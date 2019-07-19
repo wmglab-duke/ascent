@@ -1,0 +1,12 @@
+[
+  {
+    "code": 0,
+    "text": "Invalid code (out of bounds, starting at index 1).",
+    "source": "ExceptionManager."
+  },
+  {
+    "code": 1,
+    "text": "Path must be full file name if not generating new map.",
+    "source": "Map"
+  }
+]
