@@ -17,7 +17,7 @@ Description:
 
 """
 
-from utils.ExceptionManager import ExceptionManager
+from src.utils.exceptions import ExceptionManager
 
 
 class Exceptionable:

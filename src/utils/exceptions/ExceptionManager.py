@@ -17,15 +17,14 @@ Description:
 
 """
 
-import json
+from src.utils.Configurable import Configurable
 
 
-class ExceptionManager:
+class ExceptionManager(Configurable):
 
     def __init__(self, path):
-
-        with open(path, "r") as json_file:
-            self.data = json.load(json_file)
+        # set up superclass(es)
+        Configurable.__init__(self, path)
 
     def message(self, code):
         """
@@ -34,15 +33,14 @@ class ExceptionManager:
         """
 
         # force to exception 0 if incorrect bounds
-        if code not in range(1, len(self.data)):
+        if code not in range(1, len(self.config)):
             code = 0
 
-        exception = self.data[code]
+        exception = self.config[code]
         # note that the json purposefully has the redundant entry "code"
         # this is done for ease of use and organizational purposes
-        return 'Exception\n' \
-               '\tcode:\t{}\n' \
+        return '\n\tcode:\t{}\n' \
                '\ttext:\t{}\n' \
                '\tsource:\t{}'.format(exception.get('code'),
-                                        exception.get('text'),
-                                        exception.get('source'))
+                                      exception.get('text'),
+                                      exception.get('source'))

@@ -1,7 +1,7 @@
 import os
 
-from utils.SlideMap import SlideMap
-from utils.ExceptionManager import ExceptionManager
+from src.core import *
+from src.utils.exceptions import ExceptionManager
 
 
 my_exception_manager = ExceptionManager(os.path.join(os.getcwd(), '.config', 'exceptions.json'))

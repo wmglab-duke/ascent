@@ -16,16 +16,18 @@ Description:
     METHODS
 
 """
-from utils.ExceptionManager import ExceptionManager
-from utils.Exceptionable import Exceptionable
 
+# builtin imports
 import os
-import re
-import datetime
+import datetime as dt
 import numpy as np
 
+# user imports
+from src.utils.Configurable import Configurable
+from src.utils.exceptions import *
 
-class Map(Exceptionable):
+
+class SlideMap(Exceptionable, Configurable):
 
     def __init__(self, new: bool, path: str, exception_manager: ExceptionManager):
         """
@@ -33,35 +35,35 @@ class Map(Exceptionable):
         :param path: MUST exist (to find path to save/load)
         """
 
-        # set up superclass
+        # set up Exceptionable super class
         Exceptionable.__init__(self, exception_manager)
 
-        #%% assign file name
+        #%% set up Configurable super class
         if path[-1] in ['/', '\\']:  # path is a directory (only makes sense if new map)
-            self.file = os.path.join(path[:-1], self.__path())
+            Configurable.__init__(self, os.path.join(path[:-1], self.__path()))
 
             if not new:
                 self.throw(1)
 
         else:  # path given is a file
-            self.file = path
+            Configurable.__init__(self, path)
 
-        #%% choose
+        # choose whether to create new slide map or use old one!
         if new:  # new slide map must be generated
             pass
 
         else:  # old slide map will be used
+
             pass
 
     def __build(self):
-        pass
         return
 
     def __path(self):
         """
         :return: newly generated path name with date stamp
         """
-        return 'map_{}.csv'.format(datetime.datetime.now().strftime('%m%d%Y'))
+        return 'map_{}.csv'.format(dt.datetime.now().strftime('%m%d%Y'))
 
 
 # %% quick class to keep track of slides
@@ -89,8 +91,11 @@ class Electrode:
 
     def position(self):
         return np.mean([self.start.position,
-                           self.end.position])
+                        self.end.position])
 
-    def abs_dist_to(self, other_electrode: 'Electrode'):  # use string to delay type eval
-        return abs(self.position() - other_electrode.position())
+    def __add__(self, other: 'Electrode'):
+        return self.position() + other.position()
+
+    def __sub__(self, other: 'Electrode'):
+        return self.position() - other.position()
 
