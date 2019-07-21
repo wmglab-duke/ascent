@@ -23,38 +23,20 @@ import datetime as dt
 import numpy as np
 
 # user imports
-from src.utils.Configurable import Configurable
-from src.utils.exceptions import *
+from src.utils import *
 
 
 class SlideMap(Exceptionable, Configurable):
 
-    def __init__(self, new: bool, path: str, exception_manager: ExceptionManager):
+    def __init__(self, config_file_path: str, exception_config_file_path: str):
         """
         :param new: indicate whether or not to build new Map
         :param path: MUST exist (to find path to save/load)
         """
 
-        # set up Exceptionable super class
-        Exceptionable.__init__(self, exception_manager)
-
-        #%% set up Configurable super class
-        if path[-1] in ['/', '\\']:  # path is a directory (only makes sense if new map)
-            Configurable.__init__(self, os.path.join(path[:-1], self.__path()))
-
-            if not new:
-                self.throw(1)
-
-        else:  # path given is a file
-            Configurable.__init__(self, path)
-
-        # choose whether to create new slide map or use old one!
-        if new:  # new slide map must be generated
-            pass
-
-        else:  # old slide map will be used
-
-            pass
+        # set up super classes
+        Exceptionable.__init__(self, exception_config_file_path)
+        Configurable.__init__(self, config_file_path)
 
     def __build(self):
         return
