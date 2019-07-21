@@ -10,10 +10,11 @@
 #
 # Modified and expanded: June 26, 2019
 
+import csv  # for writing data to file
+import datetime  # for output file naming
 import os  # for basic filesystem navigation
 import re  # regular expression tools (for recognizing slide number)
-import datetime  # for output file naming
-import csv  # for writing data to file
+
 import numpy  # convenience
 import xlwt  # for saving to xls
 

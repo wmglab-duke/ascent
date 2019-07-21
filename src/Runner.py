@@ -1,7 +1,5 @@
-import os
-
-from src.utils import *
 from src.core import *
+from src.utils import *
 
 
 class Runner(Exceptionable, Configurable):

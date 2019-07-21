@@ -18,8 +18,8 @@ Description:
 """
 
 # builtin imports
-import os
 import datetime as dt
+
 import numpy as np
 
 # user imports
