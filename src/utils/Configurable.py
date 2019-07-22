@@ -51,7 +51,7 @@ class Configurable:
                                 '\tsource:\tConfigurable.py')
 
             with open(config, "r") as handle:
-                print('load "{}" --> key "{}"'.format(config, key))
+                # print('load "{}" --> key "{}"'.format(config, key))
                 self.configs[key.value] = json.load(handle)
 
         elif mode == SetupMode.OLD:

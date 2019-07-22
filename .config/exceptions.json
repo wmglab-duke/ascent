@@ -13,5 +13,10 @@
     "code": 2,
     "text": "This is a test error!",
     "source": "Runner"
+  },
+  {
+    "code": 3,
+    "text": "Points lists must all have same length",
+    "source": "Trace"
   }
 ]

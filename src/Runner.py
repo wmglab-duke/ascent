@@ -19,11 +19,15 @@ class Runner(Exceptionable, Configurable):
         _ = SlideMap(self.configs[ConfigKey.MASTER.value],
                      self.configs[ConfigKey.EXCEPTIONS.value])
 
+        self.trace = Trace([0], [0], [0],
+                           self.configs[ConfigKey.MASTER.value],
+                           self.configs[ConfigKey.EXCEPTIONS.value])
         # TEST: exceptions configuration path
         # print('exceptions_config_path:\t{}'.format(self.exceptions_config_path))
 
         # TEST: retrieve data from config file
-        # print(self.search('test_array', 0, 'test'))
+        # print(self.search(ConfigKey.MASTER, 'test_array', 0, 'test'))
 
         # TEST: throw error
         # self.throw(3)
+

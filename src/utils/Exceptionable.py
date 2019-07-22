@@ -17,9 +17,7 @@ Description:
 
 """
 
-from src.utils import SetupMode
-from src.utils.ConfigKey import ConfigKey
-from src.utils.Configurable import Configurable
+from src.utils import SetupMode, Configurable, ConfigKey
 
 
 class Exceptionable(Configurable):
