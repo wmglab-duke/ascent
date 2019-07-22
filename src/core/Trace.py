@@ -1,4 +1,5 @@
 import numpy as np
+import os
 
 from src.utils import *
 
@@ -7,7 +8,6 @@ class Trace(Exceptionable):
 
     def __init__(self, points, exception_config):
         """
-
         :param points:
         :param exception_config:
         """
@@ -18,26 +18,18 @@ class Trace(Exceptionable):
         # set up superclasses
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
 
-    def append(self, points: np.ndarray):
+    def append(self, points):
         """
-        :param points: nx3 ndarray, where each row is a point (x, y, z)
-        :return: none
+        :param points: nx3 ndarray, where each row is a point [x, y, z]
         """
         # if points has not been initialized (case when called by __init__)
         if self.points is None:
             self.points = np.array(points)
         else:
-            self.points = np.append(self.points, np.array(points))
+            self.points = np.append(self.points, np.array(points), axis=0)  # axis = 0 to append rows
 
         # make sure points is multidimensional ndarray
-        self.points = self.__force_multidim(self.points)
-
-    def empty(self):
-        """
-        Set self.points to None
-        :return: none
-        """
-        self.points = None
+        self.points = np.atleast_2d(self.points)
 
     def count(self):
         """
@@ -48,7 +40,6 @@ class Trace(Exceptionable):
     def shift(self, vector):
         """
         :param vector: 1-dim vector with 3 elements... shape is (3,)
-        :return: none
         """
 
         # must be 3 item vector
@@ -58,17 +49,10 @@ class Trace(Exceptionable):
         # step through each row (point), and apply shift
         self.points = np.apply_along_axis(lambda point: point + vector, 1, self.points)
 
-    def write(self, mode: WriteMode):
-        pass
+    def write(self, mode: WriteMode, path: str):
+        if os.path.
 
-    @staticmethod
-    def __force_multidim(vector):
-        """
-        :param vector: arbitrary list or ndarray
-        :return: if the vector had shape (n,), now it has (1,n)
-        """
-        shape = np.shape(vector)
-        print(shape)
-        if len(shape) == 1:
-            vector = np.reshape(vector, (1, shape[0]))
-        return vector
+        if mode == WriteMode.SECTIONWISE:
+            pass
+        else:
+            self.throw(4)

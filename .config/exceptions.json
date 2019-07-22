@@ -16,7 +16,12 @@
   },
   {
     "code": 3,
-    "text": "Vector provided for Trace.shift must be of shape (3,) (i.e. 1-dim)",
-    "source": "Trace"
+    "text": "Vector provided must be of shape (3,) (i.e. 1-dim)",
+    "source": "Trace.shift"
+  },
+  {
+    "code": 4,
+    "text": "Write mode not supported or invalid",
+    "source": "Trace.write"
   }
 ]
