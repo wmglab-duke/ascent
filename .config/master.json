@@ -10,6 +10,6 @@
     }
   ],
   "slide_map": {
-
+    "test": "slide_map data retrieval test worked!"
   }
 }

@@ -36,7 +36,13 @@ class SlideMap(Exceptionable, Configurable):
 
         # set up super classes
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
-        Configurable.__init__(self, SetupMode.OLD, 'main', main_config)
+        Configurable.__init__(self, SetupMode.OLD, ConfigKeys.MAIN.value, main_config)
+
+        # set up default path for accessing data within main config
+        self.default_path = ['main', 'slide_map']
+
+        # TEST: access data using default path
+        print(self.search(*self.default_path, 'test'))
 
     def __build(self):
         return

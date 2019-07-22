@@ -19,6 +19,7 @@ Description:
     PROPERTIES
 
     METHODS
+    search(key, *args): takes a key for the desired configs
 
 """
 
@@ -37,8 +38,8 @@ class Configurable:
         """
 
         # if self.configs does not already exist (i.e. this is first Configurable call), create it
-        if 'self.configs' not in vars() and 'self.configs' not in globals():
-            self.configs: dict = dict()
+        if not hasattr(self, 'configs'):
+            self.configs = dict()
 
         # either load up new data or used old, passed in data
         if mode == SetupMode.NEW:
