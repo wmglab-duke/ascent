@@ -2,7 +2,7 @@
   {
     "code": 0,
     "text": "Invalid code (out of bounds, starting at index 1).",
-    "source": "ExceptionManager."
+    "source": "Exceptionable"
   },
   {
     "code": 1,

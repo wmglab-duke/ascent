@@ -8,5 +8,8 @@
     {
       "test": "test self.get() worked!"
     }
-  ]
+  ],
+  "slide_map": {
+
+  }
 }

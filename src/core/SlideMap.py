@@ -28,15 +28,15 @@ from src.utils import *
 
 class SlideMap(Exceptionable, Configurable):
 
-    def __init__(self, config_file_path: str, exception_config_file_path: str):
+    def __init__(self, main_config, exception_config):
         """
         :param new: indicate whether or not to build new Map
         :param path: MUST exist (to find path to save/load)
         """
 
         # set up super classes
-        Exceptionable.__init__(self, exception_config_file_path)
-        Configurable.__init__(self, config_file_path)
+        Exceptionable.__init__(self, SetupMode.OLD, exception_config)
+        Configurable.__init__(self, SetupMode.OLD, 'main', main_config)
 
     def __build(self):
         return

@@ -16,16 +16,17 @@ Description:
     METHODS
 
 """
-import json
+
+from src.utils import SetupMode
+from src.utils.Configurable import Configurable
 
 
-class Exceptionable:
+class Exceptionable(Configurable):
 
-    def __init__(self, config_file_path: str):
-        # NOTE: BUILTIN Configurable FUNCTIONALITY TO NOT OVERRIDE WHEN BOTH ARE INHERITED
+    def __init__(self, mode: SetupMode, config):
+        self.exceptions_key = 'exceptions'
 
-        with open(config_file_path, "r") as json_file:
-            self.exception_config: dict = json.load(json_file)
+        Configurable.__init__(self, mode, self.exceptions_key, config)
 
     def throw(self, code):
         """
@@ -34,14 +35,14 @@ class Exceptionable:
         """
 
         # force to exception 0 if incorrect bounds
-        if code not in range(1, len(self.exception_config)):
+        if code not in range(1, len(self.configs[self.exceptions_key])):
             code = 0
 
-        exception = self.exception_config[code]
+        exception = self.configs[self.exceptions_key][code]
         # note that the json purposefully has the redundant entry "code"
         # this is done for ease of use and organizational purposes
-        raise Exception('\n\tcode:\t{}\n' \
-                        '\ttext:\t{}\n' \
+        raise Exception('\n\tcode:\t{}\n'
+                        '\ttext:\t{}\n'
                         '\tsource:\t{}'.format(exception.get('code'),
                                                exception.get('text'),
                                                exception.get('source')))
