@@ -1,3 +1,4 @@
+import os
 from src.core import *
 from src.utils import *
 
@@ -10,19 +11,18 @@ class Runner(Exceptionable, Configurable):
         Configurable.__init__(self, config_file_path)
 
         # get config path info from config and set to class vars
-        self.config_paths: dict = self.config.get('config_paths')
-        self.exceptions_config_path = self.__build_config_path('exceptions')
-        self.slide_map_config_path = self.__build_config_path('slide_map')
+        self.exceptions_config_path = self.path_get('config_paths', 'exceptions')
+        self.slide_map_config_path = self.path_get('config_paths', 'slide_map')
 
         # initialize Exceptionable super class
         Exceptionable.__init__(self, self.exceptions_config_path)
 
-    def __build_config_path(self, desired):
-        """
-        :param desired: desired type of configuration file
-        :return: system-specific path for the desired configuration file
-        """
-        return os.path.join(self.config_paths.get('root'), self.config_paths.get(desired))
-
     def run(self):
         _ = SlideMap(self.slide_map_config_path, self.exceptions_config_path)
+
+        # quick sanity check
+        print('exceptions_config_path:\t{}'.format(self.exceptions_config_path))
+        print('slide_map_config_path:\t{}'.format(self.slide_map_config_path))
+
+        print(self.get('test_array', 0, 'test'))
+        self.throw(2)

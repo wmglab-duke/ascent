@@ -3,5 +3,10 @@
     "root": ".config",
     "exceptions": "exceptions.json",
     "slide_map": "slide_map.json"
-  }
+  },
+  "test_array": [
+    {
+      "test": "test self.get() worked!"
+    }
+  ]
 }

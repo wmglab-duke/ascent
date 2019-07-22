@@ -8,5 +8,10 @@
     "code": 1,
     "text": "Path must be full file name if not generating new map.",
     "source": "Map"
+  },
+  {
+    "code": 2,
+    "text": "This is a test error!",
+    "source": "Runner"
   }
 ]

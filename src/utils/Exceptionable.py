@@ -16,13 +16,16 @@ Description:
     METHODS
 
 """
-from src.utils import Configurable
+import json
 
 
-class Exceptionable(Configurable):
+class Exceptionable:
 
-    def __init__(self, config_path: str):
-        Configurable.__init__(self, config_path)
+    def __init__(self, config_file_path: str):
+        # NOTE: BUILTIN Configurable FUNCTIONALITY TO NOT OVERRIDE WHEN BOTH ARE INHERITED
+
+        with open(config_file_path, "r") as json_file:
+            self.exception_config: dict = json.load(json_file)
 
     def throw(self, code):
         """
@@ -31,10 +34,10 @@ class Exceptionable(Configurable):
         """
 
         # force to exception 0 if incorrect bounds
-        if code not in range(1, len(self.config)):
+        if code not in range(1, len(self.exception_config)):
             code = 0
 
-        exception = self.config[code]
+        exception = self.exception_config[code]
         # note that the json purposefully has the redundant entry "code"
         # this is done for ease of use and organizational purposes
         raise Exception('\n\tcode:\t{}\n' \
