@@ -29,5 +29,4 @@ class Runner(Exceptionable, Configurable):
         # print(self.search(ConfigKey.MASTER, 'test_array', 0, 'test'))
 
         # TEST: throw error
-        # self.throw(3)
-
+        self.throw(2)
