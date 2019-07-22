@@ -27,11 +27,12 @@ import json
 import os
 
 from src.utils.SetupMode import SetupMode
+from src.utils.ConfigKey import ConfigKey
 
 
 class Configurable:
 
-    def __init__(self, mode: SetupMode, key: str, config):
+    def __init__(self, mode: SetupMode, key: ConfigKey, config):
         """
         :param key:
         :param config: if mode is NEW, this is file path, else (mode is OLD) this is config data
@@ -50,25 +51,23 @@ class Configurable:
                                 '\tsource:\tConfigurable.py')
 
             with open(config, "r") as handle:
-                print('loading a JSON config')
-                self.configs[key] = json.load(handle)
+                print('load "{}" --> key "{}"'.format(config, key))
+                self.configs[key.value] = json.load(handle)
 
         elif mode == SetupMode.OLD:
-
             self.configs[key] = config
 
         else:
-
             raise Exception('dude, what?')
 
-    def search(self, key: str, *args):
+    def search(self, key: ConfigKey, *args):
         """
         Get an item using "path" of args in the json config.
         :param key:
         :param args: list "path" to item within json (str or int)
         :return: final specified item
         """
-        result = self.configs[key]
+        result = self.configs[key.value]
         for arg in args:
             if isinstance(arg, str):
                 result = result.get(arg)
@@ -80,7 +79,7 @@ class Configurable:
                                 '\tsource:\tConfigurable.py'.format(type(arg), arg))
         return result
 
-    def path(self, key: str, *args):
+    def path(self, key: ConfigKey, *args):
         """
         Build a path for an item specified in same style as self.get() ...
         REQUIRES that there be a str "root" on same level as lowest item

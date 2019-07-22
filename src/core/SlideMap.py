@@ -19,7 +19,6 @@ Description:
 
 # builtin imports
 import datetime as dt
-
 import numpy as np
 
 # user imports
@@ -30,19 +29,20 @@ class SlideMap(Exceptionable, Configurable):
 
     def __init__(self, main_config, exception_config):
         """
-        :param new: indicate whether or not to build new Map
-        :param path: MUST exist (to find path to save/load)
+
+        :param main_config:
+        :param exception_config:
         """
 
         # set up super classes
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
-        Configurable.__init__(self, SetupMode.OLD, ConfigKeys.MAIN.value, main_config)
+        Configurable.__init__(self, SetupMode.OLD, ConfigKey.MASTER, main_config)
 
         # set up default path for accessing data within main config
         self.default_path = ['main', 'slide_map']
 
         # TEST: access data using default path
-        print(self.search(*self.default_path, 'test'))
+        # print(self.search(*self.default_path, 'test'))
 
     def __build(self):
         return

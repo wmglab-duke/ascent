@@ -1,8 +1,7 @@
 {
   "config_paths": {
     "root": ".config",
-    "exceptions": "exceptions.json",
-    "slide_map": "slide_map.json"
+    "exceptions": "exceptions.json"
   },
   "test_array": [
     {

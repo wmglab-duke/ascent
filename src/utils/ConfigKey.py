@@ -1,6 +1,6 @@
 from enum import Enum
 
 
-class ConfigKeys(Enum):
-    MAIN = 'main'
+class ConfigKey(Enum):
+    MASTER = 'master'
     EXCEPTIONS = 'exceptions'

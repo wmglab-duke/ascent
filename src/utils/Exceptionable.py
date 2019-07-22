@@ -18,7 +18,7 @@ Description:
 """
 
 from src.utils import SetupMode
-from src.utils.ConfigKeys import ConfigKeys
+from src.utils.ConfigKey import ConfigKey
 from src.utils.Configurable import Configurable
 
 
@@ -26,7 +26,7 @@ class Exceptionable(Configurable):
 
     def __init__(self, mode: SetupMode, config):
 
-        Configurable.__init__(self, mode, ConfigKeys.EXCEPTIONS.value, config)
+        Configurable.__init__(self, mode, ConfigKey.EXCEPTIONS, config)
 
     def throw(self, code):
         """
@@ -35,10 +35,10 @@ class Exceptionable(Configurable):
         """
 
         # force to exception 0 if incorrect bounds
-        if code not in range(1, len(self.configs[ConfigKeys.EXCEPTIONS.value])):
+        if code not in range(1, len(self.configs[ConfigKey.EXCEPTIONS.value])):
             code = 0
 
-        exception = self.configs[ConfigKeys.EXCEPTIONS.value][code]
+        exception = self.configs[ConfigKey.EXCEPTIONS.value][code]
         # note that the json purposefully has the redundant entry "code"
         # this is done for ease of use and organizational purposes
         raise Exception('\n\tcode:\t{}\n'
