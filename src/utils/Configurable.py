@@ -55,7 +55,7 @@ class Configurable:
                 self.configs[key.value] = json.load(handle)
 
         elif mode == SetupMode.OLD:
-            self.configs[key] = config
+            self.configs[key.value] = config
 
         else:
             raise Exception('dude, what?')
