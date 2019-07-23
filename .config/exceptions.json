@@ -28,5 +28,10 @@
     "code": 5,
     "text": "Points to append must have 3 columns (x, y, z)",
     "source": "Trace.append"
+  },
+  {
+    "code": 6,
+    "text": "Current implementation requires that all points in Trace have same z-value to create contour",
+    "source": "Trace.current_contour"
   }
 ]
