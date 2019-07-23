@@ -27,6 +27,9 @@ class Runner(Exceptionable, Configurable):
                             [1,  2, 0],
                             [0,  2, 0],
                             [0,  1, 0]], self.configs[ConfigKey.EXCEPTIONS.value])
+        print('output path: {}'.format(self.trace.write(Trace.WriteMode.SECTIONWISE,
+                                                        '/Users/jakecariello/Box/SPARCpy/data/output/test_trace')))
+
         # TEST: exceptions configuration path
         # print('exceptions_config_path:\t{}'.format(self.exceptions_config_path))
 

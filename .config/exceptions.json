@@ -2,36 +2,41 @@
   {
     "code": 0,
     "text": "Invalid code (out of bounds, starting at index 1).",
-    "source": "Exceptionable"
+    "source": "src.utils.Exceptionable"
   },
   {
     "code": 1,
     "text": "Path must be full file name if not generating new map.",
-    "source": "Map"
+    "source": "src.core.SlideMap"
   },
   {
     "code": 2,
     "text": "This is a test error!",
-    "source": "Runner"
+    "source": "src.Runner"
   },
   {
     "code": 3,
     "text": "Vector provided must be of shape (3,) (i.e. 1-dim)",
-    "source": "Trace.shift"
+    "source": "src.core.Trace.shift"
   },
   {
     "code": 4,
     "text": "Write mode not supported or invalid",
-    "source": "Trace.write"
+    "source": "src.core.Trace.write"
   },
   {
     "code": 5,
     "text": "Points to append must have 3 columns (x, y, z)",
-    "source": "Trace.append"
+    "source": "src.core.Trace.append"
   },
   {
     "code": 6,
     "text": "Current implementation requires that all points in Trace have same z-value to create contour",
-    "source": "Trace.current_contour"
+    "source": "src.core.Trace.current_contour"
+  },
+  {
+    "code": 7,
+    "text": "Exception while throwing",
+    "source": "src.core.Trace.current_contour"
   }
 ]

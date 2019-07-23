@@ -1,9 +1,10 @@
+from enum import Enum, unique
+
 import numpy as np
 import os
 import cv2
 
 from src.utils import *
-
 
 class Trace(Exceptionable):
 
@@ -13,7 +14,7 @@ class Trace(Exceptionable):
         :param points:
         :param exception_config:
         """
-        # equivalent of calling self.clear_contour()
+
         self.__contour = None
 
         # set up superclass
@@ -41,6 +42,7 @@ class Trace(Exceptionable):
         else:
             self.points = np.append(self.points, points, axis=0)  # axis = 0 to append rows
 
+        # required for mutating method
         self.__update()
 
     def shift(self, vector):
@@ -52,9 +54,33 @@ class Trace(Exceptionable):
         if np.shape(vector) != (3,):
             self.throw(3)
 
-        # step through each row (point), and apply shift
-        self.points = self.points + vector
+        # apply shift to each point
+        self.points += vector
 
+        # required for mutating method
+        self.__update()
+
+    def downsample(self, mode: 'Trace.DownSampleMode', step: int):
+        """
+        Simple downsample method to remove points at even intervals.
+        Will start indices on "stepth" element (i.e. if step is 4, first selected element at index 3)
+        :param mode: decide whether to KEEP only the points on steps, or REMOVE only those points
+        :param step: spacing between each selected point (both keep and remove)
+        """
+
+        ii = list(range(step - 1, self.count(), step))
+
+        if mode == Trace.DownSampleMode.KEEP:
+            pass  # nothing here; just showing the case for readability
+        elif mode == Trace.DownSampleMode.REMOVE:
+            ii = [i for i in list(range(0, self.count())) if i not in ii]
+        else:
+            # this should be unreachable because above cases are exhaustive
+            print('I am utterly baffled.')
+
+        self.points = self.points[ii, :]
+
+        # required for mutating method
         self.__update()
 
     #%% public, NON-MUTATING methods
@@ -112,20 +138,64 @@ class Trace(Exceptionable):
         """
         return cv2.fitEllipse(self.contour())[0]
 
-    def write(self, mode: WriteMode, path: str):
-        if mode == WriteMode.SECTIONWISE:
-            pass
-        else:
-            self.throw(4)
+    def write(self, mode: 'Trace.WriteMode', path: str):
+        """
+        Write Trace data (points, elements, etc.) to file
+        :param mode: choice of write implementations
+        :param path: string path with file name of file WITHOUT extension (it is derived from mode)
+        :return: string full path including extension that was written to
+        """
+        # add extension
+        path += mode.value
+
+        try:
+            # open in write mode; "+" indicates to create file if not found
+            with open(path, 'w+') as f:
+                count = self.count()
+
+                # choose implementation from mode
+                if mode == Trace.WriteMode.SECTIONWISE:
+
+                    # write coordinates
+                    f.write('%% Coordinates\n')
+                    for i in range(count):
+                        f.write('{}\t{}\t{}\n'.format(self.points[i, 0],
+                                                      self.points[i, 1],
+                                                      self.points[i, 2]))
+
+                    # write elements (corresponding to their coordinates)
+                    f.write('%% Elements\n')
+                    for i in range(count):
+                        # if not last point, attach to next point
+                        if i < count - 1:
+                            f.write('{}\t{}\n'.format(i + 1, i + 2))
+                        else:  # attach to first point (closed loop)
+                            f.write('{}\t{}\n'.format(i + 1, 1))
+
+                else:
+                    self.throw(4)
+        except EnvironmentError as e:
+            # only one of these can run, so comment at will
+            self.throw(7)
+            #raise e
+
+        return path
 
     #%% private utility methods
     def __update(self):
         self.__int_points = self.__intify(self.points)
-        self.__clear_contour()
-
-    def __clear_contour(self):
         self.__contour = None
 
     @staticmethod
     def __intify(points: np.ndarray):
         return np.array(np.round(points), dtype=np.int32)
+
+    #%% helper Enums for choosing modes
+    @unique
+    class DownSampleMode(Enum):
+        KEEP = 0
+        REMOVE = 1
+
+    class WriteMode(Enum): # note: NOT required to have unique values
+        SECTIONWISE = '.txt'
+        DATA = '.dat'
