@@ -1,7 +1,9 @@
 {
-  "config_paths": {
-    "root": ".config",
-    "exceptions": "exceptions.json"
+  "config": {
+    "paths": {
+      "exceptions": [".config", "exceptions.json"],
+      "master": [".config", "master.json"]
+    }
   },
   "test_array": [
     {
@@ -9,6 +11,42 @@
     }
   ],
   "slide_map": {
-    "test": "slide_map data retrieval test worked!"
+    "cassettes": ["VN1_A", "VN1_B"],
+    "allowed_differences": [1, 2],
+    "start_position": 20000,
+    "number_regex": "([0-9]*)[.]",
+    "scale": -1,
+    "skips": {
+      "normal": 5,
+      "large": 120,
+      "cassette": 100
+    },
+    "paths": {
+      "output": ["data", "output", "slide_maps"],
+      "source": ["Users", "jakecariello", "Box", "19P866_05292019"]
+    },
+    "resize_reference": {
+      "start_slides": [
+        {
+          "cassette": "VN1_A",
+          "number": 145
+        },
+        {
+          "cassette": "VN1_A",
+          "number": 175
+        }
+      ],
+      "end_slides": [
+        {
+          "cassette": "VN1_B",
+          "number": 66
+        },
+        {
+          "cassette": "VN1_B",
+          "number": 117
+        }
+      ],
+      "distance": 6000
+    }
   }
 }

@@ -46,12 +46,7 @@ class Configurable:
         # either load up new data or used old, passed in data
         if mode == SetupMode.NEW:
             self.config_path = config
-
-            # if last 5 characters of file path are NOT '.json', raise an Exception
-            if not self.config_path[-5:] == '.json':
-                raise Exception('\n\tcode:\t-1'
-                                '\ttext:\tConfiguration file path must end in .json\n'
-                                '\tsource:\tConfigurable.py')
+            self.__validate_path()
             self.__load(key)
 
         elif mode == SetupMode.OLD:
@@ -74,21 +69,30 @@ class Configurable:
             elif isinstance(arg, int):
                 result = result[arg]
             else:
-                raise Exception('\n\tcode:\t-2'
-                                '\ttext:\tInvalid search parameter (\n\t\tTYPE: {}\t VALUE: {})\n'
+                raise Exception('\n\tcode:\t-2\n'
+                                '\ttext:\tInvalid search parameter:\tTYPE: {}\tVALUE: {}\n'
                                 '\tsource:\tConfigurable.py'.format(type(arg), arg))
         return result
 
-    def path(self, key: ConfigKey, *args):
+    def path(self, key: ConfigKey, *args, isdir: bool = False, isabsolute: bool = False):
         """
-        Build a path for an item specified in same style as self.get() ...
-        REQUIRES that there be a str "root" on same level as lowest item
-        :param key:
-        :param args: "path" to desired item
+        Build a path for an item specified in same style as self.search().
+        Expects the item returned by self.search(key, *args) to be a list.
+        :param isabsolute: flag to make the path absolute
+        :param isdir: if true, will add trailing slash (system nonspecific) to path
+        :param key: ConfigKey (choice of configurations from discrete enumeration)
+        :param args: "path" to desired path
         :return: final path to item (with system formatting!)
         """
-        return os.path.join(self.search(key, *args[:-1]).get('root'),
-                            self.search(key, *args))
+        items: list = self.search(key, *args)
+
+        if isdir:
+            items.append('')  # to force trailing slash with os.path.join
+
+        if isabsolute:
+            items.insert(0, os.path.abspath(''))  # force leading slash and (if Windows) drive letter
+
+        return os.path.join(*items)  # splat list into comma-separated args
 
     def __load(self, key: ConfigKey):
         """
@@ -99,9 +103,21 @@ class Configurable:
             # print('load "{}" --> key "{}"'.format(config, key))
             self.configs[key.value] = json.load(handle)
 
-    def reload(self, key: ConfigKey):
+    def reload(self, key: ConfigKey, config_path: str = None):
         """
         Buffer public method to load data from JSON (for naming purposes)
+        :param config_path:
         :param key: choice of config to load up
         """
+        if config_path is not None:  # this MUST be the case if it was loaded up via SetupMode.OLD
+            self.config_path = config_path
+            self.__validate_path()
+
         self.__load(key)
+
+    def __validate_path(self):
+        # if last 5 characters of file path are NOT '.json', raise an Exception
+        if not self.config_path[-5:] == '.json':
+            raise Exception('\n\tcode:\t-1'
+                            '\ttext:\tConfiguration file path must end in .json\n'
+                            '\tsource:\tConfigurable.py')

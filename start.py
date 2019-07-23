@@ -1,6 +1,10 @@
 import os
+import time
 
 from src import Runner
+
+# START timer
+start = time.time()
 
 # get main configuration file
 master_config_file_path = os.path.join('.config', 'master.json')
@@ -12,3 +16,7 @@ runner = Runner(master_config_file_path)
 runner.run()
 #runner.test1()
 runner.test2()
+
+# END timer
+end = time.time()
+print('runtime: {}'.format(end - start))
