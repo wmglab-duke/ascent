@@ -13,13 +13,14 @@ Description:
     throws (-1 and below) because it is inherently unable to inherit from Exceptionable, which, in turn, is configured.
 
     INITIALIZER
-    Pass in a string path to the JSON configuration file. Will raise an exception if incorrect format (just checks the
-    file extension). Loads that configuration file into a property self.config using standard convention.
+    See docstring in __init__.
 
     PROPERTIES
 
     METHODS
-    search(key, *args): takes a key for the desired configs
+    search(key, *args): takes a key for the desired configs, then "path" to the item in the JSON (all strings and ints)
+
+
 
 """
 
@@ -34,25 +35,24 @@ class Configurable:
 
     def __init__(self, mode: SetupMode, key: ConfigKey, config):
         """
-        :param key:
-        :param config: if mode is NEW, this is file path, else (mode is OLD) this is config data
+        :param mode: SetupMode, determines if loads new JSON or uses old data
+        :param key: choice of MASTER or EXCEPTIONS (or any other added separate configs)
+        :param config: if mode is NEW, this is file path str, else (mode is OLD) this is already loaded config data
         """
-
         # if self.configs does not already exist (i.e. this is first Configurable call), create it
         if not hasattr(self, 'configs'):
             self.configs = dict()
 
         # either load up new data or used old, passed in data
         if mode == SetupMode.NEW:
+            self.config_path = config
+
             # if last 5 characters of file path are NOT '.json', raise an Exception
-            if not config[-5:] == '.json':
+            if not self.config_path[-5:] == '.json':
                 raise Exception('\n\tcode:\t-1'
                                 '\ttext:\tConfiguration file path must end in .json\n'
                                 '\tsource:\tConfigurable.py')
-
-            with open(config, "r") as handle:
-                # print('load "{}" --> key "{}"'.format(config, key))
-                self.configs[key.value] = json.load(handle)
+            self.__load(key)
 
         elif mode == SetupMode.OLD:
             self.configs[key.value] = config
@@ -89,3 +89,19 @@ class Configurable:
         """
         return os.path.join(self.search(key, *args[:-1]).get('root'),
                             self.search(key, *args))
+
+    def __load(self, key: ConfigKey):
+        """
+        PRIVATE method to load in data (can access publicly through self.reload)
+        :param key: choice of config to load up
+        """
+        with open(self.config_path, "r") as handle:
+            # print('load "{}" --> key "{}"'.format(config, key))
+            self.configs[key.value] = json.load(handle)
+
+    def reload(self, key: ConfigKey):
+        """
+        Buffer public method to load data from JSON (for naming purposes)
+        :param key: choice of config to load up
+        """
+        self.__load(key)

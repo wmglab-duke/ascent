@@ -23,6 +23,10 @@ from src.utils import SetupMode, Configurable, ConfigKey
 class Exceptionable(Configurable):
 
     def __init__(self, mode: SetupMode, config):
+        """
+        :param mode: SetupMode, determines if Configurable loads new JSON or uses old data
+        :param config: if SetupMode.OLD, this is the data. if SetupMode.NEW, this is str path to JSON
+        """
 
         Configurable.__init__(self, mode, ConfigKey.EXCEPTIONS, config)
 

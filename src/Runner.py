@@ -16,8 +16,7 @@ class Runner(Exceptionable, Configurable):
         Exceptionable.__init__(self, SetupMode.NEW, self.exceptions_config_path)
 
     def run(self):
-        _ = SlideMap(self.configs[ConfigKey.MASTER.value],
-                     self.configs[ConfigKey.EXCEPTIONS.value])
+        # _ = SlideMap(self.configs[ConfigKey.MASTER.value], self.configs[ConfigKey.EXCEPTIONS.value])
 
         self.trace = Trace([0, 0, 0], self.configs[ConfigKey.EXCEPTIONS.value])
         # TEST: exceptions configuration path

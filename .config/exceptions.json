@@ -23,5 +23,10 @@
     "code": 4,
     "text": "Write mode not supported or invalid",
     "source": "Trace.write"
+  },
+  {
+    "code": 5,
+    "text": "Points to append must have 3 columns (x, y, z)",
+    "source": "Trace.append"
   }
 ]
