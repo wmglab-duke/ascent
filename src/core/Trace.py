@@ -30,9 +30,9 @@ class Trace(Exceptionable):
 
         # if points has not been initialized (case when called by __init__)
         if self.points is None:
-            self.points = np.array(points)
+            self.points = points
         else:
-            self.points = np.append(self.points, np.array(points), axis=0)  # axis = 0 to append rows
+            self.points = np.append(self.points, points, axis=0)  # axis = 0 to append rows
 
     def count(self):
         """
@@ -50,7 +50,7 @@ class Trace(Exceptionable):
             self.throw(3)
 
         # step through each row (point), and apply shift
-        self.points = np.apply_along_axis(lambda point: point + vector, 1, self.points)
+        self.points = self.points + vector
 
     def write(self, mode: WriteMode, path: str):
         if mode == WriteMode.SECTIONWISE:
@@ -64,3 +64,9 @@ class Trace(Exceptionable):
         """
         count = self.count()
         return np.apply_along_axis(lambda column: np.sum(column) / count, 0, self.points)
+
+    def ellipse_axes(self):
+        """
+        :return:
+        """
+        pass

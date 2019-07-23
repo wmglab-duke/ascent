@@ -1,5 +1,6 @@
 from src.core import *
 from src.utils import *
+import cv2
 
 
 class Runner(Exceptionable, Configurable):
@@ -27,3 +28,12 @@ class Runner(Exceptionable, Configurable):
 
         # TEST: throw error
         # self.throw(2)
+
+    def test1(self):
+
+        path = 'D:/Documents/SPARCpy/data/tracefile2.tif'
+        img = cv2.imread(path, -1)
+
+        cv2.utils.dumpInputArray(img)
+
+        cnts, hierarchy = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)

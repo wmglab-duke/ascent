@@ -10,3 +10,4 @@ runner = Runner(master_config_file_path)
 
 # ready, set, GO!
 runner.run()
+runner.test1()
