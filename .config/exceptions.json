@@ -36,7 +36,12 @@
   },
   {
     "code": 7,
-    "text": "Exception while throwing",
+    "text": "Exception while writing",
+    "source": "src.core.Trace.write"
+  },
+  {
+    "code": 8,
+    "text": "",
     "source": "src.core.Trace.current_contour"
   }
 ]

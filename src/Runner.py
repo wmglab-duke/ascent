@@ -41,14 +41,14 @@ class Runner(Exceptionable, Configurable):
                             mode=SetupMode.OLD)
 
         # TEST: Trace functionality
-        # self.trace = Trace([[0,  0, 0],
-        #                     [1,  0, 0],
-        #                     [6,  0, 0],
-        #                     [2,  1, 0],
-        #                     [2,  2, 0],
-        #                     [1,  2, 0],
-        #                     [0,  2, 0],
-        #                     [0,  1, 0]], self.configs[ConfigKey.EXCEPTIONS.value])
+        self.trace = Trace([[0,  0, 0],
+                            [1,  0, 0],
+                            [2,  0, 0],
+                            [2,  1, 0],
+                            [2,  2, 0],
+                            [1,  2, 0],
+                            [0,  2, 0],
+                            [0,  1, 0]], self.configs[ConfigKey.EXCEPTIONS.value])
         # print('output path: {}'.format(self.trace.write(Trace.WriteMode.SECTIONWISE,
         #                                                 '/Users/jakecariello/Box/SPARCpy/data/output/test_trace')))
 

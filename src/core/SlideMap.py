@@ -77,13 +77,13 @@ class SlideMap(Exceptionable, Configurable):
         self.output_path = os.path.join(self.path(ConfigKey.MASTER, *self.data_root, 'paths', 'output'),
                                         '{}.json'.format(dt.datetime.now().strftime('%m_%d_%Y')))
 
+        # init self.slides
+        self.slides: List[SlideMap.Slide] = []
+
         if self.mode == SetupMode.NEW:
             # source DIRECTORY
             self.source_path = self.path(ConfigKey.MASTER, *self.data_root, 'paths', 'source',
                                          is_dir=True, is_absolute=True)
-
-            # init self.slides
-            self.slides: List[SlideMap.Slide] = []
 
             # build, resize, and write to file
             self.__build()
