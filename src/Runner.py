@@ -38,7 +38,7 @@ class Runner(Exceptionable, Configurable):
     def run(self):
         self.map = SlideMap(self.configs[ConfigKey.MASTER.value],
                             self.configs[ConfigKey.EXCEPTIONS.value],
-                            mode=SetupMode.OLD)
+                            mode=SetupMode.NEW)
 
         # TEST: Trace functionality
         self.trace = Trace([[0,  0, 0],

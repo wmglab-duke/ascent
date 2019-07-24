@@ -10,6 +10,7 @@
       "test": "test self.get() worked!"
     }
   ],
+  "sample": "uwm",
   "slide_map": {
     "cassettes": ["VN1_A", "VN1_B"],
     "allowed_differences": [1, 2],

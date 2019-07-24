@@ -20,6 +20,8 @@ Description:
 """
 
 # import math
+from typing import List, Tuple
+import itertools
 from typing import List
 from matplotlib import path as pth
 
@@ -36,14 +38,21 @@ class Fascicle(Exceptionable):
         self.inners = inners
         self.outer = outer
 
-        # validate the inner/outer relationship
-        # create path representing the outer Trace shape
-        outer_path = pth.Path([tuple(point) for point in outer.points[:, :2]])
-        # loop through all inner traces
-        for inner in inners:
-            # check that all points in this Trace are within the outer path
-            if not all(outer_path.contains_points([tuple(point) for point in inner.points[:, :2]])):
-                self.throw(8)
+        # ensure all inner Traces are actually inside outer Trace
+        if any([inner for inner in inners if inner.is_inside(outer)]):
+            self.throw(8)
+
+        # ensure no Traces intersect
+        self.pairs: List[Tuple[Trace]] = list(itertools.combinations(inners + [outer], 2))
+        if any([pair[0].intersects(pair[1]) for pair in self.pairs]):
+            self.throw(9)
+
+    def intersects(self, other: 'Fascicle') -> bool:
+        """
+        :param other: the other Fascicle to check
+        :return: True if the outer traces of the Fascicles intersect
+        """
+        return self.outer.intersects(other.outer)
 
 # # might use this code for checking if points are within elliptical nerve
 # # get bounding ellipse parameters

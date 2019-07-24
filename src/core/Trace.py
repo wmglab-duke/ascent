@@ -1,5 +1,5 @@
 from enum import Enum, unique
-
+from matplotlib.path import Path
 import numpy as np
 import os
 import cv2
@@ -16,6 +16,7 @@ class Trace(Exceptionable):
         """
 
         self.__contour = None
+        self.__path: Path = None
 
         # set up superclass
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
@@ -96,6 +97,27 @@ class Trace(Exceptionable):
         """
         count = self.count()
         return np.apply_along_axis(lambda column: np.sum(column) / count, 0, self.points)
+
+    #%% dependent on matplotib.path.Path
+    def points_path(self):
+        """
+        NOTE: this is TWO DIMENSIONAL (ignores z-coordinate)
+        :return: matplotlib.path.Path object
+        """
+        if self.__path is None:
+            if len(set(self.points[:, 2])) != 1:
+                self.throw(6)
+
+            self.__path = Path([tuple(point) for point in self.points[:, :2]])
+        return self.__path
+
+    def is_inside(self, outer: 'Trace') -> bool:
+        return all(outer.points_path().contains_points([tuple(point) for point in self.points[:, :2]]))
+
+    def intersects(self, other: 'Trace') -> bool:
+        return self.points_path().intersects_path(other.points_path())
+
+    #%% contour-dependent (cv2)
 
     def contour(self):
         """
@@ -185,6 +207,7 @@ class Trace(Exceptionable):
     def __update(self):
         self.__int_points = self.__intify(self.points)
         self.__contour = None
+        self.__path = None
 
     @staticmethod
     def __intify(points: np.ndarray):

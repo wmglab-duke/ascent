@@ -17,6 +17,11 @@ Description:
         22 milliseconds (@ ~0.099s) when compared to building and saving a new JSON (@ ~ 0.121s).
     Note that the functionality of this class is EXTREMELY dependent on the structure of the JSON files it deals with.
 
+    I considered adding path-building functionality to this class, but ultimately decided to defer that functionality
+    to a "SlideManager" class (not created as of 7/24/2019). This was done so the configuration can be read and the
+    appropriate data store in the master configuration (or similar). That way, a COMSOL-interfacing program will be able
+    to easily access the data from one place.
+
     PROPERTIES
     data_root
     mode
@@ -76,6 +81,9 @@ class SlideMap(Exceptionable, Configurable):
         # output path for new slide map (and allows for old slide map to be edited and rewritten!)
         self.output_path = os.path.join(self.path(ConfigKey.MASTER, *self.data_root, 'paths', 'output'),
                                         '{}.json'.format(dt.datetime.now().strftime('%m_%d_%Y')))
+
+        # get sample string to pass to SlideMap.Slide
+        self.sample = self.search(ConfigKey.MASTER, 'sample')
 
         # init self.slides
         self.slides: List[SlideMap.Slide] = []
@@ -173,7 +181,8 @@ class SlideMap(Exceptionable, Configurable):
                 # add this to the current 'row' of slides
                 cassette.append(SlideMap.Slide(cassette_code,
                                                number,
-                                               position))
+                                               position,
+                                               os.path.join(self.source_path, file)))
             # add this cassette to the total list of slides
             self.slides += cassette
 
@@ -217,16 +226,18 @@ class SlideMap(Exceptionable, Configurable):
             result.append({
                 "cassette": slide.cassette,
                 "number": slide.number,
-                "position": slide.position
+                "position": slide.position,
+                "raw_source": slide.raw_source,
             })
 
-        return json.dumps(result, indent=4)
+        return json.dumps(result, indent=2)
 
     def json_to_list(self) -> list:
         data = self.load(self.source_path)
         return [SlideMap.Slide(item.get('cassette'),
                                item.get('number'),
-                               item.get('position')) for item in data]
+                               item.get('position'),
+                               item.get('raw_source')) for item in data]
 
     #%% utility
     @staticmethod
@@ -262,15 +273,28 @@ class SlideMap(Exceptionable, Configurable):
     #%% helper classes... self.map will be stored as a list of Slide objects
     # quick class to keep track of slides
     class Slide:
-        def __init__(self, cassette, number, position):
+        def __init__(self, cassette: str, number: int, position: int, raw_source: str):
             self.cassette = cassette
             self.number = number
             self.position = position
+            self.raw_source = raw_source
+
+            # (directory, file) = os.path.split(raw_source)  # returns tuple
+            # (name, extension) = tuple(file.split('.'))
+            #
+            # # build source paths
+            # self.fascicle_source = os.path.join(directory,
+            #                                     'fascicles',
+            #                                     '.'.join(['_'.join([name, 'fascicle']), extension]))
+            # self.nerve_source = os.path.join(directory,
+            #                                  'nerves',
+            #                                  '.'.join(['_'.join([name, 'nerve']), extension]))
+
 
         def __repr__(self):
-            return '\tcas: {}\n\tnum: {}\n\tpos: {}\n\n'.format(self.cassette,
-                                                                self.number,
-                                                                self.position)
+            return '\tcas:\t{}\tnum:\t{}\n\tpos:\t{}\n\n'.format(self.cassette,
+                                                                 self.number,
+                                                                 self.position)
 
     # quick class to keep track of a reference distance for resizing (i.e. space between electrodes)
     class Reference:
