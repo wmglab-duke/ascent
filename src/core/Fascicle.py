@@ -15,15 +15,11 @@ Description:
 
     METHODS
 
-    TODO: check if inners are overlapping
-
 """
 
 # import math
-from typing import List, Tuple
 import itertools
-from typing import List
-from matplotlib import path as pth
+from typing import List, Tuple
 
 from src.core import Trace, Nerve
 from src.utils import Exceptionable, SetupMode
@@ -32,6 +28,12 @@ from src.utils import Exceptionable, SetupMode
 class Fascicle(Exceptionable):
 
     def __init__(self, exception_config, inners: List[Trace], outer: Trace):
+        """
+        :param exception_config: existing data already loaded form JSON (hence SetupMode.OLD)
+        :param inners: list of inner Traces (i.e. endoneuriums)
+        :param outer: single outer Trace (i.e. perineurium)
+        """
+
         # set up superclass
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
 
@@ -43,7 +45,7 @@ class Fascicle(Exceptionable):
             self.throw(8)
 
         # ensure no Traces intersect
-        self.pairs: List[Tuple[Trace]] = list(itertools.combinations(inners + [outer], 2))
+        self.pairs: List[Tuple[Trace]] = list(itertools.combinations(self.all_traces(), 2))
         if any([pair[0].intersects(pair[1]) for pair in self.pairs]):
             self.throw(9)
 
@@ -56,11 +58,33 @@ class Fascicle(Exceptionable):
 
     def intersects_nerve(self, nerve: Nerve) -> bool:
         """
-
         :param nerve: the Nerve to check
         :return: True if the self.outer Traces intersects the single Trace of nerve
         """
-        return self.outer.intersects(nerve.trace)
+        return self.outer.intersects(nerve)
+
+    def is_inside_nerve(self, nerve: Nerve) -> bool:
+        return self.outer.is_inside(nerve)
+
+    def shift(self, vector):
+        for trace in self.all_traces():
+            trace.shift(vector)
+
+    def all_traces(self) -> List[Trace]:
+        return self.inners + [self.outer]
+
+    def ellipse_centroid(self):
+        return self.outer.ellipse_centroid()
+
+    def mean_centroid(self):
+        return self.outer.mean_centroid()
+
+    def area(self):
+        return self.outer.area()
+
+    def ellipse(self):
+        return self.outer.ellipse()
+
 
 # # might use this code for checking if points are within elliptical nerve
 # # get bounding ellipse parameters

@@ -3,14 +3,15 @@ File:       Nerve.py
 Author:     Jake Cariello
 Created:    July 24, 2019
 
-Description: Container class for a single trace (might expand later??)
+Description: Proxy class for a single trace (might expand later??)
 
 """
 
 from src.core import Trace
+from src.utils import ConfigKey
 
 
-class Nerve:
+class Nerve(Trace):
 
     def __init__(self, trace: Trace):
-        self.trace = trace
+        Trace.__init__(self, trace.points, trace.configs[ConfigKey.EXCEPTIONS.value])
