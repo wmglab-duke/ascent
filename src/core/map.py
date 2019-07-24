@@ -1,7 +1,7 @@
 #!/usr/bin/env python3.7
 
 """
-File:       slidemap.py
+File:       map.py
 Author:     Jake Cariello
 Created:    July 19, 2019
 

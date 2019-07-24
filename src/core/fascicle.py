@@ -21,7 +21,8 @@ Description:
 import itertools
 from typing import List, Tuple
 
-from src.core import Trace, Trace as Nerve
+from .trace import Trace
+from .nerve import Nerve
 from src.utils import Exceptionable, SetupMode
 
 

@@ -127,4 +127,4 @@ class Configurable:
         if not config_path[-5:] == '.json':
             raise Exception('\n\tcode:\t-1'
                             '\ttext:\tFile path must end in .json\n'
-                            '\tsource:\tconfigurable.py or slidemap.py')
+                            '\tsource:\tconfigurable.py or map.py')
