@@ -15,6 +15,8 @@ Description:
 
     METHODS
 
+    TODO: check if inners are overlapping
+
 """
 
 # import math
