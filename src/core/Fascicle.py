@@ -37,20 +37,13 @@ class Fascicle(Exceptionable):
         self.outer = outer
 
         # validate the inner/outer relationship
-        for inner in inners:
-            if not self.inside(inner, outer):
-                self.throw(8)
-
-    @staticmethod
-    def inside(inner: Trace, outer: Trace) -> bool:
-        """
-        :param inner: the Trace on the inside
-        :param outer: the Trace on the outside
-        :return: bool indicating whether or not the inner really is inside the outer
-        """
+        # create path representing the outer Trace shape
         outer_path = pth.Path([tuple(point) for point in outer.points[:, :2]])
-        return all(outer_path.contains_points([tuple(point) for point in inner.points[:, :2]]))
-
+        # loop through all inner traces
+        for inner in inners:
+            # check that all points in this Trace are within the outer path
+            if not all(outer_path.contains_points([tuple(point) for point in inner.points[:, :2]])):
+                self.throw(8)
 
 # # might use this code for checking if points are within elliptical nerve
 # # get bounding ellipse parameters
