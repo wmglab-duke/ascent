@@ -1,10 +1,10 @@
 from enum import Enum, unique
 from matplotlib.path import Path
 import numpy as np
-import os
 import cv2
 
 from src.utils import *
+
 
 class Trace(Exceptionable):
 
@@ -16,7 +16,7 @@ class Trace(Exceptionable):
         """
 
         self.__contour = None
-        self.__path: Path = None
+        self.__path = None
 
         # set up superclass
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
@@ -61,7 +61,7 @@ class Trace(Exceptionable):
         # required for mutating method
         self.__update()
 
-    def downsample(self, mode: 'Trace.DownSampleMode', step: int):
+    def down_sample(self, mode: 'Trace.DownSampleMode', step: int):
         """
         Simple downsample method to remove points at even intervals.
         Will start indices on "stepth" element (i.e. if step is 4, first selected element at index 3)

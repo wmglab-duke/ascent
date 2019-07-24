@@ -21,7 +21,7 @@ Description:
 import itertools
 from typing import List, Tuple
 
-from src.core import Trace, Nerve
+from src.core import Trace, Trace as Nerve
 from src.utils import Exceptionable, SetupMode
 
 
@@ -44,7 +44,7 @@ class Fascicle(Exceptionable):
         if any([inner for inner in inners if inner.is_inside(outer)]):
             self.throw(8)
 
-        # ensure no Traces intersect
+        # ensure no Traces intersect (and only check each pair of Traces once)
         self.pairs: List[Tuple[Trace]] = list(itertools.combinations(self.all_traces(), 2))
         if any([pair[0].intersects(pair[1]) for pair in self.pairs]):
             self.throw(9)
@@ -64,25 +64,48 @@ class Fascicle(Exceptionable):
         return self.outer.intersects(nerve)
 
     def is_inside_nerve(self, nerve: Nerve) -> bool:
+        """
+        :param nerve:
+        :return:
+        """
         return self.outer.is_inside(nerve)
 
     def shift(self, vector):
+        """
+        :param vector:
+        :return:
+        """
         for trace in self.all_traces():
             trace.shift(vector)
 
     def all_traces(self) -> List[Trace]:
+        """
+        :return: list of all traces
+        """
         return self.inners + [self.outer]
 
     def ellipse_centroid(self):
+        """
+        :return: centroid of outer trace (ellipse method)
+        """
         return self.outer.ellipse_centroid()
 
     def mean_centroid(self):
+        """
+        :return: centroid of outer trace (mean method)
+        """
         return self.outer.mean_centroid()
 
     def area(self):
+        """
+        :return: area of outer trace
+        """
         return self.outer.area()
 
     def ellipse(self):
+        """
+        :return: ellipse fit of outer trace (see Trace.ellipse for return format/type)
+        """
         return self.outer.ellipse()
 
 
