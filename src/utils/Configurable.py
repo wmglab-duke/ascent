@@ -46,8 +46,8 @@ class Configurable:
         # either load up new data or used old, passed in data
         if mode == SetupMode.NEW:
             self.config_path = config
-            self.__validate_path()
-            self.__load(key)
+            self.validate_path(self.config_path)
+            self.configs[key.value] = self.load(self.config_path)
 
         elif mode == SetupMode.OLD:
             self.configs[key.value] = config
@@ -90,34 +90,35 @@ class Configurable:
             items.append('')  # to force trailing slash with os.path.join
 
         if isabsolute:
-            items.insert(0, os.path.abspath(''))  # force leading slash and (if Windows) drive letter
+            items.insert(0, os.path.abspath(os.sep))  # force leading slash and (if Windows) drive letter
 
         return os.path.join(*items)  # splat list into comma-separated args
 
-    def __load(self, key: ConfigKey):
+    @staticmethod
+    def load(config_path: str):
         """
         PRIVATE method to load in data (can access publicly through self.reload)
-        :param key: choice of config to load up
+        :param config_path:
         """
-        with open(self.config_path, "r") as handle:
+        with open(config_path, "r") as handle:
             # print('load "{}" --> key "{}"'.format(config, key))
-            self.configs[key.value] = json.load(handle)
+            return json.load(handle)
 
-    def reload(self, key: ConfigKey, config_path: str = None):
+    def reload(self, config_path: str = None):
         """
         Buffer public method to load data from JSON (for naming purposes)
         :param config_path:
-        :param key: choice of config to load up
         """
         if config_path is not None:  # this MUST be the case if it was loaded up via SetupMode.OLD
             self.config_path = config_path
-            self.__validate_path()
+            self.validate_path(config_path)
 
-        self.__load(key)
+        self.load(self.config_path)
 
-    def __validate_path(self):
+    @staticmethod
+    def validate_path(config_path: str):
         # if last 5 characters of file path are NOT '.json', raise an Exception
-        if not self.config_path[-5:] == '.json':
+        if not config_path[-5:] == '.json':
             raise Exception('\n\tcode:\t-1'
-                            '\ttext:\tConfiguration file path must end in .json\n'
-                            '\tsource:\tConfigurable.py')
+                            '\ttext:\tFile path must end in .json\n'
+                            '\tsource:\tConfigurable.py or SlideMap.py')

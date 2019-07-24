@@ -15,15 +15,16 @@
     "allowed_differences": [1, 2],
     "start_position": 20000,
     "number_regex": "([0-9]*)[.]",
-    "scale": -1,
     "skips": {
+      "up": false,
       "normal": 5,
       "large": 120,
       "cassette": 100
     },
     "paths": {
       "output": ["data", "output", "slide_maps"],
-      "source": ["Users", "jakecariello", "Box", "19P866_05292019"]
+      "source": ["Users", "jakecariello", "Box", "19P866_05292019"],
+      "old": ["data", "output", "slide_maps", "07_24_2019.json"]
     },
     "resize_reference": {
       "start_slides": [

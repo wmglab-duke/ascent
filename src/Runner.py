@@ -1,3 +1,22 @@
+#!/usr/bin/env python3.7
+
+"""
+File:       Runner.py
+Author:     Jake Cariello
+Created:    July 21, 2019
+
+Description:
+
+    OVERVIEW
+
+    INITIALIZER
+
+    PROPERTIES
+
+    METHODS
+
+"""
+
 from src.core import *
 from src.utils import *
 import cv2
@@ -17,7 +36,9 @@ class Runner(Exceptionable, Configurable):
         Exceptionable.__init__(self, SetupMode.NEW, self.exceptions_config_path)
 
     def run(self):
-        self.map = SlideMap(self.configs[ConfigKey.MASTER.value], self.configs[ConfigKey.EXCEPTIONS.value])
+        self.map = SlideMap(self.configs[ConfigKey.MASTER.value],
+                            self.configs[ConfigKey.EXCEPTIONS.value],
+                            mode=SetupMode.OLD)
 
         # TEST: Trace functionality
         # self.trace = Trace([[0,  0, 0],
