@@ -25,7 +25,7 @@ import itertools
 from typing import List
 from matplotlib import path as pth
 
-from src.core import Trace
+from src.core import Trace, Nerve
 from src.utils import Exceptionable, SetupMode
 
 
@@ -47,12 +47,20 @@ class Fascicle(Exceptionable):
         if any([pair[0].intersects(pair[1]) for pair in self.pairs]):
             self.throw(9)
 
-    def intersects(self, other: 'Fascicle') -> bool:
+    def intersects_fascicle(self, other: 'Fascicle') -> bool:
         """
         :param other: the other Fascicle to check
         :return: True if the outer traces of the Fascicles intersect
         """
         return self.outer.intersects(other.outer)
+
+    def intersects_nerve(self, nerve: Nerve) -> bool:
+        """
+
+        :param nerve: the Nerve to check
+        :return: True if the self.outer Traces intersects the single Trace of nerve
+        """
+        return self.outer.intersects(nerve.trace)
 
 # # might use this code for checking if points are within elliptical nerve
 # # get bounding ellipse parameters
