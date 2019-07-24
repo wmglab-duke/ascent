@@ -1,5 +1,5 @@
 """
-File:       Nerve.py
+File:       nerve.py
 Author:     Jake Cariello
 Created:    July 24, 2019
 

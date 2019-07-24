@@ -1,7 +1,7 @@
 #!/usr/bin/env python3.7
 
 """
-File:       Exceptionable.py
+File:       exceptionable.py
 Author:     Jake Cariello
 Created:    July 20, 2019
 
@@ -32,8 +32,7 @@ Description:
 import json
 import os
 
-from src.utils.SetupMode import SetupMode
-from src.utils.ConfigKey import ConfigKey
+from .enums import SetupMode, ConfigKey
 
 
 class Configurable:
@@ -76,7 +75,7 @@ class Configurable:
             else:
                 raise Exception('\n\tcode:\t-2\n'
                                 '\ttext:\tInvalid search parameter:\tTYPE: {}\tVALUE: {}\n'
-                                '\tsource:\tConfigurable.py'.format(type(arg), arg))
+                                '\tsource:\tconfigurable.py'.format(type(arg), arg))
         return result
 
     def path(self, key: ConfigKey, *args, is_dir: bool = False, is_absolute: bool = False):
@@ -128,4 +127,4 @@ class Configurable:
         if not config_path[-5:] == '.json':
             raise Exception('\n\tcode:\t-1'
                             '\ttext:\tFile path must end in .json\n'
-                            '\tsource:\tConfigurable.py or SlideMap.py')
+                            '\tsource:\tconfigurable.py or slidemap.py')

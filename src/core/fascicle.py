@@ -1,7 +1,7 @@
 #!/usr/bin/env python3.7
 
 """
-File:       Fascicle.py
+File:       fascicle.py
 Author:     Jake Cariello
 Created:    July 24, 2019
 

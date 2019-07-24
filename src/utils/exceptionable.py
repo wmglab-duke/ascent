@@ -1,7 +1,7 @@
 #!/usr/bin/env python3.7
 
 """
-File:       Exceptionable.py
+File:       exceptionable.py
 Author:     Jake Cariello
 Created:    July 19, 2019
 
@@ -21,7 +21,8 @@ Description:
 
 """
 
-from src.utils import SetupMode, Configurable, ConfigKey
+from .configurable import Configurable
+from .enums import SetupMode, ConfigKey
 
 
 class Exceptionable(Configurable):

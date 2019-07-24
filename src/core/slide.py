@@ -1,7 +1,7 @@
 #!/usr/bin/env python3.7
 
 """
-File:       Slide.py
+File:       slide.py
 Author:     Jake Cariello
 Created:    July 24, 2019
 
@@ -19,8 +19,8 @@ Description:
 from typing import List
 
 # really weird syntax is required to directly import the class without going through the pesky init
-from .Fascicle import Fascicle
-from .Nerve import Nerve
+from .fascicle import Fascicle
+from .nerve import Nerve
 from src.utils import *
 
 
