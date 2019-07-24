@@ -125,5 +125,9 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# PyCharm-specific
+######### START JAKE ADDITIONS
+# PyCharm specific
 .idea/
+
+# don't include data b/c this may get pretty big at some point
+data/
