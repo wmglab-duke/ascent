@@ -8,24 +8,48 @@ Created:    July 19, 2019
 Description:
 
     OVERVIEW
+    Synthesizes and stores slide information.
 
     INITIALIZER
+    MUST provide main configuration data as well as exception configuration data.
+    Optionally, indicate that the setup mode is old, meaning that it will attempt to load existing data from JSON.
+    --> Some informal testing with a directory of 224 slides showed that loading up an existing JSON saved about
+        22 milliseconds (@ ~0.099s) when compared to building and saving a new JSON (@ ~ 0.121s).
+    Note that the functionality of this class is EXTREMELY dependent on the structure of the JSON files it deals with.
 
     PROPERTIES
+    data_root
+    mode
+    source_path
+    output_path
+    slides
+    reference
+    reference_distance
+    scale
+    Slide (utility class)
+    Reference (utility class)
 
     METHODS
+    __init__
+    find (returns slide that matches the provided cassette and number)
+    __build
+    __resize
+    write
+    list_to_json
+    json_to_list
+    clean_file_names (not system-independent)
+
 
 """
 
-# builtin imports
 import datetime as dt
 import numpy as np
 import os
 import re
 import json
+import warnings
 from typing import List
 
-# user imports
 from src.utils import *
 
 
@@ -49,12 +73,14 @@ class SlideMap(Exceptionable, Configurable):
         # store mode if later requested by user (idk why they would want it though?)
         self.mode: SetupMode = mode
 
+        # output path for new slide map (and allows for old slide map to be edited and rewritten!)
+        self.output_path = os.path.join(self.path(ConfigKey.MASTER, *self.data_root, 'paths', 'output'),
+                                        '{}.json'.format(dt.datetime.now().strftime('%m_%d_%Y')))
+
         if self.mode == SetupMode.NEW:
-            # set paths
+            # source DIRECTORY
             self.source_path = self.path(ConfigKey.MASTER, *self.data_root, 'paths', 'source',
-                                         isdir=True, isabsolute=True)
-            self.output_path = os.path.join(self.path(ConfigKey.MASTER, *self.data_root, 'paths', 'output'),
-                                            '{}.json'.format(dt.datetime.now().strftime('%m_%d_%Y')))
+                                         is_dir=True, is_absolute=True)
 
             # init self.slides
             self.slides: List[SlideMap.Slide] = []
@@ -62,23 +88,37 @@ class SlideMap(Exceptionable, Configurable):
             # build, resize, and write to file
             self.__build()
             self.__resize()
-            self.__write()
+            self.write()
 
         elif self.mode == SetupMode.OLD:
+            # source FILE
             self.source_path = self.path(ConfigKey.MASTER, *self.data_root, 'paths', 'old')
-            self.output_path = self.source_path
 
             # make sure ends in ".json" (defined in Configurable)
-            self.validate_path(self.source_path)
+            self.validate_path(self.output_path)
 
+            # build slides list from json file
             self.slides = self.json_to_list()
 
+        else:
+            # the above if statements are exhaustive, so this should be unreachable
+            print('how the hell?')
+
     def find(self, cassette: str, number: int) -> 'SlideMap.Slide':
+        """
+        Returns first slide that matches search parameters (there should only be one, though).
+        :param cassette: cassette to narrow search
+        :param number: number within that cassette (should narrow search to 1 slide)
+        :return: the Slide object (note that the list is being indexed into at the end: [0])
+        """
         return list(filter(lambda s: (s.cassette == cassette) and (s.number == number), self.slides))[0]
 
     def __build(self):
         """
         This method is adapted from generate_slide_map.py, which was the original non-OOP version of the algorithm.
+        In addition, there aren't checks for throwing exceptions, which may be useful to add later before distribution.
+
+        Note: private method because this should only be called from the constructor
         """
         # load in and compute parameters
         cassettes = self.search(ConfigKey.MASTER, *self.data_root, 'cassettes')
@@ -138,6 +178,10 @@ class SlideMap(Exceptionable, Configurable):
             self.slides += cassette
 
     def __resize(self):
+        """
+        Note: private method because user should not need to resize once built?
+        """
+
         # get the data about the reference slides
         start_slide_data = self.search(ConfigKey.MASTER, *self.data_root, 'resize_reference', 'start_slides')
         end_slide_data = self.search(ConfigKey.MASTER, *self.data_root, 'resize_reference', 'end_slides')
@@ -156,9 +200,16 @@ class SlideMap(Exceptionable, Configurable):
         for slide in self.slides:
             slide.position = round((slide.position - lowest_position) * self.scale)
 
-    def __write(self):
+    def write(self):
+        """
+        Note: not private to allow user to make changes if required, then write those changes to file.
+        """
         with open(self.output_path, 'w+') as file:
             file.write(self.list_to_json())
+
+    #%% conversion methods... might make these static in the future?
+    # definitely won't put these in some json utility class because they aren't involved in writing/reading
+    # instead, they are for interpreting SlideMap-specific data, so nothing outside this class should need to use them
 
     def list_to_json(self) -> str:
         result = []
@@ -171,18 +222,42 @@ class SlideMap(Exceptionable, Configurable):
 
         return json.dumps(result, indent=4)
 
-    def json_to_list(self):
+    def json_to_list(self) -> list:
         data = self.load(self.source_path)
         return [SlideMap.Slide(item.get('cassette'),
                                item.get('number'),
                                item.get('position')) for item in data]
 
+    #%% utility
+    @staticmethod
+    def clean_file_names():
+        """
+        Jake Cariello
+        July 24, 2019
+        Utility method for cleaning file names.
+        It is not dynamic or system-independent at the time because it is a specific thing that I required.
+        If it becomes clear that this is required for core functionality, I will rewrite the method.
+        """
+        warnings.warn('METHOD clean_file_names IS NOT SYSTEM-INDEPENDENT!')
 
-    # might just remove this; commenting out for now because super nonessential to basic functionality
-    # def rebuild(self, new: bool = False, config_path: str = ):
-    #
-    #     self.reload(ConfigKey.MASTER)
-    #     return self.__build()
+        dir_to_parse = '/Users/jakecariello/Box/Histology/UW-Madison/Segmentations/Cassettes/VN1_A'
+
+        prefixes = ['19P866_', 'Pig19P866_']
+
+        remove_keys = ['.dxf']
+
+        for root, dirs, files in os.walk(dir_to_parse):
+            for file in files:
+                for prefix in prefixes:
+                    if re.match(prefix, file) is not None:
+                        # remove leading code (separated by '_') and any extra '_'
+                        new_file = '_'.join([f for f in file.split('_')[1:] if f is not ''])
+                        os.rename('{}/{}'.format(root, file),
+                                  '{}/{}'.format(root, new_file))
+
+                for key in remove_keys:
+                    if re.search(key, file) is not None:
+                        os.remove('{}/{}'.format(root, file))
 
     #%% helper classes... self.map will be stored as a list of Slide objects
     # quick class to keep track of slides
@@ -193,7 +268,9 @@ class SlideMap(Exceptionable, Configurable):
             self.position = position
 
         def __repr__(self):
-            return '\tcas: {}\n\tnum: {}\n\tpos: {}\n\n'.format(self.cassette, self.number, self.position)
+            return '\tcas: {}\n\tnum: {}\n\tpos: {}\n\n'.format(self.cassette,
+                                                                self.number,
+                                                                self.position)
 
     # quick class to keep track of a reference distance for resizing (i.e. space between electrodes)
     class Reference:
@@ -208,4 +285,6 @@ class SlideMap(Exceptionable, Configurable):
             return distance / float(self.abs_distance)
 
         def __repr__(self):
-            return '\tstart pos:\t{}\n\tend pos:\t{}\n\tabs dist:\t{}\n\n'.format(self.start, self.end, self.abs_distance)
+            return '\tstart pos:\t{}\n\tend pos:\t{}\n\tabs dist:\t{}\n\n'.format(self.start,
+                                                                                  self.end,
+                                                                                  self.abs_distance)

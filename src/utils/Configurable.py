@@ -16,9 +16,14 @@ Description:
     See docstring in __init__.
 
     PROPERTIES
+    configs (dict, with the top-level keys being values from the ConfigKeys, which is an Enum)
 
     METHODS
-    search(key, *args): takes a key for the desired configs, then "path" to the item in the JSON (all strings and ints)
+    search
+    path
+    load
+    reload
+    validate_path (ensures that it ends with .json)
 
 
 
@@ -58,7 +63,7 @@ class Configurable:
     def search(self, key: ConfigKey, *args):
         """
         Get an item using "path" of args in the json config.
-        :param key:
+        :param key: type of config to search within
         :param args: list "path" to item within json (str or int)
         :return: final specified item
         """
@@ -74,22 +79,22 @@ class Configurable:
                                 '\tsource:\tConfigurable.py'.format(type(arg), arg))
         return result
 
-    def path(self, key: ConfigKey, *args, isdir: bool = False, isabsolute: bool = False):
+    def path(self, key: ConfigKey, *args, is_dir: bool = False, is_absolute: bool = False):
         """
         Build a path for an item specified in same style as self.search().
         Expects the item returned by self.search(key, *args) to be a list.
-        :param isabsolute: flag to make the path absolute
-        :param isdir: if true, will add trailing slash (system nonspecific) to path
+        :param is_absolute: flag to make the path absolute
+        :param is_dir: if true, will add trailing slash (system nonspecific) to path
         :param key: ConfigKey (choice of configurations from discrete enumeration)
         :param args: "path" to desired path
         :return: final path to item (with system formatting!)
         """
         items: list = self.search(key, *args)
 
-        if isdir:
+        if is_dir:
             items.append('')  # to force trailing slash with os.path.join
 
-        if isabsolute:
+        if is_absolute:
             items.insert(0, os.path.abspath(os.sep))  # force leading slash and (if Windows) drive letter
 
         return os.path.join(*items)  # splat list into comma-separated args
@@ -97,23 +102,25 @@ class Configurable:
     @staticmethod
     def load(config_path: str):
         """
-        PRIVATE method to load in data (can access publicly through self.reload)
-        :param config_path:
+        Loads in json data and returns to user, assuming it has already been validated.
+        :param config_path: the string path to load up
+        :return: json data (usually dict or list)
         """
         with open(config_path, "r") as handle:
             # print('load "{}" --> key "{}"'.format(config, key))
             return json.load(handle)
 
-    def reload(self, config_path: str = None):
+    def reload(self, key: ConfigKey, config_path: str = None):
         """
         Buffer public method to load data from JSON (for naming purposes)
-        :param config_path:
+        :param key: type of config to reload
+        :param config_path: the path to the json, assuming already validated
         """
         if config_path is not None:  # this MUST be the case if it was loaded up via SetupMode.OLD
             self.config_path = config_path
             self.validate_path(config_path)
 
-        self.load(self.config_path)
+        self.configs[key.value] = self.load(self.config_path)
 
     @staticmethod
     def validate_path(config_path: str):

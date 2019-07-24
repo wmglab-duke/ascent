@@ -8,12 +8,16 @@ Created:    July 19, 2019
 Description:
 
     OVERVIEW
+    Centralized way to organize and "throw" exceptions.
 
     INITIALIZER
+    See docstring of __init__.
 
     PROPERTIES
+    none, but creates key/value in configs (inherited form Configurable) that pertains to exception data
 
     METHODS
+    throw
 
 """
 
@@ -32,6 +36,12 @@ class Exceptionable(Configurable):
 
     def throw(self, code):
         """
+        Use this to throw an exception
+
+        example:
+            if FATAL_CONDITION:
+                self.throw(CODE)
+
         :param code: index of exception in json file (i.e. exceptions.json)
         :return: full message (with code and text)
         """
