@@ -28,6 +28,7 @@ description is accompanied by an example of what that image may look like (at lo
     - form: `[ARB_NAME]_[CASSETTE]_[NUMBER]_r.tif`
     - type: Though `.tif` is indicated above filename, this is arbitrary for now.
     - example:
+
     ![raw](examples/images/raw.jpg)
         
 2. Fascicles binary mask
@@ -48,4 +49,5 @@ description is accompanied by an example of what that image may look like (at lo
     - form: `[ARB_NAME]_[CASSETTE]_[NUMBER]_n.tif`
     - type: Only `.tif` allowed for now.
     - example:
+    
     ![nerve](examples/images/nerve.jpg)
