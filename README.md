@@ -27,27 +27,18 @@ description is accompanied by an example of what that image may look like (at lo
 1. Raw image of slide
     - form: `[ARB_NAME]_[CASSETTE]_[NUMBER]_r.tif`
     - type: Though `.tif` is indicated above filename, this is arbitrary for now.
-    - example:
-
-    ![raw](examples/images/raw.jpg)     
+    - <a href="https://gitlab.oit.duke.edu/edm23/sparcpy/raw/master/examples/images/raw.jpg" target="_blank">example</a>
 2. Fascicles binary mask
     - form: `[ARB_NAME]_[CASSETTE]_[NUMBER]_f.tif`
     - type: Only `.tif` allowed for now.
-    - examples (two options):
-      - both inner (endoneurium) and outer (perineurium) masks, either one-to-one (a) or containing peanut fascicles (b)
-      - only inner (endoneurium) masks if perineurium thickness is prohibitively small for the purposes of image segmentation (c)                
-    
-    a.![one-to-one fascicles](examples/images/fascicle_normal.jpg)
-    
-    b.![peanut fascicles](examples/images/fascicle_peanut.jpg)
-    
-    c.![fascicles inner only](examples/images/fascicle_inner.jpg)     
+    - examples (two categories):
+      - both inner (endoneurium) and outer (perineurium) masks, either <a href="https://gitlab.oit.duke.edu/edm23/sparcpy/raw/master/examples/images/fascicle_normal.jpg" target="_blank">one-to-one</a> or containing <a href="https://gitlab.oit.duke.edu/edm23/sparcpy/raw/master/examples/images/fascicle_peanut.jpg" target="_blank">peanut fascicles</a>
+      - only inner (endoneurium) masks if perineurium thickness is prohibitively small for the purposes of
+      image segmentation, assumed to be <a href="https://gitlab.oit.duke.edu/edm23/sparcpy/raw/master/examples/images/fascicle_inner.jpg" target="_blank">one-to-one</a>   
 3. Nerve binary mask
     - form: `[ARB_NAME]_[CASSETTE]_[NUMBER]_n.tif`
     - type: Only `.tif` allowed for now.
-    - example:
-    
-    ![nerve](examples/images/nerve.jpg)
+    - <a href="https://gitlab.oit.duke.edu/edm23/sparcpy/raw/master/examples/images/nerve.jpg" target="_blank">example</a>
 
 An example for a grouping of three images for a slide might be:
 - `MyPig4_UpperCas_12_r.tif`
