@@ -29,25 +29,29 @@ description is accompanied by an example of what that image may look like (at lo
     - type: Though `.tif` is indicated above filename, this is arbitrary for now.
     - example:
 
-    ![raw](examples/images/raw.jpg)
-        
+    ![raw](examples/images/raw.jpg)     
 2. Fascicles binary mask
     - form: `[ARB_NAME]_[CASSETTE]_[NUMBER]_f.tif`
     - type: Only `.tif` allowed for now.
     - examples (two options):
-        - both inner (endoneurium) and outer (perineurium) masks,
-          either one-to-one (top) or containing peanut fascicles (bottom)
-          
-        ![one-to-one fascicles](examples/images/fascicle_normal.jpg) ![peanut fascicles](examples/images/fascicle_peanut.jpg)
-          
-        - only inner (endoneurium) masks if perineurium thickness is
-          prohibitively small for the purposes of image segmentation
-          
-        ![fascicles inner only](examples/images/fascicle_inner.jpg)
-          
+      - both inner (endoneurium) and outer (perineurium) masks, either one-to-one (a) or containing peanut fascicles (b)
+      - only inner (endoneurium) masks if perineurium thickness is prohibitively small for the purposes of image segmentation (c)                
+    
+    a.![one-to-one fascicles](examples/images/fascicle_normal.jpg)
+    
+    b.![peanut fascicles](examples/images/fascicle_peanut.jpg)
+    
+    c.![fascicles inner only](examples/images/fascicle_inner.jpg)     
 3. Nerve binary mask
     - form: `[ARB_NAME]_[CASSETTE]_[NUMBER]_n.tif`
     - type: Only `.tif` allowed for now.
     - example:
     
     ![nerve](examples/images/nerve.jpg)
+
+An example for a grouping of three images for a slide might be:
+- `MyPig4_UpperCas_12_r.tif`
+- `MyPig4_UpperCas_12_f.tif`
+- `MyPig4_UpperCas_12_n.tif`
+
+### TODO: add info about scale length and scale bar
