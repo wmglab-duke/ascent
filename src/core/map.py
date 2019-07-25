@@ -239,6 +239,15 @@ class SlideMap(Exceptionable, Configurable):
                                item.get('position'),
                                item.get('raw_source')) for item in data]
 
+    def build_target_filesystem(self):
+        """
+        Build filesystem under data/SAMPLE/ and copy required files (i.e. raw.tif, fascicle.tif, nerve.tif). This
+        function uses self.slides as a guide for the files to copy, so the SlideMap can be customized if data is loaded
+        in from a custom (even hand-typed) configuration (when SetupMode.OLD is flagged).
+        """
+
+        pass
+
     #%% utility
     @staticmethod
     def clean_file_names():
@@ -289,7 +298,6 @@ class SlideMap(Exceptionable, Configurable):
             # self.nerve_source = os.path.join(directory,
             #                                  'nerves',
             #                                  '.'.join(['_'.join([name, 'nerve']), extension]))
-
 
         def __repr__(self):
             return '\tcas:\t{}\tnum:\t{}\n\tpos:\t{}\n\n'.format(self.cassette,
