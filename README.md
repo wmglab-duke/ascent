@@ -22,7 +22,7 @@ to SPARCpy and can thus be included in the **sample name** if desired.
 
 Below is a description of the specific filename formatting for each of the 3 required file types. Note that, for all
 formatting, there must be at least 1 underscore where indicated, but more than 1 is allowed and ignored. Each file type
-description is accompanied by an example of what that image may look like
+description is accompanied by an example of what that image may look like (at lower resolution for efficiency).
 
 1. Raw image of slide
     - form: `[ARB_NAME]_[CASSETTE]_[NUMBER]_r.tif`
@@ -37,9 +37,7 @@ description is accompanied by an example of what that image may look like
         - both inner (endoneurium) and outer (perineurium) masks,
           either one-to-one (top) or containing peanut fascicles (bottom)
           
-        ![one-to-one fascicles](examples/images/fascicle_normal.jpg)
-          
-        ![peanut fascicles](examples/images/fascicle_peanut.jpg)
+        ![one-to-one fascicles](examples/images/fascicle_normal.jpg) ![peanut fascicles](examples/images/fascicle_peanut.jpg)
           
         - only inner (endoneurium) masks if perineurium thickness is
           prohibitively small for the purposes of image segmentation
