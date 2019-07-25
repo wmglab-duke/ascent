@@ -1,10 +1,11 @@
-from enum import Enum, unique
 from matplotlib.path import Path
 import numpy as np
 import cv2
+import matplotlib.pyplot as plt
 
 from src.utils import *
 
+# TODO: THERE IS A SCALING ISSUE WITH ELLIPSE FITTING???? or maybe just with the ellipse points generation?
 
 class Trace(Exceptionable):
 
@@ -61,19 +62,19 @@ class Trace(Exceptionable):
         # required for mutating method
         self.__update()
 
-    def down_sample(self, mode: 'Trace.DownSampleMode', step: int):
+    def down_sample(self, mode: DownSampleMode, step: int):
         """
-        Simple downsample method to remove points at even intervals.
-        Will start indices on "stepth" element (i.e. if step is 4, first selected element at index 3)
+        Simple down sample method to remove points at even intervals.
+        Will start indices on "step-th" element (i.e. if step is 4, first selected element at index 3)
         :param mode: decide whether to KEEP only the points on steps, or REMOVE only those points
         :param step: spacing between each selected point (both keep and remove)
         """
 
         ii = list(range(step - 1, self.count(), step))
 
-        if mode == Trace.DownSampleMode.KEEP:
+        if mode == DownSampleMode.KEEP:
             pass  # nothing here; just showing the case for readability
-        elif mode == Trace.DownSampleMode.REMOVE:
+        elif mode == DownSampleMode.REMOVE:
             ii = [i for i in list(range(0, self.count())) if i not in ii]
         else:
             # this should be unreachable because above cases are exhaustive
@@ -135,7 +136,7 @@ class Trace(Exceptionable):
             for i, point in enumerate(self.__int_points):
                 self.__contour[i, 0] = point[:-1]  # do not include z
 
-            self.__contour = self.__intify(self.__contour)
+            self.__contour = self.__int32(self.__contour)
 
         return self.__contour
 
@@ -160,7 +161,63 @@ class Trace(Exceptionable):
         """
         return cv2.fitEllipse(self.contour())[0]
 
-    def write(self, mode: 'Trace.WriteMode', path: str):
+    def to_ellipse(self):
+        """
+        :return:
+        """
+        # ((centroid), (axes), angle) ... note angle is in degrees
+        ((u, v), (a, b), angle) = self.ellipse()
+
+        # return the associated ellipse object, after converting angle to degrees
+        return self.__ellipse_object(u, v, a, b, angle * 2 * np.pi / 360)
+
+    def to_circle(self):
+        """
+        :return:
+        """
+        # ((centroid), (axes), angle) ... note angle is in degrees
+        ((u, v), (a, b), angle) = self.ellipse()
+
+        # find average radius of circle
+        r = np.mean([a, b], axis=0)
+
+        # return the associated ellipse object, after converting angle to degrees
+        # also, PyCharm thinks that np.mean returns a ndarray, but it definitely isn't in this case
+        return self.__ellipse_object(u, v, r, r, angle * 2 * np.pi / 360)
+
+    def __ellipse_object(self, u: float, v: float, a: float, b: float, angle: float) -> 'Trace':
+        """
+        :param u:
+        :param v:
+        :param a:
+        :param b:
+        :param angle:
+        :return:
+        """
+
+        # get t values for parameterized ellipse and preserve number of points
+        t = np.linspace(0, 2 * np.pi, self.count())
+
+        # find x and y values along ellipse (not shifted to centroid yet)
+        (x, y) = (a * np.cos(t), b * np.sin(t))
+
+        # create rotation matrix
+        rot_mat = np.array([[np.cos(angle), -np.sin(angle)],
+                            [np.sin(angle), np.cos(angle)]])
+
+        # apply rotation and shift to centroid
+        points = (rot_mat @ np.array([x, y])).T + [u, v]
+
+        # add column of z-values (should all be the same)
+        points = np.append(points,  np.c_[self.points[:, 2]], axis=1)
+
+        return Trace(points, self.configs[ConfigKey.EXCEPTIONS.value])
+
+    #%% output
+    def plot(self):
+        plt.plot(self.points[:, 0], self.points[:, 1])
+
+    def write(self, mode: WriteMode, path: str):
         """
         Write Trace data (points, elements, etc.) to file
         :param mode: choice of write implementations
@@ -176,7 +233,7 @@ class Trace(Exceptionable):
                 count = self.count()
 
                 # choose implementation from mode
-                if mode == Trace.WriteMode.SECTIONWISE:
+                if mode == WriteMode.SECTIONWISE:
 
                     # write coordinates
                     f.write('%% Coordinates\n')
@@ -196,29 +253,19 @@ class Trace(Exceptionable):
 
                 else:
                     self.throw(4)
-        except EnvironmentError as e:
+        except EnvironmentError as _:
             # only one of these can run, so comment at will
             self.throw(7)
-            #raise e
+            # raise
 
         return path
 
     #%% private utility methods
     def __update(self):
-        self.__int_points = self.__intify(self.points)
+        self.__int_points = self.__int32(self.points)
         self.__contour = None
         self.__path = None
 
     @staticmethod
-    def __intify(points: np.ndarray):
+    def __int32(points: np.ndarray):
         return np.array(np.round(points), dtype=np.int32)
-
-    #%% helper Enums for choosing modes
-    @unique
-    class DownSampleMode(Enum):
-        KEEP = 0
-        REMOVE = 1
-
-    class WriteMode(Enum): # note: NOT required to have unique values
-        SECTIONWISE = '.txt'
-        DATA = '.dat'

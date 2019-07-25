@@ -48,5 +48,25 @@
     "code": 9,
     "text": "Intersecting traces found",
     "source": "src.core.Fascicle.__init__"
+  },
+  {
+    "code": 10,
+    "text": "Fascicle-fascicle intersection found",
+    "source": "src.core.Slide.validation"
+  },
+  {
+    "code": 11,
+    "text": "Fascicle-nerve intersection found",
+    "source": "src.core.Slide.validation"
+  },
+  {
+    "code": 12,
+    "text": "Not all fascicles fall within nerve",
+    "source": "src.core.Slide.validation"
+  },
+  {
+    "code": 13,
+    "text": "Nonspecific validation failed",
+    "source": "src.core.Slide.validation"
   }
 ]

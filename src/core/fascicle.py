@@ -19,7 +19,7 @@ Description:
 
 # import math
 import itertools
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
 from .trace import Trace
 from .nerve import Nerve
@@ -46,23 +46,22 @@ class Fascicle(Exceptionable):
             self.throw(8)
 
         # ensure no Traces intersect (and only check each pair of Traces once)
-        self.pairs: List[Tuple[Trace]] = list(itertools.combinations(self.all_traces(), 2))
-        if any([pair[0].intersects(pair[1]) for pair in self.pairs]):
+        pairs: List[Tuple[Trace]] = list(itertools.combinations(self.all_traces(), 2))
+        if any([pair[0].intersects(pair[1]) for pair in pairs]):
             self.throw(9)
 
-    def intersects_fascicle(self, other: 'Fascicle') -> bool:
+    def intersects(self, other: Union['Fascicle', Nerve]):
         """
-        :param other: the other Fascicle to check
-        :return: True if the outer traces of the Fascicles intersect
-        """
-        return self.outer.intersects(other.outer)
+        I just realized that this would fail to account for the case when "other" is within,
+        but not intersecting "self." This is nonsensical though, so not worrying about it for now.
 
-    def intersects_nerve(self, nerve: Nerve) -> bool:
+        :param other: the other Fascicle or Nerve to check
+        :return: True if a Trace intersection is found
         """
-        :param nerve: the Nerve to check
-        :return: True if the self.outer Traces intersects the single Trace of nerve
-        """
-        return self.outer.intersects(nerve)
+        if isinstance(other, Fascicle):
+            return self.outer.intersects(other.outer)
+        else:  # other must be a Nerve
+            return self.outer.intersects(other)
 
     def is_inside_nerve(self, nerve: Nerve) -> bool:
         """
@@ -73,7 +72,7 @@ class Fascicle(Exceptionable):
 
     def shift(self, vector):
         """
-        :param vector:
+        :param vector: shift to apply to all Traces in the fascicle
         :return:
         """
         for trace in self.all_traces():

@@ -61,12 +61,12 @@ class Runner(Exceptionable, Configurable):
         # TEST: throw error
         # self.throw(2)
 
-        self.slide = Slide([Fascicle(self.configs[ConfigKey.EXCEPTIONS.value],
-                                     [self.trace],
-                                     self.trace)],
-                           self.trace,
-                           self.configs[ConfigKey.MASTER.value],
-                           self.configs[ConfigKey.EXCEPTIONS.value])
+        # self.slide = Slide([Fascicle(self.configs[ConfigKey.EXCEPTIONS.value],
+        #                              [self.trace],
+        #                              self.trace)],
+        #                    self.trace,
+        #                    self.configs[ConfigKey.MASTER.value],
+        #                    self.configs[ConfigKey.EXCEPTIONS.value])
 
     def test1(self):
 
