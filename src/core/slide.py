@@ -72,7 +72,7 @@ class Slide(Exceptionable, Configurable):
         """
         :return: True if any fascicle lies outside the nerve, otherwise False
         """
-        return any([not fascicle.is_inside_nerve(self.nerve) for fascicle in self.fascicles])
+        return any([not fascicle.within_nerve(self.nerve) for fascicle in self.fascicles])
 
     def reposition_fascicles(self):
         """

@@ -16,10 +16,12 @@ Description:
     METHODS
 
 """
+import os
 
 from src.core import *
 from src.utils import *
 import cv2
+import matplotlib.pyplot as plt
 
 
 class Runner(Exceptionable, Configurable):
@@ -36,19 +38,19 @@ class Runner(Exceptionable, Configurable):
         Exceptionable.__init__(self, SetupMode.NEW, self.exceptions_config_path)
 
     def run(self):
-        self.map = SlideMap(self.configs[ConfigKey.MASTER.value],
-                            self.configs[ConfigKey.EXCEPTIONS.value],
-                            mode=SetupMode.NEW)
+        # self.map = SlideMap(self.configs[ConfigKey.MASTER.value],
+        #                     self.configs[ConfigKey.EXCEPTIONS.value],
+        #                     mode=SetupMode.NEW)
 
         # TEST: Trace functionality
-        self.trace = Trace([[0,  0, 0],
-                            [1,  0, 0],
-                            [2,  0, 0],
-                            [2,  1, 0],
-                            [2,  2, 0],
-                            [1,  2, 0],
-                            [0,  2, 0],
-                            [0,  1, 0]], self.configs[ConfigKey.EXCEPTIONS.value])
+        # self.trace = Trace([[0,  0, 0],
+        #                     [2,  0, 0],
+        #                     [4,  0, 0],
+        #                     [4,  1, 0],
+        #                     [4,  2, 0],
+        #                     [2,  2, 0],
+        #                     [0,  2, 0],
+        #                     [0,  1, 0]], self.configs[ConfigKey.EXCEPTIONS.value])
         # print('output path: {}'.format(self.trace.write(Trace.WriteMode.SECTIONWISE,
         #                                                 '/Users/jakecariello/Box/SPARCpy/data/output/test_trace')))
 
@@ -67,21 +69,50 @@ class Runner(Exceptionable, Configurable):
         #                    self.trace,
         #                    self.configs[ConfigKey.MASTER.value],
         #                    self.configs[ConfigKey.EXCEPTIONS.value])
+        pass
 
-    def test1(self):
+    def trace_test(self):
 
-        path = 'D:/Documents/SPARCpy/data/tracefile2.tif'
+        # build path and read image
+        path = os.path.join('data', 'tracefile2.tif');
         img = cv2.imread(path, -1)
 
-        cv2.utils.dumpInputArray(img)
-
-        cnts, hierarchy = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-
-    def test2(self):
-
-        path = '/Users/jakecariello/Box/SPARCpy/data/tracefile2.tif'
-        img = cv2.imread(path, -1)
-
-        cv2.utils.dumpInputArray(img)
-
+        # get contours and build corresponding traces
+        # these are intentionally instance attributes so they can be inspected in the Python Console
         self.cnts, self.hierarchy = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        self.traces = [Trace(cnt[:, 0, :], self.configs[ConfigKey.EXCEPTIONS.value]) for cnt in self.cnts]
+
+        # plot formats
+        formats = ['r', 'g', 'b']
+
+        # original points and centroids
+        print('See figure 0 for original traces with centroids.')
+        plt.figure(0)
+        plt.axes().set_aspect('equal', 'datalim')
+        for i, trace in enumerate(self.traces):
+            trace.plot(formats[i] + '-')
+            trace.plot_centroid(formats[i] + '*')
+        plt.legend([str(i) for i in range(len(self.traces)) for _ in (0, 1)]) # end of this line is to duplicate items
+        plt.title('Original traces and centroids')
+        plt.show()
+
+        # ellipse/circle/original comparison (trace 0)
+        print('See figure 1 for fit comparison.')
+        plt.figure(1)
+        plt.axes().set_aspect('equal', 'datalim')
+        self.traces[0].plot(formats[0])
+        self.traces[0].to_circle().plot(formats[1])
+        self.traces[0].to_ellipse().plot(formats[2])
+        plt.legend(['original', 'circle', 'ellipse'])
+        plt.title('Fit comparison (trace 0)')
+        plt.show()
+
+        # example stats
+        pairs = [(0, 1), (1, 2), (2, 0)]
+        print('\nEXAMPLE STATS')
+        for pair in pairs:
+            print('PAIR: ({}, {})'.format(*pair))
+            print('\tcent dist:\t{}'.format(self.traces[pair[0]].centroid_distance(self.traces[pair[1]])))
+            print('\tmin dist:\t{}'.format(self.traces[pair[0]].min_distance(self.traces[pair[1]])))
+            print('\tmax dist:\t{}'.format(self.traces[pair[0]].max_distance(self.traces[pair[1]])))
+            print('\twithin:\t\t{}'.format(self.traces[pair[0]].within(self.traces[pair[1]])))

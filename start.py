@@ -13,10 +13,9 @@ master_config_file_path = os.path.join('.config', 'master.json')
 runner = Runner(master_config_file_path)
 
 # ready, set, GO!
-runner.run()
-#runner.test1()
-runner.test2()
+# runner.run()
+runner.trace_test()
 
 # END timer
 end = time.time()
-print('runtime: {}'.format(end - start))
+print('\nruntime: {}'.format(end - start))

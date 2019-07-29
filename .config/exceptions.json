@@ -32,7 +32,7 @@
   {
     "code": 6,
     "text": "Current implementation requires that all points in Trace have same z-value to create contour",
-    "source": "src.core.Trace.contour or src.core.Trace.points_path"
+    "source": "src.core.Trace.contour or src.core.Trace.points_path or src.core.Trace.polygon"
   },
   {
     "code": 7,

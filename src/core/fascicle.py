@@ -42,7 +42,7 @@ class Fascicle(Exceptionable):
         self.outer = outer
 
         # ensure all inner Traces are actually inside outer Trace
-        if any([inner for inner in inners if inner.is_inside(outer)]):
+        if any([inner for inner in inners if inner.within(outer)]):
             self.throw(8)
 
         # ensure no Traces intersect (and only check each pair of Traces once)
@@ -63,12 +63,12 @@ class Fascicle(Exceptionable):
         else:  # other must be a Nerve
             return self.outer.intersects(other)
 
-    def is_inside_nerve(self, nerve: Nerve) -> bool:
+    def within_nerve(self, nerve: Nerve) -> bool:
         """
         :param nerve:
         :return:
         """
-        return self.outer.is_inside(nerve)
+        return self.outer.within(nerve)
 
     def shift(self, vector):
         """

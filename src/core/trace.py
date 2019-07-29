@@ -1,11 +1,12 @@
+from typing import Tuple, Union
+
 from matplotlib.path import Path
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
+from shapely.geometry import Polygon
 
 from src.utils import *
-
-# TODO: THERE IS A SCALING ISSUE WITH ELLIPSE FITTING???? or maybe just with the ellipse points generation?
 
 class Trace(Exceptionable):
 
@@ -17,10 +18,14 @@ class Trace(Exceptionable):
         """
 
         self.__contour = None
-        self.__path = None
+        self.__polygon = None
 
         # set up superclass
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
+
+        # add 0 as z value if only x and y given
+        if np.shape(points)[1] == 2:
+            points = np.append(points, np.zeros([len(points), 1]), 1)
 
         self.points = None  # must declare instance variable in __init__ at some point!
         self.__int_points = None
@@ -86,47 +91,72 @@ class Trace(Exceptionable):
         self.__update()
 
     #%% public, NON-MUTATING methods
-    def count(self):
+    def count(self) -> int:
         """
         :return: number of rows in self.points (i.e. number of points)
         """
         return np.shape(self.points)[0]
 
-    def mean_centroid(self):
-        """
-        :return: calculated centroid of self.points as ndarray with 3 elements
-        """
-        count = self.count()
-        return np.apply_along_axis(lambda column: np.sum(column) / count, 0, self.points)
-
-    #%% dependent on matplotib.path.Path
-    def points_path(self):
-        """
-        NOTE: this is TWO DIMENSIONAL (ignores z-coordinate)
-        :return: matplotlib.path.Path object
-        """
-        if self.__path is None:
+    #%% dependent on shapely.geometry.Polygon (ALL 2D GEOMETRY)
+    def polygon(self) -> Polygon:
+        if self.__polygon is None:
             if len(set(self.points[:, 2])) != 1:
                 self.throw(6)
 
-            self.__path = Path([tuple(point) for point in self.points[:, :2]])
-        return self.__path
+            self.__polygon = Polygon([tuple(point) for point in self.points[:, :2]])
 
-    def is_inside(self, outer: 'Trace') -> bool:
-        return all(outer.points_path().contains_points([tuple(point) for point in self.points[:, :2]]))
+        return self.__polygon
+
+    def within(self, outer: 'Trace') -> bool:
+        """
+        :param outer: other Trace to check
+        :return: True if within other Trace, else False
+        """
+        return self.polygon().within(outer.polygon())
 
     def intersects(self, other: 'Trace') -> bool:
-        return self.points_path().intersects_path(other.points_path())
+        """
+        :param other: other Trace to check
+        :return: True if intersecting, else False
+        """
+        return self.polygon().intersects(other.polygon())
+
+    def centroid(self) -> Tuple[float]:
+        """
+        :return: ellipse centroid as tuple: center --> (x, y)
+        """
+        return list(self.polygon().centroid.coords)[0]
+
+    def area(self) -> float:
+        """
+        :return: area of Trace
+        """
+        return self.polygon().area
+
+    def min_distance(self, other: 'Trace') -> float:
+        """
+        :param other: Trace to find distance to
+        :return: float minimum distance
+        """
+        return self.polygon().boundary.distance(other.polygon().boundary)
+
+    def max_distance(self, other: 'Trace') -> float:
+        """
+        :param other: Trace to find distance to
+        :return: float maximum distance
+        """
+        return self.polygon().boundary.hausdorff_distance(other.polygon().boundary)
+
+    def centroid_distance(self, other: 'Trace') -> float:
+        return self.polygon().centroid.distance(other.polygon().centroid)
 
     #%% contour-dependent (cv2)
-
-    def contour(self):
+    def contour(self) -> np.ndarray:
         """
         Builds a "fake" contour so that cv2 can analyze it (independent of the image)
         :return:
         """
         if self.__contour is None:
-            print('building new contour')
             # check points all have same z-value (MAY BE CHANGED?)
             if len(set(self.__int_points[:, 2])) != 1:
                 self.throw(6)
@@ -140,26 +170,12 @@ class Trace(Exceptionable):
 
         return self.__contour
 
-    def area(self):
+    def ellipse(self) -> Tuple[Union[Tuple[float], float]]:
         """
         NOTE: this uses 2-D contour (ignores z-coordinate)
-        :return: area of Trace
-        """
-        return cv2.contourArea(self.contour())
-
-    def ellipse(self):
-        """
-        NOTE: this uses 2-D contour (ignores z-coordinate)
-        :return: ellipse specs as 2-D tuple: (center, axes) --> ((x, y), (a, b))
+        :return: ellipse specs as 2-D tuple: (center, axes) --> ((x, y), (a, b), angle)
         """
         return cv2.fitEllipse(self.contour())
-
-    def ellipse_centroid(self):
-        """
-        NOTE: this uses 2-D contour (ignores z-coordinate)
-        :return: ellipse centroid as tuple: center --> (x, y)
-        """
-        return cv2.fitEllipse(self.contour())[0]
 
     def to_ellipse(self):
         """
@@ -179,7 +195,8 @@ class Trace(Exceptionable):
         ((u, v), (a, b), angle) = self.ellipse()
 
         # find average radius of circle
-        r = np.mean([a, b], axis=0)
+        # casting to float is just so PyCharm stops yelling at me (I think it should already be a float64?)
+        r = float(np.mean([a, b], axis=0))
 
         # return the associated ellipse object, after converting angle to degrees
         # also, PyCharm thinks that np.mean returns a ndarray, but it definitely isn't in this case
@@ -187,16 +204,18 @@ class Trace(Exceptionable):
 
     def __ellipse_object(self, u: float, v: float, a: float, b: float, angle: float) -> 'Trace':
         """
-        :param u:
-        :param v:
-        :param a:
-        :param b:
-        :param angle:
-        :return:
+        :param u: x value of center
+        :param v: y value of center
+        :param a: first (minor) axis, twice the "radius"
+        :param b: second (major) axis, twice the "radius"
+        :param angle: clockwise angle to rotate in radians
+        :return: a new Trace object with the points of the best-fit ellipse (point count is preserved)
         """
-
         # get t values for parameterized ellipse and preserve number of points
         t = np.linspace(0, 2 * np.pi, self.count())
+
+        # divide a and b by 2 because they are AXIS lengths
+        (a, b) = (item / 2 for item in (a, b))
 
         # find x and y values along ellipse (not shifted to centroid yet)
         (x, y) = (a * np.cos(t), b * np.sin(t))
@@ -214,8 +233,11 @@ class Trace(Exceptionable):
         return Trace(points, self.configs[ConfigKey.EXCEPTIONS.value])
 
     #%% output
-    def plot(self):
-        plt.plot(self.points[:, 0], self.points[:, 1])
+    def plot(self, plot_format: str = 'k-'):
+        plt.plot(self.points[:, 0], self.points[:, 1], plot_format)
+
+    def plot_centroid(self, plot_format: str = 'k*'):
+        plt.plot(*self.centroid(), plot_format)
 
     def write(self, mode: WriteMode, path: str):
         """
@@ -264,7 +286,7 @@ class Trace(Exceptionable):
     def __update(self):
         self.__int_points = self.__int32(self.points)
         self.__contour = None
-        self.__path = None
+        self.__polygon = None
 
     @staticmethod
     def __int32(points: np.ndarray):
