@@ -52,9 +52,6 @@ class Fascicle(Exceptionable):
 
     def intersects(self, other: Union['Fascicle', Nerve]):
         """
-        I just realized that this would fail to account for the case when "other" is within,
-        but not intersecting "self." This is nonsensical though, so not worrying about it for now.
-
         :param other: the other Fascicle or Nerve to check
         :return: True if a Trace intersection is found
         """
@@ -62,6 +59,26 @@ class Fascicle(Exceptionable):
             return self.outer.intersects(other.outer)
         else:  # other must be a Nerve
             return self.outer.intersects(other)
+
+    def min_distance(self, other: Union['Fascicle', Nerve]):
+        """
+        :param other: other Fascicle or Nerve to check
+        :return: minimum straight-line distance between self and other
+        """
+        if isinstance(other, Fascicle):
+            return self.outer.min_distance(other.outer)
+        else:  # other must be a Nerve
+            return self.outer.min_distance(other)
+
+    def centroid_distance(self, other: Union['Fascicle', Nerve]):
+        """
+        :param other: other Fascicle or Nerve to check
+        :return: minimum straight-line distance between self and other
+        """
+        if isinstance(other, Fascicle):
+            return self.outer.centroid_distance(other.outer)
+        else:  # other must be a Nerve
+            return self.outer.centroid_distance(other)
 
     def within_nerve(self, nerve: Nerve) -> bool:
         """
@@ -107,7 +124,6 @@ class Fascicle(Exceptionable):
         :return: ellipse fit of outer trace (see Trace.ellipse for return format/type)
         """
         return self.outer.ellipse()
-
 
 # # might use this code for checking if points are within elliptical nerve
 # # get bounding ellipse parameters

@@ -8,6 +8,10 @@ from shapely.geometry import Polygon
 
 from src.utils import *
 
+# TODO: Add SCALE functionality (dilate around a point origin)
+# TODO: Add ROTATE functionality (rotate by arbitrary angle around a point)
+
+
 class Trace(Exceptionable):
 
     #%% constructor
@@ -234,9 +238,15 @@ class Trace(Exceptionable):
 
     #%% output
     def plot(self, plot_format: str = 'k-'):
+        """
+        :param plot_format: the plt.plot format spec (see matplotlib docs)
+        """
         plt.plot(self.points[:, 0], self.points[:, 1], plot_format)
 
     def plot_centroid(self, plot_format: str = 'k*'):
+        """
+        :param plot_format: the plt.plot format spec (see matplotlib docs)
+        """
         plt.plot(*self.centroid(), plot_format)
 
     def write(self, mode: WriteMode, path: str):
