@@ -22,6 +22,7 @@ class Trace(Exceptionable):
 
         self.__contour = None
         self.__polygon = None
+        self.__centroid = None
 
         # set up superclass
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
@@ -102,6 +103,10 @@ class Trace(Exceptionable):
 
     #%% dependent on shapely.geometry.Polygon (ALL 2D GEOMETRY)
     def polygon(self) -> Polygon:
+        """
+
+        :return:
+        """
         if self.__polygon is None:
             if len(set(self.points[:, 2])) != 1:
                 self.throw(6)
@@ -124,11 +129,23 @@ class Trace(Exceptionable):
         """
         return self.polygon().boundary.intersects(other.polygon().boundary)
 
-    def centroid(self) -> Tuple[float]:
+    def centroid(self):
         """
         :return: ellipse centroid as tuple: center --> (x, y)
         """
-        return list(self.polygon().centroid.coords)[0]
+        if self.__centroid is None:
+            self.__centroid = list(self.polygon().centroid.coords)[0]
+
+        return self.__centroid
+
+    def angle_to(self, other: 'Trace'):
+        """
+        :param other:
+        :return:
+        """
+        (self_x, self_y) = self.centroid()
+        (other_x, other_y) = other.centroid()
+        return np.arctan2((other_y - self_y) / (other_x - self_y))
 
     def area(self) -> float:
         """
@@ -151,7 +168,10 @@ class Trace(Exceptionable):
         return self.polygon().boundary.hausdorff_distance(other.polygon().boundary)
 
     def centroid_distance(self, other: 'Trace') -> float:
-        return self.polygon().centroid.distance(other.polygon().centroid)
+        self_c = self.centroid()
+        other_c = other.centroid()
+
+        return np.sqrt((other_c[0] - self_c[0])**2 + (other_c[1] - self_c[1])**2)
 
     #%% contour-dependent (cv2)
     def contour(self) -> np.ndarray:
@@ -173,12 +193,20 @@ class Trace(Exceptionable):
 
         return self.__contour
 
-    def ellipse(self) -> Tuple[Union[Tuple[float], float]]:
+    def ellipse(self):
         """
         NOTE: this uses 2-D contour (ignores z-coordinate)
         :return: ellipse specs as 2-D tuple: (center, axes) --> ((x, y), (a, b), angle)
         """
         return cv2.fitEllipse(self.contour())
+
+    def mean_radius(self) -> float:
+        """
+        :return:
+        """
+
+        ((_, _), (a, b)) = cv2.fitEllipse(self.contour())
+        return float(np.mean([item / 2 for item in (a, b)], axis=0))
 
     def to_ellipse(self):
         """
@@ -298,6 +326,7 @@ class Trace(Exceptionable):
         self.__int_points = self.__int32(self.points)
         self.__contour = None
         self.__polygon = None
+        self.__centroid = None
 
     @staticmethod
     def __int32(points: np.ndarray):

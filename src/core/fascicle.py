@@ -114,7 +114,6 @@ class Fascicle(Exceptionable):
         """
         return self.outer.centroid()
 
-
     def area(self):
         """
         :return: area of outer trace
@@ -126,6 +125,22 @@ class Fascicle(Exceptionable):
         :return: ellipse fit of outer trace (see Trace.ellipse for return format/type)
         """
         return self.outer.ellipse()
+
+    def mean_radius(self):
+        """
+        :return:
+        """
+        return self.outer.mean_radius()
+
+    def angle_to(self, other: Union['Fascicle', Nerve]):
+        """
+        :param other:
+        :return:
+        """
+        if isinstance(other, Fascicle):
+            return self.outer.angle_to(other.outer)
+        else:  # must be Nerve
+            return self.outer.angle_to(other)
 
     @staticmethod
     def list_from_contours(cnts: list, hierarchy: np.ndarray, exception_config, plot: bool = False) -> List['Fascicle']:
@@ -145,6 +160,8 @@ class Fascicle(Exceptionable):
 
         This algorithm is expecting a max hierarchical depth of 2 (i.e. one level each of inners and outers)
 
+        :param plot:
+        :param exception_config:
         :param cnts: contours, as returned by cv2.findContours
         :param hierarchy: hierarchical structure, as returned by cv2.findContours
         :return: list of Fascicles derived from the hierarchy (and associated contours)
