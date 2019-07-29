@@ -166,4 +166,3 @@ class Runner(Exceptionable, Configurable):
         self.fascicles = Fascicle.list_from_contours(self.cnts, self.hierarchy[0],
                                                      self.configs[ConfigKey.EXCEPTIONS.value],
                                                      plot=True)
->>>>>>> aab653fa97e46eb4c38239a1439c24df1b07d967
