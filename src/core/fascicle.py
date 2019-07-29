@@ -49,7 +49,6 @@ class Fascicle(Exceptionable):
             self.__endoneurium_setup()
 
         # ensure all inner Traces are actually inside outer Trace
-        print([not inner.within(outer) for inner in inners])
         if any([not inner.within(outer) for inner in inners]):
             self.throw(8)
 
@@ -161,7 +160,6 @@ class Fascicle(Exceptionable):
             # loop while updating last index
             next_index = start_index
             while next_index >= 0:
-                print(next_index)
 
                 # set current index and append to list
                 current_index = next_index
@@ -175,17 +173,19 @@ class Fascicle(Exceptionable):
         # create list (will be returned at end of method)
         fascicles: List[Fascicle] = []
 
+        if plot:
+            plt.axes().set_aspect('equal', 'datalim')
+
         # loop through all rows... not filtering in one line b/c want to preserve indices
         for i, row in enumerate(hierarchy):
             # if top level (no parent)
-            print(row)
             if row[3] < 0:
                 outer_contour = cnts[i]
                 inner_contours = [cnts[index] for index in inner_indices(i, hierarchy)]
 
                 # if no inner traces, this is endoneurium only, so set inner and outer
-                if len(inner_contours) == 0:
-                    inner_contours.append(outer_contour)
+                # if len(inner_contours) == 0:
+                #     inner_contours.append(outer_contour)
 
                 # build Traces from contours
                 outer_trace = Trace(outer_contour[:, 0, :], exception_config)

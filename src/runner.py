@@ -22,6 +22,7 @@ from src.core import *
 from src.utils import *
 import cv2
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 class Runner(Exceptionable, Configurable):
@@ -122,11 +123,11 @@ class Runner(Exceptionable, Configurable):
     def fascicle_test(self):
         # build path and read image
         path = os.path.join('data', 'tracefile.tif');
-        img = cv2.imread(path, -1)
+        self.img = np.flipud(cv2.imread(path, -1))
 
         # get contours and build corresponding traces
         # these are intentionally instance attributes so they can be inspected in the Python Console
-        self.cnts, self.hierarchy = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        self.cnts, self.hierarchy = cv2.findContours(self.img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         self.fascicles = Fascicle.list_from_contours(self.cnts, self.hierarchy[0],
                                                      self.configs[ConfigKey.EXCEPTIONS.value],
                                                      plot=True)
