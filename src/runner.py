@@ -122,7 +122,7 @@ class Runner(Exceptionable, Configurable):
 
     def fascicle_test(self):
         # build path and read image
-        path = os.path.join('data', 'tracefile.tif');
+        path = os.path.join('data', 'tracefile4.tif');
         self.img = np.flipud(cv2.imread(path, -1))
 
         # get contours and build corresponding traces
