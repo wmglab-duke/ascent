@@ -22,18 +22,18 @@ import itertools
 from typing import List, Tuple, Union
 import numpy as np
 import matplotlib.pyplot as plt
+from copy import deepcopy
 
 from .trace import Trace
 from .nerve import Nerve
 from src.utils import Exceptionable, SetupMode
 
-# TODO: ENDONEURIUM SETUP (i.e. make inner and outer trace if only outer is given)??
-
 
 class Fascicle(Exceptionable):
 
-    def __init__(self, exception_config, outer: Trace, inners: List[Trace] = None):
+    def __init__(self, exception_config, outer: Trace, inners: List[Trace] = None, outer_scale: float = None):
         """
+        :param outer_scale:
         :param exception_config: existing data already loaded form JSON (hence SetupMode.OLD)
         :param inners: list of inner Traces (i.e. endoneuriums)
         :param outer: single outer Trace (i.e. perineurium)
@@ -42,20 +42,23 @@ class Fascicle(Exceptionable):
         # set up superclass
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
 
+        # use for scaling if no outer trace (i.e. ONLY outer trace has been set)
+        self.outer_scale = outer_scale
+
         self.inners = inners
         self.outer = outer
 
         if inners is None:
-            self.__endoneurium_setup()
+            self.__endoneurium_setup(outer_scale)
+        else:
+            # ensure all inner Traces are actually inside outer Trace
+            if any([not inner.within(outer) for inner in inners]):
+                self.throw(8)
 
-        # ensure all inner Traces are actually inside outer Trace
-        if any([not inner.within(outer) for inner in inners]):
-            self.throw(8)
-
-        # ensure no Traces intersect (and only check each pair of Traces once)
-        pairs: List[Tuple[Trace]] = list(itertools.combinations(self.all_traces(), 2))
-        if any([pair[0].intersects(pair[1]) for pair in pairs]):
-            self.throw(9)
+            # ensure no Traces intersect (and only check each pair of Traces once)
+            pairs: List[Tuple[Trace]] = list(itertools.combinations(self.all_traces(), 2))
+            if any([pair[0].intersects(pair[1]) for pair in pairs]):
+                self.throw(9)
 
     def intersects(self, other: Union['Fascicle', Nerve]):
         """
@@ -143,7 +146,8 @@ class Fascicle(Exceptionable):
             return self.outer.angle_to(other)
 
     @staticmethod
-    def list_from_contours(cnts: list, hierarchy: np.ndarray, exception_config, plot: bool = False) -> List['Fascicle']:
+    def list_from_contours(cnts: list, hierarchy: np.ndarray, exception_config,
+                           plot: bool = False, scale: float = None) -> List['Fascicle']:
         """
         Example usage:
             (cnts, hier) = cv2.findContours( ... )
@@ -160,6 +164,7 @@ class Fascicle(Exceptionable):
 
         This algorithm is expecting a max hierarchical depth of 2 (i.e. one level each of inners and outers)
 
+        :param scale:
         :param plot:
         :param exception_config:
         :param cnts: contours, as returned by cv2.findContours
@@ -208,18 +213,37 @@ class Fascicle(Exceptionable):
                 outer_trace = Trace(outer_contour[:, 0, :], exception_config)
                 inner_traces = [Trace(cnt[:, 0, :], exception_config) for cnt in inner_contours]
 
-                if plot:
-                    outer_trace.plot()
-                    for inner_trace in inner_traces:
-                        inner_trace.plot('b-')
+                # add fascicle to list (with or without inner trace)
+                if len(inner_traces) > 0:
+                    fascicles.append(Fascicle(exception_config, outer_trace, inner_traces))
+                else:
+                    fascicles.append(Fascicle(exception_config, outer_trace, outer_scale=scale));
 
-                # append new Fascicle to list
-                fascicles.append(Fascicle(exception_config, outer_trace, inner_traces))
+                if plot:
+                    fascicles[i].plot()
 
         if plot:
             plt.show()
 
         return fascicles
 
-    def __endoneurium_setup(self):
-        pass
+    def plot(self):
+        self.outer.plot()
+        for inner in self.inners:
+            inner.plot('b-')
+
+    def __endoneurium_setup(self, factor: float):
+
+        # check that outer scale is provided
+        if self.outer_scale is None:
+            self.throw(14)
+
+        if factor < 1:
+            self.throw(15)
+
+        # set single inner trace
+        self.inners = [deepcopy(self.outer)]
+
+        # scale up outer trace
+        self.outer.scale(factor)
+

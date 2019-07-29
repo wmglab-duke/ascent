@@ -120,9 +120,20 @@ class Runner(Exceptionable, Configurable):
             print('\tmax dist:\t{}'.format(self.traces[pair[0]].max_distance(self.traces[pair[1]])))
             print('\twithin:\t\t{}'.format(self.traces[pair[0]].within(self.traces[pair[1]])))
 
+        title = 'Figure 2: Scaled trace'
+        print(title)
+        plt.figure(2)
+        plt.axes().set_aspect('equal', 'datalim')
+        self.traces[0].plot(formats[0])
+        self.traces[0].scale(1.2)
+        self.traces[0].plot(formats[1])
+        plt.legend(['original', 'scaled'])
+        plt.title(title)
+        plt.show()
+
     def fascicle_test(self):
         # build path and read image
-        path = os.path.join('data', 'tracefile2.tif');
+        path = os.path.join('data', 'tracefile3.tif');
 
         self.img = np.flipud(cv2.imread(path, -1))
 
@@ -131,4 +142,6 @@ class Runner(Exceptionable, Configurable):
         self.cnts, self.hierarchy = cv2.findContours(self.img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         self.fascicles = Fascicle.list_from_contours(self.cnts, self.hierarchy[0],
                                                      self.configs[ConfigKey.EXCEPTIONS.value],
-                                                     plot=True)
+                                                     plot=True,
+                                                     scale=1.03)
+

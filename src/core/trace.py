@@ -7,7 +7,7 @@ from shapely.geometry import Polygon
 
 from src.utils import *
 
-# TODO: Add SCALE functionality (dilate around a point origin)
+# TODO: FIX SCALE functionality (dilate around a point origin)
 # TODO: Add ROTATE functionality (rotate by arbitrary angle around a point)
 
 
@@ -54,6 +54,18 @@ class Trace(Exceptionable):
             self.points = np.append(self.points, points, axis=0)  # axis = 0 to append rows
 
         # required for mutating method
+        self.__update()
+
+    def scale(self, factor: float):
+        # FIXME: THIS NEEDS TO USE SOME KIND OF POLYGON DILATE FUNCTION!
+        """
+        :param factor:
+        :return:
+        """
+        point_buffer = (self.points - (list(self.centroid()) + [0])) * factor
+        point_buffer += (list(self.centroid()) + [0])
+        self.points = point_buffer
+
         self.__update()
 
     def shift(self, vector):

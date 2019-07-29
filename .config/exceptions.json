@@ -68,5 +68,15 @@
     "code": 13,
     "text": "Nonspecific validation failed",
     "source": "src.core.Slide.validation"
+  },
+  {
+    "code": 14,
+    "text": "Outer scale must be set if only one trace provided",
+    "source": "src.core.Fascicle.__endoneurium_setup"
+  },
+  {
+    "code": 15,
+    "text": "Scale factor must be greater than 1",
+    "source": "src.core.Fascicle.__endoneurium_setup"
   }
 ]
