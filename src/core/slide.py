@@ -77,8 +77,7 @@ class Slide(Exceptionable, Configurable):
 
     def reposition_fascicles(self):
         """
-        Some kind of fancy repositioning algorithm... Might require a parameter with the new Nerve shape?
-        I would assume that this method needs to do a whole bunch of its own validation
+        :return: Shifted fascicles (which contain traces) within the final shape of the nerve
         """
 
         # THE MEATY STUFF GOES HERE!!!
