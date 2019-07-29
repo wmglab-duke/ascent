@@ -40,7 +40,7 @@ class Trace(Exceptionable):
         """
         :param points: nx3 ndarray, where each row is a point [x, y, z]
         """
-        # make sure points is multidimensional ndarray
+        # make sure points is multidimensional ndarray (only applicable if a single point is passed in)
         points = np.atleast_2d(points)
 
         # ensure 3 columns
@@ -123,7 +123,7 @@ class Trace(Exceptionable):
         :param other: other Trace to check
         :return: True if intersecting, else False
         """
-        return self.polygon().intersects(other.polygon())
+        return self.polygon().boundary.intersects(other.polygon().boundary)
 
     def centroid(self) -> Tuple[float]:
         """
@@ -241,7 +241,9 @@ class Trace(Exceptionable):
         """
         :param plot_format: the plt.plot format spec (see matplotlib docs)
         """
-        plt.plot(self.points[:, 0], self.points[:, 1], plot_format)
+        # append first point to plot as loop
+        points = np.vstack([self.points, self.points[0]])
+        plt.plot(points[:, 0], points[:, 1], plot_format)
 
     def plot_centroid(self, plot_format: str = 'k*'):
         """

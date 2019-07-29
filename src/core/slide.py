@@ -18,6 +18,7 @@ Description:
 """
 import itertools
 from typing import List, Tuple
+import numpy as np
 
 # really weird syntax is required to directly import the class without going through the pesky init
 from .fascicle import Fascicle

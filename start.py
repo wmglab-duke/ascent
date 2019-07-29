@@ -14,8 +14,12 @@ runner = Runner(master_config_file_path)
 
 # ready, set, GO!
 # runner.run()
-runner.trace_test()
+# runner.trace_test()
+runner.fascicle_test()
 
 # END timer
 end = time.time()
 print('\nruntime: {}'.format(end - start))
+
+# cleanup for console viewing/inspecting
+del start, end

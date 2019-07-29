@@ -86,25 +86,27 @@ class Runner(Exceptionable, Configurable):
         formats = ['r', 'g', 'b']
 
         # original points and centroids
-        print('See figure 0 for original traces with centroids.')
+        title = 'Figure 0: original traces with calculated centroids'
+        print(title)
         plt.figure(0)
         plt.axes().set_aspect('equal', 'datalim')
         for i, trace in enumerate(self.traces):
             trace.plot(formats[i] + '-')
             trace.plot_centroid(formats[i] + '*')
         plt.legend([str(i) for i in range(len(self.traces)) for _ in (0, 1)]) # end of this line is to duplicate items
-        plt.title('Original traces and centroids')
+        plt.title(title)
         plt.show()
 
         # ellipse/circle/original comparison (trace 0)
-        print('See figure 1 for fit comparison.')
+        title = 'Figure 1: fit comparisons (trace 0)'
+        print(title)
         plt.figure(1)
         plt.axes().set_aspect('equal', 'datalim')
         self.traces[0].plot(formats[0])
         self.traces[0].to_circle().plot(formats[1])
         self.traces[0].to_ellipse().plot(formats[2])
         plt.legend(['original', 'circle', 'ellipse'])
-        plt.title('Fit comparison (trace 0)')
+        plt.title(title)
         plt.show()
 
         # example stats
@@ -116,3 +118,15 @@ class Runner(Exceptionable, Configurable):
             print('\tmin dist:\t{}'.format(self.traces[pair[0]].min_distance(self.traces[pair[1]])))
             print('\tmax dist:\t{}'.format(self.traces[pair[0]].max_distance(self.traces[pair[1]])))
             print('\twithin:\t\t{}'.format(self.traces[pair[0]].within(self.traces[pair[1]])))
+
+    def fascicle_test(self):
+        # build path and read image
+        path = os.path.join('data', 'tracefile.tif');
+        img = cv2.imread(path, -1)
+
+        # get contours and build corresponding traces
+        # these are intentionally instance attributes so they can be inspected in the Python Console
+        self.cnts, self.hierarchy = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        self.fascicles = Fascicle.list_from_contours(self.cnts, self.hierarchy[0],
+                                                     self.configs[ConfigKey.EXCEPTIONS.value],
+                                                     plot=True)
