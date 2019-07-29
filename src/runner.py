@@ -145,3 +145,25 @@ class Runner(Exceptionable, Configurable):
                                                      plot=True,
                                                      scale=1.03)
 
+
+    def reposition_test(self):
+        # build path and read image
+        path = os.path.join('data', 'Cadaver54-3_NerveMask.tif');
+        path2 = os.path.join('data', 'Cadaver54-3_PerineuriumMask.tif');
+
+        self.img = np.flipud(cv2.imread(path, -1))
+        self.img2 = np.flipud(cv2.imread(path2, -1))
+
+        # get contours and build corresponding traces
+        # these are intentionally instance attributes so they can be inspected in the Python Console
+        self.cnts, self.hierarchy = cv2.findContours(self.img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        self.Nerve = Nerve.list_from_contours(self.cnts, self.hierarchy[0],
+                                                     self.configs[ConfigKey.EXCEPTIONS.value],
+                                                     plot=True)
+        self.slide = Slide(self.fascicles,)
+
+        self.cnts2, self.hierarchy2 = cv2.findContours(self.img2, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        self.fascicles = Fascicle.list_from_contours(self.cnts, self.hierarchy[0],
+                                                     self.configs[ConfigKey.EXCEPTIONS.value],
+                                                     plot=True)
+>>>>>>> aab653fa97e46eb4c38239a1439c24df1b07d967

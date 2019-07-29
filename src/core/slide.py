@@ -18,6 +18,7 @@ Description:
 """
 import itertools
 from typing import List, Tuple
+from shapely.geometry import LineString
 import numpy as np
 
 # really weird syntax is required to directly import the class without going through the pesky init
@@ -75,12 +76,20 @@ class Slide(Exceptionable, Configurable):
         """
         return any([not fascicle.within_nerve(self.nerve) for fascicle in self.fascicles])
 
-    def reposition_fascicles(self):
+    def reposition_fascicles(self, new_nerve: Nerve):
         """
         :return: Shifted fascicles (which contain traces) within the final shape of the nerve
         """
 
-        # THE MEATY STUFF GOES HERE!!!
+        for fascicle in self.fascicles:
+            v_init_fasc = LineString([fascicle.centroid(), new_nerve.centroid()])
+            dy = (v_init_fasc.coords[1, 1] - v_init_fasc.coords[0, 1])
+            dx = (v_init_fasc.coords[1, 0] - v_init_fasc.coords[0, 0])
+            final = 5 * np.array(dx, dy) #FIXME: standardize at some point
+            length = np.sqrt(final[0]**2 + final[1]**2)
+
+            #v_init_fasc.length = self.nerve.mean_radius()*5
+            #v_init_fasc.intersection(new_nerve.polygon()).coords[0]
 
         self.validation()
 
