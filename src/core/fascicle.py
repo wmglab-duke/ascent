@@ -111,7 +111,7 @@ class Fascicle(Exceptionable):
         """
         :return: list of all traces
         """
-        return self.inners + [self.outer]
+        return list(self.inners) + [self.outer]
 
     def centroid(self):
         """
