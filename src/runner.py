@@ -164,4 +164,4 @@ class Runner(Exceptionable, Configurable):
                                                      plot=True,
                                                      scale=1.03)
 
-        print("hello")
+
