@@ -19,6 +19,7 @@ Description:
 import itertools
 from typing import List, Tuple
 from shapely.geometry import LineString
+from shapely.affinity import scale
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -120,23 +121,57 @@ class Slide(Exceptionable, Configurable):
         # fascicle centroid from nerve centroid
 
         for fascicle in self.fascicles:
-            fascicle_centroid = np.array(fascicle.centroid())
-            new_nerve_centroid = np.array(new_nerve.centroid())
-            v_init_fasc = LineString([fascicle_centroid, new_nerve_centroid])
+            fascicle_centroid = fascicle.centroid()
+            new_nerve_centroid = new_nerve.centroid()
+            r_fascicle_initial = LineString([new_nerve_centroid, fascicle_centroid])
 
             r_mean = new_nerve.mean_radius()
-            r_fasc = v_init_fasc.length
+            r_fasc = r_fascicle_initial.length
+            a = 2 #FIXME
+            exterior_scale_factor = a * (r_mean / r_fasc)
+            exterior_line: LineString = scale(r_fascicle_initial,
+                                              *([exterior_scale_factor] * 3),
+                                              origin=new_nerve_centroid)
 
-            a = 2
-            point_ext = new_nerve_centroid + a*(r_mean/r_fasc)*(fascicle_centroid - new_nerve_centroid)
+            # plt.plot(*new_nerve_centroid, 'go')
+            # plt.plot(*fascicle_centroid, 'r+')
+            # new_nerve.plot()
+            # plt.plot(*np.array(exterior_line.coords).T)
+            # plt.show()
 
-            plt.plot(*new_nerve_centroid, 'go')
-            plt.plot(*fascicle_centroid, 'r+')
-            plt.plot(*point_ext, 'b*')
-            new_nerve.plot()
-            plt.show()
+            new_intersection = exterior_line.intersection(new_nerve.polygon().boundary)
+            old_intersection = exterior_line.intersection(self.nerve.polygon().boundary)
+            nerve_change_vector = LineString([new_intersection.coords[0], old_intersection.coords[0]])
 
-            plt.plot([new_nerve_centroid[0], point_ext[0]], [new_nerve_centroid[1], point_ext[1]])
+            # plt.plot(*np.array(nerve_change_vector.coords).T)
+            # self.nerve.plot()
+            # new_nerve.plot()
+
+            r_new_nerve = LineString([new_nerve_centroid, new_intersection.coords[0]])
+            r_old_nerve = LineString([new_nerve_centroid, old_intersection.coords[0]])
+
+            fascicle_scale_factor = r_new_nerve.length/r_old_nerve.length
+
+            r_fascicle_final = scale(r_fascicle_initial,
+                                     *([fascicle_scale_factor] * 3),
+                                     origin=new_nerve_centroid)
+
+            shift = list(np.array(r_fascicle_final.coords[1]) - np.array(r_fascicle_initial.coords[1])) + [0]
+            fascicle.shift(shift)
+            # fascicle.plot('r-')
+
+        # Jitter
+        
+
+        # plt.show()
+
+
+
+
+            #v_ext_fasc = LineString([point_ext, new_nerve_centroid])
+            #nerve_int = v_ext_fasc.intersection(new_nerve.polygon().boundary)
+
+            # line.intersection po
 
             # v_init_fasc.length = self.nerve.mean_radius()*5
             # v_init_fasc.intersection(new_nerve.polygon()).coords[0]
