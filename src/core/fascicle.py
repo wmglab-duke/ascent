@@ -23,6 +23,7 @@ from typing import List, Tuple, Union
 import numpy as np
 import matplotlib.pyplot as plt
 from copy import deepcopy
+import cv2
 
 from .trace import Trace
 from .nerve import Nerve
@@ -171,8 +172,7 @@ class Fascicle(Exceptionable):
         self.outer.scale(factor)
 
     @staticmethod
-    def list_from_contours_compiled(cnts: list, hierarchy: np.ndarray, exception_config,
-                           plot: bool = False, scale: float = None) -> List['Fascicle']:
+    def compiled_to_list(img_path: str, exception_config, plot: bool = False, scale: float = None) -> List['Fascicle']:
         """
         Example usage:
             (cnts, hier) = cv2.findContours( ... )
@@ -189,11 +189,10 @@ class Fascicle(Exceptionable):
 
         This algorithm is expecting a max hierarchical depth of 2 (i.e. one level each of inners and outers)
 
+        :param img_path:
         :param scale:
         :param plot:
         :param exception_config:
-        :param cnts: contours, as returned by cv2.findContours
-        :param hierarchy: hierarchical structure, as returned by cv2.findContours
         :return: list of Fascicles derived from the hierarchy (and associated contours)
         """
 
@@ -215,6 +214,12 @@ class Fascicle(Exceptionable):
                 next_index = hierarchy[current_index][0]
 
             return indices
+
+        # read image and flip
+        img = np.flipud(cv2.imread(img_path, -1))
+
+        # get contours and hierarchy
+        cnts, hierarchy = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
         # create list (will be returned at end of method)
         fascicles: List[Fascicle] = []
@@ -252,21 +257,55 @@ class Fascicle(Exceptionable):
         return fascicles
 
     @staticmethod
-    def list_from_contours_separate(inner_cnts: list, outer_cnts: list, hierarchy: np.ndarray, exception_config,
-                                    plot: bool = False, scale: float = None) -> List['Fascicle']:
+    def separate_to_list(inner_img_path: str, outer_img_path: list, exception_config,
+                         plot: bool = False) -> List['Fascicle']:
         """
-        :param inner_cnts:
-        :param outer_cnts:
-        :param hierarchy:
+        :param outer_img_path:
+        :param inner_img_path:
         :param exception_config:
         :param plot:
         :param scale:
         :return:
         """
+        def build_traces(path: str) -> List[Trace]:
+            # default findContours params
+            params = [cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE]
+            # default findContours params
+            img = np.flipud(cv2.imread(path, -1))
+            # find points of traces (hierarchy is IGNORED! ... see that "_")
+            contours, _ = cv2.findContours(img, *params)
+            # build list of traces
+            return [Trace(contour[:, 0, :], exception_config) for contour in contours]
 
-        inners = [Trace(cnt[:, 0, :], exception_config) for cnt in inner_contours]
+        # build traces list for inner and outer image paths
+        inners, outers = (np.array(build_traces(path)) for path in (inner_img_path, outer_img_path))
 
+        # create empty list to hold the outer traces that inners correspond to
+        inner_correspondence: List[int] = []
+
+        # iterate through all inner traces and assign outer index
+        for inner in inners:
+            distances = np.array([inner.centroid_distance(outer) for outer in outers])
+            inner_correspondence.append(np.where(distances == np.min(distances))[0])
+
+        # create empty list to hold fascicles
         fascicles: List[Fascicle] = []
 
-        for inner_cnt in inner_cnts:
-            distances = []
+        if plot:
+            plt.axes().set_aspect('equal', 'datalim')
+
+        # iterate through each outer and build fascicles
+        for index, outer in enumerate(outers):
+            # get all the inner traces that correspond to this outer
+            inners_corresponding = inners[np.where(np.array(inner_correspondence) == index)]
+
+            # add fascicle!
+            fascicles.append(Fascicle(exception_config, outer, inners_corresponding))
+
+            if plot:
+                fascicles[index].plot()
+
+        if plot:
+            plt.show()
+
+        return fascicles
