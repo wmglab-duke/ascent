@@ -133,12 +133,12 @@ class Runner(Exceptionable, Configurable):
 
     def fascicle_test(self):
         # build path and read image
-        path = os.path.join('data', 'input', 'misc_traces', 'tracefile3.tif')
+        path = os.path.join('data', 'input', 'misc_traces', 'tracefile5.tif')
 
         self.fascicles = Fascicle.compiled_to_list(path,
                                                    self.configs[ConfigKey.EXCEPTIONS.value],
                                                    plot=True,
-                                                   scale=1.03)
+                                                   scale=1.06)
 
     def reposition_test(self):
         # build path and read image
