@@ -16,6 +16,9 @@ Description:
     METHODS
 
 """
+
+# TODO: add more documentation for reposition fascicles
+
 import itertools
 from typing import List, Tuple, Union
 from shapely.geometry import LineString, Point
@@ -218,8 +221,8 @@ class Slide(Exceptionable, Configurable):
             iteration += 1
             print('\titeration: {}'.format(iteration))
             for fascicle in random_permutation(self.fascicles):
-                while fascicle.min_distance(new_nerve) < minimum_distance:
-                    jitter(fascicle, new_nerve)
+                while fascicle.min_distance(self.nerve) < minimum_distance:
+                    jitter(fascicle, self.nerve)
 
                 for other_fascicle in random_permutation(filter(lambda item: item is not fascicle, self.fascicles)):
                     while fascicle.min_distance(other_fascicle) < minimum_distance:

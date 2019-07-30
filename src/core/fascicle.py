@@ -29,6 +29,8 @@ from .trace import Trace
 from .nerve import Nerve
 from src.utils import Exceptionable, SetupMode
 
+# TODO: add more documentation for building fascicle lists
+
 
 class Fascicle(Exceptionable):
 
