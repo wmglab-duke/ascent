@@ -20,6 +20,7 @@ import itertools
 from typing import List, Tuple
 from shapely.geometry import LineString
 import numpy as np
+import matplotlib.pyplot as plt
 
 # really weird syntax is required to directly import the class without going through the pesky init
 from .fascicle import Fascicle
@@ -119,15 +120,28 @@ class Slide(Exceptionable, Configurable):
         # fascicle centroid from nerve centroid
 
         for fascicle in self.fascicles:
-            v_init_fasc = LineString([fascicle.centroid(), new_nerve.centroid()])
-            dy = (v_init_fasc.coords[1, 1] - v_init_fasc.coords[0, 1])
-            dx = (v_init_fasc.coords[1, 0] - v_init_fasc.coords[0, 0])
-            final = 5 * np.array(dx, dy)  # FIXME: standardize at some point
-            length = np.sqrt(final[0] ** 2 + final[1] ** 2)
+            fascicle_centroid = np.array(fascicle.centroid())
+            new_nerve_centroid = np.array(new_nerve.centroid())
+            v_init_fasc = LineString([fascicle_centroid, new_nerve_centroid])
+
+            r_mean = new_nerve.mean_radius()
+            r_fasc = v_init_fasc.length
+
+            a = 2
+            point_ext = new_nerve_centroid + a*(r_mean/r_fasc)*(fascicle_centroid - new_nerve_centroid)
+
+            plt.plot(*new_nerve_centroid, 'go')
+            plt.plot(*fascicle_centroid, 'r+')
+            plt.plot(*point_ext, 'b*')
+            new_nerve.plot()
+            plt.show()
+
+            plt.plot([new_nerve_centroid[0], point_ext[0]], [new_nerve_centroid[1], point_ext[1]])
 
             # v_init_fasc.length = self.nerve.mean_radius()*5
             # v_init_fasc.intersection(new_nerve.polygon()).coords[0]
 
+        # While overlap == True - loop
         self.validation()
 
 
