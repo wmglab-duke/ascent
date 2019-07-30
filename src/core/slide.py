@@ -98,3 +98,13 @@ class Slide(Exceptionable, Configurable):
 
     def to_ellipse(self):
         self.nerve = self.nerve.to_ellipse()
+
+    def center_point(self, point: np.ndarray):
+        centroid = np.array(self.nerve.centroid())
+        shift = list(point - centroid) + [0]
+        self.nerve.shift(shift)
+        for fascicle in self.fascicles:
+            fascicle.shift(shift)
+
+        
+
