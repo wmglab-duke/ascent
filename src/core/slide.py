@@ -180,6 +180,9 @@ class Slide(Exceptionable, Configurable):
             # fascicle.plot('r-')
 
         # Jitter
+<<<<<<< HEAD
+
+=======
         while self.validation(specific=False):
             for fascicle in random_permutation(self.fascicles):
                 while fascicle.min_distance(new_nerve) < minimum_distance:
@@ -188,6 +191,7 @@ class Slide(Exceptionable, Configurable):
                 for other_fascicle in random_permutation(filter(lambda item: item is not fascicle, self.fascicles)):
                     while fascicle.min_distance(other_fascicle) < minimum_distance:
                         jitter(fascicle, other_fascicle)
+>>>>>>> 676e1f287d7055f23f18c4956f3cd386af6a9d11
 
         # plt.show()
 
