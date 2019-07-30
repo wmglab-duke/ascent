@@ -181,11 +181,13 @@ class Trace(Exceptionable):
         """
         return self.polygon().area
 
-    def min_distance(self, other: 'Trace') -> float:
+    def min_distance(self, other: 'Trace', return_points: bool = False) -> Union[float, tuple]:
         """
         :param other: Trace to find distance to
         :return: float minimum distance
         """
+
+
         return self.polygon().boundary.distance(other.polygon().boundary)
 
     def max_distance(self, other: 'Trace') -> float:
