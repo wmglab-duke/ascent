@@ -4,6 +4,7 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 from shapely.geometry import Polygon
+from shapely.affinity import scale
 from copy import deepcopy
 
 from src.utils import *
@@ -58,16 +59,19 @@ class Trace(Exceptionable):
         self.__update()
 
     def scale(self, factor: float):
-        # FIXME: THIS NEEDS TO USE SOME KIND OF POLYGON DILATE FUNCTION!
         """
         :param factor:
         :return:
         """
+        scaled_poly: Polygon = scale(self.polygon(), factor, factor, factor, origin='centroid')
+        new_coords = [list(coord) + [0] for coord in list(scaled_poly.boundary.coords)]
 
+        # point_buffer = (self.points - (list(self.centroid()) + [0])) * factor
+        # point_buffer += (list(self.centroid()) + [0])
+        # self.points = point_buffer
 
-        point_buffer = (self.points - (list(self.centroid()) + [0])) * factor
-        point_buffer += (list(self.centroid()) + [0])
-        self.points = point_buffer
+        self.points = None
+        self.append(new_coords)
 
         self.__update()
 

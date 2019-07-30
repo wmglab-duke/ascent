@@ -75,7 +75,7 @@ class Runner(Exceptionable, Configurable):
     def trace_test(self):
 
         # build path and read image
-        path = os.path.join('data', 'tracefile2.tif');
+        path = os.path.join('data', 'input', 'misc_traces', 'tracefile2.tif');
         img = cv2.imread(path, -1)
 
         # get contours and build corresponding traces
