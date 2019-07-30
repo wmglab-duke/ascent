@@ -94,14 +94,19 @@ class Slide(Exceptionable, Configurable):
         self.validation()
 
     def to_circle(self):
-        self.nerve = self.nerve.to_circular()
+        self.nerve = self.nerve.to_circle()
 
     def to_ellipse(self):
         self.nerve = self.nerve.to_ellipse()
 
-    def center_point(self, point: np.ndarray):
-        centroid = np.array(self.nerve.centroid())
-        shift = list(point - centroid) + [0]
+    def move_center(self, point: np.ndarray):
+        """
+        :param point: the point of the new slide center
+        """
+        # get shift from nerve centroid and point argument
+        shift = list(point - np.array(self.nerve.centroid())) + [0]
+
+        # apply shift to nerve trace and all fascicles
         self.nerve.shift(shift)
         for fascicle in self.fascicles:
             fascicle.shift(shift)

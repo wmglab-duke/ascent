@@ -260,9 +260,9 @@ class SlideMap(Exceptionable, Configurable):
         """
         warnings.warn('METHOD clean_file_names IS NOT SYSTEM-INDEPENDENT!')
 
-        dir_to_parse = '/Users/jakecariello/Box/Histology/UW-Madison/Segmentations/Cassettes/VN1_A'
+        dir_to_parse = '/Users/jakecariello/Box/SPARCpy/data/input/samples/Cadaver54-3'
 
-        prefixes = ['19P866_', 'Pig19P866_']
+        prefixes = ['Cadaver54-3']
 
         remove_keys = ['.dxf']
 
