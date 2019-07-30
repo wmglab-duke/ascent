@@ -115,6 +115,9 @@ class Slide(Exceptionable, Configurable):
         :return: Shifted fascicles (which contain traces) within the final shape of the nerve
         """
 
+        # Initial shift - proportional to amount of change in the nerve boundary and distance of
+        # fascicle centroid from nerve centroid
+
         for fascicle in self.fascicles:
             v_init_fasc = LineString([fascicle.centroid(), new_nerve.centroid()])
             dy = (v_init_fasc.coords[1, 1] - v_init_fasc.coords[0, 1])
