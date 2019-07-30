@@ -295,8 +295,6 @@ class Fascicle(Exceptionable):
         if plot:
             plt.axes().set_aspect('equal', 'datalim')
 
-        formats = ['r-', 'b-', 'g-', 'm-', 'y-']
-
         # iterate through each outer and build fascicles
         for index, outer in enumerate(outers):
             # get all the inner traces that correspond to this outer
@@ -306,7 +304,7 @@ class Fascicle(Exceptionable):
             fascicles.append(Fascicle(exception_config, outer, inners_corresponding))
 
             if plot:
-                fascicles[index].plot(formats[index])
+                fascicles[index].plot()
 
         if plot:
             plt.show()
