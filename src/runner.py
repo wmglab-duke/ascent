@@ -39,7 +39,7 @@ class Runner(Exceptionable, Configurable):
         Exceptionable.__init__(self, SetupMode.NEW, self.exceptions_config_path)
 
     def run(self):
-        # self.map = SlideMap(self.configs[ConfigKey.MASTER.value],
+        # self.map = Map(self.configs[ConfigKey.MASTER.value],
         #                     self.configs[ConfigKey.EXCEPTIONS.value],
         #                     mode=SetupMode.NEW)
 
@@ -133,7 +133,7 @@ class Runner(Exceptionable, Configurable):
 
     def fascicle_test(self):
         # build path and read image
-        path = os.path.join('data', 'tracefile3.tif');
+        path = os.path.join('data', 'input', 'misc_traces', 'tracefile3.tif');
 
         self.img = np.flipud(cv2.imread(path, -1))
 
@@ -144,7 +144,6 @@ class Runner(Exceptionable, Configurable):
                                                      self.configs[ConfigKey.EXCEPTIONS.value],
                                                      plot=True,
                                                      scale=1.03)
-
 
     def reposition_test(self):
         # build path and read image

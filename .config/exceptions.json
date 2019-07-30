@@ -7,7 +7,7 @@
   {
     "code": 1,
     "text": "Path must be full file name if not generating new map.",
-    "source": "src.core.SlideMap"
+    "source": "src.core.Map"
   },
   {
     "code": 2,

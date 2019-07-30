@@ -58,7 +58,7 @@ from typing import List
 from src.utils import *
 
 
-class SlideMap(Exceptionable, Configurable):
+class Map(Exceptionable, Configurable):
 
     def __init__(self, main_config, exception_config, mode: SetupMode = SetupMode.NEW):
         """
@@ -82,11 +82,11 @@ class SlideMap(Exceptionable, Configurable):
         self.output_path = os.path.join(self.path(ConfigKey.MASTER, *self.data_root, 'paths', 'output'),
                                         '{}.json'.format(dt.datetime.now().strftime('%m_%d_%Y')))
 
-        # get sample string to pass to SlideMap.Slide
+        # get sample string to pass to Map.Slide
         self.sample = self.search(ConfigKey.MASTER, 'sample')
 
         # init self.slides
-        self.slides: List[SlideMap.Slide] = []
+        self.slides: List[Map.Slide] = []
 
         if self.mode == SetupMode.NEW:
             # source DIRECTORY
@@ -112,7 +112,7 @@ class SlideMap(Exceptionable, Configurable):
             # the above if statements are exhaustive, so this should be unreachable
             print('how the hell?')
 
-    def find(self, cassette: str, number: int) -> 'SlideMap.Slide':
+    def find(self, cassette: str, number: int) -> 'Map.Slide':
         """
         Returns first slide that matches search parameters (there should only be one, though).
         :param cassette: cassette to narrow search
@@ -179,7 +179,7 @@ class SlideMap(Exceptionable, Configurable):
                     if (i + 1) == len(filtered_files):
                         cassette_start_pos = position + cassette_skip  # account for trimming
                 # add this to the current 'row' of slides
-                cassette.append(SlideMap.Slide(cassette_code,
+                cassette.append(Map.Slide(cassette_code,
                                                number,
                                                position,
                                                os.path.join(self.source_path, file)))
@@ -200,7 +200,7 @@ class SlideMap(Exceptionable, Configurable):
         end_slides = [self.find(item.get('cassette'), item.get('number')) for item in end_slide_data]
 
         # find reference distance and scale factor
-        self.reference = SlideMap.Reference(start_slides, end_slides)
+        self.reference = Map.Reference(start_slides, end_slides)
         self.reference_distance = self.search(ConfigKey.MASTER, *self.data_root, 'resize_reference', 'distance')
         self.scale = self.reference.scale_for_distance(self.reference_distance)
 
@@ -218,7 +218,7 @@ class SlideMap(Exceptionable, Configurable):
 
     #%% conversion methods... might make these static in the future?
     # definitely won't put these in some json utility class because they aren't involved in writing/reading
-    # instead, they are for interpreting SlideMap-specific data, so nothing outside this class should need to use them
+    # instead, they are for interpreting Map-specific data, so nothing outside this class should need to use them
 
     def list_to_json(self) -> str:
         result = []
@@ -234,7 +234,7 @@ class SlideMap(Exceptionable, Configurable):
 
     def json_to_list(self) -> list:
         data = self.load(self.source_path)
-        return [SlideMap.Slide(item.get('cassette'),
+        return [Map.Slide(item.get('cassette'),
                                item.get('number'),
                                item.get('position'),
                                item.get('raw_source')) for item in data]
@@ -242,7 +242,7 @@ class SlideMap(Exceptionable, Configurable):
     def build_target_filesystem(self):
         """
         Build filesystem under data/SAMPLE/ and copy required files (i.e. raw.tif, fascicle.tif, nerve.tif). This
-        function uses self.slides as a guide for the files to copy, so the SlideMap can be customized if data is loaded
+        function uses self.slides as a guide for the files to copy, so the Map can be customized if data is loaded
         in from a custom (even hand-typed) configuration (when SetupMode.OLD is flagged).
         """
 
@@ -306,7 +306,7 @@ class SlideMap(Exceptionable, Configurable):
 
     # quick class to keep track of a reference distance for resizing (i.e. space between electrodes)
     class Reference:
-        def __init__(self, start: List['SlideMap.Slide'], end: List['SlideMap.Slide']):
+        def __init__(self, start: List['Map.Slide'], end: List['Map.Slide']):
             # find average start and end positions  and save as instance variables for printing if needed
             self.start = np.mean([slide.position for slide in start])
             self.end = np.mean([slide.position for slide in end])
