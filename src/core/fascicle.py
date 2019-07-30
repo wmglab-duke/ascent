@@ -71,15 +71,16 @@ class Fascicle(Exceptionable):
         else:  # other must be a Nerve
             return self.outer.intersects(other)
 
-    def min_distance(self, other: Union['Fascicle', Nerve]):
+    def min_distance(self, other: Union['Fascicle', Nerve], return_points: bool = False):
         """
+        :param return_points:
         :param other: other Fascicle or Nerve to check
         :return: minimum straight-line distance between self and other
         """
         if isinstance(other, Fascicle):
-            return self.outer.min_distance(other.outer)
+            return self.outer.min_distance(other.outer, return_points=return_points)
         else:  # other must be a Nerve
-            return self.outer.min_distance(other)
+            return self.outer.min_distance(other, return_points=return_points)
 
     def centroid_distance(self, other: Union['Fascicle', Nerve]):
         """

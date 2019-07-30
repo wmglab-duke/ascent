@@ -4,9 +4,9 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 from shapely.geometry import Polygon
-from shapely.affinity import scale
 from copy import deepcopy
 import pyclipper
+import itertools
 
 from src.utils import *
 
@@ -44,7 +44,7 @@ class Trace(Exceptionable):
         :param points: nx3 ndarray, where each row is a point [x, y, z]
         """
         # make sure points is multidimensional ndarray (only applicable if a single point is passed in)
-        points = np.atleast_2d(points)
+        points = np.atleast_2d(points).astype(float)
 
         # ensure 3 columns
         if np.shape(points)[1] != 3:
@@ -94,6 +94,7 @@ class Trace(Exceptionable):
             self.throw(3)
 
         # apply shift to each point
+        vector = [float(item) for item in vector]
         self.points += vector
 
         # required for mutating method
@@ -171,9 +172,11 @@ class Trace(Exceptionable):
         :param other:
         :return:
         """
-        (self_x, self_y) = self.centroid()
-        (other_x, other_y) = other.centroid()
-        return np.arctan2((other_y - self_y) / (other_x - self_y))
+        return Trace.angle(self.centroid(), other.centroid())
+
+    @staticmethod
+    def angle(first, second):
+        return np.arctan2(second[1] - first[1], second[0] - first[0])
 
     def area(self) -> float:
         """
@@ -198,10 +201,20 @@ class Trace(Exceptionable):
         if not return_points:
             return self.polygon().boundary.distance(other.polygon().boundary)
         else:
-            minimum_distance = self.p
+            # get all possible pairs of points
+            pairs = itertools.product(self.points, other.points)
 
-            for self_point in self.points:
-                for
+            # get all distances of pairs with their points
+            pairs_distances = [(self_point, other_point, distance(self_point, other_point))
+                               for (self_point, other_point) in pairs]
+            # find minimum distance
+            minimum_distance = min([dist for _, _, dist in pairs_distances])
+
+            # find the pair that corresponds to the minimum distance
+            minimum_pair = [(self_point, other_point) for (self_point, other_point, dist)
+                            in pairs_distances if dist == minimum_distance][0]
+
+            return minimum_distance, minimum_pair
 
 
     def max_distance(self, other: 'Trace') -> float:

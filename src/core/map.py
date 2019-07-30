@@ -260,9 +260,9 @@ class Map(Exceptionable, Configurable):
         """
         warnings.warn('METHOD clean_file_names IS NOT SYSTEM-INDEPENDENT!')
 
-        dir_to_parse = '/Users/jakecariello/Box/SPARCpy/data/input/samples/Cadaver54-3'
+        dir_to_parse = '/Users/jakecariello/Box/SPARCpy/data/input/samples/Pig11-3'
 
-        prefixes = ['Cadaver54-3']
+        prefixes = ['sub-11_sam-3']
 
         remove_keys = ['.dxf']
 
