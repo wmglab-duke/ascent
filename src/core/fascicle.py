@@ -24,6 +24,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from copy import deepcopy
 import cv2
+import time
 
 from .trace import Trace
 from .nerve import Nerve
@@ -147,11 +148,10 @@ class Fascicle(Exceptionable):
             return self.outer.angle_to(other)
 
 
-
-    def plot(self):
+    def plot(self, plot_format: str = 'b-'):
         self.outer.plot()
         for inner in self.inners:
-            inner.plot('b-')
+            inner.plot(plot_format)
 
     def deepcopy(self):
         return deepcopy(self)
@@ -285,14 +285,17 @@ class Fascicle(Exceptionable):
 
         # iterate through all inner traces and assign outer index
         for inner in inners:
-            distances = np.array([inner.centroid_distance(outer) for outer in outers])
-            inner_correspondence.append(np.where(distances == np.min(distances))[0])
+            mask = [inner.within(outer) for outer in outers]
+            inner_correspondence.append(np.where(mask)[0][0])
+        print(inner_correspondence)
 
         # create empty list to hold fascicles
         fascicles: List[Fascicle] = []
 
         if plot:
             plt.axes().set_aspect('equal', 'datalim')
+
+        formats = ['r-', 'b-', 'g-', 'm-', 'y-']
 
         # iterate through each outer and build fascicles
         for index, outer in enumerate(outers):
@@ -303,7 +306,7 @@ class Fascicle(Exceptionable):
             fascicles.append(Fascicle(exception_config, outer, inners_corresponding))
 
             if plot:
-                fascicles[index].plot()
+                fascicles[index].plot(formats[index])
 
         if plot:
             plt.show()
