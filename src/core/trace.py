@@ -63,6 +63,8 @@ class Trace(Exceptionable):
         :param factor:
         :return:
         """
+
+
         point_buffer = (self.points - (list(self.centroid()) + [0])) * factor
         point_buffer += (list(self.centroid()) + [0])
         self.points = point_buffer

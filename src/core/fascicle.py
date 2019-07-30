@@ -145,8 +145,33 @@ class Fascicle(Exceptionable):
         else:  # must be Nerve
             return self.outer.angle_to(other)
 
+
+
+    def plot(self):
+        self.outer.plot()
+        for inner in self.inners:
+            inner.plot('b-')
+
+    def deepcopy(self):
+        return deepcopy(self)
+
+    def __endoneurium_setup(self, factor: float):
+
+        # check that outer scale is provided
+        if self.outer_scale is None:
+            self.throw(14)
+
+        if factor < 1:
+            self.throw(15)
+
+        # set single inner trace
+        self.inners = [self.outer.deepcopy()]
+
+        # scale up outer trace
+        self.outer.scale(factor)
+
     @staticmethod
-    def list_from_contours(cnts: list, hierarchy: np.ndarray, exception_config,
+    def list_from_contours_compiled(cnts: list, hierarchy: np.ndarray, exception_config,
                            plot: bool = False, scale: float = None) -> List['Fascicle']:
         """
         Example usage:
@@ -182,7 +207,6 @@ class Fascicle(Exceptionable):
             # loop while updating last index
             next_index = start_index
             while next_index >= 0:
-
                 # set current index and append to list
                 current_index = next_index
                 indices.append(current_index)
@@ -227,26 +251,22 @@ class Fascicle(Exceptionable):
 
         return fascicles
 
-    def plot(self):
-        self.outer.plot()
-        for inner in self.inners:
-            inner.plot('b-')
+    @staticmethod
+    def list_from_contours_separate(inner_cnts: list, outer_cnts: list, hierarchy: np.ndarray, exception_config,
+                                    plot: bool = False, scale: float = None) -> List['Fascicle']:
+        """
+        :param inner_cnts:
+        :param outer_cnts:
+        :param hierarchy:
+        :param exception_config:
+        :param plot:
+        :param scale:
+        :return:
+        """
 
-    def deepcopy(self):
-        return deepcopy(self)
+        inners = [Trace(cnt[:, 0, :], exception_config) for cnt in inner_contours]
 
-    def __endoneurium_setup(self, factor: float):
+        fascicles: List[Fascicle] = []
 
-        # check that outer scale is provided
-        if self.outer_scale is None:
-            self.throw(14)
-
-        if factor < 1:
-            self.throw(15)
-
-        # set single inner trace
-        self.inners = [self.outer.deepcopy()]
-
-        # scale up outer trace
-        self.outer.scale(factor)
-
+        for inner_cnt in inner_cnts:
+            distances = []
