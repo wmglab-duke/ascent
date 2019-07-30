@@ -143,7 +143,7 @@ class Runner(Exceptionable, Configurable):
     def reposition_test(self):
         # build path and read image
         path = os.path.join('data', 'input', 'samples', 'Cadaver54-3', 'NerveMask.tif')
-        path2 = os.path.join('data',  'input', 'samples', 'Cadaver54-3', 'PerineuriumMask.tif')
+        path2 = os.path.join('data',  'input', 'samples', 'Cadaver54-3', 'EndoneuriumMask.tif')
 
         self.img = np.flipud(cv2.imread(path, -1))
         self.img2 = np.flipud(cv2.imread(path2, -1))
