@@ -161,7 +161,7 @@ class Slide(Exceptionable, Configurable):
             # fascicle.plot('r-')
 
         # Jitter
-        
+
 
         # plt.show()
 
