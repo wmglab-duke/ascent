@@ -17,10 +17,11 @@ Description:
 
 """
 import itertools
-from typing import List, Tuple
+from typing import List, Tuple, Union
 from shapely.geometry import LineString
 from shapely.affinity import scale
 import numpy as np
+import random
 import matplotlib.pyplot as plt
 
 # really weird syntax is required to directly import the class without going through the pesky init
@@ -117,6 +118,24 @@ class Slide(Exceptionable, Configurable):
         :return: Shifted fascicles (which contain traces) within the final shape of the nerve
         """
 
+        minimum_distance = 10
+
+        def random_permutation(iterable, r=None):
+            "Random selection from itertools.permutations(iterable, r)"
+            pool = tuple(iterable)
+            r = len(pool) if r is None else r
+            return tuple(random.sample(pool, r))
+
+        def jitter(first: Fascicle, second: Union[Fascicle, Nerve]):
+
+            if isinstance(second, Fascicle):
+                angle = first.angle_to(second)
+
+                step_magnitude =
+            else:  # second must be a Nerve
+                pass
+
+
         # Initial shift - proportional to amount of change in the nerve boundary and distance of
         # fascicle centroid from nerve centroid
 
@@ -161,7 +180,18 @@ class Slide(Exceptionable, Configurable):
             # fascicle.plot('r-')
 
         # Jitter
+<<<<<<< HEAD
 
+=======
+        while self.validation(specific=False):
+            for fascicle in random_permutation(self.fascicles):
+                while fascicle.min_distance(new_nerve) < minimum_distance:
+                    jitter(fascicle, new_nerve)
+
+                for other_fascicle in random_permutation(filter(lambda item: item is not fascicle, self.fascicles)):
+                    while fascicle.min_distance(other_fascicle) < minimum_distance:
+                        jitter(fascicle, other_fascicle)
+>>>>>>> 676e1f287d7055f23f18c4956f3cd386af6a9d11
 
         # plt.show()
 
