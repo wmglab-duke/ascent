@@ -53,14 +53,14 @@ class Fascicle(Exceptionable):
         if inners is None:
             self.__endoneurium_setup(outer_scale)
 
-        # # ensure all inner Traces are actually inside outer Trace
-        # if any([not inner.within(outer) for inner in self.inners]):
-        #     self.throw(8)
-        #
-        # # ensure no Traces intersect (and only check each pair of Traces once)
-        # pairs: List[Tuple[Trace]] = list(itertools.combinations(self.all_traces(), 2))
-        # if any([pair[0].intersects(pair[1]) for pair in pairs]):
-        #     self.throw(9)
+        # ensure all inner Traces are actually inside outer Trace
+        if any([not inner.within(outer) for inner in self.inners]):
+            self.throw(8)
+
+        # ensure no Traces intersect (and only check each pair of Traces once)
+        pairs: List[Tuple[Trace]] = list(itertools.combinations(self.all_traces(), 2))
+        if any([pair[0].intersects(pair[1]) for pair in pairs]):
+            self.throw(9)
 
     def intersects(self, other: Union['Fascicle', Nerve]):
         """
