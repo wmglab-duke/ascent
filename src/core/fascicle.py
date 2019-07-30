@@ -232,6 +232,9 @@ class Fascicle(Exceptionable):
         for inner in self.inners:
             inner.plot('b-')
 
+    def deepcopy(self):
+        return deepcopy(self)
+
     def __endoneurium_setup(self, factor: float):
 
         # check that outer scale is provided
@@ -242,7 +245,7 @@ class Fascicle(Exceptionable):
             self.throw(15)
 
         # set single inner trace
-        self.inners = [deepcopy(self.outer)]
+        self.inners = [self.outer.deepcopy()]
 
         # scale up outer trace
         self.outer.scale(factor)

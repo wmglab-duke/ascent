@@ -22,3 +22,7 @@ class DownSampleMode(Enum):
 class WriteMode(Enum): # note: NOT required to have unique values
     SECTIONWISE = '.txt'
     DATA = '.dat'
+
+@unique
+class ReshapeNerveMethod(Enum):
+    CIRCLE = 0

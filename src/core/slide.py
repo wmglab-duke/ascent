@@ -76,23 +76,6 @@ class Slide(Exceptionable, Configurable):
         """
         return any([not fascicle.within_nerve(self.nerve) for fascicle in self.fascicles])
 
-    def reposition_fascicles(self, new_nerve: Nerve):
-        """
-        :return: Shifted fascicles (which contain traces) within the final shape of the nerve
-        """
-
-        for fascicle in self.fascicles:
-            v_init_fasc = LineString([fascicle.centroid(), new_nerve.centroid()])
-            dy = (v_init_fasc.coords[1, 1] - v_init_fasc.coords[0, 1])
-            dx = (v_init_fasc.coords[1, 0] - v_init_fasc.coords[0, 0])
-            final = 5 * np.array(dx, dy) #FIXME: standardize at some point
-            length = np.sqrt(final[0]**2 + final[1]**2)
-
-            #v_init_fasc.length = self.nerve.mean_radius()*5
-            #v_init_fasc.intersection(new_nerve.polygon()).coords[0]
-
-        self.validation()
-
     def to_circle(self):
         """
         :return:
@@ -117,5 +100,31 @@ class Slide(Exceptionable, Configurable):
         for fascicle in self.fascicles:
             fascicle.shift(shift)
 
+    def reshaped_nerve(self, mode: ReshapeNerveMethod) -> Nerve:
+        """
+        :param mode:
+        :return:
+        """
+        if mode == ReshapeNerveMethod.CIRCLE:
+            return self.nerve.deepcopy().to_circle()
+        else:
+            self.throw(16)
+
+    def reposition_fascicles(self, new_nerve: Nerve):
+        """
+        :return: Shifted fascicles (which contain traces) within the final shape of the nerve
+        """
+
+        for fascicle in self.fascicles:
+            v_init_fasc = LineString([fascicle.centroid(), new_nerve.centroid()])
+            dy = (v_init_fasc.coords[1, 1] - v_init_fasc.coords[0, 1])
+            dx = (v_init_fasc.coords[1, 0] - v_init_fasc.coords[0, 0])
+            final = 5 * np.array(dx, dy)  # FIXME: standardize at some point
+            length = np.sqrt(final[0] ** 2 + final[1] ** 2)
+
+            # v_init_fasc.length = self.nerve.mean_radius()*5
+            # v_init_fasc.intersection(new_nerve.polygon()).coords[0]
+
+        self.validation()
 
 

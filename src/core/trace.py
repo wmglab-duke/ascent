@@ -4,6 +4,7 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 from shapely.geometry import Polygon
+from copy import deepcopy
 
 from src.utils import *
 
@@ -332,6 +333,9 @@ class Trace(Exceptionable):
             # raise
 
         return path
+
+    def deepcopy(self) -> 'Trace':
+        return deepcopy(self)
 
     #%% private utility methods
     def __update(self):

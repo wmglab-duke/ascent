@@ -78,5 +78,10 @@
     "code": 15,
     "text": "Scale factor must be greater than 1",
     "source": "src.core.Fascicle.__endoneurium_setup"
+  },
+  {
+    "code": 16,
+    "text": "Invalid reshape mode.",
+    "source": "src.core.Slide.reshaped_nerve"
   }
 ]
