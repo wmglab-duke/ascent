@@ -153,10 +153,11 @@ class Runner(Exceptionable, Configurable):
         self.nerve_cnts, _ = cv2.findContours(self.img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         self.nerve = Nerve(Trace(self.nerve_cnts[0][:, 0, :], self.configs[ConfigKey.EXCEPTIONS.value]))
 
-        self.fascicle_cnts, self.hierarchy = cv2.findContours(self.img2, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-        self.fascicles = Fascicle.list_from_contours_compiled(self.fascicle_cnts, self.hierarchy[0],
-                                                     self.configs[ConfigKey.EXCEPTIONS.value],
-                                                     plot=True,
-                                                     scale=1.03)
+        self.fascicles = Fascicle.separate_to_list(os.path.join('data', 'input', 'samples',
+                                                                'Cadaver54-3', 'EndoneuriumMask.tif'),
+                                                   os.path.join('data', 'input', 'samples',
+                                                                'Cadaver54-3','PerineuriumMask.tif'),
+                                                   self.configs[ConfigKey.EXCEPTIONS.value],
+                                                   plot=True)
 
 

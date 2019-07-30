@@ -257,7 +257,7 @@ class Fascicle(Exceptionable):
         return fascicles
 
     @staticmethod
-    def separate_to_list(inner_img_path: str, outer_img_path: list, exception_config,
+    def separate_to_list(inner_img_path: str, outer_img_path: str, exception_config,
                          plot: bool = False) -> List['Fascicle']:
         """
         :param outer_img_path:
