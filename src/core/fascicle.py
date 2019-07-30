@@ -24,7 +24,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from copy import deepcopy
 import cv2
-import time
 
 from .trace import Trace
 from .nerve import Nerve
@@ -310,3 +309,8 @@ class Fascicle(Exceptionable):
             plt.show()
 
         return fascicles
+
+    @staticmethod
+    def inner_to_list(img_path: str, exception_config,
+                      plot: bool = False, scale: float = None) -> List['Fascicle']:
+        return Fascicle.compiled_to_list(img_path, exception_config, plot, scale)
