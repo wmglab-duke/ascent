@@ -128,3 +128,5 @@ class Slide(Exceptionable, Configurable):
         self.validation()
 
 
+# slide: Slide
+# slide.reposition_fascicles(slide.reshaped_nerve(ReshapeNerveMethod.CIRCLE))
