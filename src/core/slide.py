@@ -94,9 +94,15 @@ class Slide(Exceptionable, Configurable):
         self.validation()
 
     def to_circle(self):
+        """
+        :return:
+        """
         self.nerve = self.nerve.to_circular()
 
     def to_ellipse(self):
+        """
+        :return:
+        """
         self.nerve = self.nerve.to_ellipse()
 
     def center_point(self, point: np.ndarray):
@@ -106,5 +112,5 @@ class Slide(Exceptionable, Configurable):
         for fascicle in self.fascicles:
             fascicle.shift(shift)
 
-        
+
 
