@@ -1,4 +1,4 @@
-from typing import Tuple, Union
+from typing import Tuple, Union, List
 
 import numpy as np
 import cv2
@@ -183,12 +183,26 @@ class Trace(Exceptionable):
 
     def min_distance(self, other: 'Trace', return_points: bool = False) -> Union[float, tuple]:
         """
+        :param return_points:
         :param other: Trace to find distance to
         :return: float minimum distance
         """
+        def distance(first: List[float], second: List[float]) -> float:
+            differences = (np.array(second) - np.array(first))
+            return np.sqrt(
+                np.sum(
+                    differences ** 2
+                )
+            )
 
+        if not return_points:
+            return self.polygon().boundary.distance(other.polygon().boundary)
+        else:
+            minimum_distance = self.p
 
-        return self.polygon().boundary.distance(other.polygon().boundary)
+            for self_point in self.points:
+                for
+
 
     def max_distance(self, other: 'Trace') -> float:
         """
