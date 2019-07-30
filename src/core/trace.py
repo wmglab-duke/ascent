@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from shapely.geometry import Polygon
 from shapely.affinity import scale
 from copy import deepcopy
+import pyclipper
 
 from src.utils import *
 
@@ -63,17 +64,25 @@ class Trace(Exceptionable):
         :param factor:
         :return:
         """
-        scaled_poly: Polygon = scale(self.polygon(), factor, factor, factor, origin='centroid')
-        new_coords = [list(coord) + [0] for coord in list(scaled_poly.boundary.coords)]
+        # create clipper offset object
+        pco = pyclipper.PyclipperOffset()
 
-        # point_buffer = (self.points - (list(self.centroid()) + [0])) * factor
-        # point_buffer += (list(self.centroid()) + [0])
-        # self.points = point_buffer
+        # put self.points into a 2-D tuple
+        tuple_points = tuple([tuple(point[:2]) for point in self.points])
 
+        # add points to clipper
+        pco.AddPath(tuple_points, pyclipper.JT_SQUARE, pyclipper.ET_CLOSEDPOLYGON)
+
+        # find offset distance from factor and mean radius
+        distance: float = self.mean_radius() * (factor - 1)
+
+        # set new points of offset
         self.points = None
-        self.append(new_coords)
+        self.append([point + [0] for point in pco.Execute(distance)[0]])
 
+        # cleanup
         self.__update()
+        pco.Clear()
 
     def shift(self, vector):
         """
@@ -223,8 +232,7 @@ class Trace(Exceptionable):
         """
         :return:
         """
-
-        ((_, _), (a, b)) = cv2.fitEllipse(self.contour())
+        ((_, _), (a, b), _) = cv2.fitEllipse(self.contour())
         return float(np.mean([item / 2 for item in (a, b)], axis=0))
 
     def to_ellipse(self):

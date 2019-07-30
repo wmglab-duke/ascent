@@ -147,7 +147,6 @@ class Fascicle(Exceptionable):
         else:  # must be Nerve
             return self.outer.angle_to(other)
 
-
     def plot(self, plot_format: str = 'b-'):
         self.outer.plot()
         for inner in self.inners:
@@ -227,11 +226,11 @@ class Fascicle(Exceptionable):
             plt.axes().set_aspect('equal', 'datalim')
 
         # loop through all rows... not filtering in one line b/c want to preserve indices
-        for i, row in enumerate(hierarchy):
+        for i, row in enumerate(hierarchy[0]):
             # if top level (no parent)
             if row[3] < 0:
                 outer_contour = cnts[i]
-                inner_contours = [cnts[index] for index in inner_indices(i, hierarchy)]
+                inner_contours = [cnts[index] for index in inner_indices(i, hierarchy[0])]
 
                 # if no inner traces, this is endoneurium only, so set inner and outer
                 # if len(inner_contours) == 0:
@@ -245,7 +244,7 @@ class Fascicle(Exceptionable):
                 if len(inner_traces) > 0:
                     fascicles.append(Fascicle(exception_config, outer_trace, inner_traces))
                 else:
-                    fascicles.append(Fascicle(exception_config, outer_trace, outer_scale=scale));
+                    fascicles.append(Fascicle(exception_config, outer_trace, outer_scale=scale))
 
                 if plot:
                     fascicles[i].plot()
@@ -289,7 +288,6 @@ class Fascicle(Exceptionable):
         for inner in inners:
             mask = [inner.within(outer) for outer in outers]
             inner_correspondence.append(np.where(mask)[0][0])
-        print(inner_correspondence)
 
         # create empty list to hold fascicles
         fascicles: List[Fascicle] = []
