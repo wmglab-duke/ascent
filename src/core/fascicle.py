@@ -172,12 +172,11 @@ class Fascicle(Exceptionable):
         self.outer.scale(factor)
 
     @staticmethod
-    def compiled_to_list(img_path: str, exception_config, plot: bool = False, scale: float = None) -> List['Fascicle']:
+    def compiled_to_list(img_path: str, exception_config,
+                         plot: bool = False, scale: float = None) -> List['Fascicle']:
         """
         Example usage:
-            (cnts, hier) = cv2.findContours( ... )
-            fascicles = Fascicle.list_from_contours(cnts, hier[0])
-        Note: use hier[0] so that hierarchy argument is only 2D
+            fascicles = Fascicle.compiled_to_list(my_image_path, ... )
 
         Each row of hierarchy corresponds to the same 0-based index contour in cnts
         For all elements, if the associated feature is not present/applicable, the value will be negative (-1).
@@ -193,7 +192,7 @@ class Fascicle(Exceptionable):
         :param scale:
         :param plot:
         :param exception_config:
-        :return: list of Fascicles derived from the hierarchy (and associated contours)
+        :return: list of Fascicles derived from the single image
         """
 
         # helper method
@@ -260,12 +259,15 @@ class Fascicle(Exceptionable):
     def separate_to_list(inner_img_path: str, outer_img_path: str, exception_config,
                          plot: bool = False) -> List['Fascicle']:
         """
+        Example usage:
+            fascicles = Fascicle.separate_to_list(my_inner_image_path,
+                                                  my_outer_image_path, ... )
+
         :param outer_img_path:
         :param inner_img_path:
         :param exception_config:
         :param plot:
-        :param scale:
-        :return:
+        :return: list of Fascicles derived from the two images
         """
         def build_traces(path: str) -> List[Trace]:
             # default findContours params
