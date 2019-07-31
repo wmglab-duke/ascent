@@ -37,10 +37,11 @@ class Manager(Exceptionable, Configurable):
 
     def build_file_structure(self):
         pass
-        # Read root of raw file - use map to move all other files to native file structure
+        # Builds folders and copies files
 
     def populate(self):
         pass
+        # Reads in the known files
 
 
 

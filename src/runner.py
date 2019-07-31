@@ -189,6 +189,6 @@ class Runner(Exceptionable, Configurable):
         self.slide.reposition_fascicles(self.slide.reshaped_nerve(ReshapeNerveMode.CIRCLE))
 
     def manager_test(self):
-        manager = Manager(self.configs[ConfigKey.MASTER.value], self.configs[ConfigKey.EXCEPTIONS.value])
+        manager = Manager(self.configs[ConfigKey.MASTER.value], self.configs[ConfigKey.EXCEPTIONS.value], map)
         manager.build_file_structure()
         manager.populate()
