@@ -168,7 +168,6 @@ class Runner(Exceptionable, Configurable):
     def reposition_test2(self):
         # build path and read image
         path = os.path.join('data', 'input', 'samples', 'Pig11-3', 'NerveMask.tif')
-
         self.img = np.flipud(cv2.imread(path, -1))
 
         # get contours and build corresponding traces
