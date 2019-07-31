@@ -4,10 +4,7 @@
 The user must provide 3 types of files that will be used to construct the data filesystem. In addition to the type
 designation (a single letter, seen in filename specifications below), 3 pieces of data must be included:
 
-1. `[ARB_NAME]` – This is an arbitrary identifier at the beginning of each filename that will be _ignored_ by the
-program; however, it is suggested that this consist of either the sample name or some other bookkeeping identifier as
-determined on a case-by-case basis. Please note, that the **sample name** will be provided elsewhere in a more formal
-manner.
+1. `[SAMPLE]` – The sample name. Must be unique and not contain any underscores.
 
 2. `[CASSETTE]` – If a multi-slide sample is being analyzed, use a consistent system of uniquely identifying cassettes
 used for embedding and slicing. In the (probably very common) cases that either one unnamed cassette was used or a
@@ -25,23 +22,23 @@ formatting, there must be at least 1 underscore where indicated, but more than 1
 description is accompanied by an example of what that image may look like (at lower resolution for efficiency).
 
 1. Raw image of slide
-    - form: `[ARB_NAME]_[CASSETTE]_[NUMBER]_r.tif`
+    - form: `[SAMPLE]_[CASSETTE]_[NUMBER]_r.tif`
     - type: Though `.tif` is indicated above filename, this is arbitrary for now.
     - <a href="https://gitlab.oit.duke.edu/edm23/sparcpy/raw/master/examples/images/raw.jpg" target="_blank">example</a>
 2. Compiled fascicles binary mask
-    - form: `[ARB_NAME]_[CASSETTE]_[NUMBER]_f.tif`
+    - form: `[SAMPLE]_[CASSETTE]_[NUMBER]_f.tif`
     - type: Only `.tif` allowed for now.
     - <a href="https://gitlab.oit.duke.edu/edm23/sparcpy/raw/master/examples/images/fascicle_normal.jpg" target="_blank">one-to-one</a> or containing <a href="https://gitlab.oit.duke.edu/edm23/sparcpy/raw/master/examples/images/fascicle_peanut.jpg" target="_blank">peanut fascicles</a>
 3. Individual fascicles binary masks
-    - forms: `[ARB_NAME]_[CASSETTE]_[NUMBER]_i.tif` (inner) or `[ARB_NAME]_[CASSETTE]_[NUMBER]_o.tif` (outer)
+    - forms: `[SAMPLE]_[CASSETTE]_[NUMBER]_i.tif` (inner) or `[SAMPLE]_[CASSETTE]_[NUMBER]_o.tif` (outer)
     - type: Only `.tif` allowed for now.
     - notes: in place of a single compiled fascicles mask. either both `_i` and `_o` must be provided or only one is provided (a scale for perineurium thickness with appropriate direction must be provided at a later point)
 4. Nerve binary mask
-    - form: `[ARB_NAME]_[CASSETTE]_[NUMBER]_n.tif`
+    - form: `[SAMPLE]_[CASSETTE]_[NUMBER]_n.tif`
     - type: Only `.tif` allowed for now.
     - <a href="https://gitlab.oit.duke.edu/edm23/sparcpy/raw/master/examples/images/nerve.jpg" target="_blank">example</a>
 5. Scale bar mask
-    - form: `[ARB_NAME]_[CASSETTE]_[NUMBER]_s.tif`
+    - form: `[SAMPLE]_[CASSETTE]_[NUMBER]_s.tif`
     - type: Only `.tif` allowed for now.
     - <a href="https://gitlab.oit.duke.edu/edm23/sparcpy/raw/master/examples/images/scalebar.jpg" target="_blank">example</a>
 An example for a grouping of three images for a slide might be:
