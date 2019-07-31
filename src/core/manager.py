@@ -34,3 +34,12 @@ class Manager(Exceptionable, Configurable):
 
         for slide in self.slides:
             slide.scale(factor)
+
+    def build_file_structure():
+        pass
+
+
+
+
+
+
