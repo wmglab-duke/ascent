@@ -59,7 +59,7 @@ class Trace(Exceptionable):
         # required for mutating method
         self.__update()
 
-    def scale(self, factor: float):
+    def offset(self, factor: float):
         """
         :param factor:
         :return:
@@ -83,6 +83,9 @@ class Trace(Exceptionable):
         # cleanup
         self.__update()
         pco.Clear()
+
+    def scale(self, factor: float):
+        pass
 
     def shift(self, vector):
         """

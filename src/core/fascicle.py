@@ -157,6 +157,9 @@ class Fascicle(Exceptionable):
     def deepcopy(self):
         return deepcopy(self)
 
+    def scale(self, factor: float):
+        pass
+
     def __endoneurium_setup(self, factor: float):
 
         # check that outer scale is provided
@@ -170,7 +173,7 @@ class Fascicle(Exceptionable):
         self.inners = [self.outer.deepcopy()]
 
         # scale up outer trace
-        self.outer.scale(factor)
+        self.outer.offset(factor)
 
     @staticmethod
     def compiled_to_list(img_path: str, exception_config,
