@@ -11,13 +11,9 @@ import itertools
 
 from src.utils import *
 
-# TODO: FIX SCALE functionality (dilate around a point origin)
-# TODO: Add ROTATE functionality (rotate by arbitrary angle around a point)
-
 
 class Trace(Exceptionable):
 
-    #%% constructor
     def __init__(self, points, exception_config):
         """
         :param points:
@@ -39,7 +35,6 @@ class Trace(Exceptionable):
         self.__int_points = None
         self.append(points)
 
-    #%% public, MUTATING methods (must call self.__update)
     def append(self, points):
         """
         :param points: nx3 ndarray, where each row is a point [x, y, z]
@@ -99,7 +94,6 @@ class Trace(Exceptionable):
         self.append([list(coord[:2]) + [0] for coord in scaled_polygon.boundary.coords])
         self.__update()
 
-
     def shift(self, vector):
         """
         :param vector: 1-dim vector with 3 elements... shape is (3,)
@@ -149,7 +143,6 @@ class Trace(Exceptionable):
     #%% dependent on shapely.geometry.Polygon (ALL 2D GEOMETRY)
     def polygon(self) -> Polygon:
         """
-
         :return:
         """
         if self.__polygon is None:
@@ -231,7 +224,6 @@ class Trace(Exceptionable):
                             in pairs_distances if dist == minimum_distance][0]
 
             return minimum_distance, minimum_pair
-
 
     def max_distance(self, other: 'Trace') -> float:
         """

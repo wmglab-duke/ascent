@@ -40,6 +40,8 @@ class Manager(Exceptionable, Configurable):
     def build_file_structure(self):
         pass
         # Builds folders and copies files
+        os.path.split(data_path)
+        path.split('_')
 
     def populate(self):
         pass
