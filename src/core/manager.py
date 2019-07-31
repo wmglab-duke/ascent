@@ -63,8 +63,7 @@ class Manager(Exceptionable, Configurable):
                     os.makedirs(directory_part)
                 os.chdir(directory_part)
 
-            for letter_code in ['r', 'f', 'i', 'o', 's']:
-                target_file = letter_code + '.tif'
+            for target_file in [item.value for item in MaskFileNames]:
                 source_file = os.path.join(start_directory,
                                            *source_directory,
                                            '_'.join([sample, cassette, number, target_file]))

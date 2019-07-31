@@ -23,10 +23,12 @@ class WriteMode(Enum): # note: NOT required to have unique values
     SECTIONWISE = '.txt'
     DATA = '.dat'
 
+
 @unique
 class ReshapeNerveMode(Enum):
     CIRCLE = 0
     ELLIPSE = 1
+
 
 @unique
 class MaskInputMode(Enum):
@@ -34,4 +36,13 @@ class MaskInputMode(Enum):
     OUTERS = 1
     INNER_AND_OUTER_SEPARATE = 2
     INNER_AND_OUTER_COMPILED = 3
+
+
+@unique
+class MaskFileNames(Enum):
+    RAW = 'r.tif'
+    COMPILED = 'f.tif'
+    INNERS = 'i.tif'
+    OUTERS = 'o.tif'
+    SCALE_BAR = 's.tif'
 
