@@ -281,3 +281,7 @@ class Slide(Exceptionable, Configurable):
                 plt.title(title)
 
             plt.show()
+
+    def scale(self):
+        
+
