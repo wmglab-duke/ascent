@@ -88,5 +88,15 @@
     "code": 17,
     "text": "Invalid scale center string.",
     "source": "src.core.Trace.scale"
+  },
+    {
+    "code": 18,
+    "text": "Raw nerve micrograph does not exist.",
+    "source": "src.core.Manager.populate"
+  },
+    {
+    "code": 19,
+    "text": "Scale bar for nerve micrograph does not exist.",
+    "source": "src.core.Manager.populate"
   }
 ]

@@ -76,7 +76,7 @@ class Manager(Exceptionable, Configurable):
 
             os.chdir(start_directory)
 
-    def populate(self):
+    def populate(self, mode: MaskInputMode):
 
         # get starting point so able to go back
         start_directory: str = os.getcwd()
@@ -93,23 +93,24 @@ class Manager(Exceptionable, Configurable):
 
             os.chdir(os.path.join(samples_path, sample, cassette, number, 'masks'))
 
+            if not os.path.exists(MaskFileNames.RAW.value):
+                self.throw(18)
+            elif not os.path.exists(MaskFileNames.SCALE_BAR.value):
+                self.throw(19)
+
+
+
             # r.tif does not exist, fail
 
             # s.tif does not exist, fail
 
             # compiled, inner only, outer only, inner and outer
 
-            ['r', 'f', 'i', 'o', 's']
+            #['r', 'f', 'i', 'o', 's']
 
 
             os.chdir(start_directory)
 
-
-            # Reads in the known files
-            # check if i and o exist
-
-            #os.path.join(samples_path, cassette, 'r.tif')
-            #r s n
 
 
 
