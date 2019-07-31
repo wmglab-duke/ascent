@@ -1,4 +1,8 @@
 {
+  "scale_bar": {
+    "length": 500,
+    "unit": "micrometer"
+  },
   "config": {
     "paths": {
       "exceptions": [".config", "exceptions.json"],
