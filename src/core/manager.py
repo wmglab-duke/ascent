@@ -47,8 +47,15 @@ class Manager(Exceptionable, Configurable):
     def populate(self):
         # Reads in the known files
         for slide_info in self.map.slides:
-            print(type(slide_info))
-            print(slide_info)
+            cassette:str = slide_info.cassette
+            # make the path, read in
+
+            slide_info.
+
+        sample_path = self.path(ConfigKey.MASTER, 'samples_path')
+
+        if exist(os.path.isdir)
+
 
 
 
