@@ -282,6 +282,12 @@ class Slide(Exceptionable, Configurable):
 
             plt.show()
 
-    def scale(self):
-        
+    def scale(self, factor: float):
+        """
+        :param factor:
+        :return:
+        """
+        self.nerve.scale(self, factor)
+        for fascicle in self.fascicles:
+            fascicle.scale(self, factor)
 
