@@ -50,7 +50,8 @@ class Slide(Exceptionable, Configurable):
             # do validation (default is specific!)
             self.validation()
 
-    def validation(self, specific: bool = True, die: bool = True):
+    def validation(self, specific: bool = True, die: bool = True, tolerance: float = None):
+
         if specific:
             if self.fascicle_fascicle_intersection():
                 self.throw(10)
@@ -60,21 +61,36 @@ class Slide(Exceptionable, Configurable):
 
             if self.fascicles_outside_nerve():
                 self.throw(12)
+
         else:
-            if any([self.fascicle_fascicle_intersection(),
-                    self.fascicle_nerve_intersection(),
-                    self.fascicles_outside_nerve()]):
+            if any([self.fascicle_fascicle_intersection(), self.fascicle_nerve_intersection(),
+                    self.fascicles_outside_nerve(), self.fascicles_too_close(tolerance)]):
                 if die:
                     self.throw(13)
                 else:
-                    return True
+                    return False
+            else:
+                return True
+
+    def fascicles_too_close(self, tolerance: float = None):
+        """
+        :param tolerance:
+        :return:
+        """
+
+        if tolerance is None:
+            return False
+        else:
+            pairs = itertools.combinations(self.fascicles, 2)
+            return any([first.min_distance(second) < tolerance for first, second in pairs]) or \
+                any([fascicle.min_distance(self.nerve) < tolerance for fascicle in self.fascicles])
 
     def fascicle_fascicle_intersection(self) -> bool:
         """
         :return: True if any fascicle intersects another fascicle, otherwise False
         """
-        pairs: List[Tuple[Fascicle]] = list(itertools.combinations(self.fascicles, 2))
-        return any([pair[0].intersects(pair[1]) for pair in pairs])
+        pairs = itertools.combinations(self.fascicles, 2)
+        return any([first.intersects(second) for first, second in pairs])
 
     def fascicle_nerve_intersection(self) -> bool:
         """
@@ -112,23 +128,30 @@ class Slide(Exceptionable, Configurable):
         for fascicle in self.fascicles:
             fascicle.shift(shift)
 
-    def reshaped_nerve(self, mode: ReshapeNerveMethod) -> Nerve:
+    def reshaped_nerve(self, mode: ReshapeNerveMode) -> Nerve:
         """
         :param mode:
         :return:
         """
-        if mode == ReshapeNerveMethod.CIRCLE:
+        if mode == ReshapeNerveMode.CIRCLE:
             return self.nerve.deepcopy().to_circle()
+        elif mode == ReshapeNerveMode.ELLIPSE:
+            return self.nerve.deepcopy().to_ellipse()
         else:
             self.throw(16)
 
-    def reposition_fascicles(self, new_nerve: Nerve):
+    def reposition_fascicles(self, new_nerve: Nerve, minimum_distance: float = 10, seed: int = None):
         """
-        :return: Shifted fascicles (which contain traces) within the final shape of the nerve
+        :param new_nerve:
+        :param minimum_distance:
+        :param seed:
+        :return:
         """
-        self.plot('BEFORE')
+        self.plot(final=False, fix_aspect_ratio=True)
 
-        minimum_distance = 10
+        # seed the random number generator
+        if seed is not None:
+            random.seed(seed)
 
         def random_permutation(iterable, r=None):
             "Random selection from itertools.permutations(iterable, r)"
@@ -217,7 +240,7 @@ class Slide(Exceptionable, Configurable):
         # Jitter
         iteration = 0
         print('START random jitter')
-        while self.validation(specific=False, die=False):
+        while not self.validation(specific=False, die=False, tolerance=minimum_distance):
             iteration += 1
             print('\titeration: {}'.format(iteration))
             for fascicle in random_permutation(self.fascicles):
@@ -233,20 +256,28 @@ class Slide(Exceptionable, Configurable):
         # validate again just for kicks
         self.validation()
 
-        self.plot('AFTER')
+        self.plot('CHANGE', inner_format='r-')
 
-    def plot(self, title: str = None):
-        plt.figure()
-        plt.axes().set_aspect('equal', 'datalim')
+    def plot(self, title: str = None, final: bool = True, inner_format: str = 'b-', fix_aspect_ratio: bool = False):
+        """
+        Quick util for plotting the nerve and fascicles
+        :param title: optional string title for plot
+        :param final: optional, if False, will not show or add title (if comparisons are being overlayed)
+        :param inner_format: optional format for inner traces of fascicles
+        :param fix_aspect_ratio: optional, if True, will set equal aspect ratio
+        """
+        # if not the last graph plotted
+        if fix_aspect_ratio:
+            plt.axes().set_aspect('equal', 'datalim')
+
+        # loop through constituents and plot each
         self.nerve.plot(plot_format='g-')
         for fascicle in self.fascicles:
-            fascicle.plot()
+            fascicle.plot(inner_format)
 
-        if title is not None:
-            plt.title(title)
+        # if final plot, add title and show
+        if final:
+            if title is not None:
+                plt.title(title)
 
-        plt.show()
-
-
-# slide: Slide
-# slide.reposition_fascicles(slide.reshaped_nerve(ReshapeNerveMethod.CIRCLE))
+            plt.show()
