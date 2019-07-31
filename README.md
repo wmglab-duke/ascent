@@ -4,7 +4,7 @@
 The user must provide 3 types of files that will be used to construct the data filesystem. In addition to the type
 designation (a single letter, seen in filename specifications below), 3 pieces of data must be included:
 
-1. `[SAMPLE]` – The sample name. Must be unique and not contain any underscores.
+1. `[SAMPLE]` – The sample name. Must be unique and not contain any underscores.im
 
 2. `[CASSETTE]` – If a multi-slide sample is being analyzed, use a consistent system of uniquely identifying cassettes
 used for embedding and slicing. In the (probably very common) cases that either one unnamed cassette was used or a

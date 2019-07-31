@@ -1,0 +1,13 @@
+{
+  "scale_bar": {
+    "length": 500,
+    "unit": "micrometer"
+  },
+  "config": {
+    "paths": {
+      "exceptions": [".config", "exceptions.json"],
+      "master": [".config", "master.json"]
+    }
+  },
+  "map_path": ["data", "input", "samples", "Pig13-1", "map.json"]
+}

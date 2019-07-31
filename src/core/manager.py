@@ -8,14 +8,16 @@ from src.utils import *
 
 class Manager(Exceptionable, Configurable):
 
-    def __init__(self, master_config: dict, exception_config: list, map: Map):
+    def __init__(self, master_config: dict, exception_config: list, map_mode: SetupMode):
 
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
         Configurable.__init__(self, SetupMode.OLD, ConfigKey.MASTER, master_config)
 
         self.slides: List[Slide] = []
 
-        self.map = map
+        self.map = Map(self.configs[ConfigKey.MASTER.value],
+                       self.configs[ConfigKey.EXCEPTIONS.value],
+                       map_mode)
 
     def scale(self, scale_bar_mask_path: str, scale_bar_length: float):
         """

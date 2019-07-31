@@ -100,7 +100,8 @@ class Map(Exceptionable, Configurable):
 
         elif self.mode == SetupMode.OLD:
             # source FILE
-            self.source_path = self.path(ConfigKey.MASTER, *self.data_root, 'paths', 'old')
+            self.source_path = self.path(ConfigKey.MASTER, "map_path")
+            # self.source_path = self.path(ConfigKey.MASTER, *self.data_root, 'paths', 'old')
 
             # make sure ends in ".json" (defined in Configurable)
             self.validate_path(self.output_path)
