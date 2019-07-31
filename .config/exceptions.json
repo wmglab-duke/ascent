@@ -98,5 +98,25 @@
     "code": 19,
     "text": "Scale bar for nerve micrograph does not exist.",
     "source": "src.core.Manager.populate"
+  },
+    {
+    "code": 20,
+    "text": "Outers only has not yet been developed.",
+    "source": "src.core.Manager.populate"
+  },
+    {
+    "code": 21,
+    "text": "Inner mask required for input mode INNERS.",
+    "source": "src.core.Manager.populate"
+  },
+    {
+    "code": 22,
+    "text": "Inner AND outer masks required for input mode INNER_AND_OUTER_SEPARATE.",
+    "source": "src.core.Manager.populate"
+  },
+    {
+    "code": 23,
+    "text": "Compiled masks required for input mode INNER_AND_OUTER_COMPILED.",
+    "source": "src.core.Manager.populate"
   }
 ]

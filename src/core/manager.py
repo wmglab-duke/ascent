@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import shutil
 
-from src.core import Slide, Map
+from src.core import Slide, Map, Fascicle, Nerve
 from src.utils import *
 
 
@@ -84,7 +84,10 @@ class Manager(Exceptionable, Configurable):
 
             os.chdir(start_directory)
 
-    def populate(self, mode: MaskInputMode):
+    def populate(self, mask_input_mode: MaskInputMode, nerve_mode: NerveMode):
+
+        def exists(mask_file_name: MaskFileNames)
+            return os.path.exists(mask_file_name.value)
 
         # get starting point so able to go back
         start_directory: str = os.getcwd()
@@ -106,6 +109,57 @@ class Manager(Exceptionable, Configurable):
             elif not os.path.exists(MaskFileNames.SCALE_BAR.value):
                 self.throw(19)
 
+            # init fascicles list
+            fascicles: List[Fascicle] = []
+
+            # load fascicles and check that the files exist
+            if mask_input_mode == MaskInputMode.INNERS:
+                if exists(MaskFileNames.INNERS.value):
+                    fascicles = Fascicle.inner_to_list(MaskFileNames.INNERS.value,
+                                                       self.configs[ConfigKey.EXCEPTIONS.value])
+                else:
+                    self.throw(21)
+
+            elif mask_input_mode == MaskInputMode.OUTERS:
+                #fascicles = Fascicle.outer_to_list(MaskFileNames.OUTERS.value, self.configs[ConfigKey.EXCEPTIONS.value])
+                self.throw(20)
+
+            elif mask_input_mode == MaskInputMode.INNER_AND_OUTER_SEPARATE:
+                if exists(MaskFileNames.INNERS.value) and exists(MaskFileNames.OUTERS.value):
+                    fascicles = Fascicle.separate_to_list(MaskFileNames.INNERS.value,
+                                                          MaskFileNames.OUTERS.value,
+                                                          self.configs[ConfigKey.EXCEPTIONS.value])
+                else:
+                    self.throw(22)
+
+            elif mask_input_mode == MaskInputMode.INNER_AND_OUTER_COMPILED:
+                if exists(MaskFileNames.COMPILED.value):
+                    fascicles = Fascicle.compiled_to_list(MaskFileNames.COMPILED.value,
+                                                          self.configs[ConfigKey.EXCEPTIONS.value])
+                else:
+                    self.throw(23)
+
+            else: # exhaustive
+                pass
+
+
+            # check nerve mode, if nerve mode is present, check that the nerve trace is there and load it in
+            # if nerve mode is not present, check that list of fascicles is length of one, if not throw error.
+            # if pass, nerve = Nerve(fascicles[0].outer.deepcopy())
+
+
+            # and scale bar
+
+
+            if nerve_mode == NerveMode.PRESENT:
+                # check and load in nerve, throw error if not present
+
+            elif nerve_mode == NerveMode.NOT_PRESENT:
+                # compiled
+                # nerve = copy of fasc
+                #
+            else:  # exhaustive
+                pass
 
 
             # r.tif does not exist, fail

@@ -41,8 +41,15 @@ class MaskInputMode(Enum):
 @unique
 class MaskFileNames(Enum):
     RAW = 'r.tif'
-    COMPILED = 'f.tif'
+    COMPILED = 'c.tif'
     INNERS = 'i.tif'
     OUTERS = 'o.tif'
     SCALE_BAR = 's.tif'
+    NERVE = 'n.tif'
+
+@unique
+class NerveMode(Enum):
+    PRESENT = 1
+    NOT_PRESENT = 0
+
 
