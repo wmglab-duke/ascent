@@ -302,6 +302,9 @@ class SlideInfo:
         #                                  'nerves',
         #                                  '.'.join(['_'.join([name, 'nerve']), extension]))
 
+    def data(self) -> tuple:
+        return self.cassette, self.number, self.position, self.directory
+
     def __repr__(self):
         return 'cas:\t{}\nnum:\t{}\npos:\t{}\ndir:\t{}'.format(self.cassette,
                                                                self.number,

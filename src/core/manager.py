@@ -40,8 +40,13 @@ class Manager(Exceptionable, Configurable):
             slide.scale(factor)
 
     def build_file_structure(self):
-        pass
         # Builds folders and copies files
+        samples_path = self.path(ConfigKey.MASTER, 'samples_path')
+
+        for slide_info in self.map.slides:
+            cassette: str = slide_info.cassette
+
+
 
 
     def populate(self):
@@ -49,6 +54,7 @@ class Manager(Exceptionable, Configurable):
         for slide_info in self.map.slides:
             print(type(slide_info))
             print(slide_info)
+            print(type(self.map.slides))
 
 
 
