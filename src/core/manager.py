@@ -1,3 +1,4 @@
+import os
 from typing import List
 import matplotlib.pyplot as plt
 import numpy as np
@@ -46,22 +47,24 @@ class Manager(Exceptionable, Configurable):
         for slide_info in self.map.slides:
             cassette: str = slide_info.cassette
 
-
-
-
     def populate(self):
-        # Reads in the known files
+        samples_path = self.path(ConfigKey.MASTER, 'samples_path')
+
         for slide_info in self.map.slides:
+            data: tuple = slide_info.data()
+            cassette, number, position, _ = data
 
-            cassette:str = slide_info.cassette
-            # make the path, read in
+            for director_part in
 
-            slide_info.
+            # Reads in the known files
+            # check if i and o exist
 
-        sample_path = self.path(ConfigKey.MASTER, 'samples_path')
+            #os.path.join(samples_path, cassette, 'r.tif')
+            #r s n
 
-        if exist(os.path.isdir)
 
+
+        # make the path, read in
 
 
 
