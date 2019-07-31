@@ -170,7 +170,7 @@ class Slide(Exceptionable, Configurable):
 
             r_mean = new_nerve.mean_radius()
             r_fasc = r_fascicle_initial.length
-            a = 2 #FIXME
+            a = 2 # FIXME
             exterior_scale_factor = a * (r_mean / r_fasc)
             exterior_line: LineString = scale(r_fascicle_initial,
                                               *([exterior_scale_factor] * 3),
