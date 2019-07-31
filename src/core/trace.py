@@ -4,6 +4,7 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 from shapely.geometry import Polygon
+from shapely.affinity import scale
 from copy import deepcopy
 import pyclipper
 import itertools
@@ -84,8 +85,14 @@ class Trace(Exceptionable):
         self.__update()
         pco.Clear()
 
-    def scale(self, factor: float):
-        pass
+    def scale(self, factor: float = 1):
+
+        scaled_polygon: Polygon = scale(self.polygon(), *([factor] * 3), origin='centroid')
+
+        self.points = None
+        self.append([list(coord[:2]) + [0] for coord in scaled_polygon.coords])
+        self.__update()
+
 
     def shift(self, vector):
         """
