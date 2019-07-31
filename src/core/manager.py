@@ -59,11 +59,19 @@ class Manager(Exceptionable, Configurable):
             cassette, number = (str(item) for item in (cassette, number))
 
             for directory_part in samples_path, sample, cassette, number, 'masks':
+
                 if not os.path.exists(directory_part):
                     os.makedirs(directory_part)
                 os.chdir(directory_part)
 
-            for target_file in [item.value for item in MaskFileNames]:
+                if directory_part == sample:
+                    scale_source_file = os.path.join(start_directory, *source_directory, MaskFileNames.SCALE_BAR.value)
+                    if os.path.exists(scale_source_file):
+                        shutil.copy2(scale_source_file, MaskFileNames.SCALE_BAR.value)
+                    else:
+                        raise Exception('s.tif not found')
+
+            for target_file in [item.value for item in MaskFileNames if item != MaskFileNames.SCALE_BAR]:
                 source_file = os.path.join(start_directory,
                                            *source_directory,
                                            '_'.join([sample, cassette, number, target_file]))
