@@ -14,12 +14,12 @@ master_config_file_path = os.path.join('.config', 'master2.json')
 runner = Runner(master_config_file_path)
 
 # ready, set, GO!
-runner.run()
+# runner.run()
 # runner.trace_test()
 # runner.fascicle_test()
 # runner.reposition_test()
 # runner.reposition_test2()
-# manager_test()
+runner.manager_test()
 
 # END timer
 end = time.time()

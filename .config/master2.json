@@ -9,5 +9,7 @@
       "master": [".config", "master.json"]
     }
   },
-  "map_path": ["data", "input", "samples", "Pig13-1", "map.json"]
+  "map_path": ["data", "input", "samples", "Pig13-1", "map.json"],
+  "samples_path": ["data", "samples"]
+
 }

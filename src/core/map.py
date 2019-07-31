@@ -78,10 +78,6 @@ class Map(Exceptionable, Configurable):
         # store mode if later requested by user (idk why they would want it though?)
         self.mode: SetupMode = mode
 
-        # output path for new slide map (and allows for old slide map to be edited and rewritten!)
-        self.output_path = os.path.join(self.path(ConfigKey.MASTER, *self.data_root, 'paths', 'output'),
-                                        '{}.json'.format(dt.datetime.now().strftime('%m_%d_%Y')))
-
         # get sample string to pass to Map.Slide
         self.sample = self.search(ConfigKey.MASTER, 'sample')
 
@@ -89,6 +85,9 @@ class Map(Exceptionable, Configurable):
         self.slides: List[Map.Slide] = []
 
         if self.mode == SetupMode.NEW:
+            self.output_path = os.path.join(self.path(ConfigKey.MASTER, *self.data_root, 'paths', 'output'),
+                                            '{}.json'.format(dt.datetime.now().strftime('%m_%d_%Y')))
+
             # source DIRECTORY
             self.source_path = self.path(ConfigKey.MASTER, *self.data_root, 'paths', 'source',
                                          is_dir=True, is_absolute=True)
@@ -99,9 +98,13 @@ class Map(Exceptionable, Configurable):
             self.write()
 
         elif self.mode == SetupMode.OLD:
+
+
             # source FILE
             self.source_path = self.path(ConfigKey.MASTER, "map_path")
             # self.source_path = self.path(ConfigKey.MASTER, *self.data_root, 'paths', 'old')
+
+            self.output_path = self.source_path
 
             # make sure ends in ".json" (defined in Configurable)
             self.validate_path(self.output_path)
@@ -238,7 +241,7 @@ class Map(Exceptionable, Configurable):
         return [Map.Slide(item.get('cassette'),
                                item.get('number'),
                                item.get('position'),
-                               item.get('raw_source')) for item in data]
+                               item.get('directory')) for item in data]
 
     def build_target_filesystem(self):
         """
@@ -283,11 +286,11 @@ class Map(Exceptionable, Configurable):
     #%% helper classes... self.map will be stored as a list of Slide objects
     # quick class to keep track of slides
     class Slide:
-        def __init__(self, cassette: str, number: int, position: int, raw_source: str):
+        def __init__(self, cassette: str, number: int, position: int, directory: str):
             self.cassette = cassette
             self.number = number
             self.position = position
-            self.raw_source = raw_source
+            self.directory = directory
 
             # (directory, file) = os.path.split(raw_source)  # returns tuple
             # (name, extension) = tuple(file.split('.'))

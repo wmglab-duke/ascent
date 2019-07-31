@@ -38,10 +38,13 @@ class Manager(Exceptionable, Configurable):
             slide.scale(factor)
 
     def build_file_structure(self):
-        pass
         # Builds folders and copies files
-        os.path.split(data_path)
-        path.split('_')
+        pass
+        # for slide in map
+        #
+        #
+        # os.path.split(data_path)
+        # path.split('_')
 
     def populate(self):
         pass
