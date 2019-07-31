@@ -35,9 +35,14 @@ class Manager(Exceptionable, Configurable):
         for slide in self.slides:
             slide.scale(factor)
 
-    def build_file_structure():
+    def build_file_structure(self):
         pass
         # Read root of raw file - use map to move all other files to native file structure
+
+    def populate(self):
+        pass
+
+
 
 
 
