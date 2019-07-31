@@ -222,8 +222,6 @@ class Slide(Exceptionable, Configurable):
             else:  # more complex geometry (MULTIPOINT)
                 r_old_nerve = LineString([new_nerve_centroid, list(old_intersection)[0].coords[0]])
 
-
-
             fascicle_scale_factor = r_new_nerve.length/r_old_nerve.length
 
             r_fascicle_final = scale(r_fascicle_initial,

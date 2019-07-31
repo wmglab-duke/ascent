@@ -19,7 +19,6 @@ class Manager(Exceptionable, Configurable):
 
     def scale(self, scale_bar_mask_path: str, scale_bar_length: float):
         """
-
         :param scale_bar_mask_path:
         :param scale_bar_length:
         :return:
@@ -35,3 +34,12 @@ class Manager(Exceptionable, Configurable):
 
         for slide in self.slides:
             slide.scale(factor)
+
+    def build_file_structure():
+        pass
+
+
+
+
+
+
