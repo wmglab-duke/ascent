@@ -49,7 +49,7 @@ class Manager(Exceptionable, Configurable):
         # go to samples root
         samples_path: str = self.path(ConfigKey.MASTER, 'samples_path')
 
-        # get to sample name
+        # get sample name
         sample: str = self.search(ConfigKey.MASTER, 'sample')
 
         # loop through each slide
@@ -77,15 +77,30 @@ class Manager(Exceptionable, Configurable):
 
             os.chdir(start_directory)
 
-
     def populate(self):
+
+        # get starting point so able to go back
+        start_directory: str = os.getcwd()
+
         samples_path = self.path(ConfigKey.MASTER, 'samples_path')
 
-        for slide_info in self.map.slides:
-            data: tuple = slide_info.data()
-            cassette, number, position, _ = data
+        # get sample name
+        sample: str = self.search(ConfigKey.MASTER, 'sample')
 
-            for director_part in
+        for slide_info in self.map.slides:
+            # unpack data and force cast to string
+            cassette, number, position, _ = slide_info.data()
+            cassette, number = (str(item) for item in (cassette, number))
+
+            os.chdir(os.path.join(samples_path, sample, cassette, number, 'masks'))
+
+
+
+            ['r', 'f', 'i', 'o', 's']
+
+
+            os.chdir(start_directory)
+
 
             # Reads in the known files
             # check if i and o exist

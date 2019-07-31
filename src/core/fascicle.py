@@ -179,7 +179,7 @@ class Fascicle(Exceptionable):
 
     @staticmethod
     def compiled_to_list(img_path: str, exception_config,
-                         plot: bool = False, scale: float = None) -> List['Fascicle']:
+                         plot: bool = False, scale: float = None, z: float = 0) -> List['Fascicle']:
         """
         Example usage:
             fascicles = Fascicle.compiled_to_list(my_image_path, ... )
@@ -194,6 +194,7 @@ class Fascicle(Exceptionable):
 
         This algorithm is expecting a max hierarchical depth of 2 (i.e. one level each of inners and outers)
 
+        :param z:
         :param img_path:
         :param scale:
         :param plot:
@@ -243,9 +244,10 @@ class Fascicle(Exceptionable):
                 # if len(inner_contours) == 0:
                 #     inner_contours.append(outer_contour)
 
+
                 # build Traces from contours
-                outer_trace = Trace(outer_contour[:, 0, :], exception_config)
-                inner_traces = [Trace(cnt[:, 0, :], exception_config) for cnt in inner_contours]
+                outer_trace = Trace([item + [z] for item in outer_contour[:, 0, :]], exception_config)
+                inner_traces = [Trace([item + [z] for item in cnt[:, 0, :]], exception_config) for cnt in inner_contours]
 
                 # add fascicle to list (with or without inner trace)
                 if len(inner_traces) > 0:
@@ -263,12 +265,13 @@ class Fascicle(Exceptionable):
 
     @staticmethod
     def separate_to_list(inner_img_path: str, outer_img_path: str, exception_config,
-                         plot: bool = False) -> List['Fascicle']:
+                         plot: bool = False, z: float = 0) -> List['Fascicle']:
         """
         Example usage:
             fascicles = Fascicle.separate_to_list(my_inner_image_path,
                                                   my_outer_image_path, ... )
 
+        :param z:
         :param outer_img_path:
         :param inner_img_path:
         :param exception_config:
@@ -282,8 +285,9 @@ class Fascicle(Exceptionable):
             img = np.flipud(cv2.imread(path, -1))
             # find points of traces (hierarchy is IGNORED! ... see that "_")
             contours, _ = cv2.findContours(img, *params)
+
             # build list of traces
-            return [Trace(contour[:, 0, :], exception_config) for contour in contours]
+            return [Trace([item + [z] for item in contour[:, 0, :]], exception_config) for contour in contours]
 
         # build traces list for inner and outer image paths
         inners, outers = (np.array(build_traces(path)) for path in (inner_img_path, outer_img_path))
@@ -320,5 +324,5 @@ class Fascicle(Exceptionable):
 
     @staticmethod
     def inner_to_list(img_path: str, exception_config,
-                      plot: bool = False, scale: float = None) -> List['Fascicle']:
-        return Fascicle.compiled_to_list(img_path, exception_config, plot, scale)
+                      plot: bool = False, scale: float = None, z: float = 0) -> List['Fascicle']:
+        return Fascicle.compiled_to_list(img_path, exception_config, plot, scale, z)
