@@ -46,7 +46,6 @@ class Manager(Exceptionable, Configurable):
 
         # get starting point so able to go back
         start_directory: str = os.getcwd()
-
         # go to samples root
         samples_path: str = self.path(ConfigKey.MASTER, 'samples_path')
 
@@ -78,20 +77,21 @@ class Manager(Exceptionable, Configurable):
 
             os.chdir(start_directory)
 
-    def populate(self):
-        # Reads in the known files
-        # for slide_info in self.map.slides:
-        #
-        #     cassette:str = slide_info.cassette
-        #     # make the path, read in
-        #
-        #     slide_info.
-        #
-        # sample_path = self.path(ConfigKey.MASTER, 'samples_path')
-        #
-        # if exist(os.path.isdir)
-        pass
 
+    def populate(self):
+        samples_path = self.path(ConfigKey.MASTER, 'samples_path')
+
+        for slide_info in self.map.slides:
+            data: tuple = slide_info.data()
+            cassette, number, position, _ = data
+
+            for director_part in
+
+            # Reads in the known files
+            # check if i and o exist
+
+            #os.path.join(samples_path, cassette, 'r.tif')
+            #r s n
 
 
 
