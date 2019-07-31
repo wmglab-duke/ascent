@@ -41,7 +41,8 @@ description is accompanied by an example of what that image may look like (at lo
     - form: `[SAMPLE]_[CASSETTE]_[NUMBER]_s.tif`
     - type: Only `.tif` allowed for now.
     - <a href="https://gitlab.oit.duke.edu/edm23/sparcpy/raw/master/examples/images/scalebar.jpg" target="_blank">example</a>
-An example for a grouping of three images for a slide might be:
+
+An example for a grouping of four images for a slide might be:
 - `MyPig4_UpperCas_12_r.tif`
 - `MyPig4_UpperCas_12_f.tif`
 - `MyPig4_UpperCas_12_n.tif`
