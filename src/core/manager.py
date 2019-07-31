@@ -94,7 +94,11 @@ class Manager(Exceptionable, Configurable):
 
             os.chdir(os.path.join(samples_path, sample, cassette, number, 'masks'))
 
+            # r.tif does not exist, fail
 
+            # s.tif does not exist, fail
+
+            # compiled, inner only, outer only, inner and outer
 
             ['r', 'f', 'i', 'o', 's']
 
