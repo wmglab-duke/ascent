@@ -85,12 +85,18 @@ class Trace(Exceptionable):
         self.__update()
         pco.Clear()
 
-    def scale(self, factor: float = 1):
+    def scale(self, factor: float = 1, center: Union[List[float], str] = 'centroid'):
 
-        scaled_polygon: Polygon = scale(self.polygon(), *([factor] * 3), origin='centroid')
+        if isinstance(center, list):
+            center = tuple(center)
+        else:
+            if center not in ['centroid', 'center']:
+                self.throw(17)
+
+        scaled_polygon: Polygon = scale(self.polygon(), *([factor] * 3), origin=center)
 
         self.points = None
-        self.append([list(coord[:2]) + [0] for coord in scaled_polygon.coords])
+        self.append([list(coord[:2]) + [0] for coord in scaled_polygon.boundary.coords])
         self.__update()
 
 

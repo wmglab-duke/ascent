@@ -287,7 +287,9 @@ class Slide(Exceptionable, Configurable):
         :param factor:
         :return:
         """
-        self.nerve.scale(self, factor)
+        center = list(self.nerve.centroid())
+
+        self.nerve.scale(self, factor, center)
         for fascicle in self.fascicles:
-            fascicle.scale(self, factor)
+            fascicle.scale(self, factor, center)
 

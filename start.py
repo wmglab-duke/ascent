@@ -14,10 +14,10 @@ runner = Runner(master_config_file_path)
 
 # ready, set, GO!
 # runner.run()
-# runner.trace_test()
+runner.trace_test()
 # runner.fascicle_test()
 # runner.reposition_test()
-runner.reposition_test2()
+# runner.reposition_test2()
 
 # END timer
 end = time.time()

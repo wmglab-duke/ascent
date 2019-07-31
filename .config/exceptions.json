@@ -83,5 +83,10 @@
     "code": 16,
     "text": "Invalid reshape mode.",
     "source": "src.core.Slide.reshaped_nerve"
+  },
+  {
+    "code": 17,
+    "text": "Invalid scale center string.",
+    "source": "src.core.Trace.scale"
   }
 ]
