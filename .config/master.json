@@ -27,9 +27,9 @@
       "cassette": 100
     },
     "paths": {
-      "output": ["data", "output", "slide_maps"],
+      "output": ["data", "output", "maps"],
       "source": ["Users", "jakecariello", "Box", "19P866_05292019"],
-      "old": ["data", "output", "slide_maps", "07_24_2019.json"]
+      "old": ["data", "output", "maps", "07_24_2019.json"]
     },
     "resize_reference": {
       "start_slides": [

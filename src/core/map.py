@@ -227,7 +227,7 @@ class Map(Exceptionable, Configurable):
                 "cassette": slide.cassette,
                 "number": slide.number,
                 "position": slide.position,
-                "raw_source": slide.raw_source,
+                "directory": os.path.split(slide.raw_source)[0],
             })
 
         return json.dumps(result, indent=2)

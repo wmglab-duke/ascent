@@ -39,9 +39,9 @@ class Runner(Exceptionable, Configurable):
         Exceptionable.__init__(self, SetupMode.NEW, self.exceptions_config_path)
 
     def run(self):
-        # self.map = Map(self.configs[ConfigKey.MASTER.value],
-        #                     self.configs[ConfigKey.EXCEPTIONS.value],
-        #                     mode=SetupMode.NEW)
+        self.map = Map(self.configs[ConfigKey.MASTER.value],
+                            self.configs[ConfigKey.EXCEPTIONS.value],
+                            mode=SetupMode.NEW)
 
         # TEST: Trace functionality
         # self.trace = Trace([[0,  0, 0],
