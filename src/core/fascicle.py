@@ -158,8 +158,9 @@ class Fascicle(Exceptionable):
         return deepcopy(self)
 
     def scale(self, factor: float):
-        # scale outers and inners
-    
+        self.outer.scale(factor)
+        for inner in self.inners:
+            inner.scale(factor)
 
     def __endoneurium_setup(self, factor: float):
 
