@@ -1,6 +1,8 @@
+import os
 from typing import List
 import matplotlib.pyplot as plt
 import numpy as np
+import shutil
 
 from src.core import Slide, Map
 from src.utils import *
@@ -40,27 +42,55 @@ class Manager(Exceptionable, Configurable):
             slide.scale(factor)
 
     def build_file_structure(self):
-        # Builds folders and copies files
-        samples_path = self.path(ConfigKey.MASTER, 'samples_path')
+        # TODO: ADD DOCUMENTATION
 
+        # get starting point so able to go back
+        start_directory: str = os.getcwd()
+
+        # go to samples root
+        samples_path: str = self.path(ConfigKey.MASTER, 'samples_path')
+
+        # get to sample name
+        sample: str = self.search(ConfigKey.MASTER, 'sample')
+
+        # loop through each slide
         for slide_info in self.map.slides:
-            cassette: str = slide_info.cassette
+            # unpack data and force cast to string
+            cassette, number, _, source_directory = slide_info.data()
+            cassette, number = (str(item) for item in (cassette, number))
 
+            for directory_part in samples_path, sample, cassette, number, 'masks':
+                if not os.path.exists(directory_part):
+                    os.makedirs(directory_part)
+                os.chdir(directory_part)
 
+            for letter_code in ['r', 'f', 'i', 'o', 's']:
+                target_file = letter_code + '.tif'
+                source_file = os.path.join(start_directory,
+                                           *source_directory,
+                                           '_'.join([sample, cassette, number, target_file]))
+                print('source: {}\ntarget: {}'.format(source_file, target_file))
+                if os.path.exists(source_file):
+                    print('\tFOUND\n')
+                    shutil.copy2(source_file, target_file)
+                else:
+                    print('\tNOT FOUND\n')
 
+            os.chdir(start_directory)
 
     def populate(self):
         # Reads in the known files
-        for slide_info in self.map.slides:
-
-            cassette:str = slide_info.cassette
-            # make the path, read in
-
-            slide_info.
-
-        sample_path = self.path(ConfigKey.MASTER, 'samples_path')
-
-        if exist(os.path.isdir)
+        # for slide_info in self.map.slides:
+        #
+        #     cassette:str = slide_info.cassette
+        #     # make the path, read in
+        #
+        #     slide_info.
+        #
+        # sample_path = self.path(ConfigKey.MASTER, 'samples_path')
+        #
+        # if exist(os.path.isdir)
+        pass
 
 
 

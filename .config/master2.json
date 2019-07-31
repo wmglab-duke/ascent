@@ -10,6 +10,6 @@
     }
   },
   "map_path": ["data", "input", "samples", "Pig13-1", "map.json"],
-  "samples_path": ["data", "samples"]
-
+  "samples_path": ["data", "samples"],
+  "sample": "Pig13-1"
 }
