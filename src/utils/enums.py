@@ -24,5 +24,6 @@ class WriteMode(Enum): # note: NOT required to have unique values
     DATA = '.dat'
 
 @unique
-class ReshapeNerveMethod(Enum):
+class ReshapeNerveMode(Enum):
     CIRCLE = 0
+    ELLIPSE = 1

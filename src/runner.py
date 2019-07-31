@@ -163,7 +163,7 @@ class Runner(Exceptionable, Configurable):
                            self.configs[ConfigKey.MASTER.value],
                            self.configs[ConfigKey.EXCEPTIONS.value])
 
-        self.slide.reposition_fascicles(self.slide.reshaped_nerve(ReshapeNerveMethod.CIRCLE))
+        self.slide.reposition_fascicles(self.slide.reshaped_nerve(ReshapeNerveMode.CIRCLE))
 
     def reposition_test2(self):
         # build path and read image
@@ -186,4 +186,5 @@ class Runner(Exceptionable, Configurable):
                            self.configs[ConfigKey.EXCEPTIONS.value],
                            will_reposition=True)
 
-        self.slide.reposition_fascicles(self.slide.reshaped_nerve(ReshapeNerveMethod.CIRCLE))
+        # self.slide.reposition_fascicles(self.slide.reshaped_nerve(ReshapeNerveMode.ELLIPSE))
+        self.slide.reposition_fascicles(self.slide.reshaped_nerve(ReshapeNerveMode.CIRCLE))
