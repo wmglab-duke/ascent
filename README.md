@@ -28,14 +28,15 @@ description is accompanied by an example of what that image may look like (at lo
     - form: `[ARB_NAME]_[CASSETTE]_[NUMBER]_r.tif`
     - type: Though `.tif` is indicated above filename, this is arbitrary for now.
     - <a href="https://gitlab.oit.duke.edu/edm23/sparcpy/raw/master/examples/images/raw.jpg" target="_blank">example</a>
-2. Fascicles binary mask
+2. Compiled fascicles binary mask
     - form: `[ARB_NAME]_[CASSETTE]_[NUMBER]_f.tif`
     - type: Only `.tif` allowed for now.
-    - examples (two categories):
-      - both inner (endoneurium) and outer (perineurium) masks, either <a href="https://gitlab.oit.duke.edu/edm23/sparcpy/raw/master/examples/images/fascicle_normal.jpg" target="_blank">one-to-one</a> or containing <a href="https://gitlab.oit.duke.edu/edm23/sparcpy/raw/master/examples/images/fascicle_peanut.jpg" target="_blank">peanut fascicles</a>
-      - only inner (endoneurium) masks if perineurium thickness is prohibitively small for the purposes of
-      image segmentation, assumed to be <a href="https://gitlab.oit.duke.edu/edm23/sparcpy/raw/master/examples/images/fascicle_inner.jpg" target="_blank">one-to-one</a>   
-3. Nerve binary mask
+    - <a href="https://gitlab.oit.duke.edu/edm23/sparcpy/raw/master/examples/images/fascicle_normal.jpg" target="_blank">one-to-one</a> or containing <a href="https://gitlab.oit.duke.edu/edm23/sparcpy/raw/master/examples/images/fascicle_peanut.jpg" target="_blank">peanut fascicles</a>
+3. Individual fascicles binary masks
+    - forms: `[ARB_NAME]_[CASSETTE]_[NUMBER]_i.tif` (inner) or `[ARB_NAME]_[CASSETTE]_[NUMBER]_o.tif` (outer)
+    - type: Only `.tif` allowed for now.
+    - notes: in place of a single compiled fascicles mask. either both `_i` and `_o` must be provided or only one is provided (a scale for perineurium thickness with appropriate direction must be provided at a later point)
+4. Nerve binary mask
     - form: `[ARB_NAME]_[CASSETTE]_[NUMBER]_n.tif`
     - type: Only `.tif` allowed for now.
     - <a href="https://gitlab.oit.duke.edu/edm23/sparcpy/raw/master/examples/images/nerve.jpg" target="_blank">example</a>
