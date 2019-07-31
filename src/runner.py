@@ -190,4 +190,5 @@ class Runner(Exceptionable, Configurable):
         self.slide.reposition_fascicles(self.slide.reshaped_nerve(ReshapeNerveMode.CIRCLE))
 
     def manager_test(self):
+        build_f
 

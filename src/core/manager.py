@@ -37,6 +37,7 @@ class Manager(Exceptionable, Configurable):
 
     def build_file_structure():
         pass
+        # Read root of raw file - use map to move all other files to native file structure
 
 
 
