@@ -82,7 +82,7 @@ class Map(Exceptionable, Configurable):
         self.sample = self.search(ConfigKey.MASTER, 'sample')
 
         # init self.slides
-        self.slides: List[Map.Slide] = []
+        self.slides: List[SlideInfo] = []
 
         if self.mode == SetupMode.NEW:
             self.output_path = os.path.join(self.path(ConfigKey.MASTER, *self.data_root, 'paths', 'output'),
@@ -98,8 +98,6 @@ class Map(Exceptionable, Configurable):
             self.write()
 
         elif self.mode == SetupMode.OLD:
-
-
             # source FILE
             self.source_path = self.path(ConfigKey.MASTER, "map_path")
             # self.source_path = self.path(ConfigKey.MASTER, *self.data_root, 'paths', 'old')
@@ -116,7 +114,7 @@ class Map(Exceptionable, Configurable):
             # the above if statements are exhaustive, so this should be unreachable
             print('how the hell?')
 
-    def find(self, cassette: str, number: int) -> 'Map.Slide':
+    def find(self, cassette: str, number: int) -> 'SlideInfo':
         """
         Returns first slide that matches search parameters (there should only be one, though).
         :param cassette: cassette to narrow search
@@ -183,10 +181,10 @@ class Map(Exceptionable, Configurable):
                     if (i + 1) == len(filtered_files):
                         cassette_start_pos = position + cassette_skip  # account for trimming
                 # add this to the current 'row' of slides
-                cassette.append(Map.Slide(cassette_code,
-                                               number,
-                                               position,
-                                               os.path.join(self.source_path, file)))
+                cassette.append(SlideInfo(cassette_code,
+                                          number,
+                                          position,
+                                          os.path.join(self.source_path, file)))
             # add this cassette to the total list of slides
             self.slides += cassette
 
@@ -204,7 +202,7 @@ class Map(Exceptionable, Configurable):
         end_slides = [self.find(item.get('cassette'), item.get('number')) for item in end_slide_data]
 
         # find reference distance and scale factor
-        self.reference = Map.Reference(start_slides, end_slides)
+        self.reference = Reference(start_slides, end_slides)
         self.reference_distance = self.search(ConfigKey.MASTER, *self.data_root, 'resize_reference', 'distance')
         self.scale = self.reference.scale_for_distance(self.reference_distance)
 
@@ -238,10 +236,10 @@ class Map(Exceptionable, Configurable):
 
     def json_to_list(self) -> list:
         data = self.load(self.source_path)
-        return [Map.Slide(item.get('cassette'),
-                               item.get('number'),
-                               item.get('position'),
-                               item.get('directory')) for item in data]
+        return [SlideInfo(item.get('cassette'),
+                          item.get('number'),
+                          item.get('position'),
+                          item.get('directory')) for item in data]
 
     def build_target_filesystem(self):
         """
@@ -283,44 +281,47 @@ class Map(Exceptionable, Configurable):
                     if re.search(key, file) is not None:
                         os.remove('{}/{}'.format(root, file))
 
-    #%% helper classes... self.map will be stored as a list of Slide objects
-    # quick class to keep track of slides
-    class Slide:
-        def __init__(self, cassette: str, number: int, position: int, directory: str):
-            self.cassette = cassette
-            self.number = number
-            self.position = position
-            self.directory = directory
 
-            # (directory, file) = os.path.split(raw_source)  # returns tuple
-            # (name, extension) = tuple(file.split('.'))
-            #
-            # # build source paths
-            # self.fascicle_source = os.path.join(directory,
-            #                                     'fascicles',
-            #                                     '.'.join(['_'.join([name, 'fascicle']), extension]))
-            # self.nerve_source = os.path.join(directory,
-            #                                  'nerves',
-            #                                  '.'.join(['_'.join([name, 'nerve']), extension]))
+#%% helper classes... self.map will be stored as a list of Slide objects
+# quick class to keep track of slides
+class SlideInfo:
+    def __init__(self, cassette: str, number: int, position: int, directory: str):
+        self.cassette = cassette
+        self.number = number
+        self.position = position
+        self.directory = directory
 
-        def __repr__(self):
-            return '\tcas:\t{}\tnum:\t{}\n\tpos:\t{}\n\n'.format(self.cassette,
-                                                                 self.number,
-                                                                 self.position)
+        # (directory, file) = os.path.split(raw_source)  # returns tuple
+        # (name, extension) = tuple(file.split('.'))
+        #
+        # # build source paths
+        # self.fascicle_source = os.path.join(directory,
+        #                                     'fascicles',
+        #                                     '.'.join(['_'.join([name, 'fascicle']), extension]))
+        # self.nerve_source = os.path.join(directory,
+        #                                  'nerves',
+        #                                  '.'.join(['_'.join([name, 'nerve']), extension]))
 
-    # quick class to keep track of a reference distance for resizing (i.e. space between electrodes)
-    class Reference:
-        def __init__(self, start: List['Map.Slide'], end: List['Map.Slide']):
-            # find average start and end positions  and save as instance variables for printing if needed
-            self.start = np.mean([slide.position for slide in start])
-            self.end = np.mean([slide.position for slide in end])
-            # calculate reference distance
-            self.abs_distance = abs(self.end - self.start)
+    def __repr__(self):
+        return 'cas:\t{}\nnum:\t{}\npos:\t{}\ndir:\t{}'.format(self.cassette,
+                                                               self.number,
+                                                               self.position,
+                                                               self.directory)
 
-        def scale_for_distance(self, distance: int) -> float:
-            return distance / float(self.abs_distance)
 
-        def __repr__(self):
-            return '\tstart pos:\t{}\n\tend pos:\t{}\n\tabs dist:\t{}\n\n'.format(self.start,
-                                                                                  self.end,
-                                                                                  self.abs_distance)
+# quick class to keep track of a reference distance for resizing (i.e. space between electrodes)
+class Reference:
+    def __init__(self, start: List[SlideInfo], end: List[SlideInfo]):
+        # find average start and end positions  and save as instance variables for printing if needed
+        self.start = np.mean([slide.position for slide in start])
+        self.end = np.mean([slide.position for slide in end])
+        # calculate reference distance
+        self.abs_distance = abs(self.end - self.start)
+
+    def scale_for_distance(self, distance: int) -> float:
+        return distance / float(self.abs_distance)
+
+    def __repr__(self):
+        return '\tstart pos:\t{}\n\tend pos:\t{}\n\tabs dist:\t{}\n\n'.format(self.start,
+                                                                              self.end,
+                                                                              self.abs_distance)

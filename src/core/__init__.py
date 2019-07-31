@@ -1,4 +1,4 @@
-from src.core.map import Map
+from src.core.map import Map, SlideInfo
 from src.core.trace import Trace
 from src.core.slide import Slide
 from src.core.fascicle import Fascicle

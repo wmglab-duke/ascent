@@ -21,34 +21,36 @@ class Manager(Exceptionable, Configurable):
 
     def scale(self, scale_bar_mask_path: str, scale_bar_length: float):
         """
-        :param scale_bar_mask_path:
-        :param scale_bar_length:
-        :return:
+        Scale all slides to the correct unit.
+        :param scale_bar_mask_path: path to binary mask with white straight scale bar
+        :param scale_bar_length: length (in global units as determined by config/user) of the scale bar
         """
-
+        # load in image
         image_raw: np.ndarray = plt.imread(scale_bar_mask_path)
+        # get maximum of each column (each "pixel" is a 4-item vector)
         row_of_column_maxes: np.ndarray = image_raw.max(0)
+        # find the indices of columns in original image where the first pixel item was maxed (i.e. white)
         indices = np.where(row_of_column_maxes[:, 0] == max(row_of_column_maxes[:, 0]))[0]
-
+        # find the length of the scale bar by finding total range of "max white" indices
         scale_bar_pixels = max(indices) - min(indices) + 1
-
+        # calculate scale factor as unit/pixel
         factor = scale_bar_length / scale_bar_pixels
-
+        # for each slide, scale to units
         for slide in self.slides:
             slide.scale(factor)
 
     def build_file_structure(self):
-        # Builds folders and copies files
         pass
-        # for slide in map
-        #
-        #
-        # os.path.split(data_path)
-        # path.split('_')
+        # Builds folders and copies files
+
 
     def populate(self):
-        pass
         # Reads in the known files
+        for slide_info in self.map.slides:
+            print(type(slide_info))
+            print(slide_info)
+
+
 
 
 
