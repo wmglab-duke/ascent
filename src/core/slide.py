@@ -153,15 +153,28 @@ class Slide(Exceptionable, Configurable):
         if seed is not None:
             random.seed(seed)
 
-        def random_permutation(iterable, r=None):
-            "Random selection from itertools.permutations(iterable, r)"
+        def random_permutation(iterable, r: int = None):
+            """
+            :param iterable:
+            :param r: size for permutations (defaults to number of elements in iterable)
+            :return: a random permutation of the elements in iterable
+            """
             pool = tuple(iterable)
             r = len(pool) if r is None else r
             return tuple(random.sample(pool, r))
 
-        def jitter(first: Fascicle, second: Union[Fascicle, Nerve]):
-
+        def jitter(first: Fascicle, second: Union[Fascicle, Nerve], rotation: bool = False):
+            """
+            :param rotation: whether or not to randomly rotate
+            :param first:
+            :param second:
+            :return:
+            """
+            # create list of fascicles to jitter, defaulting to just the first fascicle
             fascicles_to_jitter = [first]
+
+            # is second argument is a Fascicles, append it to list of fascicles to jitter
+            # also, use second argument's type to decide how to find angle between arguments
             if isinstance(second, Fascicle):
                 fascicles_to_jitter.append(second)
                 angle = first.angle_to(second)
@@ -169,69 +182,31 @@ class Slide(Exceptionable, Configurable):
                 _, points = first.min_distance(second, return_points=True)
                 angle = Trace.angle(*[point.coords[0] for point in points])
 
+            # will be inverted on each iteration to move in opposite directions
             factor = -1
-            angle_magnitude = 0 #((random.random() * 2) - 1) * (2 * np.pi) / 10
             for f in fascicles_to_jitter:
                 step_scale = 1
+
+                # if the second elements is a Fascicle, and this fascicle is within the other, grow step size
+                # this helps fascicles that were moved into others move out quickly
                 if isinstance(second, Fascicle) and [f.outer.within(h.outer) for h in (first, second) if h is not f][0]:
                     step_scale *= -20
 
+                # find random step magnitude and build a step vector from that
                 step_magnitude = random.random() * minimum_distance
-
                 step = list(np.array([np.cos(angle), np.sin(angle)]) * step_magnitude)
 
+                # apply rigid transformations
                 f.shift([step_scale * factor * item for item in step] + [0])
-                f.rotate(factor * angle_magnitude)
+                if rotation:
+                    f.rotate(factor * ((random.random() * 2) - 1) * (2 * np.pi) / 10)
 
+                # if just moved out of nerve, move back in
                 if not f.within_nerve(new_nerve):
-                    # for _ in range(2):
                     f.shift([step_scale * -factor * item for item in step] + [0])
 
+                # invert factor for next fascicle
                 factor *= -1
-
-
-
-
-            # # to decide whether or not to move second argument
-            # move_second: bool
-            #
-            # step_factor = -1
-            # second_step_factor = 1
-            #
-            # # based on second argument type, get angle
-            # if isinstance(second, Fascicle):
-            #     move_second = True
-            #     angle = first.angle_to(second)  # add random?
-            #
-            #     if first.outer.within(second.outer):
-            #         step_factor = -20
-            #         second_step_factor = 0
-            #
-            # else:  # second must be a Nerve
-            #     move_second = False
-            #     _, points = first.min_distance(second, return_points=True)
-            #
-            #     angle = Trace.angle(*[point.coords[0] for point in points])
-            #
-            #     if not first.within_nerve(second):
-            #         step_factor = 20
-            #
-            # # create step size
-            # step_magnitude = random.random() * minimum_distance
-            # step = list(np.array([np.cos(angle), np.sin(angle)]) * step_magnitude)
-            #
-            # angle_magnitude = ((random.random() * 2) - 1) * (2 * np.pi) / 100
-            #
-            # first_step = [step_factor * item for item in step] + [0]
-
-            # shift input arguments
-            # first.shift(first_step)  # negative shift for first item
-            # first.rotate(angle_magnitude)
-            # if move_second:
-            #     # second_in_before = second.within_nerve(new_nerve)
-            #     second_step = [second_step_factor * item for item in step] + [0]
-            #     second.shift(second_step)  # positive shift for second item
-            #     second.rotate(-angle_magnitude)
 
 
         # Initial shift - proportional to amount of change in the nerve boundary and distance of
@@ -307,20 +282,23 @@ class Slide(Exceptionable, Configurable):
         iteration = 0
         print('START random jitter')
         while not self.validation(specific=False, die=False, tolerance=None):
+
+            # USER OUTPUT
             iteration += 1
             plt.figure()
             self.plot(final=True, fix_aspect_ratio=True, inner_format='r-')
             plt.title('iteration: {}'.format(iteration - 1))
             plt.show()
-            # raise Exception('')  # FIXME: TEMPORARY STOP TO VIEW GRAPH
             print('\titeration: {}'.format(iteration))
+
+            # loop through random permutation
             for fascicle in random_permutation(self.fascicles):
                 while fascicle.min_distance(self.nerve) < minimum_distance:
                     jitter(fascicle, self.nerve)
 
                 for other_fascicle in random_permutation(filter(lambda item: item is not fascicle, self.fascicles)):
-                    while fascicle.min_distance(other_fascicle) < minimum_distance or \
-                            fascicle.outer.within(other_fascicle.outer):
+                    while any([fascicle.min_distance(other_fascicle) < minimum_distance,
+                               fascicle.outer.within(other_fascicle.outer)]):
                         jitter(fascicle, other_fascicle)
 
         print('END random jitter')
