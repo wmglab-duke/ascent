@@ -195,4 +195,4 @@ class Runner(Exceptionable, Configurable):
                                map_mode=SetupMode.OLD)
 
         self.manager.build_file_structure()
-        self.manager.populate()
+        self.manager.populate(MaskInputMode.INNERS, NerveMode.PRESENT)

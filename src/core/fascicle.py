@@ -73,7 +73,7 @@ class Fascicle(Exceptionable):
         else:  # other must be a Nerve
             return self.outer.intersects(other)
 
-    def min_distance(self, other: Union['Fascicle', Nerve], return_points: bool = False):
+    def min_distance(self, other: Union['Fascicle', Nerve], return_points: bool = False) -> Union[float, tuple]:
         """
         :param return_points:
         :param other: other Fascicle or Nerve to check
@@ -84,15 +84,16 @@ class Fascicle(Exceptionable):
         else:  # other must be a Nerve
             return self.outer.min_distance(other, return_points=return_points)
 
-    def centroid_distance(self, other: Union['Fascicle', Nerve]):
+    def centroid_distance(self, other: Union['Fascicle', Nerve], return_points: bool = False):
         """
+        :param return_points:
         :param other: other Fascicle or Nerve to check
         :return: minimum straight-line distance between self and other
         """
         if isinstance(other, Fascicle):
-            return self.outer.centroid_distance(other.outer)
+            return self.outer.centroid_distance(other.outer, return_points=return_points)
         else:  # other must be a Nerve
-            return self.outer.centroid_distance(other)
+            return self.outer.centroid_distance(other, return_points=return_points)
 
     def within_nerve(self, nerve: Nerve) -> bool:
         """
@@ -161,6 +162,14 @@ class Fascicle(Exceptionable):
         self.outer.scale(factor, center)
         for inner in self.inners:
             inner.scale(factor, center)
+
+    def rotate(self, angle: float, center: List[float] = None):
+        if center is None:
+            center = list(self.centroid())
+
+        self.outer.rotate(angle, center)
+        for inner in self.inners:
+            inner.rotate(angle, center)
 
     def __endoneurium_setup(self, factor: float):
 
@@ -249,9 +258,17 @@ class Fascicle(Exceptionable):
                 outer_trace = Trace([item + [z] for item in outer_contour[:, 0, :]], exception_config)
                 inner_traces = [Trace([item + [z] for item in cnt[:, 0, :]], exception_config) for cnt in inner_contours]
 
+
                 # add fascicle to list (with or without inner trace)
                 if len(inner_traces) > 0:
-                    fascicles.append(Fascicle(exception_config, outer_trace, inner_traces))
+                    try:
+                        fascicles.append(Fascicle(exception_config, outer_trace, inner_traces))
+                    except:
+                        outer_trace.plot()
+                        for inner in inner_traces:
+                            inner.plot()
+                        plt.show()
+                        raise Exception('')
                 else:
                     fascicles.append(Fascicle(exception_config, outer_trace, outer_scale=scale))
 

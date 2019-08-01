@@ -161,39 +161,92 @@ class Slide(Exceptionable, Configurable):
 
         def jitter(first: Fascicle, second: Union[Fascicle, Nerve]):
 
-            # to decide whether or not to move second argument
-            move_second: bool
-
-            # based on second argument type, get angle
+            fascicles_to_jitter = [first]
             if isinstance(second, Fascicle):
-                move_second = True
-                angle = first.angle_to(second)  # add random?
-
-            else:  # second must be a Nerve
-                move_second = False
+                fascicles_to_jitter.append(second)
+                angle = first.angle_to(second)
+            else:
                 _, points = first.min_distance(second, return_points=True)
-                angle = Trace.angle(*points)
+                angle = Trace.angle(*[point.coords[0] for point in points])
 
-            # create step size
-            step_magnitude = random.random() * minimum_distance / 2
-            step = list(np.array([np.cos(angle), np.sin(angle)]) * step_magnitude)
+            factor = -1
+            angle_magnitude = 0 #((random.random() * 2) - 1) * (2 * np.pi) / 10
+            for f in fascicles_to_jitter:
+                step_scale = 1
+                if isinstance(second, Fascicle) and [f.outer.within(h.outer) for h in (first, second) if h is not f][0]:
+                    step_scale *= -20
+
+                step_magnitude = random.random() * minimum_distance
+
+                step = list(np.array([np.cos(angle), np.sin(angle)]) * step_magnitude)
+
+                f.shift([step_scale * factor * item for item in step] + [0])
+                f.rotate(factor * angle_magnitude)
+
+                if not f.within_nerve(new_nerve):
+                    # for _ in range(2):
+                    f.shift([step_scale * -factor * item for item in step] + [0])
+
+                factor *= -1
+
+
+
+
+            # # to decide whether or not to move second argument
+            # move_second: bool
+            #
+            # step_factor = -1
+            # second_step_factor = 1
+            #
+            # # based on second argument type, get angle
+            # if isinstance(second, Fascicle):
+            #     move_second = True
+            #     angle = first.angle_to(second)  # add random?
+            #
+            #     if first.outer.within(second.outer):
+            #         step_factor = -20
+            #         second_step_factor = 0
+            #
+            # else:  # second must be a Nerve
+            #     move_second = False
+            #     _, points = first.min_distance(second, return_points=True)
+            #
+            #     angle = Trace.angle(*[point.coords[0] for point in points])
+            #
+            #     if not first.within_nerve(second):
+            #         step_factor = 20
+            #
+            # # create step size
+            # step_magnitude = random.random() * minimum_distance
+            # step = list(np.array([np.cos(angle), np.sin(angle)]) * step_magnitude)
+            #
+            # angle_magnitude = ((random.random() * 2) - 1) * (2 * np.pi) / 100
+            #
+            # first_step = [step_factor * item for item in step] + [0]
 
             # shift input arguments
-            first.shift([-item for item in step] + [0])
-            if move_second:
-                second.shift(step + [0])
+            # first.shift(first_step)  # negative shift for first item
+            # first.rotate(angle_magnitude)
+            # if move_second:
+            #     # second_in_before = second.within_nerve(new_nerve)
+            #     second_step = [second_step_factor * item for item in step] + [0]
+            #     second.shift(second_step)  # positive shift for second item
+            #     second.rotate(-angle_magnitude)
+
 
         # Initial shift - proportional to amount of change in the nerve boundary and distance of
         # fascicle centroid from nerve centroid
 
-        for fascicle in self.fascicles:
+        for i, fascicle in enumerate(self.fascicles):
+            # print('fascicle {}'.format(i))
+
             fascicle_centroid = fascicle.centroid()
             new_nerve_centroid = new_nerve.centroid()
             r_fascicle_initial = LineString([new_nerve_centroid, fascicle_centroid])
 
             r_mean = new_nerve.mean_radius()
             r_fasc = r_fascicle_initial.length
-            a = 2 # FIXME
+            a = 3  # FIXME:
             exterior_scale_factor = a * (r_mean / r_fasc)
             exterior_line: LineString = scale(r_fascicle_initial,
                                               *([exterior_scale_factor] * 3),
@@ -222,7 +275,11 @@ class Slide(Exceptionable, Configurable):
             else:  # more complex geometry (MULTIPOINT)
                 r_old_nerve = LineString([new_nerve_centroid, list(old_intersection)[0].coords[0]])
 
-            fascicle_scale_factor = r_new_nerve.length/r_old_nerve.length
+            fascicle_scale_factor = (r_new_nerve.length/r_old_nerve.length) * 0.75
+
+            # TODO: nonlinear scaling of fascicle_scale_factor
+            # if fascicle_scale_factor > 1:
+            #     fascicle_scale_factor **= exponent
 
             r_fascicle_final = scale(r_fascicle_initial,
                                      *([fascicle_scale_factor] * 3),
@@ -232,21 +289,38 @@ class Slide(Exceptionable, Configurable):
             fascicle.shift(shift)
             # fascicle.plot('r-')
 
+            # attempt to move in direction of closest boundary
+            _, min_dist_intersection_initial = fascicle.centroid_distance(self.nerve, return_points=True)
+            _, min_dist_intersection_final = fascicle.centroid_distance(new_nerve, return_points=True)
+            min_distance_length = LineString([min_dist_intersection_final[1].coords[0],
+                                              min_dist_intersection_initial[1].coords[0]]).length
+            min_distance_vector = np.array(min_dist_intersection_final[1].coords[0]) - \
+                                  np.array(min_dist_intersection_initial[1].coords[0])
+            min_distance_vector *= 1
+
+            # fascicle.shift(list(-min_distance_vector) + [0])
+
         # NOW, set the slide's actual nerve to be the new nerve
         self.nerve = new_nerve
 
         # Jitter
         iteration = 0
         print('START random jitter')
-        while not self.validation(specific=False, die=False, tolerance=minimum_distance):
+        while not self.validation(specific=False, die=False, tolerance=None):
             iteration += 1
+            plt.figure()
+            self.plot(final=True, fix_aspect_ratio=True, inner_format='r-')
+            plt.title('iteration: {}'.format(iteration - 1))
+            plt.show()
+            # raise Exception('')  # FIXME: TEMPORARY STOP TO VIEW GRAPH
             print('\titeration: {}'.format(iteration))
             for fascicle in random_permutation(self.fascicles):
                 while fascicle.min_distance(self.nerve) < minimum_distance:
                     jitter(fascicle, self.nerve)
 
                 for other_fascicle in random_permutation(filter(lambda item: item is not fascicle, self.fascicles)):
-                    while fascicle.min_distance(other_fascicle) < minimum_distance:
+                    while fascicle.min_distance(other_fascicle) < minimum_distance or \
+                            fascicle.outer.within(other_fascicle.outer):
                         jitter(fascicle, other_fascicle)
 
         print('END random jitter')
@@ -287,7 +361,7 @@ class Slide(Exceptionable, Configurable):
         """
         center = list(self.nerve.centroid())
 
-        self.nerve.scale(self, factor, center)
+        self.nerve.scale(factor, center)
         for fascicle in self.fascicles:
-            fascicle.scale(self, factor, center)
+            fascicle.scale(factor, center)
 

@@ -1,10 +1,12 @@
 import os
 from typing import List
+
+import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import shutil
 
-from src.core import Slide, Map, Fascicle, Nerve
+from src.core import Slide, Map, Fascicle, Nerve, Trace
 from src.utils import *
 
 
@@ -41,7 +43,7 @@ class Manager(Exceptionable, Configurable):
         for slide in self.slides:
             slide.scale(factor)
 
-    def build_file_structure(self):
+    def build_file_structure(self, printing: bool = False):
         # TODO: ADD DOCUMENTATION
 
         # get starting point so able to go back
@@ -65,28 +67,36 @@ class Manager(Exceptionable, Configurable):
                 os.chdir(directory_part)
 
                 if directory_part == sample:
-                    scale_source_file = os.path.join(start_directory, *source_directory, MaskFileNames.SCALE_BAR.value)
+                    scale_source_file = os.path.join(start_directory,
+                                                     *source_directory,
+                                                     '_'.join([sample,
+                                                               cassette,
+                                                               number,
+                                                               MaskFileNames.SCALE_BAR.value]))
                     if os.path.exists(scale_source_file):
-                        shutil.copy2(scale_source_file, MaskFileNames.SCALE_BAR.value)
+                        shutil.copy2(scale_source_file,  MaskFileNames.SCALE_BAR.value)
                     else:
-                        raise Exception('s.tif not found')
+                        raise Exception('{} not found'.format(scale_source_file))
 
             for target_file in [item.value for item in MaskFileNames if item != MaskFileNames.SCALE_BAR]:
                 source_file = os.path.join(start_directory,
                                            *source_directory,
                                            '_'.join([sample, cassette, number, target_file]))
-                print('source: {}\ntarget: {}'.format(source_file, target_file))
+                if printing:
+                    print('source: {}\ntarget: {}'.format(source_file, target_file))
                 if os.path.exists(source_file):
-                    print('\tFOUND\n')
+                    if printing:
+                        print('\tFOUND\n')
                     shutil.copy2(source_file, target_file)
                 else:
-                    print('\tNOT FOUND\n')
+                    if printing:
+                        print('\tNOT FOUND\n')
 
             os.chdir(start_directory)
 
     def populate(self, mask_input_mode: MaskInputMode, nerve_mode: NerveMode):
 
-        def exists(mask_file_name: MaskFileNames)
+        def exists(mask_file_name: MaskFileNames):
             return os.path.exists(mask_file_name.value)
 
         # get starting point so able to go back
@@ -97,6 +107,9 @@ class Manager(Exceptionable, Configurable):
         # get sample name
         sample: str = self.search(ConfigKey.MASTER, 'sample')
 
+        # create scale bar path
+        scale_path = os.path.join(samples_path, sample, MaskFileNames.SCALE_BAR.value)
+
         for slide_info in self.map.slides:
             # unpack data and force cast to string
             cassette, number, position, _ = slide_info.data()
@@ -104,19 +117,18 @@ class Manager(Exceptionable, Configurable):
 
             os.chdir(os.path.join(samples_path, sample, cassette, number, 'masks'))
 
-            if not os.path.exists(MaskFileNames.RAW.value):
+            if not exists(MaskFileNames.RAW):
                 self.throw(18)
-            elif not os.path.exists(MaskFileNames.SCALE_BAR.value):
-                self.throw(19)
 
             # init fascicles list
             fascicles: List[Fascicle] = []
 
             # load fascicles and check that the files exist
             if mask_input_mode == MaskInputMode.INNERS:
-                if exists(MaskFileNames.INNERS.value):
+                if exists(MaskFileNames.INNERS):
                     fascicles = Fascicle.inner_to_list(MaskFileNames.INNERS.value,
-                                                       self.configs[ConfigKey.EXCEPTIONS.value])
+                                                       self.configs[ConfigKey.EXCEPTIONS.value],
+                                                       scale=1.1)
                 else:
                     self.throw(21)
 
@@ -125,7 +137,7 @@ class Manager(Exceptionable, Configurable):
                 self.throw(20)
 
             elif mask_input_mode == MaskInputMode.INNER_AND_OUTER_SEPARATE:
-                if exists(MaskFileNames.INNERS.value) and exists(MaskFileNames.OUTERS.value):
+                if exists(MaskFileNames.INNERS) and exists(MaskFileNames.OUTERS):
                     fascicles = Fascicle.separate_to_list(MaskFileNames.INNERS.value,
                                                           MaskFileNames.OUTERS.value,
                                                           self.configs[ConfigKey.EXCEPTIONS.value])
@@ -133,45 +145,49 @@ class Manager(Exceptionable, Configurable):
                     self.throw(22)
 
             elif mask_input_mode == MaskInputMode.INNER_AND_OUTER_COMPILED:
-                if exists(MaskFileNames.COMPILED.value):
+                if exists(MaskFileNames.COMPILED):
                     fascicles = Fascicle.compiled_to_list(MaskFileNames.COMPILED.value,
                                                           self.configs[ConfigKey.EXCEPTIONS.value])
                 else:
                     self.throw(23)
 
-            else: # exhaustive
-                pass
-
-
-            # check nerve mode, if nerve mode is present, check that the nerve trace is there and load it in
-            # if nerve mode is not present, check that list of fascicles is length of one, if not throw error.
-            # if pass, nerve = Nerve(fascicles[0].outer.deepcopy())
-
-
-            # and scale bar
-
-
-            if nerve_mode == NerveMode.PRESENT:
-                # check and load in nerve, throw error if not present
-
-            elif nerve_mode == NerveMode.NOT_PRESENT:
-                # compiled
-                # nerve = copy of fasc
-                #
             else:  # exhaustive
                 pass
 
+            nerve = None
 
-            # r.tif does not exist, fail
+            if nerve_mode == NerveMode.PRESENT:
+                # check and load in nerve, throw error if not present
+                if exists(MaskFileNames.NERVE):
+                    contour, _ = cv2.findContours(np.flipud(cv2.imread(MaskFileNames.NERVE.value, -1)),
+                                                  cv2.RETR_TREE,
+                                                  cv2.CHAIN_APPROX_SIMPLE)
+                    nerve = Nerve(Trace([point + [0] for point in contour[0][:, 0, :]],
+                                        self.configs[ConfigKey.EXCEPTIONS.value]))
 
-            # s.tif does not exist, fail
+            elif nerve_mode == NerveMode.NOT_PRESENT:
+                self.throw(24)
+            else:  # exhaustive
+                pass
 
-            # compiled, inner only, outer only, inner and outer
+            slide: Slide = Slide(fascicles,
+                                 nerve,
+                                 self.configs[ConfigKey.MASTER.value],
+                                 self.configs[ConfigKey.EXCEPTIONS.value],
+                                 will_reposition=True)
 
-            #['r', 'f', 'i', 'o', 's']
-
+            self.slides.append(slide)
 
             os.chdir(start_directory)
+
+        if os.path.exists(scale_path):
+            self.scale(scale_path, self.search(ConfigKey.MASTER, 'scale_bar', 'length'))
+        else:
+            print(scale_path)
+            self.throw(19)
+
+        for slide in self.slides:
+            slide.reposition_fascicles(slide.reshaped_nerve(ReshapeNerveMode.CIRCLE), 5)
 
 
 

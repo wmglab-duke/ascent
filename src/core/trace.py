@@ -3,8 +3,9 @@ from typing import Tuple, Union, List
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
-from shapely.geometry import Polygon
-from shapely.affinity import scale
+from shapely.geometry import Polygon, Point
+from shapely.affinity import scale, rotate
+from shapely.ops import nearest_points
 from copy import deepcopy
 import pyclipper
 import itertools
@@ -92,6 +93,20 @@ class Trace(Exceptionable):
 
         self.points = None
         self.append([list(coord[:2]) + [0] for coord in scaled_polygon.boundary.coords])
+        self.__update()
+
+    def rotate(self, angle: float, center: Union[List[float], str] = 'centroid'):
+
+        if isinstance(center, list):
+            center = tuple(center)
+        else:
+            if center not in ['centroid', 'center']:
+                self.throw(17)
+
+        rotated_polygon: Polygon = rotate(self.polygon(), angle, origin=center, use_radians=True)
+
+        self.points = None
+        self.append([list(coord[:2]) + [0] for coord in rotated_polygon.boundary.coords])
         self.__update()
 
     def shift(self, vector):
@@ -199,31 +214,13 @@ class Trace(Exceptionable):
         :param other: Trace to find distance to
         :return: float minimum distance
         """
-        def distance(first: List[float], second: List[float]) -> float:
-            differences = (np.array(second) - np.array(first))
-            return np.sqrt(
-                np.sum(
-                    differences ** 2
-                )
-            )
+
+        distance = self.polygon().boundary.distance(other.polygon().boundary)
 
         if not return_points:
-            return self.polygon().boundary.distance(other.polygon().boundary)
+            return distance
         else:
-            # get all possible pairs of points
-            pairs = itertools.product(self.points, other.points)
-
-            # get all distances of pairs with their points
-            pairs_distances = [(self_point, other_point, distance(self_point, other_point))
-                               for (self_point, other_point) in pairs]
-            # find minimum distance
-            minimum_distance = min([dist for _, _, dist in pairs_distances])
-
-            # find the pair that corresponds to the minimum distance
-            minimum_pair = [(self_point, other_point) for (self_point, other_point, dist)
-                            in pairs_distances if dist == minimum_distance][0]
-
-            return minimum_distance, minimum_pair
+            return distance, nearest_points(self.polygon(), other.polygon())
 
     def max_distance(self, other: 'Trace') -> float:
         """
@@ -232,11 +229,15 @@ class Trace(Exceptionable):
         """
         return self.polygon().boundary.hausdorff_distance(other.polygon().boundary)
 
-    def centroid_distance(self, other: 'Trace') -> float:
-        self_c = self.centroid()
-        other_c = other.centroid()
+    def centroid_distance(self, other: 'Trace', return_points: bool = False) -> Union[float, tuple]:
+        self_c = Point([self.centroid()])
 
-        return np.sqrt((other_c[0] - self_c[0])**2 + (other_c[1] - self_c[1])**2)
+        distance = self_c.distance(other.polygon().boundary)
+
+        if not return_points:
+            return distance
+        else:
+            return distance, nearest_points(self_c, other.polygon().boundary)
 
     #%% contour-dependent (cv2)
     def contour(self) -> np.ndarray:

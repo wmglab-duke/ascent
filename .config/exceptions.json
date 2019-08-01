@@ -118,5 +118,10 @@
     "code": 23,
     "text": "Compiled masks required for input mode INNER_AND_OUTER_COMPILED.",
     "source": "src.core.Manager.populate"
+  },
+    {
+    "code": 24,
+    "text": "NerveMode.NOT_PRESENT is not implemented.",
+    "source": "src.core.Manager.populate"
   }
 ]
