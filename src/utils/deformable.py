@@ -24,7 +24,6 @@ class Deformable(Exceptionable):
         # init space with default gravity (0, 0)
         self.space = pymunk.Space()
 
-
     def deform(self, boundary_step: int = 100, render: bool = True, render_step: int = 1) -> List[tuple]:
         pass
 
