@@ -29,6 +29,8 @@ class Manager(Exceptionable, Configurable):
         :param scale_bar_mask_path: path to binary mask with white straight scale bar
         :param scale_bar_length: length (in global units as determined by config/user) of the scale bar
         """
+
+
         # load in image
         image_raw: np.ndarray = plt.imread(scale_bar_mask_path)
         # get maximum of each column (each "pixel" is a 4-item vector)
