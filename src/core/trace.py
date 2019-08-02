@@ -8,7 +8,7 @@ from shapely.affinity import scale, rotate
 from shapely.ops import nearest_points
 from copy import deepcopy
 import pyclipper
-import itertools
+import pymunk
 
 from src.utils import *
 
@@ -389,6 +389,12 @@ class Trace(Exceptionable):
 
     def deepcopy(self) -> 'Trace':
         return deepcopy(self)
+
+    def pymunk_poly(self, body: pymunk.Body) -> pymunk.Poly:
+        """
+        :param body:
+        """
+        return pymunk.Poly(body, [tuple(point[:2]) for point in self.points])
 
     #%% private utility methods
     def __update(self):
