@@ -26,6 +26,7 @@ draw_options = pymunk.pygame_util.DrawOptions(screen)
 ## Balls
 balls = []
 
+
 ### walls
 def line_points(w: float = width, h: float = height, center: bool = False):
     x, y = 0, 0
