@@ -199,7 +199,7 @@ class Slide(Exceptionable, Configurable):
                 # apply rigid transformations
                 f.shift([step_scale * factor * item for item in step] + [0])
                 if rotation:
-                    f.rotate(factor * ((random.random() * 2) - 1) * (2 * np.pi) / 10)
+                    f.rotate(factor * ((random.random() * 2) - 1) * (2 * np.pi) / 100)
 
                 # if just moved out of nerve, move back in
                 if not f.within_nerve(new_nerve):
@@ -207,7 +207,6 @@ class Slide(Exceptionable, Configurable):
 
                 # invert factor for next fascicle
                 factor *= -1
-
 
         # Initial shift - proportional to amount of change in the nerve boundary and distance of
         # fascicle centroid from nerve centroid
@@ -250,7 +249,7 @@ class Slide(Exceptionable, Configurable):
             else:  # more complex geometry (MULTIPOINT)
                 r_old_nerve = LineString([new_nerve_centroid, list(old_intersection)[0].coords[0]])
 
-            fascicle_scale_factor = (r_new_nerve.length/r_old_nerve.length) * 0.75
+            fascicle_scale_factor = (r_new_nerve.length/r_old_nerve.length) * 0.8
 
             # TODO: nonlinear scaling of fascicle_scale_factor
             # if fascicle_scale_factor > 1:
@@ -343,3 +342,13 @@ class Slide(Exceptionable, Configurable):
         for fascicle in self.fascicles:
             fascicle.scale(factor, center)
 
+    def rotate(self, angle: float):
+        """
+        :param angle:
+        :return:
+        """
+        center = list(self.nerve.centroid())
+
+        self.nerve.rotate(angle, center)
+        for fascicle in self.fascicles:
+            fascicle.rotate(angle, center)
