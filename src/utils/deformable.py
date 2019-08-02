@@ -11,7 +11,7 @@ from pygame.camera import *
 
 # SPARCpy
 from src.core import Trace, Slide
-from src.utils import Exceptionable, SetupMode
+from src.utils import Exceptionable, SetupMode, ReshapeNerveMode, ConfigKey
 
 
 class Deformable(Exceptionable):
@@ -21,20 +21,41 @@ class Deformable(Exceptionable):
         # init superclass
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
 
+        # initialize instance variables
+        self.start = boundary_start
+        self.end = boundary_end
+        self.contents = contents
+
         # init space with default gravity (0, 0)
         self.space = pymunk.Space()
 
     def deform(self, boundary_step: int = 100, render: bool = True, render_step: int = 1) -> List[tuple]:
         pass
 
-    @staticmethod
-    def deform_steps(start: Trace, stop: Trace) -> List[Trace]:
+    def deform_steps(self, start: Trace, end: Trace, count: int) -> List[Trace]:
         pass
 
     @staticmethod
-    def from_slide(slide: Slide) -> 'Deformable':
-        pass
-    # method in slide will pull out each trace and add to a list of contents, go through traces and build polygons
+    def from_slide(slide: Slide, mode: ReshapeNerveMode) -> 'Deformable':
+        # method in slide will pull out each trace and add to a list of contents, go through traces and build polygons
+
+        # get start boundary
+        boundary_start = slide.nerve
+
+        # get end boundary
+        boundary_end = slide.reshaped_nerve(mode)
+
+        # get contents
+        contents = [fascicle.outer for fascicle in slide.fascicles]
+
+        # exception configuration data
+        exception_config_data = slide.configs[ConfigKey.EXCEPTIONS.value]
+
+        # return new object
+        return Deformable(exception_config_data, boundary_start, boundary_end, contents)
+
+
+
 
 
 
