@@ -35,6 +35,21 @@ class Deformable(Exceptionable):
     def deform_steps(self, start: Trace, end: Trace, count: int) -> List[Trace]:
         pass
 
+        # Find point along old_nerve that is closest to major axis of best fit ellipse
+        (x, y), (a, b), angle = Trace.ellipse(self)
+
+        # Use point on major axis as the first point on old_nerve, find closest point on new_nerve
+        # and assign as first point
+        
+
+        # Sweep CW assigning consecutive points
+
+        # Find vector between old_nerve and new_nerve associated points
+
+        # Save incremental steps of nerve
+
+
+
     @staticmethod
     def from_slide(slide: Slide, mode: ReshapeNerveMode) -> 'Deformable':
         # method in slide will pull out each trace and add to a list of contents, go through traces and build polygons
