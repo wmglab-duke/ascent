@@ -396,7 +396,6 @@ class Slide(Exceptionable, Configurable):
                         # go back up a folder
                         os.chdir(index_start_folder)
 
-
                 # change directory back to starting place
                 os.chdir(sub_start)
 

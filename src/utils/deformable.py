@@ -30,7 +30,7 @@ class Deformable(Exceptionable):
 
     @staticmethod
     def deform_steps(start: Trace, stop: Trace) -> List[Trace]:
-
+        pass
 
     @staticmethod
     def from_slide(slide: Slide) -> 'Deformable':
