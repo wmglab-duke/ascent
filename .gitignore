@@ -130,5 +130,6 @@ dmypy.json
 .idea/
 
 # don't include data b/c this may get pretty big at some point
-# data/output/
+data/samples
+data/input/samples
 *r.tif

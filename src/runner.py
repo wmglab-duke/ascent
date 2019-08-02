@@ -189,10 +189,17 @@ class Runner(Exceptionable, Configurable):
         self.slide.reposition_fascicles(self.slide.reshaped_nerve(ReshapeNerveMode.CIRCLE))
 
     def manager_test(self):
-
+        print('\nINIT MANAGER')
         self.manager = Manager(self.configs[ConfigKey.MASTER.value],
                                self.configs[ConfigKey.EXCEPTIONS.value],
                                map_mode=SetupMode.OLD)
 
+        print('\nBUILD FILE STRUCTURE')
         self.manager.build_file_structure()
-        self.manager.populate(MaskInputMode.INNERS, NerveMode.PRESENT)
+
+        print('\nPOPULATE')
+        self.manager.populate(MaskInputMode.INNERS, NerveMode.PRESENT, reposition=False)
+
+        print('\nWRITE')
+        self.manager.write(WriteMode.SECTIONWISE)
+

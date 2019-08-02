@@ -123,5 +123,25 @@
     "code": 24,
     "text": "NerveMode.NOT_PRESENT is not implemented.",
     "source": "src.core.Manager.populate"
+  },
+    {
+    "code": 25,
+    "text": "Invalid path to write Fascicle to.",
+    "source": "src.core.Fascicle.write"
+  },
+    {
+    "code": 26,
+    "text": "Invalid path to write Slide to.",
+    "source": "src.core.Slide.write"
+  },
+    {
+    "code": 27,
+    "text": "Path to slide must have already been created.",
+    "source": "src.core.Manager.write"
+  },
+    {
+    "code": 28,
+    "text": "Unimplemented write mode.",
+    "source": "src.core.Manager.write"
   }
 ]

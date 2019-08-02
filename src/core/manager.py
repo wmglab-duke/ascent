@@ -94,7 +94,7 @@ class Manager(Exceptionable, Configurable):
 
             os.chdir(start_directory)
 
-    def populate(self, mask_input_mode: MaskInputMode, nerve_mode: NerveMode):
+    def populate(self, mask_input_mode: MaskInputMode, nerve_mode: NerveMode, reposition: bool = True):
 
         def exists(mask_file_name: MaskFileNames):
             return os.path.exists(mask_file_name.value)
@@ -128,12 +128,13 @@ class Manager(Exceptionable, Configurable):
                 if exists(MaskFileNames.INNERS):
                     fascicles = Fascicle.inner_to_list(MaskFileNames.INNERS.value,
                                                        self.configs[ConfigKey.EXCEPTIONS.value],
-                                                       scale=1.1)
+                                                       scale=1.03)
                 else:
                     self.throw(21)
 
             elif mask_input_mode == MaskInputMode.OUTERS:
-                #fascicles = Fascicle.outer_to_list(MaskFileNames.OUTERS.value, self.configs[ConfigKey.EXCEPTIONS.value])
+                # fascicles = Fascicle.outer_to_list(MaskFileNames.OUTERS.value,
+                #                                    self.configs[ConfigKey.EXCEPTIONS.value])
                 self.throw(20)
 
             elif mask_input_mode == MaskInputMode.INNER_AND_OUTER_SEPARATE:
@@ -186,15 +187,51 @@ class Manager(Exceptionable, Configurable):
             print(scale_path)
             self.throw(19)
 
-        for slide in self.slides:
-            slide.reposition_fascicles(slide.reshaped_nerve(ReshapeNerveMode.CIRCLE), 5)
+        if reposition:
+            for slide in self.slides:
+                slide.reposition_fascicles(slide.reshaped_nerve(ReshapeNerveMode.CIRCLE), 5)
 
+    def write(self, mode: WriteMode):
+        """
+        Write entire list of slides.
+        """
 
+        # get starting point so able to go back
+        start_directory: str = os.getcwd()
 
+        # get path to sample
+        sample_path = os.path.join(self.path(ConfigKey.MASTER, 'samples_path'),
+                                   self.search(ConfigKey.MASTER, 'sample'))
 
+        # loop through the slide info (index i SHOULD correspond to slide in self.slides
+        # TODO: some kind of check to ensure self.slides matches up with self.map.slides
+        for i, slide_info in enumerate(self.map.slides):
+            # unpack data and force cast to string
+            cassette, number, _, source_directory = slide_info.data()
+            cassette, number = (str(item) for item in (cassette, number))
 
+            # build path to slide and ensure that it exists before proceeding
+            slide_path = os.path.join(sample_path, cassette, number)
+            if not os.path.exists(slide_path):
+                self.throw(27)
+            else:
+                # change directories to slide path
+                os.chdir(slide_path)
 
+                # build the directory for output (name is the write mode)
+                directory_to_create = ''
+                if mode == WriteMode.SECTIONWISE:
+                    directory_to_create = 'sectionwise'
+                else:
+                    self.throw(28)
 
+                if not os.path.exists(directory_to_create):
+                    os.makedirs(directory_to_create)
+                os.chdir(directory_to_create)
 
+                # WRITE
+                self.slides[i].write(mode, os.getcwd())
 
+            # go back up to start directory, then to top of loop
+            os.chdir(start_directory)
 

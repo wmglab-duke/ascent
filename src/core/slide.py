@@ -20,6 +20,7 @@ Description:
 # TODO: add more documentation for reposition fascicles
 
 import itertools
+import os
 from typing import List, Tuple, Union
 from shapely.geometry import LineString, Point
 from shapely.affinity import scale
@@ -279,7 +280,7 @@ class Slide(Exceptionable, Configurable):
 
         # Jitter
         iteration = 0
-        print('START random jitter')
+        print('start random jitter')
         while not self.validation(specific=False, die=False, tolerance=None):
 
             # USER OUTPUT
@@ -300,7 +301,7 @@ class Slide(Exceptionable, Configurable):
                                fascicle.outer.within(other_fascicle.outer)]):
                         jitter(fascicle, other_fascicle)
 
-        print('END random jitter')
+        print('end random jitter')
 
         # validate again just for kicks
         self.validation()
@@ -352,3 +353,51 @@ class Slide(Exceptionable, Configurable):
         self.nerve.rotate(angle, center)
         for fascicle in self.fascicles:
             fascicle.rotate(angle, center)
+
+    def write(self, mode: WriteMode, path: str):
+        """
+        :param mode:
+        :param path: root path of slide
+        """
+        start = os.getcwd()
+
+        if not os.path.exists(path):
+            self.throw(26)
+        else:
+            # go to directory to write to
+            os.chdir(path)
+
+            # keep track of starting place
+            sub_start = os.getcwd()
+
+            # write nerve and fascicles
+            for items, folder in [([self.nerve], 'nerve'), (self.fascicles, 'fascicles')]:
+                # build path if not already existing
+                if not os.path.exists(folder):
+                    os.makedirs(folder)
+                os.chdir(folder)
+
+                # write all items (give filename as i (index) without the extension
+                for i, item in enumerate(items):
+
+                    if isinstance(item, Nerve):
+                        item.write(mode, os.path.join(os.getcwd(), str(i)))
+                    else:
+                        # start to keep track of position file structure
+                        index_start_folder = os.getcwd()
+
+                        # go to indexed folder for each fascicle
+                        index_folder = str(i)
+                        if not os.path.exists(index_folder):
+                            os.makedirs(index_folder)
+                        os.chdir(index_folder)
+                        item.write(mode, os.getcwd())
+
+                        # go back up a folder
+                        os.chdir(index_start_folder)
+
+
+                # change directory back to starting place
+                os.chdir(sub_start)
+
+        os.chdir(start)

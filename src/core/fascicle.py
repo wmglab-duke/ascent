@@ -24,10 +24,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from copy import deepcopy
 import cv2
+import os
 
 from .trace import Trace
 from .nerve import Nerve
-from src.utils import Exceptionable, SetupMode
+from src.utils import Exceptionable, SetupMode, WriteMode
 
 # TODO: add more documentation for building fascicle lists
 
@@ -48,8 +49,8 @@ class Fascicle(Exceptionable):
         # use for scaling if no outer trace (i.e. ONLY outer trace has been set)
         self.outer_scale = outer_scale
 
-        self.inners = inners
-        self.outer = outer
+        self.inners: List[Trace] = inners
+        self.outer: Trace = outer
 
         if inners is None:
             self.__endoneurium_setup(outer_scale)
@@ -344,8 +345,34 @@ class Fascicle(Exceptionable):
                       plot: bool = False, scale: float = None, z: float = 0) -> List['Fascicle']:
         return Fascicle.compiled_to_list(img_path, exception_config, plot, scale, z)
 
-    def write(self, path: str):
+    def write(self, mode: WriteMode, path: str):
         """
+        :param mode:
         :param path: root path of fascicle
-        :return:
         """
+
+        start = os.getcwd()
+
+        if not os.path.exists(path):
+            self.throw(25)
+        else:
+            # go to directory to write to
+            os.chdir(path)
+
+            # keep track of starting place
+            sub_start = os.getcwd()
+
+            # write outer and inners
+            for items, folder in [([self.outer], 'outer'), (self.inners, 'inners')]:
+                if not os.path.exists(folder):
+                    os.makedirs(folder)
+                os.chdir(folder)
+
+                # write all items (give filename as i (index) without the extension
+                for i, item in enumerate(items):
+                    item.write(mode, os.path.join(os.getcwd(), str(i)))
+
+                # change directory back to starting place
+                os.chdir(sub_start)
+
+        os.chdir(start)

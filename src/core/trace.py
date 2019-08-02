@@ -355,6 +355,7 @@ class Trace(Exceptionable):
 
         try:
             # open in write mode; "+" indicates to create file if not found
+            # print('writing to: {}'.format(path))
             with open(path, 'w+') as f:
                 count = self.count()
 
