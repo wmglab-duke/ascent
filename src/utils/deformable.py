@@ -35,5 +35,7 @@ class Deformable(Exceptionable):
     @staticmethod
     def from_slide(slide: Slide) -> 'Deformable':
         pass
+    # method in slide will pull out each trace and add to a list of contents, go through traces and build polygons
+
 
 
