@@ -343,3 +343,9 @@ class Fascicle(Exceptionable):
     def inner_to_list(img_path: str, exception_config,
                       plot: bool = False, scale: float = None, z: float = 0) -> List['Fascicle']:
         return Fascicle.compiled_to_list(img_path, exception_config, plot, scale, z)
+
+    def write(self, path: str):
+        """
+        :param path: root path of fascicle
+        :return:
+        """

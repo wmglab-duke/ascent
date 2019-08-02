@@ -1,7 +1,6 @@
-"""A very basic flipper game.
 """
-__version__ = "$Id:$"
-__docformat__ = "reStructuredText"
+Proof-of-concept for a physics-based fascicle repositioning method, adapted from flipper.py in the Pymunk examples.
+"""
 
 import random
 
@@ -51,7 +50,6 @@ for line in static_lines:
 space.add(static_lines)
 
 
-
 while running:
     for event in pygame.event.get():
         if event.type == QUIT:
@@ -60,8 +58,8 @@ while running:
             running = False
 
         elif event.type == KEYDOWN and event.key == K_SPACE:
-            width -= 5
-            height -= 5
+            width -= 15
+            height -= 15
 
             for line in static_lines:
                 space.remove(line)
@@ -84,7 +82,7 @@ while running:
             # body.position = x, 400
             # shape = pymunk.Circle(body, radius, (0,0))
 
-            vertices = [(0, 60), (60, 60), (30, 30), (60, 0), (0, 0)]
+            vertices = [(0, 60), (60, 60), (60, 0), (0, 0)]
             x = random.randint(115, 350)
             position = x, 400
             inertia = pymunk.moment_for_poly(mass, vertices)
@@ -94,7 +92,7 @@ while running:
             shape.friction = 0.6
             shape.density = 0.01
 
-            shape.elasticity = 0.5
+            shape.elasticity = 0.0
             space.add(body, shape)
             balls.append(shape)
 
@@ -103,16 +101,6 @@ while running:
 
     ### Draw stuff
     space.debug_draw(draw_options)
-
-    ### Remove any balls outside
-    to_remove = []
-    for ball in balls:
-        if ball.body.position.get_distance((300, 300)) > 1000:
-            to_remove.append(ball)
-
-    for ball in to_remove:
-        space.remove(ball.body, ball)
-        balls.remove(ball)
 
     ### Update physics
     dt = 1.0 / 60.0 / 5.
