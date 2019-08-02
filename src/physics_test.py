@@ -8,8 +8,6 @@ import pygame
 from pygame.locals import *
 from pygame.color import *
 
-import pymunk
-from pymunk import Vec2d
 import pymunk.pygame_util
 
 width = 600
@@ -56,7 +54,6 @@ while running:
             running = False
         elif event.type == KEYDOWN and event.key == K_ESCAPE:
             running = False
-
         elif event.type == KEYDOWN and event.key == K_SPACE:
             width -= 15
             height -= 15
@@ -68,14 +65,14 @@ while running:
                                                                                                  height,
                                                                                                  center=True)]
             for line in static_lines:
-                line.elasticity = 0.7
+                line.elasticity = 2.0
                 line.group = 1
             space.add(static_lines)
 
         elif event.type == KEYDOWN and event.key == K_b:
 
             mass = 1
-            radius = 25
+            radius = 1
             # inertia = pymunk.moment_for_circle(mass, 0, radius, (0,0))
             # body = pymunk.Body(mass, inertia)
             # x = random.randint(115,350)
@@ -83,12 +80,11 @@ while running:
             # shape = pymunk.Circle(body, radius, (0,0))
 
             vertices = [(0, 60), (60, 60), (60, 0), (0, 0)]
-            x = random.randint(115, 350)
-            position = x, 400
+            position = random.randint(200, 400), random.randint(200, 400)
             inertia = pymunk.moment_for_poly(mass, vertices)
             body = pymunk.Body(mass, inertia)
             body.position = position
-            shape = pymunk.Poly(body, vertices)
+            shape = pymunk.Poly(body, vertices, radius=radius)
             shape.friction = 0.6
             shape.density = 0.01
 
@@ -100,10 +96,11 @@ while running:
     screen.fill(THECOLORS["white"])
 
     ### Draw stuff
+    draw_options.shape_outline_color = (0, 0, 0, 255)
     space.debug_draw(draw_options)
 
     ### Update physics
-    dt = 1.0 / 60.0 / 5.
+    dt = 1.0 / 60.0 / 2
     for x in range(2):
         space.step(dt)
 
