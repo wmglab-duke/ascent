@@ -7,6 +7,7 @@ import numpy as np
 import shutil
 
 from src.core import Slide, Map, Fascicle, Nerve, Trace
+from .deformable import Deformable
 from src.utils import *
 
 
@@ -191,7 +192,9 @@ class Manager(Exceptionable, Configurable):
 
         if reposition:
             for slide in self.slides:
-                slide.reposition_fascicles(slide.reshaped_nerve(ReshapeNerveMode.CIRCLE), 5)
+                # slide.reposition_fascicles(slide.reshaped_nerve(ReshapeNerveMode.CIRCLE), 5)
+                deformable = Deformable.from_slide(slide, ReshapeNerveMode.CIRCLE)
+                deformable.deform(morph_count=50)
 
     def write(self, mode: WriteMode):
         """

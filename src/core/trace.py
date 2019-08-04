@@ -390,11 +390,40 @@ class Trace(Exceptionable):
     def deepcopy(self) -> 'Trace':
         return deepcopy(self)
 
-    def pymunk_poly(self, body: pymunk.Body) -> pymunk.Poly:
+    def pymunk_poly(self) -> Tuple[pymunk.Body, pymunk.Poly]:
         """
-        :param body:
+        Return a body and polygon shape
         """
-        return pymunk.Poly(body, [tuple(point[:2]) for point in self.points])
+        copy = self.deepcopy()
+        # copy.down_sample(DownSampleMode.KEEP, 1)
+
+        mass = 1
+        radius = 1
+        vertices = [tuple(point[:2]) for point in copy.points]
+        inertia = pymunk.moment_for_poly(mass, vertices)
+        body = pymunk.Body(mass, inertia)
+        shape = pymunk.Poly(body, vertices, radius=radius)
+        shape.density = 0.01
+        shape.friction = 0.5
+        shape.elasticity = 0.0
+        return body, shape
+
+    def pymunk_segments(self, space: pymunk.Space) -> List[pymunk.Segment]:
+        copy = self.deepcopy()
+        # copy.down_sample(DownSampleMode.KEEP, 1)
+
+        points = np.vstack((copy.points, copy.points[-1]))
+
+        segments: List[pymunk.Segment] = []
+
+        for i, point in enumerate(points[:-1]):
+            if np.array_equiv(point[:2], points[i + 1][:2]):
+                pass
+            segments.append(pymunk.Segment(space.static_body,
+                                           point[:2],
+                                           points[i + 1][:2],
+                                           radius=1.0))
+        return segments
 
     #%% private utility methods
     def __update(self):
