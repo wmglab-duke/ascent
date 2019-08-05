@@ -14,6 +14,13 @@ from src.utils import Exceptionable, SetupMode, ReshapeNerveMode, ConfigKey
 class Deformable(Exceptionable):
 
     def __init__(self, exception_config: list, boundary_start: Trace, boundary_end: Trace, contents: List[Trace]):
+        """
+        :param exception_config: pre-loaded data
+        :param boundary_start: original start trace
+        :param boundary_end: end trace
+        :param contents: list of traces assumed to be within boundary start, not required to be within boundary end.
+        Assumed boundary end will be able to hold all contents.
+        """
 
         # init superclass
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
@@ -29,6 +36,16 @@ class Deformable(Exceptionable):
                render: bool = True,
                minimum_distance: float = 0.0) -> Tuple[List[tuple],
                                                        List[float]]:
+        """
+        :param morph_count: number of incremental traces including the start and end of boundary
+        :param morph_index_step: steps between loops of updating outer boundary, i.e. 1 is every loop,
+        2 is every other loop...
+        :param render: True if you care to see it happen... makes this method WAY slower
+        :param minimum_distance: separation between original inputs
+        :return: tuple of a list of total movement vectors and total angle rotated for each fascicle
+        """
+
+        # TODO: convergence studies of morph count and morph_index_step
 
         # copy the "contents" so multiple deformations are possible
         contents = [trace.deepcopy() for trace in self.contents]
@@ -38,18 +55,22 @@ class Deformable(Exceptionable):
             trace.offset(distance=minimum_distance / 2.0)
 
         # initialize drawing vars, regardless of whether or not actually rendering
+        # these have been moved below (if render...)
         drawing_screen = options = display_dimensions = screen = None
 
+        # initialize the physics space (gravity is 0)
         space = pymunk.Space()
 
+        # referencing the deform_steps method below
         morph_steps = [step.pymunk_segments(space) for step in Deformable.deform_steps(self.start,
                                                                                        self.end,
                                                                                        morph_count)]
 
-        # TODO: FIND ACTUAL VALUES
         bounds = self.start.polygon().bounds
 
+        # draw the deformation
         if render:
+            # packages
             import pygame
             from pygame.locals import KEYDOWN, K_ESCAPE, QUIT, K_SPACE
             from pygame.color import THECOLORS
@@ -75,14 +96,14 @@ class Deformable(Exceptionable):
         # add fascicles bodies to space
         fascicles = [trace.pymunk_poly() for trace in contents]
         for body, shape in fascicles:
-            shape.elasticity = 2.0
+            shape.elasticity = 0.0
             space.add(body, shape)
             start_positions.append(np.array(body.position))
             start_rotations.append(body.angle)
 
         def add_boundary():
             for seg in morph_step:
-                seg.elasticity = 2.0
+                seg.elasticity = 0.0
                 seg.group = 1
             space.add(morph_step)
 
@@ -131,7 +152,6 @@ class Deformable(Exceptionable):
             if render:
                 drawing_screen.fill(THECOLORS["white"])
 
-
                 # draw the actual screen
                 space.debug_draw(options)
                 pygame.transform.scale(drawing_screen, display_dimensions, screen)
@@ -157,9 +177,9 @@ class Deformable(Exceptionable):
     @staticmethod
     def deform_steps(start: Trace, end: Trace, count: int = 2) -> List[Trace]:
         # Find point along old_nerve that is closest to major axis of best fit ellipse
-        (x, y), (a, b), angle = start.ellipse()
+        (x, y), (a, b), angle = start.ellipse()  # returns degrees
 
-        angle *= 2 * np.pi / 360
+        angle *= 2 * np.pi / 360  # converts to radians
 
         ray = LineString([(x, y), (x + (2 * a * np.cos(angle)),  y + (2 * a * np.sin(angle)))])
 
@@ -179,6 +199,9 @@ class Deformable(Exceptionable):
         start_i = start_initial_index
         end_i = end_initial_index
         associated_points = [(0, 0)] * len(start.points)
+
+        # Match pre and post-deformation nerve points. Increment one, decrement the other
+        # to match rotation of trace points.
         while True:
             associated_points[start_i] = (start.points[start_i], end.points[end_i])
 
