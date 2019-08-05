@@ -1,47 +1,38 @@
 #!/usr/bin/env python3.7
 
-"""
-File:       slide.py
-Author:     Jake Cariello
-Created:    July 24, 2019
-
-Description:
-
-    OVERVIEW
-
-    INITIALIZER
-
-    PROPERTIES
-
-    METHODS
-
-"""
-
-# TODO: add more documentation for reposition fascicles
-
+# builtins
 import itertools
 import os
-from typing import List, Tuple, Union
+from typing import List, Union
+import random
+
+# packages
 from shapely.geometry import LineString, Point
 from shapely.affinity import scale
 import numpy as np
-import random
 import matplotlib.pyplot as plt
 
-# really weird syntax is required to directly import the class without going through the pesky init
+# SPARCpy
 from .fascicle import Fascicle
 from .nerve import Nerve
 from .trace import Trace
 from src.utils import *
 
 
-class Slide(Exceptionable, Configurable):
+class Slide(Exceptionable):
 
     def __init__(self, fascicles: List[Fascicle], nerve: Nerve, master_config: dict, exception_config: list,
                  will_reposition: bool = False):
+        """
+        :param fascicles: List of fascicles
+        :param nerve: Nerve (effectively is a Trace)
+        :param master_config: pre-loaded configuration data
+        :param exception_config: pre-loaded configuration data
+        :param will_reposition: boolean flag that tells the initializer whether or not it should be validating the
+        geometries - if it will be reposition then this is not a concern
+        """
 
         # init superclasses
-        Configurable.__init__(self, SetupMode.OLD, ConfigKey.MASTER, master_config)
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
 
         self.nerve: Nerve = nerve
@@ -51,7 +42,14 @@ class Slide(Exceptionable, Configurable):
             # do validation (default is specific!)
             self.validation()
 
-    def validation(self, specific: bool = True, die: bool = True, tolerance: float = None):
+    def validation(self, specific: bool = True, die: bool = True, tolerance: float = None) -> bool:
+        """
+        Checks to make sure nerve geometry is not overlapping itself
+        :param specific: if you want to know what made it fail first
+        :param die: if non-specific, decides whether or not to throw an error if it fails
+        :param tolerance: minimum separation distance for unit you are currently in
+        :return: Boolean for True (no intersection) or False (issues with geometry overlap)
+        """
 
         if specific:
             if self.fascicle_fascicle_intersection():
@@ -73,10 +71,10 @@ class Slide(Exceptionable, Configurable):
             else:
                 return True
 
-    def fascicles_too_close(self, tolerance: float = None):
+    def fascicles_too_close(self, tolerance: float = None) -> bool:
         """
-        :param tolerance:
-        :return:
+        :param tolerance: Minimum separation distance
+        :return: Boolean for True for fascicles too close as defined by tolerance
         """
 
         if tolerance is None:
@@ -90,6 +88,7 @@ class Slide(Exceptionable, Configurable):
         """
         :return: True if any fascicle intersects another fascicle, otherwise False
         """
+
         pairs = itertools.combinations(self.fascicles, 2)
         return any([first.intersects(second) for first, second in pairs])
 
@@ -97,30 +96,21 @@ class Slide(Exceptionable, Configurable):
         """
         :return: True if any fascicle intersects the nerve, otherwise False
         """
+
         return any([fascicle.intersects(self.nerve) for fascicle in self.fascicles])
 
     def fascicles_outside_nerve(self) -> bool:
         """
         :return: True if any fascicle lies outside the nerve, otherwise False
         """
+
         return any([not fascicle.within_nerve(self.nerve) for fascicle in self.fascicles])
-
-    def to_circle(self):
-        """
-        :return:
-        """
-        self.nerve = self.nerve.to_circle()
-
-    def to_ellipse(self):
-        """
-        :return:
-        """
-        self.nerve = self.nerve.to_ellipse()
 
     def move_center(self, point: np.ndarray):
         """
         :param point: the point of the new slide center
         """
+
         # get shift from nerve centroid and point argument
         shift = list(point - np.array(self.nerve.centroid())) + [0]
 
@@ -131,13 +121,15 @@ class Slide(Exceptionable, Configurable):
 
     def reshaped_nerve(self, mode: ReshapeNerveMode) -> Nerve:
         """
-        :param mode:
-        :return:
+        :param mode: Final form of reshaped nerve, either circle or ellipse
+        :return: a copy of the nerve with reshaped nerve boundary, preserves point count which is SUPER critical for
+        fascicle repositioning
         """
+
         if mode == ReshapeNerveMode.CIRCLE:
-            return self.nerve.deepcopy().to_circle()
+            return self.nerve.to_circle()
         elif mode == ReshapeNerveMode.ELLIPSE:
-            return self.nerve.deepcopy().to_ellipse()
+            return self.nerve.to_ellipse()
         else:
             self.throw(16)
 
@@ -148,6 +140,7 @@ class Slide(Exceptionable, Configurable):
         :param seed:
         :return:
         """
+
         self.plot(final=False, fix_aspect_ratio=True)
 
         # seed the random number generator
@@ -160,6 +153,7 @@ class Slide(Exceptionable, Configurable):
             :param r: size for permutations (defaults to number of elements in iterable)
             :return: a random permutation of the elements in iterable
             """
+
             pool = tuple(iterable)
             r = len(pool) if r is None else r
             return tuple(random.sample(pool, r))
@@ -171,6 +165,7 @@ class Slide(Exceptionable, Configurable):
             :param second:
             :return:
             """
+
             # create list of fascicles to jitter, defaulting to just the first fascicle
             fascicles_to_jitter = [first]
 
@@ -316,6 +311,7 @@ class Slide(Exceptionable, Configurable):
         :param inner_format: optional format for inner traces of fascicles
         :param fix_aspect_ratio: optional, if True, will set equal aspect ratio
         """
+
         # if not the last graph plotted
         if fix_aspect_ratio:
             plt.axes().set_aspect('equal', 'datalim')
@@ -337,6 +333,7 @@ class Slide(Exceptionable, Configurable):
         :param factor:
         :return:
         """
+
         center = list(self.nerve.centroid())
 
         self.nerve.scale(factor, center)
@@ -348,6 +345,7 @@ class Slide(Exceptionable, Configurable):
         :param angle:
         :return:
         """
+
         center = list(self.nerve.centroid())
 
         self.nerve.rotate(angle, center)
@@ -359,6 +357,7 @@ class Slide(Exceptionable, Configurable):
         :param mode:
         :param path: root path of slide
         """
+
         start = os.getcwd()
 
         if not os.path.exists(path):

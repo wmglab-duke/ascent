@@ -1,12 +1,6 @@
-"""
-File:       nerve.py
-Author:     Jake Cariello
-Created:    July 24, 2019
+#!/usr/bin/env python3.7
 
-Description: Proxy class for a single trace (might expand later??)
-
-"""
-
+# SPARCpy
 from src.core import Trace
 from src.utils import ConfigKey
 

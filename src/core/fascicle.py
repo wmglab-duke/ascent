@@ -1,3 +1,5 @@
+#!/usr/bin/env python3.7
+
 # builtins
 import itertools
 from typing import List, Tuple, Union

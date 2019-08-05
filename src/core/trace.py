@@ -1,3 +1,5 @@
+#!/usr/bin/env python3.7
+
 # builtins
 from typing import Tuple, Union, List
 from copy import deepcopy
