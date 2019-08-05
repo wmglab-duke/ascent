@@ -1,5 +1,18 @@
 # SPARCpy
 
+### Dependencies
+- numpy
+- Pillow
+- cv2 (opencv-python)
+- matplotlib
+- shapely
+- pyclipper
+- pymunk
+- pygame
+- shutil (builtin?)
+- json (builtin?)
+- 
+
 ### Source images
 The user must provide 3 types of files that will be used to construct the data filesystem. In addition to the type
 designation (a single letter, seen in filename specifications below), 3 pieces of data must be included:
