@@ -1,19 +1,25 @@
+# builtins
 from typing import Tuple, Union, List
+from copy import deepcopy
 
+# packages
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 from shapely.geometry import Polygon, Point
 from shapely.affinity import scale, rotate
 from shapely.ops import nearest_points
-from copy import deepcopy
 import pyclipper
 import pymunk
 
+# SPARCpy
 from src.utils import *
 
 
 class Trace(Exceptionable):
+    """
+    Core object for manipulating points/traces of nerve sections.
+    """
 
     def __init__(self, points, exception_config):
         """
