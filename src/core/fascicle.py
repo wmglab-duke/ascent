@@ -1,43 +1,29 @@
-#!/usr/bin/env python3.7
-
-"""
-File:       fascicle.py
-Author:     Jake Cariello
-Created:    July 24, 2019
-
-Description:
-
-    OVERVIEW
-
-    INITIALIZER
-
-    PROPERTIES
-
-    METHODS
-
-"""
-
-# import math
+# builtins
 import itertools
 from typing import List, Tuple, Union
-import numpy as np
-import matplotlib.pyplot as plt
 from copy import deepcopy
-import cv2
 import os
 
+# packages
+import numpy as np
+import matplotlib.pyplot as plt
+import cv2
+
+# SPARCpy
 from .trace import Trace
 from .nerve import Nerve
 from src.utils import Exceptionable, SetupMode, WriteMode
-
-# TODO: add more documentation for building fascicle lists
 
 
 class Fascicle(Exceptionable):
 
     def __init__(self, exception_config, outer: Trace, inners: List[Trace] = None, outer_scale: float = None):
         """
-        :param outer_scale:
+        Fascicle can be created with either:
+         option 1: an outer and any number of inners
+         option 2: an inner, which is passed in as an outer argument, and scaled out to make a virtual outer
+         option 3: ... tbd
+        :param outer_scale: how much the inner will be scaled to make a virtual outer
         :param exception_config: existing data already loaded form JSON (hence SetupMode.OLD)
         :param inners: list of inner Traces (i.e. endoneuriums)
         :param outer: single outer Trace (i.e. perineurium)
@@ -49,9 +35,11 @@ class Fascicle(Exceptionable):
         # use for scaling if no outer trace (i.e. ONLY outer trace has been set)
         self.outer_scale = outer_scale
 
+        # initialize constituent traces
         self.inners: List[Trace] = inners
         self.outer: Trace = outer
 
+        # if no inners are passed in
         if inners is None:
             self.__endoneurium_setup(outer_scale)
 
@@ -99,7 +87,7 @@ class Fascicle(Exceptionable):
     def within_nerve(self, nerve: Nerve) -> bool:
         """
         :param nerve:
-        :return:
+        :return: returns boolean, true if fascicle is within the nerve, false if fascicle is not in the nerve
         """
         return self.outer.within(nerve)
 
@@ -143,8 +131,8 @@ class Fascicle(Exceptionable):
 
     def angle_to(self, other: Union['Fascicle', Nerve]):
         """
-        :param other:
-        :return:
+        :param other: type Trace
+        :return: returns the CCW angle to the other trace based on self and other's centroids
         """
         if isinstance(other, Fascicle):
             return self.outer.angle_to(other.outer)
@@ -152,27 +140,49 @@ class Fascicle(Exceptionable):
             return self.outer.angle_to(other)
 
     def plot(self, plot_format: str = 'b-'):
+        """
+        :param plot_format: outers automatically black, plot_format only affects inners
+        """
         self.outer.plot()
         for inner in self.inners:
             inner.plot(plot_format)
 
     def deepcopy(self):
+        """
+        :return: creates a new place in memory for the Trace. See: https://docs.python.org/2/library/copy.html
+        """
         return deepcopy(self)
 
-    def scale(self, factor: float, center: List[float]):
-        self.outer.scale(factor, center)
-        for inner in self.inners:
-            inner.scale(factor, center)
-
-    def rotate(self, angle: float, center: List[float] = None):
+    def scale(self, factor: float, center: List[float] = None):
+        """
+        :param factor: scale factor
+        :param center: [x,y]
+        """
         if center is None:
             center = list(self.centroid())
 
-        self.outer.rotate(angle, center)
-        for inner in self.inners:
-            inner.rotate(angle, center)
+        for trace in self.all_traces():
+            trace.scale(factor, center)
+
+    def rotate(self, angle: float, center: List[float] = None):
+        """
+        :param angle: angle in radians
+        :param center: [x,y]
+        """
+        if center is None:
+            center = list(self.centroid())
+
+        for trace in self.all_traces():
+            trace.rotate(angle, center)
+
+
 
     def __endoneurium_setup(self, factor: float):
+        """
+        If you only gave an outer, treat it as an inner, and use offset to create new outer
+        :param factor: how much bigger to make the outer from the inner (i.e. 1.03 is a 3% perineurium
+        thickness to inner fascicle diameter)
+        """
 
         # check that outer scale is provided
         if self.outer_scale is None:
@@ -202,7 +212,7 @@ class Fascicle(Exceptionable):
             2: index of first child contour
             3: index of parent contour
 
-        This algorithm is expecting a max hierarchical depth of 2 (i.e. one level each of inners and outers)
+        IMPORTANT: This algorithm is expecting a max hierarchical depth of 2 (i.e. one level each of inners and outers)
 
         :param z:
         :param img_path:
@@ -234,10 +244,10 @@ class Fascicle(Exceptionable):
         # read image and flip
         img = np.flipud(cv2.imread(img_path, -1))
 
-        # get contours and hierarchy
+        # get contours and hierarchy using cv2
         cnts, hierarchy = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
-        # create list (will be returned at end of method)
+        # create empty list (will be returned at end of method)
         fascicles: List[Fascicle] = []
 
         if plot:
@@ -254,23 +264,14 @@ class Fascicle(Exceptionable):
                 # if len(inner_contours) == 0:
                 #     inner_contours.append(outer_contour)
 
-
                 # build Traces from contours
                 outer_trace = Trace([item + [z] for item in outer_contour[:, 0, :]], exception_config)
                 inner_traces = [Trace([item + [z] for item in cnt[:, 0, :]], exception_config) for cnt in inner_contours]
 
-
                 # add fascicle to list (with or without inner trace)
                 if len(inner_traces) > 0:
-                    try:
-                        fascicles.append(Fascicle(exception_config, outer_trace, inner_traces))
-                    except:
-                        outer_trace.plot()
-                        for inner in inner_traces:
-                            inner.plot()
-                        plt.show()
-                        raise Exception('')
-                else:
+                    fascicles.append(Fascicle(exception_config, outer_trace, inner_traces))
+                else:  # inners only case
                     fascicles.append(Fascicle(exception_config, outer_trace, outer_scale=scale))
 
                 if plot:
@@ -293,7 +294,7 @@ class Fascicle(Exceptionable):
         :param outer_img_path:
         :param inner_img_path:
         :param exception_config:
-        :param plot:
+        :param plot: boolean
         :return: list of Fascicles derived from the two images
         """
         def build_traces(path: str) -> List[Trace]:
@@ -347,8 +348,8 @@ class Fascicle(Exceptionable):
 
     def write(self, mode: WriteMode, path: str):
         """
-        :param mode:
-        :param path: root path of fascicle
+        :param mode: Sectionwise... for now
+        :param path: root path of fascicle trace destination
         """
 
         start = os.getcwd()
