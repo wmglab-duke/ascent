@@ -47,9 +47,17 @@ class MaskFileNames(Enum):
     SCALE_BAR = 's.tif'
     NERVE = 'n.tif'
 
+
 @unique
 class NerveMode(Enum):
     PRESENT = 1
     NOT_PRESENT = 0
+
+
+@unique
+class DeformationMode(Enum):
+    NONE = None
+    JITTER = 0
+    PHYSICS = 1
 
 

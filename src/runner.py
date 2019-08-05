@@ -198,7 +198,7 @@ class Runner(Exceptionable, Configurable):
         self.manager.build_file_structure()
 
         print('\nPOPULATE')
-        self.manager.populate(MaskInputMode.INNERS, NerveMode.PRESENT, reposition=True)
+        self.manager.populate(MaskInputMode.INNERS, NerveMode.PRESENT, deform_mode=DeformationMode.PHYSICS)
 
         print('\nWRITE')
         self.manager.write(WriteMode.SECTIONWISE)

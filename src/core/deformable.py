@@ -1,15 +1,10 @@
 # builtin
-import random
-from typing import List
+from typing import List, Tuple
 
 # packages
-import numpy as np
 import pymunk.pygame_util
-import pygame
-from pygame.locals import *
-from pygame.color import *
+import numpy as np
 from shapely.geometry import LineString, Point
-import matplotlib.pyplot as plt
 
 # SPARCpy
 from src.core import Trace, Slide
@@ -28,52 +23,73 @@ class Deformable(Exceptionable):
         self.end = boundary_end
         self.contents = contents
 
-    def deform(self, morph_count: int = 100, morph_index_step: int = 10, render: bool = True) -> List[tuple]:
+    def deform(self,
+               morph_count: int = 100,
+               morph_index_step: int = 10,
+               render: bool = True,
+               minimum_distance: float = 0.0) -> Tuple[List[tuple],
+                                                        List[float]]:
 
-        # init space with default gravity (0, 0)
+        # copy the "contents" so multiple deformations are possible
+        contents = [trace.deepcopy() for trace in self.contents]
+
+        # offset all the traces to provide for an effective minimum distance for original fascicles
+        for trace in contents:
+            trace.offset(distance=minimum_distance / 2.0)
+
+        # initialize drawing vars, regardless of whether or not actually rendering
+        drawing_screen = options = display_dimensions = screen = None
+
         space = pymunk.Space()
 
-        pygame.init()
-
-        clock = pygame.time.Clock()
-
-
-        #TODO: implement static line segment version of Trace to pymunk
-
-        morph_steps = [step.pymunk_segments(space) for step in self.deform_steps(self.start, self.end, morph_count)]
-        # morph_steps = [step.pymunk_segments(space) for step in (self.start, self.end)]
-
-
+        morph_steps = [step.pymunk_segments(space) for step in Deformable.deform_steps(self.start,
+                                                                                       self.end,
+                                                                                       morph_count)]
 
         # TODO: FIND ACTUAL VALUES
         bounds = self.start.polygon().bounds
 
-        width = int(1.5 * bounds[2])
-        height = int(1.5 * bounds[3])
+        if render:
+            import pygame
+            from pygame.locals import KEYDOWN, K_ESCAPE, QUIT, K_SPACE
+            from pygame.color import THECOLORS
 
-        aspect = float(width) / height
+            width = int(1.5 * bounds[2])
+            height = int(1.5 * bounds[3])
 
-        display_dimensions = int(800 * aspect), 800
-        screen = pygame.display.set_mode(display_dimensions)
+            aspect = float(width) / height
 
-        drawing_screen = pygame.Surface((width, height))
-        options = pymunk.pygame_util.DrawOptions(drawing_screen)
-        options.shape_outline_color = (0, 0, 0, 255)
-        options.shape_static_color = (0, 0, 0, 255)
+            display_dimensions = int(800 * aspect), 800
+            screen = pygame.display.set_mode(display_dimensions)
+
+            pygame.init()
+            drawing_screen = pygame.Surface((width, height))
+            options = pymunk.pygame_util.DrawOptions(drawing_screen)
+            options.shape_outline_color = (0, 0, 0, 255)
+            options.shape_static_color = (0, 0, 0, 255)
 
         # init vector of start positions
-        start_positions: list = []
+        start_positions: List[np.ndarray] = []
+        start_rotations: List[float] = []
 
         # add fascicles bodies to space
-        for body, shape in [trace.pymunk_poly() for trace in self.contents]:
-            start_positions.append(body.position)
+        fascicles = [trace.pymunk_poly() for trace in contents]
+        for body, shape in fascicles:
+            shape.elasticity = 2.0
             space.add(body, shape)
+            start_positions.append(np.array(body.position))
+            start_rotations.append(body.angle)
 
         def add_boundary():
             for seg in morph_step:
                 seg.elasticity = 2.0
                 seg.group = 1
             space.add(morph_step)
+
+        def step_physics(space: pymunk.Space, count: int):
+            dt = 1.0 / 60.0
+            for x in range(count):
+                space.step(dt)
 
         running = True
         loop_count = morph_index_step
@@ -83,17 +99,19 @@ class Deformable(Exceptionable):
 
         while running:
             # if the loop count is divisible by the index step, update morph
-            for event in pygame.event.get():
-                if event.type == QUIT:
-                    running = False
-                elif event.type == KEYDOWN and event.key == K_ESCAPE:
-                    running = False
-                elif event.type == KEYDOWN and event.key == K_SPACE:
-                    pass
+            if render:
+                for event in pygame.event.get():
+                    if event.type == QUIT:
+                        running = False
+                    elif event.type == KEYDOWN and event.key == K_ESCAPE:
+                        running = False
+                    elif event.type == KEYDOWN and event.key == K_SPACE:
+                        pass
 
             if loop_count % morph_index_step == 0:
                 space.remove(morph_step)
                 morph_index += 1
+                print('\tmorph step {} of {}'.format(morph_index, len(morph_steps)))
 
                 if morph_index == len(morph_steps):
                     running = False
@@ -102,9 +120,7 @@ class Deformable(Exceptionable):
                     add_boundary()
 
             # update physics
-            dt = 1.0 / 60.0 / 2
-            for x in range(2):
-                space.step(dt)
+            step_physics(space, 3)
 
             # draw screen
             if render:
@@ -119,12 +135,28 @@ class Deformable(Exceptionable):
 
             loop_count += 1
 
-    def deform_steps(self, start: Trace, end: Trace, count: int = 2) -> List[Trace]:
+        step_physics(space, 500)
+
+        # get end positions
+        end_positions: List[np.ndarray] = []
+        end_rotations: List[float] = []
+        for body, _ in fascicles:
+            end_positions.append(np.array(body.position))
+            end_rotations.append(body.angle)
+
+        print('DONE REPOSITIONING')
+
+        # return total movement vectors (dx, dy)
+        movements = [tuple(end - start) for start, end in zip(start_positions, end_positions)]
+        rotations = [end - start for start, end in zip(start_rotations, end_rotations)]
+        return movements, rotations
+
+    @staticmethod
+    def deform_steps(start: Trace, end: Trace, count: int = 2) -> List[Trace]:
         # Find point along old_nerve that is closest to major axis of best fit ellipse
         (x, y), (a, b), angle = start.ellipse()
 
         angle *= 2 * np.pi / 360
-        print(angle)
 
         ray = LineString([(x, y), (x + (2 * a * np.cos(angle)),  y + (2 * a * np.sin(angle)))])
 
@@ -179,13 +211,13 @@ class Deformable(Exceptionable):
         # method in slide will pull out each trace and add to a list of contents, go through traces and build polygons
 
         # get start boundary
-        boundary_start = slide.nerve
+        boundary_start = slide.nerve.deepcopy()
 
         # get end boundary
-        boundary_end = slide.reshaped_nerve(mode)
+        boundary_end = slide.reshaped_nerve(mode).deepcopy()
 
         # get contents
-        contents = [fascicle.outer for fascicle in slide.fascicles]
+        contents = [fascicle.outer.deepcopy() for fascicle in slide.fascicles]
 
         # exception configuration data
         exception_config_data = slide.configs[ConfigKey.EXCEPTIONS.value]

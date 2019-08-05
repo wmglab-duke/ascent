@@ -143,5 +143,10 @@
     "code": 28,
     "text": "Unimplemented write mode.",
     "source": "src.core.Manager.write"
+  },
+    {
+    "code": 29,
+    "text": "Either factor or distance MUST be provided.",
+    "source": "src.core.Trace.offset"
   }
 ]

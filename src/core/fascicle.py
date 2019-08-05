@@ -185,7 +185,7 @@ class Fascicle(Exceptionable):
         self.inners = [self.outer.deepcopy()]
 
         # scale up outer trace
-        self.outer.offset(factor)
+        self.outer.offset(factor=factor)
 
     @staticmethod
     def compiled_to_list(img_path: str, exception_config,

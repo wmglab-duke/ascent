@@ -56,11 +56,13 @@ class Trace(Exceptionable):
         # required for mutating method
         self.__update()
 
-    def offset(self, factor: float):
+    def offset(self, factor: float = None, distance: float = None):
         """
         :param factor:
+        :param distance:
         :return:
         """
+
         # create clipper offset object
         pco = pyclipper.PyclipperOffset()
 
@@ -70,8 +72,11 @@ class Trace(Exceptionable):
         # add points to clipper
         pco.AddPath(tuple_points, pyclipper.JT_SQUARE, pyclipper.ET_CLOSEDPOLYGON)
 
-        # find offset distance from factor and mean radius
-        distance: float = self.mean_radius() * (factor - 1)
+        if factor is not None:
+            # find offset distance from factor and mean radius
+            distance: float = self.mean_radius() * (factor - 1)
+        elif distance is None:
+            self.throw(28)
 
         # set new points of offset
         self.points = None
@@ -395,6 +400,7 @@ class Trace(Exceptionable):
         Return a body and polygon shape
         """
         copy = self.deepcopy()
+        copy.shift(-np.array(list(copy.centroid()) + [0]))
         # copy.down_sample(DownSampleMode.KEEP, 1)
 
         mass = 1
@@ -402,6 +408,7 @@ class Trace(Exceptionable):
         vertices = [tuple(point[:2]) for point in copy.points]
         inertia = pymunk.moment_for_poly(mass, vertices)
         body = pymunk.Body(mass, inertia)
+        body.position = self.centroid()
         shape = pymunk.Poly(body, vertices, radius=radius)
         shape.density = 0.01
         shape.friction = 0.5

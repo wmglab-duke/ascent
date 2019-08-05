@@ -97,7 +97,7 @@ class Manager(Exceptionable, Configurable):
 
             os.chdir(start_directory)
 
-    def populate(self, mask_input_mode: MaskInputMode, nerve_mode: NerveMode, reposition: bool = True):
+    def populate(self, mask_input_mode: MaskInputMode, nerve_mode: NerveMode, deform_mode: DeformationMode = DeformationMode.NONE):
 
         def exists(mask_file_name: MaskFileNames):
             return os.path.exists(mask_file_name.value)
@@ -169,16 +169,16 @@ class Manager(Exceptionable, Configurable):
                     nerve = Nerve(Trace([point + [0] for point in contour[0][:, 0, :]],
                                         self.configs[ConfigKey.EXCEPTIONS.value]))
 
-            elif nerve_mode == NerveMode.NOT_PRESENT:
+            else:  # nerve_mode == NerveMode.NOT_PRESENT:
                 self.throw(24)
-            else:  # exhaustive
-                pass
+
+
 
             slide: Slide = Slide(fascicles,
                                  nerve,
                                  self.configs[ConfigKey.MASTER.value],
                                  self.configs[ConfigKey.EXCEPTIONS.value],
-                                 will_reposition=True)
+                                 will_reposition=(deform_mode != DeformationMode.NONE))
 
             self.slides.append(slide)
 
@@ -190,11 +190,26 @@ class Manager(Exceptionable, Configurable):
             print(scale_path)
             self.throw(19)
 
-        if reposition:
-            for slide in self.slides:
-                # slide.reposition_fascicles(slide.reshaped_nerve(ReshapeNerveMode.CIRCLE), 5)
+        # repositioning!
+        for slide in self.slides:
+            title = ''
+
+            if deform_mode == DeformationMode.PHYSICS:
                 deformable = Deformable.from_slide(slide, ReshapeNerveMode.CIRCLE)
-                deformable.deform(morph_count=50)
+                morph_count = 36
+                title = 'morph count: {}'.format(morph_count)
+                movements, rotations = deformable.deform(morph_count=morph_count, render=False, minimum_distance=10.0)
+                for move, angle, fascicle in zip(movements, rotations, slide.fascicles):
+                    fascicle.shift(list(move) + [0])
+                    fascicle.rotate(angle)
+            elif deform_mode == DeformationMode.JITTER:
+                slide.reposition_fascicles(slide.reshaped_nerve(ReshapeNerveMode.CIRCLE), 5)
+            else:  # must be DeformationMode.NONE
+                import warnings
+                warnings.warn('NO DEFORMATION is happening!')
+
+            slide.nerve = slide.reshaped_nerve(ReshapeNerveMode.CIRCLE)
+            slide.plot(fix_aspect_ratio=True, title=title)
 
     def write(self, mode: WriteMode):
         """
