@@ -18,18 +18,21 @@ from src.utils import *
 
 class Trace(Exceptionable):
     """
-    Core object for manipulating points/traces of nerve sections.
+    Core object for manipulating points/traces of nerve sections. Trace is the fundamental building block for nerve
+    geometries (fascicles, nerve, endoneurium, perineurium)
     """
 
     def __init__(self, points, exception_config):
         """
-        :param points:
-        :param exception_config:
+        :param points: nx3 list expected to be a loop. If a non-loop is given, then the functionality is not defined.
+        :param exception_config: data passed from a higher object for exceptions.json, hence why it inherits exceptionable.
         """
 
+        # These are private instance variables that are returned by getter
         self.__contour = None
         self.__polygon = None
         self.__centroid = None
+        self.__int_points = None
 
         # set up superclass
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
@@ -39,9 +42,9 @@ class Trace(Exceptionable):
             points = np.append(points, np.zeros([len(points), 1]), 1)
 
         self.points = None  # must declare instance variable in __init__ at some point!
-        self.__int_points = None
         self.append(points)
 
+    #%% public, MUTATING methods
     def append(self, points):
         """
         :param points: nx3 ndarray, where each row is a point [x, y, z]
@@ -64,9 +67,9 @@ class Trace(Exceptionable):
 
     def offset(self, factor: float = None, distance: float = None):
         """
-        :param factor:
-        :param distance:
-        :return:
+        NOT AN AFFINE TRANSFORMATION
+        :param factor: used to scale up by a factor if you are offsetting the boundary by a factor
+        :param distance: used to scale by a discrete distance
         """
 
         # create clipper offset object
@@ -93,6 +96,11 @@ class Trace(Exceptionable):
         pco.Clear()
 
     def scale(self, factor: float = 1, center: Union[List[float], str] = 'centroid'):
+        """
+        :param factor: scaling factor to scale up by - multiple all points by a factor.
+        [X 0 0; 0 Y 0; 0 0 Z]
+        :param center: string "centroid", string "center" or a point [x,y]
+        """
 
         if isinstance(center, list):
             center = tuple(center)
@@ -107,6 +115,10 @@ class Trace(Exceptionable):
         self.__update()
 
     def rotate(self, angle: float, center: Union[List[float], str] = 'centroid'):
+        """
+        :param angle: rotates trace by radians CCW
+        :param center: string "centroid", string "center" or a point [x,y]
+        """
 
         if isinstance(center, list):
             center = tuple(center)
@@ -123,6 +135,7 @@ class Trace(Exceptionable):
     def shift(self, vector):
         """
         :param vector: 1-dim vector with 3 elements... shape is (3,)
+        Moves trace [x,y] in any direction (x,y,z) could be np.ndarray/list/tuple
         """
 
         # must be 3 item vector
@@ -148,11 +161,8 @@ class Trace(Exceptionable):
 
         if mode == DownSampleMode.KEEP:
             pass  # nothing here; just showing the case for readability
-        elif mode == DownSampleMode.REMOVE:
+        else:  # mode == DownSampleMode.REMOVE:
             ii = [i for i in list(range(0, self.count())) if i not in ii]
-        else:
-            # this should be unreachable because above cases are exhaustive
-            print('I am utterly baffled.')
 
         self.points = self.points[ii, :]
 
@@ -169,7 +179,7 @@ class Trace(Exceptionable):
     #%% dependent on shapely.geometry.Polygon (ALL 2D GEOMETRY)
     def polygon(self) -> Polygon:
         """
-        :return:
+        :return: shape of polygon as a shapely.geometry.Polygon (ALL 2D geometry)
         """
         if self.__polygon is None:
             if len(set(self.points[:, 2])) != 1:
@@ -204,8 +214,8 @@ class Trace(Exceptionable):
 
     def angle_to(self, other: 'Trace'):
         """
-        :param other:
-        :return:
+        :param other: type Trace
+        :return: returns the CCW angle to the other trace based on self and other's centroids
         """
         return Trace.angle(self.centroid(), other.centroid())
 
@@ -221,9 +231,9 @@ class Trace(Exceptionable):
 
     def min_distance(self, other: 'Trace', return_points: bool = False) -> Union[float, tuple]:
         """
-        :param return_points:
+        :param return_points: boolean for whether the closest points will be returned
         :param other: Trace to find distance to
-        :return: float minimum distance
+        :return: float minimum distance and the points if indicated
         """
 
         distance = self.polygon().boundary.distance(other.polygon().boundary)
@@ -241,6 +251,11 @@ class Trace(Exceptionable):
         return self.polygon().boundary.hausdorff_distance(other.polygon().boundary)
 
     def centroid_distance(self, other: 'Trace', return_points: bool = False) -> Union[float, tuple]:
+        """
+        :param return_points: boolean for whether the closest points will be returned
+        :param other: Trace to find distance to
+        :return: float maximum distance and the points if indicated
+        """
         self_c = Point([self.centroid()])
 
         distance = self_c.distance(other.polygon().boundary)
@@ -254,7 +269,7 @@ class Trace(Exceptionable):
     def contour(self) -> np.ndarray:
         """
         Builds a "fake" contour so that cv2 can analyze it (independent of the image)
-        :return:
+        Use for to_circle and to_ellipse
         """
         if self.__contour is None:
             # check points all have same z-value (MAY BE CHANGED?)
@@ -279,14 +294,14 @@ class Trace(Exceptionable):
 
     def mean_radius(self) -> float:
         """
-        :return:
+        :return: the mean radius of the best-fit ellipse
         """
         ((_, _), (a, b), _) = cv2.fitEllipse(self.contour())
         return float(np.mean([item / 2 for item in (a, b)], axis=0))
 
     def to_ellipse(self):
         """
-        :return:
+        :return: returns ellipse object methods for best-fit ellipse
         """
         # ((centroid), (axes), angle) ... note angle is in degrees
         ((u, v), (a, b), angle) = self.ellipse()
@@ -296,7 +311,8 @@ class Trace(Exceptionable):
 
     def to_circle(self):
         """
-        :return:
+        :return: returns ellipse object methods for best-fit circle (averages axes of best fit ellipse and
+        sets as circle radius)
         """
         # ((centroid), (axes), angle) ... note angle is in degrees
         ((u, v), (a, b), angle) = self.ellipse()
@@ -317,6 +333,8 @@ class Trace(Exceptionable):
         :param b: second (major) axis, twice the "radius"
         :param angle: clockwise angle to rotate in radians
         :return: a new Trace object with the points of the best-fit ellipse (point count is preserved)
+
+        This one is for all you Matlab fanpeople
         """
         # get t values for parameterized ellipse and preserve number of points
         t = np.linspace(0, 2 * np.pi, self.count())
@@ -357,7 +375,7 @@ class Trace(Exceptionable):
     def write(self, mode: WriteMode, path: str):
         """
         Write Trace data (points, elements, etc.) to file
-        :param mode: choice of write implementations
+        :param mode: choice of write implementations - sectionwise file for COMSOL
         :param path: string path with file name of file WITHOUT extension (it is derived from mode)
         :return: string full path including extension that was written to
         """
@@ -399,11 +417,14 @@ class Trace(Exceptionable):
         return path
 
     def deepcopy(self) -> 'Trace':
+        """
+        :return: creates a new place in memory for the Trace. See: https://docs.python.org/2/library/copy.html
+        """
         return deepcopy(self)
 
     def pymunk_poly(self) -> Tuple[pymunk.Body, pymunk.Poly]:
         """
-        Return a body and polygon shape
+        :return: a body and polygon shape, rigid polygon
         """
         copy = self.deepcopy()
         copy.shift(-np.array(list(copy.centroid()) + [0]))
@@ -414,27 +435,31 @@ class Trace(Exceptionable):
         vertices = [tuple(point[:2]) for point in copy.points]
         inertia = pymunk.moment_for_poly(mass, vertices)
         body = pymunk.Body(mass, inertia)
-        body.position = self.centroid()
+        body.position = self.centroid()  # position is tracked from trace centroid
         shape = pymunk.Poly(body, vertices, radius=radius)
-        shape.density = 0.01
+        shape.density = 0.01  # all fascicles have same density so this value does not matter
         shape.friction = 0.5
-        shape.elasticity = 0.0
+        shape.elasticity = 0.0  # they absorb all energy, i.e. they do not bounce
         return body, shape
 
     def pymunk_segments(self, space: pymunk.Space) -> List[pymunk.Segment]:
+        """
+        :param space:
+        :return: returns a list of static line segments that cannot be moved
+        """
         copy = self.deepcopy()
         # copy.down_sample(DownSampleMode.KEEP, 1)
 
-        points = np.vstack((copy.points, copy.points[-1]))
+        points = np.vstack((copy.points, copy.points[0]))
 
         segments: List[pymunk.Segment] = []
 
-        for i, point in enumerate(points[:-1]):
-            if np.array_equiv(point[:2], points[i + 1][:2]):
+        for first, second in zip(points[:-1], points[1:]):
+            if np.array_equiv(first[:2], second[:2]):
                 pass
             segments.append(pymunk.Segment(space.static_body,
-                                           point[:2],
-                                           points[i + 1][:2],
+                                           first[:2],
+                                           second[:2],
                                            radius=1.0))
         return segments
 
