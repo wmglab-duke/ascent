@@ -21,8 +21,7 @@ from src.utils import *
 
 class Slide(Exceptionable):
 
-    def __init__(self, fascicles: List[Fascicle], nerve: Nerve, exception_config: list,
-                 will_reposition: bool = False):
+    def __init__(self, fascicles: List[Fascicle], nerve: Nerve, exception_config: list, will_reposition: bool = False):
         """
         :param fascicles: List of fascicles
         :param nerve: Nerve (effectively is a Trace)
