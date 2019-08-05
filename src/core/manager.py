@@ -137,7 +137,8 @@ class Manager(Exceptionable, Configurable):
                 if exists(MaskFileNames.INNERS):
                     fascicles = Fascicle.inner_to_list(MaskFileNames.INNERS.value,
                                                        self.configs[ConfigKey.EXCEPTIONS.value],
-                                                       scale=1.03)
+                                                       scale=1 + self.search(ConfigKey.MASTER,
+                                                                             'outer_thick_to_inner_diam'))
                 else:
                     self.throw(21)
 
@@ -197,10 +198,12 @@ class Manager(Exceptionable, Configurable):
             self.throw(19)
 
         # repositioning!
-        for slide in self.slides:
+        for i, slide in enumerate(self.slides):
+            print('\tslide {} of {}'.format(1 + i, len(self.slides)))
             title = ''
 
             if deform_mode == DeformationMode.PHYSICS:
+                print('\t\tsetting up physics')
                 deformable = Deformable.from_slide(slide, ReshapeNerveMode.CIRCLE)
                 morph_count = 36
                 title = 'morph count: {}'.format(morph_count)
@@ -260,4 +263,3 @@ class Manager(Exceptionable, Configurable):
 
             # go back up to start directory, then to top of loop
             os.chdir(start_directory)
-

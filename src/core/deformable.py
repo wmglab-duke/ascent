@@ -111,7 +111,12 @@ class Deformable(Exceptionable):
             if loop_count % morph_index_step == 0:
                 space.remove(morph_step)
                 morph_index += 1
-                print('\tmorph step {} of {}'.format(morph_index, len(morph_steps)))
+                Deformable.printProgressBar(morph_index,
+                                            len(morph_steps),
+                                            prefix='\t\tdeforming',
+                                            suffix='complete',
+                                            length=50)
+                # print('\tmorph step {} of {}'.format(morph_index, len(morph_steps)))
 
                 if morph_index == len(morph_steps):
                     running = False
@@ -143,8 +148,6 @@ class Deformable(Exceptionable):
         for body, _ in fascicles:
             end_positions.append(np.array(body.position))
             end_rotations.append(body.angle)
-
-        print('DONE REPOSITIONING')
 
         # return total movement vectors (dx, dy)
         movements = [tuple(end - start) for start, end in zip(start_positions, end_positions)]
@@ -224,6 +227,28 @@ class Deformable(Exceptionable):
 
         # return new object
         return Deformable(exception_config_data, boundary_start, boundary_end, contents)
+
+    # copied from https://stackoverflow.com/questions/3173320/text-progress-bar-in-the-console
+    @staticmethod
+    def printProgressBar(iteration, total, prefix='', suffix='', decimals=1, length=100, fill='█'):
+        """
+        Call in a loop to create terminal progress bar
+        @params:
+            iteration   - Required  : current iteration (Int)
+            total       - Required  : total iterations (Int)
+            prefix      - Optional  : prefix string (Str)
+            suffix      - Optional  : suffix string (Str)
+            decimals    - Optional  : positive number of decimals in percent complete (Int)
+            length      - Optional  : character length of bar (Int)
+            fill        - Optional  : bar fill character (Str)
+        """
+        percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+        filledLength = int(length * iteration // total)
+        bar = fill * filledLength + '-' * (length - filledLength)
+        print('\r%s |%s| %s%% %s' % (prefix, bar, percent, suffix), end='\r')
+        # Print New Line on Complete
+        if iteration == total:
+            print()
 
 
 

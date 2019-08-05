@@ -36,9 +36,6 @@ from typing import Type
 from .enums import *
 
 
-
-
-
 class Configurable:
 
     def __init__(self, mode: SetupMode, key: ConfigKey, config):
@@ -125,7 +122,7 @@ class Configurable:
 
         self.configs[key.value] = self.load(self.config_path)
 
-    def search_mode(self, mode: Type[Enum]) -> Type[Enum]:
+    def search_mode(self, mode: Type[Enum]):
         """
         :param mode: an Enum mode that is being searched. it MUST have variable config, which is the name
                      to search for in the masterX.json file

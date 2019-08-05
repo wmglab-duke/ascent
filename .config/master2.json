@@ -17,5 +17,6 @@
     "nerve": "PRESENT",
     "reshape_nerve": "CIRCLE",
     "deform": "PHYSICS"
-  }
+  },
+  "outer_thick_to_inner_diam": 0.03
 }
