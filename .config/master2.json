@@ -11,5 +11,11 @@
   },
   "map_path": ["data", "input", "samples", "Pig13-1", "map.json"],
   "samples_path": ["data", "samples"],
-  "sample": "Pig13-1"
+  "sample": "Pig13-1",
+  "modes": {
+    "mask_input": "INNERS",
+    "nerve": "PRESENT",
+    "reshape_nerve": "CIRCLE",
+    "deform": "PHYSICS"
+  }
 }

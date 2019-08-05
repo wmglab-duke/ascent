@@ -31,8 +31,12 @@ Description:
 
 import json
 import os
+from typing import Type
 
-from .enums import SetupMode, ConfigKey
+from .enums import *
+
+
+
 
 
 class Configurable:
@@ -120,6 +124,27 @@ class Configurable:
             self.validate_path(config_path)
 
         self.configs[key.value] = self.load(self.config_path)
+
+    def search_mode(self, mode: Type[Enum]) -> Type[Enum]:
+        """
+        :param mode: an Enum mode that is being searched. it MUST have variable config, which is the name
+                     to search for in the masterX.json file
+        :return: the Enum version of the mode that is specified by the master config
+        """
+
+        list_results = [option for option in mode
+                        if str(option).split('.')[1] == self.search(ConfigKey.MASTER, 'modes', mode.config.value)]
+
+        if len(list_results) < 1:
+            raise Exception('\n\tcode:\t-3\n'
+                            '\ttext:\tNo matching mode value found\n'
+                            '\tsource:\tsrc.utils.Configurable.search_mode')
+        if len(list_results) > 1:
+            raise Exception('\n\tcode:\t-4\n'
+                            '\ttext:\tMore than one mode value found. Please check configuration JSON file.\n'
+                            '\tsource:\tsrc.utils.Configurable.search_mode')
+
+        return list_results[0]
 
     @staticmethod
     def validate_path(config_path: str):

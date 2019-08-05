@@ -97,7 +97,13 @@ class Manager(Exceptionable, Configurable):
 
             os.chdir(start_directory)
 
-    def populate(self, mask_input_mode: MaskInputMode, nerve_mode: NerveMode, deform_mode: DeformationMode = DeformationMode.NONE):
+    def populate(self):
+
+        # get parameters from configuration file
+        mask_input_mode = self.search_mode(MaskInputMode)
+        nerve_mode = self.search_mode(NerveMode)
+        reshape_nerve_mode = self.search_mode(ReshapeNerveMode)
+        deform_mode = self.search_mode(DeformationMode)
 
         def exists(mask_file_name: MaskFileNames):
             return os.path.exists(mask_file_name.value)
@@ -203,12 +209,12 @@ class Manager(Exceptionable, Configurable):
                     fascicle.shift(list(move) + [0])
                     fascicle.rotate(angle)
             elif deform_mode == DeformationMode.JITTER:
-                slide.reposition_fascicles(slide.reshaped_nerve(ReshapeNerveMode.CIRCLE), 5)
+                slide.reposition_fascicles(slide.reshaped_nerve(reshape_nerve_mode), 5)
             else:  # must be DeformationMode.NONE
                 import warnings
                 warnings.warn('NO DEFORMATION is happening!')
 
-            slide.nerve = slide.reshaped_nerve(ReshapeNerveMode.CIRCLE)
+            slide.nerve = slide.reshaped_nerve(reshape_nerve_mode)
             slide.plot(fix_aspect_ratio=True, title=title)
 
     def write(self, mode: WriteMode):
@@ -223,8 +229,8 @@ class Manager(Exceptionable, Configurable):
         sample_path = os.path.join(self.path(ConfigKey.MASTER, 'samples_path'),
                                    self.search(ConfigKey.MASTER, 'sample'))
 
-        # loop through the slide info (index i SHOULD correspond to slide in self.slides
-        # TODO: some kind of check to ensure self.slides matches up with self.map.slides
+        # loop through the slide info (index i SHOULD correspond to slide in self.slides)
+        # TODO: ensure self.slides matches up with self.map.slides
         for i, slide_info in enumerate(self.map.slides):
             # unpack data and force cast to string
             cassette, number, _, source_directory = slide_info.data()

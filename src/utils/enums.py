@@ -26,12 +26,14 @@ class WriteMode(Enum): # note: NOT required to have unique values
 
 @unique
 class ReshapeNerveMode(Enum):
+    config = 'reshape_nerve'
     CIRCLE = 0
     ELLIPSE = 1
 
 
 @unique
 class MaskInputMode(Enum):
+    config = 'mask_input'
     INNERS = 0
     OUTERS = 1
     INNER_AND_OUTER_SEPARATE = 2
@@ -50,12 +52,14 @@ class MaskFileNames(Enum):
 
 @unique
 class NerveMode(Enum):
+    config = 'nerve'
     PRESENT = 1
     NOT_PRESENT = 0
 
 
 @unique
 class DeformationMode(Enum):
+    config = 'deform'
     NONE = None
     JITTER = 0
     PHYSICS = 1

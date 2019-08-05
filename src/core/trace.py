@@ -76,7 +76,7 @@ class Trace(Exceptionable):
             # find offset distance from factor and mean radius
             distance: float = self.mean_radius() * (factor - 1)
         elif distance is None:
-            self.throw(28)
+            self.throw(29)
 
         # set new points of offset
         self.points = None
