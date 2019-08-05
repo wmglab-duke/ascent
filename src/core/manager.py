@@ -138,6 +138,7 @@ class Manager(Exceptionable, Configurable):
                     fascicles = Fascicle.inner_to_list(MaskFileNames.INNERS.value,
                                                        self.configs[ConfigKey.EXCEPTIONS.value],
                                                        scale=1 + self.search(ConfigKey.MASTER,
+                                                                             'scale',
                                                                              'outer_thick_to_inner_diam'))
                 else:
                     self.throw(21)
@@ -192,7 +193,7 @@ class Manager(Exceptionable, Configurable):
             os.chdir(start_directory)
 
         if os.path.exists(scale_path):
-            self.scale(scale_path, self.search(ConfigKey.MASTER, 'scale_bar', 'length'))
+            self.scale(scale_path, self.search(ConfigKey.MASTER, 'scale', 'scale_bar_length'))
         else:
             print(scale_path)
             self.throw(19)

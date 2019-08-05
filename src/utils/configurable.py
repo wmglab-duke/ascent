@@ -1,7 +1,7 @@
 #!/usr/bin/env python3.7
 
 """
-File:       exceptionable.py
+File:       configurable.py
 Author:     Jake Cariello
 Created:    July 20, 2019
 
