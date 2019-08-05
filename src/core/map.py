@@ -43,10 +43,9 @@ Description:
     list_to_json
     json_to_list
     clean_file_names (not system-independent)
-
-
 """
 
+# builtins
 import datetime as dt
 import numpy as np
 import os
@@ -55,6 +54,7 @@ import json
 import warnings
 from typing import List
 
+# SPARCpy
 from src.utils import *
 
 
@@ -240,15 +240,6 @@ class Map(Exceptionable, Configurable):
                           item.get('number'),
                           item.get('position'),
                           item.get('directory')) for item in data]
-
-    def build_target_filesystem(self):
-        """
-        Build filesystem under data/SAMPLE/ and copy required files (i.e. raw.tif, fascicle.tif, nerve.tif). This
-        function uses self.slides as a guide for the files to copy, so the Map can be customized if data is loaded
-        in from a custom (even hand-typed) configuration (when SetupMode.OLD is flagged).
-        """
-
-        pass
 
     #%% utility
     @staticmethod

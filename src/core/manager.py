@@ -1,11 +1,16 @@
+#!/usr/bin/env python3.7
+
+# builtins
 import os
 from typing import List
 
+# packages
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import shutil
 
+# SPARCpy
 from src.core import Slide, Map, Fascicle, Nerve, Trace
 from .deformable import Deformable
 from src.utils import *
@@ -14,12 +19,21 @@ from src.utils import *
 class Manager(Exceptionable, Configurable):
 
     def __init__(self, master_config: dict, exception_config: list, map_mode: SetupMode):
+        """
+        :param master_config: preloaded configuration data for master
+        :param exception_config: preloaded configuration data for exceptions
+        :param map_mode: setup mode. If you want to build a new map from a directory, then NEW. Otherwise, or if for
+        a single slide, OLD.
+        """
 
+        # Initializes superclasses
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
         Configurable.__init__(self, SetupMode.OLD, ConfigKey.MASTER, master_config)
 
+        # Initialize slides
         self.slides: List[Slide] = []
 
+        # Make a slide map
         self.map = Map(self.configs[ConfigKey.MASTER.value],
                        self.configs[ConfigKey.EXCEPTIONS.value],
                        map_mode)
@@ -47,10 +61,13 @@ class Manager(Exceptionable, Configurable):
             slide.scale(factor)
 
     def build_file_structure(self, printing: bool = False):
-        # TODO: ADD DOCUMENTATION
+        """
+        :param printing: bool, gives user console output
+        """
 
         # get starting point so able to go back
         start_directory: str = os.getcwd()
+
         # go to samples root
         samples_path: str = self.path(ConfigKey.MASTER, 'samples_path')
 
@@ -99,7 +116,7 @@ class Manager(Exceptionable, Configurable):
 
     def populate(self):
 
-        # get parameters from configuration file
+        # get parameters (modes) from configuration file
         mask_input_mode = self.search_mode(MaskInputMode)
         nerve_mode = self.search_mode(NerveMode)
         reshape_nerve_mode = self.search_mode(ReshapeNerveMode)
@@ -180,11 +197,8 @@ class Manager(Exceptionable, Configurable):
             else:  # nerve_mode == NerveMode.NOT_PRESENT:
                 self.throw(24)
 
-
-
             slide: Slide = Slide(fascicles,
                                  nerve,
-                                 self.configs[ConfigKey.MASTER.value],
                                  self.configs[ConfigKey.EXCEPTIONS.value],
                                  will_reposition=(deform_mode != DeformationMode.NONE))
 
