@@ -191,6 +191,9 @@ class Manager(Exceptionable, Configurable):
             # shrinkage correction
             slide.scale(1+self.search(ConfigKey.MASTER, "scale", "shrinkage_scale"))
 
+            # shift slide about (0,0)
+            slide.move_center(np.array([0, 0]))
+
             self.slides.append(slide)
 
             os.chdir(start_directory)
