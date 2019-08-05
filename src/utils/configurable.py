@@ -54,11 +54,8 @@ class Configurable:
             self.validate_path(self.config_path)
             self.configs[key.value] = self.load(self.config_path)
 
-        elif mode == SetupMode.OLD:
+        else:  # mode == SetupMode.OLD:
             self.configs[key.value] = config
-
-        else:
-            raise Exception('dude, what?')
 
     def search(self, key: ConfigKey, *args):
         """

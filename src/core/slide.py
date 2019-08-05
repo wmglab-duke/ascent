@@ -21,12 +21,11 @@ from src.utils import *
 
 class Slide(Exceptionable):
 
-    def __init__(self, fascicles: List[Fascicle], nerve: Nerve, master_config: dict, exception_config: list,
+    def __init__(self, fascicles: List[Fascicle], nerve: Nerve, exception_config: list,
                  will_reposition: bool = False):
         """
         :param fascicles: List of fascicles
         :param nerve: Nerve (effectively is a Trace)
-        :param master_config: pre-loaded configuration data
         :param exception_config: pre-loaded configuration data
         :param will_reposition: boolean flag that tells the initializer whether or not it should be validating the
         geometries - if it will be reposition then this is not a concern
