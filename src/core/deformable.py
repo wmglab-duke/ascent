@@ -28,7 +28,7 @@ class Deformable(Exceptionable):
                morph_index_step: int = 10,
                render: bool = True,
                minimum_distance: float = 0.0) -> Tuple[List[tuple],
-                                                        List[float]]:
+                                                       List[float]]:
 
         # copy the "contents" so multiple deformations are possible
         contents = [trace.deepcopy() for trace in self.contents]
