@@ -187,6 +187,9 @@ class Manager(Exceptionable, Configurable):
                                  self.configs[ConfigKey.EXCEPTIONS.value],
                                  will_reposition=(deform_mode != DeformationMode.NONE))
 
+            # shrinkage correction
+            slide.scale(1+self.search(ConfigKey.MASTER, "scale", "shrinkage_scale"))
+
             self.slides.append(slide)
 
             os.chdir(start_directory)
