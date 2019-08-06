@@ -209,8 +209,6 @@ class Trace(Exceptionable):
             if Point(coordinate).within(self.polygon()):
                 points.append(coordinate)
 
-        print(points)
-
         return points
 
     def within(self, outer: 'Trace') -> bool:

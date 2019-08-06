@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import shutil
 from shapely.affinity import scale
-from shapely.geometry import LineString
+from shapely.geometry import LineString, Point
 
 # SPARCpy
 from src.core import Slide, Map, Fascicle, Nerve, Trace
@@ -335,7 +335,7 @@ class Manager(Exceptionable, Configurable):
                             if fiber_count < minimum_number:
                                 fiber_count = minimum_number
 
-                            for fiber_index, point in inner.random_points(fiber_count):
+                            for fiber_index, point in enumerate(inner.random_points(fiber_count)):
                                 xy_coordinates.append(point)
                                 metadata.append((fascicle_index, inner_index, fiber_index))
 
@@ -354,7 +354,7 @@ class Manager(Exceptionable, Configurable):
                             if fiber_count > maximum_number:
                                 fiber_count = maximum_number
 
-                            for fiber_index, point in inner.random_points(fiber_count):
+                            for fiber_index, point in enumerate(inner.random_points(fiber_count)):
                                 xy_coordinates.append(point)
                                 metadata.append((fascicle_index, inner_index, fiber_index))
 
@@ -363,7 +363,7 @@ class Manager(Exceptionable, Configurable):
 
                 for fascicle_index, fascicle in enumerate(self.slides[0].fascicles):
                     for inner_index, inner in enumerate(fascicle.inners):
-                        for fiber_index, point in inner.random_points(count):
+                        for fiber_index, point in enumerate(inner.random_points(count)):
                             xy_coordinates.append(point)
                             metadata.append((fascicle_index, inner_index, fiber_index))
 
@@ -385,7 +385,7 @@ class Manager(Exceptionable, Configurable):
                         # initialize last_fiber_index (to track indices between spokes)
                         start_fiber_index = 0
                         # loop through spoke angles
-                        for spoke_angle in (np.linspace(0, 2 * np.pi, spoke_count) + angle_offset):
+                        for spoke_angle in (np.linspace(0, 2 * np.pi, spoke_count + 1)[:-1] + angle_offset):
                             # find the mean radius for a reference distance when "casting the spoke ray"
                             mean_radius = inner.mean_radius()
 
@@ -400,6 +400,10 @@ class Manager(Exceptionable, Configurable):
                             # get that vector's intersection with the trace to find "trimmed" endpoint
                             intersection_with_boundary = raw_spoke_vector.intersection(inner.polygon().boundary)
 
+                            # fix type of intersection with boundary
+                            if not isinstance(intersection_with_boundary, Point):
+                                intersection_with_boundary = list(intersection_with_boundary)[0]
+
                             # build trimmed vector
                             trimmed_spoke_vector = LineString([inner.centroid(),
                                                               tuple(intersection_with_boundary.coords)[0]])
@@ -407,10 +411,10 @@ class Manager(Exceptionable, Configurable):
                             # get scale vectors whose endpoints will be the desired points ([1:] to not include 0)
                             scaled_vectors: List[LineString] = [scale(trimmed_spoke_vector, *([factor] * 3),
                                                                       origin=trimmed_spoke_vector.coords[0])
-                                                                for factor in np.linspace(0, 1, point_count)[1:]]
+                                                                for factor in np.linspace(0, 1, point_count + 2)[1:-1]]
 
                             # loop through the end points of the vectors
-                            for fiber_index, point in [vector.coords[1] for vector in scaled_vectors]:
+                            for fiber_index, point in enumerate([vector.coords[1] for vector in scaled_vectors]):
                                 xy_coordinates.append(point)
                                 metadata.append((fascicle_index, inner_index, fiber_index))
 

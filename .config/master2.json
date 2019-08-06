@@ -34,7 +34,7 @@
     "nerve": "PRESENT",
     "reshape_nerve": "CIRCLE",
     "deform": "PHYSICS",
-    "fiber_xy": "UNIFORM_COUNT",
+    "fiber_xy": "WHEEL",
     "fiber_z": "EXTRUSION",
     "z_offset": "UNIFORM",
     "myel": "MYELINATED",
@@ -53,11 +53,11 @@
   },
   "fiber_xy_parameters": {
     "UNIFORM_DENSITY": {
-      "top_down": true,
+      "top_down": false,
       "minimum_number": 0,
-      "maximum_number": 1.0e5000,
+      "maximum_number": 20,
       "target_density": 0.0005,
-      "target_number": 2
+      "target_number": 4
     },
     "UNIFORM_COUNT": {
       "count": 5
@@ -67,7 +67,7 @@
     },
     "WHEEL": {
       "spoke_count": 5,
-      "point_count_per_spoke": 1,
+      "point_count_per_spoke": 5,
       "find_centroid": true,
       "angle_offset_is_in_degrees": true,
       "angle_offset": 0.0
