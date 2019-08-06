@@ -289,19 +289,24 @@ class Manager(Exceptionable, Configurable):
         """
         :return:
         """
-        z_offset_mode: ZOffsetMode = self.search_mode(ZOffsetMode)
+
         xy_mode: FiberXYMode = self.search_mode(FiberXYMode)
         mode_name = str(xy_mode).split('.')[1]
-        parameters = self.search(ConfigKey.MASTER, xy_mode.parameters.value, mode_name)
+        xy_parameters = self.search(ConfigKey.MASTER, xy_mode.parameters.value, mode_name)
 
-        if xy_mode == FiberXYMode.CENTROID:
-            pass
-        elif xy_mode == FiberXYMode.UNIFORM_DENSITY:
-            pass
-        elif xy_mode == FiberXYMode.UNIFORM_COUNT:
-            pass
-        elif xy_mode == FiberXYMode.WHEEL:
-            pass
+        if self.search_mode(FiberZMode) == FiberZMode.EXTRUSION
+            if xy_mode == FiberXYMode.CENTROID:
+                xy_coordinates = [fascicle.centroid() for fascicle in self.slides[0]]
+            elif xy_mode == FiberXYMode.UNIFORM_DENSITY:
+                pass
+            elif xy_mode == FiberXYMode.UNIFORM_COUNT:
+                pass
+            elif xy_mode == FiberXYMode.WHEEL:
+                pass
+        else:
+            self.throw(30)
+
+        z_offset_mode: ZOffsetMode = self.search_mode(ZOffsetMode)
 
         return
 

@@ -148,5 +148,10 @@
     "code": 29,
     "text": "Either factor or distance MUST be provided.",
     "source": "src.core.Trace.offset"
+  },
+    {
+    "code": 30,
+    "text": "That FiberZMode is not yet implemented.",
+    "source": "src.core.Manager.fiber_xy_coordinates"
   }
 ]
