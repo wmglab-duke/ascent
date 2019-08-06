@@ -116,7 +116,7 @@ class MyelinatedFiberType(Enum):
 
 @unique
 class UnmyelinatedFiberType(Enum):
-    config = 'umyel_fiber'
+    config = 'unmyel_fiber'
     NONE = None
     SUNDT = 0
     TIGERHOLM = 1
