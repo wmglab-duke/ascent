@@ -48,7 +48,7 @@
   },
   "fiber_xy_parameters": {
     "UNIFORM_DENSITY": {
-      "mininum_bounds": 0,
+      "minimum_bounds": 0,
       "target_fibers_per_ micrometer2": 0.0005
     },
     "UNIFORM_COUNT": {
