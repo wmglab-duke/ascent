@@ -76,6 +76,7 @@ class DeformationMode(Enum):
 @unique
 class FiberXYMode(Enum):
     config = 'fiber_xy'
+    parameters = 'fiber_xy_parameters'
     UNIFORM_DENSITY = 0  # all fascicles have same fiber DENSITY, randomized positions within each fascicle
     UNIFORM_COUNT = 1  # all fascicles have save fiber COUNT, same randomization of positions within each fascicle
     CENTROID = 2  # a single fiber per inner trace (endoneurium bundle?), located at each inner trace centroid
@@ -85,6 +86,7 @@ class FiberXYMode(Enum):
 @unique
 class FiberZMode(Enum):
     config = 'fiber_z'
+    parameters = 'fiber_z_parameters'
     EXTRUSION = 0
     LOFTED = 1
 
@@ -99,6 +101,7 @@ class ZOffsetMode(Enum):
 @unique
 class MyelinationMode(Enum):
     config = 'myel'
+    parameters = 'fiber_type_parameters'
     UNMYELINATED = False
     MYELINATED = True
 
@@ -119,3 +122,15 @@ class UnmyelinatedFiberType(Enum):
     TIGERHOLM = 1
     RATTAY = 2
     SCHILD = 3
+
+
+#%% Waveforms
+
+@unique
+class WaveformMode(Enum):
+    config = 'waveform'
+    parameters = 'waveform_parameters'
+    MONOPHASIC_PULSE_TRAIN = 0
+    SINUSOID = 1
+    BIPHASIC_FULL_DUTY = 2
+    BIPHASIC_PULSE_TRAIN = 3

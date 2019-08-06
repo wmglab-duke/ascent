@@ -39,9 +39,10 @@
     "z_offset": "UNIFORM",
     "myel": "MYELINATED",
     "myel_fiber": "MRG",
-    "unmyel_fiber": "NONE"
+    "unmyel_fiber": "NONE",
+    "waveform": "BIPHASIC_PULSE_TRAIN"
   },
-  "fiber_z": {
+  "fiber_z_parameters": {
     "offset": 0.0,
     "min": 0.0,
     "max": 25000.0
@@ -68,17 +69,54 @@
   "fiber_type_parameters": {
     "MYELINATED": {
       "MRG": {
-        "subset": [1.0, 2.0, 5.7, 7.3, 8.7, 10.0],
+        "subset": [
+          1.0,
+          2.0,
+          5.7,
+          7.3,
+          8.7,
+          10.0
+        ],
         "node_length": 1.0,
         "paranodal_length_1": 3.0,
         "diameters": [
-          1.0, 2.0, 5.7, 7.3, 8.7, 10.0, 11.5, 12.8, 14.0, 15.0, 16.0
+          1.0,
+          2.0,
+          5.7,
+          7.3,
+          8.7,
+          10.0,
+          11.5,
+          12.8,
+          14.0,
+          15.0,
+          16.0
         ],
         "delta_z": [
-          100, 200, 500, 750, 1000, 1150, 1250, 1350, 1400, 1450, 1500
+          100,
+          200,
+          500,
+          750,
+          1000,
+          1150,
+          1250,
+          1350,
+          1400,
+          1450,
+          1500
         ],
         "paranodal_length_2": [
-          5, 10, 35, 38, 40, 46, 50, 54, 56, 58, 60
+          5,
+          10,
+          35,
+          38,
+          40,
+          46,
+          50,
+          54,
+          56,
+          58,
+          60
         ]
       },
       "B_FIBER": {
@@ -86,19 +124,56 @@
       }
     },
     "UNMYELINATED": {
-      "SUNDT":{
+      "SUNDT": {
         "delta_z": 8.33333333333333
       },
-      "TIGERHOLM":{
+      "TIGERHOLM": {
         "delta_z": 8.33333333333333
       },
-      "RATTAY":{
+      "RATTAY": {
         "delta_z": 8.33333333333333
       },
-      "SCHILD":{
+      "SCHILD": {
         "delta_z": 8.33333333333333
       }
     }
-
+  },
+  "waveform_parameters": {
+    "global": {
+      "time_unit": "ms",
+      "dt": 0.001,
+      "t_start": 1.0,
+      "frequency_unit": "Hz"
+    },
+    "MONOPHASIC_PULSE_TRAIN": {
+      "pulse_width": [
+        0.1
+      ],
+      "frequency": [
+        1.0
+      ],
+      "digits": 1
+    },
+    "SINUSOID": {
+      "frequency": [
+        20000
+      ],
+      "digits": 10
+    },
+    "BIPHASIC_FULL_DUTY": {
+      "frequency": [
+        20000
+      ],
+      "digits": 1
+    },
+    "BIPHASIC_PULSE_TRAIN": {
+      "frequency": [
+        1
+      ],
+      "pulse_width": [
+        0.1
+      ],
+      "digits": 1
+    }
   }
 }
