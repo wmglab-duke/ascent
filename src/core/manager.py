@@ -428,17 +428,49 @@ class Manager(Exceptionable, Configurable):
         else:
             self.throw(30)
 
-        # TO BE IMPLEMENTED WHERE Z COORDINATES ARE FOUND
-        # z_offset_mode: ZOffsetMode = self.search_mode(ZOffsetMode)
-        # z_offset_parameters: dict = self.search(ConfigKey.MASTER, xy_mode.parameters.value)
-        # if z_offset_mode == ZOffsetMode.UNIFORM:
-        #     # get offset, assuming units are micrometers
-        #     offset = z_offset_parameters.get('offset')
-        #     # append offset to all the point tuples
-        #     xy_coordinates = [(x, y, offset) for x, y in xy_coordinates]
-        # elif
-
         return xy_coordinates, metadata
+
+    def fiber_z_coordinates(self, xy_coordinates, metadata):
+        """
+        :param xy_coordinates:
+        :param metadata:
+        :return:
+        """
+        myelination_mode = self.search_mode(MyelinationMode)
+        if  myelination_mode == MyelinationMode.MYELINATED:
+            myelinated_fiber_type = self.search_mode(MyelinatedFiberType)
+            fiber_length = self.search(ConfigKey.MASTER, 'geometry', 'z_nerve')
+
+            
+
+        else:  # must be unmyelinated
+            unmyelinated_fiber_type = self.search_mode(UnmyelinatedFiberType)
+
+            fiber_length = self.search(ConfigKey.MASTER, 'geometry', 'z_nerve')
+            delta_z = self.search(ConfigKey.MASTER,
+                                  MyelinationMode.parameters.value,
+                                  str(myelination_mode).split('.')[-1],
+                                  str(unmyelinated_fiber_type).split('.')[-1],
+                                  'delta_z')
+
+            z_top = np.arange(fiber_length / 2, fiber_length + delta_z, delta_z)
+
+
+
+
+            # offset
+
+            z_offset_mode: ZOffsetMode = self.search_mode(ZOffsetMode)
+            z_offset_parameters: dict = self.search(ConfigKey.MASTER, xy_mode.parameters.value)
+
+            if z_offset_mode == ZOffsetMode.UNIFORM:
+                # get offset, assuming units are micrometers
+                offset = z_offset_parameters.get('offset')
+                # append offset to all the point tuples
+                xy_coordinates = [(x, y, offset) for x, y in xy_coordinates]
+            elif
+
+
 
 
 
