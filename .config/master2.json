@@ -43,9 +43,13 @@
     "waveform": "BIPHASIC_PULSE_TRAIN"
   },
   "fiber_z_parameters": {
-    "offset": 0.0,
+    "unit": "micrometer",
     "min": 0.0,
     "max": 25000.0
+  },
+  "z_offset_parameters": {
+    "unit": "micrometer",
+    "value": 0.0
   },
   "fiber_xy_parameters": {
     "UNIFORM_DENSITY": {
