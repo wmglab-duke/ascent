@@ -23,7 +23,7 @@ class DownSampleMode(Enum):
     REMOVE = 1
 
 
-class WriteMode(Enum): # note: NOT required to have unique values
+class WriteMode(Enum):  # note: NOT required to have unique values
     SECTIONWISE = '.txt'
     DATA = '.dat'
 
