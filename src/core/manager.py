@@ -384,6 +384,13 @@ class Manager(Exceptionable, Configurable):
                     for inner_index, inner in enumerate(fascicle.inners):
                         # initialize last_fiber_index (to track indices between spokes)
                         start_fiber_index = 0
+
+                        if find_centroid:
+                            xy_coordinates.append(inner.centroid())
+                            metadata.append((fascicle_index, inner_index, start_fiber_index))  # 0 is axon index
+                            # increment start fiber index
+                            start_fiber_index += 1
+
                         # loop through spoke angles
                         for spoke_angle in (np.linspace(0, 2 * np.pi, spoke_count + 1)[:-1] + angle_offset):
                             # find the mean radius for a reference distance when "casting the spoke ray"
@@ -430,45 +437,60 @@ class Manager(Exceptionable, Configurable):
 
         return xy_coordinates, metadata
 
-    def fiber_z_coordinates(self, xy_coordinates, metadata):
+    def fiber_z_coordinates(self, xy_coordinates: List[Tuple[float]]):
         """
+        Finds coordinates to top of axon (1/2 to 1) then flips down to find bottom half
+
         :param xy_coordinates:
         :param metadata:
         :return:
         """
-        myelination_mode = self.search_mode(MyelinationMode)
-        if  myelination_mode == MyelinationMode.MYELINATED:
-            myelinated_fiber_type = self.search_mode(MyelinatedFiberType)
+        fiber_z_mode = self.search_mode(FiberZMode)
+        fiber_top: np.ndarray
+
+        if fiber_z_mode == FiberZMode.EXTRUSION:
+
+            myelination_mode = self.search_mode(MyelinationMode)
             fiber_length = self.search(ConfigKey.MASTER, 'geometry', 'z_nerve')
 
-            
 
-        else:  # must be unmyelinated
-            unmyelinated_fiber_type = self.search_mode(UnmyelinatedFiberType)
+            if  myelination_mode == MyelinationMode.MYELINATED:
+                myelinated_fiber_type = self.search_mode(MyelinatedFiberType)
 
-            fiber_length = self.search(ConfigKey.MASTER, 'geometry', 'z_nerve')
-            delta_z = self.search(ConfigKey.MASTER,
-                                  MyelinationMode.parameters.value,
-                                  str(myelination_mode).split('.')[-1],
-                                  str(unmyelinated_fiber_type).split('.')[-1],
-                                  'delta_z')
+            else:  # must be unmyelinated
+                # get unmyel type
+                unmyelinated_fiber_type = self.search_mode(UnmyelinatedFiberType)
+                # get delta z from fiber type
+                delta_z = self.search(ConfigKey.MASTER,
+                                      MyelinationMode.parameters.value,
+                                      str(myelination_mode).split('.')[-1],
+                                      str(unmyelinated_fiber_type).split('.')[-1],
+                                      'delta_z')
+                # calculate "top" coordinates
+                fiber_top = np.arange(fiber_length / 2, fiber_length + delta_z, delta_z)
 
-            z_top = np.arange(fiber_length / 2, fiber_length + delta_z, delta_z)
+            # reflect top onto bottom
 
-
-
+            # create full list of tuples (points)
+            fiber_full: np.ndarray = np.array([])
 
             # offset
-
             z_offset_mode: ZOffsetMode = self.search_mode(ZOffsetMode)
-            z_offset_parameters: dict = self.search(ConfigKey.MASTER, xy_mode.parameters.value)
+            z_offset_parameters: dict = self.search(ConfigKey.MASTER, z_offset_mode.parameters.value)
 
             if z_offset_mode == ZOffsetMode.UNIFORM:
-                # get offset, assuming units are micrometers
                 offset = z_offset_parameters.get('offset')
-                # append offset to all the point tuples
-                xy_coordinates = [(x, y, offset) for x, y in xy_coordinates]
-            elif
+                # offset iff offset is not zero
+                if offset != 0.0:
+                    # append offset to all the point tuples
+                    xy_coordinates = [(x, y, offset) for x, y in xy_coordinates]
+
+            else:  # ZOffsetMode.RANDOM
+                pass
+
+
+        else:
+            self.throw(31)
 
 
 

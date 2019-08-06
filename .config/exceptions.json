@@ -153,5 +153,10 @@
     "code": 30,
     "text": "That FiberZMode is not yet implemented.",
     "source": "src.core.Manager.fiber_xy_coordinates"
+  },
+    {
+    "code": 31,
+    "text": "That FiberZMode is not yet implemented.",
+    "source": "src.core.Manager.fiber_z_coordinates"
   }
 ]
