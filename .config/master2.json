@@ -34,7 +34,7 @@
     "nerve": "PRESENT",
     "reshape_nerve": "CIRCLE",
     "deform": "PHYSICS",
-    "fiber_xy": "CENTROID",
+    "fiber_xy": "UNIFORM_COUNT",
     "fiber_z": "EXTRUSION",
     "z_offset": "UNIFORM",
     "myel": "MYELINATED",
@@ -53,21 +53,24 @@
   },
   "fiber_xy_parameters": {
     "UNIFORM_DENSITY": {
-      "minimum_bounds": 0,
-      "target_fibers_per_ micrometer2": 0.0005
+      "top_down": true,
+      "minimum_number": 0,
+      "maximum_number": 1.0e5000,
+      "target_density": 0.0005,
+      "target_number": 2
     },
     "UNIFORM_COUNT": {
-      "count": 3
+      "count": 5
     },
     "CENTROID": {
       "no parameters needed!": "so true dude..."
     },
     "WHEEL": {
       "spoke_count": 5,
-      "points_per_spoke": 1,
-      "centroid": true,
-      "degrees": true,
-      "angle_offset": 0
+      "point_count_per_spoke": 1,
+      "find_centroid": true,
+      "angle_offset_is_in_degrees": true,
+      "angle_offset": 0.0
     }
   },
   "fiber_type_parameters": {

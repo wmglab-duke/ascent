@@ -177,6 +177,12 @@ class Fascicle(Exceptionable):
         for trace in self.all_traces():
             trace.rotate(angle, center)
 
+    def smallest_trace(self) -> Trace:
+        """
+        :return: the trace with the smallest area
+        """
+        areas = np.array([trace.area() for trace in self.all_traces()])
+        return np.array(self.all_traces())[np.where(areas == np.min(areas))]
 
 
     def __endoneurium_setup(self, factor: float):

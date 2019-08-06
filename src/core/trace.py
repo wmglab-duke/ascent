@@ -1,6 +1,7 @@
 #!/usr/bin/env python3.7
 
 # builtins
+import random
 from typing import Tuple, Union, List
 from copy import deepcopy
 
@@ -190,6 +191,27 @@ class Trace(Exceptionable):
             self.__polygon = Polygon([tuple(point) for point in self.points[:, :2]])
 
         return self.__polygon
+
+    def random_points(self, count: int) -> List[Tuple[float]]:
+        """
+        :param count: number of points to find
+        :return: list of tuples (x,y) that are within the trace (polygon)
+        """
+
+        min_x, min_y, max_x, max_y = self.polygon().bounds
+
+        points: List[Tuple[float]] = []
+        while len(points) < count:
+
+            coordinate = tuple((random.random() * (ceiling - floor)) + floor
+                               for floor, ceiling in ((min_x, max_x), (min_y, max_y)))
+
+            if Point(coordinate).within(self.polygon()):
+                points.append(coordinate)
+
+        print(points)
+
+        return points
 
     def within(self, outer: 'Trace') -> bool:
         """

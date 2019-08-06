@@ -181,7 +181,6 @@ class Runner(Exceptionable, Configurable):
                                                 plot=False,
                                                 scale=1.05)
         self.slide = Slide(self.fascicles, self.nerve,
-                           self.configs[ConfigKey.MASTER.value],
                            self.configs[ConfigKey.EXCEPTIONS.value],
                            will_reposition=True)
 
@@ -202,4 +201,7 @@ class Runner(Exceptionable, Configurable):
 
         print('WRITE')
         self.manager.write(WriteMode.SECTIONWISE)
+
+        print('FIBER XY COORDINATES')
+        self.manager.fiber_xy_coordinates(plot=True)
 

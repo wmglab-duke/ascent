@@ -3,12 +3,15 @@
 # builtins
 import os
 from typing import List, Tuple
+import random
 
 # packages
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import shutil
+from shapely.affinity import scale
+from shapely.geometry import LineString
 
 # SPARCpy
 from src.core import Slide, Map, Fascicle, Nerve, Trace
@@ -114,7 +117,7 @@ class Manager(Exceptionable, Configurable):
 
             os.chdir(start_directory)
 
-    def populate(self):
+    def populate(self, deform_animate: bool = False):
 
         # get parameters (modes) from configuration file
         mask_input_mode = self.search_mode(MaskInputMode)
@@ -228,7 +231,9 @@ class Manager(Exceptionable, Configurable):
                 deformable = Deformable.from_slide(slide, ReshapeNerveMode.CIRCLE)
                 morph_count = 36
                 title = 'morph count: {}'.format(morph_count)
-                movements, rotations = deformable.deform(morph_count=morph_count, render=False, minimum_distance=10.0)
+                movements, rotations = deformable.deform(morph_count=morph_count,
+                                                         render=deform_animate,
+                                                         minimum_distance=10.0)
                 for move, angle, fascicle in zip(movements, rotations, slide.fascicles):
                     fascicle.shift(list(move) + [0])
                     fascicle.rotate(angle)
@@ -285,15 +290,17 @@ class Manager(Exceptionable, Configurable):
             # go back up to start directory, then to top of loop
             os.chdir(start_directory)
 
-    def fiber_xy_coordinates(self) -> Tuple[List[tuple], List[tuple]]:
+    def fiber_xy_coordinates(self, plot: bool = False) -> Tuple[List[tuple], List[tuple]]:
         """
-        :return:
+        :return: tuple containg two lists of tuples,
+                    1) first list of tuples is points [(x, y)]
+                    2) second list of tuples is metadata [(fascicle_index, inner_index, fiber_index)]
         """
 
         # get required parameters from configuration JSON (using inherited Configurable methods)
         xy_mode: FiberXYMode = self.search_mode(FiberXYMode)
         mode_name = str(xy_mode).split('.')[1]
-        xy_parameters = self.search(ConfigKey.MASTER, xy_mode.parameters.value, mode_name)
+        xy_parameters: dict = self.search(ConfigKey.MASTER, xy_mode.parameters.value, mode_name)
 
         # initialize result lists
         xy_coordinates: List[tuple] = []
@@ -301,18 +308,119 @@ class Manager(Exceptionable, Configurable):
 
         # perform implemented mode
         if self.search_mode(FiberZMode) == FiberZMode.EXTRUSION:
+
             if xy_mode == FiberXYMode.CENTROID:
                 for fascicle_index, fascicle in enumerate(self.slides[0].fascicles):
                     for inner_index, inner in enumerate(fascicle.inners):
+
                         xy_coordinates.append(inner.centroid())
                         metadata.append((fascicle_index, inner_index, 0))  # 0 is axon index
 
             elif xy_mode == FiberXYMode.UNIFORM_DENSITY:
-                pass
+
+                # this determines whether the density should be determined top-down or bottom-up
+                # case top_down == true: fetch target density and cap minimum axons if too low
+                # case top_down == false: (i.e. bottom-up) find density from target number and smallest inner by area
+                #   also cap the number at a maximum!
+                top_down: bool = xy_parameters.get('top_down')
+
+                if top_down:  # do top-down approach
+                    # get required parameters
+                    target_density = xy_parameters.get('target_density')
+                    minimum_number = xy_parameters.get('minimum_number')
+
+                    for fascicle_index, fascicle in enumerate(self.slides[0].fascicles):
+                        for inner_index, inner in enumerate(fascicle.inners):
+                            fiber_count = target_density * inner.area()
+                            if fiber_count < minimum_number:
+                                fiber_count = minimum_number
+
+                            for fiber_index, point in inner.random_points(fiber_count):
+                                xy_coordinates.append(point)
+                                metadata.append((fascicle_index, inner_index, fiber_index))
+
+                else:  # do bottom-up approach
+                    # get required parameters
+                    target_number = xy_parameters.get('target_number')
+                    maximum_number = xy_parameters.get('maximum_number')
+
+                    # calculate target density
+                    min_area = np.amin([[fascicle.smallest_trace().area() for fascicle in self.slides[0].fascicles]])
+                    target_density = float(target_number) / min_area
+
+                    for fascicle_index, fascicle in enumerate(self.slides[0].fascicles):
+                        for inner_index, inner in enumerate(fascicle.inners):
+                            fiber_count = target_density * inner.area()
+                            if fiber_count > maximum_number:
+                                fiber_count = maximum_number
+
+                            for fiber_index, point in inner.random_points(fiber_count):
+                                xy_coordinates.append(point)
+                                metadata.append((fascicle_index, inner_index, fiber_index))
+
             elif xy_mode == FiberXYMode.UNIFORM_COUNT:
-                pass
+                count: int = xy_parameters.get('count')
+
+                for fascicle_index, fascicle in enumerate(self.slides[0].fascicles):
+                    for inner_index, inner in enumerate(fascicle.inners):
+                        for fiber_index, point in inner.random_points(count):
+                            xy_coordinates.append(point)
+                            metadata.append((fascicle_index, inner_index, fiber_index))
+
             elif xy_mode == FiberXYMode.WHEEL:
-                pass
+                # get required parameters
+                spoke_count: int = xy_parameters.get("spoke_count")
+                point_count: int = xy_parameters.get("point_count_per_spoke")  # this number is PER SPOKE
+                find_centroid: bool = xy_parameters.get("find_centroid")
+                angle_offset_is_in_degrees: bool = xy_parameters.get("angle_offset_is_in_degrees")
+                angle_offset: float = xy_parameters.get("angle_offset")
+
+                # convert angle offset to radians if necessary
+                if angle_offset_is_in_degrees:
+                    angle_offset *= 2 * np.pi / 360
+
+                # master loop!
+                for fascicle_index, fascicle in enumerate(self.slides[0].fascicles):
+                    for inner_index, inner in enumerate(fascicle.inners):
+                        # initialize last_fiber_index (to track indices between spokes)
+                        start_fiber_index = 0
+                        # loop through spoke angles
+                        for spoke_angle in (np.linspace(0, 2 * np.pi, spoke_count) + angle_offset):
+                            # find the mean radius for a reference distance when "casting the spoke ray"
+                            mean_radius = inner.mean_radius()
+
+                            # get a point that is assumed to be outside the trace
+                            raw_outer_point = np.array(inner.centroid()) + [5 * mean_radius * np.cos(spoke_angle),
+                                                                            5 * mean_radius * np.sin(spoke_angle)]
+
+                            # build a vector starting from the centroid of the trace
+                            raw_spoke_vector = LineString([inner.centroid(),
+                                                           tuple(raw_outer_point)])
+
+                            # get that vector's intersection with the trace to find "trimmed" endpoint
+                            intersection_with_boundary = raw_spoke_vector.intersection(inner.polygon().boundary)
+
+                            # build trimmed vector
+                            trimmed_spoke_vector = LineString([inner.centroid(),
+                                                              tuple(intersection_with_boundary.coords)[0]])
+
+                            # get scale vectors whose endpoints will be the desired points ([1:] to not include 0)
+                            scaled_vectors: List[LineString] = [scale(trimmed_spoke_vector, *([factor] * 3),
+                                                                      origin=trimmed_spoke_vector.coords[0])
+                                                                for factor in np.linspace(0, 1, point_count)[1:]]
+
+                            # loop through the end points of the vectors
+                            for fiber_index, point in [vector.coords[1] for vector in scaled_vectors]:
+                                xy_coordinates.append(point)
+                                metadata.append((fascicle_index, inner_index, fiber_index))
+
+                            # update start fiber index for next spoke
+                            start_fiber_index = len(scaled_vectors) + start_fiber_index
+
+            if plot:
+                self.slides[0].plot()
+                for point in xy_coordinates:
+                    plt.plot(*point, 'r*')
         else:
             self.throw(30)
 
