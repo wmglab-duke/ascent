@@ -7,12 +7,27 @@
   },
   "config": {
     "paths": {
-      "exceptions": [".config", "exceptions.json"],
-      "master": [".config", "master.json"]
+      "exceptions": [
+        ".config",
+        "exceptions.json"
+      ],
+      "master": [
+        ".config",
+        "master.json"
+      ]
     }
   },
-  "map_path": ["data", "input", "samples", "Pig13-1", "map.json"],
-  "samples_path": ["data", "samples"],
+  "map_path": [
+    "data",
+    "input",
+    "samples",
+    "Pig13-1",
+    "map.json"
+  ],
+  "samples_path": [
+    "data",
+    "samples"
+  ],
   "sample": "Pig13-1",
   "modes": {
     "mask_input": "INNERS",
@@ -31,11 +46,23 @@
     "min": 0.0,
     "max": 25000.0
   },
-  "wheel": {
-    "spoke_count": 5,
-    "points_per_spoke": 1,
-    "centroid": true,
-    "degrees": true,
-    "angle_offset": 0
+  "fiber_xy_parameters": {
+    "UNIFORM_DENSITY": {
+      "mininum_bounds": 0,
+      "target_fibers_per_ micrometer2": 0.0005
+    },
+    "UNIFORM_COUNT": {
+      "count": 3
+    },
+    "CENTROID": {
+      "no parameters needed!": "so true dude..."
+    },
+    "WHEEL": {
+      "spoke_count": 5,
+      "points_per_spoke": 1,
+      "centroid": true,
+      "degrees": true,
+      "angle_offset": 0
+    }
   }
 }
