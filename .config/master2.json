@@ -30,5 +30,12 @@
     "offset": 0.0,
     "min": 0.0,
     "max": 25000.0
+  },
+  "wheel": {
+    "spoke_count": 5,
+    "points_per_spoke": 1,
+    "centroid": true,
+    "degrees": true,
+    "angle_offset": 0
   }
 }

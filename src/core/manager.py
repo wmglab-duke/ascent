@@ -284,3 +284,10 @@ class Manager(Exceptionable, Configurable):
 
             # go back up to start directory, then to top of loop
             os.chdir(start_directory)
+
+    def fiber_xy_coordinates(self):
+        """
+        :return:
+        """
+
+
