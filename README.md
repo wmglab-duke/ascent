@@ -37,11 +37,11 @@ description is accompanied by an example of what that image may look like (at lo
 1. Raw image of slide
     - form: `[SAMPLE]_[CASSETTE]_[NUMBER]_r.tif`
     - type: Though `.tif` is indicated above filename, this is arbitrary for now.
-    - <a href="https://gitlab.oit.duke.edu/edm23/sparcpy/raw/master/examples/images/raw.jpg" target="_blank">example</a>
+    - <a href="https://gitlab.oit.duke.edu/edm23/sparcpy/raw/master/examples/images/masks/raw.jpg" target="_blank">example</a>
 2. Compiled fascicles binary mask
     - form: `[SAMPLE]_[CASSETTE]_[NUMBER]_f.tif`
     - type: Only `.tif` allowed for now.
-    - <a href="https://gitlab.oit.duke.edu/edm23/sparcpy/raw/master/examples/images/fascicle_normal.jpg" target="_blank">one-to-one</a> or containing <a href="https://gitlab.oit.duke.edu/edm23/sparcpy/raw/master/examples/images/fascicle_peanut.jpg" target="_blank">peanut fascicles</a>
+    - <a href="https://gitlab.oit.duke.edu/edm23/sparcpy/raw/master/examples/images/masks/fascicle_normal.jpg" target="_blank">one-to-one</a> or containing <a href="https://gitlab.oit.duke.edu/edm23/sparcpy/raw/master/examples/images/masks/fascicle_peanut.jpg" target="_blank">peanut fascicles</a>
 3. Individual fascicles binary masks
     - forms: `[SAMPLE]_[CASSETTE]_[NUMBER]_i.tif` (inner) or `[SAMPLE]_[CASSETTE]_[NUMBER]_o.tif` (outer)
     - type: Only `.tif` allowed for now.
@@ -49,11 +49,11 @@ description is accompanied by an example of what that image may look like (at lo
 4. Nerve binary mask
     - form: `[SAMPLE]_[CASSETTE]_[NUMBER]_n.tif`
     - type: Only `.tif` allowed for now.
-    - <a href="https://gitlab.oit.duke.edu/edm23/sparcpy/raw/master/examples/images/nerve.jpg" target="_blank">example</a>
+    - <a href="https://gitlab.oit.duke.edu/edm23/sparcpy/raw/master/examples/images/masks/nerve.jpg" target="_blank">example</a>
 5. Scale bar mask
     - form: `[SAMPLE]_[CASSETTE]_[NUMBER]_s.tif`
     - type: Only `.tif` allowed for now.
-    - <a href="https://gitlab.oit.duke.edu/edm23/sparcpy/raw/master/examples/images/scalebar.jpg" target="_blank">example</a>
+    - <a href="https://gitlab.oit.duke.edu/edm23/sparcpy/raw/master/examples/images/masks/scalebar.jpg" target="_blank">example</a>
 
 An example for a grouping of four images for a slide might be:
 - `MyPig4_UpperCas_12_r.tif`
