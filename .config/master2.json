@@ -18,6 +18,17 @@
     "mask_input": "INNERS",
     "nerve": "PRESENT",
     "reshape_nerve": "CIRCLE",
-    "deform": "PHYSICS"
+    "deform": "PHYSICS",
+    "fiber_xy": "CENTROID",
+    "fiber_z": "EXTRUSION",
+    "z_offset": "UNIFORM",
+    "myel": "MYELINATED",
+    "myel_fiber": "MRG",
+    "unmyel_fiber": "NONE"
+  },
+  "fiber_z": {
+    "offset": 0.0,
+    "min": 0.0,
+    "max": 25000.0
   }
 }

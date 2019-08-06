@@ -1,5 +1,6 @@
 from enum import Enum, unique
 
+#%% Core (backend) functionality
 
 @unique
 class SetupMode(Enum):
@@ -13,6 +14,8 @@ class ConfigKey(Enum):
     EXCEPTIONS = 'exceptions'
 
 
+#%% Trace functionality
+
 @unique
 class DownSampleMode(Enum):
     KEEP = 0
@@ -23,6 +26,8 @@ class WriteMode(Enum): # note: NOT required to have unique values
     SECTIONWISE = '.txt'
     DATA = '.dat'
 
+
+#%% Higher-level Manager functionality
 
 @unique
 class ReshapeNerveMode(Enum):
@@ -65,3 +70,51 @@ class DeformationMode(Enum):
     PHYSICS = 1
 
 
+#%% Fiber Position and Type
+
+@unique
+class FiberXYMode(Enum):
+    config = 'fiber_xy'
+    UNIFORM_DENSITY = 0  # all fascicles have same fiber DENSITY, randomized positions within each fascicle
+    UNIFORM_COUNT = 1  # all fascicles have save fiber COUNT, same randomization of positions within each fascicle
+    CENTROID = 2  # a single fiber per inner trace (endoneurium bundle?), located at each inner trace centroid
+    WHEEL = 3  # 1) points on lines extending radially for each inner centroid, 2) offset inwards from boundary
+
+
+@unique
+class FiberZMode(Enum):
+    config = 'fiber_z'
+    EXTRUSION = 0
+    LOFTED = 1
+
+
+@unique
+class ZOffsetMode(Enum):
+    config = 'z_offset',
+    UNIFORM = 0  # choose uniform offset (in JSON as 'fiber_z/offset'... 0.0 for node centered about z bounds)
+    RANDOM = 1
+
+
+@unique
+class MyelinationMode(Enum):
+    config = 'myel'
+    UNMYELINATED = False
+    MYELINATED = True
+
+
+@unique
+class MyelinatedFiberType(Enum):
+    config = 'myel_fiber'
+    NONE = None
+    MRG = 0
+    B_FIBER = 1
+
+
+@unique
+class UnmyelinatedFiberType(Enum):
+    config = 'umyel_fiber'
+    NONE = None
+    SUNDT = 0
+    TIGERHOLM = 1
+    RATTAY = 2
+    SCHILD = 3
