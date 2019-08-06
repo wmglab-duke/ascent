@@ -2,7 +2,7 @@
 
 # builtins
 import os
-from typing import List
+from typing import List, Tuple
 
 # packages
 import cv2
@@ -285,11 +285,12 @@ class Manager(Exceptionable, Configurable):
             # go back up to start directory, then to top of loop
             os.chdir(start_directory)
 
-    def fiber_xy_coordinates(self):
+    def fiber_xy_coordinates(self) -> Tuple[List[tuple], List[tuple]]:
         """
         :return:
         """
 
+        # get required parameters from configuration JSON (using inherited Configurable methods)
         xy_mode: FiberXYMode = self.search_mode(FiberXYMode)
         mode_name = str(xy_mode).split('.')[1]
         xy_parameters = self.search(ConfigKey.MASTER, xy_mode.parameters.value, mode_name)
