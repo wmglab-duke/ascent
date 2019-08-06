@@ -92,7 +92,7 @@ class FiberZMode(Enum):
 class ZOffsetMode(Enum):
     config = 'z_offset',
     UNIFORM = 0  # choose uniform offset (in JSON as 'fiber_z/offset'... 0.0 for node centered about z bounds)
-    RANDOM = 1
+    RANDOM = 1  # max range of +/- 1/2 segment length (internodal length for MRG)
 
 
 @unique
