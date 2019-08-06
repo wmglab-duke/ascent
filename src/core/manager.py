@@ -294,9 +294,18 @@ class Manager(Exceptionable, Configurable):
         mode_name = str(xy_mode).split('.')[1]
         xy_parameters = self.search(ConfigKey.MASTER, xy_mode.parameters.value, mode_name)
 
-        if self.search_mode(FiberZMode) == FiberZMode.EXTRUSION
+        # initialize result lists
+        xy_coordinates: List[tuple] = []
+        metadata: List[tuple] = []
+
+        # perform implemented mode
+        if self.search_mode(FiberZMode) == FiberZMode.EXTRUSION:
             if xy_mode == FiberXYMode.CENTROID:
-                xy_coordinates = [fascicle.centroid() for fascicle in self.slides[0]]
+                for fascicle_index, fascicle in enumerate(self.slides[0].fascicles):
+                    for inner_index, inner in enumerate(fascicle.inners):
+                        xy_coordinates.append(inner.centroid())
+                        metadata.append((fascicle_index, inner_index, 0))  # 0 is axon index
+
             elif xy_mode == FiberXYMode.UNIFORM_DENSITY:
                 pass
             elif xy_mode == FiberXYMode.UNIFORM_COUNT:
@@ -306,9 +315,17 @@ class Manager(Exceptionable, Configurable):
         else:
             self.throw(30)
 
-        z_offset_mode: ZOffsetMode = self.search_mode(ZOffsetMode)
+        # TO BE IMPLEMENTED WHERE Z COORDINATES ARE FOUND
+        # z_offset_mode: ZOffsetMode = self.search_mode(ZOffsetMode)
+        # z_offset_parameters: dict = self.search(ConfigKey.MASTER, xy_mode.parameters.value)
+        # if z_offset_mode == ZOffsetMode.UNIFORM:
+        #     # get offset, assuming units are micrometers
+        #     offset = z_offset_parameters.get('offset')
+        #     # append offset to all the point tuples
+        #     xy_coordinates = [(x, y, offset) for x, y in xy_coordinates]
+        # elif
 
-        return
+        return xy_coordinates, metadata
 
 
 
