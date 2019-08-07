@@ -541,6 +541,12 @@ class Manager(Exceptionable, Configurable):
                     delta_z: float = self.search(ConfigKey.MASTER, *fiber_mode_search_params, 'delta_z')
                     z_top_half = np.arange(fiber_length/2, fiber_length+delta_z, delta_z)
                     z_bottom_half = -np.flip(z_top_half)+fiber_length
+
+                    while z_top_half[-1] > fiber_length:
+                        # trim top of top half
+                        z_top_half = z_top_half[:-1]
+                        z_bottom_half = z_bottom_half[1:]
+
                     z = np.concatenate((z_bottom_half[:-1], z_top_half))
 
                 for offset in offsets:
