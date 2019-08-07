@@ -452,7 +452,7 @@ class Manager(Exceptionable, Configurable):
         :return: see param return_points
         """
 
-        fiber_z_mode = self.search_mode(FiberZMode)
+        fiber_z_mode: FiberZMode = self.search_mode(FiberZMode)
         fiber_top: np.ndarray
 
         if fiber_z_mode == FiberZMode.EXTRUSION:
@@ -468,7 +468,9 @@ class Manager(Exceptionable, Configurable):
                 self.search_multi_mode(MyelinatedFiberType
                                        if myelination_mode == MyelinationMode.MYELINATED
                                        else UnmyelinatedFiberType)
-            fiber_mode_list = []
+
+            # init first dimension
+            fiber_mode_dimension = []
             for fiber_mode in fiber_modes:
 
                 fiber_mode_search_params = [MyelinationMode.parameters.value,
@@ -491,7 +493,9 @@ class Manager(Exceptionable, Configurable):
                                             'delta_zs',
                                             'paranodal_length_2s'])
 
-                    z_subsets: List[List[float]]
+                    # init next dimension
+                    subsets_dimension = []
+                    z_subsets: List[List[float]] = []
                     for subset_index, (diameter, delta_z, paranodal_length_2) in enumerate(zip(diameters,
                                                                                                delta_zs,
                                                                                                paranodal_length_2s)):
@@ -501,7 +505,7 @@ class Manager(Exceptionable, Configurable):
                         if diameter in subset:
                             z_steps: List = []
                             half_fiber_length = fiber_length / 2
-                            while np.cumsum(z_steps) < half_fiber_length:
+                            while sum(z_steps) < half_fiber_length:
                                 z_steps += [(node_length / 2) + (paranodal_length_1 / 2),
                                            (paranodal_length_1 / 2) + (paranodal_length_2 / 2),
                                            (paranodal_length_2 / 2) + (inter_length / 2),
@@ -529,20 +533,25 @@ class Manager(Exceptionable, Configurable):
                             z_bottom_half = np.cumsum(z_bottom_half)
 
                             # concatenate lists together
-                            z = np.concatenate((z_bottom_half, z_top_half))
-
-
-                            pass
-
-
+                            z_subsets.append(list(np.concatenate((z_bottom_half, z_top_half))))
 
                 else:  # UNMYELINATED
 
                     delta_z: float = self.search(ConfigKey.MASTER, *fiber_mode_search_params, 'delta_z')
 
-                # find base z values
+                # init next dimension
+                offsets_dimension = []
 
+                # find base z values
+                offsets = self.search(ConfigKey.MASTER, fiber_z_mode.parameters.value, 'offsets')
                 for offset in offsets:
+                    random_offset = False
+                    if offset is None:
+                        offset = 0.0
+                        random_offset = True
+
+
+
                     for fascicle in fascicles:
                         for inner in inners:
                             for fiber in fibers:

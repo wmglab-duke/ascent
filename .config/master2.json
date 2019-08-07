@@ -49,11 +49,8 @@
   "fiber_z_parameters": {
     "unit": "micrometer",
     "min": 0.0,
-    "max": 25000.0
-  },
-  "z_offset_parameters": {
-    "unit": "micrometer",
-    "offset": 0.0
+    "max": 25000.0,
+    "offsets": [0.0, null]
   },
   "fiber_xy_parameters": {
     "UNIFORM_DENSITY": {
