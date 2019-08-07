@@ -459,6 +459,7 @@ class Manager(Exceptionable, Configurable):
 
 
             fiber_length = self.search(ConfigKey.MASTER, 'geometry', 'z_nerve')
+            half_fiber_length = fiber_length / 2
 
             myelination_mode = self.search_mode(MyelinationMode)
 
@@ -500,7 +501,6 @@ class Manager(Exceptionable, Configurable):
 
                         if diameter in subset:
                             z_steps: List = []
-                            half_fiber_length = fiber_length / 2
                             while np.cumsum(z_steps) < half_fiber_length:
                                 z_steps += [(node_length / 2) + (paranodal_length_1 / 2),
                                            (paranodal_length_1 / 2) + (paranodal_length_2 / 2),
@@ -539,8 +539,9 @@ class Manager(Exceptionable, Configurable):
                 else:  # UNMYELINATED
 
                     delta_z: float = self.search(ConfigKey.MASTER, *fiber_mode_search_params, 'delta_z')
-
-                # find base z values
+                    z_top_half = np.arange(fiber_length/2, fiber_length+delta_z, delta_z)
+                    z_bottom_half = -np.flip(z_top_half)+fiber_length
+                    z = np.concatenate((z_bottom_half[:-1], z_top_half))
 
                 for offset in offsets:
                     for fascicle in fascicles:
