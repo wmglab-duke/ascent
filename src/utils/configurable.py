@@ -126,19 +126,27 @@ class Configurable:
         :return: the Enum version of the mode that is specified by the master config
         """
 
+        return self.search_multi_mode(mode, 1)[0]
+
+    def search_multi_mode(self, mode: Type[Enum], count: int = None) -> list:
+
+        modes_in_config = self.search(ConfigKey.MASTER, 'modes', mode.config.value)
+
+        if not isinstance(modes_in_config, list):
+            modes_in_config = [modes_in_config]
+
         list_results = [option for option in mode
-                        if str(option).split('.')[1] == self.search(ConfigKey.MASTER, 'modes', mode.config.value)]
+                        if str(option).split('.')[1] in modes_in_config]
 
-        if len(list_results) < 1:
-            raise Exception('\n\tcode:\t-3\n'
-                            '\ttext:\tNo matching mode value found\n'
-                            '\tsource:\tsrc.utils.Configurable.search_mode')
-        if len(list_results) > 1:
-            raise Exception('\n\tcode:\t-4\n'
-                            '\ttext:\tMore than one mode value found. Please check configuration JSON file.\n'
-                            '\tsource:\tsrc.utils.Configurable.search_mode')
+        if count is not None:
+            if len(list_results) != count:
+                raise Exception('\n\tcode:\t-3\n'
+                                '\ttext:\t{} matches found when {} were expected.\n'
+                                '\tsource:\tsrc.utils.Configurable.search_mode'.format(len(list_results), count))
 
-        return list_results[0]
+        return list_results
+
+
 
     @staticmethod
     def validate_path(config_path: str):

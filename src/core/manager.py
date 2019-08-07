@@ -458,9 +458,9 @@ class Manager(Exceptionable, Configurable):
             myelination_mode = self.search_mode(MyelinationMode)
             fiber_length = self.search(ConfigKey.MASTER, 'geometry', 'z_nerve')
 
-            
-
-            fiber_modes = self.search_multi_modes()
+            fiber_modes = self.search_multi_modes(MyelinatedFiberType
+                                                  if myelination_mode == MyelinationMode.MYELINATED
+                                                  else UnmyelinatedFiberType)
             for mode in fiber_modes
                 fiber_subtype_specs =
                 for spec in fiber_subtype_specs
