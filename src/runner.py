@@ -205,3 +205,6 @@ class Runner(Exceptionable, Configurable):
         print('FIBER XY COORDINATES')
         self.manager.fiber_xy_coordinates(plot=True)
 
+        print('FIBER XY COORDINATES')
+        self.manager.fiber_z_coordinates()
+

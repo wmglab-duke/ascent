@@ -444,7 +444,7 @@ class Manager(Exceptionable, Configurable):
 
         return fascicles
 
-    def fiber_z_coordinates(self, xy_coordinates: List[Tuple[float]]) -> Tuple[List[tuple]]:
+    def fiber_z_coordinates(self, xy_coordinates: List[List[List[Tuple[float]]]]) -> Tuple[List[tuple]]:
         """
         Finds coordinates to top of axon (1/2 to 1) then flips down to find bottom half
         :param xy_coordinates: list of tuple (x,y) points. this is a parameter, not saved as instance variable so the
@@ -459,6 +459,7 @@ class Manager(Exceptionable, Configurable):
 
 
             fiber_length = self.search(ConfigKey.MASTER, 'geometry', 'z_nerve')
+            half_fiber_length = fiber_length / 2
 
             myelination_mode = self.search_mode(MyelinationMode)
 
@@ -495,7 +496,6 @@ class Manager(Exceptionable, Configurable):
 
                     # init next dimension
                     subsets_dimension = []
-                    z_subsets: List[List[float]] = []
                     for subset_index, (diameter, delta_z, paranodal_length_2) in enumerate(zip(diameters,
                                                                                                delta_zs,
                                                                                                paranodal_length_2s)):
@@ -504,7 +504,6 @@ class Manager(Exceptionable, Configurable):
 
                         if diameter in subset:
                             z_steps: List = []
-                            half_fiber_length = fiber_length / 2
                             while sum(z_steps) < half_fiber_length:
                                 z_steps += [(node_length / 2) + (paranodal_length_1 / 2),
                                            (paranodal_length_1 / 2) + (paranodal_length_2 / 2),
@@ -533,28 +532,60 @@ class Manager(Exceptionable, Configurable):
                             z_bottom_half = np.cumsum(z_bottom_half)
 
                             # concatenate lists together
-                            z_subsets.append(list(np.concatenate((z_bottom_half, z_top_half))))
+                            z_subsets = np.concatenate((z_bottom_half, z_top_half))
+
+
+
+
+
+                            # init next dimension
+                            offsets_dimension = []
+                            # find base z values
+                            offsets = self.search(ConfigKey.MASTER, fiber_z_mode.parameters.value, 'offsets')
+                            for offset in offsets:
+                                random_offset = False
+                                if offset is None:
+                                    offset = 0.0
+                                    random_offset = True
+
+                                z_subsets_offset = [z + offset for z in z_subsets]
+
+                                fascicles_dimension = []
+                                for fascicle in xy_coordinates:
+
+                                    inners_dimension = []
+                                    for inner in fascicle:
+
+                                        fibers_dimension = []
+                                        for x, y in inner:  # get specific fiber (x, y point)
+
+                                            points = [(x, y, z) for z in z_subsets_offset]
+
+                                            if random_offset:
+                                                random_offset_value = delta_z * (random.random() - 0.5)
+                                                points = [(x, y, z + random_offset_value) for x, y, z in points]
+
+
+
+
+                                            fibers_dimension.append(points)
+                                        inners_dimension.append(fibers_dimension)
+                                    fascicles_dimension.append(inners_dimension)
+                                offsets_dimension.append(fascicles_dimension)
+                            subsets_dimension.append(offsets_dimension)
+                    fiber_mode_dimension.append(subsets_dimension)
+
+
 
                 else:  # UNMYELINATED
 
                     delta_z: float = self.search(ConfigKey.MASTER, *fiber_mode_search_params, 'delta_z')
-
-                # init next dimension
-                offsets_dimension = []
-
-                # find base z values
-                offsets = self.search(ConfigKey.MASTER, fiber_z_mode.parameters.value, 'offsets')
-                for offset in offsets:
-                    random_offset = False
-                    if offset is None:
-                        offset = 0.0
-                        random_offset = True
+                    z_top_half = np.arange(fiber_length/2, fiber_length+delta_z, delta_z)
+                    z_bottom_half = -np.flip(z_top_half)+fiber_length
+                    z_subset = np.concatenate((z_bottom_half[:-1], z_top_half))
 
 
 
-                    for fascicle in fascicles:
-                        for inner in inners:
-                            for fiber in fibers:
 
 
 
