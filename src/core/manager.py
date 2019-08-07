@@ -451,25 +451,59 @@ class Manager(Exceptionable, Configurable):
         user is able to filter points to only find z coordinates for desired fascicles/inners/fibers
         :return: see param return_points
         """
+
         fiber_z_mode = self.search_mode(FiberZMode)
         fiber_top: np.ndarray
 
         if fiber_z_mode == FiberZMode.EXTRUSION:
-            myelination_mode = self.search_mode(MyelinationMode)
+
             fiber_length = self.search(ConfigKey.MASTER, 'geometry', 'z_nerve')
 
-            fiber_modes = self.search_multi_mode(MyelinatedFiberType
-                                                 if myelination_mode == MyelinationMode.MYELINATED
-                                                 else UnmyelinatedFiberType)
-            for mode in fiber_modes
+            myelination_mode = self.search_mode(MyelinationMode)
 
-                fiber_subtype_specs =
-                for fiber_subtype_spec in fiber_subtype_specs
-                    # find base z values
-                    for offset in offsets
-                        for fascicle in fascicles
-                            for inner in inners
-                                for fiber in fibers
+            #TODO: INTERPOLATION FOR MYELINATED
+
+            fiber_modes: List[Union[MyelinatedFiberType, UnmyelinatedFiberType]] =\
+                self.search_multi_mode(MyelinatedFiberType
+                                       if myelination_mode == MyelinationMode.MYELINATED
+                                       else UnmyelinatedFiberType)
+
+            for fiber_mode in fiber_modes:
+                fiber_mode_search_params = [MyelinationMode.parameters.value,
+                                            *[str(m).split('.')[-1] for m in (myelination_mode, fiber_mode)]]
+                delta_z: Union[float, list] = self.search(ConfigKey.MASTER, *fiber_mode_search_params, 'delta_z')
+
+                if myelination_mode == MyelinationMode.MYELINATED:
+
+                    # load in all the required specifications for finding myelinated z coordinates
+                    subset,\
+                    node_length,\
+                    paranodal_length_1,\
+                    diameters,\
+                    delta_zs,\
+                    paranodal_length_2s = (self.search(ConfigKey.MASTER,*fiber_mode_search_params, key) for key in
+                                           ['subset',
+                                            'node_length',
+                                            'paranodal_length_1',
+                                            'diameters',
+                                            'delta_zs',
+                                            'paranodal_length_2s'])
+
+                    for diameter, delta_z, paranodal_length_2 in zip(diameters, delta_zs, paranodal_length_2s):
+                        if diameter in subset:
+                            pass
+
+
+
+                else:  # UNMYELINATED
+
+                    delta_z: float = self.search(ConfigKey.MASTER, *fiber_mode_search_params, 'delta_z')
+
+                # find base z values
+                for offset in offsets:
+                    for fascicle in fascicles:
+                        for inner in inners:
+                            for fiber in fibers:
 
 
 
