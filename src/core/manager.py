@@ -462,13 +462,14 @@ class Manager(Exceptionable, Configurable):
                                                  if myelination_mode == MyelinationMode.MYELINATED
                                                  else UnmyelinatedFiberType)
             for mode in fiber_modes
+
                 fiber_subtype_specs =
-                for spec in fiber_subtype_specs
+                for fiber_subtype_spec in fiber_subtype_specs
                     # find base z values
                     for offset in offsets
                         for fascicle in fascicles
                             for inner in inners
-                                for fiber in fiber_subtype_specs
+                                for fiber in fibers
 
 
 
