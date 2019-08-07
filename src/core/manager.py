@@ -2,7 +2,7 @@
 
 # builtins
 import os
-from typing import List, Tuple
+from typing import List, Tuple, Union
 import random
 
 # packages
@@ -437,13 +437,12 @@ class Manager(Exceptionable, Configurable):
 
         return xy_coordinates, metadata
 
-    def fiber_z_coordinates(self, xy_coordinates: List[Tuple[float]]):
+    def fiber_z_coordinates(self, xy_coordinates: List[Tuple[float]]) -> Tuple[List[tuple]]:
         """
         Finds coordinates to top of axon (1/2 to 1) then flips down to find bottom half
-
-        :param xy_coordinates:
-        :param metadata:
-        :return:
+        :param xy_coordinates: list of tuple (x,y) points. this is a parameter, not saved as instance variable so the
+        user is able to filter points to only find z coordinates for desired fascicles/inners/fibers
+        :return: see param return_points
         """
         fiber_z_mode = self.search_mode(FiberZMode)
         fiber_top: np.ndarray
@@ -452,7 +451,6 @@ class Manager(Exceptionable, Configurable):
 
             myelination_mode = self.search_mode(MyelinationMode)
             fiber_length = self.search(ConfigKey.MASTER, 'geometry', 'z_nerve')
-
 
             if  myelination_mode == MyelinationMode.MYELINATED:
                 myelinated_fiber_type = self.search_mode(MyelinatedFiberType)
@@ -491,6 +489,9 @@ class Manager(Exceptionable, Configurable):
 
         else:
             self.throw(31)
+
+        if return_points:
+            return
 
 
 
