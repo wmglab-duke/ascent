@@ -449,10 +449,25 @@ class Manager(Exceptionable, Configurable):
 
         if fiber_z_mode == FiberZMode.EXTRUSION:
             myelination_mode = self.search_mode(MyelinationMode)
-
-
-            myelination_mode = self.search_mode(MyelinationMode)
             fiber_length = self.search(ConfigKey.MASTER, 'geometry', 'z_nerve')
+
+            
+
+            fiber_modes = self.search_multi_modes()
+            for mode in fiber_modes
+                fiber_subtype_specs =
+                for spec in fiber_subtype_specs
+                    # find base z values
+                    for offset in offsets
+                        for fascicle in fascicles
+                            for inner in inners
+                                for fiber in fiber_subtype_specs
+
+
+
+
+
+            self.search(ConfigKey.MASTER)
 
 
 
