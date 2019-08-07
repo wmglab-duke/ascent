@@ -455,50 +455,66 @@ class Manager(Exceptionable, Configurable):
         fiber_top: np.ndarray
 
         if fiber_z_mode == FiberZMode.EXTRUSION:
-
             myelination_mode = self.search_mode(MyelinationMode)
             fiber_length = self.search(ConfigKey.MASTER, 'geometry', 'z_nerve')
 
-            if  myelination_mode == MyelinationMode.MYELINATED:
-                myelinated_fiber_type = self.search_mode(MyelinatedFiberType)
+            
 
-            else:  # must be unmyelinated
-                # get unmyel type
-                unmyelinated_fiber_type = self.search_mode(UnmyelinatedFiberType)
-                # get delta z from fiber type
-                delta_z = self.search(ConfigKey.MASTER,
-                                      MyelinationMode.parameters.value,
-                                      str(myelination_mode).split('.')[-1],
-                                      str(unmyelinated_fiber_type).split('.')[-1],
-                                      'delta_z')
-                # calculate "top" coordinates
-                fiber_top = np.arange(fiber_length / 2, fiber_length + delta_z, delta_z)
+            fiber_modes = self.search_multi_modes()
+            for mode in fiber_modes
+                fiber_subtype_specs =
+                for spec in fiber_subtype_specs
+                    # find base z values
+                    for offset in offsets
+                        for fascicle in fascicles
+                            for inner in inners
+                                for fiber in fiber_subtype_specs
 
-            # reflect top onto bottom
 
-            # create full list of tuples (points)
-            fiber_full: np.ndarray = np.array([])
 
-            # offset
-            z_offset_mode: ZOffsetMode = self.search_mode(ZOffsetMode)
-            z_offset_parameters: dict = self.search(ConfigKey.MASTER, z_offset_mode.parameters.value)
 
-            if z_offset_mode == ZOffsetMode.UNIFORM:
-                offset = z_offset_parameters.get('offset')
-                # offset iff offset is not zero
-                if offset != 0.0:
-                    # append offset to all the point tuples
-                    xy_coordinates = [(x, y, offset) for x, y in xy_coordinates]
 
-            else:  # ZOffsetMode.RANDOM
-                pass
+            self.search(ConfigKey.MASTER)
+
+
+
+            # if  myelination_mode == MyelinationMode.MYELINATED:
+            #     myelinated_fiber_type = self.search_mode(MyelinatedFiberType)
+            #
+            # else:  # must be unmyelinated
+            #     # get unmyel type
+            #     unmyelinated_fiber_type = self.search_mode(UnmyelinatedFiberType)
+            #     # get delta z from fiber type
+            #     delta_z = self.search(ConfigKey.MASTER,
+            #                           MyelinationMode.parameters.value,
+            #                           str(myelination_mode).split('.')[-1],
+            #                           str(unmyelinated_fiber_type).split('.')[-1],
+            #                           'delta_z')
+            #     # calculate "top" coordinates
+            #     fiber_top = np.arange(fiber_length / 2, fiber_length + delta_z, delta_z)
+            #
+            # # reflect top onto bottom
+            #
+            # # create full list of tuples (points)
+            # fiber_full: np.ndarray = np.array([])
+            #
+            # # offset
+            # z_offset_mode: ZOffsetMode = self.search_mode(ZOffsetMode)
+            # z_offset_parameters: dict = self.search(ConfigKey.MASTER, z_offset_mode.parameters.value)
+            #
+            # if z_offset_mode == ZOffsetMode.UNIFORM:
+            #     offset = z_offset_parameters.get('offset')
+            #     # offset iff offset is not zero
+            #     if offset != 0.0:
+            #         # append offset to all the point tuples
+            #         xy_coordinates = [(x, y, offset) for x, y in xy_coordinates]
+            #
+            # else:  # ZOffsetMode.RANDOM
+            #     pass
 
 
         else:
             self.throw(31)
-
-        if return_points:
-            return
 
 
 
