@@ -452,6 +452,40 @@ class Manager(Exceptionable, Configurable):
         :return: see param return_points
         """
 
+        def inner_loop(z_subset):
+            # init next dimension
+            offsets_dimension = []
+            # find base z values
+            offsets = self.search(ConfigKey.MASTER, FiberZMode.parameters.value, 'offsets')
+            for offset in offsets:
+                random_offset = False
+                if offset is None:
+                    offset = 0.0
+                    random_offset = True
+
+                z_subsets_offset = [z + offset for z in z_subset]
+
+                fascicles_dimension = []
+                for fascicle in xy_coordinates:
+
+                    inners_dimension = []
+                    for inner in fascicle:
+
+                        fibers_dimension = []
+                        for x, y in inner:  # get specific fiber (x, y point)
+
+                            points = [(x, y, z) for z in z_subsets_offset]
+
+                            if random_offset:
+                                random_offset_value = delta_z * (random.random() - 0.5)
+                                points = [(x, y, z + random_offset_value) for x, y, z in points]
+
+                            fibers_dimension.append(points)
+                        inners_dimension.append(fibers_dimension)
+                    fascicles_dimension.append(inners_dimension)
+                offsets_dimension.append(fascicles_dimension)
+            return offsets_dimension
+
         fiber_z_mode: FiberZMode = self.search_mode(FiberZMode)
         fiber_top: np.ndarray
 
@@ -532,47 +566,10 @@ class Manager(Exceptionable, Configurable):
                             z_bottom_half = np.cumsum(z_bottom_half)
 
                             # concatenate lists together
-                            z_subsets = np.concatenate((z_bottom_half, z_top_half))
+                            z_subset = np.concatenate((z_bottom_half, z_top_half))
 
+                            subsets_dimension.append(inner_loop())
 
-
-
-
-                            # init next dimension
-                            offsets_dimension = []
-                            # find base z values
-                            offsets = self.search(ConfigKey.MASTER, fiber_z_mode.parameters.value, 'offsets')
-                            for offset in offsets:
-                                random_offset = False
-                                if offset is None:
-                                    offset = 0.0
-                                    random_offset = True
-
-                                z_subsets_offset = [z + offset for z in z_subsets]
-
-                                fascicles_dimension = []
-                                for fascicle in xy_coordinates:
-
-                                    inners_dimension = []
-                                    for inner in fascicle:
-
-                                        fibers_dimension = []
-                                        for x, y in inner:  # get specific fiber (x, y point)
-
-                                            points = [(x, y, z) for z in z_subsets_offset]
-
-                                            if random_offset:
-                                                random_offset_value = delta_z * (random.random() - 0.5)
-                                                points = [(x, y, z + random_offset_value) for x, y, z in points]
-
-
-
-
-                                            fibers_dimension.append(points)
-                                        inners_dimension.append(fibers_dimension)
-                                    fascicles_dimension.append(inners_dimension)
-                                offsets_dimension.append(fascicles_dimension)
-                            subsets_dimension.append(offsets_dimension)
                     fiber_mode_dimension.append(subsets_dimension)
 
 
@@ -582,53 +579,13 @@ class Manager(Exceptionable, Configurable):
                     delta_z: float = self.search(ConfigKey.MASTER, *fiber_mode_search_params, 'delta_z')
                     z_top_half = np.arange(fiber_length/2, fiber_length+delta_z, delta_z)
                     z_bottom_half = -np.flip(z_top_half)+fiber_length
+
+                    while z_top_half[-1] > fiber_length:
+                        # trim top of top half
+                        z_top_half = z_top_half[:-1]
+                        z_bottom_half = z_bottom_half[1:]
+
                     z_subset = np.concatenate((z_bottom_half[:-1], z_top_half))
-
-
-
-
-
-
-
-
-            self.search(ConfigKey.MASTER)
-
-
-
-            # if  myelination_mode == MyelinationMode.MYELINATED:
-            #     myelinated_fiber_type = self.search_mode(MyelinatedFiberType)
-            #
-            # else:  # must be unmyelinated
-            #     # get unmyel type
-            #     unmyelinated_fiber_type = self.search_mode(UnmyelinatedFiberType)
-            #     # get delta z from fiber type
-            #     delta_z = self.search(ConfigKey.MASTER,
-            #                           MyelinationMode.parameters.value,
-            #                           str(myelination_mode).split('.')[-1],
-            #                           str(unmyelinated_fiber_type).split('.')[-1],
-            #                           'delta_z')
-            #     # calculate "top" coordinates
-            #     fiber_top = np.arange(fiber_length / 2, fiber_length + delta_z, delta_z)
-            #
-            # # reflect top onto bottom
-            #
-            # # create full list of tuples (points)
-            # fiber_full: np.ndarray = np.array([])
-            #
-            # # offset
-            # z_offset_mode: ZOffsetMode = self.search_mode(ZOffsetMode)
-            # z_offset_parameters: dict = self.search(ConfigKey.MASTER, z_offset_mode.parameters.value)
-            #
-            # if z_offset_mode == ZOffsetMode.UNIFORM:
-            #     offset = z_offset_parameters.get('offset')
-            #     # offset iff offset is not zero
-            #     if offset != 0.0:
-            #         # append offset to all the point tuples
-            #         xy_coordinates = [(x, y, offset) for x, y in xy_coordinates]
-            #
-            # else:  # ZOffsetMode.RANDOM
-            #     pass
-
 
         else:
             self.throw(31)
