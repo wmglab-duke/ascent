@@ -457,6 +457,7 @@ class Manager(Exceptionable, Configurable):
 
         if fiber_z_mode == FiberZMode.EXTRUSION:
 
+
             fiber_length = self.search(ConfigKey.MASTER, 'geometry', 'z_nerve')
 
             myelination_mode = self.search_mode(MyelinationMode)
@@ -467,8 +468,9 @@ class Manager(Exceptionable, Configurable):
                 self.search_multi_mode(MyelinatedFiberType
                                        if myelination_mode == MyelinationMode.MYELINATED
                                        else UnmyelinatedFiberType)
-
+            fiber_mode_list = []
             for fiber_mode in fiber_modes:
+
                 fiber_mode_search_params = [MyelinationMode.parameters.value,
                                             *[str(m).split('.')[-1] for m in (myelination_mode, fiber_mode)]]
                 delta_z: Union[float, list] = self.search(ConfigKey.MASTER, *fiber_mode_search_params, 'delta_z')
@@ -489,8 +491,47 @@ class Manager(Exceptionable, Configurable):
                                             'delta_zs',
                                             'paranodal_length_2s'])
 
-                    for diameter, delta_z, paranodal_length_2 in zip(diameters, delta_zs, paranodal_length_2s):
+                    z_subsets: List[List[float]]
+                    for subset_index, (diameter, delta_z, paranodal_length_2) in enumerate(zip(diameters,
+                                                                                               delta_zs,
+                                                                                               paranodal_length_2s)):
+
+                        inter_length = (delta_z - node_length - (2 * paranodal_length_1) - (2 * paranodal_length_2)) / 6
+
                         if diameter in subset:
+                            z_steps: List = []
+                            half_fiber_length = fiber_length / 2
+                            while np.cumsum(z_steps) < half_fiber_length:
+                                z_steps += [(node_length / 2) + (paranodal_length_1 / 2),
+                                           (paranodal_length_1 / 2) + (paranodal_length_2 / 2),
+                                           (paranodal_length_2 / 2) + (inter_length / 2),
+                                           *([inter_length] * 5),
+                                           (inter_length / 2) + (paranodal_length_2 / 2),
+                                           (paranodal_length_2 / 2) + (paranodal_length_1 / 2),
+                                           (paranodal_length_1 / 2) + (node_length / 2)]
+
+                            # flip top steps upside down to get bottom steps
+                            z_bottom_half: np.ndarray = np.flipud(z_steps)
+
+                            # get cumulative sum of top half, before shifting
+                            z_top_half: np.ndarray = np.cumsum(z_steps)
+
+                            # trim top half so that the cumulative sum fits within half of fiber length
+                            while z_top_half[-1] > half_fiber_length:
+                                # trim top of top half
+                                z_top_half = z_top_half[:-1]
+                                # trim bottom of bottom half
+                                z_bottom_half = z_bottom_half[1:]
+
+                            # finally, shift z_top_half to start at  half of length
+                            z_top_half += half_fiber_length
+                            # also, make the bottom half into a cumulative sum
+                            z_bottom_half = np.cumsum(z_bottom_half)
+
+                            # concatenate lists together
+                            z = np.concatenate((z_bottom_half, z_top_half))
+
+
                             pass
 
 
@@ -500,6 +541,7 @@ class Manager(Exceptionable, Configurable):
                     delta_z: float = self.search(ConfigKey.MASTER, *fiber_mode_search_params, 'delta_z')
 
                 # find base z values
+
                 for offset in offsets:
                     for fascicle in fascicles:
                         for inner in inners:
