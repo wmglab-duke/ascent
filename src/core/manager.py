@@ -290,7 +290,7 @@ class Manager(Exceptionable, Configurable):
             # go back up to start directory, then to top of loop
             os.chdir(start_directory)
 
-    def fiber_xy_coordinates(self, plot: bool = False) -> Tuple[List[tuple], List[tuple]]:
+    def fiber_xy_coordinates(self, plot: bool = False) -> List[List[List[tuple]]]:
         """
         :return: tuple containg two lists of tuples,
                     1) first list of tuples is points [(x, y)]
@@ -303,18 +303,20 @@ class Manager(Exceptionable, Configurable):
         xy_parameters: dict = self.search(ConfigKey.MASTER, xy_mode.parameters.value, mode_name)
 
         # initialize result lists
-        xy_coordinates: List[tuple] = []
-        metadata: List[tuple] = []
+        fascicles: List[List[List[tuple]]] = []
 
         # perform implemented mode
         if self.search_mode(FiberZMode) == FiberZMode.EXTRUSION:
 
             if xy_mode == FiberXYMode.CENTROID:
-                for fascicle_index, fascicle in enumerate(self.slides[0].fascicles):
-                    for inner_index, inner in enumerate(fascicle.inners):
-
-                        xy_coordinates.append(inner.centroid())
-                        metadata.append((fascicle_index, inner_index, 0))  # 0 is axon index
+                for fascicle in self.slides[0].fascicles:
+                    inners = []
+                    for inner in fascicle.inners:
+                        fibers = []
+                        for _ in (0,):
+                            fibers.append(inner.centroid())
+                        inners.append(fibers)
+                    fascicles.append(inners)
 
             elif xy_mode == FiberXYMode.UNIFORM_DENSITY:
 
@@ -329,15 +331,17 @@ class Manager(Exceptionable, Configurable):
                     target_density = xy_parameters.get('target_density')
                     minimum_number = xy_parameters.get('minimum_number')
 
-                    for fascicle_index, fascicle in enumerate(self.slides[0].fascicles):
-                        for inner_index, inner in enumerate(fascicle.inners):
+                    for fascicle in self.slides[0].fascicles:
+                        inners = []
+                        for inner in fascicle.inners:
                             fiber_count = target_density * inner.area()
                             if fiber_count < minimum_number:
                                 fiber_count = minimum_number
-
-                            for fiber_index, point in enumerate(inner.random_points(fiber_count)):
-                                xy_coordinates.append(point)
-                                metadata.append((fascicle_index, inner_index, fiber_index))
+                            fibers = []
+                            for point in inner.random_points(fiber_count):
+                                fibers.append(point)
+                            inners.append(fibers)
+                        fascicles.append(inners)
 
                 else:  # do bottom-up approach
                     # get required parameters
@@ -348,24 +352,30 @@ class Manager(Exceptionable, Configurable):
                     min_area = np.amin([[fascicle.smallest_trace().area() for fascicle in self.slides[0].fascicles]])
                     target_density = float(target_number) / min_area
 
-                    for fascicle_index, fascicle in enumerate(self.slides[0].fascicles):
-                        for inner_index, inner in enumerate(fascicle.inners):
+                    for fascicle in self.slides[0].fascicles:
+                        inners = []
+                        for inner in fascicle.inners:
                             fiber_count = target_density * inner.area()
                             if fiber_count > maximum_number:
                                 fiber_count = maximum_number
 
-                            for fiber_index, point in enumerate(inner.random_points(fiber_count)):
-                                xy_coordinates.append(point)
-                                metadata.append((fascicle_index, inner_index, fiber_index))
+                            fibers = []
+                            for point in inner.random_points(fiber_count):
+                                fibers.append(point)
+                            inners.append(fibers)
+                        fascicles.append(inners)
 
             elif xy_mode == FiberXYMode.UNIFORM_COUNT:
                 count: int = xy_parameters.get('count')
 
-                for fascicle_index, fascicle in enumerate(self.slides[0].fascicles):
-                    for inner_index, inner in enumerate(fascicle.inners):
-                        for fiber_index, point in enumerate(inner.random_points(count)):
-                            xy_coordinates.append(point)
-                            metadata.append((fascicle_index, inner_index, fiber_index))
+                for fascicle in self.slides[0].fascicles:
+                    inners = []
+                    for inner in fascicle.inners:
+                        fibers = []
+                        for point in inner.random_points(count):
+                            fibers.append(point)
+                        inners.append(fibers)
+                    fascicles.append(inners)
 
             elif xy_mode == FiberXYMode.WHEEL:
                 # get required parameters
@@ -380,16 +390,13 @@ class Manager(Exceptionable, Configurable):
                     angle_offset *= 2 * np.pi / 360
 
                 # master loop!
-                for fascicle_index, fascicle in enumerate(self.slides[0].fascicles):
-                    for inner_index, inner in enumerate(fascicle.inners):
-                        # initialize last_fiber_index (to track indices between spokes)
-                        start_fiber_index = 0
+                for fascicle in self.slides[0].fascicles:
+                    inners = []
+                    for inner in fascicle.inners:
+                        fibers = []
 
                         if find_centroid:
-                            xy_coordinates.append(inner.centroid())
-                            metadata.append((fascicle_index, inner_index, start_fiber_index))  # 0 is axon index
-                            # increment start fiber index
-                            start_fiber_index += 1
+                            fibers.append(inner.centroid())
 
                         # loop through spoke angles
                         for spoke_angle in (np.linspace(0, 2 * np.pi, spoke_count + 1)[:-1] + angle_offset):
@@ -421,21 +428,21 @@ class Manager(Exceptionable, Configurable):
                                                                 for factor in np.linspace(0, 1, point_count + 2)[1:-1]]
 
                             # loop through the end points of the vectors
-                            for fiber_index, point in enumerate([vector.coords[1] for vector in scaled_vectors]):
-                                xy_coordinates.append(point)
-                                metadata.append((fascicle_index, inner_index, fiber_index))
+                            for point in [vector.coords[1] for vector in scaled_vectors]:
+                                fibers.append(point)
 
-                            # update start fiber index for next spoke
-                            start_fiber_index = len(scaled_vectors) + start_fiber_index
+                        inners.append(fibers)
+                    fascicles.append(inners)
 
             if plot:
                 self.slides[0].plot()
-                for point in xy_coordinates:
+
+                for point in np.reshape(fascicles, (-1, 2)):
                     plt.plot(*point, 'r*')
         else:
             self.throw(30)
 
-        return xy_coordinates, metadata
+        return fascicles
 
     def fiber_z_coordinates(self, xy_coordinates: List[Tuple[float]]) -> Tuple[List[tuple]]:
         """

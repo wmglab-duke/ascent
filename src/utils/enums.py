@@ -135,3 +135,5 @@ class WaveformMode(Enum):
     SINUSOID = 1
     BIPHASIC_FULL_DUTY = 2
     BIPHASIC_PULSE_TRAIN = 3
+
+# mode discretized
