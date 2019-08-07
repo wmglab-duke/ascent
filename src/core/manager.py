@@ -458,17 +458,17 @@ class Manager(Exceptionable, Configurable):
             myelination_mode = self.search_mode(MyelinationMode)
             fiber_length = self.search(ConfigKey.MASTER, 'geometry', 'z_nerve')
 
-            fiber_modes = self.search_multi_modes(MyelinatedFiberType
+            fiber_modes = self.search_multi_mode(MyelinatedFiberType
                                                   if myelination_mode == MyelinationMode.MYELINATED
                                                   else UnmyelinatedFiberType)
-            for mode in fiber_modes
+            for fiber_mode in fiber_modes
                 fiber_subtype_specs =
-                for spec in fiber_subtype_specs
+                for fiber_subtype_spec in fiber_subtype_specs
                     # find base z values
                     for offset in offsets
                         for fascicle in fascicles
                             for inner in inners
-                                for fiber in fiber_subtype_specs
+                                for fiber in fibers
 
 
 
