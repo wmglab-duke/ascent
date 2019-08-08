@@ -521,7 +521,6 @@ class Manager(Exceptionable, Configurable):
 
                 fiber_mode_search_params = [MyelinationMode.parameters.value,
                                             *[str(m).split('.')[-1] for m in (myelination_mode, fiber_mode)]]
-                delta_z: Union[float, list] = self.search(ConfigKey.MASTER, *fiber_mode_search_params, 'delta_z')
 
                 if myelination_mode == MyelinationMode.MYELINATED:
 
@@ -548,8 +547,8 @@ class Manager(Exceptionable, Configurable):
                         inter_length = (delta_z - node_length - (2 * paranodal_length_1) - (2 * paranodal_length_2)) / 6
 
                         if diameter in subset:
-                            z_steps: List = [0]
-                            while sum(z_steps) <= half_fiber_length:
+                            z_steps: List = []
+                            while sum(z_steps) < half_fiber_length:
                                 z_steps += [(node_length / 2) + (paranodal_length_1 / 2),
                                             (paranodal_length_1 / 2) + (paranodal_length_2 / 2),
                                             (paranodal_length_2 / 2) + (inter_length / 2),
@@ -558,30 +557,21 @@ class Manager(Exceptionable, Configurable):
                                             (paranodal_length_2 / 2) + (paranodal_length_1 / 2),
                                             (paranodal_length_1 / 2) + (node_length / 2)]
 
-                            # flip top steps upside down to get bottom steps
-                            z_bottom_half: np.ndarray = np.flipud(z_steps)[:-1]
-
-                            # get cumulative sum of top half, before shifting
-                            z_top_half: np.ndarray = np.cumsum(z_steps)
-
-                            # finally, shift z_top_half to start at  half of length
-                            z_top_half += half_fiber_length
-
-                            # also, make the bottom half into a cumulative sum
-                            z_bottom_half = np.cumsum(z_bottom_half)
-
-                            # trim lists to fit in range
-                            z_top_half = np.array(clip(list(z_top_half),
-                                                       half_fiber_length,
-                                                       fiber_length,
-                                                       myelination_mode))
-                            z_bottom_half = np.array(clip(list(z_bottom_half),
-                                                          0,
-                                                          half_fiber_length,
-                                                          myelination_mode))
-
-                            # concatenate lists together
-                            z_subset = np.concatenate((z_bottom_half, z_top_half))
+                            # concat, cumsum, and other stuff to get final list of z points
+                            z_subset = np.array(
+                                clip(
+                                    list(
+                                        np.cumsum(
+                                            np.concatenate(
+                                                ([0], z_steps.reverse(), z_steps)
+                                            )
+                                        )
+                                    ),
+                                    0,
+                                    fiber_length,
+                                    myelination_mode
+                                )
+                            )
 
                             subsets_dimension.append(inner_loop(list(z_subset),
                                                                 myelination_mode,
