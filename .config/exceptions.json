@@ -158,5 +158,15 @@
     "code": 31,
     "text": "That FiberZMode is not yet implemented.",
     "source": "src.core.Manager.fiber_z_coordinates"
+  },
+    {
+    "code": 32,
+    "text": "t_start, t_on, t_off, t_stop must be in order.",
+    "source": "src.core.Waveform.validate_times"
+  },
+    {
+    "code": 33,
+    "text": "dt is too large to create waveforms.",
+    "source": "src.core.Waveform.validate_times"
   }
 ]
