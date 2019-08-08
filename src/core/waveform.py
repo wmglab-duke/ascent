@@ -36,6 +36,9 @@ class Waveform(Exceptionable, Configurable):
         self.validate_times()
 
     def validate_times(self):
+        """
+        Checks to make sure that the waveform T_ON < T_START < T_OFF < T_STOP
+        """
 
         time_params = [self.t_start, self.t_on, self.t_off, self.t_stop]
         if time_params.sort() != time_params:
