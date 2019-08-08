@@ -31,7 +31,7 @@ Description:
 
 import json
 import os
-from typing import Type
+from typing import Type, List
 
 from .enums import *
 
@@ -126,23 +126,42 @@ class Configurable:
         :return: the Enum version of the mode that is specified by the master config
         """
 
-        return self.search_multi_mode(mode, 1)[0]
+        return self.search_multi_mode(mode=mode, count=1)[0]
 
-    def search_multi_mode(self, mode: Type[Enum], count: int = None) -> list:
+    def search_multi_mode(self, mode: Type[Enum] = None, modes: List[Type[Enum]] = None, count: int = None) -> list:
+        """
 
-        modes_in_config = self.search(ConfigKey.MASTER, 'modes', mode.config.value)
+        :param mode:
+        :param modes:
+        :param count:
+        :return:
+        """
 
-        if not isinstance(modes_in_config, list):
-            modes_in_config = [modes_in_config]
+        list_results = []
 
-        list_results = [option for option in mode
-                        if str(option).split('.')[1] in modes_in_config]
+        if mode is not None:
+            modes = [mode]
+
+        if modes is None:
+            raise Exception('\n\tcode:\t-4\n'
+                            '\ttext:\tAt least one mode type must be provided.\n'
+                            '\tsource:\tsrc.utils.Configurable.search_multi_mode')
+
+        for mode in modes:
+
+            modes_in_config = self.search(ConfigKey.MASTER, 'modes', mode.config.value)
+
+            if not isinstance(modes_in_config, list):
+                modes_in_config = [modes_in_config]
+
+            list_results += [option for option in mode
+                             if str(option).split('.')[1] in modes_in_config]
 
         if count is not None:
             if len(list_results) != count:
                 raise Exception('\n\tcode:\t-3\n'
                                 '\ttext:\t{} matches found when {} were expected.\n'
-                                '\tsource:\tsrc.utils.Configurable.search_mode'.format(len(list_results), count))
+                                '\tsource:\tsrc.utils.Configurable.search_multi_mode'.format(len(list_results), count))
 
         return list_results
 

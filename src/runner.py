@@ -203,8 +203,8 @@ class Runner(Exceptionable, Configurable):
         self.manager.write(WriteMode.SECTIONWISE)
 
         print('FIBER XY COORDINATES')
-        self.manager.fiber_xy_coordinates(plot=True)
+        self.xy_coordinates = self.manager.fiber_xy_coordinates(plot=True)
 
-        print('FIBER XY COORDINATES')
-        self.manager.fiber_z_coordinates()
+        print('FIBER Z COORDINATES')
+        self.z_coordinates = self.manager.fiber_z_coordinates(self.xy_coordinates)
 

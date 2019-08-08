@@ -464,7 +464,7 @@ class Manager(Exceptionable, Configurable):
 
             return values
 
-        def inner_loop(zs: list, myel_mode: MyelinationMode, length: float):
+        def inner_loop(zs: list, myel_mode: MyelinationMode, length: float, delta_z: float):
             # init next dimension
             offsets_dimension = []
             # find base z values
@@ -475,7 +475,7 @@ class Manager(Exceptionable, Configurable):
                     offset = 0.0
                     random_offset = True
 
-                z_subsets_offset = clip([z + offset for z in zs], 0, length, myel_mode)
+                z_subsets_offset = clip([z + offset for z in zs], delta_z, length - delta_z, myel_mode)
 
                 fascicles_dimension = []
                 for fascicle in xy_coordinates:
@@ -498,26 +498,26 @@ class Manager(Exceptionable, Configurable):
                 offsets_dimension.append(fascicles_dimension)
             return offsets_dimension
 
+        #%% START ALGORITHM
+
+        # get top-level fiber z generation
         fiber_z_mode: FiberZMode = self.search_mode(FiberZMode)
-        fiber_top: np.ndarray
 
         if fiber_z_mode == FiberZMode.EXTRUSION:
 
             fiber_length = self.search(ConfigKey.MASTER, 'geometry', 'z_nerve')
             half_fiber_length = fiber_length / 2
 
-            myelination_mode = self.search_mode(MyelinationMode)
+            myelination_modes = self.search_multi_mode(MyelinationMode)
 
             # TODO: INTERPOLATION FOR MYELINATED
 
             fiber_modes: List[Union[MyelinatedFiberType, UnmyelinatedFiberType]] =\
-                self.search_multi_mode(MyelinatedFiberType
-                                       if myelination_mode == MyelinationMode.MYELINATED
-                                       else UnmyelinatedFiberType)
+                self.search_multi_mode(modes=[MyelinatedFiberType, UnmyelinatedFiberType])
 
             # init first dimension
             fiber_mode_dimension = []
-            for fiber_mode in fiber_modes:
+            for fiber_mode, myelination_mode in zip(fiber_modes, myelination_modes):
 
                 fiber_mode_search_params = [MyelinationMode.parameters.value,
                                             *[str(m).split('.')[-1] for m in (myelination_mode, fiber_mode)]]
@@ -548,8 +548,8 @@ class Manager(Exceptionable, Configurable):
                         inter_length = (delta_z - node_length - (2 * paranodal_length_1) - (2 * paranodal_length_2)) / 6
 
                         if diameter in subset:
-                            z_steps: List = []
-                            while sum(z_steps) < half_fiber_length:
+                            z_steps: List = [0]
+                            while sum(z_steps) <= half_fiber_length:
                                 z_steps += [(node_length / 2) + (paranodal_length_1 / 2),
                                             (paranodal_length_1 / 2) + (paranodal_length_2 / 2),
                                             (paranodal_length_2 / 2) + (inter_length / 2),
@@ -559,7 +559,7 @@ class Manager(Exceptionable, Configurable):
                                             (paranodal_length_1 / 2) + (node_length / 2)]
 
                             # flip top steps upside down to get bottom steps
-                            z_bottom_half: np.ndarray = np.flipud(z_steps)
+                            z_bottom_half: np.ndarray = np.flipud(z_steps)[:-1]
 
                             # get cumulative sum of top half, before shifting
                             z_top_half: np.ndarray = np.cumsum(z_steps)
@@ -583,13 +583,16 @@ class Manager(Exceptionable, Configurable):
                             # concatenate lists together
                             z_subset = np.concatenate((z_bottom_half, z_top_half))
 
-                            subsets_dimension.append(inner_loop(list(z_subset), myelination_mode, fiber_length))
+                            subsets_dimension.append(inner_loop(list(z_subset),
+                                                                myelination_mode,
+                                                                fiber_length,
+                                                                delta_z))
 
                     fiber_mode_dimension.append(subsets_dimension)
 
                 else:  # UNMYELINATED
 
-                    delta_zs: list = self.search(ConfigKey.MASTER, *fiber_mode_search_params, 'delta_z')
+                    delta_zs: list = self.search(ConfigKey.MASTER, *fiber_mode_search_params, 'delta_zs')
 
                     subsets_dimension = []
                     for delta_z in delta_zs:
@@ -604,7 +607,17 @@ class Manager(Exceptionable, Configurable):
 
                         z_subset = np.concatenate((z_bottom_half[:-1], z_top_half))
 
-                        subsets_dimension.append(inner_loop(list(z_subset), myelination_mode, fiber_length))
+                        subsets_dimension.append(inner_loop(list(z_subset),
+                                                            myelination_mode,
+                                                            fiber_length,
+                                                            delta_z))
+
+                    fiber_mode_dimension.append(subsets_dimension)
+
+            # return top dimension of z points list
+            return fiber_mode_dimension
 
         else:
             self.throw(31)
+
+

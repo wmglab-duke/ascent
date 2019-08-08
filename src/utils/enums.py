@@ -103,8 +103,8 @@ class ZOffsetMode(Enum):
 class MyelinationMode(Enum):
     config = 'myel'
     parameters = 'fiber_type_parameters'
-    UNMYELINATED = False
     MYELINATED = True
+    UNMYELINATED = False
 
 
 @unique
