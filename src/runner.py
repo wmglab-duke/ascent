@@ -17,6 +17,7 @@ Description:
 
 """
 import os
+import pickle
 
 from src.core import *
 from src.utils import *
@@ -189,9 +190,9 @@ class Runner(Exceptionable, Configurable):
 
     def manager_test(self):
         print('\nSTART SLIDE MANAGER')
-        self.manager = Manager(self.configs[ConfigKey.MASTER.value],
-                               self.configs[ConfigKey.EXCEPTIONS.value],
-                               map_mode=SetupMode.OLD)
+        self.manager = SlideManager(self.configs[ConfigKey.MASTER.value],
+                                    self.configs[ConfigKey.EXCEPTIONS.value],
+                                    map_mode=SetupMode.OLD)
 
         print('BUILD FILE STRUCTURE')
         self.manager.build_file_structure()
@@ -203,8 +204,29 @@ class Runner(Exceptionable, Configurable):
         self.manager.write(WriteMode.SECTIONWISE)
 
         print('FIBER XY COORDINATES')
-        self.xy_coordinates = self.manager.fiber_xy_coordinates(plot=True)
+        self.xy_coordinates = self.manager.fiber_xy_coordinates(plot=True, save=True)
 
         print('FIBER Z COORDINATES')
-        self.z_coordinates = self.manager.fiber_z_coordinates(self.xy_coordinates)
+        self.z_coordinates = self.manager.fiber_z_coordinates(self.manager.xy_coordinates, save=True)
 
+        print('SAVE?')
+        path = os.path.join(self.path(ConfigKey.MASTER, 'samples_path'),
+                            self.search(ConfigKey.MASTER, 'sample'),
+                            'manager.obj')
+        self.manager.save(path)
+
+    def load_up_manager(self):
+
+        path = os.path.join(self.path(ConfigKey.MASTER, 'samples_path'),
+                            self.search(ConfigKey.MASTER, 'sample'),
+                            'manager.obj')
+        self.manager = pickle.load(open(path, 'rb'))
+
+    def smart_run(self):
+
+        if os.path.isfile(os.path.join(self.path(ConfigKey.MASTER, 'samples_path'),
+                            self.search(ConfigKey.MASTER, 'sample'),
+                            'manager.obj')):
+            self.load_up_manager()
+        else:
+            self.manager_test()
