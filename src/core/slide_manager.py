@@ -2,7 +2,7 @@
 
 # builtins
 import os
-from typing import List, Tuple, Union
+from typing import List, Tuple, Union, Type, Dict, Any
 import random
 
 # packages
@@ -19,7 +19,7 @@ from .deformable import Deformable
 from src.utils import *
 
 
-class Manager(Exceptionable, Configurable):
+class SlideManager(Exceptionable, Configurable, Saveable):
 
     def __init__(self, master_config: dict, exception_config: list, map_mode: SetupMode):
         """
@@ -35,6 +35,13 @@ class Manager(Exceptionable, Configurable):
 
         # Initialize slides
         self.slides: List[Slide] = []
+
+        # initialize empty lists of fiber points
+        self.xy_coordinates = None
+        self.full_coordinates = None
+
+        # empty metadata
+        self.fiber_metadata: Dict[str, list] = {}
 
         # Make a slide map
         self.map = Map(self.configs[ConfigKey.MASTER.value],
@@ -288,7 +295,7 @@ class Manager(Exceptionable, Configurable):
             # go back up to start directory, then to top of loop
             os.chdir(start_directory)
 
-    def fiber_xy_coordinates(self, plot: bool = False) -> List[List[List[tuple]]]:
+    def fiber_xy_coordinates(self, plot: bool = False, save: bool = False) -> List[List[List[tuple]]]:
         """
         :return: tuple containg two lists of tuples,
                     1) first list of tuples is points [(x, y)]
@@ -440,15 +447,29 @@ class Manager(Exceptionable, Configurable):
         else:
             self.throw(30)
 
+        if save:
+            self.xy_coordinates = fascicles
+
         return fascicles
 
-    def fiber_z_coordinates(self, xy_coordinates: List[List[List[Tuple[float]]]]):
+    def fiber_z_coordinates(self, xy_coordinates: List[List[List[Tuple[float]]]], save: bool = False):
         """
         Finds coordinates to top of axon (1/2 to 1) then flips down to find bottom half
         :param xy_coordinates: list of tuple (x,y) points. this is a parameter, not saved as instance variable so the
         user is able to filter points to only find z coordinates for desired fascicles/inners/fibers
         :return: see param return_points
         """
+
+        # reset fiber metadata
+        self.fiber_metadata = {
+            "fiber_z_modes": [],
+            "fiber_types": [],
+            "subsets": [],
+            "offsets": self.search(ConfigKey.MASTER, FiberZMode.parameters.value, 'offsets'),
+            "fascicles": [],
+            "inners": [],
+            "fibers": []
+        }
 
         def clip(values: list, start, end, myel: MyelinationMode) -> list:
 
@@ -478,11 +499,12 @@ class Manager(Exceptionable, Configurable):
                 z_subsets_offset = clip([z + offset for z in zs], delta_z, length - delta_z, myel_mode)
 
                 fascicles_dimension = []
+                self.fiber_metadata['fascicles'].append(list(range(len(xy_coordinates))))
                 for fascicle in xy_coordinates:
-
+                    self.fiber_metadata['inners'].append(list(range(len(fascicle))))
                     inners_dimension = []
                     for inner in fascicle:
-
+                        self.fiber_metadata['fibers'].append(list(range(len(inner))))
                         fibers_dimension = []
                         for x, y in inner:  # get specific fiber (x, y point)
 
@@ -502,6 +524,7 @@ class Manager(Exceptionable, Configurable):
 
         # get top-level fiber z generation
         fiber_z_mode: FiberZMode = self.search_mode(FiberZMode)
+        self.fiber_metadata['fiber_z_modes'].append(fiber_z_mode)
 
         # all functionality is only defined for EXTRUSION as of now
         if fiber_z_mode == FiberZMode.EXTRUSION:
@@ -525,6 +548,8 @@ class Manager(Exceptionable, Configurable):
             # loop through paired fiber mode and myelination modes
             for fiber_mode, myelination_mode in zip(fiber_modes, myelination_modes):
 
+                self.fiber_metadata['fiber_types'].append(fiber_mode)
+
                 fiber_mode_search_params = [MyelinationMode.parameters.value,
                                             *[str(m).split('.')[-1] for m in (myelination_mode, fiber_mode)]]
 
@@ -543,6 +568,8 @@ class Manager(Exceptionable, Configurable):
                                                 'diameters',
                                                 'delta_zs',
                                                 'paranodal_length_2s'])
+
+                    self.fiber_metadata['subsets'].append(subset)
 
                     # init next dimension
                     subsets_dimension = []
@@ -563,13 +590,16 @@ class Manager(Exceptionable, Configurable):
                                             (paranodal_length_2 / 2) + (paranodal_length_1 / 2),
                                             (paranodal_length_1 / 2) + (node_length / 2)]
 
+                            reverse_z_steps = z_steps.copy()
+                            reverse_z_steps.reverse()
+
                             # concat, cumsum, and other stuff to get final list of z points
                             z_subset = np.array(
                                 clip(
                                     list(
                                         np.cumsum(
                                             np.concatenate(
-                                                ([0], z_steps.reverse(), z_steps)
+                                                ([0], reverse_z_steps, z_steps)
                                             )
                                         )
                                     ),
@@ -610,7 +640,9 @@ class Manager(Exceptionable, Configurable):
 
                     fiber_mode_dimension.append(subsets_dimension)
 
-            # return top dimension of z points list
+            # return and save top dimension of z points list
+            if save:
+                self.full_coordinates = fiber_mode_dimension
             return fiber_mode_dimension
 
         else:
