@@ -44,7 +44,7 @@
     "myel": ["MYELINATED", "UNMYELINATED"],
     "myel_fiber": ["MRG"],
     "unmyel_fiber": ["SUNDT"],
-    "waveform": "BIPHASIC_PULSE_TRAIN"
+    "waveform": ["BIPHASIC_PULSE_TRAIN"]
   },
   "fiber_z_parameters": {
     "unit": "micrometer",
@@ -161,8 +161,8 @@
       "t_on": 1,
       "t_off": 19,
       "t_stop": 20,
-      "time_unit": "s",
-      "frequency_unit": "Hz"
+      "time_unit": "ms",
+      "frequency_unit": "kHz"
     },
     "MONOPHASIC_PULSE_TRAIN": {
       "pulse_width": [
