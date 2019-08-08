@@ -503,20 +503,26 @@ class Manager(Exceptionable, Configurable):
         # get top-level fiber z generation
         fiber_z_mode: FiberZMode = self.search_mode(FiberZMode)
 
+        # all functionality is only defined for EXTRUSION as of now
         if fiber_z_mode == FiberZMode.EXTRUSION:
 
+            # get the correct fiber lengths
             fiber_length = self.search(ConfigKey.MASTER, 'geometry', 'z_nerve')
             half_fiber_length = fiber_length / 2
 
+            # search for all myelination modes (length of this corresponds to length of total modes looped through)
+            # TODO: set values in FIBER TYPES ENUM to associated myel mode
             myelination_modes = self.search_multi_mode(MyelinationMode)
 
             # TODO: INTERPOLATION FOR MYELINATED
 
+            # get all the fiber modes (BOTH myel and unmyel)
             fiber_modes: List[Union[MyelinatedFiberType, UnmyelinatedFiberType]] =\
                 self.search_multi_mode(modes=[MyelinatedFiberType, UnmyelinatedFiberType])
 
             # init first dimension
             fiber_mode_dimension = []
+            # loop through paired fiber mode and myelination modes
             for fiber_mode, myelination_mode in zip(fiber_modes, myelination_modes):
 
                 fiber_mode_search_params = [MyelinationMode.parameters.value,

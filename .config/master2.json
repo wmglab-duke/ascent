@@ -156,9 +156,12 @@
   },
   "waveform_parameters": {
     "global": {
-      "time_unit": "ms",
       "dt": 0.001,
-      "t_start": 1.0,
+      "t_start": 0,
+      "t_on": 1,
+      "t_off": 19,
+      "t_stop": 20,
+      "time_unit": "s",
       "frequency_unit": "Hz"
     },
     "MONOPHASIC_PULSE_TRAIN": {
@@ -188,6 +191,9 @@
       ],
       "pulse_width": [
         0.1
+      ],
+      "inter_phase": [
+        1
       ],
       "digits": 1
     }
