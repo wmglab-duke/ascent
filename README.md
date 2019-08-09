@@ -16,7 +16,9 @@ files for simulations... (eventually translate NEURON into Python?)
 
 * **FILTERING, SEARCHING, etc.**
 
-* Possible add-on: Investigate methods of streamlining/standardizing interface with cluster computing service
+* Possible add-ons
+    * Investigate methods of streamlining/standardizing interface with cluster computing service
+    * Implement best-fit bounding ellipse for CuffInputMode (written to electrode_input.json).
 
 ## Dependencies (non-builtin)
 - numpy
