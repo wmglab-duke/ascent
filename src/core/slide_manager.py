@@ -285,3 +285,28 @@ class SlideManager(Exceptionable, Configurable, Saveable):
             # go back up to start directory, then to top of loop
             os.chdir(start_directory)
 
+    def make_electrode_input(self):
+
+        # load template for electrode input
+        electrode_input: dict = TemplateOutput.read(TemplateMode.ELECTRODE_INPUT)
+
+        for cuff_inner_mode in CuffInnerMode:
+
+            if cuff_inner_mode == CuffInnerMode.CIRCLE:
+
+                pass
+
+            elif cuff_inner_mode == CuffInnerMode.ELLIPSE:
+
+                pass
+
+            elif cuff_inner_mode == CuffInnerMode.BOUNDING_BOX:
+
+                pass
+
+            else:
+                self.throw(37)
+
+        # write template for electrode input
+        TemplateOutput.write(electrode_input, TemplateMode.ELECTRODE_INPUT, self)
+

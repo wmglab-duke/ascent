@@ -148,6 +148,7 @@ class WaveformMode(Enum):
     BIPHASIC_FULL_DUTY = 2
     BIPHASIC_PULSE_TRAIN = 3
 
+
 #%% Cuffs
 
 @unique
@@ -160,5 +161,9 @@ class CuffInnerMode(Enum):
     BOUNDING_BOX = 2
 
 
+#%% Templates
 
-
+@unique
+class TemplateMode(Enum):
+    path = '.templates'
+    ELECTRODE_INPUT = 'electrode_input.json'
