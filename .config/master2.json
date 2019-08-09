@@ -194,5 +194,8 @@
       ],
       "digits": 1
     }
+  },
+  "cuff_parameters": {
+
   }
 }

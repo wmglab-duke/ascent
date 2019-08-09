@@ -159,6 +159,17 @@ class CuffInnerMode(Enum):
     CIRCLE = 0
     BOUNDING_BOX = 1
 
+class CuffMode(Enum):
+    config = 'cuff_mode'
+    parameters = 'cuff_parameters'
+
+    BIPOLAR_EMBEDDED_RIBBON = 0
+    BIPOLAR_EXPOSED_WIRE = 1
+    LIVANOVA = 3
+    ENTEROMEDICS = 4
+    MONOPOLAR_DISK = 5
+    IMTHERA = 6
+
 
 #%% Templates
 
