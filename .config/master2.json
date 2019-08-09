@@ -44,7 +44,8 @@
     "myel": ["MYELINATED", "UNMYELINATED"],
     "myel_fiber": ["MRG"],
     "unmyel_fiber": ["SUNDT"],
-    "waveform": ["BIPHASIC_PULSE_TRAIN"]
+    "waveform": ["BIPHASIC_PULSE_TRAIN"],
+    "cuff_inner": ["CIRCLE", "ELLIPSE", "BOUNDING_BOX"]
   },
   "fiber_z_parameters": {
     "unit": "micrometer",

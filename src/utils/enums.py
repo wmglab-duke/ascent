@@ -148,3 +148,17 @@ class WaveformMode(Enum):
     BIPHASIC_FULL_DUTY = 2
     BIPHASIC_PULSE_TRAIN = 3
 
+#%% Cuffs
+
+@unique
+class CuffInnerMode(Enum):
+    config = 'cuff_inner'
+    parameters = 'cuff_inner_parameters'
+
+    CIRCLE = 0
+    ELLIPSE = 1
+    BOUNDING_BOX = 2
+
+
+
+
