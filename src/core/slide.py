@@ -131,7 +131,6 @@ class Slide(Exceptionable):
         else:
             self.throw(16)
 
-
     def plot(self, title: str = None, final: bool = True, inner_format: str = 'b-', fix_aspect_ratio: bool = False):
         """
         Quick util for plotting the nerve and fascicles

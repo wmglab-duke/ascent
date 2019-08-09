@@ -38,12 +38,12 @@
     "nerve": "PRESENT",
     "reshape_nerve": "CIRCLE",
     "deform": "PHYSICS",
-    "fiber_xy": "WHEEL",
+    "fiber_xy": "CENTROID",
     "fiber_z": "EXTRUSION",
     "z_offset": "UNIFORM",
-    "myel": ["MYELINATED", "UNMYELINATED"],
+    "myel": ["MYELINATED"],
     "myel_fiber": ["MRG"],
-    "unmyel_fiber": ["SUNDT"],
+    "unmyel_fiber": [],
     "waveform": ["BIPHASIC_PULSE_TRAIN"]
   },
   "fiber_z_parameters": {
@@ -75,15 +75,11 @@
     }
   },
   "fiber_type_parameters": {
+    "unit": "micrometers",
     "MYELINATED": {
       "MRG": {
         "subset": [
-          1.0,
-          2.0,
-          5.7,
-          7.3,
-          8.7,
-          10.0
+          1.0
         ],
         "node_length": 1.0,
         "paranodal_length_1": 3.0,
@@ -134,22 +130,22 @@
     "UNMYELINATED": {
       "SUNDT": {
         "delta_zs": [
-          8.333333333333333
+          8.333
         ]
       },
       "TIGERHOLM": {
         "delta_zs": [
-          8.333333333333333
+          8.333
         ]
       },
       "RATTAY": {
         "delta_zs": [
-          8.333333333333333
+          8.333
         ]
       },
       "SCHILD": {
         "delta_zs": [
-          8.333333333333333
+          8.333
         ]
       }
     }

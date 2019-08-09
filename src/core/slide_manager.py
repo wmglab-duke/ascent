@@ -2,16 +2,13 @@
 
 # builtins
 import os
-from typing import List, Tuple, Union, Type, Dict, Any
-import random
+from typing import List
 
 # packages
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import shutil
-from shapely.affinity import scale
-from shapely.geometry import LineString, Point
 
 # SPARCpy
 from src.core import Slide, Map, Fascicle, Nerve, Trace

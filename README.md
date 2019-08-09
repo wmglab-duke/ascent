@@ -1,6 +1,24 @@
 # SPARCpy
 
-### Dependencies
+## Future Development Goals
+* Efficient saving of program states, split into higher-level nerve geometries (derived from mask data)
+and fiber information (metadata and coordinates for extracting electric potentials)
+
+* Electrode validation with higher-level nerve geometry
+
+* COMSOL-interfacing code (MATLAB or Java, but eventually the latter) to build models and extract static
+electric potentials from predetermined coordinates (see `FiberManager.fiber_z_coordinates`)
+
+* NEURON-interfacing code (to interface with preexisting NEURON code written in Hoc) to build launch
+files for simulations... (eventually translate NEURON into Python?)
+
+* Standardized built-in data analysis
+
+* **FILTERING, SEARCHING, etc.**
+
+* Possible add-on: Investigate methods of streamlining/standardizing interface with cluster computing service
+
+## Dependencies (non-builtin)
 - numpy
 - Pillow
 - cv2 (opencv-python)
@@ -9,11 +27,10 @@
 - pyclipper
 - pymunk
 - pygame
-- shutil (builtin?)
-- json (builtin?)
-- 
+- shutil
+- json
 
-### Source images
+## Source images
 The user must provide 3 types of files that will be used to construct the data filesystem. In addition to the type
 designation (a single letter, seen in filename specifications below), 3 pieces of data must be included:
 
