@@ -47,22 +47,30 @@ class Runner(Exceptionable, Configurable):
 
     def smart_run(self):
 
+        print('\nStarting smart run.')
+
         def load(path: str):
             return pickle.load(open(path, 'rb'))
 
         path_parts = [self.path(ConfigKey.MASTER, 'samples_path'), self.search(ConfigKey.MASTER, 'sample')]
 
         if not os.path.isfile(os.path.join(*path_parts, 'slide_manager.obj')):
+            print('Existing slide manager not found. Performing full run.')
             self.full_run()
 
         else:
+            print('Loading existing slide manager.')
             self.slide_manager = load(os.path.join(*path_parts, 'slide_manager.obj'))
 
             if os.path.isfile(os.path.join(*path_parts, 'fiber_manager.obj')):
+                print('Loading existing fiber manager.')
                 self.fiber_manager = load(os.path.join(*path_parts, 'fiber_manager.obj'))
 
             else:
+                print('Existing fiber manager not found. Performing fiber run.')
                 self.fiber_run()
+
+        self.save_all()
 
     def full_run(self):
         self.slide_run()
@@ -84,7 +92,7 @@ class Runner(Exceptionable, Configurable):
         self.slide_manager.write(WriteMode.SECTIONWISE)
 
     def fiber_run(self):
-        print('START FIBER MANAGER')
+        print('\nSTART FIBER MANAGER')
         self.fiber_manager = FiberManager(self.slide_manager,
                                           self.configs[ConfigKey.MASTER.value],
                                           self.configs[ConfigKey.EXCEPTIONS.value])
@@ -95,7 +103,9 @@ class Runner(Exceptionable, Configurable):
         print('FIBER Z COORDINATES')
         self.fiber_manager.fiber_z_coordinates(self.fiber_manager.xy_coordinates, save=True)
 
-        print('SAVE?')
+    def save_all(self):
+
+        print('SAVE ALL')
         path_parts = [self.path(ConfigKey.MASTER, 'samples_path'), self.search(ConfigKey.MASTER, 'sample')]
         self.slide_manager.save(os.path.join(*path_parts, 'slide_manager.obj'))
         self.fiber_manager.save(os.path.join(*path_parts, 'fiber_manager.obj'))
