@@ -292,20 +292,21 @@ class SlideManager(Exceptionable, Configurable, Saveable):
 
         for cuff_inner_mode in CuffInnerMode:
 
+            string_mode = str(cuff_inner_mode).split('.')[1]
+
             if cuff_inner_mode == CuffInnerMode.CIRCLE:
 
-                pass
-
-            elif cuff_inner_mode == CuffInnerMode.ELLIPSE:
-
-                pass
+                (minx, miny, maxx, maxy) = self.slides[0].nerve.polygon().bounds
+                electrode_input[string_mode]['r'] = max([(maxx - minx)/2, (maxy - miny)/2])
 
             elif cuff_inner_mode == CuffInnerMode.BOUNDING_BOX:
 
-                pass
+                (minx, miny, maxx, maxy) = self.slides[0].nerve.polygon().bounds
+                electrode_input[string_mode]['x'] = maxx - minx
+                electrode_input[string_mode]['y'] = maxy - miny
 
             else:
-                self.throw(37)
+                pass
 
         # write template for electrode input
         TemplateOutput.write(electrode_input, TemplateMode.ELECTRODE_INPUT, self)

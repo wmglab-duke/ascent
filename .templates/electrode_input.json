@@ -3,13 +3,6 @@
     "r": null,
     "length_unit": "micrometer"
   },
-  "ELLIPSE": {
-    "a": null,
-    "b": null,
-    "angle": null,
-    "angle_unit": "radians",
-    "length_unit": "micrometer"
-  },
   "BOUNDING_BOX": {
     "x": null,
     "y": null,

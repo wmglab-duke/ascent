@@ -157,8 +157,7 @@ class CuffInnerMode(Enum):
     parameters = 'cuff_inner_parameters'
 
     CIRCLE = 0
-    ELLIPSE = 1
-    BOUNDING_BOX = 2
+    BOUNDING_BOX = 1
 
 
 #%% Templates
