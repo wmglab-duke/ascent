@@ -1,7 +1,7 @@
 # SPARCpy
 
 ## Future Development Goals
-*  **Monday, Sept. 16, 2019** COMSOL-interfacing code (MATLAB or Java, but eventually the latter) to build models
+*  **Monday, Sept. 16, 2019** COMSOL-interfacing Java code to build models
     * Eric
         - add cuff specific parameters to master
         - clean up and annotate existing MATLAB code for building FEM's (electrode, nerve, general model parameters)
@@ -12,8 +12,15 @@
         - logic for fascicle representation from folder structures
         - general model geometry validation, particularly wrt electrodes (specific to each)
 
-* NEURON-interfacing code (to interface with preexisting NEURON code written in Hoc) to build launch
-files for simulations... (eventually translate NEURON into Python?)
+* **Friday, Sept. 20, 2019** Extracting potentials from solved models, saving to file, and successfully loading for
+use in Python (for Both)
+
+* **Monday, Sept. 30** NEURON-interfacing Python code (to interface with preexisting NEURON code written in Hoc) to build launch
+files for simulation (for Both)
+    - Write `LaunchSim###.hoc`
+    - Build simulation folder structure
+    - Streamline simulation indexing
+    - Upload to Cluster and confirm successful simulation
 
 * Efficient saving of program states, split into higher-level nerve geometries (derived from mask data)
 and fiber information (metadata and coordinates for extracting electric potentials)
@@ -27,6 +34,7 @@ and fiber information (metadata and coordinates for extracting electric potentia
     * Implement best-fit bounding ellipse for CuffInputMode (written to electrode_input.json).
     * pretty progressbar: <a href="https://pypi.org/project/ppl/">https://pypi.org/project/ppl/</a>
     * library of generic electrode geometries
+    * port NEURON code to Python?
 
 ## Dependencies (non-builtin)
 - numpy
