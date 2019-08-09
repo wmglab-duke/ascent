@@ -196,6 +196,43 @@
     }
   },
   "cuff_parameters": {
+    "BIPOLAR_EMBEDDED_RIBBON": {
 
+    },
+    "BIPOLAR_EXPOSED_WIRE": {
+
+    },
+    "LIVANOVA": {
+
+    },
+    "ENTEROMEDICS": {
+
+    },
+    "MONOPOLAR_SQUARE_DISK": {
+
+    },
+    "IMTHERA": {
+      "length_unit": "inch",
+      "L_cuff": 0.354,
+      "thk_inner_cuff": 0.03,
+      "r_cuff_in_pre": 0.059,
+      "d_contact": 0.062,
+      "recess": 0.008,
+      "d_zm": 0.108,
+      "r_space_elec_elec": 0.066,
+      "r_cuff_out_pre": 0.089,
+      "r_space_elec_body": 0.077,
+      "thk_elec": 0.002,
+      "d_hole_de": 0.03,
+      "d_hole": 0.02,
+      "thk_furl": 0.02,
+      "sep_cf": 0,
+      "d_re": 0.077,
+      "angle_unit": "degrees",
+      "ang_edge_contact": 53,
+      "ang_contact_contact": 51,
+      "thk_saline_ext": 0.008,
+      "thk_saline_int": 0.008
+    }
   }
 }

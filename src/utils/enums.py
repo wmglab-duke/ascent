@@ -167,7 +167,7 @@ class CuffMode(Enum):
     BIPOLAR_EXPOSED_WIRE = 1
     LIVANOVA = 3
     ENTEROMEDICS = 4
-    MONOPOLAR_DISK = 5
+    MONOPOLAR_SQUARE_DISK = 5
     IMTHERA = 6
 
 
