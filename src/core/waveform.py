@@ -1,8 +1,13 @@
+#!/usr/bin/env python3.7
+
+# builtins
 from typing import List
 
+# packages
 import numpy as np
 import scipy.signal as sg
 
+# SPARCpy
 from src.utils import Exceptionable, Configurable
 from src.utils.enums import *
 

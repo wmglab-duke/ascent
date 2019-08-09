@@ -28,11 +28,12 @@ Description:
 
 
 """
-
+# builtins
 import json
 import os
 from typing import Type, List
 
+# SPARCpy
 from .enums import *
 
 

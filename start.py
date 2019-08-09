@@ -20,7 +20,8 @@ runner = Runner(master_config_file_path)
 # runner.reposition_test()
 # runner.reposition_test2()
 # runner.manager_test()
-runner.load_up_manager()
+runner.smart_run()
+# runner.load_up_manager()
 
 # END timer
 end = time.time()
