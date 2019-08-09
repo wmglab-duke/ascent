@@ -183,5 +183,10 @@
     "code": 36,
     "text": "2*Pulse + Interphase is longer than period.",
     "source": "src.core.Waveform.generate"
+  },
+    {
+    "code": 37,
+    "text": "Unsupported CuffInnerMode choice.",
+    "source": "src.core.SlideManager.make_electrode_input"
   }
 ]
