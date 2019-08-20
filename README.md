@@ -1,4 +1,4 @@
-# ACCESS
+# SPARC ACCESS
 
 ## Future Development Goals
 *  **Monday, Sept. 16, 2019** COMSOL-interfacing Java code to build models
