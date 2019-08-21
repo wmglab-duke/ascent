@@ -27,6 +27,6 @@ class Javable:
         run_java_file_prompt = "java %s" % path
         os.system(run_java_file_prompt)  # note absence of ".java"
 
-    def compile_and_run(self, TARGET_FILE: str):
-        self.compile_file()
-        self.run_file()
+    def compile_and_run(self, path: str):
+        self.compile_file(path)
+        self.run_file(path)
