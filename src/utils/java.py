@@ -6,10 +6,15 @@ import os
 # for checking the OS type
 import sys
 
-def compile(self, path: str):
-        # compile target java file
-        os.system('javac TARGET_FILE.java')
 
+class Javable:
+
+    def compile_file(self, path: str):
+        # compile target java file
+        compile_java_file_prompt = "javac %s.java" % path
+        os.system(compile_java_file_prompt)
+
+    def run_file(self, path: str):
         # set working directory for java (choose by system type)
         cwd = os.getcwd()
 
@@ -19,13 +24,9 @@ def compile(self, path: str):
             os.system('set path={}'.format(cwd))
 
         # run target java file
-        os.system('java TARGET_FILE')  # note absence of ".java"
+        run_java_file_prompt = "java %s" % path
+        os.system(run_java_file_prompt)  # note absence of ".java"
 
-def run(self, path: str):
-
-#    from src.utils import java
- #   java.compile()
-  #  java.run()
-
-
-
+    def compile_and_run(self, TARGET_FILE: str):
+        self.compile_file()
+        self.run_file()
