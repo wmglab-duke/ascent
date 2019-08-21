@@ -103,6 +103,10 @@ class Runner(Exceptionable, Configurable):
         print('FIBER Z COORDINATES')
         self.fiber_manager.fiber_z_coordinates(self.fiber_manager.xy_coordinates, save=True)
 
+    def fem_run(self):
+        print('\nSTART FEM RUNNER')
+        self.fem_manager = FEMManager()
+
     def save_all(self):
 
         print('SAVE ALL')

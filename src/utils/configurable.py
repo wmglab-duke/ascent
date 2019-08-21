@@ -33,7 +33,7 @@ import json
 import os
 from typing import Type, List
 
-# SPARCpy
+# access
 from .enums import *
 
 

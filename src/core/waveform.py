@@ -7,7 +7,7 @@ from typing import List
 import numpy as np
 import scipy.signal as sg
 
-# SPARCpy
+# access
 from src.utils import Exceptionable, Configurable
 from src.utils.enums import *
 

@@ -54,7 +54,7 @@ import json
 import warnings
 from typing import List
 
-# SPARCpy
+# access
 from src.utils import *
 
 

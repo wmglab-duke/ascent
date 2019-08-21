@@ -8,7 +8,7 @@ import pymunk.pygame_util
 import numpy as np
 from shapely.geometry import LineString, Point
 
-# SPARCpy
+# access
 from src.core import Trace, Slide
 from src.utils import Exceptionable, SetupMode, ReshapeNerveMode, ConfigKey
 

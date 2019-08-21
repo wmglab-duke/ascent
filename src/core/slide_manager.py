@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import shutil
 
-# SPARCpy
+# access
 from src.core import Slide, Map, Fascicle, Nerve, Trace
 from .deformable import Deformable
 from src.utils import *

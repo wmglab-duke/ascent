@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from shapely.affinity import scale
 from shapely.geometry import LineString, Point
 
-# SPARCpy
+# access
 from .slide_manager import SlideManager
 from src.utils import *
 

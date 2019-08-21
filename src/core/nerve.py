@@ -1,6 +1,6 @@
 #!/usr/bin/env python3.7
 
-# SPARCpy
+# access
 from src.core import Trace
 from src.utils import ConfigKey
 
