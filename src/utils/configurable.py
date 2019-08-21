@@ -8,7 +8,7 @@ Created:    July 20, 2019
 Description:
 
     OVERVIEW
-    Meant to be inherited for configurable functionality. Expandable and allows for quick access to configuration file
+    Meant to be inherited for configurable functionality. Expandable and allows for quick src to configuration file
     data (in addition to path building method). It is important to note that this class has BUILT IN exceptions that it
     throws (-1 and below) because it is inherently unable to inherit from Exceptionable, which, in turn, is configured.
 

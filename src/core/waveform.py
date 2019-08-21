@@ -90,7 +90,7 @@ class Waveform(Exceptionable, Configurable):
         # outermost loop on mode
         for mode in self.modes:
 
-            # for ease of parameter access later on
+            # for ease of parameter src later on
             path_to_specific_parameters = [WaveformMode.parameters, str(mode).split('.')[-1]]
 
             # loop on frequency (all modes have property)... WITHIN THIS LOOP: "switch" on wave type

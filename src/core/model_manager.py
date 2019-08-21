@@ -14,6 +14,3 @@ class ModelManager(Exceptionable, Configurable, Saveable):
         # Initializes superclasses
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
         Configurable.__init__(self, SetupMode.OLD, ConfigKey.MASTER, master_config)
-
-        # set self manager
-        self.manager = slide_manager

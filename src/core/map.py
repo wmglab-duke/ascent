@@ -20,7 +20,7 @@ Description:
     I considered adding path-building functionality to this class, but ultimately decided to defer that functionality
     to a "SlideManager" class (not created as of 7/24/2019). This was done so the configuration can be read and the
     appropriate data store in the master configuration (or similar). That way, a COMSOL-interfacing program will be able
-    to easily access the data from one place.
+    to easily src the data from one place.
 
     PROPERTIES
     data_root
