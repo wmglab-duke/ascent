@@ -247,7 +247,7 @@ class SlideManager(Exceptionable, Configurable, Saveable):
     def write(self, mode: WriteMode):
         """
         Write entire list of slides.
-        """
+         """
 
         # get starting point so able to go back
         start_directory: str = os.getcwd()
