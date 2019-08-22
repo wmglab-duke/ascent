@@ -11,7 +11,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import cv2
 
-# SPARCpy
+# access
 from .trace import Trace
 from .nerve import Nerve
 from src.utils import Exceptionable, SetupMode, WriteMode

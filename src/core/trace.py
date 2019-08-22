@@ -15,7 +15,7 @@ from shapely.ops import nearest_points
 import pyclipper
 import pymunk
 
-# SPARCpy
+# access
 from src.utils import *
 
 

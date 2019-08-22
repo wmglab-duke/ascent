@@ -165,10 +165,9 @@ class CuffMode(Enum):
 
     BIPOLAR_EMBEDDED_RIBBON = 0
     BIPOLAR_EXPOSED_WIRE = 1
-    LIVANOVA = 3
-    ENTEROMEDICS = 4
-    MONOPOLAR_SQUARE_DISK = 5
-    IMTHERA = 6
+    LIVANOVA = 2
+    ENTEROMEDICS = 3
+    IMTHERA = 4
 
 
 #%% Templates

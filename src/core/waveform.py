@@ -7,7 +7,7 @@ from typing import List
 import numpy as np
 import scipy.signal as sg
 
-# SPARCpy
+# access
 from src.utils import Exceptionable, Configurable
 from src.utils.enums import *
 
@@ -90,7 +90,7 @@ class Waveform(Exceptionable, Configurable):
         # outermost loop on mode
         for mode in self.modes:
 
-            # for ease of parameter access later on
+            # for ease of parameter src later on
             path_to_specific_parameters = [WaveformMode.parameters, str(mode).split('.')[-1]]
 
             # loop on frequency (all modes have property)... WITHIN THIS LOOP: "switch" on wave type

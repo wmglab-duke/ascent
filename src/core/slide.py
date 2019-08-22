@@ -12,7 +12,7 @@ from shapely.affinity import scale
 import numpy as np
 import matplotlib.pyplot as plt
 
-# SPARCpy
+# access
 from .fascicle import Fascicle
 from .nerve import Nerve
 from .trace import Trace

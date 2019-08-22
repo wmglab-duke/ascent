@@ -1,11 +1,14 @@
+# builtins
 import random
 from typing import Dict, List, Tuple, Union
 
+# packages
 import numpy as np
 import matplotlib.pyplot as plt
 from shapely.affinity import scale
 from shapely.geometry import LineString, Point
 
+# access
 from .slide_manager import SlideManager
 from src.utils import *
 
@@ -19,7 +22,7 @@ class FiberManager(Exceptionable, Configurable, Saveable):
         Configurable.__init__(self, SetupMode.OLD, ConfigKey.MASTER, master_config)
 
         # set self manager
-        self.manager = slide_manager
+        self.manager = slide_manager  # TODO would it be more clear to make all managers in this file slide_manager?
 
         # initialize empty lists of fiber points
         self.xy_coordinates = None
