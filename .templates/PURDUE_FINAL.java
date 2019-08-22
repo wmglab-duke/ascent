@@ -5,7 +5,7 @@
 import com.comsol.model.*;
 import com.comsol.model.util.*;
 
-/** Model exported on Aug 20 2019, 16:05 by COMSOL 5.4.0.388. */
+/** Model exported on Aug 22 2019, 17:58 by COMSOL 5.4.0.388. */
 public class PURDUE_FINAL {
 
   public static Model run() {
@@ -308,6 +308,10 @@ public class PURDUE_FINAL {
     model.result("pg1").set("frametype", "spatial");
     model.result("pg1").feature("mslc1").set("colortable", "RainbowLight");
     model.result("pg1").feature("mslc1").set("resolution", "normal");
+
+    model.label("PURDUE_FINAL.mph");
+
+    model.component("comp1").view("view1").set("renderwireframe", false);
 
     return model;
   }

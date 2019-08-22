@@ -5,7 +5,7 @@
 import com.comsol.model.*;
 import com.comsol.model.util.*;
 
-/** Model exported on Aug 20 2019, 16:07 by COMSOL 5.4.0.388. */
+/** Model exported on Aug 22 2019, 17:57 by COMSOL 5.4.0.388. */
 public class LIVANOVA_FINAL {
 
   public static Model run() {
@@ -410,6 +410,8 @@ public class LIVANOVA_FINAL {
     model.result("pg1").set("frametype", "spatial");
     model.result("pg1").feature("mslc1").set("colortable", "RainbowLight");
     model.result("pg1").feature("mslc1").set("resolution", "normal");
+
+    model.label("LIVANOVA_FINAL.mph");
 
     return model;
   }
