@@ -18,3 +18,8 @@ class FEMManager(Exceptionable, Configurable, Saveable):
 
         # Initialize FEMs
         self.fems: List[FEM] = []
+
+    def extract_Ve(self):
+
+    def save_Ve(self):
+
