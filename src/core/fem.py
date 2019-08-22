@@ -19,7 +19,7 @@ class FEM(Exceptionable)
         # init superclasses
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
 
-    def validation():
+    def cuff_validation():
         """
         Checks to make sure that the chose cuff geometry does not conflict with itself, the nerve, or distant ground
         :return: Boolean for True (no intersection) or False (issues with geometry overlap)

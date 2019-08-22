@@ -14,6 +14,14 @@ class Javable:
         compile_java_file_prompt = "javac %s.java" % path
         os.system(compile_java_file_prompt)
 
+        # WINDOWS
+        <COMSOL PATH>\bin\win32\comsolcompile -jdkroot <JDK path> fname_model.java
+
+        # MAC and Linux
+        <COMSOL PATH >/bin/comsol compile - jdkroot < JDK path > \fname_model.java
+
+        # where <COMSOL PATH> is the COMSOL installation directory and <JDK PATH> is the installation directory for the JDK
+
     def run_file(self, path: str):
         # set working directory for java (choose by system type)
         cwd = os.getcwd()
