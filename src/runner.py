@@ -116,15 +116,15 @@ class Runner(Exceptionable, Configurable):
         cwd = os.getcwd()
         if sys.platform.startswith('darwin') or sys.platform.startswith('linux'):  # macOS and linux
 
-            os.system('{}/bin/comsol compile {}.java'.format(comsol_path, file_name_no_ext))
+            os.system('{}/bin/comsol compile $(pwd)/{}.java'.format(comsol_path, file_name_no_ext))
             os.system('export JAVA_HOME={}'.format(cwd))
-            os.system('{}/bin/comsol batch -inputfile {}.class'.format(comsol_path, file_name_no_ext))
+            os.system('{}/bin/comsol batch -inputfile $(pwd)/{}.class'.format(comsol_path, file_name_no_ext))
 
         else:  # sys.platform would be 'win32' or 'win64'
 
-            os.system('\"{}\\bin\\win64\\comsolcompile\" {}.java'.format(comsol_path, file_name_no_ext))
+            os.system('\"{}\\bin\\win64\\comsolcompile\" \"%cd%\\{}.java\"'.format(comsol_path, file_name_no_ext))
             os.system('set path={}'.format(cwd))
-            os.system('\"{}\\bin\\win64\\comsolbatch\" -inputfile {}.class'.format(comsol_path, file_name_no_ext))
+            os.system('\"{}\\bin\\win64\\comsolbatch\" -inputfile \""%cd%\\{}.class\"'.format(comsol_path, file_name_no_ext))
 
     def save_all(self):
 
