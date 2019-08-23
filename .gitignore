@@ -134,3 +134,4 @@ data/samples
 #data/input/samples
 *r.tif
 *system.json
+*.status
