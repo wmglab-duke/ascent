@@ -122,9 +122,9 @@ class Runner(Exceptionable, Configurable):
 
         else:  # sys.platform would be 'win32' or 'win64'
 
-            os.system('\"{}\\bin\\win64\\comsolcompile\" \"%cd%\\{}.java\"'.format(comsol_path, file_name_no_ext))
+            os.system('r\"{}\\bin\\win64\\comsolcompile\" r\"%cd%\\{}.java\"'.format(comsol_path, file_name_no_ext))
             os.system('set path=\"{}\"'.format(cwd))
-            os.system('\"{}\\bin\\win64\\comsolbatch\" -inputfile \"%cd%\\{}.class\"'.format(comsol_path, file_name_no_ext))
+            os.system('r\"{}\\bin\\win64\\comsolbatch\" -inputfile r\"%cd%\\{}.class\"'.format(comsol_path, file_name_no_ext))
 
     def save_all(self):
 
