@@ -19,19 +19,19 @@ public class ENTEROMEDICS_FINAL {
     model.param().set("contact_area", "10.3226 [mm^2]");
     model.param().set("theta_contact_pre", "256.4287 [deg]");
     model.param().set("thk_elec", "0.1 [mm]");
-    model.param().set("z_nerve", "20 [mm]");
-    model.param().set("r_ground", "5 [mm]");
+    model.param().set("z_nerve", "20 [mm]"); //dynamic
+    model.param().set("r_ground", "5 [mm]"); //dynamic
     model.param().set("thk_cuff", "1 [mm]");
-    model.param().set("L_cuff", "3*z_elec");
+    model.param().set("L_cuff", "3*z_elec"); //dynamic
     model.param().set("z_elec", "1.397 [mm]");
     model.param().set("arc_ext", "0.5 [mm]");
     model.param().set("thk_scar", "0.2 [mm]");
     model.param().set("zw_rot", "0");
-    model.param().set("r_cuff_in", "max(r_nerve+thk_medium_gap_internal,r_cuff_in_pre)");
-    model.param().set("r_nerve", "1.3 [mm]");
+    model.param().set("r_cuff_in", "max(r_nerve+thk_medium_gap_internal,r_cuff_in_pre)"); //dynamic
+    model.param().set("r_nerve", "1.3 [mm]"); //dynamic
     model.param().set("thk_medium_gap_internal", "0");
-    model.param().set("theta_contact", "theta_contact_pre*(r_cuff_in_pre/r_cuff_in)");
-    model.param().set("theta_cuff", "theta_contact+((2*(360*arc_ext)/(2*pi*r_cuff_in)) [deg])");
+    model.param().set("theta_contact", "theta_contact_pre*(r_cuff_in_pre/r_cuff_in)"); //dynamic
+    model.param().set("theta_cuff", "theta_contact+((2*(360*arc_ext)/(2*pi*r_cuff_in)) [deg])"); //dynamic
     model.param().set("theta_cuff_pre", "360 [deg]");
 
     model.component().create("comp1", true);

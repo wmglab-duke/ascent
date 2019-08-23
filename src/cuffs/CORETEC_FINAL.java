@@ -16,36 +16,35 @@ public class CORETEC_FINAL {
     model.label("CORETEC_FINAL.mph");
 
     model.param().set("r_cuff_in_pre", "150 [um]");
-    model.param().set("r_nerve", "160 [um]");
+    model.param().set("r_nerve", "160 [um]"); //dynamic
     model.param().set("thk_medium_gap_internal", "0");
-    model.param().set("r_cuff_in", "max(r_nerve+thk_medium_gap_internal,r_cuff_in_pre)");
+    model.param().set("r_cuff_in", "max(r_nerve+thk_medium_gap_internal,r_cuff_in_pre)"); //dynamic
     model.param().set("percent_circ_cuff_pre", "1");
-    model.param().set("percent_circ_cuff", "percent_circ_cuff_pre*(r_cuff_in_pre/r_cuff_in)");
+    model.param().set("percent_circ_cuff", "percent_circ_cuff_pre*(r_cuff_in_pre/r_cuff_in)"); //dynamic
     model.param().set("thk_cuff", "0.65 [mm]");
-    model.param().set("r_cuff_out", "r_cuff_in+thk_cuff");
+    model.param().set("r_cuff_out", "r_cuff_in+thk_cuff"); //dynamic
     model.param().set("L_cuff", "2 [mm]");
     model.param().set("pitch", "1.5 [mm]");
-    model.param().set("z_nerve", "20 [mm]");
+    model.param().set("z_nerve", "20 [mm]"); //dynamic
     model.param().set("A", "0.3 [mm]");
     model.param().set("B", "0.6 [mm]");
-    model.param().set("theta_cuff_pre", "percent_circ_cuff_pre*360 [deg]");
-    model.param().set("theta_cuff", "percent_circ_cuff*360 [deg]");
+    model.param().set("theta_cuff_pre", "percent_circ_cuff_pre*360 [deg]"); //dynamic
+    model.param().set("theta_cuff", "percent_circ_cuff*360 [deg]"); //dynamic
     model.param().set("thk_contact", "0.025 [mm]");
-    model.param().set("theta_contact", "360*(B/(2*pi*r_cuff_in)) [deg]");
+    model.param().set("theta_contact", "360*(B/(2*pi*r_cuff_in)) [deg]"); //dynamic
     model.param().set("thk_saline", "0.1 [mm]");
-    model.param().set("r_ground", "5 [mm]");
+    model.param().set("r_ground", "5 [mm]"); //dynamic
     model.param().set("zw_rot", "0");
 
     model.component().create("comp1", true);
-
     model.component("comp1").geom().create("geom1", 3);
-
     model.component("comp1").mesh().create("mesh1");
 
     model.geom().create("part1", "Part", 3);
     model.geom().create("part2", "Part", 3);
     model.geom().create("part3", "Part", 3);
     model.geom().create("part4", "Part", 3);
+
     model.geom("part1").label("Cuff");
     model.geom("part1").inputParam().set("z_center", "0");
     model.geom("part1").inputParam().set("rotation_angle", "0");
@@ -85,8 +84,7 @@ public class CORETEC_FINAL {
     model.geom("part1").feature("wp1").set("unite", true);
     model.geom("part1").feature("wp1").geom().create("r1", "Rectangle");
     model.geom("part1").feature("wp1").geom().feature("r1").label("Inner Cuff Gap Cut Cross Section");
-    model.geom("part1").feature("wp1").geom().feature("r1")
-         .set("pos", new String[]{"r_cuff_in+(thk_cuff/2)", "z_center"});
+    model.geom("part1").feature("wp1").geom().feature("r1").set("pos", new String[]{"r_cuff_in+(thk_cuff/2)", "z_center"});
     model.geom("part1").feature("wp1").geom().feature("r1").set("base", "center");
     model.geom("part1").feature("wp1").geom().feature("r1").set("size", new String[]{"thk_cuff", "L_cuff"});
     model.geom("part1").create("rev1", "Revolve");
@@ -101,6 +99,7 @@ public class CORETEC_FINAL {
     model.geom("part1").feature("dif2").selection("input2").named("csel5");
     model.geom("part1").create("endif1", "EndIf");
     model.geom("part1").run();
+
     model.geom("part2").label("Contact");
     model.geom("part2").inputParam().set("z_center", "0");
     model.geom("part2").inputParam().set("rotation_angle", "0");
@@ -117,8 +116,7 @@ public class CORETEC_FINAL {
     model.geom("part2").feature("wp1").geom().create("r1", "Rectangle");
     model.geom("part2").feature("wp1").geom().feature("r1").label("Contact Cross Section");
     model.geom("part2").feature("wp1").geom().feature("r1").set("contributeto", "csel1");
-    model.geom("part2").feature("wp1").geom().feature("r1")
-         .set("pos", new String[]{"r_cuff_in+thk_contact/2", "z_center"});
+    model.geom("part2").feature("wp1").geom().feature("r1").set("pos", new String[]{"r_cuff_in+thk_contact/2", "z_center"});
     model.geom("part2").feature("wp1").geom().feature("r1").set("base", "center");
     model.geom("part2").feature("wp1").geom().feature("r1").set("size", new String[]{"thk_contact", "A"});
     model.geom("part2").create("rev1", "Revolve");
@@ -129,9 +127,9 @@ public class CORETEC_FINAL {
     model.geom("part2").feature("rev1").selection("input").set("wp1");
     model.geom("part2").create("pt1", "Point");
     model.geom("part2").feature("pt1").set("contributeto", "csel2");
-    model.geom("part2").feature("pt1")
-         .set("p", new String[]{"(r_cuff_in+(thk_contact/2))*cos(rotation_angle)", "(r_cuff_in+(thk_contact/2))*sin(rotation_angle)", "z_center"});
+    model.geom("part2").feature("pt1").set("p", new String[]{"(r_cuff_in+(thk_contact/2))*cos(rotation_angle)", "(r_cuff_in+(thk_contact/2))*sin(rotation_angle)", "z_center"});
     model.geom("part2").run();
+
     model.geom("part3").label("Cuff Fill");
     model.geom("part3").inputParam().set("z_center", "0");
     model.geom("part3").selection().create("csel1", "CumulativeSelection");
@@ -145,6 +143,7 @@ public class CORETEC_FINAL {
     model.geom("part3").feature("cyl1").set("r", "r_cuff_in+thk_cuff+thk_saline");
     model.geom("part3").feature("cyl1").set("h", "L_cuff+2*thk_saline");
     model.geom("part3").run();
+
     model.geom("part4").label("Distant Ground");
     model.geom("part4").selection().create("csel1", "CumulativeSelection");
     model.geom("part4").selection("csel1").label("DISTANT GROUND");
@@ -154,14 +153,15 @@ public class CORETEC_FINAL {
     model.geom("part4").feature("cyl1").set("r", "r_ground");
     model.geom("part4").feature("cyl1").set("h", "z_nerve");
     model.geom("part4").run();
+
     model.component("comp1").geom("geom1").lengthUnit("\u00b5m");
     model.component("comp1").geom("geom1").create("pi1", "PartInstance");
     model.component("comp1").geom("geom1").feature("pi1").setEntry("inputexpr", "z_center", "z_nerve/2");
-    model.component("comp1").geom("geom1").feature("pi1")
-         .setEntry("inputexpr", "rotation_angle", "-(theta_cuff-theta_contact)/2");
+    model.component("comp1").geom("geom1").feature("pi1").setEntry("inputexpr", "rotation_angle", "-(theta_cuff-theta_contact)/2");
     model.component("comp1").geom("geom1").feature("pi1").set("rot", "zw_rot");
     model.component("comp1").geom("geom1").feature("pi1").set("selkeepnoncontr", false);
     model.component("comp1").geom("geom1").feature("pi1").setEntry("selkeepdom", "pi1_csel3.dom", "on");
+
     model.component("comp1").geom("geom1").create("pi2", "PartInstance");
     model.component("comp1").geom("geom1").feature("pi2").label("Contact 1");
     model.component("comp1").geom("geom1").feature("pi2").set("part", "part2");
@@ -171,6 +171,7 @@ public class CORETEC_FINAL {
     model.component("comp1").geom("geom1").feature("pi2").set("selkeepnoncontr", false);
     model.component("comp1").geom("geom1").feature("pi2").setEntry("selkeepdom", "pi2_csel1.dom", "on");
     model.component("comp1").geom("geom1").feature("pi2").setEntry("selkeeppnt", "pi2_csel2.pnt", "on");
+
     model.component("comp1").geom("geom1").create("pi3", "PartInstance");
     model.component("comp1").geom("geom1").feature("pi3").label("Contact 2");
     model.component("comp1").geom("geom1").feature("pi3").set("part", "part2");
@@ -180,6 +181,7 @@ public class CORETEC_FINAL {
     model.component("comp1").geom("geom1").feature("pi3").set("selkeepnoncontr", false);
     model.component("comp1").geom("geom1").feature("pi3").setEntry("selkeepdom", "pi3_csel1.dom", "on");
     model.component("comp1").geom("geom1").feature("pi3").setEntry("selkeeppnt", "pi3_csel2.pnt", "on");
+
     model.component("comp1").geom("geom1").create("pi4", "PartInstance");
     model.component("comp1").geom("geom1").feature("pi4").label("Cuff Fill 1");
     model.component("comp1").geom("geom1").feature("pi4").set("part", "part3");
@@ -187,12 +189,14 @@ public class CORETEC_FINAL {
     model.component("comp1").geom("geom1").feature("pi4").set("rot", "zw_rot");
     model.component("comp1").geom("geom1").feature("pi4").set("selkeepnoncontr", false);
     model.component("comp1").geom("geom1").feature("pi4").setEntry("selkeepdom", "pi4_csel2.dom", "on");
+
     model.component("comp1").geom("geom1").create("pi5", "PartInstance");
     model.component("comp1").geom("geom1").feature("pi5").label("Distant Ground 1");
     model.component("comp1").geom("geom1").feature("pi5").set("part", "part4");
     model.component("comp1").geom("geom1").feature("pi5").set("selkeepnoncontr", false);
     model.component("comp1").geom("geom1").feature("pi5").setEntry("selkeepdom", "pi5_csel1.dom", "on");
     model.component("comp1").geom("geom1").feature("pi5").setEntry("selkeepbnd", "pi5_csel1.bnd", "on");
+
     model.component("comp1").geom("geom1").run();
     model.component("comp1").geom("geom1").run("fin");
 
@@ -251,18 +255,19 @@ public class CORETEC_FINAL {
     model.component("comp1").material("matlnk5").set("link", "mat4");
     model.component("comp1").material("matlnk4").label("Cuff Fill is Saline");
     model.component("comp1").material("matlnk4").set("link", "mat2");
+
     model.material("mat1").label("Silicone");
-    model.material("mat1").propertyGroup("def")
-         .set("electricconductivity", new String[]{"10^(-12)", "0", "0", "0", "10^(-12)", "0", "0", "0", "10^(-12)"});
+    model.material("mat1").propertyGroup("def").set("electricconductivity", new String[]{"10^(-12)", "0", "0", "0", "10^(-12)", "0", "0", "0", "10^(-12)"});
+
     model.material("mat2").label("Saline");
-    model.material("mat2").propertyGroup("def")
-         .set("electricconductivity", new String[]{"1.76", "0", "0", "0", "1.76", "0", "0", "0", "1.76"});
+    model.material("mat2").propertyGroup("def").set("electricconductivity", new String[]{"1.76", "0", "0", "0", "1.76", "0", "0", "0", "1.76"});
+
     model.material("mat3").label("Platinum");
-    model.material("mat3").propertyGroup("def")
-         .set("electricconductivity", new String[]{"9.43*10^6", "0", "0", "0", "9.43*10^6", "0", "0", "0", "9.43*10^6"});
+    model.material("mat3").propertyGroup("def").set("electricconductivity", new String[]{"9.43*10^6", "0", "0", "0", "9.43*10^6", "0", "0", "0", "9.43*10^6"});
+
     model.material("mat4").label("Muscle");
-    model.material("mat4").propertyGroup("def")
-         .set("electricconductivity", new String[]{"0.086", "0", "0", "0", "0.086", "0", "0", "0", "0.35"});
+    model.material("mat4").propertyGroup("def").set("electricconductivity", new String[]{"0.086", "0", "0", "0", "0.086", "0", "0", "0", "0.35"});
+
     model.component("comp1").material("matlnk1").label("Cuff is Silicone");
     model.component("comp1").material("matlnk2").label("Contact 1 is Platinum");
     model.component("comp1").material("matlnk2").set("link", "mat3");

@@ -206,9 +206,28 @@
 
     },
     "ENTEROMEDICS": {
-
+      "length_unit": "mm",
+      "area_unit": "mm^2",
+      "angle_unit": "degrees",
+      "r_cuff_in_pre": 1.651,
+      "contact_area": 10.3226,
+      "theta_contact_pre": 256.4287,
+      "thk_elec": 0.1,
+      "thk_cuff": 1,
+      "z_elec": 1.397,
+      "arc_ext": 0.5,
+      "thk_scar": 0.2,
+      "zw_rot": 0,
+      "thk_medium_gap_internal": 0,
+      "theta_cuff_pre": 360
     },
     "MONOPOLAR_SQUARE_DISK": {
+      "length_unit": "mm",
+      "area_unit": "mm^2",
+      "angle_unit": "degrees",
+      "thk_cuff": 1,
+      "thk_elec": 0.05,
+      "z_elec": 1,
 
     },
     "IMTHERA": {
@@ -233,6 +252,21 @@
       "ang_contact_contact": 51,
       "thk_saline_ext": 0.008,
       "thk_saline_int": 0.008
+    },
+    "CorTec300": {
+      "length_unit": "micrometers",
+      "angle_unit": "degrees",
+      "r_cuff_in_pre": 150,
+      "thk_medium_gap_internal": 0,
+      "percent_circ_cuff_pre": 1,
+      "thk_cuff": 650,
+      "L_cuff": 2000,
+      "pitch": 1500,
+      "A": 300,
+      "B": 600,
+      "thk_contact": 25,
+      "thk_saline": 100,
+      "zw_rot": 0
     }
   }
 }

@@ -15,12 +15,12 @@ public class MADISON_FINAL {
 
     model.label("MADISON_FINAL.mph");
 
-    model.param().set("r_cuff_in", "max(r_nerve+thk_medium_gap_internal,r_cuff_in_pre)");
+    model.param().set("r_cuff_in", "max(r_nerve+thk_medium_gap_internal,r_cuff_in_pre)"); //dynamic
     model.param().set("thk_cuff", "1 [mm]");
     model.param().set("L_cuff", "10 [mm]");
     model.param().set("thk_elec", "0.05 [mm]");
     model.param().set("z_elec", "1 [mm]");
-    model.param().set("z_nerve", "20 [mm]");
+    model.param().set("z_nerve", "20 [mm]"); //dynamic
     model.param().set("theta_elec", "(360*(w_elec/(pi*2*r_cuff_in))) [deg]");
     model.param().set("theta_cuff", "percent_circ_cuff*360 [deg]");
     model.param().set("theta_cuff_pre", "360 [deg]");
