@@ -20,13 +20,8 @@ public class MADISON_FINAL_wRECESS {
     model.param().set("L_cuff", "10 [mm]");
     model.param().set("thk_elec", "0.05 [mm]");
     model.param().set("z_elec", "1 [mm]");
-<<<<<<< HEAD:src/cuffs/MADISON_FINAL.java
-    model.param().set("z_nerve", "20 [mm]"); //dynamic
-    model.param().set("theta_elec", "(360*(w_elec/(pi*2*r_cuff_in))) [deg]");
-=======
     model.param().set("z_nerve", "20 [mm]");
     model.param().set("theta_elec", "360*(w_elec/(pi*2*(r_cuff_in+recess))) [deg]");
->>>>>>> 2b00adf2cc1348e5e491ede704ffd1c6a31905c5:.templates/MADISON_FINAL_wRECESS.java
     model.param().set("theta_cuff", "percent_circ_cuff*360 [deg]");
     model.param().set("theta_cuff_pre", "360 [deg]");
     model.param().set("percent_circ_cuff", "percent_circ_cuff_pre*(r_cuff_in_pre/r_cuff_in)");
