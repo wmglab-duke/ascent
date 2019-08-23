@@ -227,8 +227,7 @@
       "angle_unit": "degrees",
       "thk_cuff": 1,
       "thk_elec": 0.05,
-      "z_elec": 1,
-
+      "z_elec": 1
     },
     "IMTHERA": {
       "length_unit": "inch",
