@@ -108,8 +108,8 @@ class Runner(Exceptionable, Configurable):
 
     def handoff(self):
 
-        comsol_path = '/Applications/COMSOL54/Multiphysics'
-        file_name_no_ext = 'src/model/Model'
+        comsol_path = self.load(os.path.join('.config', 'system.json')).get('comsol_path')
+        file_name_no_ext = os.path.join('src', 'model', 'Model')
 
         # run commands by system type
         cwd = os.getcwd()
@@ -121,9 +121,9 @@ class Runner(Exceptionable, Configurable):
 
         else:  # sys.platform would be 'win32' or 'win64'
 
-            os.system('{}\\bin\\win64\\comsolcompile {}.java'.format(comsol_path, file_name_no_ext))
+            os.system('\"{}\\bin\\win64\\comsolcompile\" {}.java'.format(comsol_path, file_name_no_ext))
             os.system('set path={}'.format(cwd))
-            os.system('{}\\bin\\win64\\comsolbatch -inputfile {}.class'.format(comsol_path, file_name_no_ext))
+            os.system('\"{}\\bin\\win64\\comsolbatch\" -inputfile {}.class'.format(comsol_path, file_name_no_ext))
 
     def save_all(self):
 
