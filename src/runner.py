@@ -109,7 +109,7 @@ class Runner(Exceptionable, Configurable):
     def handoff(self):
 
         comsol_path = self.load(os.path.join('.config', 'system.json')).get('comsol_path')
-        file_name_no_ext = os.path.join('src', 'model', 'Model')
+        file_name_no_ext = os.path.join('src', 'model', 'ModelBuilder')
 
 
         # run commands by system type

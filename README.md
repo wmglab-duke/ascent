@@ -46,6 +46,9 @@ and fiber information (metadata and coordinates for extracting electric potentia
 - shutil
 - json
 
+## Setup
+IN COMSOL: Preferences -> Security -> Methods and Java Libraries -> File System Access -> All Files
+
 ## Source images
 The user must provide 3 types of files that will be used to construct the data filesystem. In addition to the type
 designation (a single letter, seen in filename specifications below), 3 pieces of data must be included:
