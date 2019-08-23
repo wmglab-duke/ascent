@@ -31,11 +31,7 @@ public class CORETEC_FINAL_wRECESS {
     model.param().set("theta_cuff_pre", "percent_circ_cuff_pre*360 [deg]"); //dynamic
     model.param().set("theta_cuff", "percent_circ_cuff*360 [deg]"); //dynamic
     model.param().set("thk_contact", "0.025 [mm]");
-<<<<<<< HEAD:src/cuffs/CORETEC_FINAL.java
-    model.param().set("theta_contact", "360*(B/(2*pi*r_cuff_in)) [deg]"); //dynamic
-=======
     model.param().set("theta_contact", "360*(B/(2*pi*(r_cuff_in+recess))) [deg]");
->>>>>>> 2b00adf2cc1348e5e491ede704ffd1c6a31905c5:.templates/CORETEC_FINAL_wRECESS.java
     model.param().set("thk_saline", "0.1 [mm]");
     model.param().set("r_ground", "5 [mm]"); //dynamic
     model.param().set("zw_rot", "0");
@@ -130,12 +126,8 @@ public class CORETEC_FINAL_wRECESS {
     model.geom("part2").feature("wp1").geom().create("r1", "Rectangle");
     model.geom("part2").feature("wp1").geom().feature("r1").label("Contact Cross Section");
     model.geom("part2").feature("wp1").geom().feature("r1").set("contributeto", "csel1");
-<<<<<<< HEAD:src/cuffs/CORETEC_FINAL.java
-    model.geom("part2").feature("wp1").geom().feature("r1").set("pos", new String[]{"r_cuff_in+thk_contact/2", "z_center"});
-=======
     model.geom("part2").feature("wp1").geom().feature("r1")
          .set("pos", new String[]{"r_cuff_in+(recess)+(thk_contact/2)", "z_center"});
->>>>>>> 2b00adf2cc1348e5e491ede704ffd1c6a31905c5:.templates/CORETEC_FINAL_wRECESS.java
     model.geom("part2").feature("wp1").geom().feature("r1").set("base", "center");
     model.geom("part2").feature("wp1").geom().feature("r1").set("size", new String[]{"thk_contact", "A"});
     model.geom("part2").create("rev1", "Revolve");
@@ -171,12 +163,8 @@ public class CORETEC_FINAL_wRECESS {
     model.geom("part2").create("endif1", "EndIf");
     model.geom("part2").create("pt1", "Point");
     model.geom("part2").feature("pt1").set("contributeto", "csel2");
-<<<<<<< HEAD:src/cuffs/CORETEC_FINAL.java
-    model.geom("part2").feature("pt1").set("p", new String[]{"(r_cuff_in+(thk_contact/2))*cos(rotation_angle)", "(r_cuff_in+(thk_contact/2))*sin(rotation_angle)", "z_center"});
-=======
     model.geom("part2").feature("pt1")
          .set("p", new String[]{"(r_cuff_in+recess+(thk_contact/2))*cos(rotation_angle)", "(r_cuff_in+recess+(thk_contact/2))*sin(rotation_angle)", "z_center"});
->>>>>>> 2b00adf2cc1348e5e491ede704ffd1c6a31905c5:.templates/CORETEC_FINAL_wRECESS.java
     model.geom("part2").run();
 
     model.geom("part3").label("Cuff Fill");
