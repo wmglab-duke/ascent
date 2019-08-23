@@ -8,7 +8,7 @@ start = time.time()
 
 # get main configuration file
 # master_config_file_path = os.path.join('.config', 'master.json')
-master_config_file_path = os.path.join('.config', 'master2.json')
+master_config_file_path = os.path.join('.config', 'master.json')
 
 # initialize Runner (loads in parameters)
 runner = Runner(master_config_file_path)
