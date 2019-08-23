@@ -5,7 +5,7 @@
 import com.comsol.model.*;
 import com.comsol.model.util.*;
 
-/** Model exported on Aug 20 2019, 16:06 by COMSOL 5.4.0.388. */
+/** Model exported on Aug 22 2019, 18:08 by COMSOL 5.4.0.388. */
 public class IMTHERA_FINAL {
 
   public static Model run() {
@@ -24,7 +24,7 @@ public class IMTHERA_FINAL {
     model.param()
          .set("z_nerve", "20 [mm]", "Source: Internal. Length of the nerve. This will have to be long enough so that it does not influence the thresholds of the model.");
     model.param()
-         .set("r_nerve", "1.6 [mm]", "Source: Internal. Radius of the nerve. This depends on the sample being used.");
+         .set("r_nerve", "1.55 [mm]", "Source: Internal. Radius of the nerve. This depends on the sample being used.");
     model.param()
          .set("r_cuff_in", "max(r_nerve+thk_medium_gap_internal,r_cuff_in_pre)", "Source: Deriv B-B. Radius of the inner cuff (center to inner surface of the cuff) after deformation (uncoiling of the cuff from contents opening up the cuff).");
     model.param()
@@ -584,6 +584,8 @@ public class IMTHERA_FINAL {
     model.view("view9").tag("view7");
     model.view("view101").tag("view8");
     model.view("view111").tag("view9");
+    model.component("comp1").view("view1").hideEntities().create("hide1");
+    model.component("comp1").view("view1").hideEntities("hide1").set(1, 2, 6);
 
     model.component("comp1").material().create("matlnk16", "Link");
     model.component("comp1").material().create("matlnk10", "Link");
@@ -607,8 +609,8 @@ public class IMTHERA_FINAL {
     model.material().create("mat5", "Common", "");
     model.component("comp1").material("matlnk16").selection().named("geom1_pi11_csel1_dom");
     model.component("comp1").material("matlnk10").selection().named("geom1_pi10_csel2_dom");
-    model.component("comp1").material("matlnk2").selection().set(5);
-    model.component("comp1").material("matlnk1").selection().set(3, 4, 6, 7, 8, 9);
+    model.component("comp1").material("matlnk2").selection().set(6);
+    model.component("comp1").material("matlnk1").selection().set(3, 4, 5, 7, 8, 9);
     model.component("comp1").material("matlnk3").selection().named("geom1_pi3_csel12_dom");
     model.component("comp1").material("matlnk11").selection().named("geom1_pi4_csel12_dom");
     model.component("comp1").material("matlnk12").selection().named("geom1_pi5_csel12_dom");
@@ -640,7 +642,6 @@ public class IMTHERA_FINAL {
 
     model.component("comp1").mesh("mesh1").create("ftet1", "FreeTet");
 
-    model.component("comp1").view("view1").set("renderwireframe", true);
     model.component("comp1").view("view1").set("transparency", true);
     model.view("view2").set("transparency", true);
     model.view("view3").label("View 3.1");
@@ -749,6 +750,57 @@ public class IMTHERA_FINAL {
     model.result("pg1").feature("mslc1").set("resolution", "normal");
 
     model.component("comp1").geom("geom1").run("fin");
+
+    model.param().set("r_nerve", "1.8 [mm]");
+
+    model.geom("part1").run("endif2");
+    model.component("comp1").geom("geom1").run("fin");
+
+    model.label("IMTHERA_FINAL.mph");
+
+    model.param().set("r_nerve", "1.4 [mm]");
+
+    model.component("comp1").geom("geom1").run("fin");
+    model.geom("part2").run("wp1");
+    model.component("comp1").geom("geom1").run("fin");
+    model.geom("part2").run("pt1");
+    model.geom("part2").run("wp2");
+    model.geom("part2").run("ext1");
+    model.geom("part2").run("cyl1");
+    model.geom("part2").run("dif1");
+    model.geom("part2").run("wp3");
+    model.geom("part2").run("ext2");
+    model.geom("part2").run("cyl2");
+
+    model.param().set("recess_depth", "0.1 [inch]");
+
+    model.geom("part2").run("pt1");
+
+    model.param().set("recess_depth", "0.01 [inch]");
+
+    model.geom("part2").run("pt1");
+
+    model.param().set("r_nerve", "1.5 [mm]");
+
+    model.component("comp1").geom("geom1").run("fin");
+
+    model.param().set("recess_depth", "0 [inch]");
+
+    model.component("comp1").geom("geom1").run("fin");
+
+    model.component("comp1").view("view1").hideObjects().clear();
+    model.component("comp1").view("view1").hideEntities().clear();
+    model.component("comp1").view("view1").hideMesh().clear();
+    model.component("comp1").view("view1").hideEntities().create("hide1");
+    model.component("comp1").view("view1").hideEntities("hide1").geom(3);
+    model.component("comp1").view("view1").hideEntities("hide1").add(1);
+    model.component("comp1").view("view1").hideEntities("hide1").add(2);
+    model.component("comp1").view("view1").hideEntities("hide1").add(6);
+    model.component("comp1").view("view1").hideObjects().clear();
+    model.component("comp1").view("view1").hideEntities().clear();
+    model.component("comp1").view("view1").hideMesh().clear();
+
+    model.label("IMTHERA_FINAL.mph");
 
     return model;
   }

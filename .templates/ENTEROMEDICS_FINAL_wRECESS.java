@@ -1,19 +1,19 @@
 /*
- * ENTEROMEDICS_FINAL.java
+ * ENTEROMEDICS_FINAL_wRECESS.java
  */
 
 import com.comsol.model.*;
 import com.comsol.model.util.*;
 
-/** Model exported on Aug 20 2019, 16:04 by COMSOL 5.4.0.388. */
-public class ENTEROMEDICS_FINAL {
+/** Model exported on Aug 22 2019, 18:07 by COMSOL 5.4.0.388. */
+public class ENTEROMEDICS_FINAL_wRECESS {
 
   public static Model run() {
     Model model = ModelUtil.create("Model");
 
     model.modelPath("D:\\Documents\\ModularCuffs");
 
-    model.label("ENTEROMEDICS_FINAL.mph");
+    model.label("ENTEROMEDICS_FINAL_wRECESS.mph");
 
     model.param().set("r_cuff_in_pre", "1.651 [mm]");
     model.param().set("contact_area", "10.3226 [mm^2]");
@@ -33,6 +33,7 @@ public class ENTEROMEDICS_FINAL {
     model.param().set("theta_contact", "theta_contact_pre*(r_cuff_in_pre/r_cuff_in)"); //dynamic
     model.param().set("theta_cuff", "theta_contact+((2*(360*arc_ext)/(2*pi*r_cuff_in)) [deg])"); //dynamic
     model.param().set("theta_cuff_pre", "360 [deg]");
+    model.param().set("recess", "0 [mm]");
 
     model.component().create("comp1", true);
 
@@ -107,8 +108,15 @@ public class ENTEROMEDICS_FINAL {
     model.geom("part2").selection("csel1").label("CONTACT FINAL");
     model.geom("part2").selection().create("csel2", "CumulativeSelection");
     model.geom("part2").selection("csel2").label("SRC");
+    model.geom("part2").selection().create("csel3", "CumulativeSelection");
+    model.geom("part2").selection("csel3").label("CONTACT CROSS SECTION");
+    model.geom("part2").selection().create("csel4", "CumulativeSelection");
+    model.geom("part2").selection("csel4").label("RECESS CROSS SECTION");
+    model.geom("part2").selection().create("csel5", "CumulativeSelection");
+    model.geom("part2").selection("csel5").label("RECESS FINAL");
     model.geom("part2").create("wp1", "WorkPlane");
     model.geom("part2").feature("wp1").label("Contact Cross Section");
+    model.geom("part2").feature("wp1").set("contributeto", "csel3");
     model.geom("part2").feature("wp1").set("quickplane", "xz");
     model.geom("part2").feature("wp1").set("unite", true);
     model.geom("part2").feature("wp1").geom().selection().create("csel1", "CumulativeSelection");
@@ -117,19 +125,43 @@ public class ENTEROMEDICS_FINAL {
     model.geom("part2").feature("wp1").geom().feature("r1").label("Contact Cross Section");
     model.geom("part2").feature("wp1").geom().feature("r1").set("contributeto", "csel1");
     model.geom("part2").feature("wp1").geom().feature("r1")
-         .set("pos", new String[]{"r_cuff_in+thk_elec/2", "z_center"});
+         .set("pos", new String[]{"r_cuff_in+recess+thk_elec/2", "z_center"});
     model.geom("part2").feature("wp1").geom().feature("r1").set("base", "center");
     model.geom("part2").feature("wp1").geom().feature("r1").set("size", new String[]{"thk_elec", "z_elec"});
     model.geom("part2").create("rev1", "Revolve");
     model.geom("part2").feature("rev1").set("contributeto", "csel1");
     model.geom("part2").feature("rev1").set("angle1", "rotation_angle-(theta_contact/2)");
     model.geom("part2").feature("rev1").set("angle2", "rotation_angle+(theta_contact/2)");
-    model.geom("part2").feature("rev1").selection("input").set("wp1");
+    model.geom("part2").feature("rev1").selection("input").named("csel3");
+    model.geom("part2").create("if1", "If");
+    model.geom("part2").feature("if1").set("condition", "recess>0");
+    model.geom("part2").create("wp2", "WorkPlane");
+    model.geom("part2").feature("wp2").label("Recess Cross Section");
+    model.geom("part2").feature("wp2").set("contributeto", "csel4");
+    model.geom("part2").feature("wp2").set("quickplane", "xz");
+    model.geom("part2").feature("wp2").set("unite", true);
+    model.geom("part2").feature("wp2").geom().selection().create("csel1", "CumulativeSelection");
+    model.geom("part2").feature("wp2").geom().selection("csel1").label("CONTACT CROSS SECTION");
+    model.geom("part2").feature("wp2").geom().selection().create("csel2", "CumulativeSelection");
+    model.geom("part2").feature("wp2").geom().selection("csel2").label("RECESS CROSS SECTION");
+    model.geom("part2").feature("wp2").geom().create("r1", "Rectangle");
+    model.geom("part2").feature("wp2").geom().feature("r1").label("Recess Cross Section");
+    model.geom("part2").feature("wp2").geom().feature("r1").set("contributeto", "csel2");
+    model.geom("part2").feature("wp2").geom().feature("r1")
+         .set("pos", new String[]{"r_cuff_in+recess/2", "z_center"});
+    model.geom("part2").feature("wp2").geom().feature("r1").set("base", "center");
+    model.geom("part2").feature("wp2").geom().feature("r1").set("size", new String[]{"thk_elec", "z_elec"});
+    model.geom("part2").create("rev2", "Revolve");
+    model.geom("part2").feature("rev2").set("contributeto", "csel5");
+    model.geom("part2").feature("rev2").set("angle1", "rotation_angle-(theta_contact/2)");
+    model.geom("part2").feature("rev2").set("angle2", "rotation_angle+(theta_contact/2)");
+    model.geom("part2").feature("rev2").selection("input").named("csel4");
+    model.geom("part2").create("endif1", "EndIf");
     model.geom("part2").create("pt1", "Point");
     model.geom("part2").feature("pt1").label("src");
     model.geom("part2").feature("pt1").set("contributeto", "csel2");
     model.geom("part2").feature("pt1")
-         .set("p", new String[]{"(r_cuff_in+thk_elec/2)*cos(rotation_angle)", "(r_cuff_in+thk_elec/2)*sin(rotation_angle)", "z_center"});
+         .set("p", new String[]{"(r_cuff_in+recess+thk_elec/2)*cos(rotation_angle)", "(r_cuff_in+recess+thk_elec/2)*sin(rotation_angle)", "z_center"});
     model.geom("part2").run();
     model.geom("part3").label("Cuff Fill");
     model.geom("part3").inputParam().set("z_center", "0");
@@ -167,6 +199,7 @@ public class ENTEROMEDICS_FINAL {
     model.component("comp1").geom("geom1").feature("pi2").set("rot", "zw_rot");
     model.component("comp1").geom("geom1").feature("pi2").set("selkeepnoncontr", false);
     model.component("comp1").geom("geom1").feature("pi2").setEntry("selkeepdom", "pi2_csel1.dom", "on");
+    model.component("comp1").geom("geom1").feature("pi2").setEntry("selkeepdom", "pi2_csel5.dom", "on");
     model.component("comp1").geom("geom1").feature("pi2").setEntry("selkeeppnt", "pi2_csel2.pnt", "on");
     model.component("comp1").geom("geom1").create("pi3", "PartInstance");
     model.component("comp1").geom("geom1").feature("pi3").label("Cuff Fill 1");
@@ -203,10 +236,12 @@ public class ENTEROMEDICS_FINAL {
     model.component("comp1").material().create("matlnk2", "Link");
     model.material().create("mat3", "Common", "");
     model.material().create("mat4", "Common", "");
+    model.component("comp1").material().create("matlnk5", "Link");
     model.component("comp1").material("matlnk4").selection().named("geom1_pi4_csel1_dom");
     model.component("comp1").material("matlnk3").selection().named("geom1_pi3_csel1_dom");
     model.component("comp1").material("matlnk1").selection().named("geom1_pi1_csel5_dom");
     model.component("comp1").material("matlnk2").selection().named("geom1_pi2_csel1_dom");
+    model.component("comp1").material("matlnk5").selection().named("geom1_pi2_csel5_dom");
 
     model.component("comp1").physics().create("ec", "ConductiveMedia", "geom1");
     model.component("comp1").physics("ec").create("pcs1", "PointCurrentSource", 0);
@@ -226,12 +261,16 @@ public class ENTEROMEDICS_FINAL {
     model.view("view4").label("View 4.1");
     model.view("view4").set("transparency", true);
     model.view("view5").label("View 5.1");
-    model.view("view5").axis().set("xmin", -1.811965823173523);
-    model.view("view5").axis().set("xmax", 1.811965823173523);
-    model.view("view5").axis().set("ymin", -1.888857364654541);
-    model.view("view5").axis().set("ymax", 1.888857364654541);
+    model.view("view5").axis().set("xmin", 2.3394916206598282E-4);
+    model.view("view5").axis().set("xmax", 0.003368050791323185);
+    model.view("view5").axis().set("ymin", -7.683500880375504E-4);
+    model.view("view5").axis().set("ymax", 7.683500880375504E-4);
     model.view("view6").label("View 6");
     model.view("view7").label("View 7");
+    model.view("view8").axis().set("xmin", 1.8392631318420172E-4);
+    model.view("view8").axis().set("xmax", 0.0033180275931954384);
+    model.view("view8").axis().set("ymin", -7.683500298298895E-4);
+    model.view("view8").axis().set("ymax", 7.683500298298895E-4);
 
     model.component("comp1").material("matlnk4").label("Medium is Fat");
     model.component("comp1").material("matlnk4").set("link", "mat4");
@@ -253,6 +292,8 @@ public class ENTEROMEDICS_FINAL {
     model.material("mat4").label("Fat");
     model.material("mat4").propertyGroup("def")
          .set("electricconductivity", new String[]{"0.033333", "0", "0", "0", "0.033333", "0", "0", "0", "0.033333"});
+    model.component("comp1").material("matlnk5").label("Recess is Scar");
+    model.component("comp1").material("matlnk5").set("link", "mat3");
 
     model.component("comp1").physics("ec").feature("pcs1").set("Qjp", 0.001);
 
@@ -285,6 +326,12 @@ public class ENTEROMEDICS_FINAL {
     model.result("pg1").set("frametype", "spatial");
     model.result("pg1").feature("mslc1").set("colortable", "RainbowLight");
     model.result("pg1").feature("mslc1").set("resolution", "normal");
+
+    model.label("ENTEROMEDICS_FINAL_wRECESS.mph");
+
+    model.component("comp1").view("view1").set("renderwireframe", false);
+
+    model.label("ENTEROMEDICS_FINAL_wRECESS.mph");
 
     return model;
   }
