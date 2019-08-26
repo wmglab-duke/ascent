@@ -32,6 +32,7 @@ and fiber information (metadata and coordinates for extracting electric potentia
     * pretty progressbar: <a href="https://pypi.org/project/ppl/">https://pypi.org/project/ppl/</a>
     * library of generic electrode geometries
     * port NEURON code to Python?
+    * Batching files from command line - save geom and mesh and resolve for different frequencies: https://www.comsol.com/blogs/how-to-run-simulations-in-batch-mode-from-the-command-line/
     
 
 ## Dependencies (non-builtin)
