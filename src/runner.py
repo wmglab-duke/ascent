@@ -116,7 +116,6 @@ class Runner(Exceptionable, Configurable):
             os.system('{}/bin/comsol compile {}/{}.java'.format(comsol_path,
                                                                 cwd,
                                                                 file_name_no_ext))
-            os.system('export JAVA_HOME={}'.format(cwd))
             os.system('{}/bin/comsol batch -inputfile {}/{}.class'.format(comsol_path,
                                                                           cwd,
                                                                           file_name_no_ext))
