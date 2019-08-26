@@ -24,9 +24,7 @@ import sys
 # packages
 from src.core import *
 from src.utils import *
-import cv2
-import matplotlib.pyplot as plt
-import numpy as np
+import subprocess
 
 
 class Runner(Exceptionable, Configurable):
@@ -111,7 +109,6 @@ class Runner(Exceptionable, Configurable):
         comsol_path = self.load(os.path.join('.config', 'system.json')).get('comsol_path')
         file_name_no_ext = os.path.join('src', 'model', 'ModelBuilder')
 
-
         # run commands by system type
         cwd = os.getcwd()
         if sys.platform.startswith('darwin') or sys.platform.startswith('linux'):  # macOS and linux
@@ -121,10 +118,15 @@ class Runner(Exceptionable, Configurable):
             os.system('{}/bin/comsol batch -inputfile $(pwd)/{}.class'.format(comsol_path, file_name_no_ext))
 
         else:  # sys.platform would be 'win32' or 'win64'
+            compile_string = '\"{}\\bin\\win64\\comsolcompile\" \"{}\\{}.java\"'.format(comsol_path,
+                                                                                        cwd,
+                                                                                        file_name_no_ext)
+            batch_string = '\"{}\\bin\\win64\\comsolbatch\" -inputfile \"{}\\{}.class\"'.format(comsol_path,
+                                                                                                cwd,
+                                                                                                file_name_no_ext)
 
-            os.system('r\"{}\\bin\\win64\\comsolcompile\" r\"%cd%\\{}.java\"'.format(comsol_path, file_name_no_ext))
-            os.system('set path=\"{}\"'.format(cwd))
-            os.system('r\"{}\\bin\\win64\\comsolbatch\" -inputfile r\"%cd%\\{}.class\"'.format(comsol_path, file_name_no_ext))
+            subprocess.call(compile_string, shell=True)
+            subprocess.call(batch_string, shell=True)
 
     def save_all(self):
 
