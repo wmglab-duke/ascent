@@ -1,4 +1,4 @@
-# SPARC ACCESS: Automated Computational Cuff Electrode Simulation Stimulation
+# SPARC ACCESS: Automated Computational Cuff Electrode Stimulation Simulation
 
 ## Future Development Goals
 *  **Monday, Sept. 16, 2019** COMSOL-interfacing Java code to build models
