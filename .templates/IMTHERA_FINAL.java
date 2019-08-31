@@ -138,6 +138,7 @@ public class IMTHERA_FINAL {
     model.geom("part1").feature("dif1").set("contributeto", "csel3");
     model.geom("part1").feature("dif1").selection("input").named("csel2");
     model.geom("part1").feature("dif1").selection("input2").named("csel1");
+    
     model.geom("part1").create("if1", "If");
     model.geom("part1").feature("if1").set("condition", "theta_cuff<theta_cuff_pre");
     model.geom("part1").create("wp1", "WorkPlane");
@@ -180,6 +181,7 @@ public class IMTHERA_FINAL {
     model.geom("part1").feature("dif4").selection("input").named("csel8");
     model.geom("part1").feature("dif4").selection("input2").named("csel7");
     model.geom("part1").create("endif1", "EndIf");
+
     model.geom("part1").create("if2", "If");
     model.geom("part1").feature("if2").set("condition", "theta_cuff>=theta_cuff_pre");
     model.geom("part1").create("econ1", "ECone");

@@ -22,9 +22,11 @@ import pickle
 import sys
 
 # packages
+import subprocess
+
+# access
 from src.core import *
 from src.utils import *
-import subprocess
 
 
 class Runner(Exceptionable, Configurable):
