@@ -1341,9 +1341,28 @@ public class Sandbox {
     model.material("mat1").propertyGroup("def").set("electricconductivity", new String[]{"1.76"});
 
     model.material("mat2").label("Platinum");
-    model.material("mat3").label("Silicone");
-    model.material("mat4").label("Scar");
+    model.material("mat2").propertyGroup("def").set("electricconductivity", new String[]{"9.43*10^6"});
 
+    model.material("mat3").label("Silicone");
+    model.material("mat3").propertyGroup("def").set("electricconductivity", new String[]{"10^(-12)"});
+
+    model.material("mat4").label("Scar");
+    model.material("mat4").propertyGroup("def").set("electricconductivity", new String[]{"1/6.3"});
+
+    model.material("mat5").label("Muscle");
+    model.material("mat5").propertyGroup("def").set("electricconductivity", new String[]{"0.086, 0.086, 0.35"});
+
+    model.material("mat6").label("Fat");
+    model.material("mat6").propertyGroup("def").set("electricconductivity", new String[]{"1/30"});
+
+    model.material("mat7").label("Endoneurium");
+    model.material("mat7").propertyGroup("def").set("electricconductivity", new String[]{"1/6 1/6 1/1.75"});
+
+    model.material("mat8").label("Perineurium");
+    model.material("mat8").propertyGroup("def").set("electricconductivity", new String[]{""});
+
+    model.material("mat9").label("Epineurium");
+    model.material("mat9").propertyGroup("def").set("electricconductivity", new String[]{"1/6.3"});
 
     model.component("comp1").material("matlnk1").label("Purdue Contact 1 is Platinum");
     model.component("comp1").material("matlnk1").set("link", "mat2");
@@ -1388,7 +1407,7 @@ public class Sandbox {
     model.component("comp1").physics("ec").feature("pcs2").set("Qjp", -0.001);
     model.component("comp1").physics("ec").feature("pcs2").label("Purdue Point Current Source 2");
     model.component("comp1").physics("ec").feature("pcs7").set("Qjp", 0.001);
-    
+
     model.component("comp1").physics("ec").feature("pcs7").label("ImThera Point Current Source 1");
     model.component("comp1").physics("ec").feature("pcs8").set("Qjp", 0.001);
     model.component("comp1").physics("ec").feature("pcs8").label("ImThera Point Current Source 2");
