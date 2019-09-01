@@ -13,7 +13,7 @@
 
   {
     "name": "Center_CT",
-    "expression": "z_nerve_CT/2",
+    "expression": "10 [mm]",
     "description": ""
   },
 

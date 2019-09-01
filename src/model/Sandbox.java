@@ -134,7 +134,7 @@ public class Sandbox {
     model.param("par4").set("Pitch_P", "1.5 [mm]");
 
     // PLACEHOLDER for PITT PARAMETERS
-    model.param().group().create("par5"); // new group
+    //model.param().group().create("par5"); // new group
 
     // IMTHERA PARAMETERS
     model.param().group().create("par6"); // new group
@@ -195,7 +195,7 @@ public class Sandbox {
     model.param("par2").label("Madison [M]"); //MADISON
     model.param("par3").label("CorTec300 [CT]"); //CORTEC300
     model.param("par4").label("Purdue [P]"); //PURDUE
-    model.param("par5").label("Pitt (WIP)"); // PITT
+    //model.param("par5").label("Pitt (WIP)"); // PITT
     model.param("par6").label("ImThera [IT: ITI+ITF+ITC]"); // IMTHERA
 
 
@@ -910,21 +910,21 @@ public class Sandbox {
 
 
     // Define input params to TubeCuff Primitive to make Pitt Cuff
-    model.component("comp1").geom("geom1").create("pi5", "PartInstance");
-    model.component("comp1").geom("geom1").feature("pi5").label("Pitt (WIP)");
-    model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "N_holes", "1");
-    model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "Theta", "340 [deg]");
-    model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "Center", "50 [mm]");
-    model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "R_in", "1 [mm]");
-    model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "R_out", "2 [mm]");
-    model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "L", "5 [mm]");
-    model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "Rot_def", "0 [deg]");
-    model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "D_hole", "0.3 [mm]");
-    model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "Buffer_hole", "0.1 [mm]");
-    model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "L_holecenter_cuffseam", "0.3 [mm]");
-    model.component("comp1").geom("geom1").feature("pi5")
-         .setEntry("inputexpr", "Pitch_holecenter_holecenter", "0 [mm]");
-    model.component("comp1").geom("geom1").feature("pi5").set("selkeepnoncontr", false);
+    //model.component("comp1").geom("geom1").create("pi5", "PartInstance");
+    //model.component("comp1").geom("geom1").feature("pi5").label("Pitt (WIP)");
+    //model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "N_holes", "1");
+    //model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "Theta", "340 [deg]");
+    //model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "Center", "50 [mm]");
+    //model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "R_in", "1 [mm]");
+    //model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "R_out", "2 [mm]");
+    //model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "L", "5 [mm]");
+    //model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "Rot_def", "0 [deg]");
+    //model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "D_hole", "0.3 [mm]");
+    //model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "Buffer_hole", "0.1 [mm]");
+    //model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "L_holecenter_cuffseam", "0.3 [mm]");
+    //model.component("comp1").geom("geom1").feature("pi5")
+    //     .setEntry("inputexpr", "Pitch_holecenter_holecenter", "0 [mm]");
+    //model.component("comp1").geom("geom1").feature("pi5").set("selkeepnoncontr", false);
     // WIP.............
 
 
@@ -1336,10 +1336,15 @@ public class Sandbox {
     model.component("comp1").material("matlnk10").set("link", "mat2");
     model.component("comp1").material("matlnk3").label("Purdue Cuff is Silicone");
     model.component("comp1").material("matlnk3").set("link", "mat3");
+
     model.material("mat1").label("Saline");
+    model.material("mat1").propertyGroup("def").set("electricconductivity", new String[]{"1.76"});
+
     model.material("mat2").label("Platinum");
     model.material("mat3").label("Silicone");
     model.material("mat4").label("Scar");
+
+
     model.component("comp1").material("matlnk1").label("Purdue Contact 1 is Platinum");
     model.component("comp1").material("matlnk1").set("link", "mat2");
     model.component("comp1").material("matlnk2").label("Purdue Contact 2 is Platinum");
@@ -1371,10 +1376,6 @@ public class Sandbox {
     model.component("comp1").physics("ec").feature("pcs3").label("Enteromedics Point Current Source 1");
     model.component("comp1").physics("ec").feature("pcs4").set("Qjp", 0.001);
 
-    return model;
-  }
-
-  public static Model run4(Model model) {
     model.component("comp1").physics("ec").feature("pcs4").label("Madison Point Current Source 1");
     model.component("comp1").physics("ec").feature("pcs5").set("Qjp", 0.001);
     model.component("comp1").physics("ec").feature("pcs5").label("CorTec300 Point Current Source 1");
@@ -1405,9 +1406,6 @@ public class Sandbox {
 
   public static void main(String[] args) {
     Model model = run();
-    model = run2(model);
-    model = run3(model);
-    run4(model);
-  }
+   }
 
 }

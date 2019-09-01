@@ -13,7 +13,7 @@
 
   {
     "name": "Center_P",
-    "expression": "z_nerve_P/2",
+    "expression": "50 [mm]",
     "description": ""
   },
 

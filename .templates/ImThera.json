@@ -13,7 +13,7 @@
 
   {
     "name": "Center_IT",
-    "expression": "z_nerve_IT/2",
+    "expression": "30 [mm]",
     "description": ""
   },
 
