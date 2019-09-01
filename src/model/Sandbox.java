@@ -9,12 +9,19 @@ import com.comsol.model.util.*;
 public class Sandbox {
 
   public static Model run() {
+    // Define instance of model
     Model model = ModelUtil.create("Model");
-
+    // Define path of COMSOL model
     model.modelPath("D:\\Documents\\ModularCuffs");
-
+    // Name MPH file
     model.label("UNI_TUBECUFF.mph");
 
+    // Set global parameters for the COMSOL MPH file - loop over variables in the JSON for the given cuff type
+    // Only one of the following blocks of code will be executed (in a for loop probably) depending on which type of cuff is
+    // being made. Parameters values have been moved to the template JSON files for built in electrode designs.
+
+    // ENTEROMEDICS PARAMETERS
+    model.param().group().create("par1"); // I manually added this to be consistent, pretty sure it won't cause issues but seems to not be necessary
     model.param().set("N_holes_EM", "0");
     model.param().set("Theta_EM", "Theta_contact_EM+((2*(360*arc_ext_EM)/(2*pi*R_in_EM)) [deg])");
     model.param().set("Center_EM", "10 [mm]");
@@ -37,7 +44,9 @@ public class Sandbox {
     model.param().set("z_nerve_EM", "20 [mm]");
     model.param().set("Thk_elec_EM", "0.1 [mm]");
     model.param().set("Recess_EM", "0 [mm]");
-    model.param().group().create("par2");
+
+    // ENTEROMEDICS PARAMETERS
+    model.param().group().create("par2"); // new group
     model.param("par2").set("N_holes_M", "0");
     model.param("par2").set("Theta_M", "percent_circ_cuff_M*360 [deg]");
     model.param("par2").set("Center_M", "2*10 [mm]");
@@ -62,7 +71,9 @@ public class Sandbox {
     model.param("par2").set("Theta_contact_M", "360*(w_elec_M/(pi*2*(R_in_M+Recess_M))) [deg]");
     model.param("par2").set("w_elec_M", "1 [mm]");
     model.param("par2").set("Rot_def_contact_M", "(Theta_M/2)-(Theta_contact_M/2)");
-    model.param().group().create("par3");
+
+    // CorTec PARAMETERS
+    model.param().group().create("par3"); // new group
     model.param("par3").set("N_holes_CT", "0");
     model.param("par3").set("Theta_CT", "percent_circ_cuff_CT*360 [deg]");
     model.param("par3").set("Center_CT", "3*10 [mm]");
@@ -91,7 +102,9 @@ public class Sandbox {
     model.param("par3").set("Theta_contact_CT", "360*(B_CT/(2*pi*(R_in_CT+Recess_CT))) [deg]");
     model.param("par3").set("Rot_def_contact_CT", "0");
     model.param("par3").set("Pitch_CT", "1.5 [mm]");
-    model.param().group().create("par4");
+
+    // PURDUE PARAMETERS
+    model.param().group().create("par4"); // new group
     model.param("par4").set("N_holes_P", "0");
     model.param("par4").set("Theta_P", "percent_circ_cuff_P*360 [deg]");
     model.param("par4").set("Center_P", "4*10 [mm]");
@@ -119,8 +132,12 @@ public class Sandbox {
     model.param("par4")
          .set("percent_circ_conductor_P", "percent_circ_conductor_pre_P*((r_cuff_in_pre_P-sep_conductor_P-2*r_conductor_P)/(R_in_P-sep_conductor_P-2*r_conductor_P))");
     model.param("par4").set("Pitch_P", "1.5 [mm]");
-    model.param().group().create("par5");
-    model.param().group().create("par6");
+
+    // PLACEHOLDER for PITT PARAMETERS
+    model.param().group().create("par5"); // new group
+
+    // IMTHERA PARAMETERS
+    model.param().group().create("par6"); // new group
     model.param("par6").set("N_holes_ITI", "1");
     model.param("par6").set("Theta_ITI", "theta_cuff_pre_ITI*(r_cuff_in_pre_ITI/R_in_ITI)");
     model.param("par6").set("Center_IT", "5*10 [mm]");
@@ -169,25 +186,39 @@ public class Sandbox {
     model.param("par6")
          .set("ang_contactcenter_contactcenter_ITC", "ang_contactcenter_contactcenter_pre_ITC*(r_cuff_in_pre_ITI/R_in_ITI)");
     model.param("par6").set("ang_contactcenter_contactcenter_pre_ITC", "51 [deg]");
-    model.param().label("Enteromedics [EM]");
-    model.param("par2").label("Madison [M]");
-    model.param("par3").label("CorTec300 [CT]");
-    model.param("par4").label("Purdue [P]");
-    model.param("par5").label("Pitt (WIP)");
-    model.param("par6").label("ImThera [IT: ITI+ITF+ITC]");
 
-    model.component().create("comp1", true);
 
-    model.component("comp1").geom().create("geom1", 3);
 
-    model.component("comp1").mesh().create("mesh1");
 
-    model.geom().create("part1", "Part", 3);
-    model.geom().create("part2", "Part", 3);
-    model.geom().create("part3", "Part", 3);
-    model.geom().create("part4", "Part", 3);
-    model.geom("part1").label("TubeCuff_Primitive");
-    model.geom("part1").lengthUnit("\u00b5m");
+    // GIVE PARAMETERS GROUPS NAMES/LABELS
+    model.param().label("Enteromedics [EM]"); //ENTEROMEDICS
+    model.param("par2").label("Madison [M]"); //MADISON
+    model.param("par3").label("CorTec300 [CT]"); //CORTEC300
+    model.param("par4").label("Purdue [P]"); //PURDUE
+    model.param("par5").label("Pitt (WIP)"); // PITT
+    model.param("par6").label("ImThera [IT: ITI+ITF+ITC]"); // IMTHERA
+
+
+
+
+    model.component().create("comp1", true); // make component node - this is the highest level of the model (has cuff, nerve, mesh, mtls)
+
+    model.component("comp1").geom().create("geom1", 3); // make geometry 1, all my models only have 1
+
+    model.component("comp1").mesh().create("mesh1"); // make mesh, can mesh different domains/selections with different meshes if you want
+
+    model.geom().create("part1", "Part", 3); // make 3D part index 1
+    model.geom().create("part2", "Part", 3); // """""""""""""""""" 2
+    model.geom().create("part3", "Part", 3); // """""""""""""""""" 3
+    model.geom().create("part4", "Part", 3); // """""""""""""""""" 4
+
+
+    // DEFINE PRIMITIVE OBJECTS - will be called later (this is the toolbox)
+
+    model.geom("part1").label("TubeCuff_Primitive"); // give part index 1 this name
+    model.geom("part1").lengthUnit("\u00b5m"); // length unit micron (for all this is the case)
+
+    // assign parameters to the required input parameters for TubeCuff Primitive
     model.geom("part1").inputParam().set("N_holes", "1");
     model.geom("part1").inputParam().set("Theta", "340 [deg]");
     model.geom("part1").inputParam().set("Center", "10 [mm]");
@@ -199,6 +230,8 @@ public class Sandbox {
     model.geom("part1").inputParam().set("Buffer_hole", "0.1 [mm]");
     model.geom("part1").inputParam().set("L_holecenter_cuffseam", "0.3 [mm]");
     model.geom("part1").inputParam().set("Pitch_holecenter_holecenter", "0 [mm]");
+
+    // Define selections (might need to delete some that are not actually used) to make TubeCuff Primitive
     model.geom("part1").selection().create("csel1", "CumulativeSelection");
     model.geom("part1").selection("csel1").label("INNER CUFF SURFACE");
     model.geom("part1").selection().create("csel2", "CumulativeSelection");
@@ -221,6 +254,8 @@ public class Sandbox {
     model.geom("part1").selection("csel8").label("HOLE 1");
     model.geom("part1").selection().create("csel9", "CumulativeSelection");
     model.geom("part1").selection("csel9").label("HOLES");
+
+    // Operations to make TubeCuff Primitive
     model.geom("part1").create("cyl1", "Cylinder");
     model.geom("part1").feature("cyl1").label("Make Inner Cuff Surface");
     model.geom("part1").feature("cyl1").set("contributeto", "csel1");
@@ -353,8 +388,12 @@ public class Sandbox {
     model.geom("part1").feature("rot3").selection("input").named("csel3");
     model.geom("part1").create("endif1", "EndIf");
     model.geom("part1").run();
-    model.geom("part2").label("RibbonContact_Primitive");
-    model.geom("part2").lengthUnit("\u00b5m");
+
+
+    model.geom("part2").label("RibbonContact_Primitive"); // give part index 2 this name
+    model.geom("part2").lengthUnit("\u00b5m"); // length unit micron (for all this is the case)
+
+    // assign parameters to the required input parameters for TubeCuff Primitive
     model.geom("part2").inputParam().set("Thk_elec", "0.1 [mm]");
     model.geom("part2").inputParam().set("L_elec", "3 [mm]");
     model.geom("part2").inputParam().set("R_in", "1 [mm]");
@@ -362,6 +401,8 @@ public class Sandbox {
     model.geom("part2").inputParam().set("Center", "10 [mm]");
     model.geom("part2").inputParam().set("Theta_contact", "100 [deg]");
     model.geom("part2").inputParam().set("Rot_def", "0 [deg]");
+
+    // Define selections (might need to delete some that are not actually used) to make RibbonContact Primitive
     model.geom("part2").selection().create("csel1", "CumulativeSelection");
     model.geom("part2").selection("csel1").label("CONTACT CROSS SECTION");
     model.geom("part2").selection().create("csel2", "CumulativeSelection");
@@ -372,6 +413,8 @@ public class Sandbox {
     model.geom("part2").selection("csel4").label("CONTACT FINAL");
     model.geom("part2").selection().create("csel5", "CumulativeSelection");
     model.geom("part2").selection("csel5").label("RECESS FINAL");
+
+    // Operations to make RibbonContact Primitive
     model.geom("part2").create("wp1", "WorkPlane");
     model.geom("part2").feature("wp1").label("Contact Cross Section");
     model.geom("part2").feature("wp1").set("contributeto", "csel1");
@@ -419,20 +462,28 @@ public class Sandbox {
     model.geom("part2").feature("pt1")
          .set("p", new String[]{"(R_in+Recess+Thk_elec/2)*cos(Rot_def+Theta_contact/2)", "(R_in+Recess+Thk_elec/2)*sin(Rot_def+Theta_contact/2)", "Center"});
     model.geom("part2").run();
-    model.geom("part3").label("WireContact_Primitive");
-    model.geom("part3").lengthUnit("\u00b5m");
+
+
+    model.geom("part3").label("WireContact_Primitive"); // give part index 3 this name
+    model.geom("part3").lengthUnit("\u00b5m"); // length unit micron (for all this is the case)
+
+    // assign parameters to the required input parameters for WireContact Primitive
     model.geom("part3").inputParam().set("R_conductor", "r_conductor_P");
     model.geom("part3").inputParam().set("R_in", "R_in_P");
     model.geom("part3").inputParam().set("Center", "Center_P");
     model.geom("part3").inputParam().set("Pitch", "Pitch_P");
     model.geom("part3").inputParam().set("Sep_conductor", "sep_conductor_P");
     model.geom("part3").inputParam().set("Theta_conductor", "theta_conductor_P");
+
+    // Define selections (might need to delete some that are not actually used) to make WireContact Primitive
     model.geom("part3").selection().create("csel1", "CumulativeSelection");
     model.geom("part3").selection("csel1").label("CONTACT CROSS SECTION");
     model.geom("part3").selection().create("csel2", "CumulativeSelection");
     model.geom("part3").selection("csel2").label("CONTACT FINAL");
     model.geom("part3").selection().create("csel3", "CumulativeSelection");
     model.geom("part3").selection("csel3").label("SRC");
+
+    // Operations to make WireContact Primitive
     model.geom("part3").create("wp1", "WorkPlane");
     model.geom("part3").feature("wp1").label("Contact Cross Section");
     model.geom("part3").feature("wp1").set("contributeto", "csel1");
@@ -458,8 +509,12 @@ public class Sandbox {
     model.geom("part3").feature("pt1")
          .set("p", new String[]{"(R_in-R_conductor-Sep_conductor)*cos(Theta_conductor/2)", "(R_in-R_conductor-Sep_conductor)*sin(Theta_conductor/2)", "Center"});
     model.geom("part3").run();
-    model.geom("part4").label("CircleContact_Primitive");
-    model.geom("part4").lengthUnit("\u00b5m");
+
+
+    model.geom("part4").label("CircleContact_Primitive"); // give part index 4 this name
+    model.geom("part4").lengthUnit("\u00b5m"); // length unit micron (for all this is the case)
+
+    // assign parameters to the required input parameters for ImThera CircleContact Primitive
     model.geom("part4").inputParam().set("Recess", "Recess_ITC");
     model.geom("part4").inputParam().set("Rotation_angle", "0 [deg]");
     model.geom("part4").inputParam().set("Center", "Center_IT");
@@ -470,6 +525,8 @@ public class Sandbox {
     model.geom("part4").inputParam().set("A_ellipse_contact", "a_ellipse_contact_ITC");
     model.geom("part4").inputParam().set("Diam_contact", "diam_contact_ITC");
     model.geom("part4").inputParam().set("L", "L_IT");
+
+    // Define selections (might need to delete some that are not actually used) to make CircleContact Primitive
     model.geom("part4").selection().create("csel11", "CumulativeSelection");
     model.geom("part4").selection("csel11").label("CONTACT CUTTER IN");
     model.geom("part4").selection().create("csel10", "CumulativeSelection");
@@ -484,11 +541,6 @@ public class Sandbox {
     model.geom("part4").selection("csel9").label("PLANE FOR CONTACT");
     model.geom("part4").selection().create("csel13", "CumulativeSelection");
     model.geom("part4").selection("csel13").label("CONTACT FINAL");
-
-    return model;
-  }
-
-  public static Model run2(Model model) {
     model.geom("part4").selection().create("csel12", "CumulativeSelection");
     model.geom("part4").selection("csel12").label("CONTACT CUTTER OUT");
     model.geom("part4").selection().create("csel1", "CumulativeSelection");
@@ -503,6 +555,8 @@ public class Sandbox {
     model.geom("part4").selection("csel5").label("RECESS CUTTER IN");
     model.geom("part4").selection().create("csel6", "CumulativeSelection");
     model.geom("part4").selection("csel6").label("RECESS CUTTER OUT");
+
+    // Operations to make CircleContact Primitive
     model.geom("part4").create("wp1", "WorkPlane");
     model.geom("part4").feature("wp1").label("Base Plane (Pre Rrotation)");
     model.geom("part4").feature("wp1").set("contributeto", "csel2");
@@ -656,6 +710,13 @@ public class Sandbox {
     model.geom("part4").feature("pt1")
          .set("p", new String[]{"(R_in+Recess+Contact_depth/2)*cos(Rotation_angle)", "(R_in+Recess+Contact_depth/2)*sin(Rotation_angle)", "Center"});
     model.geom("part4").run();
+
+
+
+
+
+
+    // Define input params to TubeCuff Primitive to make Enteromedics Cuff
     model.component("comp1").geom("geom1").create("pi8", "PartInstance");
     model.component("comp1").geom("geom1").feature("pi8").label("Enteromedics Cuff");
     model.component("comp1").geom("geom1").feature("pi8").setEntry("inputexpr", "N_holes", "N_holes_EM");
@@ -673,6 +734,8 @@ public class Sandbox {
          .setEntry("inputexpr", "Pitch_holecenter_holecenter", "Pitch_holecenter_holecenter_EM");
     model.component("comp1").geom("geom1").feature("pi8").set("selkeepnoncontr", false);
     model.component("comp1").geom("geom1").feature("pi8").setEntry("selkeepdom", "pi8_csel3.dom", "on");
+
+    // Define input params to RibbonContact Primitive to make Enteromedics Contact
     model.component("comp1").geom("geom1").create("pi9", "PartInstance");
     model.component("comp1").geom("geom1").feature("pi9").label("Enteromedics RibbonContact");
     model.component("comp1").geom("geom1").feature("pi9").set("part", "part2");
@@ -686,6 +749,13 @@ public class Sandbox {
     model.component("comp1").geom("geom1").feature("pi9").set("selkeepnoncontr", false);
     model.component("comp1").geom("geom1").feature("pi9").setEntry("selkeepdom", "pi9_csel4.dom", "on");
     model.component("comp1").geom("geom1").feature("pi9").setEntry("selkeeppnt", "pi9_csel3.pnt", "on");
+
+
+
+
+
+
+    // Define input params to TubeCuff Primitive to make Madison Cuff
     model.component("comp1").geom("geom1").create("pi2", "PartInstance");
     model.component("comp1").geom("geom1").feature("pi2").label("Madison Cuff");
     model.component("comp1").geom("geom1").feature("pi2").setEntry("inputexpr", "N_holes", "N_holes_M");
@@ -704,6 +774,8 @@ public class Sandbox {
     model.component("comp1").geom("geom1").feature("pi2").set("selkeepnoncontr", false);
     model.component("comp1").geom("geom1").feature("pi2").setEntry("selkeepdom", "pi2_csel3.dom", "on");
     model.component("comp1").geom("geom1").create("pi10", "PartInstance");
+
+    // Define input params to RibbonContact Primitive to make Madison Contact
     model.component("comp1").geom("geom1").feature("pi10").label("Madison RibbonContact");
     model.component("comp1").geom("geom1").feature("pi10").set("part", "part2");
     model.component("comp1").geom("geom1").feature("pi10").setEntry("inputexpr", "Thk_elec", "Thk_elec_M");
@@ -716,6 +788,14 @@ public class Sandbox {
     model.component("comp1").geom("geom1").feature("pi10").set("selkeepnoncontr", false);
     model.component("comp1").geom("geom1").feature("pi10").setEntry("selkeepdom", "pi10_csel4.dom", "on");
     model.component("comp1").geom("geom1").feature("pi10").setEntry("selkeeppnt", "pi10_csel3.pnt", "on");
+
+
+
+
+
+
+
+    // Define input params to TubeCuff Primitive to make CorTec300 Cuff
     model.component("comp1").geom("geom1").create("pi3", "PartInstance");
     model.component("comp1").geom("geom1").feature("pi3").label("CorTec300 Cuff");
     model.component("comp1").geom("geom1").feature("pi3").setEntry("inputexpr", "N_holes", "N_holes_CT");
@@ -734,6 +814,8 @@ public class Sandbox {
     model.component("comp1").geom("geom1").feature("pi3").set("selkeepnoncontr", false);
     model.component("comp1").geom("geom1").feature("pi3").setEntry("selkeepdom", "pi3_csel3.dom", "on");
     model.component("comp1").geom("geom1").create("pi11", "PartInstance");
+
+    // Define input params to RibbonContact Primitive to make CorTec300 Contact1
     model.component("comp1").geom("geom1").feature("pi11").label("CorTec300 RibbonContact 1");
     model.component("comp1").geom("geom1").feature("pi11").set("part", "part2");
     model.component("comp1").geom("geom1").feature("pi11").setEntry("inputexpr", "Thk_elec", "Thk_elec_CT");
@@ -747,6 +829,8 @@ public class Sandbox {
     model.component("comp1").geom("geom1").feature("pi11").set("selkeepnoncontr", false);
     model.component("comp1").geom("geom1").feature("pi11").setEntry("selkeepdom", "pi11_csel4.dom", "on");
     model.component("comp1").geom("geom1").feature("pi11").setEntry("selkeeppnt", "pi11_csel3.pnt", "on");
+
+    // Define input params to RibbonContact Primitive to make CorTec300 Contact2
     model.component("comp1").geom("geom1").create("pi12", "PartInstance");
     model.component("comp1").geom("geom1").feature("pi12").label("CorTec300 RibbonContact 2");
     model.component("comp1").geom("geom1").feature("pi12").set("part", "part2");
@@ -761,6 +845,14 @@ public class Sandbox {
     model.component("comp1").geom("geom1").feature("pi12").set("selkeepnoncontr", false);
     model.component("comp1").geom("geom1").feature("pi12").setEntry("selkeepdom", "pi12_csel4.dom", "on");
     model.component("comp1").geom("geom1").feature("pi12").setEntry("selkeeppnt", "pi12_csel3.pnt", "on");
+
+
+
+
+
+
+
+    // Define input params to TubeCuff Primitive to make Purdue Cuff
     model.component("comp1").geom("geom1").create("pi4", "PartInstance");
     model.component("comp1").geom("geom1").feature("pi4").label("Purdue Cuff");
     model.component("comp1").geom("geom1").feature("pi4").setEntry("inputexpr", "N_holes", "N_holes_P");
@@ -779,6 +871,8 @@ public class Sandbox {
     model.component("comp1").geom("geom1").feature("pi4").set("selkeepnoncontr", false);
     model.component("comp1").geom("geom1").feature("pi4").setEntry("selkeepdom", "pi4_csel3.dom", "on");
     model.component("comp1").geom("geom1").create("pi13", "PartInstance");
+
+    // Define input params to RibbonContact Primitive to make Purdue Contact1
     model.component("comp1").geom("geom1").feature("pi13").label("Purdue WireContact 1");
     model.component("comp1").geom("geom1").feature("pi13").set("part", "part3");
     model.component("comp1").geom("geom1").feature("pi13").setEntry("inputexpr", "R_conductor", "r_conductor_P");
@@ -791,6 +885,8 @@ public class Sandbox {
     model.component("comp1").geom("geom1").feature("pi13").set("selkeepnoncontr", false);
     model.component("comp1").geom("geom1").feature("pi13").setEntry("selkeepdom", "pi13_csel2.dom", "on");
     model.component("comp1").geom("geom1").feature("pi13").setEntry("selkeeppnt", "pi13_csel3.pnt", "on");
+
+    // Define input params to RibbonContact Primitive to make Purdue Contact2
     model.component("comp1").geom("geom1").create("pi14", "PartInstance");
     model.component("comp1").geom("geom1").feature("pi14").label("Purdue WireContact 2");
     model.component("comp1").geom("geom1").feature("pi14").set("part", "part3");
@@ -805,6 +901,15 @@ public class Sandbox {
     model.component("comp1").geom("geom1").feature("pi14").setEntry("selkeepobj", "pi14_csel2", "on");
     model.component("comp1").geom("geom1").feature("pi14").setEntry("selkeepdom", "pi14_csel2.dom", "on");
     model.component("comp1").geom("geom1").feature("pi14").setEntry("selkeeppnt", "pi14_csel3.pnt", "on");
+
+
+
+
+
+
+
+
+    // Define input params to TubeCuff Primitive to make Pitt Cuff
     model.component("comp1").geom("geom1").create("pi5", "PartInstance");
     model.component("comp1").geom("geom1").feature("pi5").label("Pitt (WIP)");
     model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "N_holes", "1");
@@ -820,6 +925,12 @@ public class Sandbox {
     model.component("comp1").geom("geom1").feature("pi5")
          .setEntry("inputexpr", "Pitch_holecenter_holecenter", "0 [mm]");
     model.component("comp1").geom("geom1").feature("pi5").set("selkeepnoncontr", false);
+    // WIP.............
+
+
+
+
+    // Define input params to TubeCuff Primitive to make ImThera Inner Cuff
     model.component("comp1").geom("geom1").create("pi6", "PartInstance");
     model.component("comp1").geom("geom1").feature("pi6").label("ImThera Inner Cuff");
     model.component("comp1").geom("geom1").feature("pi6").setEntry("inputexpr", "N_holes", "N_holes_ITI");
@@ -837,6 +948,8 @@ public class Sandbox {
          .setEntry("inputexpr", "Pitch_holecenter_holecenter", "Pitch_holecenter_holecenter_ITI");
     model.component("comp1").geom("geom1").feature("pi6").set("selkeepnoncontr", false);
     model.component("comp1").geom("geom1").feature("pi6").setEntry("selkeepdom", "pi6_csel3.dom", "on");
+
+    // Define input params to TubeCuff Primitive to make ImThera Furl Cuff
     model.component("comp1").geom("geom1").create("pi7", "PartInstance");
     model.component("comp1").geom("geom1").feature("pi7").label("ImThera Furl Cuff");
     model.component("comp1").geom("geom1").feature("pi7").setEntry("inputexpr", "N_holes", "N_holes_ITF");
@@ -854,6 +967,8 @@ public class Sandbox {
          .setEntry("inputexpr", "Pitch_holecenter_holecenter", "Pitch_holecenter_holecenter_ITF");
     model.component("comp1").geom("geom1").feature("pi7").set("selkeepnoncontr", false);
     model.component("comp1").geom("geom1").feature("pi7").setEntry("selkeepdom", "pi7_csel3.dom", "on");
+
+    // Define input params to CircleContact Primitive to make ImThera Contact 1
     model.component("comp1").geom("geom1").create("pi15", "PartInstance");
     model.component("comp1").geom("geom1").feature("pi15").label("ImThera Contact 1");
     model.component("comp1").geom("geom1").feature("pi15").set("part", "part4");
@@ -866,11 +981,6 @@ public class Sandbox {
     model.component("comp1").geom("geom1").feature("pi15").setEntry("inputexpr", "R_in", "R_in_ITI");
     model.component("comp1").geom("geom1").feature("pi15")
          .setEntry("inputexpr", "Contact_depth", "Contact_depth_ITC");
-
-    return model;
-  }
-
-  public static Model run3(Model model) {
     model.component("comp1").geom("geom1").feature("pi15").setEntry("inputexpr", "Overshoot", "Overshoot_ITC");
     model.component("comp1").geom("geom1").feature("pi15")
          .setEntry("inputexpr", "A_ellipse_contact", "a_ellipse_contact_ITC");
@@ -893,6 +1003,8 @@ public class Sandbox {
     model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepedg", "pi15_csel14.edg", "off");
     model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeeppnt", "pi15_csel12.pnt", "off");
     model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeeppnt", "pi15_csel13.pnt", "off");
+
+    // Define input params to CircleContact Primitive to make ImThera Contact 2
     model.component("comp1").geom("geom1").create("pi16", "PartInstance");
     model.component("comp1").geom("geom1").feature("pi16").label("ImThera Contact 2");
     model.component("comp1").geom("geom1").feature("pi16").set("part", "part4");
@@ -926,6 +1038,8 @@ public class Sandbox {
     model.component("comp1").geom("geom1").feature("pi16").setEntry("selkeepedg", "pi16_csel14.edg", "off");
     model.component("comp1").geom("geom1").feature("pi16").setEntry("selkeeppnt", "pi16_csel12.pnt", "off");
     model.component("comp1").geom("geom1").feature("pi16").setEntry("selkeeppnt", "pi16_csel13.pnt", "off");
+
+    // Define input params to CircleContact Primitive to make ImThera Contact 3
     model.component("comp1").geom("geom1").create("pi17", "PartInstance");
     model.component("comp1").geom("geom1").feature("pi17").label("ImThera Contact 3");
     model.component("comp1").geom("geom1").feature("pi17").set("part", "part4");
@@ -960,6 +1074,8 @@ public class Sandbox {
     model.component("comp1").geom("geom1").feature("pi17").setEntry("selkeepedg", "pi17_csel14.edg", "off");
     model.component("comp1").geom("geom1").feature("pi17").setEntry("selkeeppnt", "pi17_csel12.pnt", "off");
     model.component("comp1").geom("geom1").feature("pi17").setEntry("selkeeppnt", "pi17_csel13.pnt", "off");
+
+    // Define input params to CircleContact Primitive to make ImThera Contact 4
     model.component("comp1").geom("geom1").create("pi18", "PartInstance");
     model.component("comp1").geom("geom1").feature("pi18").label("ImThera Contact 4");
     model.component("comp1").geom("geom1").feature("pi18").set("part", "part4");
@@ -994,6 +1110,8 @@ public class Sandbox {
     model.component("comp1").geom("geom1").feature("pi18").setEntry("selkeepedg", "pi18_csel14.edg", "off");
     model.component("comp1").geom("geom1").feature("pi18").setEntry("selkeeppnt", "pi18_csel12.pnt", "off");
     model.component("comp1").geom("geom1").feature("pi18").setEntry("selkeeppnt", "pi18_csel13.pnt", "off");
+
+    // Define input params to CircleContact Primitive to make ImThera Contact 5
     model.component("comp1").geom("geom1").create("pi19", "PartInstance");
     model.component("comp1").geom("geom1").feature("pi19").label("ImThera Contact 5");
     model.component("comp1").geom("geom1").feature("pi19").set("part", "part4");
@@ -1028,6 +1146,8 @@ public class Sandbox {
     model.component("comp1").geom("geom1").feature("pi19").setEntry("selkeeppnt", "pi19_csel12.pnt", "off");
     model.component("comp1").geom("geom1").feature("pi19").setEntry("selkeeppnt", "pi19_csel13.pnt", "off");
     model.component("comp1").geom("geom1").create("pi20", "PartInstance");
+
+    // Define input params to CircleContact Primitive to make ImThera Contact 6
     model.component("comp1").geom("geom1").feature("pi20").label("ImThera Contact 6");
     model.component("comp1").geom("geom1").feature("pi20").set("part", "part4");
     model.component("comp1").geom("geom1").feature("pi20").setEntry("inputexpr", "Recess", "Recess_ITC");
@@ -1061,9 +1181,12 @@ public class Sandbox {
     model.component("comp1").geom("geom1").feature("pi20").setEntry("selkeepedg", "pi20_csel14.edg", "off");
     model.component("comp1").geom("geom1").feature("pi20").setEntry("selkeeppnt", "pi20_csel12.pnt", "off");
     model.component("comp1").geom("geom1").feature("pi20").setEntry("selkeeppnt", "pi20_csel13.pnt", "off");
+
+    // Make everything - BUILD ALL
     model.component("comp1").geom("geom1").run();
     model.component("comp1").geom("geom1").run("fin");
 
+    // VIEWS - probably can delete
     model.view("view5").tag("view51");
     model.view("view3").tag("view5");
     model.view("view6").tag("view61");
@@ -1076,6 +1199,7 @@ public class Sandbox {
     model.view("view9").tag("view8");
     model.view("view101").tag("view9");
 
+    // Material Links - adds material definition to selections
     model.component("comp1").material().create("matlnk4", "Link");
     model.component("comp1").material().create("matlnk5", "Link");
     model.component("comp1").material().create("matlnk6", "Link");
