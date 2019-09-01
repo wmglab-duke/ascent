@@ -1378,14 +1378,17 @@ public class Sandbox {
 
     model.component("comp1").physics("ec").feature("pcs4").label("Madison Point Current Source 1");
     model.component("comp1").physics("ec").feature("pcs5").set("Qjp", 0.001);
+
     model.component("comp1").physics("ec").feature("pcs5").label("CorTec300 Point Current Source 1");
     model.component("comp1").physics("ec").feature("pcs6").set("Qjp", -0.001);
     model.component("comp1").physics("ec").feature("pcs6").label("CorTec300 Point Current Source 2");
     model.component("comp1").physics("ec").feature("pcs1").set("Qjp", 0.001);
+
     model.component("comp1").physics("ec").feature("pcs1").label("Purdue Point Current Source 1");
     model.component("comp1").physics("ec").feature("pcs2").set("Qjp", -0.001);
     model.component("comp1").physics("ec").feature("pcs2").label("Purdue Point Current Source 2");
     model.component("comp1").physics("ec").feature("pcs7").set("Qjp", 0.001);
+    
     model.component("comp1").physics("ec").feature("pcs7").label("ImThera Point Current Source 1");
     model.component("comp1").physics("ec").feature("pcs8").set("Qjp", 0.001);
     model.component("comp1").physics("ec").feature("pcs8").label("ImThera Point Current Source 2");
