@@ -35,7 +35,7 @@ and fiber information (metadata and coordinates for extracting electric potentia
     * Batching files from command line - save geom and mesh and resolve for different frequencies: https://www.comsol.com/blogs/how-to-run-simulations-in-batch-mode-from-the-command-line/
     
 
-## Dependencies (non-builtin)
+## Python Dependencies (non-builtin)
 - numpy
 - Pillow
 - cv2 (opencv-python)
@@ -46,6 +46,9 @@ and fiber information (metadata and coordinates for extracting electric potentia
 - pygame
 - shutil
 - json
+
+## Java 12.0.2 Dependencies
+- Maven: com.googlecode.json-simple:json-simple:1.1
 
 ## Setup
 IN COMSOL: Preferences -> Security -> Methods and Java Libraries -> File System Access -> All Files

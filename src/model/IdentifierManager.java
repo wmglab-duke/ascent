@@ -9,6 +9,7 @@ class IdentifierManager {
 
     public IdentifierManager() {
         identifiers = new HashMap<String, Integer>();
+
     }
 
     public String next(String key) {
