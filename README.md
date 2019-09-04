@@ -50,6 +50,7 @@ and fiber information (metadata and coordinates for extracting electric potentia
 ## Java 12.0.2 Dependencies (figure out streamlining?)
 - Maven: `com.googlecode.json-simple:json-simple:1.1`
 - must add to CLASSPATH: `<path-to-comsol>/COMSOL54/Multiphysics/plugins/`
+- if using IntelliJ, ensure presence of line in `access.iml`: `<component name="NewModuleRootManager" inherit-compiler-output="true">`
 
 ## Setup
 IN COMSOL: Preferences -> Security -> Methods and Java Libraries -> File System Access -> All Files

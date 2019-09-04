@@ -1,170 +1,144 @@
-[
-  {
-    "name": "N_holes_CT",
-    "expression": "0",
-    "description": ""
-  },
-
-  {
-    "name": "Theta_CT",
-    "expression": "percent_circ_cuff_CT*360 [deg]",
-    "description": ""
-  },
-
-  {
-    "name": "Center_CT",
-    "expression": "10 [mm]",
-    "description": ""
-  },
-
-  {
-    "name": "R_in_CT",
-    "expression": "max(r_nerve_CT+thk_medium_gap_internal_CT,r_cuff_in_pre_CT)",
-    "description": ""
-  },
-
-  {
-    "name": "R_out_CT",
-    "expression": "R_in_CT+thk_cuff_CT",
-    "description": ""
-  },
-
-  {
-    "name": "L_CT",
-    "expression": "2 [mm]",
-    "description": ""
-  },
-
-  {
-    "name": "Rot_def_CT",
-    "expression": "-(theta_cuff_CT-theta_contact_CT)/2",
-    "description": ""
-  },
-
-  {
-    "name": "D_hole_CT",
-    "expression": "NaN",
-    "description": ""
-  },
-
-  {
-    "name": "Buffer_hole_CT",
-    "expression": "NaN",
-    "description": ""
-  },
-
-  {
-    "name": "L_holecenter_cuffseam_CT",
-    "expression": "NaN",
-    "description": ""
-  },
-
-  {
-    "name": "Pitch_holecenter_holecenter_CT",
-    "expression": "NaN",
-    "description": ""
-  },
-
-  {
-    "name": "percent_circ_cuff_CT",
-    "expression": "percent_circ_cuff_pre_CT*(r_cuff_in_pre_CT/R_in_CT)",
-    "description": ""
-  },
-
-  {
-    "name": "r_nerve_CT",
-    "expression": "160 [um]",
-    "description": ""
-  },
-
-  {
-    "name": "z_nerve_CT",
-    "expression": "20 [mm]",
-    "description": ""
-  },
-
-  {
-    "name": "thk_medium_gap_internal_CT",
-    "expression": "0",
-    "description": ""
-  },
-
-  {
-    "name": "r_cuff_in_pre_CT",
-    "expression": "150 [um]",
-    "description": ""
-  },
-
-  {
-    "name": "recess_CT",
-    "expression": "0",
-    "description": ""
-  },
-
-  {
-    "name": "Thk_elec_CT",
-    "expression": "0.025 [mm]",
-    "description": ""
-  },
-
-  {
-    "name": "B_CT",
-    "expression": "0.6 [mm]",
-    "description": ""
-  },
-
-  {
-    "name": "percent_circ_cuff_pre_CT",
-    "expression": "1",
-    "description": ""
-  },
-
-  {
-    "name": "theta_contact_CT",
-    "expression": "360*(B_CT/(2*pi*(R_in_CT+recess_CT))) [deg]",
-    "description": ""
-  },
-
-  {
-    "name": "theta_cuff_CT",
-    "expression": "percent_circ_cuff_CT*360 [deg]",
-    "description": ""
-  },
-
-  {
-    "name": "thk_cuff_CT",
-    "expression": "0.65 [mm]",
-    "description": ""
-  },
-
-  {
-    "name": "L_elec_CT",
-    "expression": "0.3 [mm]",
-    "description": ""
-  },
-
-  {
-    "name": "Recess_CT",
-    "expression": "0 [mm]",
-    "description": ""
-  },
-
-  {
-    "name": "Theta_contact_CT",
-    "expression": "360*(B_CT/(2*pi*(R_in_CT+Recess_CT))) [deg]",
-    "description": ""
-  },
-
-  {
-    "name": "Rot_def_contact_CT",
-    "expression": "0",
-    "description": ""
-  },
-
-  {
-    "name": "Pitch_CT",
-    "expression": "1.5 [mm]",
-    "description": ""
-  }
-]
-
+{
+  "data": [
+    {
+      "name": "N_holes_CT",
+      "expression": "0",
+      "description": ""
+    },
+    {
+      "name": "Theta_CT",
+      "expression": "percent_circ_cuff_CT*360 [deg]",
+      "description": ""
+    },
+    {
+      "name": "Center_CT",
+      "expression": "10 [mm]",
+      "description": ""
+    },
+    {
+      "name": "R_in_CT",
+      "expression": "max(r_nerve_CT+thk_medium_gap_internal_CT,r_cuff_in_pre_CT)",
+      "description": ""
+    },
+    {
+      "name": "R_out_CT",
+      "expression": "R_in_CT+thk_cuff_CT",
+      "description": ""
+    },
+    {
+      "name": "L_CT",
+      "expression": "2 [mm]",
+      "description": ""
+    },
+    {
+      "name": "Rot_def_CT",
+      "expression": "-(theta_cuff_CT-theta_contact_CT)/2",
+      "description": ""
+    },
+    {
+      "name": "D_hole_CT",
+      "expression": "NaN",
+      "description": ""
+    },
+    {
+      "name": "Buffer_hole_CT",
+      "expression": "NaN",
+      "description": ""
+    },
+    {
+      "name": "L_holecenter_cuffseam_CT",
+      "expression": "NaN",
+      "description": ""
+    },
+    {
+      "name": "Pitch_holecenter_holecenter_CT",
+      "expression": "NaN",
+      "description": ""
+    },
+    {
+      "name": "percent_circ_cuff_CT",
+      "expression": "percent_circ_cuff_pre_CT*(r_cuff_in_pre_CT/R_in_CT)",
+      "description": ""
+    },
+    {
+      "name": "r_nerve_CT",
+      "expression": "160 [um]",
+      "description": ""
+    },
+    {
+      "name": "z_nerve_CT",
+      "expression": "20 [mm]",
+      "description": ""
+    },
+    {
+      "name": "thk_medium_gap_internal_CT",
+      "expression": "0",
+      "description": ""
+    },
+    {
+      "name": "r_cuff_in_pre_CT",
+      "expression": "150 [um]",
+      "description": ""
+    },
+    {
+      "name": "recess_CT",
+      "expression": "0",
+      "description": ""
+    },
+    {
+      "name": "Thk_elec_CT",
+      "expression": "0.025 [mm]",
+      "description": ""
+    },
+    {
+      "name": "B_CT",
+      "expression": "0.6 [mm]",
+      "description": ""
+    },
+    {
+      "name": "percent_circ_cuff_pre_CT",
+      "expression": "1",
+      "description": ""
+    },
+    {
+      "name": "theta_contact_CT",
+      "expression": "360*(B_CT/(2*pi*(R_in_CT+recess_CT))) [deg]",
+      "description": ""
+    },
+    {
+      "name": "theta_cuff_CT",
+      "expression": "percent_circ_cuff_CT*360 [deg]",
+      "description": ""
+    },
+    {
+      "name": "thk_cuff_CT",
+      "expression": "0.65 [mm]",
+      "description": ""
+    },
+    {
+      "name": "L_elec_CT",
+      "expression": "0.3 [mm]",
+      "description": ""
+    },
+    {
+      "name": "Recess_CT",
+      "expression": "0 [mm]",
+      "description": ""
+    },
+    {
+      "name": "Theta_contact_CT",
+      "expression": "360*(B_CT/(2*pi*(R_in_CT+Recess_CT))) [deg]",
+      "description": ""
+    },
+    {
+      "name": "Rot_def_contact_CT",
+      "expression": "0",
+      "description": ""
+    },
+    {
+      "name": "Pitch_CT",
+      "expression": "1.5 [mm]",
+      "description": ""
+    }
+  ]
+}

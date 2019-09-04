@@ -1,259 +1,219 @@
-[
-  {
-    "name": "N_holes_ITI",
-    "expression": "1",
-    "description": ""
-  },
-
-  {
-    "name": "Theta_ITI",
-    "expression": "theta_cuff_pre_ITI*(r_cuff_in_pre_ITI/R_in_ITI)",
-    "description": ""
-  },
-
-  {
-    "name": "Center_IT",
-    "expression": "30 [mm]",
-    "description": ""
-  },
-
-  {
-    "name": "R_in_ITI",
-    "expression": "max(r_nerve_IT+thk_medium_gap_internal_IT,r_cuff_in_pre_ITI)",
-    "description": ""
-  },
-
-  {
-    "name": "R_out_ITI",
-    "expression": "R_in_ITI+thk_cuff_ITI",
-    "description": ""
-  },
-
-  {
-    "name": "L_IT",
-    "expression": "0.354 [inch]",
-    "description": ""
-  },
-
-  {
-    "name": "Rot_def_ITI",
-    "expression": "0",
-    "description": ""
-  },
-
-  {
-    "name": "D_hole_ITI",
-    "expression": "0.02 [inch]",
-    "description": ""
-  },
-
-  {
-    "name": "Buffer_hole_ITI",
-    "expression": "150 [um]",
-    "description": ""
-  },
-
-  {
-    "name": "L_holecenter_cuffseam_ITI",
-    "expression": "0.03 [inch]",
-    "description": ""
-  },
-
-  {
-    "name": "N_holes_ITF",
-    "expression": "2",
-    "description": ""
-  },
-
-  {
-    "name": "Theta_ITF",
-    "expression": "theta_cuff_pre_ITF*((r_cuff_in_pre_ITF+thk_cuff_ITI+thk_gap_cuff_furl_IT)/(R_in_ITI+thk_cuff_ITI+thk_gap_cuff_furl_IT))",
-    "description": ""
-  },
-
-  {
-    "name": "R_in_ITF",
-    "expression": "R_in_ITI+thk_cuff_ITI+thk_gap_cuff_furl_IT",
-    "description": ""
-  },
-
-  {
-    "name": "R_out_ITF",
-    "expression": "R_in_ITI+thk_cuff_ITI+thk_gap_cuff_furl_IT+thk_furl_ITF",
-    "description": ""
-  },
-
-  {
-    "name": "Rot_def_ITF",
-    "expression": "-((2*pi-Theta_ITI)/2)-(Theta_ITF/2)",
-    "description": ""
-  },
-
-  {
-    "name": "D_hole_ITF",
-    "expression": "0.02 [inch]",
-    "description": ""
-  },
-
-  {
-    "name": "Buffer_hole_ITF",
-    "expression": "Buffer_hole_ITI",
-    "description": ""
-  },
-
-  {
-    "name": "L_holecenter_cuffseam_ITF",
-    "expression": "(pi*2*R_in_ITF)*(Theta_ITF/(2*pi))-0.03 [inch]",
-    "description": ""
-  },
-
-  {
-    "name": "theta_cuff_pre_ITI",
-    "expression": "360 [deg]",
-    "description": ""
-  },
-
-  {
-    "name": "r_cuff_in_pre_ITI",
-    "expression": "(0.118/2) [inch]",
-    "description": ""
-  },
-
-  {
-    "name": "z_nerve_IT",
-    "expression": "20 [mm]",
-    "description": ""
-  },
-
-  {
-    "name": "r_nerve_IT",
-    "expression": "1.7 [mm]",
-    "description": ""
-  },
-
-  {
-    "name": "thk_medium_gap_internal_IT",
-    "expression": "0",
-    "description": ""
-  },
-
-  {
-    "name": "thk_cuff_ITI",
-    "expression": "r_cuff_out_pre_ITI-r_cuff_in_pre_ITI",
-    "description": ""
-  },
-
-  {
-    "name": "r_cuff_out_pre_ITI",
-    "expression": "(0.178/2) [inch]",
-    "description": ""
-  },
-
-  {
-    "name": "Pitch_holecenter_holecenter_ITI",
-    "expression": "0",
-    "description": ""
-  },
-
-  {
-    "name": "theta_cuff_pre_ITF",
-    "expression": "250 [deg]",
-    "description": ""
-  },
-
-  {
-    "name": "r_cuff_in_pre_ITF",
-    "expression": "(0.178/2) [inch]",
-    "description": ""
-  },
-
-  {
-    "name": "thk_gap_cuff_furl_IT",
-    "expression": "0",
-    "description": ""
-  },
-
-  {
-    "name": "thk_furl_ITF",
-    "expression": "r_furl_out_pre_ITF-r_furl_in_pre_ITF",
-    "description": ""
-  },
-
-  {
-    "name": "r_furl_out_pre_ITF",
-    "expression": "(0.218/2) [inch]",
-    "description": ""
-  },
-
-  {
-    "name": "r_furl_in_pre_ITF",
-    "expression": "(0.178/2) [inch]",
-    "description": ""
-  },
-
-  {
-    "name": "Pitch_holecenter_holecenter_ITF",
-    "expression": "L_IT-2*0.077 [inch]",
-    "description": ""
-  },
-
-  {
-    "name": "diam_contact_ITC",
-    "expression": "2 [mm]",
-    "description": ""
-  },
-
-  {
-    "name": "a_ellipse_contact_ITC",
-    "expression": "0.5*(R_in_ITI+Recess_ITC)*sin((diam_contact_ITC)/(R_in_ITI+Recess_ITC))",
-    "description": ""
-  },
-
-  {
-    "name": "Recess_ITC",
-    "expression": "0",
-    "description": ""
-  },
-
-  {
-    "name": "Round_def_ITC",
-    "expression": "1",
-    "description": ""
-  },
-
-  {
-    "name": "Contact_depth_ITC",
-    "expression": "0.05 [mm]",
-    "description": ""
-  },
-
-  {
-    "name": "Overshoot_ITC",
-    "expression": "0.05 [mm]",
-    "description": ""
-  },
-
-  {
-    "name": "length_contactcenter_contactcenter_ITC",
-    "expression": "0.108 [inch]",
-    "description": ""
-  },
-
-  {
-    "name": "ang_cuffseam_contactcenter_ITC",
-    "expression": "ang_cuffseam_contactcenter_pre_ITC*(r_cuff_in_pre_ITI/R_in_ITI)",
-    "description": ""
-  },
-
-  {
-    "name": "ang_cuffseam_contactcenter_pre_ITC",
-    "expression": "53 [deg]",
-    "description": ""
-  },
-
-  {
-    "name": "ang_contactcenter_contactcenter_ITC",
-    "expression": "ang_contactcenter_contactcenter_pre_ITC*(r_cuff_in_pre_ITI/R_in_ITI)",
-    "description": ""
-  }
-]
+{
+  "data": [
+    {
+      "name": "N_holes_ITI",
+      "expression": "1",
+      "description": ""
+    },
+    {
+      "name": "Theta_ITI",
+      "expression": "theta_cuff_pre_ITI*(r_cuff_in_pre_ITI/R_in_ITI)",
+      "description": ""
+    },
+    {
+      "name": "Center_IT",
+      "expression": "30 [mm]",
+      "description": ""
+    },
+    {
+      "name": "R_in_ITI",
+      "expression": "max(r_nerve_IT+thk_medium_gap_internal_IT,r_cuff_in_pre_ITI)",
+      "description": ""
+    },
+    {
+      "name": "R_out_ITI",
+      "expression": "R_in_ITI+thk_cuff_ITI",
+      "description": ""
+    },
+    {
+      "name": "L_IT",
+      "expression": "0.354 [inch]",
+      "description": ""
+    },
+    {
+      "name": "Rot_def_ITI",
+      "expression": "0",
+      "description": ""
+    },
+    {
+      "name": "D_hole_ITI",
+      "expression": "0.02 [inch]",
+      "description": ""
+    },
+    {
+      "name": "Buffer_hole_ITI",
+      "expression": "150 [um]",
+      "description": ""
+    },
+    {
+      "name": "L_holecenter_cuffseam_ITI",
+      "expression": "0.03 [inch]",
+      "description": ""
+    },
+    {
+      "name": "N_holes_ITF",
+      "expression": "2",
+      "description": ""
+    },
+    {
+      "name": "Theta_ITF",
+      "expression": "theta_cuff_pre_ITF*((r_cuff_in_pre_ITF+thk_cuff_ITI+thk_gap_cuff_furl_IT)/(R_in_ITI+thk_cuff_ITI+thk_gap_cuff_furl_IT))",
+      "description": ""
+    },
+    {
+      "name": "R_in_ITF",
+      "expression": "R_in_ITI+thk_cuff_ITI+thk_gap_cuff_furl_IT",
+      "description": ""
+    },
+    {
+      "name": "R_out_ITF",
+      "expression": "R_in_ITI+thk_cuff_ITI+thk_gap_cuff_furl_IT+thk_furl_ITF",
+      "description": ""
+    },
+    {
+      "name": "Rot_def_ITF",
+      "expression": "-((2*pi-Theta_ITI)/2)-(Theta_ITF/2)",
+      "description": ""
+    },
+    {
+      "name": "D_hole_ITF",
+      "expression": "0.02 [inch]",
+      "description": ""
+    },
+    {
+      "name": "Buffer_hole_ITF",
+      "expression": "Buffer_hole_ITI",
+      "description": ""
+    },
+    {
+      "name": "L_holecenter_cuffseam_ITF",
+      "expression": "(pi*2*R_in_ITF)*(Theta_ITF/(2*pi))-0.03 [inch]",
+      "description": ""
+    },
+    {
+      "name": "theta_cuff_pre_ITI",
+      "expression": "360 [deg]",
+      "description": ""
+    },
+    {
+      "name": "r_cuff_in_pre_ITI",
+      "expression": "(0.118/2) [inch]",
+      "description": ""
+    },
+    {
+      "name": "z_nerve_IT",
+      "expression": "20 [mm]",
+      "description": ""
+    },
+    {
+      "name": "r_nerve_IT",
+      "expression": "1.7 [mm]",
+      "description": ""
+    },
+    {
+      "name": "thk_medium_gap_internal_IT",
+      "expression": "0",
+      "description": ""
+    },
+    {
+      "name": "thk_cuff_ITI",
+      "expression": "r_cuff_out_pre_ITI-r_cuff_in_pre_ITI",
+      "description": ""
+    },
+    {
+      "name": "r_cuff_out_pre_ITI",
+      "expression": "(0.178/2) [inch]",
+      "description": ""
+    },
+    {
+      "name": "Pitch_holecenter_holecenter_ITI",
+      "expression": "0",
+      "description": ""
+    },
+    {
+      "name": "theta_cuff_pre_ITF",
+      "expression": "250 [deg]",
+      "description": ""
+    },
+    {
+      "name": "r_cuff_in_pre_ITF",
+      "expression": "(0.178/2) [inch]",
+      "description": ""
+    },
+    {
+      "name": "thk_gap_cuff_furl_IT",
+      "expression": "0",
+      "description": ""
+    },
+    {
+      "name": "thk_furl_ITF",
+      "expression": "r_furl_out_pre_ITF-r_furl_in_pre_ITF",
+      "description": ""
+    },
+    {
+      "name": "r_furl_out_pre_ITF",
+      "expression": "(0.218/2) [inch]",
+      "description": ""
+    },
+    {
+      "name": "r_furl_in_pre_ITF",
+      "expression": "(0.178/2) [inch]",
+      "description": ""
+    },
+    {
+      "name": "Pitch_holecenter_holecenter_ITF",
+      "expression": "L_IT-2*0.077 [inch]",
+      "description": ""
+    },
+    {
+      "name": "diam_contact_ITC",
+      "expression": "2 [mm]",
+      "description": ""
+    },
+    {
+      "name": "a_ellipse_contact_ITC",
+      "expression": "0.5*(R_in_ITI+Recess_ITC)*sin((diam_contact_ITC)/(R_in_ITI+Recess_ITC))",
+      "description": ""
+    },
+    {
+      "name": "Recess_ITC",
+      "expression": "0",
+      "description": ""
+    },
+    {
+      "name": "Round_def_ITC",
+      "expression": "1",
+      "description": ""
+    },
+    {
+      "name": "Contact_depth_ITC",
+      "expression": "0.05 [mm]",
+      "description": ""
+    },
+    {
+      "name": "Overshoot_ITC",
+      "expression": "0.05 [mm]",
+      "description": ""
+    },
+    {
+      "name": "length_contactcenter_contactcenter_ITC",
+      "expression": "0.108 [inch]",
+      "description": ""
+    },
+    {
+      "name": "ang_cuffseam_contactcenter_ITC",
+      "expression": "ang_cuffseam_contactcenter_pre_ITC*(r_cuff_in_pre_ITI/R_in_ITI)",
+      "description": ""
+    },
+    {
+      "name": "ang_cuffseam_contactcenter_pre_ITC",
+      "expression": "53 [deg]",
+      "description": ""
+    },
+    {
+      "name": "ang_contactcenter_contactcenter_ITC",
+      "expression": "ang_contactcenter_contactcenter_pre_ITC*(r_cuff_in_pre_ITI/R_in_ITI)",
+      "description": ""
+    }
+  ]
+}

@@ -1,133 +1,135 @@
-[
-  {
-    "name": "N_holes_EM",
-    "expression": "0",
-    "description": ""
-  },
+{
+  "data": [
+    {
+      "name": "N_holes_EM",
+      "expression": "0",
+      "description": ""
+    },
 
-  {
-    "name": "Theta_EM",
-    "expression": "Theta_contact_EM+((2*(360*arc_ext_EM)/(2*pi*R_in_EM)) [deg])",
-    "description": ""
-  },
+    {
+      "name": "Theta_EM",
+      "expression": "Theta_contact_EM+((2*(360*arc_ext_EM)/(2*pi*R_in_EM)) [deg])",
+      "description": ""
+    },
 
-  {
-    "name": "Center_EM",
-    "expression": "20 [mm]",
-    "description": ""
-  },
+    {
+      "name": "Center_EM",
+      "expression": "20 [mm]",
+      "description": ""
+    },
 
-  {
-    "name": "R_in_EM",
-    "expression": "max(r_nerve_EM+thk_medium_gap_internal_EM,r_cuff_in_pre_EM)",
-    "description": ""
-  },
+    {
+      "name": "R_in_EM",
+      "expression": "max(r_nerve_EM+thk_medium_gap_internal_EM,r_cuff_in_pre_EM)",
+      "description": ""
+    },
 
-  {
-    "name": "R_out_EM",
-    "expression": "R_in_EM+thk_cuff_EM",
-    "description": ""
-  },
+    {
+      "name": "R_out_EM",
+      "expression": "R_in_EM+thk_cuff_EM",
+      "description": ""
+    },
 
-  {
-    "name": "L_EM",
-    "expression": "3*L_elec_EM",
-    "description": ""
-  },
+    {
+      "name": "L_EM",
+      "expression": "3*L_elec_EM",
+      "description": ""
+    },
 
-  {
-    "name": "Rot_def_EM",
-    "expression": "-(360*arc_ext_EM)/(2*pi*R_in_EM)",
-    "description": ""
-  },
+    {
+      "name": "Rot_def_EM",
+      "expression": "-(360*arc_ext_EM)/(2*pi*R_in_EM)",
+      "description": ""
+    },
 
-  {
-    "name": "D_hole_EM",
-    "expression": "NaN",
-    "description": ""
-  },
+    {
+      "name": "D_hole_EM",
+      "expression": "NaN",
+      "description": ""
+    },
 
-  {
-    "name": "Buffer_hole_EM",
-    "expression": "NaN",
-    "description": ""
-  },
+    {
+      "name": "Buffer_hole_EM",
+      "expression": "NaN",
+      "description": ""
+    },
 
-  {
-    "name": "L_holecenter_cuffseam_EM",
-    "expression": "NaN",
-    "description": ""
-  },
+    {
+      "name": "L_holecenter_cuffseam_EM",
+      "expression": "NaN",
+      "description": ""
+    },
 
-  {
-    "name": "Pitch_holecenter_holecenter_EM",
-    "expression": "NaN",
-    "description": ""
-  },
+    {
+      "name": "Pitch_holecenter_holecenter_EM",
+      "expression": "NaN",
+      "description": ""
+    },
 
-  {
-    "name": "r_nerve_EM",
-    "expression": "1.3 [mm]",
-    "description": ""
-  },
+    {
+      "name": "r_nerve_EM",
+      "expression": "1.3 [mm]",
+      "description": ""
+    },
 
-  {
-    "name": "thk_medium_gap_internal_EM",
-    "expression": "0 [mm]",
-    "description": ""
-  },
+    {
+      "name": "thk_medium_gap_internal_EM",
+      "expression": "0 [mm]",
+      "description": ""
+    },
 
-  {
-    "name": "r_cuff_in_pre_EM",
-    "expression": "1.651 [mm]",
-    "description": ""
-  },
+    {
+      "name": "r_cuff_in_pre_EM",
+      "expression": "1.651 [mm]",
+      "description": ""
+    },
 
-  {
-    "name": "thk_cuff_EM",
-    "expression": "1 [mm]",
-    "description": ""
-  },
+    {
+      "name": "thk_cuff_EM",
+      "expression": "1 [mm]",
+      "description": ""
+    },
 
-  {
-    "name": "L_elec_EM",
-    "expression": "1.397 [mm]",
-    "description": ""
-  },
+    {
+      "name": "L_elec_EM",
+      "expression": "1.397 [mm]",
+      "description": ""
+    },
 
-  {
-    "name": "arc_ext_EM",
-    "expression": "0.5 [mm]",
-    "description": ""
-  },
+    {
+      "name": "arc_ext_EM",
+      "expression": "0.5 [mm]",
+      "description": ""
+    },
 
-  {
-    "name": "theta_contact_pre_EM",
-    "expression": "256.4287 [deg]",
-    "description": ""
-  },
+    {
+      "name": "theta_contact_pre_EM",
+      "expression": "256.4287 [deg]",
+      "description": ""
+    },
 
-  {
-    "name": "Theta_contact_EM",
-    "expression": "theta_contact_pre_EM*(r_cuff_in_pre_EM/R_in_EM)",
-    "description": ""
-  },
+    {
+      "name": "Theta_contact_EM",
+      "expression": "theta_contact_pre_EM*(r_cuff_in_pre_EM/R_in_EM)",
+      "description": ""
+    },
 
-  {
-    "name": "z_nerve_EM",
-    "expression": "20 [mm]",
-    "description": ""
-  },
+    {
+      "name": "z_nerve_EM",
+      "expression": "20 [mm]",
+      "description": ""
+    },
 
-  {
-    "name": "Thk_elec_EM",
-    "expression": "0.1 [mm]",
-    "description": ""
-  },
+    {
+      "name": "Thk_elec_EM",
+      "expression": "0.1 [mm]",
+      "description": ""
+    },
 
-  {
-    "name": "Recess_EM",
-    "expression": "0 [mm]",
-    "description": ""
-  }
-]
+    {
+      "name": "Recess_EM",
+      "expression": "0 [mm]",
+      "description": ""
+    }
+  ]
+}
