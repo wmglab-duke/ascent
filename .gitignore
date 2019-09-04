@@ -136,4 +136,4 @@ data/samples
 *system.json
 *.mph*
 *.class*
-.out
+out/
