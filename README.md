@@ -36,19 +36,20 @@ and fiber information (metadata and coordinates for extracting electric potentia
     
 
 ## Python Dependencies (non-builtin)
-- numpy
-- Pillow
-- cv2 (opencv-python)
-- matplotlib
-- shapely
-- pyclipper
-- pymunk
-- pygame
-- shutil
-- json
+- `numpy`
+- `Pillow`
+- `cv2` (opencv-python)
+- `matplotlib`
+- `shapely`
+- `pyclipper`
+- `pymunk`
+- `pygame`
+- `shutil`
+- `json`
 
-## Java 12.0.2 Dependencies
-- Maven: com.googlecode.json-simple:json-simple:1.1
+## Java 12.0.2 Dependencies (figure out streamlining?)
+- Maven: `com.googlecode.json-simple:json-simple:1.1`
+- must add to CLASSPATH: `<path-to-comsol>/COMSOL54/Multiphysics/plugins/`
 
 ## Setup
 IN COMSOL: Preferences -> Security -> Methods and Java Libraries -> File System Access -> All Files

@@ -1,10 +1,7 @@
-/*
- * Sandbox.java
- */
+package model;
 
-import com.comsol.model.*;
-import com.comsol.model.util.*;
-import org.json.*;
+import com.comsol.model.Model;
+import com.comsol.model.util.ModelUtil;
 
 /** Model exported on Aug 31 2019, 13:18 by COMSOL 5.4.0.388. */
 public class Sandbox {
