@@ -1,13 +1,12 @@
 /*
- * Sandbox2.java
+ * SandboxwMtl.java
  */
 
 import com.comsol.model.*;
 import com.comsol.model.util.*;
-import JSONReader;
 
-/** Model exported on Sep 5 2019, 09:20 by COMSOL 5.4.0.388. */
-public class Sandbox2 {
+/** Model exported on Aug 31 2019, 20:32 by COMSOL 5.4.0.388. */
+public class SandboxwMtl {
 
   public static Model run() {
     Model model = ModelUtil.create("Model");
@@ -15,14 +14,6 @@ public class Sandbox2 {
     model.modelPath("D:\\Documents\\ModularCuffs");
 
     model.label("UNI_TUBECUFF.mph");
-
-    //JSONreader reader = new JSONReader("../../.templates/CorTec.json")
-    //JSONObject data = reader.getData();
-
-    for (Object item: (JSONArray) data.get("data")) {
-      JSONObject itemObject = (JSONObject) item;
-      model.param().set(itemObject.get("name"), itemObject.get("expression"), itemObject.get("description"));
-    }
 
     model.param().set("N_holes_EM", "0");
     model.param().set("Theta_EM", "Theta_contact_EM+((2*(360*arc_ext_EM)/(2*pi*R_in_EM)) [deg])");
@@ -1286,8 +1277,6 @@ public class Sandbox2 {
 
     model.study().create("std1");
     model.study("std1").create("stat", "Stationary");
-
-    model.label("UNI_TUBECUFF.mph");
 
     return model;
   }
