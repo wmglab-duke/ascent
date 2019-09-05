@@ -1,10 +1,9 @@
-/*
+package model;/*
  * Sandbox2.java
  */
 
-import com.comsol.model.*;
-import com.comsol.model.util.*;
-import JSONReader;
+import com.comsol.model.Model;
+import com.comsol.model.util.ModelUtil;
 
 /** Model exported on Sep 5 2019, 09:20 by COMSOL 5.4.0.388. */
 public class Sandbox2 {
@@ -19,10 +18,10 @@ public class Sandbox2 {
     //JSONreader reader = new JSONReader("../../.templates/CorTec.json")
     //JSONObject data = reader.getData();
 
-    for (Object item: (JSONArray) data.get("data")) {
-      JSONObject itemObject = (JSONObject) item;
-      model.param().set(itemObject.get("name"), itemObject.get("expression"), itemObject.get("description"));
-    }
+    //for (Object item: (JSONArray) data.get("data")) {
+      //JSONObject itemObject = (JSONObject) item;
+      //model.param().set(itemObject.get("name"), itemObject.get("expression"), itemObject.get("description"));
+    //}
 
     model.param().set("N_holes_EM", "0");
     model.param().set("Theta_EM", "Theta_contact_EM+((2*(360*arc_ext_EM)/(2*pi*R_in_EM)) [deg])");
