@@ -121,8 +121,7 @@ class Runner(Exceptionable, Configurable):
             os.system('{}/bin/comsol batch -inputfile {}/{}.class'.format(comsol_path,
                                                                           cwd,
                                                                           file_name_no_ext))
-
-        else:  # sys.platform would be 'win32' or 'win64'
+        else: # assume to be 'win64'
 
             compile_string = '\"{}\\bin\\win64\\comsolcompile\" \"{}\\{}.java\"'.format(comsol_path,
                                                                                         cwd,

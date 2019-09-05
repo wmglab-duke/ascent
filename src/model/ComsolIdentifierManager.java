@@ -3,11 +3,11 @@ package model;
 import java.util.HashMap;
 import java.util.Map;
 
-class IdentifierManager {
+public class ComsolIdentifierManager {
 
     private Map<String, Integer> identifiers;
 
-    public IdentifierManager() {
+    public ComsolIdentifierManager() {
         identifiers = new HashMap<String, Integer>();
 
     }
@@ -26,5 +26,9 @@ class IdentifierManager {
 
         // return String version (i.e. "keyN")
         return key + Integer.toString(nextIndex);
+    }
+
+    public static void main(String[] args) {
+
     }
 }

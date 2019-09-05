@@ -6,8 +6,8 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="plugins" level="project" />
     <orderEntry type="library" name="org.json:json:20190722" level="project" />
+    <orderEntry type="library" name="plugins" level="project" />
   </component>
   <component name="TestRunnerService">
     <option name="projectConfiguration" value="Twisted Trial" />
