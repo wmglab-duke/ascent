@@ -43,6 +43,7 @@
     <property name="aspect.path.notification.shown" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
+<<<<<<< HEAD
     <property name="node.js.detected.package.jscs" value="true" />
     <property name="node.js.detected.package.standard" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
@@ -55,6 +56,17 @@
     <property name="node.js.selected.package.standard" value="" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="project.structure.last.edited" value="Libraries" />
+=======
+    <property name="node.js.detected.package.standard" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.standard" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.standard" value="" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="project.structure.last.edited" value="Modules" />
+>>>>>>> b05b6392a5af4fb5daf658f5e42b0d3ae8bd5627
     <property name="project.structure.proportion" value="0.23125" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="run.code.analysis.last.selected.profile" value="aDefault" />
@@ -72,7 +84,11 @@
       </list>
     </option>
   </component>
+<<<<<<< HEAD
   <component name="RunManager" selected="Application.Sandbox">
+=======
+  <component name="RunManager" selected="Application.JSONReader">
+>>>>>>> b05b6392a5af4fb5daf658f5e42b0d3ae8bd5627
     <configuration name="JSONReader" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="model.JSONReader" />
       <module name="access" />
@@ -86,8 +102,13 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+<<<<<<< HEAD
     <configuration name="Sandbox" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="model.Sandbox" />
+=======
+    <configuration name="Sandbox2" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="model.Sandbox2" />
+>>>>>>> b05b6392a5af4fb5daf658f5e42b0d3ae8bd5627
       <module name="access" />
       <extension name="coverage">
         <pattern>
@@ -129,8 +150,15 @@
       <workItem from="1567630047855" duration="274000" />
       <workItem from="1567633443274" duration="20000" />
       <workItem from="1567654915964" duration="24000" />
+<<<<<<< HEAD
       <workItem from="1567709040184" duration="5989000" />
       <workItem from="1567716672488" duration="2715000" />
+=======
+      <workItem from="1567709040184" duration="1469000" />
+      <workItem from="1567711853813" duration="518000" />
+      <workItem from="1567712648924" duration="40000" />
+      <workItem from="1567713404370" duration="3964000" />
+>>>>>>> b05b6392a5af4fb5daf658f5e42b0d3ae8bd5627
     </task>
     <servers />
   </component>
