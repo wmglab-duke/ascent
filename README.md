@@ -35,7 +35,7 @@ and fiber information (metadata and coordinates for extracting electric potentia
     * Batching files from command line - save geom and mesh and resolve for different frequencies: https://www.comsol.com/blogs/how-to-run-simulations-in-batch-mode-from-the-command-line/
     
 
-## Python Dependencies (non-builtin)
+## Python 3.7 Dependencies (non-builtin)
 - `numpy`
 - `Pillow`
 - `cv2` (opencv-python)
