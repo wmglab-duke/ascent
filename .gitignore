@@ -127,7 +127,7 @@ dmypy.json
 
 ######### START JAKE ADDITIONS
 # PyCharm specific
-.idea/
+#.idea/
 
 # don't include data b/c this may get pretty big at some point
 data/samples
