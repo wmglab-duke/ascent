@@ -1,5 +1,5 @@
-/*
- * SandboxwMtl.java
+package core;/*
+ * core.SandboxwMtl.java
  */
 
 import com.comsol.model.*;
