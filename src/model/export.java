@@ -1,200 +1,174 @@
 /*
- * Sandbox2.java
+ * export.java
  */
 
-import com.comsol.model.Model;
-import com.comsol.model.util.ModelUtil;
-//import model.ComsolIdentifierManager;
-//import model.JSONReader;
-//import org.json.JSONArray;
-//import org.json.JSONObject;
+import com.comsol.model.*;
+import com.comsol.model.util.*;
 
-// comsolbatch -inputfile Model1.mph -outputfile Model1_solved.mph
-/** Model exported on Sep 5 2019, 09:20 by COMSOL 5.4.0.388. */
-public class Sandbox2 {
+/** Model exported on Sep 6 2019, 17:36 by COMSOL 5.4.0.388. */
+public class export {
 
   public static Model run() {
-
-
     Model model = ModelUtil.create("Model");
-    ModelUtil.showProgress(false);
 
     model.modelPath("D:\\Documents\\ModularCuffs");
+
     model.label("UNI_TUBECUFF.mph");
 
-//    ComsolIdentifierManager cim = new ComsolIdentifierManager();
-//    String[] files = {"CorTec.json", "Enteromedics.json", "ImThera.json", "Madison.json", "Purdue.json"};
-//
-//    for (String file: files) {
-//      String par = cim.next("par");
-//
-//      JSONObject data = new JSONReader("../../.templates/" + file).getData();
-//
-//      for (Object item: (JSONArray) data.get("data")) {
-//        JSONObject itemObject = (JSONObject) item;
-//        model.param(par).set(
-//                (String) itemObject.get("name"),
-//                (String) itemObject.get("expression"),
-//                (String) itemObject.get("description")
-//        );
-//      }
-//    }
-
-//
-//    model.param().set("N_holes_EM", "0");
-//    model.param().set("Theta_EM", "Theta_contact_EM+((2*(360*arc_ext_EM)/(2*pi*R_in_EM)) [deg])");
-//    model.param().set("Center_EM", "10 [mm]");
-//    model.param().set("R_in_EM", "max(r_nerve_EM+thk_medium_gap_internal_EM,r_cuff_in_pre_EM)");
-//    model.param().set("R_out_EM", "R_in_EM+thk_cuff_EM");
-//    model.param().set("L_EM", "3*L_elec_EM");
-//    model.param().set("Rot_def_EM", "-(360*arc_ext_EM)/(2*pi*R_in_EM)");
-//    model.param().set("D_hole_EM", "NaN");
-//    model.param().set("Buffer_hole_EM", "NaN");
-//    model.param().set("L_holecenter_cuffseam_EM", "NaN");
-//    model.param().set("Pitch_holecenter_holecenter_EM", "NaN");
-//    model.param().set("r_nerve_EM", "1.3 [mm]");
-//    model.param().set("thk_medium_gap_internal_EM", "0 [mm]");
-//    model.param().set("r_cuff_in_pre_EM", "1.651 [mm]");
-//    model.param().set("thk_cuff_EM", "1 [mm]");
-//    model.param().set("L_elec_EM", "1.397 [mm]");
-//    model.param().set("arc_ext_EM", "0.5 [mm]");
-//    model.param().set("theta_contact_pre_EM", "256.4287 [deg]");
-//    model.param().set("Theta_contact_EM", "theta_contact_pre_EM*(r_cuff_in_pre_EM/R_in_EM)");
-//    model.param().set("z_nerve_EM", "20 [mm]");
-//    model.param().set("Thk_elec_EM", "0.1 [mm]");
-//    model.param().set("Recess_EM", "0 [mm]");
-//    model.param().group().create("par2");
-//    model.param("par2").set("N_holes_M", "0");
-//    model.param("par2").set("Theta_M", "percent_circ_cuff_M*360 [deg]");
-//    model.param("par2").set("Center_M", "2*10 [mm]");
-//    model.param("par2").set("R_in_M", "max(r_nerve_M+thk_medium_gap_internal_M,r_cuff_in_pre_M)");
-//    model.param("par2").set("R_out_M", "R_in_M+thk_cuff_M");
-//    model.param("par2").set("L_M", "10 [mm]");
-//    model.param("par2").set("Rot_def_M", "0");
-//    model.param("par2").set("D_hole_M", "NaN");
-//    model.param("par2").set("Buffer_hole_M", "NaN");
-//    model.param("par2").set("L_holecenter_cuffseam_M", "NaN");
-//    model.param("par2").set("Pitch_holecenter_holecenter_M", "NaN");
-//    model.param("par2").set("percent_circ_cuff_M", "percent_circ_cuff_pre_M*(r_cuff_in_pre_M/R_in_M)");
-//    model.param("par2").set("percent_circ_cuff_pre_M", "1");
-//    model.param("par2").set("z_nerve_M", "20 [mm]");
-//    model.param("par2").set("r_cuff_in_pre_M", "1.5 [mm]");
-//    model.param("par2").set("r_nerve_M", "1.6 [mm]");
-//    model.param("par2").set("thk_medium_gap_internal_M", "0");
-//    model.param("par2").set("thk_cuff_M", "1 [mm]");
-//    model.param("par2").set("Recess_M", "0 [mm]");
-//    model.param("par2").set("Thk_elec_M", "0.05 [mm]");
-//    model.param("par2").set("L_elec_M", "1 [mm]");
-//    model.param("par2").set("Theta_contact_M", "360*(w_elec_M/(pi*2*(R_in_M+Recess_M))) [deg]");
-//    model.param("par2").set("w_elec_M", "1 [mm]");
-//    model.param("par2").set("Rot_def_contact_M", "(Theta_M/2)-(Theta_contact_M/2)");
-//    model.param().group().create("par3");
-//    model.param("par3").set("N_holes_CT", "0");
-//    model.param("par3").set("Theta_CT", "percent_circ_cuff_CT*360 [deg]");
-//    model.param("par3").set("Center_CT", "3*10 [mm]");
-//    model.param("par3").set("R_in_CT", "max(r_nerve_CT+thk_medium_gap_internal_CT,r_cuff_in_pre_CT)");
-//    model.param("par3").set("R_out_CT", "R_in_CT+thk_cuff_CT");
-//    model.param("par3").set("L_CT", "2 [mm]");
-//    model.param("par3").set("Rot_def_CT", "-(theta_cuff_CT-theta_contact_CT)/2");
-//    model.param("par3").set("D_hole_CT", "NaN");
-//    model.param("par3").set("Buffer_hole_CT", "NaN");
-//    model.param("par3").set("L_holecenter_cuffseam_CT", "NaN");
-//    model.param("par3").set("Pitch_holecenter_holecenter_CT", "NaN");
-//    model.param("par3").set("percent_circ_cuff_CT", "percent_circ_cuff_pre_CT*(r_cuff_in_pre_CT/R_in_CT)");
-//    model.param("par3").set("r_nerve_CT", "160 [um]");
-//    model.param("par3").set("z_nerve_CT", "20 [mm]");
-//    model.param("par3").set("thk_medium_gap_internal_CT", "0");
-//    model.param("par3").set("r_cuff_in_pre_CT", "150 [um]");
-//    model.param("par3").set("thk_cuff_CT", "0.65 [mm]");
-//    model.param("par3").set("theta_cuff_CT", "percent_circ_cuff_CT*360 [deg]");
-//    model.param("par3").set("theta_contact_CT", "360*(B_CT/(2*pi*(R_in_CT+recess_CT))) [deg]");
-//    model.param("par3").set("percent_circ_cuff_pre_CT", "1");
-//    model.param("par3").set("B_CT", "0.6 [mm]");
-//    model.param("par3").set("recess_CT", "0");
-//    model.param("par3").set("Thk_elec_CT", "0.025 [mm]");
-//    model.param("par3").set("L_elec_CT", "0.3 [mm]");
-//    model.param("par3").set("Recess_CT", "0 [mm]");
-//    model.param("par3").set("Theta_contact_CT", "360*(B_CT/(2*pi*(R_in_CT+Recess_CT))) [deg]");
-//    model.param("par3").set("Rot_def_contact_CT", "0");
-//    model.param("par3").set("Pitch_CT", "1.5 [mm]");
-//    model.param().group().create("par4");
-//    model.param("par4").set("N_holes_P", "0");
-//    model.param("par4").set("Theta_P", "percent_circ_cuff_P*360 [deg]");
-//    model.param("par4").set("Center_P", "4*10 [mm]");
-//    model.param("par4")
-//         .set("R_in_P", "max(r_nerve_P+thk_medium_gap_internal_P+2*r_conductor_P+sep_conductor_P,r_cuff_in_pre_P)");
-//    model.param("par4").set("R_out_P", "R_in_P+thk_cuff_P");
-//    model.param("par4").set("L_P", "3.5 [mm]");
-//    model.param("par4").set("Rot_def_P", "-((theta_cuff_P-theta_conductor_P)/2)");
-//    model.param("par4").set("D_hole_P", "NaN");
-//    model.param("par4").set("Buffer_hole_P", "NaN");
-//    model.param("par4").set("L_holecenter_cuffseam_P", "NaN");
-//    model.param("par4").set("Pitch_holecenter_holecenter_P", "NaN");
-//    model.param("par4").set("z_nerve_P", "20 [mm]");
-//    model.param("par4").set("percent_circ_cuff_P", "percent_circ_cuff_pre_P*(r_cuff_in_pre_P/R_in_P)");
-//    model.param("par4").set("percent_circ_cuff_pre_P", "1");
-//    model.param("par4").set("r_cuff_in_pre_P", "317.5 [um]");
-//    model.param("par4").set("r_nerve_P", "300 [um]");
-//    model.param("par4").set("thk_medium_gap_internal_P", "0");
-//    model.param("par4").set("r_conductor_P", "37.5 [um]");
-//    model.param("par4").set("sep_conductor_P", "10 [um]");
-//    model.param("par4").set("thk_cuff_P", "0.279 [mm]");
-//    model.param("par4").set("theta_cuff_P", "percent_circ_cuff_P*360 [deg]");
-//    model.param("par4").set("theta_conductor_P", "percent_circ_conductor_P*360 [deg]");
-//    model.param("par4").set("percent_circ_conductor_pre_P", "0.8");
-//    model.param("par4")
-//         .set("percent_circ_conductor_P", "percent_circ_conductor_pre_P*((r_cuff_in_pre_P-sep_conductor_P-2*r_conductor_P)/(R_in_P-sep_conductor_P-2*r_conductor_P))");
-//    model.param("par4").set("Pitch_P", "1.5 [mm]");
-//    model.param().group().create("par5");
-//    model.param().group().create("par6");
-//    model.param("par6").set("N_holes_ITI", "1");
-//    model.param("par6").set("Theta_ITI", "theta_cuff_pre_ITI*(r_cuff_in_pre_ITI/R_in_ITI)");
-//    model.param("par6").set("Center_IT", "5*10 [mm]");
-//    model.param("par6").set("R_in_ITI", "max(r_nerve_IT+thk_medium_gap_internal_IT,r_cuff_in_pre_ITI)");
-//    model.param("par6").set("R_out_ITI", "R_in_ITI+thk_cuff_ITI");
-//    model.param("par6").set("L_IT", "0.354 [inch]");
-//    model.param("par6").set("Rot_def_ITI", "0");
-//    model.param("par6").set("D_hole_ITI", "0.02 [inch]");
-//    model.param("par6").set("Buffer_hole_ITI", "150 [um]");
-//    model.param("par6").set("L_holecenter_cuffseam_ITI", "0.03 [inch]");
-//    model.param("par6").set("N_holes_ITF", "2");
-//    model.param("par6")
-//         .set("Theta_ITF", "theta_cuff_pre_ITF*((r_cuff_in_pre_ITF+thk_cuff_ITI+thk_gap_cuff_furl_IT)/(R_in_ITI+thk_cuff_ITI+thk_gap_cuff_furl_IT))");
-//    model.param("par6").set("R_in_ITF", "R_in_ITI+thk_cuff_ITI+thk_gap_cuff_furl_IT");
-//    model.param("par6").set("R_out_ITF", "R_in_ITI+thk_cuff_ITI+thk_gap_cuff_furl_IT+thk_furl_ITF");
-//    model.param("par6").set("Rot_def_ITF", "-((2*pi-Theta_ITI)/2)-(Theta_ITF/2)");
-//    model.param("par6").set("D_hole_ITF", "0.02 [inch]");
-//    model.param("par6").set("Buffer_hole_ITF", "Buffer_hole_ITI");
-//    model.param("par6").set("L_holecenter_cuffseam_ITF", "(pi*2*R_in_ITF)*(Theta_ITF/(2*pi))-0.03 [inch]");
-//    model.param("par6").set("theta_cuff_pre_ITI", "360 [deg]");
-//    model.param("par6").set("r_cuff_in_pre_ITI", "(0.118/2) [inch]");
-//    model.param("par6").set("z_nerve_IT", "20 [mm]");
-//    model.param("par6").set("r_nerve_IT", "1.7 [mm]");
-//    model.param("par6").set("thk_medium_gap_internal_IT", "0");
-//    model.param("par6").set("thk_cuff_ITI", "r_cuff_out_pre_ITI-r_cuff_in_pre_ITI");
-//    model.param("par6").set("r_cuff_out_pre_ITI", "(0.178/2) [inch]");
-//    model.param("par6").set("Pitch_holecenter_holecenter_ITI", "0");
-//    model.param("par6").set("theta_cuff_pre_ITF", "250 [deg]");
-//    model.param("par6").set("r_cuff_in_pre_ITF", "(0.178/2) [inch]");
-//    model.param("par6").set("thk_gap_cuff_furl_IT", "0");
-//    model.param("par6").set("thk_furl_ITF", "r_furl_out_pre_ITF-r_furl_in_pre_ITF");
-//    model.param("par6").set("r_furl_out_pre_ITF", "(0.218/2) [inch]");
-//    model.param("par6").set("r_furl_in_pre_ITF", "(0.178/2) [inch]");
-//    model.param("par6").set("Pitch_holecenter_holecenter_ITF", "L_IT-2*0.077 [inch]");
-//    model.param("par6").set("diam_contact_ITC", "2 [mm]");
-//    model.param("par6")
-//         .set("a_ellipse_contact_ITC", "0.5*(R_in_ITI+Recess_ITC)*sin((diam_contact_ITC)/(R_in_ITI+Recess_ITC))");
-//    model.param("par6").set("Recess_ITC", "0.1 [mm]");
-//    model.param("par6").set("Round_def_ITC", "1");
-//    model.param("par6").set("Contact_depth_ITC", "0.05 [mm]");
-//    model.param("par6").set("Overshoot_ITC", "0.05 [mm]");
-//    model.param("par6").set("length_contactcenter_contactcenter_ITC", "0.108 [inch]");
-//    model.param("par6")
-//         .set("ang_cuffseam_contactcenter_ITC", "ang_cuffseam_contactcenter_pre_ITC*(r_cuff_in_pre_ITI/R_in_ITI)");
-//    model.param("par6").set("ang_cuffseam_contactcenter_pre_ITC", "53 [deg]");
-//    model.param("par6")
-//         .set("ang_contactcenter_contactcenter_ITC", "ang_contactcenter_contactcenter_pre_ITC*(r_cuff_in_pre_ITI/R_in_ITI)");
-//    model.param("par6").set("ang_contactcenter_contactcenter_pre_ITC", "51 [deg]");
+    model.param().set("N_holes_EM", "0");
+    model.param().set("Theta_EM", "Theta_contact_EM+((2*(360*arc_ext_EM)/(2*pi*R_in_EM)) [deg])");
+    model.param().set("Center_EM", "10 [mm]");
+    model.param().set("R_in_EM", "max(r_nerve_EM+thk_medium_gap_internal_EM,r_cuff_in_pre_EM)");
+    model.param().set("R_out_EM", "R_in_EM+thk_cuff_EM");
+    model.param().set("L_EM", "3*L_elec_EM");
+    model.param().set("Rot_def_EM", "-(360*arc_ext_EM)/(2*pi*R_in_EM)");
+    model.param().set("D_hole_EM", "NaN");
+    model.param().set("Buffer_hole_EM", "NaN");
+    model.param().set("L_holecenter_cuffseam_EM", "NaN");
+    model.param().set("Pitch_holecenter_holecenter_EM", "NaN");
+    model.param().set("r_nerve_EM", "1.3 [mm]");
+    model.param().set("thk_medium_gap_internal_EM", "0 [mm]");
+    model.param().set("r_cuff_in_pre_EM", "1.651 [mm]");
+    model.param().set("thk_cuff_EM", "1 [mm]");
+    model.param().set("L_elec_EM", "1.397 [mm]");
+    model.param().set("arc_ext_EM", "0.5 [mm]");
+    model.param().set("theta_contact_pre_EM", "256.4287 [deg]");
+    model.param().set("Theta_contact_EM", "theta_contact_pre_EM*(r_cuff_in_pre_EM/R_in_EM)");
+    model.param().set("z_nerve_EM", "20 [mm]");
+    model.param().set("Thk_elec_EM", "0.1 [mm]");
+    model.param().set("Recess_EM", "0 [mm]");
+    model.param().group().create("par2");
+    model.param("par2").set("N_holes_M", "0");
+    model.param("par2").set("Theta_M", "percent_circ_cuff_M*360 [deg]");
+    model.param("par2").set("Center_M", "2*10 [mm]");
+    model.param("par2").set("R_in_M", "max(r_nerve_M+thk_medium_gap_internal_M,r_cuff_in_pre_M)");
+    model.param("par2").set("R_out_M", "R_in_M+thk_cuff_M");
+    model.param("par2").set("L_M", "10 [mm]");
+    model.param("par2").set("Rot_def_M", "0");
+    model.param("par2").set("D_hole_M", "NaN");
+    model.param("par2").set("Buffer_hole_M", "NaN");
+    model.param("par2").set("L_holecenter_cuffseam_M", "NaN");
+    model.param("par2").set("Pitch_holecenter_holecenter_M", "NaN");
+    model.param("par2").set("percent_circ_cuff_M", "percent_circ_cuff_pre_M*(r_cuff_in_pre_M/R_in_M)");
+    model.param("par2").set("percent_circ_cuff_pre_M", "1");
+    model.param("par2").set("z_nerve_M", "20 [mm]");
+    model.param("par2").set("r_cuff_in_pre_M", "1.5 [mm]");
+    model.param("par2").set("r_nerve_M", "1.6 [mm]");
+    model.param("par2").set("thk_medium_gap_internal_M", "0");
+    model.param("par2").set("thk_cuff_M", "1 [mm]");
+    model.param("par2").set("Recess_M", "0 [mm]");
+    model.param("par2").set("Thk_elec_M", "0.05 [mm]");
+    model.param("par2").set("L_elec_M", "1 [mm]");
+    model.param("par2").set("Theta_contact_M", "360*(w_elec_M/(pi*2*(R_in_M+Recess_M))) [deg]");
+    model.param("par2").set("w_elec_M", "1 [mm]");
+    model.param("par2").set("Rot_def_contact_M", "(Theta_M/2)-(Theta_contact_M/2)");
+    model.param().group().create("par3");
+    model.param("par3").set("N_holes_CT", "0");
+    model.param("par3").set("Theta_CT", "percent_circ_cuff_CT*360 [deg]");
+    model.param("par3").set("Center_CT", "3*10 [mm]");
+    model.param("par3").set("R_in_CT", "max(r_nerve_CT+thk_medium_gap_internal_CT,r_cuff_in_pre_CT)");
+    model.param("par3").set("R_out_CT", "R_in_CT+thk_cuff_CT");
+    model.param("par3").set("L_CT", "2 [mm]");
+    model.param("par3").set("Rot_def_CT", "-(theta_cuff_CT-theta_contact_CT)/2");
+    model.param("par3").set("D_hole_CT", "NaN");
+    model.param("par3").set("Buffer_hole_CT", "NaN");
+    model.param("par3").set("L_holecenter_cuffseam_CT", "NaN");
+    model.param("par3").set("Pitch_holecenter_holecenter_CT", "NaN");
+    model.param("par3").set("percent_circ_cuff_CT", "percent_circ_cuff_pre_CT*(r_cuff_in_pre_CT/R_in_CT)");
+    model.param("par3").set("r_nerve_CT", "160 [um]");
+    model.param("par3").set("z_nerve_CT", "20 [mm]");
+    model.param("par3").set("thk_medium_gap_internal_CT", "0");
+    model.param("par3").set("r_cuff_in_pre_CT", "150 [um]");
+    model.param("par3").set("thk_cuff_CT", "0.65 [mm]");
+    model.param("par3").set("theta_cuff_CT", "percent_circ_cuff_CT*360 [deg]");
+    model.param("par3").set("theta_contact_CT", "360*(B_CT/(2*pi*(R_in_CT+recess_CT))) [deg]");
+    model.param("par3").set("percent_circ_cuff_pre_CT", "1");
+    model.param("par3").set("B_CT", "0.6 [mm]");
+    model.param("par3").set("recess_CT", "0");
+    model.param("par3").set("Thk_elec_CT", "0.025 [mm]");
+    model.param("par3").set("L_elec_CT", "0.3 [mm]");
+    model.param("par3").set("Recess_CT", "0 [mm]");
+    model.param("par3").set("Theta_contact_CT", "360*(B_CT/(2*pi*(R_in_CT+Recess_CT))) [deg]");
+    model.param("par3").set("Rot_def_contact_CT", "0");
+    model.param("par3").set("Pitch_CT", "1.5 [mm]");
+    model.param().group().create("par4");
+    model.param("par4").set("N_holes_P", "0");
+    model.param("par4").set("Theta_P", "percent_circ_cuff_P*360 [deg]");
+    model.param("par4").set("Center_P", "4*10 [mm]");
+    model.param("par4")
+         .set("R_in_P", "max(r_nerve_P+thk_medium_gap_internal_P+2*r_conductor_P+sep_conductor_P,r_cuff_in_pre_P)");
+    model.param("par4").set("R_out_P", "R_in_P+thk_cuff_P");
+    model.param("par4").set("L_P", "3.5 [mm]");
+    model.param("par4").set("Rot_def_P", "-((theta_cuff_P-theta_conductor_P)/2)");
+    model.param("par4").set("D_hole_P", "NaN");
+    model.param("par4").set("Buffer_hole_P", "NaN");
+    model.param("par4").set("L_holecenter_cuffseam_P", "NaN");
+    model.param("par4").set("Pitch_holecenter_holecenter_P", "NaN");
+    model.param("par4").set("z_nerve_P", "20 [mm]");
+    model.param("par4").set("percent_circ_cuff_P", "percent_circ_cuff_pre_P*(r_cuff_in_pre_P/R_in_P)");
+    model.param("par4").set("percent_circ_cuff_pre_P", "1");
+    model.param("par4").set("r_cuff_in_pre_P", "317.5 [um]");
+    model.param("par4").set("r_nerve_P", "300 [um]");
+    model.param("par4").set("thk_medium_gap_internal_P", "0");
+    model.param("par4").set("r_conductor_P", "37.5 [um]");
+    model.param("par4").set("sep_conductor_P", "10 [um]");
+    model.param("par4").set("thk_cuff_P", "0.279 [mm]");
+    model.param("par4").set("theta_cuff_P", "percent_circ_cuff_P*360 [deg]");
+    model.param("par4").set("theta_conductor_P", "percent_circ_conductor_P*360 [deg]");
+    model.param("par4").set("percent_circ_conductor_pre_P", "0.8");
+    model.param("par4")
+         .set("percent_circ_conductor_P", "percent_circ_conductor_pre_P*((r_cuff_in_pre_P-sep_conductor_P-2*r_conductor_P)/(R_in_P-sep_conductor_P-2*r_conductor_P))");
+    model.param("par4").set("Pitch_P", "1.5 [mm]");
+    model.param().group().create("par5");
+    model.param().group().create("par6");
+    model.param("par6").set("N_holes_ITI", "1");
+    model.param("par6").set("Theta_ITI", "theta_cuff_pre_ITI*(r_cuff_in_pre_ITI/R_in_ITI)");
+    model.param("par6").set("Center_IT", "5*10 [mm]");
+    model.param("par6").set("R_in_ITI", "max(r_nerve_IT+thk_medium_gap_internal_IT,r_cuff_in_pre_ITI)");
+    model.param("par6").set("R_out_ITI", "R_in_ITI+thk_cuff_ITI");
+    model.param("par6").set("L_IT", "0.354 [inch]");
+    model.param("par6").set("Rot_def_ITI", "0");
+    model.param("par6").set("D_hole_ITI", "0.02 [inch]");
+    model.param("par6").set("Buffer_hole_ITI", "150 [um]");
+    model.param("par6").set("L_holecenter_cuffseam_ITI", "0.03 [inch]");
+    model.param("par6").set("N_holes_ITF", "2");
+    model.param("par6")
+         .set("Theta_ITF", "theta_cuff_pre_ITF*((r_cuff_in_pre_ITF+thk_cuff_ITI+thk_gap_cuff_furl_IT)/(R_in_ITI+thk_cuff_ITI+thk_gap_cuff_furl_IT))");
+    model.param("par6").set("R_in_ITF", "R_in_ITI+thk_cuff_ITI+thk_gap_cuff_furl_IT");
+    model.param("par6").set("R_out_ITF", "R_in_ITI+thk_cuff_ITI+thk_gap_cuff_furl_IT+thk_furl_ITF");
+    model.param("par6").set("Rot_def_ITF", "-((2*pi-Theta_ITI)/2)-(Theta_ITF/2)");
+    model.param("par6").set("D_hole_ITF", "0.02 [inch]");
+    model.param("par6").set("Buffer_hole_ITF", "Buffer_hole_ITI");
+    model.param("par6").set("L_holecenter_cuffseam_ITF", "(pi*2*R_in_ITF)*(Theta_ITF/(2*pi))-0.03 [inch]");
+    model.param("par6").set("theta_cuff_pre_ITI", "360 [deg]");
+    model.param("par6").set("r_cuff_in_pre_ITI", "(0.118/2) [inch]");
+    model.param("par6").set("z_nerve_IT", "20 [mm]");
+    model.param("par6").set("r_nerve_IT", "1.7 [mm]");
+    model.param("par6").set("thk_medium_gap_internal_IT", "0");
+    model.param("par6").set("thk_cuff_ITI", "r_cuff_out_pre_ITI-r_cuff_in_pre_ITI");
+    model.param("par6").set("r_cuff_out_pre_ITI", "(0.178/2) [inch]");
+    model.param("par6").set("Pitch_holecenter_holecenter_ITI", "0");
+    model.param("par6").set("theta_cuff_pre_ITF", "250 [deg]");
+    model.param("par6").set("r_cuff_in_pre_ITF", "(0.178/2) [inch]");
+    model.param("par6").set("thk_gap_cuff_furl_IT", "0");
+    model.param("par6").set("thk_furl_ITF", "r_furl_out_pre_ITF-r_furl_in_pre_ITF");
+    model.param("par6").set("r_furl_out_pre_ITF", "(0.218/2) [inch]");
+    model.param("par6").set("r_furl_in_pre_ITF", "(0.178/2) [inch]");
+    model.param("par6").set("Pitch_holecenter_holecenter_ITF", "L_IT-2*0.077 [inch]");
+    model.param("par6").set("diam_contact_ITC", "2 [mm]");
+    model.param("par6")
+         .set("a_ellipse_contact_ITC", "0.5*(R_in_ITI+Recess_ITC)*sin((diam_contact_ITC)/(R_in_ITI+Recess_ITC))");
+    model.param("par6").set("Recess_ITC", "0.1 [mm]");
+    model.param("par6").set("Round_def_ITC", "1");
+    model.param("par6").set("Contact_depth_ITC", "0.05 [mm]");
+    model.param("par6").set("Overshoot_ITC", "0.05 [mm]");
+    model.param("par6").set("length_contactcenter_contactcenter_ITC", "0.108 [inch]");
+    model.param("par6")
+         .set("ang_cuffseam_contactcenter_ITC", "ang_cuffseam_contactcenter_pre_ITC*(r_cuff_in_pre_ITI/R_in_ITI)");
+    model.param("par6").set("ang_cuffseam_contactcenter_pre_ITC", "53 [deg]");
+    model.param("par6")
+         .set("ang_contactcenter_contactcenter_ITC", "ang_contactcenter_contactcenter_pre_ITC*(r_cuff_in_pre_ITI/R_in_ITI)");
+    model.param("par6").set("ang_contactcenter_contactcenter_pre_ITC", "51 [deg]");
     model.param().label("Enteromedics [EM]");
     model.param("par2").label("Madison [M]");
     model.param("par3").label("CorTec300 [CT]");
@@ -459,7 +433,6 @@ public class Sandbox2 {
     model.geom("part3").selection("csel2").label("CONTACT FINAL");
     model.geom("part3").selection().create("csel3", "CumulativeSelection");
     model.geom("part3").selection("csel3").label("SRC");
-
     model.geom("part3").create("wp1", "WorkPlane");
     model.geom("part3").feature("wp1").label("Contact Cross Section");
     model.geom("part3").feature("wp1").set("contributeto", "csel1");
@@ -485,7 +458,6 @@ public class Sandbox2 {
     model.geom("part3").feature("pt1")
          .set("p", new String[]{"(R_in-R_conductor-Sep_conductor)*cos(Theta_conductor/2)", "(R_in-R_conductor-Sep_conductor)*sin(Theta_conductor/2)", "Center"});
     model.geom("part3").run();
-
     model.geom("part4").label("CircleContact_Primitive");
     model.geom("part4").lengthUnit("\u00b5m");
     model.geom("part4").inputParam().set("Recess", "Recess_ITC");
@@ -703,6 +675,7 @@ public class Sandbox2 {
          .setEntry("inputexpr", "Pitch_holecenter_holecenter", "Pitch_holecenter_holecenter_EM");
     model.component("comp1").geom("geom1").feature("pi8").set("selkeepnoncontr", false);
     model.component("comp1").geom("geom1").feature("pi8").setEntry("selkeepdom", "pi8_csel3.dom", "on");
+
     model.component("comp1").geom("geom1").create("pi9", "PartInstance");
     model.component("comp1").geom("geom1").feature("pi9").label("Enteromedics RibbonContact");
     model.component("comp1").geom("geom1").feature("pi9").set("part", "part2");
@@ -716,6 +689,7 @@ public class Sandbox2 {
     model.component("comp1").geom("geom1").feature("pi9").set("selkeepnoncontr", false);
     model.component("comp1").geom("geom1").feature("pi9").setEntry("selkeepdom", "pi9_csel4.dom", "on");
     model.component("comp1").geom("geom1").feature("pi9").setEntry("selkeeppnt", "pi9_csel3.pnt", "on");
+
     model.component("comp1").geom("geom1").create("pi2", "PartInstance");
     model.component("comp1").geom("geom1").feature("pi2").label("Madison Cuff");
     model.component("comp1").geom("geom1").feature("pi2").setEntry("inputexpr", "N_holes", "N_holes_M");
@@ -733,6 +707,7 @@ public class Sandbox2 {
          .setEntry("inputexpr", "Pitch_holecenter_holecenter", "Pitch_holecenter_holecenter_M");
     model.component("comp1").geom("geom1").feature("pi2").set("selkeepnoncontr", false);
     model.component("comp1").geom("geom1").feature("pi2").setEntry("selkeepdom", "pi2_csel3.dom", "on");
+
     model.component("comp1").geom("geom1").create("pi10", "PartInstance");
     model.component("comp1").geom("geom1").feature("pi10").label("Madison RibbonContact");
     model.component("comp1").geom("geom1").feature("pi10").set("part", "part2");
@@ -746,6 +721,7 @@ public class Sandbox2 {
     model.component("comp1").geom("geom1").feature("pi10").set("selkeepnoncontr", false);
     model.component("comp1").geom("geom1").feature("pi10").setEntry("selkeepdom", "pi10_csel4.dom", "on");
     model.component("comp1").geom("geom1").feature("pi10").setEntry("selkeeppnt", "pi10_csel3.pnt", "on");
+
     model.component("comp1").geom("geom1").create("pi3", "PartInstance");
     model.component("comp1").geom("geom1").feature("pi3").label("CorTec300 Cuff");
     model.component("comp1").geom("geom1").feature("pi3").setEntry("inputexpr", "N_holes", "N_holes_CT");
@@ -763,6 +739,7 @@ public class Sandbox2 {
          .setEntry("inputexpr", "Pitch_holecenter_holecenter", "Pitch_holecenter_holecenter_CT");
     model.component("comp1").geom("geom1").feature("pi3").set("selkeepnoncontr", false);
     model.component("comp1").geom("geom1").feature("pi3").setEntry("selkeepdom", "pi3_csel3.dom", "on");
+
     model.component("comp1").geom("geom1").create("pi11", "PartInstance");
     model.component("comp1").geom("geom1").feature("pi11").label("CorTec300 RibbonContact 1");
     model.component("comp1").geom("geom1").feature("pi11").set("part", "part2");
@@ -777,6 +754,7 @@ public class Sandbox2 {
     model.component("comp1").geom("geom1").feature("pi11").set("selkeepnoncontr", false);
     model.component("comp1").geom("geom1").feature("pi11").setEntry("selkeepdom", "pi11_csel4.dom", "on");
     model.component("comp1").geom("geom1").feature("pi11").setEntry("selkeeppnt", "pi11_csel3.pnt", "on");
+
     model.component("comp1").geom("geom1").create("pi12", "PartInstance");
     model.component("comp1").geom("geom1").feature("pi12").label("CorTec300 RibbonContact 2");
     model.component("comp1").geom("geom1").feature("pi12").set("part", "part2");
@@ -791,6 +769,7 @@ public class Sandbox2 {
     model.component("comp1").geom("geom1").feature("pi12").set("selkeepnoncontr", false);
     model.component("comp1").geom("geom1").feature("pi12").setEntry("selkeepdom", "pi12_csel4.dom", "on");
     model.component("comp1").geom("geom1").feature("pi12").setEntry("selkeeppnt", "pi12_csel3.pnt", "on");
+
     model.component("comp1").geom("geom1").create("pi4", "PartInstance");
     model.component("comp1").geom("geom1").feature("pi4").label("Purdue Cuff");
     model.component("comp1").geom("geom1").feature("pi4").setEntry("inputexpr", "N_holes", "N_holes_P");
@@ -808,6 +787,7 @@ public class Sandbox2 {
          .setEntry("inputexpr", "Pitch_holecenter_holecenter", "Pitch_holecenter_holecenter_P");
     model.component("comp1").geom("geom1").feature("pi4").set("selkeepnoncontr", false);
     model.component("comp1").geom("geom1").feature("pi4").setEntry("selkeepdom", "pi4_csel3.dom", "on");
+
     model.component("comp1").geom("geom1").create("pi13", "PartInstance");
     model.component("comp1").geom("geom1").feature("pi13").label("Purdue WireContact 1");
     model.component("comp1").geom("geom1").feature("pi13").set("part", "part3");
@@ -821,6 +801,7 @@ public class Sandbox2 {
     model.component("comp1").geom("geom1").feature("pi13").set("selkeepnoncontr", false);
     model.component("comp1").geom("geom1").feature("pi13").setEntry("selkeepdom", "pi13_csel2.dom", "on");
     model.component("comp1").geom("geom1").feature("pi13").setEntry("selkeeppnt", "pi13_csel3.pnt", "on");
+
     model.component("comp1").geom("geom1").create("pi14", "PartInstance");
     model.component("comp1").geom("geom1").feature("pi14").label("Purdue WireContact 2");
     model.component("comp1").geom("geom1").feature("pi14").set("part", "part3");
@@ -835,6 +816,7 @@ public class Sandbox2 {
     model.component("comp1").geom("geom1").feature("pi14").setEntry("selkeepobj", "pi14_csel2", "on");
     model.component("comp1").geom("geom1").feature("pi14").setEntry("selkeepdom", "pi14_csel2.dom", "on");
     model.component("comp1").geom("geom1").feature("pi14").setEntry("selkeeppnt", "pi14_csel3.pnt", "on");
+
     model.component("comp1").geom("geom1").create("pi5", "PartInstance");
     model.component("comp1").geom("geom1").feature("pi5").label("Pitt (WIP)");
     model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "N_holes", "1");
@@ -886,6 +868,7 @@ public class Sandbox2 {
          .setEntry("inputexpr", "Pitch_holecenter_holecenter", "Pitch_holecenter_holecenter_ITF");
     model.component("comp1").geom("geom1").feature("pi7").set("selkeepnoncontr", false);
     model.component("comp1").geom("geom1").feature("pi7").setEntry("selkeepdom", "pi7_csel3.dom", "on");
+
     model.component("comp1").geom("geom1").create("pi15", "PartInstance");
     model.component("comp1").geom("geom1").feature("pi15").label("ImThera Contact 1");
     model.component("comp1").geom("geom1").feature("pi15").set("part", "part4");
@@ -925,6 +908,7 @@ public class Sandbox2 {
     model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepedg", "pi15_csel14.edg", "off");
     model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeeppnt", "pi15_csel12.pnt", "off");
     model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeeppnt", "pi15_csel13.pnt", "off");
+
     model.component("comp1").geom("geom1").create("pi16", "PartInstance");
     model.component("comp1").geom("geom1").feature("pi16").label("ImThera Contact 2");
     model.component("comp1").geom("geom1").feature("pi16").set("part", "part4");
@@ -1094,7 +1078,7 @@ public class Sandbox2 {
     model.component("comp1").geom("geom1").feature("pi20").setEntry("selkeeppnt", "pi20_csel12.pnt", "off");
     model.component("comp1").geom("geom1").feature("pi20").setEntry("selkeeppnt", "pi20_csel13.pnt", "off");
     model.component("comp1").geom("geom1").run();
-    model.component("comp1").geom("geom1").run("fin");
+    model.component("comp1").geom("geom1").run("pi5");
 
     model.view("view5").tag("view51");
     model.view("view3").tag("view5");
@@ -1309,8 +1293,6 @@ public class Sandbox2 {
 
     model.study().create("std1");
     model.study("std1").create("stat", "Stationary");
-
-    model.label("UNI_TUBECUFF.mph");
 
     return model;
   }

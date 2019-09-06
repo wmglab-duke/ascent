@@ -1,10 +1,10 @@
 <component name="libraryTable">
   <library name="plugins">
     <CLASSES>
-      <root url="file:///Applications/COMSOL54/Multiphysics/plugins" />
+      <root url="file://C:/Program Files/COMSOL/COMSOL54/Multiphysics/plugins" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
-    <jarDirectory url="file:///Applications/COMSOL54/Multiphysics/plugins" recursive="false" />
+    <jarDirectory url="file://C:/Program Files/COMSOL/COMSOL54/Multiphysics/plugins" recursive="false" />
   </library>
 </component>
