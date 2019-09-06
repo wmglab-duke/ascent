@@ -1,0 +1,3 @@
+Automatic-Module-Name: utils
+Export-Package: utils
+Bundle-SymbolicName: utils

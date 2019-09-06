@@ -1145,7 +1145,7 @@ public class Sandbox3 {
 
 
 
-        
+
 
         model.component("comp1").material("matlnk4").selection().named("geom1_pi8_csel3_dom");
         model.component("comp1").material("matlnk5").selection().named("geom1_pi9_csel4_dom");

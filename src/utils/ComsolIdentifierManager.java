@@ -1,4 +1,4 @@
-package model;
+package utils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,7 +8,7 @@ public class ComsolIdentifierManager {
     private Map<String, Integer> identifiers;
 
     public ComsolIdentifierManager() {
-        identifiers = new HashMap<String, Integer>();
+        identifiers = new HashMap<>();
 
     }
 
@@ -25,10 +25,11 @@ public class ComsolIdentifierManager {
         identifiers.put(key, nextIndex);
 
         // return String version (i.e. "keyN")
-        return key + Integer.toString(nextIndex);
+        return key + nextIndex;
     }
 
     public static void main(String[] args) {
-
+        System.out.println("YO");
     }
+
 }

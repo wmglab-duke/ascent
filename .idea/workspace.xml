@@ -5,13 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3a1d8ed9-6972-42b8-b1ad-c0f0ee5ee868" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/access.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/access.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/model/IdentifierManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/model/ComsolIdentifierManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/model/JSONReader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/model/JSONReader.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/model/Sandbox2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/model/Sandbox2.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/runner.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/runner.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -35,11 +29,11 @@
   </component>
   <component name="ProjectId" id="1QBygosM0JkunWKxTo0gtKFW9aW" />
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="Downloaded.Files.Path.Enabled" value="true" />
     <property name="Repository.Attach.Annotations" value="false" />
     <property name="Repository.Attach.JavaDocs" value="false" />
     <property name="Repository.Attach.Sources" value="false" />
-    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="last_opened_file_path" value="C:/Program Files/Git/bin/git.exe" />
@@ -66,6 +60,11 @@
       <recent name="model" />
     </key>
   </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/utils" />
+    </key>
+  </component>
   <component name="RunDashboard">
     <option name="ruleStates">
       <list>
@@ -78,13 +77,13 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Application.Sandbox">
+  <component name="RunManager" selected="Application.Sandbox2">
     <configuration name="JSONReader" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="model.JSONReader" />
+      <option name="MAIN_CLASS_NAME" value="utils.JSONReader" />
       <module name="access" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="model.*" />
+          <option name="PATTERN" value="utils.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -93,11 +92,11 @@
       </method>
     </configuration>
     <configuration name="Sandbox" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="model.Sandbox" />
+      <option name="MAIN_CLASS_NAME" value="core.Sandbox" />
       <module name="access" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="model.*" />
+          <option name="PATTERN" value="utils.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -105,8 +104,16 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="Sandbox2" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="core.Sandbox2" />
+      <module name="access" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.Sandbox2" />
         <item itemvalue="Application.Sandbox" />
         <item itemvalue="Application.JSONReader" />
       </list>
@@ -137,6 +144,7 @@
       <workItem from="1567654915964" duration="24000" />
       <workItem from="1567709040184" duration="5989000" />
       <workItem from="1567716672488" duration="2715000" />
+      <workItem from="1567792778646" duration="5365000" />
     </task>
     <servers />
   </component>

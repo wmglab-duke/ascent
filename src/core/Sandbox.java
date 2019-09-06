@@ -1,4 +1,4 @@
-package model;
+package core;
 
 import com.comsol.model.Model;
 import com.comsol.model.util.ModelUtil;
