@@ -5,15 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3a1d8ed9-6972-42b8-b1ad-c0f0ee5ee868" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/com/comsol/accessutils/MANIFEST.MF" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/access.iml" beforeDir="false" afterPath="$PROJECT_DIR$/access.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/Sandbox2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/Sandbox2.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/runner.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/runner.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/ComsolIdentifierManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/comsol/accessutils/ComsolIdentifierManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/JSONReader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/comsol/accessutils/JSONReader.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/MANIFEST.MF" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/debug/test_build_commands.txt" beforeDir="false" afterPath="$PROJECT_DIR$/debug/test_build_commands.txt" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -62,11 +54,6 @@
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="run.code.analysis.last.selected.profile" value="aDefault" />
     <property name="settings.editor.selected.configurable" value="vcs.Git" />
-  </component>
-  <component name="RecentsManager">
-    <key name="CopyClassDialog.RECENTS_KEY">
-      <recent name="model" />
-    </key>
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
