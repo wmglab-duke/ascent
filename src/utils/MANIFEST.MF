@@ -1,3 +1,2 @@
-Automatic-Module-Name: utils
-Export-Package: utils
-Bundle-SymbolicName: utils
+Import-Package: org.json
+

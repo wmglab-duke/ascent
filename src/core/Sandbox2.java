@@ -3,12 +3,10 @@
  */
 
 
+import com.comsol.accessutils.ComsolIdentifierManager;
+import com.comsol.accessutils.JSONReader;
 import com.comsol.model.Model;
 import com.comsol.model.util.ModelUtil;
-
-import utils.ComsolIdentifierManager;
-import utils.JSONReader;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -19,6 +17,7 @@ public class Sandbox2 {
 
     private static Model run() {
 
+        System.out.println("RUNNING!");
 
         Model model = ModelUtil.create("Model");
 //        ModelUtil.showProgress(false);
@@ -26,11 +25,13 @@ public class Sandbox2 {
         model.modelPath("D:\\Documents\\ModularCuffs");
         model.label("UNI_TUBECUFF.mph");
 
+        System.out.println("model initialized");
+
         ComsolIdentifierManager cim = new ComsolIdentifierManager();
         String[] files = {"CorTec.json", "Enteromedics.json", "ImThera.json", "Madison.json", "Purdue.json"};
 
         for (String file: files) {
-            String par = cim.next("par");
+            String par = "par";//cim.next("par");
 
             JSONObject data = new JSONReader("../../.templates/" + file).getData();
 

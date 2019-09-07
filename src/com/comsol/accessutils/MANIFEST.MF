@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Bundle-SymbolicName: com.comsol.accessutils;singleton:=true
+Export-Package: com.comsol.accessutils
+Bundle-Version: 1.0.0

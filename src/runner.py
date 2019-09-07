@@ -126,7 +126,7 @@ class Runner(Exceptionable, Configurable):
             print('RUNNING: {}/bin/comsol batch -inputfile {}/{}.class'.format(comsol_path,
                                                                           cwd,
                                                                           file_name_no_ext))
-            os.system('{}/bin/comsol batch -inputfile {}/{}.class'.format(comsol_path,
+            os.system('{}/bin/comsol batch -inputfile {}/{}.class -dev "/Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar:/Users/jakecariello/Box/Documents/Pipeline/access/lib/utils.jar"'.format(comsol_path,
                                                                           cwd,
                                                                           file_name_no_ext))
         else: # assume to be 'win64'

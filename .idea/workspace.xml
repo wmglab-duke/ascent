@@ -5,7 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3a1d8ed9-6972-42b8-b1ad-c0f0ee5ee868" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/com/comsol/accessutils/MANIFEST.MF" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/access.iml" beforeDir="false" afterPath="$PROJECT_DIR$/access.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/Sandbox2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/Sandbox2.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/runner.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/runner.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/ComsolIdentifierManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/comsol/accessutils/ComsolIdentifierManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/JSONReader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/comsol/accessutils/JSONReader.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/MANIFEST.MF" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -48,14 +56,15 @@
     <property name="node.js.selected.package.jscs" value="" />
     <property name="node.js.selected.package.standard" value="" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
-    <property name="project.structure.last.edited" value="Libraries" />
+    <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.23125" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="run.code.analysis.last.selected.profile" value="aDefault" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyIntegratedToolsModulesConfigurable" />
+    <property name="settings.editor.selected.configurable" value="reference.settings.project.osgi.project.settings" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/com/comsol/accessutils" />
       <recent name="$PROJECT_DIR$/src/utils" />
     </key>
   </component>
@@ -71,13 +80,13 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Application.Sandbox2">
+  <component name="RunManager" selected="Application.Sandbox">
     <configuration name="JSONReader" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="utils.JSONReader" />
+      <option name="MAIN_CLASS_NAME" value="com.comsol.accessutils.JSONReader" />
       <module name="access" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="utils.*" />
+          <option name="PATTERN" value="com.comsol.accessutils.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -90,7 +99,7 @@
       <module name="access" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="utils.*" />
+          <option name="PATTERN" value="com.comsol.accessutils.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -98,16 +107,12 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Sandbox2" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="core.Sandbox2" />
-      <module name="access" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
+    <list>
+      <item itemvalue="Application.JSONReader" />
+      <item itemvalue="Application.Sandbox" />
+    </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.Sandbox2" />
         <item itemvalue="Application.Sandbox" />
         <item itemvalue="Application.JSONReader" />
       </list>
@@ -138,7 +143,8 @@
       <workItem from="1567654915964" duration="24000" />
       <workItem from="1567709040184" duration="5989000" />
       <workItem from="1567716672488" duration="2715000" />
-      <workItem from="1567792778646" duration="5365000" />
+      <workItem from="1567792778646" duration="6066000" />
+      <workItem from="1567876548688" duration="6103000" />
     </task>
     <servers />
   </component>

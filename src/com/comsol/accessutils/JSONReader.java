@@ -1,4 +1,4 @@
-package utils;
+package com.comsol.accessutils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
