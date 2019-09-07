@@ -15,7 +15,6 @@ public class Sandbox3 {
 
     public static Model run() {
 
-
         Model model = ModelUtil.create("Model");
         ModelUtil.showProgress(false);
 
@@ -694,11 +693,13 @@ public class Sandbox3 {
     }
 
     public static Model run2(Model model) {
-        // SECTION: MAKE COMPONENT
+        // SECTION: MAKE COMPONENTS FROM PRIMITIVES
         model.component().create("comp1", true);
         model.component("comp1").geom().create("geom1", 3);
         model.component("comp1").mesh().create("mesh1");
 
+        //// ENTEROMEDICS
+        // CUFF
         model.component("comp1").geom("geom1").create("pi8", "PartInstance");
         model.component("comp1").geom("geom1").feature("pi8").label("Enteromedics Cuff");
         model.component("comp1").geom("geom1").feature("pi8").setEntry("inputexpr", "N_holes", "N_holes_EM");
@@ -717,6 +718,7 @@ public class Sandbox3 {
         model.component("comp1").geom("geom1").feature("pi8").set("selkeepnoncontr", false);
         model.component("comp1").geom("geom1").feature("pi8").setEntry("selkeepdom", "pi8_csel3.dom", "on");
 
+        // CONTACT
         model.component("comp1").geom("geom1").create("pi9", "PartInstance");
         model.component("comp1").geom("geom1").feature("pi9").label("Enteromedics RibbonContact");
         model.component("comp1").geom("geom1").feature("pi9").set("part", "part2");
@@ -731,6 +733,8 @@ public class Sandbox3 {
         model.component("comp1").geom("geom1").feature("pi9").setEntry("selkeepdom", "pi9_csel4.dom", "on");
         model.component("comp1").geom("geom1").feature("pi9").setEntry("selkeeppnt", "pi9_csel3.pnt", "on");
 
+        //// MADISON
+        // CUFF
         model.component("comp1").geom("geom1").create("pi2", "PartInstance");
         model.component("comp1").geom("geom1").feature("pi2").label("Madison Cuff");
         model.component("comp1").geom("geom1").feature("pi2").setEntry("inputexpr", "N_holes", "N_holes_M");
@@ -749,6 +753,7 @@ public class Sandbox3 {
         model.component("comp1").geom("geom1").feature("pi2").set("selkeepnoncontr", false);
         model.component("comp1").geom("geom1").feature("pi2").setEntry("selkeepdom", "pi2_csel3.dom", "on");
 
+        // CONTACT
         model.component("comp1").geom("geom1").create("pi10", "PartInstance");
         model.component("comp1").geom("geom1").feature("pi10").label("Madison RibbonContact");
         model.component("comp1").geom("geom1").feature("pi10").set("part", "part2");
@@ -762,102 +767,363 @@ public class Sandbox3 {
         model.component("comp1").geom("geom1").feature("pi10").set("selkeepnoncontr", false);
         model.component("comp1").geom("geom1").feature("pi10").setEntry("selkeepdom", "pi10_csel4.dom", "on");
         model.component("comp1").geom("geom1").feature("pi10").setEntry("selkeeppnt", "pi10_csel3.pnt", "on");
-////
-////        model.component("comp1").geom("geom1").create("pi3", "PartInstance");
-////        model.component("comp1").geom("geom1").feature("pi3").label("CorTec300 Cuff");
-////        model.component("comp1").geom("geom1").feature("pi3").setEntry("inputexpr", "N_holes", "N_holes_CT");
-////        model.component("comp1").geom("geom1").feature("pi3").setEntry("inputexpr", "Theta", "Theta_CT");
-////        model.component("comp1").geom("geom1").feature("pi3").setEntry("inputexpr", "Center", "Center_CT");
-////        model.component("comp1").geom("geom1").feature("pi3").setEntry("inputexpr", "R_in", "R_in_CT");
-////        model.component("comp1").geom("geom1").feature("pi3").setEntry("inputexpr", "R_out", "R_out_CT");
-////        model.component("comp1").geom("geom1").feature("pi3").setEntry("inputexpr", "L", "L_CT");
-////        model.component("comp1").geom("geom1").feature("pi3").setEntry("inputexpr", "Rot_def", "Rot_def_CT");
-////        model.component("comp1").geom("geom1").feature("pi3").setEntry("inputexpr", "D_hole", "D_hole_CT");
-////        model.component("comp1").geom("geom1").feature("pi3").setEntry("inputexpr", "Buffer_hole", "Buffer_hole_CT");
-////        model.component("comp1").geom("geom1").feature("pi3")
-////                .setEntry("inputexpr", "L_holecenter_cuffseam", "L_holecenter_cuffseam_CT");
-////        model.component("comp1").geom("geom1").feature("pi3")
-////                .setEntry("inputexpr", "Pitch_holecenter_holecenter", "Pitch_holecenter_holecenter_CT");
-////        model.component("comp1").geom("geom1").feature("pi3").set("selkeepnoncontr", false);
-////        model.component("comp1").geom("geom1").feature("pi3").setEntry("selkeepdom", "pi3_csel3.dom", "on");
-//
-////        model.component("comp1").geom("geom1").create("pi11", "PartInstance");
-////        model.component("comp1").geom("geom1").feature("pi11").label("CorTec300 RibbonContact 1");
-////        model.component("comp1").geom("geom1").feature("pi11").set("part", "part2");
-////        model.component("comp1").geom("geom1").feature("pi11").setEntry("inputexpr", "Thk_elec", "Thk_elec_CT");
-////        model.component("comp1").geom("geom1").feature("pi11").setEntry("inputexpr", "L_elec", "L_elec_CT");
-////        model.component("comp1").geom("geom1").feature("pi11").setEntry("inputexpr", "R_in", "R_in_CT");
-////        model.component("comp1").geom("geom1").feature("pi11").setEntry("inputexpr", "Recess", "Recess_CT");
-////        model.component("comp1").geom("geom1").feature("pi11").setEntry("inputexpr", "Center", "Center_CT+(Pitch_CT/2)");
-////        model.component("comp1").geom("geom1").feature("pi11")
-////                .setEntry("inputexpr", "Theta_contact", "Theta_contact_CT");
-////        model.component("comp1").geom("geom1").feature("pi11").setEntry("inputexpr", "Rot_def", "Rot_def_contact_CT");
-////        model.component("comp1").geom("geom1").feature("pi11").set("selkeepnoncontr", false);
-////        model.component("comp1").geom("geom1").feature("pi11").setEntry("selkeepdom", "pi11_csel4.dom", "on");
-////        model.component("comp1").geom("geom1").feature("pi11").setEntry("selkeeppnt", "pi11_csel3.pnt", "on");
-//
-////        model.component("comp1").geom("geom1").create("pi12", "PartInstance");
-////        model.component("comp1").geom("geom1").feature("pi12").label("CorTec300 RibbonContact 2");
-////        model.component("comp1").geom("geom1").feature("pi12").set("part", "part2");
-////        model.component("comp1").geom("geom1").feature("pi12").setEntry("inputexpr", "Thk_elec", "Thk_elec_CT");
-////        model.component("comp1").geom("geom1").feature("pi12").setEntry("inputexpr", "L_elec", "L_elec_CT");
-////        model.component("comp1").geom("geom1").feature("pi12").setEntry("inputexpr", "R_in", "R_in_CT");
-////        model.component("comp1").geom("geom1").feature("pi12").setEntry("inputexpr", "Recess", "Recess_CT");
-////        model.component("comp1").geom("geom1").feature("pi12").setEntry("inputexpr", "Center", "Center_CT-(Pitch_CT/2)");
-////        model.component("comp1").geom("geom1").feature("pi12")
-////                .setEntry("inputexpr", "Theta_contact", "Theta_contact_CT");
-////        model.component("comp1").geom("geom1").feature("pi12").setEntry("inputexpr", "Rot_def", "Rot_def_contact_CT");
-////        model.component("comp1").geom("geom1").feature("pi12").set("selkeepnoncontr", false);
-////        model.component("comp1").geom("geom1").feature("pi12").setEntry("selkeepdom", "pi12_csel4.dom", "on");
-////        model.component("comp1").geom("geom1").feature("pi12").setEntry("selkeeppnt", "pi12_csel3.pnt", "on");
-//
-////        model.component("comp1").geom("geom1").create("pi4", "PartInstance");
-////        model.component("comp1").geom("geom1").feature("pi4").label("Purdue Cuff");
-////        model.component("comp1").geom("geom1").feature("pi4").setEntry("inputexpr", "N_holes", "N_holes_P");
-////        model.component("comp1").geom("geom1").feature("pi4").setEntry("inputexpr", "Theta", "Theta_P");
-////        model.component("comp1").geom("geom1").feature("pi4").setEntry("inputexpr", "Center", "Center_P");
-////        model.component("comp1").geom("geom1").feature("pi4").setEntry("inputexpr", "R_in", "R_in_P");
-////        model.component("comp1").geom("geom1").feature("pi4").setEntry("inputexpr", "R_out", "R_out_P");
-////        model.component("comp1").geom("geom1").feature("pi4").setEntry("inputexpr", "L", "L_P");
-////        model.component("comp1").geom("geom1").feature("pi4").setEntry("inputexpr", "Rot_def", "Rot_def_P");
-////        model.component("comp1").geom("geom1").feature("pi4").setEntry("inputexpr", "D_hole", "D_hole_P");
-////        model.component("comp1").geom("geom1").feature("pi4").setEntry("inputexpr", "Buffer_hole", "Buffer_hole_P");
-////        model.component("comp1").geom("geom1").feature("pi4")
-////                .setEntry("inputexpr", "L_holecenter_cuffseam", "L_holecenter_cuffseam_P");
-////        model.component("comp1").geom("geom1").feature("pi4")
-////                .setEntry("inputexpr", "Pitch_holecenter_holecenter", "Pitch_holecenter_holecenter_P");
-////        model.component("comp1").geom("geom1").feature("pi4").set("selkeepnoncontr", false);
-////        model.component("comp1").geom("geom1").feature("pi4").setEntry("selkeepdom", "pi4_csel3.dom", "on");
-//
-////        model.component("comp1").geom("geom1").create("pi13", "PartInstance");
-////        model.component("comp1").geom("geom1").feature("pi13").label("Purdue WireContact 1");
-////        model.component("comp1").geom("geom1").feature("pi13").set("part", "part3");
-////        model.component("comp1").geom("geom1").feature("pi13").setEntry("inputexpr", "R_conductor", "r_conductor_P");
-////        model.component("comp1").geom("geom1").feature("pi13").setEntry("inputexpr", "R_in", "R_in_P");
-////        model.component("comp1").geom("geom1").feature("pi13").setEntry("inputexpr", "Center", "Center_P-(Pitch_P/2)");
-////        model.component("comp1").geom("geom1").feature("pi13").setEntry("inputexpr", "Pitch", "Pitch_P");
-////        model.component("comp1").geom("geom1").feature("pi13").setEntry("inputexpr", "Sep_conductor", "sep_conductor_P");
-////        model.component("comp1").geom("geom1").feature("pi13")
-////                .setEntry("inputexpr", "Theta_conductor", "theta_conductor_P");
-////        model.component("comp1").geom("geom1").feature("pi13").set("selkeepnoncontr", false);
-////        model.component("comp1").geom("geom1").feature("pi13").setEntry("selkeepdom", "pi13_csel2.dom", "on");
-////        model.component("comp1").geom("geom1").feature("pi13").setEntry("selkeeppnt", "pi13_csel3.pnt", "on");
-//
-////        model.component("comp1").geom("geom1").create("pi14", "PartInstance");
-////        model.component("comp1").geom("geom1").feature("pi14").label("Purdue WireContact 2");
-////        model.component("comp1").geom("geom1").feature("pi14").set("part", "part3");
-////        model.component("comp1").geom("geom1").feature("pi14").setEntry("inputexpr", "R_conductor", "r_conductor_P");
-////        model.component("comp1").geom("geom1").feature("pi14").setEntry("inputexpr", "R_in", "R_in_P");
-////        model.component("comp1").geom("geom1").feature("pi14").setEntry("inputexpr", "Center", "Center_P+(Pitch_P/2)");
-////        model.component("comp1").geom("geom1").feature("pi14").setEntry("inputexpr", "Pitch", "Pitch_P");
-////        model.component("comp1").geom("geom1").feature("pi14").setEntry("inputexpr", "Sep_conductor", "sep_conductor_P");
-////        model.component("comp1").geom("geom1").feature("pi14")
-////                .setEntry("inputexpr", "Theta_conductor", "theta_conductor_P");
-////        model.component("comp1").geom("geom1").feature("pi14").set("selkeepnoncontr", false);
-////        model.component("comp1").geom("geom1").feature("pi14").setEntry("selkeepobj", "pi14_csel2", "on");
-////        model.component("comp1").geom("geom1").feature("pi14").setEntry("selkeepdom", "pi14_csel2.dom", "on");
-////        model.component("comp1").geom("geom1").feature("pi14").setEntry("selkeeppnt", "pi14_csel3.pnt", "on");
-//
+
+        //// CORTEC
+        // CUFF
+        model.component("comp1").geom("geom1").create("pi3", "PartInstance");
+        model.component("comp1").geom("geom1").feature("pi3").label("CorTec300 Cuff");
+        model.component("comp1").geom("geom1").feature("pi3").setEntry("inputexpr", "N_holes", "N_holes_CT");
+        model.component("comp1").geom("geom1").feature("pi3").setEntry("inputexpr", "Theta", "Theta_CT");
+        model.component("comp1").geom("geom1").feature("pi3").setEntry("inputexpr", "Center", "Center_CT");
+        model.component("comp1").geom("geom1").feature("pi3").setEntry("inputexpr", "R_in", "R_in_CT");
+        model.component("comp1").geom("geom1").feature("pi3").setEntry("inputexpr", "R_out", "R_out_CT");
+        model.component("comp1").geom("geom1").feature("pi3").setEntry("inputexpr", "L", "L_CT");
+        model.component("comp1").geom("geom1").feature("pi3").setEntry("inputexpr", "Rot_def", "Rot_def_CT");
+        model.component("comp1").geom("geom1").feature("pi3").setEntry("inputexpr", "D_hole", "D_hole_CT");
+        model.component("comp1").geom("geom1").feature("pi3").setEntry("inputexpr", "Buffer_hole", "Buffer_hole_CT");
+        model.component("comp1").geom("geom1").feature("pi3")
+                .setEntry("inputexpr", "L_holecenter_cuffseam", "L_holecenter_cuffseam_CT");
+        model.component("comp1").geom("geom1").feature("pi3")
+                .setEntry("inputexpr", "Pitch_holecenter_holecenter", "Pitch_holecenter_holecenter_CT");
+        model.component("comp1").geom("geom1").feature("pi3").set("selkeepnoncontr", false);
+        model.component("comp1").geom("geom1").feature("pi3").setEntry("selkeepdom", "pi3_csel3.dom", "on");
+
+        // CONTACT 1
+        model.component("comp1").geom("geom1").create("pi11", "PartInstance");
+        model.component("comp1").geom("geom1").feature("pi11").label("CorTec300 RibbonContact 1");
+        model.component("comp1").geom("geom1").feature("pi11").set("part", "part2");
+        model.component("comp1").geom("geom1").feature("pi11").setEntry("inputexpr", "Thk_elec", "Thk_elec_CT");
+        model.component("comp1").geom("geom1").feature("pi11").setEntry("inputexpr", "L_elec", "L_elec_CT");
+        model.component("comp1").geom("geom1").feature("pi11").setEntry("inputexpr", "R_in", "R_in_CT");
+        model.component("comp1").geom("geom1").feature("pi11").setEntry("inputexpr", "Recess", "Recess_CT");
+        model.component("comp1").geom("geom1").feature("pi11").setEntry("inputexpr", "Center", "Center_CT+(Pitch_CT/2)");
+        model.component("comp1").geom("geom1").feature("pi11")
+                .setEntry("inputexpr", "Theta_contact", "Theta_contact_CT");
+        model.component("comp1").geom("geom1").feature("pi11").setEntry("inputexpr", "Rot_def", "Rot_def_contact_CT");
+        model.component("comp1").geom("geom1").feature("pi11").set("selkeepnoncontr", false);
+        model.component("comp1").geom("geom1").feature("pi11").setEntry("selkeepdom", "pi11_csel4.dom", "on");
+        model.component("comp1").geom("geom1").feature("pi11").setEntry("selkeeppnt", "pi11_csel3.pnt", "on");
+
+        // CONTACT 2
+        model.component("comp1").geom("geom1").create("pi12", "PartInstance");
+        model.component("comp1").geom("geom1").feature("pi12").label("CorTec300 RibbonContact 2");
+        model.component("comp1").geom("geom1").feature("pi12").set("part", "part2");
+        model.component("comp1").geom("geom1").feature("pi12").setEntry("inputexpr", "Thk_elec", "Thk_elec_CT");
+        model.component("comp1").geom("geom1").feature("pi12").setEntry("inputexpr", "L_elec", "L_elec_CT");
+        model.component("comp1").geom("geom1").feature("pi12").setEntry("inputexpr", "R_in", "R_in_CT");
+        model.component("comp1").geom("geom1").feature("pi12").setEntry("inputexpr", "Recess", "Recess_CT");
+        model.component("comp1").geom("geom1").feature("pi12").setEntry("inputexpr", "Center", "Center_CT-(Pitch_CT/2)");
+        model.component("comp1").geom("geom1").feature("pi12")
+                .setEntry("inputexpr", "Theta_contact", "Theta_contact_CT");
+        model.component("comp1").geom("geom1").feature("pi12").setEntry("inputexpr", "Rot_def", "Rot_def_contact_CT");
+        model.component("comp1").geom("geom1").feature("pi12").set("selkeepnoncontr", false);
+        model.component("comp1").geom("geom1").feature("pi12").setEntry("selkeepdom", "pi12_csel4.dom", "on");
+        model.component("comp1").geom("geom1").feature("pi12").setEntry("selkeeppnt", "pi12_csel3.pnt", "on");
+
+        //// PURDUE
+        // CUFF
+        model.component("comp1").geom("geom1").create("pi4", "PartInstance");
+        model.component("comp1").geom("geom1").feature("pi4").label("Purdue Cuff");
+        model.component("comp1").geom("geom1").feature("pi4").setEntry("inputexpr", "N_holes", "N_holes_P");
+        model.component("comp1").geom("geom1").feature("pi4").setEntry("inputexpr", "Theta", "Theta_P");
+        model.component("comp1").geom("geom1").feature("pi4").setEntry("inputexpr", "Center", "Center_P");
+        model.component("comp1").geom("geom1").feature("pi4").setEntry("inputexpr", "R_in", "R_in_P");
+        model.component("comp1").geom("geom1").feature("pi4").setEntry("inputexpr", "R_out", "R_out_P");
+        model.component("comp1").geom("geom1").feature("pi4").setEntry("inputexpr", "L", "L_P");
+        model.component("comp1").geom("geom1").feature("pi4").setEntry("inputexpr", "Rot_def", "Rot_def_P");
+        model.component("comp1").geom("geom1").feature("pi4").setEntry("inputexpr", "D_hole", "D_hole_P");
+        model.component("comp1").geom("geom1").feature("pi4").setEntry("inputexpr", "Buffer_hole", "Buffer_hole_P");
+        model.component("comp1").geom("geom1").feature("pi4")
+                .setEntry("inputexpr", "L_holecenter_cuffseam", "L_holecenter_cuffseam_P");
+        model.component("comp1").geom("geom1").feature("pi4")
+                .setEntry("inputexpr", "Pitch_holecenter_holecenter", "Pitch_holecenter_holecenter_P");
+        model.component("comp1").geom("geom1").feature("pi4").set("selkeepnoncontr", false);
+        model.component("comp1").geom("geom1").feature("pi4").setEntry("selkeepdom", "pi4_csel3.dom", "on");
+
+        // CONTACT 1
+        model.component("comp1").geom("geom1").create("pi13", "PartInstance");
+        model.component("comp1").geom("geom1").feature("pi13").label("Purdue WireContact 1");
+        model.component("comp1").geom("geom1").feature("pi13").set("part", "part3");
+        model.component("comp1").geom("geom1").feature("pi13").setEntry("inputexpr", "R_conductor", "r_conductor_P");
+        model.component("comp1").geom("geom1").feature("pi13").setEntry("inputexpr", "R_in", "R_in_P");
+        model.component("comp1").geom("geom1").feature("pi13").setEntry("inputexpr", "Center", "Center_P-(Pitch_P/2)");
+        model.component("comp1").geom("geom1").feature("pi13").setEntry("inputexpr", "Pitch", "Pitch_P");
+        model.component("comp1").geom("geom1").feature("pi13").setEntry("inputexpr", "Sep_conductor", "sep_conductor_P");
+        model.component("comp1").geom("geom1").feature("pi13")
+                .setEntry("inputexpr", "Theta_conductor", "theta_conductor_P");
+        model.component("comp1").geom("geom1").feature("pi13").set("selkeepnoncontr", false);
+        model.component("comp1").geom("geom1").feature("pi13").setEntry("selkeepdom", "pi13_csel2.dom", "on");
+        model.component("comp1").geom("geom1").feature("pi13").setEntry("selkeeppnt", "pi13_csel3.pnt", "on");
+
+        // CONTACT 2
+        model.component("comp1").geom("geom1").create("pi14", "PartInstance");
+        model.component("comp1").geom("geom1").feature("pi14").label("Purdue WireContact 2");
+        model.component("comp1").geom("geom1").feature("pi14").set("part", "part3");
+        model.component("comp1").geom("geom1").feature("pi14").setEntry("inputexpr", "R_conductor", "r_conductor_P");
+        model.component("comp1").geom("geom1").feature("pi14").setEntry("inputexpr", "R_in", "R_in_P");
+        model.component("comp1").geom("geom1").feature("pi14").setEntry("inputexpr", "Center", "Center_P+(Pitch_P/2)");
+        model.component("comp1").geom("geom1").feature("pi14").setEntry("inputexpr", "Pitch", "Pitch_P");
+        model.component("comp1").geom("geom1").feature("pi14").setEntry("inputexpr", "Sep_conductor", "sep_conductor_P");
+        model.component("comp1").geom("geom1").feature("pi14")
+                .setEntry("inputexpr", "Theta_conductor", "theta_conductor_P");
+        model.component("comp1").geom("geom1").feature("pi14").set("selkeepnoncontr", false);
+        model.component("comp1").geom("geom1").feature("pi14").setEntry("selkeepobj", "pi14_csel2", "on");
+        model.component("comp1").geom("geom1").feature("pi14").setEntry("selkeepdom", "pi14_csel2.dom", "on");
+        model.component("comp1").geom("geom1").feature("pi14").setEntry("selkeeppnt", "pi14_csel3.pnt", "on");
+
+        //// IMTHERA
+        // INNER CUFF
+        model.component("comp1").geom("geom1").create("pi6", "PartInstance");
+        model.component("comp1").geom("geom1").feature("pi6").label("ImThera Inner Cuff");
+        model.component("comp1").geom("geom1").feature("pi6").setEntry("inputexpr", "N_holes", "N_holes_ITI");
+        model.component("comp1").geom("geom1").feature("pi6").setEntry("inputexpr", "Theta", "Theta_ITI");
+        model.component("comp1").geom("geom1").feature("pi6").setEntry("inputexpr", "Center", "Center_IT");
+        model.component("comp1").geom("geom1").feature("pi6").setEntry("inputexpr", "R_in", "R_in_ITI");
+        model.component("comp1").geom("geom1").feature("pi6").setEntry("inputexpr", "R_out", "R_out_ITI");
+        model.component("comp1").geom("geom1").feature("pi6").setEntry("inputexpr", "L", "L_IT");
+        model.component("comp1").geom("geom1").feature("pi6").setEntry("inputexpr", "Rot_def", "Rot_def_ITI");
+        model.component("comp1").geom("geom1").feature("pi6").setEntry("inputexpr", "D_hole", "D_hole_ITI");
+        model.component("comp1").geom("geom1").feature("pi6").setEntry("inputexpr", "Buffer_hole", "Buffer_hole_ITI");
+        model.component("comp1").geom("geom1").feature("pi6")
+                .setEntry("inputexpr", "L_holecenter_cuffseam", "L_holecenter_cuffseam_ITI");
+        model.component("comp1").geom("geom1").feature("pi6")
+                .setEntry("inputexpr", "Pitch_holecenter_holecenter", "Pitch_holecenter_holecenter_ITI");
+        model.component("comp1").geom("geom1").feature("pi6").set("selkeepnoncontr", false);
+        model.component("comp1").geom("geom1").feature("pi6").setEntry("selkeepdom", "pi6_csel3.dom", "on");
+
+        // FURL
+        model.component("comp1").geom("geom1").create("pi7", "PartInstance");
+        model.component("comp1").geom("geom1").feature("pi7").label("ImThera Furl Cuff");
+        model.component("comp1").geom("geom1").feature("pi7").setEntry("inputexpr", "N_holes", "N_holes_ITF");
+        model.component("comp1").geom("geom1").feature("pi7").setEntry("inputexpr", "Theta", "Theta_ITF");
+        model.component("comp1").geom("geom1").feature("pi7").setEntry("inputexpr", "Center", "Center_IT");
+        model.component("comp1").geom("geom1").feature("pi7").setEntry("inputexpr", "R_in", "R_in_ITF");
+        model.component("comp1").geom("geom1").feature("pi7").setEntry("inputexpr", "R_out", "R_out_ITF");
+        model.component("comp1").geom("geom1").feature("pi7").setEntry("inputexpr", "L", "L_IT");
+        model.component("comp1").geom("geom1").feature("pi7").setEntry("inputexpr", "Rot_def", "Rot_def_ITF");
+        model.component("comp1").geom("geom1").feature("pi7").setEntry("inputexpr", "D_hole", "D_hole_ITF");
+        model.component("comp1").geom("geom1").feature("pi7").setEntry("inputexpr", "Buffer_hole", "Buffer_hole_ITF");
+        model.component("comp1").geom("geom1").feature("pi7")
+                .setEntry("inputexpr", "L_holecenter_cuffseam", "L_holecenter_cuffseam_ITF");
+        model.component("comp1").geom("geom1").feature("pi7")
+                .setEntry("inputexpr", "Pitch_holecenter_holecenter", "Pitch_holecenter_holecenter_ITF");
+        model.component("comp1").geom("geom1").feature("pi7").set("selkeepnoncontr", false);
+        model.component("comp1").geom("geom1").feature("pi7").setEntry("selkeepdom", "pi7_csel3.dom", "on");
+
+        // CONTACT 1
+        model.component("comp1").geom("geom1").create("pi15", "PartInstance");
+        model.component("comp1").geom("geom1").feature("pi15").label("ImThera Contact 1");
+        model.component("comp1").geom("geom1").feature("pi15").set("part", "part4");
+        model.component("comp1").geom("geom1").feature("pi15").setEntry("inputexpr", "Recess", "Recess_ITC");
+        model.component("comp1").geom("geom1").feature("pi15")
+                .setEntry("inputexpr", "Rotation_angle", "ang_cuffseam_contactcenter_ITC");
+        model.component("comp1").geom("geom1").feature("pi15")
+                .setEntry("inputexpr", "Center", "Center_IT-length_contactcenter_contactcenter_ITC");
+        model.component("comp1").geom("geom1").feature("pi15").setEntry("inputexpr", "Round_def", "Round_def_ITC");
+        model.component("comp1").geom("geom1").feature("pi15").setEntry("inputexpr", "R_in", "R_in_ITI");
+        model.component("comp1").geom("geom1").feature("pi15")
+                .setEntry("inputexpr", "Contact_depth", "Contact_depth_ITC");
+        model.component("comp1").geom("geom1").feature("pi15").setEntry("inputexpr", "Overshoot", "Overshoot_ITC");
+        model.component("comp1").geom("geom1").feature("pi15")
+                .setEntry("inputexpr", "A_ellipse_contact", "a_ellipse_contact_ITC");
+        model.component("comp1").geom("geom1").feature("pi15").setEntry("inputexpr", "Diam_contact", "diam_contact_ITC");
+        model.component("comp1").geom("geom1").feature("pi15").setEntry("inputexpr", "L", "L_IT");
+        model.component("comp1").geom("geom1").feature("pi15").set("selkeepnoncontr", false);
+        model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepobj", "pi15_csel12", "off");
+        model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepobj", "pi15_csel13", "off");
+        model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepobj", "pi15_csel14", "off");
+        model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepdom", "pi15_ballsel1", "off");
+        model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepdom", "pi15_ballsel2", "off");
+        model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepdom", "pi15_csel7.dom", "on");
+        model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepdom", "pi15_csel12.dom", "off");
+        model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepdom", "pi15_csel14.dom", "off");
+        model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepbnd", "pi15_csel12.bnd", "off");
+        model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepbnd", "pi15_csel13.bnd", "off");
+        model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepbnd", "pi15_csel14.bnd", "off");
+        model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepedg", "pi15_csel12.edg", "off");
+        model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepedg", "pi15_csel13.edg", "off");
+        model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepedg", "pi15_csel14.edg", "off");
+        model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeeppnt", "pi15_csel12.pnt", "off");
+        model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeeppnt", "pi15_csel13.pnt", "off");
+
+        // CONTACT 2
+        model.component("comp1").geom("geom1").create("pi16", "PartInstance");
+        model.component("comp1").geom("geom1").feature("pi16").label("ImThera Contact 2");
+        model.component("comp1").geom("geom1").feature("pi16").set("part", "part4");
+        model.component("comp1").geom("geom1").feature("pi16").setEntry("inputexpr", "Recess", "Recess_ITC");
+        model.component("comp1").geom("geom1").feature("pi16")
+                .setEntry("inputexpr", "Rotation_angle", "ang_cuffseam_contactcenter_ITC+ang_contactcenter_contactcenter_ITC [deg]");
+        model.component("comp1").geom("geom1").feature("pi16").setEntry("inputexpr", "Center", "Center_IT");
+        model.component("comp1").geom("geom1").feature("pi16").setEntry("inputexpr", "Round_def", "Round_def_ITC");
+        model.component("comp1").geom("geom1").feature("pi16").setEntry("inputexpr", "R_in", "R_in_ITI");
+        model.component("comp1").geom("geom1").feature("pi16")
+                .setEntry("inputexpr", "Contact_depth", "Contact_depth_ITC");
+        model.component("comp1").geom("geom1").feature("pi16").setEntry("inputexpr", "Overshoot", "Overshoot_ITC");
+        model.component("comp1").geom("geom1").feature("pi16")
+                .setEntry("inputexpr", "A_ellipse_contact", "a_ellipse_contact_ITC");
+        model.component("comp1").geom("geom1").feature("pi16").setEntry("inputexpr", "Diam_contact", "diam_contact_ITC");
+        model.component("comp1").geom("geom1").feature("pi16").setEntry("inputexpr", "L", "L_IT");
+        model.component("comp1").geom("geom1").feature("pi16").set("selkeepnoncontr", false);
+        model.component("comp1").geom("geom1").feature("pi16").setEntry("selkeepobj", "pi16_csel12", "off");
+        model.component("comp1").geom("geom1").feature("pi16").setEntry("selkeepobj", "pi16_csel13", "off");
+        model.component("comp1").geom("geom1").feature("pi16").setEntry("selkeepobj", "pi16_csel14", "off");
+        model.component("comp1").geom("geom1").feature("pi16").setEntry("selkeepdom", "pi16_ballsel1", "off");
+        model.component("comp1").geom("geom1").feature("pi16").setEntry("selkeepdom", "pi16_ballsel2", "off");
+        model.component("comp1").geom("geom1").feature("pi16").setEntry("selkeepdom", "pi16_csel7.dom", "on");
+        model.component("comp1").geom("geom1").feature("pi16").setEntry("selkeepdom", "pi16_csel12.dom", "off");
+        model.component("comp1").geom("geom1").feature("pi16").setEntry("selkeepdom", "pi16_csel14.dom", "off");
+        model.component("comp1").geom("geom1").feature("pi16").setEntry("selkeepbnd", "pi16_csel12.bnd", "off");
+        model.component("comp1").geom("geom1").feature("pi16").setEntry("selkeepbnd", "pi16_csel13.bnd", "off");
+        model.component("comp1").geom("geom1").feature("pi16").setEntry("selkeepbnd", "pi16_csel14.bnd", "off");
+        model.component("comp1").geom("geom1").feature("pi16").setEntry("selkeepedg", "pi16_csel12.edg", "off");
+        model.component("comp1").geom("geom1").feature("pi16").setEntry("selkeepedg", "pi16_csel13.edg", "off");
+        model.component("comp1").geom("geom1").feature("pi16").setEntry("selkeepedg", "pi16_csel14.edg", "off");
+        model.component("comp1").geom("geom1").feature("pi16").setEntry("selkeeppnt", "pi16_csel12.pnt", "off");
+        model.component("comp1").geom("geom1").feature("pi16").setEntry("selkeeppnt", "pi16_csel13.pnt", "off");
+
+        // CONTACT 3
+        model.component("comp1").geom("geom1").create("pi17", "PartInstance");
+        model.component("comp1").geom("geom1").feature("pi17").label("ImThera Contact 3");
+        model.component("comp1").geom("geom1").feature("pi17").set("part", "part4");
+        model.component("comp1").geom("geom1").feature("pi17").setEntry("inputexpr", "Recess", "Recess_ITC");
+        model.component("comp1").geom("geom1").feature("pi17")
+                .setEntry("inputexpr", "Rotation_angle", "ang_cuffseam_contactcenter_ITC+2*ang_contactcenter_contactcenter_ITC [deg]");
+        model.component("comp1").geom("geom1").feature("pi17")
+                .setEntry("inputexpr", "Center", "Center_IT+length_contactcenter_contactcenter_ITC");
+        model.component("comp1").geom("geom1").feature("pi17").setEntry("inputexpr", "Round_def", "Round_def_ITC");
+        model.component("comp1").geom("geom1").feature("pi17").setEntry("inputexpr", "R_in", "R_in_ITI");
+        model.component("comp1").geom("geom1").feature("pi17")
+                .setEntry("inputexpr", "Contact_depth", "Contact_depth_ITC");
+        model.component("comp1").geom("geom1").feature("pi17").setEntry("inputexpr", "Overshoot", "Overshoot_ITC");
+        model.component("comp1").geom("geom1").feature("pi17")
+                .setEntry("inputexpr", "A_ellipse_contact", "a_ellipse_contact_ITC");
+        model.component("comp1").geom("geom1").feature("pi17").setEntry("inputexpr", "Diam_contact", "diam_contact_ITC");
+        model.component("comp1").geom("geom1").feature("pi17").setEntry("inputexpr", "L", "L_IT");
+        model.component("comp1").geom("geom1").feature("pi17").set("selkeepnoncontr", false);
+        model.component("comp1").geom("geom1").feature("pi17").setEntry("selkeepobj", "pi17_csel12", "off");
+        model.component("comp1").geom("geom1").feature("pi17").setEntry("selkeepobj", "pi17_csel13", "off");
+        model.component("comp1").geom("geom1").feature("pi17").setEntry("selkeepobj", "pi17_csel14", "off");
+        model.component("comp1").geom("geom1").feature("pi17").setEntry("selkeepdom", "pi17_ballsel1", "off");
+        model.component("comp1").geom("geom1").feature("pi17").setEntry("selkeepdom", "pi17_ballsel2", "off");
+        model.component("comp1").geom("geom1").feature("pi17").setEntry("selkeepdom", "pi17_csel7.dom", "on");
+        model.component("comp1").geom("geom1").feature("pi17").setEntry("selkeepdom", "pi17_csel12.dom", "off");
+        model.component("comp1").geom("geom1").feature("pi17").setEntry("selkeepdom", "pi17_csel14.dom", "off");
+        model.component("comp1").geom("geom1").feature("pi17").setEntry("selkeepbnd", "pi17_csel12.bnd", "off");
+        model.component("comp1").geom("geom1").feature("pi17").setEntry("selkeepbnd", "pi17_csel13.bnd", "off");
+        model.component("comp1").geom("geom1").feature("pi17").setEntry("selkeepbnd", "pi17_csel14.bnd", "off");
+        model.component("comp1").geom("geom1").feature("pi17").setEntry("selkeepedg", "pi17_csel12.edg", "off");
+        model.component("comp1").geom("geom1").feature("pi17").setEntry("selkeepedg", "pi17_csel13.edg", "off");
+        model.component("comp1").geom("geom1").feature("pi17").setEntry("selkeepedg", "pi17_csel14.edg", "off");
+        model.component("comp1").geom("geom1").feature("pi17").setEntry("selkeeppnt", "pi17_csel12.pnt", "off");
+        model.component("comp1").geom("geom1").feature("pi17").setEntry("selkeeppnt", "pi17_csel13.pnt", "off");
+
+        // CONTACT 4
+        model.component("comp1").geom("geom1").create("pi18", "PartInstance");
+        model.component("comp1").geom("geom1").feature("pi18").label("ImThera Contact 4");
+        model.component("comp1").geom("geom1").feature("pi18").set("part", "part4");
+        model.component("comp1").geom("geom1").feature("pi18").setEntry("inputexpr", "Recess", "Recess_ITC");
+        model.component("comp1").geom("geom1").feature("pi18")
+                .setEntry("inputexpr", "Rotation_angle", "ang_cuffseam_contactcenter_ITC+3*ang_contactcenter_contactcenter_ITC [deg]");
+        model.component("comp1").geom("geom1").feature("pi18")
+                .setEntry("inputexpr", "Center", "Center_IT-length_contactcenter_contactcenter_ITC");
+        model.component("comp1").geom("geom1").feature("pi18").setEntry("inputexpr", "Round_def", "Round_def_ITC");
+        model.component("comp1").geom("geom1").feature("pi18").setEntry("inputexpr", "R_in", "R_in_ITI");
+        model.component("comp1").geom("geom1").feature("pi18")
+                .setEntry("inputexpr", "Contact_depth", "Contact_depth_ITC");
+        model.component("comp1").geom("geom1").feature("pi18").setEntry("inputexpr", "Overshoot", "Overshoot_ITC");
+        model.component("comp1").geom("geom1").feature("pi18")
+                .setEntry("inputexpr", "A_ellipse_contact", "a_ellipse_contact_ITC");
+        model.component("comp1").geom("geom1").feature("pi18").setEntry("inputexpr", "Diam_contact", "diam_contact_ITC");
+        model.component("comp1").geom("geom1").feature("pi18").setEntry("inputexpr", "L", "L_IT");
+        model.component("comp1").geom("geom1").feature("pi18").set("selkeepnoncontr", false);
+        model.component("comp1").geom("geom1").feature("pi18").setEntry("selkeepobj", "pi18_csel12", "off");
+        model.component("comp1").geom("geom1").feature("pi18").setEntry("selkeepobj", "pi18_csel13", "off");
+        model.component("comp1").geom("geom1").feature("pi18").setEntry("selkeepobj", "pi18_csel14", "off");
+        model.component("comp1").geom("geom1").feature("pi18").setEntry("selkeepdom", "pi18_ballsel1", "off");
+        model.component("comp1").geom("geom1").feature("pi18").setEntry("selkeepdom", "pi18_ballsel2", "off");
+        model.component("comp1").geom("geom1").feature("pi18").setEntry("selkeepdom", "pi18_csel7.dom", "on");
+        model.component("comp1").geom("geom1").feature("pi18").setEntry("selkeepdom", "pi18_csel12.dom", "off");
+        model.component("comp1").geom("geom1").feature("pi18").setEntry("selkeepdom", "pi18_csel14.dom", "off");
+        model.component("comp1").geom("geom1").feature("pi18").setEntry("selkeepbnd", "pi18_csel12.bnd", "off");
+        model.component("comp1").geom("geom1").feature("pi18").setEntry("selkeepbnd", "pi18_csel13.bnd", "off");
+        model.component("comp1").geom("geom1").feature("pi18").setEntry("selkeepbnd", "pi18_csel14.bnd", "off");
+        model.component("comp1").geom("geom1").feature("pi18").setEntry("selkeepedg", "pi18_csel12.edg", "off");
+        model.component("comp1").geom("geom1").feature("pi18").setEntry("selkeepedg", "pi18_csel13.edg", "off");
+        model.component("comp1").geom("geom1").feature("pi18").setEntry("selkeepedg", "pi18_csel14.edg", "off");
+        model.component("comp1").geom("geom1").feature("pi18").setEntry("selkeeppnt", "pi18_csel12.pnt", "off");
+        model.component("comp1").geom("geom1").feature("pi18").setEntry("selkeeppnt", "pi18_csel13.pnt", "off");
+
+        // CONTACT 5
+        model.component("comp1").geom("geom1").create("pi19", "PartInstance");
+        model.component("comp1").geom("geom1").feature("pi19").label("ImThera Contact 5");
+        model.component("comp1").geom("geom1").feature("pi19").set("part", "part4");
+        model.component("comp1").geom("geom1").feature("pi19").setEntry("inputexpr", "Recess", "Recess_ITC");
+        model.component("comp1").geom("geom1").feature("pi19")
+                .setEntry("inputexpr", "Rotation_angle", "ang_cuffseam_contactcenter_ITC+4*ang_contactcenter_contactcenter_ITC [deg]");
+        model.component("comp1").geom("geom1").feature("pi19").setEntry("inputexpr", "Center", "Center_IT");
+        model.component("comp1").geom("geom1").feature("pi19").setEntry("inputexpr", "Round_def", "Round_def_ITC");
+        model.component("comp1").geom("geom1").feature("pi19").setEntry("inputexpr", "R_in", "R_in_ITI");
+        model.component("comp1").geom("geom1").feature("pi19")
+                .setEntry("inputexpr", "Contact_depth", "Contact_depth_ITC");
+        model.component("comp1").geom("geom1").feature("pi19").setEntry("inputexpr", "Overshoot", "Overshoot_ITC");
+        model.component("comp1").geom("geom1").feature("pi19")
+                .setEntry("inputexpr", "A_ellipse_contact", "a_ellipse_contact_ITC");
+        model.component("comp1").geom("geom1").feature("pi19").setEntry("inputexpr", "Diam_contact", "diam_contact_ITC");
+        model.component("comp1").geom("geom1").feature("pi19").setEntry("inputexpr", "L", "L_IT");
+        model.component("comp1").geom("geom1").feature("pi19").set("selkeepnoncontr", false);
+        model.component("comp1").geom("geom1").feature("pi19").setEntry("selkeepobj", "pi19_csel12", "off");
+        model.component("comp1").geom("geom1").feature("pi19").setEntry("selkeepobj", "pi19_csel13", "off");
+        model.component("comp1").geom("geom1").feature("pi19").setEntry("selkeepobj", "pi19_csel14", "off");
+        model.component("comp1").geom("geom1").feature("pi19").setEntry("selkeepdom", "pi19_ballsel1", "off");
+        model.component("comp1").geom("geom1").feature("pi19").setEntry("selkeepdom", "pi19_ballsel2", "off");
+        model.component("comp1").geom("geom1").feature("pi19").setEntry("selkeepdom", "pi19_csel7.dom", "on");
+        model.component("comp1").geom("geom1").feature("pi19").setEntry("selkeepdom", "pi19_csel12.dom", "off");
+        model.component("comp1").geom("geom1").feature("pi19").setEntry("selkeepdom", "pi19_csel14.dom", "off");
+        model.component("comp1").geom("geom1").feature("pi19").setEntry("selkeepbnd", "pi19_csel12.bnd", "off");
+        model.component("comp1").geom("geom1").feature("pi19").setEntry("selkeepbnd", "pi19_csel13.bnd", "off");
+        model.component("comp1").geom("geom1").feature("pi19").setEntry("selkeepbnd", "pi19_csel14.bnd", "off");
+        model.component("comp1").geom("geom1").feature("pi19").setEntry("selkeepedg", "pi19_csel12.edg", "off");
+        model.component("comp1").geom("geom1").feature("pi19").setEntry("selkeepedg", "pi19_csel13.edg", "off");
+        model.component("comp1").geom("geom1").feature("pi19").setEntry("selkeepedg", "pi19_csel14.edg", "off");
+        model.component("comp1").geom("geom1").feature("pi19").setEntry("selkeeppnt", "pi19_csel12.pnt", "off");
+        model.component("comp1").geom("geom1").feature("pi19").setEntry("selkeeppnt", "pi19_csel13.pnt", "off");
+
+        // CONTACT 6
+        model.component("comp1").geom("geom1").create("pi20", "PartInstance");
+        model.component("comp1").geom("geom1").feature("pi20").label("ImThera Contact 6");
+        model.component("comp1").geom("geom1").feature("pi20").set("part", "part4");
+        model.component("comp1").geom("geom1").feature("pi20").setEntry("inputexpr", "Recess", "Recess_ITC");
+        model.component("comp1").geom("geom1").feature("pi20")
+                .setEntry("inputexpr", "Rotation_angle", "ang_cuffseam_contactcenter_ITC+5*ang_contactcenter_contactcenter_ITC [deg]");
+        model.component("comp1").geom("geom1").feature("pi20")
+                .setEntry("inputexpr", "Center", "Center_IT+length_contactcenter_contactcenter_ITC");
+        model.component("comp1").geom("geom1").feature("pi20").setEntry("inputexpr", "Round_def", "Round_def_ITC");
+        model.component("comp1").geom("geom1").feature("pi20").setEntry("inputexpr", "R_in", "R_in_ITI");
+        model.component("comp1").geom("geom1").feature("pi20")
+                .setEntry("inputexpr", "Contact_depth", "Contact_depth_ITC");
+        model.component("comp1").geom("geom1").feature("pi20").setEntry("inputexpr", "Overshoot", "Overshoot_ITC");
+        model.component("comp1").geom("geom1").feature("pi20")
+                .setEntry("inputexpr", "A_ellipse_contact", "a_ellipse_contact_ITC");
+        model.component("comp1").geom("geom1").feature("pi20").setEntry("inputexpr", "Diam_contact", "diam_contact_ITC");
+        model.component("comp1").geom("geom1").feature("pi20").setEntry("inputexpr", "L", "L_IT");
+        model.component("comp1").geom("geom1").feature("pi20").set("selkeepnoncontr", false);
+        model.component("comp1").geom("geom1").feature("pi20").setEntry("selkeepobj", "pi20_csel12", "off");
+        model.component("comp1").geom("geom1").feature("pi20").setEntry("selkeepobj", "pi20_csel13", "off");
+        model.component("comp1").geom("geom1").feature("pi20").setEntry("selkeepobj", "pi20_csel14", "off");
+        model.component("comp1").geom("geom1").feature("pi20").setEntry("selkeepdom", "pi20_ballsel1", "off");
+        model.component("comp1").geom("geom1").feature("pi20").setEntry("selkeepdom", "pi20_ballsel2", "off");
+        model.component("comp1").geom("geom1").feature("pi20").setEntry("selkeepdom", "pi20_csel7.dom", "on");
+        model.component("comp1").geom("geom1").feature("pi20").setEntry("selkeepdom", "pi20_csel12.dom", "off");
+        model.component("comp1").geom("geom1").feature("pi20").setEntry("selkeepdom", "pi20_csel14.dom", "off");
+        model.component("comp1").geom("geom1").feature("pi20").setEntry("selkeepbnd", "pi20_csel12.bnd", "off");
+        model.component("comp1").geom("geom1").feature("pi20").setEntry("selkeepbnd", "pi20_csel13.bnd", "off");
+        model.component("comp1").geom("geom1").feature("pi20").setEntry("selkeepbnd", "pi20_csel14.bnd", "off");
+        model.component("comp1").geom("geom1").feature("pi20").setEntry("selkeepedg", "pi20_csel12.edg", "off");
+        model.component("comp1").geom("geom1").feature("pi20").setEntry("selkeepedg", "pi20_csel13.edg", "off");
+        model.component("comp1").geom("geom1").feature("pi20").setEntry("selkeepedg", "pi20_csel14.edg", "off");
+        model.component("comp1").geom("geom1").feature("pi20").setEntry("selkeeppnt", "pi20_csel12.pnt", "off");
+        model.component("comp1").geom("geom1").feature("pi20").setEntry("selkeeppnt", "pi20_csel13.pnt", "off");
+
 ////        model.component("comp1").geom("geom1").create("pi5", "PartInstance");
 ////        model.component("comp1").geom("geom1").feature("pi5").label("Pitt (WIP)");
 ////        model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "N_holes", "1");
@@ -873,454 +1139,221 @@ public class Sandbox3 {
 ////        model.component("comp1").geom("geom1").feature("pi5")
 ////                .setEntry("inputexpr", "Pitch_holecenter_holecenter", "0 [mm]");
 ////        model.component("comp1").geom("geom1").feature("pi5").set("selkeepnoncontr", false);
-//
-////        model.component("comp1").geom("geom1").create("pi6", "PartInstance");
-////        model.component("comp1").geom("geom1").feature("pi6").label("ImThera Inner Cuff");
-////        model.component("comp1").geom("geom1").feature("pi6").setEntry("inputexpr", "N_holes", "N_holes_ITI");
-////        model.component("comp1").geom("geom1").feature("pi6").setEntry("inputexpr", "Theta", "Theta_ITI");
-////        model.component("comp1").geom("geom1").feature("pi6").setEntry("inputexpr", "Center", "Center_IT");
-////        model.component("comp1").geom("geom1").feature("pi6").setEntry("inputexpr", "R_in", "R_in_ITI");
-////        model.component("comp1").geom("geom1").feature("pi6").setEntry("inputexpr", "R_out", "R_out_ITI");
-////        model.component("comp1").geom("geom1").feature("pi6").setEntry("inputexpr", "L", "L_IT");
-////        model.component("comp1").geom("geom1").feature("pi6").setEntry("inputexpr", "Rot_def", "Rot_def_ITI");
-////        model.component("comp1").geom("geom1").feature("pi6").setEntry("inputexpr", "D_hole", "D_hole_ITI");
-////        model.component("comp1").geom("geom1").feature("pi6").setEntry("inputexpr", "Buffer_hole", "Buffer_hole_ITI");
-////        model.component("comp1").geom("geom1").feature("pi6")
-////                .setEntry("inputexpr", "L_holecenter_cuffseam", "L_holecenter_cuffseam_ITI");
-////        model.component("comp1").geom("geom1").feature("pi6")
-////                .setEntry("inputexpr", "Pitch_holecenter_holecenter", "Pitch_holecenter_holecenter_ITI");
-////        model.component("comp1").geom("geom1").feature("pi6").set("selkeepnoncontr", false);
-////        model.component("comp1").geom("geom1").feature("pi6").setEntry("selkeepdom", "pi6_csel3.dom", "on");
-//
-////        model.component("comp1").geom("geom1").create("pi7", "PartInstance");
-////        model.component("comp1").geom("geom1").feature("pi7").label("ImThera Furl Cuff");
-////        model.component("comp1").geom("geom1").feature("pi7").setEntry("inputexpr", "N_holes", "N_holes_ITF");
-////        model.component("comp1").geom("geom1").feature("pi7").setEntry("inputexpr", "Theta", "Theta_ITF");
-////        model.component("comp1").geom("geom1").feature("pi7").setEntry("inputexpr", "Center", "Center_IT");
-////        model.component("comp1").geom("geom1").feature("pi7").setEntry("inputexpr", "R_in", "R_in_ITF");
-////        model.component("comp1").geom("geom1").feature("pi7").setEntry("inputexpr", "R_out", "R_out_ITF");
-////        model.component("comp1").geom("geom1").feature("pi7").setEntry("inputexpr", "L", "L_IT");
-////        model.component("comp1").geom("geom1").feature("pi7").setEntry("inputexpr", "Rot_def", "Rot_def_ITF");
-////        model.component("comp1").geom("geom1").feature("pi7").setEntry("inputexpr", "D_hole", "D_hole_ITF");
-////        model.component("comp1").geom("geom1").feature("pi7").setEntry("inputexpr", "Buffer_hole", "Buffer_hole_ITF");
-////        model.component("comp1").geom("geom1").feature("pi7")
-////                .setEntry("inputexpr", "L_holecenter_cuffseam", "L_holecenter_cuffseam_ITF");
-////        model.component("comp1").geom("geom1").feature("pi7")
-////                .setEntry("inputexpr", "Pitch_holecenter_holecenter", "Pitch_holecenter_holecenter_ITF");
-////        model.component("comp1").geom("geom1").feature("pi7").set("selkeepnoncontr", false);
-////        model.component("comp1").geom("geom1").feature("pi7").setEntry("selkeepdom", "pi7_csel3.dom", "on");
-//
-////        model.component("comp1").geom("geom1").create("pi15", "PartInstance");
-////        model.component("comp1").geom("geom1").feature("pi15").label("ImThera Contact 1");
-////        model.component("comp1").geom("geom1").feature("pi15").set("part", "part4");
-////        model.component("comp1").geom("geom1").feature("pi15").setEntry("inputexpr", "Recess", "Recess_ITC");
-////        model.component("comp1").geom("geom1").feature("pi15")
-////                .setEntry("inputexpr", "Rotation_angle", "ang_cuffseam_contactcenter_ITC");
-////        model.component("comp1").geom("geom1").feature("pi15")
-////                .setEntry("inputexpr", "Center", "Center_IT-length_contactcenter_contactcenter_ITC");
-////        model.component("comp1").geom("geom1").feature("pi15").setEntry("inputexpr", "Round_def", "Round_def_ITC");
-////        model.component("comp1").geom("geom1").feature("pi15").setEntry("inputexpr", "R_in", "R_in_ITI");
-////        model.component("comp1").geom("geom1").feature("pi15")
-////                .setEntry("inputexpr", "Contact_depth", "Contact_depth_ITC");
-//
+
+        model.component("comp1").geom("geom1").run();
+        model.component("comp1").geom("geom1").run("fin");
+
         return model;
     }
 
     public static Model run3(Model model) {
-//        model.component("comp1").geom("geom1").feature("pi15").setEntry("inputexpr", "Overshoot", "Overshoot_ITC");
-//        model.component("comp1").geom("geom1").feature("pi15")
-//                .setEntry("inputexpr", "A_ellipse_contact", "a_ellipse_contact_ITC");
-//        model.component("comp1").geom("geom1").feature("pi15").setEntry("inputexpr", "Diam_contact", "diam_contact_ITC");
-//        model.component("comp1").geom("geom1").feature("pi15").setEntry("inputexpr", "L", "L_IT");
-//        model.component("comp1").geom("geom1").feature("pi15").set("selkeepnoncontr", false);
-//        model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepobj", "pi15_csel12", "off");
-//        model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepobj", "pi15_csel13", "off");
-//        model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepobj", "pi15_csel14", "off");
-//        model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepdom", "pi15_ballsel1", "off");
-//        model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepdom", "pi15_ballsel2", "off");
-//        model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepdom", "pi15_csel7.dom", "on");
-//        model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepdom", "pi15_csel12.dom", "off");
-//        model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepdom", "pi15_csel14.dom", "off");
-//        model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepbnd", "pi15_csel12.bnd", "off");
-//        model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepbnd", "pi15_csel13.bnd", "off");
-//        model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepbnd", "pi15_csel14.bnd", "off");
-//        model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepedg", "pi15_csel12.edg", "off");
-//        model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepedg", "pi15_csel13.edg", "off");
-//        model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepedg", "pi15_csel14.edg", "off");
-//        model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeeppnt", "pi15_csel12.pnt", "off");
-//        model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeeppnt", "pi15_csel13.pnt", "off");
-//        model.component("comp1").geom("geom1").create("pi16", "PartInstance");
-//        model.component("comp1").geom("geom1").feature("pi16").label("ImThera Contact 2");
-//        model.component("comp1").geom("geom1").feature("pi16").set("part", "part4");
-//        model.component("comp1").geom("geom1").feature("pi16").setEntry("inputexpr", "Recess", "Recess_ITC");
-//        model.component("comp1").geom("geom1").feature("pi16")
-//                .setEntry("inputexpr", "Rotation_angle", "ang_cuffseam_contactcenter_ITC+ang_contactcenter_contactcenter_ITC [deg]");
-//        model.component("comp1").geom("geom1").feature("pi16").setEntry("inputexpr", "Center", "Center_IT");
-//        model.component("comp1").geom("geom1").feature("pi16").setEntry("inputexpr", "Round_def", "Round_def_ITC");
-//        model.component("comp1").geom("geom1").feature("pi16").setEntry("inputexpr", "R_in", "R_in_ITI");
-//        model.component("comp1").geom("geom1").feature("pi16")
-//                .setEntry("inputexpr", "Contact_depth", "Contact_depth_ITC");
-//        model.component("comp1").geom("geom1").feature("pi16").setEntry("inputexpr", "Overshoot", "Overshoot_ITC");
-//        model.component("comp1").geom("geom1").feature("pi16")
-//                .setEntry("inputexpr", "A_ellipse_contact", "a_ellipse_contact_ITC");
-//        model.component("comp1").geom("geom1").feature("pi16").setEntry("inputexpr", "Diam_contact", "diam_contact_ITC");
-//        model.component("comp1").geom("geom1").feature("pi16").setEntry("inputexpr", "L", "L_IT");
-//        model.component("comp1").geom("geom1").feature("pi16").set("selkeepnoncontr", false);
-//        model.component("comp1").geom("geom1").feature("pi16").setEntry("selkeepobj", "pi16_csel12", "off");
-//        model.component("comp1").geom("geom1").feature("pi16").setEntry("selkeepobj", "pi16_csel13", "off");
-//        model.component("comp1").geom("geom1").feature("pi16").setEntry("selkeepobj", "pi16_csel14", "off");
-//        model.component("comp1").geom("geom1").feature("pi16").setEntry("selkeepdom", "pi16_ballsel1", "off");
-//        model.component("comp1").geom("geom1").feature("pi16").setEntry("selkeepdom", "pi16_ballsel2", "off");
-//        model.component("comp1").geom("geom1").feature("pi16").setEntry("selkeepdom", "pi16_csel7.dom", "on");
-//        model.component("comp1").geom("geom1").feature("pi16").setEntry("selkeepdom", "pi16_csel12.dom", "off");
-//        model.component("comp1").geom("geom1").feature("pi16").setEntry("selkeepdom", "pi16_csel14.dom", "off");
-//        model.component("comp1").geom("geom1").feature("pi16").setEntry("selkeepbnd", "pi16_csel12.bnd", "off");
-//        model.component("comp1").geom("geom1").feature("pi16").setEntry("selkeepbnd", "pi16_csel13.bnd", "off");
-//        model.component("comp1").geom("geom1").feature("pi16").setEntry("selkeepbnd", "pi16_csel14.bnd", "off");
-//        model.component("comp1").geom("geom1").feature("pi16").setEntry("selkeepedg", "pi16_csel12.edg", "off");
-//        model.component("comp1").geom("geom1").feature("pi16").setEntry("selkeepedg", "pi16_csel13.edg", "off");
-//        model.component("comp1").geom("geom1").feature("pi16").setEntry("selkeepedg", "pi16_csel14.edg", "off");
-//        model.component("comp1").geom("geom1").feature("pi16").setEntry("selkeeppnt", "pi16_csel12.pnt", "off");
-//        model.component("comp1").geom("geom1").feature("pi16").setEntry("selkeeppnt", "pi16_csel13.pnt", "off");
-//        model.component("comp1").geom("geom1").create("pi17", "PartInstance");
-//        model.component("comp1").geom("geom1").feature("pi17").label("ImThera Contact 3");
-//        model.component("comp1").geom("geom1").feature("pi17").set("part", "part4");
-//        model.component("comp1").geom("geom1").feature("pi17").setEntry("inputexpr", "Recess", "Recess_ITC");
-//        model.component("comp1").geom("geom1").feature("pi17")
-//                .setEntry("inputexpr", "Rotation_angle", "ang_cuffseam_contactcenter_ITC+2*ang_contactcenter_contactcenter_ITC [deg]");
-//        model.component("comp1").geom("geom1").feature("pi17")
-//                .setEntry("inputexpr", "Center", "Center_IT+length_contactcenter_contactcenter_ITC");
-//        model.component("comp1").geom("geom1").feature("pi17").setEntry("inputexpr", "Round_def", "Round_def_ITC");
-//        model.component("comp1").geom("geom1").feature("pi17").setEntry("inputexpr", "R_in", "R_in_ITI");
-//        model.component("comp1").geom("geom1").feature("pi17")
-//                .setEntry("inputexpr", "Contact_depth", "Contact_depth_ITC");
-//        model.component("comp1").geom("geom1").feature("pi17").setEntry("inputexpr", "Overshoot", "Overshoot_ITC");
-//        model.component("comp1").geom("geom1").feature("pi17")
-//                .setEntry("inputexpr", "A_ellipse_contact", "a_ellipse_contact_ITC");
-//        model.component("comp1").geom("geom1").feature("pi17").setEntry("inputexpr", "Diam_contact", "diam_contact_ITC");
-//        model.component("comp1").geom("geom1").feature("pi17").setEntry("inputexpr", "L", "L_IT");
-//        model.component("comp1").geom("geom1").feature("pi17").set("selkeepnoncontr", false);
-//        model.component("comp1").geom("geom1").feature("pi17").setEntry("selkeepobj", "pi17_csel12", "off");
-//        model.component("comp1").geom("geom1").feature("pi17").setEntry("selkeepobj", "pi17_csel13", "off");
-//        model.component("comp1").geom("geom1").feature("pi17").setEntry("selkeepobj", "pi17_csel14", "off");
-//        model.component("comp1").geom("geom1").feature("pi17").setEntry("selkeepdom", "pi17_ballsel1", "off");
-//        model.component("comp1").geom("geom1").feature("pi17").setEntry("selkeepdom", "pi17_ballsel2", "off");
-//        model.component("comp1").geom("geom1").feature("pi17").setEntry("selkeepdom", "pi17_csel7.dom", "on");
-//        model.component("comp1").geom("geom1").feature("pi17").setEntry("selkeepdom", "pi17_csel12.dom", "off");
-//        model.component("comp1").geom("geom1").feature("pi17").setEntry("selkeepdom", "pi17_csel14.dom", "off");
-//        model.component("comp1").geom("geom1").feature("pi17").setEntry("selkeepbnd", "pi17_csel12.bnd", "off");
-//        model.component("comp1").geom("geom1").feature("pi17").setEntry("selkeepbnd", "pi17_csel13.bnd", "off");
-//        model.component("comp1").geom("geom1").feature("pi17").setEntry("selkeepbnd", "pi17_csel14.bnd", "off");
-//        model.component("comp1").geom("geom1").feature("pi17").setEntry("selkeepedg", "pi17_csel12.edg", "off");
-//        model.component("comp1").geom("geom1").feature("pi17").setEntry("selkeepedg", "pi17_csel13.edg", "off");
-//        model.component("comp1").geom("geom1").feature("pi17").setEntry("selkeepedg", "pi17_csel14.edg", "off");
-//        model.component("comp1").geom("geom1").feature("pi17").setEntry("selkeeppnt", "pi17_csel12.pnt", "off");
-//        model.component("comp1").geom("geom1").feature("pi17").setEntry("selkeeppnt", "pi17_csel13.pnt", "off");
-//        model.component("comp1").geom("geom1").create("pi18", "PartInstance");
-//        model.component("comp1").geom("geom1").feature("pi18").label("ImThera Contact 4");
-//        model.component("comp1").geom("geom1").feature("pi18").set("part", "part4");
-//        model.component("comp1").geom("geom1").feature("pi18").setEntry("inputexpr", "Recess", "Recess_ITC");
-//        model.component("comp1").geom("geom1").feature("pi18")
-//                .setEntry("inputexpr", "Rotation_angle", "ang_cuffseam_contactcenter_ITC+3*ang_contactcenter_contactcenter_ITC [deg]");
-//        model.component("comp1").geom("geom1").feature("pi18")
-//                .setEntry("inputexpr", "Center", "Center_IT-length_contactcenter_contactcenter_ITC");
-//        model.component("comp1").geom("geom1").feature("pi18").setEntry("inputexpr", "Round_def", "Round_def_ITC");
-//        model.component("comp1").geom("geom1").feature("pi18").setEntry("inputexpr", "R_in", "R_in_ITI");
-//        model.component("comp1").geom("geom1").feature("pi18")
-//                .setEntry("inputexpr", "Contact_depth", "Contact_depth_ITC");
-//        model.component("comp1").geom("geom1").feature("pi18").setEntry("inputexpr", "Overshoot", "Overshoot_ITC");
-//        model.component("comp1").geom("geom1").feature("pi18")
-//                .setEntry("inputexpr", "A_ellipse_contact", "a_ellipse_contact_ITC");
-//        model.component("comp1").geom("geom1").feature("pi18").setEntry("inputexpr", "Diam_contact", "diam_contact_ITC");
-//        model.component("comp1").geom("geom1").feature("pi18").setEntry("inputexpr", "L", "L_IT");
-//        model.component("comp1").geom("geom1").feature("pi18").set("selkeepnoncontr", false);
-//        model.component("comp1").geom("geom1").feature("pi18").setEntry("selkeepobj", "pi18_csel12", "off");
-//        model.component("comp1").geom("geom1").feature("pi18").setEntry("selkeepobj", "pi18_csel13", "off");
-//        model.component("comp1").geom("geom1").feature("pi18").setEntry("selkeepobj", "pi18_csel14", "off");
-//        model.component("comp1").geom("geom1").feature("pi18").setEntry("selkeepdom", "pi18_ballsel1", "off");
-//        model.component("comp1").geom("geom1").feature("pi18").setEntry("selkeepdom", "pi18_ballsel2", "off");
-//        model.component("comp1").geom("geom1").feature("pi18").setEntry("selkeepdom", "pi18_csel7.dom", "on");
-//        model.component("comp1").geom("geom1").feature("pi18").setEntry("selkeepdom", "pi18_csel12.dom", "off");
-//        model.component("comp1").geom("geom1").feature("pi18").setEntry("selkeepdom", "pi18_csel14.dom", "off");
-//        model.component("comp1").geom("geom1").feature("pi18").setEntry("selkeepbnd", "pi18_csel12.bnd", "off");
-//        model.component("comp1").geom("geom1").feature("pi18").setEntry("selkeepbnd", "pi18_csel13.bnd", "off");
-//        model.component("comp1").geom("geom1").feature("pi18").setEntry("selkeepbnd", "pi18_csel14.bnd", "off");
-//        model.component("comp1").geom("geom1").feature("pi18").setEntry("selkeepedg", "pi18_csel12.edg", "off");
-//        model.component("comp1").geom("geom1").feature("pi18").setEntry("selkeepedg", "pi18_csel13.edg", "off");
-//        model.component("comp1").geom("geom1").feature("pi18").setEntry("selkeepedg", "pi18_csel14.edg", "off");
-//        model.component("comp1").geom("geom1").feature("pi18").setEntry("selkeeppnt", "pi18_csel12.pnt", "off");
-//        model.component("comp1").geom("geom1").feature("pi18").setEntry("selkeeppnt", "pi18_csel13.pnt", "off");
-//        model.component("comp1").geom("geom1").create("pi19", "PartInstance");
-//        model.component("comp1").geom("geom1").feature("pi19").label("ImThera Contact 5");
-//        model.component("comp1").geom("geom1").feature("pi19").set("part", "part4");
-//        model.component("comp1").geom("geom1").feature("pi19").setEntry("inputexpr", "Recess", "Recess_ITC");
-//        model.component("comp1").geom("geom1").feature("pi19")
-//                .setEntry("inputexpr", "Rotation_angle", "ang_cuffseam_contactcenter_ITC+4*ang_contactcenter_contactcenter_ITC [deg]");
-//        model.component("comp1").geom("geom1").feature("pi19").setEntry("inputexpr", "Center", "Center_IT");
-//        model.component("comp1").geom("geom1").feature("pi19").setEntry("inputexpr", "Round_def", "Round_def_ITC");
-//        model.component("comp1").geom("geom1").feature("pi19").setEntry("inputexpr", "R_in", "R_in_ITI");
-//        model.component("comp1").geom("geom1").feature("pi19")
-//                .setEntry("inputexpr", "Contact_depth", "Contact_depth_ITC");
-//        model.component("comp1").geom("geom1").feature("pi19").setEntry("inputexpr", "Overshoot", "Overshoot_ITC");
-//        model.component("comp1").geom("geom1").feature("pi19")
-//                .setEntry("inputexpr", "A_ellipse_contact", "a_ellipse_contact_ITC");
-//        model.component("comp1").geom("geom1").feature("pi19").setEntry("inputexpr", "Diam_contact", "diam_contact_ITC");
-//        model.component("comp1").geom("geom1").feature("pi19").setEntry("inputexpr", "L", "L_IT");
-//        model.component("comp1").geom("geom1").feature("pi19").set("selkeepnoncontr", false);
-//        model.component("comp1").geom("geom1").feature("pi19").setEntry("selkeepobj", "pi19_csel12", "off");
-//        model.component("comp1").geom("geom1").feature("pi19").setEntry("selkeepobj", "pi19_csel13", "off");
-//        model.component("comp1").geom("geom1").feature("pi19").setEntry("selkeepobj", "pi19_csel14", "off");
-//        model.component("comp1").geom("geom1").feature("pi19").setEntry("selkeepdom", "pi19_ballsel1", "off");
-//        model.component("comp1").geom("geom1").feature("pi19").setEntry("selkeepdom", "pi19_ballsel2", "off");
-//        model.component("comp1").geom("geom1").feature("pi19").setEntry("selkeepdom", "pi19_csel7.dom", "on");
-//        model.component("comp1").geom("geom1").feature("pi19").setEntry("selkeepdom", "pi19_csel12.dom", "off");
-//        model.component("comp1").geom("geom1").feature("pi19").setEntry("selkeepdom", "pi19_csel14.dom", "off");
-//        model.component("comp1").geom("geom1").feature("pi19").setEntry("selkeepbnd", "pi19_csel12.bnd", "off");
-//        model.component("comp1").geom("geom1").feature("pi19").setEntry("selkeepbnd", "pi19_csel13.bnd", "off");
-//        model.component("comp1").geom("geom1").feature("pi19").setEntry("selkeepbnd", "pi19_csel14.bnd", "off");
-//        model.component("comp1").geom("geom1").feature("pi19").setEntry("selkeepedg", "pi19_csel12.edg", "off");
-//        model.component("comp1").geom("geom1").feature("pi19").setEntry("selkeepedg", "pi19_csel13.edg", "off");
-//        model.component("comp1").geom("geom1").feature("pi19").setEntry("selkeepedg", "pi19_csel14.edg", "off");
-//        model.component("comp1").geom("geom1").feature("pi19").setEntry("selkeeppnt", "pi19_csel12.pnt", "off");
-//        model.component("comp1").geom("geom1").feature("pi19").setEntry("selkeeppnt", "pi19_csel13.pnt", "off");
-//        model.component("comp1").geom("geom1").create("pi20", "PartInstance");
-//        model.component("comp1").geom("geom1").feature("pi20").label("ImThera Contact 6");
-//        model.component("comp1").geom("geom1").feature("pi20").set("part", "part4");
-//        model.component("comp1").geom("geom1").feature("pi20").setEntry("inputexpr", "Recess", "Recess_ITC");
-//        model.component("comp1").geom("geom1").feature("pi20")
-//                .setEntry("inputexpr", "Rotation_angle", "ang_cuffseam_contactcenter_ITC+5*ang_contactcenter_contactcenter_ITC [deg]");
-//        model.component("comp1").geom("geom1").feature("pi20")
-//                .setEntry("inputexpr", "Center", "Center_IT+length_contactcenter_contactcenter_ITC");
-//        model.component("comp1").geom("geom1").feature("pi20").setEntry("inputexpr", "Round_def", "Round_def_ITC");
-//        model.component("comp1").geom("geom1").feature("pi20").setEntry("inputexpr", "R_in", "R_in_ITI");
-//        model.component("comp1").geom("geom1").feature("pi20")
-//                .setEntry("inputexpr", "Contact_depth", "Contact_depth_ITC");
-//        model.component("comp1").geom("geom1").feature("pi20").setEntry("inputexpr", "Overshoot", "Overshoot_ITC");
-//        model.component("comp1").geom("geom1").feature("pi20")
-//                .setEntry("inputexpr", "A_ellipse_contact", "a_ellipse_contact_ITC");
-//        model.component("comp1").geom("geom1").feature("pi20").setEntry("inputexpr", "Diam_contact", "diam_contact_ITC");
-//        model.component("comp1").geom("geom1").feature("pi20").setEntry("inputexpr", "L", "L_IT");
-//        model.component("comp1").geom("geom1").feature("pi20").set("selkeepnoncontr", false);
-//        model.component("comp1").geom("geom1").feature("pi20").setEntry("selkeepobj", "pi20_csel12", "off");
-//        model.component("comp1").geom("geom1").feature("pi20").setEntry("selkeepobj", "pi20_csel13", "off");
-//        model.component("comp1").geom("geom1").feature("pi20").setEntry("selkeepobj", "pi20_csel14", "off");
-//        model.component("comp1").geom("geom1").feature("pi20").setEntry("selkeepdom", "pi20_ballsel1", "off");
-//        model.component("comp1").geom("geom1").feature("pi20").setEntry("selkeepdom", "pi20_ballsel2", "off");
-//        model.component("comp1").geom("geom1").feature("pi20").setEntry("selkeepdom", "pi20_csel7.dom", "on");
-//        model.component("comp1").geom("geom1").feature("pi20").setEntry("selkeepdom", "pi20_csel12.dom", "off");
-//        model.component("comp1").geom("geom1").feature("pi20").setEntry("selkeepdom", "pi20_csel14.dom", "off");
-//        model.component("comp1").geom("geom1").feature("pi20").setEntry("selkeepbnd", "pi20_csel12.bnd", "off");
-//        model.component("comp1").geom("geom1").feature("pi20").setEntry("selkeepbnd", "pi20_csel13.bnd", "off");
-//        model.component("comp1").geom("geom1").feature("pi20").setEntry("selkeepbnd", "pi20_csel14.bnd", "off");
-//        model.component("comp1").geom("geom1").feature("pi20").setEntry("selkeepedg", "pi20_csel12.edg", "off");
-//        model.component("comp1").geom("geom1").feature("pi20").setEntry("selkeepedg", "pi20_csel13.edg", "off");
-//        model.component("comp1").geom("geom1").feature("pi20").setEntry("selkeepedg", "pi20_csel14.edg", "off");
-//        model.component("comp1").geom("geom1").feature("pi20").setEntry("selkeeppnt", "pi20_csel12.pnt", "off");
-//        model.component("comp1").geom("geom1").feature("pi20").setEntry("selkeeppnt", "pi20_csel13.pnt", "off");
-        model.component("comp1").geom("geom1").run();
-        model.component("comp1").geom("geom1").run("fin");
-
-
-        model.material().create("mat1", "Common", "");
-        model.material("mat1").label("Saline");
-        model.material("mat1").propertyGroup("def")
-                .set("electricconductivity", new String[]{"1.76", "0", "0", "0", "1.76", "0", "0", "0", "1.76"});
-
 
         model.material().create("mat3", "Common", "");
         model.material("mat3").label("Silicone");
         model.component("comp1").material().create("matlnk4", "Link");
         model.component("comp1").material("matlnk4").label("Enteromedics Cuff is Silicone");
         model.component("comp1").material("matlnk4").set("link", "mat3");
+        model.component("comp1").material("matlnk4").selection().named("geom1_pi8_csel3_dom");
 
+        model.component("comp1").material().create("matlnk6", "Link");
+        model.component("comp1").material("matlnk6").label("Madison Cuff is Silicone");
+        model.component("comp1").material("matlnk6").set("link", "mat3");
+        model.component("comp1").material("matlnk6").selection().named("geom1_pi2_csel3_dom");
+
+        model.component("comp1").material().create("matlnk8", "Link");
+        model.component("comp1").material("matlnk8").label("CorTec Cuff is Silicone");
+        model.component("comp1").material("matlnk8").set("link", "mat3");
+        model.component("comp1").material("matlnk8").selection().named("geom1_pi3_csel3_dom");
+
+        model.component("comp1").material().create("matlnk3", "Link");
+        model.component("comp1").material("matlnk3").label("Purdue Cuff is Silicone");
+        model.component("comp1").material("matlnk3").set("link", "mat3");
+        model.component("comp1").material("matlnk3").selection().named("geom1_pi4_csel3_dom");
+
+        model.component("comp1").material().create("matlnk11", "Link");
+        model.component("comp1").material("matlnk11").label("ImThera Inner Cuff is Silicone");
+        model.component("comp1").material("matlnk11").set("link", "mat3");
+        model.component("comp1").material("matlnk11").selection().named("geom1_pi6_csel3_dom");
+
+        model.component("comp1").material().create("matlnk12", "Link");
+        model.component("comp1").material("matlnk12").label("ImThera Furl is Silicone");
+        model.component("comp1").material("matlnk12").set("link", "mat3");
+        model.component("comp1").material("matlnk12").selection().named("geom1_pi7_csel3_dom");
+
+        // PLATINUM
         model.material().create("mat2", "Common", "");
         model.material("mat2").label("Platinum");
         model.component("comp1").material().create("matlnk5", "Link");
-        model.component("comp1").material("matlnk5").label("Enteromedics Contact is Platinum");
+        model.component("comp1").material("matlnk5").label("Enteromedics Contact 1 is Platinum");
         model.component("comp1").material("matlnk5").set("link", "mat2");
-
-        model.material().create("mat4", "Common", "");
-        model.material("mat4").label("Scar");
-
-
-
-
-
-
-        model.component("comp1").material("matlnk4").selection().named("geom1_pi8_csel3_dom");
         model.component("comp1").material("matlnk5").selection().named("geom1_pi9_csel4_dom");
-//
-        model.component("comp1").material("matlnk6").selection().named("geom1_pi2_csel3_dom");
+
+        model.component("comp1").material().create("matlnk7", "Link");
+        model.component("comp1").material("matlnk7").label("Madison Contact 1 is Platinum");
+        model.component("comp1").material("matlnk7").set("link", "mat2");
         model.component("comp1").material("matlnk7").selection().named("geom1_pi10_csel4_dom");
 
+        model.component("comp1").material().create("matlnk9", "Link");
+        model.component("comp1").material("matlnk9").label("CorTec Contact 1 is Platinum");
+        model.component("comp1").material("matlnk9").set("link", "mat2");
+        model.component("comp1").material("matlnk9").selection().named("geom1_pi11_csel4_dom");
 
+        model.component("comp1").material().create("matlnk10", "Link");
+        model.component("comp1").material("matlnk10").label("CorTec Contact 2 is Platinum");
+        model.component("comp1").material("matlnk10").set("link", "mat2");
+        model.component("comp1").material("matlnk10").selection().named("geom1_pi12_csel4_dom");
 
+        model.component("comp1").material().create("matlnk1", "Link");
+        model.component("comp1").material("matlnk1").label("Purdue Contact 1 is Platinum");
+        model.component("comp1").material("matlnk1").set("link", "mat2");
+        model.component("comp1").material("matlnk1").selection().named("geom1_pi13_csel2_dom");
 
-        model.component("comp1").material().create("matlnk6", "Link");
-        model.component("comp1").material().create("matlnk7", "Link");
+        model.component("comp1").material().create("matlnk2", "Link");
+        model.component("comp1").material("matlnk2").label("Purdue Contact 2 is Platinum");
+        model.component("comp1").material("matlnk2").set("link", "mat2");
+        model.component("comp1").material("matlnk2").selection().named("geom1_pi14_csel2_dom");
 
-//        model.component("comp1").material().create("matlnk8", "Link");
-//        model.component("comp1").material().create("matlnk9", "Link");
-//        model.component("comp1").material().create("matlnk10", "Link");
-//        model.component("comp1").material().create("matlnk3", "Link");
+        model.component("comp1").material().create("matlnk14", "Link");
+        model.component("comp1").material("matlnk14").label("ImThera Contact 1 is Platinum");
+        model.component("comp1").material("matlnk14").set("link", "mat2");
+        model.component("comp1").material("matlnk14").selection().named("geom1_pi15_csel13_dom");
 
-//        model.component("comp1").material().create("matlnk1", "Link");
-//        model.component("comp1").material().create("matlnk2", "Link");
-//        model.component("comp1").material().create("matlnk11", "Link");
-//        model.component("comp1").material().create("matlnk12", "Link");
-//        model.component("comp1").material().create("matlnk14", "Link");
-//        model.component("comp1").material().create("matlnk15", "Link");
-//        model.component("comp1").material().create("matlnk16", "Link");
-//        model.component("comp1").material().create("matlnk17", "Link");
-//        model.component("comp1").material().create("matlnk18", "Link");
-//        model.component("comp1").material().create("matlnk19", "Link");
-//        model.component("comp1").material().create("matlnk20", "Link");
-//        model.component("comp1").material().create("matlnk21", "Link");
-//        model.component("comp1").material().create("matlnk22", "Link");
-//        model.component("comp1").material().create("matlnk23", "Link");
-//        model.component("comp1").material().create("matlnk24", "Link");
-//        model.component("comp1").material().create("matlnk25", "Link");
+        model.component("comp1").material().create("matlnk15", "Link");
+        model.component("comp1").material("matlnk15").label("ImThera Contact 2 is Platinum");
+        model.component("comp1").material("matlnk15").set("link", "mat2");
+        model.component("comp1").material("matlnk15").selection().named("geom1_pi16_csel13_dom");
 
-//
-//        model.component("comp1").material("matlnk8").selection().named("geom1_pi3_csel3_dom");
-//        model.component("comp1").material("matlnk9").selection().named("geom1_pi11_csel4_dom");
+        model.component("comp1").material().create("matlnk16", "Link");
+        model.component("comp1").material("matlnk16").label("ImThera Contact 3 is Platinum");
+        model.component("comp1").material("matlnk16").set("link", "mat2");
+        model.component("comp1").material("matlnk16").selection().named("geom1_pi17_csel13_dom");
 
-//        model.component("comp1").material("matlnk10").selection().named("geom1_pi12_csel4_dom");
-//        model.component("comp1").material("matlnk3").selection().named("geom1_pi4_csel3_dom");
-//        model.component("comp1").material("matlnk1").selection().named("geom1_pi13_csel2_dom");
-//        model.component("comp1").material("matlnk2").selection().named("geom1_pi14_csel2_dom");
-//        model.component("comp1").material("matlnk11").selection().named("geom1_pi6_csel3_dom");
-//        model.component("comp1").material("matlnk12").selection().named("geom1_pi7_csel3_dom");
-//        model.component("comp1").material("matlnk14").selection().named("geom1_pi15_csel13_dom");
-//        model.component("comp1").material("matlnk15").selection().named("geom1_pi16_csel13_dom");
-//        model.component("comp1").material("matlnk16").selection().named("geom1_pi17_csel13_dom");
-//        model.component("comp1").material("matlnk17").selection().named("geom1_pi18_csel13_dom");
-//        model.component("comp1").material("matlnk18").selection().named("geom1_pi19_csel13_dom");
-//        model.component("comp1").material("matlnk19").selection().named("geom1_pi20_csel13_dom");
-//        model.component("comp1").material("matlnk20").selection().named("geom1_pi15_csel7_dom");
-//        model.component("comp1").material("matlnk21").selection().named("geom1_pi16_csel7_dom");
-//        model.component("comp1").material("matlnk22").selection().named("geom1_pi17_csel7_dom");
-//        model.component("comp1").material("matlnk23").selection().named("geom1_pi18_csel7_dom");
-//        model.component("comp1").material("matlnk24").selection().named("geom1_pi19_csel7_dom");
-//        model.component("comp1").material("matlnk25").selection().named("geom1_pi20_csel7_dom");
+        model.component("comp1").material().create("matlnk17", "Link");
+        model.component("comp1").material("matlnk17").label("ImThera Contact 4 is Platinum");
+        model.component("comp1").material("matlnk17").set("link", "mat2");
+        model.component("comp1").material("matlnk17").selection().named("geom1_pi18_csel13_dom");
 
-        model.component("comp1").physics().create("ec", "ConductiveMedia", "geom1");
-        model.component("comp1").physics("ec").create("pcs3", "PointCurrentSource", 0);
-        model.component("comp1").physics("ec").feature("pcs3").selection().named("geom1_pi9_csel3_pnt");
+        model.component("comp1").material().create("matlnk18", "Link");
+        model.component("comp1").material("matlnk18").label("ImThera Contact 5 is Platinum");
+        model.component("comp1").material("matlnk18").set("link", "mat2");
+        model.component("comp1").material("matlnk18").selection().named("geom1_pi19_csel13_dom");
 
-        model.component("comp1").physics("ec").create("pcs4", "PointCurrentSource", 0);
-        model.component("comp1").physics("ec").feature("pcs4").selection().named("geom1_pi10_csel3_pnt");
+        model.component("comp1").material().create("matlnk19", "Link");
+        model.component("comp1").material("matlnk19").label("ImThera Contact 6 is Platinum");
+        model.component("comp1").material("matlnk19").set("link", "mat2");
+        model.component("comp1").material("matlnk19").selection().named("geom1_pi20_csel13_dom");
 
+        // SALINE
+        model.material().create("mat1", "Common", "");
+        model.material("mat1").label("Saline");
+        model.material("mat1").propertyGroup("def")
+                .set("electricconductivity", new String[]{"1.76", "0", "0", "0", "1.76", "0", "0", "0", "1.76"});
 
-//        model.component("comp1").physics("ec").create("pcs5", "PointCurrentSource", 0);
-//        model.component("comp1").physics("ec").feature("pcs5").selection().named("geom1_pi11_csel3_pnt");
-//        model.component("comp1").physics("ec").create("pcs6", "PointCurrentSource", 0);
-//        model.component("comp1").physics("ec").feature("pcs6").selection().named("geom1_pi12_csel3_pnt");
-//        model.component("comp1").physics("ec").create("pcs1", "PointCurrentSource", 0);
-//        model.component("comp1").physics("ec").feature("pcs1").selection().named("geom1_pi13_csel3_pnt");
-//        model.component("comp1").physics("ec").create("pcs2", "PointCurrentSource", 0);
-//        model.component("comp1").physics("ec").feature("pcs2").selection().named("geom1_pi14_csel3_pnt");
-//        model.component("comp1").physics("ec").create("pcs7", "PointCurrentSource", 0);
-//        model.component("comp1").physics("ec").feature("pcs7").selection().named("geom1_pi15_csel14_pnt");
-//        model.component("comp1").physics("ec").create("pcs8", "PointCurrentSource", 0);
-//        model.component("comp1").physics("ec").feature("pcs8").selection().named("geom1_pi16_csel14_pnt");
-//        model.component("comp1").physics("ec").create("pcs9", "PointCurrentSource", 0);
-//        model.component("comp1").physics("ec").feature("pcs9").selection().named("geom1_pi17_csel14_pnt");
-//        model.component("comp1").physics("ec").create("pcs10", "PointCurrentSource", 0);
-//        model.component("comp1").physics("ec").feature("pcs10").selection().named("geom1_pi18_csel14_pnt");
-//        model.component("comp1").physics("ec").create("pcs11", "PointCurrentSource", 0);
-//        model.component("comp1").physics("ec").feature("pcs11").selection().named("geom1_pi19_csel14_pnt");
-//        model.component("comp1").physics("ec").create("pcs12", "PointCurrentSource", 0);
-//        model.component("comp1").physics("ec").feature("pcs12").selection().named("geom1_pi20_csel14_pnt");
+        model.component("comp1").material().create("matlnk20", "Link");
+        model.component("comp1").material("matlnk20").label("ImThera Recess 1 is Saline");
+        model.component("comp1").material("matlnk20").set("link", "mat1");
+        model.component("comp1").material("matlnk20").selection().named("geom1_pi15_csel7_dom");
 
-        model.component("comp1").view("view1").set("transparency", true);
+        model.component("comp1").material().create("matlnk21", "Link");
+        model.component("comp1").material("matlnk21").label("ImThera Recess 2 is Saline");
+        model.component("comp1").material("matlnk21").set("link", "mat1");
+        model.component("comp1").material("matlnk21").selection().named("geom1_pi16_csel7_dom");
 
+        model.component("comp1").material().create("matlnk22", "Link");
+        model.component("comp1").material("matlnk22").label("ImThera Recess 3 is Saline");
+        model.component("comp1").material("matlnk22").set("link", "mat1");
+        model.component("comp1").material("matlnk22").selection().named("geom1_pi17_csel7_dom");
 
+        model.component("comp1").material().create("matlnk23", "Link");
+        model.component("comp1").material("matlnk23").label("ImThera Recess 4 is Saline");
+        model.component("comp1").material("matlnk23").set("link", "mat1");
+        model.component("comp1").material("matlnk23").selection().named("geom1_pi18_csel7_dom");
 
+        model.component("comp1").material().create("matlnk24", "Link");
+        model.component("comp1").material("matlnk24").label("ImThera Recess 5 is Saline");
+        model.component("comp1").material("matlnk24").set("link", "mat1");
+        model.component("comp1").material("matlnk24").selection().named("geom1_pi19_csel7_dom");
 
-        model.component("comp1").material("matlnk6").label("Madison Cuff is Silicone");
-        model.component("comp1").material("matlnk6").set("link", "mat3");
-        model.component("comp1").material("matlnk7").label("Madison Contact is Platinum");
-        model.component("comp1").material("matlnk7").set("link", "mat2");
+        model.component("comp1").material().create("matlnk25", "Link");
+        model.component("comp1").material("matlnk25").label("ImThera Recess 6 is Saline");
+        model.component("comp1").material("matlnk25").set("link", "mat1");
+        model.component("comp1").material("matlnk25").selection().named("geom1_pi20_csel7_dom");
 
-//        model.component("comp1").material("matlnk8").label("CorTec300 Cuff is Silicone");
-//        model.component("comp1").material("matlnk8").set("link", "mat3");
-//        model.component("comp1").material("matlnk9").label("CorTec300 Contact 1 is Platinum");
-//        model.component("comp1").material("matlnk9").set("link", "mat2");
-//        model.component("comp1").material("matlnk10").label("CorTec300 Contact 2 is Platinum");
-//        model.component("comp1").material("matlnk10").set("link", "mat2");
-//        model.component("comp1").material("matlnk3").label("Purdue Cuff is Silicone");
-//        model.component("comp1").material("matlnk3").set("link", "mat3");
-
-
-
-//        model.component("comp1").material("matlnk1").label("Purdue Contact 1 is Platinum");
-//        model.component("comp1").material("matlnk1").set("link", "mat2");
-//        model.component("comp1").material("matlnk2").label("Purdue Contact 2 is Platinum");
-//        model.component("comp1").material("matlnk2").set("link", "mat2");
-
-//        model.component("comp1").material("matlnk11").label("ImThera Inner Cuff is Silicone");
-//        model.component("comp1").material("matlnk11").set("link", "mat3");
-//        model.component("comp1").material("matlnk12").label("ImThera Furl is Silicone");
-//        model.component("comp1").material("matlnk12").set("link", "mat3");
-//        model.component("comp1").material("matlnk14").label("ImThera Contact 1 is Platinum 1");
-//        model.component("comp1").material("matlnk14").set("link", "mat2");
-//        model.component("comp1").material("matlnk15").label("ImThera Contact 1 is Platinum 2");
-//        model.component("comp1").material("matlnk15").set("link", "mat2");
-//        model.component("comp1").material("matlnk16").label("ImThera Contact 1 is Platinum 3");
-//        model.component("comp1").material("matlnk16").set("link", "mat2");
-//        model.component("comp1").material("matlnk17").label("ImThera Contact 1 is Platinum 4");
-//        model.component("comp1").material("matlnk17").set("link", "mat2");
-//        model.component("comp1").material("matlnk18").label("ImThera Contact 1 is Platinum 5");
-//        model.component("comp1").material("matlnk18").set("link", "mat2");
-//        model.component("comp1").material("matlnk19").label("ImThera Contact 1 is Platinum 6");
-//        model.component("comp1").material("matlnk19").set("link", "mat2");
-
-//        model.component("comp1").material("matlnk20").label("ImThera Recess 1 is Saline");
-//        model.component("comp1").material("matlnk21").label("ImThera Recess 2 is Saline");
-//        model.component("comp1").material("matlnk22").label("ImThera Recess 3 is Saline");
-//        model.component("comp1").material("matlnk23").label("ImThera Recess 4 is Saline");
-//        model.component("comp1").material("matlnk24").label("ImThera Recess 5 is Saline");
-//        model.component("comp1").material("matlnk25").label("ImThera Recess 6 is Saline");
-
-        model.component("comp1").physics("ec").feature("pcs3").set("Qjp", 0.001);
-        model.component("comp1").physics("ec").feature("pcs3").label("Enteromedics Point Current Source 1");
+        // SCAR
+        model.material().create("mat4", "Common", "");
+        model.material("mat4").label("Scar");
 
         return model;
     }
 
     public static Model run4(Model model) {
+        model.component("comp1").physics().create("ec", "ConductiveMedia", "geom1");
+
+        model.component("comp1").physics("ec").create("pcs3", "PointCurrentSource", 0);
+        model.component("comp1").physics("ec").feature("pcs3").selection().named("geom1_pi9_csel3_pnt");
+        model.component("comp1").physics("ec").feature("pcs3").set("Qjp", 0.001);
+        model.component("comp1").physics("ec").feature("pcs3").label("Enteromedics Point Current Source 1");
+
+        model.component("comp1").physics("ec").create("pcs4", "PointCurrentSource", 0);
+        model.component("comp1").physics("ec").feature("pcs4").selection().named("geom1_pi10_csel3_pnt");
         model.component("comp1").physics("ec").feature("pcs4").set("Qjp", 0.001);
         model.component("comp1").physics("ec").feature("pcs4").label("Madison Point Current Source 1");
 
-//        model.component("comp1").physics("ec").feature("pcs5").set("Qjp", 0.001);
-//        model.component("comp1").physics("ec").feature("pcs5").label("CorTec300 Point Current Source 1");
-//        model.component("comp1").physics("ec").feature("pcs6").set("Qjp", -0.001);
-//        model.component("comp1").physics("ec").feature("pcs6").label("CorTec300 Point Current Source 2");
+        model.component("comp1").physics("ec").create("pcs5", "PointCurrentSource", 0);
+        model.component("comp1").physics("ec").feature("pcs5").selection().named("geom1_pi11_csel3_pnt");
+        model.component("comp1").physics("ec").feature("pcs5").set("Qjp", 0.001);
+        model.component("comp1").physics("ec").feature("pcs5").label("CorTec Point Current Source 1");
 
-//        model.component("comp1").physics("ec").feature("pcs1").set("Qjp", 0.001);
-//        model.component("comp1").physics("ec").feature("pcs1").label("Purdue Point Current Source 1");
-//        model.component("comp1").physics("ec").feature("pcs2").set("Qjp", -0.001);
-//        model.component("comp1").physics("ec").feature("pcs2").label("Purdue Point Current Source 2");
-//        model.component("comp1").physics("ec").feature("pcs7").set("Qjp", 0.001);
+        model.component("comp1").physics("ec").create("pcs6", "PointCurrentSource", 0);
+        model.component("comp1").physics("ec").feature("pcs6").selection().named("geom1_pi12_csel3_pnt");
+        model.component("comp1").physics("ec").feature("pcs6").set("Qjp", -0.001);
+        model.component("comp1").physics("ec").feature("pcs6").label("CorTec Point Current Source 2");
 
-//        model.component("comp1").physics("ec").feature("pcs7").label("ImThera Point Current Source 1");
-//        model.component("comp1").physics("ec").feature("pcs8").set("Qjp", 0.001);
-//        model.component("comp1").physics("ec").feature("pcs8").label("ImThera Point Current Source 2");
-//        model.component("comp1").physics("ec").feature("pcs9").set("Qjp", 0.001);
-//        model.component("comp1").physics("ec").feature("pcs9").label("ImThera Point Current Source 3");
-//        model.component("comp1").physics("ec").feature("pcs10").set("Qjp", 0.001);
-//        model.component("comp1").physics("ec").feature("pcs10").label("ImThera Point Current Source 4");
-//        model.component("comp1").physics("ec").feature("pcs11").set("Qjp", 0.001);
-//        model.component("comp1").physics("ec").feature("pcs11").label("ImThera Point Current Source 5");
-//        model.component("comp1").physics("ec").feature("pcs12").set("Qjp", 0.001);
-//        model.component("comp1").physics("ec").feature("pcs12").label("ImThera Point Current Source 6");
+        model.component("comp1").physics("ec").create("pcs1", "PointCurrentSource", 0);
+        model.component("comp1").physics("ec").feature("pcs1").selection().named("geom1_pi13_csel3_pnt");
+        model.component("comp1").physics("ec").feature("pcs1").set("Qjp", 0.001);
+        model.component("comp1").physics("ec").feature("pcs1").label("Purdue Point Current Source 1");
+
+        model.component("comp1").physics("ec").create("pcs2", "PointCurrentSource", 0);
+        model.component("comp1").physics("ec").feature("pcs2").selection().named("geom1_pi14_csel3_pnt");
+        model.component("comp1").physics("ec").feature("pcs2").set("Qjp", -0.001);
+        model.component("comp1").physics("ec").feature("pcs2").label("Purdue Point Current Source 2");
+
+        model.component("comp1").physics("ec").create("pcs7", "PointCurrentSource", 0);
+        model.component("comp1").physics("ec").feature("pcs7").selection().named("geom1_pi15_csel14_pnt");
+        model.component("comp1").physics("ec").feature("pcs7").set("Qjp", 0.001);
+        model.component("comp1").physics("ec").feature("pcs7").label("ImThera Point Current Source 1");
+
+        model.component("comp1").physics("ec").create("pcs8", "PointCurrentSource", 0);
+        model.component("comp1").physics("ec").feature("pcs8").selection().named("geom1_pi16_csel14_pnt");
+        model.component("comp1").physics("ec").feature("pcs8").set("Qjp", 0.001);
+        model.component("comp1").physics("ec").feature("pcs8").label("ImThera Point Current Source 2");
+
+        model.component("comp1").physics("ec").create("pcs9", "PointCurrentSource", 0);
+        model.component("comp1").physics("ec").feature("pcs9").selection().named("geom1_pi17_csel14_pnt");
+        model.component("comp1").physics("ec").feature("pcs9").set("Qjp", 0.001);
+        model.component("comp1").physics("ec").feature("pcs9").label("ImThera Point Current Source 3");
+
+        model.component("comp1").physics("ec").create("pcs10", "PointCurrentSource", 0);
+        model.component("comp1").physics("ec").feature("pcs10").selection().named("geom1_pi18_csel14_pnt");
+        model.component("comp1").physics("ec").feature("pcs10").set("Qjp", 0.001);
+        model.component("comp1").physics("ec").feature("pcs10").label("ImThera Point Current Source 4");
+
+        model.component("comp1").physics("ec").create("pcs11", "PointCurrentSource", 0);
+        model.component("comp1").physics("ec").feature("pcs11").selection().named("geom1_pi19_csel14_pnt");
+        model.component("comp1").physics("ec").feature("pcs11").set("Qjp", 0.001);
+        model.component("comp1").physics("ec").feature("pcs11").label("ImThera Point Current Source 5");
+
+        model.component("comp1").physics("ec").create("pcs12", "PointCurrentSource", 0);
+        model.component("comp1").physics("ec").feature("pcs12").selection().named("geom1_pi20_csel14_pnt");
+        model.component("comp1").physics("ec").feature("pcs12").set("Qjp", 0.001);
+        model.component("comp1").physics("ec").feature("pcs12").label("ImThera Point Current Source 6");
+
+        model.component("comp1").view("view1").set("transparency", true);
 
         model.study().create("std1");
         model.study("std1").create("stat", "Stationary");
-
         model.label("UNI_TUBECUFF.mph");
-
         return model;
     }
 
