@@ -9,6 +9,8 @@ import com.comsol.model.util.ModelUtil;
 //import org.json.JSONArray;
 //import org.json.JSONObject;
 
+// comsolbatch -inputfile Model1.mph -outputfile Model1_solved.mph (add this to runner maybe?)
+
 // comsolbatch -inputfile Model1.mph -outputfile Model1_solved.mph
 /** Model exported on Sep 5 2019, 09:20 by COMSOL 5.4.0.388. */
 public class Sandbox3 {
