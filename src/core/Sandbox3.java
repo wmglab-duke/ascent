@@ -1,11 +1,9 @@
-/*
- * Sandbox3.java
+package core;/*
+ * core.Sandbox3.java
  */
 
 import com.comsol.model.Model;
 import com.comsol.model.util.ModelUtil;
-//import model.ComsolIdentifierManager;
-//import model.JSONReader;
 //import org.json.JSONArray;
 //import org.json.JSONObject;
 
