@@ -13,7 +13,7 @@ import com.comsol.model.util.ModelUtil;
 /** Model exported on Sep 5 2019, 09:20 by COMSOL 5.4.0.388. */
 public class Sandbox3 {
 
-    public static Model run() {
+    public static Model definePartInstanceParameters() {
 
         Model model = ModelUtil.create("Model");
         ModelUtil.showProgress(false);
@@ -114,7 +114,7 @@ public class Sandbox3 {
         model.param("par4").set("Theta_P", "percent_circ_cuff_P*360 [deg]");
         model.param("par4").set("Center_P", "4*10 [mm]");
         model.param("par4")
-             .set("R_in_P", "max(r_nerve_P+thk_medium_gap_internal_P+2*r_conductor_P+sep_conductor_P,r_cuff_in_pre_P)");
+                .set("R_in_P", "max(r_nerve_P+thk_medium_gap_internal_P+2*r_conductor_P+sep_conductor_P,r_cuff_in_pre_P)");
         model.param("par4").set("R_out_P", "R_in_P+thk_cuff_P");
         model.param("par4").set("L_P", "3.5 [mm]");
         model.param("par4").set("Rot_def_P", "-((theta_cuff_P-theta_conductor_P)/2)");
@@ -135,7 +135,7 @@ public class Sandbox3 {
         model.param("par4").set("theta_conductor_P", "percent_circ_conductor_P*360 [deg]");
         model.param("par4").set("percent_circ_conductor_pre_P", "0.8");
         model.param("par4")
-             .set("percent_circ_conductor_P", "percent_circ_conductor_pre_P*((r_cuff_in_pre_P-sep_conductor_P-2*r_conductor_P)/(R_in_P-sep_conductor_P-2*r_conductor_P))");
+                .set("percent_circ_conductor_P", "percent_circ_conductor_pre_P*((r_cuff_in_pre_P-sep_conductor_P-2*r_conductor_P)/(R_in_P-sep_conductor_P-2*r_conductor_P))");
         model.param("par4").set("Pitch_P", "1.5 [mm]");
         model.param("par4").label("Purdue [P]");
 
@@ -156,7 +156,7 @@ public class Sandbox3 {
         model.param("par6").set("L_holecenter_cuffseam_ITI", "0.03 [inch]");
         model.param("par6").set("N_holes_ITF", "2");
         model.param("par6")
-             .set("Theta_ITF", "theta_cuff_pre_ITF*((r_cuff_in_pre_ITF+thk_cuff_ITI+thk_gap_cuff_furl_IT)/(R_in_ITI+thk_cuff_ITI+thk_gap_cuff_furl_IT))");
+                .set("Theta_ITF", "theta_cuff_pre_ITF*((r_cuff_in_pre_ITF+thk_cuff_ITI+thk_gap_cuff_furl_IT)/(R_in_ITI+thk_cuff_ITI+thk_gap_cuff_furl_IT))");
         model.param("par6").set("R_in_ITF", "R_in_ITI+thk_cuff_ITI+thk_gap_cuff_furl_IT");
         model.param("par6").set("R_out_ITF", "R_in_ITI+thk_cuff_ITI+thk_gap_cuff_furl_IT+thk_furl_ITF");
         model.param("par6").set("Rot_def_ITF", "-((2*pi-Theta_ITI)/2)-(Theta_ITF/2)");
@@ -180,19 +180,23 @@ public class Sandbox3 {
         model.param("par6").set("Pitch_holecenter_holecenter_ITF", "L_IT-2*0.077 [inch]");
         model.param("par6").set("diam_contact_ITC", "2 [mm]");
         model.param("par6")
-             .set("a_ellipse_contact_ITC", "0.5*(R_in_ITI+Recess_ITC)*sin((diam_contact_ITC)/(R_in_ITI+Recess_ITC))");
+                .set("a_ellipse_contact_ITC", "0.5*(R_in_ITI+Recess_ITC)*sin((diam_contact_ITC)/(R_in_ITI+Recess_ITC))");
         model.param("par6").set("Recess_ITC", "0.1 [mm]");
         model.param("par6").set("Round_def_ITC", "1");
         model.param("par6").set("Contact_depth_ITC", "0.05 [mm]");
         model.param("par6").set("Overshoot_ITC", "0.05 [mm]");
         model.param("par6").set("length_contactcenter_contactcenter_ITC", "0.108 [inch]");
         model.param("par6")
-             .set("ang_cuffseam_contactcenter_ITC", "ang_cuffseam_contactcenter_pre_ITC*(r_cuff_in_pre_ITI/R_in_ITI)");
+                .set("ang_cuffseam_contactcenter_ITC", "ang_cuffseam_contactcenter_pre_ITC*(r_cuff_in_pre_ITI/R_in_ITI)");
         model.param("par6").set("ang_cuffseam_contactcenter_pre_ITC", "53 [deg]");
         model.param("par6")
-             .set("ang_contactcenter_contactcenter_ITC", "ang_contactcenter_contactcenter_pre_ITC*(r_cuff_in_pre_ITI/R_in_ITI)");
+                .set("ang_contactcenter_contactcenter_ITC", "ang_contactcenter_contactcenter_pre_ITC*(r_cuff_in_pre_ITI/R_in_ITI)");
         model.param("par6").set("ang_contactcenter_contactcenter_pre_ITC", "51 [deg]");
         model.param("par6").label("ImThera [IT: ITI+ITF+ITC]");
+        return model;
+    }
+
+    public static Model defineDefaultPrimitiveInputParameters(Model model) {
 
         //// SECTION: PRIMITIVE, Assign part inputParams (Local and unique to instance of the part)
         // TUBE CUFF PRIMITIVE
@@ -248,7 +252,10 @@ public class Sandbox3 {
         model.geom("part4").inputParam().set("A_ellipse_contact", "a_ellipse_contact_ITC");
         model.geom("part4").inputParam().set("Diam_contact", "diam_contact_ITC");
         model.geom("part4").inputParam().set("L", "L_IT");
+        return model;
+    }
 
+    public static Model definePrimitiveSelections(Model model) {
         //// SECTION: PRIMITIVE, Create selections
         // Tube cuff primitive
         model.geom("part1").selection().create("csel1", "CumulativeSelection");
@@ -323,6 +330,10 @@ public class Sandbox3 {
         model.geom("part4").selection("csel5").label("RECESS CUTTER IN");
         model.geom("part4").selection().create("csel6", "CumulativeSelection");
         model.geom("part4").selection("csel6").label("RECESS CUTTER OUT");
+        return model;
+    }
+
+    public static Model definePrimitivePartOperations(Model model) {
 
         //// SECTION: PRIMITIVE, Defined operations for part definition
         // Tube cuff primitive
@@ -692,7 +703,7 @@ public class Sandbox3 {
         return model;
     }
 
-    public static Model run2(Model model) {
+    public static Model makePartInstances(Model model) {
         // SECTION: MAKE COMPONENTS FROM PRIMITIVES
         model.component().create("comp1", true);
         model.component("comp1").geom().create("geom1", 3);
@@ -1146,7 +1157,7 @@ public class Sandbox3 {
         return model;
     }
 
-    public static Model run3(Model model) {
+    public static Model defineMaterialLinks(Model model) {
 
         model.material().create("mat3", "Common", "");
         model.material("mat3").label("Silicone");
@@ -1286,7 +1297,7 @@ public class Sandbox3 {
         return model;
     }
 
-    public static Model run4(Model model) {
+    public static Model defineCurrentSources(Model model) {
         model.component("comp1").physics().create("ec", "ConductiveMedia", "geom1");
 
         model.component("comp1").physics("ec").create("pcs3", "PointCurrentSource", 0);
@@ -1349,19 +1360,19 @@ public class Sandbox3 {
         model.component("comp1").physics("ec").feature("pcs12").set("Qjp", 0.001);
         model.component("comp1").physics("ec").feature("pcs12").label("ImThera Point Current Source 6");
 
-        model.component("comp1").view("view1").set("transparency", true);
-
         model.study().create("std1");
         model.study("std1").create("stat", "Stationary");
-        model.label("UNI_TUBECUFF.mph");
         return model;
     }
 
     public static void main(String[] args) {
-        Model model = run();
-        model = run2(model);
-        model = run3(model);
-        run4(model);
+        Model model = definePartInstanceParameters();
+        model = defineDefaultPrimitiveInputParameters(model);
+        model = definePrimitiveSelections(model);
+        model = definePrimitivePartOperations(model);
+        model = makePartInstances(model);
+        model = defineMaterialLinks(model);
+        defineCurrentSources(model);
     }
 
 }
