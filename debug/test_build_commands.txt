@@ -18,8 +18,20 @@ javac -cp $(echo $COMSOL_PLUGINS_PATH/*.jar | tr ' ' ':'):/Users/jakecariello/Bo
 
 
 cd src
+javac com/comsol/accessutils/*.java -classpath /Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar #-source 1.8 -target 1.8
+jar -cvfm /Applications/COMSOL54/Multiphysics/plugins/com.comsol.accessutils_1.0.0.jar com/comsol/accessutils/MANIFEST.MF com/comsol/accessutils/*.class
+cd ..
+/Applications/COMSOL54/Multiphysics/bin/comsol -mpmode owner compile /Users/jakecariello/Box/Documents/Pipeline/access/src/core/Sandbox2.java -classpathadd /Applications/COMSOL54/Multiphysics/plugins/com.comsol.accessutils_1.0.0.jar:/Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar
+#/Applications/COMSOL54/Multiphysics/bin/comsol -mpmode owner compile /Users/jakecariello/Box/Documents/Pipeline/access/src/core/Sandbox2.java -classpathadd $(echo $COMSOL_PLUGINS_PATH/*.jar | tr ' ' ':'):/Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar
+#/Applications/COMSOL54/Multiphysics/bin/comsol -mpmode owner batch -inputfile /Users/jakecariello/Box/Documents/Pipeline/access/src/core/Sandbox2.class
+/Applications/COMSOL54/Multiphysics/bin/comsol -mpmode owner batch -inputfile /Users/jakecariello/Box/Documents/Pipeline/access/src/core/Sandbox2.class -classpath /Applications/COMSOL54/Multiphysics/plugins/com.comsol.accessutils_1.0.0.jar:/Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar
+
+/Applications/COMSOL54/Multiphysics/bin/comsol batch -inputfile /Users/jakecariello/Box/Documents/Pipeline/access/src/core/Sandbox2.class -classpath /Applications/COMSOL54/Multiphysics/plugins/com.comsol.accessutils_1.0.0.jar:/Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar
+
+
+cd src
 javac com/comsol/accessutils/*.java -classpath /Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar -source 1.8 -target 1.8
 jar -cvfm /Applications/COMSOL54/Multiphysics/plugins/com.comsol.accessutils_1.0.0.jar com/comsol/accessutils/MANIFEST.MF com/comsol/accessutils/*.class
 cd ..
-/Applications/COMSOL54/Multiphysics/bin/comsol -mpmode owner compile /Users/jakecariello/Box/Documents/Pipeline/access/src/core/Sandbox2.java -classpathadd $(echo $COMSOL_PLUGINS_PATH/*.jar | tr ' ' ':'):/Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar
-/Applications/COMSOL54/Multiphysics/bin/comsol -mpmode owner batch -inputfile /Users/jakecariello/Box/Documents/Pipeline/access/src/core/Sandbox2.class
+/Applications/COMSOL54/Multiphysics/bin/comsol compile /Users/jakecariello/Box/Documents/Pipeline/access/src/core/Sandbox2.java -classpathadd /Applications/COMSOL54/Multiphysics/plugins/com.comsol.accessutils_1.0.0.jar:/Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar
+/Applications/COMSOL54/Multiphysics/bin/comsol batch -inputfile /Users/jakecariello/Box/Documents/Pipeline/access/src/core/Sandbox2.class -dev /Applications/COMSOL54/Multiphysics/plugins/com.comsol.accessutils_1.0.0.jar,/Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar

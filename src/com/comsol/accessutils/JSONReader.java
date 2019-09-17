@@ -3,8 +3,8 @@ package com.comsol.accessutils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.File;
+import java.util.Scanner;
 
 
 /*
@@ -17,9 +17,13 @@ public class JSONReader {
 
     public JSONReader(String filepath) {
         try {
-            String text = new String(Files.readAllBytes(Paths.get(filepath)));
+//            String text = new String(Files.readAllBytes(Paths.get(filepath)));
+//            String text = new String(Files.readAllBytes(filepath), StandardCharsets.UTF_8);
+//            String text = StandardCharsets.UTF_8.decode(ByteBuffer.wrap(Files.readAllBytes(filepath)));
+            String text = new Scanner(new File(filepath)).useDelimiter("\\A").next();
             jsonObject = new JSONObject(text);
         } catch (Exception e) {
+            System.out.println("failed");
             // tell user if fails (likely because wrong path or wrong file type)
             e.printStackTrace();
         }
