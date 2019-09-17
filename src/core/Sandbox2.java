@@ -31,15 +31,17 @@ public class Sandbox2 {
         String[] files = {"CorTec.json", "Enteromedics.json", "ImThera.json", "Madison.json", "Purdue.json"};
 
         for (String file: files) {
-            String par = "par";//cim.next("par");
+            String par = cim.next("par");
+            System.out.println("this par: " + par);
 
-            JSONObject data = new JSONReader("../../.templates/" + file).getData();
+            JSONObject data = new JSONReader("/Users/jakecariello/Box/Documents/Pipeline/access/.templates/" + file).getData();
 
-            System.out.println(par + "///////////////////////////////gerfahetahgjkgbrwghruwoghwoughoghogG");
+            model.param().group().create(par);
 
-            for (Object item: (JSONArray) data.get("data")) {
+            for (Object item : (JSONArray) data.get("data")) {
 
                 JSONObject itemObject = (JSONObject) item;
+
                 model.param(par).set(
                         (String) itemObject.get("name"),
                         (String) itemObject.get("expression"),
@@ -203,12 +205,13 @@ public class Sandbox2 {
 //    model.param("par6")
 //         .set("ang_contactcenter_contactcenter_ITC", "ang_contactcenter_contactcenter_pre_ITC*(r_cuff_in_pre_ITI/R_in_ITI)");
 //    model.param("par6").set("ang_contactcenter_contactcenter_pre_ITC", "51 [deg]");
-        model.param().label("Enteromedics [EM]");
-        model.param("par2").label("Madison [M]");
-        model.param("par3").label("CorTec300 [CT]");
-        model.param("par4").label("Purdue [P]");
-        model.param("par5").label("Pitt (WIP)");
-        model.param("par6").label("ImThera [IT: ITI+ITF+ITC]");
+
+//        model.param().label("Enteromedics [EM]");
+//        model.param("par2").label("Madison [M]");
+//        model.param("par3").label("CorTec300 [CT]");
+//        model.param("par4").label("Purdue [P]");
+//        model.param("par5").label("Pitt (WIP)");
+//        model.param("par6").label("ImThera [IT: ITI+ITF+ITC]");
 
         model.component().create("comp1", true);
 
