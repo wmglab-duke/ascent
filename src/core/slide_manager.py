@@ -275,8 +275,8 @@ class SlideManager(Exceptionable, Configurable, Saveable):
                 directory_to_create = ''
                 if mode == WriteMode.SECTIONWISE2D:
                     directory_to_create = 'sectionwise2d'
-                elif mode == WriteMode.SECTIONWISE3D:
-                    directory_to_create = 'sectionwise3d'
+                elif mode == WriteMode.SECTIONWISE:
+                    directory_to_create = 'sectionwise'
                 else:
                     self.throw(28)
 

@@ -24,8 +24,8 @@ class DownSampleMode(Enum):
 
 
 class WriteMode(Enum):  # note: NOT required to have unique values
+    SECTIONWISE = '.txt'
     SECTIONWISE2D = '.txt'
-    SECTIONWISE3D = '.txt'
     DATA = '.dat'
 
 
