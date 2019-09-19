@@ -135,16 +135,21 @@ class Runner(Exceptionable, Configurable):
 
 
         else: # assume to be 'win64'
+            manifest = 'com/comsol/accessutils/MANIFEST.MF'
 
-            compile_string = '\"{}\\bin\\win64\\comsolcompile\" \"{}\\{}.java\" '.format(comsol_path,
-                                                                                        cwd,
-                                                                                        file_name_no_ext)
-            batch_string = '\"{}\\bin\\win64\\comsolbatch\" -inputfile \"{}\\{}.class\"'.format(comsol_path,
-                                                                                                cwd,
-                                                                                                file_name_no_ext)
+            os.chdir('src')
+            os.system('javac com/comsol/accessutils/*.java -classpath ../lib/json-20190722.jar -target 1.8')
+            os.system('jar -cvfm "{}/plugins/com.comsol.accessutils_1.0.0.jar" {} '
+                      'com/comsol/accessutils/*.class'.format(comsol_path, manifest))
+            os.chdir('..')
 
-            subprocess.call(compile_string, shell=True)
-            subprocess.call(batch_string, shell=True)
+            os.system('{}/bin/comsol compile {}/{}.java '
+                      '-classpathadd "{}/plugins/com.comsol.accessutils_1.0.0.jar:"'
+                      '{}/lib/json-20190722.jar'.format(comsol_path, cwd, file_name_no_ext, comsol_path, cwd))
+
+            os.system('"{}/bin/comsol batch -inputfile {}/{}.class '
+                      '-dev {}/plugins/com.comsol.accessutils_1.0.0.jar,'
+                      '{}/lib/json-20190722.jar"'.format(comsol_path, cwd, file_name_no_ext, comsol_path, cwd))
 
     def save_all(self):
 
