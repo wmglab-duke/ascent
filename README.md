@@ -3,14 +3,22 @@
 ## Future Development Goals
 *  **Monday, Sept. 16, 2019** COMSOL-interfacing Java code to build models
     * Eric
-        - add cuff specific parameters to master
-        - clean up and annotate existing MATLAB code for building FEM's (electrode, nerve, general model parameters) 
+        - (**done**)add cuff specific parameters to master
+        - (**done**) clean up and annotate existing MATLAB code for building FEM's (electrode, nerve, general model parameters)
+        - Fix ImThera, make copy of FEM Builder and work from that
+        - Add nerve to FEMBuilder
+        - Mesh and solve FEMBuilder (store mesh parameters in JSON)
     * Jake
-        - standardize geometry indexing
-        - reading/writing data from Java, especially wrt JSON files  
+        - (**done**) now incorporate into FEMBuilder) standardize geometry indexing 
+        - (**done**) reading/writing data from Java, especially wrt JSON files
+        - CIM added to FEMBuilder 
+        - Pulling out potentials and saving to file
+            -API Java
+            -Python code for saving potential coords; Java code for reading coords; java code for saving potentials
+        - (waiting on Eric) general model geometry validation, particularly wrt electrodes (specific to each)
+
     * Both
         - logic for fascicle representation from folder structures
-        - general model geometry validation, particularly wrt electrodes (specific to each)
 * **Friday, Sept. 20, 2019** Extracting potentials from solved models, saving to file, and successfully loading for
 use in Python (for Both)
 * **Oct. 1** NEURON-interfacing Python code (to interface with preexisting NEURON code written in Hoc) to build launch
@@ -33,7 +41,6 @@ and fiber information (metadata and coordinates for extracting electric potentia
     * library of generic electrode geometries
     * port NEURON code to Python?
     * Batching files from command line - save geom and mesh and resolve for different frequencies: https://www.comsol.com/blogs/how-to-run-simulations-in-batch-mode-from-the-command-line/
-    
 
 ## Python 3.7 Dependencies (non-builtin)
 - `numpy`
@@ -47,7 +54,7 @@ and fiber information (metadata and coordinates for extracting electric potentia
 - `shutil`
 - `json`
 
-## Java 12.0.2 Dependencies (figure out streamlining?)
+## Java 1.8 Dependencies (figure out streamlining?)
 - Maven: `com.googlecode.json-simple:json-simple:1.1`
 - must add to CLASSPATH: `<path-to-comsol>/COMSOL54/Multiphysics/plugins/`
 - if using IntelliJ, ensure presence of line in `access.iml`: `<component name="NewModuleRootManager" inherit-compiler-output="true">`
