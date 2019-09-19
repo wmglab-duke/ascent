@@ -1172,29 +1172,29 @@ public class FEMBuilder {
 
         //// LIVANOVA
         // CUFF and CONTACT 1
-        model.component("comp1").geom("geom1").create("pi21", "PartInstance");
-        model.component("comp1").geom("geom1").feature("pi21").label("Helical Silicone 1");
-        model.component("comp1").geom("geom1").feature("pi21").setIndex("inputexpr", "(z_nerve_LN/2)-(sep_elec_LN/2)", 0);
-        model.component("comp1").geom("geom1").feature("pi21").set("rot", "zw_rot1");
-        model.component("comp1").geom("geom1").feature("pi21").set("selkeepnoncontr", false);
-        model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeepdom", "pi21_csel2.dom", "on");
-        model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeepdom", "pi21_csel5.dom", "on");
-        model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeepdom", "pi21_csel6.dom", "on");
-        model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeepdom", "pi21_csel8.dom", "on");
-        model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeeppnt", "pi21_csel10.pnt", "on");
+//        model.component("comp1").geom("geom1").create("pi21", "PartInstance");
+//        model.component("comp1").geom("geom1").feature("pi21").label("Helical Silicone 1");
+//        model.component("comp1").geom("geom1").feature("pi21").setIndex("inputexpr", "(z_nerve_LN/2)-(sep_elec_LN/2)", 0);
+//        model.component("comp1").geom("geom1").feature("pi21").set("rot", "zw_rot1");
+//        model.component("comp1").geom("geom1").feature("pi21").set("selkeepnoncontr", false);
+//        model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeepdom", "pi21_csel2.dom", "on");
+//        model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeepdom", "pi21_csel5.dom", "on");
+//        model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeepdom", "pi21_csel6.dom", "on");
+//        model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeepdom", "pi21_csel8.dom", "on");
+//        model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeeppnt", "pi21_csel10.pnt", "on");
 
         // CUFF and CONTACT 2
-        model.component("comp1").geom("geom1").create("pi22", "PartInstance");
-        model.component("comp1").geom("geom1").feature("pi22").label("Helical Silicone 2");
-        model.component("comp1").geom("geom1").feature("pi22").setIndex("inputexpr", "(z_nerve_LN/2)+(sep_elec_LN/2)", 0);
-        model.component("comp1").geom("geom1").feature("pi22").set("rot", "zw_rot2");
-        model.component("comp1").geom("geom1").feature("pi22").set("selkeepnoncontr", false);
-        model.component("comp1").geom("geom1").feature("pi22").setEntry("selkeepdom", "pi22_csel2.dom", "on");
-        model.component("comp1").geom("geom1").feature("pi22").setEntry("selkeepdom", "pi22_csel5.dom", "on");
-        model.component("comp1").geom("geom1").feature("pi22").setEntry("selkeepdom", "pi22_csel6.dom", "on");
-        model.component("comp1").geom("geom1").feature("pi22").setEntry("selkeepdom", "pi22_csel8.dom", "on");
-        model.component("comp1").geom("geom1").feature("pi22").setEntry("selkeepdom", "pi22_csel10.dom", "on");
-        model.component("comp1").geom("geom1").feature("pi22").setEntry("selkeeppnt", "pi22_csel10.pnt", "on");
+//        model.component("comp1").geom("geom1").create("pi22", "PartInstance");
+//        model.component("comp1").geom("geom1").feature("pi22").label("Helical Silicone 2");
+//        model.component("comp1").geom("geom1").feature("pi22").setIndex("inputexpr", "(z_nerve_LN/2)+(sep_elec_LN/2)", 0);
+//        model.component("comp1").geom("geom1").feature("pi22").set("rot", "zw_rot2");
+//        model.component("comp1").geom("geom1").feature("pi22").set("selkeepnoncontr", false);
+//        model.component("comp1").geom("geom1").feature("pi22").setEntry("selkeepdom", "pi22_csel2.dom", "on");
+//        model.component("comp1").geom("geom1").feature("pi22").setEntry("selkeepdom", "pi22_csel5.dom", "on");
+//        model.component("comp1").geom("geom1").feature("pi22").setEntry("selkeepdom", "pi22_csel6.dom", "on");
+//        model.component("comp1").geom("geom1").feature("pi22").setEntry("selkeepdom", "pi22_csel8.dom", "on");
+//        model.component("comp1").geom("geom1").feature("pi22").setEntry("selkeepdom", "pi22_csel10.dom", "on");
+//        model.component("comp1").geom("geom1").feature("pi22").setEntry("selkeeppnt", "pi22_csel10.pnt", "on");
 
 ////        model.component("comp1").geom("geom1").create("pi5", "PartInstance");
 ////        model.component("comp1").geom("geom1").feature("pi5").label("Pitt (WIP)");
@@ -1250,35 +1250,35 @@ public class FEMBuilder {
         model.component("comp1").material("matlnk12").set("link", "mat3");
         model.component("comp1").material("matlnk12").selection().named("geom1_pi7_csel3_dom");
 
-        model.component("comp1").material().create("matlnk26", "Link");
-        model.component("comp1").material("matlnk26").label("LivaNova Cuff1p1 is Silicone");
-        model.component("comp1").material("matlnk26").set("link", "mat3");
-        model.component("comp1").material("matlnk26").selection().named("geom1_pi21_csel2_dom");
+//        model.component("comp1").material().create("matlnk26", "Link");
+//        model.component("comp1").material("matlnk26").label("LivaNova Cuff1p1 is Silicone");
+//        model.component("comp1").material("matlnk26").set("link", "mat3");
+//        model.component("comp1").material("matlnk26").selection().named("geom1_pi21_csel2_dom");
+//
+//        model.component("comp1").material().create("matlnk27", "Link");
+//        model.component("comp1").material("matlnk27").label("LivaNova Cuff1p2 is Silicone");
+//        model.component("comp1").material("matlnk27").set("link", "mat3");
+//        model.component("comp1").material("matlnk27").selection().named("geom1_pi21_csel5_dom");
+//
+//        model.component("comp1").material().create("matlnk28", "Link");
+//        model.component("comp1").material("matlnk28").label("LivaNova Cuff1p3 is Silicone");
+//        model.component("comp1").material("matlnk28").set("link", "mat3");
+//        model.component("comp1").material("matlnk28").selection().named("geom1_pi21_csel8_dom");
 
-        model.component("comp1").material().create("matlnk27", "Link");
-        model.component("comp1").material("matlnk27").label("LivaNova Cuff1p2 is Silicone");
-        model.component("comp1").material("matlnk27").set("link", "mat3");
-        model.component("comp1").material("matlnk27").selection().named("geom1_pi21_csel5_dom");
-
-        model.component("comp1").material().create("matlnk28", "Link");
-        model.component("comp1").material("matlnk28").label("LivaNova Cuff1p3 is Silicone");
-        model.component("comp1").material("matlnk28").set("link", "mat3");
-        model.component("comp1").material("matlnk28").selection().named("geom1_pi21_csel8_dom");
-
-        model.component("comp1").material().create("matlnk29", "Link");
-        model.component("comp1").material("matlnk29").label("LivaNova Cuff2p1 is Silicone");
-        model.component("comp1").material("matlnk29").set("link", "mat3");
-        model.component("comp1").material("matlnk29").selection().named("geom1_pi22_csel2_dom");
-
-        model.component("comp1").material().create("matlnk30", "Link");
-        model.component("comp1").material("matlnk30").label("LivaNova Cuff2p2 is Silicone");
-        model.component("comp1").material("matlnk30").set("link", "mat3");
-        model.component("comp1").material("matlnk30").selection().named("geom1_pi22_csel5_dom");
-
-        model.component("comp1").material().create("matlnk31", "Link");
-        model.component("comp1").material("matlnk31").label("LivaNova Cuff2p3 is Silicone");
-        model.component("comp1").material("matlnk31").set("link", "mat3");
-        model.component("comp1").material("matlnk31").selection().named("geom1_pi22_csel8_dom");
+//        model.component("comp1").material().create("matlnk29", "Link");
+//        model.component("comp1").material("matlnk29").label("LivaNova Cuff2p1 is Silicone");
+//        model.component("comp1").material("matlnk29").set("link", "mat3");
+//        model.component("comp1").material("matlnk29").selection().named("geom1_pi22_csel2_dom");
+//
+//        model.component("comp1").material().create("matlnk30", "Link");
+//        model.component("comp1").material("matlnk30").label("LivaNova Cuff2p2 is Silicone");
+//        model.component("comp1").material("matlnk30").set("link", "mat3");
+//        model.component("comp1").material("matlnk30").selection().named("geom1_pi22_csel5_dom");
+//
+//        model.component("comp1").material().create("matlnk31", "Link");
+//        model.component("comp1").material("matlnk31").label("LivaNova Cuff2p3 is Silicone");
+//        model.component("comp1").material("matlnk31").set("link", "mat3");
+//        model.component("comp1").material("matlnk31").selection().named("geom1_pi22_csel8_dom");
 
         // PLATINUM
         model.material().create("mat2", "Common", "");
@@ -1343,15 +1343,15 @@ public class FEMBuilder {
         model.component("comp1").material("matlnk19").set("link", "mat2");
         model.component("comp1").material("matlnk19").selection().named("geom1_pi20_csel13_dom");
 
-        model.component("comp1").material().create("matlnk32", "Link");
-        model.component("comp1").material("matlnk32").label("LivaNova Contact 1 is Platinum");
-        model.component("comp1").material("matlnk32").set("link", "mat2");
-        model.component("comp1").material("matlnk32").selection().named("geom1_pi21_csel6_dom");
+//        model.component("comp1").material().create("matlnk32", "Link");
+//        model.component("comp1").material("matlnk32").label("LivaNova Contact 1 is Platinum");
+//        model.component("comp1").material("matlnk32").set("link", "mat2");
+//        model.component("comp1").material("matlnk32").selection().named("geom1_pi21_csel6_dom");
 
-        model.component("comp1").material().create("matlnk33", "Link");
-        model.component("comp1").material("matlnk33").label("LivaNova Contact 2 is Platinum");
-        model.component("comp1").material("matlnk33").set("link", "mat2");
-        model.component("comp1").material("matlnk33").selection().named("geom1_pi22_csel6_dom");
+//        model.component("comp1").material().create("matlnk33", "Link");
+//        model.component("comp1").material("matlnk33").label("LivaNova Contact 2 is Platinum");
+//        model.component("comp1").material("matlnk33").set("link", "mat2");
+//        model.component("comp1").material("matlnk33").selection().named("geom1_pi22_csel6_dom");
 
         // SALINE
         model.material().create("mat1", "Common", "");

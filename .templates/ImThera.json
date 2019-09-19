@@ -177,7 +177,7 @@
     },
     {
       "name": "Recess_ITC",
-      "expression": "0.05",
+      "expression": "0.05 [mm]",
       "description": ""
     },
     {
