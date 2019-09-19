@@ -40,7 +40,8 @@ public class FEMBuilder {
         for (String file: files) {
             String par = cim.next("par");
 
-            JSONObject data = new JSONReader("/Users/jakecariello/Box/Documents/Pipeline/access/.templates/" + file).getData();
+            //JSONObject data = new JSONReader("/Users/jakecariello/Box/Documents/Pipeline/access/.templates/" + file).getData();
+            JSONObject data = new JSONReader("/Users/ericmusselman/Documents/access/.templates/" + file).getData();
 
             model.param().group().create(par);
 

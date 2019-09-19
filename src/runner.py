@@ -119,7 +119,7 @@ class Runner(Exceptionable, Configurable):
             manifest = 'com/comsol/accessutils/MANIFEST.MF'
 
             os.chdir('src')
-            os.system('javac com/comsol/accessutils/*.java -classpath ../lib/json-20190722.jar -target 1.8')
+            os.system('javac com/comsol/accessutils/*.java -classpath ../lib/json-20190722.jar -source 1.8 -target 1.8')
             os.system('jar -cvfm {}/plugins/com.comsol.accessutils_1.0.0.jar {} '
                       'com/comsol/accessutils/*.class'.format(comsol_path, manifest))
             os.chdir('..')
