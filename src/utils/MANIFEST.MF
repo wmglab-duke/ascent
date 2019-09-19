@@ -1,3 +1,0 @@
-Import-Package: org.json,
- com.comsol.model
-

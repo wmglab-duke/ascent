@@ -30,8 +30,8 @@ cd ..
 
 
 cd src
-javac com/comsol/accessutils/*.java -classpath /Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar -source 1.8 -target 1.8
+javac com/comsol/accessutils/*.java -classpath ../lib/json-20190722.jar -target 1.8
 jar -cvfm /Applications/COMSOL54/Multiphysics/plugins/com.comsol.accessutils_1.0.0.jar com/comsol/accessutils/MANIFEST.MF com/comsol/accessutils/*.class
 cd ..
-/Applications/COMSOL54/Multiphysics/bin/comsol compile /Users/jakecariello/Box/Documents/Pipeline/access/src/core/Sandbox2.java -classpathadd /Applications/COMSOL54/Multiphysics/plugins/com.comsol.accessutils_1.0.0.jar:/Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar
-/Applications/COMSOL54/Multiphysics/bin/comsol batch -inputfile /Users/jakecariello/Box/Documents/Pipeline/access/src/core/Sandbox2.class -dev /Applications/COMSOL54/Multiphysics/plugins/com.comsol.accessutils_1.0.0.jar,/Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar
+/Applications/COMSOL54/Multiphysics/bin/comsol compile /Users/jakecariello/Box/Documents/Pipeline/access/src/core/FEMBuilder.java -classpathadd /Applications/COMSOL54/Multiphysics/plugins/com.comsol.accessutils_1.0.0.jar:/Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar
+/Applications/COMSOL54/Multiphysics/bin/comsol batch -inputfile /Users/jakecariello/Box/Documents/Pipeline/access/src/core/FEMBuilder.class -dev /Applications/COMSOL54/Multiphysics/plugins/com.comsol.accessutils_1.0.0.jar,/Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar

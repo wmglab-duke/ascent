@@ -110,26 +110,30 @@ class Runner(Exceptionable, Configurable):
 
         comsol_path = self.load(os.path.join('.config', 'system.json')).get('comsol_path')
 
-        file_name_no_ext = os.path.join('src', 'core', 'Sandbox3')
+        file_name_no_ext = os.path.join('src', 'core', 'FEMBuilder')
 
         # run commands by system type
         cwd = os.getcwd()
         if sys.platform.startswith('darwin') or sys.platform.startswith('linux'):  # macOS and linux
 
-            print('RUNNING: {}/bin/comsol compile {}/{}.java -classpathadd "/Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar:/Users/jakecariello/Box/Documents/Pipeline/access/lib/utils.jar"'.format(comsol_path,
-                                                                                                                                                                                                                             cwd,
-                                                                                                                                                                                                                             file_name_no_ext))
-            os.system('{}/bin/comsol compile {}/{}.java -classpathadd "/Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar:/Users/jakecariello/Box/Documents/Pipeline/access/lib/utils.jar"'.format(comsol_path,
-                                                                cwd,
-                                                                file_name_no_ext))
+            manifest = 'com/comsol/accessutils/MANIFEST.MF'
+
+            os.chdir('src')
+            os.system('javac com/comsol/accessutils/*.java -classpath ../lib/json-20190722.jar -target 1.8')
+            os.system('jar -cvfm {}/plugins/com.comsol.accessutils_1.0.0.jar {} '
+                      'com/comsol/accessutils/*.class'.format(comsol_path, manifest))
+            os.chdir('..')
+
+            os.system('{}/bin/comsol compile {}/{}.java '
+                      '-classpathadd {}/plugins/com.comsol.accessutils_1.0.0.jar:'
+                      '{}/lib/json-20190722.jar'.format(comsol_path, cwd, file_name_no_ext, comsol_path, cwd))
+
+            os.system('{}/bin/comsol batch -inputfile {}/{}.class '
+                      '-dev {}/plugins/com.comsol.accessutils_1.0.0.jar,'
+                      '{}/lib/json-20190722.jar'.format(comsol_path, cwd, file_name_no_ext, comsol_path, cwd))
 
 
-            print('RUNNING: {}/bin/comsol batch -inputfile {}/{}.class'.format(comsol_path,
-                                                                          cwd,
-                                                                          file_name_no_ext))
-            os.system('{}/bin/comsol batch -inputfile {}/{}.class -dev "/Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar:/Users/jakecariello/Box/Documents/Pipeline/access/lib/utils.jar"'.format(comsol_path,
-                                                                          cwd,
-                                                                          file_name_no_ext))
+
         else: # assume to be 'win64'
 
             compile_string = '\"{}\\bin\\win64\\comsolcompile\" \"{}\\{}.java\" '.format(comsol_path,
