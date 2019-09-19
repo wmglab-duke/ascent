@@ -119,6 +119,11 @@
       "name": "zw_rot2_LN",
       "expression": "0",
       "description": ""
+    },
+    {
+      "name": "Center_LN",
+      "expression": "80 [mm]",
+      "description": ""
     }
   ]
 }

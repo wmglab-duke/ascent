@@ -121,10 +121,10 @@ public class FEMBuilder {
         model.geom("part4").inputParam().set("L", "L_IT");
 
         // HELICAL CUFF AND CONTACT PRIMITIVE
-//        model.geom().create("part5", "Part", 3);
-//        model.geom("part5").label("HelicalCuffnContact_Primitive");
-//        model.geom("part5").lengthUnit("\u00b5m");
-//        model.geom("part5").inputParam().set("Center", "Center_LN");
+        model.geom().create("part5", "Part", 3);
+        model.geom("part5").label("HelicalCuffnContact_Primitive");
+        model.geom("part5").lengthUnit("\u00b5m");
+        model.geom("part5").inputParam().set("Center", "Center_LN");
     }
 
     private static void definePrimitiveSelections(Model model) {
@@ -204,26 +204,26 @@ public class FEMBuilder {
         model.geom("part4").selection("csel6").label("RECESS CUTTER OUT");
 
         // LivaNova-style helical coil cuff
-//        model.geom("part5").selection().create("csel1", "CumulativeSelection");
-//        model.geom("part5").selection("csel1").label("PC1");
-//        model.geom("part5").selection().create("csel2", "CumulativeSelection");
-//        model.geom("part5").selection("csel2").label("Cuffp1");
-//        model.geom("part5").selection().create("csel3", "CumulativeSelection");
-//        model.geom("part5").selection("csel3").label("SEL END P1");
-//        model.geom("part5").selection().create("csel4", "CumulativeSelection");
-//        model.geom("part5").selection("csel4").label("PC2");
-//        model.geom("part5").selection().create("csel10", "CumulativeSelection");
-//        model.geom("part5").selection("csel10").label("SRC");
-//        model.geom("part5").selection().create("csel5", "CumulativeSelection");
-//        model.geom("part5").selection("csel5").label("Cuffp2");
-//        model.geom("part5").selection().create("csel6", "CumulativeSelection");
-//        model.geom("part5").selection("csel6").label("Conductorp2");
-//        model.geom("part5").selection().create("csel7", "CumulativeSelection");
-//        model.geom("part5").selection("csel7").label("SEL END P2");
-//        model.geom("part5").selection().create("csel8", "CumulativeSelection");
-//        model.geom("part5").selection("csel8").label("Cuffp3");
-//        model.geom("part5").selection().create("csel9", "CumulativeSelection");
-//        model.geom("part5").selection("csel9").label("PC3");
+        model.geom("part5").selection().create("csel1", "CumulativeSelection");
+        model.geom("part5").selection("csel1").label("PC1");
+        model.geom("part5").selection().create("csel2", "CumulativeSelection");
+        model.geom("part5").selection("csel2").label("Cuffp1");
+        model.geom("part5").selection().create("csel3", "CumulativeSelection");
+        model.geom("part5").selection("csel3").label("SEL END P1");
+        model.geom("part5").selection().create("csel4", "CumulativeSelection");
+        model.geom("part5").selection("csel4").label("PC2");
+        model.geom("part5").selection().create("csel10", "CumulativeSelection");
+        model.geom("part5").selection("csel10").label("SRC");
+        model.geom("part5").selection().create("csel5", "CumulativeSelection");
+        model.geom("part5").selection("csel5").label("Cuffp2");
+        model.geom("part5").selection().create("csel6", "CumulativeSelection");
+        model.geom("part5").selection("csel6").label("Conductorp2");
+        model.geom("part5").selection().create("csel7", "CumulativeSelection");
+        model.geom("part5").selection("csel7").label("SEL END P2");
+        model.geom("part5").selection().create("csel8", "CumulativeSelection");
+        model.geom("part5").selection("csel8").label("Cuffp3");
+        model.geom("part5").selection().create("csel9", "CumulativeSelection");
+        model.geom("part5").selection("csel9").label("PC3");
     }
 
     private static void definePrimitivePartOperations(Model model) {
@@ -595,145 +595,145 @@ public class FEMBuilder {
         model.geom("part4").run();
 
         // LivaNova Primitive
-//        model.geom("part5").create("wp1", "WorkPlane");
-//        model.geom("part5").feature("wp1").label("Helical Insulator Cross Section Part 1");
-//        model.geom("part5").feature("wp1").set("quickplane", "xz");
-//        model.geom("part5").feature("wp1").set("unite", true);
-//        model.geom("part5").feature("wp1").geom().selection().create("csel1", "CumulativeSelection");
-//        model.geom("part5").feature("wp1").geom().selection("csel1").label("HELICAL INSULATOR CROSS SECTION");
-//        model.geom("part5").feature("wp1").geom().selection().create("csel2", "CumulativeSelection");
-//        model.geom("part5").feature("wp1").geom().selection("csel2").label("HELICAL INSULATOR CROSS SECTION P1");
-//        model.geom("part5").feature("wp1").geom().create("r1", "Rectangle");
-//        model.geom("part5").feature("wp1").geom().feature("r1").label("Helical Insulator Cross Section Part 1");
-//        model.geom("part5").feature("wp1").geom().feature("r1").set("contributeto", "csel2");
-//        model.geom("part5").feature("wp1").geom().feature("r1")
-//                .set("pos", new String[]{"r_cuff_in_LN+(thk_cuff_LN/2)", "Center_LN-(L_cuff_LN/2)"});
-//        model.geom("part5").feature("wp1").geom().feature("r1").set("base", "center");
-//        model.geom("part5").feature("wp1").geom().feature("r1").set("size", new String[]{"thk_cuff_LN", "w_cuff_LN"});
-//        model.geom("part5").create("pc1", "ParametricCurve");
-//        model.geom("part5").feature("pc1").label("Parametric Curve Part 1");
-//        model.geom("part5").feature("pc1").set("contributeto", "csel1");
-//        model.geom("part5").feature("pc1").set("parmax", "rev_cuff_LN*(0.75/2.5)");
-//        model.geom("part5").feature("pc1")
-//                .set("coord", new String[]{"cos(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "sin(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "Center_LN+(L_cuff_LN)*(s/rev_cuff_LN)-(L_cuff_LN/2)"});
-//        model.geom("part5").create("swe1", "Sweep");
-//        model.geom("part5").feature("swe1").label("Make Cuff Part 1");
-//        model.geom("part5").feature("swe1").set("contributeto", "csel2");
-//        model.geom("part5").feature("swe1").set("crossfaces", true);
-//        model.geom("part5").feature("swe1").set("keep", false);
-//        model.geom("part5").feature("swe1").set("includefinal", false);
-//        model.geom("part5").feature("swe1").set("twistcomp", false);
-//        model.geom("part5").feature("swe1").selection("face").named("wp1_csel2");
-//        model.geom("part5").feature("swe1").selection("edge").named("csel1");
-//        model.geom("part5").feature("swe1").selection("diredge").set("pc1(1)", 1);
-//        model.geom("part5").create("ballsel1", "BallSelection");
-//        model.geom("part5").feature("ballsel1").set("entitydim", 2);
-//        model.geom("part5").feature("ballsel1").label("Select End Face Part 1");
-//        model.geom("part5").feature("ballsel1").set("posx", "cos(2*pi*rev_cuff_LN*((0.75)/2.5))*((thk_cuff_LN/2)+r_cuff_in_LN)");
-//        model.geom("part5").feature("ballsel1").set("posy", "sin(2*pi*rev_cuff_LN*((0.75)/2.5))*((thk_cuff_LN/2)+r_cuff_in_LN)");
-//        model.geom("part5").feature("ballsel1")
-//                .set("posz", "Center_LN+(L_cuff_LN)*(rev_cuff_LN*((0.75)/2.5)/rev_cuff_LN)-(L_cuff_LN/2)");
-//        model.geom("part5").feature("ballsel1").set("r", 1);
-//        model.geom("part5").feature("ballsel1").set("contributeto", "csel3");
-//        model.geom("part5").create("wp2", "WorkPlane");
-//        model.geom("part5").feature("wp2").label("Helical Insulator Cross Section Part 2");
-//        model.geom("part5").feature("wp2").set("planetype", "faceparallel");
-//        model.geom("part5").feature("wp2").set("unite", true);
-//        model.geom("part5").feature("wp2").selection("face").named("csel3");
-//        model.geom("part5").feature("wp2").geom().selection().create("csel1", "CumulativeSelection");
-//        model.geom("part5").feature("wp2").geom().selection("csel1").label("HELICAL INSULATOR CROSS SECTION P2");
-//        model.geom("part5").feature("wp2").geom().selection().create("csel2", "CumulativeSelection");
-//        model.geom("part5").feature("wp2").geom().selection("csel2").label("HELICAL CONDUCTOR CROSS SECTION P2");
-//        model.geom("part5").feature("wp2").geom().create("r1", "Rectangle");
-//        model.geom("part5").feature("wp2").geom().feature("r1").label("Helical Insulator Cross Section Part 2");
-//        model.geom("part5").feature("wp2").geom().feature("r1").set("contributeto", "csel1");
-//        model.geom("part5").feature("wp2").geom().feature("r1").set("base", "center");
-//        model.geom("part5").feature("wp2").geom().feature("r1").set("size", new String[]{"thk_cuff_LN", "w_cuff_LN"});
-//        model.geom("part5").create("wp3", "WorkPlane");
-//        model.geom("part5").feature("wp3").label("Helical Conductor Cross Section Part 2");
-//        model.geom("part5").feature("wp3").set("planetype", "faceparallel");
-//        model.geom("part5").feature("wp3").set("unite", true);
-//        model.geom("part5").feature("wp3").selection("face").named("csel3");
-//        model.geom("part5").feature("wp3").geom().selection().create("csel1", "CumulativeSelection");
-//        model.geom("part5").feature("wp3").geom().selection("csel1").label("HELICAL INSULATOR CROSS SECTION P2");
-//        model.geom("part5").feature("wp3").geom().selection().create("csel2", "CumulativeSelection");
-//        model.geom("part5").feature("wp3").geom().selection("csel2").label("HELICAL CONDUCTOR CROSS SECTION P2");
-//        model.geom("part5").feature("wp3").geom().create("r2", "Rectangle");
-//        model.geom("part5").feature("wp3").geom().feature("r2").label("Helical Conductor Cross Section Part 2");
-//        model.geom("part5").feature("wp3").geom().feature("r2").set("contributeto", "csel2");
-//        model.geom("part5").feature("wp3").geom().feature("r2").set("pos", new String[]{"(thk_elec_LN-thk_cuff_LN)/2", "0"});
-//        model.geom("part5").feature("wp3").geom().feature("r2").set("base", "center");
-//        model.geom("part5").feature("wp3").geom().feature("r2").set("size", new String[]{"thk_elec_LN", "w_elec_LN"});
-//        model.geom("part5").create("pc2", "ParametricCurve");
-//        model.geom("part5").feature("pc2").label("Parametric Curve Part 2");
-//        model.geom("part5").feature("pc2").set("contributeto", "csel4");
-//        model.geom("part5").feature("pc2").set("parmin", "rev_cuff_LN*(0.75/2.5)");
-//        model.geom("part5").feature("pc2").set("parmax", "rev_cuff_LN*((0.75+1)/2.5)");
-//        model.geom("part5").feature("pc2")
-//                .set("coord", new String[]{"cos(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "sin(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "Center+(L_cuff_LN)*(s/rev_cuff_LN)-(L_cuff_LN/2)"});
-//        model.geom("part5").create("swe2", "Sweep");
-//        model.geom("part5").feature("swe2").label("Make Cuff Part 2");
-//        model.geom("part5").feature("swe2").set("contributeto", "csel5");
-//        model.geom("part5").feature("swe2").set("crossfaces", true);
-//        model.geom("part5").feature("swe2").set("includefinal", false);
-//        model.geom("part5").feature("swe2").set("twistcomp", false);
-//        model.geom("part5").feature("swe2").selection("face").named("wp2_csel1");
-//        model.geom("part5").feature("swe2").selection("edge").named("csel4");
-//        model.geom("part5").feature("swe2").selection("diredge").set("pc2(1)", 1);
-//        model.geom("part5").create("swe3", "Sweep");
-//        model.geom("part5").feature("swe3").label("Make Conductor Part 2");
-//        model.geom("part5").feature("swe3").set("contributeto", "csel6");
-//        model.geom("part5").feature("swe3").set("crossfaces", true);
-//        model.geom("part5").feature("swe3").set("includefinal", false);
-//        model.geom("part5").feature("swe3").set("twistcomp", false);
-//        model.geom("part5").feature("swe3").selection("face").named("wp3_csel2");
-//        model.geom("part5").feature("swe3").selection("edge").named("csel4");
-//        model.geom("part5").feature("swe3").selection("diredge").set("pc2(1)", 1);
-//        model.geom("part5").create("ballsel2", "BallSelection");
-//        model.geom("part5").feature("ballsel2").set("entitydim", 2);
-//        model.geom("part5").feature("ballsel2").label("Select End Face Part 2");
-//        model.geom("part5").feature("ballsel2")
-//                .set("posx", "cos(2*pi*rev_cuff_LN*((0.75+1)/2.5))*((thk_cuff_LN/2)+r_cuff_in_LN)");
-//        model.geom("part5").feature("ballsel2")
-//                .set("posy", "sin(2*pi*rev_cuff_LN*((0.75+1)/2.5))*((thk_cuff_LN/2)+r_cuff_in_LN)");
-//        model.geom("part5").feature("ballsel2")
-//                .set("posz", "Center_LN+(L_cuff_LN)*(rev_cuff_LN*((0.75+1)/2.5)/rev_cuff_LN)-(L_cuff_LN/2)");
-//        model.geom("part5").feature("ballsel2").set("r", 1);
-//        model.geom("part5").feature("ballsel2").set("contributeto", "csel7");
-//        model.geom("part5").create("wp4", "WorkPlane");
-//        model.geom("part5").feature("wp4").label("Helical Insulator Cross Section Part 3");
-//        model.geom("part5").feature("wp4").set("planetype", "faceparallel");
-//        model.geom("part5").feature("wp4").set("unite", true);
-//        model.geom("part5").feature("wp4").selection("face").named("csel7");
-//        model.geom("part5").feature("wp4").geom().selection().create("csel1", "CumulativeSelection");
-//        model.geom("part5").feature("wp4").geom().selection("csel1").label("HELICAL INSULATOR CROSS SECTION P3");
-//        model.geom("part5").feature("wp4").geom().create("r1", "Rectangle");
-//        model.geom("part5").feature("wp4").geom().feature("r1").label("Helical Insulator Cross Section Part 3");
-//        model.geom("part5").feature("wp4").geom().feature("r1").set("contributeto", "csel1");
-//        model.geom("part5").feature("wp4").geom().feature("r1").set("base", "center");
-//        model.geom("part5").feature("wp4").geom().feature("r1").set("size", new String[]{"thk_cuff_LN", "w_cuff_LN"});
-//        model.geom("part5").create("pc3", "ParametricCurve");
-//        model.geom("part5").feature("pc3").label("Parametric Curve Part 3");
-//        model.geom("part5").feature("pc3").set("contributeto", "csel9");
-//        model.geom("part5").feature("pc3").set("parmin", "rev_cuff_LN*((0.75+1)/2.5)");
-//        model.geom("part5").feature("pc3").set("parmax", "rev_cuff_LN");
-//        model.geom("part5").feature("pc3")
-//                .set("coord", new String[]{"cos(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "sin(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "Center_LN+(L_cuff_LN)*(s/rev_cuff_LN)-(L_cuff_LN/2)"});
-//        model.geom("part5").create("swe4", "Sweep");
-//        model.geom("part5").feature("swe4").label("Make Cuff Part 3");
-//        model.geom("part5").feature("swe4").set("contributeto", "csel8");
-//        model.geom("part1").feature("swe4").set("crossfaces", true);
-//        model.geom("part5").feature("swe4").set("includefinal", false);
-//        model.geom("part5").feature("swe4").set("twistcomp", false);
-//        model.geom("part5").feature("swe4").selection("face").named("wp4_csel1");
-//        model.geom("part5").feature("swe4").selection("edge").named("csel9");
-//        model.geom("part5").feature("swe4").selection("diredge").set("pc3(1)", 1);
-//        model.geom("part5").create("pt1", "Point");
-//        model.geom("part5").feature("pt1").label("src");
-//        model.geom("part5").feature("pt1").set("contributeto", "csel10");
-//        model.geom("part5").feature("pt1")
-//                .set("p", new String[]{"cos(2*pi*rev_cuff_LN*(1.25/2.5))*((thk_elec_LN/2)+r_cuff_in_LN)", "sin(2*pi*rev_cuff_LN*(1.25/2.5))*((thk_elec_LN/2)+r_cuff_in_LN)", "Center"});
-//        model.geom("part5").run();
+        model.geom("part5").create("wp1", "WorkPlane");
+        model.geom("part5").feature("wp1").label("Helical Insulator Cross Section Part 1");
+        model.geom("part5").feature("wp1").set("quickplane", "xz");
+        model.geom("part5").feature("wp1").set("unite", true);
+        model.geom("part5").feature("wp1").geom().selection().create("csel1", "CumulativeSelection");
+        model.geom("part5").feature("wp1").geom().selection("csel1").label("HELICAL INSULATOR CROSS SECTION");
+        model.geom("part5").feature("wp1").geom().selection().create("csel2", "CumulativeSelection");
+        model.geom("part5").feature("wp1").geom().selection("csel2").label("HELICAL INSULATOR CROSS SECTION P1");
+        model.geom("part5").feature("wp1").geom().create("r1", "Rectangle");
+        model.geom("part5").feature("wp1").geom().feature("r1").label("Helical Insulator Cross Section Part 1");
+        model.geom("part5").feature("wp1").geom().feature("r1").set("contributeto", "csel2");
+        model.geom("part5").feature("wp1").geom().feature("r1")
+                .set("pos", new String[]{"r_cuff_in_LN+(thk_cuff_LN/2)", "Center_LN-(L_cuff_LN/2)"});
+        model.geom("part5").feature("wp1").geom().feature("r1").set("base", "center");
+        model.geom("part5").feature("wp1").geom().feature("r1").set("size", new String[]{"thk_cuff_LN", "w_cuff_LN"});
+        model.geom("part5").create("pc1", "ParametricCurve");
+        model.geom("part5").feature("pc1").label("Parametric Curve Part 1");
+        model.geom("part5").feature("pc1").set("contributeto", "csel1");
+        model.geom("part5").feature("pc1").set("parmax", "rev_cuff_LN*(0.75/2.5)");
+        model.geom("part5").feature("pc1")
+                .set("coord", new String[]{"cos(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "sin(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "Center_LN+(L_cuff_LN)*(s/rev_cuff_LN)-(L_cuff_LN/2)"});
+        model.geom("part5").create("swe1", "Sweep");
+        model.geom("part5").feature("swe1").label("Make Cuff Part 1");
+        model.geom("part5").feature("swe1").set("contributeto", "csel2");
+        model.geom("part5").feature("swe1").set("crossfaces", true);
+        model.geom("part5").feature("swe1").set("keep", false);
+        model.geom("part5").feature("swe1").set("includefinal", false);
+        model.geom("part5").feature("swe1").set("twistcomp", false);
+        model.geom("part5").feature("swe1").selection("face").named("wp1_csel2");
+        model.geom("part5").feature("swe1").selection("edge").named("csel1");
+        model.geom("part5").feature("swe1").selection("diredge").set("pc1(1)", 1);
+        model.geom("part5").create("ballsel1", "BallSelection");
+        model.geom("part5").feature("ballsel1").set("entitydim", 2);
+        model.geom("part5").feature("ballsel1").label("Select End Face Part 1");
+        model.geom("part5").feature("ballsel1").set("posx", "cos(2*pi*rev_cuff_LN*((0.75)/2.5))*((thk_cuff_LN/2)+r_cuff_in_LN)");
+        model.geom("part5").feature("ballsel1").set("posy", "sin(2*pi*rev_cuff_LN*((0.75)/2.5))*((thk_cuff_LN/2)+r_cuff_in_LN)");
+        model.geom("part5").feature("ballsel1")
+                .set("posz", "Center_LN+(L_cuff_LN)*(rev_cuff_LN*((0.75)/2.5)/rev_cuff_LN)-(L_cuff_LN/2)");
+        model.geom("part5").feature("ballsel1").set("r", 1);
+        model.geom("part5").feature("ballsel1").set("contributeto", "csel3");
+        model.geom("part5").create("wp2", "WorkPlane");
+        model.geom("part5").feature("wp2").label("Helical Insulator Cross Section Part 2");
+        model.geom("part5").feature("wp2").set("planetype", "faceparallel");
+        model.geom("part5").feature("wp2").set("unite", true);
+        model.geom("part5").feature("wp2").selection("face").named("csel3");
+        model.geom("part5").feature("wp2").geom().selection().create("csel1", "CumulativeSelection");
+        model.geom("part5").feature("wp2").geom().selection("csel1").label("HELICAL INSULATOR CROSS SECTION P2");
+        model.geom("part5").feature("wp2").geom().selection().create("csel2", "CumulativeSelection");
+        model.geom("part5").feature("wp2").geom().selection("csel2").label("HELICAL CONDUCTOR CROSS SECTION P2");
+        model.geom("part5").feature("wp2").geom().create("r1", "Rectangle");
+        model.geom("part5").feature("wp2").geom().feature("r1").label("Helical Insulator Cross Section Part 2");
+        model.geom("part5").feature("wp2").geom().feature("r1").set("contributeto", "csel1");
+        model.geom("part5").feature("wp2").geom().feature("r1").set("base", "center");
+        model.geom("part5").feature("wp2").geom().feature("r1").set("size", new String[]{"thk_cuff_LN", "w_cuff_LN"});
+        model.geom("part5").create("wp3", "WorkPlane");
+        model.geom("part5").feature("wp3").label("Helical Conductor Cross Section Part 2");
+        model.geom("part5").feature("wp3").set("planetype", "faceparallel");
+        model.geom("part5").feature("wp3").set("unite", true);
+        model.geom("part5").feature("wp3").selection("face").named("csel3");
+        model.geom("part5").feature("wp3").geom().selection().create("csel1", "CumulativeSelection");
+        model.geom("part5").feature("wp3").geom().selection("csel1").label("HELICAL INSULATOR CROSS SECTION P2");
+        model.geom("part5").feature("wp3").geom().selection().create("csel2", "CumulativeSelection");
+        model.geom("part5").feature("wp3").geom().selection("csel2").label("HELICAL CONDUCTOR CROSS SECTION P2");
+        model.geom("part5").feature("wp3").geom().create("r2", "Rectangle");
+        model.geom("part5").feature("wp3").geom().feature("r2").label("Helical Conductor Cross Section Part 2");
+        model.geom("part5").feature("wp3").geom().feature("r2").set("contributeto", "csel2");
+        model.geom("part5").feature("wp3").geom().feature("r2").set("pos", new String[]{"(thk_elec_LN-thk_cuff_LN)/2", "0"});
+        model.geom("part5").feature("wp3").geom().feature("r2").set("base", "center");
+        model.geom("part5").feature("wp3").geom().feature("r2").set("size", new String[]{"thk_elec_LN", "w_elec_LN"});
+        model.geom("part5").create("pc2", "ParametricCurve");
+        model.geom("part5").feature("pc2").label("Parametric Curve Part 2");
+        model.geom("part5").feature("pc2").set("contributeto", "csel4");
+        model.geom("part5").feature("pc2").set("parmin", "rev_cuff_LN*(0.75/2.5)");
+        model.geom("part5").feature("pc2").set("parmax", "rev_cuff_LN*((0.75+1)/2.5)");
+        model.geom("part5").feature("pc2")
+                .set("coord", new String[]{"cos(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "sin(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "Center+(L_cuff_LN)*(s/rev_cuff_LN)-(L_cuff_LN/2)"});
+        model.geom("part5").create("swe2", "Sweep");
+        model.geom("part5").feature("swe2").label("Make Cuff Part 2");
+        model.geom("part5").feature("swe2").set("contributeto", "csel5");
+        model.geom("part5").feature("swe2").set("crossfaces", true);
+        model.geom("part5").feature("swe2").set("includefinal", false);
+        model.geom("part5").feature("swe2").set("twistcomp", false);
+        model.geom("part5").feature("swe2").selection("face").named("wp2_csel1");
+        model.geom("part5").feature("swe2").selection("edge").named("csel4");
+        model.geom("part5").feature("swe2").selection("diredge").set("pc2(1)", 1);
+        model.geom("part5").create("swe3", "Sweep");
+        model.geom("part5").feature("swe3").label("Make Conductor Part 2");
+        model.geom("part5").feature("swe3").set("contributeto", "csel6");
+        model.geom("part5").feature("swe3").set("crossfaces", true);
+        model.geom("part5").feature("swe3").set("includefinal", false);
+        model.geom("part5").feature("swe3").set("twistcomp", false);
+        model.geom("part5").feature("swe3").selection("face").named("wp3_csel2");
+        model.geom("part5").feature("swe3").selection("edge").named("csel4");
+        model.geom("part5").feature("swe3").selection("diredge").set("pc2(1)", 1);
+        model.geom("part5").create("ballsel2", "BallSelection");
+        model.geom("part5").feature("ballsel2").set("entitydim", 2);
+        model.geom("part5").feature("ballsel2").label("Select End Face Part 2");
+        model.geom("part5").feature("ballsel2")
+                .set("posx", "cos(2*pi*rev_cuff_LN*((0.75+1)/2.5))*((thk_cuff_LN/2)+r_cuff_in_LN)");
+        model.geom("part5").feature("ballsel2")
+                .set("posy", "sin(2*pi*rev_cuff_LN*((0.75+1)/2.5))*((thk_cuff_LN/2)+r_cuff_in_LN)");
+        model.geom("part5").feature("ballsel2")
+                .set("posz", "Center_LN+(L_cuff_LN)*(rev_cuff_LN*((0.75+1)/2.5)/rev_cuff_LN)-(L_cuff_LN/2)");
+        model.geom("part5").feature("ballsel2").set("r", 1);
+        model.geom("part5").feature("ballsel2").set("contributeto", "csel7");
+        model.geom("part5").create("wp4", "WorkPlane");
+        model.geom("part5").feature("wp4").label("Helical Insulator Cross Section Part 3");
+        model.geom("part5").feature("wp4").set("planetype", "faceparallel");
+        model.geom("part5").feature("wp4").set("unite", true);
+        model.geom("part5").feature("wp4").selection("face").named("csel7");
+        model.geom("part5").feature("wp4").geom().selection().create("csel1", "CumulativeSelection");
+        model.geom("part5").feature("wp4").geom().selection("csel1").label("HELICAL INSULATOR CROSS SECTION P3");
+        model.geom("part5").feature("wp4").geom().create("r1", "Rectangle");
+        model.geom("part5").feature("wp4").geom().feature("r1").label("Helical Insulator Cross Section Part 3");
+        model.geom("part5").feature("wp4").geom().feature("r1").set("contributeto", "csel1");
+        model.geom("part5").feature("wp4").geom().feature("r1").set("base", "center");
+        model.geom("part5").feature("wp4").geom().feature("r1").set("size", new String[]{"thk_cuff_LN", "w_cuff_LN"});
+        model.geom("part5").create("pc3", "ParametricCurve");
+        model.geom("part5").feature("pc3").label("Parametric Curve Part 3");
+        model.geom("part5").feature("pc3").set("contributeto", "csel9");
+        model.geom("part5").feature("pc3").set("parmin", "rev_cuff_LN*((0.75+1)/2.5)");
+        model.geom("part5").feature("pc3").set("parmax", "rev_cuff_LN");
+        model.geom("part5").feature("pc3")
+                .set("coord", new String[]{"cos(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "sin(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "Center_LN+(L_cuff_LN)*(s/rev_cuff_LN)-(L_cuff_LN/2)"});
+        model.geom("part5").create("swe4", "Sweep");
+        model.geom("part5").feature("swe4").label("Make Cuff Part 3");
+        model.geom("part5").feature("swe4").set("contributeto", "csel8");
+        model.geom("part1").feature("swe4").set("crossfaces", true);
+        model.geom("part5").feature("swe4").set("includefinal", false);
+        model.geom("part5").feature("swe4").set("twistcomp", false);
+        model.geom("part5").feature("swe4").selection("face").named("wp4_csel1");
+        model.geom("part5").feature("swe4").selection("edge").named("csel9");
+        model.geom("part5").feature("swe4").selection("diredge").set("pc3(1)", 1);
+        model.geom("part5").create("pt1", "Point");
+        model.geom("part5").feature("pt1").label("src");
+        model.geom("part5").feature("pt1").set("contributeto", "csel10");
+        model.geom("part5").feature("pt1")
+                .set("p", new String[]{"cos(2*pi*rev_cuff_LN*(1.25/2.5))*((thk_elec_LN/2)+r_cuff_in_LN)", "sin(2*pi*rev_cuff_LN*(1.25/2.5))*((thk_elec_LN/2)+r_cuff_in_LN)", "Center"});
+        model.geom("part5").run();
     }
 
     private static void makePartInstances(Model model) {
@@ -1172,45 +1172,45 @@ public class FEMBuilder {
 
         //// LIVANOVA
         // CUFF and CONTACT 1
-//        model.component("comp1").geom("geom1").create("pi21", "PartInstance");
-//        model.component("comp1").geom("geom1").feature("pi21").label("Helical Silicone 1");
-//        model.component("comp1").geom("geom1").feature("pi21").setIndex("inputexpr", "(z_nerve_LN/2)-(sep_elec_LN/2)", 0);
-//        model.component("comp1").geom("geom1").feature("pi21").set("rot", "zw_rot1");
-//        model.component("comp1").geom("geom1").feature("pi21").set("selkeepnoncontr", false);
-//        model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeepdom", "pi21_csel2.dom", "on");
-//        model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeepdom", "pi21_csel5.dom", "on");
-//        model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeepdom", "pi21_csel6.dom", "on");
-//        model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeepdom", "pi21_csel8.dom", "on");
-//        model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeeppnt", "pi21_csel10.pnt", "on");
+        model.component("comp1").geom("geom1").create("pi21", "PartInstance");
+        model.component("comp1").geom("geom1").feature("pi21").label("Helical Silicone 1");
+        model.component("comp1").geom("geom1").feature("pi21").setIndex("inputexpr", "(z_nerve_LN/2)-(sep_elec_LN/2)", 0);
+        model.component("comp1").geom("geom1").feature("pi21").set("rot", "zw_rot1");
+        model.component("comp1").geom("geom1").feature("pi21").set("selkeepnoncontr", false);
+        model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeepdom", "pi21_csel2.dom", "on");
+        model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeepdom", "pi21_csel5.dom", "on");
+        model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeepdom", "pi21_csel6.dom", "on");
+        model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeepdom", "pi21_csel8.dom", "on");
+        model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeeppnt", "pi21_csel10.pnt", "on");
 
         // CUFF and CONTACT 2
-//        model.component("comp1").geom("geom1").create("pi22", "PartInstance");
-//        model.component("comp1").geom("geom1").feature("pi22").label("Helical Silicone 2");
-//        model.component("comp1").geom("geom1").feature("pi22").setIndex("inputexpr", "(z_nerve_LN/2)+(sep_elec_LN/2)", 0);
-//        model.component("comp1").geom("geom1").feature("pi22").set("rot", "zw_rot2");
-//        model.component("comp1").geom("geom1").feature("pi22").set("selkeepnoncontr", false);
-//        model.component("comp1").geom("geom1").feature("pi22").setEntry("selkeepdom", "pi22_csel2.dom", "on");
-//        model.component("comp1").geom("geom1").feature("pi22").setEntry("selkeepdom", "pi22_csel5.dom", "on");
-//        model.component("comp1").geom("geom1").feature("pi22").setEntry("selkeepdom", "pi22_csel6.dom", "on");
-//        model.component("comp1").geom("geom1").feature("pi22").setEntry("selkeepdom", "pi22_csel8.dom", "on");
-//        model.component("comp1").geom("geom1").feature("pi22").setEntry("selkeepdom", "pi22_csel10.dom", "on");
-//        model.component("comp1").geom("geom1").feature("pi22").setEntry("selkeeppnt", "pi22_csel10.pnt", "on");
+        model.component("comp1").geom("geom1").create("pi22", "PartInstance");
+        model.component("comp1").geom("geom1").feature("pi22").label("Helical Silicone 2");
+        model.component("comp1").geom("geom1").feature("pi22").setIndex("inputexpr", "(z_nerve_LN/2)+(sep_elec_LN/2)", 0);
+        model.component("comp1").geom("geom1").feature("pi22").set("rot", "zw_rot2");
+        model.component("comp1").geom("geom1").feature("pi22").set("selkeepnoncontr", false);
+        model.component("comp1").geom("geom1").feature("pi22").setEntry("selkeepdom", "pi22_csel2.dom", "on");
+        model.component("comp1").geom("geom1").feature("pi22").setEntry("selkeepdom", "pi22_csel5.dom", "on");
+        model.component("comp1").geom("geom1").feature("pi22").setEntry("selkeepdom", "pi22_csel6.dom", "on");
+        model.component("comp1").geom("geom1").feature("pi22").setEntry("selkeepdom", "pi22_csel8.dom", "on");
+        model.component("comp1").geom("geom1").feature("pi22").setEntry("selkeepdom", "pi22_csel10.dom", "on");
+        model.component("comp1").geom("geom1").feature("pi22").setEntry("selkeeppnt", "pi22_csel10.pnt", "on");
 
-////        model.component("comp1").geom("geom1").create("pi5", "PartInstance");
-////        model.component("comp1").geom("geom1").feature("pi5").label("Pitt (WIP)");
-////        model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "N_holes", "1");
-////        model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "Theta", "340 [deg]");
-////        model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "Center", "50 [mm]");
-////        model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "R_in", "1 [mm]");
-////        model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "R_out", "2 [mm]");
-////        model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "L", "5 [mm]");
-////        model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "Rot_def", "0 [deg]");
-////        model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "D_hole", "0.3 [mm]");
-////        model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "Buffer_hole", "0.1 [mm]");
-////        model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "L_holecenter_cuffseam", "0.3 [mm]");
-////        model.component("comp1").geom("geom1").feature("pi5")
-////                .setEntry("inputexpr", "Pitch_holecenter_holecenter", "0 [mm]");
-////        model.component("comp1").geom("geom1").feature("pi5").set("selkeepnoncontr", false);
+//        model.component("comp1").geom("geom1").create("pi5", "PartInstance");
+//        model.component("comp1").geom("geom1").feature("pi5").label("Pitt (WIP)");
+//        model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "N_holes", "1");
+//        model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "Theta", "340 [deg]");
+//        model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "Center", "50 [mm]");
+//        model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "R_in", "1 [mm]");
+//        model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "R_out", "2 [mm]");
+//        model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "L", "5 [mm]");
+//        model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "Rot_def", "0 [deg]");
+//        model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "D_hole", "0.3 [mm]");
+//        model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "Buffer_hole", "0.1 [mm]");
+//        model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "L_holecenter_cuffseam", "0.3 [mm]");
+//        model.component("comp1").geom("geom1").feature("pi5")
+//                .setEntry("inputexpr", "Pitch_holecenter_holecenter", "0 [mm]");
+//        model.component("comp1").geom("geom1").feature("pi5").set("selkeepnoncontr", false);
 
         model.component("comp1").geom("geom1").run();
         model.component("comp1").geom("geom1").run("fin");
@@ -1250,35 +1250,35 @@ public class FEMBuilder {
         model.component("comp1").material("matlnk12").set("link", "mat3");
         model.component("comp1").material("matlnk12").selection().named("geom1_pi7_csel3_dom");
 
-//        model.component("comp1").material().create("matlnk26", "Link");
-//        model.component("comp1").material("matlnk26").label("LivaNova Cuff1p1 is Silicone");
-//        model.component("comp1").material("matlnk26").set("link", "mat3");
-//        model.component("comp1").material("matlnk26").selection().named("geom1_pi21_csel2_dom");
-//
-//        model.component("comp1").material().create("matlnk27", "Link");
-//        model.component("comp1").material("matlnk27").label("LivaNova Cuff1p2 is Silicone");
-//        model.component("comp1").material("matlnk27").set("link", "mat3");
-//        model.component("comp1").material("matlnk27").selection().named("geom1_pi21_csel5_dom");
-//
-//        model.component("comp1").material().create("matlnk28", "Link");
-//        model.component("comp1").material("matlnk28").label("LivaNova Cuff1p3 is Silicone");
-//        model.component("comp1").material("matlnk28").set("link", "mat3");
-//        model.component("comp1").material("matlnk28").selection().named("geom1_pi21_csel8_dom");
+        model.component("comp1").material().create("matlnk26", "Link");
+        model.component("comp1").material("matlnk26").label("LivaNova Cuff1p1 is Silicone");
+        model.component("comp1").material("matlnk26").set("link", "mat3");
+        model.component("comp1").material("matlnk26").selection().named("geom1_pi21_csel2_dom");
 
-//        model.component("comp1").material().create("matlnk29", "Link");
-//        model.component("comp1").material("matlnk29").label("LivaNova Cuff2p1 is Silicone");
-//        model.component("comp1").material("matlnk29").set("link", "mat3");
-//        model.component("comp1").material("matlnk29").selection().named("geom1_pi22_csel2_dom");
-//
-//        model.component("comp1").material().create("matlnk30", "Link");
-//        model.component("comp1").material("matlnk30").label("LivaNova Cuff2p2 is Silicone");
-//        model.component("comp1").material("matlnk30").set("link", "mat3");
-//        model.component("comp1").material("matlnk30").selection().named("geom1_pi22_csel5_dom");
-//
-//        model.component("comp1").material().create("matlnk31", "Link");
-//        model.component("comp1").material("matlnk31").label("LivaNova Cuff2p3 is Silicone");
-//        model.component("comp1").material("matlnk31").set("link", "mat3");
-//        model.component("comp1").material("matlnk31").selection().named("geom1_pi22_csel8_dom");
+        model.component("comp1").material().create("matlnk27", "Link");
+        model.component("comp1").material("matlnk27").label("LivaNova Cuff1p2 is Silicone");
+        model.component("comp1").material("matlnk27").set("link", "mat3");
+        model.component("comp1").material("matlnk27").selection().named("geom1_pi21_csel5_dom");
+
+        model.component("comp1").material().create("matlnk28", "Link");
+        model.component("comp1").material("matlnk28").label("LivaNova Cuff1p3 is Silicone");
+        model.component("comp1").material("matlnk28").set("link", "mat3");
+        model.component("comp1").material("matlnk28").selection().named("geom1_pi21_csel8_dom");
+
+        model.component("comp1").material().create("matlnk29", "Link");
+        model.component("comp1").material("matlnk29").label("LivaNova Cuff2p1 is Silicone");
+        model.component("comp1").material("matlnk29").set("link", "mat3");
+        model.component("comp1").material("matlnk29").selection().named("geom1_pi22_csel2_dom");
+
+        model.component("comp1").material().create("matlnk30", "Link");
+        model.component("comp1").material("matlnk30").label("LivaNova Cuff2p2 is Silicone");
+        model.component("comp1").material("matlnk30").set("link", "mat3");
+        model.component("comp1").material("matlnk30").selection().named("geom1_pi22_csel5_dom");
+
+        model.component("comp1").material().create("matlnk31", "Link");
+        model.component("comp1").material("matlnk31").label("LivaNova Cuff2p3 is Silicone");
+        model.component("comp1").material("matlnk31").set("link", "mat3");
+        model.component("comp1").material("matlnk31").selection().named("geom1_pi22_csel8_dom");
 
         // PLATINUM
         model.material().create("mat2", "Common", "");
@@ -1343,15 +1343,15 @@ public class FEMBuilder {
         model.component("comp1").material("matlnk19").set("link", "mat2");
         model.component("comp1").material("matlnk19").selection().named("geom1_pi20_csel13_dom");
 
-//        model.component("comp1").material().create("matlnk32", "Link");
-//        model.component("comp1").material("matlnk32").label("LivaNova Contact 1 is Platinum");
-//        model.component("comp1").material("matlnk32").set("link", "mat2");
-//        model.component("comp1").material("matlnk32").selection().named("geom1_pi21_csel6_dom");
+        model.component("comp1").material().create("matlnk32", "Link");
+        model.component("comp1").material("matlnk32").label("LivaNova Contact 1 is Platinum");
+        model.component("comp1").material("matlnk32").set("link", "mat2");
+        model.component("comp1").material("matlnk32").selection().named("geom1_pi21_csel6_dom");
 
-//        model.component("comp1").material().create("matlnk33", "Link");
-//        model.component("comp1").material("matlnk33").label("LivaNova Contact 2 is Platinum");
-//        model.component("comp1").material("matlnk33").set("link", "mat2");
-//        model.component("comp1").material("matlnk33").selection().named("geom1_pi22_csel6_dom");
+        model.component("comp1").material().create("matlnk33", "Link");
+        model.component("comp1").material("matlnk33").label("LivaNova Contact 2 is Platinum");
+        model.component("comp1").material("matlnk33").set("link", "mat2");
+        model.component("comp1").material("matlnk33").selection().named("geom1_pi22_csel6_dom");
 
         // SALINE
         model.material().create("mat1", "Common", "");
