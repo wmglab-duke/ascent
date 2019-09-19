@@ -23,7 +23,7 @@ public class JSONReader {
             String text = new Scanner(new File(filepath)).useDelimiter("\\A").next();
             jsonObject = new JSONObject(text);
         } catch (Exception e) {
-            System.out.println("failed");
+            System.out.println("failed to read JSON");
             // tell user if fails (likely because wrong path or wrong file type)
             e.printStackTrace();
         }

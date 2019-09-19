@@ -10,12 +10,6 @@ import com.comsol.model.util.ModelUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-//import org.json.JSONArray;
-//import org.json.JSONObject;
-
-// comsolbatch -inputfile Model1.mph -outputfile Model1_solved.mph (add this to runner maybe?)
-
-// comsolbatch -inputfile Model1.mph -outputfile Model1_solved.mph
 /** Model exported on Sep 5 2019, 09:20 by COMSOL 5.4.0.388. */
 public class FEMBuilder {
 
@@ -32,13 +26,15 @@ public class FEMBuilder {
     private static Model definePartInstanceParameters() {
 
         Model model = ModelUtil.create("Model");
-//        ModelUtil.showProgress(false);
+        //ModelUtil.showProgress(false);
 
         model.modelPath("D:\\Documents\\ModularCuffs");
         model.label("UNI_TUBECUFF.mph");
 
         ComsolIdentifierManager cim = new ComsolIdentifierManager();
-        String[] files = {"Enteromedics.json", "CorTec.json", "ImThera.json", "Madison.json", "Purdue.json"};
+        String[] files = {
+                "Enteromedics.json", "CorTec.json", "ImThera.json", "Madison.json", "Purdue.json", "LivaNova.json"
+        };
 
 
         for (String file: files) {
@@ -61,36 +57,6 @@ public class FEMBuilder {
             }
         }
 
-        // LIVANOVA
-//        model.param().group().create("par7");
-//        model.param("par7").set("w_cuff_LN", "1.4 [mm]");
-//        model.param("par7").set("thk_cuff_LN", "0.9 [mm]");
-//        model.param("par7").set("w_elec_LN", "0.75 [mm]");
-//        model.param("par7").set("thk_elec_LN", "0.05 [mm]");
-//        model.param("par7").set("S_LN", "0.2 [mm]");
-//        model.param("par7").set("rev_BD_LN", "2.5");
-//        model.param("par7").set("p_LN", "w_cuff_LN+S_LN");
-//        model.param("par7").set("sep_elec_LN", "8 [mm]");
-//        model.param("par7").set("L_cuff_LN", "rev_cuff_LN*p_LN");
-//        model.param("par7").set("z_nerve_LN", "50 [mm]");
-//        model.param("par7").set("R_HigherMesh_LN", "4 [mm]");
-//        model.param("par7").set("r_ground_LN", "5 [mm]");
-//        model.param("par7").set("scar_thk_LN", "100 [micrometer]");
-//        model.param("par7").set("d_nerve_LN", "r_nerve_LN*2");
-//        model.param("par7").set("ID_30220_LN", "2 [mm]");
-//        model.param("par7").set("ID_30230_LN", "3 [mm]");
-//        model.param("par7").set("thk_medium_gap_internal_LN", "0");
-//        model.param("par7")
-//                .set("rev_cuff_LN", "2.5*((r_nerve_LN+thk_medium_gap_internal_LN)<(ID_30220_LN/2))+((rev_BD_LN)*(sqrt((p_LN^2+pi^2*(ID_cuff_LN+thk_cuff_LN)^2)/(p_LN^2+pi^2*(d_nerve_LN+2*scar_thk_LN+thk_cuff_LN)^2))))*((r_nerve_LN+thk_medium_gap_internal_LN)>=(ID_30220_LN/2))");
-//        model.param("par7").set("r_nerve_LN", "0.8 [mm]");
-//        model.param("par7").set("r_cuff_in_pre_LN", "0.5*ID_cuff_LN");
-//        model.param("par7").set("r_cuff_in_LN", "max(r_nerve_LN+thk_medium_gap_internal_LN,r_cuff_in_pre_LN)");
-//        model.param("par7")
-//                .set("ID_cuff_LN", "ID_30220_LN*((r_nerve_LN+thk_medium_gap_internal_LN)<(ID_30230_LN/2))+ID_30230_LN*((r_nerve_LN+thk_medium_gap_internal_LN)>=(ID_30230_LN/2))");
-//        model.param("par7").set("zw_rot1_LN", "0");
-//        model.param("par7").set("zw_rot2_LN", "0");
-//        model.param("par7").label("LivaNova [LN]");
-//        model.param("par4").set("Center_P", "6*10 [mm]");
 
         return model;
     }
@@ -1008,6 +974,8 @@ public class FEMBuilder {
         model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepobj", "pi15_csel12", "off");
         model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepobj", "pi15_csel13", "off");
         model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepobj", "pi15_csel14", "off");
+
+
         model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepdom", "pi15_ballsel1", "off");
         model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepdom", "pi15_ballsel2", "off");
         model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepdom", "pi15_csel7.dom", "on");

@@ -177,7 +177,7 @@
     },
     {
       "name": "Recess_ITC",
-      "expression": "0",
+      "expression": "0.05",
       "description": ""
     },
     {
@@ -213,6 +213,11 @@
     {
       "name": "ang_contactcenter_contactcenter_ITC",
       "expression": "ang_contactcenter_contactcenter_pre_ITC*(r_cuff_in_pre_ITI/R_in_ITI)",
+      "description": ""
+    },
+    {
+      "name": "ang_contactcenter_contactcenter_pre_ITC",
+      "expression": "51 [deg]",
       "description": ""
     }
   ]
