@@ -411,16 +411,14 @@ class Trace(Exceptionable):
                 count = self.count()
 
                 # choose implementation from mode
-                if mode == WriteMode.SECTIONWISE3D:
+                if mode == WriteMode.SECTIONWISE:
                     print('here 3d')
                     # write coordinates
                     f.write('%% Coordinates\n')
                     for i in range(count):
-                        # f.write('{}\t{}\t{}\n'.format(self.points[i, 0],
-                        #                               self.points[i, 1],
-                        #                               self.points[i, 2]))
-                        f.write('{}\t{}\n'.format(self.points[i, 0],
-                                                      self.points[i, 1]))
+                        f.write('{}\t{}\t{}\n'.format(self.points[i, 0],
+                                                      self.points[i, 1],
+                                                      self.points[i, 2]))
 
                     # write elements (corresponding to their coordinates)
                     f.write('%% Elements\n')
