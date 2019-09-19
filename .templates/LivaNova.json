@@ -1,0 +1,124 @@
+{
+  "data": [
+    {
+      "name": "w_cuff_LN",
+      "expression": "1.4 [mm]",
+      "description": ""
+    },
+    {
+      "name": "thk_cuff_LN",
+      "expression": "0.9 [mm]",
+      "description": ""
+    },
+    {
+      "name": "w_elec_LN",
+      "expression": "0.75 [mm]",
+      "description": ""
+    },
+    {
+      "name": "thk_elec_LN",
+      "expression": "0.05 [mm]",
+      "description": ""
+    },
+    {
+      "name": "S_LN",
+      "expression": "0.2 [mm]",
+      "description": ""
+    },
+    {
+      "name": "rev_BD_LN",
+      "expression": "2.5",
+      "description": ""
+    },
+    {
+      "name": "p_LN",
+      "expression": "w_cuff_LN+S_LN",
+      "description": ""
+    },
+    {
+      "name": "sep_elec_LN",
+      "expression": "8 [mm]",
+      "description": ""
+    },
+    {
+      "name": "L_cuff_LN",
+      "expression": "rev_cuff_LN*p_LN",
+      "description": ""
+    },
+    {
+      "name": "z_nerve_LN",
+      "expression": "50 [mm]",
+      "description": ""
+    },
+    {
+      "name": "R_HigherMesh_LN",
+      "expression": "4 [mm]",
+      "description": ""
+    },
+    {
+      "name": "r_ground_LN",
+      "expression": "5 [mm]",
+      "description": ""
+    },
+    {
+      "name": "scar_thk_LN",
+      "expression": "100 [micrometer]",
+      "description": ""
+    },
+    {
+      "name": "d_nerve_LN",
+      "expression": "r_nerve_LN*2",
+      "description": ""
+    },
+    {
+      "name": "ID_30220_LN",
+      "expression": "2 [mm]",
+      "description": ""
+    },
+    {
+      "name": "ID_30230_LN",
+      "expression": "3 [mm]",
+      "description": ""
+    },
+    {
+      "name": "thk_medium_gap_internal_LN",
+      "expression": "0",
+      "description": ""
+    },
+    {
+      "name": "rev_cuff_LN",
+      "expression": "2.5*((r_nerve_LN+thk_medium_gap_internal_LN)<(ID_30220_LN/2))+((rev_BD_LN)*(sqrt((p_LN^2+pi^2*(ID_cuff_LN+thk_cuff_LN)^2)/(p_LN^2+pi^2*(d_nerve_LN+2*scar_thk_LN+thk_cuff_LN)^2))))*((r_nerve_LN+thk_medium_gap_internal_LN)>=(ID_30220_LN/2))",
+      "description": ""
+    },
+    {
+      "name": "r_nerve_LN",
+      "expression": "0.8 [mm]",
+      "description": ""
+    },
+    {
+      "name": "r_cuff_in_pre_LN",
+      "expression": "0.5*ID_cuff_LN",
+      "description": ""
+    },
+    {
+      "name": "r_cuff_in_LN",
+      "expression": "max(r_nerve_LN+thk_medium_gap_internal_LN,r_cuff_in_pre_LN)",
+      "description": ""
+    },
+    {
+      "name": "ID_cuff_LN",
+      "expression": "ID_30220_LN*((r_nerve_LN+thk_medium_gap_internal_LN)<(ID_30230_LN/2))+ID_30230_LN*((r_nerve_LN+thk_medium_gap_internal_LN)>=(ID_30230_LN/2))",
+      "description": ""
+    },
+    {
+      "name": "zw_rot1_LN",
+      "expression": "0",
+      "description": ""
+    },
+    {
+      "name": "zw_rot2_LN",
+      "expression": "0",
+      "description": ""
+    }
+  ]
+}
