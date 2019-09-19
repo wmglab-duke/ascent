@@ -92,7 +92,7 @@ class Runner(Exceptionable, Configurable):
         self.slide_manager.populate()
 
         print('WRITE')
-        self.slide_manager.write(WriteMode.SECTIONWISE)
+        self.slide_manager.write(WriteMode.SECTIONWISE2D)
 
     def fiber_run(self):
         print('\nSTART FIBER MANAGER')

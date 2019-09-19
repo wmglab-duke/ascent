@@ -411,14 +411,33 @@ class Trace(Exceptionable):
                 count = self.count()
 
                 # choose implementation from mode
-                if mode == WriteMode.SECTIONWISE:
-
+                if mode == WriteMode.SECTIONWISE3D:
+                    print('here 3d')
                     # write coordinates
                     f.write('%% Coordinates\n')
                     for i in range(count):
-                        f.write('{}\t{}\t{}\n'.format(self.points[i, 0],
-                                                      self.points[i, 1],
-                                                      self.points[i, 2]))
+                        # f.write('{}\t{}\t{}\n'.format(self.points[i, 0],
+                        #                               self.points[i, 1],
+                        #                               self.points[i, 2]))
+                        f.write('{}\t{}\n'.format(self.points[i, 0],
+                                                      self.points[i, 1]))
+
+                    # write elements (corresponding to their coordinates)
+                    f.write('%% Elements\n')
+                    for i in range(count):
+                        # if not last point, attach to next point
+                        if i < count - 1:
+                            f.write('{}\t{}\n'.format(i + 1, i + 2))
+                        else:  # attach to first point (closed loop)
+                            f.write('{}\t{}\n'.format(i + 1, 1))
+
+                elif mode == WriteMode.SECTIONWISE2D:
+                    print('here 2d')
+                    # write coordinates
+                    f.write('%% Coordinates\n')
+                    for i in range(count):
+                        f.write('{}\t{}\n'.format(self.points[i, 0],
+                                                  self.points[i, 1]))
 
                     # write elements (corresponding to their coordinates)
                     f.write('%% Elements\n')
@@ -431,6 +450,7 @@ class Trace(Exceptionable):
 
                 else:
                     self.throw(4)
+
         except EnvironmentError as _:
             # only one of these can run, so comment at will
             self.throw(7)
