@@ -109,9 +109,9 @@ class Runner(Exceptionable, Configurable):
     def handoff(self):
 
         comsol_path = self.load(os.path.join('.config', 'system.json')).get('comsol_path')
-
+        print(comsol_path)
         file_name_no_ext = os.path.join('src', 'core', 'FEMBuilder')
-
+        print(file_name_no_ext)
         # run commands by system type
         cwd = os.getcwd()
         if sys.platform.startswith('darwin') or sys.platform.startswith('linux'):  # macOS and linux
@@ -132,24 +132,20 @@ class Runner(Exceptionable, Configurable):
                       '-dev {}/plugins/com.comsol.accessutils_1.0.0.jar,'
                       '{}/lib/json-20190722.jar'.format(comsol_path, cwd, file_name_no_ext, comsol_path, cwd))
 
-
-
         else: # assume to be 'win64'
-            manifest = 'com/comsol/accessutils/MANIFEST.MF'
+            manifest = 'com\\comsol\\accessutils\\MANIFEST.MF'
 
             os.chdir('src')
-            os.system('javac com/comsol/accessutils/*.java -classpath ../lib/json-20190722.jar -target 1.8')
-            os.system('jar -cvfm "{}/plugins/com.comsol.accessutils_1.0.0.jar" {} '
-                      'com/comsol/accessutils/*.class'.format(comsol_path, manifest))
+            os.system('javac com\\comsol\\accessutils\\*.java -classpath ..\\lib\\json-20190722.jar -source 1.8 -target 1.8')
+            os.system('jar -cvfm "{}\\plugins\\com.comsol.accessutils_1.0.0.jar" {} '
+                      'com\\comsol\\accessutils\\*.class'.format(comsol_path, manifest))
             os.chdir('..')
 
-            os.system('{}/bin/comsol compile {}/{}.java '
-                      '-classpathadd "{}/plugins/com.comsol.accessutils_1.0.0.jar:"'
-                      '{}/lib/json-20190722.jar'.format(comsol_path, cwd, file_name_no_ext, comsol_path, cwd))
+            subprocess.call('"{}\\bin\\win64\\comsolcompile" "{}\\{}.java" -classpathadd "{}\\plugins\\com.comsol.accessutils_1.0.0.jar;{}\\lib\\json-20190722.jar"'.format(comsol_path, cwd, file_name_no_ext, comsol_path, cwd),shell=True)
 
-            os.system('"{}/bin/comsol batch -inputfile {}/{}.class '
-                      '-dev {}/plugins/com.comsol.accessutils_1.0.0.jar,'
-                      '{}/lib/json-20190722.jar"'.format(comsol_path, cwd, file_name_no_ext, comsol_path, cwd))
+            subprocess.call('"{}\\bin\\win64\\comsolbatch" -inputfile "{}\\{}.class" '
+                      '-dev "{}\\plugins\\com.comsol.accessutils_1.0.0.jar,'
+                      '{}\\lib\\json-20190722.jar"'.format(comsol_path, cwd, file_name_no_ext, comsol_path, cwd),shell=True)
 
     def save_all(self):
 

@@ -60,7 +60,9 @@ and fiber information (metadata and coordinates for extracting electric potentia
 - if using IntelliJ, ensure presence of line in `access.iml`: `<component name="NewModuleRootManager" inherit-compiler-output="true">`
 
 ## Setup
-IN COMSOL: Preferences -> Security -> Methods and Java Libraries -> File System Access -> All Files
+- IN COMSOL: Preferences -> Security -> Methods and Java Libraries -> File System Access -> All Files
+- Ensure that users have write permissions to the <COMSOL installation>/plugins
+- Add com.comsol.accessutils_1.0.0.jar to <COMSOL installation>\bin\comsolpath.txt, might need to adjust security settings to do this
 
 ## Source images
 The user must provide 3 types of files that will be used to construct the data filesystem. In addition to the type
