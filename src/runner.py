@@ -141,11 +141,13 @@ class Runner(Exceptionable, Configurable):
                       'com\\comsol\\accessutils\\*.class'.format(comsol_path, manifest))
             os.chdir('..')
 
-            subprocess.call('"{}\\bin\\win64\\comsolcompile" "{}\\{}.java" -classpathadd "{}\\plugins\\com.comsol.accessutils_1.0.0.jar;{}\\lib\\json-20190722.jar"'.format(comsol_path, cwd, file_name_no_ext, comsol_path, cwd),shell=True)
+            subprocess.call('"{}\\bin\\win64\\comsolcompile" "{}\\{}.java" '
+                            '-classpathadd "{}\\plugins\\com.comsol.accessutils_1.0.0.jar;'
+                            '{}\\lib\\json-20190722.jar"'.format(comsol_path, cwd, file_name_no_ext, comsol_path, cwd),shell=True)
 
             subprocess.call('"{}\\bin\\win64\\comsolbatch" -inputfile "{}\\{}.class" '
-                      '-dev "{}\\plugins\\com.comsol.accessutils_1.0.0.jar,'
-                      '{}\\lib\\json-20190722.jar"'.format(comsol_path, cwd, file_name_no_ext, comsol_path, cwd),shell=True)
+                            '-dev "{}\\plugins\\com.comsol.accessutils_1.0.0.jar,'
+                            '{}\\lib\\json-20190722.jar"'.format(comsol_path, cwd, file_name_no_ext, comsol_path, cwd),shell=True)
 
     def save_all(self):
 
