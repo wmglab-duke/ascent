@@ -110,7 +110,7 @@ class Runner(Exceptionable, Configurable):
 
         comsol_path = self.load(os.path.join('.config', 'system.json')).get('comsol_path')
 
-        file_name_no_ext = os.path.join('src', 'core', 'Sandbox3')
+        file_name_no_ext = os.path.join('src', 'core', 'FEMBuilder')
 
         # run commands by system type
         cwd = os.getcwd()
