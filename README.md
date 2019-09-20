@@ -5,7 +5,8 @@
     * Eric
         - (**done**)add cuff specific parameters to master
         - (**done**) clean up and annotate existing MATLAB code for building FEM's (electrode, nerve, general model parameters)
-        - Fix ImThera, make copy of FEM Builder and work from that
+        - (**done**)Fix ImThera, make copy of FEM Builder and work from that
+        - (**done**)Fix LivaNova, make copy of FEM Builder and work from that
         - Add nerve to FEMBuilder
         - Mesh and solve FEMBuilder (store mesh parameters in JSON)
     * Jake
