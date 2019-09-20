@@ -875,6 +875,8 @@ public class FEMBuilder {
         model.geom("part6").feature("del3").label("Delete Outer Excess Contact");
         model.geom("part6").feature("del3").selection("input").init(3);
         model.geom("part6").feature("del3").selection("input").named("csel23");
+        model.geom("part6").create("if1", "If");
+        model.geom("part6").feature("if1").set("condition", "recess_Pitt>0");
         model.geom("part6").create("wp2", "WorkPlane");
         model.geom("part6").feature("wp2").label("Recess Cross Section");
         model.geom("part6").feature("wp2").set("contributeto", "csel8");
@@ -957,6 +959,7 @@ public class FEMBuilder {
         model.geom("part6").feature("del5").label("Delete Outer Excess Recess");
         model.geom("part6").feature("del5").selection("input").init(3);
         model.geom("part6").feature("del5").selection("input").named("csel21");
+        model.geom("part6").create("endif1", "EndIf");
         model.geom("part6").create("pt1", "Point");
         model.geom("part6").feature("pt1").label("src");
         model.geom("part6").feature("pt1").set("contributeto", "csel16");
@@ -1401,7 +1404,7 @@ public class FEMBuilder {
         //// LIVANOVA
         // CUFF and CONTACT 1
         model.component("comp1").geom("geom1").create("pi21", "PartInstance");
-        model.component("comp1").geom("geom1").feature("pi21").label("Helical Silicone 1");
+        model.component("comp1").geom("geom1").feature("pi21").label("LivaNova 1");
         model.component("comp1").geom("geom1").feature("pi21").set("part", "part5");
         model.component("comp1").geom("geom1").feature("pi21").setIndex("inputexpr", "(z_nerve_LN/2)-(sep_elec_LN/2)", 0);
         model.component("comp1").geom("geom1").feature("pi21").set("rot", "zw_rot1_LN");
@@ -1414,7 +1417,7 @@ public class FEMBuilder {
 
         // CUFF and CONTACT 2
         model.component("comp1").geom("geom1").create("pi22", "PartInstance");
-        model.component("comp1").geom("geom1").feature("pi22").label("Helical Silicone 2");
+        model.component("comp1").geom("geom1").feature("pi22").label("LivaNova 2");
         model.component("comp1").geom("geom1").feature("pi22").set("part", "part5");
         model.component("comp1").geom("geom1").feature("pi22").setIndex("inputexpr", "(z_nerve_LN/2)+(sep_elec_LN/2)", 0);
         model.component("comp1").geom("geom1").feature("pi22").set("rot", "zw_rot2_LN");
@@ -1426,21 +1429,16 @@ public class FEMBuilder {
         model.component("comp1").geom("geom1").feature("pi22").setEntry("selkeepdom", "pi22_csel10.dom", "on");
         model.component("comp1").geom("geom1").feature("pi22").setEntry("selkeeppnt", "pi22_csel10.pnt", "on");
 
-//        model.component("comp1").geom("geom1").create("pi5", "PartInstance");
-//        model.component("comp1").geom("geom1").feature("pi5").label("Pitt (WIP)");
-//        model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "N_holes", "1");
-//        model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "Theta", "340 [deg]");
-//        model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "Center", "50 [mm]");
-//        model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "R_in", "1 [mm]");
-//        model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "R_out", "2 [mm]");
-//        model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "L", "5 [mm]");
-//        model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "Rot_def", "0 [deg]");
-//        model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "D_hole", "0.3 [mm]");
-//        model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "Buffer_hole", "0.1 [mm]");
-//        model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "L_holecenter_cuffseam", "0.3 [mm]");
-//        model.component("comp1").geom("geom1").feature("pi5")
-//                .setEntry("inputexpr", "Pitch_holecenter_holecenter", "0 [mm]");
-//        model.component("comp1").geom("geom1").feature("pi5").set("selkeepnoncontr", false);
+        //// PITT
+        // CUFF
+
+        // CONTACT 1
+
+        // CONTACT 2
+
+        // CONTACT 3
+
+        // CONTACT 4
 
         model.component("comp1").geom("geom1").run();
         model.component("comp1").geom("geom1").run("fin");
