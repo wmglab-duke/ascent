@@ -234,5 +234,8 @@
       ],
       "distance": 6000
     }
+  },
+  "cuff": {
+    "preset": "Purdue"
   }
 }

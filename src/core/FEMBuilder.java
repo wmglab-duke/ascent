@@ -32,14 +32,15 @@ public class FEMBuilder {
         model.label("UNI_TUBECUFF.mph");
 
         ComsolIdentifierManager cim = new ComsolIdentifierManager();
+        // TODO: this should be based on the cuff value in the master.json
         String[] files = {
-                "Enteromedics.json", "CorTec.json", "ImThera.json", "Madison.json", "Purdue.json", "LivaNova.json"
+                "Enteromedics.json", "CorTec.json", "ImThera.json", "Madison.json", "Purdue.json", "LivaNova.json", "Pitt.json"
         };
-
 
         for (String file: files) {
             String par = cim.next("par");
 
+            // TODO: this should be based on the .templates location in .config/system.json
             //JSONObject data = new JSONReader("/Users/jakecariello/Box/Documents/Pipeline/access/.templates/" + file).getData(); //jake mac laptop
             //JSONObject data = new JSONReader("/Users/ericmusselman/Documents/access/.templates/" + file).getData(); //eric mac laptop
             JSONObject data = new JSONReader("D:\\Documents\\access\\.templates\\" + file).getData(); //eric lab windows desktop
@@ -124,6 +125,15 @@ public class FEMBuilder {
         model.geom("part5").label("HelicalCuffnContact_Primitive");
         model.geom("part5").lengthUnit("\u00b5m");
         model.geom("part5").inputParam().set("Center", "Center_LN");
+
+        // BENT RECTANGLE CONTACT WITH FILLET CORNERS PRIMITIVE
+        model.geom().create("part6", "Part", 3);
+        model.geom("part6").label("RectangleContact_Primitive");
+        model.geom("part6").lengthUnit("\u00b5m");
+        model.geom("part6").inputParam().set("r_inner_contact", "r_cuff_in_Pitt+recess_Pitt");
+        model.geom("part6").inputParam().set("r_outer_contact", "r_cuff_in_Pitt+recess_Pitt+thk_contact_Pitt");
+        model.geom("part6").inputParam().set("z_center", "0 [mm]");
+        model.geom("part6").inputParam().set("rotation_angle", "0 [deg]");
     }
 
     private static void definePrimitiveSelections(Model model) {
@@ -223,6 +233,54 @@ public class FEMBuilder {
         model.geom("part5").selection("csel8").label("Cuffp3");
         model.geom("part5").selection().create("csel9", "CumulativeSelection");
         model.geom("part5").selection("csel9").label("PC3");
+
+        // Pitt-style bent square with fillet corners primitive
+        model.geom("part6").selection().create("csel11", "CumulativeSelection");
+        model.geom("part6").selection("csel11").label("OUTER CONTACT CUTTER");
+        model.geom("part6").selection().create("csel22", "CumulativeSelection");
+        model.geom("part6").selection("csel22").label("SEL INNER EXCESS CONTACT");
+        model.geom("part6").selection().create("csel10", "CumulativeSelection");
+        model.geom("part6").selection("csel10").label("INNER CONTACT CUTTER");
+        model.geom("part6").selection().create("csel21", "CumulativeSelection");
+        model.geom("part6").selection("csel21").label("SEL OUTER EXCESS RECESS");
+        model.geom("part6").selection().create("csel20", "CumulativeSelection");
+        model.geom("part6").selection("csel20").label("SEL INNER EXCESS RECESS");
+        model.geom("part6").selection().create("csel7", "CumulativeSelection");
+        model.geom("part6").selection("csel7").label("OUTER CUTTER");
+        model.geom("part6").selection().create("csel15", "CumulativeSelection");
+        model.geom("part6").selection("csel15").label("FINAL RECESS");
+        model.geom("part6").selection().create("csel8", "CumulativeSelection");
+        model.geom("part6").selection("csel8").label("RECESS CROSS SECTION");
+        model.geom("part6").selection().create("csel14", "CumulativeSelection");
+        model.geom("part6").selection("csel14").label("OUTER RECESS CUTTER");
+        model.geom("part6").selection().create("csel9", "CumulativeSelection");
+        model.geom("part6").selection("csel9").label("RECESS PRE CUTS");
+        model.geom("part6").selection().create("csel13", "CumulativeSelection");
+        model.geom("part6").selection("csel13").label("INNER RECESS CUTTER");
+        model.geom("part6").selection().create("csel12", "CumulativeSelection");
+        model.geom("part6").selection("csel12").label("FINAL CONTACT");
+        model.geom("part6").selection().create("csel23", "CumulativeSelection");
+        model.geom("part6").selection("csel23").label("SEL OUTER EXCESS CONTACT");
+        model.geom("part6").selection().create("csel19", "CumulativeSelection");
+        model.geom("part6").selection("csel19").label("SEL OUTER EXCESS");
+        model.geom("part6").selection().create("csel18", "CumulativeSelection");
+        model.geom("part6").selection("csel18").label("SEL INNER EXCESS");
+        model.geom("part6").selection().create("csel17", "CumulativeSelection");
+        model.geom("part6").selection("csel17").label("BASE CONTACT PLANE (PRE ROTATION)");
+        model.geom("part6").selection().create("csel16", "CumulativeSelection");
+        model.geom("part6").selection("csel16").label("SRC");
+        model.geom("part6").selection().create("csel1", "CumulativeSelection");
+        model.geom("part6").selection("csel1").label("CONTACT PRE CUTS");
+        model.geom("part6").selection().create("csel2", "CumulativeSelection");
+        model.geom("part6").selection("csel2").label("CONTACT CROSS SECTION");
+        model.geom("part6").selection().create("csel3", "CumulativeSelection");
+        model.geom("part6").selection("csel3").label("INNER CUFF CUTTER");
+        model.geom("part6").selection().create("csel4", "CumulativeSelection");
+        model.geom("part6").selection("csel4").label("OUTER CUFF CUTTER");
+        model.geom("part6").selection().create("csel5", "CumulativeSelection");
+        model.geom("part6").selection("csel5").label("FINAL");
+        model.geom("part6").selection().create("csel6", "CumulativeSelection");
+        model.geom("part6").selection("csel6").label("INNER CUTTER");
     }
 
     private static void definePrimitivePartOperations(Model model) {
@@ -732,6 +790,179 @@ public class FEMBuilder {
         model.geom("part5").feature("pt1")
                 .set("p", new String[]{"cos(2*pi*rev_cuff_LN*(1.25/2.5))*((thk_elec_LN/2)+r_cuff_in_LN)", "sin(2*pi*rev_cuff_LN*(1.25/2.5))*((thk_elec_LN/2)+r_cuff_in_LN)", "Center"});
         model.geom("part5").run();
+
+        // BENT RECTANGLE CONTACT WITH FILLET CORNERS PRIMITIVE
+        model.geom("part6").create("wp3", "WorkPlane");
+        model.geom("part6").feature("wp3").label("base plane (pre rotation)");
+        model.geom("part6").feature("wp3").set("contributeto", "csel17");
+        model.geom("part6").feature("wp3").set("quickplane", "yz");
+        model.geom("part6").feature("wp3").set("unite", true);
+        model.geom("part6").create("wp1", "WorkPlane");
+        model.geom("part6").feature("wp1").label("Contact Cross Section");
+        model.geom("part6").feature("wp1").set("contributeto", "csel2");
+        model.geom("part6").feature("wp1").set("planetype", "transformed");
+        model.geom("part6").feature("wp1").set("workplane", "wp3");
+        model.geom("part6").feature("wp1").set("transaxis", new int[]{0, 1, 0});
+        model.geom("part6").feature("wp1").set("transrot", "rotation_angle");
+        model.geom("part6").feature("wp1").set("unite", true);
+        model.geom("part6").feature("wp1").geom().selection().create("csel1", "CumulativeSelection");
+        model.geom("part6").feature("wp1").geom().selection("csel1").label("CONTACT PRE FILLET");
+        model.geom("part6").feature("wp1").geom().selection().create("csel2", "CumulativeSelection");
+        model.geom("part6").feature("wp1").geom().selection("csel2").label("CONTACT FILLETED");
+        model.geom("part6").feature("wp1").geom().create("r1", "Rectangle");
+        model.geom("part6").feature("wp1").geom().feature("r1").label("Contact Pre Fillet Corners");
+        model.geom("part6").feature("wp1").geom().feature("r1").set("contributeto", "csel1");
+        model.geom("part6").feature("wp1").geom().feature("r1").set("pos", new int[]{0, 0});
+        model.geom("part6").feature("wp1").geom().feature("r1").set("base", "center");
+        model.geom("part6").feature("wp1").geom().feature("r1").set("size", new String[]{"w_contact_Pitt", "z_contact_Pitt"});
+        model.geom("part6").feature("wp1").geom().create("fil1", "Fillet");
+        model.geom("part6").feature("wp1").geom().feature("fil1").label("Fillet Corners");
+        model.geom("part6").feature("wp1").geom().feature("fil1").set("contributeto", "csel2");
+        model.geom("part6").feature("wp1").geom().feature("fil1").set("radius", "fillet_contact_Pitt");
+        model.geom("part6").feature("wp1").geom().feature("fil1").selection("point").named("csel1");
+        model.geom("part6").feature("wp1").geom().create("sca1", "Scale");
+        model.geom("part6").feature("wp1").geom().feature("sca1").set("type", "anisotropic");
+        model.geom("part6").feature("wp1").geom().feature("sca1")
+                .set("factor", new String[]{"1", "scale_morph_w_contact_Pitt"});
+        model.geom("part6").feature("wp1").geom().feature("sca1").selection("input").named("csel2");
+        model.geom("part6").feature("wp1").geom().create("mov1", "Move");
+        model.geom("part6").feature("wp1").geom().feature("mov1").set("disply", "z_center");
+        model.geom("part6").feature("wp1").geom().feature("mov1").selection("input").named("csel2");
+        model.geom("part6").create("ext1", "Extrude");
+        model.geom("part6").feature("ext1").label("Make Contact Pre Cuts");
+        model.geom("part6").feature("ext1").set("contributeto", "csel1");
+        model.geom("part6").feature("ext1").setIndex("distance", "2*r_cuff_in_Pitt", 0);
+        model.geom("part6").feature("ext1").selection("input").named("csel2");
+        model.geom("part6").create("cyl1", "Cylinder");
+        model.geom("part6").feature("cyl1").label("Inner Contact Cutter");
+        model.geom("part6").feature("cyl1").set("contributeto", "csel10");
+        model.geom("part6").feature("cyl1").set("pos", new String[]{"0", "0", "-L_cuff_Pitt/2+z_center"});
+        model.geom("part6").feature("cyl1").set("r", "r_inner_contact");
+        model.geom("part6").feature("cyl1").set("h", "L_cuff_Pitt");
+        model.geom("part6").create("cyl2", "Cylinder");
+        model.geom("part6").feature("cyl2").label("Outer Contact Cutter");
+        model.geom("part6").feature("cyl2").set("contributeto", "csel11");
+        model.geom("part6").feature("cyl2").set("pos", new String[]{"0", "0", "-L_cuff_Pitt/2+z_center"});
+        model.geom("part6").feature("cyl2").set("r", "r_outer_contact");
+        model.geom("part6").feature("cyl2").set("h", "L_cuff_Pitt");
+        model.geom("part6").create("par1", "Partition");
+        model.geom("part6").feature("par1").set("contributeto", "csel12");
+        model.geom("part6").feature("par1").selection("input").named("csel1");
+        model.geom("part6").feature("par1").selection("tool").named("csel11");
+        model.geom("part6").create("par2", "Partition");
+        model.geom("part6").feature("par2").set("contributeto", "csel12");
+        model.geom("part6").feature("par2").selection("input").named("csel1");
+        model.geom("part6").feature("par2").selection("tool").named("csel10");
+        model.geom("part6").create("ballsel1", "BallSelection");
+        model.geom("part6").feature("ballsel1").label("sel inner excess");
+        model.geom("part6").feature("ballsel1").set("posx", "(r_inner_contact/2)*cos(rotation_angle)");
+        model.geom("part6").feature("ballsel1").set("posy", "(r_inner_contact/2)*sin(rotation_angle)");
+        model.geom("part6").feature("ballsel1").set("posz", "z_center");
+        model.geom("part6").feature("ballsel1").set("r", 1);
+        model.geom("part6").feature("ballsel1").set("contributeto", "csel22");
+        model.geom("part6").create("ballsel2", "BallSelection");
+        model.geom("part6").feature("ballsel2").label("sel outer excess");
+        model.geom("part6").feature("ballsel2").set("posx", "((r_outer_contact+2*r_cuff_in_Pitt)/2)*cos(rotation_angle)");
+        model.geom("part6").feature("ballsel2").set("posy", "((r_outer_contact+2*r_cuff_in_Pitt)/2)*sin(rotation_angle)");
+        model.geom("part6").feature("ballsel2").set("posz", "z_center");
+        model.geom("part6").feature("ballsel2").set("r", 1);
+        model.geom("part6").feature("ballsel2").set("contributeto", "csel23");
+        model.geom("part6").create("del1", "Delete");
+        model.geom("part6").feature("del1").label("Delete Inner Excess Contact");
+        model.geom("part6").feature("del1").selection("input").init(3);
+        model.geom("part6").feature("del1").selection("input").named("csel22");
+        model.geom("part6").create("del3", "Delete");
+        model.geom("part6").feature("del3").label("Delete Outer Excess Contact");
+        model.geom("part6").feature("del3").selection("input").init(3);
+        model.geom("part6").feature("del3").selection("input").named("csel23");
+        model.geom("part6").create("wp2", "WorkPlane");
+        model.geom("part6").feature("wp2").label("Recess Cross Section");
+        model.geom("part6").feature("wp2").set("contributeto", "csel8");
+        model.geom("part6").feature("wp2").set("planetype", "transformed");
+        model.geom("part6").feature("wp2").set("workplane", "wp3");
+        model.geom("part6").feature("wp2").set("transaxis", new int[]{0, 1, 0});
+        model.geom("part6").feature("wp2").set("transrot", "rotation_angle");
+        model.geom("part6").feature("wp2").set("unite", true);
+        model.geom("part6").feature("wp2").geom().selection().create("csel1", "CumulativeSelection");
+        model.geom("part6").feature("wp2").geom().selection("csel1").label("CONTACT PRE FILLET");
+        model.geom("part6").feature("wp2").geom().selection().create("csel2", "CumulativeSelection");
+        model.geom("part6").feature("wp2").geom().selection("csel2").label("CONTACT FILLETED");
+        model.geom("part6").feature("wp2").geom().selection().create("csel3", "CumulativeSelection");
+        model.geom("part6").feature("wp2").geom().selection("csel3").label("RECESS PRE FILLET");
+        model.geom("part6").feature("wp2").geom().selection().create("csel4", "CumulativeSelection");
+        model.geom("part6").feature("wp2").geom().selection("csel4").label("RECESS FILLETED");
+        model.geom("part6").feature("wp2").geom().create("r1", "Rectangle");
+        model.geom("part6").feature("wp2").geom().feature("r1").label("Recess Pre Fillet Corners");
+        model.geom("part6").feature("wp2").geom().feature("r1").set("contributeto", "csel3");
+        model.geom("part6").feature("wp2").geom().feature("r1").set("pos", new int[]{0, 0});
+        model.geom("part6").feature("wp2").geom().feature("r1").set("base", "center");
+        model.geom("part6").feature("wp2").geom().feature("r1").set("size", new String[]{"w_contact_Pitt", "z_contact_Pitt"});
+        model.geom("part6").feature("wp2").geom().create("fil1", "Fillet");
+        model.geom("part6").feature("wp2").geom().feature("fil1").label("Fillet Corners");
+        model.geom("part6").feature("wp2").geom().feature("fil1").set("contributeto", "csel4");
+        model.geom("part6").feature("wp2").geom().feature("fil1").set("radius", "fillet_contact_Pitt");
+        model.geom("part6").feature("wp2").geom().feature("fil1").selection("point").named("csel3");
+        model.geom("part6").feature("wp2").geom().create("sca1", "Scale");
+        model.geom("part6").feature("wp2").geom().feature("sca1").set("type", "anisotropic");
+        model.geom("part6").feature("wp2").geom().feature("sca1")
+                .set("factor", new String[]{"1", "scale_morph_w_contact_Pitt"});
+        model.geom("part6").feature("wp2").geom().feature("sca1").selection("input").named("csel4");
+        model.geom("part6").feature("wp2").geom().create("mov1", "Move");
+        model.geom("part6").feature("wp2").geom().feature("mov1").set("disply", "z_center");
+        model.geom("part6").feature("wp2").geom().feature("mov1").selection("input").named("csel4");
+        model.geom("part6").create("ext2", "Extrude");
+        model.geom("part6").feature("ext2").label("Make Recess Pre Cuts 1");
+        model.geom("part6").feature("ext2").set("contributeto", "csel9");
+        model.geom("part6").feature("ext2").setIndex("distance", "2*r_cuff_in_Pitt", 0);
+        model.geom("part6").feature("ext2").selection("input").named("csel8");
+        model.geom("part6").create("cyl3", "Cylinder");
+        model.geom("part6").feature("cyl3").label("Inner Recess Cutter");
+        model.geom("part6").feature("cyl3").set("contributeto", "csel13");
+        model.geom("part6").feature("cyl3").set("pos", new String[]{"0", "0", "-L_cuff_Pitt/2+z_center"});
+        model.geom("part6").feature("cyl3").set("r", "r_cuff_in_Pitt");
+        model.geom("part6").feature("cyl3").set("h", "L_cuff_Pitt");
+        model.geom("part6").create("cyl4", "Cylinder");
+        model.geom("part6").feature("cyl4").label("Outer Recess Cutter");
+        model.geom("part6").feature("cyl4").set("contributeto", "csel14");
+        model.geom("part6").feature("cyl4").set("pos", new String[]{"0", "0", "-L_cuff_Pitt/2+z_center"});
+        model.geom("part6").feature("cyl4").set("r", "r_inner_contact");
+        model.geom("part6").feature("cyl4").set("h", "L_cuff_Pitt");
+        model.geom("part6").create("par3", "Partition");
+        model.geom("part6").feature("par3").set("contributeto", "csel15");
+        model.geom("part6").feature("par3").selection("input").named("csel9");
+        model.geom("part6").feature("par3").selection("tool").named("csel14");
+        model.geom("part6").create("par4", "Partition");
+        model.geom("part6").feature("par4").set("contributeto", "csel15");
+        model.geom("part6").feature("par4").selection("input").named("csel9");
+        model.geom("part6").feature("par4").selection("tool").named("csel13");
+        model.geom("part6").create("ballsel3", "BallSelection");
+        model.geom("part6").feature("ballsel3").label("sel inner excess 1");
+        model.geom("part6").feature("ballsel3").set("posx", "((r_inner_contact+recess_Pitt)/2)*cos(rotation_angle)");
+        model.geom("part6").feature("ballsel3").set("posy", "((r_inner_contact+recess_Pitt)/2)*sin(rotation_angle)");
+        model.geom("part6").feature("ballsel3").set("posz", "z_center");
+        model.geom("part6").feature("ballsel3").set("r", 1);
+        model.geom("part6").feature("ballsel3").set("contributeto", "csel20");
+        model.geom("part6").create("ballsel4", "BallSelection");
+        model.geom("part6").feature("ballsel4").label("sel outer excess 1");
+        model.geom("part6").feature("ballsel4").set("posx", "((r_cuff_in_Pitt+2*r_cuff_in_Pitt)/2)*cos(rotation_angle)");
+        model.geom("part6").feature("ballsel4").set("posy", "((r_cuff_in_Pitt+2*r_cuff_in_Pitt)/2)*sin(rotation_angle)");
+        model.geom("part6").feature("ballsel4").set("posz", "z_center");
+        model.geom("part6").feature("ballsel4").set("r", 1);
+        model.geom("part6").feature("ballsel4").set("contributeto", "csel21");
+        model.geom("part6").create("del4", "Delete");
+        model.geom("part6").feature("del4").label("Delete Inner Excess Recess");
+        model.geom("part6").feature("del4").selection("input").init(3);
+        model.geom("part6").feature("del4").selection("input").named("csel20");
+        model.geom("part6").create("del5", "Delete");
+        model.geom("part6").feature("del5").label("Delete Outer Excess Recess");
+        model.geom("part6").feature("del5").selection("input").init(3);
+        model.geom("part6").feature("del5").selection("input").named("csel21");
+        model.geom("part6").create("pt1", "Point");
+        model.geom("part6").feature("pt1").label("src");
+        model.geom("part6").feature("pt1").set("contributeto", "csel16");
+        model.geom("part6").feature("pt1")
+                .set("p", new String[]{"(r_cuff_in_Pitt+recess_Pitt+(thk_contact_Pitt/2))*cos(rotation_angle)", "(r_cuff_in_Pitt+recess_Pitt+(thk_contact_Pitt/2))*sin(rotation_angle)", "z_center"});
+        model.geom("part6").run();
     }
 
     private static void makePartInstances(Model model) {
