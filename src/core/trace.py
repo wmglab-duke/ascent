@@ -412,7 +412,6 @@ class Trace(Exceptionable):
 
                 # choose implementation from mode
                 if mode == WriteMode.SECTIONWISE:
-                    print('here 3d')
                     # write coordinates
                     f.write('%% Coordinates\n')
                     for i in range(count):
@@ -430,7 +429,6 @@ class Trace(Exceptionable):
                             f.write('{}\t{}\n'.format(i + 1, 1))
 
                 elif mode == WriteMode.SECTIONWISE2D:
-                    print('here 2d')
                     # write coordinates
                     f.write('%% Coordinates\n')
                     for i in range(count):
