@@ -909,7 +909,6 @@ public class FEMBuilder {
         model.component("comp1").geom("geom1").feature("pi14")
                 .setEntry("inputexpr", "Theta_conductor", "theta_conductor_P");
         model.component("comp1").geom("geom1").feature("pi14").set("selkeepnoncontr", false);
-        model.component("comp1").geom("geom1").feature("pi14").setEntry("selkeepobj", "pi14_csel2", "on");
         model.component("comp1").geom("geom1").feature("pi14").setEntry("selkeepdom", "pi14_csel2.dom", "on");
         model.component("comp1").geom("geom1").feature("pi14").setEntry("selkeeppnt", "pi14_csel3.pnt", "on");
 
@@ -1458,7 +1457,6 @@ public class FEMBuilder {
         model.component("comp1").physics("ec").feature("pcs12").set("Qjp", 0.001);
         model.component("comp1").physics("ec").feature("pcs12").label("ImThera Point Current Source 6");
 
-        //
         model.component("comp1").physics("ec").create("pcs13", "PointCurrentSource", 0);
         model.component("comp1").physics("ec").feature("pcs13").selection().named("geom1_pi21_csel10_pnt");
         model.component("comp1").physics("ec").feature("pcs13").set("Qjp", 0.001);
@@ -1468,7 +1466,6 @@ public class FEMBuilder {
         model.component("comp1").physics("ec").feature("pcs14").selection().named("geom1_pi22_csel10_pnt");
         model.component("comp1").physics("ec").feature("pcs14").set("Qjp", -0.001);
         model.component("comp1").physics("ec").feature("pcs14").label("LivaNova Point Current Source 2");
-        //
 
         model.study().create("std1");
         model.study("std1").create("stat", "Stationary");
