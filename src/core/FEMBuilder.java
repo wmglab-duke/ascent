@@ -59,7 +59,6 @@ public class FEMBuilder {
             }
         }
 
-
         return model;
     }
 
@@ -203,7 +202,7 @@ public class FEMBuilder {
         model.geom("part4").selection().create("csel6", "CumulativeSelection");
         model.geom("part4").selection("csel6").label("RECESS CUTTER OUT");
 
-        // LivaNova-style helical coil cuff
+        // LivaNova-style helical coil cuff primitive
         model.geom("part5").selection().create("csel1", "CumulativeSelection");
         model.geom("part5").selection("csel1").label("PC1");
         model.geom("part5").selection().create("csel2", "CumulativeSelection");
@@ -607,7 +606,7 @@ public class FEMBuilder {
         model.geom("part5").feature("wp1").geom().feature("r1").label("Helical Insulator Cross Section Part 1");
         model.geom("part5").feature("wp1").geom().feature("r1").set("contributeto", "csel2");
         model.geom("part5").feature("wp1").geom().feature("r1")
-                .set("pos", new String[]{"r_cuff_in_LN+(thk_cuff_LN/2)", "Center_LN-(L_cuff_LN/2)"});
+                .set("pos", new String[]{"r_cuff_in_LN+(thk_cuff_LN/2)", "Center-(L_cuff_LN/2)"});
         model.geom("part5").feature("wp1").geom().feature("r1").set("base", "center");
         model.geom("part5").feature("wp1").geom().feature("r1").set("size", new String[]{"thk_cuff_LN", "w_cuff_LN"});
         model.geom("part5").create("pc1", "ParametricCurve");
@@ -615,7 +614,7 @@ public class FEMBuilder {
         model.geom("part5").feature("pc1").set("contributeto", "csel1");
         model.geom("part5").feature("pc1").set("parmax", "rev_cuff_LN*(0.75/2.5)");
         model.geom("part5").feature("pc1")
-                .set("coord", new String[]{"cos(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "sin(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "Center_LN+(L_cuff_LN)*(s/rev_cuff_LN)-(L_cuff_LN/2)"});
+                .set("coord", new String[]{"cos(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "sin(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "Center+(L_cuff_LN)*(s/rev_cuff_LN)-(L_cuff_LN/2)"});
         model.geom("part5").create("swe1", "Sweep");
         model.geom("part5").feature("swe1").label("Make Cuff Part 1");
         model.geom("part5").feature("swe1").set("contributeto", "csel2");
@@ -632,7 +631,7 @@ public class FEMBuilder {
         model.geom("part5").feature("ballsel1").set("posx", "cos(2*pi*rev_cuff_LN*((0.75)/2.5))*((thk_cuff_LN/2)+r_cuff_in_LN)");
         model.geom("part5").feature("ballsel1").set("posy", "sin(2*pi*rev_cuff_LN*((0.75)/2.5))*((thk_cuff_LN/2)+r_cuff_in_LN)");
         model.geom("part5").feature("ballsel1")
-                .set("posz", "Center_LN+(L_cuff_LN)*(rev_cuff_LN*((0.75)/2.5)/rev_cuff_LN)-(L_cuff_LN/2)");
+                .set("posz", "Center+(L_cuff_LN)*(rev_cuff_LN*((0.75)/2.5)/rev_cuff_LN)-(L_cuff_LN/2)");
         model.geom("part5").feature("ballsel1").set("r", 1);
         model.geom("part5").feature("ballsel1").set("contributeto", "csel3");
         model.geom("part5").create("wp2", "WorkPlane");
@@ -684,6 +683,7 @@ public class FEMBuilder {
         model.geom("part5").feature("swe3").label("Make Conductor Part 2");
         model.geom("part5").feature("swe3").set("contributeto", "csel6");
         model.geom("part5").feature("swe3").set("crossfaces", true);
+        model.geom("part5").feature("swe3").set("keep", false);
         model.geom("part5").feature("swe3").set("includefinal", false);
         model.geom("part5").feature("swe3").set("twistcomp", false);
         model.geom("part5").feature("swe3").selection("face").named("wp3_csel2");
@@ -697,7 +697,7 @@ public class FEMBuilder {
         model.geom("part5").feature("ballsel2")
                 .set("posy", "sin(2*pi*rev_cuff_LN*((0.75+1)/2.5))*((thk_cuff_LN/2)+r_cuff_in_LN)");
         model.geom("part5").feature("ballsel2")
-                .set("posz", "Center_LN+(L_cuff_LN)*(rev_cuff_LN*((0.75+1)/2.5)/rev_cuff_LN)-(L_cuff_LN/2)");
+                .set("posz", "Center+(L_cuff_LN)*(rev_cuff_LN*((0.75+1)/2.5)/rev_cuff_LN)-(L_cuff_LN/2)");
         model.geom("part5").feature("ballsel2").set("r", 1);
         model.geom("part5").feature("ballsel2").set("contributeto", "csel7");
         model.geom("part5").create("wp4", "WorkPlane");
@@ -718,16 +718,14 @@ public class FEMBuilder {
         model.geom("part5").feature("pc3").set("parmin", "rev_cuff_LN*((0.75+1)/2.5)");
         model.geom("part5").feature("pc3").set("parmax", "rev_cuff_LN");
         model.geom("part5").feature("pc3")
-                .set("coord", new String[]{"cos(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "sin(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "Center_LN+(L_cuff_LN)*(s/rev_cuff_LN)-(L_cuff_LN/2)"});
+                .set("coord", new String[]{"cos(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "sin(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "Center+(L_cuff_LN)*(s/rev_cuff_LN)-(L_cuff_LN/2)"});
         model.geom("part5").create("swe4", "Sweep");
         model.geom("part5").feature("swe4").label("Make Cuff Part 3");
         model.geom("part5").feature("swe4").set("contributeto", "csel8");
-        model.geom("part1").feature("swe4").set("crossfaces", true);
-        model.geom("part5").feature("swe4").set("includefinal", false);
-        model.geom("part5").feature("swe4").set("twistcomp", false);
         model.geom("part5").feature("swe4").selection("face").named("wp4_csel1");
         model.geom("part5").feature("swe4").selection("edge").named("csel9");
-        model.geom("part5").feature("swe4").selection("diredge").set("pc3(1)", 1);
+        model.geom("part5").feature("swe4").set("keep", false);
+        model.geom("part5").feature("swe4").set("twistcomp", false);
         model.geom("part5").create("pt1", "Point");
         model.geom("part5").feature("pt1").label("src");
         model.geom("part5").feature("pt1").set("contributeto", "csel10");
@@ -1174,8 +1172,9 @@ public class FEMBuilder {
         // CUFF and CONTACT 1
         model.component("comp1").geom("geom1").create("pi21", "PartInstance");
         model.component("comp1").geom("geom1").feature("pi21").label("Helical Silicone 1");
+        model.component("comp1").geom("geom1").feature("pi21").set("part", "part5");
         model.component("comp1").geom("geom1").feature("pi21").setIndex("inputexpr", "(z_nerve_LN/2)-(sep_elec_LN/2)", 0);
-        model.component("comp1").geom("geom1").feature("pi21").set("rot", "zw_rot1");
+        model.component("comp1").geom("geom1").feature("pi21").set("rot", "zw_rot1_LN");
         model.component("comp1").geom("geom1").feature("pi21").set("selkeepnoncontr", false);
         model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeepdom", "pi21_csel2.dom", "on");
         model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeepdom", "pi21_csel5.dom", "on");
@@ -1186,8 +1185,9 @@ public class FEMBuilder {
         // CUFF and CONTACT 2
         model.component("comp1").geom("geom1").create("pi22", "PartInstance");
         model.component("comp1").geom("geom1").feature("pi22").label("Helical Silicone 2");
+        model.component("comp1").geom("geom1").feature("pi22").set("part", "part5");
         model.component("comp1").geom("geom1").feature("pi22").setIndex("inputexpr", "(z_nerve_LN/2)+(sep_elec_LN/2)", 0);
-        model.component("comp1").geom("geom1").feature("pi22").set("rot", "zw_rot2");
+        model.component("comp1").geom("geom1").feature("pi22").set("rot", "zw_rot2_LN");
         model.component("comp1").geom("geom1").feature("pi22").set("selkeepnoncontr", false);
         model.component("comp1").geom("geom1").feature("pi22").setEntry("selkeepdom", "pi22_csel2.dom", "on");
         model.component("comp1").geom("geom1").feature("pi22").setEntry("selkeepdom", "pi22_csel5.dom", "on");
@@ -1457,6 +1457,18 @@ public class FEMBuilder {
         model.component("comp1").physics("ec").feature("pcs12").selection().named("geom1_pi20_csel14_pnt");
         model.component("comp1").physics("ec").feature("pcs12").set("Qjp", 0.001);
         model.component("comp1").physics("ec").feature("pcs12").label("ImThera Point Current Source 6");
+
+        //
+        model.component("comp1").physics("ec").create("pcs13", "PointCurrentSource", 0);
+        model.component("comp1").physics("ec").feature("pcs13").selection().named("geom1_pi21_csel10_pnt");
+        model.component("comp1").physics("ec").feature("pcs13").set("Qjp", 0.001);
+        model.component("comp1").physics("ec").feature("pcs13").label("LivaNova Point Current Source 1");
+
+        model.component("comp1").physics("ec").create("pcs14", "PointCurrentSource", 0);
+        model.component("comp1").physics("ec").feature("pcs14").selection().named("geom1_pi22_csel10_pnt");
+        model.component("comp1").physics("ec").feature("pcs14").set("Qjp", -0.001);
+        model.component("comp1").physics("ec").feature("pcs14").label("LivaNova Point Current Source 2");
+        //
 
         model.study().create("std1");
         model.study("std1").create("stat", "Stationary");

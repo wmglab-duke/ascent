@@ -47,7 +47,7 @@
     },
     {
       "name": "z_nerve_LN",
-      "expression": "50 [mm]",
+      "expression": "200 [mm]",
       "description": ""
     },
     {
