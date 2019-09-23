@@ -1,5 +1,10 @@
 {
-  "data": [
+  "parts": [
+    {
+      "list": ["TubeCuff_Primitive", "RectangleContact_Primitive"]
+    }
+  ],
+  "params": [
     {
       "name": "w_contact_Pitt",
       "expression": "0.475 [mm]",

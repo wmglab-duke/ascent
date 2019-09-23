@@ -1,5 +1,10 @@
 {
-  "data": [
+  "parts": [
+    {
+      "list": ["HelicalCuffnContact_Primitive"]
+    }
+  ],
+  "params": [
     {
       "name": "w_cuff_LN",
       "expression": "1.4 [mm]",

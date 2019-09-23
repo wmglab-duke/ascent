@@ -1,5 +1,10 @@
 {
-  "data": [
+  "parts": [
+    {
+      "list": ["TubeCuff_Primitive", "WireContact_Primitive"]
+    }
+  ],
+  "params": [
     {
       "name": "N_holes_P",
       "expression": "0",
