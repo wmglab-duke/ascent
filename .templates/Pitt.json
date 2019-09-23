@@ -1,9 +1,5 @@
 {
-  "parts": [
-    {
-      "list": ["TubeCuff_Primitive", "RectangleContact_Primitive"]
-    }
-  ],
+  "parts": ["TubeCuff_Primitive", "RectangleContact_Primitive"],
   "params": [
     {
       "name": "w_contact_Pitt",

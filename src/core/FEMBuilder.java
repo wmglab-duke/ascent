@@ -36,30 +36,38 @@ public class FEMBuilder {
         JSONObject configdata = new JSONReader("D:\\Documents\\access\\.config\\" + configfile).getData(); //eric lab windows desktop
 
         JSONObject cuffObject = (JSONObject) configdata.get("cuff");
-        JSONArray arr = (JSONArray) cuffObject.get("preset");
+        JSONArray cuffs = (JSONArray) cuffObject.get("preset");
 
-        ArrayList<String> files = new ArrayList<String>();
-        for (int i = 0; i < arr.length(); i++) {
-            files.add(arr.getString(i));
+        ArrayList<String> cufffiles = new ArrayList<String>();
+        for (int i = 0; i < cuffs.length(); i++) {
+            cufffiles.add(cuffs.getString(i));
         }
-
-//        String[] files = {
-//                "Enteromedics.json", "CorTec.json", "ImThera.json", "Madison.json", "Purdue.json", "LivaNova.json", "Pitt.json"
-//        };
 
         ComsolIdentifierManager cim = new ComsolIdentifierManager();
 
-        for (String file: files) {
+        //"preset": ["Enteromedics.json", "CorTec.json", "ImThera.json", "Madison.json", "Purdue.json", "LivaNova.json", "Pitt.json"]
+
+        ArrayList<String> parts = new ArrayList<String>();
+        for (String cufffile: cufffiles) {
             String par = cim.next("par");
 
             // TODO: this should be based on the .templates location in .config/system.json
             //JSONObject data = new JSONReader("/Users/jakecariello/Box/Documents/Pipeline/access/.templates/" + file).getData(); //jake mac laptop
             //JSONObject data = new JSONReader("/Users/ericmusselman/Documents/access/.templates/" + file).getData(); //eric mac laptop
-            JSONObject data = new JSONReader("D:\\Documents\\access\\.templates\\" + file).getData(); //eric lab windows desktop
+            JSONObject cuff = new JSONReader("D:\\Documents\\access\\.templates\\" + cufffile).getData(); //eric lab windows desktop
 
             model.param().group().create(par);
+            //model.param(par).label(cufffile.split(".")[0]);
 
-            for (Object item : (JSONArray) data.get("data")) {
+            JSONArray cuffPartsArray = (JSONArray) cuff.get("parts");
+//            System.out.println(cuffPartsArray);
+//            System.out.println("============");
+
+            for (int i = 0; i < cuffPartsArray.length(); i++) {
+                parts.add(cuffPartsArray.getString(i));
+            }
+
+            for (Object item : (JSONArray) cuff.get("params")) {
 
                 JSONObject itemObject = (JSONObject) item;
 
@@ -68,10 +76,9 @@ public class FEMBuilder {
                         (String) itemObject.get("expression"),
                         (String) itemObject.get("description")
                 );
-                //model.param(par).label(file.split(".")[0]);
             }
         }
-
+//        System.out.println(parts);
         return model;
     }
 

@@ -236,6 +236,6 @@
     }
   },
   "cuff": {
-    "preset": ["Enteromedics.json", "CorTec.json", "ImThera.json", "Madison.json", "Purdue.json", "LivaNova.json", "Pitt.json"]
+    "preset": ["Purdue.json","LivaNova.json"]
   }
 }

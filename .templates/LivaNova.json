@@ -1,9 +1,5 @@
 {
-  "parts": [
-    {
-      "list": ["HelicalCuffnContact_Primitive"]
-    }
-  ],
+  "parts": ["HelicalCuffnContact_Primitive"],
   "params": [
     {
       "name": "w_cuff_LN",

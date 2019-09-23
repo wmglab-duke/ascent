@@ -1,9 +1,5 @@
 {
-  "parts": [
-    {
-      "list": ["TubeCuff_Primitive", "CircleContact_Primitive"]
-    }
-  ],
+  "parts": ["TubeCuff_Primitive", "CircleContact_Primitive"],
   "params": [
     {
       "name": "N_holes_ITI",
