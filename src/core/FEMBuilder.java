@@ -9,6 +9,7 @@ import com.comsol.model.Model;
 import com.comsol.model.util.ModelUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import java.util.*;
 
 /** Model exported on Sep 5 2019, 09:20 by COMSOL 5.4.0.388. */
 public class FEMBuilder {
@@ -31,11 +32,22 @@ public class FEMBuilder {
         model.modelPath("D:\\Documents\\ModularCuffs");
         model.label("UNI_TUBECUFF.mph");
 
+        String configfile = "master.json";
+        JSONObject configdata = new JSONReader("D:\\Documents\\access\\.config\\" + configfile).getData(); //eric lab windows desktop
+
+        JSONObject cuffObject = (JSONObject) configdata.get("cuff");
+        JSONArray arr = (JSONArray) cuffObject.get("preset");
+
+        ArrayList<String> files = new ArrayList<String>();
+        for (int i = 0; i < arr.length(); i++) {
+            files.add(arr.getString(i));
+        }
+
+//        String[] files = {
+//                "Enteromedics.json", "CorTec.json", "ImThera.json", "Madison.json", "Purdue.json", "LivaNova.json", "Pitt.json"
+//        };
+
         ComsolIdentifierManager cim = new ComsolIdentifierManager();
-        // TODO: this should be based on the cuff value in the master.json
-        String[] files = {
-                "Enteromedics.json", "CorTec.json", "ImThera.json", "Madison.json", "Purdue.json", "LivaNova.json", "Pitt.json"
-        };
 
         for (String file: files) {
             String par = cim.next("par");
