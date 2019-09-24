@@ -29,47 +29,32 @@ public class FEMBuilder {
 
         Model model = ModelUtil.create("Model");
         //ModelUtil.showProgress(false);
+        String fileSep = System.getProperty("file.separator");
 
-        model.modelPath("D:\\Documents\\ModularCuffs");
-        model.label("UNI_TUBECUFF.mph");
+        String currentDirectory = System.getProperty("user.dir");
+        String configFile = fileSep + ".config" + fileSep + "master.json";
+        JSONObject configData = new JSONReader(currentDirectory + configFile).getData();
 
-        String configfile = "master.json";
-        System.out.println("============");
-
-        JSONObject configdata = new JSONReader("D:\\Documents\\access\\.config\\" + configfile).getData(); //eric lab windows desktop
-        //JSONObject configdata = new JSONReader("/Users/ericmusselman/Documents/access/.config/" + configfile).getData(); //eric mac laptop
-
-        System.out.println("============");
-
-        JSONObject cuffObject = (JSONObject) configdata.get("cuff");
+        JSONObject cuffObject = (JSONObject) configData.get("cuff");
         JSONArray cuffs = (JSONArray) cuffObject.get("preset");
 
-        System.out.println("============");
-
-        ArrayList<String> cufffiles = new ArrayList<String>();
+        ArrayList<String> cuffFiles = new ArrayList<String>();
         for (int i = 0; i < cuffs.length(); i++) {
-            cufffiles.add(cuffs.getString(i));
+            cuffFiles.add(cuffs.getString(i));
         }
 
         ComsolIdentifierManager cim = new ComsolIdentifierManager();
 
-        //"preset": ["Enteromedics.json", "CorTec.json", "ImThera.json", "Madison.json", "Purdue.json", "LivaNova.json", "Pitt.json"]
-
         ArrayList<String> parts = new ArrayList<String>();
-        for (String cufffile: cufffiles) {
+        for (String cuffFile: cuffFiles) {
             String par = cim.next("par");
 
-            // TODO: this should be based on the .templates location in .config/system.json
-            //JSONObject data = new JSONReader("/Users/jakecariello/Box/Documents/Pipeline/access/.templates/" + file).getData(); //jake mac laptop
-            //JSONObject cuff = new JSONReader("/Users/ericmusselman/Documents/access/.templates/" + cufffile).getData(); //eric mac laptop
-            JSONObject cuff = new JSONReader("D:\\Documents\\access\\.templates\\" + cufffile).getData(); //eric lab windows desktop
+            JSONObject cuff = new JSONReader(currentDirectory + fileSep + ".templates" + fileSep + cuffFile).getData();
 
             model.param().group().create(par);
             //model.param(par).label(cufffile.split(".")[0]);
-
+            // System.out.println(cuffFile.split(".")[0]);
             JSONArray cuffPartsArray = (JSONArray) cuff.get("parts");
-//            System.out.println(cuffPartsArray);
-//            System.out.println("============");
 
             for (int i = 0; i < cuffPartsArray.length(); i++) {
                 parts.add(cuffPartsArray.getString(i));
@@ -86,7 +71,6 @@ public class FEMBuilder {
                 );
             }
         }
-//        System.out.println(parts);
         return model;
     }
 
@@ -1749,3 +1733,5 @@ public class FEMBuilder {
 //        );
 //      }
 //    }
+
+//"preset": ["Enteromedics.json", "CorTec.json", "ImThera.json", "Madison.json", "Purdue.json", "LivaNova.json", "Pitt.json"]
