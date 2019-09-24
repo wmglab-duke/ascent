@@ -36,8 +36,8 @@ public class FEMBuilder {
         String configfile = "master.json";
         System.out.println("============");
 
-        //JSONObject configdata = new JSONReader("D:\\Documents\\access\\.config\\" + configfile).getData(); //eric lab windows desktop
-        JSONObject configdata = new JSONReader("/Users/ericmusselman/Documents/access/.config/" + configfile).getData(); //eric lab windows desktop
+        JSONObject configdata = new JSONReader("D:\\Documents\\access\\.config\\" + configfile).getData(); //eric lab windows desktop
+        //JSONObject configdata = new JSONReader("/Users/ericmusselman/Documents/access/.config/" + configfile).getData(); //eric mac laptop
 
         System.out.println("============");
 
@@ -61,8 +61,8 @@ public class FEMBuilder {
 
             // TODO: this should be based on the .templates location in .config/system.json
             //JSONObject data = new JSONReader("/Users/jakecariello/Box/Documents/Pipeline/access/.templates/" + file).getData(); //jake mac laptop
-            JSONObject cuff = new JSONReader("/Users/ericmusselman/Documents/access/.templates/" + cufffile).getData(); //eric mac laptop
-            //JSONObject cuff = new JSONReader("D:\\Documents\\access\\.templates\\" + cufffile).getData(); //eric lab windows desktop
+            //JSONObject cuff = new JSONReader("/Users/ericmusselman/Documents/access/.templates/" + cufffile).getData(); //eric mac laptop
+            JSONObject cuff = new JSONReader("D:\\Documents\\access\\.templates\\" + cufffile).getData(); //eric lab windows desktop
 
             model.param().group().create(par);
             //model.param(par).label(cufffile.split(".")[0]);
