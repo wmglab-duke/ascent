@@ -9,7 +9,8 @@ import com.comsol.model.Model;
 import com.comsol.model.util.ModelUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import java.util.*;
+
+import java.util.ArrayList;
 
 /** Model exported on Sep 5 2019, 09:20 by COMSOL 5.4.0.388. */
 public class FEMBuilder {
@@ -33,10 +34,17 @@ public class FEMBuilder {
         model.label("UNI_TUBECUFF.mph");
 
         String configfile = "master.json";
-        JSONObject configdata = new JSONReader("D:\\Documents\\access\\.config\\" + configfile).getData(); //eric lab windows desktop
+        System.out.println("============");
+
+        //JSONObject configdata = new JSONReader("D:\\Documents\\access\\.config\\" + configfile).getData(); //eric lab windows desktop
+        JSONObject configdata = new JSONReader("/Users/ericmusselman/Documents/access/.config/" + configfile).getData(); //eric lab windows desktop
+
+        System.out.println("============");
 
         JSONObject cuffObject = (JSONObject) configdata.get("cuff");
         JSONArray cuffs = (JSONArray) cuffObject.get("preset");
+
+        System.out.println("============");
 
         ArrayList<String> cufffiles = new ArrayList<String>();
         for (int i = 0; i < cuffs.length(); i++) {
@@ -53,8 +61,8 @@ public class FEMBuilder {
 
             // TODO: this should be based on the .templates location in .config/system.json
             //JSONObject data = new JSONReader("/Users/jakecariello/Box/Documents/Pipeline/access/.templates/" + file).getData(); //jake mac laptop
-            //JSONObject data = new JSONReader("/Users/ericmusselman/Documents/access/.templates/" + file).getData(); //eric mac laptop
-            JSONObject cuff = new JSONReader("D:\\Documents\\access\\.templates\\" + cufffile).getData(); //eric lab windows desktop
+            JSONObject cuff = new JSONReader("/Users/ericmusselman/Documents/access/.templates/" + cufffile).getData(); //eric mac laptop
+            //JSONObject cuff = new JSONReader("D:\\Documents\\access\\.templates\\" + cufffile).getData(); //eric lab windows desktop
 
             model.param().group().create(par);
             //model.param(par).label(cufffile.split(".")[0]);
