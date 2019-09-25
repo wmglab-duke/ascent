@@ -52,8 +52,8 @@ public class FEMBuilder {
             JSONObject cuff = new JSONReader(currentDirectory + fileSep + ".templates" + fileSep + cuffFile).getData();
 
             model.param().group().create(par);
-            //model.param(par).label(cufffile.split(".")[0]);
-            // System.out.println(cuffFile.split(".")[0]);
+            model.param(par).label(cuffFile.split("\\.")[0]);
+
             JSONArray cuffPartsArray = (JSONArray) cuff.get("parts");
 
             for (int i = 0; i < cuffPartsArray.length(); i++) {

@@ -428,5 +428,5 @@ class FiberManager(Exceptionable, Configurable, Saveable):
             }, cls=self.Encoder)
             handle.write(self.json_data)
         print('done writing file')
-        raise Exception('forcing this to DIE')
+        # raise Exception('forcing this to DIE')
 

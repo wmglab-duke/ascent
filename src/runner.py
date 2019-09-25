@@ -78,7 +78,7 @@ class Runner(Exceptionable, Configurable):
         else:
             raise Exception('my dude, something went horribly wrong here')
 
-        # self.handoff()
+        self.handoff()
 
     def full_run(self):
         self.slide_run()
