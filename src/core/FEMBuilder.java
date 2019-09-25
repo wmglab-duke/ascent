@@ -34,7 +34,6 @@ public class FEMBuilder {
         String currentDirectory = System.getProperty("user.dir");
         String configFile = fileSep + ".config" + fileSep + "master.json";
         JSONObject configData = new JSONReader(currentDirectory + configFile).getData();
-
         JSONObject cuffObject = (JSONObject) configData.get("cuff");
         JSONArray cuffs = (JSONArray) cuffObject.get("preset");
 
@@ -44,16 +43,14 @@ public class FEMBuilder {
         }
 
         ComsolIdentifierManager cim = new ComsolIdentifierManager();
-
         ArrayList<String> parts = new ArrayList<String>();
+
         for (String cuffFile: cuffFiles) {
             String par = cim.next("par");
 
             JSONObject cuff = new JSONReader(currentDirectory + fileSep + ".templates" + fileSep + cuffFile).getData();
-
             model.param().group().create(par);
             model.param(par).label(cuffFile.split("\\.")[0]);
-
             JSONArray cuffPartsArray = (JSONArray) cuff.get("parts");
 
             for (int i = 0; i < cuffPartsArray.length(); i++) {
@@ -61,9 +58,7 @@ public class FEMBuilder {
             }
 
             for (Object item : (JSONArray) cuff.get("params")) {
-
                 JSONObject itemObject = (JSONObject) item;
-
                 model.param(par).set(
                         (String) itemObject.get("name"),
                         (String) itemObject.get("expression"),
@@ -78,6 +73,7 @@ public class FEMBuilder {
 
         //// SECTION: PRIMITIVE, Assign part inputParams (Local and unique to instance of the part)
         // TUBE CUFF PRIMITIVE
+        //System.out.println(parts);
         model.geom().create("part1", "Part", 3);
         model.geom("part1").label("TubeCuff_Primitive");
         model.geom("part1").lengthUnit("\u00b5m");
