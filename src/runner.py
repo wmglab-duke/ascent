@@ -73,7 +73,12 @@ class Runner(Exceptionable, Configurable):
 
         self.save_all()
 
-        self.handoff()
+        if self.fiber_manager is not None:
+            self.fiber_manager.save_full_coordinates('TEST_JSON_OUTPUT.json')
+        else:
+            raise Exception('my dude, something went horribly wrong here')
+
+        # self.handoff()
 
     def full_run(self):
         self.slide_run()

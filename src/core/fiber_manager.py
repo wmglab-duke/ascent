@@ -1,4 +1,5 @@
 # builtins
+import json
 import random
 from typing import Dict, List, Tuple, Union
 
@@ -33,7 +34,7 @@ class FiberManager(Exceptionable, Configurable, Saveable):
 
     def fiber_xy_coordinates(self, plot: bool = False, save: bool = False) -> List[List[List[tuple]]]:
         """
-        :return: tuple containg two lists of tuples,
+        :return: tuple containing two lists of tuples,
                     1) first list of tuples is points [(x, y)]
                     2) second list of tuples is metadata [(fascicle_index, inner_index, fiber_index)]
         """
@@ -387,3 +388,45 @@ class FiberManager(Exceptionable, Configurable, Saveable):
 
         else:
             self.throw(31)
+
+    class Encoder(json.JSONEncoder):
+        """
+        This is a helper class for converting a NumPy array (ndarray) to a JSON file
+        """
+        EXPORTABLE_ENUMS = {
+            'FiberZMode': FiberZMode,
+            'MyelinatedFiberType': MyelinatedFiberType,
+            'UnmyelinatedFiberType': UnmyelinatedFiberType
+        }
+
+        def default(self, obj):
+            if isinstance(obj, np.ndarray):
+                return obj.tolist()
+            elif type(obj) in self.EXPORTABLE_ENUMS.values():
+                return {"__enum__": str(obj)}
+            return json.JSONEncoder.default(self, obj)
+
+    def save_full_coordinates(self, path: str):
+        """
+        :return:
+        """
+
+        with open(path, "w") as handle:
+            print('writing file')
+            self.json_data = json.dumps({
+                'order': [
+                    'fiber modes',
+                    'subsets',
+                    'offsets',
+                    'fascicles',
+                    'inners',
+                    'fibers',
+                    'points'
+                ],
+                'metadata': self.fiber_metadata,
+                'fibers': self.full_coordinates
+            }, cls=self.Encoder)
+            handle.write(self.json_data)
+        print('done writing file')
+        raise Exception('forcing this to DIE')
+
