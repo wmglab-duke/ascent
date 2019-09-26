@@ -20,17 +20,17 @@ public class FEMBuilder {
 
     public static void main(String[] args) {
 
-        ModelUtil.connect("localhost", 2036);
+        //ModelUtil.connect("localhost", 2036);
 
         //ModelUtil.initStandalone(false);
 
 
 
         System.out.println("hello");
-        System.out.println(args.getClass());
-        for (String arg: args) {
-            System.out.println("ARGUMENT: " + arg);
-        }
+        //System.out.println(args.getClass());
+//        for (String arg: args) {
+//            System.out.println("ARGUMENT: " + arg);
+//        }
         System.out.println("hello 2");
 
         ModelWrapper mw = definePartInstanceParameters();
@@ -43,7 +43,7 @@ public class FEMBuilder {
         defineMaterialLinks((Model) mw.getModel());
         defineCurrentSources((Model) mw.getModel());
 
-        ModelUtil.disconnect();
+        //ModelUtil.disconnect();
         System.out.println("EXITING");
         System.exit(0);
     }
@@ -64,13 +64,13 @@ public class FEMBuilder {
         JSONObject cuffObject = (JSONObject) configData.get("cuff");
         JSONArray cuffs = (JSONArray) cuffObject.get("preset");
 
-        ArrayList<String> cuffFiles = new ArrayList<>();
+        ArrayList<String> cuffFiles = new ArrayList<String>();
         for (int i = 0; i < cuffs.length(); i++) {
             cuffFiles.add(cuffs.getString(i));
         }
 
         ComsolIdentifierManager cim = new ComsolIdentifierManager();
-        Set<String> parts = new HashSet<>();
+        Set<String> parts = new HashSet<String>();
 
         for (String cuffFile: cuffFiles) {
             String par = cim.next("par");

@@ -6,6 +6,7 @@ public class ModelWrapper {
 
     private Object model;
     private String projectPath;
+    //CIM
     public Set<String> parts;
 
     public ModelWrapper(Object model, String projectPath, Set parts) {
