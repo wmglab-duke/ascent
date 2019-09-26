@@ -7,12 +7,13 @@ public class ModelWrapper {
     private Object model;
     private String projectPath;
     private Set<String> parts;
-    //CIM
+    private ComsolIdentifierManager cim;
 
-    public ModelWrapper(Object model, String projectPath, Set parts) {
+    public ModelWrapper(Object model, String projectPath, Set parts, ComsolIdentifierManager cim) {
         this.model = model;
         this.projectPath = projectPath;
         this.parts = parts;
+        this.cim = cim;
     }
 
     public Object getModel() {
@@ -25,5 +26,9 @@ public class ModelWrapper {
 
     public Set<String> getParts() {
         return parts;
+    }
+
+    public ComsolIdentifierManager getCim() {
+        return cim;
     }
 }

@@ -28,8 +28,7 @@ public class FEMBuilder {
 //        }
 
         ModelWrapper mw = definePartInstanceParameters();
-//        defineDefaultPrimitiveInputParameters((Model) mw.getModel());
-        defineDefaultPrimitiveInputParameters((Model) mw.getModel(), (Set) mw.getParts());
+        defineDefaultPrimitiveInputParameters((Model) mw.getModel(), (Set) mw.getParts(), (ComsolIdentifierManager) mw.getCim());
         definePrimitiveSelections((Model) mw.getModel(), (Set) mw.getParts());
         definePrimitivePartOperations((Model) mw.getModel(), (Set) mw.getParts());
         makePartInstances((Model) mw.getModel());
@@ -38,7 +37,7 @@ public class FEMBuilder {
 
         //ModelUtil.disconnect();
         System.out.println("EXITING");
-        System.exit(0);
+        //System.exit(0);
     }
 
     private static ModelWrapper definePartInstanceParameters() {
@@ -81,97 +80,103 @@ public class FEMBuilder {
                 );
             }
         }
-        return new ModelWrapper(model, "", parts);
+        return new ModelWrapper(model, "", parts, cim);
     }
 
-    private static void defineDefaultPrimitiveInputParameters(Model model, Set parts) {
+    private static void defineDefaultPrimitiveInputParameters(Model model, Set parts, ComsolIdentifierManager cim) {
         // Assign part inputParams (Local and unique to instance of the part)
 
         // TUBE CUFF PRIMITIVE
         if (parts.contains("TubeCuff_Primitive")) {
+            String part = cim.next("part");
             System.out.println("Adding TubeCuff_Primitive Default Parameters");
-            model.geom().create("part1", "Part", 3);
-            model.geom("part1").label("TubeCuff_Primitive");
-            model.geom("part1").lengthUnit("\u00b5m");
-            model.geom("part1").inputParam().set("N_holes", "1");
-            model.geom("part1").inputParam().set("Theta", "340 [deg]");
-            model.geom("part1").inputParam().set("Center", "10 [mm]");
-            model.geom("part1").inputParam().set("R_in", "1 [mm]");
-            model.geom("part1").inputParam().set("R_out", "2 [mm]");
-            model.geom("part1").inputParam().set("L", "5 [mm]");
-            model.geom("part1").inputParam().set("Rot_def", "0 [deg]");
-            model.geom("part1").inputParam().set("D_hole", "0.3 [mm]");
-            model.geom("part1").inputParam().set("Buffer_hole", "0.1 [mm]");
-            model.geom("part1").inputParam().set("L_holecenter_cuffseam", "0.3 [mm]");
-            model.geom("part1").inputParam().set("Pitch_holecenter_holecenter", "0 [mm]");
+            model.geom().create(part, "Part", 3);
+            model.geom(part).label("TubeCuff_Primitive");
+            model.geom(part).lengthUnit("\u00b5m");
+            model.geom(part).inputParam().set("N_holes", "1");
+            model.geom(part).inputParam().set("Theta", "340 [deg]");
+            model.geom(part).inputParam().set("Center", "10 [mm]");
+            model.geom(part).inputParam().set("R_in", "1 [mm]");
+            model.geom(part).inputParam().set("R_out", "2 [mm]");
+            model.geom(part).inputParam().set("L", "5 [mm]");
+            model.geom(part).inputParam().set("Rot_def", "0 [deg]");
+            model.geom(part).inputParam().set("D_hole", "0.3 [mm]");
+            model.geom(part).inputParam().set("Buffer_hole", "0.1 [mm]");
+            model.geom(part).inputParam().set("L_holecenter_cuffseam", "0.3 [mm]");
+            model.geom(part).inputParam().set("Pitch_holecenter_holecenter", "0 [mm]");
         }
 
         // RIBBON CONTACT PRIMITIVE
         if (parts.contains("RibbonContact_Primitive")) {
+            String part = cim.next("part");
             System.out.println("Adding RibbonContact_Primitive Default Parameters");
-            model.geom().create("part2", "Part", 3);
-            model.geom("part2").label("RibbonContact_Primitive");
-            model.geom("part2").lengthUnit("\u00b5m");
-            model.geom("part2").inputParam().set("Thk_elec", "0.1 [mm]");
-            model.geom("part2").inputParam().set("L_elec", "3 [mm]");
-            model.geom("part2").inputParam().set("R_in", "1 [mm]");
-            model.geom("part2").inputParam().set("Recess", "0.1 [mm]");
-            model.geom("part2").inputParam().set("Center", "10 [mm]");
-            model.geom("part2").inputParam().set("Theta_contact", "100 [deg]");
-            model.geom("part2").inputParam().set("Rot_def", "0 [deg]");
+            model.geom().create(part, "Part", 3);
+            model.geom(part).label("RibbonContact_Primitive");
+            model.geom(part).lengthUnit("\u00b5m");
+            model.geom(part).inputParam().set("Thk_elec", "0.1 [mm]");
+            model.geom(part).inputParam().set("L_elec", "3 [mm]");
+            model.geom(part).inputParam().set("R_in", "1 [mm]");
+            model.geom(part).inputParam().set("Recess", "0.1 [mm]");
+            model.geom(part).inputParam().set("Center", "10 [mm]");
+            model.geom(part).inputParam().set("Theta_contact", "100 [deg]");
+            model.geom(part).inputParam().set("Rot_def", "0 [deg]");
         }
 
         // WIRE CONTACT PRIMITIVE
         if (parts.contains("WireContact_Primitive")) {
+            String part = cim.next("part");
             System.out.println("Adding WireContact_Primitive Default Parameters");
-            model.geom().create("part3", "Part", 3);
-            model.geom("part3").label("WireContact_Primitive");
-            model.geom("part3").lengthUnit("\u00b5m");
-            model.geom("part3").inputParam().set("R_conductor", "r_conductor_P");
-            model.geom("part3").inputParam().set("R_in", "R_in_P");
-            model.geom("part3").inputParam().set("Center", "Center_P");
-            model.geom("part3").inputParam().set("Pitch", "Pitch_P");
-            model.geom("part3").inputParam().set("Sep_conductor", "sep_conductor_P");
-            model.geom("part3").inputParam().set("Theta_conductor", "theta_conductor_P");
+            model.geom().create(part, "Part", 3);
+            model.geom(part).label("WireContact_Primitive");
+            model.geom(part).lengthUnit("\u00b5m");
+            model.geom(part).inputParam().set("R_conductor", "r_conductor_P");
+            model.geom(part).inputParam().set("R_in", "R_in_P");
+            model.geom(part).inputParam().set("Center", "Center_P");
+            model.geom(part).inputParam().set("Pitch", "Pitch_P");
+            model.geom(part).inputParam().set("Sep_conductor", "sep_conductor_P");
+            model.geom(part).inputParam().set("Theta_conductor", "theta_conductor_P");
         }
 
         // CIRCLE CONTACT PRIMITIVE
         if (parts.contains("CircleContact_Primitive")) {
+            String part = cim.next("part");
             System.out.println("Adding CircleContact_Primitive Default Parameters");
-            model.geom().create("part4", "Part", 3);
-            model.geom("part4").label("CircleContact_Primitive");
-            model.geom("part4").lengthUnit("\u00b5m");
-            model.geom("part4").inputParam().set("Recess", "Recess_ITC");
-            model.geom("part4").inputParam().set("Rotation_angle", "0 [deg]");
-            model.geom("part4").inputParam().set("Center", "Center_IT");
-            model.geom("part4").inputParam().set("Round_def", "Round_def_ITC");
-            model.geom("part4").inputParam().set("R_in", "R_in_ITI");
-            model.geom("part4").inputParam().set("Contact_depth", "Contact_depth_ITC");
-            model.geom("part4").inputParam().set("Overshoot", "Overshoot_ITC");
-            model.geom("part4").inputParam().set("A_ellipse_contact", "a_ellipse_contact_ITC");
-            model.geom("part4").inputParam().set("Diam_contact", "diam_contact_ITC");
-            model.geom("part4").inputParam().set("L", "L_IT");
+            model.geom().create(part, "Part", 3);
+            model.geom(part).label("CircleContact_Primitive");
+            model.geom(part).lengthUnit("\u00b5m");
+            model.geom(part).inputParam().set("Recess", "Recess_ITC");
+            model.geom(part).inputParam().set("Rotation_angle", "0 [deg]");
+            model.geom(part).inputParam().set("Center", "Center_IT");
+            model.geom(part).inputParam().set("Round_def", "Round_def_ITC");
+            model.geom(part).inputParam().set("R_in", "R_in_ITI");
+            model.geom(part).inputParam().set("Contact_depth", "Contact_depth_ITC");
+            model.geom(part).inputParam().set("Overshoot", "Overshoot_ITC");
+            model.geom(part).inputParam().set("A_ellipse_contact", "a_ellipse_contact_ITC");
+            model.geom(part).inputParam().set("Diam_contact", "diam_contact_ITC");
+            model.geom(part).inputParam().set("L", "L_IT");
         }
 
         // HELICAL CUFF AND CONTACT PRIMITIVE
         if (parts.contains("HelicalCuffnContact_Primitive")) {
+            String part = cim.next("part");
             System.out.println("Adding HelicalCuffnContact_Primitive Default Parameters");
-            model.geom().create("part5", "Part", 3);
-            model.geom("part5").label("HelicalCuffnContact_Primitive");
-            model.geom("part5").lengthUnit("\u00b5m");
-            model.geom("part5").inputParam().set("Center", "Center_LN");
+            model.geom().create(part, "Part", 3);
+            model.geom(part).label("HelicalCuffnContact_Primitive");
+            model.geom(part).lengthUnit("\u00b5m");
+            model.geom(part).inputParam().set("Center", "Center_LN");
         }
 
         // BENT RECTANGLE CONTACT WITH FILLET CORNERS PRIMITIVE
         if (parts.contains("RectangleContact_Primitive")) {
+            String part = cim.next("part");
             System.out.println("Adding RectangleContact_Primitive Default Parameters");
-            model.geom().create("part6", "Part", 3);
-            model.geom("part6").label("RectangleContact_Primitive");
-            model.geom("part6").lengthUnit("\u00b5m");
-            model.geom("part6").inputParam().set("r_inner_contact", "r_cuff_in_Pitt+recess_Pitt");
-            model.geom("part6").inputParam().set("r_outer_contact", "r_cuff_in_Pitt+recess_Pitt+thk_contact_Pitt");
-            model.geom("part6").inputParam().set("z_center", "0 [mm]");
-            model.geom("part6").inputParam().set("rotation_angle", "0 [deg]");
+            model.geom().create(part, "Part", 3);
+            model.geom(part).label("RectangleContact_Primitive");
+            model.geom(part).lengthUnit("\u00b5m");
+            model.geom(part).inputParam().set("r_inner_contact", "r_cuff_in_Pitt+recess_Pitt");
+            model.geom(part).inputParam().set("r_outer_contact", "r_cuff_in_Pitt+recess_Pitt+thk_contact_Pitt");
+            model.geom(part).inputParam().set("z_center", "0 [mm]");
+            model.geom(part).inputParam().set("rotation_angle", "0 [deg]");
         }
     }
 
