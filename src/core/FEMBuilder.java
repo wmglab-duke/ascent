@@ -15,6 +15,8 @@ import java.util.ArrayList;
 /** Model exported on Sep 5 2019, 09:20 by COMSOL 5.4.0.388. */
 public class FEMBuilder {
 
+    private ArrayList<String> parts = null;
+
     public static void main(String[] args) {
         Model model = definePartInstanceParameters();
         defineDefaultPrimitiveInputParameters(model);
@@ -45,7 +47,7 @@ public class FEMBuilder {
         }
 
         ComsolIdentifierManager cim = new ComsolIdentifierManager();
-        ArrayList<String> parts = new ArrayList<String>();
+        this.parts = new ArrayList<String>();
 
         for (String cuffFile: cuffFiles) {
             String par = cim.next("par");
@@ -56,7 +58,7 @@ public class FEMBuilder {
             JSONArray cuffPartsArray = (JSONArray) cuff.get("parts");
 
             for (int i = 0; i < cuffPartsArray.length(); i++) {
-                parts.add(cuffPartsArray.getString(i));
+                this.parts.add(cuffPartsArray.getString(i));
             }
 
             for (Object item : (JSONArray) cuff.get("params")) {

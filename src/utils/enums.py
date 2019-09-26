@@ -27,6 +27,7 @@ class WriteMode(Enum):
     SECTIONWISE = 0
     SECTIONWISE2D = 1
     DATA = 2
+    file_endings = ['.txt', '.txt', '.dat']
 
 
 #%% Higher-level Manager functionality

@@ -403,7 +403,7 @@ class Trace(Exceptionable):
         """
         # add extension
         #path += mode.value
-        path += '.txt'
+        path += WriteMode.file_endings.value[mode.value]
 
         try:
             # open in write mode; "+" indicates to create file if not found
