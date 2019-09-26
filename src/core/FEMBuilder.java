@@ -5,29 +5,30 @@
 
 import com.comsol.accessutils.ComsolIdentifierManager;
 import com.comsol.accessutils.JSONReader;
+import com.comsol.accessutils.ModelWrapper;
 import com.comsol.model.Model;
 import com.comsol.model.util.ModelUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 /** Model exported on Sep 5 2019, 09:20 by COMSOL 5.4.0.388. */
 public class FEMBuilder {
 
-    private ArrayList<String> parts = null;
-
     public static void main(String[] args) {
-        Model model = definePartInstanceParameters();
-        defineDefaultPrimitiveInputParameters(model);
-        definePrimitiveSelections(model);
-        definePrimitivePartOperations(model);
-        makePartInstances(model);
-        defineMaterialLinks(model);
-        defineCurrentSources(model);
+        ModelWrapper mw = definePartInstanceParameters();
+        defineDefaultPrimitiveInputParameters(mw.getModel());
+        definePrimitiveSelections(mw.getModel());
+        definePrimitivePartOperations(mw.getModel());
+        makePartInstances(mw.getModel());
+        defineMaterialLinks(mw.getModel());
+        defineCurrentSources(mw.getModel());
     }
 
-    private static Model definePartInstanceParameters() {
+    private static ModelWrapper definePartInstanceParameters() {
 
         Model model = ModelUtil.create("Model");
         //ModelUtil.showProgress(false);
@@ -47,7 +48,7 @@ public class FEMBuilder {
         }
 
         ComsolIdentifierManager cim = new ComsolIdentifierManager();
-        this.parts = new ArrayList<String>();
+        Set<String> parts = new HashSet<>();
 
         for (String cuffFile: cuffFiles) {
             String par = cim.next("par");
@@ -58,7 +59,7 @@ public class FEMBuilder {
             JSONArray cuffPartsArray = (JSONArray) cuff.get("parts");
 
             for (int i = 0; i < cuffPartsArray.length(); i++) {
-                this.parts.add(cuffPartsArray.getString(i));
+                parts.add(cuffPartsArray.getString(i));
             }
 
             for (Object item : (JSONArray) cuff.get("params")) {
@@ -70,7 +71,7 @@ public class FEMBuilder {
                 );
             }
         }
-        return model;
+        return new ModelWrapper();
     }
 
     private static void defineDefaultPrimitiveInputParameters(Model model) {
