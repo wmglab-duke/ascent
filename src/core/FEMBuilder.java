@@ -33,6 +33,7 @@ public class FEMBuilder {
 
         String currentDirectory = System.getProperty("user.dir");
         String configFile = fileSep + ".config" + fileSep + "master.json";
+        System.out.println(currentDirectory + configFile);
         JSONObject configData = new JSONReader(currentDirectory + configFile).getData();
         JSONObject cuffObject = (JSONObject) configData.get("cuff");
         JSONArray cuffs = (JSONArray) cuffObject.get("preset");
