@@ -35,3 +35,31 @@ jar -cvfm /Applications/COMSOL54/Multiphysics/plugins/com.comsol.accessutils_1.0
 cd ..
 /Applications/COMSOL54/Multiphysics/bin/comsol compile /Users/jakecariello/Box/Documents/Pipeline/access/src/core/FEMBuilder.java -classpathadd /Applications/COMSOL54/Multiphysics/plugins/com.comsol.accessutils_1.0.0.jar:/Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar
 /Applications/COMSOL54/Multiphysics/bin/comsol batch -inputfile /Users/jakecariello/Box/Documents/Pipeline/access/src/core/FEMBuilder.class -dev /Applications/COMSOL54/Multiphysics/plugins/com.comsol.accessutils_1.0.0.jar,/Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar
+
+javac -classpath "/Applications/COMSOL54/Multiphysics/plugins/*:/Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar" FEMBuilder.java
+java -classpath "/Applications/COMSOL54/Multiphysics/plugins/*:/Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar" FEMBuilder.class
+
+
+
+
+javac core/FEMBuilder.java -classpath "/Applications/COMSOL54/Multiphysics/plugins/*:/Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar"
+java  core.FEMBuilder -classpath "/Applications/COMSOL54/Multiphysics/plugins/*:/Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar"
+
+
+
+javac core/FEMBuilder.java -classpath "/Applications/COMSOL54/Multiphysics/plugins/*:/Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar"
+java  core.FEMBuilder -classpath "/Applications/COMSOL54/Multiphysics/plugins/*:/Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar"
+
+javac -classpath /Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar:/Applications/COMSOL54/Multiphysics/plugins/* core/FEMBuilder.java
+java -jar "/Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar:/Applications/COMSOL54/Multiphysics/plugins/*" core/FEMBuilder
+
+javac -classpath /Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar:/Applications/COMSOL54/Multiphysics/plugins/* core/FEMBuilder.java
+java -cp $(echo /Applications/COMSOL54/Multiphysics/plugins/*.jar | tr ' ' ':'):/Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar core.FEMBuilder
+
+java -cp .:$(echo /Applications/COMSOL54/Multiphysics/plugins/*.jar | tr ' ' ':'):/Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar FEMBuilder
+
+javac --release 8 -classpath /Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar:/Applications/COMSOL54/Multiphysics/plugins/* FEMBuilder.java
+java -cp .:$(echo /Applications/COMSOL54/Multiphysics/plugins/*.jar | tr ' ' ':'):/Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar FEMBuilder
+
+javac --release 8 -classpath /Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar:/Applications/COMSOL54/Multiphysics/plugins/* FEMBuilder.java
+java -cp .:$(echo /Applications/COMSOL54/Multiphysics/plugins/*.jar | tr ' ' ':'):/Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar FEMBuilder

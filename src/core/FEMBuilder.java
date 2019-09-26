@@ -19,21 +19,43 @@ import java.util.Set;
 public class FEMBuilder {
 
     public static void main(String[] args) {
+
+        ModelUtil.connect("localhost", 2036);
+
+        //ModelUtil.initStandalone(false);
+
+
+
+        System.out.println("hello");
+        System.out.println(args.getClass());
+        for (String arg: args) {
+            System.out.println("ARGUMENT: " + arg);
+        }
+        System.out.println("hello 2");
+
         ModelWrapper mw = definePartInstanceParameters();
-        defineDefaultPrimitiveInputParameters(mw.getModel());
-        definePrimitiveSelections(mw.getModel());
-        definePrimitivePartOperations(mw.getModel());
-        makePartInstances(mw.getModel());
-        defineMaterialLinks(mw.getModel());
-        defineCurrentSources(mw.getModel());
+        System.out.println(1);
+        defineDefaultPrimitiveInputParameters((Model) mw.getModel());
+        System.out.println(2);
+        definePrimitiveSelections((Model) mw.getModel());
+        definePrimitivePartOperations((Model) mw.getModel());
+        makePartInstances((Model) mw.getModel());
+        defineMaterialLinks((Model) mw.getModel());
+        defineCurrentSources((Model) mw.getModel());
+
+        ModelUtil.disconnect();
+        System.out.println("EXITING");
+        System.exit(0);
     }
 
     private static ModelWrapper definePartInstanceParameters() {
 
+        System.out.println(-3);
         Model model = ModelUtil.create("Model");
-        //ModelUtil.showProgress(false);
+//        ModelUtil.showProgress(true);
+        System.out.println(-2);
         String fileSep = System.getProperty("file.separator");
-
+        System.out.println(-1);
         String currentDirectory = System.getProperty("user.dir");
         String configFile = fileSep + ".config" + fileSep + "master.json";
         System.out.println(currentDirectory + configFile);
@@ -42,7 +64,7 @@ public class FEMBuilder {
         JSONObject cuffObject = (JSONObject) configData.get("cuff");
         JSONArray cuffs = (JSONArray) cuffObject.get("preset");
 
-        ArrayList<String> cuffFiles = new ArrayList<String>();
+        ArrayList<String> cuffFiles = new ArrayList<>();
         for (int i = 0; i < cuffs.length(); i++) {
             cuffFiles.add(cuffs.getString(i));
         }
@@ -71,7 +93,8 @@ public class FEMBuilder {
                 );
             }
         }
-        return new ModelWrapper();
+        System.out.println(0);
+        return new ModelWrapper(model, "", parts);
     }
 
     private static void defineDefaultPrimitiveInputParameters(Model model) {

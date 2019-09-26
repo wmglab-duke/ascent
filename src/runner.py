@@ -134,7 +134,8 @@ class Runner(Exceptionable, Configurable):
 
             subprocess.call('{}/bin/comsol batch -inputfile {}/{}.class '
                       '-dev {}/plugins/com.comsol.accessutils_1.0.0.jar,'
-                      '{}/lib/json-20190722.jar'.format(comsol_path, cwd, file_name_no_ext, comsol_path, cwd),shell=True)
+                      '{}/lib/json-20190722.jar '
+                      '-plist 10.0'.format(comsol_path, cwd, file_name_no_ext, comsol_path, cwd),shell=True)
 
         else: # assume to be 'win64'
             manifest = 'com\\comsol\\accessutils\\MANIFEST.MF'
