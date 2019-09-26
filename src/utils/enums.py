@@ -23,10 +23,10 @@ class DownSampleMode(Enum):
     REMOVE = 1
 
 
-class WriteMode(Enum):  # note: NOT required to have unique values
-    SECTIONWISE = '.txt'
-    SECTIONWISE2D = '.txt'
-    DATA = '.dat'
+class WriteMode(Enum):
+    SECTIONWISE = 0
+    SECTIONWISE2D = 1
+    DATA = 2
 
 
 #%% Higher-level Manager functionality

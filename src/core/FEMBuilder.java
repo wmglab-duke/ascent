@@ -31,12 +31,10 @@ public class FEMBuilder {
         //ModelUtil.showProgress(false);
         String fileSep = System.getProperty("file.separator");
 
-        String currentDirectory = System.getProperty("user.home");
+        String currentDirectory = System.getProperty("user.dir");
         String configFile = fileSep + ".config" + fileSep + "master.json";
         System.out.println(currentDirectory + configFile);
-        System.out.println("hello");
         JSONObject configData = new JSONReader(currentDirectory + configFile).getData();
-        System.out.println("hello1");
 
         JSONObject cuffObject = (JSONObject) configData.get("cuff");
         JSONArray cuffs = (JSONArray) cuffObject.get("preset");
