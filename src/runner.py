@@ -114,11 +114,10 @@ class Runner(Exceptionable, Configurable):
     def handoff(self):
 
         comsol_path = self.load(os.path.join('.config', 'system.json')).get('comsol_path')
-        print(comsol_path)
         file_name_no_ext = os.path.join('src', 'core', 'FEMBuilder')
-        print(file_name_no_ext)
         # run commands by system type
         cwd = os.getcwd()
+
         if sys.platform.startswith('darwin') or sys.platform.startswith('linux'):  # macOS and linux
 
             manifest = 'com/comsol/accessutils/MANIFEST.MF'
@@ -129,13 +128,13 @@ class Runner(Exceptionable, Configurable):
                       'com/comsol/accessutils/*.class'.format(comsol_path, manifest))
             os.chdir('..')
 
-            os.system('{}/bin/comsol compile {}/{}.java '
+            subprocess.call('{}/bin/comsol compile {}/{}.java '
                       '-classpathadd {}/plugins/com.comsol.accessutils_1.0.0.jar:'
-                      '{}/lib/json-20190722.jar'.format(comsol_path, cwd, file_name_no_ext, comsol_path, cwd))
+                      '{}/lib/json-20190722.jar'.format(comsol_path, cwd, file_name_no_ext, comsol_path, cwd),shell=True)
 
-            os.system('{}/bin/comsol batch -inputfile {}/{}.class '
+            subprocess.call('{}/bin/comsol batch -inputfile {}/{}.class '
                       '-dev {}/plugins/com.comsol.accessutils_1.0.0.jar,'
-                      '{}/lib/json-20190722.jar'.format(comsol_path, cwd, file_name_no_ext, comsol_path, cwd))
+                      '{}/lib/json-20190722.jar'.format(comsol_path, cwd, file_name_no_ext, comsol_path, cwd),shell=True)
 
         else: # assume to be 'win64'
             manifest = 'com\\comsol\\accessutils\\MANIFEST.MF'
