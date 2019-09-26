@@ -272,6 +272,7 @@ public class FEMBuilder {
             model.geom("part4").selection("csel6").label("RECESS CUTTER OUT");
         }
 
+
         // LivaNova-style helical coil cuff primitive
         if (parts.contains("HelicalCuffnContact_Primitive")) {
             System.out.println("Adding HelicalCuffnContact_Primitive Default Selections");
@@ -296,6 +297,7 @@ public class FEMBuilder {
             model.geom("part5").selection().create("csel9", "CumulativeSelection");
             model.geom("part5").selection("csel9").label("PC3");
         }
+
 
         // Pitt-style bent square with fillet corners primitive
         if (parts.contains("RectangleContact_Primitive")) {
@@ -1786,26 +1788,3 @@ public class FEMBuilder {
     }
 
 }
-
-
-
-
-//    ComsolIdentifierManager cim = new ComsolIdentifierManager();
-//    String[] files = {"CorTec.json", "Enteromedics.json", "ImThera.json", "Madison.json", "Purdue.json"};
-//
-//    for (String file: files) {
-//      String par = cim.next("par");
-//
-//      JSONObject data = new JSONReader("../../.templates/" + file).getData();
-//
-//      for (Object item: (JSONArray) data.get("data")) {
-//        JSONObject itemObject = (JSONObject) item;
-//        model.param(par).set(
-//                (String) itemObject.get("name"),
-//                (String) itemObject.get("expression"),
-//                (String) itemObject.get("description")
-//        );
-//      }
-//    }
-
-//"preset": ["Enteromedics.json", "CorTec.json", "ImThera.json", "Madison.json", "Purdue.json", "LivaNova.json", "Pitt.json"]
