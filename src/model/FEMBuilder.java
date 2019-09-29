@@ -1,11 +1,9 @@
-package model;//package core;
+package model;
 /*
  * core.FEMBuilder.java
  */
 
-import com.comsol.accessutils.ComsolIdentifierManager;
-import com.comsol.accessutils.JSONReader;
-import com.comsol.accessutils.ModelWrapper;
+
 import com.comsol.model.Model;
 import com.comsol.model.util.ModelUtil;
 import org.json.JSONArray;
@@ -54,7 +52,7 @@ public class FEMBuilder {
 
         String fileSep = System.getProperty("file.separator");
         String currentDirectory = System.getProperty("user.dir");
-        currentDirectory = String.join("/", Arrays.copyOfRange(currentDirectory.split("/"), 0, currentDirectory.split("/").length - 2));
+        currentDirectory = String.join("/", Arrays.copyOfRange(currentDirectory.split("/"), 0, currentDirectory.split("/").length - 1));
         String configFile = fileSep + ".config" + fileSep + "master.json";
         JSONObject configData = new JSONReader(currentDirectory + configFile).getData();
 

@@ -1,4 +1,4 @@
-package com.comsol.accessutils;
+package model;
 
 import java.util.*;
 

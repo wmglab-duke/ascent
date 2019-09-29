@@ -1,4 +1,4 @@
-package com.comsol.accessutils;
+package model;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

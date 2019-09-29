@@ -1,4 +1,4 @@
-package com.comsol.accessutils;
+package model;
 
 import java.util.Set;
 
@@ -9,7 +9,7 @@ public class ModelWrapper {
     private Set<String> parts;
     private ComsolIdentifierManager cim;
 
-    public ModelWrapper(Object model, String projectPath, Set<String> parts, ComsolIdentifierManager cim) {
+    ModelWrapper(Object model, String projectPath, Set<String> parts, ComsolIdentifierManager cim) {
         this.model = model;
         this.projectPath = projectPath;
         this.parts = parts;
@@ -28,7 +28,7 @@ public class ModelWrapper {
         return parts;
     }
 
-    public ComsolIdentifierManager getCIM() {
+    ComsolIdentifierManager getCIM() {
         return cim;
     }
 }
