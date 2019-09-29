@@ -61,5 +61,19 @@ java -cp .:$(echo /Applications/COMSOL54/Multiphysics/plugins/*.jar | tr ' ' ':'
 javac --release 8 -classpath /Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar:/Applications/COMSOL54/Multiphysics/plugins/* FEMBuilder.java
 java -cp .:$(echo /Applications/COMSOL54/Multiphysics/plugins/*.jar | tr ' ' ':'):/Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar FEMBuilder
 
+cd src
+javac com/comsol/accessutils/*.java -classpath ../lib/json-20190722.jar -target 8
+jar -cvfm /Applications/COMSOL54/Multiphysics/plugins/com.comsol.accessutils_1.0.0.jar com/comsol/accessutils/MANIFEST.MF com/comsol/accessutils/*.class
+cd core
 javac --release 8 -classpath /Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar:/Applications/COMSOL54/Multiphysics/plugins/* FEMBuilder.java
 java -cp .:$(echo /Applications/COMSOL54/Multiphysics/plugins/*.jar | tr ' ' ':'):/Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar FEMBuilder
+cd ../..
+
+
+cd src
+/Library/Java/JavaVirtualMachines/jdk1.8.0_221.jdk/Contents/Home/bin/javac com/comsol/accessutils/*.java -classpath ../lib/json-20190722.jar
+/Library/Java/JavaVirtualMachines/jdk1.8.0_221.jdk/Contents/Home/bin/jar -cvfm /Applications/COMSOL54/Multiphysics/plugins/com.comsol.accessutils_1.0.0.jar com/comsol/accessutils/MANIFEST.MF com/comsol/accessutils/*.class
+cd core
+/Library/Java/JavaVirtualMachines/jdk1.8.0_221.jdk/Contents/Home/bin/javac -classpath /Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar:/Applications/COMSOL54/Multiphysics/plugins/* FEMBuilder.java
+/Library/Java/JavaVirtualMachines/jdk1.8.0_221.jdk/Contents/Home/bin/java -cp .:$(echo /Applications/COMSOL54/Multiphysics/plugins/*.jar | tr ' ' ':'):/Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar FEMBuilder
+cd ../..

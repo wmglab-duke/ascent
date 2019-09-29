@@ -21,16 +21,18 @@ public class FEMBuilder {
     public static void main(String[] args) {
 
 //        ModelUtil.connect("localhost", 2036);
-//        ModelUtil.initStandalone(false);
+        ModelUtil.initStandalone(false);
 //        System.out.println(args.getClass());
 //        for (String arg: args) {
 //            System.out.println("ARGUMENT: " + arg);
 //        }
 
+        System.out.println("HELLO");
         ModelWrapper mw = definePartInstanceParameters();
-        defineDefaultPrimitiveInputParameters((Model) mw.getModel(), (Set) mw.getParts(), (ComsolIdentifierManager) mw.getCim());
-        definePrimitiveSelections((Model) mw.getModel(), (Set) mw.getParts());
-        definePrimitivePartOperations((Model) mw.getModel(), (Set) mw.getParts());
+        System.out.println("HELLO AGAIN");
+        defineDefaultPrimitiveInputParameters((Model) mw.getModel(), mw.getParts(), mw.getCIM());
+        definePrimitiveSelections((Model) mw.getModel(), mw.getParts());
+        definePrimitivePartOperations((Model) mw.getModel(), mw.getParts());
         makePartInstances((Model) mw.getModel());
         defineMaterialLinks((Model) mw.getModel());
         defineCurrentSources((Model) mw.getModel());
@@ -42,7 +44,9 @@ public class FEMBuilder {
 
     private static ModelWrapper definePartInstanceParameters() {
 
+        System.out.println("\tINSIDE");
         Model model = ModelUtil.create("Model");
+        System.out.println("hi");
 //        ModelUtil.showProgress(true);
         String fileSep = System.getProperty("file.separator");
         String currentDirectory = System.getProperty("user.dir");

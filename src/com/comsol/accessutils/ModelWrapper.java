@@ -28,7 +28,7 @@ public class ModelWrapper {
         return parts;
     }
 
-    public ComsolIdentifierManager getCim() {
+    public ComsolIdentifierManager getCIM() {
         return cim;
     }
 }
