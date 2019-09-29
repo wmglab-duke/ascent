@@ -123,30 +123,46 @@ cd ..
         """
 
         comsol_path = self.load(os.path.join('.config', 'system.json')).get('comsol_path')
+        jkd_path = self.load(os.path.join('.config', 'system.json')).get('jdk')
         file_name_no_ext = os.path.join('src', 'core', 'FEMBuilder')
+        core_name = 'FEMBuilder'
         # run commands by system type
         cwd = os.getcwd()
 
         if sys.platform.startswith('darwin') or sys.platform.startswith('linux'):  # macOS and linux
 
-            manifest = 'com/comsol/accessutils/MANIFEST.MF'
 
+            # TODO: RUN ./comsol server IN SEPARATE SHELL
             os.chdir('src')
-            os.system('javac com/comsol/accessutils/*.java -classpath ../lib/json-20190722.jar -source 1.8 -target 1.8')
-            os.system('jar -cvfm {}/plugins/com.comsol.accessutils_1.0.0.jar {} '
-                      'com/comsol/accessutils/*.class'.format(comsol_path, manifest))
+            os.system('{}/javac -classpath ../lib/json-20190722.jar:{}/plugins/* model/*.java'.format(jkd_path,
+                                                                                                      comsol_path))
+            os.system('{}/java/maci64/jre/Contents/Home/bin/java '
+                      '-cp .:$(echo {}/plugins/*.jar | tr \' \' \':\'):../lib/json-20190722.jar model/{}'.format(comsol_path,
+                                                                                                                 comsol_path,
+                                                                                                                 core_name))
             os.chdir('..')
 
-            subprocess.call('{}/bin/comsol compile {}/{}.java '
-                      '-classpathadd {}/plugins/com.comsol.accessutils_1.0.0.jar:'
-                      '{}/lib/json-20190722.jar'.format(comsol_path, cwd, file_name_no_ext, comsol_path, cwd),shell=True)
 
-            subprocess.call('{}/bin/comsol batch -inputfile {}/{}.class '
-                      '-dev {}/plugins/com.comsol.accessutils_1.0.0.jar,'
-                      '{}/lib/json-20190722.jar '
-                      '-plist 10.0'.format(comsol_path, cwd, file_name_no_ext, comsol_path, cwd),shell=True)
+            # manifest = 'com/comsol/accessutils/MANIFEST.MF'
+            #
+            # os.chdir('src')
+            # os.system('javac com/comsol/accessutils/*.java -classpath ../lib/json-20190722.jar -source 1.8 -target 1.8')
+            # os.system('jar -cvfm {}/plugins/com.comsol.accessutils_1.0.0.jar {} '
+            #           'com/comsol/accessutils/*.class'.format(comsol_path, manifest))
+            # os.chdir('..')
+            #
+            # subprocess.call('{}/bin/comsol compile {}/{}.java '
+            #           '-classpathadd {}/plugins/com.comsol.accessutils_1.0.0.jar:'
+            #           '{}/lib/json-20190722.jar'.format(comsol_path, cwd, file_name_no_ext, comsol_path, cwd),shell=True)
+            #
+            # subprocess.call('{}/bin/comsol batch -inputfile {}/{}.class '
+            #           '-dev {}/plugins/com.comsol.accessutils_1.0.0.jar,'
+            #           '{}/lib/json-20190722.jar '
+            #           '-plist 10.0'.format(comsol_path, cwd, file_name_no_ext, comsol_path, cwd),shell=True)
 
         else: # assume to be 'win64'
+
+            # TODO: WINDOWS IMPLEMENTATION OF ABOVE CODE
             manifest = 'com\\comsol\\accessutils\\MANIFEST.MF'
 
             os.chdir('src')
