@@ -12,6 +12,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,7 +22,7 @@ public class FEMBuilder {
     public static void main(String[] args) {
 
 //        ModelUtil.connect("localhost", 2036);
-        ModelUtil.initStandalone(false);
+        ModelUtil.initStandalone(true);
 //        System.out.println(args.getClass());
 //        for (String arg: args) {
 //            System.out.println("ARGUMENT: " + arg);
@@ -50,6 +51,7 @@ public class FEMBuilder {
 //        ModelUtil.showProgress(true);
         String fileSep = System.getProperty("file.separator");
         String currentDirectory = System.getProperty("user.dir");
+        currentDirectory = String.join("/", Arrays.copyOfRange(currentDirectory.split("/"), 0, currentDirectory.split("/").length - 2));
         String configFile = fileSep + ".config" + fileSep + "master.json";
         JSONObject configData = new JSONReader(currentDirectory + configFile).getData();
 
