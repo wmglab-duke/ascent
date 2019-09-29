@@ -1,4 +1,4 @@
-//package core;
+package model;//package core;
 /*
  * core.FEMBuilder.java
  */
@@ -21,8 +21,8 @@ public class FEMBuilder {
 
     public static void main(String[] args) {
 
-//        ModelUtil.connect("localhost", 2036);
-        ModelUtil.initStandalone(true);
+        ModelUtil.connect("localhost", 2036);
+        ModelUtil.initStandalone(false);
 //        System.out.println(args.getClass());
 //        for (String arg: args) {
 //            System.out.println("ARGUMENT: " + arg);
@@ -38,17 +38,20 @@ public class FEMBuilder {
         defineMaterialLinks((Model) mw.getModel());
         defineCurrentSources((Model) mw.getModel());
 
-        //ModelUtil.disconnect();
+        ModelUtil.disconnect();
         System.out.println("EXITING");
+
+//        ((Model) mw.getModel()).save("directory");
         //System.exit(0);
     }
 
     private static ModelWrapper definePartInstanceParameters() {
 
+        ModelUtil.showProgress(true);
         System.out.println("\tINSIDE");
         Model model = ModelUtil.create("Model");
         System.out.println("hi");
-//        ModelUtil.showProgress(true);
+
         String fileSep = System.getProperty("file.separator");
         String currentDirectory = System.getProperty("user.dir");
         currentDirectory = String.join("/", Arrays.copyOfRange(currentDirectory.split("/"), 0, currentDirectory.split("/").length - 2));

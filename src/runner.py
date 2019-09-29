@@ -113,6 +113,17 @@ class Runner(Exceptionable, Configurable):
 
     def handoff(self):
 
+        """
+cd src
+/Library/Java/JavaVirtualMachines/jdk1.8.0_221.jdk/Contents/Home/bin/javac com/comsol/accessutils/*.java -classpath ../lib/json-20190722.jar
+/Library/Java/JavaVirtualMachines/jdk1.8.0_221.jdk/Contents/Home/bin/jar -cvfm /Applications/COMSOL54/Multiphysics/plugins/com.comsol.accessutils_1.0.0.jar com/comsol/accessutils/MANIFEST.MF com/comsol/accessutils/*.class
+cd model
+/Library/Java/JavaVirtualMachines/jdk1.8.0_221.jdk/Contents/Home/bin/javac -classpath /Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar:/Applications/COMSOL54/Multiphysics/plugins/* FEMBuilder.java
+/Applications/COMSOL54/Multiphysics/java/maci64/jre/Contents/Home/bin/java -cp .:$(echo /Applications/COMSOL54/Multiphysics/plugins/*.jar | tr ' ' ':'):/Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar FEMBuilder
+cd ../..
+
+        """
+
         comsol_path = self.load(os.path.join('.config', 'system.json')).get('comsol_path')
         file_name_no_ext = os.path.join('src', 'core', 'FEMBuilder')
         # run commands by system type

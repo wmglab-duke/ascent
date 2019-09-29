@@ -1,4 +1,4 @@
-/*
+package model;/*
  * interp_curve_example.java
  */
 

@@ -9,7 +9,7 @@ public class ModelWrapper {
     private Set<String> parts;
     private ComsolIdentifierManager cim;
 
-    public ModelWrapper(Object model, String projectPath, Set parts, ComsolIdentifierManager cim) {
+    public ModelWrapper(Object model, String projectPath, Set<String> parts, ComsolIdentifierManager cim) {
         this.model = model;
         this.projectPath = projectPath;
         this.parts = parts;
