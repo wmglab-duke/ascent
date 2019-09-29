@@ -28,5 +28,8 @@ public class ModelWrapper2 {
         this.dest = defaultSaveDestination;
     }
 
-
+    public next(String key, String pseudonym) {
+        String id = this.next(key);
+        identifierPseudonyms.put(id, pseudonym);
+    }
 }
