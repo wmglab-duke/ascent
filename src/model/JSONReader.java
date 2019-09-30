@@ -4,6 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 
@@ -15,6 +16,7 @@ public class JSONReader {
 
     private JSONObject jsonObject;
 
+    // idea: make this method throw `FileNotFoundException`?
     public JSONReader(String filepath) {
         try {
 //            String text = new String(Files.readAllBytes(Paths.get(filepath)));
@@ -22,7 +24,7 @@ public class JSONReader {
 //            String text = StandardCharsets.UTF_8.decode(ByteBuffer.wrap(Files.readAllBytes(filepath)));
             String text = new Scanner(new File(filepath)).useDelimiter("\\A").next();
             jsonObject = new JSONObject(text);
-        } catch (Exception e) {
+        } catch (FileNotFoundException e) {
             System.out.println("failed to read JSON");
             // tell user if fails (likely because wrong path or wrong file type)
             e.printStackTrace();

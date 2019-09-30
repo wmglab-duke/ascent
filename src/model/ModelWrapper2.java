@@ -5,6 +5,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 
 /**
@@ -194,12 +195,24 @@ public class ModelWrapper2 {
     }
 
     public boolean extractPotentials(String json_path) {
-        double[][] coordinates = new double[3][5]
+
+
+        JSONObject json_data = new JSONReader(json_path).getData();
+
+
+        double[][] coordinates = new double[3][5];
         String id = this.nextID("interp");
+
         model.result().numerical().create(id, "Interp");
+        model.result().numerical(id).set("expr", "V");
         model.result().numerical(id).setInterpolationCoordinates(coordinates);
+
+        double[][][] data = model.result().numerical(id).getData();
+
+        System.out.println("data.toString() = " + Arrays.deepToString(data));
 
         return true;
     }
+
 
 }

@@ -133,6 +133,7 @@ cd ..
 
 
             # TODO: RUN ./comsol server IN SEPARATE SHELL
+            subprocess.Popen(['{}/bin/comsol'.format(comsol_path), 'server'], close_fds=True)
             os.chdir('src')
             os.system('{}/javac -classpath ../lib/json-20190722.jar:{}/plugins/* model/*.java'.format(jkd_path,
                                                                                                       comsol_path))

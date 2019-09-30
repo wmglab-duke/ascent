@@ -44,8 +44,6 @@ public class FEMBuilder {
     }
 
     private static ModelWrapper definePartInstanceParameters() {
-
-        ModelUtil.showProgress(true);
         System.out.println("\tINSIDE");
         Model model = ModelUtil.create("Model");
         System.out.println("hi");
