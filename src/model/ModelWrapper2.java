@@ -10,7 +10,8 @@ import java.util.HashMap;
 /**
  * model.ModelWrapper
  *
- * Eventually, call this class ModelWrapper (NOT ModelWrapper2).
+ * NOTE: Eventually, call this class ModelWrapper (NOT ModelWrapper2).
+ *
  * Master high-level class for managing a model, its metadata, and various critical operations such as creating parts
  * and extracting potentials. This class houses the "meaty" operations of actually interacting with the model object
  * when creating parts in the static class model.Parts.
@@ -61,7 +62,37 @@ public class ModelWrapper2 {
     }
 
 
-    // METHODS
+    // ACCESSOR/MUTATOR METHODS
+
+    public Model getModel() {
+        return model;
+    }
+
+    public String getRoot() {
+        return root;
+    }
+
+    public String getDest() {
+        return dest;
+    }
+
+    public void setRoot(String root) {
+        this.root = root;
+    }
+
+    public void setDest(String dest) {
+        this.dest = dest;
+    }
+
+    public HashMap<String, String> getPartInstances() {
+        return partInstances;
+    }
+
+    public HashMap<String, String> getPartPrimitives() {
+        return partPrimitives;
+    }
+
+    // OTHER METHODS
 
     /**
      *
@@ -161,7 +192,5 @@ public class ModelWrapper2 {
         return true;
 
     }
-
-
 
 }
