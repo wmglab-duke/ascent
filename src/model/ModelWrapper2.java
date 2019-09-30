@@ -193,4 +193,13 @@ public class ModelWrapper2 {
 
     }
 
+    public boolean extractPotentials(String json_path) {
+        double[][] coordinates = new double[3][5]
+        String id = this.nextID("interp");
+        model.result().numerical().create(id, "Interp");
+        model.result().numerical(id).setInterpolationCoordinates(coordinates);
+
+        return true;
+    }
+
 }
