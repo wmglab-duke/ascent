@@ -26,12 +26,13 @@ class Part {
      */
     public static boolean createPartPrimitive(String id, String psuedonym, Model model,
                                               HashMap<String, Object> data) {
+
+        model.geom().create("part1", "Part", 3);
+        model.geom("part1").label(psuedonym);
+        model.geom("part1").lengthUnit("\u00b5m");
+
         switch (psuedonym) {
             case "TubeCuff_Primitive":
-                model.geom().create("part1", "Part", 3);
-                model.geom("part1").label(psuedonym);
-                model.geom("part1").lengthUnit("\u00b5m");
-
                 model.geom("part1").inputParam().set("N_holes", "1");
                 model.geom("part1").inputParam().set("Theta", "340 [deg]");
                 model.geom("part1").inputParam().set("Center", "10 [mm]");
@@ -201,10 +202,6 @@ class Part {
                 model.geom("part1").run();
                 break;
             case "RibbonContact_Primitive":
-                model.geom().create("part2", "Part", 3);
-                model.geom("part2").label("RibbonContact_Primitive");
-                model.geom("part2").lengthUnit("\u00b5m");
-
                 model.geom("part2").inputParam().set("Thk_elec", "0.1 [mm]");
                 model.geom("part2").inputParam().set("L_elec", "3 [mm]");
                 model.geom("part2").inputParam().set("R_in", "1 [mm]");
@@ -273,10 +270,6 @@ class Part {
                 model.geom("part2").run();
                 break;
             case "WireContact_Primitive":
-                model.geom().create("part3", "Part", 3);
-                model.geom("part3").label("WireContact_Primitive");
-                model.geom("part3").lengthUnit("\u00b5m");
-
                 model.geom("part3").inputParam().set("R_conductor", "r_conductor_P");
                 model.geom("part3").inputParam().set("R_in", "R_in_P");
                 model.geom("part3").inputParam().set("Center", "Center_P");
@@ -318,10 +311,6 @@ class Part {
                 model.geom("part3").run();
                 break;
             case "CircleContact_Primitive":
-                model.geom().create("part4", "Part", 3);
-                model.geom("part4").label("CircleContact_Primitive");
-                model.geom("part4").lengthUnit("\u00b5m");
-
                 model.geom("part4").inputParam().set("Recess", "Recess_ITC");
                 model.geom("part4").inputParam().set("Rotation_angle", "0 [deg]");
                 model.geom("part4").inputParam().set("Center", "Center_IT");
@@ -517,10 +506,6 @@ class Part {
                 model.geom("part4").run();
                 break;
             case "HelicalCuffnContact_Primitive":
-                model.geom().create("part5", "Part", 3);
-                model.geom("part5").label("HelicalCuffnContact_Primitive");
-                model.geom("part5").lengthUnit("\u00b5m");
-
                 model.geom("part5").inputParam().set("Center", "Center_LN");
 
                 model.geom("part5").selection().create("csel1", "CumulativeSelection");
@@ -684,10 +669,6 @@ class Part {
                 model.geom("part5").run();
                 break;
             case "RectangleContact_Primitive":
-                model.geom().create("part6", "Part", 3);
-                model.geom("part6").label("RectangleContact_Primitive");
-                model.geom("part6").lengthUnit("\u00b5m");
-
                 model.geom("part6").inputParam().set("r_inner_contact", "r_cuff_in_Pitt+recess_Pitt");
                 model.geom("part6").inputParam().set("r_outer_contact", "r_cuff_in_Pitt+recess_Pitt+thk_contact_Pitt");
                 model.geom("part6").inputParam().set("z_center", "0 [mm]");
