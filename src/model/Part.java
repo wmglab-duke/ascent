@@ -938,9 +938,18 @@ class Part {
         model.component("comp1").mesh().create("mesh1");
 
         switch (psuedonym) {
-
-
-
+            case "TubeCuff_Primitive":
+                break;
+            case "RibbonContact_Primitive":
+                break;
+            case "WireContact_Primitive":
+                break;
+            case "CircleContact_Primitive":
+                break;
+            case "HelicalCuffnContact_Primitive":
+                break;
+            case "RectangleContact_Primitive":
+                break;
         }
 
         return true;
