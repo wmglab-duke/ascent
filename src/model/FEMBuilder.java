@@ -191,13 +191,13 @@ public class FEMBuilder {
         // Tube cuff primitive
         if (parts.contains("TubeCuff_Primitive")) {
             System.out.println("Adding RectangleContact_Primitive Default Selections");
-            model.geom("part1").selection().create("csel1", "CumulativeSelection");
-            model.geom("part1").selection("csel1").label("INNER CUFF SURFACE");
-            model.geom("part1").selection().create("csel2", "CumulativeSelection");
-            model.geom("part1").selection("csel2").label("OUTER CUFF SURFACE");
-            model.geom("part1").selection().create("csel3", "CumulativeSelection");
-            model.geom("part1").selection("csel3").label("CUFF FINAL");
-            model.geom("part1").selection().create("csel11", "CumulativeSelection");
+            model.geom("").selection().create("csel1", "CumulativeSelection");
+            model.geom("").selection("csel1").label("INNER CUFF SURFACE");
+            model.geom("").selection().create("csel2", "CumulativeSelection");
+            model.geom("").selection("csel2").label("OUTER CUFF SURFACE");
+            model.geom("").selection().create("csel3", "CumulativeSelection");
+            model.geom("id").selection("csel3").label("CUFF FINAL");
+            model.geom("id").selection().create("csel11", "CumulativeSelection");
             model.geom("part1").selection("csel11").label("CUFF wGAP PRE HOLES");
             model.geom("part1").selection().create("csel4", "CumulativeSelection");
             model.geom("part1").selection("csel4").label("CUFF PRE GAP");
