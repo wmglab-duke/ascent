@@ -144,6 +144,13 @@ cd ..
                                                                                                                  core_name))
             os.chdir('..')
 
+            # . current directory
+            # : delimeter
+            # $ run whatever follows
+            # echo repeats string on screen
+            # | pipe, basically run and handoff output to thing on the right
+            # tr translate
+
 
             # manifest = 'com/comsol/accessutils/MANIFEST.MF'
             #
@@ -172,7 +179,7 @@ cd ..
             os.system('""{}\\javac" -classpath "..\\lib\\json-20190722.jar";"{}\\plugins\\*" model\\*.java"'.format(jdk_path,
                                                                                                                   comsol_path))
             os.system('""{}\\java\\win64\\jre\\bin\\java" '
-                      '-cp .:$(echo "{}\\plugins\\*.jar" | tr \' \' \':\'):..\\lib\\json-20190722.jar "model\\{}"'.format(comsol_path,
+                      '-copy .;$(echo "{}\\plugins\\*.jar" | tr \' \' \':\');..\\lib\\json-20190722.jar "model\\{}"'.format(comsol_path,
                                                                                                                  comsol_path,
                                                                                                                  core_name))
             os.chdir('..')
