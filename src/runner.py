@@ -124,10 +124,11 @@ cd ..
 
         comsol_path = self.load(os.path.join('.config', 'system.json')).get('comsol_path')
         jdk_path = self.load(os.path.join('.config', 'system.json')).get('jdk_path')
-        file_name_no_ext = os.path.join('src', 'core', 'FEMBuilder')
         core_name = 'FEMBuilder'
+
+        # file_name_no_ext = os.path.join('src', 'core', 'FEMBuilder')
         # run commands by system type
-        cwd = os.getcwd()
+        # cwd = os.getcwd()
 
         if sys.platform.startswith('darwin') or sys.platform.startswith('linux'):  # macOS and linux
 
@@ -142,6 +143,13 @@ cd ..
                                                                                                                  comsol_path,
                                                                                                                  core_name))
             os.chdir('..')
+
+            # . current directory
+            # : delimeter
+            # $ run whatever follows
+            # echo repeats string on screen
+            # | pipe, basically run and handoff output to thing on the right
+            # tr translate
 
 
             # manifest = 'com/comsol/accessutils/MANIFEST.MF'
@@ -164,21 +172,33 @@ cd ..
         else: # assume to be 'win64'
 
             # TODO: WINDOWS IMPLEMENTATION OF ABOVE CODE
-            manifest = 'com\\comsol\\accessutils\\MANIFEST.MF'
+            # TODO: RUN ./comsol server IN SEPARATE SHELL
+            subprocess.Popen(['{}\\bin\\win64\\comsolmphserver.exe'.format(comsol_path)], close_fds=True)
 
             os.chdir('src')
-            os.system('javac com\\comsol\\accessutils\\*.java -classpath ..\\lib\\json-20190722.jar -source 1.8 -target 1.8')
-            os.system('jar -cvfm "{}\\plugins\\com.comsol.accessutils_1.0.0.jar" {} '
-                      'com\\comsol\\accessutils\\*.class'.format(comsol_path, manifest))
+            os.system('""{}\\javac" -classpath "..\\lib\\json-20190722.jar";"{}\\plugins\\*" model\\*.java"'.format(jdk_path,
+                                                                                                                  comsol_path))
+            os.system('""{}\\java\\win64\\jre\\bin\\java" '
+                      '-copy .;$(echo "{}\\plugins\\*.jar" | tr \' \' \':\');..\\lib\\json-20190722.jar "model\\{}"'.format(comsol_path,
+                                                                                                                 comsol_path,
+                                                                                                                 core_name))
             os.chdir('..')
 
-            subprocess.call('"{}\\bin\\win64\\comsolcompile" "{}\\{}.java" '
-                            '-classpathadd "{}\\plugins\\com.comsol.accessutils_1.0.0.jar;'
-                            '{}\\lib\\json-20190722.jar"'.format(comsol_path, cwd, file_name_no_ext, comsol_path, cwd),shell=True)
-
-            subprocess.call('"{}\\bin\\win64\\comsolbatch" -inputfile "{}\\{}.class" '
-                            '-dev "{}\\plugins\\com.comsol.accessutils_1.0.0.jar,'
-                            '{}\\lib\\json-20190722.jar"'.format(comsol_path, cwd, file_name_no_ext, comsol_path, cwd),shell=True)
+            # manifest = 'com\\comsol\\accessutils\\MANIFEST.MF'
+            #
+            # os.chdir('src')
+            # os.system('javac com\\comsol\\accessutils\\*.java -classpath ..\\lib\\json-20190722.jar -source 1.8 -target 1.8')
+            # os.system('jar -cvfm "{}\\plugins\\com.comsol.accessutils_1.0.0.jar" {} '
+            #           'com\\comsol\\accessutils\\*.class'.format(comsol_path, manifest))
+            # os.chdir('..')
+            #
+            # subprocess.call('"{}\\bin\\win64\\comsolcompile" "{}\\{}.java" '
+            #                 '-classpathadd "{}\\plugins\\com.comsol.accessutils_1.0.0.jar;'
+            #                 '{}\\lib\\json-20190722.jar"'.format(comsol_path, cwd, file_name_no_ext, comsol_path, cwd),shell=True)
+            #
+            # subprocess.call('"{}\\bin\\win64\\comsolbatch" -inputfile "{}\\{}.class" '
+            #                 '-dev "{}\\plugins\\com.comsol.accessutils_1.0.0.jar,'
+            #                 '{}\\lib\\json-20190722.jar"'.format(comsol_path, cwd, file_name_no_ext, comsol_path, cwd),shell=True)
 
     def save_all(self):
 
