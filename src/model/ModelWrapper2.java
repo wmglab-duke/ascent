@@ -31,8 +31,8 @@ public class ModelWrapper2 {
     private HashMap<String, String> identifierPseudonyms = new HashMap<>();
 
     // managing parts within COMSOL
-    private HashMap<String, String> partPrimitives = new HashMap<>();
     private HashMap<String, String> partInstances = new HashMap<>();
+    private HashMap<String, String> partPrimitives = new HashMap<>();
 
     // directory structure
     private String root;
@@ -176,6 +176,7 @@ public class ModelWrapper2 {
         // extract data from json
         JSONObject data = new JSONReader(String.join("/",
                 new String[]{this.root,".templates", name + ".json"})).getData();
+
         // get the id for the next "par" (i.e. parameters section)
         String id = this.nextID("par", name);
 
@@ -188,17 +189,12 @@ public class ModelWrapper2 {
                     (String) itemObject.get("description")
             );
         }
-
-
         return true;
-
     }
 
     public boolean extractPotentials(String json_path) {
 
-
         JSONObject json_data = new JSONReader(json_path).getData();
-
 
         double[][] coordinates = new double[3][5];
         String id = this.nextID("interp");
@@ -213,6 +209,4 @@ public class ModelWrapper2 {
 
         return true;
     }
-
-
 }
