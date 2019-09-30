@@ -123,7 +123,7 @@ cd ..
         """
 
         comsol_path = self.load(os.path.join('.config', 'system.json')).get('comsol_path')
-        jkd_path = self.load(os.path.join('.config', 'system.json')).get('jdk')
+        jdk_path = self.load(os.path.join('.config', 'system.json')).get('jdk_path')
         file_name_no_ext = os.path.join('src', 'core', 'FEMBuilder')
         core_name = 'FEMBuilder'
         # run commands by system type
@@ -135,7 +135,7 @@ cd ..
             # TODO: RUN ./comsol server IN SEPARATE SHELL
             subprocess.Popen(['{}/bin/comsol'.format(comsol_path), 'server'], close_fds=True)
             os.chdir('src')
-            os.system('{}/javac -classpath ../lib/json-20190722.jar:{}/plugins/* model/*.java'.format(jkd_path,
+            os.system('{}/javac -classpath ../lib/json-20190722.jar:{}/plugins/* model/*.java'.format(jdk_path,
                                                                                                       comsol_path))
             os.system('{}/java/maci64/jre/Contents/Home/bin/java '
                       '-cp .:$(echo {}/plugins/*.jar | tr \' \' \':\'):../lib/json-20190722.jar model/{}'.format(comsol_path,
