@@ -1,7 +1,6 @@
 package model;
 
 import com.comsol.model.Model;
-import org.eclipse.e4.ui.css.swt.properties.custom.CSSPropertyUnselectedTabsSWTHandler;
 
 import java.util.HashMap;
 
@@ -26,6 +25,7 @@ class Part {
      */
     public static boolean createPartPrimitive(String id, String pseudonym, Model model,
                                               HashMap<String, Object> data) {
+
 
         model.geom().create(id, "Part", 3);
         model.geom(id).label(pseudonym);
@@ -911,12 +911,21 @@ class Part {
      * @param data
      * @return
      */
-    public static boolean createPartInstance(String id, String pseudonym, Model model,
-                                             HashMap<String, String> partPrimitives, HashMap<String, Object> data) {
+    public static boolean createPartInstance(String id, String pseudonym, ModelWrapper2 mw, HashMap<String, Object> data) {
 
+        Model model = mw.getModel();
         model.component().create("comp1", true);
         model.component("comp1").geom().create("geom1", 3);
         model.component("comp1").mesh().create("mesh1");
+
+        // EXAMPLE
+        String nextCsel = mw.nextID("csel", "mySuperCoolCsel");
+
+        // you can either refer to it with that variable, nextCsel
+        model.geom(id).selection().create(nextCsel, "CumulativeSelection");
+
+        // or retrieve it later (likely in another method where the first variable isn't easily accessible
+        model.geom(id).selection(mw.getID("mySuperCoolCsel")).label("INNER CUFF SURFACE");
 
         switch (pseudonym) {
             case "TubeCuff_Primitive":
