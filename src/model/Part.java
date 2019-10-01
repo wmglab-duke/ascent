@@ -273,7 +273,7 @@ class Part {
                 model.geom(id).feature(mw.getID("Recess Cross Section 1")).set("contributeto", mw.getID(("RECESS CROSS SECTION"));
                 model.geom(id).feature(mw.getID("Recess Cross Section 1")).set("quickplane", "xz");
                 model.geom(id).feature(mw.getID("Recess Cross Section 1")).set("unite", true);
-//                model.geom(id).feature(mw.getID("Recess Cross Section 1")).geom().selection().create("csel1", "CumulativeSelection");
+//                model.geom(id).feature(mw.getID("Recess Cross Section 1")).geom().selection().create("csel1", "CumulativeSelection"); // TODO: how do we handle sections within a selection?
 //                model.geom(id).feature(mw.getID("Recess Cross Section 1")).geom().selection("csel1").label("Cumulative Selection 1");
 //                model.geom(id).feature(mw.getID("Recess Cross Section 1")).geom().selection().create("csel2", "CumulativeSelection");
 //                model.geom(id).feature(mw.getID("Recess Cross Section 1")).geom().selection("csel2").label("RECESS CROSS SECTION");
@@ -357,186 +357,207 @@ class Part {
                 model.geom(id).inputParam().set("Diam_contact", "diam_contact_ITC");
                 model.geom(id).inputParam().set("L", "L_IT");
 
-                model.geom(id).selection().create("csel11", "CumulativeSelection");
-                model.geom(id).selection("csel11").label("CONTACT CUTTER IN");
-                model.geom(id).selection().create("csel10", "CumulativeSelection");
-                model.geom(id).selection("csel10").label("PRE CUT CONTACT");
-                model.geom(id).selection().create("csel7", "CumulativeSelection");
-                model.geom(id).selection("csel7").label("RECESS FINAL");
-                model.geom(id).selection().create("csel8", "CumulativeSelection");
-                model.geom(id).selection("csel8").label("RECESS OVERSHOOT");
-                model.geom(id).selection().create("csel14", "CumulativeSelection");
-                model.geom(id).selection("csel14").label("SRC");
-                model.geom(id).selection().create("csel9", "CumulativeSelection");
-                model.geom(id).selection("csel9").label("PLANE FOR CONTACT");
-                model.geom(id).selection().create("csel13", "CumulativeSelection");
-                model.geom(id).selection("csel13").label("CONTACT FINAL");
-                model.geom(id).selection().create("csel12", "CumulativeSelection");
-                model.geom(id).selection("csel12").label("CONTACT CUTTER OUT");
-                model.geom(id).selection().create("csel1", "CumulativeSelection");
-                model.geom(id).selection("csel1").label("BASE CONTACT PLANE (PRE ROTATION)");
-                model.geom(id).selection().create("csel2", "CumulativeSelection");
-                model.geom(id).selection("csel2").label("BASE PLANE (PRE ROTATION)");
-                model.geom(id).selection().create("csel3", "CumulativeSelection");
-                model.geom(id).selection("csel3").label("PLANE FOR RECESS");
-                model.geom(id).selection().create("csel4", "CumulativeSelection");
-                model.geom(id).selection("csel4").label("PRE CUT RECESS");
-                model.geom(id).selection().create("csel5", "CumulativeSelection");
-                model.geom(id).selection("csel5").label("RECESS CUTTER IN");
-                model.geom(id).selection().create("csel6", "CumulativeSelection");
-                model.geom(id).selection("csel6").label("RECESS CUTTER OUT");
+                model.geom(id).selection().create(mw.nextID("csel","CONTACT CUTTER IN"), "CumulativeSelection");
+                model.geom(id).selection(mw.getID("CONTACT CUTTER IN")).label("CONTACT CUTTER IN");
+                model.geom(id).selection().create(mw.nextID("csel","PRE CUT CONTACT"), "CumulativeSelection");
+                model.geom(id).selection(mw.getID("PRE CUT CONTACT")).label("PRE CUT CONTACT");
+                model.geom(id).selection().create(mw.nextID("csel","RECESS FINAL"), "CumulativeSelection");
+                model.geom(id).selection(mw.getID("RECESS FINAL")).label("RECESS FINAL");
+                model.geom(id).selection().create(mw.nextID("csel","RECESS OVERSHOOT"), "CumulativeSelection");
+                model.geom(id).selection(mw.getID("RECESS OVERSHOOT")).label("RECESS OVERSHOOT");
+                model.geom(id).selection().create(mw.nextID("csel","SRC"), "CumulativeSelection");
+                model.geom(id).selection(mw.getID("SRC")).label("SRC");
+                model.geom(id).selection().create(mw.nextID("csel","PLANE FOR CONTACT"), "CumulativeSelection");
+                model.geom(id).selection(mw.getID("PLANE FOR CONTACT")).label("PLANE FOR CONTACT");
+                model.geom(id).selection().create(mw.nextID("csel","CONTACT FINAL"), "CumulativeSelection");
+                model.geom(id).selection(mw.getID("CONTACT FINAL")).label("CONTACT FINAL");
+                model.geom(id).selection().create(mw.nextID("csel","CONTACT CUTTER OUT"), "CumulativeSelection");
+                model.geom(id).selection(mw.getID("CONTACT CUTTER OUT")).label("CONTACT CUTTER OUT");
+                model.geom(id).selection().create(mw.nextID("csel","BASE CONTACT PLANE (PRE ROTATION)"), "CumulativeSelection");
+                model.geom(id).selection(mw.getID("BASE CONTACT PLANE (PRE ROTATION)")).label("BASE CONTACT PLANE (PRE ROTATION)");
+                model.geom(id).selection().create(mw.nextID("csel","BASE PLANE (PRE ROTATION)"), "CumulativeSelection");
+                model.geom(id).selection(mw.getID("BASE PLANE (PRE ROTATION)")).label("BASE PLANE (PRE ROTATION)");
+                model.geom(id).selection().create(mw.nextID("csel","PLANE FOR RECESS"), "CumulativeSelection");
+                model.geom(id).selection(mw.getID("PLANE FOR RECESS")).label("PLANE FOR RECESS");
+                model.geom(id).selection().create(mw.nextID("csel","PRE CUT RECESS"), "CumulativeSelection");
+                model.geom(id).selection(mw.getID("PRE CUT RECESS")).label("PRE CUT RECESS");
+                model.geom(id).selection().create(mw.nextID("csel","RECESS CUTTER IN"), "CumulativeSelection");
+                model.geom(id).selection(mw.getID("RECESS CUTTER IN")).label("RECESS CUTTER IN");
+                model.geom(id).selection().create(mw.nextID("csel","RECESS CUTTER OUT"), "CumulativeSelection");
+                model.geom(id).selection(mw.getID("RECESS CUTTER OUT")).label("RECESS CUTTER OUT");
 
-                model.geom(id).create("wp1", "WorkPlane");
-                model.geom(id).feature("wp1").label("Base Plane (Pre Rrotation)");
-                model.geom(id).feature("wp1").set("contributeto", "csel2");
-                model.geom(id).feature("wp1").set("quickplane", "yz");
-                model.geom(id).feature("wp1").set("unite", true);
-                model.geom(id).create("if1", "If");
-                model.geom(id).feature("if1").label("If Recess");
-                model.geom(id).feature("if1").set("condition", "Recess>0");
-                model.geom(id).create("wp2", "WorkPlane");
-                model.geom(id).feature("wp2").label("Rotated Plane for Recess");
-                model.geom(id).feature("wp2").set("contributeto", "csel3");
-                model.geom(id).feature("wp2").set("planetype", "transformed");
-                model.geom(id).feature("wp2").set("workplane", "wp1");
-                model.geom(id).feature("wp2").set("transaxis", new int[]{0, 1, 0});
-                model.geom(id).feature("wp2").set("transrot", "Rotation_angle");
-                model.geom(id).feature("wp2").set("unite", true);
-                model.geom(id).feature("wp2").geom().selection().create("csel1", "CumulativeSelection");
-                model.geom(id).feature("wp2").geom().selection("csel1").label("CONTACT OUTLINE SHAPE");
-                model.geom(id).feature("wp2").geom().create("if1", "If");
-                model.geom(id).feature("wp2").geom().feature("if1").label("If Contact Surface is Circle");
-                model.geom(id).feature("wp2").geom().feature("if1").set("condition", "Round_def_ITC==1");
-                model.geom(id).feature("wp2").geom().create("e1", "Ellipse");
-                model.geom(id).feature("wp2").geom().feature("e1").label("Contact Outline");
-                model.geom(id).feature("wp2").geom().feature("e1").set("contributeto", "csel1");
-                model.geom(id).feature("wp2").geom().feature("e1").set("pos", new String[]{"0", "Center"});
-                model.geom(id).feature("wp2").geom().feature("e1")
+                model.geom(id).create(mw.nextID("wp", "Base Plane (Pre Rrotation)"), "WorkPlane");
+                model.geom(id).feature(mw.getID("Base Plane (Pre Rrotation)")).label("Base Plane (Pre Rrotation)");
+                model.geom(id).feature(mw.getID("Base Plane (Pre Rrotation)")).set("contributeto", mw.getID("BASE PLANE (PRE ROTATION)"));
+                model.geom(id).feature(mw.getID("Base Plane (Pre Rrotation)")).set("quickplane", "yz");
+                model.geom(id).feature(mw.getID("Base Plane (Pre Rrotation)")).set("unite", true);
+
+                model.geom(id).create(mw.nextID("if","If Recess"), "If");
+                model.geom(id).feature(mw.getID("If Recess")).label("If Recess");
+                model.geom(id).feature(mw.getID("If Recess")).set("condition", "Recess>0");
+
+                model.geom(id).create(mw.nextID("wp","Rotated Plane for Recess"), "WorkPlane");
+                model.geom(id).feature(mw.getID("Rotated Plane for Recess")).label("Rotated Plane for Recess");
+                model.geom(id).feature(mw.getID("Rotated Plane for Recess")).set("contributeto", mw.getID("PLANE FOR RECESS"));
+                model.geom(id).feature(mw.getID("Rotated Plane for Recess")).set("planetype", "transformed");
+                model.geom(id).feature(mw.getID("Rotated Plane for Recess")).set("workplane", mw.getID("Rotated Plane for Recess"));
+                model.geom(id).feature(mw.getID("Rotated Plane for Recess")).set("transaxis", new int[]{0, 1, 0});
+                model.geom(id).feature(mw.getID("Rotated Plane for Recess")).set("transrot", "Rotation_angle");
+                model.geom(id).feature(mw.getID("Rotated Plane for Recess")).set("unite", true);
+                model.geom(id).feature(mw.getID("Rotated Plane for Recess")).geom().selection().create(mw.nextID("csel","CONTACT OUTLINE SHAPE"), "CumulativeSelection"); // TODO: how do we handle sections within a selection?
+                model.geom(id).feature(mw.getID("Rotated Plane for Recess")).geom().selection(mw.getID("CONTACT OUTLINE SHAPE")).label("CONTACT OUTLINE SHAPE");
+                model.geom(id).feature(mw.getID("Rotated Plane for Recess")).geom().create(mw.nextID("if","If Contact Surface is Circle"), "If");                                // TODO: how do we handle sections within a selection?
+                model.geom(id).feature(mw.getID("Rotated Plane for Recess")).geom().feature(mw.getID("If Contact Surface is Circle")).label("If Contact Surface is Circle");
+                model.geom(id).feature(mw.getID("Rotated Plane for Recess")).geom().feature(mw.getID("If Contact Surface is Circle")).set("condition", "Round_def_ITC==1");
+                model.geom(id).feature(mw.getID("Rotated Plane for Recess")).geom().create(mw.nextID("e","Contact Outline"), "Ellipse");                            // TODO: how do we handle sections within a selection?
+                model.geom(id).feature(mw.getID("Rotated Plane for Recess")).geom().feature(mw.getID("Contact Outline")).label("Contact Outline");
+                model.geom(id).feature(mw.getID("Rotated Plane for Recess")).geom().feature(mw.getID("Contact Outline")).set("contributeto", mw.getID("CONTACT OUTLINE SHAPE"));
+                model.geom(id).feature(mw.getID("Rotated Plane for Recess")).geom().feature(mw.getID("Contact Outline")).set("pos", new String[]{"0", "Center"});
+                model.geom(id).feature(mw.getID("Rotated Plane for Recess")).geom().feature(mw.getID("Contact Outline"))
                         .set("semiaxes", new String[]{"A_ellipse_contact", "Diam_contact/2"});
-                model.geom(id).feature("wp2").geom().create("elseif1", "ElseIf");
-                model.geom(id).feature("wp2").geom().feature("elseif1").label("Else If Contact Outline is Circle");
-                model.geom(id).feature("wp2").geom().feature("elseif1").set("condition", "Round_def_ITC==2");
-                model.geom(id).feature("wp2").geom().create("e2", "Ellipse");
-                model.geom(id).feature("wp2").geom().feature("e2").label("Contact Outline 1");
-                model.geom(id).feature("wp2").geom().feature("e2").set("contributeto", "csel1");
-                model.geom(id).feature("wp2").geom().feature("e2").set("pos", new String[]{"0", "Center"});
-                model.geom(id).feature("wp2").geom().feature("e2")
+                model.geom(id).feature(mw.getID("Rotated Plane for Recess")).geom().create(mw.nextID("elseif","Else If Contact Outline is Circle"), "ElseIf");
+                model.geom(id).feature(mw.getID("Rotated Plane for Recess")).geom().feature(mw.getID("Else If Contact Outline is Circle")).label("Else If Contact Outline is Circle");
+                model.geom(id).feature(mw.getID("Rotated Plane for Recess")).geom().feature(mw.getID("Else If Contact Outline is Circle")).set("condition", "Round_def_ITC==2");
+                model.geom(id).feature(mw.getID("Rotated Plane for Recess")).geom().create(mw.nextID("e","Contact Outline 1"), "Ellipse");
+                model.geom(id).feature(mw.getID("Rotated Plane for Recess")).geom().feature(mw.getID("Contact Outline 1")).label("Contact Outline 1");
+                model.geom(id).feature(mw.getID("Rotated Plane for Recess")).geom().feature(mw.getID("Contact Outline 1")).set("contributeto", "csel1");
+                model.geom(id).feature(mw.getID("Rotated Plane for Recess")).geom().feature(mw.getID("Contact Outline 1")).set("pos", new String[]{"0", "Center"});
+                model.geom(id).feature(mw.getID("Rotated Plane for Recess")).geom().feature(mw.getID("Contact Outline 1"))
                         .set("semiaxes", new String[]{"Diam_contact/2", "Diam_contact/2"});
-                model.geom(id).feature("wp2").geom().create("endif1", "EndIf");
-                model.geom(id).create("ext1", "Extrude");
-                model.geom(id).feature("ext1").label("Make Pre Cut Recess Domains");
-                model.geom(id).feature("ext1").set("contributeto", "csel4");
-                model.geom(id).feature("ext1").setIndex("distance", "R_in+Recess+Overshoot", 0);
-                model.geom(id).feature("ext1").selection("input").named("csel3");
-                model.geom(id).create("cyl1", "Cylinder");
-                model.geom(id).feature("cyl1").label("Recess Cut In");
-                model.geom(id).feature("cyl1").set("contributeto", "csel5");
-                model.geom(id).feature("cyl1").set("pos", new String[]{"0", "0", "Center-L/2"});
-                model.geom(id).feature("cyl1").set("r", "R_in");
-                model.geom(id).feature("cyl1").set("h", "L");
-                model.geom(id).create("cyl2", "Cylinder");
-                model.geom(id).feature("cyl2").label("Recess Cut Out");
-                model.geom(id).feature("cyl2").set("contributeto", "csel6");
-                model.geom(id).feature("cyl2").set("pos", new String[]{"0", "0", "Center-L/2"});
-                model.geom(id).feature("cyl2").set("r", "R_in+Recess");
-                model.geom(id).feature("cyl2").set("h", "L");
-                model.geom(id).create("dif1", "Difference");
-                model.geom(id).feature("dif1").label("Execute Recess Cut In");
-                model.geom(id).feature("dif1").set("contributeto", "csel7");
-                model.geom(id).feature("dif1").selection("input").named("csel4");
-                model.geom(id).feature("dif1").selection("input2").named("csel5");
-                model.geom(id).create("pard1", "PartitionDomains");
-                model.geom(id).feature("pard1").set("contributeto", "csel7");
-                model.geom(id).feature("pard1").set("partitionwith", "objects");
-                model.geom(id).feature("pard1").set("keepobject", false);
-                model.geom(id).feature("pard1").selection("domain").named("csel4");
-                model.geom(id).feature("pard1").selection("object").named("csel6");
-                model.geom(id).create("ballsel1", "BallSelection");
-                model.geom(id).feature("ballsel1").label("Select Overshoot");
-                model.geom(id).feature("ballsel1").set("posx", "(R_in+Recess+Overshoot/2)*cos(Rotation_angle)");
-                model.geom(id).feature("ballsel1").set("posy", "(R_in+Recess+Overshoot/2)*sin(Rotation_angle)");
-                model.geom(id).feature("ballsel1").set("posz", "Center");
-                model.geom(id).feature("ballsel1").set("r", 1);
-                model.geom(id).feature("ballsel1").set("contributeto", "csel8");
-                model.geom(id).create("del1", "Delete");
-                model.geom(id).feature("del1").label("Delete Recess Overshoot");
-                model.geom(id).feature("del1").selection("input").init(3);
-                model.geom(id).feature("del1").selection("input").named("csel8");
-                model.geom(id).create("endif1", "EndIf");
-                model.geom(id).create("wp3", "WorkPlane");
-                model.geom(id).feature("wp3").label("Rotated Plane for Contact");
-                model.geom(id).feature("wp3").set("contributeto", "csel9");
-                model.geom(id).feature("wp3").set("planetype", "transformed");
-                model.geom(id).feature("wp3").set("workplane", "wp1");
-                model.geom(id).feature("wp3").set("transaxis", new int[]{0, 1, 0});
-                model.geom(id).feature("wp3").set("transrot", "Rotation_angle");
-                model.geom(id).feature("wp3").set("unite", true);
-                model.geom(id).feature("wp3").geom().selection().create("csel1", "CumulativeSelection");
-                model.geom(id).feature("wp3").geom().selection("csel1").label("CONTACT OUTLINE SHAPE");
-                model.geom(id).feature("wp3").geom().create("if1", "If");
-                model.geom(id).feature("wp3").geom().feature("if1").label("If Contact Surface is Circle");
-                model.geom(id).feature("wp3").geom().feature("if1").set("condition", "Round_def_ITC==1");
-                model.geom(id).feature("wp3").geom().create("e1", "Ellipse");
-                model.geom(id).feature("wp3").geom().feature("e1").label("Contact Outline");
-                model.geom(id).feature("wp3").geom().feature("e1").set("contributeto", "csel1");
-                model.geom(id).feature("wp3").geom().feature("e1").set("pos", new String[]{"0", "Center"});
-                model.geom(id).feature("wp3").geom().feature("e1")
+                model.geom(id).feature(mw.getID("Rotated Plane for Recess")).geom().create(mw.nextID("endif"), "EndIf");
+
+                model.geom(id).create(mw.nextID("ext","Make Pre Cut Recess Domains"), "Extrude");
+                model.geom(id).feature(mw.getID("Make Pre Cut Recess Domains")).label("Make Pre Cut Recess Domains");
+                model.geom(id).feature(mw.getID("Make Pre Cut Recess Domains")).set("contributeto", mw.getID("PRE CUT RECESS"));
+                model.geom(id).feature(mw.getID("Make Pre Cut Recess Domains")).setIndex("distance", "R_in+Recess+Overshoot", 0);
+                model.geom(id).feature(mw.getID("Make Pre Cut Recess Domains")).selection("input").named(mw.getID("PLANE FOR RECESS"));
+
+                model.geom(id).create(mw.nextID("cyl","Recess Cut In"), "Cylinder");
+                model.geom(id).feature(mw.getID("Recess Cut In")).label("Recess Cut In");
+                model.geom(id).feature(mw.getID("Recess Cut In")).set("contributeto", mw.getID("RECESS CUTTER IN"));
+                model.geom(id).feature(mw.getID("Recess Cut In")).set("pos", new String[]{"0", "0", "Center-L/2"});
+                model.geom(id).feature(mw.getID("Recess Cut In")).set("r", "R_in");
+                model.geom(id).feature(mw.getID("Recess Cut In")).set("h", "L");
+
+                model.geom(id).create(mw.nextID("cyl","Recess Cut Out"), "Cylinder");
+                model.geom(id).feature(mw.getID("Recess Cut Out")).label("Recess Cut Out");
+                model.geom(id).feature(mw.getID("Recess Cut Out")).set("contributeto", mw.getID("RECESS CUTTER OUT"));
+                model.geom(id).feature(mw.getID("Recess Cut Out")).set("pos", new String[]{"0", "0", "Center-L/2"});
+                model.geom(id).feature(mw.getID("Recess Cut Out")).set("r", "R_in+Recess");
+                model.geom(id).feature(mw.getID("Recess Cut Out")).set("h", "L");
+
+                model.geom(id).create(mw.nextID("dif","Execute Recess Cut In"), "Difference");
+                model.geom(id).feature(mw.getID("Execute Recess Cut In")).label("Execute Recess Cut In");
+                model.geom(id).feature(mw.getID("Execute Recess Cut In")).set("contributeto", mw.getID("RECESS FINAL"));
+                model.geom(id).feature(mw.getID("Execute Recess Cut In")).selection("input").named(mw.getID("PRE CUT RECESS"));
+                model.geom(id).feature(mw.getID("Execute Recess Cut In")).selection("input2").named(mw.getID("RECESS CUTTER IN"));
+
+                model.geom(id).create(mw.nextID("pard", "Partition Outer Recess Domain"), "PartitionDomains");
+                model.geom(id).feature(mw.getID("Partition Outer Recess Domain")).label("Partition Outer Recess Domain");
+                model.geom(id).feature(mw.getID("Partition Outer Recess Domain")).set("contributeto", mw.getID("RECESS FINAL"));
+                model.geom(id).feature(mw.getID("Partition Outer Recess Domain")).set("partitionwith", "objects");
+                model.geom(id).feature(mw.getID("Partition Outer Recess Domain")).set("keepobject", false);
+                model.geom(id).feature(mw.getID("Partition Outer Recess Domain")).selection("domain").named(mw.getID("PRE CUT RECESS"));
+                model.geom(id).feature(mw.getID("Partition Outer Recess Domain")).selection("object").named(mw.getID("RECESS CUTTER OUT"));
+
+                model.geom(id).create(mw.nextID("ballsel","Select Overshoot"), "BallSelection");
+                model.geom(id).feature(mw.getID("Select Overshoot")).label("Select Overshoot");
+                model.geom(id).feature(mw.getID("Select Overshoot")).set("posx", "(R_in+Recess+Overshoot/2)*cos(Rotation_angle)");
+                model.geom(id).feature(mw.getID("Select Overshoot")).set("posy", "(R_in+Recess+Overshoot/2)*sin(Rotation_angle)");
+                model.geom(id).feature(mw.getID("Select Overshoot")).set("posz", "Center");
+                model.geom(id).feature(mw.getID("Select Overshoot")).set("r", 1);
+                model.geom(id).feature(mw.getID("Select Overshoot")).set("contributeto", mw.getID("RECESS OVERSHOOT"));
+
+                model.geom(id).create(mw.nextID("del","Delete Recess Overshoot"), "Delete");
+                model.geom(id).feature(mw.getID("Delete Recess Overshoot")).label("Delete Recess Overshoot");
+                model.geom(id).feature(mw.getID("Delete Recess Overshoot")).selection("input").init(3);                                         // TODO: not sure what this means, look closer in GUI to see if it is clear there
+                model.geom(id).feature(mw.getID("Delete Recess Overshoot")).selection("input").named(mw.getID("RECESS OVERSHOOT"));
+
+                model.geom(id).create(mw.nextID("endif"), "EndIf");
+
+                model.geom(id).create(mw.nextID("wp","Rotated Plane for Contact"), "WorkPlane");
+                model.geom(id).feature(mw.getID("Rotated Plane for Contact")).label("Rotated Plane for Contact");
+                model.geom(id).feature(mw.getID("Rotated Plane for Contact")).set("contributeto", mw.getID("PLANE FOR CONTACT"));
+                model.geom(id).feature(mw.getID("Rotated Plane for Contact")).set("planetype", "transformed");
+                model.geom(id).feature(mw.getID("Rotated Plane for Contact")).set("workplane", mw.getID("Base Plane (Pre Rrotation)"));
+                model.geom(id).feature(mw.getID("Rotated Plane for Contact")).set("transaxis", new int[]{0, 1, 0});
+                model.geom(id).feature(mw.getID("Rotated Plane for Contact")).set("transrot", "Rotation_angle");
+                model.geom(id).feature(mw.getID("Rotated Plane for Contact")).set("unite", true);
+                model.geom(id).feature(mw.getID("Rotated Plane for Contact")).geom().selection().create("csel1", "CumulativeSelection");
+                model.geom(id).feature(mw.getID("Rotated Plane for Contact")).geom().selection("csel1").label("CONTACT OUTLINE SHAPE");     // TODO: how do we handle sections within a selection?
+                model.geom(id).feature(mw.getID("Rotated Plane for Contact")).geom().create("if1", "If");                               // TODO: how do we handle sections within a selection?
+                model.geom(id).feature(mw.getID("Rotated Plane for Contact")).geom().feature("if1").label("If Contact Surface is Circle");  // TODO: how do we handle sections within a selection?
+                model.geom(id).feature(mw.getID("Rotated Plane for Contact")).geom().feature("if1").set("condition", "Round_def_ITC==1");   // TODO: how do we handle sections within a selection?
+                model.geom(id).feature(mw.getID("Rotated Plane for Contact")).geom().create("e1", "Ellipse");                           // TODO: how do we handle sections within a selection?
+                model.geom(id).feature(mw.getID("Rotated Plane for Contact")).geom().feature("e1").label("Contact Outline");                // TODO: how do we handle sections within a selection?
+                model.geom(id).feature(mw.getID("Rotated Plane for Contact")).geom().feature("e1").set("contributeto", "csel1");            // TODO: how do we handle sections within a selection?
+                model.geom(id).feature(mw.getID("Rotated Plane for Contact")).geom().feature("e1").set("pos", new String[]{"0", "Center"}); // TODO: how do we handle sections within a selection?
+                model.geom(id).feature(mw.getID("Rotated Plane for Contact")).geom().feature("e1")                                          // TODO: how do we handle sections within a selection?
                         .set("semiaxes", new String[]{"A_ellipse_contact", "Diam_contact/2"});
-                model.geom(id).feature("wp3").geom().create("elseif1", "ElseIf");
-                model.geom(id).feature("wp3").geom().feature("elseif1").label("Else If Contact Outline is Circle");
-                model.geom(id).feature("wp3").geom().feature("elseif1").set("condition", "Round_def_ITC==2");
-                model.geom(id).feature("wp3").geom().create("e2", "Ellipse");
-                model.geom(id).feature("wp3").geom().feature("e2").label("Contact Outline 1");
-                model.geom(id).feature("wp3").geom().feature("e2").set("contributeto", "csel1");
-                model.geom(id).feature("wp3").geom().feature("e2").set("pos", new String[]{"0", "Center"});
-                model.geom(id).feature("wp3").geom().feature("e2")
+                model.geom(id).feature(mw.getID("Rotated Plane for Contact")).geom().create("elseif1", "ElseIf");                       // TODO: how do we handle sections within a selection?
+                model.geom(id).feature(mw.getID("Rotated Plane for Contact")).geom().feature("elseif1").label("Else If Contact Outline is Circle"); // TODO: how do we handle sections within a selection?
+                model.geom(id).feature(mw.getID("Rotated Plane for Contact")).geom().feature("elseif1").set("condition", "Round_def_ITC==2"); // TODO: how do we handle sections within a selection?
+                model.geom(id).feature(mw.getID("Rotated Plane for Contact")).geom().create("e2", "Ellipse");                             // TODO: how do we handle sections within a selection?
+                model.geom(id).feature(mw.getID("Rotated Plane for Contact")).geom().feature("e2").label("Contact Outline 1");                // TODO: how do we handle sections within a selection?
+                model.geom(id).feature(mw.getID("Rotated Plane for Contact")).geom().feature("e2").set("contributeto", "csel1");              // TODO: how do we handle sections within a selection?
+                model.geom(id).feature(mw.getID("Rotated Plane for Contact")).geom().feature("e2").set("pos", new String[]{"0", "Center"});   // TODO: how do we handle sections within a selection?
+                model.geom(id).feature(mw.getID("Rotated Plane for Contact")).geom().feature("e2")                                            // TODO: how do we handle sections within a selection?
                         .set("semiaxes", new String[]{"Diam_contact/2", "Diam_contact/2"});
-                model.geom(id).feature("wp3").geom().create("endif1", "EndIf");
-                model.geom(id).create("ext2", "Extrude");
-                model.geom(id).feature("ext2").label("Make Pre Cut Contact Domains");
-                model.geom(id).feature("ext2").set("contributeto", "csel10");
-                model.geom(id).feature("ext2").setIndex("distance", "R_in+Recess+Contact_depth+Overshoot", 0);
-                model.geom(id).feature("ext2").selection("input").named("csel9");
-                model.geom(id).create("cyl3", "Cylinder");
-                model.geom(id).feature("cyl3").label("Contact Cut In");
-                model.geom(id).feature("cyl3").set("contributeto", "csel11");
-                model.geom(id).feature("cyl3").set("pos", new String[]{"0", "0", "Center-L/2"});
-                model.geom(id).feature("cyl3").set("r", "R_in+Recess");
-                model.geom(id).feature("cyl3").set("h", "L");
-                model.geom(id).create("cyl4", "Cylinder");
-                model.geom(id).feature("cyl4").label("Contact Cut Out");
-                model.geom(id).feature("cyl4").set("contributeto", "csel12");
-                model.geom(id).feature("cyl4").set("pos", new String[]{"0", "0", "Center-L/2"});
-                model.geom(id).feature("cyl4").set("r", "R_in+Recess+Contact_depth");
-                model.geom(id).feature("cyl4").set("h", "L");
-                model.geom(id).create("dif2", "Difference");
-                model.geom(id).feature("dif2").label("Execute Contact Cut In");
-                model.geom(id).feature("dif2").set("contributeto", "csel13");
-                model.geom(id).feature("dif2").selection("input").named("csel10");
-                model.geom(id).feature("dif2").selection("input2").named("csel11");
-                model.geom(id).create("pard2", "PartitionDomains");
-                model.geom(id).feature("pard2").set("contributeto", "csel13");
-                model.geom(id).feature("pard2").set("partitionwith", "objects");
-                model.geom(id).feature("pard2").set("keepobject", false);
-                model.geom(id).feature("pard2").selection("domain").named("csel10");
-                model.geom(id).feature("pard2").selection("object").named("csel12");
-                model.geom(id).create("ballsel2", "BallSelection");
-                model.geom(id).feature("ballsel2").label("Select Overshoot 1");
-                model.geom(id).feature("ballsel2")
+                model.geom(id).feature(mw.getID("Rotated Plane for Contact")).geom().create("endif1", "EndIf");                           // TODO: how do we handle sections within a selection?
+
+                model.geom(id).create(mw.nextID("ext","Make Pre Cut Contact Domains"), "Extrude");
+                model.geom(id).feature(mw.getID("Make Pre Cut Contact Domains")).label("Make Pre Cut Contact Domains");
+                model.geom(id).feature(mw.getID("Make Pre Cut Contact Domains")).set("contributeto", mw.getID("PRE CUT CONTACT"));
+                model.geom(id).feature(mw.getID("Make Pre Cut Contact Domains")).setIndex("distance", "R_in+Recess+Contact_depth+Overshoot", 0);
+                model.geom(id).feature(mw.getID("Make Pre Cut Contact Domains")).selection("input").named(mw.getID("PLANE FOR CONTACT"));
+
+                model.geom(id).create(mw.nextID("cyl","Contact Cut In"), "Cylinder");
+                model.geom(id).feature(mw.getID("Contact Cut In")).label("Contact Cut In");
+                model.geom(id).feature(mw.getID("Contact Cut In")).set("contributeto", mw.getID("CONTACT CUTTER IN"));
+                model.geom(id).feature(mw.getID("Contact Cut In")).set("pos", new String[]{"0", "0", "Center-L/2"});
+                model.geom(id).feature(mw.getID("Contact Cut In")).set("r", "R_in+Recess");
+                model.geom(id).feature(mw.getID("Contact Cut In")).set("h", "L");
+
+                model.geom(id).create(mw.nextID("cyl","Contact Cut Out"), "Cylinder");
+                model.geom(id).feature(mw.getID("Contact Cut Out")).label("Contact Cut Out");
+                model.geom(id).feature(mw.getID("Contact Cut Out")).set("contributeto", mw.getID("CONTACT CUTTER OUT"));
+                model.geom(id).feature(mw.getID("Contact Cut Out")).set("pos", new String[]{"0", "0", "Center-L/2"});
+                model.geom(id).feature(mw.getID("Contact Cut Out")).set("r", "R_in+Recess+Contact_depth");
+                model.geom(id).feature(mw.getID("Contact Cut Out")).set("h", "L");
+
+                model.geom(id).create(mw.nextID("dif","Execute Contact Cut In"), "Difference");
+                model.geom(id).feature(mw.getID("Execute Contact Cut In")).label("Execute Contact Cut In");
+                model.geom(id).feature(mw.getID("Execute Contact Cut In")).set("contributeto", mw.getID("CONTACT FINAL"));
+                model.geom(id).feature(mw.getID("Execute Contact Cut In")).selection("input").named("PRE CUT CONTACT");
+                model.geom(id).feature(mw.getID("Execute Contact Cut In")).selection("input2").named(mw.getID("CONTACT CUTTER IN"));
+
+                model.geom(id).create(mw.nextID("pard","Partition Outer Contact Domain"), "PartitionDomains");
+                model.geom(id).feature(mw.getID("Partition Outer Contact Domain")).label("Partition Outer Contact Domain"); // added this
+                model.geom(id).feature(mw.getID("Partition Outer Contact Domain")).set("contributeto", mw.getID("CONTACT FINAL"));
+                model.geom(id).feature(mw.getID("Partition Outer Contact Domain")).set("partitionwith", "objects");
+                model.geom(id).feature(mw.getID("Partition Outer Contact Domain")).set("keepobject", false);
+                model.geom(id).feature(mw.getID("Partition Outer Contact Domain")).selection("domain").named(mw.getID("PRE CUT CONTACT"));
+                model.geom(id).feature(mw.getID("Partition Outer Contact Domain")).selection("object").named(mw.getID("CONTACT CUTTER OUT"));
+
+                model.geom(id).create(mw.nextID("ballsel", "Select Overshoot 1"), "BallSelection");
+                model.geom(id).feature(mw.getID("Select Overshoot 1")).label("Select Overshoot 1");
+                model.geom(id).feature(mw.getID("Select Overshoot 1"))
                         .set("posx", "(R_in+Recess+Contact_depth+Overshoot/2)*cos(Rotation_angle)");
-                model.geom(id).feature("ballsel2")
+                model.geom(id).feature(mw.getID("Select Overshoot 1"))
                         .set("posy", "(R_in+Recess+Contact_depth+Overshoot/2)*sin(Rotation_angle)");
-                model.geom(id).feature("ballsel2").set("posz", "Center");
-                model.geom(id).feature("ballsel2").set("r", 1);
-                model.geom(id).feature("ballsel2").set("contributeto", "csel8");
-                model.geom(id).create("del2", "Delete");
-                model.geom(id).feature("del2").label("Delete Recess Overshoot 1");
-                model.geom(id).feature("del2").selection("input").init(3);
-                model.geom(id).feature("del2").selection("input").named("csel8");
-                model.geom(id).create("pt1", "Point");
-                model.geom(id).feature("pt1").label("Src");
-                model.geom(id).feature("pt1").set("contributeto", "csel14");
-                model.geom(id).feature("pt1")
+                model.geom(id).feature(mw.getID("Select Overshoot 1")).set("posz", "Center");
+                model.geom(id).feature(mw.getID("Select Overshoot 1")).set("r", 1);
+                model.geom(id).feature(mw.getID("Select Overshoot 1")).set("contributeto", mw.getID("RECESS OVERSHOOT"));
+
+                model.geom(id).create(mw.nextID("del","Delete Recess Overshoot 1"), "Delete");
+                model.geom(id).feature(mw.getID("Delete Recess Overshoot 1")).label("Delete Recess Overshoot 1");
+                model.geom(id).feature(mw.getID("Delete Recess Overshoot 1")).selection("input").init(3);
+                model.geom(id).feature(mw.getID("Delete Recess Overshoot 1")).selection("input").named(mw.getID("RECESS OVERSHOOT"));
+
+                model.geom(id).create(mw.nextID("pt","Src"), "Point");
+                model.geom(id).feature(mw.getID("Src")).label("Src");
+                model.geom(id).feature(mw.getID("Src")).set("contributeto", mw.getID("SRC"));
+                model.geom(id).feature(mw.getID("Src"))
                         .set("p", new String[]{"(R_in+Recess+Contact_depth/2)*cos(Rotation_angle)", "(R_in+Recess+Contact_depth/2)*sin(Rotation_angle)", "Center"});
                 model.geom(id).run();
                 break;
