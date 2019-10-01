@@ -31,8 +31,8 @@ public class ModelWrapper2 {
     private HashMap<String, String> identifierPseudonyms = new HashMap<>();
 
     // managing parts within COMSOL
-    private HashMap<String, String> partInstances = new HashMap<>();
     private HashMap<String, String> partPrimitives = new HashMap<>();
+    private HashMap<String, String> partInstances = new HashMap<>();
 
     // directory structure
     private String root;
@@ -189,7 +189,6 @@ public class ModelWrapper2 {
                     (String) itemObject.get("description")
             );
         }
-
 
         return true;
     }

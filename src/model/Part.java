@@ -6,14 +6,14 @@ import org.eclipse.e4.ui.css.swt.properties.custom.CSSPropertyUnselectedTabsSWTH
 import java.util.HashMap;
 
 class Part {
-    public static boolean createPartPrimitive(String id, String psuedonym, Model model) {
+    public static boolean createPartPrimitive(String id, String pseudonym, Model model) {
 
-        return createPartPrimitive(id, psuedonym, model, null);
+        return createPartPrimitive(id, pseudonym, model, null);
     }
 
-    public static boolean createPartInstance(String id, String psuedonym, Model model,
+    public static boolean createPartInstance(String id, String pseudonym, Model model,
                                              HashMap<String, String> partPrimitives) {
-        return createPartInstance(id, psuedonym, model, partPrimitives, null);
+        return createPartInstance(id, pseudonym, model, partPrimitives, null);
     }
 
     /**
@@ -897,7 +897,7 @@ class Part {
                 model.geom(id).run();
                 break;
             default:
-                throw new IllegalStateException("Unexpected value: " + psuedonym);
+                throw new IllegalStateException("Unexpected value: " + pseudonym);
         }
         return true;
     }
@@ -905,20 +905,20 @@ class Part {
     /**
      *
      * @param id
-     * @param psuedonym
+     * @param pseudonym
      * @param model
      * @param partPrimitives
      * @param data
      * @return
      */
-    public static boolean createPartInstance(String id, String psuedonym, Model model,
+    public static boolean createPartInstance(String id, String pseudonym, Model model,
                                              HashMap<String, String> partPrimitives, HashMap<String, Object> data) {
 
         model.component().create("comp1", true);
         model.component("comp1").geom().create("geom1", 3);
         model.component("comp1").mesh().create("mesh1");
 
-        switch (psuedonym) {
+        switch (pseudonym) {
             case "TubeCuff_Primitive":
                 break;
             case "RibbonContact_Primitive":
