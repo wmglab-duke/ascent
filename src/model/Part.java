@@ -5,14 +5,14 @@ import com.comsol.model.Model;
 import java.util.HashMap;
 
 class Part {
-    public static boolean createPartPrimitive(String id, String pseudonym, Model model) {
+    public static boolean createPartPrimitive(String id, String pseudonym, ModelWrapper2 mw) {
 
-        return createPartPrimitive(id, pseudonym, model, null);
+        return createPartPrimitive(id, pseudonym, mw, null);
     }
 
-    public static boolean createPartInstance(String id, String pseudonym, Model model,
+    public static boolean createPartInstance(String id, String pseudonym, ModelWrapper2 mw,
                                              HashMap<String, String> partPrimitives) {
-        return createPartInstance(id, pseudonym, model, partPrimitives, null);
+        return createPartInstance(id, pseudonym, mw, partPrimitives, null);
     }
 
     /**
@@ -270,7 +270,7 @@ class Part {
 
                 model.geom(id).create(mw.nextID("wp","Recess Cross Section 1"), "WorkPlane");
                 model.geom(id).feature(mw.getID("Recess Cross Section 1")).label("Recess Cross Section 1");
-                model.geom(id).feature(mw.getID("Recess Cross Section 1")).set("contributeto", mw.getID(("RECESS CROSS SECTION"));
+                model.geom(id).feature(mw.getID("Recess Cross Section 1")).set("contributeto", mw.getID("RECESS CROSS SECTION"));
                 model.geom(id).feature(mw.getID("Recess Cross Section 1")).set("quickplane", "xz");
                 model.geom(id).feature(mw.getID("Recess Cross Section 1")).set("unite", true);
 //                model.geom(id).feature(mw.getID("Recess Cross Section 1")).geom().selection().create("csel1", "CumulativeSelection"); // TODO: how do we handle sections within a selection?
@@ -319,7 +319,7 @@ class Part {
                 model.geom(id).create(mw.nextID("wp","Contact Cross Section"), "WorkPlane");
                 model.geom(id).feature(mw.getID("Contact Cross Section")).label("Contact Cross Section");
                 model.geom(id).feature(mw.getID("Contact Cross Section")).set("contributeto", mw.getID("CONTACT CROSS SECTION"));
-                model.geom(id).feature(mw.getID("Contact Cross Section").set("quickplane", "zx");
+                model.geom(id).feature(mw.getID("Contact Cross Section")).set("quickplane", "zx");
                 model.geom(id).feature(mw.getID("Contact Cross Section")).set("unite", true);
                 model.geom(id).feature(mw.getID("Contact Cross Section")).geom().selection().create(mw.getID("CONTACT CROSS SECTION"), "CumulativeSelection");
                 model.geom(id).feature(mw.getID("Contact Cross Section")).geom().selection(mw.getID("CONTACT CROSS SECTION")).label("CONTACT CROSS SECTION");
@@ -955,7 +955,7 @@ class Part {
                 model.geom(id).create(mw.nextID("par","Remove Inner Recess Excess"), "Partition");
                 model.geom(id).feature(mw.getID("Remove Inner Recess Excess")).label("Remove Inner Recess Excess");
                 model.geom(id).feature(mw.getID("Remove Inner Recess Excess")).set("contributeto", mw.getID("FINAL RECESS"));
-                model.geom(id).feature(mw.getID("Remove Inner Recess Excess")).selection("input").named(mw.getID(("RECESS PRE CUTS"));
+                model.geom(id).feature(mw.getID("Remove Inner Recess Excess")).selection("input").named(mw.getID("RECESS PRE CUTS"));
                 model.geom(id).feature(mw.getID("Remove Inner Recess Excess")).selection("tool").named(mw.getID("INNER RECESS CUTTER"));
 
                 model.geom(id).create(mw.nextID("ballsel","sel inner excess 1"), "BallSelection");
