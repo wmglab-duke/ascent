@@ -179,7 +179,7 @@ cd ..
             os.system('""{}\\javac" -classpath "..\\lib\\json-20190722.jar";"{}\\plugins\\*" model\\*.java"'.format(jdk_path,
                                                                                                                   comsol_path))
             os.system('""{}\\java\\win64\\jre\\bin\\java" '
-                      '-copy .;$(echo "{}\\plugins\\*.jar" | tr \' \' \':\');..\\lib\\json-20190722.jar "model\\{}"'.format(comsol_path,
+                      '-copy .;$(echo "{}\\plugins\\*" );..\\lib\\json-20190722.jar "model\\{}"'.format(comsol_path,
                                                                                                                  comsol_path,
                                                                                                                  core_name))
             os.chdir('..')
