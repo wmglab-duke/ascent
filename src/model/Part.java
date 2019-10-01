@@ -930,8 +930,7 @@ class Part {
      *
      * @param id
      * @param pseudonym
-     * @param model
-     * @param partPrimitives
+     * @param mw
      * @param data
      * @return
      */
