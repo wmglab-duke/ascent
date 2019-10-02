@@ -57,7 +57,7 @@ class Part {
      *
      * @param id
      * @param pseudonym
-     * @param model
+     * @param mw
      * @param data
      * @return
      */
@@ -326,7 +326,7 @@ class Part {
 
                 model.geom(id).create(mw.nextID("rev","Make Recess"), "Revolve");
                 model.geom(id).feature(mw.getID("Make Recess")).label("Make Recess");
-                model.geom(id).feature(mw.getID("Make Recess")).set("contributeto", wm.getID("RECESS FINAL"));
+                model.geom(id).feature(mw.getID("Make Recess")).set("contributeto", mw.getID("RECESS FINAL"));
                 model.geom(id).feature(mw.getID("Make Recess")).set("angle1", "Rot_def");
                 model.geom(id).feature(mw.getID("Make Recess")).set("angle2", "Rot_def+Theta_contact");
                 model.geom(id).feature(mw.getID("Make Recess")).selection("input").named(mw.getID("RECESS CROSS SECTION"));
