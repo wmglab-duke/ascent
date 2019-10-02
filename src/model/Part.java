@@ -5,6 +5,43 @@ import com.comsol.model.Model;
 import java.util.HashMap;
 
 class Part {
+
+    private static void examples(ModelWrapper2 mw) {
+
+        Model model = mw.getModel();
+
+        // assume this is passed in (i.e. "id" in method below)
+        String partID = "pi1";
+
+        //  id's and pseudonyms
+        String wpPseudo = "MY_WORKPLANE";
+        String wpID = mw.nextID("wp", wpPseudo);
+
+        String swePseudo = "MY_SWEEP"; // I ~think~ it's a sweep?
+        String sweID = mw.nextID("swe", swePseudo);
+
+        String cselPseudo = "MY_CSEL";
+        String cselID = mw.nextID("csel", cselPseudo);
+
+        // create those items
+        model.geom(partID).create(wpID, "WorkPlane");
+        model.geom(partID).create(sweID, "Sweep");
+        model.geom(partID).selection().create(cselID, "CumulativeSelection");
+
+        // one mechanic, but not sure if this is how it actually works
+        // assuming this is first wp1_csel, should have the name "wp1_csel1"
+        model.geom(partID).feature(sweID).selection("face").named(mw.nextID(wpID + "_csel"));
+
+        // other possible mechanic: that name is just referring to already existing objects
+        model.geom(partID).feature(sweID).selection("face").named(wpID + "_" + cselID);
+
+        // also, other new thing: just instantiate a new CMI if need  to restart indexing for part
+        IdentifierManager thisPartIM = new IdentifierManager();
+        String restartedIDwp = thisPartIM.nextID("wp");
+
+
+    }
+
     public static boolean createPartPrimitive(String id, String pseudonym, Model model) {
 
         return createPartPrimitive(id, pseudonym, model, null);
@@ -25,6 +62,8 @@ class Part {
      */
     public static boolean createPartPrimitive(String id, String pseudonym, ModelWrapper2 mw,
                                               HashMap<String, Object> data) {
+
+
         Model model = mw.getModel();
 
         model.geom().create(id, "Part", 3);
