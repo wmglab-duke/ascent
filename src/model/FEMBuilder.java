@@ -4,7 +4,9 @@ package model;
  */
 
 
+import com.comsol.model.GeomFeature;
 import com.comsol.model.Model;
+import com.comsol.model.PropFeature;
 import com.comsol.model.util.ModelUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -28,7 +30,6 @@ public class FEMBuilder {
 
         System.out.println("HELLO");
         ModelWrapper mw = definePartInstanceParameters();
-        System.out.println("HELLO AGAIN");
         defineDefaultPrimitiveInputParameters((Model) mw.getModel(), mw.getParts(), mw.getCIM());
         definePrimitiveSelections((Model) mw.getModel(), mw.getParts());
         definePrimitivePartOperations((Model) mw.getModel(), mw.getParts());
@@ -44,10 +45,7 @@ public class FEMBuilder {
     }
 
     private static ModelWrapper definePartInstanceParameters() {
-        System.out.println("\tINSIDE");
         Model model = ModelUtil.create("Model");
-        System.out.println("hi");
-
         String fileSep = System.getProperty("file.separator");
         String currentDirectory = System.getProperty("user.dir");
         currentDirectory = String.join("/", Arrays.copyOfRange(currentDirectory.split("/"), 0, currentDirectory.split("/").length - 1));
@@ -61,7 +59,7 @@ public class FEMBuilder {
             cuffFiles.add(cuffs.getString(i));
         }
 
-        ComsolIdentifierManager cim = new ComsolIdentifierManager();
+        IdentifierManager cim = new IdentifierManager();
         Set<String> parts = new HashSet<String>();
 
         for (String cuffFile: cuffFiles) {
@@ -1066,10 +1064,18 @@ public class FEMBuilder {
         model.component("comp1").geom().create("geom1", 3);
         model.component("comp1").mesh().create("mesh1");
 
-        //// ENTEROMEDICS
+        //// ENTEROMEDICS - MOVE THIS TO PART
         // CUFF
-        model.component("comp1").geom("geom1").create("pi8", "PartInstance");
-        model.component("comp1").geom("geom1").feature("pi8").label("Enteromedics Cuff");
+        GeomFeature piEM = model.component("comp1").geom("geom1").create("pi8", "PartInstance");
+        piEM.label("Enteromedics Cuff");
+        // loop through JSON?
+        String[] requiredParamsEM = {"N_holes"};
+        GeomFeature part8 = model.component("comp1").geom("geom1").feature("pi8");
+        for (String requiredParam: requiredParamsEM) {
+            part8.setEntry("inputexpr", requiredParam, requiredParam + "_EM");
+        }
+
+
         model.component("comp1").geom("geom1").feature("pi8").setEntry("inputexpr", "N_holes", "N_holes_EM");
         model.component("comp1").geom("geom1").feature("pi8").setEntry("inputexpr", "Theta", "Theta_EM");
         model.component("comp1").geom("geom1").feature("pi8").setEntry("inputexpr", "Center", "Center_EM");
