@@ -29,10 +29,10 @@ public class FEMBuilder {
 //        }
 
         System.out.println("HELLO");
-        ModelWrapper mw = definePartInstanceParameters();
-        defineDefaultPrimitiveInputParameters((Model) mw.getModel(), mw.getParts(), mw.getCIM());
-        definePrimitiveSelections((Model) mw.getModel(), mw.getParts());
-        definePrimitivePartOperations((Model) mw.getModel(), mw.getParts());
+        ModelWrapper2 mw = definePartInstanceParameters();
+//        defineDefaultPrimitiveInputParameters((Model) mw.getModel(), mw.getParts(), mw.getCIM());
+//        definePrimitiveSelections((Model) mw.getModel(), mw.getParts());
+//        definePrimitivePartOperations((Model) mw.getModel(), mw.getParts());
         makePartInstances((Model) mw.getModel());
         defineMaterialLinks((Model) mw.getModel());
         defineCurrentSources((Model) mw.getModel());
@@ -44,7 +44,7 @@ public class FEMBuilder {
         //System.exit(0);
     }
 
-    private static ModelWrapper definePartInstanceParameters() {
+    private static ModelWrapper2 definePartInstanceParameters() {
         Model model = ModelUtil.create("Model");
         String fileSep = System.getProperty("file.separator");
         String currentDirectory = System.getProperty("user.dir");
@@ -83,7 +83,7 @@ public class FEMBuilder {
                 );
             }
         }
-        return new ModelWrapper(model, "", parts, cim);
+        return new ModelWrapper2(model, "");
     }
 
     private static void defineDefaultPrimitiveInputParameters(Model model, Set parts, ComsolIdentifierManager cim) {

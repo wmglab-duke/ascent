@@ -111,7 +111,7 @@ public class ModelWrapper2 {
      * @param destination full path to save to
      * @return success indicator
      */
-    public boolean saveModel(String destination) {
+    public boolean save(String destination) {
         try {
             this.model.save(destination);
             return true;
@@ -125,8 +125,8 @@ public class ModelWrapper2 {
      * Convenience method for saving to relative directory (this.dest) wrt the project directory (root)
      * @return success indicator
      */
-    public boolean saveModel() {
-        if (this.dest != null) return saveModel(String.join("/", new String[]{this.root, this.dest}));
+    public boolean save() {
+        if (this.dest != null) return save(String.join("/", new String[]{this.root, this.dest}));
         else {
             System.out.println("Save directory not initialized");
             return false;
@@ -162,9 +162,12 @@ public class ModelWrapper2 {
         return true;
     }
 
-    public boolean extractPotentials(String json_path) {
+    public double[][][] extractPotentials(String json_path) {
 
-        JSONObject json_data = new JSONReader(json_path).getData();
+        // TODO: Simulation folders; sorting through configuration files VIA PYTHON
+        // TODO: FORCE THE USER TO STAGE/COMMIT CHANGES BEFORE RUNNING; add Git Commit ID/number to config file
+
+        JSONObject json_data = new JSONReader(String.join("/", new String[]{root, json_path})).getData();
 
         double[][] coordinates = new double[3][5];
         String id = this.next("interp");
@@ -177,6 +180,16 @@ public class ModelWrapper2 {
 
         System.out.println("data.toString() = " + Arrays.deepToString(data));
 
-        return true;
+        return data;
+    }
+
+    public IdentifierManager getIm(String partPrimitiveLabel) {
+        return new IdentifierManager();
+    }
+
+    public static void main(String[] args) {
+        ModelWrapper2 mw = new ModelWrapper2(null, "/Users/jakecariello/Box/Documents/Pipeline/access");
+        double[][][] data = mw.extractPotentials("");
+
     }
 }
