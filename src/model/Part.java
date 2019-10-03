@@ -76,6 +76,7 @@ class Part {
 
         switch (pseudonym) {
             case "TubeCuff_Primitive":
+
                 IdentifierManager im = new IdentifierManager();
 
                 ModelParam mp = model.geom(id).inputParam();
@@ -461,7 +462,7 @@ class Part {
                 model.geom(id).feature(mw.get("Rotated Plane for Recess")).geom().selection(mw.get("CONTACT OUTLINE SHAPE")).label("CONTACT OUTLINE SHAPE");
                 model.geom(id).feature(mw.get("Rotated Plane for Recess")).geom().create(mw.next("if","If Contact Surface is Circle"), "If");                                // TODO: this is wrong how do we handle sections within a selection?
                 model.geom(id).feature(mw.get("Rotated Plane for Recess")).geom().feature(mw.get("If Contact Surface is Circle")).label("If Contact Surface is Circle");
-                model.geom(id).feature(mw.get("Rotated Plane for Recess")).geom().feature(mw.get("If Contact Surface is Circle")).set("condition", "Round_def_ITC==1");
+                model.geom(id).feature(mw.get("Rotated Plane for Recess")).geom().feature(mw.get("If Contact Surface is Circle")).set("condition", "Round_def==1");
                 model.geom(id).feature(mw.get("Rotated Plane for Recess")).geom().create(mw.next("e","Contact Outline"), "Ellipse");                            // TODO: how do we handle sections within a selection?
                 model.geom(id).feature(mw.get("Rotated Plane for Recess")).geom().feature(mw.get("Contact Outline")).label("Contact Outline");
                 model.geom(id).feature(mw.get("Rotated Plane for Recess")).geom().feature(mw.get("Contact Outline")).set("contributeto", mw.get("CONTACT OUTLINE SHAPE"));
@@ -470,7 +471,7 @@ class Part {
                         .set("semiaxes", new String[]{"A_ellipse_contact", "Diam_contact/2"});
                 model.geom(id).feature(mw.get("Rotated Plane for Recess")).geom().create(mw.next("elseif","Else If Contact Outline is Circle"), "ElseIf");
                 model.geom(id).feature(mw.get("Rotated Plane for Recess")).geom().feature(mw.get("Else If Contact Outline is Circle")).label("Else If Contact Outline is Circle");
-                model.geom(id).feature(mw.get("Rotated Plane for Recess")).geom().feature(mw.get("Else If Contact Outline is Circle")).set("condition", "Round_def_ITC==2");
+                model.geom(id).feature(mw.get("Rotated Plane for Recess")).geom().feature(mw.get("Else If Contact Outline is Circle")).set("condition", "Round_def==2");
                 model.geom(id).feature(mw.get("Rotated Plane for Recess")).geom().create(mw.next("e","Contact Outline 1"), "Ellipse");
                 model.geom(id).feature(mw.get("Rotated Plane for Recess")).geom().feature(mw.get("Contact Outline 1")).label("Contact Outline 1");
                 model.geom(id).feature(mw.get("Rotated Plane for Recess")).geom().feature(mw.get("Contact Outline 1")).set("contributeto", "csel1"); // TODO: this is wrong --- probably lots of errors in this region
@@ -545,7 +546,7 @@ class Part {
                 model.geom(id).feature(mw.get("Rotated Plane for Contact")).geom().selection("csel1").label("CONTACT OUTLINE SHAPE");     // TODO: how do we handle sections within a selection?
                 model.geom(id).feature(mw.get("Rotated Plane for Contact")).geom().create("if1", "If");                               // TODO: how do we handle sections within a selection?
                 model.geom(id).feature(mw.get("Rotated Plane for Contact")).geom().feature("if1").label("If Contact Surface is Circle");  // TODO: how do we handle sections within a selection?
-                model.geom(id).feature(mw.get("Rotated Plane for Contact")).geom().feature("if1").set("condition", "Round_def_ITC==1");   // TODO: how do we handle sections within a selection?
+                model.geom(id).feature(mw.get("Rotated Plane for Contact")).geom().feature("if1").set("condition", "Round_def==1");   // TODO: how do we handle sections within a selection?
                 model.geom(id).feature(mw.get("Rotated Plane for Contact")).geom().create("e1", "Ellipse");                           // TODO: how do we handle sections within a selection?
                 model.geom(id).feature(mw.get("Rotated Plane for Contact")).geom().feature("e1").label("Contact Outline");                // TODO: how do we handle sections within a selection?
                 model.geom(id).feature(mw.get("Rotated Plane for Contact")).geom().feature("e1").set("contributeto", "csel1");            // TODO: how do we handle sections within a selection?
@@ -554,7 +555,7 @@ class Part {
                         .set("semiaxes", new String[]{"A_ellipse_contact", "Diam_contact/2"});
                 model.geom(id).feature(mw.get("Rotated Plane for Contact")).geom().create("elseif1", "ElseIf");                       // TODO: how do we handle sections within a selection?
                 model.geom(id).feature(mw.get("Rotated Plane for Contact")).geom().feature("elseif1").label("Else If Contact Outline is Circle"); // TODO: how do we handle sections within a selection?
-                model.geom(id).feature(mw.get("Rotated Plane for Contact")).geom().feature("elseif1").set("condition", "Round_def_ITC==2"); // TODO: how do we handle sections within a selection?
+                model.geom(id).feature(mw.get("Rotated Plane for Contact")).geom().feature("elseif1").set("condition", "Round_def==2"); // TODO: how do we handle sections within a selection?
                 model.geom(id).feature(mw.get("Rotated Plane for Contact")).geom().create("e2", "Ellipse");                             // TODO: how do we handle sections within a selection?
                 model.geom(id).feature(mw.get("Rotated Plane for Contact")).geom().feature("e2").label("Contact Outline 1");                // TODO: how do we handle sections within a selection?
                 model.geom(id).feature(mw.get("Rotated Plane for Contact")).geom().feature("e2").set("contributeto", "csel1");              // TODO: how do we handle sections within a selection?
@@ -1081,6 +1082,8 @@ class Part {
 
         // or retrieve it later (likely in another method where the first variable isn't easily accessible
         model.geom(id).selection(mw.get("mySuperCoolCsel")).label("INNER CUFF SURFACE");
+
+        IdentifierManager im = mw.getIm(pseudonym);
 
         switch (pseudonym) {
             case "TubeCuff_Primitive":
