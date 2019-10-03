@@ -94,16 +94,16 @@ public class ModelWrapper2 {
 
     // OTHER METHODS
 
-    public String nextID(String key) {
-        return this.im.nextID(key);
+    public String next(String key) {
+        return this.im.next(key);
     }
 
-    public String nextID(String key, String pseudonym) {
-        return this.im.nextID(key, pseudonym);
+    public String next(String key, String pseudonym) {
+        return this.im.next(key, pseudonym);
     }
 
-    public String getID(String psuedonym) {
-        return this.im.getID(psuedonym);
+    public String get(String psuedonym) {
+        return this.im.get(psuedonym);
     }
 
     /**
@@ -147,7 +147,7 @@ public class ModelWrapper2 {
                 new String[]{this.root,".templates", name + ".json"})).getData();
 
         // get the id for the next "par" (i.e. parameters section)
-        String id = this.nextID("par", name);
+        String id = this.next("par", name);
 
         // loop through all parameters in file, and set in parameters
         for (Object item : (JSONArray) data.get("params")) {
@@ -167,7 +167,7 @@ public class ModelWrapper2 {
         JSONObject json_data = new JSONReader(json_path).getData();
 
         double[][] coordinates = new double[3][5];
-        String id = this.nextID("interp");
+        String id = this.next("interp");
 
         model.result().numerical().create(id, "Interp");
         model.result().numerical(id).set("expr", "V");

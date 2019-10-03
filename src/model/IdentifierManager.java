@@ -12,7 +12,7 @@ public class IdentifierManager {
      * @param key type of id to get the next index for
      * @return a string in the form of [id][N], where id is the key passed in and N is the next available index
      */
-    public String nextID(String key) {
+    public String next(String key) {
         // default next index to 1 (assume first call of key)
         int nextIndex = 1;
         // if the key already exists, set
@@ -28,9 +28,9 @@ public class IdentifierManager {
      * @param pseudonym the name to give that id
      * @return string in form [id][N] (id is key passed in, N is next available index); null (pseudonym already used)
      */
-    public String nextID(String key, String pseudonym) {
+    public String next(String key, String pseudonym) {
         // get next key using base method
-        String id = this.nextID(key);
+        String id = this.next(key);
         // put into map as key, value pair
         if (! identifierPseudonyms.containsKey(pseudonym)) {
             identifierPseudonyms.put(pseudonym, id);
@@ -44,7 +44,7 @@ public class IdentifierManager {
      * @param psuedonym previously assigned using nextID(String, String)
      * @return associated id (from the HashMap)
      */
-    public String getID(String psuedonym) {
+    public String get(String psuedonym) {
         if (identifierPseudonyms.containsKey(psuedonym)) return identifierPseudonyms.get(psuedonym);
         return null;
     }

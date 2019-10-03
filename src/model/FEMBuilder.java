@@ -28,7 +28,6 @@ public class FEMBuilder {
 
         System.out.println("HELLO");
         ModelWrapper mw = definePartInstanceParameters();
-        System.out.println("HELLO AGAIN");
         defineDefaultPrimitiveInputParameters((Model) mw.getModel(), mw.getParts(), mw.getCIM());
         definePrimitiveSelections((Model) mw.getModel(), mw.getParts());
         definePrimitivePartOperations((Model) mw.getModel(), mw.getParts());
@@ -44,10 +43,7 @@ public class FEMBuilder {
     }
 
     private static ModelWrapper definePartInstanceParameters() {
-        System.out.println("\tINSIDE");
         Model model = ModelUtil.create("Model");
-        System.out.println("hi");
-
         String fileSep = System.getProperty("file.separator");
         String currentDirectory = System.getProperty("user.dir");
         currentDirectory = String.join("/", Arrays.copyOfRange(currentDirectory.split("/"), 0, currentDirectory.split("/").length - 1));
@@ -61,7 +57,7 @@ public class FEMBuilder {
             cuffFiles.add(cuffs.getString(i));
         }
 
-        ComsolIdentifierManager cim = new ComsolIdentifierManager();
+        IdentifierManager cim = new IdentifierManager();
         Set<String> parts = new HashSet<String>();
 
         for (String cuffFile: cuffFiles) {
