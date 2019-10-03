@@ -1,6 +1,9 @@
 package model;
 
+import com.comsol.model.GeomFeature;
+import com.comsol.model.GeomSequence;
 import com.comsol.model.Model;
+import com.comsol.model.ModelParam;
 
 import java.util.HashMap;
 
@@ -61,7 +64,7 @@ class Part {
      * @param data
      * @return
      */
-    public static boolean createPartPrimitive(String id, String pseudonym, ModelWrapper2 mw,
+    public static IdentifierManager createPartPrimitive(String id, String pseudonym, ModelWrapper2 mw,
                                               HashMap<String, Object> data) {
 
 
@@ -73,20 +76,26 @@ class Part {
 
         switch (pseudonym) {
             case "TubeCuff_Primitive":
-                model.geom(id).inputParam().set("N_holes", "1");
-                model.geom(id).inputParam().set("Theta", "340 [deg]");
-                model.geom(id).inputParam().set("Center", "10 [mm]");
-                model.geom(id).inputParam().set("R_in", "1 [mm]");
-                model.geom(id).inputParam().set("R_out", "2 [mm]");
-                model.geom(id).inputParam().set("L", "5 [mm]");
-                model.geom(id).inputParam().set("Rot_def", "0 [deg]");
-                model.geom(id).inputParam().set("D_hole", "0.3 [mm]");
-                model.geom(id).inputParam().set("Buffer_hole", "0.1 [mm]");
-                model.geom(id).inputParam().set("L_holecenter_cuffseam", "0.3 [mm]");
-                model.geom(id).inputParam().set("Pitch_holecenter_holecenter", "0 [mm]");
+                IdentifierManager im = new IdentifierManager();
 
-                model.geom(id).selection().create(mw.next("csel", "INNER CUFF SURFACE"), "CumulativeSelection");
-                model.geom(id).selection(mw.get("INNER CUFF SURFACE")).label("INNER CUFF SURFACE");
+                ModelParam mp = model.geom(id).inputParam();
+                mp.set("N_holes", "1");
+                mp.set("Theta", "340 [deg]");
+                mp.set("Center", "10 [mm]");
+                mp.set("R_in", "1 [mm]");
+                mp.set("R_out", "2 [mm]");
+                mp.set("L", "5 [mm]");
+                mp.set("Rot_def", "0 [deg]");
+                mp.set("D_hole", "0.3 [mm]");
+                mp.set("Buffer_hole", "0.1 [mm]");
+                mp.set("L_holecenter_cuffseam", "0.3 [mm]");
+                mp.set("Pitch_holecenter_holecenter", "0 [mm]");
+
+                String icsLabel = "INNER CUFF SURFACE";
+                model.geom(id).selection().create(im.next("csel", icsLabel), "CumulativeSelection")
+                        .label(icsLabel);
+
+
                 model.geom(id).selection().create(mw.next("csel","OUTER CUFF SURFACE"), "CumulativeSelection");
                 model.geom(id).selection(mw.get("OUTER CUFF SURFACE")).label("OUTER CUFF SURFACE");
                 model.geom(id).selection().create(mw.next("csel","CUFF FINAL"), "CumulativeSelection");
@@ -108,10 +117,12 @@ class Part {
                 model.geom(id).selection().create(mw.next("csel","HOLES"), "CumulativeSelection");
                 model.geom(id).selection(mw.get("HOLES")).label("HOLES");
 
-                model.geom(id).create(mw.next("cyl","Make Inner Cuff Surface"), "Cylinder");
-                model.geom(id).feature(mw.get("Make Inner Cuff Surface")).label("Make Inner Cuff Surface");
-                model.geom(id).feature(mw.get("Make Inner Cuff Surface")).set("contributeto", mw.get("INNER CUFF SURFACE"));
-                model.geom(id).feature(mw.get("Make Inner Cuff Surface")).set("pos", new String[]{"0", "0", "Center-(L/2)"});
+                String micsLabel = "Make Inner Cuff Surface";
+
+                GeomFeature inner_surf = model.geom(id).create(im.next("cyl",micsLabel), "Cylinder");
+                inner_surf.label(micsLabel);
+                inner_surf.set("contributeto", mw.get("INNER CUFF SURFACE"));
+                inner_surf.set("pos", new String[]{"0", "0", "Center-(L/2)"});
                 model.geom(id).feature(mw.get("Make Inner Cuff Surface")).set("r", "R_in");
                 model.geom(id).feature(mw.get("Make Inner Cuff Surface")).set("h", "L");
 
@@ -264,6 +275,7 @@ class Part {
 
                 model.geom(id).create(mw.next("endif"), "EndIf");
                 model.geom(id).run();
+                return im;
                 break;
             case "RibbonContact_Primitive":
                 model.geom(id).inputParam().set("Thk_elec", "0.1 [mm]");
@@ -313,8 +325,9 @@ class Part {
                 model.geom(id).feature(mw.get("Recess Cross Section 1")).set("contributeto", mw.get("RECESS CROSS SECTION"));
                 model.geom(id).feature(mw.get("Recess Cross Section 1")).set("quickplane", "xz");
                 model.geom(id).feature(mw.get("Recess Cross Section 1")).set("unite", true);
-                model.geom(id).feature(mw.get("Recess Cross Section 1")).geom().selection().create("csel1", "CumulativeSelection"); // TODO: how do we handle sections within a selection?
-                model.geom(id).feature(mw.get("Recess Cross Section 1")).geom().selection("csel1").label("Cumulative Selection 1");
+                mw.next(mw.get("Recess Cross Section 1") + "_" + "csel", "MY_NESTED_CSEL");
+                model.geom(id).feature(mw.get("Recess Cross Section 1")).geom().selection().create(mw.get("MY_NESTED_CSEL").split("_")[1], "CumulativeSelection"); // TODO: how do we handle sections within a selection?
+                model.geom(id).feature(mw.get("Recess Cross Section 1")).geom().selection("csel1").label("Cumulative Selection 1"); // wp1_csel
                 model.geom(id).feature(mw.get("Recess Cross Section 1")).geom().selection().create("csel2", "CumulativeSelection");
                 model.geom(id).feature(mw.get("Recess Cross Section 1")).geom().selection("csel2").label("RECESS CROSS SECTION");
                 model.geom(id).feature(mw.get("Recess Cross Section 1")).geom().create("r1", "Rectangle");
@@ -515,8 +528,13 @@ class Part {
 
                 model.geom(id).create(mw.next("endif"), "EndIf");
 
-                model.geom(id).create(mw.next("wp","Rotated Plane for Contact"), "WorkPlane");
-                model.geom(id).feature(mw.get("Rotated Plane for Contact")).label("Rotated Plane for Contact");
+                String gfKey = mw.next("wp");
+
+                GeomFeature gf = model.geom(id).feature(gfKey);
+
+                model.geom(id).create(gfKey, "WorkPlane");
+                gf.label("Rotated Plane for Contact");
+
                 model.geom(id).feature(mw.get("Rotated Plane for Contact")).set("contributeto", mw.get("PLANE FOR CONTACT"));
                 model.geom(id).feature(mw.get("Rotated Plane for Contact")).set("planetype", "transformed");
                 model.geom(id).feature(mw.get("Rotated Plane for Contact")).set("workplane", mw.get("Base Plane (Pre Rrotation)"));
@@ -544,6 +562,7 @@ class Part {
                 model.geom(id).feature(mw.get("Rotated Plane for Contact")).geom().feature("e2")                                            // TODO: how do we handle sections within a selection?
                         .set("semiaxes", new String[]{"Diam_contact/2", "Diam_contact/2"});
                 model.geom(id).feature(mw.get("Rotated Plane for Contact")).geom().create("endif1", "EndIf");                           // TODO: how do we handle sections within a selection?
+
 
                 model.geom(id).create(mw.next("ext","Make Pre Cut Contact Domains"), "Extrude");
                 model.geom(id).feature(mw.get("Make Pre Cut Contact Domains")).label("Make Pre Cut Contact Domains");
@@ -1036,7 +1055,7 @@ class Part {
             default:
                 throw new IllegalStateException("Unexpected value: " + pseudonym);
         }
-        return true;
+        return null;
     }
 
     /**
