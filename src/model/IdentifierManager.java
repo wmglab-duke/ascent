@@ -48,4 +48,12 @@ public class IdentifierManager {
         if (identifierPseudonyms.containsKey(psuedonym)) return identifierPseudonyms.get(psuedonym);
         return null;
     }
+
+    /**
+     * @param pseudonym the pseudonym to check
+     * @return true if the pseudonym has already been used
+     */
+    public boolean hasPseudonym(String pseudonym) {
+        return this.identifierPseudonyms.containsKey(pseudonym);
+    }
 }
