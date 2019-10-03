@@ -176,10 +176,10 @@ cd ..
             subprocess.Popen(['{}\\bin\\win64\\comsolmphserver.exe'.format(comsol_path)], close_fds=True)
 
             os.chdir('src')
-            os.system('""{}\\javac" -classpath "..\\lib\\json-20190722.jar";"{}\\plugins\\*" model\\*.java"'.format(jdk_path,
+            os.system('""{}\\javac" -cp "..\\lib\\json-20190722.jar";"{}\\plugins\\*" model\\*.java"'.format(jdk_path,
                                                                                                                   comsol_path))
             os.system('""{}\\java\\win64\\jre\\bin\\java" '
-                      '-copy .;$(echo "{}\\plugins\\*" );..\\lib\\json-20190722.jar "model\\{}"'.format(comsol_path,
+                      '-classpath .;$(echo "{}\\plugins\\*" );..\\lib\\json-20190722.jar "model\\{}"'.format(comsol_path,
                                                                                                                  comsol_path,
                                                                                                                  core_name))
             os.chdir('..')
