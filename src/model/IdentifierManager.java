@@ -50,6 +50,17 @@ public class IdentifierManager {
     }
 
     /**
+     * @return the amount of
+     */
+    public int count() {
+        int result = 0;
+        for (String key: this.identifierStates.keySet()) {
+            result += this.identifierStates.get(key);
+        }
+        return result;
+    }
+
+    /**
      * @param pseudonym the pseudonym to check
      * @return true if the pseudonym has already been used
      */

@@ -72,12 +72,12 @@ class Part {
         model.geom(id).label(pseudonym);
         model.geom(id).lengthUnit("\u00b5m");
 
+        // only used once per method, so ok to define outside the switch
+        IdentifierManager im = new IdentifierManager();
+        ModelParam mp = model.geom(id).inputParam();
+
         switch (pseudonym) {
             case "TubeCuff_Primitive":
-
-                IdentifierManager im = new IdentifierManager();
-
-                ModelParam mp = model.geom(id).inputParam();
                 mp.set("N_holes", "1");
                 mp.set("Theta", "340 [deg]");
                 mp.set("Center", "10 [mm]");
@@ -90,47 +90,55 @@ class Part {
                 mp.set("L_holecenter_cuffseam", "0.3 [mm]");
                 mp.set("Pitch_holecenter_holecenter", "0 [mm]");
 
-                String icsLabel = "INNER CUFF SURFACE";
-                model.geom(id).selection().create(im.next("csel", icsLabel), "CumulativeSelection")
-                        .label(icsLabel);
-                String ocsLabel = "OUTER CUFF SURFACE";
-                model.geom(id).selection().create(im.next("csel", ocsLabel), "CumulativeSelection")
-                        .label(ocsLabel);
-                String cfLabel = "CUFF FINAL";
-                model.geom(id).selection().create(im.next("csel", cfLabel), "CumulativeSelection")
-                        .label(cfLabel);
-                String cgphLabel = "CUFF wGAP PRE HOLES";
-                model.geom(id).selection().create(im.next("csel", cgphLabel), "CumulativeSelection")
-                        .label(cgphLabel);
-                String cpgLabel = "CUFF PRE GAP";
-                model.geom(id).selection().create(im.next("csel", cpgLabel), "CumulativeSelection")
-                        .label(cpgLabel);
-                String cpgphLabel = "CUFF PRE GAP PRE HOLES";
-                model.geom(id).selection().create(im.next("csel", cpgphLabel), "CumulativeSelection")
-                        .label(cpgphLabel);
-                String cgcsLabel = "CUFF GAP CROSS SECTION";
-                model.geom(id).selection().create(im.next("csel", cgcsLabel), "CumulativeSelection")
-                        .label(cgcsLabel);
-                String cgLabel = "CUFF GAP";
-                model.geom(id).selection().create(im.next("csel", cgLabel), "CumulativeSelection")
-                        .label(cgLabel);
-                String cphLabel = "CUFF PRE HOLES";
-                model.geom(id).selection().create(im.next("csel", cphLabel), "CumulativeSelection")
-                        .label(cphLabel);
-                String h1Label = "HOLE 1";
-                model.geom(id).selection().create(im.next("csel", h1Label), "CumulativeSelection")
-                        .label(h1Label);
-                String h2Label = "HOLE 2";
-                model.geom(id).selection().create(im.next("csel", h2Label), "CumulativeSelection")
-                        .label(h2Label);
-                String holesLabel = "HOLES";
-                model.geom(id).selection().create(im.next("csel", holesLabel), "CumulativeSelection")
-                        .label(holesLabel);
+
+
+//                String icsLabel = "INNER CUFF SURFACE";
+//                model.geom(id).selection().create(im.next("csel", icsLabel), "CumulativeSelection").label(icsLabel);
+//                String ocsLabel = "OUTER CUFF SURFACE";
+//                model.geom(id).selection().create(im.next("csel", ocsLabel), "CumulativeSelection").label(ocsLabel);
+//                String cfLabel = "CUFF FINAL";
+//                model.geom(id).selection().create(im.next("csel", cfLabel), "CumulativeSelection").label(cfLabel);
+//                String cgphLabel = "CUFF wGAP PRE HOLES";
+//                model.geom(id).selection().create(im.next("csel", cgphLabel), "CumulativeSelection").label(cgphLabel);
+//                String cpgLabel = "CUFF PRE GAP";
+//                model.geom(id).selection().create(im.next("csel", cpgLabel), "CumulativeSelection").label(cpgLabel);
+//                String cpgphLabel = "CUFF PRE GAP PRE HOLES";
+//                model.geom(id).selection().create(im.next("csel", cpgphLabel), "CumulativeSelection").label(cpgphLabel);
+//                String cgcsLabel = "CUFF GAP CROSS SECTION";
+//                model.geom(id).selection().create(im.next("csel", cgcsLabel), "CumulativeSelection").label(cgcsLabel);
+//                String cgLabel = "CUFF GAP";
+//                model.geom(id).selection().create(im.next("csel", cgLabel), "CumulativeSelection").label(cgLabel);
+//                String cphLabel = "CUFF PRE HOLES";
+//                model.geom(id).selection().create(im.next("csel", cphLabel), "CumulativeSelection").label(cphLabel);
+//                String h1Label = "HOLE 1";
+//                model.geom(id).selection().create(im.next("csel", h1Label), "CumulativeSelection").label(h1Label);
+//                String h2Label = "HOLE 2";
+//                model.geom(id).selection().create(im.next("csel", h2Label), "CumulativeSelection").label(h2Label);
+//                String holesLabel = "HOLES";
+//                model.geom(id).selection().create(im.next("csel", holesLabel), "CumulativeSelection").label(holesLabel);
+
+                String[] cselLabels = {
+                        "INNER CUFF SURFACE",
+                        "OUTER CUFF SURFACE", "CUFF FINAL",
+                        "CUFF wGAP PRE HOLES",
+                        "CUFF PRE GAP",
+                        "CUFF PRE GAP PRE HOLES",
+                        "CUFF GAP CROSS SECTION",
+                        "CUFF GAP",
+                        "CUFF PRE HOLES",
+                        "HOLE 1",
+                        "HOLE 2",
+                        "HOLES"
+                };
+                for (String cselLabel: cselLabels) {
+                    model.geom(id).selection().create(im.next("csel", cselLabel), "CumulativeSelection")
+                            .label(cselLabel);
+                }
 
                 String micsLabel = "Make Inner Cuff Surface";
                 GeomFeature inner_surf = model.geom(id).create(im.next("cyl",micsLabel), "Cylinder");
                 inner_surf.label(micsLabel);
-                inner_surf.set("contributeto", im.get(icsLabel));
+                inner_surf.set("contributeto", im.get(cselLabels[0]));
                 inner_surf.set("pos", new String[]{"0", "0", "Center-(L/2)"});
                 inner_surf.set("r", "R_in");
                 inner_surf.set("h", "L");
@@ -235,7 +243,7 @@ class Part {
                 dif_make_innercuff_hole.selection("input2").named(im.get("HOLES"));
 
                 String elifgahLabel = "If (Gap AND Holes)";
-                GeomFeature elif_gap_and_holes = model.geom(id).create(im.next("elseif",elifgahLabel), "ElseIf");s
+                GeomFeature elif_gap_and_holes = model.geom(id).create(im.next("elseif",elifgahLabel), "ElseIf");
                 elif_gap_and_holes.label(elifgahLabel);
                 elif_gap_and_holes.set("condition", "(Theta<360) && (N_holes>0)");
 
@@ -306,12 +314,9 @@ class Part {
                 endif.label(endifLabel);
 
                 model.geom(id).run();
-                return im;
                 break;
             case "RibbonContact_Primitive":
-                IdentifierManager im = new IdentifierManager();
 
-                ModelParam mp = model.geom(id).inputParam();
 
                 mp.set("Thk_elec", "0.1 [mm]");
                 mp.set("L_elec", "3 [mm]");
@@ -396,18 +401,16 @@ class Part {
                 rev_make_racess.set("angle2", "Rot_def+Theta_contact");
                 rev_make_racess.selection("input").named(im.get("RECESS CROSS SECTION"));
 
-                String endifLabel = "EndIf";
-                GeomFeature endif = model.geom(id).create(im.next("endif"), endifLabel);
-                endif.label(endifLabel);
+                endifLabel = "EndIf";
+                model.geom(id).create(im.next("endif"), endifLabel).label(endifLabel);
 
-                String srcLabel = "Src";
+                srcLabel = "Src";
                 GeomFeature src = model.geom(id).create(im.next("pt",srcLabel), "Point");
                 src.label(srcLabel);
                 src.set("contributeto", im.get("SRC"));
                 src.set("p", new String[]{"(R_in+Recess+Thk_elec/2)*cos(Rot_def+Theta_contact/2)", "(R_in+Recess+Thk_elec/2)*sin(Rot_def+Theta_contact/2)", "Center"});
 
                 model.geom(id).run();
-                return im;
                 break;
             case "WireContact_Primitive":
                 model.geom(id).inputParam().set("R_conductor", "r_conductor_P");
@@ -452,7 +455,6 @@ class Part {
                         .set("p", new String[]{"(R_in-R_conductor-Sep_conductor)*cos(Theta_conductor/2)", "(R_in-R_conductor-Sep_conductor)*sin(Theta_conductor/2)", "Center"});
 
                 model.geom(id).run();
-                return im;
                 break;
             case "CircleContact_Primitive":
                 model.geom(id).inputParam().set("Recess", "Recess_ITC");
@@ -675,7 +677,6 @@ class Part {
                 model.geom(id).feature(mw.get("Src"))
                         .set("p", new String[]{"(R_in+Recess+Contact_depth/2)*cos(Rotation_angle)", "(R_in+Recess+Contact_depth/2)*sin(Rotation_angle)", "Center"});
                 model.geom(id).run();
-                return im;
                 break;
             case "HelicalCuffnContact_Primitive":
                 model.geom("part5").inputParam().set("Center", "Center_LN");
@@ -852,7 +853,6 @@ class Part {
                 model.geom(id).feature(mw.get("SRC"))
                         .set("p", new String[]{"cos(2*pi*rev_cuff_LN*(1.25/2.5))*((thk_elec_LN/2)+r_cuff_in_LN)", "sin(2*pi*rev_cuff_LN*(1.25/2.5))*((thk_elec_LN/2)+r_cuff_in_LN)", "Center"});
                 model.geom(id).run();
-                return im;
                 break;
             case "RectangleContact_Primitive":
                 model.geom(id).inputParam().set("r_inner_contact", "r_cuff_in_Pitt+recess_Pitt");
@@ -1109,12 +1109,14 @@ class Part {
                 model.geom(id).feature(mw.get("src"))
                         .set("p", new String[]{"(r_cuff_in_Pitt+recess_Pitt+(thk_contact_Pitt/2))*cos(rotation_angle)", "(r_cuff_in_Pitt+recess_Pitt+(thk_contact_Pitt/2))*sin(rotation_angle)", "z_center"});
                 model.geom(id).run();
-                return im;
                 break;
             default:
                 throw new  IllegalArgumentException("No implementation for part primitive name: " + pseudonym);
         }
-        return null;
+
+        // if im was not edited for some reason, return null
+        if (im.count() == 0) return null;
+        return im;
     }
 
     /**
@@ -1152,7 +1154,7 @@ class Part {
         // or retrieve it later (likely in another method where the first variable isn't easily accessible
         model.geom(id).selection(mw.get("mySuperCoolCsel")).label("INNER CUFF SURFACE");
 
-        IdentifierManager im = mw.getIm(pseudonym);
+
 
         switch (pseudonym) {
             case "TubeCuff_Primitive":
@@ -1169,7 +1171,6 @@ class Part {
                 break;
             default:
                 throw new IllegalArgumentException("No implementation for part instance name: " + pseudonym);
-                break;
         }
 
         return true;
