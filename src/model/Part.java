@@ -1,10 +1,8 @@
 package model;
 
 import com.comsol.model.GeomFeature;
-import com.comsol.model.GeomSequence;
 import com.comsol.model.Model;
 import com.comsol.model.ModelParam;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.HashMap;
 
@@ -43,12 +41,11 @@ class Part {
         IdentifierManager thisPartIM = new IdentifierManager();
         String restartedIDwp = thisPartIM.next("wp");
 
-
     }
 
 
     public static IdentifierManager createPartPrimitive(String id, String pseudonym, ModelWrapper2 mw) throws IllegalArgumentException {
-        return createPartPrimitive(id, pseudonym, mw, null);
+        return Part.createPartPrimitive(id, pseudonym, mw, null);
     }
 
 //    public static boolean createPartInstance(String id, String pseudonym, ModelWrapper2 mw,
