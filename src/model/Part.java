@@ -380,10 +380,11 @@ class Part {
 
                 im.next(im.get("Recess Cross Section 1") + "_" + "csel", "MY_NESTED_CSEL");
                 wp_recess_cx1.geom().selection().create(im.get("MY_NESTED_CSEL").split("_")[1], "CumulativeSelection"); // TODO: how do we handle sections within a selection?
-
                 wp_recess_cx1.geom().selection("csel1").label("Cumulative Selection 1"); // wp1_csel
+
                 wp_recess_cx1.geom().selection().create("csel2", "CumulativeSelection");
                 wp_recess_cx1.geom().selection("csel2").label("RECESS CROSS SECTION");
+
                 wp_recess_cx1.geom().create("r1", "Rectangle");
                 wp_recess_cx1.geom().feature("r1").label("Recess Cross Section");
                 wp_recess_cx1.geom().feature("r1").set("contributeto", im.get("RECESS CROSS SECTION")); // TODO see above
@@ -406,7 +407,7 @@ class Part {
                 String srcLabel = "Src";
                 GeomFeature src = model.geom(id).create(im.next("pt",srcLabel), "Point");
                 src.label(srcLabel);
-                src.set("contributeto", im.get("SRC")); 
+                src.set("contributeto", im.get("SRC"));
                 src.set("p", new String[]{"(R_in+Recess+Thk_elec/2)*cos(Rot_def+Theta_contact/2)", "(R_in+Recess+Thk_elec/2)*sin(Rot_def+Theta_contact/2)", "Center"});
 
                 model.geom(id).run();
