@@ -721,7 +721,7 @@ class Part {
                 model.geom(id).run();
                 break;
             case "HelicalCuffnContact_Primitive":
-                model.geom("part5").inputParam().set("Center", "Center_LN");
+                model.geom(id).inputParam().set("Center", "Center_LN");
 
                 String[] cselLabels = {
                         "PC1",
