@@ -384,7 +384,7 @@ class Part {
                 wp_recess_cx1.geom().selection("csel1").label("Cumulative Selection 1"); // wp1_csel
 
                 wp_recess_cx1.geom().selection().create("csel2", "CumulativeSelection");
-                wp_recess_cx1.geom().selection("csel2").label("RECESS CROSS SECTION");
+                wp_recess_cx1.geom().selection("csel2").label("RECESS CROSS SECTION"); 
 
                 wp_recess_cx1.geom().create("r1", "Rectangle");
                 wp_recess_cx1.geom().feature("r1").label("Recess Cross Section");
