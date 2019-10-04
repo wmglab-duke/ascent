@@ -17,18 +17,12 @@ public class JSONReader {
     private JSONObject jsonObject;
 
     // idea: make this method throw `FileNotFoundException`?
-    public JSONReader(String filepath) {
-        try {
+    public JSONReader(String filepath) throws FileNotFoundException {
 //            String text = new String(Files.readAllBytes(Paths.get(filepath)));
 //            String text = new String(Files.readAllBytes(filepath), StandardCharsets.UTF_8);
 //            String text = StandardCharsets.UTF_8.decode(ByteBuffer.wrap(Files.readAllBytes(filepath)));
-            String text = new Scanner(new File(filepath)).useDelimiter("\\A").next();
-            jsonObject = new JSONObject(text);
-        } catch (FileNotFoundException e) {
-            System.out.println("failed to read JSON");
-            // tell user if fails (likely because wrong path or wrong file type)
-            e.printStackTrace();
-        }
+        String text = new Scanner(new File(filepath)).useDelimiter("\\A").next();
+        jsonObject = new JSONObject(text);
     }
 
     public JSONObject getData() {
@@ -38,12 +32,16 @@ public class JSONReader {
     // example usage for looping over parameters in a file from .templates (top level list)
     public static void main(String[] args) {
         // NOTE: "/" can be used on any OS in Java! HYPE!
-        JSONObject data = new JSONReader(".templates/CorTec.json").getData();
-        for (Object item: (JSONArray) data.get("data")) {
-            JSONObject itemObject = (JSONObject) item;
-            System.out.println("expression: " + itemObject.get("expression"));
-            System.out.println("name: " + itemObject.get("name"));
-            System.out.println("");
+        try {
+            JSONObject data = new JSONReader(".templates/CorTec.json").getData();
+            for (Object item: (JSONArray) data.get("data")) {
+                JSONObject itemObject = (JSONObject) item;
+                System.out.println("expression: " + itemObject.get("expression"));
+                System.out.println("name: " + itemObject.get("name"));
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
+
     }
 }
