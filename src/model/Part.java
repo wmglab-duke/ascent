@@ -3,8 +3,6 @@ package model;
 import com.comsol.model.GeomFeature;
 import com.comsol.model.Model;
 import com.comsol.model.ModelParam;
-import com.comsol.nativejni.geom.Geom;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.HashMap;
 
