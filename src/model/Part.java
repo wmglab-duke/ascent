@@ -345,62 +345,72 @@ class Part {
                 model.geom(id).selection().create(im.next("csel",rfLabel), "CumulativeSelection")
                         .label(rfLabel);
 
-                model.geom(id).create(mw.next("wp","Contact Cross Section"), "WorkPlane");
-                model.geom(id).feature(mw.get("Contact Cross Section")).label("Contact Cross Section");
-                model.geom(id).feature(mw.get("Contact Cross Section")).set("contributeto", mw.get("CONTACT CROSS SECTION"));
-                model.geom(id).feature(mw.get("Contact Cross Section")).set("quickplane", "xz");
-                model.geom(id).feature(mw.get("Contact Cross Section")).set("unite", true);
-                model.geom(id).feature(mw.get("Contact Cross Section")).geom().create("r1", "Rectangle"); //TODO could abstract away from r1
-                model.geom(id).feature(mw.get("Contact Cross Section")).geom().feature("r1").label("Contact Cross Section");
-                model.geom(id).feature(mw.get("Contact Cross Section")).geom().feature("r1")
+                String wpccxLabel = "Contact Cross Section";
+                GeomFeature wp_contact_cx = model.geom(id).create(im.next("wp",wpccxLabel), "WorkPlane");
+                wp_contact_cx.label(wpccxLabel);
+                wp_contact_cx.set("contributeto",im.get("CONTACT CROSS SECTION"));
+                wp_contact_cx.set("quickplane", "xz");
+                wp_contact_cx.set("unite", true);
+                wp_contact_cx.geom().create("r1", "Rectangle");
+                wp_contact_cx.geom().feature("r1").label("Contact Cross Section");
+                wp_contact_cx.geom().feature("r1")
                         .set("pos", new String[]{"R_in+Recess+Thk_elec/2", "Center"});
-                model.geom(id).feature(mw.get("Contact Cross Section")).geom().feature("r1").set("base", "center");
-                model.geom(id).feature(mw.get("Contact Cross Section")).geom().feature("r1").set("size", new String[]{"Thk_elec", "L_elec"});
+                wp_contact_cx.geom().feature("r1").set("base", "center");
+                wp_contact_cx.geom().feature("r1").set("size", new String[]{"Thk_elec", "L_elec"});
 
-                model.geom(id).create(mw.next("rev","Make Contact"), "Revolve");
-                model.geom(id).feature(mw.get("Make Contact")).label("Make Contact");
-                model.geom(id).feature(mw.get("Make Contact")).set("contributeto", mw.get("CONTACT FINAL"));
-                model.geom(id).feature(mw.get("Make Contact")).set("angle1", "Rot_def");
-                model.geom(id).feature(mw.get("Make Contact")).set("angle2", "Rot_def+Theta_contact");
-                model.geom(id).feature(mw.get("Make Contact")).selection("input").named(mw.get("CONTACT CROSS SECTION"));
+                String revmcLabel = "Make Contact";
+                GeomFeature rev_make_contact = model.geom(id).create(im.next("rev",revmcLabel), "Revolve");
+                rev_make_contact.label("Make Contact");
+                rev_make_contact.set("contributeto", im.get("CONTACT FINAL"));
+                rev_make_contact.set("angle1", "Rot_def");
+                rev_make_contact.set("angle2", "Rot_def+Theta_contact");
+                rev_make_contact.selection("input").named(im.get("CONTACT CROSS SECTION"));
 
-                model.geom(id).create(mw.next("if","IF RECESS"), "If");
-                model.geom(id).feature(mw.get("IF RECESS")).set("condition", "Recess>0");
-                model.geom(id).feature(mw.get("IF RECESS")).label("IF RECESS"); // added this line
+                String ifrecessLabel = "IF RECESS";
+                GeomFeature if_recess = model.geom(id).create(im.next("if",ifrecessLabel), "If");
+                if_recess.set("condition", "Recess>0");
+                if_recess.label(ifrecessLabel);
 
-                model.geom(id).create(mw.next("wp","Recess Cross Section 1"), "WorkPlane");
-                model.geom(id).feature(mw.get("Recess Cross Section 1")).label("Recess Cross Section 1");
-                model.geom(id).feature(mw.get("Recess Cross Section 1")).set("contributeto", mw.get("RECESS CROSS SECTION"));
-                model.geom(id).feature(mw.get("Recess Cross Section 1")).set("quickplane", "xz");
-                model.geom(id).feature(mw.get("Recess Cross Section 1")).set("unite", true);
-                mw.next(mw.get("Recess Cross Section 1") + "_" + "csel", "MY_NESTED_CSEL");
-                model.geom(id).feature(mw.get("Recess Cross Section 1")).geom().selection().create(mw.get("MY_NESTED_CSEL").split("_")[1], "CumulativeSelection"); // TODO: how do we handle sections within a selection?
-                model.geom(id).feature(mw.get("Recess Cross Section 1")).geom().selection("csel1").label("Cumulative Selection 1"); // wp1_csel
-                model.geom(id).feature(mw.get("Recess Cross Section 1")).geom().selection().create("csel2", "CumulativeSelection");
-                model.geom(id).feature(mw.get("Recess Cross Section 1")).geom().selection("csel2").label("RECESS CROSS SECTION");
-                model.geom(id).feature(mw.get("Recess Cross Section 1")).geom().create("r1", "Rectangle");
-                model.geom(id).feature(mw.get("Recess Cross Section 1")).geom().feature("r1").label("Recess Cross Section");
-                model.geom(id).feature(mw.get("Recess Cross Section 1")).geom().feature("r1").set("contributeto", mw.get("RECESS CROSS SECTION")); // TODO see above
-                model.geom(id).feature(mw.get("Recess Cross Section 1")).geom().feature("r1").set("pos", new String[]{"R_in+Recess/2", "Center"});
-                model.geom(id).feature(mw.get("Recess Cross Section 1")).geom().feature("r1").set("base", "center");
-                model.geom(id).feature(mw.get("Recess Cross Section 1")).geom().feature("r1").set("size", new String[]{"Recess", "L_elec"});
+                String wprcx1Label = "Recess Cross Section 1";
+                GeomFeature wp_recess_cx1 = model.geom(id).create(im.next("wp",wprcx1Label), "WorkPlane");
+                wp_recess_cx1.label(wprcx1Label);
+                wp_recess_cx1.set("contributeto", im.get("RECESS CROSS SECTION"));
+                wp_recess_cx1.set("quickplane", "xz");
+                wp_recess_cx1.set("unite", true);
 
-                model.geom(id).create(mw.next("rev","Make Recess"), "Revolve");
-                model.geom(id).feature(mw.get("Make Recess")).label("Make Recess");
-                model.geom(id).feature(mw.get("Make Recess")).set("contributeto", mw.get("RECESS FINAL"));
-                model.geom(id).feature(mw.get("Make Recess")).set("angle1", "Rot_def");
-                model.geom(id).feature(mw.get("Make Recess")).set("angle2", "Rot_def+Theta_contact");
-                model.geom(id).feature(mw.get("Make Recess")).selection("input").named(mw.get("RECESS CROSS SECTION"));
+                im.next(im.get("Recess Cross Section 1") + "_" + "csel", "MY_NESTED_CSEL");
+                wp_recess_cx1.geom().selection().create(im.get("MY_NESTED_CSEL").split("_")[1], "CumulativeSelection"); // TODO: how do we handle sections within a selection?
 
-                model.geom(id).create(mw.next("endif"), "EndIf"); // add label?
+                wp_recess_cx1.geom().selection("csel1").label("Cumulative Selection 1"); // wp1_csel
+                wp_recess_cx1.geom().selection().create("csel2", "CumulativeSelection");
+                wp_recess_cx1.geom().selection("csel2").label("RECESS CROSS SECTION");
+                wp_recess_cx1.geom().create("r1", "Rectangle");
+                wp_recess_cx1.geom().feature("r1").label("Recess Cross Section");
+                wp_recess_cx1.geom().feature("r1").set("contributeto", im.get("RECESS CROSS SECTION")); // TODO see above
+                wp_recess_cx1.geom().feature("r1").set("pos", new String[]{"R_in+Recess/2", "Center"});
+                wp_recess_cx1.geom().feature("r1").set("base", "center");
+                wp_recess_cx1.geom().feature("r1").set("size", new String[]{"Recess", "L_elec"});
 
-                model.geom(id).create(mw.next("pt","src"), "Point");
-                model.geom(id).feature(mw.get("src")).label("src");
-                model.geom(id).feature(mw.get("src")).set("contributeto", mw.get("SRC")); // IMPORTANT: this is conflict between csel3 and pt1, how can we take care of this? better names maybe? since hashmaps are case sensitive this is an option
-                model.geom(id).feature(mw.get("src"))
-                        .set("p", new String[]{"(R_in+Recess+Thk_elec/2)*cos(Rot_def+Theta_contact/2)", "(R_in+Recess+Thk_elec/2)*sin(Rot_def+Theta_contact/2)", "Center"});
+                String revmrLabel = "Make Recess";
+                GeomFeature rev_make_racess = model.geom(id).create(im.next("rev",revmrLabel), "Revolve");
+                rev_make_racess.label(revmrLabel);
+                rev_make_racess.set("contributeto", im.get("RECESS FINAL"));
+                rev_make_racess.set("angle1", "Rot_def");
+                rev_make_racess.set("angle2", "Rot_def+Theta_contact");
+                rev_make_racess.selection("input").named(im.get("RECESS CROSS SECTION"));
+
+                String endifLabel = "EndIf";
+                GeomFeature endif = model.geom(id).create(im.next("endif"), endifLabel);
+                endif.label(endifLabel);
+
+                String srcLabel = "Src";
+                GeomFeature src = model.geom(id).create(im.next("pt",srcLabel), "Point");
+                src.label(srcLabel);
+                src.set("contributeto", im.get("SRC")); 
+                src.set("p", new String[]{"(R_in+Recess+Thk_elec/2)*cos(Rot_def+Theta_contact/2)", "(R_in+Recess+Thk_elec/2)*sin(Rot_def+Theta_contact/2)", "Center"});
 
                 model.geom(id).run();
+                return im;
                 break;
             case "WireContact_Primitive":
                 model.geom(id).inputParam().set("R_conductor", "r_conductor_P");
@@ -445,6 +455,7 @@ class Part {
                         .set("p", new String[]{"(R_in-R_conductor-Sep_conductor)*cos(Theta_conductor/2)", "(R_in-R_conductor-Sep_conductor)*sin(Theta_conductor/2)", "Center"});
 
                 model.geom(id).run();
+                return im;
                 break;
             case "CircleContact_Primitive":
                 model.geom(id).inputParam().set("Recess", "Recess_ITC");
@@ -667,6 +678,7 @@ class Part {
                 model.geom(id).feature(mw.get("Src"))
                         .set("p", new String[]{"(R_in+Recess+Contact_depth/2)*cos(Rotation_angle)", "(R_in+Recess+Contact_depth/2)*sin(Rotation_angle)", "Center"});
                 model.geom(id).run();
+                return im;
                 break;
             case "HelicalCuffnContact_Primitive":
                 model.geom("part5").inputParam().set("Center", "Center_LN");
@@ -843,6 +855,7 @@ class Part {
                 model.geom(id).feature(mw.get("SRC"))
                         .set("p", new String[]{"cos(2*pi*rev_cuff_LN*(1.25/2.5))*((thk_elec_LN/2)+r_cuff_in_LN)", "sin(2*pi*rev_cuff_LN*(1.25/2.5))*((thk_elec_LN/2)+r_cuff_in_LN)", "Center"});
                 model.geom(id).run();
+                return im;
                 break;
             case "RectangleContact_Primitive":
                 model.geom(id).inputParam().set("r_inner_contact", "r_cuff_in_Pitt+recess_Pitt");
@@ -1099,6 +1112,7 @@ class Part {
                 model.geom(id).feature(mw.get("src"))
                         .set("p", new String[]{"(r_cuff_in_Pitt+recess_Pitt+(thk_contact_Pitt/2))*cos(rotation_angle)", "(r_cuff_in_Pitt+recess_Pitt+(thk_contact_Pitt/2))*sin(rotation_angle)", "z_center"});
                 model.geom(id).run();
+                return im;
                 break;
             default:
                 throw new  IllegalArgumentException("No implementation for part name: " + pseudonym);
