@@ -95,44 +95,55 @@ class Part {
                 String icsLabel = "INNER CUFF SURFACE";
                 model.geom(id).selection().create(im.next("csel", icsLabel), "CumulativeSelection")
                         .label(icsLabel);
-
-
-                model.geom(id).selection().create(mw.next("csel","OUTER CUFF SURFACE"), "CumulativeSelection");
-                model.geom(id).selection(mw.get("OUTER CUFF SURFACE")).label("OUTER CUFF SURFACE");
-                model.geom(id).selection().create(mw.next("csel","CUFF FINAL"), "CumulativeSelection");
-                model.geom(id).selection(mw.get("CUFF FINAL")).label("CUFF FINAL");
-                model.geom(id).selection().create(mw.next("csel","CUFF wGAP PRE HOLES"), "CumulativeSelection");
-                model.geom(id).selection(mw.get("CUFF wGAP PRE HOLES")).label("CUFF wGAP PRE HOLES");
-                model.geom(id).selection().create(mw.next("csel","CUFF PRE GAP"), "CumulativeSelection");
-                model.geom(id).selection(mw.get("CUFF PRE GAP")).label("CUFF PRE GAP");
-                model.geom(id).selection().create(mw.next("csel","CUFF PRE GAP PRE HOLES"), "CumulativeSelection");
-                model.geom(id).selection(mw.get("CUFF PRE GAP PRE HOLES")).label("CUFF PRE GAP PRE HOLES");
-                model.geom(id).selection().create(mw.next("csel","CUFF GAP CROSS SECTION"), "CumulativeSelection");
-                model.geom(id).selection(mw.get("CUFF GAP CROSS SECTION")).label("CUFF GAP CROSS SECTION");
-                model.geom(id).selection().create(mw.next("csel","CUFF GAP"), "CumulativeSelection");
-                model.geom(id).selection(mw.get("CUFF GAP")).label("CUFF GAP");
-                model.geom(id).selection().create(mw.next("csel","CUFF PRE HOLES"), "CumulativeSelection");
-                model.geom(id).selection(mw.get("CUFF PRE HOLES")).label("CUFF PRE HOLES");
-                model.geom(id).selection().create(mw.next("csel","HOLE 1"), "CumulativeSelection");
-                model.geom(id).selection(mw.get("HOLE 1")).label("HOLE 1");
-                model.geom(id).selection().create(mw.next("csel","HOLES"), "CumulativeSelection");
-                model.geom(id).selection(mw.get("HOLES")).label("HOLES");
+                String ocsLabel = "OUTER CUFF SURFACE";
+                model.geom(id).selection().create(im.next("csel", ocsLabel), "CumulativeSelection")
+                        .label(ocsLabel);
+                String cfLabel = "CUFF FINAL";
+                model.geom(id).selection().create(im.next("csel", cfLabel), "CumulativeSelection")
+                        .label(cfLabel);
+                String cgphLabel = "CUFF wGAP PRE HOLES";
+                model.geom(id).selection().create(im.next("csel", cgphLabel), "CumulativeSelection")
+                        .label(cgphLabel);
+                String cpgLabel = "CUFF PRE GAP";
+                model.geom(id).selection().create(im.next("csel", cpgLabel), "CumulativeSelection")
+                        .label(cpgLabel);
+                String cpgphLabel = "CUFF PRE GAP PRE HOLES";
+                model.geom(id).selection().create(im.next("csel", cpgphLabel), "CumulativeSelection")
+                        .label(cpgphLabel);
+                String cgcsLabel = "CUFF GAP CROSS SECTION";
+                model.geom(id).selection().create(im.next("csel", cgcsLabel), "CumulativeSelection")
+                        .label(cgcsLabel);
+                String cgLabel = "CUFF GAP";
+                model.geom(id).selection().create(im.next("csel", cgLabel), "CumulativeSelection")
+                        .label(cgLabel);
+                String cphLabel = "CUFF PRE HOLES";
+                model.geom(id).selection().create(im.next("csel", cphLabel), "CumulativeSelection")
+                        .label(cphLabel);
+                String h1Label = "HOLE 1";
+                model.geom(id).selection().create(im.next("csel", h1Label), "CumulativeSelection")
+                        .label(h1Label);
+                String h2Label = "HOLE 2";
+                model.geom(id).selection().create(im.next("csel", h2Label), "CumulativeSelection")
+                        .label(h2Label);
+                String holesLabel = "HOLES";
+                model.geom(id).selection().create(im.next("csel", holesLabel), "CumulativeSelection")
+                        .label(holesLabel);
 
                 String micsLabel = "Make Inner Cuff Surface";
-
                 GeomFeature inner_surf = model.geom(id).create(im.next("cyl",micsLabel), "Cylinder");
                 inner_surf.label(micsLabel);
-                inner_surf.set("contributeto", mw.get("INNER CUFF SURFACE"));
+                inner_surf.set("contributeto", im.get(icsLabel));
                 inner_surf.set("pos", new String[]{"0", "0", "Center-(L/2)"});
-                model.geom(id).feature(mw.get("Make Inner Cuff Surface")).set("r", "R_in");
-                model.geom(id).feature(mw.get("Make Inner Cuff Surface")).set("h", "L");
+                inner_surf.set("r", "R_in");
+                inner_surf.set("h", "L");
 
-                model.geom(id).create(mw.next("cyl","Make Outer Cuff Surface"), "Cylinder");
-                model.geom(id).feature(mw.get("Make Outer Cuff Surface")).label("Make Outer Cuff Surface");
-                model.geom(id).feature(mw.get("Make Outer Cuff Surface")).set("contributeto", mw.get("OUTER CUFF SURFACE"));
-                model.geom(id).feature(mw.get("Make Outer Cuff Surface")).set("pos", new String[]{"0", "0", "Center-(L/2)"});
-                model.geom(id).feature(mw.get("Make Outer Cuff Surface")).set("r", "R_out");
-                model.geom(id).feature(mw.get("Make Outer Cuff Surface")).set("h", "L");
+                String mocsLabel = "Make Outer Cuff Surface";
+                GeomFeature outer_surf = model.geom(id).create(im.next("cyl",mocsLabel),"Cylinder");
+                outer_surf.label(mocsLabel);
+                outer_surf.set("contributeto", mw.get("OUTER CUFF SURFACE"));
+                outer_surf.set("pos", new String[]{"0", "0", "Center-(L/2)"});
+                outer_surf.set("r", "R_out");
+                outer_surf.set("h", "L");
 
                 model.geom(id).create(mw.next("if", "If (No Gap AND No Holes)"), "If");
                 model.geom(id).feature(mw.get("If (No Gap AND No Holes)")).label("If (No Gap AND No Holes)");
