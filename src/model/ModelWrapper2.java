@@ -223,21 +223,26 @@ public class ModelWrapper2 {
 
     public boolean extractPotentials(String json_path) {
 
+        // see todos below (unrelated to this method hahahah)
         // TODO: Simulation folders; sorting through configuration files VIA PYTHON
         // TODO: FORCE THE USER TO STAGE/COMMIT CHANGES BEFORE RUNNING; add Git Commit ID/number to config file
+        try {
+            JSONObject json_data = new JSONReader(String.join("/", new String[]{root, json_path})).getData();
 
-        JSONObject json_data = new JSONReader(String.join("/", new String[]{root, json_path})).getData();
+            double[][] coordinates = new double[3][5];
+            String id = this.next("interp");
 
-        double[][] coordinates = new double[3][5];
-        String id = this.next("interp");
+            model.result().numerical().create(id, "Interp");
+            model.result().numerical(id).set("expr", "V");
+            model.result().numerical(id).setInterpolationCoordinates(coordinates);
 
-        model.result().numerical().create(id, "Interp");
-        model.result().numerical(id).set("expr", "V");
-        model.result().numerical(id).setInterpolationCoordinates(coordinates);
+            double[][][] data = model.result().numerical(id).getData();
 
-        double[][][] data = model.result().numerical(id).getData();
-
-        System.out.println("data.toString() = " + Arrays.deepToString(data));
+            System.out.println("data.toString() = " + Arrays.deepToString(data));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        }
 
         return true;
     }
