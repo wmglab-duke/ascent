@@ -30,8 +30,7 @@ public class ModelWrapper2 {
     private IdentifierManager im = new IdentifierManager();
 
     // managing parts within COMSOL
-    private HashMap<String, String> partPrimitives = new HashMap<>();
-    private HashMap<String, String> partInstances = new HashMap<>();
+    private HashMap<String, IdentifierManager> partPrimitiveIMs = new HashMap<>();
 
     // directory structure
     private String root;
@@ -64,46 +63,70 @@ public class ModelWrapper2 {
 
     // ACCESSOR/MUTATOR METHODS
 
+    /**
+     * @return the model
+     */
     public Model getModel() {
         return model;
     }
 
+    /**
+     * @return the root of the project (String path)
+     */
     public String getRoot() {
         return root;
     }
 
+    /**
+     * @return the destination path to which to save the model
+     */
     public String getDest() {
         return dest;
     }
 
+    /**
+     * @param root set the project root (String path)
+     */
     public void setRoot(String root) {
         this.root = root;
     }
 
+    /**
+     * @param dest set the destination path to which to save the model
+     */
     public void setDest(String dest) {
         this.dest = dest;
     }
 
-    public HashMap<String, String> getPartInstances() {
-        return partInstances;
-    }
-
-    public HashMap<String, String> getPartPrimitives() {
-        return partPrimitives;
-    }
-
     // OTHER METHODS
 
+    /**
+     * call method on im (IdentifierManager)... see class for details
+     */
     public String next(String key) {
         return this.im.next(key);
     }
 
+    /**
+     * call method on im (IdentifierManager)... see class for details
+     */
     public String next(String key, String pseudonym) {
         return this.im.next(key, pseudonym);
     }
 
+    /**
+     * call method on im (IdentifierManager)... see class for details
+     */
     public String get(String psuedonym) {
         return this.im.get(psuedonym);
+    }
+
+    /**
+     * @param partPrimitiveLabel the name of the part primitive (i.e. "TubeCuff_Primitive")
+     * @return the associated IdentifierManager, for correct intra-part indexing
+     */
+    public IdentifierManager getPartPrimitiveIM(String partPrimitiveLabel) {
+        return this.partPrimitiveIMs.get(partPrimitiveLabel);
     }
 
     /**
@@ -159,10 +182,33 @@ public class ModelWrapper2 {
             );
         }
 
+        // for each required part, create it (if not already existing)
+        // then  initialize that part
+        for (Object item: (JSONArray) data.get("parts")) {
+            String partName = (String) item; // quick cast to String
+
+            // create the part if it has not already been created
+            if (! this.im.hasPseudonym(partName)) {
+                // get next available (TOP LEVEL) "part" id
+                String partID = this.im.next("part", partName);
+                // TRY to create that part, assuming there is an existing implementation (catch error if not)
+                try {
+                    IdentifierManager partIM = Part.createPartPrimitive(partID, partName, this);
+                    // add the returned id manager to the HashMap of IMs with the partName as its key
+                    this.partPrimitiveIMs.put(partName, partIM);
+                } catch (IllegalArgumentException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            // initialize that part!
+//            Part.createPartInstance()
+        }
+
         return true;
     }
 
-    public double[][][] extractPotentials(String json_path) {
+    public boolean extractPotentials(String json_path) {
 
         // TODO: Simulation folders; sorting through configuration files VIA PYTHON
         // TODO: FORCE THE USER TO STAGE/COMMIT CHANGES BEFORE RUNNING; add Git Commit ID/number to config file
@@ -180,16 +226,12 @@ public class ModelWrapper2 {
 
         System.out.println("data.toString() = " + Arrays.deepToString(data));
 
-        return data;
-    }
-
-    public IdentifierManager getIm(String partPrimitiveLabel) {
-        return new IdentifierManager();
+        return true;
     }
 
     public static void main(String[] args) {
         ModelWrapper2 mw = new ModelWrapper2(null, "/Users/jakecariello/Box/Documents/Pipeline/access");
-        double[][][] data = mw.extractPotentials("");
+
 
     }
 }

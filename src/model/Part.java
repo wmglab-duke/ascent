@@ -4,6 +4,7 @@ import com.comsol.model.GeomFeature;
 import com.comsol.model.GeomSequence;
 import com.comsol.model.Model;
 import com.comsol.model.ModelParam;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.HashMap;
 
@@ -46,8 +47,7 @@ class Part {
     }
 
 
-    public static boolean createPartPrimitive(String id, String pseudonym, ModelWrapper2 mw) {
-
+    public static IdentifierManager createPartPrimitive(String id, String pseudonym, ModelWrapper2 mw) throws IllegalArgumentException {
         return createPartPrimitive(id, pseudonym, mw, null);
     }
 
@@ -65,7 +65,7 @@ class Part {
      * @return
      */
     public static IdentifierManager createPartPrimitive(String id, String pseudonym, ModelWrapper2 mw,
-                                              HashMap<String, Object> data) {
+                                              HashMap<String, Object> data) throws IllegalArgumentException {
 
 
         Model model = mw.getModel();
@@ -1065,7 +1065,7 @@ class Part {
                 model.geom(id).run();
                 break;
             default:
-                throw new IllegalStateException("Unexpected value: " + pseudonym);
+                throw new  IllegalArgumentException("No implementation for part name: " + pseudonym);
         }
         return null;
     }
