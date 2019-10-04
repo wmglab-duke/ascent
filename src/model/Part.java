@@ -4,6 +4,7 @@ import com.comsol.model.GeomFeature;
 import com.comsol.model.GeomSequence;
 import com.comsol.model.Model;
 import com.comsol.model.ModelParam;
+import com.comsol.nativejni.geom.Geom;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.HashMap;
@@ -159,19 +160,19 @@ class Part {
 
                 String elseifganhLabel = "If (Gap AND No Holes)";
                 GeomFeature elseif_gap_noholes = model.geom(id).create(im.next("elseif",elseifganhLabel), "ElseIf");
-                elseif_gap_noholes.label("If (Gap AND No Holes)");
+                elseif_gap_noholes.label(elseifganhLabel);
                 elseif_gap_noholes.set("condition", "(Theta<360) && (N_holes==0)");
 
                 String difrmwics1Label = "Remove Domain Within Inner Cuff Surface 1";
                 GeomFeature dif_remove_ics1 = model.geom(id).create(im.next("dif",difrmwics1Label), "Difference");
-                dif_remove_ics1.label("Remove Domain Within Inner Cuff Surface 1");
+                dif_remove_ics1.label(difrmwics1Label);
                 dif_remove_ics1.set("contributeto", im.get("CUFF PRE GAP"));
                 dif_remove_ics1.selection("input").named(im.get("OUTER CUFF SURFACE"));
                 dif_remove_ics1.selection("input2").named(im.get("INNER CUFF SURFACE"));
 
                 String wpmcgcsLabel = "Make Cuff Gap Cross Section";
                 GeomFeature wp_make_cuffgapcx = model.geom(id).create(im.next("wp",wpmcgcsLabel), "WorkPlane");
-                wp_make_cuffgapcx.label("Make Cuff Gap Cross Section");
+                wp_make_cuffgapcx.label(wpmcgcsLabel);
                 wp_make_cuffgapcx.set("contributeto", im.get("CUFF GAP CROSS SECTION"));
                 wp_make_cuffgapcx.set("quickplane", "xz");
                 wp_make_cuffgapcx.set("unite", true);
@@ -190,7 +191,7 @@ class Part {
 
                 String difrcgLabel = "Remove Cuff Gap";
                 GeomFeature dif_remove_cuffgap = model.geom(id).create(im.next("dif",difrcgLabel), "Difference");
-                dif_remove_cuffgap.label("Remove Cuff Gap");
+                dif_remove_cuffgap.label(difrcgLabel);
                 dif_remove_cuffgap.set("contributeto", im.get("CUFF FINAL"));
                 dif_remove_cuffgap.selection("input").named(im.get("CUFF PRE GAP"));
                 dif_remove_cuffgap.selection("input2").named(im.get("CUFF GAP"));
@@ -207,11 +208,11 @@ class Part {
                 elif_nogap_noholes.set("condition", "(Theta==360) && (N_holes>0)");
 
                 String difrdwics2 = "Remove Domain Within Inner Cuff Surface 2";
-                GeomFeature dif_remove_domain_inner_cuff = model.geom(id).create(im.next("dif",difrdwics2), "Difference");
-                dif_remove_domain_inner_cuff.label("Remove Domain Within Inner Cuff Surface 2");
-                dif_remove_domain_inner_cuff.set("contributeto", im.get("CUFF PRE HOLES"));
-                dif_remove_domain_inner_cuff.selection("input").named(im.get("OUTER CUFF SURFACE"));
-                dif_remove_domain_inner_cuff.selection("input2").named(im.get("INNER CUFF SURFACE"));
+                GeomFeature dif_remove_domain_inner_cuff2 = model.geom(id).create(im.next("dif",difrdwics2), "Difference");
+                dif_remove_domain_inner_cuff2.label(difrdwics2);
+                dif_remove_domain_inner_cuff2.set("contributeto", im.get("CUFF PRE HOLES"));
+                dif_remove_domain_inner_cuff2.selection("input").named(im.get("OUTER CUFF SURFACE"));
+                dif_remove_domain_inner_cuff2.selection("input2").named(im.get("INNER CUFF SURFACE"));
 
                 String econmhsLabel = "Make Hole Shape";
                 GeomFeature econ_make_holeshape = model.geom(id).create(im.next("econ",econmhsLabel), "ECone");
@@ -225,79 +226,88 @@ class Part {
 
                 String rotphicLabel = "Position Hole in Cuff";
                 GeomFeature rot_pos_hole = model.geom(id).create(im.next("rot",rotphicLabel), "Rotate");
-                rot_pos_hole.label("Position Hole in Cuff");
+                rot_pos_hole.label(rotphicLabel);
                 rot_pos_hole.set("rot", "(360*L_holecenter_cuffseam)/(pi*2*R_in)");
                 rot_pos_hole.selection("input").named(im.get("HOLES"));
 
                 String difmichLabel = "Make Inner Cuff Hole";
                 GeomFeature dif_make_innercuff_hole = model.geom(id).create(im.next("dif",difmichLabel), "Difference");
-                dif_make_innercuff_hole.label("Make Inner Cuff Hole");
+                dif_make_innercuff_hole.label(difmichLabel);
                 dif_make_innercuff_hole.set("contributeto", im.get("CUFF FINAL"));
                 dif_make_innercuff_hole.selection("input").named(im.get("CUFF PRE HOLES"));
                 dif_make_innercuff_hole.selection("input2").named(im.get("HOLES"));
 
-                String elifgah = "If (Gap AND Holes)";
-                GeomFeature elif_gap_and_holes = model.geom(id).create(im.next("elseif",elifgah), "ElseIf");s
-                elif_gap_and_holes.label("If (Gap AND Holes)");
+                String elifgahLabel = "If (Gap AND Holes)";
+                GeomFeature elif_gap_and_holes = model.geom(id).create(im.next("elseif",elifgahLabel), "ElseIf");s
+                elif_gap_and_holes.label(elifgahLabel);
                 elif_gap_and_holes.set("condition", "(Theta<360) && (N_holes>0)");
 
-                model.geom(id).create(im.next("dif","Remove Domain Within Inner Cuff Surface 3"), "Difference");
-                model.geom(id).feature(im.get("Remove Domain Within Inner Cuff Surface 3")).label("Remove Domain Within Inner Cuff Surface 3");
-                model.geom(id).feature(im.get("Remove Domain Within Inner Cuff Surface 3")).set("contributeto", im.get("CUFF PRE GAP PRE HOLES"));
-                model.geom(id).feature(im.get("Remove Domain Within Inner Cuff Surface 3")).selection("input").named(im.get("OUTER CUFF SURFACE"));
-                model.geom(id).feature(im.get("Remove Domain Within Inner Cuff Surface 3")).selection("input2").named(im.get("INNER CUFF SURFACE"));
+                String difrdwics3Label = "Remove Domain Within Inner Cuff Surface 3";
+                GeomFeature dif_remove_domain_inner_cuff3 = model.geom(id).create(im.next("dif",difrdwics3Label), "Difference");
+                dif_remove_domain_inner_cuff3.label(difrdwics3Label);
+                dif_remove_domain_inner_cuff3.set("contributeto", im.get("CUFF PRE GAP PRE HOLES"));
+                dif_remove_domain_inner_cuff3.selection("input").named(im.get("OUTER CUFF SURFACE"));
+                dif_remove_domain_inner_cuff3.selection("input2").named(im.get("INNER CUFF SURFACE"));
 
-                model.geom(id).create(im.next("wp","Make Cuff Gap Cross Section 1"), "WorkPlane");
-                model.geom(id).feature(im.get("Make Cuff Gap Cross Section 1")).label("Make Cuff Gap Cross Section 1");
-                model.geom(id).feature(im.get("Make Cuff Gap Cross Section 1")).set("contributeto", im.get("CUFF GAP CROSS SECTION"));
-                model.geom(id).feature(im.get("Make Cuff Gap Cross Section 1")).set("quickplane", "xz");
-                model.geom(id).feature(im.get("Make Cuff Gap Cross Section 1")).set("unite", true);
-                model.geom(id).feature(im.get("Make Cuff Gap Cross Section 1")).geom().create("r1", "Rectangle"); // TODO could abstract away r1
-                model.geom(id).feature(im.get("Make Cuff Gap Cross Section 1")).geom().feature("r1").label("Cuff Gap Cross Section");
-                model.geom(id).feature(im.get("Make Cuff Gap Cross Section 1")).geom().feature("r1")
-                        .set("pos", new String[]{"R_in+((R_out-R_in)/2)", "Center"});
-                model.geom(id).feature(im.get("Make Cuff Gap Cross Section 1")).geom().feature("r1").set("base", "center");
-                model.geom(id).feature(im.get("Make Cuff Gap Cross Section 1")).geom().feature("r1").set("size", new String[]{"R_out-R_in", "L"});
+                String wpmcgcs1Label  = "Make Cuff Gap Cross Section 1";
+                GeomFeature wp_make_cuffgapcx1 = model.geom(id).create(im.next("wp",wpmcgcs1Label), "WorkPlane");
+                wp_make_cuffgapcx1.label(wpmcgcs1Label);
+                wp_make_cuffgapcx1.set("contributeto", im.get("CUFF GAP CROSS SECTION"));
+                wp_make_cuffgapcx1.set("quickplane", "xz");
+                wp_make_cuffgapcx1.set("unite", true);
+                wp_make_cuffgapcx1.geom().create("r1", "Rectangle");
+                wp_make_cuffgapcx1.geom().feature("r1").label("Cuff Gap Cross Section");
+                wp_make_cuffgapcx1.geom().feature("r1").set("pos", new String[]{"R_in+((R_out-R_in)/2)", "Center"});
+                wp_make_cuffgapcx1.geom().feature("r1").set("base", "center");
+                wp_make_cuffgapcx1.geom().feature("r1").set("size", new String[]{"R_out-R_in", "L"});
 
-                model.geom(id).create(im.next("rev","Make Cuff Gap 1"), "Revolve");
-                model.geom(id).feature(im.get("Make Cuff Gap 1")).label("Make Cuff Gap 1");
-                model.geom(id).feature(im.get("Make Cuff Gap 1")).set("contributeto", im.get("CUFF GAP"));
-                model.geom(id).feature(im.get("Make Cuff Gap 1")).set("angle1", "Theta");
-                model.geom(id).feature(im.get("Make Cuff Gap 1")).selection("input").named(im.get("CUFF GAP CROSS SECTION"));
+                String revmcg1Label = "Make Cuff Gap 1";
+                GeomFeature rev_make_cuffgap1 = model.geom(id).create(im.next("rev",revmcg1Label), "Revolve");
+                rev_make_cuffgap1.label(revmcg1Label);
+                rev_make_cuffgap1.set("contributeto", im.get("CUFF GAP"));
+                rev_make_cuffgap1.set("angle1", "Theta");
+                rev_make_cuffgap1.selection("input").named(im.get("CUFF GAP CROSS SECTION"));
 
-                model.geom(id).create(im.next("dif","Remove Cuff Gap 1"), "Difference");
-                model.geom(id).feature(im.get("Remove Cuff Gap 1")).label("Remove Cuff Gap 1");
-                model.geom(id).feature(im.get("Remove Cuff Gap 1")).set("contributeto", im.get("CUFF wGAP PRE HOLES"));
-                model.geom(id).feature(im.get("Remove Cuff Gap 1")).selection("input").named(im.get("CUFF PRE GAP PRE HOLES"));
-                model.geom(id).feature(im.get("Remove Cuff Gap 1")).selection("input2").named(im.get("CUFF GAP"));
+                String difrcg1Label = "Remove Cuff Gap 1";
+                GeomFeature dif_remove_cuffgap1 = model.geom(id).create(im.next("dif",difrcg1Label), "Difference");
+                dif_remove_cuffgap1.label(difrcg1Label);
+                dif_remove_cuffgap1.set("contributeto", im.get("CUFF wGAP PRE HOLES"));
+                dif_remove_cuffgap1.selection("input").named(im.get("CUFF PRE GAP PRE HOLES"));
+                dif_remove_cuffgap1.selection("input2").named(im.get("CUFF GAP"));
 
-                model.geom(id).create(im.next("econ","Make Hole Shape 1"), "ECone");
-                model.geom(id).feature(im.get("Make Hole Shape 1")).label("Make Hole Shape 1");
-                model.geom(id).feature(im.get("Make Hole Shape 1")).set("contributeto", im.get("HOLES"));
-                model.geom(id).feature(im.get("Make Hole Shape 1"))
-                        .set("pos", new String[]{"R_in-Buffer_hole/2", "0", "Center+Pitch_holecenter_holecenter/2"});
-                model.geom(id).feature(im.get("Make Hole Shape 1")).set("axis", new int[]{1, 0, 0});
-                model.geom(id).feature(im.get("Make Hole Shape 1")).set("semiaxes", new String[]{"D_hole/2", "D_hole/2"});
-                model.geom(id).feature(im.get("Make Hole Shape 1")).set("h", "(R_out-R_in)+Buffer_hole");
-                model.geom(id).feature(im.get("Make Hole Shape 1")).set("rat", "R_out/R_in");
+                String econmhs1Label = "Make Hole Shape 1";
+                GeomFeature econ_makehole1 = model.geom(id).create(im.next("econ",econmhs1Label), "ECone");
+                econ_makehole1.label(econmhs1Label);
+                econ_makehole1.set("contributeto", im.get("HOLES"));
+                econ_makehole1.set("pos", new String[]{"R_in-Buffer_hole/2", "0", "Center+Pitch_holecenter_holecenter/2"});
+                econ_makehole1.set("axis", new int[]{1, 0, 0});
+                econ_makehole1.set("semiaxes", new String[]{"D_hole/2", "D_hole/2"});
+                econ_makehole1.set("h", "(R_out-R_in)+Buffer_hole");
+                econ_makehole1.set("rat", "R_out/R_in");
 
-                model.geom(id).create(im.next("rot","Position Hole in Cuff 1"), "Rotate");
-                model.geom(id).feature(im.get("Position Hole in Cuff 1")).label("Position Hole in Cuff 1");
-                model.geom(id).feature(im.get("Position Hole in Cuff 1")).set("rot", "(360*L_holecenter_cuffseam)/(pi*2*R_in)");
-                model.geom(id).feature(im.get("Position Hole in Cuff 1")).selection("input").named(im.get("HOLES"));
+                String rotphic1Label = "Position Hole in Cuff 1";
+                GeomFeature rot_position_hole1 = model.geom(id).create(im.next("rot",rotphic1Label), "Rotate");
+                rot_position_hole1.label(rotphic1Label);
+                rot_position_hole1.set("rot", "(360*L_holecenter_cuffseam)/(pi*2*R_in)");
+                rot_position_hole1.selection("input").named(im.get("HOLES"));
 
-                model.geom(id).create(im.next("dif","Make Inner Cuff Hole 1"), "Difference");
-                model.geom(id).feature(im.get("Make Inner Cuff Hole 1")).label("Make Inner Cuff Hole 1");
-                model.geom(id).feature(im.get("Make Inner Cuff Hole 1")).set("contributeto", im.get("CUFF FINAL"));
-                model.geom(id).feature(im.get("Make Inner Cuff Hole 1")).selection("input").named(im.get("CUFF wGAP PRE HOLES"));
-                model.geom(id).feature(im.get("Make Inner Cuff Hole 1")).selection("input2").named(im.get("HOLES"));
+                String difmich1Label = "Make Inner Cuff Hole 1";
+                GeomFeature dif_make_hole1 = model.geom(id).create(im.next("dif",difmich1Label), "Difference");
+                dif_make_hole1.label(difmich1Label);
+                dif_make_hole1.set("contributeto", im.get("CUFF FINAL"));
+                dif_make_hole1.selection("input").named(im.get("CUFF wGAP PRE HOLES"));
+                dif_make_hole1.selection("input2").named(im.get("HOLES"));
 
-                model.geom(id).create(im.next("rot","Rotate to Default Conformation"), "Rotate");
-                model.geom(id).feature(im.get("Rotate to Default Conformation")).label("Rotate to Default Conformation");
-                model.geom(id).feature(im.get("Rotate to Default Conformation")).set("rot", "Rot_def");
-                model.geom(id).feature(im.get("Rotate to Default Conformation")).selection("input").named(im.get("CUFF FINAL"));
+                String rotdcLabel = "Rotate to Default Conformation";
+                GeomFeature rot_default_conformation = model.geom(id).create(im.next("rot",rotdcLabel), "Rotate");
+                rot_default_conformation.label(rotdcLabel);
+                rot_default_conformation.set("rot", "Rot_def");
+                rot_default_conformation.selection("input").named(im.get("CUFF FINAL"));
 
-                model.geom(id).create(im.next("endif"), "EndIf");
+                String endifLabel = "End";
+                GeomFeature endif = model.geom(id).create(im.next("endif", endifLabel), "EndIf");
+                endif.label(endifLabel);
+                
                 model.geom(id).run();
                 return im;
                 break;
