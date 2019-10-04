@@ -515,6 +515,8 @@ public class FEMBuilder {
             model.geom("part2").feature("rev1").set("angle1", "Rot_def");
             model.geom("part2").feature("rev1").set("angle2", "Rot_def+Theta_contact");
             model.geom("part2").feature("rev1").selection("input").named("csel1");
+
+            // Eric working here
             model.geom("part2").create("if1", "If");
             model.geom("part2").feature("if1").set("condition", "Recess>0");
             model.geom("part2").create("wp2", "WorkPlane");
@@ -532,6 +534,8 @@ public class FEMBuilder {
             model.geom("part2").feature("wp2").geom().feature("r1").set("pos", new String[]{"R_in+Recess/2", "Center"});
             model.geom("part2").feature("wp2").geom().feature("r1").set("base", "center");
             model.geom("part2").feature("wp2").geom().feature("r1").set("size", new String[]{"Recess", "L_elec"});
+            //
+
             model.geom("part2").create("rev2", "Revolve");
             model.geom("part2").feature("rev2").label("Make Recess");
             model.geom("part2").feature("rev2").set("contributeto", "csel5");
