@@ -63,6 +63,7 @@ class Part {
      * @param pseudonym
      * @param mw
      * @param data
+     * @param data
      * @return
      */
     public static IdentifierManager createPartPrimitive(String id, String pseudonym, ModelWrapper2 mw,
@@ -307,29 +308,42 @@ class Part {
                 String endifLabel = "End";
                 GeomFeature endif = model.geom(id).create(im.next("endif", endifLabel), "EndIf");
                 endif.label(endifLabel);
-                
+
                 model.geom(id).run();
                 return im;
                 break;
             case "RibbonContact_Primitive":
-                model.geom(id).inputParam().set("Thk_elec", "0.1 [mm]");
-                model.geom(id).inputParam().set("L_elec", "3 [mm]");
-                model.geom(id).inputParam().set("R_in", "1 [mm]");
-                model.geom(id).inputParam().set("Recess", "0.1 [mm]");
-                model.geom(id).inputParam().set("Center", "10 [mm]");
-                model.geom(id).inputParam().set("Theta_contact", "100 [deg]");
-                model.geom(id).inputParam().set("Rot_def", "0 [deg]");
+                IdentifierManager im = new IdentifierManager();
 
-                model.geom(id).selection().create(mw.next("csel","CONTACT CROSS SECTION"), "CumulativeSelection");
-                model.geom(id).selection(mw.get("CONTACT CROSS SECTION")).label("CONTACT CROSS SECTION");
-                model.geom(id).selection().create(mw.next("csel","RECESS CROSS SECTION"), "CumulativeSelection");
-                model.geom(id).selection(mw.get("RECESS CROSS SECTION")).label("RECESS CROSS SECTION");
-                model.geom(id).selection().create(mw.next("csel","SRC"), "CumulativeSelection");
-                model.geom(id).selection(mw.get("SRC")).label("SRC");
-                model.geom(id).selection().create(mw.next("csel","CONTACT FINAL"), "CumulativeSelection");
-                model.geom(id).selection(mw.get("CONTACT FINAL")).label("CONTACT FINAL");
-                model.geom(id).selection().create(mw.next("csel","RECESS FINAL"), "CumulativeSelection");
-                model.geom(id).selection(mw.get("RECESS FINAL")).label("RECESS FINAL");
+                ModelParam mp = model.geom(id).inputParam();
+
+                mp.set("Thk_elec", "0.1 [mm]");
+                mp.set("L_elec", "3 [mm]");
+                mp.set("R_in", "1 [mm]");
+                mp.set("Recess", "0.1 [mm]");
+                mp.set("Center", "10 [mm]");
+                mp.set("Theta_contact", "100 [deg]");
+                mp.set("Rot_def", "0 [deg]");
+
+                String ccxLabel = "CONTACT CROSS SECTION";
+                model.geom(id).selection().create(im.next("csel",ccxLabel), "CumulativeSelection")
+                        .label(ccxLabel);
+
+                String rcxLabel = "RECESS CROSS SECTION";
+                model.geom(id).selection().create(im.next("csel",rcxLabel), "CumulativeSelection")
+                        .label(rcxLabel);
+
+                String srcLabel = "SRC";
+                model.geom(id).selection().create(im.next("csel",srcLabel), "CumulativeSelection")
+                        .label(srcLabel);
+
+                String cfLabel = "CONTACT FINAL";
+                model.geom(id).selection().create(im.next("csel",cfLabel), "CumulativeSelection")
+                        .label(cfLabel);
+
+                String rfLabel = "RECESS FINAL";
+                model.geom(id).selection().create(im.next("csel",rfLabel), "CumulativeSelection")
+                        .label(rfLabel);
 
                 model.geom(id).create(mw.next("wp","Contact Cross Section"), "WorkPlane");
                 model.geom(id).feature(mw.get("Contact Cross Section")).label("Contact Cross Section");
