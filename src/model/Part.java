@@ -1,7 +1,6 @@
 package model;
 
 import com.comsol.model.GeomFeature;
-import com.comsol.model.GeomSequence;
 import com.comsol.model.Model;
 import com.comsol.model.ModelParam;
 import com.comsol.nativejni.geom.Geom;
@@ -44,12 +43,11 @@ class Part {
         IdentifierManager thisPartIM = new IdentifierManager();
         String restartedIDwp = thisPartIM.next("wp");
 
-
     }
 
 
     public static IdentifierManager createPartPrimitive(String id, String pseudonym, ModelWrapper2 mw) throws IllegalArgumentException {
-        return createPartPrimitive(id, pseudonym, mw, null);
+        return Part.createPartPrimitive(id, pseudonym, mw, null);
     }
 
 //    public static boolean createPartInstance(String id, String pseudonym, ModelWrapper2 mw,
@@ -1116,9 +1114,20 @@ class Part {
                 return im;
                 break;
             default:
-                throw new  IllegalArgumentException("No implementation for part name: " + pseudonym);
+                throw new  IllegalArgumentException("No implementation for part primitive name: " + pseudonym);
         }
         return null;
+    }
+
+    /**
+     *
+     * @param id
+     * @param pseudonym
+     * @param mw
+     * @return
+     */
+    public static boolean createPartInstance(String id, String pseudonym, ModelWrapper2 mw) throws IllegalArgumentException {
+        return createPartInstance(id, pseudonym, mw, null);
     }
 
     /**
@@ -1129,7 +1138,7 @@ class Part {
      * @param data
      * @return
      */
-    public static boolean createPartInstance(String id, String pseudonym, ModelWrapper2 mw, HashMap<String, Object> data) {
+    public static boolean createPartInstance(String id, String pseudonym, ModelWrapper2 mw, HashMap<String, Object> data) throws IllegalArgumentException {
 
         Model model = mw.getModel();
         model.component().create("comp1", true);
@@ -1159,6 +1168,9 @@ class Part {
             case "HelicalCuffnContact_Primitive":
                 break;
             case "RectangleContact_Primitive":
+                break;
+            default:
+                throw new IllegalArgumentException("No implementation for part instance name: " + pseudonym);
                 break;
         }
 

@@ -4,6 +4,7 @@ import com.comsol.model.Model;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -166,43 +167,55 @@ public class ModelWrapper2 {
     public boolean addPart(String name) {
 
         // extract data from json
-        JSONObject data = new JSONReader(String.join("/",
-                new String[]{this.root,".templates", name + ".json"})).getData();
+        try {
+            JSONObject data = new JSONReader(String.join("/",
+                    new String[]{this.root, ".templates", name + ".json"})).getData();
 
-        // get the id for the next "par" (i.e. parameters section)
-        String id = this.next("par", name);
+            // get the id for the next "par" (i.e. parameters section)
+            String id = this.next("par", name);
 
-        // loop through all parameters in file, and set in parameters
-        for (Object item : (JSONArray) data.get("params")) {
-            JSONObject itemObject = (JSONObject) item;
-            model.param(id).set(
-                    (String) itemObject.get("name"),
-                    (String) itemObject.get("expression"),
-                    (String) itemObject.get("description")
-            );
-        }
+            // loop through all parameters in file, and set in parameters
+            for (Object item : (JSONArray) data.get("params")) {
+                JSONObject itemObject = (JSONObject) item;
+                model.param(id).set(
+                        (String) itemObject.get("name"),
+                        (String) itemObject.get("expression"),
+                        (String) itemObject.get("description")
+                );
+            }
 
-        // for each required part, create it (if not already existing)
-        // then  initialize that part
-        for (Object item: (JSONArray) data.get("parts")) {
-            String partName = (String) item; // quick cast to String
+            // for each required part, create it (if not already existing)
+            for (Object item: (JSONArray) data.get("parts")) {
+                String partPrimitiveName = (String) item; // quick cast to String
 
-            // create the part if it has not already been created
-            if (! this.im.hasPseudonym(partName)) {
-                // get next available (TOP LEVEL) "part" id
-                String partID = this.im.next("part", partName);
-                // TRY to create that part, assuming there is an existing implementation (catch error if not)
-                try {
-                    IdentifierManager partIM = Part.createPartPrimitive(partID, partName, this);
-                    // add the returned id manager to the HashMap of IMs with the partName as its key
-                    this.partPrimitiveIMs.put(partName, partIM);
-                } catch (IllegalArgumentException e) {
-                    e.printStackTrace();
+                // create the part if it has not already been created
+                if (! this.im.hasPseudonym(partPrimitiveName)) {
+                    // get next available (TOP LEVEL) "part" id
+                    String partID = this.im.next("part", partPrimitiveName);
+                    try {
+                        // TRY to create the part primitive (catch error if no existing implementation)
+                        IdentifierManager partPrimitiveIM = Part.createPartPrimitive(partID, partPrimitiveName, this);
+                        // add the returned id manager to the HashMap of IMs with the partName as its key
+                        this.partPrimitiveIMs.put(partPrimitiveName, partPrimitiveIM);
+                    } catch (IllegalArgumentException e) {
+                        e.printStackTrace();
+                        return false;
+                    }
                 }
             }
 
-            // initialize that part!
-//            Part.createPartInstance()
+            // time to initialize the indicated part
+            try {
+                // TRY to initialize the part (catch error if no existing implementation)
+                Part.createPartInstance(this.next("pi", name), name, this);
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+                return false;
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return false;
         }
 
         return true;
@@ -210,21 +223,26 @@ public class ModelWrapper2 {
 
     public boolean extractPotentials(String json_path) {
 
+        // see todos below (unrelated to this method hahahah)
         // TODO: Simulation folders; sorting through configuration files VIA PYTHON
         // TODO: FORCE THE USER TO STAGE/COMMIT CHANGES BEFORE RUNNING; add Git Commit ID/number to config file
+        try {
+            JSONObject json_data = new JSONReader(String.join("/", new String[]{root, json_path})).getData();
 
-        JSONObject json_data = new JSONReader(String.join("/", new String[]{root, json_path})).getData();
+            double[][] coordinates = new double[3][5];
+            String id = this.next("interp");
 
-        double[][] coordinates = new double[3][5];
-        String id = this.next("interp");
+            model.result().numerical().create(id, "Interp");
+            model.result().numerical(id).set("expr", "V");
+            model.result().numerical(id).setInterpolationCoordinates(coordinates);
 
-        model.result().numerical().create(id, "Interp");
-        model.result().numerical(id).set("expr", "V");
-        model.result().numerical(id).setInterpolationCoordinates(coordinates);
+            double[][][] data = model.result().numerical(id).getData();
 
-        double[][][] data = model.result().numerical(id).getData();
-
-        System.out.println("data.toString() = " + Arrays.deepToString(data));
+            System.out.println("data.toString() = " + Arrays.deepToString(data));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        }
 
         return true;
     }
