@@ -138,7 +138,7 @@ class Part {
                 String micsLabel = "Make Inner Cuff Surface";
                 GeomFeature inner_surf = model.geom(id).create(im.next("cyl",micsLabel), "Cylinder");
                 inner_surf.label(micsLabel);
-                inner_surf.set("contributeto", im.get(cselLabels[0]));
+                inner_surf.set("contributeto", im.get(cselTCLabels[0]));
                 inner_surf.set("pos", new String[]{"0", "0", "Center-(L/2)"});
                 inner_surf.set("r", "R_in");
                 inner_surf.set("h", "L");
@@ -325,16 +325,16 @@ class Part {
                 mp.set("Theta_contact", "100 [deg]");
                 mp.set("Rot_def", "0 [deg]");
 
-                String[] cselRCLabels = {
+                String[] cselRiCLabels = {
                         "CONTACT CROSS SECTION",
                         "RECESS CROSS SECTION",
                         "SRC",
                         "CONTACT FINAL",
                         "RECESS FINAL"
                 };
-                for (String cselRCLabel: cselRCLabels) {
-                    model.geom(id).selection().create(im.next("csel", cselRCLabel), "CumulativeSelection")
-                            .label(cselRCLabel);
+                for (String cselRiCLabel: cselRiCLabels) {
+                    model.geom(id).selection().create(im.next("csel", cselRiCLabel), "CumulativeSelection")
+                            .label(cselRiCLabel);
                 }
 
 //                String ccxLabel = "CONTACT CROSS SECTION";
@@ -919,7 +919,7 @@ class Part {
                 model.geom(id).inputParam().set("z_center", "0 [mm]");
                 model.geom(id).inputParam().set("rotation_angle", "0 [deg]");
 
-                String[] cselRCLabels = {
+                String[] cselReCLabels = {
                         "OUTER CONTACT CUTTER",
                         "SEL INNER EXCESS CONTACT",
                         "INNER CONTACT CUTTER",
@@ -944,9 +944,9 @@ class Part {
                         "FINAL",
                         "INNER CUTTER"
                 };
-                for (String cselRCLabel: cselRCLabels) {
-                    model.geom(id).selection().create(im.next("csel", cselRCLabel), "CumulativeSelection")
-                            .label(cselRCLabel);
+                for (String cselReCLabel: cselReCLabels) {
+                    model.geom(id).selection().create(im.next("csel", cselReCLabel), "CumulativeSelection")
+                            .label(cselReCLabel);
                 }
 
 //                model.geom(id).selection().create(mw.next("csel","OUTER CONTACT CUTTER"), "CumulativeSelection");
