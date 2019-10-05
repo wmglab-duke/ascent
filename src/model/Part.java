@@ -90,33 +90,6 @@ class Part {
                 mp.set("L_holecenter_cuffseam", "0.3 [mm]");
                 mp.set("Pitch_holecenter_holecenter", "0 [mm]");
 
-
-
-//                String icsLabel = "INNER CUFF SURFACE";
-//                model.geom(id).selection().create(im.next("csel", icsLabel), "CumulativeSelection").label(icsLabel);
-//                String ocsLabel = "OUTER CUFF SURFACE";
-//                model.geom(id).selection().create(im.next("csel", ocsLabel), "CumulativeSelection").label(ocsLabel);
-//                String cfLabel = "CUFF FINAL";
-//                model.geom(id).selection().create(im.next("csel", cfLabel), "CumulativeSelection").label(cfLabel);
-//                String cgphLabel = "CUFF wGAP PRE HOLES";
-//                model.geom(id).selection().create(im.next("csel", cgphLabel), "CumulativeSelection").label(cgphLabel);
-//                String cpgLabel = "CUFF PRE GAP";
-//                model.geom(id).selection().create(im.next("csel", cpgLabel), "CumulativeSelection").label(cpgLabel);
-//                String cpgphLabel = "CUFF PRE GAP PRE HOLES";
-//                model.geom(id).selection().create(im.next("csel", cpgphLabel), "CumulativeSelection").label(cpgphLabel);
-//                String cgcsLabel = "CUFF GAP CROSS SECTION";
-//                model.geom(id).selection().create(im.next("csel", cgcsLabel), "CumulativeSelection").label(cgcsLabel);
-//                String cgLabel = "CUFF GAP";
-//                model.geom(id).selection().create(im.next("csel", cgLabel), "CumulativeSelection").label(cgLabel);
-//                String cphLabel = "CUFF PRE HOLES";
-//                model.geom(id).selection().create(im.next("csel", cphLabel), "CumulativeSelection").label(cphLabel);
-//                String h1Label = "HOLE 1";
-//                model.geom(id).selection().create(im.next("csel", h1Label), "CumulativeSelection").label(h1Label);
-//                String h2Label = "HOLE 2";
-//                model.geom(id).selection().create(im.next("csel", h2Label), "CumulativeSelection").label(h2Label);
-//                String holesLabel = "HOLES";
-//                model.geom(id).selection().create(im.next("csel", holesLabel), "CumulativeSelection").label(holesLabel);
-
                 String[] cselTCLabels = {
                         "INNER CUFF SURFACE",
                         "OUTER CUFF SURFACE", "CUFF FINAL",
@@ -337,26 +310,6 @@ class Part {
                             .label(cselRiCLabel);
                 }
 
-//                String ccxLabel = "CONTACT CROSS SECTION";
-//                model.geom(id).selection().create(im.next("csel",ccxLabel), "CumulativeSelection")
-//                        .label(ccxLabel);
-//
-//                String rcxLabel = "RECESS CROSS SECTION";
-//                model.geom(id).selection().create(im.next("csel",rcxLabel), "CumulativeSelection")
-//                        .label(rcxLabel);
-//
-//                String srcLabel = "SRC";
-//                model.geom(id).selection().create(im.next("csel",srcLabel), "CumulativeSelection")
-//                        .label(srcLabel);
-//
-//                String cfLabel = "CONTACT FINAL";
-//                model.geom(id).selection().create(im.next("csel",cfLabel), "CumulativeSelection")
-//                        .label(cfLabel);
-//
-//                String rfLabel = "RECESS FINAL";
-//                model.geom(id).selection().create(im.next("csel",rfLabel), "CumulativeSelection")
-//                        .label(rfLabel);
-
                 String wpccxLabel = "Contact Cross Section";
                 GeomFeature wp_contact_cx = model.geom(id).create(im.next("wp",wpccxLabel), "WorkPlane");
                 wp_contact_cx.label(wpccxLabel);
@@ -441,13 +394,6 @@ class Part {
                             .label(cselWCLabel);
                 }
 
-//                model.geom(id).selection().create(mw.next("csel","CONTACT CROSS SECTION"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("CONTACT CROSS SECTION")).label("CONTACT CROSS SECTION");
-//                model.geom(id).selection().create(mw.next("csel","CONTACT FINAL"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("CONTACT FINAL")).label("CONTACT FINAL");
-//                model.geom(id).selection().create(mw.next("csel","SRC"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("SRC")).label("SRC");
-
                 model.geom(id).create(mw.next("wp","Contact Cross Section"), "WorkPlane");
                 model.geom(id).feature(mw.get("Contact Cross Section")).label("Contact Cross Section");
                 model.geom(id).feature(mw.get("Contact Cross Section")).set("contributeto", mw.get("CONTACT CROSS SECTION"));
@@ -508,36 +454,6 @@ class Part {
                     model.geom(id).selection().create(im.next("csel", cselCCLabel), "CumulativeSelection")
                             .label(cselCCLabel);
                 }
-
-
-//                model.geom(id).selection().create(mw.next("csel","CONTACT CUTTER IN"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("CONTACT CUTTER IN")).label("CONTACT CUTTER IN");
-//                model.geom(id).selection().create(mw.next("csel","PRE CUT CONTACT"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("PRE CUT CONTACT")).label("PRE CUT CONTACT");
-//                model.geom(id).selection().create(mw.next("csel","RECESS FINAL"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("RECESS FINAL")).label("RECESS FINAL");
-//                model.geom(id).selection().create(mw.next("csel","RECESS OVERSHOOT"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("RECESS OVERSHOOT")).label("RECESS OVERSHOOT");
-//                model.geom(id).selection().create(mw.next("csel","SRC"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("SRC")).label("SRC");
-//                model.geom(id).selection().create(mw.next("csel","PLANE FOR CONTACT"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("PLANE FOR CONTACT")).label("PLANE FOR CONTACT");
-//                model.geom(id).selection().create(mw.next("csel","CONTACT FINAL"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("CONTACT FINAL")).label("CONTACT FINAL");
-//                model.geom(id).selection().create(mw.next("csel","CONTACT CUTTER OUT"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("CONTACT CUTTER OUT")).label("CONTACT CUTTER OUT");
-//                model.geom(id).selection().create(mw.next("csel","BASE CONTACT PLANE (PRE ROTATION)"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("BASE CONTACT PLANE (PRE ROTATION)")).label("BASE CONTACT PLANE (PRE ROTATION)");
-//                model.geom(id).selection().create(mw.next("csel","BASE PLANE (PRE ROTATION)"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("BASE PLANE (PRE ROTATION)")).label("BASE PLANE (PRE ROTATION)");
-//                model.geom(id).selection().create(mw.next("csel","PLANE FOR RECESS"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("PLANE FOR RECESS")).label("PLANE FOR RECESS");
-//                model.geom(id).selection().create(mw.next("csel","PRE CUT RECESS"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("PRE CUT RECESS")).label("PRE CUT RECESS");
-//                model.geom(id).selection().create(mw.next("csel","RECESS CUTTER IN"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("RECESS CUTTER IN")).label("RECESS CUTTER IN");
-//                model.geom(id).selection().create(mw.next("csel","RECESS CUTTER OUT"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("RECESS CUTTER OUT")).label("RECESS CUTTER OUT");
 
                 model.geom(id).create(mw.next("wp", "Base Plane (Pre Rrotation)"), "WorkPlane");
                 model.geom(id).feature(mw.get("Base Plane (Pre Rrotation)")).label("Base Plane (Pre Rrotation)");
@@ -740,27 +656,6 @@ class Part {
                             .label(cselHCCLabel);
                 }
 
-//                model.geom(id).selection().create(mw.next("csel","PC1"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("PC1")).label("PC1");
-//                model.geom(id).selection().create(mw.next("csel","Cuffp1"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("Cuffp1")).label("Cuffp1");
-//                model.geom(id).selection().create(mw.next("csel","SEL END P1"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("SEL END P1")).label("SEL END P1");
-//                model.geom(id).selection().create(mw.next("csel","PC2"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("PC2")).label("PC2");
-//                model.geom(id).selection().create(mw.next("csel","SRC"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("SRC")).label("SRC");
-//                model.geom(id).selection().create(mw.next("csel","Cuffp2"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("Cuffp2")).label("Cuffp2");
-//                model.geom(id).selection().create(mw.next("csel","Conductorp2"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("Conductorp2")).label("Conductorp2");
-//                model.geom(id).selection().create(mw.next("csel","SEL END P2"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("SEL END P2")).label("SEL END P2");
-//                model.geom(id).selection().create(mw.next("csel","Cuffp3"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("Cuffp3")).label("Cuffp3");
-//                model.geom(id).selection().create(mw.next("csel","PC3"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("PC3")).label("PC3");
-
                 model.geom(id).create(mw.next("wp","Helical Insulator Cross Section Part 1"), "WorkPlane");
                 model.geom(id).feature(mw.get("Helical Insulator Cross Section Part 1")).label("Helical Insulator Cross Section Part 1");
                 model.geom(id).feature(mw.get("Helical Insulator Cross Section Part 1")).set("quickplane", "xz");
@@ -948,53 +843,6 @@ class Part {
                     model.geom(id).selection().create(im.next("csel", cselReCLabel), "CumulativeSelection")
                             .label(cselReCLabel);
                 }
-
-//                model.geom(id).selection().create(mw.next("csel","OUTER CONTACT CUTTER"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("OUTER CONTACT CUTTER")).label("OUTER CONTACT CUTTER");
-//                model.geom(id).selection().create(mw.next("csel","SEL INNER EXCESS CONTACT"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("SEL INNER EXCESS CONTACT")).label("SEL INNER EXCESS CONTACT");
-//                model.geom(id).selection().create(mw.next("csel","INNER CONTACT CUTTER"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("INNER CONTACT CUTTER")).label("INNER CONTACT CUTTER");
-//                model.geom(id).selection().create(mw.next("csel","SEL OUTER EXCESS RECESS"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("SEL OUTER EXCESS RECESS")).label("SEL OUTER EXCESS RECESS");
-//                model.geom(id).selection().create(mw.next("csel","SEL INNER EXCESS RECESS"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("SEL INNER EXCESS RECESS")).label("SEL INNER EXCESS RECESS");
-//                model.geom(id).selection().create(mw.next("csel", "OUTER CUTTER"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("OUTER CUTTER")).label("OUTER CUTTER");
-//                model.geom(id).selection().create(mw.next("csel","FINAL RECESS"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("FINAL RECESS")).label("FINAL RECESS");
-//                model.geom(id).selection().create(mw.next("csel","RECESS CROSS SECTION"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("RECESS CROSS SECTION")).label("RECESS CROSS SECTION");
-//                model.geom(id).selection().create(mw.next("csel", "OUTER RECESS CUTTER"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("OUTER RECESS CUTTER")).label("OUTER RECESS CUTTER");
-//                model.geom(id).selection().create(mw.next("csel","RECESS PRE CUTS"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("RECESS PRE CUTS")).label("RECESS PRE CUTS");
-//                model.geom(id).selection().create(mw.next("csel","INNER RECESS CUTTER"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("INNER RECESS CUTTER")).label("INNER RECESS CUTTER");
-//                model.geom(id).selection().create(mw.next("csel","FINAL CONTACT"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("FINAL CONTACT")).label("FINAL CONTACT");
-//                model.geom(id).selection().create(mw.next("csel","SEL OUTER EXCESS CONTACT"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("SEL OUTER EXCESS CONTACT")).label("SEL OUTER EXCESS CONTACT");
-//                model.geom(id).selection().create(mw.next("csel","SEL OUTER EXCESS"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("SEL OUTER EXCESS")).label("SEL OUTER EXCESS");
-//                model.geom(id).selection().create(mw.next("csel","SEL INNER EXCESS"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("SEL INNER EXCESS")).label("SEL INNER EXCESS");
-//                model.geom(id).selection().create(mw.next("csel","BASE CONTACT PLANE (PRE ROTATION)"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("BASE CONTACT PLANE (PRE ROTATION)")).label("BASE CONTACT PLANE (PRE ROTATION)");
-//                model.geom(id).selection().create(mw.next("csel","SRC"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("SRC")).label("SRC");
-//                model.geom(id).selection().create(mw.next("csel","CONTACT PRE CUTS"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("CONTACT PRE CUTS")).label("CONTACT PRE CUTS");
-//                model.geom(id).selection().create(mw.next("csel","CONTACT CROSS SECTION"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("CONTACT CROSS SECTION")).label("CONTACT CROSS SECTION");
-//                model.geom(id).selection().create(mw.next("csel","INNER CUFF CUTTER"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("INNER CUFF CUTTER")).label("INNER CUFF CUTTER");
-//                model.geom(id).selection().create(mw.next("csel","OUTER CUFF CUTTER"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("OUTER CUFF CUTTER")).label("OUTER CUFF CUTTER");
-//                model.geom(id).selection().create(mw.next("csel","FINAL"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("FINAL")).label("FINAL");
-//                model.geom(id).selection().create(mw.next("csel","INNER CUTTER"), "CumulativeSelection");
-//                model.geom(id).selection(mw.get("INNER CUTTER")).label("INNER CUTTER");
 
                 model.geom(id).create(mw.next("wp","base plane (pre rotation)"), "WorkPlane");
                 model.geom(id).feature(mw.get("base plane (pre rotation)")).label("base plane (pre rotation)");
