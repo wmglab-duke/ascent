@@ -353,7 +353,7 @@ class Part {
 
                 wp_recess_cx1.geom().create("r1", "Rectangle");
                 wp_recess_cx1.geom().feature("r1").label("Recess Cross Section");
-                wp_recess_cx1.geom().feature("r1").set("contributeto", im.get("RECESS CROSS SECTION")); // TODO see above
+                wp_recess_cx1.geom().feature("r1").set("contributeto", im.get("RECESS CROSS SECTION"));
                 wp_recess_cx1.geom().feature("r1").set("pos", new String[]{"R_in+Recess/2", "Center"});
                 wp_recess_cx1.geom().feature("r1").set("base", "center");
                 wp_recess_cx1.geom().feature("r1").set("size", new String[]{"Recess", "L_elec"});
@@ -395,33 +395,34 @@ class Part {
                             .label(cselWCLabel);
                 }
 
-                model.geom(id).create(mw.next("wp","Contact Cross Section"), "WorkPlane");
-                model.geom(id).feature(mw.get("Contact Cross Section")).label("Contact Cross Section");
-                model.geom(id).feature(mw.get("Contact Cross Section")).set("contributeto", mw.get("CONTACT CROSS SECTION"));
-                model.geom(id).feature(mw.get("Contact Cross Section")).set("quickplane", "zx");
-                model.geom(id).feature(mw.get("Contact Cross Section")).set("unite", true);
-                model.geom(id).feature(mw.get("Contact Cross Section")).geom().selection().create(mw.get("CONTACT CROSS SECTION"), "CumulativeSelection");
-                model.geom(id).feature(mw.get("Contact Cross Section")).geom().selection(mw.get("CONTACT CROSS SECTION")).label("CONTACT CROSS SECTION");
-                model.geom(id).feature(mw.get("Contact Cross Section")).geom().create("c1", "Circle"); // TODO
-                model.geom(id).feature(mw.get("Contact Cross Section")).geom().feature("c1").label("Contact Cross Section");
-                model.geom(id).feature(mw.get("Contact Cross Section")).geom().feature("c1").set("contributeto", mw.get("CONTACT CROSS SECTION"));
-                model.geom(id).feature(mw.get("Contact Cross Section")).geom().feature("c1")
-                        .set("pos", new String[]{"Center", "R_in-R_conductor-Sep_conductor"});
-                model.geom(id).feature(mw.get("Contact Cross Section")).geom().feature("c1").set("r", "R_conductor");
+                String contactxsLabel = "Contact Cross Section";
+                GeomFeature contact_xs = model.geom(id).create(im.next("wp",contactxsLabel), "WorkPlane");
+                contact_xs.set("contributeto", im.get("CONTACT CROSS SECTION"));
+                contact_xs.label(contactxsLabel);
+                contact_xs.set("quickplane", "zx");
+                contact_xs.set("unite", true);
+                contact_xs.geom().selection().create(im.get("CONTACT CROSS SECTION"), "CumulativeSelection");
+                contact_xs.geom().selection(im.get("CONTACT CROSS SECTION")).label("CONTACT CROSS SECTION");
+                contact_xs.geom().create("c1", "Circle");
+                contact_xs.geom().feature("c1").label("Contact Cross Section");
+                contact_xs.geom().feature("c1").set("contributeto", im.get("CONTACT CROSS SECTION"));
+                contact_xs.geom().feature("c1").set("pos", new String[]{"Center", "R_in-R_conductor-Sep_conductor"});
+                contact_xs.geom().feature("c1").set("r", "R_conductor");
 
-                model.geom(id).create(mw.next("rev","Make Contact"), "Revolve");
-                model.geom(id).feature(mw.get("Make Contact")).label("Make Contact");
-                model.geom(id).feature(mw.get("Make Contact")).set("contributeto", mw.get("CONTACT FINAL"));
-                model.geom(id).feature(mw.get("Make Contact")).set("angle2", "Theta_conductor");
-                model.geom(id).feature(mw.get("Make Contact")).set("axis", new int[]{1, 0});
-                model.geom(id).feature(mw.get("Make Contact")).selection("input").named(mw.get("CONTACT CROSS SECTION"));
+                String mcLabel = "Make Contact";
+                GeomFeature contact = model.geom(id).create(im.next("rev",mcLabel), "Revolve");
+                contact.label(mcLabel);
+                contact.set("contributeto", im.get("CONTACT FINAL"));
+                contact.set("angle2", "Theta_conductor");
+                contact.set("axis", new int[]{1, 0});
+                contact.selection("input").named(im.get("CONTACT CROSS SECTION"));
 
-                model.geom(id).create(mw.next("pt","Src"), "Point");
-                model.geom(id).feature(mw.get("Src")).label("Src");
-                model.geom(id).feature(mw.get("Src")).set("contributeto", mw.get("SRC"));
-                model.geom(id).feature(mw.get("Src"))
-                        .set("p", new String[]{"(R_in-R_conductor-Sep_conductor)*cos(Theta_conductor/2)", "(R_in-R_conductor-Sep_conductor)*sin(Theta_conductor/2)", "Center"});
+                String sourceLabel = "Src";
+                GeomFeature source = model.geom(id).create(im.next("pt",sourceLabel), "Point");
 
+                source.label(sourceLabel);
+                source.set("contributeto", im.get("SRC"));
+                source.set("p", new String[]{"(R_in-R_conductor-Sep_conductor)*cos(Theta_conductor/2)", "(R_in-R_conductor-Sep_conductor)*sin(Theta_conductor/2)", "Center"});
                 model.geom(id).run();
                 break;
             case "CircleContact_Primitive":
