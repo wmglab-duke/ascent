@@ -343,11 +343,12 @@ class Part {
                 wp_recess_cx1.set("quickplane", "xz");
                 wp_recess_cx1.set("unite", true);
 
-                im.next(im.get("Recess Cross Section 1") + "_" + "csel", "MY_NESTED_CSEL");
-                wp_recess_cx1.geom().selection().create(im.get("MY_NESTED_CSEL").split("_")[1], "CumulativeSelection"); // TODO: how do we handle sections within a selection?
-                wp_recess_cx1.geom().selection("csel1").label("Cumulative Selection 1"); // wp1_csel
+                im.next(im.get(wprcx1Label) + "_" + "csel", "Cumulative Selection 1");
+                wp_recess_cx1.geom().selection().create(im.get("Cumulative Selection 1").split("_")[1], "CumulativeSelection");
+                wp_recess_cx1.geom().selection("csel1").label("Cumulative Selection 1");
 
-                wp_recess_cx1.geom().selection().create("csel2", "CumulativeSelection");
+                im.next(im.get(wprcx1Label) + "_" + "csel", "RECESS CROSS SECTION");
+                wp_recess_cx1.geom().selection().create(im.get("RECESS CROSS SECTION").split("_")[1], "CumulativeSelection");
                 wp_recess_cx1.geom().selection("csel2").label("RECESS CROSS SECTION");
 
                 wp_recess_cx1.geom().create("r1", "Rectangle");

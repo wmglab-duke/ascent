@@ -524,10 +524,16 @@ public class FEMBuilder {
             model.geom("part2").feature("wp2").set("contributeto", "csel2");
             model.geom("part2").feature("wp2").set("quickplane", "xz");
             model.geom("part2").feature("wp2").set("unite", true);
+
             model.geom("part2").feature("wp2").geom().selection().create("csel1", "CumulativeSelection");
             model.geom("part2").feature("wp2").geom().selection("csel1").label("Cumulative Selection 1");
+
             model.geom("part2").feature("wp2").geom().selection().create("csel2", "CumulativeSelection");
             model.geom("part2").feature("wp2").geom().selection("csel2").label("RECESS CROSS SECTION");
+
+
+
+
             model.geom("part2").feature("wp2").geom().create("r1", "Rectangle");
             model.geom("part2").feature("wp2").geom().feature("r1").label("Recess Cross Section");
             model.geom("part2").feature("wp2").geom().feature("r1").set("contributeto", "csel2");
