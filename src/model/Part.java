@@ -419,7 +419,6 @@ class Part {
 
                 String sourceLabel = "Src";
                 GeomFeature source = model.geom(id).create(im.next("pt",sourceLabel), "Point");
-
                 source.label(sourceLabel);
                 source.set("contributeto", im.get("SRC"));
                 source.set("p", new String[]{"(R_in-R_conductor-Sep_conductor)*cos(Theta_conductor/2)", "(R_in-R_conductor-Sep_conductor)*sin(Theta_conductor/2)", "Center"});
