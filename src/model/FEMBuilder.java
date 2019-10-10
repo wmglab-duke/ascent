@@ -667,8 +667,10 @@ public class FEMBuilder {
             model.geom("part4").feature("del1").selection("input").init(3);
             model.geom("part4").feature("del1").selection("input").named("csel8");
             model.geom("part4").create("endif1", "EndIf");
+
             model.geom("part4").create("wp3", "WorkPlane");
             model.geom("part4").feature("wp3").label("Rotated Plane for Contact");
+
             model.geom("part4").feature("wp3").set("contributeto", "csel9");
             model.geom("part4").feature("wp3").set("planetype", "transformed");
             model.geom("part4").feature("wp3").set("workplane", "wp1");

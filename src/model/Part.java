@@ -3,6 +3,7 @@ package model;
 import com.comsol.model.GeomFeature;
 import com.comsol.model.Model;
 import com.comsol.model.ModelParam;
+import com.comsol.nativejni.geom.Geom;
 
 import java.util.HashMap;
 
@@ -456,185 +457,214 @@ class Part {
                             .label(cselCCLabel);
                 }
 
-                model.geom(id).create(mw.next("wp", "Base Plane (Pre Rrotation)"), "WorkPlane");
-                model.geom(id).feature(mw.get("Base Plane (Pre Rrotation)")).label("Base Plane (Pre Rrotation)");
-                model.geom(id).feature(mw.get("Base Plane (Pre Rrotation)")).set("contributeto", mw.get("BASE PLANE (PRE ROTATION)"));
-                model.geom(id).feature(mw.get("Base Plane (Pre Rrotation)")).set("quickplane", "yz");
-                model.geom(id).feature(mw.get("Base Plane (Pre Rrotation)")).set("unite", true);
+                String bpprLabel = "Base Plane (Pre Rrotation)";
+                GeomFeature baseplane_prerot = model.geom(id).create(im.next("wp", bpprLabel), "WorkPlane");
+                baseplane_prerot.label(bpprLabel);
+                baseplane_prerot.set("contributeto", im.get("BASE PLANE (PRE ROTATION)"));
+                baseplane_prerot.set("quickplane", "yz");
+                baseplane_prerot.set("unite", true);
 
-                model.geom(id).create(mw.next("if","If Recess"), "If");
-                model.geom(id).feature(mw.get("If Recess")).label("If Recess");
-                model.geom(id).feature(mw.get("If Recess")).set("condition", "Recess>0");
+                String ifrecessCCLabel = "If Recess";
+                GeomFeature ifrecessCC = model.geom(id).create(im.next("if",ifrecessCCLabel), "If");
+                ifrecessCC.label(ifrecessCCLabel);
+                ifrecessCC.set("condition", "Recess>0");
 
-                model.geom(id).create(mw.next("wp","Rotated Plane for Recess"), "WorkPlane");
-                model.geom(id).feature(mw.get("Rotated Plane for Recess")).label("Rotated Plane for Recess");
-                model.geom(id).feature(mw.get("Rotated Plane for Recess")).set("contributeto", mw.get("PLANE FOR RECESS"));
-                model.geom(id).feature(mw.get("Rotated Plane for Recess")).set("planetype", "transformed");
-                model.geom(id).feature(mw.get("Rotated Plane for Recess")).set("workplane", mw.get("Rotated Plane for Recess"));
-                model.geom(id).feature(mw.get("Rotated Plane for Recess")).set("transaxis", new int[]{0, 1, 0});
-                model.geom(id).feature(mw.get("Rotated Plane for Recess")).set("transrot", "Rotation_angle");
-                model.geom(id).feature(mw.get("Rotated Plane for Recess")).set("unite", true);
-                model.geom(id).feature(mw.get("Rotated Plane for Recess")).geom().selection().create(mw.next("csel","CONTACT OUTLINE SHAPE"), "CumulativeSelection"); // TODO: how do we handle sections within a selection?
-                model.geom(id).feature(mw.get("Rotated Plane for Recess")).geom().selection(mw.get("CONTACT OUTLINE SHAPE")).label("CONTACT OUTLINE SHAPE");
-                model.geom(id).feature(mw.get("Rotated Plane for Recess")).geom().create(mw.next("if","If Contact Surface is Circle"), "If");                                // TODO: this is wrong how do we handle sections within a selection?
-                model.geom(id).feature(mw.get("Rotated Plane for Recess")).geom().feature(mw.get("If Contact Surface is Circle")).label("If Contact Surface is Circle");
-                model.geom(id).feature(mw.get("Rotated Plane for Recess")).geom().feature(mw.get("If Contact Surface is Circle")).set("condition", "Round_def==1");
-                model.geom(id).feature(mw.get("Rotated Plane for Recess")).geom().create(mw.next("e","Contact Outline"), "Ellipse");                            // TODO: how do we handle sections within a selection?
-                model.geom(id).feature(mw.get("Rotated Plane for Recess")).geom().feature(mw.get("Contact Outline")).label("Contact Outline");
-                model.geom(id).feature(mw.get("Rotated Plane for Recess")).geom().feature(mw.get("Contact Outline")).set("contributeto", mw.get("CONTACT OUTLINE SHAPE"));
-                model.geom(id).feature(mw.get("Rotated Plane for Recess")).geom().feature(mw.get("Contact Outline")).set("pos", new String[]{"0", "Center"});
-                model.geom(id).feature(mw.get("Rotated Plane for Recess")).geom().feature(mw.get("Contact Outline"))
-                        .set("semiaxes", new String[]{"A_ellipse_contact", "Diam_contact/2"});
-                model.geom(id).feature(mw.get("Rotated Plane for Recess")).geom().create(mw.next("elseif","Else If Contact Outline is Circle"), "ElseIf");
-                model.geom(id).feature(mw.get("Rotated Plane for Recess")).geom().feature(mw.get("Else If Contact Outline is Circle")).label("Else If Contact Outline is Circle");
-                model.geom(id).feature(mw.get("Rotated Plane for Recess")).geom().feature(mw.get("Else If Contact Outline is Circle")).set("condition", "Round_def==2");
-                model.geom(id).feature(mw.get("Rotated Plane for Recess")).geom().create(mw.next("e","Contact Outline 1"), "Ellipse");
-                model.geom(id).feature(mw.get("Rotated Plane for Recess")).geom().feature(mw.get("Contact Outline 1")).label("Contact Outline 1");
-                model.geom(id).feature(mw.get("Rotated Plane for Recess")).geom().feature(mw.get("Contact Outline 1")).set("contributeto", "csel1"); // TODO: this is wrong --- probably lots of errors in this region
-                model.geom(id).feature(mw.get("Rotated Plane for Recess")).geom().feature(mw.get("Contact Outline 1")).set("pos", new String[]{"0", "Center"});
-                model.geom(id).feature(mw.get("Rotated Plane for Recess")).geom().feature(mw.get("Contact Outline 1"))
-                        .set("semiaxes", new String[]{"Diam_contact/2", "Diam_contact/2"});
-                model.geom(id).feature(mw.get("Rotated Plane for Recess")).geom().create(mw.next("endif"), "EndIf");
+                String rprLabel = "Rotated Plane for Recess";
+                GeomFeature rpr = model.geom(id).create(im.next("wp",rprLabel), "WorkPlane");
+                rpr.label(rprLabel);
+                rpr.set("contributeto", im.get("PLANE FOR RECESS"));
+                rpr.set("planetype", "transformed");
+                rpr.set("workplane", im.get("Rotated Plane for Recess"));
+                rpr.set("transaxis", new int[]{0, 1, 0});
+                rpr.set("transrot", "Rotation_angle");
+                rpr.set("unite", true);
 
-                model.geom(id).create(mw.next("ext","Make Pre Cut Recess Domains"), "Extrude");
-                model.geom(id).feature(mw.get("Make Pre Cut Recess Domains")).label("Make Pre Cut Recess Domains");
-                model.geom(id).feature(mw.get("Make Pre Cut Recess Domains")).set("contributeto", mw.get("PRE CUT RECESS"));
-                model.geom(id).feature(mw.get("Make Pre Cut Recess Domains")).setIndex("distance", "R_in+Recess+Overshoot", 0);
-                model.geom(id).feature(mw.get("Make Pre Cut Recess Domains")).selection("input").named(mw.get("PLANE FOR RECESS"));
+                String cosLabel = "CONTACT OUTLINE SHAPE";
+                rpr.geom().selection().create(im.next("csel",cosLabel), "CumulativeSelection");
+                rpr.geom().selection(im.get(cosLabel)).label(cosLabel);
 
-                model.geom(id).create(mw.next("cyl","Recess Cut In"), "Cylinder");
-                model.geom(id).feature(mw.get("Recess Cut In")).label("Recess Cut In");
-                model.geom(id).feature(mw.get("Recess Cut In")).set("contributeto", mw.get("RECESS CUTTER IN"));
-                model.geom(id).feature(mw.get("Recess Cut In")).set("pos", new String[]{"0", "0", "Center-L/2"});
-                model.geom(id).feature(mw.get("Recess Cut In")).set("r", "R_in");
-                model.geom(id).feature(mw.get("Recess Cut In")).set("h", "L");
+                String ifcsicLabel = "If Contact Surface is Circle";
+                GeomFeature ifcsic = rpr.geom().create(im.next("if",ifcsicLabel), "If");
+                ifcsic.label("If Contact Surface is Circle");
+                ifcsic.set("condition", "Round_def==1");
 
-                model.geom(id).create(mw.next("cyl","Recess Cut Out"), "Cylinder");
-                model.geom(id).feature(mw.get("Recess Cut Out")).label("Recess Cut Out");
-                model.geom(id).feature(mw.get("Recess Cut Out")).set("contributeto", mw.get("RECESS CUTTER OUT"));
-                model.geom(id).feature(mw.get("Recess Cut Out")).set("pos", new String[]{"0", "0", "Center-L/2"});
-                model.geom(id).feature(mw.get("Recess Cut Out")).set("r", "R_in+Recess");
-                model.geom(id).feature(mw.get("Recess Cut Out")).set("h", "L");
+                String coLabel = "Contact Outline";
+                GeomFeature co = rpr.geom().create(im.next("e",coLabel), "Ellipse");
+                co.label("Contact Outline");
+                co.set("contributeto", im.get("CONTACT OUTLINE SHAPE"));
+                co.set("pos", new String[]{"0", "Center"});
+                co.set("semiaxes", new String[]{"A_ellipse_contact", "Diam_contact/2"});
 
-                model.geom(id).create(mw.next("dif","Execute Recess Cut In"), "Difference");
-                model.geom(id).feature(mw.get("Execute Recess Cut In")).label("Execute Recess Cut In");
-                model.geom(id).feature(mw.get("Execute Recess Cut In")).set("contributeto", mw.get("RECESS FINAL"));
-                model.geom(id).feature(mw.get("Execute Recess Cut In")).selection("input").named(mw.get("PRE CUT RECESS"));
-                model.geom(id).feature(mw.get("Execute Recess Cut In")).selection("input2").named(mw.get("RECESS CUTTER IN"));
+                String elifcocLabel = "Else If Contact Outline is Circle";
+                GeomFeature elifcoc = rpr.geom().create(im.next("elseif",elifcocLabel), "ElseIf");
+                elifcoc.label("Else If Contact Outline is Circle");
+                elifcoc.set("condition", "Round_def==2");
 
-                model.geom(id).create(mw.next("pard", "Partition Outer Recess Domain"), "PartitionDomains");
-                model.geom(id).feature(mw.get("Partition Outer Recess Domain")).label("Partition Outer Recess Domain");
-                model.geom(id).feature(mw.get("Partition Outer Recess Domain")).set("contributeto", mw.get("RECESS FINAL"));
-                model.geom(id).feature(mw.get("Partition Outer Recess Domain")).set("partitionwith", "objects");
-                model.geom(id).feature(mw.get("Partition Outer Recess Domain")).set("keepobject", false);
-                model.geom(id).feature(mw.get("Partition Outer Recess Domain")).selection("domain").named(mw.get("PRE CUT RECESS"));
-                model.geom(id).feature(mw.get("Partition Outer Recess Domain")).selection("object").named(mw.get("RECESS CUTTER OUT"));
+                String co1Label = "Contact Outline 1";
+                GeomFeature co1 = rpr.geom().create(im.next("e",co1Label), "Ellipse");
+                co1.label(co1Label);
+                co1.set("contributeto", im.get("CONTACT OUTLINE SHAPE"));
+                co1.set("pos", new String[]{"0", "Center"});
+                co1.set("semiaxes", new String[]{"Diam_contact/2", "Diam_contact/2"});
+                rpr.geom().create(im.next("endif"), "EndIf");
 
-                model.geom(id).create(mw.next("ballsel","Select Overshoot"), "BallSelection");
-                model.geom(id).feature(mw.get("Select Overshoot")).label("Select Overshoot");
-                model.geom(id).feature(mw.get("Select Overshoot")).set("posx", "(R_in+Recess+Overshoot/2)*cos(Rotation_angle)");
-                model.geom(id).feature(mw.get("Select Overshoot")).set("posy", "(R_in+Recess+Overshoot/2)*sin(Rotation_angle)");
-                model.geom(id).feature(mw.get("Select Overshoot")).set("posz", "Center");
-                model.geom(id).feature(mw.get("Select Overshoot")).set("r", 1);
-                model.geom(id).feature(mw.get("Select Overshoot")).set("contributeto", mw.get("RECESS OVERSHOOT"));
+                String mpcrdLabel = "Make Pre Cut Recess Domains";
+                GeomFeature mpcrd = model.geom(id).create(im.next("ext",mpcrdLabel), "Extrude");
+                mpcrd.label(mpcrdLabel);
+                mpcrd.set("contributeto", im.get("PRE CUT RECESS"));
+                mpcrd.setIndex("distance", "R_in+Recess+Overshoot", 0);
+                mpcrd.selection("input").named(im.get("PLANE FOR RECESS"));
 
-                model.geom(id).create(mw.next("del","Delete Recess Overshoot"), "Delete");
-                model.geom(id).feature(mw.get("Delete Recess Overshoot")).label("Delete Recess Overshoot");
-                model.geom(id).feature(mw.get("Delete Recess Overshoot")).selection("input").init(3);                                         // TODO: not sure what this means, look closer in GUI to see if it is clear there
-                model.geom(id).feature(mw.get("Delete Recess Overshoot")).selection("input").named(mw.get("RECESS OVERSHOOT"));
+                String rciLabel = "Recess Cut In";
+                GeomFeature rci = model.geom(id).create(im.next("cyl",rciLabel), "Cylinder");
+                rci.label(rciLabel);
+                rci.set("contributeto", im.get("RECESS CUTTER IN"));
+                rci.set("pos", new String[]{"0", "0", "Center-L/2"});
+                rci.set("r", "R_in");
+                rci.set("h", "L");
 
-                model.geom(id).create(mw.next("endif"), "EndIf");
+                String rcoLabel = "Recess Cut Out";
+                GeomFeature rco = model.geom(id).create(im.next("cyl",rcoLabel), "Cylinder");
+                rco.label(rcoLabel);
+                rco.set("contributeto", im.get("RECESS CUTTER OUT"));
+                rco.set("pos", new String[]{"0", "0", "Center-L/2"});
+                rco.set("r", "R_in+Recess");
+                rco.set("h", "L");
 
-                String gfKey = mw.next("wp");
+                String erciLabel = "Execute Recess Cut In";
+                GeomFeature erci = model.geom(id).create(im.next("dif",erciLabel), "Difference");
+                erci.label(erciLabel);
+                erci.set("contributeto", im.get("RECESS FINAL"));
+                erci.selection("input").named(im.get("PRE CUT RECESS"));
+                erci.selection("input2").named(im.get("RECESS CUTTER IN"));
 
-                GeomFeature gf = model.geom(id).feature(gfKey);
+                String pordLabel = "Partition Outer Recess Domain";
+                GeomFeature pord = model.geom(id).create(im.next("pard", pordLabel), "PartitionDomains");
+                pord.label(pordLabel);
+                pord.set("contributeto", im.get("RECESS FINAL"));
+                pord.set("partitionwith", "objects");
+                pord.set("keepobject", false);
+                pord.selection("domain").named(im.get("PRE CUT RECESS"));
+                pord.selection("object").named(im.get("RECESS CUTTER OUT"));
 
-                model.geom(id).create(gfKey, "WorkPlane");
-                gf.label("Rotated Plane for Contact");
+                String soLabel = "Select Overshoot";
+                GeomFeature so = model.geom(id).create(im.next("ballsel",soLabel), "BallSelection");
+                so.label(soLabel);
+                so.set("posx", "(R_in+Recess+Overshoot/2)*cos(Rotation_angle)");
+                so.set("posy", "(R_in+Recess+Overshoot/2)*sin(Rotation_angle)");
+                so.set("posz", "Center");
+                so.set("r", 1);
+                so.set("contributeto", im.get("RECESS OVERSHOOT"));
 
-                model.geom(id).feature(mw.get("Rotated Plane for Contact")).set("contributeto", mw.get("PLANE FOR CONTACT"));
-                model.geom(id).feature(mw.get("Rotated Plane for Contact")).set("planetype", "transformed");
-                model.geom(id).feature(mw.get("Rotated Plane for Contact")).set("workplane", mw.get("Base Plane (Pre Rrotation)"));
-                model.geom(id).feature(mw.get("Rotated Plane for Contact")).set("transaxis", new int[]{0, 1, 0});
-                model.geom(id).feature(mw.get("Rotated Plane for Contact")).set("transrot", "Rotation_angle");
-                model.geom(id).feature(mw.get("Rotated Plane for Contact")).set("unite", true);
-                model.geom(id).feature(mw.get("Rotated Plane for Contact")).geom().selection().create("csel1", "CumulativeSelection");    // TODO
-                model.geom(id).feature(mw.get("Rotated Plane for Contact")).geom().selection("csel1").label("CONTACT OUTLINE SHAPE");     // TODO: how do we handle sections within a selection?
-                model.geom(id).feature(mw.get("Rotated Plane for Contact")).geom().create("if1", "If");                               // TODO: how do we handle sections within a selection?
-                model.geom(id).feature(mw.get("Rotated Plane for Contact")).geom().feature("if1").label("If Contact Surface is Circle");  // TODO: how do we handle sections within a selection?
-                model.geom(id).feature(mw.get("Rotated Plane for Contact")).geom().feature("if1").set("condition", "Round_def==1");   // TODO: how do we handle sections within a selection?
-                model.geom(id).feature(mw.get("Rotated Plane for Contact")).geom().create("e1", "Ellipse");                           // TODO: how do we handle sections within a selection?
-                model.geom(id).feature(mw.get("Rotated Plane for Contact")).geom().feature("e1").label("Contact Outline");                // TODO: how do we handle sections within a selection?
-                model.geom(id).feature(mw.get("Rotated Plane for Contact")).geom().feature("e1").set("contributeto", "csel1");            // TODO: how do we handle sections within a selection?
-                model.geom(id).feature(mw.get("Rotated Plane for Contact")).geom().feature("e1").set("pos", new String[]{"0", "Center"}); // TODO: how do we handle sections within a selection?
-                model.geom(id).feature(mw.get("Rotated Plane for Contact")).geom().feature("e1")                                          // TODO: how do we handle sections within a selection?
-                        .set("semiaxes", new String[]{"A_ellipse_contact", "Diam_contact/2"});
-                model.geom(id).feature(mw.get("Rotated Plane for Contact")).geom().create("elseif1", "ElseIf");                       // TODO: how do we handle sections within a selection?
-                model.geom(id).feature(mw.get("Rotated Plane for Contact")).geom().feature("elseif1").label("Else If Contact Outline is Circle"); // TODO: how do we handle sections within a selection?
-                model.geom(id).feature(mw.get("Rotated Plane for Contact")).geom().feature("elseif1").set("condition", "Round_def==2"); // TODO: how do we handle sections within a selection?
-                model.geom(id).feature(mw.get("Rotated Plane for Contact")).geom().create("e2", "Ellipse");                             // TODO: how do we handle sections within a selection?
-                model.geom(id).feature(mw.get("Rotated Plane for Contact")).geom().feature("e2").label("Contact Outline 1");                // TODO: how do we handle sections within a selection?
-                model.geom(id).feature(mw.get("Rotated Plane for Contact")).geom().feature("e2").set("contributeto", "csel1");              // TODO: how do we handle sections within a selection?
-                model.geom(id).feature(mw.get("Rotated Plane for Contact")).geom().feature("e2").set("pos", new String[]{"0", "Center"});   // TODO: how do we handle sections within a selection?
-                model.geom(id).feature(mw.get("Rotated Plane for Contact")).geom().feature("e2")                                            // TODO: how do we handle sections within a selection?
-                        .set("semiaxes", new String[]{"Diam_contact/2", "Diam_contact/2"});
-                model.geom(id).feature(mw.get("Rotated Plane for Contact")).geom().create("endif1", "EndIf");                           // TODO: how do we handle sections within a selection?
+                String droLabel = "Delete Recess Overshoot";
+                GeomFeature dro = model.geom(id).create(im.next("del",droLabel), "Delete");
+                dro.label(droLabel);
+                dro.selection("input").init(3);
+                dro.selection("input").named(im.get("RECESS OVERSHOOT"));
 
+                String endifrecessLabel = "EndIf";
+                model.geom(id).create(im.next("endif"), endifrecessLabel);
 
-                model.geom(id).create(mw.next("ext","Make Pre Cut Contact Domains"), "Extrude");
-                model.geom(id).feature(mw.get("Make Pre Cut Contact Domains")).label("Make Pre Cut Contact Domains");
-                model.geom(id).feature(mw.get("Make Pre Cut Contact Domains")).set("contributeto", mw.get("PRE CUT CONTACT"));
-                model.geom(id).feature(mw.get("Make Pre Cut Contact Domains")).setIndex("distance", "R_in+Recess+Contact_depth+Overshoot", 0);
-                model.geom(id).feature(mw.get("Make Pre Cut Contact Domains")).selection("input").named(mw.get("PLANE FOR CONTACT"));
+                String rpcLabel = "Rotated Plane for Contact";
+                GeomFeature rpc = model.geom(id).create(im.next("wp",rpcLabel), "WorkPlane");
+                rpc.label(rpcLabel);
+                rpc.set("contributeto", im.get("PLANE FOR CONTACT"));
+                rpc.set("planetype", "transformed");
+                rpc.set("workplane", im.get("Base Plane (Pre Rrotation)"));
+                rpc.set("transaxis", new int[]{0, 1, 0});
+                rpc.set("transrot", "Rotation_angle");
+                rpc.set("unite", true);
 
-                model.geom(id).create(mw.next("cyl","Contact Cut In"), "Cylinder");
-                model.geom(id).feature(mw.get("Contact Cut In")).label("Contact Cut In");
-                model.geom(id).feature(mw.get("Contact Cut In")).set("contributeto", mw.get("CONTACT CUTTER IN"));
-                model.geom(id).feature(mw.get("Contact Cut In")).set("pos", new String[]{"0", "0", "Center-L/2"});
-                model.geom(id).feature(mw.get("Contact Cut In")).set("r", "R_in+Recess");
-                model.geom(id).feature(mw.get("Contact Cut In")).set("h", "L");
+                String coscLabel = "CONTACT OUTLINE SHAPE";
 
-                model.geom(id).create(mw.next("cyl","Contact Cut Out"), "Cylinder");
-                model.geom(id).feature(mw.get("Contact Cut Out")).label("Contact Cut Out");
-                model.geom(id).feature(mw.get("Contact Cut Out")).set("contributeto", mw.get("CONTACT CUTTER OUT"));
-                model.geom(id).feature(mw.get("Contact Cut Out")).set("pos", new String[]{"0", "0", "Center-L/2"});
-                model.geom(id).feature(mw.get("Contact Cut Out")).set("r", "R_in+Recess+Contact_depth");
-                model.geom(id).feature(mw.get("Contact Cut Out")).set("h", "L");
+                rpc.geom().selection().create(im.next("csel",coscLabel), "CumulativeSelection");
+                rpc.geom().selection(im.get(coscLabel)).label(coscLabel);
 
-                model.geom(id).create(mw.next("dif","Execute Contact Cut In"), "Difference");
-                model.geom(id).feature(mw.get("Execute Contact Cut In")).label("Execute Contact Cut In");
-                model.geom(id).feature(mw.get("Execute Contact Cut In")).set("contributeto", mw.get("CONTACT FINAL"));
-                model.geom(id).feature(mw.get("Execute Contact Cut In")).selection("input").named("PRE CUT CONTACT");
-                model.geom(id).feature(mw.get("Execute Contact Cut In")).selection("input2").named(mw.get("CONTACT CUTTER IN"));
+                String ifcsiccLabel = "If Contact Surface is Circle";
+                GeomFeature icsicc = rpc.geom().create(im.next("if",ifcsiccLabel), "If");
+                icsicc.label(ifcsiccLabel);
+                icsicc.set("condition", "Round_def==1");
 
-                model.geom(id).create(mw.next("pard","Partition Outer Contact Domain"), "PartitionDomains");
-                model.geom(id).feature(mw.get("Partition Outer Contact Domain")).label("Partition Outer Contact Domain"); // added this
-                model.geom(id).feature(mw.get("Partition Outer Contact Domain")).set("contributeto", mw.get("CONTACT FINAL"));
-                model.geom(id).feature(mw.get("Partition Outer Contact Domain")).set("partitionwith", "objects");
-                model.geom(id).feature(mw.get("Partition Outer Contact Domain")).set("keepobject", false);
-                model.geom(id).feature(mw.get("Partition Outer Contact Domain")).selection("domain").named(mw.get("PRE CUT CONTACT"));
-                model.geom(id).feature(mw.get("Partition Outer Contact Domain")).selection("object").named(mw.get("CONTACT CUTTER OUT"));
+                String cocLabel = "Contact Outline";
+                GeomFeature coc = rpc.geom().create(im.next("e",cocLabel), "Ellipse");
+                coc.label(cocLabel);
+                coc.set("contributeto", "csel1");
+                coc.set("pos", new String[]{"0", "Center"});
+                coc.set("semiaxes", new String[]{"A_ellipse_contact", "Diam_contact/2"});
 
-                model.geom(id).create(mw.next("ballsel", "Select Overshoot 1"), "BallSelection");
-                model.geom(id).feature(mw.get("Select Overshoot 1")).label("Select Overshoot 1");
-                model.geom(id).feature(mw.get("Select Overshoot 1"))
-                        .set("posx", "(R_in+Recess+Contact_depth+Overshoot/2)*cos(Rotation_angle)");
-                model.geom(id).feature(mw.get("Select Overshoot 1"))
-                        .set("posy", "(R_in+Recess+Contact_depth+Overshoot/2)*sin(Rotation_angle)");
-                model.geom(id).feature(mw.get("Select Overshoot 1")).set("posz", "Center");
-                model.geom(id).feature(mw.get("Select Overshoot 1")).set("r", 1);
-                model.geom(id).feature(mw.get("Select Overshoot 1")).set("contributeto", mw.get("RECESS OVERSHOOT"));
+                String elifcoccLabel = "Else If Contact Outline is Circle";
+                GeomFeature elifcocc = rpc.geom().create(im.next("elseif",elifcoccLabel), "ElseIf");
+                elifcoc.label("Else If Contact Outline is Circle");
+                elifcocc.set("condition", "Round_def==2");
 
-                model.geom(id).create(mw.next("del","Delete Recess Overshoot 1"), "Delete");
-                model.geom(id).feature(mw.get("Delete Recess Overshoot 1")).label("Delete Recess Overshoot 1");
-                model.geom(id).feature(mw.get("Delete Recess Overshoot 1")).selection("input").init(3);
-                model.geom(id).feature(mw.get("Delete Recess Overshoot 1")).selection("input").named(mw.get("RECESS OVERSHOOT"));
+                String co1cLabel = "Contact Outline 1";
+                GeomFeature co1c = rpc.geom().create(im.next("e",co1cLabel), "Ellipse");
+                co1c.label("Contact Outline 1");
+                co1c.set("contributeto", im.get("CONTACT OUTLINE SHAPE"));
+                co1c.set("pos", new String[]{"0", "Center"});
+                co1c.set("semiaxes", new String[]{"Diam_contact/2", "Diam_contact/2"});
+                rpc.geom().create(im.next("endif"), "EndIf");
 
-                model.geom(id).create(mw.next("pt","Src"), "Point");
-                model.geom(id).feature(mw.get("Src")).label("Src");
-                model.geom(id).feature(mw.get("Src")).set("contributeto", mw.get("SRC"));
-                model.geom(id).feature(mw.get("Src"))
-                        .set("p", new String[]{"(R_in+Recess+Contact_depth/2)*cos(Rotation_angle)", "(R_in+Recess+Contact_depth/2)*sin(Rotation_angle)", "Center"});
+                String mpccdLabel = "Make Pre Cut Contact Domains";
+                GeomFeature mpccd = model.geom(id).create(im.next("ext",mpccdLabel), "Extrude");
+                mpccd.label(mpccdLabel);
+                mpccd.set("contributeto", im.get("PRE CUT CONTACT"));
+                mpccd.setIndex("distance", "R_in+Recess+Contact_depth+Overshoot", 0);
+                mpccd.selection("input").named(im.get("PLANE FOR CONTACT"));
+
+                String cciLabel = "Contact Cut In";
+                GeomFeature cci = model.geom(id).create(im.next("cyl",cciLabel), "Cylinder");
+                cci.label(cciLabel);
+                cci.set("contributeto", im.get("CONTACT CUTTER IN"));
+                cci.set("pos", new String[]{"0", "0", "Center-L/2"});
+                cci.set("r", "R_in+Recess");
+                cci.set("h", "L");
+
+                String ccoLabel = "Contact Cut Out";
+                GeomFeature cco = model.geom(id).create(im.next("cyl",ccoLabel), "Cylinder");
+                cco.label(ccoLabel);
+                cco.set("contributeto", im.get("CONTACT CUTTER OUT"));
+                cco.set("pos", new String[]{"0", "0", "Center-L/2"});
+                cco.set("r", "R_in+Recess+Contact_depth");
+                cco.set("h", "L");
+
+                String ecciLabel = "Execute Contact Cut In";
+                GeomFeature ecci = model.geom(id).create(im.next("dif",ecciLabel), "Difference");
+                ecci.label(ecciLabel);
+                ecci.set("contributeto", im.get("CONTACT FINAL"));
+                ecci.selection("input").named("PRE CUT CONTACT");
+                ecci.selection("input2").named(im.get("CONTACT CUTTER IN"));
+
+                String pocdLabel = "Partition Outer Contact Domain";
+                GeomFeature pocd = model.geom(id).create(im.next("pard",pocdLabel), "PartitionDomains");
+                pocd.label(pocdLabel);
+                pocd.set("contributeto", im.get("CONTACT FINAL"));
+                pocd.set("partitionwith", "objects");
+                pocd.set("keepobject", false);
+                pocd.selection("domain").named(im.get("PRE CUT CONTACT"));
+                pocd.selection("object").named(im.get("CONTACT CUTTER OUT"));
+
+                String so1Label = "Select Overshoot 1";
+                GeomFeature so1 = model.geom(id).create(im.next("ballsel", so1Label), "BallSelection");
+                so1.label(so1Label);
+                so1.set("posx", "(R_in+Recess+Contact_depth+Overshoot/2)*cos(Rotation_angle)");
+                so1.set("posy", "(R_in+Recess+Contact_depth+Overshoot/2)*sin(Rotation_angle)");
+                so1.set("posz", "Center");
+                so1.set("r", 1);
+                so1.set("contributeto", im.get("RECESS OVERSHOOT"));
+
+                String dro1Label = "Delete Recess Overshoot 1";
+                GeomFeature dro1 = model.geom(id).create(im.next("del",dro1Label), "Delete");
+                dro1.label(dro1Label);
+                dro1.selection("input").init(3);
+                dro1.selection("input").named(im.get("RECESS OVERSHOOT"));
+
+                String srccLabel = "Src";
+                GeomFeature srcc = model.geom(id).create(im.next("pt",srccLabel), "Point");
+                srcc.label(srccLabel);
+                srcc.set("contributeto", mw.get("SRC"));
+                srcc.set("p", new String[]{"(R_in+Recess+Contact_depth/2)*cos(Rotation_angle)", "(R_in+Recess+Contact_depth/2)*sin(Rotation_angle)", "Center"});
+
                 model.geom(id).run();
                 break;
             case "HelicalCuffnContact_Primitive":
