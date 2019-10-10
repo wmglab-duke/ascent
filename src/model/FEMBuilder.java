@@ -750,6 +750,7 @@ public class FEMBuilder {
         // LivaNova Primitive
         if (parts.contains("HelicalCuffnContact_Primitive")) {
             System.out.println("Adding HelicalCuffnContact_Primitive Part Operations");
+
             model.geom("part5").create("wp1", "WorkPlane");
             model.geom("part5").feature("wp1").label("Helical Insulator Cross Section Part 1");
             model.geom("part5").feature("wp1").set("quickplane", "xz");
@@ -772,6 +773,7 @@ public class FEMBuilder {
             model.geom("part5").feature("pc1")
                     .set("coord", new String[]{"cos(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "sin(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "Center+(L_cuff_LN)*(s/rev_cuff_LN)-(L_cuff_LN/2)"});
             model.geom("part5").create("swe1", "Sweep");
+
             model.geom("part5").feature("swe1").label("Make Cuff Part 1");
             model.geom("part5").feature("swe1").set("contributeto", "csel2");
             model.geom("part5").feature("swe1").set("crossfaces", true);
@@ -781,6 +783,7 @@ public class FEMBuilder {
             model.geom("part5").feature("swe1").selection("face").named("wp1_csel2");
             model.geom("part5").feature("swe1").selection("edge").named("csel1");
             model.geom("part5").feature("swe1").selection("diredge").set("pc1(1)", 1);
+
             model.geom("part5").create("ballsel1", "BallSelection");
             model.geom("part5").feature("ballsel1").set("entitydim", 2);
             model.geom("part5").feature("ballsel1").label("Select End Face Part 1");
@@ -791,6 +794,7 @@ public class FEMBuilder {
             model.geom("part5").feature("ballsel1").set("r", 1);
             model.geom("part5").feature("ballsel1").set("contributeto", "csel3");
             model.geom("part5").create("wp2", "WorkPlane");
+
             model.geom("part5").feature("wp2").label("Helical Insulator Cross Section Part 2");
             model.geom("part5").feature("wp2").set("planetype", "faceparallel");
             model.geom("part5").feature("wp2").set("unite", true);
@@ -804,6 +808,7 @@ public class FEMBuilder {
             model.geom("part5").feature("wp2").geom().feature("r1").set("contributeto", "csel1");
             model.geom("part5").feature("wp2").geom().feature("r1").set("base", "center");
             model.geom("part5").feature("wp2").geom().feature("r1").set("size", new String[]{"thk_cuff_LN", "w_cuff_LN"});
+
             model.geom("part5").create("wp3", "WorkPlane");
             model.geom("part5").feature("wp3").label("Helical Conductor Cross Section Part 2");
             model.geom("part5").feature("wp3").set("planetype", "faceparallel");

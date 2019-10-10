@@ -120,7 +120,7 @@ class Part {
                 String mocsLabel = "Make Outer Cuff Surface";
                 GeomFeature outer_surf = model.geom(id).create(im.next("cyl",mocsLabel),"Cylinder");
                 outer_surf.label(mocsLabel);
-                outer_surf.set("contributeto", mw.get("OUTER CUFF SURFACE"));
+                outer_surf.set("contributeto", im.get("OUTER CUFF SURFACE"));
                 outer_surf.set("pos", new String[]{"0", "0", "Center-(L/2)"});
                 outer_surf.set("r", "R_out");
                 outer_surf.set("h", "L");
@@ -662,7 +662,7 @@ class Part {
                 String srccLabel = "Src";
                 GeomFeature srcc = model.geom(id).create(im.next("pt",srccLabel), "Point");
                 srcc.label(srccLabel);
-                srcc.set("contributeto", mw.get("SRC"));
+                srcc.set("contributeto", im.get("SRC"));
                 srcc.set("p", new String[]{"(R_in+Recess+Contact_depth/2)*cos(Rotation_angle)", "(R_in+Recess+Contact_depth/2)*sin(Rotation_angle)", "Center"});
 
                 model.geom(id).run();
@@ -688,159 +688,169 @@ class Part {
                 }
 
                 String hicsp1Label = "Helical Insulator Cross Section Part 1";
-                GeomFeature hicsp1 = model.geom(id).create(mw.next("wp",hicsp1Label), "WorkPlane");
+                GeomFeature hicsp1 = model.geom(id).create(im.next("wp",hicsp1Label), "WorkPlane");
                 hicsp1.label(hicsp1Label);
                 hicsp1.set("quickplane", "xz");
                 hicsp1.set("unite", true);
-                hicsp1.geom().selection().create("csel1", "CumulativeSelection");               // TODO
-                hicsp1.geom().selection("csel1").label("HELICAL INSULATOR CROSS SECTION");          // TODO
-                hicsp1.geom().selection().create("csel2", "CumulativeSelection");               // TODO
-                hicsp1.geom().selection("csel2").label("HELICAL INSULATOR CROSS SECTION P1");       // TODO
-                hicsp1.geom().create("r1", "Rectangle");                                        // TODO
-                hicsp1.geom().feature("r1").label("Helical Insulator Cross Section Part 1");        // TODO
-                hicsp1.geom().feature("r1").set("contributeto", "csel2");                           // TODO
+
+                String hicsLabel = "HELICAL INSULATOR CROSS SECTION";
+                hicsp1.geom().selection().create(im.next("csel",hicsLabel), "CumulativeSelection");
+                hicsp1.geom().selection(im.get(hicsLabel)).label(hicsLabel);
+
+                String hicxp1Label = "HELICAL INSULATOR CROSS SECTION P1";
+                hicsp1.geom().selection().create(im.next("csel",hicxp1Label), "CumulativeSelection");
+                hicsp1.geom().selection(im.get(hicxp1Label)).label(hicxp1Label);
+                hicsp1.geom().create("r1", "Rectangle");
+                hicsp1.geom().feature("r1").label("Helical Insulator Cross Section Part 1");
+                hicsp1.geom().feature("r1").set("contributeto", "csel2");
                 hicsp1.geom().feature("r1").set("pos", new String[]{"r_cuff_in_LN+(thk_cuff_LN/2)", "Center-(L_cuff_LN/2)"});
-                hicsp1.geom().feature("r1").set("base", "center");                                  // TODO
-                hicsp1.geom().feature("r1").set("size", new String[]{"thk_cuff_LN", "w_cuff_LN"});  // TODO
+                hicsp1.geom().feature("r1").set("base", "center");
+                hicsp1.geom().feature("r1").set("size", new String[]{"thk_cuff_LN", "w_cuff_LN"});
 
                 String pcp1Label = "Parametric Curve Part 1";
-                GeomFeature pcp1 = model.geom(id).create(mw.next("pc",pcp1Label), "ParametricCurve");
+                GeomFeature pcp1 = model.geom(id).create(im.next("pc",pcp1Label), "ParametricCurve");
                 pcp1.label(pcp1Label);
-                pcp1.set("contributeto", mw.get("PC1"));
+                pcp1.set("contributeto", im.get("PC1"));
                 pcp1.set("parmax", "rev_cuff_LN*(0.75/2.5)");
                 pcp1.set("coord", new String[]{"cos(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "sin(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "Center+(L_cuff_LN)*(s/rev_cuff_LN)-(L_cuff_LN/2)"});
 
                 String mcp1Label = "Make Cuff Part 1";
-                GeomFeature mcp1 = model.geom(id).create(mw.next("swe","Make Cuff Part 1"), "Sweep");
+                GeomFeature mcp1 = model.geom(id).create(im.next("swe",mcp1Label), "Sweep");
                 mcp1.label("Make Cuff Part 1");
-                mcp1.set("contributeto", mw.get("Cuffp1"));
+                mcp1.set("contributeto", im.get("Cuffp1"));
                 mcp1.set("crossfaces", true);
                 mcp1.set("keep", false);
                 mcp1.set("includefinal", false);
                 mcp1.set("twistcomp", false);
-                mcp1.selection("face").named("wp1_csel2");  // TODO
-                mcp1.selection("edge").named(mw.get("PC1")); // TODO
-                mcp1.selection("diredge").set("pc1(1)", 1); // TODO
+                mcp1.selection("face").named(im.get(hicxp1Label) + "_" + im.get(hicxp1Label));
+                mcp1.selection("edge").named(im.get(im.get(hicsLabel)));
+                mcp1.selection("diredge").set(im.get(pcp1Label) + "(1)", 1);
 
                 String sefp1Label = "Select End Face Part 1";
-                GeomFeature sefp1 = model.geom(id).create(mw.next("ballsel", sefp1Label), "BallSelection");
+                GeomFeature sefp1 = model.geom(id).create(im.next("ballsel", sefp1Label), "BallSelection");
                 sefp1.set("entitydim", 2);
                 sefp1.label(sefp1Label);
                 sefp1.set("posx", "cos(2*pi*rev_cuff_LN*((0.75)/2.5))*((thk_cuff_LN/2)+r_cuff_in_LN)");
                 sefp1.set("posy", "sin(2*pi*rev_cuff_LN*((0.75)/2.5))*((thk_cuff_LN/2)+r_cuff_in_LN)");
                 sefp1.set("posz", "Center+(L_cuff_LN)*(rev_cuff_LN*((0.75)/2.5)/rev_cuff_LN)-(L_cuff_LN/2)");
                 sefp1.set("r", 1);
-                sefp1.set("contributeto", mw.get("SEL END P1"));
+                sefp1.set("contributeto", im.get("SEL END P1"));
 
                 String hicsp2Label = "Helical Insulator Cross Section Part 2";
-                GeomFeature hicsp2 = model.geom(id).create(mw.next("wp","Helical Insulator Cross Section Part 2"), "WorkPlane");
+                GeomFeature hicsp2 = model.geom(id).create(im.next("wp","Helical Insulator Cross Section Part 2"), "WorkPlane");
                 hicsp2.label(hicsp2Label);
                 hicsp2.set("planetype", "faceparallel");
                 hicsp2.set("unite", true);
-                hicsp2.selection("face").named("csel3");                                        // TODO
-                hicsp2.geom().selection().create("csel1", "CumulativeSelection");           // TODO
-                hicsp2.geom().selection("csel1").label("HELICAL INSULATOR CROSS SECTION P2");   // TODO
-                hicsp2.geom().selection().create("csel2", "CumulativeSelection");           // TODO
-                hicsp2.geom().selection("csel2").label("HELICAL CONDUCTOR CROSS SECTION P2");   // TODO
-                hicsp2.geom().create("r1", "Rectangle"); // TODO
-                hicsp2.geom().feature("r1").label("Helical Insulator Cross Section Part 2"); // TODO
-                hicsp2.geom().feature("r1").set("contributeto", "csel1");                       // TODO
-                hicsp2.geom().feature("r1").set("base", "center"); // TODO
-                hicsp2.geom().feature("r1").set("size", new String[]{"thk_cuff_LN", "w_cuff_LN"}); // TODO
+                hicsp2.selection("face").named(im.get("SEL END P1"));
+                String hicsp2wpLabel =  "HELICAL INSULATOR CROSS SECTION P2";
+                hicsp2.geom().selection().create(im.next("csel",hicsp2wpLabel), "CumulativeSelection");
+                hicsp2.geom().selection(im.get(hicsp2wpLabel)).label(hicsp2wpLabel);
+                String hccsp2wpLabel = "HELICAL CONDUCTOR CROSS SECTION P2";
+                hicsp2.geom().selection().create(im.next("csel",hccsp2wpLabel), "CumulativeSelection");
+                hicsp2.geom().selection(im.get(hccsp2wpLabel)).label(hccsp2wpLabel);
+                hicsp2.geom().create("r1", "Rectangle");
+                hicsp2.geom().feature("r1").label("Helical Insulator Cross Section Part 2");
+                hicsp2.geom().feature("r1").set("contributeto", im.get(hicsp2wpLabel));
+                hicsp2.geom().feature("r1").set("base", "center");
+                hicsp2.geom().feature("r1").set("size", new String[]{"thk_cuff_LN", "w_cuff_LN"});
 
                 String hccsp2Label = "Helical Conductor Cross Section Part 2";
-                GeomFeature hccsp2 = model.geom(id).create(mw.next("wp",hccsp2Label), "WorkPlane");
+                GeomFeature hccsp2 = model.geom(id).create(im.next("wp",hccsp2Label), "WorkPlane");
                 hccsp2.label("Helical Conductor Cross Section Part 2");
                 hccsp2.set("planetype", "faceparallel");
                 hccsp2.set("unite", true);
-                hccsp2.selection("face").named("csel3");                                      // TODO
-                hccsp2.geom().selection().create("csel1", "CumulativeSelection");         // TODO
-                hccsp2.geom().selection("csel1").label("HELICAL INSULATOR CROSS SECTION P2"); // TODO
-                hccsp2.geom().selection().create("csel2", "CumulativeSelection");         // TODO
-                hccsp2.geom().selection("csel2").label("HELICAL CONDUCTOR CROSS SECTION P2"); // TODO
+                hccsp2.selection("face").named(im.get("SEL END P1"));
+                String hicxp2Label = "HELICAL INSULATOR CROSS SECTION P2";
+                hccsp2.geom().selection().create(im.next("csel",hicxp2Label), "CumulativeSelection");
+                hccsp2.geom().selection(im.get("hicxp2Label")).label(hicxp2Label);
+
+                String hccxp2Label = "HELICAL CONDUCTOR CROSS SECTION P2";
+                hccsp2.geom().selection().create(im.next("csel",hccxp2Label), "CumulativeSelection");
+                hccsp2.geom().selection(im.get(hccxp2Label)).label(hccxp2Label);
                 hccsp2.geom().create("r2", "Rectangle");
-                hccsp2.geom().feature("r2").label("Helical Conductor Cross Section Part 2");  // TODO
-                hccsp2.geom().feature("r2").set("contributeto", "csel2");                     // TODO
+                hccsp2.geom().feature("r2").label("Helical Conductor Cross Section Part 2");
+                hccsp2.geom().feature("r2").set("contributeto", im.get(hccxp2Label));
                 hccsp2.geom().feature("r2").set("pos", new String[]{"(thk_elec_LN-thk_cuff_LN)/2", "0"});
                 hccsp2.geom().feature("r2").set("base", "center");
                 hccsp2.geom().feature("r2").set("size", new String[]{"thk_elec_LN", "w_elec_LN"});
 
                 String pcp2Label = "Parametric Curve Part 2";
-                GeomFeature pcp2 = model.geom(id).create(mw.next("pc",pcp2Label), "ParametricCurve");
+                GeomFeature pcp2 = model.geom(id).create(im.next("pc",pcp2Label), "ParametricCurve");
                 pcp2.label(pcp2Label);
-                pcp2.set("contributeto", "csel4");
+                pcp2.set("contributeto", im.get("PC2"));
                 pcp2.set("parmin", "rev_cuff_LN*(0.75/2.5)");
                 pcp2.set("parmax", "rev_cuff_LN*((0.75+1)/2.5)");
                 pcp2.set("coord", new String[]{"cos(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "sin(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "Center+(L_cuff_LN)*(s/rev_cuff_LN)-(L_cuff_LN/2)"});
 
                 String mcp2Label = "Make Cuff Part 2";
-                GeomFeature mcp2 = model.geom(id).create(mw.next("swe",mcp2Label), "Sweep");
+                GeomFeature mcp2 = model.geom(id).create(im.next("swe",mcp2Label), "Sweep");
                 mcp2.label("Make Cuff Part 2");
-                mcp2.set("contributeto", mw.get("Cuffp2"));
+                mcp2.set("contributeto", im.get("Cuffp2"));
                 mcp2.set("crossfaces", true);
                 mcp2.set("includefinal", false);
                 mcp2.set("twistcomp", false);
-                mcp2.selection("face").named("wp2_csel1"); //TODO
-                mcp2.selection("edge").named("csel4"); //TODO
-                mcp2.selection("diredge").set("pc2(1)", 1); //TODO
+                mcp2.selection("face").named(im.get(hccsp2Label) + "_" + im.get(hccxp2Label));
+                mcp2.selection("edge").named(im.get("PC2"));
+                mcp2.selection("diredge").set(im.get(pcp2Label) + "(1)", 1);
 
                 String mcp2cLabel = "Make Conductor Part 2";
-                GeomFeature mcp2c = model.geom(id).create(mw.next("swe",mcp2cLabel), "Sweep");
+                GeomFeature mcp2c = model.geom(id).create(im.next("swe",mcp2cLabel), "Sweep");
                 mcp2c.label(mcp2cLabel);
-                mcp2c.set("contributeto", mw.get("Conductorp2"));
+                mcp2c.set("contributeto", im.get("Conductorp2"));
                 mcp2c.set("crossfaces", true);
                 mcp2c.set("keep", false);
                 mcp2c.set("includefinal", false);
                 mcp2c.set("twistcomp", false);
-                mcp2c.selection("face").named("wp3_csel2"); //TODO
-                mcp2c.selection("edge").named(mw.get("PC2")); //TODO
-                mcp2c.selection("diredge").set("pc2(1)", 1); //TODO
+                mcp2c.selection("face").named(im.get(hccxp2Label + "_" + hccxp2Label));
+                mcp2c.selection("edge").named(im.get("PC2"));
+                mcp2c.selection("diredge").set(im.get(pcp2Label) + "(1)", 1);
 
                 String sefp2Label = "Select End Face Part 2";
-                GeomFeature sefp2 = model.geom(id).create(mw.next("ballsel",sefp2Label), "BallSelection");
+                GeomFeature sefp2 = model.geom(id).create(im.next("ballsel",sefp2Label), "BallSelection");
                 sefp2.set("entitydim", 2);
                 sefp2.label(sefp2Label;
                 sefp2.set("posx", "cos(2*pi*rev_cuff_LN*((0.75+1)/2.5))*((thk_cuff_LN/2)+r_cuff_in_LN)");
                 sefp2.set("posy", "sin(2*pi*rev_cuff_LN*((0.75+1)/2.5))*((thk_cuff_LN/2)+r_cuff_in_LN)");
                 sefp2.set("posz", "Center+(L_cuff_LN)*(rev_cuff_LN*((0.75+1)/2.5)/rev_cuff_LN)-(L_cuff_LN/2)");
                 sefp2.set("r", 1);
-                sefp2.set("contributeto", mw.get("SEL END P2"));
+                sefp2.set("contributeto", im.get("SEL END P2"));
 
                 String hicsp3Label = "Helical Insulator Cross Section Part 3";
-                GeomFeature hicsp3 = model.geom(id).create(mw.next("wp",hicsp3Label), "WorkPlane");
+                GeomFeature hicsp3 = model.geom(id).create(im.next("wp",hicsp3Label), "WorkPlane");
                 hicsp3.label(hicsp3Label);
                 hicsp3.set("planetype", "faceparallel");
                 hicsp3.set("unite", true);
-                hicsp3.selection("face").named(mw.get("SEL END P2"));
-                hicsp3.geom().selection().create("csel1", "CumulativeSelection"); //TODO
-                hicsp3.geom().selection("csel1").label("HELICAL INSULATOR CROSS SECTION P3"); //TODO
-                hicsp3.geom().create("r1", "Rectangle"); // TODO
+                hicsp3.selection("face").named(im.get("SEL END P2"));
+                String hicssp3Label = "HELICAL INSULATOR CROSS SECTION P3";
+                hicsp3.geom().selection().create(im.next("csel", hicssp3Label), "CumulativeSelection");
+                hicsp3.geom().selection(im.get(hicssp3Label)).label(hicssp3Label);
+                hicsp3.geom().create("r1", "Rectangle");
                 hicsp3.geom().feature("r1").label("Helical Insulator Cross Section Part 3");
-                hicsp3.geom().feature("r1").set("contributeto", "csel1"); //TODO - might not be necessary? maybe on the ones that are like wp1_csel1 need this actually
+                hicsp3.geom().feature("r1").set("contributeto", im.get(hicssp3Label));
                 hicsp3.geom().feature("r1").set("base", "center");
                 hicsp3.geom().feature("r1").set("size", new String[]{"thk_cuff_LN", "w_cuff_LN"});
 
                 String pcp3Label = "Parametric Curve Part 3";
-                GeomFeature pcp3 = model.geom(id).create(mw.next("pc",pcp3Label), "ParametricCurve");
+                GeomFeature pcp3 = model.geom(id).create(im.next("pc",pcp3Label), "ParametricCurve");
                 pcp3.label(pcp3Label);
-                pcp3.set("contributeto", mw.get("PC3"));
+                pcp3.set("contributeto", im.get("PC3"));
                 pcp3.set("parmin", "rev_cuff_LN*((0.75+1)/2.5)");
                 pcp3.set("parmax", "rev_cuff_LN");
                 pcp3.set("coord", new String[]{"cos(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "sin(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "Center+(L_cuff_LN)*(s/rev_cuff_LN)-(L_cuff_LN/2)"});
 
                 String mcp3Label = "Make Cuff Part 3";
-                GeomFeature mcp3 = model.geom(id).create(mw.next("swe",mcp3Label), "Sweep");
+                GeomFeature mcp3 = model.geom(id).create(im.next("swe",mcp3Label), "Sweep");
                 mcp3.label(mcp3Label);
-                mcp3.set("contributeto", mw.get("Cuffp3"));
-                mcp3.selection("face").named("wp4_csel1"); //TODO
-                mcp3.selection("edge").named(mw.get("PC3"));
+                mcp3.set("contributeto", im.get("Cuffp3"));
+                mcp3.selection("face").named(im.get(hicsp3Label) + "_" + im.get(hicssp3Label));
+                mcp3.selection("edge").named(im.get("PC3"));
                 mcp3.set("keep", false);
                 mcp3.set("twistcomp", false);
 
                 String srchLabel = "SRC";
-                GeomFeature srch = model.geom(id).create(mw.next("pt",srchLabel), "Point");
+                GeomFeature srch = model.geom(id).create(im.next("pt",srchLabel), "Point");
                 srch.label(srchLabel);
-                srch.set("contributeto", mw.get("SRC"));
+                srch.set("contributeto", im.get("SRC"));
                 srch.set("p", new String[]{"cos(2*pi*rev_cuff_LN*(1.25/2.5))*((thk_elec_LN/2)+r_cuff_in_LN)", "sin(2*pi*rev_cuff_LN*(1.25/2.5))*((thk_elec_LN/2)+r_cuff_in_LN)", "Center"});
 
                 model.geom(id).run();
@@ -882,18 +892,18 @@ class Part {
                 }
 
                 String bpprsLabel = "base plane (pre rotation)";
-                GeomFeature bpprs = model.geom(id).create(mw.next("wp",bpprsLabel), "WorkPlane");
+                GeomFeature bpprs = model.geom(id).create(im.next("wp",bpprsLabel), "WorkPlane");
                 bpprs.label(bpprsLabel);
-                bpprs.set("contributeto", mw.get("BASE CONTACT PLANE (PRE ROTATION)"));
+                bpprs.set("contributeto", im.get("BASE CONTACT PLANE (PRE ROTATION)"));
                 bpprs.set("quickplane", "yz");
                 bpprs.set("unite", true);
 
                 String ccscLabel = "Contact Cross Section";
-                GeomFeature ccsc = model.geom(id).create(mw.next("wp",ccscLabel), "WorkPlane");
+                GeomFeature ccsc = model.geom(id).create(im.next("wp",ccscLabel), "WorkPlane");
                 ccsc.label(ccscLabel);
-                ccsc.set("contributeto", mw.get("CONTACT CROSS SECTION"));
+                ccsc.set("contributeto", im.get("CONTACT CROSS SECTION"));
                 ccsc.set("planetype", "transformed");
-                ccsc.set("workplane", mw.get("Contact Cross Section"));
+                ccsc.set("workplane", im.get("Contact Cross Section"));
                 ccsc.set("transaxis", new int[]{0, 1, 0});
                 ccsc.set("transrot", "rotation_angle");
                 ccsc.set("unite", true);
@@ -921,83 +931,83 @@ class Part {
                 ccsc.geom().feature("mov1").selection("input").named("csel2"); //TODO
 
                 String mcpcLabel = "Make Contact Pre Cuts";
-                GeomFeature mcpc = model.geom(id).create(mw.next("ext",mcpcLabel), "Extrude");
+                GeomFeature mcpc = model.geom(id).create(im.next("ext",mcpcLabel), "Extrude");
                 mcpc.label("Make Contact Pre Cuts");
-                mcpc.set("contributeto", mw.get("CONTACT PRE CUTS"));
+                mcpc.set("contributeto", im.get("CONTACT PRE CUTS"));
                 mcpc.setIndex("distance", "2*r_cuff_in_Pitt", 0);
-                mcpc.selection("input").named(mw.get("CONTACT CROSS SECTION"));
+                mcpc.selection("input").named(im.get("CONTACT CROSS SECTION"));
 
                 String iccLabel = "Inner Contact Cutter";
-                GeomFeature icc = model.geom(id).create(mw.next("cyl",iccLabel), "Cylinder");
+                GeomFeature icc = model.geom(id).create(im.next("cyl",iccLabel), "Cylinder");
                 icc.label(iccLabel);
-                icc.set("contributeto", mw.get("INNER CONTACT CUTTER"));
+                icc.set("contributeto", im.get("INNER CONTACT CUTTER"));
                 icc.set("pos", new String[]{"0", "0", "-L_cuff_Pitt/2+z_center"});
                 icc.set("r", "r_inner_contact");
                 icc.set("h", "L_cuff_Pitt");
 
                 String occLabel = "Outer Contact Cutter";
-                GeomFeature occ = model.geom(id).create(mw.next("cyl",occLabel), "Cylinder");
+                GeomFeature occ = model.geom(id).create(im.next("cyl",occLabel), "Cylinder");
                 occ.label(occLabel);
-                occ.set("contributeto", mw.get("OUTER CONTACT CUTTER"));
+                occ.set("contributeto", im.get("OUTER CONTACT CUTTER"));
                 occ.set("pos", new String[]{"0", "0", "-L_cuff_Pitt/2+z_center"});
                 occ.set("r", "r_outer_contact");
                 occ.set("h", "L_cuff_Pitt");
 
                 String coeLabel = "Cut Outer Excess";
-                GeomFeature coe = model.geom(id).create(mw.next("par",coeLabel), "Partition");
+                GeomFeature coe = model.geom(id).create(im.next("par",coeLabel), "Partition");
                 coe.label(coeLabel);
-                coe.set("contributeto", mw.get("FINAL CONTACT"));
-                coe.selection("input").named(mw.get("CONTACT PRE CUTS"));
-                coe.selection("tool").named(mw.get("OUTER CONTACT CUTTER"));
+                coe.set("contributeto", im.get("FINAL CONTACT"));
+                coe.selection("input").named(im.get("CONTACT PRE CUTS"));
+                coe.selection("tool").named(im.get("OUTER CONTACT CUTTER"));
 
                 String cieLabel = "Cut Inner Excess";
-                GeomFeature cie = model.geom(id).create(mw.next("par",cieLabel), "Partition");
+                GeomFeature cie = model.geom(id).create(im.next("par",cieLabel), "Partition");
                 cie.label(cieLabel);
-                cie.set("contributeto", mw.get("FINAL CONTACT"));
-                cie.selection("input").named(mw.get("CONTACT PRE CUTS"));
-                cie.selection("tool").named(mw.get("INNER CONTACT CUTTER"));
+                cie.set("contributeto", im.get("FINAL CONTACT"));
+                cie.selection("input").named(im.get("CONTACT PRE CUTS"));
+                cie.selection("tool").named(im.get("INNER CONTACT CUTTER"));
 
                 String sieLabel = "sel inner excess";
-                GeomFeature sie = model.geom(id).create(mw.next("ballsel",sieLabel), "BallSelection");
+                GeomFeature sie = model.geom(id).create(im.next("ballsel",sieLabel), "BallSelection");
                 sie.label(sieLabel);
                 sie.set("posx", "(r_inner_contact/2)*cos(rotation_angle)");
                 sie.set("posy", "(r_inner_contact/2)*sin(rotation_angle)");
                 sie.set("posz", "z_center");
                 sie.set("r", 1);
-                sie.set("contributeto", mw.get("SEL INNER EXCESS CONTACT"));
+                sie.set("contributeto", im.get("SEL INNER EXCESS CONTACT"));
 
                 String soeLabel = "sel outer excess";
-                GeomFeature soe = model.geom(id).create(mw.next("ballsel",soeLabel), "BallSelection");
+                GeomFeature soe = model.geom(id).create(im.next("ballsel",soeLabel), "BallSelection");
                 soe.label(soeLabel);
                 soe.set("posx", "((r_outer_contact+2*r_cuff_in_Pitt)/2)*cos(rotation_angle)");
                 soe.set("posy", "((r_outer_contact+2*r_cuff_in_Pitt)/2)*sin(rotation_angle)");
                 soe.set("posz", "z_center");
                 soe.set("r", 1);
-                soe.set("contributeto", mw.get("SEL OUTER EXCESS CONTACT"));
+                soe.set("contributeto", im.get("SEL OUTER EXCESS CONTACT"));
 
                 String diecLabel = "Delete Inner Excess Contact";
-                GeomFeature diec = model.geom(id).create(mw.next("del",diecLabel), "Delete");
+                GeomFeature diec = model.geom(id).create(im.next("del",diecLabel), "Delete");
                 diec.label(diecLabel);
                 diec.selection("input").init(3);
-                diec.selection("input").named(mw.get("SEL INNER EXCESS CONTACT"));
+                diec.selection("input").named(im.get("SEL INNER EXCESS CONTACT"));
 
                 String doecLabel = "Delete Outer Excess Contact";
-                GeomFeature doec = model.geom(id).create(mw.next("del",doecLabel), "Delete");
+                GeomFeature doec = model.geom(id).create(im.next("del",doecLabel), "Delete");
                 doec.label(doecLabel);
                 doec.selection("input").init(3);
-                doec.selection("input").named(mw.get("SEL OUTER EXCESS CONTACT"));
+                doec.selection("input").named(im.get("SEL OUTER EXCESS CONTACT"));
 
                 String irsLabel = "If Recess";
-                GeomFeature irs = model.geom(id).create(mw.next("if",irsLabel), "If");
+                GeomFeature irs = model.geom(id).create(im.next("if",irsLabel), "If");
                 irs.set("condition", "recess_Pitt>0");
                 irs.label(irsLabel);
 
                 String rcsLabel = "Recess Cross Section";
-                GeomFeature rcs = model.geom(id).create(mw.next("wp",rcsLabel), "WorkPlane");
+                GeomFeature rcs = model.geom(id).create(im.next("wp",rcsLabel), "WorkPlane");
                 rcs.label(rcsLabel);
-                rcs.set("contributeto", mw.get("RECESS CROSS SECTION"));
+                rcs.set("contributeto", im.get("RECESS CROSS SECTION"));
                 rcs.set("planetype", "transformed");
-                rcs.set("workplane", mw.get("base plane (pre rotation)"));
+                rcs.set("workplane", im.get("base plane (pre rotation)"));
                 rcs.set("transaxis", new int[]{0, 1, 0});
                 rcs.set("transrot", "rotation_angle");
                 rcs.set("unite", true);
@@ -1030,78 +1040,78 @@ class Part {
                 rcs.geom().feature("mov1").selection("input").named("csel4");// TODO
 
                 String mrpc1Label = "Make Recess Pre Cuts 1";
-                GeomFeature mrpc1 = model.geom(id).create(mw.next("ext", mrpc1Label), "Extrude");
+                GeomFeature mrpc1 = model.geom(id).create(im.next("ext", mrpc1Label), "Extrude");
                 mrpc1.label(mrpc1Label);
-                mrpc1.set("contributeto", mw.get("RECESS PRE CUTS"));
+                mrpc1.set("contributeto", im.get("RECESS PRE CUTS"));
                 mrpc1.setIndex("distance", "2*r_cuff_in_Pitt", 0);
-                mrpc1.selection("input").named(mw.get("RECESS CROSS SECTION"));
+                mrpc1.selection("input").named(im.get("RECESS CROSS SECTION"));
 
                 String ircLabel = "Inner Recess Cutter";
-                GeomFeature irc = model.geom(id).create(mw.next("cyl", ircLabel), "Cylinder");
+                GeomFeature irc = model.geom(id).create(im.next("cyl", ircLabel), "Cylinder");
                 irc.label(ircLabel);
-                irc.set("contributeto", mw.get("INNER RECESS CUTTER"));
+                irc.set("contributeto", im.get("INNER RECESS CUTTER"));
                 irc.set("pos", new String[]{"0", "0", "-L_cuff_Pitt/2+z_center"});
                 irc.set("r", "r_cuff_in_Pitt");
                 irc.set("h", "L_cuff_Pitt");
 
                 String orcLabel = "Outer Recess Cutter";
-                GeomFeature orc = model.geom(id).create(mw.next("cyl",orcLabel), "Cylinder");
+                GeomFeature orc = model.geom(id).create(im.next("cyl",orcLabel), "Cylinder");
                 orc.label(orcLabel);
-                orc.set("contributeto", mw.get("OUTER RECESS CUTTER"));
+                orc.set("contributeto", im.get("OUTER RECESS CUTTER"));
                 orc.set("pos", new String[]{"0", "0", "-L_cuff_Pitt/2+z_center"});
                 orc.set("r", "r_inner_contact");
                 orc.set("h", "L_cuff_Pitt");
 
                 String roreLabel = "Remove Outer Recess Excess";
-                GeomFeature rore = model.geom(id).create(mw.next("par",roreLabel), "Partition");
+                GeomFeature rore = model.geom(id).create(im.next("par",roreLabel), "Partition");
                 rore.label(roreLabel);
-                rore.set("contributeto", mw.get("FINAL RECESS"));
-                rore.selection("input").named(mw.get("RECESS PRE CUTS"));
-                rore.selection("tool").named(mw.get("OUTER RECESS CUTTER"));
+                rore.set("contributeto", im.get("FINAL RECESS"));
+                rore.selection("input").named(im.get("RECESS PRE CUTS"));
+                rore.selection("tool").named(im.get("OUTER RECESS CUTTER"));
 
                 String rireLabel = "Remove Inner Recess Excess";
-                GeomFeature rire = model.geom(id).create(mw.next("par",rireLabel), "Partition");
+                GeomFeature rire = model.geom(id).create(im.next("par",rireLabel), "Partition");
                 rire.label(rireLabel);
-                rire.set("contributeto", mw.get("FINAL RECESS"));
-                rire.selection("input").named(mw.get("RECESS PRE CUTS"));
-                rire.selection("tool").named(mw.get("INNER RECESS CUTTER"));
+                rire.set("contributeto", im.get("FINAL RECESS"));
+                rire.selection("input").named(im.get("RECESS PRE CUTS"));
+                rire.selection("tool").named(im.get("INNER RECESS CUTTER"));
 
                 String sie1Label = "sel inner excess 1";
-                GeomFeature sie1 = model.geom(id).create(mw.next("ballsel",sie1Label), "BallSelection");
+                GeomFeature sie1 = model.geom(id).create(im.next("ballsel",sie1Label), "BallSelection");
                 sie1.label(sie1Label);
                 sie1.set("posx", "((r_inner_contact+recess_Pitt)/2)*cos(rotation_angle)");
                 sie1.set("posy", "((r_inner_contact+recess_Pitt)/2)*sin(rotation_angle)");
                 sie1.set("posz", "z_center");
                 sie1.set("r", 1);
-                sie1.set("contributeto", mw.get("SEL INNER EXCESS RECESS"));
+                sie1.set("contributeto", im.get("SEL INNER EXCESS RECESS"));
 
                 String soe1Label = "sel outer excess 1";
-                GeomFeature soe1 = model.geom(id).create(mw.next("ballsel",soe1Label), "BallSelection");
+                GeomFeature soe1 = model.geom(id).create(im.next("ballsel",soe1Label), "BallSelection");
                 soe1.label(soe1Label);
                 soe1.set("posx", "((r_cuff_in_Pitt+2*r_cuff_in_Pitt)/2)*cos(rotation_angle)");
                 soe1.set("posy", "((r_cuff_in_Pitt+2*r_cuff_in_Pitt)/2)*sin(rotation_angle)");
                 soe1.set("posz", "z_center");
                 soe1.set("r", 1);
-                soe1.set("contributeto", mw.get("SEL OUTER EXCESS RECESS"));
+                soe1.set("contributeto", im.get("SEL OUTER EXCESS RECESS"));
 
                 String dierLabel = "Delete Inner Excess Recess";
-                GeomFeature dier = model.geom(id).create(mw.next("del",dierLabel), "Delete");
+                GeomFeature dier = model.geom(id).create(im.next("del",dierLabel), "Delete");
                 dier.label(dierLabel);
                 dier.selection("input").init(3);
-                dier.selection("input").named(mw.get("SEL INNER EXCESS RECESS"));
+                dier.selection("input").named(im.get("SEL INNER EXCESS RECESS"));
 
                 String doerLabel = "Delete Outer Excess Recess";
-                GeomFeature doer = model.geom(id).create(mw.next("del",doerLabel), "Delete");
+                GeomFeature doer = model.geom(id).create(im.next("del",doerLabel), "Delete");
                 doer.label(doerLabel);
                 doer.selection("input").init(3);
-                doer.selection("input").named(mw.get("SEL OUTER EXCESS RECESS"));
+                doer.selection("input").named(im.get("SEL OUTER EXCESS RECESS"));
 
-                model.geom(id).create(mw.next("endif"), "EndIf");
+                model.geom(id).create(im.next("endif"), "EndIf");
 
                 String srcsLabel = "src";
-                GeomFeature srcs = model.geom(id).create(mw.next("pt",srcsLabel), "Point");
+                GeomFeature srcs = model.geom(id).create(im.next("pt",srcsLabel), "Point");
                 srcs.label(srcsLabel);
-                srcs.set("contributeto", mw.get("SRC"));
+                srcs.set("contributeto", im.get("SRC"));
                 srcs.set("p", new String[]{"(r_cuff_in_Pitt+recess_Pitt+(thk_contact_Pitt/2))*cos(rotation_angle)", "(r_cuff_in_Pitt+recess_Pitt+(thk_contact_Pitt/2))*sin(rotation_angle)", "z_center"});
                 model.geom(id).run();
                 break;
