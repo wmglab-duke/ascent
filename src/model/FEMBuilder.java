@@ -64,7 +64,7 @@ public class FEMBuilder {
 
         for (String cuffFile: cuffFiles) {
             String par = cim.next("par");
-
+            System.out.println(currentDirectory + fileSep + ".templates" + fileSep + cuffFile);
             JSONObject cuff = new JSONReader(currentDirectory + fileSep + ".templates" + fileSep + cuffFile).getData();
             model.param().group().create(par);
             model.param(par).label(cuffFile.split("\\.")[0]);
@@ -86,7 +86,7 @@ public class FEMBuilder {
         return new ModelWrapper2(model, "");
     }
 
-    private static void defineDefaultPrimitiveInputParameters(Model model, Set parts, ComsolIdentifierManager cim) {
+    private static void defineDefaultPrimitiveInputParameters(Model model, Set parts, IdentifierManager cim) {
         // Assign part inputParams (Local and unique to instance of the part)
 
         // TUBE CUFF PRIMITIVE

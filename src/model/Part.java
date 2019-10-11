@@ -807,7 +807,7 @@ class Part {
                 String sefp2Label = "Select End Face Part 2";
                 GeomFeature sefp2 = model.geom(id).create(im.next("ballsel",sefp2Label), "BallSelection");
                 sefp2.set("entitydim", 2);
-                sefp2.label(sefp2Label;
+                sefp2.label(sefp2Label);
                 sefp2.set("posx", "cos(2*pi*rev_cuff_LN*((0.75+1)/2.5))*((thk_cuff_LN/2)+r_cuff_in_LN)");
                 sefp2.set("posy", "sin(2*pi*rev_cuff_LN*((0.75+1)/2.5))*((thk_cuff_LN/2)+r_cuff_in_LN)");
                 sefp2.set("posz", "Center+(L_cuff_LN)*(rev_cuff_LN*((0.75+1)/2.5)/rev_cuff_LN)-(L_cuff_LN/2)");
