@@ -344,13 +344,13 @@ class Part {
                 wp_recess_cx1.set("quickplane", "xz");
                 wp_recess_cx1.set("unite", true);
 
-                im.next(im.get(wprcx1Label) + "_" + "csel", "Cumulative Selection 1");
-                wp_recess_cx1.geom().selection().create(im.get("Cumulative Selection 1").split("_")[1], "CumulativeSelection");
-                wp_recess_cx1.geom().selection("csel1").label("Cumulative Selection 1");
+                String cs1Label = "Cumulative Selection 1";
+                wp_recess_cx1.geom().selection().create(im.next("csel", cs1Label), "CumulativeSelection");
+                wp_recess_cx1.geom().selection(im.get(cs1Label)).label(cs1Label);
 
-                im.next(im.get(wprcx1Label) + "_" + "csel", "RECESS CROSS SECTION");
-                wp_recess_cx1.geom().selection().create(im.get("RECESS CROSS SECTION").split("_")[1], "CumulativeSelection");
-                wp_recess_cx1.geom().selection("csel2").label("RECESS CROSS SECTION");
+                String rcxLabel = "RECESS CROSS SECTION";
+                wp_recess_cx1.geom().selection().create(im.next("csel",rcxLabel), "CumulativeSelection");
+                wp_recess_cx1.geom().selection(im.get(rcxLabel)).label(rcxLabel);
 
                 wp_recess_cx1.geom().create("r1", "Rectangle");
                 wp_recess_cx1.geom().feature("r1").label("Recess Cross Section");
@@ -576,7 +576,6 @@ class Part {
                 rpc.set("unite", true);
 
                 String coscLabel = "CONTACT OUTLINE SHAPE";
-
                 rpc.geom().selection().create(im.next("csel",coscLabel), "CumulativeSelection");
                 rpc.geom().selection(im.get(coscLabel)).label(coscLabel);
 
@@ -588,7 +587,7 @@ class Part {
                 String cocLabel = "Contact Outline";
                 GeomFeature coc = rpc.geom().create(im.next("e",cocLabel), "Ellipse");
                 coc.label(cocLabel);
-                coc.set("contributeto", "csel1");
+                coc.set("contributeto", im.get(coscLabel));
                 coc.set("pos", new String[]{"0", "Center"});
                 coc.set("semiaxes", new String[]{"A_ellipse_contact", "Diam_contact/2"});
 
@@ -702,7 +701,7 @@ class Part {
                 hicsp1.geom().selection(im.get(hicxp1Label)).label(hicxp1Label);
                 hicsp1.geom().create("r1", "Rectangle");
                 hicsp1.geom().feature("r1").label("Helical Insulator Cross Section Part 1");
-                hicsp1.geom().feature("r1").set("contributeto", "csel2");
+                hicsp1.geom().feature("r1").set("contributeto", im.get(hicxp1Label));
                 hicsp1.geom().feature("r1").set("pos", new String[]{"r_cuff_in_LN+(thk_cuff_LN/2)", "Center-(L_cuff_LN/2)"});
                 hicsp1.geom().feature("r1").set("base", "center");
                 hicsp1.geom().feature("r1").set("size", new String[]{"thk_cuff_LN", "w_cuff_LN"});
@@ -907,28 +906,37 @@ class Part {
                 ccsc.set("transaxis", new int[]{0, 1, 0});
                 ccsc.set("transrot", "rotation_angle");
                 ccsc.set("unite", true);
-                ccsc.geom().selection().create("csel1", "CumulativeSelection"); //TODO
-                ccsc.geom().selection("csel1").label("CONTACT PRE FILLET"); //TODO
-                ccsc.geom().selection().create("csel2", "CumulativeSelection"); //TODO
-                ccsc.geom().selection("csel2").label("CONTACT FILLETED"); //TODO
-                ccsc.geom().create("r1", "Rectangle"); // TODO
-                ccsc.geom().feature("r1").label("Contact Pre Fillet Corners"); // TODO
-                ccsc.geom().feature("r1").set("contributeto", "csel1"); // TODO
-                ccsc.geom().feature("r1").set("pos", new int[]{0, 0}); // TODO
-                ccsc.geom().feature("r1").set("base", "center"); // TODO
-                ccsc.geom().feature("r1").set("size", new String[]{"w_contact_Pitt", "z_contact_Pitt"}); // TODO
-                ccsc.geom().create("fil1", "Fillet"); // TODO
-                ccsc.geom().feature("fil1").label("Fillet Corners"); // TODO
-                ccsc.geom().feature("fil1").set("contributeto", "csel2"); //TODO
-                ccsc.geom().feature("fil1").set("radius", "fillet_contact_Pitt"); // TODO
-                ccsc.geom().feature("fil1").selection("point").named("csel1"); // TODO
-                ccsc.geom().create("sca1", "Scale"); // TODO
-                ccsc.geom().feature("sca1").set("type", "anisotropic"); // TODO
-                ccsc.geom().feature("sca1").set("factor", new String[]{"1", "scale_morph_w_contact_Pitt"});
-                ccsc.geom().feature("sca1").selection("input").named("csel2"); //TODO
-                ccsc.geom().create("mov1", "Move"); // TODO
+
+                String cpfLabel = "CONTACT PRE FILLET";
+                ccsc.geom().selection().create(im.next("csel", cpfLabel), "CumulativeSelection");
+                ccsc.geom().selection(im.get(cpfLabel)).label(cpfLabel);
+
+                String cfLabel = "CONTACT FILLETED";
+                ccsc.geom().selection().create(im.next("csel",cfLabel), "CumulativeSelection");
+                ccsc.geom().selection(im.get(cfLabel)).label(cfLabel);
+                ccsc.geom().create("r1", "Rectangle");
+                ccsc.geom().feature("r1").label("Contact Pre Fillet Corners");
+                ccsc.geom().feature("r1").set("contributeto", im.get(cpfLabel));
+                ccsc.geom().feature("r1").set("pos", new int[]{0, 0});
+                ccsc.geom().feature("r1").set("base", "center");
+                ccsc.geom().feature("r1").set("size", new String[]{"w_contact_Pitt", "z_contact_Pitt"});
+
+                String filletLabel = "Fillet Corners";
+                GeomFeature fillet = ccsc.geom().create(im.next("fil",filletLabel), filletLabel);
+                fillet.label(filletLabel);
+                fillet.set("contributeto", im.get(cfLabel));
+                fillet.set("radius", "fillet_contact_Pitt");
+                fillet.selection("point").named(im.get(cpfLabel));
+                String scaleLabel = "scLabel";
+                GeomFeature scale = ccsc.geom().create(im.next("sca",scaleLabel), "Scale");
+                scale.label(scaleLabel);
+                scale.set("type", "anisotropic");
+                scale.set("factor", new String[]{"1", "scale_morph_w_contact_Pitt"});
+                scale.selection("input").named(im.get(cfLabel));
+
+                ccsc.geom().create("mov1", "Move");
                 ccsc.geom().feature("mov1").set("disply", "z_center");
-                ccsc.geom().feature("mov1").selection("input").named("csel2"); //TODO
+                ccsc.geom().feature("mov1").selection("input").named(im.get(cfLabel));
 
                 String mcpcLabel = "Make Contact Pre Cuts";
                 GeomFeature mcpc = model.geom(id).create(im.next("ext",mcpcLabel), "Extrude");
@@ -1011,33 +1019,48 @@ class Part {
                 rcs.set("transaxis", new int[]{0, 1, 0});
                 rcs.set("transrot", "rotation_angle");
                 rcs.set("unite", true);
-                rcs.geom().selection().create("csel1", "CumulativeSelection"); // TODO
-                rcs.geom().selection("csel1").label("CONTACT PRE FILLET");// TODO
-                rcs.geom().selection().create("csel2", "CumulativeSelection");// TODO
-                rcs.geom().selection("csel2").label("CONTACT FILLETED");// TODO
-                rcs.geom().selection().create("csel3", "CumulativeSelection");// TODO
-                rcs.geom().selection("csel3").label("RECESS PRE FILLET");// TODO
-                rcs.geom().selection().create("csel4", "CumulativeSelection");// TODO
-                rcs.geom().selection("csel4").label("RECESS FILLETED");// TODO
+
+                String cpfrLabel = "CONTACT PRE FILLET";
+                rcs.geom().selection().create(im.next("csel",cpfrLabel), "CumulativeSelection");
+                rcs.geom().selection(im.get(cpfrLabel)).label(cpfrLabel);
+
+                String cfrLabel = "CONTACT FILLETED";
+                rcs.geom().selection().create(im.next("csel",cfrLabel), "CumulativeSelection");
+                rcs.geom().selection(im.get(cfrLabel)).label(cfrLabel);
+
+                String rpfrLabel = "RECESS PRE FILLET";
+                rcs.geom().selection().create(im.next("csel",rpfrLabel), "CumulativeSelection");
+                rcs.geom().selection(im.get(rpfrLabel)).label(rpfrLabel);
+
+                String rfrLabel = "RECESS FILLETED";
+                rcs.geom().selection().create(im.next("csel",rfrLabel), "CumulativeSelection");
+                rcs.geom().selection(im.get(rfrLabel)).label(rfrLabel);
+
                 rcs.geom().create("r1", "Rectangle");
-                rcs.geom().feature("r1").label("Recess Pre Fillet Corners");// TODO
-                rcs.geom().feature("r1").set("contributeto", "csel3");// TODO
+                rcs.geom().feature("r1").label("Recess Pre Fillet Corners");
+                rcs.geom().feature("r1").set("contributeto", im.get(rpfrLabel));
                 rcs.geom().feature("r1").set("pos", new int[]{0, 0});
                 rcs.geom().feature("r1").set("base", "center");
                 rcs.geom().feature("r1").set("size", new String[]{"w_contact_Pitt", "z_contact_Pitt"});
-                rcs.geom().create("fil1", "Fillet"); // TODO
-                rcs.geom().feature("fil1").label("Fillet Corners"); // TODO
-                rcs.geom().feature("fil1").set("contributeto", "csel4");// TODO
-                rcs.geom().feature("fil1").set("radius", "fillet_contact_Pitt");
-                rcs.geom().feature("fil1").selection("point").named("csel3");// TODO
-                rcs.geom().create("sca1", "Scale"); // TODO
-                rcs.geom().feature("sca1").set("type", "anisotropic"); // TODO
-                rcs.geom().feature("sca1") // TODO
-                        .set("factor", new String[]{"1", "scale_morph_w_contact_Pitt"});
-                rcs.geom().feature("sca1").selection("input").named("csel4");// TODO
-                rcs.geom().create("mov1", "Move"); // TODO
-                rcs.geom().feature("mov1").set("disply", "z_center"); // TODO
-                rcs.geom().feature("mov1").selection("input").named("csel4");// TODO
+
+                String filletrLabel = "Fillet Corners";
+                GeomFeature filletr = rcs.geom().create(im.next("fil", filletrLabel), "Fillet");
+                filletr.label(filletrLabel);
+
+                filletr.set("contributeto", im.get(rfrLabel));
+                filletr.set("radius", "fillet_contact_Pitt");
+                filletr.selection("point").named(im.get(rpfrLabel));
+
+                String scalerLabel = "scrLabel";
+                GeomFeature scaler = rcs.geom().create(im.next("sca",scalerLabel), "Scale");
+                scaler.label(scalerLabel);
+                scaler.set("type", "anisotropic");
+                scaler.set("factor", new String[]{"1", "scale_morph_w_contact_Pitt"});
+                scaler.selection("input").named(im.get(rfrLabel));
+
+                rcs.geom().create("mov1", "Move");
+                rcs.geom().feature("mov1").set("disply", "z_center");
+                rcs.geom().feature("mov1").selection("input").named(im.get(rfrLabel));
 
                 String mrpc1Label = "Make Recess Pre Cuts 1";
                 GeomFeature mrpc1 = model.geom(id).create(im.next("ext", mrpc1Label), "Extrude");
