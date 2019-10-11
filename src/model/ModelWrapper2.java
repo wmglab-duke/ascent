@@ -171,7 +171,7 @@ public class ModelWrapper2 {
         // extract data from json
         try {
             JSONObject data = new JSONReader(String.join("/",
-                    new String[]{this.root, ".templates", name + ".json"})).getData();
+                    new String[]{this.root, ".templates", name})).getData();
 
             // get the id for the next "par" (i.e. parameters section)
             String id = this.next("par", name);
@@ -183,6 +183,10 @@ public class ModelWrapper2 {
                         (String) itemObject.get("name"),
                         (String) itemObject.get("expression"),
                         (String) itemObject.get("description")
+
+//                        String.join("", "\"", (String) itemObject.get("name"), "\""),
+//                        String.join("", "\"", (String) itemObject.get("expression"), "\""),
+//                        String.join("", "\"", (String) itemObject.get("description"), "\"")
                 );
             }
 
@@ -254,11 +258,10 @@ public class ModelWrapper2 {
         ModelWrapper2 mw = new ModelWrapper2(null, "/Users/ericmusselman/Documents/access");
 
         String configFile = "/.config/master.json";
-        String currentDirectory = System.getProperty("user.dir");
 
         JSONObject configData = null;
         try {
-            configData = new JSONReader(currentDirectory + configFile).getData();
+            configData = new JSONReader("/Users/ericmusselman/Documents/access" + configFile).getData();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
