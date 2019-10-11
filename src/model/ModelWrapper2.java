@@ -269,7 +269,7 @@ public class ModelWrapper2 {
 
         for (int i = 0; i < cuffs.length(); i++) {
             cuffFiles.add(cuffs.getString(i));
-            addParts(cuffs.getString(i));
+            mw.addParts(cuffs.getString(i));
         }
     }
 }
