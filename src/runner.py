@@ -138,7 +138,7 @@ cd ..
             os.chdir('src')
             os.system('{}/javac -classpath ../lib/json-20190722.jar:{}/plugins/* model/*.java'.format(jdk_path,
                                                                                                       comsol_path))
-            print("here")
+
             os.system('{}/java/maci64/jre/Contents/Home/bin/java '
                       '-cp .:$(echo {}/plugins/*.jar | tr \' \' \':\'):../lib/json-20190722.jar model/{}'.format(comsol_path,
                                                                                                                  comsol_path,
