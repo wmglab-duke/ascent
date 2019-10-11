@@ -124,7 +124,7 @@ cd ..
 
         comsol_path = self.load(os.path.join('.config', 'system.json')).get('comsol_path')
         jdk_path = self.load(os.path.join('.config', 'system.json')).get('jdk_path')
-        core_name = 'FEMBuilder'
+        core_name = 'ModelWrapper2'
 
         # file_name_no_ext = os.path.join('src', 'core', 'FEMBuilder')
         # run commands by system type
@@ -138,6 +138,7 @@ cd ..
             os.chdir('src')
             os.system('{}/javac -classpath ../lib/json-20190722.jar:{}/plugins/* model/*.java'.format(jdk_path,
                                                                                                       comsol_path))
+
             os.system('{}/java/maci64/jre/Contents/Home/bin/java '
                       '-cp .:$(echo {}/plugins/*.jar | tr \' \' \':\'):../lib/json-20190722.jar model/{}'.format(comsol_path,
                                                                                                                  comsol_path,

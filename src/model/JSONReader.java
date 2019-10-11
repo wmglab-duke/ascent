@@ -42,6 +42,5 @@ public class JSONReader {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-
     }
 }

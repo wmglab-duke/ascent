@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.ArrayList;
 
 /**
  * model.ModelWrapper
@@ -99,6 +100,7 @@ public class ModelWrapper2 {
         this.dest = dest;
     }
 
+
     // OTHER METHODS
 
     /**
@@ -164,7 +166,7 @@ public class ModelWrapper2 {
      * @param name the name of the JSON configuration (same as unique indicator) for a given part
      * @return success indicator (might remove this later)
      */
-    public boolean addPart(String name) {
+    public boolean addParts(String name) {
 
         // extract data from json
         try {
@@ -223,7 +225,7 @@ public class ModelWrapper2 {
 
     public boolean extractPotentials(String json_path) {
 
-        // see todos below (unrelated to this method hahahah)
+        // see todos below (unrelated to this method hahahah - HILARIOUS! ROFL!)
         // TODO: Simulation folders; sorting through configuration files VIA PYTHON
         // TODO: FORCE THE USER TO STAGE/COMMIT CHANGES BEFORE RUNNING; add Git Commit ID/number to config file
         try {
@@ -248,8 +250,26 @@ public class ModelWrapper2 {
     }
 
     public static void main(String[] args) {
-        ModelWrapper2 mw = new ModelWrapper2(null, "/Users/jakecariello/Box/Documents/Pipeline/access");
+//        ModelWrapper2 mw = new ModelWrapper2(null, "/Users/jakecariello/Box/Documents/Pipeline/access");
+        ModelWrapper2 mw = new ModelWrapper2(null, "/Users/ericmusselman/Documents/access");
 
+        String configFile = "/.config/master.json";
+        String currentDirectory = System.getProperty("user.dir");
 
+        JSONObject configData = null;
+        try {
+            configData = new JSONReader(currentDirectory + configFile).getData();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        JSONObject cuffObject = (JSONObject) configData.get("cuff");
+        JSONArray cuffs = (JSONArray) cuffObject.get("preset");
+        ArrayList<String> cuffFiles = new ArrayList<>();
+
+        for (int i = 0; i < cuffs.length(); i++) {
+            cuffFiles.add(cuffs.getString(i));
+            mw.addParts(cuffs.getString(i));
+        }
     }
 }
