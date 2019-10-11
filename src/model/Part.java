@@ -740,6 +740,8 @@ class Part {
                             .label(cselLabel);
                 }
 
+
+
 //                model.geom(id).selection().create(mw.next("csel","PC1"), "CumulativeSelection");
 //                model.geom(id).selection(mw.get("PC1")).label("PC1");
 //                model.geom(id).selection().create(mw.next("csel","Cuffp1"), "CumulativeSelection");
