@@ -206,7 +206,7 @@ class Slide(Exceptionable):
                 for i, item in enumerate(items):
 
                     if isinstance(item, Nerve):
-                        item.write(mode, os.path.join(os.getcwd(), str(i)))
+                        item.write(mode, os.path.join(os.getcwd(), str(i), str(i)))
                     else:
                         # start to keep track of position file structure
                         index_start_folder = os.getcwd()
