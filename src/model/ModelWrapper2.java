@@ -1,7 +1,7 @@
 package model;
 
 import com.comsol.model.Model;
-import com.sun.xml.internal.ws.api.model.wsdl.WSDLOutput;
+import com.comsol.model.util.ModelUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -168,7 +168,6 @@ public class ModelWrapper2 {
      * @return success indicator (might remove this later)
      */
     public boolean addParts(String name) {
-
         // extract data from json
         try {
             JSONObject data = new JSONReader(String.join("/",
@@ -176,27 +175,17 @@ public class ModelWrapper2 {
 
             // get the id for the next "par" (i.e. parameters section)
             String id = this.next("par", name);
+            model.param().group().create(id);
 
             // loop through all parameters in file, and set in parameters
             for (Object item : (JSONArray) data.get("params")) {
                 JSONObject itemObject = (JSONObject) item;
-
-                System.out.println(itemObject);
-                System.out.println(itemObject.get("name"));
-                System.out.println(itemObject.get("expression"));
-                System.out.println(itemObject.get("description"));
-                System.out.println(id);
-
-                model.param("par").set("parameter","1","testing");
-                System.out.println("here");
-                System.out.println(model);
 
                 model.param(id).set(
                         (String) itemObject.get("name"),
                         (String) itemObject.get("expression"),
                         (String) itemObject.get("description")
                 );
-                System.out.println("here");
             }
 
             // for each required part, create it (if not already existing)
@@ -207,6 +196,7 @@ public class ModelWrapper2 {
                 if (! this.im.hasPseudonym(partPrimitiveName)) {
                     // get next available (TOP LEVEL) "part" id
                     String partID = this.im.next("part", partPrimitiveName);
+                    System.out.println(partPrimitiveName);
                     try {
                         // TRY to create the part primitive (catch error if no existing implementation)
                         IdentifierManager partPrimitiveIM = Part.createPartPrimitive(partID, partPrimitiveName, this);
@@ -263,8 +253,12 @@ public class ModelWrapper2 {
     }
 
     public static void main(String[] args) {
+        ModelUtil.connect("localhost", 2036);
+        ModelUtil.initStandalone(false);
+        Model model = ModelUtil.create("Model");
+
 //        ModelWrapper2 mw = new ModelWrapper2(null, "/Users/jakecariello/Box/Documents/Pipeline/access");
-        ModelWrapper2 mw = new ModelWrapper2(null, "/Users/ericmusselman/Documents/access");
+        ModelWrapper2 mw = new ModelWrapper2(model, "/Users/ericmusselman/Documents/access");
 
         String configFile = "/.config/master.json";
 
@@ -277,10 +271,14 @@ public class ModelWrapper2 {
 
         JSONObject cuffObject = (JSONObject) configData.get("cuff");
         JSONArray cuffs = (JSONArray) cuffObject.get("preset");
+
+        System.out.println(cuffs);
+
         ArrayList<String> cuffFiles = new ArrayList<>();
 
         for (int i = 0; i < cuffs.length(); i++) {
             cuffFiles.add(cuffs.getString(i));
+            System.out.println(cuffs.getString(i));
             mw.addParts(cuffs.getString(i));
         }
     }

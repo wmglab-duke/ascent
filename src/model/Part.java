@@ -349,7 +349,9 @@ class Part {
                 wp_recess_cx1.geom().selection(im.get(cs1Label)).label(cs1Label);
 
                 String rcxLabel = "RECESS CROSS SECTION";
+                System.out.println("ionside ribbon 1!");
                 wp_recess_cx1.geom().selection().create(im.next("csel",rcxLabel), "CumulativeSelection");
+                System.out.println("ionside ribbon 2!");
                 wp_recess_cx1.geom().selection(im.get(rcxLabel)).label(rcxLabel);
 
                 wp_recess_cx1.geom().create("r1", "Rectangle");
@@ -369,6 +371,7 @@ class Part {
 
                 endifLabel = "EndIf";
                 model.geom(id).create(im.next("endif"), endifLabel).label(endifLabel);
+
 
                 String srcLabel = "Src";
                 GeomFeature src = model.geom(id).create(im.next("pt",srcLabel), "Point");
