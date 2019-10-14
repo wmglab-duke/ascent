@@ -281,5 +281,7 @@ public class ModelWrapper2 {
             cuffFiles.add(cuffs.getString(i));
             mw.addParts(cuffs.getString(i));
         }
+        System.out.println("here");
+        ModelUtil.disconnect();
     }
 }

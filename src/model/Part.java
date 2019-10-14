@@ -5,6 +5,7 @@ import com.comsol.model.Model;
 import com.comsol.model.ModelParam;
 import com.comsol.nativejni.geom.Geom;
 
+import java.io.IOException;
 import java.util.HashMap;
 
 class Part {
@@ -911,7 +912,7 @@ class Part {
                 ccsc.label(ccscLabel);
                 ccsc.set("contributeto", im.get("CONTACT CROSS SECTION"));
                 ccsc.set("planetype", "transformed");
-                ccsc.set("workplane", im.get("Contact Cross Section"));
+                ccsc.set("workplane", im.get(bpprsLabel));
                 ccsc.set("transaxis", new int[]{0, 1, 0});
                 ccsc.set("transrot", "rotation_angle");
                 ccsc.set("unite", true);
@@ -930,10 +931,8 @@ class Part {
                 ccsc.geom().feature("r1").set("base", "center");
                 ccsc.geom().feature("r1").set("size", new String[]{"w_contact_Pitt", "z_contact_Pitt"});
 
-                System.out.println("In square 2");
-
                 String filletLabel = "Fillet Corners";
-                GeomFeature fillet = ccsc.geom().create(im.next("fil",filletLabel), filletLabel);
+                GeomFeature fillet = ccsc.geom().create(im.next("fil",filletLabel), "Fillet");
                 fillet.label(filletLabel);
                 fillet.set("contributeto", im.get(cfLabel));
                 fillet.set("radius", "fillet_contact_Pitt");
@@ -948,8 +947,6 @@ class Part {
                 ccsc.geom().create("mov1", "Move");
                 ccsc.geom().feature("mov1").set("disply", "z_center");
                 ccsc.geom().feature("mov1").selection("input").named(im.get(cfLabel));
-
-                System.out.println("In square 1");
 
                 String mcpcLabel = "Make Contact Pre Cuts";
                 GeomFeature mcpc = model.geom(id).create(im.next("ext",mcpcLabel), "Extrude");
@@ -1033,11 +1030,11 @@ class Part {
                 rcs.set("transrot", "rotation_angle");
                 rcs.set("unite", true);
 
-                String cpfrLabel = "CONTACT PRE FILLET";
+                String cpfrLabel = "wp CONTACT PRE FILLET";
                 rcs.geom().selection().create(im.next("csel",cpfrLabel), "CumulativeSelection");
                 rcs.geom().selection(im.get(cpfrLabel)).label(cpfrLabel);
 
-                String cfrLabel = "CONTACT FILLETED";
+                String cfrLabel = "wp CONTACT FILLETED";
                 rcs.geom().selection().create(im.next("csel",cfrLabel), "CumulativeSelection");
                 rcs.geom().selection(im.get(cfrLabel)).label(cfrLabel);
 
@@ -1056,7 +1053,7 @@ class Part {
                 rcs.geom().feature("r1").set("base", "center");
                 rcs.geom().feature("r1").set("size", new String[]{"w_contact_Pitt", "z_contact_Pitt"});
 
-                String filletrLabel = "Fillet Corners";
+                String filletrLabel = "wp Fillet Corners";
                 GeomFeature filletr = rcs.geom().create(im.next("fil", filletrLabel), "Fillet");
                 filletr.label(filletrLabel);
 
@@ -1155,6 +1152,11 @@ class Part {
                 throw new  IllegalArgumentException("No implementation for part primitive name: " + pseudonym);
         }
 
+        try {
+            model.save("parts_test");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         // if im was not edited for some reason, return null
         if (im.count() == 0) return null;
         return im;
