@@ -204,8 +204,9 @@ class Slide(Exceptionable):
 
                 # write all items (give filename as i (index) without the extension
                 for i, item in enumerate(items):
-
-                    if isinstance(item, Nerve):
+                    if isinstance(item, Trace):  # not Nerve bc it is buffer class!
+                        if not os.path.exists(str(i)):
+                            os.mkdir(str(i))
                         item.write(mode, os.path.join(os.getcwd(), str(i), str(i)))
                     else:
                         # start to keep track of position file structure
