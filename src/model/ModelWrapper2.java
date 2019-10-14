@@ -202,12 +202,8 @@ public class ModelWrapper2 {
                         // TRY to create the part primitive (catch error if no existing implementation)
                         IdentifierManager partPrimitiveIM = Part.createPartPrimitive(partID, partPrimitiveName, this);
 
-                        System.out.println("ran part primitive code");
-
                         // add the returned id manager to the HashMap of IMs with the partName as its key
                         this.partPrimitiveIMs.put(partPrimitiveName, partPrimitiveIM);
-
-                        System.out.println("put");
 
                     } catch (IllegalArgumentException e) {
                         e.printStackTrace();
@@ -216,18 +212,12 @@ public class ModelWrapper2 {
                 }
             }
 
-            System.out.println("here there here");
-
             // time to initialize the indicated part
             try {
                 // TRY to initialize the part (catch error if no existing implementation)
-                System.out.println("we are here");
-                System.out.println(name);
-                Part.createPartInstance(this.next("pi", name), name, this);
-                System.out.println("this happens");
+//                Part.createPartInstance(this.next("pi", name), name, this);
 
             } catch (IllegalArgumentException e) {
-                System.out.println("error happened");
                 e.printStackTrace();
                 return false;
             }
@@ -285,16 +275,11 @@ public class ModelWrapper2 {
 
         JSONObject cuffObject = (JSONObject) configData.get("cuff");
         JSONArray cuffs = (JSONArray) cuffObject.get("preset");
-
-        System.out.println(cuffs);
-
         ArrayList<String> cuffFiles = new ArrayList<>();
 
         for (int i = 0; i < cuffs.length(); i++) {
             cuffFiles.add(cuffs.getString(i));
-            System.out.println(cuffs.getString(i));
             mw.addParts(cuffs.getString(i));
-            System.out.println("added part");
         }
     }
 }

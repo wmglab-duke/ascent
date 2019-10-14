@@ -377,8 +377,6 @@ class Part {
                 src.set("p", new String[]{"(R_in+Recess+Thk_elec/2)*cos(Rot_def+Theta_contact/2)", "(R_in+Recess+Thk_elec/2)*sin(Rot_def+Theta_contact/2)", "Center"});
 
                 model.geom(id).run();
-                System.out.println("here4");
-
                 break;
             case "WireContact_Primitive":
                 model.geom(id).inputParam().set("R_conductor", "r_conductor_P");
@@ -452,7 +450,8 @@ class Part {
                         "PLANE FOR RECESS",
                         "PRE CUT RECESS",
                         "RECESS CUTTER IN",
-                        "RECESS CUTTER OUT"
+                        "RECESS CUTTER OUT",
+                        "BASE PLANE (PRE ROTATION)"
                 };
                 for (String cselCCLabel: cselCCLabels) {
                     model.geom(id).selection().create(im.next("csel", cselCCLabel), "CumulativeSelection")
@@ -476,7 +475,7 @@ class Part {
                 rpr.label(rprLabel);
                 rpr.set("contributeto", im.get("PLANE FOR RECESS"));
                 rpr.set("planetype", "transformed");
-                rpr.set("workplane", im.get("Rotated Plane for Recess"));
+                rpr.set("workplane", im.get(bpprLabel));
                 rpr.set("transaxis", new int[]{0, 1, 0});
                 rpr.set("transrot", "Rotation_angle");
                 rpr.set("unite", true);
@@ -485,7 +484,7 @@ class Part {
                 rpr.geom().selection().create(im.next("csel",cosLabel), "CumulativeSelection");
                 rpr.geom().selection(im.get(cosLabel)).label(cosLabel);
 
-                String ifcsicLabel = "If Contact Surface is Circle";
+                String ifcsicLabel = "If Contact Surface is Circle (for recess)";
                 GeomFeature ifcsic = rpr.geom().create(im.next("if",ifcsicLabel), "If");
                 ifcsic.label("If Contact Surface is Circle");
                 ifcsic.set("condition", "Round_def==1");
@@ -577,31 +576,31 @@ class Part {
                 rpc.set("transrot", "Rotation_angle");
                 rpc.set("unite", true);
 
-                String coscLabel = "CONTACT OUTLINE SHAPE";
+                String coscLabel = "wp CONTACT OUTLINE SHAPE";
                 rpc.geom().selection().create(im.next("csel",coscLabel), "CumulativeSelection");
                 rpc.geom().selection(im.get(coscLabel)).label(coscLabel);
 
-                String ifcsiccLabel = "If Contact Surface is Circle";
+                String ifcsiccLabel = "If Contact Surface is Circle (for contact)";
                 GeomFeature icsicc = rpc.geom().create(im.next("if",ifcsiccLabel), "If");
                 icsicc.label(ifcsiccLabel);
                 icsicc.set("condition", "Round_def==1");
 
-                String cocLabel = "Contact Outline";
+                String cocLabel = "Contact Outline circle";
                 GeomFeature coc = rpc.geom().create(im.next("e",cocLabel), "Ellipse");
                 coc.label(cocLabel);
                 coc.set("contributeto", im.get(coscLabel));
                 coc.set("pos", new String[]{"0", "Center"});
-                coc.set("semiaxes", new String[]{"A_ellipse_contact", "Diam_contact/2"});
+                coc.set("semiaxes", new String[]{"A_ellipse_contact", "Diam_contact/2"}); //
 
-                String elifcoccLabel = "Else If Contact Outline is Circle";
+                String elifcoccLabel = "wp Else If Contact Outline is Circle";
                 GeomFeature elifcocc = rpc.geom().create(im.next("elseif",elifcoccLabel), "ElseIf");
-                elifcoc.label("Else If Contact Outline is Circle");
+                elifcoc.label(elifcoccLabel);
                 elifcocc.set("condition", "Round_def==2");
 
-                String co1cLabel = "Contact Outline 1";
+                String co1cLabel = "wp Contact Outline 1";
                 GeomFeature co1c = rpc.geom().create(im.next("e",co1cLabel), "Ellipse");
-                co1c.label("Contact Outline 1");
-                co1c.set("contributeto", im.get("CONTACT OUTLINE SHAPE"));
+                co1c.label(co1cLabel);
+                co1c.set("contributeto", im.get(coscLabel));
                 co1c.set("pos", new String[]{"0", "Center"});
                 co1c.set("semiaxes", new String[]{"Diam_contact/2", "Diam_contact/2"});
                 rpc.geom().create(im.next("endif"), "EndIf");
@@ -633,7 +632,7 @@ class Part {
                 GeomFeature ecci = model.geom(id).create(im.next("dif",ecciLabel), "Difference");
                 ecci.label(ecciLabel);
                 ecci.set("contributeto", im.get("CONTACT FINAL"));
-                ecci.selection("input").named("PRE CUT CONTACT");
+                ecci.selection("input").named(im.get("PRE CUT CONTACT"));
                 ecci.selection("input2").named(im.get("CONTACT CUTTER IN"));
 
                 String pocdLabel = "Partition Outer Contact Domain";
@@ -723,9 +722,9 @@ class Part {
                 mcp1.set("keep", false);
                 mcp1.set("includefinal", false);
                 mcp1.set("twistcomp", false);
-                mcp1.selection("face").named(im.get(hicxp1Label) + "_" + im.get(hicxp1Label));
-                mcp1.selection("edge").named(im.get(im.get(hicsLabel)));
-                mcp1.selection("diredge").set(im.get(pcp1Label) + "(1)", 1);
+                mcp1.selection("face").named(im.get(hicsp1Label) + "_" + im.get(hicxp1Label));
+                mcp1.selection("edge").named(im.get("PC1"));
+                mcp1.selection("diredge").set(im.get(pcp1Label) + "(1)", 1); //TODO
 
                 String sefp1Label = "Select End Face Part 1";
                 GeomFeature sefp1 = model.geom(id).create(im.next("ballsel", sefp1Label), "BallSelection");
@@ -743,12 +742,15 @@ class Part {
                 hicsp2.set("planetype", "faceparallel");
                 hicsp2.set("unite", true);
                 hicsp2.selection("face").named(im.get("SEL END P1"));
+
                 String hicsp2wpLabel =  "HELICAL INSULATOR CROSS SECTION P2";
                 hicsp2.geom().selection().create(im.next("csel",hicsp2wpLabel), "CumulativeSelection");
                 hicsp2.geom().selection(im.get(hicsp2wpLabel)).label(hicsp2wpLabel);
+
                 String hccsp2wpLabel = "HELICAL CONDUCTOR CROSS SECTION P2";
                 hicsp2.geom().selection().create(im.next("csel",hccsp2wpLabel), "CumulativeSelection");
                 hicsp2.geom().selection(im.get(hccsp2wpLabel)).label(hccsp2wpLabel);
+
                 hicsp2.geom().create("r1", "Rectangle");
                 hicsp2.geom().feature("r1").label("Helical Insulator Cross Section Part 2");
                 hicsp2.geom().feature("r1").set("contributeto", im.get(hicsp2wpLabel));
@@ -757,15 +759,16 @@ class Part {
 
                 String hccsp2Label = "Helical Conductor Cross Section Part 2";
                 GeomFeature hccsp2 = model.geom(id).create(im.next("wp",hccsp2Label), "WorkPlane");
-                hccsp2.label("Helical Conductor Cross Section Part 2");
+                hccsp2.label(hccsp2Label);
                 hccsp2.set("planetype", "faceparallel");
                 hccsp2.set("unite", true);
                 hccsp2.selection("face").named(im.get("SEL END P1"));
-                String hicxp2Label = "HELICAL INSULATOR CROSS SECTION P2";
-                hccsp2.geom().selection().create(im.next("csel",hicxp2Label), "CumulativeSelection");
-                hccsp2.geom().selection(im.get("hicxp2Label")).label(hicxp2Label);
 
-                String hccxp2Label = "HELICAL CONDUCTOR CROSS SECTION P2";
+                String hicxp2Label = "wp HELICAL INSULATOR CROSS SECTION P2";
+                hccsp2.geom().selection().create(im.next("csel",hicxp2Label), "CumulativeSelection");
+                hccsp2.geom().selection(im.get(hicxp2Label)).label(hicxp2Label);
+
+                String hccxp2Label = "wp HELICAL CONDUCTOR CROSS SECTION P2";
                 hccsp2.geom().selection().create(im.next("csel",hccxp2Label), "CumulativeSelection");
                 hccsp2.geom().selection(im.get(hccxp2Label)).label(hccxp2Label);
                 hccsp2.geom().create("r2", "Rectangle");
@@ -848,13 +851,16 @@ class Part {
                 mcp3.set("keep", false);
                 mcp3.set("twistcomp", false);
 
-                String srchLabel = "SRC";
+                String srchLabel = "ptSRC";
                 GeomFeature srch = model.geom(id).create(im.next("pt",srchLabel), "Point");
                 srch.label(srchLabel);
                 srch.set("contributeto", im.get("SRC"));
                 srch.set("p", new String[]{"cos(2*pi*rev_cuff_LN*(1.25/2.5))*((thk_elec_LN/2)+r_cuff_in_LN)", "sin(2*pi*rev_cuff_LN*(1.25/2.5))*((thk_elec_LN/2)+r_cuff_in_LN)", "Center"});
 
                 model.geom(id).run();
+
+                System.out.println("In helix 1");
+
                 break;
             case "RectangleContact_Primitive":
                 model.geom(id).inputParam().set("r_inner_contact", "r_cuff_in_Pitt+recess_Pitt");
@@ -1157,7 +1163,6 @@ class Part {
      * @return
      */
     public static boolean createPartInstance(String id, String pseudonym, ModelWrapper2 mw) throws IllegalArgumentException {
-        System.out.println("fun in the CPI");
         return createPartInstance(id, pseudonym, mw, null);
     }
 
