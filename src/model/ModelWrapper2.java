@@ -176,7 +176,7 @@ public class ModelWrapper2 {
             // get the id for the next "par" (i.e. parameters section)
             String id = this.next("par", name);
             model.param().group().create(id);
-
+            System.out.println(id);
             // loop through all parameters in file, and set in parameters
             for (Object item : (JSONArray) data.get("params")) {
                 JSONObject itemObject = (JSONObject) item;
@@ -189,6 +189,7 @@ public class ModelWrapper2 {
             }
 
             // for each required part, create it (if not already existing)
+            System.out.println(data.get("parts"));
             for (Object item: (JSONArray) data.get("parts")) {
                 String partPrimitiveName = (String) item; // quick cast to String
 
@@ -200,8 +201,14 @@ public class ModelWrapper2 {
                     try {
                         // TRY to create the part primitive (catch error if no existing implementation)
                         IdentifierManager partPrimitiveIM = Part.createPartPrimitive(partID, partPrimitiveName, this);
+
+                        System.out.println("ran part primitive code");
+
                         // add the returned id manager to the HashMap of IMs with the partName as its key
                         this.partPrimitiveIMs.put(partPrimitiveName, partPrimitiveIM);
+
+                        System.out.println("put");
+
                     } catch (IllegalArgumentException e) {
                         e.printStackTrace();
                         return false;
@@ -209,11 +216,18 @@ public class ModelWrapper2 {
                 }
             }
 
+            System.out.println("here there here");
+
             // time to initialize the indicated part
             try {
                 // TRY to initialize the part (catch error if no existing implementation)
+                System.out.println("we are here");
+                System.out.println(name);
                 Part.createPartInstance(this.next("pi", name), name, this);
+                System.out.println("this happens");
+
             } catch (IllegalArgumentException e) {
+                System.out.println("error happened");
                 e.printStackTrace();
                 return false;
             }
@@ -280,6 +294,7 @@ public class ModelWrapper2 {
             cuffFiles.add(cuffs.getString(i));
             System.out.println(cuffs.getString(i));
             mw.addParts(cuffs.getString(i));
+            System.out.println("added part");
         }
     }
 }

@@ -348,15 +348,13 @@ class Part {
                 wp_recess_cx1.geom().selection().create(im.next("csel", cs1Label), "CumulativeSelection");
                 wp_recess_cx1.geom().selection(im.get(cs1Label)).label(cs1Label);
 
-                String rcxLabel = "RECESS CROSS SECTION";
-                System.out.println("ionside ribbon 1!");
+                String rcxLabel = "wp RECESS CROSS SECTION";
                 wp_recess_cx1.geom().selection().create(im.next("csel",rcxLabel), "CumulativeSelection");
-                System.out.println("ionside ribbon 2!");
                 wp_recess_cx1.geom().selection(im.get(rcxLabel)).label(rcxLabel);
 
                 wp_recess_cx1.geom().create("r1", "Rectangle");
                 wp_recess_cx1.geom().feature("r1").label("Recess Cross Section");
-                wp_recess_cx1.geom().feature("r1").set("contributeto", im.get("RECESS CROSS SECTION"));
+                wp_recess_cx1.geom().feature("r1").set("contributeto", im.get(rcxLabel));
                 wp_recess_cx1.geom().feature("r1").set("pos", new String[]{"R_in+Recess/2", "Center"});
                 wp_recess_cx1.geom().feature("r1").set("base", "center");
                 wp_recess_cx1.geom().feature("r1").set("size", new String[]{"Recess", "L_elec"});
@@ -372,7 +370,6 @@ class Part {
                 endifLabel = "EndIf";
                 model.geom(id).create(im.next("endif"), endifLabel).label(endifLabel);
 
-
                 String srcLabel = "Src";
                 GeomFeature src = model.geom(id).create(im.next("pt",srcLabel), "Point");
                 src.label(srcLabel);
@@ -380,6 +377,8 @@ class Part {
                 src.set("p", new String[]{"(R_in+Recess+Thk_elec/2)*cos(Rot_def+Theta_contact/2)", "(R_in+Recess+Thk_elec/2)*sin(Rot_def+Theta_contact/2)", "Center"});
 
                 model.geom(id).run();
+                System.out.println("here4");
+
                 break;
             case "WireContact_Primitive":
                 model.geom(id).inputParam().set("R_conductor", "r_conductor_P");
@@ -1158,6 +1157,7 @@ class Part {
      * @return
      */
     public static boolean createPartInstance(String id, String pseudonym, ModelWrapper2 mw) throws IllegalArgumentException {
+        System.out.println("fun in the CPI");
         return createPartInstance(id, pseudonym, mw, null);
     }
 
