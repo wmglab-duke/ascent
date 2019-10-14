@@ -805,7 +805,7 @@ class Part {
                 mcp2c.set("keep", false);
                 mcp2c.set("includefinal", false);
                 mcp2c.set("twistcomp", false);
-                mcp2c.selection("face").named(im.get(hccxp2Label + "_" + hccxp2Label));
+                mcp2c.selection("face").named(im.get(hccsp2Label) + "_" + im.get(hccxp2Label));
                 mcp2c.selection("edge").named(im.get("PC2"));
                 mcp2c.selection("diredge").set(im.get(pcp2Label) + "(1)", 1);
 
@@ -819,37 +819,40 @@ class Part {
                 sefp2.set("r", 1);
                 sefp2.set("contributeto", im.get("SEL END P2"));
 
-                String hicsp3Label = "Helical Insulator Cross Section Part 3";
-                GeomFeature hicsp3 = model.geom(id).create(im.next("wp",hicsp3Label), "WorkPlane");
-                hicsp3.label(hicsp3Label);
-                hicsp3.set("planetype", "faceparallel");
-                hicsp3.set("unite", true);
-                hicsp3.selection("face").named(im.get("SEL END P2"));
-                String hicssp3Label = "HELICAL INSULATOR CROSS SECTION P3";
-                hicsp3.geom().selection().create(im.next("csel", hicssp3Label), "CumulativeSelection");
-                hicsp3.geom().selection(im.get(hicssp3Label)).label(hicssp3Label);
-                hicsp3.geom().create("r1", "Rectangle");
-                hicsp3.geom().feature("r1").label("Helical Insulator Cross Section Part 3");
-                hicsp3.geom().feature("r1").set("contributeto", im.get(hicssp3Label));
-                hicsp3.geom().feature("r1").set("base", "center");
-                hicsp3.geom().feature("r1").set("size", new String[]{"thk_cuff_LN", "w_cuff_LN"});
+                // COULDN'T FIGURE OUT THIS ERROR - WILL DEBUG WITH GUI LATER, in selecting face SEL END P2
 
-                String pcp3Label = "Parametric Curve Part 3";
-                GeomFeature pcp3 = model.geom(id).create(im.next("pc",pcp3Label), "ParametricCurve");
-                pcp3.label(pcp3Label);
-                pcp3.set("contributeto", im.get("PC3"));
-                pcp3.set("parmin", "rev_cuff_LN*((0.75+1)/2.5)");
-                pcp3.set("parmax", "rev_cuff_LN");
-                pcp3.set("coord", new String[]{"cos(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "sin(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "Center+(L_cuff_LN)*(s/rev_cuff_LN)-(L_cuff_LN/2)"});
-
-                String mcp3Label = "Make Cuff Part 3";
-                GeomFeature mcp3 = model.geom(id).create(im.next("swe",mcp3Label), "Sweep");
-                mcp3.label(mcp3Label);
-                mcp3.set("contributeto", im.get("Cuffp3"));
-                mcp3.selection("face").named(im.get(hicsp3Label) + "_" + im.get(hicssp3Label));
-                mcp3.selection("edge").named(im.get("PC3"));
-                mcp3.set("keep", false);
-                mcp3.set("twistcomp", false);
+//                String hicsp3Label = "Helical Insulator Cross Section Part 3";
+//                GeomFeature hicsp3 = model.geom(id).create(im.next("wp",hicsp3Label), "WorkPlane");
+//                hicsp3.label(hicsp3Label);
+//                hicsp3.set("planetype", "faceparallel");
+//                hicsp3.set("unite", true);
+//                hicsp3.selection("face").named(im.get("SEL END P2")); // here
+//
+//                String hicssp3Label = "HELICAL INSULATOR CROSS SECTION P3";
+//                hicsp3.geom().selection().create(im.next("csel", hicssp3Label), "CumulativeSelection");
+//                hicsp3.geom().selection(im.get(hicssp3Label)).label(hicssp3Label);
+//                hicsp3.geom().create("r1", "Rectangle");
+//                hicsp3.geom().feature("r1").label("Helical Insulator Cross Section Part 3");
+//                hicsp3.geom().feature("r1").set("contributeto", im.get(hicssp3Label));
+//                hicsp3.geom().feature("r1").set("base", "center");
+//                hicsp3.geom().feature("r1").set("size", new String[]{"thk_cuff_LN", "w_cuff_LN"});
+//
+//                String pcp3Label = "Parametric Curve Part 3";
+//                GeomFeature pcp3 = model.geom(id).create(im.next("pc",pcp3Label), "ParametricCurve");
+//                pcp3.label(pcp3Label);
+//                pcp3.set("contributeto", im.get("PC3"));
+//                pcp3.set("parmin", "rev_cuff_LN*((0.75+1)/2.5)");
+//                pcp3.set("parmax", "rev_cuff_LN");
+//                pcp3.set("coord", new String[]{"cos(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "sin(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "Center+(L_cuff_LN)*(s/rev_cuff_LN)-(L_cuff_LN/2)"});
+//
+//                String mcp3Label = "Make Cuff Part 3";
+//                GeomFeature mcp3 = model.geom(id).create(im.next("swe",mcp3Label), "Sweep");
+//                mcp3.label(mcp3Label);
+//                mcp3.set("contributeto", im.get("Cuffp3"));
+//                mcp3.selection("face").named(im.get(hicsp3Label) + "_" + im.get(hicssp3Label));
+//                mcp3.selection("edge").named(im.get("PC3"));
+//                mcp3.set("keep", false);
+//                mcp3.set("twistcomp", false);
 
                 String srchLabel = "ptSRC";
                 GeomFeature srch = model.geom(id).create(im.next("pt",srchLabel), "Point");
@@ -858,8 +861,6 @@ class Part {
                 srch.set("p", new String[]{"cos(2*pi*rev_cuff_LN*(1.25/2.5))*((thk_elec_LN/2)+r_cuff_in_LN)", "sin(2*pi*rev_cuff_LN*(1.25/2.5))*((thk_elec_LN/2)+r_cuff_in_LN)", "Center"});
 
                 model.geom(id).run();
-
-                System.out.println("In helix 1");
 
                 break;
             case "RectangleContact_Primitive":
@@ -929,6 +930,8 @@ class Part {
                 ccsc.geom().feature("r1").set("base", "center");
                 ccsc.geom().feature("r1").set("size", new String[]{"w_contact_Pitt", "z_contact_Pitt"});
 
+                System.out.println("In square 2");
+
                 String filletLabel = "Fillet Corners";
                 GeomFeature fillet = ccsc.geom().create(im.next("fil",filletLabel), filletLabel);
                 fillet.label(filletLabel);
@@ -945,6 +948,8 @@ class Part {
                 ccsc.geom().create("mov1", "Move");
                 ccsc.geom().feature("mov1").set("disply", "z_center");
                 ccsc.geom().feature("mov1").selection("input").named(im.get(cfLabel));
+
+                System.out.println("In square 1");
 
                 String mcpcLabel = "Make Contact Pre Cuts";
                 GeomFeature mcpc = model.geom(id).create(im.next("ext",mcpcLabel), "Extrude");
