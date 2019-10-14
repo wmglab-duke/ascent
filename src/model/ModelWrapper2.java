@@ -176,7 +176,8 @@ public class ModelWrapper2 {
             // get the id for the next "par" (i.e. parameters section)
             String id = this.next("par", name);
             model.param().group().create(id);
-            System.out.println(id);
+            model.param(id).label(name.split("\\.")[0]);
+
             // loop through all parameters in file, and set in parameters
             for (Object item : (JSONArray) data.get("params")) {
                 JSONObject itemObject = (JSONObject) item;
@@ -189,7 +190,6 @@ public class ModelWrapper2 {
             }
 
             // for each required part, create it (if not already existing)
-            System.out.println(data.get("parts"));
             for (Object item: (JSONArray) data.get("parts")) {
                 String partPrimitiveName = (String) item; // quick cast to String
 
@@ -197,7 +197,6 @@ public class ModelWrapper2 {
                 if (! this.im.hasPseudonym(partPrimitiveName)) {
                     // get next available (TOP LEVEL) "part" id
                     String partID = this.im.next("part", partPrimitiveName);
-                    System.out.println(partPrimitiveName);
                     try {
                         // TRY to create the part primitive (catch error if no existing implementation)
                         IdentifierManager partPrimitiveIM = Part.createPartPrimitive(partID, partPrimitiveName, this);

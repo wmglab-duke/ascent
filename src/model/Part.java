@@ -820,8 +820,6 @@ class Part {
                 sefp2.set("r", 1);
                 sefp2.set("contributeto", im.get("SEL END P2"));
 
-                // COULDN'T FIGURE OUT THIS ERROR - WILL DEBUG WITH GUI LATER, in selecting face SEL END P2
-
                 String hicsp3Label = "Helical Insulator Cross Section Part 3";
                 GeomFeature hicsp3 = model.geom(id).create(im.next("wp",hicsp3Label), "WorkPlane");
                 hicsp3.label(hicsp3Label);
