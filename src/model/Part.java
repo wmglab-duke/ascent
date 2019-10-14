@@ -794,7 +794,7 @@ class Part {
                 mcp2.set("crossfaces", true);
                 mcp2.set("includefinal", false);
                 mcp2.set("twistcomp", false);
-                mcp2.selection("face").named(im.get(hccsp2Label) + "_" + im.get(hccxp2Label));
+                mcp2.selection("face").named(im.get(hicsp2Label) + "_" + im.get(hicsp2wpLabel));
                 mcp2.selection("edge").named(im.get("PC2"));
                 mcp2.selection("diredge").set(im.get(pcp2Label) + "(1)", 1);
 
@@ -822,38 +822,38 @@ class Part {
 
                 // COULDN'T FIGURE OUT THIS ERROR - WILL DEBUG WITH GUI LATER, in selecting face SEL END P2
 
-//                String hicsp3Label = "Helical Insulator Cross Section Part 3";
-//                GeomFeature hicsp3 = model.geom(id).create(im.next("wp",hicsp3Label), "WorkPlane");
-//                hicsp3.label(hicsp3Label);
-//                hicsp3.set("planetype", "faceparallel");
-//                hicsp3.set("unite", true);
-//                hicsp3.selection("face").named(im.get("SEL END P2")); // here
-//
-//                String hicssp3Label = "HELICAL INSULATOR CROSS SECTION P3";
-//                hicsp3.geom().selection().create(im.next("csel", hicssp3Label), "CumulativeSelection");
-//                hicsp3.geom().selection(im.get(hicssp3Label)).label(hicssp3Label);
-//                hicsp3.geom().create("r1", "Rectangle");
-//                hicsp3.geom().feature("r1").label("Helical Insulator Cross Section Part 3");
-//                hicsp3.geom().feature("r1").set("contributeto", im.get(hicssp3Label));
-//                hicsp3.geom().feature("r1").set("base", "center");
-//                hicsp3.geom().feature("r1").set("size", new String[]{"thk_cuff_LN", "w_cuff_LN"});
-//
-//                String pcp3Label = "Parametric Curve Part 3";
-//                GeomFeature pcp3 = model.geom(id).create(im.next("pc",pcp3Label), "ParametricCurve");
-//                pcp3.label(pcp3Label);
-//                pcp3.set("contributeto", im.get("PC3"));
-//                pcp3.set("parmin", "rev_cuff_LN*((0.75+1)/2.5)");
-//                pcp3.set("parmax", "rev_cuff_LN");
-//                pcp3.set("coord", new String[]{"cos(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "sin(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "Center+(L_cuff_LN)*(s/rev_cuff_LN)-(L_cuff_LN/2)"});
-//
-//                String mcp3Label = "Make Cuff Part 3";
-//                GeomFeature mcp3 = model.geom(id).create(im.next("swe",mcp3Label), "Sweep");
-//                mcp3.label(mcp3Label);
-//                mcp3.set("contributeto", im.get("Cuffp3"));
-//                mcp3.selection("face").named(im.get(hicsp3Label) + "_" + im.get(hicssp3Label));
-//                mcp3.selection("edge").named(im.get("PC3"));
-//                mcp3.set("keep", false);
-//                mcp3.set("twistcomp", false);
+                String hicsp3Label = "Helical Insulator Cross Section Part 3";
+                GeomFeature hicsp3 = model.geom(id).create(im.next("wp",hicsp3Label), "WorkPlane");
+                hicsp3.label(hicsp3Label);
+                hicsp3.set("planetype", "faceparallel");
+                hicsp3.set("unite", true);
+                hicsp3.selection("face").named(im.get("SEL END P2")); // here
+
+                String hicssp3Label = "HELICAL INSULATOR CROSS SECTION P3";
+                hicsp3.geom().selection().create(im.next("csel", hicssp3Label), "CumulativeSelection");
+                hicsp3.geom().selection(im.get(hicssp3Label)).label(hicssp3Label);
+                hicsp3.geom().create("r1", "Rectangle");
+                hicsp3.geom().feature("r1").label("Helical Insulator Cross Section Part 3");
+                hicsp3.geom().feature("r1").set("contributeto", im.get(hicssp3Label));
+                hicsp3.geom().feature("r1").set("base", "center");
+                hicsp3.geom().feature("r1").set("size", new String[]{"thk_cuff_LN", "w_cuff_LN"});
+
+                String pcp3Label = "Parametric Curve Part 3";
+                GeomFeature pcp3 = model.geom(id).create(im.next("pc",pcp3Label), "ParametricCurve");
+                pcp3.label(pcp3Label);
+                pcp3.set("contributeto", im.get("PC3"));
+                pcp3.set("parmin", "rev_cuff_LN*((0.75+1)/2.5)");
+                pcp3.set("parmax", "rev_cuff_LN");
+                pcp3.set("coord", new String[]{"cos(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "sin(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "Center+(L_cuff_LN)*(s/rev_cuff_LN)-(L_cuff_LN/2)"});
+
+                String mcp3Label = "Make Cuff Part 3";
+                GeomFeature mcp3 = model.geom(id).create(im.next("swe",mcp3Label), "Sweep");
+                mcp3.label(mcp3Label);
+                mcp3.set("contributeto", im.get("Cuffp3"));
+                mcp3.selection("face").named(im.get(hicsp3Label) + "_" + im.get(hicssp3Label));
+                mcp3.selection("edge").named(im.get("PC3"));
+                mcp3.set("keep", false);
+                mcp3.set("twistcomp", false);
 
                 String srchLabel = "ptSRC";
                 GeomFeature srch = model.geom(id).create(im.next("pt",srchLabel), "Point");
@@ -1152,6 +1152,7 @@ class Part {
                 throw new  IllegalArgumentException("No implementation for part primitive name: " + pseudonym);
         }
 
+        // TODO: I think we will want to move this elsewhere... also try/catch so if breaks you can see in GUI what is was doing
         try {
             model.save("parts_test");
         } catch (IOException e) {
