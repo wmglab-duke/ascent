@@ -4,13 +4,13 @@
     {
       "name": "N_holes_EM",
       "expression": "0",
-      "description": ""
+      "description": "number of holes"
     },
 
     {
       "name": "Theta_EM",
       "expression": "Theta_contact_EM+((2*(360*arc_ext_EM)/(2*pi*R_in_EM)) [deg])",
-      "description": ""
+      "description": "test"
     },
 
     {

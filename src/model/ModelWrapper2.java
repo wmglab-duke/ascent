@@ -179,15 +179,19 @@ public class ModelWrapper2 {
             // loop through all parameters in file, and set in parameters
             for (Object item : (JSONArray) data.get("params")) {
                 JSONObject itemObject = (JSONObject) item;
+
+                System.out.println(itemObject);
+                System.out.println(itemObject.get("name"));
+                System.out.println(itemObject.get("expression"));
+                System.out.println(itemObject.get("description"));
+                System.out.println(id);
+
                 model.param(id).set(
                         (String) itemObject.get("name"),
                         (String) itemObject.get("expression"),
                         (String) itemObject.get("description")
-
-//                        String.join("", "\"", (String) itemObject.get("name"), "\""),
-//                        String.join("", "\"", (String) itemObject.get("expression"), "\""),
-//                        String.join("", "\"", (String) itemObject.get("description"), "\"")
                 );
+                System.out.println("here");
             }
 
             // for each required part, create it (if not already existing)
