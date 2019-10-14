@@ -1,6 +1,7 @@
 package model;
 
 import com.comsol.model.Model;
+import com.sun.xml.internal.ws.api.model.wsdl.WSDLOutput;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -185,6 +186,10 @@ public class ModelWrapper2 {
                 System.out.println(itemObject.get("expression"));
                 System.out.println(itemObject.get("description"));
                 System.out.println(id);
+
+                model.param("par").set("parameter","1","testing");
+                System.out.println("here");
+                System.out.println(model);
 
                 model.param(id).set(
                         (String) itemObject.get("name"),
