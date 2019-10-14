@@ -204,9 +204,14 @@ class Slide(Exceptionable):
 
                 # write all items (give filename as i (index) without the extension
                 for i, item in enumerate(items):
-
-                    if isinstance(item, Nerve):
-                        item.write(mode, os.path.join(os.getcwd(), str(i), str(i)))
+                    print(i)
+                    print(type(item))
+                    if isinstance(item, Trace):  # not Nerve bc it is buffer class!
+                        if not os.path.exists(str(i)):
+                            os.mkdir(str(i))
+                        nerve_path = os.path.join(os.getcwd(), str(i), str(i))
+                        print('NERVE PATH: {}'.format(nerve_path))
+                        item.write(mode, nerve_path)
                     else:
                         # start to keep track of position file structure
                         index_start_folder = os.getcwd()
