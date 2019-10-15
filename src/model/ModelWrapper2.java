@@ -260,6 +260,10 @@ public class ModelWrapper2 {
         return true;
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean addFascicles() {
 
         try {
