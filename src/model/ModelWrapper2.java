@@ -234,7 +234,7 @@ public class ModelWrapper2 {
                     new String[]{this.root, ".templates", name})).getData();
 
             // loop through all part instances (e.g., instance1, instance2, etc...)
-            Object item = data.get("instance1");
+            Object item = data.get("instance1"); // TODO
             JSONObject itemObject = (JSONObject) item;
 
             String instanceLabel = (String) itemObject.get("label");
