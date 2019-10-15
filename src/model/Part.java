@@ -49,10 +49,6 @@ class Part {
         return Part.createPartPrimitive(id, pseudonym, mw, null);
     }
 
-    public static boolean createPartInstance(String id, String pseudonym, ModelWrapper2 mw, HashMap<String, String> partPrimitives) {
-        return createPartInstance(id, pseudonym, mw, partPrimitives, null);
-    }
-
     /**
      *
      * @param id
@@ -1164,34 +1160,24 @@ class Part {
      * @param mw
      * @return
      */
-//    public static boolean createPartInstance(String id, String pseudonym, ModelWrapper2 mw) throws IllegalArgumentException {
-//        return createPartInstance(id, pseudonym, mw, null);
-//    }
-
-    /**
-     *
-     * @param id
-     * @param pseudonym
-     * @param mw
-     * @param data
-     * @return
-     */
-    public static boolean createPartInstance(String id, String pseudonym, ModelWrapper2 mw, HashMap<String, Object> data) throws IllegalArgumentException {
+    public static boolean createPartInstance(String instanceLabel, String pseudonym, ModelWrapper2 mw) throws IllegalArgumentException {
 
         Model model = mw.getModel();
 
-        // TODO Only if the first part - maybe move this elsewhere?
-        model.component().create("comp1", true);
-        model.component("comp1").geom().create("geom1", 3);
-        model.component("comp1").mesh().create("mesh1");
+        model.component("comp1").geom("geom1").create(mw.get(instanceLabel), "PartInstance");
+        model.component("comp1").geom("geom1").feature(mw.get(instanceLabel)).label(instanceLabel);
 
-//        model.component("comp1").geom("geom1").create("pi21", "PartInstance");
-//        model.component("comp1").geom("geom1").feature("pi21").label("LivaNova 1");
+        System.out.println(mw.get(instanceLabel));
+        System.out.println(instanceLabel);
 //        model.component("comp1").geom("geom1").feature("pi21").set("part", "part5");
 
+        // Imports
         switch (pseudonym) {
             case "TubeCuff_Primitive":
-                // Imports
+
+                // set instantiation parameters
+                // model.component("comp1").geom("geom1").feature("pi8").setEntry("inputexpr", "N_holes", "N_holes_EM");
+
 //                model.component("comp1").geom("geom1").feature("pi4").setEntry("selkeepdom", "pi4_csel3.dom", "on");
 
 //                model.component("comp1").geom("geom1").feature("pi3").setEntry("selkeepdom", "pi3_csel3.dom", "on");
@@ -1199,7 +1185,9 @@ class Part {
 //                model.component("comp1").geom("geom1").feature("pi8").setEntry("selkeepdom", "pi8_csel3.dom", "on");
                 break;
             case "RibbonContact_Primitive":
-                // Imports
+                // set instantiation parameters
+                // model.component("comp1").geom("geom1").feature("pi8").setEntry("inputexpr", "N_holes", "N_holes_EM");
+
 //                model.component("comp1").geom("geom1").feature("pi9").setEntry("selkeepdom", "pi9_csel4.dom", "on");
 //                model.component("comp1").geom("geom1").feature("pi9").setEntry("selkeeppnt", "pi9_csel3.pnt", "on");
 
@@ -1213,7 +1201,6 @@ class Part {
 //                model.component("comp1").geom("geom1").feature("pi12").setEntry("selkeeppnt", "pi12_csel3.pnt", "on");
 
             case "WireContact_Primitive":
-                // Imports
 //                model.component("comp1").geom("geom1").feature("pi13").setEntry("selkeepdom", "pi13_csel2.dom", "on");
 //                model.component("comp1").geom("geom1").feature("pi13").setEntry("selkeeppnt", "pi13_csel3.pnt", "on");
 //
@@ -1222,7 +1209,6 @@ class Part {
 
                 break;
             case "CircleContact_Primitive":
-                // Imports
 //                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepobj", "pi15_csel12", "off");
 //                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepobj", "pi15_csel13", "off");
 //                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepobj", "pi15_csel14", "off");
@@ -1243,7 +1229,6 @@ class Part {
 
                 break;
             case "HelicalCuffnContact_Primitive":
-                // Imports
 //                model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeepdom", "pi21_csel2.dom", "on");
 //                model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeepdom", "pi21_csel5.dom", "on");
 //                model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeepdom", "pi21_csel6.dom", "on");

@@ -236,38 +236,34 @@ public class ModelWrapper2 {
 
             // loop through all part instances (e.g., instance1, instance2, etc...)
             for (Object item : (JSONArray) data.get("instance1")) {
+                JSONObject itemObject = (JSONObject) item;
 
-                // something like this here:
-                // model.component("comp1").geom("geom1").feature("pi8").setEntry("inputexpr", "N_holes", "N_holes_EM");
-//                // set instantiation parameters
-//                model.param(id).set(
-//                        (String) itemObject.get("name"),
-//                        (String) itemObject.get("expression"),
-//                        (String) itemObject.get("description")
-//                );
+                String instanceLabel = (String) itemObject.get("label");
+                String instanceID = this.im.next("pi", instanceLabel);
+
+                String type = (String) itemObject.get("type");
+
+                Part.createPartInstance(instanceLabel, type , this);
             }
 
             // for each required part primitive, create it (if not already existing)
-            for (Object item: (JSONArray) data.get("parts")) {
-                String partPrimitiveName = (String) item; // quick cast to String
-
-                // create the part primitive if it has not already been created
-                if (! this.im.hasPseudonym(partPrimitiveName)) {
-                    // get next available (TOP LEVEL) "part" id
-                    String partID = this.im.next("part", partPrimitiveName);
-                    try {
-                        // TRY to create the part primitive (catch error if no existing implementation)
-                        IdentifierManager partPrimitiveIM = Part.createPartPrimitive(partID, partPrimitiveName, this);
-
-                        // add the returned id manager to the HashMap of IMs with the partName as its key
-                        this.partPrimitiveIMs.put(partPrimitiveName, partPrimitiveIM);
-
-                    } catch (IllegalArgumentException e) {
-                        e.printStackTrace();
-                        return false;
-                    }
-                }
-            }
+//            for (Object item: (JSONArray) data.get("parts")) {
+//                String partPrimitiveName = (String) item; // quick cast to String
+//
+//                // create the part primitive if it has not already been created
+//                if (! this.im.hasPseudonym(partPrimitiveName)) {
+//                    // get next available (TOP LEVEL) "part" id
+//                    String partID = this.im.next("part", partPrimitiveName);
+//                    try {
+//                        // TRY to create the part primitive (catch error if no existing implementation)
+//                        Part.createPartInstance(partID, partPrimitiveName, this);
+//
+//                    } catch (IllegalArgumentException e) {
+//                        e.printStackTrace();
+//                        return false;
+//                    }
+//                }
+//            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             return false;
@@ -373,6 +369,10 @@ public class ModelWrapper2 {
         JSONObject cuffObject = (JSONObject) configData.get("cuff");
         JSONArray cuffs = (JSONArray) cuffObject.get("preset");
         ArrayList<String> cuffFiles = new ArrayList<>();
+
+        model.component().create("comp1", true);
+        model.component("comp1").geom().create("geom1", 3);
+        model.component("comp1").mesh().create("mesh1");
 
         for (int i = 0; i < cuffs.length(); i++) {
             // make list of cuffs in model
