@@ -1,5 +1,19 @@
 {
   "parts": ["HelicalCuffnContact_Primitive"],
+  "instance1": [
+    {
+      "type": "HelicalCuffnContact_Primitive",
+      "label": "LivaNova CuffnContact 1",
+      "Center": ""
+    }
+  ],
+  "instance2": [
+    {
+      "type": "HelicalCuffnContact_Primitive",
+      "label": "LivaNova CuffnContact 2",
+      "Center": ""
+    }
+  ],
   "params": [
     {
       "name": "w_cuff_LN",
