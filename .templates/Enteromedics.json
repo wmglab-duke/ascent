@@ -1,5 +1,35 @@
 {
   "parts": ["TubeCuff_Primitive", "RibbonContact_Primitive"],
+  "instance1": [
+    {
+      "type": "TubeCuff_Primitive",
+      "label": "Enteromedics Cuff",
+      "N_holes": "",
+      "Theta": "",
+      "Center": "",
+      "R_in": "",
+      "R_out": "",
+      "L": "",
+      "Rot_def": "",
+      "D_hole": "",
+      "Buffer_hole": "",
+      "L_holecenter_cuffseam": "",
+      "Pitch_holecenter_holecenter": ""
+    }
+  ],
+  "instance2": [
+    {
+      "type": "RibbonContact_Primitive",
+      "label": "Enteromedics Contact",
+      "Thk_elec": "",
+      "L_elec": "",
+      "R_in": "",
+      "Recess": "",
+      "Center": "",
+      "Theta_contact": "",
+      "Rot_def": ""
+    }
+  ],
   "params": [
     {
       "name": "N_holes_EM",
