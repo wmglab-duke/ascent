@@ -20,7 +20,7 @@
   "instance2": [
     {
       "type": "RibbonContact_Primitive",
-      "label": "Enteromedics Contact",
+      "label": "Enteromedics Contact 1",
       "Thk_elec": "Thk_elec_EM",
       "L_elec": "L_elec_EM",
       "R_in": "R_in_EM",
