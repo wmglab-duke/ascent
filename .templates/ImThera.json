@@ -1,5 +1,135 @@
 {
   "parts": ["TubeCuff_Primitive", "CircleContact_Primitive"],
+  "instance1": [
+    {
+      "type": "TubeCuff_Primitive",
+      "label": "ImThera Cuff",
+      "N_holes": "",
+      "Theta": "",
+      "Center": "",
+      "R_in": "",
+      "R_out": "",
+      "L": "",
+      "Rot_def": "",
+      "D_hole": "",
+      "Buffer_hole": "",
+      "L_holecenter_cuffseam": "",
+      "Pitch_holecenter_holecenter": ""
+    }
+  ],
+  "instance2": [
+    {
+      "type": "TubeCuff_Primitive",
+      "label": "ImThera Furl",
+      "N_holes": "",
+      "Theta": "",
+      "Center": "",
+      "R_in": "",
+      "R_out": "",
+      "L": "",
+      "Rot_def": "",
+      "D_hole": "",
+      "Buffer_hole": "",
+      "L_holecenter_cuffseam": "",
+      "Pitch_holecenter_holecenter": ""
+    }
+  ],
+  "instance3": [
+    {
+      "type": "CircleContact_Primitive",
+      "label": "ImThera Contact 1",
+      "Recess": "",
+      "Rotation_angle": "",
+      "Center": "",
+      "Round_def": "",
+      "R_in": "",
+      "Contact_depth": "",
+      "Overshoot": "",
+      "A_ellipse_contact": "",
+      "Diam_contact": "",
+      "L": ""
+    }
+  ],
+  "instance4": [
+    {
+      "type": "CircleContact_Primitive",
+      "label": "ImThera Contact 2",
+      "Recess": "",
+      "Rotation_angle": "",
+      "Center": "",
+      "Round_def": "",
+      "R_in": "",
+      "Contact_depth": "",
+      "Overshoot": "",
+      "A_ellipse_contact": "",
+      "Diam_contact": "",
+      "L": ""
+    }
+  ],
+  "instance5": [
+    {
+      "type": "CircleContact_Primitive",
+      "label": "ImThera Contact 3",
+      "Recess": "",
+      "Rotation_angle": "",
+      "Center": "",
+      "Round_def": "",
+      "R_in": "",
+      "Contact_depth": "",
+      "Overshoot": "",
+      "A_ellipse_contact": "",
+      "Diam_contact": "",
+      "L": ""
+    }
+  ],
+  "instance6": [
+    {
+      "type": "CircleContact_Primitive",
+      "label": "ImThera Contact 4",
+      "Recess": "",
+      "Rotation_angle": "",
+      "Center": "",
+      "Round_def": "",
+      "R_in": "",
+      "Contact_depth": "",
+      "Overshoot": "",
+      "A_ellipse_contact": "",
+      "Diam_contact": "",
+      "L": ""
+    }
+  ],
+  "instance7": [
+    {
+      "type": "CircleContact_Primitive",
+      "label": "ImThera Contact 5",
+      "Recess": "",
+      "Rotation_angle": "",
+      "Center": "",
+      "Round_def": "",
+      "R_in": "",
+      "Contact_depth": "",
+      "Overshoot": "",
+      "A_ellipse_contact": "",
+      "Diam_contact": "",
+      "L": ""
+    }
+  ],
+  "instance8": [
+    {
+      "type": "CircleContact_Primitive",
+      "label": "ImThera Contact 6",
+      "Recess": "",
+      "Rotation_angle": "",
+      "Center": "",
+      "Round_def": "",
+      "R_in": "",
+      "Contact_depth": "",
+      "Overshoot": "",
+      "A_ellipse_contact": "",
+      "Diam_contact": "",
+      "L": ""
+    }
+  ],
   "params": [
     {
       "name": "N_holes_ITI",
