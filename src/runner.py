@@ -144,7 +144,7 @@ cd ..
                       '-cp .:$(echo {}/plugins/*.jar | tr \' \' \':\'):../lib/json-20190722.jar model/{}'.format(comsol_path,
                                                                                                                  comsol_path,
                                                                                                                  core_name))
-            os.chdir('..')
+            os.chdir('..') 
 
             # . current directory
             # : delimeter
