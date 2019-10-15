@@ -50,10 +50,9 @@ class Part {
         return Part.createPartPrimitive(id, pseudonym, mw, null);
     }
 
-//    public static boolean createPartInstance(String id, String pseudonym, ModelWrapper2 mw,
-//                                             HashMap<String, String> partPrimitives) {
-//        return createPartInstance(id, pseudonym, mw, partPrimitives, null);
-//    }
+    public static boolean createPartInstance(String id, String pseudonym, ModelWrapper2 mw, HashMap<String, String> partPrimitives) {
+        return createPartInstance(id, pseudonym, mw, partPrimitives, null);
+    }
 
     /**
      *
@@ -66,8 +65,6 @@ class Part {
      */
     public static IdentifierManager createPartPrimitive(String id, String pseudonym, ModelWrapper2 mw,
                                               HashMap<String, Object> data) throws IllegalArgumentException {
-
-
         Model model = mw.getModel();
 
         model.geom().create(id, "Part", 3);
@@ -1186,18 +1183,7 @@ class Part {
         model.component().create("comp1", true);
         model.component("comp1").geom().create("geom1", 3);
         model.component("comp1").mesh().create("mesh1");
-
-        // EXAMPLE
-        String nextCsel = mw.next("csel", "mySuperCoolCsel");
-
-        // you can either refer to it with that variable, nextCsel
-        model.geom(id).selection().create(nextCsel, "CumulativeSelection");
-
-        // or retrieve it later (likely in another method where the first variable isn't easily accessible
-        model.geom(id).selection(mw.get("mySuperCoolCsel")).label("INNER CUFF SURFACE");
-
-
-
+        
         switch (pseudonym) {
             case "TubeCuff_Primitive":
                 break;

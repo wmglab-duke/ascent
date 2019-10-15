@@ -173,7 +173,7 @@ public class ModelWrapper2 {
             JSONObject data = new JSONReader(String.join("/",
                     new String[]{this.root, ".templates", name})).getData();
 
-            // get the id for the next "par" (i.e. parameters section)
+            // get the id for the next "par" (i.e. parameters section), and give it a name from the JSON file name
             String id = this.next("par", name);
             model.param().group().create(id);
             model.param(id).label(name.split("\\.")[0]);
@@ -214,18 +214,15 @@ public class ModelWrapper2 {
             // time to initialize the indicated part
             try {
                 // TRY to initialize the part (catch error if no existing implementation)
-//                Part.createPartInstance(this.next("pi", name), name, this);
-
+                Part.createPartInstance(this.next("pi", name), name, this);
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
                 return false;
             }
-
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             return false;
         }
-
         return true;
     }
 
