@@ -7,9 +7,14 @@ import org.json.JSONObject;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.stream.Stream;
 
 /**
  * model.ModelWrapper
@@ -247,6 +252,57 @@ public class ModelWrapper2 {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             return false;
+        }
+
+        return true;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public boolean addFascicles() {
+
+        try {
+            JSONObject json_data = new JSONReader(String.join("/", new String[]{
+                    this.root,
+                    ".config",
+                    "master.json"
+            })).getData();
+
+            String fasciclesPath = String.join("/", new String[]{
+                    this.root,
+                    "data",
+                    "samples",
+                    (String) json_data.get("sample"),
+                    String.valueOf(0), // these 0's are temporary (for 3d models will need to change)
+                    String.valueOf(0),
+                    (String) ((JSONObject) json_data.get("modes")).get("write"),
+                    "fascicles"
+            });
+
+            try (Stream<Path> result = Files.walk(Paths.get(fasciclesPath))) {
+
+                for (Iterator<Path> it = result.iterator(); it.hasNext(); ) {
+                    Path p = it.next();
+                    if (p.toString().contains(".txt")) {
+                        String[] pathParts = p.toString().split("/");
+                        int length = pathParts.length;
+                        String fascicleName = (pathParts[length - 2] + pathParts[length - 3] + "_" + pathParts[length - 1])
+                                .replaceAll(".txt", "").replaceAll("s", "");
+                        System.out.println("fascicleName = " + fascicleName);
+
+                        // TODO: figure out how to designate which part is being created
+                        //  (i.e. distinguish instances from each other?)
+                        Part.createPartInstance("Fascicle", fascicleName, this, null);
+                    }
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
 
         return true;
