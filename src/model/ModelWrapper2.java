@@ -172,7 +172,11 @@ public class ModelWrapper2 {
      * @param name the name of the JSON configuration (same as unique indicator) for a given part
      * @return success indicator (might remove this later)
      */
-    public boolean addParts(String name) {
+
+    // TRY to initialize the part (catch error if no existing implementation)
+//            Part.createPartInstance(this.next("pi", name), name, this);
+
+    public boolean addPartPrimitives(String name) {
         // extract data from json
         try {
             JSONObject data = new JSONReader(String.join("/",
@@ -215,16 +219,62 @@ public class ModelWrapper2 {
                     }
                 }
             }
-
-            // TRY to initialize the part (catch error if no existing implementation)
-            Part.createPartInstance(this.next("pi", name), name, this);
-
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             return false;
         }
         return true;
     }
+
+    ///////
+    public boolean addPartInstances(String name) {
+        // extract data from json
+        // name is something like Enteromedics.json
+        try {
+            JSONObject data = new JSONReader(String.join("/",
+                    new String[]{this.root, ".templates", name})).getData();
+
+            // loop through all part instances (e.g., instance1, instance2, etc...)
+            for (Object item : (JSONArray) data.get("instance1")) {
+
+                // something like this here:
+                // model.component("comp1").geom("geom1").feature("pi8").setEntry("inputexpr", "N_holes", "N_holes_EM");
+//                // set instantiation parameters
+//                model.param(id).set(
+//                        (String) itemObject.get("name"),
+//                        (String) itemObject.get("expression"),
+//                        (String) itemObject.get("description")
+//                );
+            }
+
+            // for each required part primitive, create it (if not already existing)
+            for (Object item: (JSONArray) data.get("parts")) {
+                String partPrimitiveName = (String) item; // quick cast to String
+
+                // create the part primitive if it has not already been created
+                if (! this.im.hasPseudonym(partPrimitiveName)) {
+                    // get next available (TOP LEVEL) "part" id
+                    String partID = this.im.next("part", partPrimitiveName);
+                    try {
+                        // TRY to create the part primitive (catch error if no existing implementation)
+                        IdentifierManager partPrimitiveIM = Part.createPartPrimitive(partID, partPrimitiveName, this);
+
+                        // add the returned id manager to the HashMap of IMs with the partName as its key
+                        this.partPrimitiveIMs.put(partPrimitiveName, partPrimitiveIM);
+
+                    } catch (IllegalArgumentException e) {
+                        e.printStackTrace();
+                        return false;
+                    }
+                }
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+    ///////
 
     public boolean extractPotentials(String json_path) {
 
@@ -330,7 +380,10 @@ public class ModelWrapper2 {
             cuffFiles.add(cuff);
 
             // add part primitives needed to make the cuff
-            mw.addParts(cuff);
+            mw.addPartPrimitives(cuff);
+
+            // add part instances needed to make the cuff
+            mw.addPartInstances(cuff);
         }
         ModelUtil.disconnect();
         System.out.println("Disconnected from COMSOL Server");

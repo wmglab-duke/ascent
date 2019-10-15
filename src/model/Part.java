@@ -1179,6 +1179,8 @@ class Part {
     public static boolean createPartInstance(String id, String pseudonym, ModelWrapper2 mw, HashMap<String, Object> data) throws IllegalArgumentException {
 
         Model model = mw.getModel();
+
+        // TODO Only if the first part - maybe move this elsewhere?
         model.component().create("comp1", true);
         model.component("comp1").geom().create("geom1", 3);
         model.component("comp1").mesh().create("mesh1");
