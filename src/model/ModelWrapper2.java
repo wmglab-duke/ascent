@@ -330,7 +330,10 @@ public class ModelWrapper2 {
         ArrayList<String> cuffFiles = new ArrayList<>();
 
         for (int i = 0; i < cuffs.length(); i++) {
+            // make list of cuffs in model
             cuffFiles.add(cuffs.getString(i));
+
+            // add part primitives needed to make the model
             mw.addParts(cuffs.getString(i));
         }
         ModelUtil.disconnect();
