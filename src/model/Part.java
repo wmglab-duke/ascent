@@ -3,6 +3,8 @@ package model;
 import com.comsol.model.GeomFeature;
 import com.comsol.model.Model;
 import com.comsol.model.ModelParam;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -1160,20 +1162,31 @@ class Part {
      * @param mw
      * @return
      */
-    public static boolean createPartInstance(String instanceID, String instanceLabel, String pseudonym, ModelWrapper2 mw) throws IllegalArgumentException {
+    public static boolean createPartInstance(String instanceID, String instanceLabel, String pseudonym, ModelWrapper2 mw, JSONObject instanceParams) throws IllegalArgumentException {
 
         Model model = mw.getModel();
 
         model.component("comp1").geom("geom1").create(instanceID, "PartInstance");
         model.component("comp1").geom("geom1").feature(instanceID).label(instanceLabel);
+        model.component("comp1").geom("geom1").feature(instanceID).set("part", mw.im.get(pseudonym));
 
-        System.out.println(mw.get(instanceLabel));
-        System.out.println(instanceLabel);
-//        model.component("comp1").geom("geom1").feature("pi21").set("part", "part5");
+        Object item = instanceParams.get("def");
+        JSONObject itemObject = (JSONObject) item;
 
         // Imports
         switch (pseudonym) {
             case "TubeCuff_Primitive":
+                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "N_holes", (String) itemObject.get("N_holes"));
+                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Theta", (String) itemObject.get("Theta"));
+                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Center", (String) itemObject.get("Center"));
+                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "R_in", (String) itemObject.get("R_in"));
+                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "R_out", (String) itemObject.get("R_out"));
+                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "L", (String) itemObject.get("L"));
+                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Rot_def", (String) itemObject.get("Rot_def"));
+                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "D_hole", (String) itemObject.get("D_hole"));
+                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Buffer_hole", (String) itemObject.get("Buffer_hole"));
+                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "L_holecenter_cuffseam", (String) itemObject.get("L_holecenter_cuffseam"));
+                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Pitch_holecenter_holecenter", (String) itemObject.get("Pitch_holecenter_holecenter"));
 
                 // set instantiation parameters
                 // model.component("comp1").geom("geom1").feature("pi8").setEntry("inputexpr", "N_holes", "N_holes_EM");

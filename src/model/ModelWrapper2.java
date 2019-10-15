@@ -34,8 +34,8 @@ public class ModelWrapper2 {
     // main model
     private Model model;
 
-    // top level indentifier manager
-    private IdentifierManager im = new IdentifierManager();
+    // top level identifier manager
+    public IdentifierManager im = new IdentifierManager();
 
     // managing parts within COMSOL
     private HashMap<String, IdentifierManager> partPrimitiveIMs = new HashMap<>();
@@ -226,7 +226,6 @@ public class ModelWrapper2 {
         return true;
     }
 
-    ///////
     public boolean addPartInstances(String name) {
         // extract data from json
         // name is something like Enteromedics.json
@@ -243,33 +242,14 @@ public class ModelWrapper2 {
 
             String type = (String) itemObject.get("type");
 
-            Part.createPartInstance(instanceID, instanceLabel, type , this);
+            Part.createPartInstance(instanceID, instanceLabel, type , this, itemObject);
 
-            // for each required part primitive, create it (if not already existing)
-//            for (Object item: (JSONArray) data.get("parts")) {
-//                String partPrimitiveName = (String) item; // quick cast to String
-//
-//                // create the part primitive if it has not already been created
-//                if (! this.im.hasPseudonym(partPrimitiveName)) {
-//                    // get next available (TOP LEVEL) "part" id
-//                    String partID = this.im.next("part", partPrimitiveName);
-//                    try {
-//                        // TRY to create the part primitive (catch error if no existing implementation)
-//                        Part.createPartInstance(partID, partPrimitiveName, this);
-//
-//                    } catch (IllegalArgumentException e) {
-//                        e.printStackTrace();
-//                        return false;
-//                    }
-//                }
-//            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             return false;
         }
         return true;
     }
-    ///////
 
     public boolean extractPotentials(String json_path) {
 
@@ -352,6 +332,9 @@ public class ModelWrapper2 {
         ModelUtil.connect("localhost", 2036);
         ModelUtil.initStandalone(false);
         Model model = ModelUtil.create("Model");
+        model.component().create("comp1", true);
+        model.component("comp1").geom().create("geom1", 3);
+        model.component("comp1").mesh().create("mesh1");
 
 //        ModelWrapper2 mw = new ModelWrapper2(null, "/Users/jakecariello/Box/Documents/Pipeline/access");
         ModelWrapper2 mw = new ModelWrapper2(model, "/Users/ericmusselman/Documents/access");
@@ -368,10 +351,6 @@ public class ModelWrapper2 {
         JSONObject cuffObject = (JSONObject) configData.get("cuff");
         JSONArray cuffs = (JSONArray) cuffObject.get("preset");
         ArrayList<String> cuffFiles = new ArrayList<>();
-
-        model.component().create("comp1", true);
-        model.component("comp1").geom().create("geom1", 3);
-        model.component("comp1").mesh().create("mesh1");
 
         for (int i = 0; i < cuffs.length(); i++) {
             // make list of cuffs in model
