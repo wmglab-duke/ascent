@@ -4,30 +4,30 @@
     {
       "type": "TubeCuff_Primitive",
       "label": "Enteromedics Cuff",
-      "N_holes": "",
-      "Theta": "",
-      "Center": "",
-      "R_in": "",
-      "R_out": "",
-      "L": "",
-      "Rot_def": "",
-      "D_hole": "",
-      "Buffer_hole": "",
-      "L_holecenter_cuffseam": "",
-      "Pitch_holecenter_holecenter": ""
+      "N_holes": "N_holes_EM",
+      "Theta": "Theta_EM",
+      "Center": "Center_EM",
+      "R_in": "R_in_EM",
+      "R_out": "R_out_EM",
+      "L": "L_EM",
+      "Rot_def": "Rot_def_EM",
+      "D_hole": "D_hole_EM",
+      "Buffer_hole": "Buffer_hole_EM",
+      "L_holecenter_cuffseam": "L_holecenter_cuffseam_EM",
+      "Pitch_holecenter_holecenter": "Pitch_holecenter_holecenter_EM"
     }
   ],
   "instance2": [
     {
       "type": "RibbonContact_Primitive",
       "label": "Enteromedics Contact",
-      "Thk_elec": "",
-      "L_elec": "",
-      "R_in": "",
-      "Recess": "",
-      "Center": "",
-      "Theta_contact": "",
-      "Rot_def": ""
+      "Thk_elec": "Thk_elec_EM",
+      "L_elec": "L_elec_EM",
+      "R_in": "R_in_EM",
+      "Recess": "Recess_EM",
+      "Center": "Center_EM",
+      "Theta_contact": "Theta_contact_EM",
+      "Rot_def": "0 [deg]"
     }
   ],
   "params": [
