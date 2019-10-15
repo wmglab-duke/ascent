@@ -1,5 +1,46 @@
 {
   "parts": ["TubeCuff_Primitive", "WireContact_Primitive"],
+  "instance1": [
+    {
+      "type": "TubeCuff_Primitive",
+      "label": "Purdue Cuff",
+      "N_holes": "",
+      "Theta": "",
+      "Center": "",
+      "R_in": "",
+      "R_out": "",
+      "L": "",
+      "Rot_def": "",
+      "D_hole": "",
+      "Buffer_hole": "",
+      "L_holecenter_cuffseam": "",
+      "Pitch_holecenter_holecenter": ""
+    }
+  ],
+  "instance2": [
+    {
+      "type": "WireContact_Primitive",
+      "label": "Purdue Contact 1",
+      "R_conductor": "",
+      "R_in": "",
+      "Center": "",
+      "Pitch": "",
+      "Sep_conductor": "",
+      "Theta_conductor": ""
+    }
+  ],
+  "instance3": [
+    {
+      "type": "WireContact_Primitive",
+      "label": "Purdue Contact 2",
+      "R_conductor": "",
+      "R_in": "",
+      "Center": "",
+      "Pitch": "",
+      "Sep_conductor": "",
+      "Theta_conductor": ""
+    }
+  ],
   "params": [
     {
       "name": "N_holes_P",
