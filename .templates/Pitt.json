@@ -1,5 +1,46 @@
 {
   "parts": ["TubeCuff_Primitive", "RectangleContact_Primitive"],
+  "instance1": [
+    {
+      "type": "TubeCuff_Primitive",
+      "label": "Pitt Cuff",
+      "N_holes": "",
+      "Theta": "",
+      "Center": "",
+      "R_in": "",
+      "R_out": "",
+      "L": "",
+      "Rot_def": "",
+      "D_hole": "",
+      "Buffer_hole": "",
+      "L_holecenter_cuffseam": "",
+      "Pitch_holecenter_holecenter": ""
+    }
+  ],
+  "instance2": [
+    {
+      "type": "RectangleContact_Primitive",
+      "label": "Pitt Contact 1"
+    }
+  ],
+  "instance3": [
+    {
+      "type": "RectangleContact_Primitive",
+      "label": "Pitt Contact 2"
+    }
+  ],
+  "instance4": [
+    {
+      "type": "RectangleContact_Primitive",
+      "label": "Pitt Contact 3"
+    }
+  ],
+  "instance5": [
+    {
+      "type": "RectangleContact_Primitive",
+      "label": "Pitt Contact 4"
+    }
+  ],
   "params": [
     {
       "name": "w_contact_Pitt",
