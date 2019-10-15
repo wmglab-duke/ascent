@@ -1,9 +1,9 @@
 {
   "parts": ["TubeCuff_Primitive", "RibbonContact_Primitive"],
-  "instance1": [
-    {
-      "type": "TubeCuff_Primitive",
-      "label": "Madison Cuff",
+  "instance1": {
+    "type": "TubeCuff_Primitive",
+    "label": "Madison Cuff",
+    "def": {
       "N_holes": "N_holes_M",
       "Theta": "Theta_M",
       "Center": "Center_M",
@@ -16,11 +16,12 @@
       "L_holecenter_cuffseam": "L_holecenter_cuffseam_M",
       "Pitch_holecenter_holecenter": "Pitch_holecenter_holecenter_M"
     }
-  ],
-  "instance2": [
-    {
-      "type": "RibbonContact_Primitive",
-      "label": "Madison Contact 1",
+  },
+
+  "instance2": {
+    "type": "RibbonContact_Primitive",
+    "label": "Madison Contact 1",
+    "def": {
       "Thk_elec": "Thk_elec_M",
       "L_elec": "L_elec_M",
       "R_in": "R_in_M",
@@ -29,7 +30,8 @@
       "Theta_contact": "Theta_contact_M",
       "Rot_def": "Rot_def_contact_M"
     }
-  ],
+  },
+
   "params": [
     {
       "name": "N_holes_M",

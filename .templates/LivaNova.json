@@ -1,19 +1,21 @@
 {
   "parts": ["HelicalCuffnContact_Primitive"],
-  "instance1": [
-    {
-      "type": "HelicalCuffnContact_Primitive",
-      "label": "LivaNova CuffnContact 1",
+  "instance1": {
+    "type": "HelicalCuffnContact_Primitive",
+    "label": "LivaNova CuffnContact 1",
+    "def": {
       "Center": "(z_nerve_LN/2)-(sep_elec_LN/2)"
     }
-  ],
-  "instance2": [
-    {
-      "type": "HelicalCuffnContact_Primitive",
-      "label": "LivaNova CuffnContact 2",
+  },
+
+  "instance2": {
+    "type": "HelicalCuffnContact_Primitive",
+    "label": "LivaNova CuffnContact 2",
+    "def": {
       "Center": "(z_nerve_LN/2)+(sep_elec_LN/2)"
     }
-  ],
+  },
+
   "params": [
     {
       "name": "w_cuff_LN",

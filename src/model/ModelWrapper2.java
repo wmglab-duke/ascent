@@ -235,16 +235,15 @@ public class ModelWrapper2 {
                     new String[]{this.root, ".templates", name})).getData();
 
             // loop through all part instances (e.g., instance1, instance2, etc...)
-            for (Object item : (JSONArray) data.get("instance1")) {
-                JSONObject itemObject = (JSONObject) item;
+            Object item = data.get("instance1");
+            JSONObject itemObject = (JSONObject) item;
 
-                String instanceLabel = (String) itemObject.get("label");
-                String instanceID = this.im.next("pi", instanceLabel);
+            String instanceLabel = (String) itemObject.get("label");
+            String instanceID = this.im.next("pi", instanceLabel);
 
-                String type = (String) itemObject.get("type");
+            String type = (String) itemObject.get("type");
 
-                Part.createPartInstance(instanceLabel, type , this);
-            }
+            Part.createPartInstance(instanceID, instanceLabel, type , this);
 
             // for each required part primitive, create it (if not already existing)
 //            for (Object item: (JSONArray) data.get("parts")) {

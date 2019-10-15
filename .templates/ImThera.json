@@ -1,7 +1,9 @@
 {
   "parts": ["TubeCuff_Primitive", "CircleContact_Primitive"],
-  "instance1": [
-    {
+  "instance1": {
+    "type": "TubeCuff_Primitive",
+    "label": "ImThera Cuff",
+    "def": {
       "type": "TubeCuff_Primitive",
       "label": "ImThera Cuff",
       "N_holes": "N_holes_ITI",
@@ -16,11 +18,12 @@
       "L_holecenter_cuffseam": "L_holecenter_cuffseam_ITI",
       "Pitch_holecenter_holecenter": "Pitch_holecenter_holecenter_ITI"
     }
-  ],
-  "instance2": [
-    {
-      "type": "TubeCuff_Primitive",
-      "label": "ImThera Furl",
+  },
+
+  "instance2": {
+    "type": "TubeCuff_Primitive",
+    "label": "ImThera Furl",
+    "def": {
       "N_holes": "N_holes_ITF",
       "Theta": "Theta_ITF",
       "Center": "Center_IT",
@@ -33,11 +36,12 @@
       "L_holecenter_cuffseam": "L_holecenter_cuffseam_ITF",
       "Pitch_holecenter_holecenter": "Pitch_holecenter_holecenter_ITF"
     }
-  ],
-  "instance3": [
-    {
-      "type": "CircleContact_Primitive",
-      "label": "ImThera Contact 1",
+  },
+
+  "instance3": {
+    "type": "CircleContact_Primitive",
+    "label": "ImThera Contact 1",
+    "def": {
       "Recess": "Recess_ITC",
       "Rotation_angle": "ang_cuffseam_contactcenter_ITC",
       "Center": "Center_IT-length_contactcenter_contactcenter_ITC",
@@ -49,11 +53,12 @@
       "Diam_contact": "diam_contact_ITC",
       "L": "L_IT"
     }
-  ],
-  "instance4": [
-    {
-      "type": "CircleContact_Primitive",
-      "label": "ImThera Contact 2",
+  },
+
+  "instance4": {
+    "type": "CircleContact_Primitive",
+    "label": "ImThera Contact 2",
+    "def": {
       "Recess": "Recess_ITC",
       "Rotation_angle": "ang_cuffseam_contactcenter_ITC+ang_contactcenter_contactcenter_ITC [deg]",
       "Center": "Center_IT",
@@ -65,11 +70,12 @@
       "Diam_contact": "diam_contact_ITC",
       "L": "L_IT"
     }
-  ],
-  "instance5": [
-    {
-      "type": "CircleContact_Primitive",
-      "label": "ImThera Contact 3",
+  },
+
+  "instance5": {
+    "type": "CircleContact_Primitive",
+    "label": "ImThera Contact 3",
+    "def": {
       "Recess": "Recess_ITC",
       "Rotation_angle": "ang_cuffseam_contactcenter_ITC+2*ang_contactcenter_contactcenter_ITC [deg]",
       "Center": "Center_IT+length_contactcenter_contactcenter_ITC",
@@ -81,11 +87,12 @@
       "Diam_contact": "diam_contact_ITC",
       "L": "L_IT"
     }
-  ],
-  "instance6": [
-    {
-      "type": "CircleContact_Primitive",
-      "label": "ImThera Contact 4",
+  },
+
+  "instance6": {
+    "type": "CircleContact_Primitive",
+    "label": "ImThera Contact 4",
+    "def": {
       "Recess": "Recess_ITC",
       "Rotation_angle": "ang_cuffseam_contactcenter_ITC+3*ang_contactcenter_contactcenter_ITC [deg]",
       "Center": "Center_IT-length_contactcenter_contactcenter_ITC",
@@ -97,11 +104,12 @@
       "Diam_contact": "diam_contact_ITC",
       "L": "L_IT"
     }
-  ],
-  "instance7": [
-    {
-      "type": "CircleContact_Primitive",
-      "label": "ImThera Contact 5",
+  },
+
+  "instance7": {
+    "type": "CircleContact_Primitive",
+    "label": "ImThera Contact 5",
+    "def": {
       "Recess": "Recess_ITC",
       "Rotation_angle": "ang_cuffseam_contactcenter_ITC+4*ang_contactcenter_contactcenter_ITC [deg]",
       "Center": "Center_IT",
@@ -113,11 +121,12 @@
       "Diam_contact": "diam_contact_ITC",
       "L": "L_IT"
     }
-  ],
-  "instance8": [
-    {
-      "type": "CircleContact_Primitive",
-      "label": "ImThera Contact 6",
+  },
+
+  "instance8": {
+    "type": "CircleContact_Primitive",
+    "label": "ImThera Contact 6",
+    "def": {
       "Recess": "Recess_ITC",
       "Rotation_angle": "ang_cuffseam_contactcenter_ITC+5*ang_contactcenter_contactcenter_ITC [deg]",
       "Center": "Center_IT+length_contactcenter_contactcenter_ITC",
@@ -129,7 +138,8 @@
       "Diam_contact": "diam_contact_ITC",
       "L": "L_IT"
     }
-  ],
+  },
+
   "params": [
     {
       "name": "N_holes_ITI",

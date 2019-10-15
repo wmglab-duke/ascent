@@ -1155,17 +1155,17 @@ class Part {
 
     /**
      *
-     * @param id
+     * @param instanceLabel
      * @param pseudonym
      * @param mw
      * @return
      */
-    public static boolean createPartInstance(String instanceLabel, String pseudonym, ModelWrapper2 mw) throws IllegalArgumentException {
+    public static boolean createPartInstance(String instanceID, String instanceLabel, String pseudonym, ModelWrapper2 mw) throws IllegalArgumentException {
 
         Model model = mw.getModel();
 
-        model.component("comp1").geom("geom1").create(mw.get(instanceLabel), "PartInstance");
-        model.component("comp1").geom("geom1").feature(mw.get(instanceLabel)).label(instanceLabel);
+        model.component("comp1").geom("geom1").create(instanceID, "PartInstance");
+        model.component("comp1").geom("geom1").feature(instanceID).label(instanceLabel);
 
         System.out.println(mw.get(instanceLabel));
         System.out.println(instanceLabel);
