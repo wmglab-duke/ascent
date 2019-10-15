@@ -4,43 +4,43 @@
     {
       "type": "TubeCuff_Primitive",
       "label": "CorTec Cuff",
-      "N_holes": "",
-      "Theta": "",
-      "Center": "",
-      "R_in": "",
-      "R_out": "",
-      "L": "",
-      "Rot_def": "",
-      "D_hole": "",
-      "Buffer_hole": "",
-      "L_holecenter_cuffseam": "",
-      "Pitch_holecenter_holecenter": ""
+      "N_holes": "N_holes_CT",
+      "Theta": "Theta_CT",
+      "Center": "Center_CT",
+      "R_in": "R_in_CT",
+      "R_out": "R_out_CT",
+      "L": "L_CT",
+      "Rot_def": "Rot_def_CT",
+      "D_hole": "D_hole_CT",
+      "Buffer_hole": "Buffer_hole_CT",
+      "L_holecenter_cuffseam": "L_holecenter_cuffseam_CT",
+      "Pitch_holecenter_holecenter": "Pitch_holecenter_holecenter_CT"
     }
   ],
   "instance2": [
     {
       "type": "RibbonContact_Primitive",
       "label": "CorTec Contact 1",
-      "Thk_elec": "",
-      "L_elec": "",
-      "R_in": "",
-      "Recess": "",
-      "Center": "",
-      "Theta_contact": "",
-      "Rot_def": ""
+      "Thk_elec": "Thk_elec_CT",
+      "L_elec": "L_elec_CT",
+      "R_in": "R_in_CT",
+      "Recess": "Recess_CT",
+      "Center": "Center_CT+(Pitch_CT/2)",
+      "Theta_contact": "Theta_contact_CT",
+      "Rot_def": "Rot_def_contact_CT"
     }
   ],
   "instance3": [
     {
       "type": "RibbonContact_Primitive",
-      "label": "CorTec Contact 2",
-      "Thk_elec": "",
-      "L_elec": "",
-      "R_in": "",
-      "Recess": "",
-      "Center": "",
-      "Theta_contact": "",
-      "Rot_def": ""
+      "label": "CorTec Contact 1",
+      "Thk_elec": "Thk_elec_CT",
+      "L_elec": "L_elec_CT",
+      "R_in": "R_in_CT",
+      "Recess": "Recess_CT",
+      "Center": "Center_CT-(Pitch_CT/2)",
+      "Theta_contact": "Theta_contact_CT",
+      "Rot_def": "Rot_def_contact_CT"
     }
   ],
   "params": [
