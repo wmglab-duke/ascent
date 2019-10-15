@@ -194,11 +194,11 @@ public class ModelWrapper2 {
                 );
             }
 
-            // for each required part, create it (if not already existing)
+            // for each required part primitive, create it (if not already existing)
             for (Object item: (JSONArray) data.get("parts")) {
                 String partPrimitiveName = (String) item; // quick cast to String
 
-                // create the part if it has not already been created
+                // create the part primitive if it has not already been created
                 if (! this.im.hasPseudonym(partPrimitiveName)) {
                     // get next available (TOP LEVEL) "part" id
                     String partID = this.im.next("part", partPrimitiveName);
@@ -331,11 +331,13 @@ public class ModelWrapper2 {
 
         for (int i = 0; i < cuffs.length(); i++) {
             // make list of cuffs in model
-            cuffFiles.add(cuffs.getString(i));
+            String cuff = cuffs.getString(i);
+            cuffFiles.add(cuff);
 
-            // add part primitives needed to make the model
-            mw.addParts(cuffs.getString(i));
+            // add part primitives needed to make the cuff
+            mw.addParts(cuff);
         }
         ModelUtil.disconnect();
+        System.out.println("Disconnected from COMSOL Server");
     }
 }
