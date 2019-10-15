@@ -137,7 +137,7 @@ cd ..
             # TODO: RUN ./comsol server IN SEPARATE SHELL
             subprocess.Popen(['{}/bin/comsol'.format(comsol_path), 'server'], close_fds=True)
             os.chdir('src')
-            os.system('{}/javac -classpath ../lib/json-20190722.jar:{}/plugins/* model/*.java'.format(jdk_path,
+            os.system('{}/javac -classpath ../lib/json-20190722.jar:{}/plugins/* model/*.java -d bin/'.format(jdk_path,
                                                                                                       comsol_path))
 
             os.system('{}/java/maci64/jre/Contents/Home/bin/java '

@@ -49,9 +49,9 @@ class Part {
         return Part.createPartPrimitive(id, pseudonym, mw, null);
     }
 
-    public static boolean createPartInstance(String id, String pseudonym, ModelWrapper2 mw, HashMap<String, String> partPrimitives) {
-        return createPartInstance(id, pseudonym, mw, partPrimitives, null);
-    }
+//    public static boolean createPartInstance(String id, String pseudonym, ModelWrapper2 mw, HashMap<String, String> partPrimitives) {
+//        return createPartInstance(id, pseudonym, mw, partPrimitives, null);
+//    }
 
     /**
      *
@@ -1164,9 +1164,9 @@ class Part {
      * @param mw
      * @return
      */
-    public static boolean createPartInstance(String id, String pseudonym, ModelWrapper2 mw) throws IllegalArgumentException {
-        return createPartInstance(id, pseudonym, mw, null);
-    }
+//    public static boolean createPartInstance(String id, String pseudonym, ModelWrapper2 mw) throws IllegalArgumentException {
+//        return createPartInstance(id, pseudonym, mw, null);
+//    }
 
     /**
      *
@@ -1176,34 +1176,34 @@ class Part {
      * @param data
      * @return
      */
-    public static boolean createPartInstance(String id, String pseudonym, ModelWrapper2 mw, HashMap<String, Object> data) throws IllegalArgumentException {
-
-        Model model = mw.getModel();
-        model.component().create("comp1", true);
-        model.component("comp1").geom().create("geom1", 3);
-        model.component("comp1").mesh().create("mesh1");
-        
-        switch (pseudonym) {
-            case "TubeCuff_Primitive":
-                break;
-            case "RibbonContact_Primitive":
-                break;
-            case "WireContact_Primitive":
-                break;
-            case "CircleContact_Primitive":
-                break;
-            case "HelicalCuffnContact_Primitive":
-                break;
-            case "RectangleContact_Primitive":
-                break;
-            case "Fascicle":
-                break;
-            case "Nerve":
-                break;
-            default:
-                throw new IllegalArgumentException("No implementation for part instance name: " + pseudonym);
-        }
-
-        return true;
-    }
+//    public static boolean createPartInstance(String id, String pseudonym, ModelWrapper2 mw, HashMap<String, Object> data) throws IllegalArgumentException {
+//
+//        Model model = mw.getModel();
+//        model.component().create("comp1", true);
+//        model.component("comp1").geom().create("geom1", 3);
+//        model.component("comp1").mesh().create("mesh1");
+//
+//        switch (pseudonym) {
+//            case "TubeCuff_Primitive":
+//                break;
+//            case "RibbonContact_Primitive":
+//                break;
+//            case "WireContact_Primitive":
+//                break;
+//            case "CircleContact_Primitive":
+//                break;
+//            case "HelicalCuffnContact_Primitive":
+//                break;
+//            case "RectangleContact_Primitive":
+//                break;
+//            case "Fascicle":
+//                break;
+//            case "Nerve":
+//                break;
+//            default:
+//                throw new IllegalArgumentException("No implementation for part instance name: " + pseudonym);
+//        }
+//
+//        return true;
+//    }
 }

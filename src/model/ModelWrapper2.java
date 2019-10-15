@@ -217,13 +217,13 @@ public class ModelWrapper2 {
             }
 
             // time to initialize the indicated part
-            try {
-                // TRY to initialize the part (catch error if no existing implementation)
-                Part.createPartInstance(this.next("pi", name), name, this);
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-                return false;
-            }
+//            try {
+//                // TRY to initialize the part (catch error if no existing implementation)
+//                Part.createPartInstance(this.next("pi", name), name, this);
+//            } catch (IllegalArgumentException e) {
+//                e.printStackTrace();
+//                return false;
+//            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             return false;
@@ -294,7 +294,7 @@ public class ModelWrapper2 {
 
                         // TODO: figure out how to designate which part is being created
                         //  (i.e. distinguish instances from each other?)
-                        Part.createPartInstance("Fascicle", fascicleName, this, null);
+//                        Part.createPartInstance("Fascicle", fascicleName, this, null);
                     }
                 }
 
