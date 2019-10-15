@@ -216,14 +216,9 @@ public class ModelWrapper2 {
                 }
             }
 
-            // time to initialize the indicated part
-//            try {
-//                // TRY to initialize the part (catch error if no existing implementation)
-//                Part.createPartInstance(this.next("pi", name), name, this);
-//            } catch (IllegalArgumentException e) {
-//                e.printStackTrace();
-//                return false;
-//            }
+            // TRY to initialize the part (catch error if no existing implementation)
+            Part.createPartInstance(this.next("pi", name), name, this);
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             return false;

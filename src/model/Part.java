@@ -49,9 +49,9 @@ class Part {
         return Part.createPartPrimitive(id, pseudonym, mw, null);
     }
 
-//    public static boolean createPartInstance(String id, String pseudonym, ModelWrapper2 mw, HashMap<String, String> partPrimitives) {
-//        return createPartInstance(id, pseudonym, mw, partPrimitives, null);
-//    }
+    public static boolean createPartInstance(String id, String pseudonym, ModelWrapper2 mw, HashMap<String, String> partPrimitives) {
+        return createPartInstance(id, pseudonym, mw, partPrimitives, null);
+    }
 
     /**
      *
@@ -1176,34 +1176,95 @@ class Part {
      * @param data
      * @return
      */
-//    public static boolean createPartInstance(String id, String pseudonym, ModelWrapper2 mw, HashMap<String, Object> data) throws IllegalArgumentException {
+    public static boolean createPartInstance(String id, String pseudonym, ModelWrapper2 mw, HashMap<String, Object> data) throws IllegalArgumentException {
+
+        Model model = mw.getModel();
+        model.component().create("comp1", true);
+        model.component("comp1").geom().create("geom1", 3);
+        model.component("comp1").mesh().create("mesh1");
+
+//        model.component("comp1").geom("geom1").create("pi21", "PartInstance");
+//        model.component("comp1").geom("geom1").feature("pi21").label("LivaNova 1");
+//        model.component("comp1").geom("geom1").feature("pi21").set("part", "part5");
+
+        switch (pseudonym) {
+            case "TubeCuff_Primitive":
+                // Imports
+//                model.component("comp1").geom("geom1").feature("pi4").setEntry("selkeepdom", "pi4_csel3.dom", "on");
+
+//                model.component("comp1").geom("geom1").feature("pi3").setEntry("selkeepdom", "pi3_csel3.dom", "on");
+
+//                model.component("comp1").geom("geom1").feature("pi8").setEntry("selkeepdom", "pi8_csel3.dom", "on");
+                break;
+            case "RibbonContact_Primitive":
+                // Imports
+//                model.component("comp1").geom("geom1").feature("pi9").setEntry("selkeepdom", "pi9_csel4.dom", "on");
+//                model.component("comp1").geom("geom1").feature("pi9").setEntry("selkeeppnt", "pi9_csel3.pnt", "on");
+
+//                model.component("comp1").geom("geom1").feature("pi10").setEntry("selkeepdom", "pi10_csel4.dom", "on");
+//                model.component("comp1").geom("geom1").feature("pi10").setEntry("selkeeppnt", "pi10_csel3.pnt", "on");
+
+//                model.component("comp1").geom("geom1").feature("pi11").setEntry("selkeepdom", "pi11_csel4.dom", "on");
+//                model.component("comp1").geom("geom1").feature("pi11").setEntry("selkeeppnt", "pi11_csel3.pnt", "on");
+
+//                model.component("comp1").geom("geom1").feature("pi12").setEntry("selkeepdom", "pi12_csel4.dom", "on");
+//                model.component("comp1").geom("geom1").feature("pi12").setEntry("selkeeppnt", "pi12_csel3.pnt", "on");
+
+            case "WireContact_Primitive":
+                // Imports
+//                model.component("comp1").geom("geom1").feature("pi13").setEntry("selkeepdom", "pi13_csel2.dom", "on");
+//                model.component("comp1").geom("geom1").feature("pi13").setEntry("selkeeppnt", "pi13_csel3.pnt", "on");
 //
-//        Model model = mw.getModel();
-//        model.component().create("comp1", true);
-//        model.component("comp1").geom().create("geom1", 3);
-//        model.component("comp1").mesh().create("mesh1");
-//
-//        switch (pseudonym) {
-//            case "TubeCuff_Primitive":
-//                break;
-//            case "RibbonContact_Primitive":
-//                break;
-//            case "WireContact_Primitive":
-//                break;
-//            case "CircleContact_Primitive":
-//                break;
-//            case "HelicalCuffnContact_Primitive":
-//                break;
-//            case "RectangleContact_Primitive":
-//                break;
-//            case "Fascicle":
-//                break;
-//            case "Nerve":
-//                break;
-//            default:
-//                throw new IllegalArgumentException("No implementation for part instance name: " + pseudonym);
-//        }
-//
-//        return true;
-//    }
+//                model.component("comp1").geom("geom1").feature("pi14").setEntry("selkeepdom", "pi14_csel2.dom", "on");
+//                model.component("comp1").geom("geom1").feature("pi14").setEntry("selkeeppnt", "pi14_csel3.pnt", "on");
+
+                break;
+            case "CircleContact_Primitive":
+                // Imports
+//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepobj", "pi15_csel12", "off");
+//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepobj", "pi15_csel13", "off");
+//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepobj", "pi15_csel14", "off");
+//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepdom", "pi15_ballsel1", "off");
+//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepdom", "pi15_ballsel2", "off");
+//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepdom", "pi15_csel7.dom", "on");
+//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepdom", "pi15_csel12.dom", "off");
+//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepdom", "pi15_csel14.dom", "off");
+//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepbnd", "pi15_csel12.bnd", "off");
+//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepbnd", "pi15_csel13.bnd", "off");
+//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepbnd", "pi15_csel14.bnd", "off");
+//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepedg", "pi15_csel12.edg", "off");
+//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepedg", "pi15_csel13.edg", "off");
+//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepedg", "pi15_csel14.edg", "off");
+//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeeppnt", "pi15_csel12.pnt", "off");
+//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeeppnt", "pi15_csel13.pnt", "off");
+
+
+                break;
+            case "HelicalCuffnContact_Primitive":
+                // Imports
+//                model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeepdom", "pi21_csel2.dom", "on");
+//                model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeepdom", "pi21_csel5.dom", "on");
+//                model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeepdom", "pi21_csel6.dom", "on");
+//                model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeepdom", "pi21_csel8.dom", "on");
+//                model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeeppnt", "pi21_csel10.pnt", "on");
+
+                break;
+            case "RectangleContact_Primitive":
+                // Imports
+
+                break;
+            case "Fascicle":
+                // Imports
+
+                break;
+            case "Nerve":
+                // Imports
+
+                break;
+            default:
+                throw new IllegalArgumentException("No implementation for part instance name: " + pseudonym);
+        }
+
+        return true;
+    }
 }
