@@ -1173,9 +1173,10 @@ class Part {
         Object item = instanceParams.get("def");
         JSONObject itemObject = (JSONObject) item;
 
-        // Imports
+        // set instantiation parameters and import selections
         switch (pseudonym) {
             case "TubeCuff_Primitive":
+                // set instantiation parameters
                 model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "N_holes", (String) itemObject.get("N_holes"));
                 model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Theta", (String) itemObject.get("Theta"));
                 model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Center", (String) itemObject.get("Center"));
@@ -1188,8 +1189,7 @@ class Part {
                 model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "L_holecenter_cuffseam", (String) itemObject.get("L_holecenter_cuffseam"));
                 model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Pitch_holecenter_holecenter", (String) itemObject.get("Pitch_holecenter_holecenter"));
 
-                // set instantiation parameters
-                // model.component("comp1").geom("geom1").feature("pi8").setEntry("inputexpr", "N_holes", "N_holes_EM");
+                // imports
 
 //                model.component("comp1").geom("geom1").feature("pi4").setEntry("selkeepdom", "pi4_csel3.dom", "on");
 
@@ -1200,6 +1200,8 @@ class Part {
             case "RibbonContact_Primitive":
                 // set instantiation parameters
                 // model.component("comp1").geom("geom1").feature("pi8").setEntry("inputexpr", "N_holes", "N_holes_EM");
+
+                // imports
 
 //                model.component("comp1").geom("geom1").feature("pi9").setEntry("selkeepdom", "pi9_csel4.dom", "on");
 //                model.component("comp1").geom("geom1").feature("pi9").setEntry("selkeeppnt", "pi9_csel3.pnt", "on");
@@ -1214,6 +1216,9 @@ class Part {
 //                model.component("comp1").geom("geom1").feature("pi12").setEntry("selkeeppnt", "pi12_csel3.pnt", "on");
 
             case "WireContact_Primitive":
+                // set instantiation parameters
+
+                // imports
 //                model.component("comp1").geom("geom1").feature("pi13").setEntry("selkeepdom", "pi13_csel2.dom", "on");
 //                model.component("comp1").geom("geom1").feature("pi13").setEntry("selkeeppnt", "pi13_csel3.pnt", "on");
 //
@@ -1222,6 +1227,10 @@ class Part {
 
                 break;
             case "CircleContact_Primitive":
+                // set instantiation parameters
+
+                // imports
+
 //                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepobj", "pi15_csel12", "off");
 //                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepobj", "pi15_csel13", "off");
 //                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepobj", "pi15_csel14", "off");
@@ -1242,6 +1251,9 @@ class Part {
 
                 break;
             case "HelicalCuffnContact_Primitive":
+                // set instantiation parameters
+
+                // imports
 //                model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeepdom", "pi21_csel2.dom", "on");
 //                model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeepdom", "pi21_csel5.dom", "on");
 //                model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeepdom", "pi21_csel6.dom", "on");
@@ -1250,15 +1262,21 @@ class Part {
 
                 break;
             case "RectangleContact_Primitive":
-                // Imports
+                // set instantiation parameters
+
+                // imports
 
                 break;
             case "Fascicle":
-                // Imports
+                // set instantiation parameters
+
+                // imports
 
                 break;
             case "Nerve":
-                // Imports
+                // set instantiation parameters
+
+                // imports
 
                 break;
             default:
