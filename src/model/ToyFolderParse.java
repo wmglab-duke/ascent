@@ -16,7 +16,11 @@ public class ToyFolderParse {
             for (Iterator<Path> it = result.iterator(); it.hasNext(); ) {
                 Path p = it.next();
                 if (p.toString().contains(".txt")) {
-                    System.out.println(p);
+                    String[] pathParts = p.toString().split("/");
+                    int length = pathParts.length;
+                    String fascicleName = (pathParts[length - 2] + pathParts[length - 3] + "_" + pathParts[length - 1])
+                            .replaceAll(".txt", "").replaceAll("s", "");
+                    System.out.println("fascicleName = " + fascicleName);
                 }
             }
 

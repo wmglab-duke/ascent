@@ -3,7 +3,6 @@ package model;
 import com.comsol.model.GeomFeature;
 import com.comsol.model.Model;
 import com.comsol.model.ModelParam;
-import com.comsol.nativejni.geom.Geom;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -1210,6 +1209,10 @@ class Part {
             case "HelicalCuffnContact_Primitive":
                 break;
             case "RectangleContact_Primitive":
+                break;
+            case "Fascicle":
+                break;
+            case "Nerve":
                 break;
             default:
                 throw new IllegalArgumentException("No implementation for part instance name: " + pseudonym);
