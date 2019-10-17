@@ -199,7 +199,7 @@ public class ModelWrapper2 {
             }
 
             // for each required part primitive, create it (if not already existing)
-            for (Object item: (JSONArray) data.get("parts")) {
+            for (Object item: (JSONArray) data.get("parts")) { // TODO update for new JSON structure
                 String partPrimitiveName = (String) item; // quick cast to String
 
                 // create the part primitive if it has not already been created
@@ -234,15 +234,21 @@ public class ModelWrapper2 {
                     new String[]{this.root, ".templates", name})).getData();
 
             // loop through all part instances (e.g., instance1, instance2, etc...)
-            Object item = data.get("instance1"); // TODO
-            JSONObject itemObject = (JSONObject) item;
+            for(int i=1;i<=2;i++){
+                System.out.println("instance"+i);
+                Object item = data.get("instance"+i); // TODO - how to find how many instances there are without having an explicit variable for it?
+                JSONObject itemObject = (JSONObject) item;
+                System.out.println("item object is");
+                System.out.println(itemObject);
+                String instanceLabel = (String) itemObject.get("label");
+                String instanceID = this.im.next("pi", instanceLabel);
 
-            String instanceLabel = (String) itemObject.get("label");
-            String instanceID = this.im.next("pi", instanceLabel);
+                String type = (String) itemObject.get("type");
+                System.out.println(type);
 
-            String type = (String) itemObject.get("type");
+                Part.createPartInstance(instanceID, instanceLabel, type , this, itemObject);
+            }
 
-            Part.createPartInstance(instanceID, instanceLabel, type , this, itemObject);
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
