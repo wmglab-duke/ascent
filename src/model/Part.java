@@ -88,7 +88,8 @@ class Part {
 
                 String[] cselTCLabels = {
                         "INNER CUFF SURFACE",
-                        "OUTER CUFF SURFACE", "CUFF FINAL",
+                        "OUTER CUFF SURFACE",
+                        "CUFF FINAL",
                         "CUFF wGAP PRE HOLES",
                         "CUFF PRE GAP",
                         "CUFF PRE GAP PRE HOLES",
