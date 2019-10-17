@@ -1165,15 +1165,10 @@ class Part {
     public static boolean createPartInstance(String instanceID, String instanceLabel, String pseudonym, ModelWrapper mw, JSONObject instanceParams) throws IllegalArgumentException {
 
         Model model = mw.getModel();
-        System.out.println("here");
 
-        model.component("comp1").geom("geom1").create(instanceID, "PartInstance");
-        model.component("comp1").geom("geom1").feature(instanceID).label(instanceLabel);
-        model.component("comp1").geom("geom1").feature(instanceID).set("part", mw.im.get(pseudonym));
-
-        System.out.println("psuedo");
-        System.out.println(pseudonym);
-        System.out.println(mw.im.get(pseudonym));
+        GeomFeature partInstance = model.component("comp1").geom("geom1").create(instanceID, "PartInstance");
+        partInstance.label(instanceLabel);
+        partInstance.set("part", mw.im.get(pseudonym));
 
         Object item = instanceParams.get("def");
         JSONObject itemObject = (JSONObject) item;
@@ -1186,18 +1181,25 @@ class Part {
         // set instantiation parameters and import selections
         switch (pseudonym) {
             case "TubeCuff_Primitive":
+
                 // set instantiation parameters
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "N_holes", (String) itemObject.get("N_holes"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Theta", (String) itemObject.get("Theta"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Center", (String) itemObject.get("Center"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "R_in", (String) itemObject.get("R_in"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "R_out", (String) itemObject.get("R_out"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "L", (String) itemObject.get("L"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Rot_def", (String) itemObject.get("Rot_def"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "D_hole", (String) itemObject.get("D_hole"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Buffer_hole", (String) itemObject.get("Buffer_hole"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "L_holecenter_cuffseam", (String) itemObject.get("L_holecenter_cuffseam"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Pitch_holecenter_holecenter", (String) itemObject.get("Pitch_holecenter_holecenter"));
+                String[] tubeCuffParameters = {
+                        "N_holes",
+                        "Theta",
+                        "Center",
+                        "R_in",
+                        "R_out",
+                        "L",
+                        "Rot_def",
+                        "D_hole",
+                        "Buffer_hole",
+                        "L_holecenter_cuffseam",
+                        "Pitch_holecenter_holecenter"
+                };
+
+                for (String param: tubeCuffParameters) {
+                    partInstance.setEntry("inputexpr", (String) param, (String) itemObject.get(param));
+                }
 
                 // imports
 
@@ -1208,14 +1210,21 @@ class Part {
 //                model.component("comp1").geom("geom1").feature("pi8").setEntry("selkeepdom", "pi8_csel3.dom", "on");
                 break;
             case "RibbonContact_Primitive":
+
                 // set instantiation parameters
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Thk_elec", (String) itemObject.get("Thk_elec"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "L_elec", (String) itemObject.get("L_elec"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "R_in", (String) itemObject.get("R_in"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Recess", (String) itemObject.get("Recess"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Center", (String) itemObject.get("Center"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Theta_contact", (String) itemObject.get("Theta_contact"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Rot_def", (String) itemObject.get("Rot_def"));
+                String[] ribbonContactParameters = {
+                        "Thk_elec",
+                        "L_elec",
+                        "R_in",
+                        "Recess",
+                        "Center",
+                        "Theta_contact",
+                        "Rot_def"
+                };
+
+                for (String param: ribbonContactParameters) {
+                    partInstance.setEntry("inputexpr", (String) param, (String) itemObject.get(param));
+                }
 
                 // imports
 
@@ -1233,13 +1242,20 @@ class Part {
                 break;
 
             case "WireContact_Primitive":
+
                 // set instantiation parameters
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "R_conductor", (String) itemObject.get("R_conductor"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "R_in", (String) itemObject.get("R_in"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Center", (String) itemObject.get("Center"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Pitch", (String) itemObject.get("Pitch"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Sep_conductor", (String) itemObject.get("Sep_conductor"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Theta_conductor", (String) itemObject.get("Theta_conductor"));
+                String[] wireContactParameters = {
+                        "R_conductor",
+                        "R_in",
+                        "Center",
+                        "Pitch",
+                        "Sep_conductor",
+                        "Theta_conductor"
+                };
+
+                for (String param: wireContactParameters) {
+                    partInstance.setEntry("inputexpr", (String) param, (String) itemObject.get(param));
+                }
 
                 // imports
 //                model.component("comp1").geom("geom1").feature("pi13").setEntry("selkeepdom", "pi13_csel2.dom", "on");
@@ -1250,17 +1266,24 @@ class Part {
 
                 break;
             case "CircleContact_Primitive":
+
                 // set instantiation parameters
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Recess", (String) itemObject.get("Recess"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Rotation_angle", (String) itemObject.get("Rotation_angle"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Center", (String) itemObject.get("Center"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Round_def", (String) itemObject.get("Round_def"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "R_in", (String) itemObject.get("R_in"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Contact_depth", (String) itemObject.get("Contact_depth"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Overshoot", (String) itemObject.get("Overshoot"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "A_ellipse_contact", (String) itemObject.get("A_ellipse_contact"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Diam_contact", (String) itemObject.get("Diam_contact"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "L", (String) itemObject.get("L"));
+                String[] circleContactParameters = {
+                        "Recess",
+                        "Rotation_angle",
+                        "Center",
+                        "Round_def",
+                        "R_in",
+                        "Contact_depth",
+                        "Overshoot",
+                        "A_ellipse_contact",
+                        "Diam_contact",
+                        "L"
+                };
+
+                for (String param: circleContactParameters) {
+                    partInstance.setEntry("inputexpr", (String) param, (String) itemObject.get(param));
+                }
 
                 // imports
 
@@ -1284,7 +1307,16 @@ class Part {
 
                 break;
             case "HelicalCuffnContact_Primitive":
+
                 // set instantiation parameters
+                String[] helicalCuffnContactParameters = {
+                        "Center"
+                };
+
+                for (String param: helicalCuffnContactParameters) {
+                    partInstance.setEntry("inputexpr", (String) param, (String) itemObject.get(param));
+                }
+
                 model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Center", (String) itemObject.get("Center"));
 
                 // imports
@@ -1296,7 +1328,16 @@ class Part {
 
                 break;
             case "RectangleContact_Primitive":
+
                 // set instantiation parameters
+//                String[] rectangleContactParameters = {
+//                        "Center"
+//                };
+//
+//                for (String param: rectangleContactParameters) {
+//                    partInstance.setEntry("inputexpr", (String) param, (String) itemObject.get(param));
+//                }
+
                 // TODO
 //                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "R_conductor", (String) itemObject.get("R_conductor"));
 //                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "R_in", (String) itemObject.get("R_in"));

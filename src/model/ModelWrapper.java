@@ -350,10 +350,8 @@ public class ModelWrapper {
         ArrayList<String> cuffFiles = new ArrayList<>();
 
         for (int i = 0; i < cuffs.length(); i++) {
-            System.out.println("i =" + i);
             // make list of cuffs in model
             String cuff = cuffs.getString(i);
-            System.out.println(cuff);
 
             // add part primitives needed to make the cuff
             mw.addPartPrimitives(cuff);
