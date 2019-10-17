@@ -302,14 +302,15 @@ class Part {
                 mp.set("Theta_contact", "100 [deg]");
                 mp.set("Rot_def", "0 [deg]");
 
-                String[] cselRiCLabels = {
+                im.labels = new String[]{
                         "CONTACT CROSS SECTION",
                         "RECESS CROSS SECTION",
                         "SRC",
                         "CONTACT FINAL",
                         "RECESS FINAL"
                 };
-                for (String cselRiCLabel: cselRiCLabels) {
+
+                for (String cselRiCLabel: im.labels) {
                     model.geom(id).selection().create(im.next("csel", cselRiCLabel), "CumulativeSelection")
                             .label(cselRiCLabel);
                 }
@@ -389,12 +390,13 @@ class Part {
                 model.geom(id).inputParam().set("Sep_conductor", "sep_conductor_P");
                 model.geom(id).inputParam().set("Theta_conductor", "theta_conductor_P");
 
-                String[] cselWCLabels = {
+                im.labels = new String[]{
                         "CONTACT CROSS SECTION",
                         "CONTACT FINAL",
                         "SRC"
                 };
-                for (String cselWCLabel: cselWCLabels) {
+
+                for (String cselWCLabel: im.labels) {
                     model.geom(id).selection().create(im.next("csel", cselWCLabel), "CumulativeSelection")
                             .label(cselWCLabel);
                 }
@@ -440,7 +442,7 @@ class Part {
                 model.geom(id).inputParam().set("Diam_contact", "diam_contact_ITC");
                 model.geom(id).inputParam().set("L", "L_IT");
 
-                String[] cselCCLabels = {
+                im.labels = new String[]{
                         "CONTACT CUTTER IN",
                         "PRE CUT CONTACT",
                         "RECESS FINAL",
@@ -456,7 +458,8 @@ class Part {
                         "RECESS CUTTER OUT",
                         "BASE PLANE (PRE ROTATION)"
                 };
-                for (String cselCCLabel: cselCCLabels) {
+
+                for (String cselCCLabel: im.labels) {
                     model.geom(id).selection().create(im.next("csel", cselCCLabel), "CumulativeSelection")
                             .label(cselCCLabel);
                 }
@@ -673,7 +676,7 @@ class Part {
             case "HelicalCuffnContact_Primitive":
                 model.geom(id).inputParam().set("Center", "Center_LN");
 
-                String[] cselHCCLabels = {
+                im.labels = new String[]{
                         "PC1",
                         "Cuffp1",
                         "SEL END P1",
@@ -685,7 +688,8 @@ class Part {
                         "Cuffp3",
                         "PC3"
                 };
-                for (String cselHCCLabel: cselHCCLabels) {
+
+                for (String cselHCCLabel: im.labels) {
                     model.geom(id).selection().create(im.next("csel", cselHCCLabel), "CumulativeSelection")
                             .label(cselHCCLabel);
                 }
@@ -870,7 +874,7 @@ class Part {
                 model.geom(id).inputParam().set("z_center", "0 [mm]");
                 model.geom(id).inputParam().set("rotation_angle", "0 [deg]");
 
-                String[] cselReCLabels = {
+                im.labels = new String[]{
                         "OUTER CONTACT CUTTER",
                         "SEL INNER EXCESS CONTACT",
                         "INNER CONTACT CUTTER",
@@ -895,7 +899,8 @@ class Part {
                         "FINAL",
                         "INNER CUTTER"
                 };
-                for (String cselReCLabel: cselReCLabels) {
+
+                for (String cselReCLabel: im.labels) {
                     model.geom(id).selection().create(im.next("csel", cselReCLabel), "CumulativeSelection")
                             .label(cselReCLabel);
                 }
