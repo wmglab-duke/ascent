@@ -3,7 +3,6 @@ package model;
 import com.comsol.model.GeomFeature;
 import com.comsol.model.Model;
 import com.comsol.model.ModelParam;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -1298,7 +1297,11 @@ class Part {
 
                 break;
             case "Fascicle":
+                // path = "path" + instanceLabel
+
                 // set instantiation parameters
+
+                //
 
                 // imports
 

@@ -234,20 +234,22 @@ public class ModelWrapper2 {
                     new String[]{this.root, ".templates", name})).getData();
 
             // loop through all part instances (e.g., instance1, instance2, etc...)
-            for(int i=1;i<=10;i++){ // TODO convert to while
-                String indexKey = "instance"+i;
-                boolean exists = data.has(indexKey);
-                if (exists) {
-                    Object item = data.get("instance"+i);
-                    JSONObject itemObject = (JSONObject) item;
-                    String instanceLabel = (String) itemObject.get("label");
-                    String instanceID = this.im.next("pi", instanceLabel);
-                    String type = (String) itemObject.get("type");
-                    Part.createPartInstance(instanceID, instanceLabel, type , this, itemObject);
-                } else {
-                    break;
-                }
+            String indexBase = "instance";
+            int indexCounter = 1;
+            String indexString = indexBase + indexCounter;
+            while(data.has(indexString)) {
+
+                Object item = data.get(indexString);
+                JSONObject itemObject = (JSONObject) item;
+                String instanceLabel = (String) itemObject.get("label");
+                String instanceID = this.im.next("pi", instanceLabel);
+                String type = (String) itemObject.get("type");
+                Part.createPartInstance(instanceID, instanceLabel, type , this, itemObject);
+
+                indexCounter += 1;
+                indexString = indexBase + indexCounter;
             }
+
 
 
         } catch (FileNotFoundException e) {
