@@ -10,13 +10,6 @@ import java.util.HashMap;
 
 class Part {
 
-    public static class Labels {
-        static String s = "hello";
-        static String t = "goodbye";
-    }
-
-    public static String s = "hello";
-
     private static void examples(ModelWrapper mw) {
 
         Model model = mw.getModel();
@@ -1157,12 +1150,6 @@ class Part {
                 throw new  IllegalArgumentException("No implementation for part primitive name: " + pseudonym);
         }
 
-        // TODO: I think we will want to move this elsewhere... also try/catch so if breaks you can see in GUI what is was doing
-        try {
-            model.save("parts_test");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         // if im was not edited for some reason, return null
         if (im.count() == 0) return null;
         return im;
@@ -1178,10 +1165,16 @@ class Part {
     public static boolean createPartInstance(String instanceID, String instanceLabel, String pseudonym, ModelWrapper mw, JSONObject instanceParams) throws IllegalArgumentException {
 
         Model model = mw.getModel();
+        System.out.println("here");
 
         model.component("comp1").geom("geom1").create(instanceID, "PartInstance");
         model.component("comp1").geom("geom1").feature(instanceID).label(instanceLabel);
         model.component("comp1").geom("geom1").feature(instanceID).set("part", mw.im.get(pseudonym));
+
+        System.out.println("psuedo");
+        System.out.println(pseudonym);
+        System.out.println(mw.im.get(pseudonym));
+
         Object item = instanceParams.get("def");
         JSONObject itemObject = (JSONObject) item;
 

@@ -350,9 +350,10 @@ public class ModelWrapper {
         ArrayList<String> cuffFiles = new ArrayList<>();
 
         for (int i = 0; i < cuffs.length(); i++) {
+            System.out.println("i =" + i);
             // make list of cuffs in model
             String cuff = cuffs.getString(i);
-            cuffFiles.add(cuff);
+            System.out.println(cuff);
 
             // add part primitives needed to make the cuff
             mw.addPartPrimitives(cuff);
@@ -360,6 +361,13 @@ public class ModelWrapper {
             // add part instances needed to make the cuff
             mw.addPartInstances(cuff);
         }
+
+        try {
+            model.save("parts_test");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         ModelUtil.disconnect();
         System.out.println("Disconnected from COMSOL Server");
     }
