@@ -198,8 +198,9 @@ public class ModelWrapper2 {
             }
 
             // for each required part primitive, create it (if not already existing)
-            for (Object item: (JSONArray) data.get("parts")) { // TODO update for new JSON structure
-                String partPrimitiveName = (String) item; // quick cast to String
+            for (Object item: (JSONArray) data.get("instances")) {
+                JSONObject itemObject = (JSONObject) item;
+                String partPrimitiveName = (String) itemObject.get("type"); // quick cast to String
 
                 // create the part primitive if it has not already been created
                 if (! this.im.hasPseudonym(partPrimitiveName)) {
@@ -232,25 +233,14 @@ public class ModelWrapper2 {
             JSONObject data = new JSONReader(String.join("/",
                     new String[]{this.root, ".templates", name})).getData();
 
-            // loop through all part instances (e.g., instance1, instance2, etc...)
-            String indexBase = "instance";
-            int indexCounter = 1;
-            String indexString = indexBase + indexCounter;
-            while(data.has(indexString)) {
-
-                Object item = data.get(indexString);
+            // loop through all part instances
+            for (Object item: (JSONArray) data.get("instances")) {
                 JSONObject itemObject = (JSONObject) item;
                 String instanceLabel = (String) itemObject.get("label");
                 String instanceID = this.im.next("pi", instanceLabel);
                 String type = (String) itemObject.get("type");
                 Part.createPartInstance(instanceID, instanceLabel, type , this, itemObject);
-
-                indexCounter += 1;
-                indexString = indexBase + indexCounter;
             }
-
-
-
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             return false;
