@@ -234,19 +234,19 @@ public class ModelWrapper2 {
                     new String[]{this.root, ".templates", name})).getData();
 
             // loop through all part instances (e.g., instance1, instance2, etc...)
-            for(int i=1;i<=2;i++){
-                System.out.println("instance"+i);
-                Object item = data.get("instance"+i); // TODO - how to find how many instances there are without having an explicit variable for it?
-                JSONObject itemObject = (JSONObject) item;
-                System.out.println("item object is");
-                System.out.println(itemObject);
-                String instanceLabel = (String) itemObject.get("label");
-                String instanceID = this.im.next("pi", instanceLabel);
-
-                String type = (String) itemObject.get("type");
-                System.out.println(type);
-
-                Part.createPartInstance(instanceID, instanceLabel, type , this, itemObject);
+            for(int i=1;i<=10;i++){ // TODO convert to while
+                String indexKey = "instance"+i;
+                boolean exists = data.has(indexKey);
+                if (exists) {
+                    Object item = data.get("instance"+i);
+                    JSONObject itemObject = (JSONObject) item;
+                    String instanceLabel = (String) itemObject.get("label");
+                    String instanceID = this.im.next("pi", instanceLabel);
+                    String type = (String) itemObject.get("type");
+                    Part.createPartInstance(instanceID, instanceLabel, type , this, itemObject);
+                } else {
+                    break;
+                }
             }
 
 

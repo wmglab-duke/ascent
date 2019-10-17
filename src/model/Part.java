@@ -1169,12 +1169,8 @@ class Part {
         model.component("comp1").geom("geom1").create(instanceID, "PartInstance");
         model.component("comp1").geom("geom1").feature(instanceID).label(instanceLabel);
         model.component("comp1").geom("geom1").feature(instanceID).set("part", mw.im.get(pseudonym));
-
         Object item = instanceParams.get("def");
         JSONObject itemObject = (JSONObject) item;
-        System.out.println(itemObject);
-        System.out.println("psuedo");
-        System.out.println(pseudonym);
 
         // set instantiation parameters and import selections
         switch (pseudonym) {
@@ -1202,7 +1198,6 @@ class Part {
                 break;
             case "RibbonContact_Primitive":
                 // set instantiation parameters
-                System.out.println("here");
                 model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Thk_elec", (String) itemObject.get("Thk_elec"));
                 model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "L_elec", (String) itemObject.get("L_elec"));
                 model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "R_in", (String) itemObject.get("R_in"));
@@ -1210,7 +1205,6 @@ class Part {
                 model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Center", (String) itemObject.get("Center"));
                 model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Theta_contact", (String) itemObject.get("Theta_contact"));
                 model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Rot_def", (String) itemObject.get("Rot_def"));
-                System.out.println("here 2");
 
                 // imports
 
@@ -1229,11 +1223,7 @@ class Part {
 
             case "WireContact_Primitive":
                 // set instantiation parameters
-                System.out.println(pseudonym);
-                System.out.println("here 3");
-                System.out.println(itemObject);
                 model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "R_conductor", (String) itemObject.get("R_conductor"));
-                System.out.println("here 4");
                 model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "R_in", (String) itemObject.get("R_in"));
                 model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Center", (String) itemObject.get("Center"));
                 model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Pitch", (String) itemObject.get("Pitch"));
