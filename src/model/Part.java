@@ -10,6 +10,28 @@ import java.util.HashMap;
 
 class Part {
 
+    public static class Labels {
+        static String s = "hello";
+        static String t = "goodbye";
+    }
+
+    public static String[] cselTCLabels = {
+            "INNER CUFF SURFACE",
+            "OUTER CUFF SURFACE",
+            "CUFF FINAL",
+            "CUFF wGAP PRE HOLES",
+            "CUFF PRE GAP",
+            "CUFF PRE GAP PRE HOLES",
+            "CUFF GAP CROSS SECTION",
+            "CUFF GAP",
+            "CUFF PRE HOLES",
+            "HOLE 1",
+            "HOLE 2",
+            "HOLES"
+    };
+
+    public static String s = "hello";
+
     private static void examples(ModelWrapper2 mw) {
 
         Model model = mw.getModel();
@@ -98,6 +120,9 @@ class Part {
                         "HOLE 2",
                         "HOLES"
                 };
+
+                im.labels = cselTCLabels;
+
                 for (String cselTCLabel: cselTCLabels) {
                     model.geom(id).selection().create(im.next("csel", cselTCLabel), "CumulativeSelection")
                             .label(cselTCLabel);
@@ -1174,6 +1199,7 @@ class Part {
         IdentifierManager myIM = mw.getPartPrimitiveIM(pseudonym);
         if (myIM == null) throw new IllegalArgumentException("IdentfierManager not created for name: " + pseudonym);
 
+        String[] myLabels = myIM.labels; // may be null, but that is ok if not used
 
         // set instantiation parameters and import selections
         switch (pseudonym) {
