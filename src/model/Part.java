@@ -17,7 +17,7 @@ class Part {
 
     public static String s = "hello";
 
-    private static void examples(ModelWrapper2 mw) {
+    private static void examples(ModelWrapper mw) {
 
         Model model = mw.getModel();
 
@@ -53,7 +53,7 @@ class Part {
     }
 
 
-    public static IdentifierManager createPartPrimitive(String id, String pseudonym, ModelWrapper2 mw) throws IllegalArgumentException {
+    public static IdentifierManager createPartPrimitive(String id, String pseudonym, ModelWrapper mw) throws IllegalArgumentException {
         return Part.createPartPrimitive(id, pseudonym, mw, null);
     }
 
@@ -66,7 +66,7 @@ class Part {
      * @param data
      * @return
      */
-    public static IdentifierManager createPartPrimitive(String id, String pseudonym, ModelWrapper2 mw,
+    public static IdentifierManager createPartPrimitive(String id, String pseudonym, ModelWrapper mw,
                                               HashMap<String, Object> data) throws IllegalArgumentException {
         Model model = mw.getModel();
 
@@ -1170,7 +1170,7 @@ class Part {
      * @param mw
      * @return
      */
-    public static boolean createPartInstance(String instanceID, String instanceLabel, String pseudonym, ModelWrapper2 mw, JSONObject instanceParams) throws IllegalArgumentException {
+    public static boolean createPartInstance(String instanceID, String instanceLabel, String pseudonym, ModelWrapper mw, JSONObject instanceParams) throws IllegalArgumentException {
 
         Model model = mw.getModel();
 

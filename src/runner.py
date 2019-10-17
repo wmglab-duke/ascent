@@ -125,7 +125,7 @@ cd ..
 
         comsol_path = self.load(os.path.join('.config', 'system.json')).get('comsol_path')
         jdk_path = self.load(os.path.join('.config', 'system.json')).get('jdk_path')
-        core_name = 'ModelWrapper2'
+        core_name = 'ModelWrapper'
 
         # file_name_no_ext = os.path.join('src', 'core', 'FEMBuilder')
         # run commands by system type
