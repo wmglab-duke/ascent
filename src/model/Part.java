@@ -15,21 +15,6 @@ class Part {
         static String t = "goodbye";
     }
 
-    public static String[] cselTCLabels = {
-            "INNER CUFF SURFACE",
-            "OUTER CUFF SURFACE",
-            "CUFF FINAL",
-            "CUFF wGAP PRE HOLES",
-            "CUFF PRE GAP",
-            "CUFF PRE GAP PRE HOLES",
-            "CUFF GAP CROSS SECTION",
-            "CUFF GAP",
-            "CUFF PRE HOLES",
-            "HOLE 1",
-            "HOLE 2",
-            "HOLES"
-    };
-
     public static String s = "hello";
 
     private static void examples(ModelWrapper2 mw) {
@@ -107,9 +92,10 @@ class Part {
                 mp.set("L_holecenter_cuffseam", "0.3 [mm]");
                 mp.set("Pitch_holecenter_holecenter", "0 [mm]");
 
-                String[] cselTCLabels = {
+                im.labels = new String[]{
                         "INNER CUFF SURFACE",
-                        "OUTER CUFF SURFACE", "CUFF FINAL",
+                        "OUTER CUFF SURFACE",
+                        "CUFF FINAL",
                         "CUFF wGAP PRE HOLES",
                         "CUFF PRE GAP",
                         "CUFF PRE GAP PRE HOLES",
@@ -121,17 +107,15 @@ class Part {
                         "HOLES"
                 };
 
-                im.labels = cselTCLabels;
-
-                for (String cselTCLabel: cselTCLabels) {
+                for (String cselTCLabel: im.labels) {
                     model.geom(id).selection().create(im.next("csel", cselTCLabel), "CumulativeSelection")
                             .label(cselTCLabel);
                 }
 
                 String micsLabel = "Make Inner Cuff Surface";
-                GeomFeature inner_surf = model.geom(id).create(im.next("cyl",micsLabel), "Cylinder");
+                GeomFeature inner_surf = model.geom(id).create(im.next("cyl", micsLabel), "Cylinder");
                 inner_surf.label(micsLabel);
-                inner_surf.set("contributeto", im.get(cselTCLabels[0]));
+                inner_surf.set("contributeto", im.get(im.labels[0]));
                 inner_surf.set("pos", new String[]{"0", "0", "Center-(L/2)"});
                 inner_surf.set("r", "R_in");
                 inner_surf.set("h", "L");
