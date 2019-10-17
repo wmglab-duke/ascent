@@ -7,6 +7,8 @@ public class IdentifierManager {
     private HashMap<String, Integer> identifierStates = new HashMap<>();
     private HashMap<String, String> identifierPseudonyms = new HashMap<>();
 
+    public String[] labels = null;
+
     /**
      *
      * @param key type of id to get the next index for
