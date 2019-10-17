@@ -1,36 +1,36 @@
 {
-  "parts": ["TubeCuff_Primitive", "RibbonContact_Primitive"],
-  "instance1": {
-    "type": "TubeCuff_Primitive",
-    "label": "Madison Cuff",
-    "def": {
-      "N_holes": "N_holes_M",
-      "Theta": "Theta_M",
-      "Center": "Center_M",
-      "R_in": "R_in_M",
-      "R_out": "R_out_M",
-      "L": "L_M",
-      "Rot_def": "Rot_def_M",
-      "D_hole": "D_hole_M",
-      "Buffer_hole": "Buffer_hole_M",
-      "L_holecenter_cuffseam": "L_holecenter_cuffseam_M",
-      "Pitch_holecenter_holecenter": "Pitch_holecenter_holecenter_M"
+  "instances": [
+    {
+      "type": "TubeCuff_Primitive",
+      "label": "Madison Cuff",
+      "def": {
+        "N_holes": "N_holes_M",
+        "Theta": "Theta_M",
+        "Center": "Center_M",
+        "R_in": "R_in_M",
+        "R_out": "R_out_M",
+        "L": "L_M",
+        "Rot_def": "Rot_def_M",
+        "D_hole": "D_hole_M",
+        "Buffer_hole": "Buffer_hole_M",
+        "L_holecenter_cuffseam": "L_holecenter_cuffseam_M",
+        "Pitch_holecenter_holecenter": "Pitch_holecenter_holecenter_M"
+      }
+    },
+    {
+      "type": "RibbonContact_Primitive",
+      "label": "Madison Contact 1",
+      "def": {
+        "Thk_elec": "Thk_elec_M",
+        "L_elec": "L_elec_M",
+        "R_in": "R_in_M",
+        "Recess": "Recess_M",
+        "Center": "Center_M",
+        "Theta_contact": "Theta_contact_M",
+        "Rot_def": "Rot_def_contact_M"
+      }
     }
-  },
-
-  "instance2": {
-    "type": "RibbonContact_Primitive",
-    "label": "Madison Contact 1",
-    "def": {
-      "Thk_elec": "Thk_elec_M",
-      "L_elec": "L_elec_M",
-      "R_in": "R_in_M",
-      "Recess": "Recess_M",
-      "Center": "Center_M",
-      "Theta_contact": "Theta_contact_M",
-      "Rot_def": "Rot_def_contact_M"
-    }
-  },
+  ],
 
   "params": [
     {
