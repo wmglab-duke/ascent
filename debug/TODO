@@ -2,3 +2,4 @@
 - load fascicle paths into params, create fascicle primitive, instantiate fascicles
 - SAME for nerves
 - add fascicle/nerve physics parameters to master.json (mesh/CI bool)
+- LOOK AT EXAMPLE FROM ERIC IN SLACK
