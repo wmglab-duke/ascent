@@ -1171,6 +1171,10 @@ class Part {
         Object item = instanceParams.get("def");
         JSONObject itemObject = (JSONObject) item;
 
+        IdentifierManager myIM = mw.getPartPrimitiveIM(pseudonym);
+        if (myIM == null) throw new IllegalArgumentException("IdentfierManager not created for name: " + pseudonym);
+
+
         // set instantiation parameters and import selections
         switch (pseudonym) {
             case "TubeCuff_Primitive":

@@ -106,7 +106,6 @@ public class ModelWrapper2 {
         this.dest = dest;
     }
 
-
     // OTHER METHODS
 
     /**
