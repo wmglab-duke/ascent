@@ -141,7 +141,7 @@ cd ..
                                                                                                       comsol_path))
 
             os.system('{}/java/maci64/jre/Contents/Home/bin/java '
-                      '-cp .:$(echo {}/plugins/*.jar | tr \' \' \':\'):../lib/json-20190722.jar:../bin model/{}'.format(comsol_path,
+                      '-cp .:$(echo {}/plugins/*.jar | tr \' \' \':\'):../lib/json-20190722.jar:../bin model.{}'.format(comsol_path,
                                                                                                                  comsol_path,
                                                                                                                  core_name))
             os.chdir('..')
