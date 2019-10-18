@@ -139,10 +139,6 @@ cd ..
             os.chdir('src')
             os.system('{}/javac -classpath ../lib/json-20190722.jar:{}/plugins/* model/*.java -d ../bin'.format(jdk_path,
                                                                                                       comsol_path))
-            submit = '{}/java/maci64/jre/Contents/Home/bin/java -cp .:$(echo {}/plugins/*.jar | tr \' \' \':\'):../lib/json-20190722.jar:../bin model/{}'.format(comsol_path,
-                                                                                                              comsol_path,
-                                                                                                              core_name)
-            print(submit)
 
             os.system('{}/java/maci64/jre/Contents/Home/bin/java '
                       '-cp .:$(echo {}/plugins/*.jar | tr \' \' \':\'):../lib/json-20190722.jar:../bin model.{}'.format(comsol_path,
