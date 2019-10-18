@@ -170,17 +170,13 @@ cd ..
             subprocess.Popen(['{}\\bin\\win64\\comsolmphserver.exe'.format(comsol_path)], close_fds=True)
             os.chdir('src')
 
-            os.system('""{}\\javac" -cp "..\\lib\\json-20190722.jar";"{}\\plugins\\*" model\\*.java"'.format(jdk_path,
+            os.system('""{}\\javac" -cp "..\\lib\\json-20190722.jar";"{}\\plugins\\*" model\\*.java -d ..\\bin"'.format(jdk_path,
                                                                                                              comsol_path))
 
-            submit = '""{}\\java\\win64\\jre\\bin\\java" -cp "{}\\plugins\\*";"..\\lib\\json-20190722.jar";"..\\bin" model.{}"'.format(comsol_path,
-                                                                                    comsol_path,
-                                                                                    core_name)
-            print(submit)
-            os.system(submit)
-            print("here")
-
-        os.chdir('..')
+            os.system('""{}\\java\\win64\\jre\\bin\\java" -cp "{}\\plugins\\*";"..\\lib\\json-20190722.jar";"..\\bin" model.{}"'.format(comsol_path,
+                                                                                                                                        comsol_path,
+                                                                                                                                        core_name))
+            os.chdir('..')
 
             # manifest = 'com\\comsol\\accessutils\\MANIFEST.MF'
             #
