@@ -139,13 +139,12 @@ cd ..
             os.chdir('src')
             os.system('{}/javac -classpath ../lib/json-20190722.jar:{}/plugins/* model/*.java -d ../bin'.format(jdk_path,
                                                                                                       comsol_path))
-
+            # https://stackoverflow.com/questions/219585/including-all-the-jars-in-a-directory-within-the-java-classpath
             os.system('{}/java/maci64/jre/Contents/Home/bin/java '
                       '-cp .:$(echo {}/plugins/*.jar | tr \' \' \':\'):../lib/json-20190722.jar:../bin model/{}'.format(comsol_path,
                                                                                                                  comsol_path,
                                                                                                                  core_name))
             os.chdir('..')
-
 
             # manifest = 'com/comsol/accessutils/MANIFEST.MF'
             #
@@ -170,18 +169,18 @@ cd ..
             # TODO: RUN ./comsol server IN SEPARATE SHELL
             subprocess.Popen(['{}\\bin\\win64\\comsolmphserver.exe'.format(comsol_path)], close_fds=True)
             os.chdir('src')
-            os.system('""{}\\javac" -cp "..\\lib\\json-20190722.jar";"{}\\plugins\\*" model\\*.java -d ../bin"'.format(jdk_path,
+
+            os.system('""{}\\javac" -cp "..\\lib\\json-20190722.jar";"{}\\plugins\\*" model\\*.java"'.format(jdk_path,
                                                                                                              comsol_path))
-            print('here')
-            print('""{}\\java\\win64\\jre\\bin\\java '
-                  '-classpath .;"{}\\plugins\\*";..\\lib\\json-20190722.jar "model\\{}"'.format(comsol_path,
-                                                                                                         comsol_path,
-                                                                                                         core_name))
-            os.system('""{}\\java\\win64\\jre\\bin\\java '
-                      '-classpath .;$(echo "{}\\plugins\\*" );..\\lib\\json-20190722.jar "model\\{}"'.format(comsol_path,
-                                                                                                                 comsol_path,
-                                                                                                                 core_name))
-            os.chdir('..')
+
+            submit = '""{}\\java\\win64\\jre\\bin\\java" -cp "{}\\plugins\\*";"..\\lib\\json-20190722.jar";"..\\bin" model.{}"'.format(comsol_path,
+                                                                                    comsol_path,
+                                                                                    core_name)
+            print(submit)
+            os.system(submit)
+            print("here")
+
+        os.chdir('..')
 
             # manifest = 'com\\comsol\\accessutils\\MANIFEST.MF'
             #
