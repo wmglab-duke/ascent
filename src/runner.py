@@ -146,13 +146,6 @@ cd ..
                                                                                                                  core_name))
             os.chdir('..')
 
-            # . current directory
-            # : delimeter
-            # $ run whatever follows
-            # echo repeats string on screen
-            # | pipe, basically run and handoff output to thing on the right
-            # tr translate
-
 
             # manifest = 'com/comsol/accessutils/MANIFEST.MF'
             #
@@ -176,11 +169,15 @@ cd ..
             # TODO: WINDOWS IMPLEMENTATION OF ABOVE CODE
             # TODO: RUN ./comsol server IN SEPARATE SHELL
             subprocess.Popen(['{}\\bin\\win64\\comsolmphserver.exe'.format(comsol_path)], close_fds=True)
-
             os.chdir('src')
-            os.system('""{}\\javac" -cp "..\\lib\\json-20190722.jar";"{}\\plugins\\*" model\\*.java"'.format(jdk_path,
-                                                                                                                  comsol_path))
-            os.system('""{}\\java\\win64\\jre\\bin\\java" '
+            os.system('""{}\\javac" -cp "..\\lib\\json-20190722.jar";"{}\\plugins\\*" model\\*.java -d ../bin"'.format(jdk_path,
+                                                                                                             comsol_path))
+            print('here')
+            print('""{}\\java\\win64\\jre\\bin\\java '
+                  '-classpath .;"{}\\plugins\\*";..\\lib\\json-20190722.jar "model\\{}"'.format(comsol_path,
+                                                                                                         comsol_path,
+                                                                                                         core_name))
+            os.system('""{}\\java\\win64\\jre\\bin\\java '
                       '-classpath .;$(echo "{}\\plugins\\*" );..\\lib\\json-20190722.jar "model\\{}"'.format(comsol_path,
                                                                                                                  comsol_path,
                                                                                                                  core_name))
