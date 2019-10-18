@@ -463,6 +463,7 @@ class Part {
                 baseplane_prerot.set("contributeto", im.get("BASE PLANE (PRE ROTATION)"));
                 baseplane_prerot.set("quickplane", "yz");
                 baseplane_prerot.set("unite", true);
+                baseplane_prerot.set("showworkplane", false);
 
                 String ifrecessCCLabel = "If Recess";
                 GeomFeature ifrecessCC = model.geom(id).create(im.next("if",ifrecessCCLabel), "If");
@@ -530,6 +531,8 @@ class Part {
                 rco.set("pos", new String[]{"0", "0", "Center-L/2"});
                 rco.set("r", "R_in+Recess");
                 rco.set("h", "L");
+                rco.set("selresult", true);
+                rco.set("selresultshow", false);
 
                 String erciLabel = "Execute Recess Cut In";
                 GeomFeature erci = model.geom(id).create(im.next("dif",erciLabel), "Difference");
@@ -1202,12 +1205,9 @@ class Part {
                 }
 
                 // imports
+                partInstance.set("selkeepnoncontr", false);
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[2]) + ".dom", "on"); // CUFF FINAL
 
-//                model.component("comp1").geom("geom1").feature("pi4").setEntry("selkeepdom", "pi4_csel3.dom", "on");
-
-//                model.component("comp1").geom("geom1").feature("pi3").setEntry("selkeepdom", "pi3_csel3.dom", "on");
-
-//                model.component("comp1").geom("geom1").feature("pi8").setEntry("selkeepdom", "pi8_csel3.dom", "on");
                 break;
             case "RibbonContact_Primitive":
 
@@ -1227,18 +1227,11 @@ class Part {
                 }
 
                 // imports
+                partInstance.set("selkeepnoncontr", false);
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[2]) + ".pnt", "on"); // SRC
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[3]) + ".dom", "on"); // CONTACT FINAL
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[4]) + ".dom", "on"); // RECESS FINAL
 
-//                model.component("comp1").geom("geom1").feature("pi9").setEntry("selkeepdom", "pi9_csel4.dom", "on");
-//                model.component("comp1").geom("geom1").feature("pi9").setEntry("selkeeppnt", "pi9_csel3.pnt", "on");
-
-//                model.component("comp1").geom("geom1").feature("pi10").setEntry("selkeepdom", "pi10_csel4.dom", "on");
-//                model.component("comp1").geom("geom1").feature("pi10").setEntry("selkeeppnt", "pi10_csel3.pnt", "on");
-
-//                model.component("comp1").geom("geom1").feature("pi11").setEntry("selkeepdom", "pi11_csel4.dom", "on");
-//                model.component("comp1").geom("geom1").feature("pi11").setEntry("selkeeppnt", "pi11_csel3.pnt", "on");
-
-//                model.component("comp1").geom("geom1").feature("pi12").setEntry("selkeepdom", "pi12_csel4.dom", "on");
-//                model.component("comp1").geom("geom1").feature("pi12").setEntry("selkeeppnt", "pi12_csel3.pnt", "on");
                 break;
 
             case "WireContact_Primitive":
@@ -1258,11 +1251,9 @@ class Part {
                 }
 
                 // imports
-//                model.component("comp1").geom("geom1").feature("pi13").setEntry("selkeepdom", "pi13_csel2.dom", "on");
-//                model.component("comp1").geom("geom1").feature("pi13").setEntry("selkeeppnt", "pi13_csel3.pnt", "on");
-//
-//                model.component("comp1").geom("geom1").feature("pi14").setEntry("selkeepdom", "pi14_csel2.dom", "on");
-//                model.component("comp1").geom("geom1").feature("pi14").setEntry("selkeeppnt", "pi14_csel3.pnt", "on");
+                partInstance.set("selkeepnoncontr", false);
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[1]) + ".dom", "on"); // CONTACT FINAL
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[2]) + ".pnt", "on"); // SRC
 
                 break;
             case "CircleContact_Primitive":
@@ -1286,21 +1277,49 @@ class Part {
                 }
 
                 // imports
+                partInstance.set("selkeepnoncontr", false);
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[2]) + ".dom", "on"); // RECESS FINAL
+
+                partInstance.setEntry("selkeepobj", instanceID + "_" +  myIM.get(myLabels[7]), "off"); // CONTACT CUTTER OUT
+                partInstance.setEntry("selkeepobj", instanceID + "_" +  myIM.get(myLabels[6]), "off"); // CONTACT FINAL
+                partInstance.setEntry("selkeepobj", instanceID + "_" +  myIM.get(myLabels[4]), "off"); // SRC
+
+                //partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[2]), "off"); //
+                //partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[2]), "off"); //
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[2]) + ".dom", "off");
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[2]) + ".dom", "off");
+
+                partInstance.setEntry("selkeepbnd", instanceID + "_" +  myIM.get(myLabels[8]) + ".bnd", "off"); // CONTACT CUTTER OUT
+                partInstance.setEntry("selkeepbnd", instanceID + "_" +  myIM.get(myLabels[6]) + ".bnd", "off"); // CONTACT FINAL
+                partInstance.setEntry("selkeepbnd", instanceID + "_" +  myIM.get(myLabels[4]) + ".bnd", "off"); // SRC
+
+                partInstance.setEntry("selkeepedg", instanceID + "_" +  myIM.get(myLabels[8]) + ".edg", "off"); // CONTACT CUTTER OUT
+                partInstance.setEntry("selkeepedg", instanceID + "_" +  myIM.get(myLabels[6]) + ".edg", "off"); // CONTACT FINAL
+                partInstance.setEntry("selkeepedg", instanceID + "_" +  myIM.get(myLabels[4]) + ".edg", "off"); // SRC
+
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[8]) + ".pnt", "off"); // CONTACT CUTTER OUT
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[6]) + ".pnt", "off"); // CONTACT FINAL
+
+
 
 //                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepobj", "pi15_csel12", "off");
 //                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepobj", "pi15_csel13", "off");
 //                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepobj", "pi15_csel14", "off");
+
 //                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepdom", "pi15_ballsel1", "off");
 //                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepdom", "pi15_ballsel2", "off");
 //                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepdom", "pi15_csel7.dom", "on");
 //                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepdom", "pi15_csel12.dom", "off");
 //                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepdom", "pi15_csel14.dom", "off");
+
 //                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepbnd", "pi15_csel12.bnd", "off");
 //                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepbnd", "pi15_csel13.bnd", "off");
 //                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepbnd", "pi15_csel14.bnd", "off");
+
 //                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepedg", "pi15_csel12.edg", "off");
 //                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepedg", "pi15_csel13.edg", "off");
 //                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepedg", "pi15_csel14.edg", "off");
+
 //                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeeppnt", "pi15_csel12.pnt", "off");
 //                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeeppnt", "pi15_csel13.pnt", "off");
 
@@ -1320,11 +1339,12 @@ class Part {
                 model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Center", (String) itemObject.get("Center"));
 
                 // imports
-//                model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeepdom", "pi21_csel2.dom", "on");
-//                model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeepdom", "pi21_csel5.dom", "on");
-//                model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeepdom", "pi21_csel6.dom", "on");
-//                model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeepdom", "pi21_csel8.dom", "on");
-//                model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeeppnt", "pi21_csel10.pnt", "on");
+                partInstance.set("selkeepnoncontr", false);
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[1]) + ".dom", "on"); // Cuffp1
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[5]) + ".dom", "on"); // Cuffp2
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[5]) + ".dom", "on"); // Conductorp2
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[8]) + ".dom", "on"); // Cuffp3
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[4]) + ".pnt", "on"); // SRC
 
                 break;
             case "RectangleContact_Primitive":

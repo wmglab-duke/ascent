@@ -141,7 +141,7 @@ cd ..
                                                                                                       comsol_path))
             # https://stackoverflow.com/questions/219585/including-all-the-jars-in-a-directory-within-the-java-classpath
             os.system('{}/java/maci64/jre/Contents/Home/bin/java '
-                      '-cp .:$(echo {}/plugins/*.jar | tr \' \' \':\'):../lib/json-20190722.jar:../bin model/{}'.format(comsol_path,
+                      '-cp .:$(echo {}/plugins/*.jar | tr \' \' \':\'):../lib/json-20190722.jar:../bin model.{}'.format(comsol_path,
                                                                                                                  comsol_path,
                                                                                                                  core_name))
             os.chdir('..')

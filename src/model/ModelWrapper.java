@@ -360,6 +360,8 @@ public class ModelWrapper {
             mw.addPartInstances(cuff);
         }
 
+        model.component("comp1").geom("geom1").run("fin");
+
         try {
             model.save("parts_test");
         } catch (IOException e) {
