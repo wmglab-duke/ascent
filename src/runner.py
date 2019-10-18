@@ -165,14 +165,11 @@ cd ..
 
         else: # assume to be 'win64'
 
-            # TODO: WINDOWS IMPLEMENTATION OF ABOVE CODE
             # TODO: RUN ./comsol server IN SEPARATE SHELL
             subprocess.Popen(['{}\\bin\\win64\\comsolmphserver.exe'.format(comsol_path)], close_fds=True)
             os.chdir('src')
-
             os.system('""{}\\javac" -cp "..\\lib\\json-20190722.jar";"{}\\plugins\\*" model\\*.java -d ..\\bin"'.format(jdk_path,
                                                                                                              comsol_path))
-
             os.system('""{}\\java\\win64\\jre\\bin\\java" -cp "{}\\plugins\\*";"..\\lib\\json-20190722.jar";"..\\bin" model.{}"'.format(comsol_path,
                                                                                                                                         comsol_path,
                                                                                                                                         core_name))

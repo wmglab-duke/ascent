@@ -334,13 +334,19 @@ public class ModelWrapper {
         model.component("comp1").mesh().create("mesh1");
 
 //        ModelWrapper mw = new ModelWrapper(null, "/Users/jakecariello/Box/Documents/Pipeline/access");
-        ModelWrapper mw = new ModelWrapper(model, "/Users/ericmusselman/Documents/access");
+//        ModelWrapper mw = new ModelWrapper(model, "/Users/ericmusselman/Documents/access");
+        String currentDir = System.getProperty("user.dir");
+        System.out.println(currentDir);
+        ModelWrapper mw = new ModelWrapper(model, "D:\\Documents\\access");
 
-        String configFile = "/.config/master.json";
+//        String configFile = "/.config/master.json";
+        String configFile = "\\.config\\master.json";
 
         JSONObject configData = null;
         try {
-            configData = new JSONReader("/Users/ericmusselman/Documents/access" + configFile).getData();
+            //configData = new JSONReader("/Users/ericmusselman/Documents/access" + configFile).getData();
+            System.out.println("D:\\Documents\\access" + configFile);
+            configData = new JSONReader("D:\\Documents\\access" + configFile).getData();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
