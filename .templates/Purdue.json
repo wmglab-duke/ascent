@@ -1,48 +1,50 @@
 {
-  "parts": ["TubeCuff_Primitive", "WireContact_Primitive"],
-  "instance1": {
-    "type": "TubeCuff_Primitive",
-    "label": "Purdue Cuff",
-    "def": {
-      "N_holes": "N_holes_P",
-      "Theta": "Theta_P",
-      "Center": "Center_P",
-      "R_in": "R_in_P",
-      "R_out": "R_out_P",
-      "L": "L_P",
-      "Rot_def": "Rot_def_P",
-      "D_hole": "D_hole_P",
-      "Buffer_hole": "Buffer_hole_P",
-      "L_holecenter_cuffseam": "L_holecenter_cuffseam_P",
-      "Pitch_holecenter_holecenter": "Pitch_holecenter_holecenter_P"
+  "instances": [
+    {
+      "type": "TubeCuff_Primitive",
+      "label": "Purdue Cuff",
+      "material": "silicone",
+      "def": {
+        "N_holes": "N_holes_P",
+        "Theta": "Theta_P",
+        "Center": "Center_P",
+        "R_in": "R_in_P",
+        "R_out": "R_out_P",
+        "L": "L_P",
+        "Rot_def": "Rot_def_P",
+        "D_hole": "D_hole_P",
+        "Buffer_hole": "Buffer_hole_P",
+        "L_holecenter_cuffseam": "L_holecenter_cuffseam_P",
+        "Pitch_holecenter_holecenter": "Pitch_holecenter_holecenter_P",
+      }
+    },
+    {
+      "type": "WireContact_Primitive",
+      "label": "Purdue Contact 1",
+      "material": "platinum",
+      "def": {
+        "R_conductor": "r_conductor_P",
+        "R_in": "R_in_P",
+        "Center": "Center_P-(Pitch_P/2)",
+        "Pitch": "Pitch_P",
+        "Sep_conductor": "sep_conductor_P",
+        "Theta_conductor": "theta_conductor_P"
+      }
+    },
+    {
+      "type": "WireContact_Primitive",
+      "label": "Purdue Contact 2",
+      "material": "platinum",
+      "def": {
+        "R_conductor": "r_conductor_P",
+        "R_in": "R_in_P",
+        "Center": "Center_P+(Pitch_P/2)",
+        "Pitch": "Pitch_P",
+        "Sep_conductor": "sep_conductor_P",
+        "Theta_conductor": "theta_conductor_P"
+      }
     }
-  },
-
-  "instance2": {
-    "type": "WireContact_Primitive",
-    "label": "Purdue Contact 1",
-    "def": {
-      "R_conductor": "r_conductor_P",
-      "R_in": "R_in_P",
-      "Center": "Center_P-(Pitch_P/2)",
-      "Pitch": "Pitch_P",
-      "Sep_conductor": "sep_conductor_P",
-      "Theta_conductor": "theta_conductor_P"
-    }
-  },
-
-  "instance3": {
-    "type": "WireContact_Primitive",
-    "label": "Purdue Contact 2",
-    "def": {
-      "R_conductor": "r_conductor_P",
-      "R_in": "R_in_P",
-      "Center": "Center_P+(Pitch_P/2)",
-      "Pitch": "Pitch_P",
-      "Sep_conductor": "sep_conductor_P",
-      "Theta_conductor": "theta_conductor_P"
-    }
-  },
+  ],
 
   "params": [
     {

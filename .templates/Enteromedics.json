@@ -3,6 +3,7 @@
     {
       "type": "TubeCuff_Primitive",
       "label": "Enteromedics Cuff",
+      "material": "silicone",
       "def": {
         "N_holes": "N_holes_EM",
         "Theta": "Theta_EM",
@@ -20,6 +21,7 @@
     {
       "type": "RibbonContact_Primitive",
       "label": "Enteromedics Contact 1",
+      "material": "platinum",
       "def": {
         "Thk_elec": "Thk_elec_EM",
         "L_elec": "L_elec_EM",

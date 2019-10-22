@@ -10,14 +10,7 @@ import java.util.HashMap;
 
 class Part {
 
-    public static class Labels {
-        static String s = "hello";
-        static String t = "goodbye";
-    }
-
-    public static String s = "hello";
-
-    private static void examples(ModelWrapper2 mw) {
+    private static void examples(ModelWrapper mw) {
 
         Model model = mw.getModel();
 
@@ -53,7 +46,7 @@ class Part {
     }
 
 
-    public static IdentifierManager createPartPrimitive(String id, String pseudonym, ModelWrapper2 mw) throws IllegalArgumentException {
+    public static IdentifierManager createPartPrimitive(String id, String pseudonym, ModelWrapper mw) throws IllegalArgumentException {
         return Part.createPartPrimitive(id, pseudonym, mw, null);
     }
 
@@ -66,7 +59,7 @@ class Part {
      * @param data
      * @return
      */
-    public static IdentifierManager createPartPrimitive(String id, String pseudonym, ModelWrapper2 mw,
+    public static IdentifierManager createPartPrimitive(String id, String pseudonym, ModelWrapper mw,
                                               HashMap<String, Object> data) throws IllegalArgumentException {
         Model model = mw.getModel();
 
@@ -302,14 +295,15 @@ class Part {
                 mp.set("Theta_contact", "100 [deg]");
                 mp.set("Rot_def", "0 [deg]");
 
-                String[] cselRiCLabels = {
+                im.labels = new String[]{
                         "CONTACT CROSS SECTION",
                         "RECESS CROSS SECTION",
                         "SRC",
                         "CONTACT FINAL",
                         "RECESS FINAL"
                 };
-                for (String cselRiCLabel: cselRiCLabels) {
+
+                for (String cselRiCLabel: im.labels) {
                     model.geom(id).selection().create(im.next("csel", cselRiCLabel), "CumulativeSelection")
                             .label(cselRiCLabel);
                 }
@@ -389,12 +383,13 @@ class Part {
                 model.geom(id).inputParam().set("Sep_conductor", "sep_conductor_P");
                 model.geom(id).inputParam().set("Theta_conductor", "theta_conductor_P");
 
-                String[] cselWCLabels = {
+                im.labels = new String[]{
                         "CONTACT CROSS SECTION",
                         "CONTACT FINAL",
                         "SRC"
                 };
-                for (String cselWCLabel: cselWCLabels) {
+
+                for (String cselWCLabel: im.labels) {
                     model.geom(id).selection().create(im.next("csel", cselWCLabel), "CumulativeSelection")
                             .label(cselWCLabel);
                 }
@@ -440,7 +435,7 @@ class Part {
                 model.geom(id).inputParam().set("Diam_contact", "diam_contact_ITC");
                 model.geom(id).inputParam().set("L", "L_IT");
 
-                String[] cselCCLabels = {
+                im.labels = new String[]{
                         "CONTACT CUTTER IN",
                         "PRE CUT CONTACT",
                         "RECESS FINAL",
@@ -456,7 +451,8 @@ class Part {
                         "RECESS CUTTER OUT",
                         "BASE PLANE (PRE ROTATION)"
                 };
-                for (String cselCCLabel: cselCCLabels) {
+
+                for (String cselCCLabel: im.labels) {
                     model.geom(id).selection().create(im.next("csel", cselCCLabel), "CumulativeSelection")
                             .label(cselCCLabel);
                 }
@@ -467,6 +463,7 @@ class Part {
                 baseplane_prerot.set("contributeto", im.get("BASE PLANE (PRE ROTATION)"));
                 baseplane_prerot.set("quickplane", "yz");
                 baseplane_prerot.set("unite", true);
+                baseplane_prerot.set("showworkplane", false);
 
                 String ifrecessCCLabel = "If Recess";
                 GeomFeature ifrecessCC = model.geom(id).create(im.next("if",ifrecessCCLabel), "If");
@@ -534,6 +531,8 @@ class Part {
                 rco.set("pos", new String[]{"0", "0", "Center-L/2"});
                 rco.set("r", "R_in+Recess");
                 rco.set("h", "L");
+                rco.set("selresult", false);
+                rco.set("selresultshow", false);
 
                 String erciLabel = "Execute Recess Cut In";
                 GeomFeature erci = model.geom(id).create(im.next("dif",erciLabel), "Difference");
@@ -559,6 +558,8 @@ class Part {
                 so.set("posz", "Center");
                 so.set("r", 1);
                 so.set("contributeto", im.get("RECESS OVERSHOOT"));
+                so.set("selkeep", false);
+
 
                 String droLabel = "Delete Recess Overshoot";
                 GeomFeature dro = model.geom(id).create(im.next("del",droLabel), "Delete");
@@ -655,6 +656,7 @@ class Part {
                 so1.set("posz", "Center");
                 so1.set("r", 1);
                 so1.set("contributeto", im.get("RECESS OVERSHOOT"));
+                so1.set("selkeep", false);
 
                 String dro1Label = "Delete Recess Overshoot 1";
                 GeomFeature dro1 = model.geom(id).create(im.next("del",dro1Label), "Delete");
@@ -673,7 +675,7 @@ class Part {
             case "HelicalCuffnContact_Primitive":
                 model.geom(id).inputParam().set("Center", "Center_LN");
 
-                String[] cselHCCLabels = {
+                im.labels = new String[]{
                         "PC1",
                         "Cuffp1",
                         "SEL END P1",
@@ -685,7 +687,8 @@ class Part {
                         "Cuffp3",
                         "PC3"
                 };
-                for (String cselHCCLabel: cselHCCLabels) {
+
+                for (String cselHCCLabel: im.labels) {
                     model.geom(id).selection().create(im.next("csel", cselHCCLabel), "CumulativeSelection")
                             .label(cselHCCLabel);
                 }
@@ -808,6 +811,7 @@ class Part {
                 mcp2c.set("keep", false);
                 mcp2c.set("includefinal", false);
                 mcp2c.set("twistcomp", false);
+                mcp2c.set("selresult", true);
                 mcp2c.selection("face").named(im.get(hccsp2Label) + "_" + im.get(hccxp2Label));
                 mcp2c.selection("edge").named(im.get("PC2"));
                 mcp2c.selection("diredge").set(im.get(pcp2Label) + "(1)", 1);
@@ -870,7 +874,7 @@ class Part {
                 model.geom(id).inputParam().set("z_center", "0 [mm]");
                 model.geom(id).inputParam().set("rotation_angle", "0 [deg]");
 
-                String[] cselReCLabels = {
+                im.labels = new String[]{
                         "OUTER CONTACT CUTTER",
                         "SEL INNER EXCESS CONTACT",
                         "INNER CONTACT CUTTER",
@@ -895,7 +899,8 @@ class Part {
                         "FINAL",
                         "INNER CUTTER"
                 };
-                for (String cselReCLabel: cselReCLabels) {
+
+                for (String cselReCLabel: im.labels) {
                     model.geom(id).selection().create(im.next("csel", cselReCLabel), "CumulativeSelection")
                             .label(cselReCLabel);
                 }
@@ -1146,23 +1151,34 @@ class Part {
                 srcs.label(srcsLabel);
                 srcs.set("contributeto", im.get("SRC"));
                 srcs.set("p", new String[]{"(r_cuff_in_Pitt+recess_Pitt+(thk_contact_Pitt/2))*cos(rotation_angle)", "(r_cuff_in_Pitt+recess_Pitt+(thk_contact_Pitt/2))*sin(rotation_angle)", "z_center"});
+
                 model.geom(id).run();
                 break;
             default:
                 throw new  IllegalArgumentException("No implementation for part primitive name: " + pseudonym);
         }
 
-        // TODO: I think we will want to move this elsewhere... also try/catch so if breaks you can see in GUI what is was doing
-        try {
-            model.save("parts_test");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         // if im was not edited for some reason, return null
         if (im.count() == 0) return null;
         return im;
     }
 
+    //
+    public static boolean defineMaterial(String materialID, String materialName, JSONObject master, ModelWrapper mw) {
+        Model model = mw.getModel();
+        model.material().create(materialID, "Common", "");
+        model.material(materialID).label(materialName);
+
+        JSONObject sigma = master.getJSONObject("conductivities");
+        String entry = sigma.getJSONObject(materialName).getString("value");
+        model.material(materialID).propertyGroup("def").set("electricconductivity", new String[]{entry});
+        return true;
+    }
+
+//    public static boolean assignMaterials() {
+//g
+//    }
+    //
     /**
      *
      * @param instanceLabel
@@ -1170,13 +1186,14 @@ class Part {
      * @param mw
      * @return
      */
-    public static boolean createPartInstance(String instanceID, String instanceLabel, String pseudonym, ModelWrapper2 mw, JSONObject instanceParams) throws IllegalArgumentException {
+    public static boolean createPartInstance(String instanceID, String instanceLabel, String pseudonym, ModelWrapper mw, JSONObject instanceParams) throws IllegalArgumentException {
 
         Model model = mw.getModel();
 
-        model.component("comp1").geom("geom1").create(instanceID, "PartInstance");
-        model.component("comp1").geom("geom1").feature(instanceID).label(instanceLabel);
-        model.component("comp1").geom("geom1").feature(instanceID).set("part", mw.im.get(pseudonym));
+        GeomFeature partInstance = model.component("comp1").geom("geom1").create(instanceID, "PartInstance");
+        partInstance.label(instanceLabel);
+        partInstance.set("part", mw.im.get(pseudonym));
+
         Object item = instanceParams.get("def");
         JSONObject itemObject = (JSONObject) item;
 
@@ -1188,117 +1205,164 @@ class Part {
         // set instantiation parameters and import selections
         switch (pseudonym) {
             case "TubeCuff_Primitive":
+
                 // set instantiation parameters
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "N_holes", (String) itemObject.get("N_holes"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Theta", (String) itemObject.get("Theta"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Center", (String) itemObject.get("Center"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "R_in", (String) itemObject.get("R_in"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "R_out", (String) itemObject.get("R_out"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "L", (String) itemObject.get("L"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Rot_def", (String) itemObject.get("Rot_def"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "D_hole", (String) itemObject.get("D_hole"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Buffer_hole", (String) itemObject.get("Buffer_hole"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "L_holecenter_cuffseam", (String) itemObject.get("L_holecenter_cuffseam"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Pitch_holecenter_holecenter", (String) itemObject.get("Pitch_holecenter_holecenter"));
+                String[] tubeCuffParameters = {
+                        "N_holes",
+                        "Theta",
+                        "Center",
+                        "R_in",
+                        "R_out",
+                        "L",
+                        "Rot_def",
+                        "D_hole",
+                        "Buffer_hole",
+                        "L_holecenter_cuffseam",
+                        "Pitch_holecenter_holecenter"
+                };
+
+                for (String param: tubeCuffParameters) {
+                    partInstance.setEntry("inputexpr", (String) param, (String) itemObject.get(param));
+                }
 
                 // imports
+                partInstance.set("selkeepnoncontr", false);
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[2]) + ".dom", "on"); // CUFF FINAL
 
-//                model.component("comp1").geom("geom1").feature("pi4").setEntry("selkeepdom", "pi4_csel3.dom", "on");
+                // define materials
 
-//                model.component("comp1").geom("geom1").feature("pi3").setEntry("selkeepdom", "pi3_csel3.dom", "on");
-
-//                model.component("comp1").geom("geom1").feature("pi8").setEntry("selkeepdom", "pi8_csel3.dom", "on");
                 break;
             case "RibbonContact_Primitive":
+
                 // set instantiation parameters
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Thk_elec", (String) itemObject.get("Thk_elec"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "L_elec", (String) itemObject.get("L_elec"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "R_in", (String) itemObject.get("R_in"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Recess", (String) itemObject.get("Recess"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Center", (String) itemObject.get("Center"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Theta_contact", (String) itemObject.get("Theta_contact"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Rot_def", (String) itemObject.get("Rot_def"));
+                String[] ribbonContactParameters = {
+                        "Thk_elec",
+                        "L_elec",
+                        "R_in",
+                        "Recess",
+                        "Center",
+                        "Theta_contact",
+                        "Rot_def"
+                };
+
+                for (String param: ribbonContactParameters) {
+                    partInstance.setEntry("inputexpr", (String) param, (String) itemObject.get(param));
+                }
 
                 // imports
+                partInstance.set("selkeepnoncontr", false);
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[2]) + ".pnt", "on"); // SRC
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[3]) + ".dom", "on"); // CONTACT FINAL
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[4]) + ".dom", "on"); // RECESS FINAL
 
-//                model.component("comp1").geom("geom1").feature("pi9").setEntry("selkeepdom", "pi9_csel4.dom", "on");
-//                model.component("comp1").geom("geom1").feature("pi9").setEntry("selkeeppnt", "pi9_csel3.pnt", "on");
-
-//                model.component("comp1").geom("geom1").feature("pi10").setEntry("selkeepdom", "pi10_csel4.dom", "on");
-//                model.component("comp1").geom("geom1").feature("pi10").setEntry("selkeeppnt", "pi10_csel3.pnt", "on");
-
-//                model.component("comp1").geom("geom1").feature("pi11").setEntry("selkeepdom", "pi11_csel4.dom", "on");
-//                model.component("comp1").geom("geom1").feature("pi11").setEntry("selkeeppnt", "pi11_csel3.pnt", "on");
-
-//                model.component("comp1").geom("geom1").feature("pi12").setEntry("selkeepdom", "pi12_csel4.dom", "on");
-//                model.component("comp1").geom("geom1").feature("pi12").setEntry("selkeeppnt", "pi12_csel3.pnt", "on");
                 break;
 
             case "WireContact_Primitive":
+
                 // set instantiation parameters
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "R_conductor", (String) itemObject.get("R_conductor"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "R_in", (String) itemObject.get("R_in"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Center", (String) itemObject.get("Center"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Pitch", (String) itemObject.get("Pitch"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Sep_conductor", (String) itemObject.get("Sep_conductor"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Theta_conductor", (String) itemObject.get("Theta_conductor"));
+                String[] wireContactParameters = {
+                        "R_conductor",
+                        "R_in",
+                        "Center",
+                        "Pitch",
+                        "Sep_conductor",
+                        "Theta_conductor"
+                };
+
+                for (String param: wireContactParameters) {
+                    partInstance.setEntry("inputexpr", (String) param, (String) itemObject.get(param));
+                }
 
                 // imports
-//                model.component("comp1").geom("geom1").feature("pi13").setEntry("selkeepdom", "pi13_csel2.dom", "on");
-//                model.component("comp1").geom("geom1").feature("pi13").setEntry("selkeeppnt", "pi13_csel3.pnt", "on");
-//
-//                model.component("comp1").geom("geom1").feature("pi14").setEntry("selkeepdom", "pi14_csel2.dom", "on");
-//                model.component("comp1").geom("geom1").feature("pi14").setEntry("selkeeppnt", "pi14_csel3.pnt", "on");
+                partInstance.set("selkeepnoncontr", false);
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[1]) + ".dom", "on"); // CONTACT FINAL
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[2]) + ".pnt", "on"); // SRC
 
                 break;
             case "CircleContact_Primitive":
+
                 // set instantiation parameters
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Recess", (String) itemObject.get("Recess"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Rotation_angle", (String) itemObject.get("Rotation_angle"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Center", (String) itemObject.get("Center"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Round_def", (String) itemObject.get("Round_def"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "R_in", (String) itemObject.get("R_in"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Contact_depth", (String) itemObject.get("Contact_depth"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Overshoot", (String) itemObject.get("Overshoot"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "A_ellipse_contact", (String) itemObject.get("A_ellipse_contact"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Diam_contact", (String) itemObject.get("Diam_contact"));
-                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "L", (String) itemObject.get("L"));
+                String[] circleContactParameters = {
+                        "Recess",
+                        "Rotation_angle",
+                        "Center",
+                        "Round_def",
+                        "R_in",
+                        "Contact_depth",
+                        "Overshoot",
+                        "A_ellipse_contact",
+                        "Diam_contact",
+                        "L"
+                };
+
+                for (String param: circleContactParameters) {
+                    partInstance.setEntry("inputexpr", (String) param, (String) itemObject.get(param));
+                }
 
                 // imports
+                partInstance.set("selkeepnoncontr", false);
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[2]) + ".dom", "on"); // RECESS FINAL
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[6]) + ".dom", "on"); // CONTACT FINAL
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[12]) + ".dom", "off"); // RECESS CUTTER OUT
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[13]) + ".dom", "off"); // BASE PLANE (PRE ROTATION)
 
-//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepobj", "pi15_csel12", "off");
-//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepobj", "pi15_csel13", "off");
-//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepobj", "pi15_csel14", "off");
-//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepdom", "pi15_ballsel1", "off");
-//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepdom", "pi15_ballsel2", "off");
-//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepdom", "pi15_csel7.dom", "on");
-//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepdom", "pi15_csel12.dom", "off");
-//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepdom", "pi15_csel14.dom", "off");
-//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepbnd", "pi15_csel12.bnd", "off");
-//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepbnd", "pi15_csel13.bnd", "off");
-//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepbnd", "pi15_csel14.bnd", "off");
-//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepedg", "pi15_csel12.edg", "off");
-//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepedg", "pi15_csel13.edg", "off");
-//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepedg", "pi15_csel14.edg", "off");
-//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeeppnt", "pi15_csel12.pnt", "off");
-//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeeppnt", "pi15_csel13.pnt", "off");
+                partInstance.setEntry("selkeepobj", instanceID + "_" +  myIM.get(myLabels[4]), "off"); // SRC
+                partInstance.setEntry("selkeepobj", instanceID + "_" +  myIM.get(myLabels[6]), "off"); // CONTACT FINAL
+                partInstance.setEntry("selkeepobj", instanceID + "_" +  myIM.get(myLabels[7]), "off"); // CONTACT CUTTER OUT
 
+                partInstance.setEntry("selkeepbnd", instanceID + "_" +  myIM.get(myLabels[4]) + ".bnd", "off"); // SRC
+                partInstance.setEntry("selkeepbnd", instanceID + "_" +  myIM.get(myLabels[6]) + ".bnd", "off"); // CONTACT FINAL
+                partInstance.setEntry("selkeepbnd", instanceID + "_" +  myIM.get(myLabels[8]) + ".bnd", "off"); // CONTACT CUTTER OUT
 
+                partInstance.setEntry("selkeepedg", instanceID + "_" +  myIM.get(myLabels[4]) + ".edg", "off"); // SRC
+                partInstance.setEntry("selkeepedg", instanceID + "_" +  myIM.get(myLabels[6]) + ".edg", "off"); // CONTACT FINAL
+                partInstance.setEntry("selkeepedg", instanceID + "_" +  myIM.get(myLabels[8]) + ".edg", "off"); // CONTACT CUTTER OUT
+
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[6]) + ".pnt", "off"); // CONTACT FINAL
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[8]) + ".pnt", "off"); // CONTACT CUTTER OUT
                 break;
             case "HelicalCuffnContact_Primitive":
+
                 // set instantiation parameters
+                String[] helicalCuffnContactParameters = {
+                        "Center"
+                };
+
+                for (String param: helicalCuffnContactParameters) {
+                    partInstance.setEntry("inputexpr", (String) param, (String) itemObject.get(param));
+                }
+
                 model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Center", (String) itemObject.get("Center"));
 
                 // imports
-//                model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeepdom", "pi21_csel2.dom", "on");
-//                model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeepdom", "pi21_csel5.dom", "on");
-//                model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeepdom", "pi21_csel6.dom", "on");
-//                model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeepdom", "pi21_csel8.dom", "on");
-//                model.component("comp1").geom("geom1").feature("pi21").setEntry("selkeeppnt", "pi21_csel10.pnt", "on");
+                partInstance.set("selkeepnoncontr", false);
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[1]) + ".dom", "on"); // Cuffp1
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[4]) + ".pnt", "on"); // SRC
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[5]) + ".dom", "on"); // Cuffp2
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[6]) + ".dom", "on"); // Conductorp2
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[8]) + ".dom", "on"); // Cuffp3
 
                 break;
             case "RectangleContact_Primitive":
-                // set instantiation parameters
+
+              // set instantiation parameters
+//                String[] rectangleContactParameters = {
+//                        "Recess",
+//                        "Rotation_angle",
+//                        "Center",
+//                        "Round_def",
+//                        "R_in",
+//                        "Contact_depth",
+//                        "Overshoot",
+//                        "A_ellipse_contact",
+//                        "Diam_contact",
+//                        "L"
+//                };
+//
+//                for (String param: rectangleContactParameters) {
+//                    partInstance.setEntry("inputexpr", (String) param, (String) itemObject.get(param));
+//                }
+
                 // TODO
 //                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "R_conductor", (String) itemObject.get("R_conductor"));
 //                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "R_in", (String) itemObject.get("R_in"));
