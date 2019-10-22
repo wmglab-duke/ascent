@@ -113,23 +113,16 @@ class Runner(Exceptionable, Configurable):
         self.fiber_manager.fiber_z_coordinates(self.fiber_manager.xy_coordinates, save=True)
 
     def handoff(self):
-
-        """
-        TODO: implement shell commands below
-cd src
-/Library/Java/JavaVirtualMachines/jdk1.8.0_221.jdk/Contents/Home/bin/javac -classpath /Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar:/Applications/COMSOL54/Multiphysics/plugins/* model/*.java
-/Applications/COMSOL54/Multiphysics/java/maci64/jre/Contents/Home/bin/java -cp .:$(echo /Applications/COMSOL54/Multiphysics/plugins/*.jar | tr ' ' ':'):/Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar model/FEMBuilder
-cd ..
-
-        """
-
         comsol_path = self.load(os.path.join('.config', 'system.json')).get('comsol_path')
         jdk_path = self.load(os.path.join('.config', 'system.json')).get('jdk_path')
-        core_name = 'ModelWrapper'
 
-        # file_name_no_ext = os.path.join('src', 'core', 'FEMBuilder')
-        # run commands by system type
-        # cwd = os.getcwd()
+        project_path = self.load(os.path.join('.config', 'system.json')).get('project_path')
+        # TODO: @jake add value "project_path" to your system.json with the string below!
+        #       @eric you too when you get your laptop back
+        # "/Users/ericmusselman/Documents/access"
+        # "/Users/jakecariello/Box/Documents/Pipeline/access"
+
+        core_name = 'ModelWrapper'
 
         if sys.platform.startswith('darwin') or sys.platform.startswith('linux'):  # macOS and linux
 
@@ -138,30 +131,14 @@ cd ..
             subprocess.Popen(['{}/bin/comsol'.format(comsol_path), 'server'], close_fds=True)
             os.chdir('src')
             os.system('{}/javac -classpath ../lib/json-20190722.jar:{}/plugins/* model/*.java -d ../bin'.format(jdk_path,
-                                                                                                      comsol_path))
+                                                                                                                comsol_path))
             # https://stackoverflow.com/questions/219585/including-all-the-jars-in-a-directory-within-the-java-classpath
             os.system('{}/java/maci64/jre/Contents/Home/bin/java '
-                      '-cp .:$(echo {}/plugins/*.jar | tr \' \' \':\'):../lib/json-20190722.jar:../bin model.{}'.format(comsol_path,
-                                                                                                                 comsol_path,
-                                                                                                                 core_name))
+                      '-cp .:$(echo {}/plugins/*.jar | tr \' \' \':\'):../lib/json-20190722.jar:../bin model.{} {}'.format(comsol_path,
+                                                                                                                           comsol_path,
+                                                                                                                           core_name,
+                                                                                                                           project_path))
             os.chdir('..')
-
-            # manifest = 'com/comsol/accessutils/MANIFEST.MF'
-            #
-            # os.chdir('src')
-            # os.system('javac com/comsol/accessutils/*.java -classpath ../lib/json-20190722.jar -source 1.8 -target 1.8')
-            # os.system('jar -cvfm {}/plugins/com.comsol.accessutils_1.0.0.jar {} '
-            #           'com/comsol/accessutils/*.class'.format(comsol_path, manifest))
-            # os.chdir('..')
-            #
-            # subprocess.call('{}/bin/comsol compile {}/{}.java '
-            #           '-classpathadd {}/plugins/com.comsol.accessutils_1.0.0.jar:'
-            #           '{}/lib/json-20190722.jar'.format(comsol_path, cwd, file_name_no_ext, comsol_path, cwd),shell=True)
-            #
-            # subprocess.call('{}/bin/comsol batch -inputfile {}/{}.class '
-            #           '-dev {}/plugins/com.comsol.accessutils_1.0.0.jar,'
-            #           '{}/lib/json-20190722.jar '
-            #           '-plist 10.0'.format(comsol_path, cwd, file_name_no_ext, comsol_path, cwd),shell=True)
 
         else: # assume to be 'win64'
 
@@ -169,27 +146,12 @@ cd ..
             subprocess.Popen(['{}\\bin\\win64\\comsolmphserver.exe'.format(comsol_path)], close_fds=True)
             os.chdir('src')
             os.system('""{}\\javac" -cp "..\\lib\\json-20190722.jar";"{}\\plugins\\*" model\\*.java -d ..\\bin"'.format(jdk_path,
-                                                                                                             comsol_path))
-            os.system('""{}\\java\\win64\\jre\\bin\\java" -cp "{}\\plugins\\*";"..\\lib\\json-20190722.jar";"..\\bin" model.{}"'.format(comsol_path,
-                                                                                                                                        comsol_path,
-                                                                                                                                        core_name))
+                                                                                                                        comsol_path))
+            os.system('""{}\\java\\win64\\jre\\bin\\java" -cp "{}\\plugins\\*";"..\\lib\\json-20190722.jar";"..\\bin" model.{} {}"'.format(comsol_path,
+                                                                                                                                           comsol_path,
+                                                                                                                                           core_name,
+                                                                                                                                           project_path))
             os.chdir('..')
-
-            # manifest = 'com\\comsol\\accessutils\\MANIFEST.MF'
-            #
-            # os.chdir('src')
-            # os.system('javac com\\comsol\\accessutils\\*.java -classpath ..\\lib\\json-20190722.jar -source 1.8 -target 1.8')
-            # os.system('jar -cvfm "{}\\plugins\\com.comsol.accessutils_1.0.0.jar" {} '
-            #           'com\\comsol\\accessutils\\*.class'.format(comsol_path, manifest))
-            # os.chdir('..')
-            #
-            # subprocess.call('"{}\\bin\\win64\\comsolcompile" "{}\\{}.java" '
-            #                 '-classpathadd "{}\\plugins\\com.comsol.accessutils_1.0.0.jar;'
-            #                 '{}\\lib\\json-20190722.jar"'.format(comsol_path, cwd, file_name_no_ext, comsol_path, cwd),shell=True)
-            #
-            # subprocess.call('"{}\\bin\\win64\\comsolbatch" -inputfile "{}\\{}.class" '
-            #                 '-dev "{}\\plugins\\com.comsol.accessutils_1.0.0.jar,'
-            #                 '{}\\lib\\json-20190722.jar"'.format(comsol_path, cwd, file_name_no_ext, comsol_path, cwd),shell=True)
 
     def save_all(self):
 

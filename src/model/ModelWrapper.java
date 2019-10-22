@@ -19,8 +19,6 @@ import java.util.stream.Stream;
 /**
  * model.ModelWrapper
  *
- * NOTE: Eventually, call this class ModelWrapper (NOT ModelWrapper).
- *
  * Master high-level class for managing a model, its metadata, and various critical operations such as creating parts
  * and extracting potentials. This class houses the "meaty" operations of actually interacting with the model object
  * when creating parts in the static class model.Parts.
@@ -333,20 +331,17 @@ public class ModelWrapper {
         model.component("comp1").geom().create("geom1", 3);
         model.component("comp1").mesh().create("mesh1");
 
+        String projectPath = args[0];
+
 //        ModelWrapper mw = new ModelWrapper(null, "/Users/jakecariello/Box/Documents/Pipeline/access");
 //        ModelWrapper mw = new ModelWrapper(model, "/Users/ericmusselman/Documents/access");
-        String currentDir = System.getProperty("user.dir");
-        System.out.println(currentDir);
-        ModelWrapper mw = new ModelWrapper(model, "D:\\Documents\\access"); // TODO
+        ModelWrapper mw = new ModelWrapper(model, projectPath);
 
-//        String configFile = "/.config/master.json";
-        String configFile = "\\.config\\master.json"; // TODO
+        String configFile = "/.config/master.json";
 
         JSONObject configData = null;
         try {
-            //configData = new JSONReader("/Users/ericmusselman/Documents/access" + configFile).getData();
-            System.out.println("D:\\Documents\\access" + configFile); // TODO
-            configData = new JSONReader("D:\\Documents\\access" + configFile).getData();
+            configData = new JSONReader(projectPath + configFile).getData();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
