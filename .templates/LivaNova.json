@@ -3,6 +3,7 @@
     {
       "type": "HelicalCuffnContact_Primitive",
       "label": "LivaNova CuffnContact 1",
+      "material": ["silicone","platinum"],
       "def": {
         "Center": "(z_nerve_LN/2)-(sep_elec_LN/2)"
       }
@@ -10,6 +11,7 @@
     {
       "type": "HelicalCuffnContact_Primitive",
       "label": "LivaNova CuffnContact 2",
+      "material": ["silicone","platinum"],
       "def": {
         "Center": "(z_nerve_LN/2)+(sep_elec_LN/2)"
       }

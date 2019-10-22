@@ -3,6 +3,7 @@
     {
       "type": "TubeCuff_Primitive",
       "label": "ImThera Cuff",
+      "material": "silicone",
       "def": {
         "type": "TubeCuff_Primitive",
         "label": "ImThera Cuff",
@@ -22,6 +23,7 @@
     {
       "type": "TubeCuff_Primitive",
       "label": "ImThera Furl",
+      "material": "silicone",
       "def": {
         "N_holes": "N_holes_ITF",
         "Theta": "Theta_ITF",
@@ -39,6 +41,7 @@
     {
       "type": "CircleContact_Primitive",
       "label": "ImThera Contact 1",
+      "material": "platinum",
       "def": {
         "Recess": "Recess_ITC",
         "Rotation_angle": "ang_cuffseam_contactcenter_ITC",
@@ -55,6 +58,7 @@
     {
       "type": "CircleContact_Primitive",
       "label": "ImThera Contact 2",
+      "material": "platinum",
       "def": {
         "Recess": "Recess_ITC",
         "Rotation_angle": "ang_cuffseam_contactcenter_ITC+ang_contactcenter_contactcenter_ITC [deg]",
@@ -71,6 +75,7 @@
     {
       "type": "CircleContact_Primitive",
       "label": "ImThera Contact 3",
+      "material": "platinum",
       "def": {
         "Recess": "Recess_ITC",
         "Rotation_angle": "ang_cuffseam_contactcenter_ITC+2*ang_contactcenter_contactcenter_ITC [deg]",
@@ -87,6 +92,7 @@
     {
       "type": "CircleContact_Primitive",
       "label": "ImThera Contact 4",
+      "material": "platinum",
       "def": {
         "Recess": "Recess_ITC",
         "Rotation_angle": "ang_cuffseam_contactcenter_ITC+3*ang_contactcenter_contactcenter_ITC [deg]",
@@ -103,6 +109,7 @@
     {
       "type": "CircleContact_Primitive",
       "label": "ImThera Contact 5",
+      "material": "platinum",
       "def": {
         "Recess": "Recess_ITC",
         "Rotation_angle": "ang_cuffseam_contactcenter_ITC+4*ang_contactcenter_contactcenter_ITC [deg]",
@@ -119,6 +126,7 @@
     {
       "type": "CircleContact_Primitive",
       "label": "ImThera Contact 6",
+      "material": "platinum",
       "def": {
         "Recess": "Recess_ITC",
         "Rotation_angle": "ang_cuffseam_contactcenter_ITC+5*ang_contactcenter_contactcenter_ITC [deg]",

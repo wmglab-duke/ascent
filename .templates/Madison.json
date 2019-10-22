@@ -3,6 +3,7 @@
     {
       "type": "TubeCuff_Primitive",
       "label": "Madison Cuff",
+      "material": "silicone",
       "def": {
         "N_holes": "N_holes_M",
         "Theta": "Theta_M",
@@ -20,6 +21,7 @@
     {
       "type": "RibbonContact_Primitive",
       "label": "Madison Contact 1",
+      "material": ["platinum"],
       "def": {
         "Thk_elec": "Thk_elec_M",
         "L_elec": "L_elec_M",

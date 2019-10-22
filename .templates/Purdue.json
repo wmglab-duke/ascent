@@ -3,6 +3,7 @@
     {
       "type": "TubeCuff_Primitive",
       "label": "Purdue Cuff",
+      "material": "silicone",
       "def": {
         "N_holes": "N_holes_P",
         "Theta": "Theta_P",
@@ -20,6 +21,7 @@
     {
       "type": "WireContact_Primitive",
       "label": "Purdue Contact 1",
+      "material": "platinum",
       "def": {
         "R_conductor": "r_conductor_P",
         "R_in": "R_in_P",
@@ -32,6 +34,7 @@
     {
       "type": "WireContact_Primitive",
       "label": "Purdue Contact 2",
+      "material": "platinum",
       "def": {
         "R_conductor": "r_conductor_P",
         "R_in": "R_in_P",

@@ -3,6 +3,7 @@
     {
       "type": "TubeCuff_Primitive",
       "label": "CorTec Cuff",
+      "material": "silicone",
       "def": {
         "N_holes": "N_holes_CT",
         "Theta": "Theta_CT",
@@ -20,6 +21,7 @@
     {
       "type": "RibbonContact_Primitive",
       "label": "CorTec Contact 1",
+      "material": "platinum",
       "def": {
         "Thk_elec": "Thk_elec_CT",
         "L_elec": "L_elec_CT",
@@ -33,6 +35,7 @@
     {
       "type": "RibbonContact_Primitive",
       "label": "CorTec Contact 2",
+      "material": "platinum",
       "def": {
         "Thk_elec": "Thk_elec_CT",
         "L_elec": "L_elec_CT",

@@ -280,6 +280,11 @@
       "name": "saline",
       "value": "1.76",
       "units": "[S/m]"
+    },
+    {
+      "name": "perineurium_DC",
+      "value": "1149",
+      "units": "[ohm*m]"
     }
   ]
 }
