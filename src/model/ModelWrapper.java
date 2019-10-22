@@ -234,6 +234,7 @@ public class ModelWrapper {
             // loop through all part instances
             for (Object item: (JSONArray) data.get("instances")) {
                 JSONObject itemObject = (JSONObject) item;
+
                 String instanceLabel = (String) itemObject.get("label");
                 String instanceID = this.im.next("pi", instanceLabel);
                 String type = (String) itemObject.get("type");

@@ -1182,7 +1182,8 @@ class Part {
      * @param mw
      * @return
      */
-    public static boolean createPartInstance(String instanceID, String instanceLabel, String pseudonym, ModelWrapper mw, JSONObject instanceParams) throws IllegalArgumentException {
+    public static boolean createPartInstance(String instanceID, String instanceLabel, String pseudonym, ModelWrapper mw,
+                                             JSONObject instanceParams) throws IllegalArgumentException {
 
         Model model = mw.getModel();
 
@@ -1192,6 +1193,9 @@ class Part {
 
         Object item = instanceParams.get("def");
         JSONObject itemObject = (JSONObject) item;
+
+        String instanceMaterial = (String) instanceParams.get("material");
+        String linkLabel = instanceLabel + " is " + instanceMaterial;
 
         IdentifierManager myIM = mw.getPartPrimitiveIM(pseudonym);
         if (myIM == null) throw new IllegalArgumentException("IdentfierManager not created for name: " + pseudonym);
@@ -1226,18 +1230,10 @@ class Part {
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[2]) + ".dom", "on"); // CUFF FINAL
 
                 // assign materials
-                System.out.println();
-                System.out.println();
-
-                String linkLabel = "dummyLabel";
-                String materialName = "silicone";
-
                 model.component("comp1").material().create(mw.im.next("matlnk", linkLabel), "Link");
                 model.component("comp1").material(mw.im.get(linkLabel)).label(linkLabel);
-                model.component("comp1").material(mw.im.get(linkLabel)).set("link", mw.im.get(materialName));
-
-//                model.component("comp1").material("matlnk1").selection().named("geom1_pi1_csel3_dom");
-
+                model.component("comp1").material(mw.im.get(linkLabel)).set("link", mw.im.get(instanceMaterial));
+                model.component("comp1").material(mw.im.get(linkLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[2]) + "_dom");
                 break;
             case "RibbonContact_Primitive":
 
@@ -1284,6 +1280,12 @@ class Part {
                 partInstance.set("selkeepnoncontr", false);
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[1]) + ".dom", "on"); // CONTACT FINAL
                 partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[2]) + ".pnt", "on"); // SRC
+
+                // assign materials
+                model.component("comp1").material().create(mw.im.next("matlnk", linkLabel), "Link");
+                model.component("comp1").material(mw.im.get(linkLabel)).label(linkLabel);
+                model.component("comp1").material(mw.im.get(linkLabel)).set("link", mw.im.get(instanceMaterial));
+                model.component("comp1").material(mw.im.get(linkLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[1]) + "_dom");
 
                 break;
             case "CircleContact_Primitive":
