@@ -1163,6 +1163,22 @@ class Part {
         return im;
     }
 
+    //
+    public static boolean defineMaterial(String materialID, String materialName, JSONObject master, ModelWrapper mw) {
+        Model model = mw.getModel();
+        model.material().create(materialID, "Common", "");
+        model.material(materialID).label(materialName);
+
+        JSONObject sigma = master.getJSONObject("conductivities");
+        String entry = sigma.getJSONObject(materialName).getString("value");
+        model.material(materialID).propertyGroup("def").set("electricconductivity", new String[]{entry});
+        return true;
+    }
+
+//    public static boolean assignMaterials() {
+//g
+//    }
+    //
     /**
      *
      * @param instanceLabel
@@ -1212,6 +1228,8 @@ class Part {
                 // imports
                 partInstance.set("selkeepnoncontr", false);
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[2]) + ".dom", "on"); // CUFF FINAL
+
+                // define materials
 
                 break;
             case "RibbonContact_Primitive":

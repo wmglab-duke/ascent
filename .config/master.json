@@ -240,51 +240,42 @@
   "cuff": {
     "preset": ["Purdue.json"]
   },
-  "materials": [
-    {
-      "name": "silicone",
+  "conductivities": {
+    "silicone": {
       "value": "10^(-12)",
       "units": "[S/m]"
     },
-    {
-      "name": "platinum",
+    "platinum": {
       "value": "9.43*10^6",
       "units": "[S/m]"
     },
-    {
-      "name": "endoneurium",
+    "endoneurium": {
       "value": "[1/6 1/6 1/1.75]",
       "units": "[S/m]"
     },
-    {
-      "name": "epineurium",
+    "epineurium": {
       "value": "1/6.3",
       "units": "[S/m]"
     },
-    {
-      "name": "muscle",
+    "muscle": {
       "value": "[.086 .086 .35]",
       "units": "[S/m]"
     },
-    {
-      "name": "fat",
+    "fat": {
       "value": "1/30",
       "units": "[S/m]"
     },
-    {
-      "name": "encapsulation",
+    "encapsulation": {
       "value": "1/6.3",
       "units": "[S/m]"
     },
-    {
-      "name": "saline",
+    "saline": {
       "value": "1.76",
       "units": "[S/m]"
     },
-    {
-      "name": "perineurium_DC",
+    "perineurium_DC": {
       "value": "1149",
       "units": "[ohm*m]"
     }
-  ]
+  }
 }

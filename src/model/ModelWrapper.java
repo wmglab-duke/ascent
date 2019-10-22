@@ -246,6 +246,42 @@ public class ModelWrapper {
         return true;
     }
 
+    //
+    public boolean addMaterialDefinitions(String name) {
+        // extract data from json
+        try {
+            JSONObject data = new JSONReader(String.join("/",
+                    new String[]{this.root, ".templates", name})).getData();
+
+            JSONObject master = new JSONReader(String.join("/",
+                    new String[]{this.root, ".config", "master.json"})).getData();
+
+            // for each material definition, create it (if not already existing)
+            for (Object item: (JSONArray) data.get("instances")) {
+                JSONObject itemObject = (JSONObject) item;
+                String materialName = (String) itemObject.get("material"); // quick cast to String
+
+                // create the material definition if it has not already been created
+                if (! this.im.hasPseudonym(materialName)) {
+                    // get next available (TOP LEVEL) "material" id
+                    String materialID = this.im.next("mat", materialName);
+                    try {
+                        // TRY to create the material definition (catch error if no existing implementation)
+                        Part.defineMaterial(materialID, materialName, master, this);
+                    } catch (IllegalArgumentException e) {
+                        e.printStackTrace();
+                        return false;
+                    }
+                }
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+    //
+
     public boolean extractPotentials(String json_path) {
 
         // see todos below (unrelated to this method hahahah - HILARIOUS! ROFL!)
@@ -355,6 +391,9 @@ public class ModelWrapper {
 
             // add part instances needed to make the cuff
             mw.addPartInstances(cuff);
+
+            // add material definitions needed to make the cuff
+            mw.addMaterialDefinitions(cuff);
         }
 
         model.component("comp1").geom("geom1").run("fin");
