@@ -32,7 +32,7 @@ class FiberManager(Exceptionable, Configurable, Saveable):
         # empty metadata
         self.fiber_metadata: Dict[str, list] = {}
 
-    def fiber_xy_coordinates(self, plot: bool = False, save: bool = False) -> List[List[List[tuple]]]:
+    def fiber_xy_coordinates(self, plot: bool = False, save: bool = False, buffer: float = 5.0) -> List[List[List[tuple]]]:
         """
         :return: tuple containing two lists of tuples,
                     1) first list of tuples is points [(x, y)]
@@ -80,7 +80,7 @@ class FiberManager(Exceptionable, Configurable, Saveable):
                             if fiber_count < minimum_number:
                                 fiber_count = minimum_number
                             fibers = []
-                            for point in inner.random_points(fiber_count):
+                            for point in inner.random_points(fiber_count, buffer=buffer):
                                 fibers.append(point)
                             inners.append(fibers)
                         fascicles.append(inners)
@@ -103,7 +103,7 @@ class FiberManager(Exceptionable, Configurable, Saveable):
                                 fiber_count = maximum_number
 
                             fibers = []
-                            for point in inner.random_points(fiber_count):
+                            for point in inner.random_points(fiber_count, buffer=buffer):
                                 fibers.append(point)
                             inners.append(fibers)
                         fascicles.append(inners)
@@ -115,7 +115,7 @@ class FiberManager(Exceptionable, Configurable, Saveable):
                     inners = []
                     for inner in fascicle.inners:
                         fibers = []
-                        for point in inner.random_points(count):
+                        for point in inner.random_points(count, buffer=buffer):
                             fibers.append(point)
                         inners.append(fibers)
                     fascicles.append(inners)
@@ -144,25 +144,28 @@ class FiberManager(Exceptionable, Configurable, Saveable):
                         # loop through spoke angles
                         for spoke_angle in (np.linspace(0, 2 * np.pi, spoke_count + 1)[:-1] + angle_offset):
                             # find the mean radius for a reference distance when "casting the spoke ray"
-                            mean_radius = inner.mean_radius()
+                            new_inner = inner.deepcopy()
+                            new_inner.offset(None, -buffer)
+
+                            mean_radius = new_inner.mean_radius()
 
                             # get a point that is assumed to be outside the trace
-                            raw_outer_point = np.array(inner.centroid()) + [5 * mean_radius * np.cos(spoke_angle),
+                            raw_outer_point = np.array(new_inner.centroid()) + [5 * mean_radius * np.cos(spoke_angle),
                                                                             5 * mean_radius * np.sin(spoke_angle)]
 
                             # build a vector starting from the centroid of the trace
-                            raw_spoke_vector = LineString([inner.centroid(),
+                            raw_spoke_vector = LineString([new_inner.centroid(),
                                                            tuple(raw_outer_point)])
 
                             # get that vector's intersection with the trace to find "trimmed" endpoint
-                            intersection_with_boundary = raw_spoke_vector.intersection(inner.polygon().boundary)
+                            intersection_with_boundary = raw_spoke_vector.intersection(new_inner.polygon().boundary)
 
                             # fix type of intersection with boundary
                             if not isinstance(intersection_with_boundary, Point):
                                 intersection_with_boundary = list(intersection_with_boundary)[0]
 
                             # build trimmed vector
-                            trimmed_spoke_vector = LineString([inner.centroid(),
+                            trimmed_spoke_vector = LineString([new_inner.centroid(),
                                                               tuple(intersection_with_boundary.coords)[0]])
 
                             # get scale vectors whose endpoints will be the desired points ([1:] to not include 0)
