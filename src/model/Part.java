@@ -1327,9 +1327,18 @@ class Part {
                 break;
             case "RectangleContact_Primitive":
 
-                // set instantiation parameters
+              // set instantiation parameters
 //                String[] rectangleContactParameters = {
-//                        "Center"
+//                        "Recess",
+//                        "Rotation_angle",
+//                        "Center",
+//                        "Round_def",
+//                        "R_in",
+//                        "Contact_depth",
+//                        "Overshoot",
+//                        "A_ellipse_contact",
+//                        "Diam_contact",
+//                        "L"
 //                };
 //
 //                for (String param: rectangleContactParameters) {
