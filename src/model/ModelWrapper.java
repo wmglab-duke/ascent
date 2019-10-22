@@ -280,7 +280,6 @@ public class ModelWrapper {
         }
         return true;
     }
-    //
 
     public boolean extractPotentials(String json_path) {
 
@@ -389,17 +388,17 @@ public class ModelWrapper {
             // add part primitives needed to make the cuff
             mw.addPartPrimitives(cuff);
 
-            // add part instances needed to make the cuff
-            mw.addPartInstances(cuff);
-
             // add material definitions needed to make the cuff
             mw.addMaterialDefinitions(cuff);
+
+            // add part instances needed to make the cuff
+            mw.addPartInstances(cuff);
         }
 
         model.component("comp1").geom("geom1").run("fin");
 
         try {
-            model.save("parts_test");
+            model.save("parts_test"); // TODO this dir needs to change
         } catch (IOException e) {
             e.printStackTrace();
         }

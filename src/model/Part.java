@@ -1163,7 +1163,6 @@ class Part {
         return im;
     }
 
-    //
     public static boolean defineMaterial(String materialID, String materialName, JSONObject master, ModelWrapper mw) {
         Model model = mw.getModel();
         model.material().create(materialID, "Common", "");
@@ -1171,14 +1170,11 @@ class Part {
 
         JSONObject sigma = master.getJSONObject("conductivities");
         String entry = sigma.getJSONObject(materialName).getString("value");
+
         model.material(materialID).propertyGroup("def").set("electricconductivity", new String[]{entry});
         return true;
     }
 
-//    public static boolean assignMaterials() {
-//g
-//    }
-    //
     /**
      *
      * @param instanceLabel
@@ -1229,7 +1225,18 @@ class Part {
                 partInstance.set("selkeepnoncontr", false);
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[2]) + ".dom", "on"); // CUFF FINAL
 
-                // define materials
+                // assign materials
+                System.out.println();
+                System.out.println();
+
+                String linkLabel = "dummyLabel";
+                String materialName = "silicone";
+
+                model.component("comp1").material().create(mw.im.next("matlnk", linkLabel), "Link");
+                model.component("comp1").material(mw.im.get(linkLabel)).label(linkLabel);
+                model.component("comp1").material(mw.im.get(linkLabel)).set("link", mw.im.get(materialName));
+
+//                model.component("comp1").material("matlnk1").selection().named("geom1_pi1_csel3_dom");
 
                 break;
             case "RibbonContact_Primitive":
@@ -1393,7 +1400,6 @@ class Part {
             default:
                 throw new IllegalArgumentException("No implementation for part instance name: " + pseudonym);
         }
-
         return true;
     }
 }
