@@ -21,7 +21,7 @@
     {
       "type": "RibbonContact_Primitive",
       "label": "Madison Contact 1",
-      "material": ["platinum"],
+      "material": "platinum",
       "def": {
         "Thk_elec": "Thk_elec_M",
         "L_elec": "L_elec_M",
