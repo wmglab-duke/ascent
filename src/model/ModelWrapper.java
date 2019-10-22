@@ -332,13 +332,9 @@ public class ModelWrapper {
         model.component("comp1").mesh().create("mesh1");
 
         String projectPath = args[0];
-
-//        ModelWrapper mw = new ModelWrapper(null, "/Users/jakecariello/Box/Documents/Pipeline/access");
-//        ModelWrapper mw = new ModelWrapper(model, "/Users/ericmusselman/Documents/access");
         ModelWrapper mw = new ModelWrapper(model, projectPath);
 
         String configFile = "/.config/master.json";
-
         JSONObject configData = null;
         try {
             configData = new JSONReader(projectPath + configFile).getData();
