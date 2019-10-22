@@ -1233,7 +1233,7 @@ class Part {
                 model.component("comp1").material().create(mw.im.next("matlnk", linkLabel), "Link");
                 model.component("comp1").material(mw.im.get(linkLabel)).label(linkLabel);
                 model.component("comp1").material(mw.im.get(linkLabel)).set("link", mw.im.get(instanceMaterial));
-                model.component("comp1").material(mw.im.get(linkLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[2]) + "_dom");
+                model.component("comp1").material(mw.im.get(linkLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[2]) + "_dom"); // CUFF FINAL
                 break;
             case "RibbonContact_Primitive":
 
@@ -1285,7 +1285,7 @@ class Part {
                 model.component("comp1").material().create(mw.im.next("matlnk", linkLabel), "Link");
                 model.component("comp1").material(mw.im.get(linkLabel)).label(linkLabel);
                 model.component("comp1").material(mw.im.get(linkLabel)).set("link", mw.im.get(instanceMaterial));
-                model.component("comp1").material(mw.im.get(linkLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[1]) + "_dom");
+                model.component("comp1").material(mw.im.get(linkLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[1]) + "_dom"); // CONTACT FINAL
 
                 break;
             case "CircleContact_Primitive":
