@@ -238,7 +238,7 @@
     }
   },
   "cuff": {
-    "preset": ["LivaNova.json"]
+    "preset": ["Enteromedics.json"]
   },
   "conductivities": {
     "silicone": {

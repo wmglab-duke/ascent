@@ -1267,6 +1267,12 @@ class Part {
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[3]) + ".dom", "on"); // CONTACT FINAL
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[4]) + ".dom", "on"); // RECESS FINAL
 
+                // assign materials
+                model.component("comp1").material().create(mw.im.next("matlnk", linkLabel), "Link");
+                model.component("comp1").material(mw.im.get(linkLabel)).label(linkLabel);
+                model.component("comp1").material(mw.im.get(linkLabel)).set("link", mw.im.get(instanceMaterial));
+                model.component("comp1").material(mw.im.get(linkLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[3]) + "_dom"); // CONTACT FINAL
+
                 break;
 
             case "WireContact_Primitive":
