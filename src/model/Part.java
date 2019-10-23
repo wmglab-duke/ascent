@@ -685,7 +685,8 @@ class Part {
                         "Conductorp2",
                         "SEL END P2",
                         "Cuffp3",
-                        "PC3"
+                        "PC3",
+                        "CUFF FINAL"
                 };
 
                 for (String cselHCCLabel: im.labels) {
@@ -864,6 +865,14 @@ class Part {
                 srch.label(srchLabel);
                 srch.set("contributeto", im.get("SRC"));
                 srch.set("p", new String[]{"cos(2*pi*rev_cuff_LN*(1.25/2.5))*((thk_elec_LN/2)+r_cuff_in_LN)", "sin(2*pi*rev_cuff_LN*(1.25/2.5))*((thk_elec_LN/2)+r_cuff_in_LN)", "Center"});
+
+                // NEW
+                String uspLabel = "Union Silicone Parts";
+                model.geom(id).create(im.next("uni", uspLabel), "Union");
+                model.geom(id).feature(im.get(uspLabel)).selection("input").set(im.get(mcp1Label), im.get(mcp2Label), im.get(mcp3Label));
+                model.geom(id).selection(im.get("CUFF FINAL")).label("CUFF FINAL");
+                model.geom(id).feature(im.get(uspLabel)).set("contributeto", im.get("CUFF FINAL"));
+                //
 
                 model.geom(id).run();
 
@@ -1357,6 +1366,13 @@ class Part {
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[5]) + ".dom", "on"); // Cuffp2
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[6]) + ".dom", "on"); // Conductorp2
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[8]) + ".dom", "on"); // Cuffp3
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[10]) + ".dom", "on"); // CUFF FINAL
+
+                // assign materials
+                model.component("comp1").material().create(mw.im.next("matlnk", linkLabel), "Link");
+                model.component("comp1").material(mw.im.get(linkLabel)).label(linkLabel);
+                model.component("comp1").material(mw.im.get(linkLabel)).set("link", mw.im.get(instanceMaterial));
+                model.component("comp1").material(mw.im.get(linkLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[10]) + "_dom"); // CUFF FINAL
 
                 break;
             case "RectangleContact_Primitive":
