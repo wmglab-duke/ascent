@@ -257,18 +257,23 @@ public class ModelWrapper {
             // for each material definition, create it (if not already existing)
             for (Object item: (JSONArray) data.get("instances")) {
                 JSONObject itemObject = (JSONObject) item;
-                String materialName = (String) itemObject.get("material"); // quick cast to String
 
-                // create the material definition if it has not already been created
-                if (! this.im.hasPseudonym(materialName)) {
-                    // get next available (TOP LEVEL) "material" id
-                    String materialID = this.im.next("mat", materialName);
-                    try {
-                        // TRY to create the material definition (catch error if no existing implementation)
-                        Part.defineMaterial(materialID, materialName, master, this);
-                    } catch (IllegalArgumentException e) {
-                        e.printStackTrace();
-                        return false;
+
+                JSONArray materials = itemObject.getJSONArray("materials");
+
+                for(Object o: materials) {
+                    String materialName = ((JSONObject) o).getString("type");
+                    // create the material definition if it has not already been created
+                    if (! this.im.hasPseudonym(materialName)) {
+                        // get next available (TOP LEVEL) "material" id
+                        String materialID = this.im.next("mat", materialName);
+                        try {
+                            // TRY to create the material definition (catch error if no existing implementation)
+                            Part.defineMaterial(materialID, materialName, master, this);
+                        } catch (IllegalArgumentException e) {
+                            e.printStackTrace();
+                            return false;
+                        }
                     }
                 }
             }
