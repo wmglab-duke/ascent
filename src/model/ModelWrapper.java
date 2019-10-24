@@ -333,7 +333,6 @@ public class ModelWrapper {
             });
 
             try (Stream<Path> result = Files.walk(Paths.get(fasciclesPath))) {
-
                 for (Iterator<Path> it = result.iterator(); it.hasNext(); ) {
                     Path p = it.next();
                     if (p.toString().contains(".txt")) {

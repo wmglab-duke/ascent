@@ -14,5 +14,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="org.json:json:20190722" level="project" />
     <orderEntry type="library" name="plugins" level="project" />
+    <orderEntry type="library" name="Python 3.7 interpreter library" level="application" />
   </component>
 </module>
