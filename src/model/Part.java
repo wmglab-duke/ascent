@@ -7,7 +7,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.HashMap;
-import java.util.Map;
 
 class Part {
 
@@ -1366,19 +1365,6 @@ class Part {
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[6]) + ".dom", "on"); // Conductorp2
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[8]) + ".dom", "off"); // Cuffp3
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[10]) + ".dom", "on"); // CUFF FINAL
-
-                // assign materials
-                Map<String, Object> material_pairs = instanceParams.getJSONObject("materials").toMap();
-
-                for (String key: material_pairs.keySet()) {
-                    String value = (String) material_pairs.get(key);
-                    if(!myIM.hasPseudonym("RECESS FINAL") && key.equals("recess")) continue;
-
-                    //model.component("comp1").material(mw.im.get(linkLabel)).set("link", mw.im.get(instanceMaterial));
-                }
-
-
-
 
                 // assign physcis
                 String helix_pcsLabel = instanceLabel + " Current Source";
