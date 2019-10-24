@@ -238,7 +238,7 @@
     }
   },
   "cuff": {
-    "preset": ["CorTec.json","Enteromedics.json","Imthera.json","LivaNova.json","Madison.json","Purdue.json"]
+    "preset": ["LivaNova.json"]
   },
   "conductivities": {
     "silicone": {
