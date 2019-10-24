@@ -1276,8 +1276,13 @@ class Part {
                 model.component("comp1").material(mw.im.get(linkLabel)).set("link", mw.im.get(instanceMaterial));
                 model.component("comp1").material(mw.im.get(linkLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[3]) + "_dom"); // CONTACT FINAL
 
+                // assign physics
+                String ribbon_pcsLabel = instanceLabel + " Current Source";
+                model.component("comp1").physics("ec").create(myIM.next("pcs", ribbon_pcsLabel), "PointCurrentSource", 0);
+                model.component("comp1").physics("ec").feature(myIM.get(ribbon_pcsLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" +  myIM.get(myLabels[2]) + "_pnt"); // SRC
+                model.component("comp1").physics("ec").feature(myIM.get(ribbon_pcsLabel)).set("Qjp", 0.001); // TODO - this should be read in from master?
+                model.component("comp1").physics("ec").feature(myIM.get(ribbon_pcsLabel)).label(ribbon_pcsLabel);
                 break;
-
             case "WireContact_Primitive":
 
                 // set instantiation parameters
@@ -1305,6 +1310,12 @@ class Part {
                 model.component("comp1").material(mw.im.get(linkLabel)).set("link", mw.im.get(instanceMaterial));
                 model.component("comp1").material(mw.im.get(linkLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[1]) + "_dom"); // CONTACT FINAL
 
+                // assign physics
+                String wire_pcsLabel = instanceLabel + " Current Source";
+                model.component("comp1").physics("ec").create(myIM.next("pcs", wire_pcsLabel), "PointCurrentSource", 0);
+                model.component("comp1").physics("ec").feature(myIM.get(wire_pcsLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" +  myIM.get(myLabels[2]) + "_pnt"); // SRC
+                model.component("comp1").physics("ec").feature(myIM.get(wire_pcsLabel)).set("Qjp", 0.001); // TODO - this should be read in from master?
+                model.component("comp1").physics("ec").feature(myIM.get(wire_pcsLabel)).label(wire_pcsLabel);
                 break;
             case "CircleContact_Primitive":
 
@@ -1345,8 +1356,10 @@ class Part {
                 partInstance.setEntry("selkeepedg", instanceID + "_" +  myIM.get(myLabels[6]) + ".edg", "off"); // CONTACT FINAL
                 partInstance.setEntry("selkeepedg", instanceID + "_" +  myIM.get(myLabels[8]) + ".edg", "off"); // CONTACT CUTTER OUT
 
-                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[6]) + ".pnt", "off"); // CONTACT FINAL
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[4]) + ".pnt", "on"); // CONTACT FINAL
                 partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[8]) + ".pnt", "off"); // CONTACT CUTTER OUT
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[12]) + ".pnt", "off"); // RECESS CUTTER OUT
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[13]) + ".pnt", "off"); // BASE PLANE (PRE ROTATION)
 
                 // assign materials
                 model.component("comp1").material().create(mw.im.next("matlnk", linkLabel), "Link");
@@ -1354,6 +1367,12 @@ class Part {
                 model.component("comp1").material(mw.im.get(linkLabel)).set("link", mw.im.get(instanceMaterial));
                 model.component("comp1").material(mw.im.get(linkLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[6]) + "_dom"); // CONTACT FINAL
 
+                // assign physics
+                String circle_pcsLabel = instanceLabel + " Current Source";
+                model.component("comp1").physics("ec").create(myIM.next("pcs", circle_pcsLabel), "PointCurrentSource", 0);
+                model.component("comp1").physics("ec").feature(myIM.get(circle_pcsLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" +  myIM.get(myLabels[4]) + "_pnt"); // SRC
+                model.component("comp1").physics("ec").feature(myIM.get(circle_pcsLabel)).set("Qjp", 0.001); // TODO - this should be read in from master?
+                model.component("comp1").physics("ec").feature(myIM.get(circle_pcsLabel)).label(circle_pcsLabel);
                 break;
             case "HelicalCuffnContact_Primitive":
 
@@ -1370,11 +1389,11 @@ class Part {
 
                 // imports
                 partInstance.set("selkeepnoncontr", false);
-                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[1]) + ".dom", "on"); // Cuffp1
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[1]) + ".dom", "off"); // Cuffp1
                 partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[4]) + ".pnt", "on"); // SRC
-                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[5]) + ".dom", "on"); // Cuffp2
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[5]) + ".dom", "off"); // Cuffp2
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[6]) + ".dom", "on"); // Conductorp2
-                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[8]) + ".dom", "on"); // Cuffp3
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[8]) + ".dom", "off"); // Cuffp3
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[10]) + ".dom", "on"); // CUFF FINAL
 
                 // assign materials
@@ -1382,6 +1401,13 @@ class Part {
                 model.component("comp1").material(mw.im.get(linkLabel)).label(linkLabel);
                 model.component("comp1").material(mw.im.get(linkLabel)).set("link", mw.im.get(instanceMaterial));
                 model.component("comp1").material(mw.im.get(linkLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[10]) + "_dom"); // CUFF FINAL
+
+                // assign physcis
+                String helix_pcsLabel = instanceLabel + " Current Source";
+                model.component("comp1").physics("ec").create(myIM.next("pcs", helix_pcsLabel), "PointCurrentSource", 0);
+                model.component("comp1").physics("ec").feature(myIM.get(helix_pcsLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" +  myIM.get(myLabels[4]) + "_pnt"); // SRC
+                model.component("comp1").physics("ec").feature(myIM.get(helix_pcsLabel)).set("Qjp", 0.001); // TODO - this should be read in from master?
+                model.component("comp1").physics("ec").feature(myIM.get(helix_pcsLabel)).label(helix_pcsLabel);
 
                 break;
             case "RectangleContact_Primitive":
@@ -1413,6 +1439,10 @@ class Part {
 //                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Theta_conductor", (String) itemObject.get("Theta_conductor"));
 
                 // imports
+
+                // assign materials
+
+                // assign physcis
 
                 break;
             case "Fascicle":

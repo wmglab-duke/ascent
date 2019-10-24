@@ -364,6 +364,7 @@ public class ModelWrapper {
         Model model = ModelUtil.create("Model");
         model.component().create("comp1", true);
         model.component("comp1").geom().create("geom1", 3);
+        model.component("comp1").physics().create("ec", "ConductiveMedia", "geom1");
         model.component("comp1").mesh().create("mesh1");
 
         String projectPath = args[0];
