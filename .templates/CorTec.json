@@ -22,6 +22,10 @@
       "type": "RibbonContact_Primitive",
       "label": "CorTec Contact 1",
       "material": "platinum",
+      "materials": {
+        "conductor": "platinum",
+        "fill": "saline"
+      },
       "def": {
         "Thk_elec": "Thk_elec_CT",
         "L_elec": "L_elec_CT",

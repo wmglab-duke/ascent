@@ -10,10 +10,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.*;
 import java.util.stream.Stream;
 
 /**
@@ -320,6 +317,14 @@ public class ModelWrapper {
                     ".config",
                     "master.json"
             })).getData();
+
+
+
+            for(Object o: json_data.getJSONArray("fhdjlag")) {
+                String s = String.valueOf(o);
+
+
+            }
 
             String fasciclesPath = String.join("/", new String[]{
                     this.root,

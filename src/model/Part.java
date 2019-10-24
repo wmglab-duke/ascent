@@ -5,8 +5,8 @@ import com.comsol.model.Model;
 import com.comsol.model.ModelParam;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 class Part {
 
@@ -1200,14 +1200,21 @@ class Part {
         partInstance.label(instanceLabel);
         partInstance.set("part", mw.im.get(pseudonym));
 
-        Object item = instanceParams.get("def");
+        Object item = instanceParams.getJSONObject("def");
         JSONObject itemObject = (JSONObject) item;
 
         // THIS NEEDS TO LOAD AN ARRAY THAT IS ACCESSIBLE IN THE SWITCH-CASE
         // SO LIVANOVA CAN HAVE silicone and platinum loaded together
-        // WHAT ABOUT RECESS MATERIALS IF APPLICABLE? BASED ON CUFF FILL...
-        String instanceMaterial = (String) instanceParams.get("material");
-        String linkLabel = instanceLabel + " is " + instanceMaterial;
+//        // WHAT ABOUT RECESS MATERIALS IF APPLICABLE? BASED ON CUFF FILL...
+//        Map<String, Object> instanceMaterials = instanceParams.getJSONObject("materials").toMap();
+//        StringBuilder linkLabelBuilder = new StringBuilder(instanceLabel + " is ");
+//
+//        for(Object o: instanceMaterials.values()) {
+//            String material = (String) o;
+//            linkLabelBuilder.append(material).append("/");
+//        }
+//        linkLabelBuilder.deleteCharAt(linkLabelBuilder.length() - 1);
+//        String linkLabel = linkLabelBuilder.toString();
 
         IdentifierManager myIM = mw.getPartPrimitiveIM(pseudonym);
         if (myIM == null) throw new IllegalArgumentException("IdentfierManager not created for name: " + pseudonym);
@@ -1242,10 +1249,10 @@ class Part {
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[2]) + ".dom", "on"); // CUFF FINAL
 
                 // assign materials
-                model.component("comp1").material().create(mw.im.next("matlnk", linkLabel), "Link");
-                model.component("comp1").material(mw.im.get(linkLabel)).label(linkLabel);
-                model.component("comp1").material(mw.im.get(linkLabel)).set("link", mw.im.get(instanceMaterial));
-                model.component("comp1").material(mw.im.get(linkLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[2]) + "_dom"); // CUFF FINAL
+                model.component("comp1").material().create(mw.im.next("matlnk", linkLabel.toString()), "Link");
+                model.component("comp1").material(mw.im.get(linkLabel.toString())).label(linkLabel.toString());
+                model.component("comp1").material(mw.im.get(linkLabel.toString())).set("link", mw.im.get(instanceMaterial));
+                model.component("comp1").material(mw.im.get(linkLabel.toString())).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[2]) + "_dom"); // CUFF FINAL
                 break;
             case "RibbonContact_Primitive":
 
@@ -1271,10 +1278,10 @@ class Part {
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[4]) + ".dom", "on"); // RECESS FINAL
 
                 // assign materials
-                model.component("comp1").material().create(mw.im.next("matlnk", linkLabel), "Link");
-                model.component("comp1").material(mw.im.get(linkLabel)).label(linkLabel);
-                model.component("comp1").material(mw.im.get(linkLabel)).set("link", mw.im.get(instanceMaterial));
-                model.component("comp1").material(mw.im.get(linkLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[3]) + "_dom"); // CONTACT FINAL
+                model.component("comp1").material().create(mw.im.next("matlnk", linkLabel.toString()), "Link");
+                model.component("comp1").material(mw.im.get(linkLabel.toString())).label(linkLabel.toString());
+                model.component("comp1").material(mw.im.get(linkLabel.toString())).set("link", mw.im.get(instanceMaterial));
+                model.component("comp1").material(mw.im.get(linkLabel.toString())).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[3]) + "_dom"); // CONTACT FINAL
 
                 // assign physics
                 String ribbon_pcsLabel = instanceLabel + " Current Source";
@@ -1305,10 +1312,10 @@ class Part {
                 partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[2]) + ".pnt", "on"); // SRC
 
                 // assign materials
-                model.component("comp1").material().create(mw.im.next("matlnk", linkLabel), "Link");
-                model.component("comp1").material(mw.im.get(linkLabel)).label(linkLabel);
-                model.component("comp1").material(mw.im.get(linkLabel)).set("link", mw.im.get(instanceMaterial));
-                model.component("comp1").material(mw.im.get(linkLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[1]) + "_dom"); // CONTACT FINAL
+                model.component("comp1").material().create(mw.im.next("matlnk", linkLabel.toString()), "Link");
+                model.component("comp1").material(mw.im.get(linkLabel.toString())).label(linkLabel.toString());
+                model.component("comp1").material(mw.im.get(linkLabel.toString())).set("link", mw.im.get(instanceMaterial));
+                model.component("comp1").material(mw.im.get(linkLabel.toString())).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[1]) + "_dom"); // CONTACT FINAL
 
                 // assign physics
                 String wire_pcsLabel = instanceLabel + " Current Source";
@@ -1362,10 +1369,10 @@ class Part {
                 partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[13]) + ".pnt", "off"); // BASE PLANE (PRE ROTATION)
 
                 // assign materials
-                model.component("comp1").material().create(mw.im.next("matlnk", linkLabel), "Link");
-                model.component("comp1").material(mw.im.get(linkLabel)).label(linkLabel);
-                model.component("comp1").material(mw.im.get(linkLabel)).set("link", mw.im.get(instanceMaterial));
-                model.component("comp1").material(mw.im.get(linkLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[6]) + "_dom"); // CONTACT FINAL
+                model.component("comp1").material().create(mw.im.next("matlnk", linkLabel.toString()), "Link");
+                model.component("comp1").material(mw.im.get(linkLabel.toString())).label(linkLabel.toString());
+                model.component("comp1").material(mw.im.get(linkLabel.toString())).set("link", mw.im.get(instanceMaterial));
+                model.component("comp1").material(mw.im.get(linkLabel.toString())).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[6]) + "_dom"); // CONTACT FINAL
 
                 // assign physics
                 String circle_pcsLabel = instanceLabel + " Current Source";
@@ -1397,10 +1404,26 @@ class Part {
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[10]) + ".dom", "on"); // CUFF FINAL
 
                 // assign materials
-                model.component("comp1").material().create(mw.im.next("matlnk", linkLabel), "Link");
-                model.component("comp1").material(mw.im.get(linkLabel)).label(linkLabel);
-                model.component("comp1").material(mw.im.get(linkLabel)).set("link", mw.im.get(instanceMaterial));
-                model.component("comp1").material(mw.im.get(linkLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[10]) + "_dom"); // CUFF FINAL
+                Map<String, Object> material_pairs = instanceParams.getJSONObject("materials").toMap();
+
+                for (String key: material_pairs.keySet()) {
+                    String value = (String) material_pairs.get(key);
+                    if(!myIM.hasPseudonym("RECESS FINAL") && key.equals("recess")) continue;
+
+                    //model.component("comp1").material(mw.im.get(linkLabel)).set("link", mw.im.get(instanceMaterial));
+                }
+
+
+
+                model.component("comp1").material().create(mw.im.next("matlnk", linkLabel.toString()), "Link");
+                model.component("comp1").material(mw.im.get(linkLabel.toString())).label(linkLabel.toString());
+
+
+                model.component("comp1").material(mw.im.get(linkLabel.toString())).set("link", mw.im.get(instanceMaterial));
+
+                model.component("comp1").material(mw.im.get(linkLabel.toString())).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[10]) + "_dom"); // CUFF FINAL
+
+
 
                 // assign physcis
                 String helix_pcsLabel = instanceLabel + " Current Source";
@@ -1464,6 +1487,9 @@ class Part {
             default:
                 throw new IllegalArgumentException("No implementation for part instance name: " + pseudonym);
         }
+
+
+
         return true;
     }
 }
