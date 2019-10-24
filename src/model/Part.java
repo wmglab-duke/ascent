@@ -1203,6 +1203,9 @@ class Part {
         Object item = instanceParams.get("def");
         JSONObject itemObject = (JSONObject) item;
 
+        // THIS NEEDS TO LOAD AN ARRAY THAT IS ACCESSIBLE IN THE SWITCH-CASE
+        // SO LIVANOVA CAN HAVE silicone and platinum loaded together
+        // WHAT ABOUT RECESS MATERIALS IF APPLICABLE? BASED ON CUFF FILL...
         String instanceMaterial = (String) instanceParams.get("material");
         String linkLabel = instanceLabel + " is " + instanceMaterial;
 
