@@ -3,7 +3,6 @@
     {
       "type": "TubeCuff_Primitive",
       "label": "ImThera Cuff",
-      "material": "silicone",
       "def": {
         "type": "TubeCuff_Primitive",
         "label": "ImThera Cuff",
@@ -18,12 +17,18 @@
         "Buffer_hole": "Buffer_hole_ITI",
         "L_holecenter_cuffseam": "L_holecenter_cuffseam_ITI",
         "Pitch_holecenter_holecenter": "Pitch_holecenter_holecenter_ITI"
-      }
+      },
+      "materials": [
+        {
+          "info": "insulator",
+          "type": "silicone",
+          "label_index": 2
+        }
+      ]
     },
     {
       "type": "TubeCuff_Primitive",
       "label": "ImThera Furl",
-      "material": "silicone",
       "def": {
         "N_holes": "N_holes_ITF",
         "Theta": "Theta_ITF",
@@ -36,12 +41,18 @@
         "Buffer_hole": "Buffer_hole_ITF",
         "L_holecenter_cuffseam": "L_holecenter_cuffseam_ITF",
         "Pitch_holecenter_holecenter": "Pitch_holecenter_holecenter_ITF"
-      }
+      },
+      "materials": [
+        {
+          "info": "insulator",
+          "type": "silicone",
+          "label_index": 2
+        }
+      ]
     },
     {
       "type": "CircleContact_Primitive",
       "label": "ImThera Contact 1",
-      "material": "platinum",
       "def": {
         "Recess": "Recess_ITC",
         "Rotation_angle": "ang_cuffseam_contactcenter_ITC",
@@ -53,12 +64,23 @@
         "A_ellipse_contact": "a_ellipse_contact_ITC",
         "Diam_contact": "diam_contact_ITC",
         "L": "L_IT"
-      }
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "type": "platinum",
+          "label_index": 6
+        },
+        {
+          "info": "recess",
+          "type": "saline",
+          "label_index": 2
+        }
+      ]
     },
     {
       "type": "CircleContact_Primitive",
       "label": "ImThera Contact 2",
-      "material": "platinum",
       "def": {
         "Recess": "Recess_ITC",
         "Rotation_angle": "ang_cuffseam_contactcenter_ITC+ang_contactcenter_contactcenter_ITC [deg]",
@@ -70,12 +92,23 @@
         "A_ellipse_contact": "a_ellipse_contact_ITC",
         "Diam_contact": "diam_contact_ITC",
         "L": "L_IT"
-      }
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "type": "platinum",
+          "label_index": 6
+        },
+        {
+          "info": "recess",
+          "type": "saline",
+          "label_index": 2
+        }
+      ]
     },
     {
       "type": "CircleContact_Primitive",
       "label": "ImThera Contact 3",
-      "material": "platinum",
       "def": {
         "Recess": "Recess_ITC",
         "Rotation_angle": "ang_cuffseam_contactcenter_ITC+2*ang_contactcenter_contactcenter_ITC [deg]",
@@ -87,12 +120,23 @@
         "A_ellipse_contact": "a_ellipse_contact_ITC",
         "Diam_contact": "diam_contact_ITC",
         "L": "L_IT"
-      }
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "type": "platinum",
+          "label_index": 6
+        },
+        {
+          "info": "recess",
+          "type": "saline",
+          "label_index": 2
+        }
+      ]
     },
     {
       "type": "CircleContact_Primitive",
       "label": "ImThera Contact 4",
-      "material": "platinum",
       "def": {
         "Recess": "Recess_ITC",
         "Rotation_angle": "ang_cuffseam_contactcenter_ITC+3*ang_contactcenter_contactcenter_ITC [deg]",
@@ -104,12 +148,23 @@
         "A_ellipse_contact": "a_ellipse_contact_ITC",
         "Diam_contact": "diam_contact_ITC",
         "L": "L_IT"
-      }
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "type": "platinum",
+          "label_index": 6
+        },
+        {
+          "info": "recess",
+          "type": "saline",
+          "label_index": 2
+        }
+      ]
     },
     {
       "type": "CircleContact_Primitive",
       "label": "ImThera Contact 5",
-      "material": "platinum",
       "def": {
         "Recess": "Recess_ITC",
         "Rotation_angle": "ang_cuffseam_contactcenter_ITC+4*ang_contactcenter_contactcenter_ITC [deg]",
@@ -121,12 +176,23 @@
         "A_ellipse_contact": "a_ellipse_contact_ITC",
         "Diam_contact": "diam_contact_ITC",
         "L": "L_IT"
-      }
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "type": "platinum",
+          "label_index": 6
+        },
+        {
+          "info": "recess",
+          "type": "saline",
+          "label_index": 2
+        }
+      ]
     },
     {
       "type": "CircleContact_Primitive",
       "label": "ImThera Contact 6",
-      "material": "platinum",
       "def": {
         "Recess": "Recess_ITC",
         "Rotation_angle": "ang_cuffseam_contactcenter_ITC+5*ang_contactcenter_contactcenter_ITC [deg]",
@@ -138,7 +204,19 @@
         "A_ellipse_contact": "a_ellipse_contact_ITC",
         "Diam_contact": "diam_contact_ITC",
         "L": "L_IT"
-      }
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "type": "platinum",
+          "label_index": 6
+        },
+        {
+          "info": "recess",
+          "type": "saline",
+          "label_index": 2
+        }
+      ]
     }
   ],
 

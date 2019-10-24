@@ -1265,7 +1265,6 @@ class Part {
                 mw.im.currentPointers.put(currentLabel,
                         model.component("comp1").physics("ec").create(mw.im.next("pcs", ribbon_pcsLabel), "PointCurrentSource", 0));
 
-
                 ((PhysicsFeature) mw.im.currentPointers.get(currentLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" +  myIM.get(myLabels[2]) + "_pnt"); // SRC
                 ((PhysicsFeature) mw.im.currentPointers.get(currentLabel)).set("Qjp", 0.001); // TODO - this should be read in from master?
                 ((PhysicsFeature) mw.im.currentPointers.get(currentLabel)).label(ribbon_pcsLabel);

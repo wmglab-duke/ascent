@@ -3,7 +3,6 @@
     {
       "type": "TubeCuff_Primitive",
       "label": "Enteromedics Cuff",
-      "material": "silicone",
       "def": {
         "N_holes": "N_holes_EM",
         "Theta": "Theta_EM",
@@ -16,12 +15,18 @@
         "Buffer_hole": "Buffer_hole_EM",
         "L_holecenter_cuffseam": "L_holecenter_cuffseam_EM",
         "Pitch_holecenter_holecenter": "Pitch_holecenter_holecenter_EM"
-      }
+      },
+      "materials": [
+        {
+          "info": "insulator",
+          "type": "silicone",
+          "label_index": 2
+        }
+      ]
     },
     {
       "type": "RibbonContact_Primitive",
       "label": "Enteromedics Contact 1",
-      "material": "platinum",
       "def": {
         "Thk_elec": "Thk_elec_EM",
         "L_elec": "L_elec_EM",
@@ -30,7 +35,19 @@
         "Center": "Center_EM",
         "Theta_contact": "Theta_contact_EM",
         "Rot_def": "0 [deg]"
-      }
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "type": "platinum",
+          "label_index": 3
+        },
+        {
+          "info": "recess",
+          "type": "saline",
+          "label_index": 4
+        }
+      ]
     }
   ],
 
