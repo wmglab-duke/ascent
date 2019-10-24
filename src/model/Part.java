@@ -685,7 +685,8 @@ class Part {
                         "Conductorp2",
                         "SEL END P2",
                         "Cuffp3",
-                        "PC3"
+                        "PC3",
+                        "CUFF FINAL"
                 };
 
                 for (String cselHCCLabel: im.labels) {
@@ -864,6 +865,14 @@ class Part {
                 srch.label(srchLabel);
                 srch.set("contributeto", im.get("SRC"));
                 srch.set("p", new String[]{"cos(2*pi*rev_cuff_LN*(1.25/2.5))*((thk_elec_LN/2)+r_cuff_in_LN)", "sin(2*pi*rev_cuff_LN*(1.25/2.5))*((thk_elec_LN/2)+r_cuff_in_LN)", "Center"});
+
+                // NEW
+                String uspLabel = "Union Silicone Parts";
+                model.geom(id).create(im.next("uni", uspLabel), "Union");
+                model.geom(id).feature(im.get(uspLabel)).selection("input").set(im.get(mcp1Label), im.get(mcp2Label), im.get(mcp3Label));
+                model.geom(id).selection(im.get("CUFF FINAL")).label("CUFF FINAL");
+                model.geom(id).feature(im.get(uspLabel)).set("contributeto", im.get("CUFF FINAL"));
+                //
 
                 model.geom(id).run();
 
@@ -1163,7 +1172,6 @@ class Part {
         return im;
     }
 
-    //
     public static boolean defineMaterial(String materialID, String materialName, JSONObject master, ModelWrapper mw) {
         Model model = mw.getModel();
         model.material().create(materialID, "Common", "");
@@ -1171,14 +1179,11 @@ class Part {
 
         JSONObject sigma = master.getJSONObject("conductivities");
         String entry = sigma.getJSONObject(materialName).getString("value");
+
         model.material(materialID).propertyGroup("def").set("electricconductivity", new String[]{entry});
         return true;
     }
 
-//    public static boolean assignMaterials() {
-//g
-//    }
-    //
     /**
      *
      * @param instanceLabel
@@ -1186,7 +1191,8 @@ class Part {
      * @param mw
      * @return
      */
-    public static boolean createPartInstance(String instanceID, String instanceLabel, String pseudonym, ModelWrapper mw, JSONObject instanceParams) throws IllegalArgumentException {
+    public static boolean createPartInstance(String instanceID, String instanceLabel, String pseudonym, ModelWrapper mw,
+                                             JSONObject instanceParams) throws IllegalArgumentException {
 
         Model model = mw.getModel();
 
@@ -1196,6 +1202,12 @@ class Part {
 
         Object item = instanceParams.get("def");
         JSONObject itemObject = (JSONObject) item;
+
+        // THIS NEEDS TO LOAD AN ARRAY THAT IS ACCESSIBLE IN THE SWITCH-CASE
+        // SO LIVANOVA CAN HAVE silicone and platinum loaded together
+        // WHAT ABOUT RECESS MATERIALS IF APPLICABLE? BASED ON CUFF FILL...
+        String instanceMaterial = (String) instanceParams.get("material");
+        String linkLabel = instanceLabel + " is " + instanceMaterial;
 
         IdentifierManager myIM = mw.getPartPrimitiveIM(pseudonym);
         if (myIM == null) throw new IllegalArgumentException("IdentfierManager not created for name: " + pseudonym);
@@ -1229,8 +1241,11 @@ class Part {
                 partInstance.set("selkeepnoncontr", false);
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[2]) + ".dom", "on"); // CUFF FINAL
 
-                // define materials
-
+                // assign materials
+                model.component("comp1").material().create(mw.im.next("matlnk", linkLabel), "Link");
+                model.component("comp1").material(mw.im.get(linkLabel)).label(linkLabel);
+                model.component("comp1").material(mw.im.get(linkLabel)).set("link", mw.im.get(instanceMaterial));
+                model.component("comp1").material(mw.im.get(linkLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[2]) + "_dom"); // CUFF FINAL
                 break;
             case "RibbonContact_Primitive":
 
@@ -1255,6 +1270,12 @@ class Part {
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[3]) + ".dom", "on"); // CONTACT FINAL
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[4]) + ".dom", "on"); // RECESS FINAL
 
+                // assign materials
+                model.component("comp1").material().create(mw.im.next("matlnk", linkLabel), "Link");
+                model.component("comp1").material(mw.im.get(linkLabel)).label(linkLabel);
+                model.component("comp1").material(mw.im.get(linkLabel)).set("link", mw.im.get(instanceMaterial));
+                model.component("comp1").material(mw.im.get(linkLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[3]) + "_dom"); // CONTACT FINAL
+
                 break;
 
             case "WireContact_Primitive":
@@ -1277,6 +1298,12 @@ class Part {
                 partInstance.set("selkeepnoncontr", false);
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[1]) + ".dom", "on"); // CONTACT FINAL
                 partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[2]) + ".pnt", "on"); // SRC
+
+                // assign materials
+                model.component("comp1").material().create(mw.im.next("matlnk", linkLabel), "Link");
+                model.component("comp1").material(mw.im.get(linkLabel)).label(linkLabel);
+                model.component("comp1").material(mw.im.get(linkLabel)).set("link", mw.im.get(instanceMaterial));
+                model.component("comp1").material(mw.im.get(linkLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[1]) + "_dom"); // CONTACT FINAL
 
                 break;
             case "CircleContact_Primitive":
@@ -1320,6 +1347,13 @@ class Part {
 
                 partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[6]) + ".pnt", "off"); // CONTACT FINAL
                 partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[8]) + ".pnt", "off"); // CONTACT CUTTER OUT
+
+                // assign materials
+                model.component("comp1").material().create(mw.im.next("matlnk", linkLabel), "Link");
+                model.component("comp1").material(mw.im.get(linkLabel)).label(linkLabel);
+                model.component("comp1").material(mw.im.get(linkLabel)).set("link", mw.im.get(instanceMaterial));
+                model.component("comp1").material(mw.im.get(linkLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[6]) + "_dom"); // CONTACT FINAL
+
                 break;
             case "HelicalCuffnContact_Primitive":
 
@@ -1341,6 +1375,13 @@ class Part {
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[5]) + ".dom", "on"); // Cuffp2
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[6]) + ".dom", "on"); // Conductorp2
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[8]) + ".dom", "on"); // Cuffp3
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[10]) + ".dom", "on"); // CUFF FINAL
+
+                // assign materials
+                model.component("comp1").material().create(mw.im.next("matlnk", linkLabel), "Link");
+                model.component("comp1").material(mw.im.get(linkLabel)).label(linkLabel);
+                model.component("comp1").material(mw.im.get(linkLabel)).set("link", mw.im.get(instanceMaterial));
+                model.component("comp1").material(mw.im.get(linkLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[10]) + "_dom"); // CUFF FINAL
 
                 break;
             case "RectangleContact_Primitive":
@@ -1393,7 +1434,6 @@ class Part {
             default:
                 throw new IllegalArgumentException("No implementation for part instance name: " + pseudonym);
         }
-
         return true;
     }
 }
