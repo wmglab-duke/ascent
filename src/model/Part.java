@@ -3,6 +3,7 @@ package model;
 import com.comsol.model.GeomFeature;
 import com.comsol.model.Model;
 import com.comsol.model.ModelParam;
+import com.comsol.model.physics.PhysicsFeature;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -1259,10 +1260,16 @@ class Part {
 
                 // assign physics
                 String ribbon_pcsLabel = instanceLabel + " Current Source";
-                model.component("comp1").physics("ec").create(mw.im.next("pcs", ribbon_pcsLabel), "PointCurrentSource", 0);
-                model.component("comp1").physics("ec").feature(mw.im.get(ribbon_pcsLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" +  myIM.get(myLabels[2]) + "_pnt"); // SRC
-                model.component("comp1").physics("ec").feature(mw.im.get(ribbon_pcsLabel)).set("Qjp", 0.001); // TODO - this should be read in from master?
-                model.component("comp1").physics("ec").feature(mw.im.get(ribbon_pcsLabel)).label(ribbon_pcsLabel);
+
+                String currentLabel = instanceLabel;
+
+                mw.im.currentPointers.put(currentLabel,
+                        model.component("comp1").physics("ec").create(mw.im.next("pcs", ribbon_pcsLabel), "PointCurrentSource", 0));
+
+
+                ((PhysicsFeature) mw.im.currentPointers.get(currentLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" +  myIM.get(myLabels[2]) + "_pnt"); // SRC
+                ((PhysicsFeature) mw.im.currentPointers.get(currentLabel)).set("Qjp", 0.001); // TODO - this should be read in from master?
+                ((PhysicsFeature) mw.im.currentPointers.get(currentLabel)).label(ribbon_pcsLabel);
                 break;
             case "WireContact_Primitive":
 
@@ -1368,10 +1375,11 @@ class Part {
 
                 // assign physcis
                 String helix_pcsLabel = instanceLabel + " Current Source";
-                model.component("comp1").physics("ec").create(mw.im.next("pcs", helix_pcsLabel), "PointCurrentSource", 0);
-                model.component("comp1").physics("ec").feature(mw.im.get(helix_pcsLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" +  myIM.get(myLabels[4]) + "_pnt"); // SRC
-                model.component("comp1").physics("ec").feature(mw.im.get(helix_pcsLabel)).set("Qjp", 0.001); // TODO - this should be read in from master?
-                model.component("comp1").physics("ec").feature(mw.im.get(helix_pcsLabel)).label(helix_pcsLabel);
+
+                mw.im.currentPointers.put(helix_pcsLabel, model.component("comp1").physics("ec").create(mw.im.next("pcs", helix_pcsLabel), "PointCurrentSource", 0));
+                ((PhysicsFeature) mw.im.currentPointers.get(helix_pcsLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" +  myIM.get(myLabels[4]) + "_pnt"); // SRC
+                ((PhysicsFeature) mw.im.currentPointers.get(helix_pcsLabel)).set("Qjp", 0.001); // TODO - this should be read in from master?
+                ((PhysicsFeature) mw.im.currentPointers.get(helix_pcsLabel)).label(helix_pcsLabel);
 
                 break;
             case "RectangleContact_Primitive":

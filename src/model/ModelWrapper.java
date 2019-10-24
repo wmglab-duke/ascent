@@ -1,6 +1,7 @@
 package model;
 
 import com.comsol.model.Model;
+import com.comsol.model.physics.PhysicsFeature;
 import com.comsol.model.util.ModelUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -414,7 +415,18 @@ public class ModelWrapper {
             e.printStackTrace();
         }
 
+        mw.loopCurrents();
+
         ModelUtil.disconnect();
         System.out.println("Disconnected from COMSOL Server");
+    }
+
+    public void loopCurrents() {
+        for(String key: this.im.currentPointers.keySet()) {
+            System.out.println("Current pointer: " + key);
+            PhysicsFeature current = (PhysicsFeature) this.im.currentPointers.get(key);
+
+            current.set("Qjp", 0.001);
+        }
     }
 }
