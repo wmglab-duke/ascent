@@ -1201,10 +1201,9 @@ class Part {
         partInstance.label(instanceLabel);
         partInstance.set("part", mw.im.get(pseudonym));
         JSONObject itemObject = instanceParams.getJSONObject("def");
-
         IdentifierManager myIM = mw.getPartPrimitiveIM(pseudonym);
         if (myIM == null) throw new IllegalArgumentException("IdentfierManager not created for name: " + pseudonym);
-
+        
         String[] myLabels = myIM.labels; // may be null, but that is ok if not used
 
         // set instantiation parameters and import selections
