@@ -1383,13 +1383,14 @@ class Part {
                 // imports
                 partInstance.set("selkeepnoncontr", false);
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[1]) + ".dom", "off"); // Cuffp1
-                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[4]) + ".pnt", "on"); // SRC
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[5]) + ".dom", "off"); // Cuffp2
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[6]) + ".dom", "on"); // Conductorp2
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[8]) + ".dom", "off"); // Cuffp3
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[10]) + ".dom", "on"); // CUFF FINAL
 
-                // assign physcis
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[4]) + ".pnt", "on"); // SRC
+
+                // assign physics
                 String helix_pcsLabel = instanceLabel + " Current Source";
                 String helix_currentLabel = instanceLabel;
 
@@ -1427,7 +1428,7 @@ class Part {
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[12]) + ".dom", "off"); // SEL OUTER EXCESS CONTACT
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[13]) + ".dom", "off"); // SEL OUTER EXCESS
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[14]) + ".dom", "off"); // SEL INNER EXCESS
-                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[15]) + ".dom", "off"); // "BASE CONTACT PLANE (PRE ROTATION)"
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[15]) + ".dom", "off"); // BASE CONTACT PLANE (PRE ROTATION)
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[16]) + ".dom", "off"); // SRC
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[17]) + ".dom", "off"); // CONTACT PRE CUTS
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[18]) + ".dom", "off"); // CONTACT CROSS SECTION
@@ -1436,11 +1437,27 @@ class Part {
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[21]) + ".dom", "off"); // FINAL
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[22]) + ".dom", "off"); // INNER CUTTER
 
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[16]) + ".pnt", "on"); // SRC
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[13]) + ".pnt", "off"); // SEL OUTER EXCESS
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[14]) + ".pnt", "off"); // SEL INNER EXCESS
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[15]) + ".pnt", "off"); // BASE CONTACT PLANE (PRE ROTATION)
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[17]) + ".pnt", "off"); // CONTACT PRE CUTS
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[18]) + ".pnt", "off"); // CONTACT CROSS SECTION
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[19]) + ".pnt", "off"); // INNER CUFF CUTTER
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[20]) + ".pnt", "off"); // OUTER CUFF CUTTER
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[21]) + ".pnt", "off"); // FINAL
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[22]) + ".pnt", "off"); // INNER CUTTER
 
+                // assign physics
+                String square_pcsLabel = instanceLabel + " Current Source";
+                String square_currentLabel = instanceLabel;
 
-                // assign materials
+                mw.im.currentPointers.put(square_currentLabel,
+                        model.component("comp1").physics("ec").create(mw.im.next("pcs", square_pcsLabel), "PointCurrentSource", 0));
 
-                // assign physcis
+                ((PhysicsFeature) mw.im.currentPointers.get(square_currentLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" +  myIM.get(myLabels[16]) + "_pnt"); // SRC
+                ((PhysicsFeature) mw.im.currentPointers.get(square_currentLabel)).set("Qjp", 0.001);
+                ((PhysicsFeature) mw.im.currentPointers.get(square_currentLabel)).label(square_pcsLabel);
 
                 break;
             case "Fascicle":
@@ -1464,19 +1481,19 @@ class Part {
         }
 
         // assign materials
-//        JSONArray materials = instanceParams.getJSONArray("materials");
-//        for(Object o: materials) {
-//            String type = ((JSONObject) o).getString("type");
-//            int label_index = ((JSONObject) o).getInt("label_index");
-//            String selection = myLabels[label_index];
-//            if(myIM.hasPseudonym(selection)) {
-//                String linkLabel = String.join("/", new String[]{instanceLabel, selection, type});
-//                model.component("comp1").material().create(mw.im.next("matlnk", linkLabel), "Link");
-//                model.component("comp1").material(mw.im.get(linkLabel)).label(linkLabel);
-//                model.component("comp1").material(mw.im.get(linkLabel)).set("link", mw.im.get(type));
-//                model.component("comp1").material(mw.im.get(linkLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(selection) + "_dom");
-//            }
-//        }
+        JSONArray materials = instanceParams.getJSONArray("materials");
+        for(Object o: materials) {
+            String type = ((JSONObject) o).getString("type");
+            int label_index = ((JSONObject) o).getInt("label_index");
+            String selection = myLabels[label_index];
+            if(myIM.hasPseudonym(selection)) {
+                String linkLabel = String.join("/", new String[]{instanceLabel, selection, type});
+                model.component("comp1").material().create(mw.im.next("matlnk", linkLabel), "Link");
+                model.component("comp1").material(mw.im.get(linkLabel)).label(linkLabel);
+                model.component("comp1").material(mw.im.get(linkLabel)).set("link", mw.im.get(type));
+                model.component("comp1").material(mw.im.get(linkLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(selection) + "_dom");
+            }
+        }
 
         return true;
     }

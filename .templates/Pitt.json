@@ -20,7 +20,7 @@
         {
           "info": "insulator",
           "type": "silicone",
-          "label_index": 0
+          "label_index": 2
         }
       ]
     },
@@ -43,12 +43,12 @@
         {
           "info": "conductor",
           "type": "platinum",
-          "label_index": 0
+          "label_index": 11
         },
         {
           "info": "recess",
           "type": "saline",
-          "label_index": 0
+          "label_index": 6
         }
       ]
     },
@@ -71,12 +71,12 @@
         {
           "info": "conductor",
           "type": "platinum",
-          "label_index": 0
+          "label_index": 11
         },
         {
           "info": "recess",
           "type": "saline",
-          "label_index": 0
+          "label_index": 6
         }
       ]
     },
@@ -99,12 +99,12 @@
         {
           "info": "conductor",
           "type": "platinum",
-          "label_index": 0
+          "label_index": 11
         },
         {
           "info": "recess",
           "type": "saline",
-          "label_index": 0
+          "label_index": 6
         }
       ]
     },
@@ -127,12 +127,12 @@
         {
           "info": "conductor",
           "type": "platinum",
-          "label_index": 0
+          "label_index": 11
         },
         {
           "info": "recess",
           "type": "saline",
-          "label_index": 0
+          "label_index": 6
         }
       ]
     }
@@ -156,8 +156,8 @@
     },
     {
       "name": "R_in_Pitt",
-      "expression": "1 [mm]",
-      "description": ""
+      "expression": "0.5 [mm]",
+      "description": "Could also be 0.6 or 0.7 mm, since the contacts are defined by angle not length this is only param that needs to be changed to use larger cuff"
     },
     {
       "name": "R_out_Pitt",
@@ -177,11 +177,6 @@
     {
       "name": "percent_circ_cuff_Pitt",
       "expression": "1",
-      "description": ""
-    },
-    {
-      "name": "r_cuff_in_pre_Pitt",
-      "expression": "0.7 [mm]",
       "description": ""
     },
     {
