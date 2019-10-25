@@ -8,6 +8,7 @@ public class IdentifierManager {
     private HashMap<String, String> identifierPseudonyms = new HashMap<>();
 
     public String[] labels = null;
+    public HashMap<String, Object> currentPointers = new HashMap<>();
 
     /**
      *

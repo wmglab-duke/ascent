@@ -3,9 +3,10 @@ package model;
 import com.comsol.model.GeomFeature;
 import com.comsol.model.Model;
 import com.comsol.model.ModelParam;
+import com.comsol.model.physics.PhysicsFeature;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.HashMap;
 
 class Part {
@@ -531,7 +532,7 @@ class Part {
                 rco.set("pos", new String[]{"0", "0", "Center-L/2"});
                 rco.set("r", "R_in+Recess");
                 rco.set("h", "L");
-                rco.set("selresult", true);
+                rco.set("selresult", false);
                 rco.set("selresultshow", false);
 
                 String erciLabel = "Execute Recess Cut In";
@@ -558,6 +559,8 @@ class Part {
                 so.set("posz", "Center");
                 so.set("r", 1);
                 so.set("contributeto", im.get("RECESS OVERSHOOT"));
+                so.set("selkeep", false);
+
 
                 String droLabel = "Delete Recess Overshoot";
                 GeomFeature dro = model.geom(id).create(im.next("del",droLabel), "Delete");
@@ -654,6 +657,7 @@ class Part {
                 so1.set("posz", "Center");
                 so1.set("r", 1);
                 so1.set("contributeto", im.get("RECESS OVERSHOOT"));
+                so1.set("selkeep", false);
 
                 String dro1Label = "Delete Recess Overshoot 1";
                 GeomFeature dro1 = model.geom(id).create(im.next("del",dro1Label), "Delete");
@@ -682,7 +686,8 @@ class Part {
                         "Conductorp2",
                         "SEL END P2",
                         "Cuffp3",
-                        "PC3"
+                        "PC3",
+                        "CUFF FINAL"
                 };
 
                 for (String cselHCCLabel: im.labels) {
@@ -808,6 +813,7 @@ class Part {
                 mcp2c.set("keep", false);
                 mcp2c.set("includefinal", false);
                 mcp2c.set("twistcomp", false);
+                mcp2c.set("selresult", true);
                 mcp2c.selection("face").named(im.get(hccsp2Label) + "_" + im.get(hccxp2Label));
                 mcp2c.selection("edge").named(im.get("PC2"));
                 mcp2c.selection("diredge").set(im.get(pcp2Label) + "(1)", 1);
@@ -860,6 +866,14 @@ class Part {
                 srch.label(srchLabel);
                 srch.set("contributeto", im.get("SRC"));
                 srch.set("p", new String[]{"cos(2*pi*rev_cuff_LN*(1.25/2.5))*((thk_elec_LN/2)+r_cuff_in_LN)", "sin(2*pi*rev_cuff_LN*(1.25/2.5))*((thk_elec_LN/2)+r_cuff_in_LN)", "Center"});
+
+                // NEW
+                String uspLabel = "Union Silicone Parts";
+                model.geom(id).create(im.next("uni", uspLabel), "Union");
+                model.geom(id).feature(im.get(uspLabel)).selection("input").set(im.get(mcp1Label), im.get(mcp2Label), im.get(mcp3Label));
+                model.geom(id).selection(im.get("CUFF FINAL")).label("CUFF FINAL");
+                model.geom(id).feature(im.get(uspLabel)).set("contributeto", im.get("CUFF FINAL"));
+                //
 
                 model.geom(id).run();
 
@@ -1147,6 +1161,7 @@ class Part {
                 srcs.label(srcsLabel);
                 srcs.set("contributeto", im.get("SRC"));
                 srcs.set("p", new String[]{"(r_cuff_in_Pitt+recess_Pitt+(thk_contact_Pitt/2))*cos(rotation_angle)", "(r_cuff_in_Pitt+recess_Pitt+(thk_contact_Pitt/2))*sin(rotation_angle)", "z_center"});
+
                 model.geom(id).run();
                 break;
             default:
@@ -1158,6 +1173,18 @@ class Part {
         return im;
     }
 
+    public static boolean defineMaterial(String materialID, String materialName, JSONObject master, ModelWrapper mw) {
+        Model model = mw.getModel();
+        model.material().create(materialID, "Common", "");
+        model.material(materialID).label(materialName);
+
+        JSONObject sigma = master.getJSONObject("conductivities");
+        String entry = sigma.getJSONObject(materialName).getString("value");
+
+        model.material(materialID).propertyGroup("def").set("electricconductivity", new String[]{entry});
+        return true;
+    }
+
     /**
      *
      * @param instanceLabel
@@ -1165,20 +1192,18 @@ class Part {
      * @param mw
      * @return
      */
-    public static boolean createPartInstance(String instanceID, String instanceLabel, String pseudonym, ModelWrapper mw, JSONObject instanceParams) throws IllegalArgumentException {
+    public static boolean createPartInstance(String instanceID, String instanceLabel, String pseudonym, ModelWrapper mw,
+                                             JSONObject instanceParams) throws IllegalArgumentException {
 
         Model model = mw.getModel();
 
         GeomFeature partInstance = model.component("comp1").geom("geom1").create(instanceID, "PartInstance");
         partInstance.label(instanceLabel);
         partInstance.set("part", mw.im.get(pseudonym));
-
-        Object item = instanceParams.get("def");
-        JSONObject itemObject = (JSONObject) item;
-
+        JSONObject itemObject = instanceParams.getJSONObject("def");
         IdentifierManager myIM = mw.getPartPrimitiveIM(pseudonym);
         if (myIM == null) throw new IllegalArgumentException("IdentfierManager not created for name: " + pseudonym);
-
+        
         String[] myLabels = myIM.labels; // may be null, but that is ok if not used
 
         // set instantiation parameters and import selections
@@ -1232,8 +1257,18 @@ class Part {
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[3]) + ".dom", "on"); // CONTACT FINAL
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[4]) + ".dom", "on"); // RECESS FINAL
 
-                break;
+                // assign physics
+                String ribbon_pcsLabel = instanceLabel + " Current Source";
 
+                String currentLabel = instanceLabel;
+
+                mw.im.currentPointers.put(currentLabel,
+                        model.component("comp1").physics("ec").create(mw.im.next("pcs", ribbon_pcsLabel), "PointCurrentSource", 0));
+
+                ((PhysicsFeature) mw.im.currentPointers.get(currentLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" +  myIM.get(myLabels[2]) + "_pnt"); // SRC
+                ((PhysicsFeature) mw.im.currentPointers.get(currentLabel)).set("Qjp", 0.001); // TODO - this should be read in from master?
+                ((PhysicsFeature) mw.im.currentPointers.get(currentLabel)).label(ribbon_pcsLabel);
+                break;
             case "WireContact_Primitive":
 
                 // set instantiation parameters
@@ -1255,6 +1290,12 @@ class Part {
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[1]) + ".dom", "on"); // CONTACT FINAL
                 partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[2]) + ".pnt", "on"); // SRC
 
+                // assign physics
+                String wire_pcsLabel = instanceLabel + " Current Source";
+                model.component("comp1").physics("ec").create(mw.im.next("pcs", wire_pcsLabel), "PointCurrentSource", 0);
+                model.component("comp1").physics("ec").feature(mw.im.get(wire_pcsLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" +  myIM.get(myLabels[2]) + "_pnt"); // SRC
+                model.component("comp1").physics("ec").feature(mw.im.get(wire_pcsLabel)).set("Qjp", 0.001); // TODO - this should be read in from master?
+                model.component("comp1").physics("ec").feature(mw.im.get(wire_pcsLabel)).label(wire_pcsLabel);
                 break;
             case "CircleContact_Primitive":
 
@@ -1279,51 +1320,34 @@ class Part {
                 // imports
                 partInstance.set("selkeepnoncontr", false);
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[2]) + ".dom", "on"); // RECESS FINAL
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[6]) + ".dom", "on"); // CONTACT FINAL
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[12]) + ".dom", "off"); // RECESS CUTTER OUT
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[13]) + ".dom", "off"); // BASE PLANE (PRE ROTATION)
 
-                partInstance.setEntry("selkeepobj", instanceID + "_" +  myIM.get(myLabels[7]), "off"); // CONTACT CUTTER OUT
-                partInstance.setEntry("selkeepobj", instanceID + "_" +  myIM.get(myLabels[6]), "off"); // CONTACT FINAL
                 partInstance.setEntry("selkeepobj", instanceID + "_" +  myIM.get(myLabels[4]), "off"); // SRC
+                partInstance.setEntry("selkeepobj", instanceID + "_" +  myIM.get(myLabels[6]), "off"); // CONTACT FINAL
+                partInstance.setEntry("selkeepobj", instanceID + "_" +  myIM.get(myLabels[7]), "off"); // CONTACT CUTTER OUT
 
-                //partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[2]), "off"); //
-                //partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[2]), "off"); //
-                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[2]) + ".dom", "off");
-                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[2]) + ".dom", "off");
-
-                partInstance.setEntry("selkeepbnd", instanceID + "_" +  myIM.get(myLabels[8]) + ".bnd", "off"); // CONTACT CUTTER OUT
-                partInstance.setEntry("selkeepbnd", instanceID + "_" +  myIM.get(myLabels[6]) + ".bnd", "off"); // CONTACT FINAL
                 partInstance.setEntry("selkeepbnd", instanceID + "_" +  myIM.get(myLabels[4]) + ".bnd", "off"); // SRC
+                partInstance.setEntry("selkeepbnd", instanceID + "_" +  myIM.get(myLabels[6]) + ".bnd", "off"); // CONTACT FINAL
+                partInstance.setEntry("selkeepbnd", instanceID + "_" +  myIM.get(myLabels[8]) + ".bnd", "off"); // CONTACT CUTTER OUT
 
-                partInstance.setEntry("selkeepedg", instanceID + "_" +  myIM.get(myLabels[8]) + ".edg", "off"); // CONTACT CUTTER OUT
-                partInstance.setEntry("selkeepedg", instanceID + "_" +  myIM.get(myLabels[6]) + ".edg", "off"); // CONTACT FINAL
                 partInstance.setEntry("selkeepedg", instanceID + "_" +  myIM.get(myLabels[4]) + ".edg", "off"); // SRC
+                partInstance.setEntry("selkeepedg", instanceID + "_" +  myIM.get(myLabels[6]) + ".edg", "off"); // CONTACT FINAL
+                partInstance.setEntry("selkeepedg", instanceID + "_" +  myIM.get(myLabels[8]) + ".edg", "off"); // CONTACT CUTTER OUT
 
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[4]) + ".pnt", "on"); // CONTACT FINAL
                 partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[8]) + ".pnt", "off"); // CONTACT CUTTER OUT
-                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[6]) + ".pnt", "off"); // CONTACT FINAL
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[12]) + ".pnt", "off"); // RECESS CUTTER OUT
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[13]) + ".pnt", "off"); // BASE PLANE (PRE ROTATION)
 
 
-
-//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepobj", "pi15_csel12", "off");
-//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepobj", "pi15_csel13", "off");
-//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepobj", "pi15_csel14", "off");
-
-//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepdom", "pi15_ballsel1", "off");
-//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepdom", "pi15_ballsel2", "off");
-//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepdom", "pi15_csel7.dom", "on");
-//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepdom", "pi15_csel12.dom", "off");
-//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepdom", "pi15_csel14.dom", "off");
-
-//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepbnd", "pi15_csel12.bnd", "off");
-//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepbnd", "pi15_csel13.bnd", "off");
-//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepbnd", "pi15_csel14.bnd", "off");
-
-//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepedg", "pi15_csel12.edg", "off");
-//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepedg", "pi15_csel13.edg", "off");
-//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeepedg", "pi15_csel14.edg", "off");
-
-//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeeppnt", "pi15_csel12.pnt", "off");
-//                model.component("comp1").geom("geom1").feature("pi15").setEntry("selkeeppnt", "pi15_csel13.pnt", "off");
-
-
+                // assign physics
+                String circle_pcsLabel = instanceLabel + " Current Source";
+                model.component("comp1").physics("ec").create(mw.im.next("pcs", circle_pcsLabel), "PointCurrentSource", 0);
+                model.component("comp1").physics("ec").feature(mw.im.get(circle_pcsLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" +  myIM.get(myLabels[4]) + "_pnt"); // SRC
+                model.component("comp1").physics("ec").feature(mw.im.get(circle_pcsLabel)).set("Qjp", 0.001); // TODO - this should be read in from master?
+                model.component("comp1").physics("ec").feature(mw.im.get(circle_pcsLabel)).label(circle_pcsLabel);
                 break;
             case "HelicalCuffnContact_Primitive":
 
@@ -1340,18 +1364,36 @@ class Part {
 
                 // imports
                 partInstance.set("selkeepnoncontr", false);
-                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[1]) + ".dom", "on"); // Cuffp1
-                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[5]) + ".dom", "on"); // Cuffp2
-                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[5]) + ".dom", "on"); // Conductorp2
-                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[8]) + ".dom", "on"); // Cuffp3
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[1]) + ".dom", "off"); // Cuffp1
                 partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[4]) + ".pnt", "on"); // SRC
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[5]) + ".dom", "off"); // Cuffp2
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[6]) + ".dom", "on"); // Conductorp2
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[8]) + ".dom", "off"); // Cuffp3
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[10]) + ".dom", "on"); // CUFF FINAL
+
+                // assign physcis
+                String helix_pcsLabel = instanceLabel + " Current Source";
+
+                mw.im.currentPointers.put(helix_pcsLabel, model.component("comp1").physics("ec").create(mw.im.next("pcs", helix_pcsLabel), "PointCurrentSource", 0));
+                ((PhysicsFeature) mw.im.currentPointers.get(helix_pcsLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" +  myIM.get(myLabels[4]) + "_pnt"); // SRC
+                ((PhysicsFeature) mw.im.currentPointers.get(helix_pcsLabel)).set("Qjp", 0.001); // TODO - this should be read in from master?
+                ((PhysicsFeature) mw.im.currentPointers.get(helix_pcsLabel)).label(helix_pcsLabel);
 
                 break;
             case "RectangleContact_Primitive":
 
-                // set instantiation parameters
+              // set instantiation parameters
 //                String[] rectangleContactParameters = {
-//                        "Center"
+//                        "Recess",
+//                        "Rotation_angle",
+//                        "Center",
+//                        "Round_def",
+//                        "R_in",
+//                        "Contact_depth",
+//                        "Overshoot",
+//                        "A_ellipse_contact",
+//                        "Diam_contact",
+//                        "L"
 //                };
 //
 //                for (String param: rectangleContactParameters) {
@@ -1367,6 +1409,10 @@ class Part {
 //                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Theta_conductor", (String) itemObject.get("Theta_conductor"));
 
                 // imports
+
+                // assign materials
+
+                // assign physcis
 
                 break;
             case "Fascicle":
@@ -1387,6 +1433,21 @@ class Part {
                 break;
             default:
                 throw new IllegalArgumentException("No implementation for part instance name: " + pseudonym);
+        }
+
+        // assign materials
+        JSONArray materials = instanceParams.getJSONArray("materials");
+        for(Object o: materials) {
+            String type = ((JSONObject) o).getString("type");
+            int label_index = ((JSONObject) o).getInt("label_index");
+            String selection = myLabels[label_index];
+            if(myIM.hasPseudonym(selection)) {
+                String linkLabel = String.join("/", new String[]{instanceLabel, selection, type});
+                model.component("comp1").material().create(mw.im.next("matlnk", linkLabel), "Link");
+                model.component("comp1").material(mw.im.get(linkLabel)).label(linkLabel);
+                model.component("comp1").material(mw.im.get(linkLabel)).set("link", mw.im.get(type));
+                model.component("comp1").material(mw.im.get(linkLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(selection) + "_dom");
+            }
         }
 
         return true;

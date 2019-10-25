@@ -1,6 +1,7 @@
 package model;
 
 import com.comsol.model.Model;
+import com.comsol.model.physics.PhysicsFeature;
 import com.comsol.model.util.ModelUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -10,16 +11,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.*;
 import java.util.stream.Stream;
 
 /**
  * model.ModelWrapper
- *
- * NOTE: Eventually, call this class ModelWrapper (NOT ModelWrapper).
  *
  * Master high-level class for managing a model, its metadata, and various critical operations such as creating parts
  * and extracting potentials. This class houses the "meaty" operations of actually interacting with the model object
@@ -236,10 +232,51 @@ public class ModelWrapper {
             // loop through all part instances
             for (Object item: (JSONArray) data.get("instances")) {
                 JSONObject itemObject = (JSONObject) item;
+
                 String instanceLabel = (String) itemObject.get("label");
                 String instanceID = this.im.next("pi", instanceLabel);
                 String type = (String) itemObject.get("type");
                 Part.createPartInstance(instanceID, instanceLabel, type , this, itemObject);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    //
+    public boolean addMaterialDefinitions(String name) {
+        // extract data from json
+        try {
+            JSONObject data = new JSONReader(String.join("/",
+                    new String[]{this.root, ".templates", name})).getData();
+
+            JSONObject master = new JSONReader(String.join("/",
+                    new String[]{this.root, ".config", "master.json"})).getData();
+
+            // for each material definition, create it (if not already existing)
+            for (Object item: (JSONArray) data.get("instances")) {
+                JSONObject itemObject = (JSONObject) item;
+
+
+                JSONArray materials = itemObject.getJSONArray("materials");
+
+                for(Object o: materials) {
+                    String materialName = ((JSONObject) o).getString("type");
+                    // create the material definition if it has not already been created
+                    if (! this.im.hasPseudonym(materialName)) {
+                        // get next available (TOP LEVEL) "material" id
+                        String materialID = this.im.next("mat", materialName);
+                        try {
+                            // TRY to create the material definition (catch error if no existing implementation)
+                            Part.defineMaterial(materialID, materialName, master, this);
+                        } catch (IllegalArgumentException e) {
+                            e.printStackTrace();
+                            return false;
+                        }
+                    }
+                }
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -287,6 +324,14 @@ public class ModelWrapper {
                     "master.json"
             })).getData();
 
+
+
+            for(Object o: json_data.getJSONArray("fhdjlag")) {
+                String s = String.valueOf(o);
+
+
+            }
+
             String fasciclesPath = String.join("/", new String[]{
                     this.root,
                     "data",
@@ -299,7 +344,6 @@ public class ModelWrapper {
             });
 
             try (Stream<Path> result = Files.walk(Paths.get(fasciclesPath))) {
-
                 for (Iterator<Path> it = result.iterator(); it.hasNext(); ) {
                     Path p = it.next();
                     if (p.toString().contains(".txt")) {
@@ -331,22 +375,16 @@ public class ModelWrapper {
         Model model = ModelUtil.create("Model");
         model.component().create("comp1", true);
         model.component("comp1").geom().create("geom1", 3);
+        model.component("comp1").physics().create("ec", "ConductiveMedia", "geom1");
         model.component("comp1").mesh().create("mesh1");
 
-//        ModelWrapper mw = new ModelWrapper(null, "/Users/jakecariello/Box/Documents/Pipeline/access");
-//        ModelWrapper mw = new ModelWrapper(model, "/Users/ericmusselman/Documents/access");
-        String currentDir = System.getProperty("user.dir");
-        System.out.println(currentDir);
-        ModelWrapper mw = new ModelWrapper(model, "D:\\Documents\\access"); // TODO
+        String projectPath = args[0];
+        ModelWrapper mw = new ModelWrapper(model, projectPath);
 
-//        String configFile = "/.config/master.json";
-        String configFile = "\\.config\\master.json"; // TODO
-
+        String configFile = "/.config/master.json";
         JSONObject configData = null;
         try {
-            //configData = new JSONReader("/Users/ericmusselman/Documents/access" + configFile).getData();
-            System.out.println("D:\\Documents\\access" + configFile); // TODO
-            configData = new JSONReader("D:\\Documents\\access" + configFile).getData();
+            configData = new JSONReader(projectPath + configFile).getData();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -362,6 +400,9 @@ public class ModelWrapper {
             // add part primitives needed to make the cuff
             mw.addPartPrimitives(cuff);
 
+            // add material definitions needed to make the cuff
+            mw.addMaterialDefinitions(cuff);
+
             // add part instances needed to make the cuff
             mw.addPartInstances(cuff);
         }
@@ -369,12 +410,23 @@ public class ModelWrapper {
         model.component("comp1").geom("geom1").run("fin");
 
         try {
-            model.save("parts_test");
+            model.save("parts_test"); // TODO this dir needs to change
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+        mw.loopCurrents();
+
         ModelUtil.disconnect();
         System.out.println("Disconnected from COMSOL Server");
+    }
+
+    public void loopCurrents() {
+        for(String key: this.im.currentPointers.keySet()) {
+            System.out.println("Current pointer: " + key);
+            PhysicsFeature current = (PhysicsFeature) this.im.currentPointers.get(key);
+
+            current.set("Qjp", 0.001);
+        }
     }
 }

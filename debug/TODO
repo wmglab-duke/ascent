@@ -1,4 +1,4 @@
-- (Jake) add buffers to axon position generation w/in fascicle
+- DONE (Jake) add buffers to axon position generation w/in fascicle
 - (Jake) load fascicle paths into params, create fascicle primitive, instantiate fascicles
 - (Jake) SAME for nerves
 - (Eric) add fascicle/nerve physics parameters to master.json (mesh/CI bool)

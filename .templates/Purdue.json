@@ -15,7 +15,14 @@
         "Buffer_hole": "Buffer_hole_P",
         "L_holecenter_cuffseam": "L_holecenter_cuffseam_P",
         "Pitch_holecenter_holecenter": "Pitch_holecenter_holecenter_P",
-      }
+      },
+      "materials": [
+        {
+          "info": "insulator",
+          "type": "silicone",
+          "label_index": 2
+        }
+      ]
     },
     {
       "type": "WireContact_Primitive",
@@ -27,7 +34,14 @@
         "Pitch": "Pitch_P",
         "Sep_conductor": "sep_conductor_P",
         "Theta_conductor": "theta_conductor_P"
-      }
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "type": "platinum",
+          "label_index": 1
+        }
+      ]
     },
     {
       "type": "WireContact_Primitive",
@@ -39,7 +53,14 @@
         "Pitch": "Pitch_P",
         "Sep_conductor": "sep_conductor_P",
         "Theta_conductor": "theta_conductor_P"
-      }
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "type": "platinum",
+          "label_index": 1
+        }
+      ]
     }
   ],
 

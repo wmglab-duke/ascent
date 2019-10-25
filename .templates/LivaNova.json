@@ -5,14 +5,38 @@
       "label": "LivaNova CuffnContact 1",
       "def": {
         "Center": "(z_nerve_LN/2)-(sep_elec_LN/2)"
-      }
+      },
+      "materials": [
+        {
+          "info": "insulator",
+          "type": "silicone",
+          "label_index": 10
+        },
+        {
+          "info": "conductor",
+          "type": "platinum",
+          "label_index": 6
+        }
+      ]
     },
     {
       "type": "HelicalCuffnContact_Primitive",
       "label": "LivaNova CuffnContact 2",
       "def": {
         "Center": "(z_nerve_LN/2)+(sep_elec_LN/2)"
-      }
+      },
+      "materials": [
+        {
+          "info": "insulator",
+          "type": "silicone",
+          "label_index": 10
+        },
+        {
+          "info": "conductor",
+          "type": "platinum",
+          "label_index": 6
+        }
+      ]
     }
   ],
 

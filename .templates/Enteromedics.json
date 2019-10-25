@@ -15,7 +15,14 @@
         "Buffer_hole": "Buffer_hole_EM",
         "L_holecenter_cuffseam": "L_holecenter_cuffseam_EM",
         "Pitch_holecenter_holecenter": "Pitch_holecenter_holecenter_EM"
-      }
+      },
+      "materials": [
+        {
+          "info": "insulator",
+          "type": "silicone",
+          "label_index": 2
+        }
+      ]
     },
     {
       "type": "RibbonContact_Primitive",
@@ -28,7 +35,19 @@
         "Center": "Center_EM",
         "Theta_contact": "Theta_contact_EM",
         "Rot_def": "0 [deg]"
-      }
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "type": "platinum",
+          "label_index": 3
+        },
+        {
+          "info": "recess",
+          "type": "saline",
+          "label_index": 4
+        }
+      ]
     }
   ],
 

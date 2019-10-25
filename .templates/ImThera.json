@@ -17,7 +17,14 @@
         "Buffer_hole": "Buffer_hole_ITI",
         "L_holecenter_cuffseam": "L_holecenter_cuffseam_ITI",
         "Pitch_holecenter_holecenter": "Pitch_holecenter_holecenter_ITI"
-      }
+      },
+      "materials": [
+        {
+          "info": "insulator",
+          "type": "silicone",
+          "label_index": 2
+        }
+      ]
     },
     {
       "type": "TubeCuff_Primitive",
@@ -34,7 +41,14 @@
         "Buffer_hole": "Buffer_hole_ITF",
         "L_holecenter_cuffseam": "L_holecenter_cuffseam_ITF",
         "Pitch_holecenter_holecenter": "Pitch_holecenter_holecenter_ITF"
-      }
+      },
+      "materials": [
+        {
+          "info": "insulator",
+          "type": "silicone",
+          "label_index": 2
+        }
+      ]
     },
     {
       "type": "CircleContact_Primitive",
@@ -50,7 +64,19 @@
         "A_ellipse_contact": "a_ellipse_contact_ITC",
         "Diam_contact": "diam_contact_ITC",
         "L": "L_IT"
-      }
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "type": "platinum",
+          "label_index": 6
+        },
+        {
+          "info": "recess",
+          "type": "saline",
+          "label_index": 2
+        }
+      ]
     },
     {
       "type": "CircleContact_Primitive",
@@ -66,7 +92,19 @@
         "A_ellipse_contact": "a_ellipse_contact_ITC",
         "Diam_contact": "diam_contact_ITC",
         "L": "L_IT"
-      }
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "type": "platinum",
+          "label_index": 6
+        },
+        {
+          "info": "recess",
+          "type": "saline",
+          "label_index": 2
+        }
+      ]
     },
     {
       "type": "CircleContact_Primitive",
@@ -82,7 +120,19 @@
         "A_ellipse_contact": "a_ellipse_contact_ITC",
         "Diam_contact": "diam_contact_ITC",
         "L": "L_IT"
-      }
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "type": "platinum",
+          "label_index": 6
+        },
+        {
+          "info": "recess",
+          "type": "saline",
+          "label_index": 2
+        }
+      ]
     },
     {
       "type": "CircleContact_Primitive",
@@ -98,7 +148,19 @@
         "A_ellipse_contact": "a_ellipse_contact_ITC",
         "Diam_contact": "diam_contact_ITC",
         "L": "L_IT"
-      }
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "type": "platinum",
+          "label_index": 6
+        },
+        {
+          "info": "recess",
+          "type": "saline",
+          "label_index": 2
+        }
+      ]
     },
     {
       "type": "CircleContact_Primitive",
@@ -114,7 +176,19 @@
         "A_ellipse_contact": "a_ellipse_contact_ITC",
         "Diam_contact": "diam_contact_ITC",
         "L": "L_IT"
-      }
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "type": "platinum",
+          "label_index": 6
+        },
+        {
+          "info": "recess",
+          "type": "saline",
+          "label_index": 2
+        }
+      ]
     },
     {
       "type": "CircleContact_Primitive",
@@ -130,7 +204,19 @@
         "A_ellipse_contact": "a_ellipse_contact_ITC",
         "Diam_contact": "diam_contact_ITC",
         "L": "L_IT"
-      }
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "type": "platinum",
+          "label_index": 6
+        },
+        {
+          "info": "recess",
+          "type": "saline",
+          "label_index": 2
+        }
+      ]
     }
   ],
 
