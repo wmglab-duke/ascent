@@ -879,8 +879,6 @@ class Part {
 
                 break;
             case "RectangleContact_Primitive":
-                model.geom(id).inputParam().set("r_inner_contact", "r_cuff_in_Pitt+recess_Pitt");
-                model.geom(id).inputParam().set("r_outer_contact", "r_cuff_in_Pitt+recess_Pitt+thk_contact_Pitt");
                 model.geom(id).inputParam().set("z_center", "0 [mm]");
                 model.geom(id).inputParam().set("rotation_angle", "0 [deg]");
                 model.geom(id).inputParam().set("w_contact", "0.475 [mm]");
@@ -975,7 +973,7 @@ class Part {
                 GeomFeature mcpc = model.geom(id).create(im.next("ext",mcpcLabel), "Extrude");
                 mcpc.label("Make Contact Pre Cuts");
                 mcpc.set("contributeto", im.get("CONTACT PRE CUTS"));
-                mcpc.setIndex("distance", "2*r_cuff_in_Pitt", 0);
+                mcpc.setIndex("distance", "2*R_in_Pitt", 0);
                 mcpc.selection("input").named(im.get("CONTACT CROSS SECTION"));
 
                 String iccLabel = "Inner Contact Cutter";
@@ -983,7 +981,7 @@ class Part {
                 icc.label(iccLabel);
                 icc.set("contributeto", im.get("INNER CONTACT CUTTER"));
                 icc.set("pos", new String[]{"0", "0", "-L_cuff_Pitt/2+z_center"});
-                icc.set("r", "r_inner_contact");
+                icc.set("r", "R_in_Pitt+recess_Pitt");
                 icc.set("h", "L_cuff_Pitt");
 
                 String occLabel = "Outer Contact Cutter";
@@ -991,7 +989,7 @@ class Part {
                 occ.label(occLabel);
                 occ.set("contributeto", im.get("OUTER CONTACT CUTTER"));
                 occ.set("pos", new String[]{"0", "0", "-L_cuff_Pitt/2+z_center"});
-                occ.set("r", "r_outer_contact");
+                occ.set("r", "R_in_Pitt+recess_Pitt+thk_contact_Pitt");
                 occ.set("h", "L_cuff_Pitt");
 
                 String coeLabel = "Cut Outer Excess";
@@ -1011,8 +1009,8 @@ class Part {
                 String sieLabel = "sel inner excess";
                 GeomFeature sie = model.geom(id).create(im.next("ballsel",sieLabel), "BallSelection");
                 sie.label(sieLabel);
-                sie.set("posx", "(r_inner_contact/2)*cos(rotation_angle)");
-                sie.set("posy", "(r_inner_contact/2)*sin(rotation_angle)");
+                sie.set("posx", "((R_in_Pitt+recess_Pitt)/2)*cos(rotation_angle)");
+                sie.set("posy", "((R_in_Pitt+recess_Pitt)/2)*sin(rotation_angle)");
                 sie.set("posz", "z_center");
                 sie.set("r", 1);
                 sie.set("contributeto", im.get("SEL INNER EXCESS CONTACT"));
@@ -1020,8 +1018,8 @@ class Part {
                 String soeLabel = "sel outer excess";
                 GeomFeature soe = model.geom(id).create(im.next("ballsel",soeLabel), "BallSelection");
                 soe.label(soeLabel);
-                soe.set("posx", "((r_outer_contact+2*r_cuff_in_Pitt)/2)*cos(rotation_angle)");
-                soe.set("posy", "((r_outer_contact+2*r_cuff_in_Pitt)/2)*sin(rotation_angle)");
+                soe.set("posx", "((2*R_in_Pitt-(R_in_Pitt+recess_Pitt+thk_contact_Pitt))/2+R_in_Pitt+recess_Pitt+thk_contact_Pitt)*cos(rotation_angle)");
+                soe.set("posy", "((2*R_in_Pitt-(R_in_Pitt+recess_Pitt+thk_contact_Pitt))/2+R_in_Pitt+recess_Pitt+thk_contact_Pitt)*sin(rotation_angle)");
                 soe.set("posz", "z_center");
                 soe.set("r", 1);
                 soe.set("contributeto", im.get("SEL OUTER EXCESS CONTACT"));
@@ -1099,7 +1097,7 @@ class Part {
                 GeomFeature mrpc1 = model.geom(id).create(im.next("ext", mrpc1Label), "Extrude");
                 mrpc1.label(mrpc1Label);
                 mrpc1.set("contributeto", im.get("RECESS PRE CUTS"));
-                mrpc1.setIndex("distance", "2*r_cuff_in_Pitt", 0);
+                mrpc1.setIndex("distance", "2*R_in_Pitt", 0);
                 mrpc1.selection("input").named(im.get("RECESS CROSS SECTION"));
 
                 String ircLabel = "Inner Recess Cutter";
@@ -1107,7 +1105,7 @@ class Part {
                 irc.label(ircLabel);
                 irc.set("contributeto", im.get("INNER RECESS CUTTER"));
                 irc.set("pos", new String[]{"0", "0", "-L_cuff_Pitt/2+z_center"});
-                irc.set("r", "r_cuff_in_Pitt");
+                irc.set("r", "R_in_Pitt");
                 irc.set("h", "L_cuff_Pitt");
 
                 String orcLabel = "Outer Recess Cutter";
@@ -1115,7 +1113,7 @@ class Part {
                 orc.label(orcLabel);
                 orc.set("contributeto", im.get("OUTER RECESS CUTTER"));
                 orc.set("pos", new String[]{"0", "0", "-L_cuff_Pitt/2+z_center"});
-                orc.set("r", "r_inner_contact");
+                orc.set("r", "R_in_Pitt+recess_Pitt");
                 orc.set("h", "L_cuff_Pitt");
 
                 String roreLabel = "Remove Outer Recess Excess";
@@ -1135,8 +1133,8 @@ class Part {
                 String sie1Label = "sel inner excess 1";
                 GeomFeature sie1 = model.geom(id).create(im.next("ballsel",sie1Label), "BallSelection");
                 sie1.label(sie1Label);
-                sie1.set("posx", "((r_inner_contact+recess_Pitt)/2)*cos(rotation_angle)");
-                sie1.set("posy", "((r_inner_contact+recess_Pitt)/2)*sin(rotation_angle)");
+                sie1.set("posx", "((R_in_Pitt+recess_Pitt)/2)*cos(rotation_angle)");
+                sie1.set("posy", "((R_in_Pitt+recess_Pitt)/2)*sin(rotation_angle)");
                 sie1.set("posz", "z_center");
                 sie1.set("r", 1);
                 sie1.set("contributeto", im.get("SEL INNER EXCESS RECESS"));
@@ -1144,8 +1142,8 @@ class Part {
                 String soe1Label = "sel outer excess 1";
                 GeomFeature soe1 = model.geom(id).create(im.next("ballsel",soe1Label), "BallSelection");
                 soe1.label(soe1Label);
-                soe1.set("posx", "((r_cuff_in_Pitt+2*r_cuff_in_Pitt)/2)*cos(rotation_angle)");
-                soe1.set("posy", "((r_cuff_in_Pitt+2*r_cuff_in_Pitt)/2)*sin(rotation_angle)");
+                soe1.set("posx", "((R_in_Pitt+2*R_in_Pitt)/2)*cos(rotation_angle)");
+                soe1.set("posy", "((R_in_Pitt+2*R_in_Pitt)/2)*sin(rotation_angle)");
                 soe1.set("posz", "z_center");
                 soe1.set("r", 1);
                 soe1.set("contributeto", im.get("SEL OUTER EXCESS RECESS"));
@@ -1168,7 +1166,7 @@ class Part {
                 GeomFeature srcs = model.geom(id).create(im.next("pt",srcsLabel), "Point");
                 srcs.label(srcsLabel);
                 srcs.set("contributeto", im.get("SRC"));
-                srcs.set("p", new String[]{"(r_cuff_in_Pitt+recess_Pitt+(thk_contact_Pitt/2))*cos(rotation_angle)", "(r_cuff_in_Pitt+recess_Pitt+(thk_contact_Pitt/2))*sin(rotation_angle)", "z_center"});
+                srcs.set("p", new String[]{"(R_in_Pitt+recess_Pitt+(thk_contact_Pitt/2))*cos(rotation_angle)", "(R_in_Pitt+recess_Pitt+(thk_contact_Pitt/2))*sin(rotation_angle)", "z_center"});
 
                 model.geom(id).run();
                 break;
@@ -1238,8 +1236,8 @@ class Part {
                 }
 
                 // imports
-//                partInstance.set("selkeepnoncontr", false);
-//                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[2]) + ".dom", "on"); // CUFF FINAL
+                partInstance.set("selkeepnoncontr", false);
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[2]) + ".dom", "on"); // CUFF FINAL
 
                 break;
             case "RibbonContact_Primitive":
@@ -1403,8 +1401,6 @@ class Part {
 
               // set instantiation parameters
                 String[] rectangleContactParameters = {
-                        "r_inner_contact",
-                        "r_outer_contact",
                         "z_center",
                         "rotation_angle",
                         "w_contact",
@@ -1418,12 +1414,11 @@ class Part {
                 };
 
                 for (String param: rectangleContactParameters) {
-                    System.out.println(param);
-                    System.out.println(itemObject.get(param));
                     partInstance.setEntry("inputexpr", (String) param, (String) itemObject.get(param));
                 }
 
                 // imports
+                partInstance.set("selkeepnoncontr", false);
 
                 // assign materials
 
@@ -1464,8 +1459,6 @@ class Part {
 //                model.component("comp1").material(mw.im.get(linkLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(selection) + "_dom");
 //            }
 //        }
-
-        System.out.println("here");
 
         return true;
     }

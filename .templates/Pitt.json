@@ -28,8 +28,6 @@
       "type": "RectangleContact_Primitive",
       "label": "Pitt Contact 1",
       "def": {
-        "r_inner_contact": "r_cuff_in_Pitt+recess_Pitt",
-        "r_outer_contact": "r_cuff_in_Pitt+recess_Pitt+thk_contact_Pitt",
         "z_center": "(z_nerve_Pitt/2)+(pitch_Pitt/2)",
         "rotation_angle": "theta_pos_contact1_Pitt [deg]",
         "w_contact": "w_contact_Pitt",
@@ -37,7 +35,7 @@
         "fillet_contact": "fillet_contact_Pitt",
         "scale_morph_w_contact": "scale_morph_w_contact_Pitt",
         "L_cuff": "L_cuff_Pitt",
-        "r_cuff_in": "r_cuff_in_Pitt",
+        "r_cuff_in": "R_in_Pitt",
         "recess": "recess_Pitt",
         "thk_contact": "thk_contact_Pitt"
       },
@@ -58,8 +56,6 @@
       "type": "RectangleContact_Primitive",
       "label": "Pitt Contact 2",
       "def": {
-        "r_inner_contact": "r_cuff_in_Pitt+recess_Pitt",
-        "r_outer_contact": "r_cuff_in_Pitt+recess_Pitt+thk_contact_Pitt",
         "z_center": "(z_nerve_Pitt/2)-(pitch_Pitt/2)",
         "rotation_angle": "theta_pos_contact2_Pitt [deg]",
         "w_contact": "w_contact_Pitt",
@@ -67,7 +63,7 @@
         "fillet_contact": "fillet_contact_Pitt",
         "scale_morph_w_contact": "scale_morph_w_contact_Pitt",
         "L_cuff": "L_cuff_Pitt",
-        "r_cuff_in": "r_cuff_in_Pitt",
+        "r_cuff_in": "R_in_Pitt",
         "recess": "recess_Pitt",
         "thk_contact": "thk_contact_Pitt"
       },
@@ -88,8 +84,6 @@
       "type": "RectangleContact_Primitive",
       "label": "Pitt Contact 3",
       "def": {
-        "r_inner_contact": "r_cuff_in_Pitt+recess_Pitt",
-        "r_outer_contact": "r_cuff_in_Pitt+recess_Pitt+thk_contact_Pitt",
         "z_center": "(z_nerve_Pitt/2)+(pitch_Pitt/2)",
         "rotation_angle": "theta_pos_contact3_Pitt [deg]",
         "w_contact": "w_contact_Pitt",
@@ -97,7 +91,7 @@
         "fillet_contact": "fillet_contact_Pitt",
         "scale_morph_w_contact": "scale_morph_w_contact_Pitt",
         "L_cuff": "L_cuff_Pitt",
-        "r_cuff_in": "r_cuff_in_Pitt",
+        "r_cuff_in": "R_in_Pitt",
         "recess": "recess_Pitt",
         "thk_contact": "thk_contact_Pitt"
       },
@@ -118,8 +112,6 @@
       "type": "RectangleContact_Primitive",
       "label": "Pitt Contact 4",
       "def": {
-        "r_inner_contact": "r_cuff_in_Pitt+recess_Pitt",
-        "r_outer_contact": "r_cuff_in_Pitt+recess_Pitt+thk_contact_Pitt",
         "z_center": "(z_nerve_Pitt/2)-(pitch_Pitt/2)",
         "rotation_angle": "theta_pos_contact4_Pitt [deg]",
         "w_contact": "w_contact_Pitt",
@@ -127,7 +119,7 @@
         "fillet_contact": "fillet_contact_Pitt",
         "scale_morph_w_contact": "scale_morph_w_contact_Pitt",
         "L_cuff": "L_cuff_Pitt",
-        "r_cuff_in": "r_cuff_in_Pitt",
+        "r_cuff_in": "R_in_Pitt",
         "recess": "recess_Pitt",
         "thk_contact": "thk_contact_Pitt"
       },
@@ -164,12 +156,12 @@
     },
     {
       "name": "R_in_Pitt",
-      "expression": "d_nerve_Pitt/2",
+      "expression": "1 [mm]",
       "description": ""
     },
     {
       "name": "R_out_Pitt",
-      "expression": "r_cuff_in_Pitt+thk_cuff_Pitt",
+      "expression": "R_in_Pitt+thk_cuff_Pitt",
       "description": ""
     },
     {
@@ -184,18 +176,18 @@
     },
     {
       "name": "percent_circ_cuff_Pitt",
-      "expression": "percent_circ_cuff_pre_Pitt*(r_cuff_in_pre_Pitt/R_in_Pitt)",
+      "expression": "1",
       "description": ""
     },
     {
       "name": "r_cuff_in_pre_Pitt",
-      "expression": "0.35 [mm]",
+      "expression": "0.7 [mm]",
       "description": ""
     },
     {
       "name": "Rot_def_Pitt",
       "expression": "0",
-      "description": "TODO?"
+      "description": ""
     },
     {
       "name": "D_hole_Pitt",
@@ -234,17 +226,12 @@
     },
     {
       "name": "theta_contact_Pitt",
-      "expression": "((w_contact_Pitt*360)/(pi*d_nerve_Pitt)) [deg]",
-      "description": ""
-    },
-    {
-      "name": "d_nerve_Pitt",
-      "expression": "0.7 [mm]",
+      "expression": "((w_contact_Pitt*360)/(pi*2*R_in_Pitt)) [deg]",
       "description": ""
     },
     {
       "name": "w_contact_ext_Pitt",
-      "expression": "d_nerve_Pitt*sin(theta_contact_Pitt/2)",
+      "expression": "2*R_in_Pitt*sin(theta_contact_Pitt/2)",
       "description": ""
     },
     {
@@ -255,11 +242,6 @@
     {
       "name": "z_nerve_Pitt",
       "expression": "100 [mm]",
-      "description": ""
-    },
-    {
-      "name": "r_cuff_in_Pitt",
-      "expression": "d_nerve_Pitt/2",
       "description": ""
     },
     {
@@ -274,7 +256,7 @@
     },
     {
       "name": "recess_Pitt",
-      "expression": "0 [mm]",
+      "expression": "100 [um]",
       "description": ""
     },
     {
@@ -288,48 +270,23 @@
       "description": ""
     },
     {
-      "name": "rad_arc_length_sep_contacts_Pitt",
-      "expression": "0.7750 [mm]",
-      "description": ""
-    },
-    {
-      "name": "arc1_gap_Pitt",
-      "expression": "2.075 [mm]",
-      "description": ""
-    },
-    {
-      "name": "arc2_gap_Pitt",
-      "expression": "2.7 [mm]",
-      "description": ""
-    },
-    {
-      "name": "arc3_gap_Pitt",
-      "expression": "arc1_gap_Pitt+w_contact_Pitt+rad_arc_length_sep_contacts_Pitt",
-      "description": ""
-    },
-    {
-      "name": "arc4_gap_Pitt",
-      "expression": "arc2_gap_Pitt+w_contact_Pitt+rad_arc_length_sep_contacts_Pitt",
-      "description": ""
-    },
-    {
       "name": "theta_pos_contact1_Pitt",
-      "expression": "360*((arc1_gap_Pitt+(w_contact_Pitt/2))/(pi*2*r_cuff_in_Pitt)) [deg]",
+      "expression": "(0+22.5) [deg]",
       "description": ""
     },
     {
       "name": "theta_pos_contact2_Pitt",
-      "expression": "360*((arc2_gap_Pitt+(w_contact_Pitt/2))/(pi*2*r_cuff_in_Pitt)) [deg]",
+      "expression": "(45+22.5) [deg]",
       "description": ""
     },
     {
       "name": "theta_pos_contact3_Pitt",
-      "expression": "360*((arc3_gap_Pitt+(w_contact_Pitt/2))/(pi*2*r_cuff_in_Pitt)) [deg]",
+      "expression": "(90+22.5) [deg]",
       "description": ""
     },
     {
       "name": "theta_pos_contact4_Pitt",
-      "expression": "360*((arc4_gap_Pitt+(w_contact_Pitt/2))/(pi*2*r_cuff_in_Pitt)) [deg]",
+      "expression": "(135+22.5) [deg]",
       "description": ""
     },
     {
