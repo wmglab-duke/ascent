@@ -1448,6 +1448,17 @@ class Part {
                 partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[21]) + ".pnt", "off"); // FINAL
                 partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[22]) + ".pnt", "off"); // INNER CUTTER
 
+                partInstance.setEntry("selkeepbnd", instanceID + "_" +  myIM.get(myLabels[13]) + ".bnd", "off"); // SEL OUTER EXCESS
+                partInstance.setEntry("selkeepbnd", instanceID + "_" +  myIM.get(myLabels[14]) + ".bnd", "off"); // SEL INNER EXCESS
+                partInstance.setEntry("selkeepbnd", instanceID + "_" +  myIM.get(myLabels[15]) + ".bnd", "off"); // BASE CONTACT PLANE (PRE ROTATION)
+                partInstance.setEntry("selkeepbnd", instanceID + "_" +  myIM.get(myLabels[16]) + ".bnd", "off"); // SRC
+                partInstance.setEntry("selkeepbnd", instanceID + "_" +  myIM.get(myLabels[17]) + ".bnd", "off"); // CONTACT PRE CUTS
+                partInstance.setEntry("selkeepbnd", instanceID + "_" +  myIM.get(myLabels[18]) + ".bnd", "off"); // CONTACT CROSS SECTION
+                partInstance.setEntry("selkeepbnd", instanceID + "_" +  myIM.get(myLabels[19]) + ".bnd", "off"); // INNER CUFF CUTTER
+                partInstance.setEntry("selkeepbnd", instanceID + "_" +  myIM.get(myLabels[20]) + ".bnd", "off"); // OUTER CUFF CUTTER
+                partInstance.setEntry("selkeepbnd", instanceID + "_" +  myIM.get(myLabels[21]) + ".bnd", "off"); // FINAL
+                partInstance.setEntry("selkeepbnd", instanceID + "_" +  myIM.get(myLabels[22]) + ".bnd", "off"); // INNER CUTTER
+
                 // assign physics
                 String square_pcsLabel = instanceLabel + " Current Source";
                 String square_currentLabel = instanceLabel;
