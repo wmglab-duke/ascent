@@ -442,12 +442,12 @@ class Part {
                         "RECESS FINAL",
                         "RECESS OVERSHOOT",
                         "SRC",
-                        "PLANE FOR CONTACT",
+                        "PLANE FOR CONTACT", //5
                         "CONTACT FINAL",
                         "CONTACT CUTTER OUT",
                         "BASE CONTACT PLANE (PRE ROTATION)",
                         "PLANE FOR RECESS",
-                        "PRE CUT RECESS",
+                        "PRE CUT RECESS", //10
                         "RECESS CUTTER IN",
                         "RECESS CUTTER OUT",
                         "BASE PLANE (PRE ROTATION)"
@@ -1344,6 +1344,9 @@ class Part {
                 partInstance.setEntry("selkeepbnd", instanceID + "_" +  myIM.get(myLabels[4]) + ".bnd", "off"); // SRC
                 partInstance.setEntry("selkeepbnd", instanceID + "_" +  myIM.get(myLabels[6]) + ".bnd", "off"); // CONTACT FINAL
                 partInstance.setEntry("selkeepbnd", instanceID + "_" +  myIM.get(myLabels[8]) + ".bnd", "off"); // CONTACT CUTTER OUT
+                partInstance.setEntry("selkeepbnd", instanceID + "_" +  myIM.get(myLabels[12]) + ".bnd", "off"); // RECESS CUTTER OUT
+                partInstance.setEntry("selkeepbnd", instanceID + "_" +  myIM.get(myLabels[13]) + ".bnd", "off"); // BASE PLANE (PRE ROTATION)
+
 
                 partInstance.setEntry("selkeepedg", instanceID + "_" +  myIM.get(myLabels[4]) + ".edg", "off"); // SRC
                 partInstance.setEntry("selkeepedg", instanceID + "_" +  myIM.get(myLabels[6]) + ".edg", "off"); // CONTACT FINAL
