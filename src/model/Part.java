@@ -883,6 +883,14 @@ class Part {
                 model.geom(id).inputParam().set("r_outer_contact", "r_cuff_in_Pitt+recess_Pitt+thk_contact_Pitt");
                 model.geom(id).inputParam().set("z_center", "0 [mm]");
                 model.geom(id).inputParam().set("rotation_angle", "0 [deg]");
+                model.geom(id).inputParam().set("w_contact", "0.475 [mm]");
+                model.geom(id).inputParam().set("z_contact", "0.475 [mm]");
+                model.geom(id).inputParam().set("fillet_contact", "0.1 [mm]");
+                model.geom(id).inputParam().set("scale_morph_w_contact", "w_contact_ext_Pitt/w_contact_Pitt");
+                model.geom(id).inputParam().set("L_cuff", "4.1917 [mm]");
+                model.geom(id).inputParam().set("r_cuff_in", "d_nerve_Pitt/2");
+                model.geom(id).inputParam().set("recess", "0 [mm]");
+                model.geom(id).inputParam().set("thk_contact", "0.018 [mm]");
 
                 im.labels = new String[]{
                         "OUTER CONTACT CUTTER",
@@ -1230,8 +1238,8 @@ class Part {
                 }
 
                 // imports
-                partInstance.set("selkeepnoncontr", false);
-                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[2]) + ".dom", "on"); // CUFF FINAL
+//                partInstance.set("selkeepnoncontr", false);
+//                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[2]) + ".dom", "on"); // CUFF FINAL
 
                 break;
             case "RibbonContact_Primitive":
@@ -1394,30 +1402,26 @@ class Part {
             case "RectangleContact_Primitive":
 
               // set instantiation parameters
-//                String[] rectangleContactParameters = {
-//                        "Recess",
-//                        "Rotation_angle",
-//                        "Center",
-//                        "Round_def",
-//                        "R_in",
-//                        "Contact_depth",
-//                        "Overshoot",
-//                        "A_ellipse_contact",
-//                        "Diam_contact",
-//                        "L"
-//                };
-//
-//                for (String param: rectangleContactParameters) {
-//                    partInstance.setEntry("inputexpr", (String) param, (String) itemObject.get(param));
-//                }
+                String[] rectangleContactParameters = {
+                        "r_inner_contact",
+                        "r_outer_contact",
+                        "z_center",
+                        "rotation_angle",
+                        "w_contact",
+                        "z_contact",
+                        "fillet_contact",
+                        "scale_morph_w_contact",
+                        "L_cuff",
+                        "r_cuff_in",
+                        "recess",
+                        "thk_contact"
+                };
 
-                // TODO
-//                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "R_conductor", (String) itemObject.get("R_conductor"));
-//                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "R_in", (String) itemObject.get("R_in"));
-//                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Center", (String) itemObject.get("Center"));
-//                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Pitch", (String) itemObject.get("Pitch"));
-//                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Sep_conductor", (String) itemObject.get("Sep_conductor"));
-//                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Theta_conductor", (String) itemObject.get("Theta_conductor"));
+                for (String param: rectangleContactParameters) {
+                    System.out.println(param);
+                    System.out.println(itemObject.get(param));
+                    partInstance.setEntry("inputexpr", (String) param, (String) itemObject.get(param));
+                }
 
                 // imports
 
@@ -1447,19 +1451,21 @@ class Part {
         }
 
         // assign materials
-        JSONArray materials = instanceParams.getJSONArray("materials");
-        for(Object o: materials) {
-            String type = ((JSONObject) o).getString("type");
-            int label_index = ((JSONObject) o).getInt("label_index");
-            String selection = myLabels[label_index];
-            if(myIM.hasPseudonym(selection)) {
-                String linkLabel = String.join("/", new String[]{instanceLabel, selection, type});
-                model.component("comp1").material().create(mw.im.next("matlnk", linkLabel), "Link");
-                model.component("comp1").material(mw.im.get(linkLabel)).label(linkLabel);
-                model.component("comp1").material(mw.im.get(linkLabel)).set("link", mw.im.get(type));
-                model.component("comp1").material(mw.im.get(linkLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(selection) + "_dom");
-            }
-        }
+//        JSONArray materials = instanceParams.getJSONArray("materials");
+//        for(Object o: materials) {
+//            String type = ((JSONObject) o).getString("type");
+//            int label_index = ((JSONObject) o).getInt("label_index");
+//            String selection = myLabels[label_index];
+//            if(myIM.hasPseudonym(selection)) {
+//                String linkLabel = String.join("/", new String[]{instanceLabel, selection, type});
+//                model.component("comp1").material().create(mw.im.next("matlnk", linkLabel), "Link");
+//                model.component("comp1").material(mw.im.get(linkLabel)).label(linkLabel);
+//                model.component("comp1").material(mw.im.get(linkLabel)).set("link", mw.im.get(type));
+//                model.component("comp1").material(mw.im.get(linkLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(selection) + "_dom");
+//            }
+//        }
+
+        System.out.println("here");
 
         return true;
     }
