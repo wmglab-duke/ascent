@@ -1259,7 +1259,6 @@ class Part {
 
                 // assign physics
                 String ribbon_pcsLabel = instanceLabel + " Current Source";
-
                 String currentLabel = instanceLabel;
 
                 mw.im.currentPointers.put(currentLabel,
@@ -1344,6 +1343,7 @@ class Part {
 
                 // assign physics
                 String circle_pcsLabel = instanceLabel + " Current Source";
+
                 model.component("comp1").physics("ec").create(mw.im.next("pcs", circle_pcsLabel), "PointCurrentSource", 0);
                 model.component("comp1").physics("ec").feature(mw.im.get(circle_pcsLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" +  myIM.get(myLabels[4]) + "_pnt"); // SRC
                 model.component("comp1").physics("ec").feature(mw.im.get(circle_pcsLabel)).set("Qjp", 0.001); // TODO - this should be read in from master?
