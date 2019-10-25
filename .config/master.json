@@ -238,7 +238,7 @@
     }
   },
   "cuff": {
-    "preset": ["Purdue.json"]
+    "preset": ["LivaNova.json"]
   },
   "conductivities": {
     "silicone": {
