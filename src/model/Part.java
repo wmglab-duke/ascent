@@ -561,7 +561,6 @@ class Part {
                 so.set("contributeto", im.get("RECESS OVERSHOOT"));
                 so.set("selkeep", false);
 
-
                 String droLabel = "Delete Recess Overshoot";
                 GeomFeature dro = model.geom(id).create(im.next("del",droLabel), "Delete");
                 dro.label(droLabel);
@@ -891,27 +890,27 @@ class Part {
                 model.geom(id).inputParam().set("thk_contact", "0.018 [mm]");
 
                 im.labels = new String[]{
-                        "OUTER CONTACT CUTTER",
+                        "OUTER CONTACT CUTTER", //0
                         "SEL INNER EXCESS CONTACT",
                         "INNER CONTACT CUTTER",
                         "SEL OUTER EXCESS RECESS",
                         "SEL INNER EXCESS RECESS",
-                        "OUTER CUTTER",
+                        "OUTER CUTTER", //5
                         "FINAL RECESS",
                         "RECESS CROSS SECTION",
                         "OUTER RECESS CUTTER",
                         "RECESS PRE CUTS",
-                        "INNER RECESS CUTTER",
+                        "INNER RECESS CUTTER", //10
                         "FINAL CONTACT",
                         "SEL OUTER EXCESS CONTACT",
                         "SEL OUTER EXCESS",
                         "SEL INNER EXCESS",
-                        "BASE CONTACT PLANE (PRE ROTATION)",
+                        "BASE CONTACT PLANE (PRE ROTATION)", //15
                         "SRC",
                         "CONTACT PRE CUTS",
                         "CONTACT CROSS SECTION",
                         "INNER CUFF CUTTER",
-                        "OUTER CUFF CUTTER",
+                        "OUTER CUFF CUTTER", //20
                         "FINAL",
                         "INNER CUTTER"
                 };
@@ -1014,6 +1013,7 @@ class Part {
                 sie.set("posz", "z_center");
                 sie.set("r", 1);
                 sie.set("contributeto", im.get("SEL INNER EXCESS CONTACT"));
+                sie.set("selkeep", false);
 
                 String soeLabel = "sel outer excess";
                 GeomFeature soe = model.geom(id).create(im.next("ballsel",soeLabel), "BallSelection");
@@ -1023,6 +1023,7 @@ class Part {
                 soe.set("posz", "z_center");
                 soe.set("r", 1);
                 soe.set("contributeto", im.get("SEL OUTER EXCESS CONTACT"));
+                soe.set("selkeep", false);
 
                 String diecLabel = "Delete Inner Excess Contact";
                 GeomFeature diec = model.geom(id).create(im.next("del",diecLabel), "Delete");
@@ -1138,6 +1139,7 @@ class Part {
                 sie1.set("posz", "z_center");
                 sie1.set("r", 1);
                 sie1.set("contributeto", im.get("SEL INNER EXCESS RECESS"));
+                sie1.set("selkeep", false);
 
                 String soe1Label = "sel outer excess 1";
                 GeomFeature soe1 = model.geom(id).create(im.next("ballsel",soe1Label), "BallSelection");
@@ -1147,6 +1149,7 @@ class Part {
                 soe1.set("posz", "z_center");
                 soe1.set("r", 1);
                 soe1.set("contributeto", im.get("SEL OUTER EXCESS RECESS"));
+                soe1.set("selkeep", false);
 
                 String dierLabel = "Delete Inner Excess Recess";
                 GeomFeature dier = model.geom(id).create(im.next("del",dierLabel), "Delete");
@@ -1419,6 +1422,21 @@ class Part {
 
                 // imports
                 partInstance.set("selkeepnoncontr", false);
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[6]) + ".dom", "on"); // FINAL RECESS
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[11]) + ".dom", "on"); // FINAL CONTACT
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[12]) + ".dom", "off"); // SEL OUTER EXCESS CONTACT
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[13]) + ".dom", "off"); // SEL OUTER EXCESS
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[14]) + ".dom", "off"); // SEL INNER EXCESS
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[15]) + ".dom", "off"); // "BASE CONTACT PLANE (PRE ROTATION)"
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[16]) + ".dom", "off"); // SRC
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[17]) + ".dom", "off"); // CONTACT PRE CUTS
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[18]) + ".dom", "off"); // CONTACT CROSS SECTION
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[19]) + ".dom", "off"); // INNER CUFF CUTTER
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[20]) + ".dom", "off"); // OUTER CUFF CUTTER
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[21]) + ".dom", "off"); // FINAL
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[22]) + ".dom", "off"); // INNER CUTTER
+
+
 
                 // assign materials
 

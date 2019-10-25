@@ -271,22 +271,22 @@
     },
     {
       "name": "theta_pos_contact1_Pitt",
-      "expression": "(0+22.5) [deg]",
-      "description": ""
-    },
-    {
-      "name": "theta_pos_contact2_Pitt",
       "expression": "(45+22.5) [deg]",
       "description": ""
     },
     {
+      "name": "theta_pos_contact2_Pitt",
+      "expression": "(0+22.5) [deg]",
+      "description": ""
+    },
+    {
       "name": "theta_pos_contact3_Pitt",
-      "expression": "(90+22.5) [deg]",
+      "expression": "(135+22.5) [deg]",
       "description": ""
     },
     {
       "name": "theta_pos_contact4_Pitt",
-      "expression": "(135+22.5) [deg]",
+      "expression": "(90+22.5) [deg]",
       "description": ""
     },
     {
