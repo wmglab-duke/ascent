@@ -1,0 +1,65 @@
+{
+  "instances": [
+    {
+      "type": "uContact_Primitive",
+      "label": "MicroLeads Contact 1",
+      "def": {
+        "z_center": "z_center_U",
+        "R_in": "R_in_U",
+        "Tangent": "Tangent_U",
+        "thk_contact": "thk_contact_U",
+        "z_contact": "z_contact_U"
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "type": "platinum",
+          "label_index": 0
+        }
+      ]
+    }
+  ],
+
+  "params": [
+    {
+      "name": "z_center_U",
+      "expression": "0",
+      "description": ""
+    },
+    {
+      "name": "R_in_U",
+      "expression": "138 [um]",
+      "description": ""
+    },
+    {
+      "name": "R_out_U",
+      "expression": "0.5 [mm]",
+      "description": ""
+    },
+    {
+      "name": "Tangent_U",
+      "expression": "322 [um]",
+      "description": ""
+    },
+    {
+      "name": "thk_contact_U",
+      "expression": "0.02 [mm]",
+      "description": ""
+    },
+    {
+      "name": "z_contact_U",
+      "expression": "0.7 [mm]",
+      "description": ""
+    },
+    {
+      "name": "Pitch_U",
+      "expression": "0.8 [mm]",
+      "description": ""
+    },
+    {
+      "name": "L_U",
+      "expression": "2.5 [mm]",
+      "description": ""
+    }
+  ]
+}

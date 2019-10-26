@@ -33,17 +33,20 @@ public class MICROLEADS_bypartsFinal {
     model.geom().create("part1", "Part", 3);
     model.geom().create("part2", "Part", 3);
     model.geom("part1").label("uContact");
+
     model.geom("part1").inputParam().set("z_center", "z_center_U");
     model.geom("part1").inputParam().set("R_in", "R_in_U");
     model.geom("part1").inputParam().set("Tangent", "Tangent_U");
     model.geom("part1").inputParam().set("thk_contact", "thk_contact_U");
     model.geom("part1").inputParam().set("z_contact", "z_contact_U");
+
     model.geom("part1").selection().create("csel1", "CumulativeSelection");
     model.geom("part1").selection("csel1").label("CONTACT XS");
     model.geom("part1").selection().create("csel2", "CumulativeSelection");
     model.geom("part1").selection("csel2").label("CONTACT FINAL");
     model.geom("part1").selection().create("csel3", "CumulativeSelection");
     model.geom("part1").selection("csel3").label("SRC");
+
     model.geom("part1").create("wp1", "WorkPlane");
     model.geom("part1").feature("wp1").label("Contact XS");
     model.geom("part1").feature("wp1").set("contributeto", "csel1");
@@ -102,16 +105,20 @@ public class MICROLEADS_bypartsFinal {
     model.geom("part1").feature("pt1").set("contributeto", "csel3");
     model.geom("part1").feature("pt1").set("p", new String[]{"-R_in-(thk_contact/2)", "0", "z_center"});
     model.geom("part1").run();
+
+
     model.geom("part2").label("uCuff");
     model.geom("part2").inputParam().set("z_center", "z_center_U");
     model.geom("part2").inputParam().set("R_in", "R_in_U");
     model.geom("part2").inputParam().set("Tangent", "Tangent_U");
     model.geom("part2").inputParam().set("R_out", "R_out_U");
     model.geom("part2").inputParam().set("L", "L_U");
+
     model.geom("part2").selection().create("csel1", "CumulativeSelection");
     model.geom("part2").selection("csel1").label("CUFF XS");
     model.geom("part2").selection().create("csel2", "CumulativeSelection");
     model.geom("part2").selection("csel2").label("CUFF FINAL");
+
     model.geom("part2").create("wp1", "WorkPlane");
     model.geom("part2").feature("wp1").label("Contact XS");
     model.geom("part2").feature("wp1").set("contributeto", "csel1");
@@ -155,6 +162,7 @@ public class MICROLEADS_bypartsFinal {
     model.geom("part2").feature("ext1").set("contributeto", "csel2");
     model.geom("part2").feature("ext1").setIndex("distance", "L", 0);
     model.geom("part2").feature("ext1").selection("input").named("csel1");
+
     model.geom("part2").run();
     model.component("comp1").geom("geom1").create("pi1", "PartInstance");
     model.component("comp1").geom("geom1").feature("pi1").label("uCuff 1");

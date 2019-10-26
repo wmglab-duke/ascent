@@ -4,6 +4,7 @@ import com.comsol.model.GeomFeature;
 import com.comsol.model.Model;
 import com.comsol.model.ModelParam;
 import com.comsol.model.physics.PhysicsFeature;
+import com.comsol.nativejni.geom.Geom;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -866,13 +867,11 @@ class Part {
                 srch.set("contributeto", im.get("SRC"));
                 srch.set("p", new String[]{"cos(2*pi*rev_cuff_LN*(1.25/2.5))*((thk_elec_LN/2)+r_cuff_in_LN)", "sin(2*pi*rev_cuff_LN*(1.25/2.5))*((thk_elec_LN/2)+r_cuff_in_LN)", "Center"});
 
-                // NEW
                 String uspLabel = "Union Silicone Parts";
                 model.geom(id).create(im.next("uni", uspLabel), "Union");
                 model.geom(id).feature(im.get(uspLabel)).selection("input").set(im.get(mcp1Label), im.get(mcp2Label), im.get(mcp3Label));
                 model.geom(id).selection(im.get("CUFF FINAL")).label("CUFF FINAL");
                 model.geom(id).feature(im.get(uspLabel)).set("contributeto", im.get("CUFF FINAL"));
-                //
 
                 model.geom(id).run();
 
@@ -1172,6 +1171,175 @@ class Part {
                 srcs.set("p", new String[]{"(R_in_Pitt+recess_Pitt+(thk_contact_Pitt/2))*cos(rotation_angle)", "(R_in_Pitt+recess_Pitt+(thk_contact_Pitt/2))*sin(rotation_angle)", "z_center"});
 
                 model.geom(id).run();
+                break;
+            case "uContact_Primitive":
+                model.geom(id).inputParam().set("z_center", "z_center_U");
+                model.geom(id).inputParam().set("R_in", "R_in_U");
+                model.geom(id).inputParam().set("Tangent", "Tangent_U");
+                model.geom(id).inputParam().set("thk_contact", "thk_contact_U");
+                model.geom(id).inputParam().set("z_contact", "z_contact_U");
+
+                im.labels = new String[]{
+                        "CONTACT XS", //0
+                        "CONTACT FINAL",
+                        "SRC"
+                };
+
+                for (String cselUContactLabel: im.labels) {
+                    model.geom(id).selection().create(im.next("csel", cselUContactLabel), "CumulativeSelection")
+                            .label(cselUContactLabel);
+                }
+
+                String ucontactxsLabel = "Contact XS";
+                GeomFeature ucontactxs = model.geom(id).create(im.next("wp",ucontactxsLabel), "WorkPlane");
+                ucontactxs.label(ucontactxsLabel);
+                ucontactxs.set("contributeto", im.get("CONTACT XS"));
+                ucontactxs.set("quickz", "z_center-z_contact/2");
+                ucontactxs.set("unite", true);
+
+                String inLineLabel = "INLINE";
+                ucontactxs.geom().selection().create(im.next("csel",inLineLabel), "CumulativeSelection");
+                ucontactxs.geom().selection(im.get(inLineLabel)).label(inLineLabel);
+
+                String inLineUnionLabel = "INLINE_UNION";
+                ucontactxs.geom().selection().create(im.next("csel",inLineUnionLabel), "CumulativeSelection");
+                ucontactxs.geom().selection(im.get(inLineUnionLabel)).label(inLineUnionLabel);
+
+                String outLineLabel = "OUTLINE";
+                ucontactxs.geom().selection().create(im.next("csel",outLineLabel), "CumulativeSelection");
+                ucontactxs.geom().selection(im.get(outLineLabel)).label(outLineLabel);
+
+                String wpucontactxsLabel = "wpCONTACT XS";
+                ucontactxs.geom().selection().create(im.next("csel",wpucontactxsLabel), "CumulativeSelection");
+                ucontactxs.geom().selection(im.get(wpucontactxsLabel)).label(wpucontactxsLabel);
+
+                String roundInlineLabel = "Round Inline";
+                GeomFeature rIL = ucontactxs.geom().create(im.next("c",roundInlineLabel), "Circle");
+                rIL.label(roundInlineLabel);
+                rIL.set("contributeto", im.get(inLineLabel));
+                rIL.set("r", "R_in");
+
+                String rectInlineLabel = "Rect Inline";
+                GeomFeature rectIL = ucontactxs.geom().create(im.next("r",rectInlineLabel), "Rectangle");
+                rectIL.label(rectInlineLabel);
+                rectIL.set("contributeto", im.get(inLineLabel));
+                rectIL.set("pos", new String[]{"Tangent/2", "0"});
+                rectIL.set("base", "center");
+                rectIL.set("size", new String[]{"Tangent", "2*R_in"});
+
+                String uInlinePLabel = "Union Inline Parts";
+                GeomFeature uInline = ucontactxs.geom().create(im.next("uni",uInlinePLabel), "Union");
+                uInline.label(uInlinePLabel);
+                uInline.set("contributeto", im.get(inLineUnionLabel));
+                uInline.set("intbnd", false);
+                uInline.selection("input").named(im.get(inLineLabel));
+
+                String roLabel = "Round Outline";
+                GeomFeature ro = ucontactxs.geom().create(im.next("c",roLabel), "Circle");
+                ro.label(roLabel);
+                ro.set("contributeto", im.get(outLineLabel));
+                ro.set("r", "R_in+thk_contact");
+
+                String rectoLabel = "Rect Outline";
+                GeomFeature urect = ucontactxs.geom().create(im.next("r",rectoLabel), "Rectangle");
+                urect.label(rectoLabel);
+                urect.set("contributeto", im.get(outLineLabel));
+                urect.set("pos", new String[]{"Tangent/2", "0"});
+                urect.set("base", "center");
+                urect.set("size", new String[]{"Tangent", "2*R_in+2*thk_contact"});
+
+                String uOPLabel = "Union Outline Parts";
+                GeomFeature uOP = ucontactxs.geom().create(im.next("uni",uOPLabel), "Union");
+                uOP.label(uOPLabel);
+                uOP.set("contributeto", im.get(inLineUnionLabel));
+                uOP.set("intbnd", false);
+                uOP.selection("input").named(im.get(outLineLabel));
+
+                String diff2cxsLabel = "Diff to Contact XS";
+                GeomFeature diff2cxs = ucontactxs.geom().create(im.next("dif", diff2cxsLabel), "Difference");
+                diff2cxs.label(diff2cxsLabel);
+                diff2cxs.selection("input").named(im.get(outLineLabel));
+                diff2cxs.selection("input2").named(im.get(inLineLabel));
+
+                String umcLabel = "Make Contact";
+                GeomFeature umc = model.geom(id).create(im.next("ext",umcLabel), "Extrude");
+                umc.label(umcLabel);
+                umc.set("contributeto", im.get("CONTACT FINAL"));
+                umc.setIndex("distance", "z_contact", 0);
+                umc.selection("input").named(im.get("CONTACT XS"));
+
+                System.out.println("here3");
+
+                String usrcLabel = "Src";
+                GeomFeature usrc = model.geom(id).create(im.next("pt",usrcLabel), "Point");
+                usrc.label(usrcLabel);
+                usrc.set("contributeto", im.get("SRC"));
+                usrc.set("p", new String[]{"-R_in-(thk_contact/2)", "0", "z_center"});
+
+                model.geom(id).run();
+                break;
+            case "uCuff_Primitive":
+//                model.geom(id).inputParam().set("z_center", "z_center_U");
+//                model.geom(id).inputParam().set("R_in", "R_in_U");
+//                model.geom(id).inputParam().set("Tangent", "Tangent_U");
+//                model.geom(id).inputParam().set("R_out", "R_out_U");
+//                model.geom(id).inputParam().set("L", "L_U");
+//
+//                im.labels = new String[]{
+//                        "CUFF XS", //0
+//                        "CUFF FINAL"
+//                };
+//
+//                for (String cselUCuffLabel: im.labels) {
+//                    model.geom(id).selection().create(im.next("csel", cselUCuffLabel), "CumulativeSelection")
+//                            .label(cselUCuffLabel);
+//                }
+//
+//                model.geom(id).create("wp1", "WorkPlane");
+//                model.geom(id).feature("wp1").label("Contact XS");
+//                model.geom(id).feature("wp1").set("contributeto", "csel1");
+//                model.geom(id).feature("wp1").set("quickz", "z_center-L/2");
+//                model.geom(id).feature("wp1").set("unite", true);
+//                model.geom(id).feature("wp1").geom().selection().create("csel1", "CumulativeSelection");
+//                model.geom(id).feature("wp1").geom().selection("csel1").label("INLINE");
+//                model.geom(id).feature("wp1").geom().selection().create("csel2", "CumulativeSelection");
+//                model.geom(id).feature("wp1").geom().selection("csel2").label("INLINE_UNION");
+//                model.geom(id).feature("wp1").geom().selection().create("csel3", "CumulativeSelection");
+//                model.geom(id).feature("wp1").geom().selection("csel3").label("OUTLINE");
+//                model.geom(id).feature("wp1").geom().selection().create("csel4", "CumulativeSelection");
+//                model.geom(id).feature("wp1").geom().selection("csel4").label("CONTACT XS");
+//                model.geom(id).feature("wp1").geom().selection().create("csel5", "CumulativeSelection");
+//                model.geom(id).feature("wp1").geom().selection("csel5").label("OUTLINE_CUFF");
+//                model.geom(id).feature("wp1").geom().create("c1", "Circle");
+//                model.geom(id).feature("wp1").geom().feature("c1").label("Round Inline");
+//                model.geom(id).feature("wp1").geom().feature("c1").set("contributeto", "csel1");
+//                model.geom(id).feature("wp1").geom().feature("c1").set("r", "R_in");
+//                model.geom(id).feature("wp1").geom().create("r1", "Rectangle");
+//                model.geom(id).feature("wp1").geom().feature("r1").label("Rect Inline");
+//                model.geom(id).feature("wp1").geom().feature("r1").set("contributeto", "csel1");
+//                model.geom(id).feature("wp1").geom().feature("r1").set("pos", new String[]{"Tangent/2", "0"});
+//                model.geom(id).feature("wp1").geom().feature("r1").set("base", "center");
+//                model.geom(id).feature("wp1").geom().feature("r1").set("size", new String[]{"Tangent", "2*R_in"});
+//                model.geom(id).feature("wp1").geom().create("uni1", "Union");
+//                model.geom(id).feature("wp1").geom().feature("uni1").label("Union Inline Parts");
+//                model.geom(id).feature("wp1").geom().feature("uni1").set("contributeto", "csel2");
+//                model.geom(id).feature("wp1").geom().feature("uni1").set("intbnd", false);
+//                model.geom(id).feature("wp1").geom().feature("uni1").selection("input").named("csel1");
+//                model.geom(id).feature("wp1").geom().create("c2", "Circle");
+//                model.geom(id).feature("wp1").geom().feature("c2").label("Cuff Outline");
+//                model.geom(id).feature("wp1").geom().feature("c2").set("contributeto", "csel5");
+//                model.geom(id).feature("wp1").geom().feature("c2").set("r", "R_out");
+//                model.geom(id).feature("wp1").geom().create("dif1", "Difference");
+//                model.geom(id).feature("wp1").geom().feature("dif1").label("Diff to Cuff XS");
+//                model.geom(id).feature("wp1").geom().feature("dif1").selection("input").named("csel5");
+//                model.geom(id).feature("wp1").geom().feature("dif1").selection("input2").named("csel2");
+//                model.geom(id).create("ext1", "Extrude");
+//                model.geom(id).feature("ext1").label("Make Cuff");
+//                model.geom(id).feature("ext1").set("contributeto", "csel2");
+//                model.geom(id).feature("ext1").setIndex("distance", "L", 0);
+//                model.geom(id).feature("ext1").selection("input").named("csel1");
+//
+//                model.geom(id).run();
                 break;
             default:
                 throw new  IllegalArgumentException("No implementation for part primitive name: " + pseudonym);
