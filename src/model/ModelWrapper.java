@@ -404,7 +404,7 @@ public class ModelWrapper {
             mw.addMaterialDefinitions(cuff);
 
             // add part instances needed to make the cuff
-//            mw.addPartInstances(cuff);
+            mw.addPartInstances(cuff);
         }
 
         model.component("comp1").geom("geom1").run("fin");

@@ -1663,6 +1663,36 @@ class Part {
                 ((PhysicsFeature) mw.im.currentPointers.get(square_currentLabel)).label(square_pcsLabel);
 
                 break;
+            case "uContact_Primitive":
+                // set instantiation parameters
+                String[] uContactParameters = {
+                        "z_center",
+                        "R_in",
+                        "Tangent",
+                        "thk_contact",
+                        "z_contact"
+                };
+
+                for (String param: uContactParameters) {
+                    partInstance.setEntry("inputexpr", (String) param, (String) itemObject.get(param));
+                }
+
+                break;
+            case "uCuff_Primitive":
+                // set instantiation parameters
+                String[] uCuffParameters = {
+                        "z_center",
+                        "R_in",
+                        "Tangent",
+                        "R_out",
+                        "L"
+                };
+
+                for (String param: uCuffParameters) {
+                    partInstance.setEntry("inputexpr", (String) param, (String) itemObject.get(param));
+                }
+
+                break;
             case "Fascicle":
                 // path = "path" + instanceLabel
 
