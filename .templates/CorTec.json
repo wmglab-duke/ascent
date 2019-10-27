@@ -4,8 +4,8 @@
       "type": "CuffFill_Primitive",
       "label": "CorTec Cuff Fill",
       "def": {
-        "Radius": "R_out_CT+Thk_CT",
-        "Thk": "Thk_CT",
+        "Radius": "R_out_CT+Thk_fill_CT",
+        "Thk": "Thk_fill_CT",
         "L": "L_CT",
         "z_center": "Center_CT"
       },
@@ -235,7 +235,7 @@
       "description": ""
     },
     {
-      "name": "Thk_CT",
+      "name": "Thk_fill_CT",
       "expression": "100 [um]",
       "description": ""
     }

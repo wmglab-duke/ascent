@@ -1,6 +1,23 @@
 {
   "instances": [
     {
+      "type": "CuffFill_Primitive",
+      "label": "MicroLeads Cuff Fill",
+      "def": {
+        "Radius": "R_out_EM+Thk_fill_EM",
+        "Thk": "Thk_fill_EM",
+        "L": "L_EM",
+        "z_center": "Center_EM"
+      },
+      "materials": [
+        {
+          "info": "fill",
+          "type": "encapsulation",
+          "label_index": 0
+        }
+      ]
+    },
+    {
       "type": "TubeCuff_Primitive",
       "label": "Enteromedics Cuff",
       "def": {
@@ -160,6 +177,11 @@
     {
       "name": "Recess_EM",
       "expression": "0 [mm]",
+      "description": ""
+    },
+    {
+      "name": "Thk_fill_EM",
+      "expression": "100 [um]",
       "description": ""
     }
   ]

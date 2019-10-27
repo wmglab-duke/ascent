@@ -4,8 +4,8 @@
       "type": "CuffFill_Primitive",
       "label": "MicroLeads Cuff Fill",
       "def": {
-        "Radius": "R_out_U+Thk_U",
-        "Thk": "Thk_U",
+        "Radius": "R_out_U+Thk_fill_U",
+        "Thk": "Thk_fill_U",
         "L": "L_U",
         "z_center": "z_center_U"
       },
@@ -115,7 +115,7 @@
       "description": ""
     },
     {
-      "name": "Thk_U",
+      "name": "Thk_fill_U",
       "expression": "100 [um]",
       "description": ""
     }
