@@ -17,6 +17,24 @@
           "label_index": 0
         }
       ]
+    },
+    {
+      "type": "uCuff_Primitive",
+      "label": "MicroLeads Contact 1",
+      "def": {
+        "z_center": "z_center_U",
+        "R_in": "R_in_U",
+        "Tangent": "Tangent_U",
+        "thk_contact": "thk_contact_U",
+        "z_contact": "z_contact_U"
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "type": "platinum",
+          "label_index": 0
+        }
+      ]
     }
   ],
 

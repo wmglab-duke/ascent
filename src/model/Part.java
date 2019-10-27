@@ -1268,8 +1268,6 @@ class Part {
                 umc.setIndex("distance", "z_contact", 0);
                 umc.selection("input").named(im.get("CONTACT XS"));
 
-                System.out.println("here3");
-
                 String usrcLabel = "Src";
                 GeomFeature usrc = model.geom(id).create(im.next("pt",usrcLabel), "Point");
                 usrc.label(usrcLabel);
@@ -1279,67 +1277,90 @@ class Part {
                 model.geom(id).run();
                 break;
             case "uCuff_Primitive":
-//                model.geom(id).inputParam().set("z_center", "z_center_U");
-//                model.geom(id).inputParam().set("R_in", "R_in_U");
-//                model.geom(id).inputParam().set("Tangent", "Tangent_U");
-//                model.geom(id).inputParam().set("R_out", "R_out_U");
-//                model.geom(id).inputParam().set("L", "L_U");
-//
-//                im.labels = new String[]{
-//                        "CUFF XS", //0
-//                        "CUFF FINAL"
-//                };
-//
-//                for (String cselUCuffLabel: im.labels) {
-//                    model.geom(id).selection().create(im.next("csel", cselUCuffLabel), "CumulativeSelection")
-//                            .label(cselUCuffLabel);
-//                }
-//
-//                model.geom(id).create("wp1", "WorkPlane");
-//                model.geom(id).feature("wp1").label("Contact XS");
-//                model.geom(id).feature("wp1").set("contributeto", "csel1");
-//                model.geom(id).feature("wp1").set("quickz", "z_center-L/2");
-//                model.geom(id).feature("wp1").set("unite", true);
-//                model.geom(id).feature("wp1").geom().selection().create("csel1", "CumulativeSelection");
-//                model.geom(id).feature("wp1").geom().selection("csel1").label("INLINE");
-//                model.geom(id).feature("wp1").geom().selection().create("csel2", "CumulativeSelection");
-//                model.geom(id).feature("wp1").geom().selection("csel2").label("INLINE_UNION");
-//                model.geom(id).feature("wp1").geom().selection().create("csel3", "CumulativeSelection");
-//                model.geom(id).feature("wp1").geom().selection("csel3").label("OUTLINE");
-//                model.geom(id).feature("wp1").geom().selection().create("csel4", "CumulativeSelection");
-//                model.geom(id).feature("wp1").geom().selection("csel4").label("CONTACT XS");
-//                model.geom(id).feature("wp1").geom().selection().create("csel5", "CumulativeSelection");
-//                model.geom(id).feature("wp1").geom().selection("csel5").label("OUTLINE_CUFF");
-//                model.geom(id).feature("wp1").geom().create("c1", "Circle");
-//                model.geom(id).feature("wp1").geom().feature("c1").label("Round Inline");
-//                model.geom(id).feature("wp1").geom().feature("c1").set("contributeto", "csel1");
-//                model.geom(id).feature("wp1").geom().feature("c1").set("r", "R_in");
-//                model.geom(id).feature("wp1").geom().create("r1", "Rectangle");
-//                model.geom(id).feature("wp1").geom().feature("r1").label("Rect Inline");
-//                model.geom(id).feature("wp1").geom().feature("r1").set("contributeto", "csel1");
-//                model.geom(id).feature("wp1").geom().feature("r1").set("pos", new String[]{"Tangent/2", "0"});
-//                model.geom(id).feature("wp1").geom().feature("r1").set("base", "center");
-//                model.geom(id).feature("wp1").geom().feature("r1").set("size", new String[]{"Tangent", "2*R_in"});
-//                model.geom(id).feature("wp1").geom().create("uni1", "Union");
-//                model.geom(id).feature("wp1").geom().feature("uni1").label("Union Inline Parts");
-//                model.geom(id).feature("wp1").geom().feature("uni1").set("contributeto", "csel2");
-//                model.geom(id).feature("wp1").geom().feature("uni1").set("intbnd", false);
-//                model.geom(id).feature("wp1").geom().feature("uni1").selection("input").named("csel1");
-//                model.geom(id).feature("wp1").geom().create("c2", "Circle");
-//                model.geom(id).feature("wp1").geom().feature("c2").label("Cuff Outline");
-//                model.geom(id).feature("wp1").geom().feature("c2").set("contributeto", "csel5");
-//                model.geom(id).feature("wp1").geom().feature("c2").set("r", "R_out");
-//                model.geom(id).feature("wp1").geom().create("dif1", "Difference");
-//                model.geom(id).feature("wp1").geom().feature("dif1").label("Diff to Cuff XS");
-//                model.geom(id).feature("wp1").geom().feature("dif1").selection("input").named("csel5");
-//                model.geom(id).feature("wp1").geom().feature("dif1").selection("input2").named("csel2");
-//                model.geom(id).create("ext1", "Extrude");
-//                model.geom(id).feature("ext1").label("Make Cuff");
-//                model.geom(id).feature("ext1").set("contributeto", "csel2");
-//                model.geom(id).feature("ext1").setIndex("distance", "L", 0);
-//                model.geom(id).feature("ext1").selection("input").named("csel1");
-//
-//                model.geom(id).run();
+                model.geom(id).inputParam().set("z_center", "z_center_U");
+                model.geom(id).inputParam().set("R_in", "R_in_U");
+                model.geom(id).inputParam().set("Tangent", "Tangent_U");
+                model.geom(id).inputParam().set("R_out", "R_out_U");
+                model.geom(id).inputParam().set("L", "L_U");
+
+                im.labels = new String[]{
+                        "CUFF XS", //0
+                        "CUFF FINAL"
+                };
+
+                for (String cselUCuffLabel: im.labels) {
+                    model.geom(id).selection().create(im.next("csel", cselUCuffLabel), "CumulativeSelection")
+                            .label(cselUCuffLabel);
+                }
+
+                String ucCXSLabel = "Contact XS";
+                GeomFeature ucCXS = model.geom(id).create(im.next("wp",ucCXSLabel), "WorkPlane");
+                ucCXS.label(ucCXSLabel);
+                ucCXS.set("contributeto", im.get("CUFF XS"));
+                ucCXS.set("quickz", "z_center-L/2");
+                ucCXS.set("unite", true);
+
+                String ucInlineLabel = "INLINE";
+                ucCXS.geom().selection().create(im.next("csel",ucInlineLabel), "CumulativeSelection");
+                ucCXS.geom().selection(im.get(ucInlineLabel)).label(ucInlineLabel);
+
+                String ucInlineUnion = "INLINE_UNION";
+                ucCXS.geom().selection().create(im.next("csel",ucInlineUnion), "CumulativeSelection");
+                ucCXS.geom().selection(im.get(ucInlineUnion)).label(ucInlineUnion);
+
+                String ucOutlineLabel = "OUTLINE";
+                ucCXS.geom().selection().create(im.next("csel",ucOutlineLabel), "CumulativeSelection");
+                ucCXS.geom().selection(im.get(ucOutlineLabel)).label(ucOutlineLabel);
+
+                String ucContactXSLabel = "CONTACT XS";
+                ucCXS.geom().selection().create(im.next("csel",ucContactXSLabel), "CumulativeSelection");
+                ucCXS.geom().selection(im.get(ucContactXSLabel)).label(ucContactXSLabel);
+
+                String ucOutlineCuffLabel = "OUTLINE_CUFF";
+                ucCXS.geom().selection().create(im.next("csel",ucOutlineCuffLabel), "CumulativeSelection");
+                ucCXS.geom().selection(im.get(ucOutlineCuffLabel)).label(ucOutlineCuffLabel);
+
+                String ucCircleInlineLabel = "Round Inline";
+                GeomFeature ucCircleInline = ucCXS.geom().create(im.next("c",ucCircleInlineLabel), "Circle");
+                ucCircleInline.label(ucCircleInlineLabel);
+                ucCircleInline.set("contributeto", im.get(ucInlineLabel));
+                ucCircleInline.set("r", "R_in");
+
+                String ucRectInlineLabel = "Rect Inline";
+                GeomFeature ucRectInline = ucCXS.geom().create(im.next("r",ucRectInlineLabel), "Rectangle");
+                ucRectInline.label(ucRectInlineLabel);
+                ucRectInline.set("contributeto", im.get(ucInlineLabel));
+                ucRectInline.set("pos", new String[]{"Tangent/2", "0"});
+                ucRectInline.set("base", "center");
+                ucRectInline.set("size", new String[]{"Tangent", "2*R_in"});
+
+                String ucUnionInlineLabel = "Union Inline Parts";
+                GeomFeature ucUnionInline = ucCXS.geom().create(im.next("uni",ucUnionInlineLabel), "Union");
+                ucUnionInline.label(ucUnionInlineLabel);
+                ucUnionInline.set("contributeto", im.get("INLINE_UNION"));
+                ucUnionInline.set("intbnd", false);
+                ucUnionInline.selection("input").named(im.get("INLINE"));
+
+                String ucCircleOutlineLabel = "Cuff Outline";
+                GeomFeature ucCircleOutline = ucCXS.geom().create(im.next("c",ucCircleOutlineLabel), "Circle");
+                ucCircleOutline.label(ucCircleOutlineLabel);
+                ucCircleOutline.set("contributeto", im.get("OUTLINE_CUFF"));
+                ucCircleOutline.set("r", "R_out");
+
+                String ucDiffLabel = "Diff to Cuff XS";
+                GeomFeature ucDiff = ucCXS.geom().create(im.next("dif",ucDiffLabel), "Difference");
+                ucDiff.label(ucDiffLabel);
+                ucDiff.selection("input").named(im.get("OUTLINE_CUFF"));
+                ucDiff.selection("input2").named(im.get("INLINE_UNION"));
+
+                String ucExtLabel = "Make Cuff";
+                GeomFeature ucExt = model.geom(id).create(im.next("ext",ucExtLabel), "Extrude");
+                ucExt.label(ucExtLabel);
+                ucExt.set("contributeto", im.get("CUFF FINAL"));
+                ucExt.setIndex("distance", "L", 0);
+                ucExt.selection("input").named(im.get("CUFF XS"));
+
+                model.geom(id).run();
                 break;
             default:
                 throw new  IllegalArgumentException("No implementation for part primitive name: " + pseudonym);
