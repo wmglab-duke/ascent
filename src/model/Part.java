@@ -1362,6 +1362,33 @@ class Part {
 
                 model.geom(id).run();
                 break;
+            case "CuffFill_Primitive":
+                model.geom(id).inputParam().set("Radius", "R_out_U");
+                model.geom(id).inputParam().set("Thk", "100 [um]");
+                model.geom(id).inputParam().set("L", "L_U");
+                model.geom(id).inputParam().set("z_center", "z_center_U");
+
+                im.labels = new String[]{
+                        "CUFF FILL FINAL", //0
+                };
+
+                for (String cselCuffFillLabel: im.labels) {
+                    model.geom(id).selection().create(im.next("csel", cselCuffFillLabel), "CumulativeSelection")
+                            .label(cselCuffFillLabel);
+                }
+
+                String cuffFillLabel = "Cuff Fill";
+                GeomFeature cf = model.geom(id).create(im.next("cyl",cuffFillLabel), "Cylinder");
+                cf.label(cuffFillLabel);
+                cf.set("contributeto", im.get("CUFF FILL FINAL"));
+                cf.set("pos", new String[]{"0", "0", "z_center-(L/2)-Thk"});
+                cf.set("r", "Radius");
+                cf.set("h", "L+2*Thk");
+
+                model.geom(id).run();
+                break;
+            case "Medium_Primitive":
+                break;
             default:
                 throw new  IllegalArgumentException("No implementation for part primitive name: " + pseudonym);
         }
@@ -1712,6 +1739,26 @@ class Part {
                 partInstance.set("selkeepnoncontr", false);
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[0]) + ".dom", "off"); // CUFF XS
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[1]) + ".dom", "on"); // CUFF FINAL
+                break;
+            case "CuffFill_Primitive":
+                // set instantiation parameters
+                String[] cuffFillParameters = {
+                        "Radius",
+                        "Thk",
+                        "L",
+                        "z_center"
+                };
+
+                for (String param: cuffFillParameters) {
+                    partInstance.setEntry("inputexpr", (String) param, (String) itemObject.get(param));
+                }
+
+                // imports
+                partInstance.set("selkeepnoncontr", false);
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[0]) + ".dom", "on"); // CUFF FILL FINAL
+
+                break;
+            case "Medium_Primitive":
                 break;
             case "Fascicle":
                 // path = "path" + instanceLabel

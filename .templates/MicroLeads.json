@@ -1,6 +1,23 @@
 {
   "instances": [
     {
+      "type": "CuffFill_Primitive",
+      "label": "MicroLeads Cuff Fill",
+      "def": {
+        "Radius": "R_out_U+Thk_U",
+        "Thk": "Thk_U",
+        "L": "L_U",
+        "z_center": "z_center_U"
+      },
+      "materials": [
+        {
+          "info": "fill",
+          "type": "saline",
+          "label_index": 0
+        }
+      ]
+    },
+    {
       "type": "uCuff_Primitive",
       "label": "MicroLeads Cuff",
       "def": {
@@ -95,6 +112,11 @@
     {
       "name": "L_U",
       "expression": "2.5 [mm]",
+      "description": ""
+    },
+    {
+      "name": "Thk_U",
+      "expression": "100 [um]",
       "description": ""
     }
   ]
