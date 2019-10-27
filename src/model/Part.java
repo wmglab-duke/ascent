@@ -1363,10 +1363,10 @@ class Part {
                 model.geom(id).run();
                 break;
             case "CuffFill_Primitive":
-                model.geom(id).inputParam().set("Radius", "R_out_U");
+                model.geom(id).inputParam().set("Radius", "0.5 [mm]");
                 model.geom(id).inputParam().set("Thk", "100 [um]");
-                model.geom(id).inputParam().set("L", "L_U");
-                model.geom(id).inputParam().set("z_center", "z_center_U");
+                model.geom(id).inputParam().set("L", "2.5 [mm]");
+                model.geom(id).inputParam().set("z_center", "0");
 
                 im.labels = new String[]{
                         "CUFF FILL FINAL", //0

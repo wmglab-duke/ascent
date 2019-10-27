@@ -1,6 +1,23 @@
 {
   "instances": [
     {
+      "type": "CuffFill_Primitive",
+      "label": "CorTec Cuff Fill",
+      "def": {
+        "Radius": "R_out_CT+Thk_CT",
+        "Thk": "Thk_CT",
+        "L": "L_CT",
+        "z_center": "Center_CT"
+      },
+      "materials": [
+        {
+          "info": "fill",
+          "type": "saline",
+          "label_index": 0
+        }
+      ]
+    },
+    {
       "type": "TubeCuff_Primitive",
       "label": "CorTec Cuff",
       "def": {
@@ -215,6 +232,11 @@
     {
       "name": "Pitch_CT",
       "expression": "1.5 [mm]",
+      "description": ""
+    },
+    {
+      "name": "Thk_CT",
+      "expression": "100 [um]",
       "description": ""
     }
   ]
