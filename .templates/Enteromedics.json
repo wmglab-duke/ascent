@@ -2,7 +2,7 @@
   "instances": [
     {
       "type": "CuffFill_Primitive",
-      "label": "MicroLeads Cuff Fill",
+      "label": "Enteromedics Cuff Fill",
       "def": {
         "Radius": "R_out_EM+Thk_fill_EM",
         "Thk": "Thk_fill_EM",
