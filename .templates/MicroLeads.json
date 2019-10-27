@@ -12,8 +12,8 @@
       },
       "materials": [
         {
-          "info": "conductor",
-          "type": "platinum",
+          "info": "insulator",
+          "type": "silicone",
           "label_index": 1
         }
       ]

@@ -1677,6 +1677,22 @@ class Part {
                     partInstance.setEntry("inputexpr", (String) param, (String) itemObject.get(param));
                 }
 
+                // imports
+                partInstance.set("selkeepnoncontr", false);
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[0]) + ".dom", "off"); // CONTACT XS
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[1]) + ".dom", "on"); // CONTACT FINAL
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[2]) + ".dom", "off"); // SRC
+
+                // assign physics
+                String u_pcsLabel = instanceLabel + " Current Source";
+                String u_currentLabel = instanceLabel;
+
+                mw.im.currentPointers.put(u_currentLabel,
+                        model.component("comp1").physics("ec").create(mw.im.next("pcs", u_pcsLabel), "PointCurrentSource", 0));
+
+                ((PhysicsFeature) mw.im.currentPointers.get(u_currentLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" +  myIM.get(myLabels[2]) + "_pnt"); // SRC
+                ((PhysicsFeature) mw.im.currentPointers.get(u_currentLabel)).set("Qjp", 0.001);
+                ((PhysicsFeature) mw.im.currentPointers.get(u_currentLabel)).label(u_pcsLabel);
                 break;
             case "uCuff_Primitive":
                 // set instantiation parameters
@@ -1692,6 +1708,10 @@ class Part {
                     partInstance.setEntry("inputexpr", (String) param, (String) itemObject.get(param));
                 }
 
+                // imports
+                partInstance.set("selkeepnoncontr", false);
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[0]) + ".dom", "off"); // CUFF XS
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[1]) + ".dom", "on"); // CUFF FINAL
                 break;
             case "Fascicle":
                 // path = "path" + instanceLabel
