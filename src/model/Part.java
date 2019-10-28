@@ -677,17 +677,17 @@ class Part {
                 model.geom(id).inputParam().set("Center", "Center_LN");
 
                 im.labels = new String[]{
-                        "PC1",
+                        "PC1", //0
                         "Cuffp1",
                         "SEL END P1",
                         "PC2",
                         "SRC",
-                        "Cuffp2",
+                        "Cuffp2", //5
                         "Conductorp2",
                         "SEL END P2",
                         "Cuffp3",
                         "PC3",
-                        "CUFF FINAL"
+                        "CUFF FINAL" //10
                 };
 
                 for (String cselHCCLabel: im.labels) {
@@ -810,10 +810,8 @@ class Part {
                 mcp2c.label(mcp2cLabel);
                 mcp2c.set("contributeto", im.get("Conductorp2"));
                 mcp2c.set("crossfaces", true);
-                mcp2c.set("keep", false);
                 mcp2c.set("includefinal", false);
                 mcp2c.set("twistcomp", false);
-                mcp2c.set("selresult", true);
                 mcp2c.selection("face").named(im.get(hccsp2Label) + "_" + im.get(hccxp2Label));
                 mcp2c.selection("edge").named(im.get("PC2"));
                 mcp2c.selection("diredge").set(im.get(pcp2Label) + "(1)", 1);
@@ -1602,9 +1600,12 @@ class Part {
                 // imports
                 partInstance.set("selkeepnoncontr", false);
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[1]) + ".dom", "off"); // Cuffp1
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[3]) + ".dom", "off"); // PC2
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[4]) + ".dom", "off"); // SRC
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[5]) + ".dom", "off"); // Cuffp2
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[6]) + ".dom", "on"); // Conductorp2
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[8]) + ".dom", "off"); // Cuffp3
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[9]) + ".dom", "off"); // PC3
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[10]) + ".dom", "on"); // CUFF FINAL
 
                 partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[4]) + ".pnt", "on"); // SRC
