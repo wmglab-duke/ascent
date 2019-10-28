@@ -1,6 +1,23 @@
 {
   "instances": [
     {
+      "type": "CuffFill_Primitive",
+      "label": "Madison Cuff Fill",
+      "def": {
+        "Radius": "R_out_M+Thk_fill_M",
+        "Thk": "Thk_fill_M",
+        "L": "L_M",
+        "z_center": "Center_M"
+      },
+      "materials": [
+        {
+          "info": "fill",
+          "type": "saline",
+          "label_index": 0
+        }
+      ]
+    },
+    {
       "type": "TubeCuff_Primitive",
       "label": "Madison Cuff",
       "def": {
@@ -170,6 +187,11 @@
     {
       "name": "Rot_def_contact_M",
       "expression": "(Theta_M/2)-(Theta_contact_M/2)",
+      "description": ""
+    },
+    {
+      "name": "Thk_fill_M",
+      "expression": "100 [um]",
       "description": ""
     }
   ]

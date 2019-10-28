@@ -88,17 +88,17 @@ class Part {
                 mp.set("Pitch_holecenter_holecenter", "0 [mm]");
 
                 im.labels = new String[]{
-                        "INNER CUFF SURFACE",
+                        "INNER CUFF SURFACE", //0
                         "OUTER CUFF SURFACE",
                         "CUFF FINAL",
                         "CUFF wGAP PRE HOLES",
                         "CUFF PRE GAP",
-                        "CUFF PRE GAP PRE HOLES",
+                        "CUFF PRE GAP PRE HOLES", //5
                         "CUFF GAP CROSS SECTION",
                         "CUFF GAP",
                         "CUFF PRE HOLES",
                         "HOLE 1",
-                        "HOLE 2",
+                        "HOLE 2", //10
                         "HOLES"
                 };
 
@@ -298,7 +298,7 @@ class Part {
                 mp.set("Rot_def", "0 [deg]");
 
                 im.labels = new String[]{
-                        "CONTACT CROSS SECTION",
+                        "CONTACT CROSS SECTION", //0
                         "RECESS CROSS SECTION",
                         "SRC",
                         "CONTACT FINAL",
@@ -1455,6 +1455,17 @@ class Part {
                 // imports
                 partInstance.set("selkeepnoncontr", false);
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[2]) + ".dom", "on"); // CUFF FINAL
+
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[1]) + ".dom", "off"); // OUTER CUFF SURFACE
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[3]) + ".dom", "off"); // CUFF wGAP PRE HOLES
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[4]) + ".dom", "off"); // CUFF PRE GAP
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[5]) + ".dom", "off"); // CUFF PRE GAP PRE HOLES
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[6]) + ".dom", "off"); // CUFF GAP CROSS SECTION
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[7]) + ".dom", "off"); // CUFF GAP
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[8]) + ".dom", "off"); // CUFF PRE HOLES
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[9]) + ".dom", "off"); // HOLE 1
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[10]) + ".dom", "off"); // HOLE 2
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[11]) + ".dom", "off"); // HOLES
 
                 break;
             case "RibbonContact_Primitive":

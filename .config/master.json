@@ -238,7 +238,7 @@
     }
   },
   "cuff": {
-    "preset": ["MicroLeads.json"]
+    "preset": ["Madison.json"]
   },
   "conductivities": {
     "silicone": {
