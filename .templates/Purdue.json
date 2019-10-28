@@ -1,6 +1,23 @@
 {
   "instances": [
     {
+      "type": "CuffFill_Primitive",
+      "label": "Purdue Cuff Fill",
+      "def": {
+        "Radius": "R_out_P+Thk_fill_P",
+        "Thk": "Thk_fill_P",
+        "L": "L_P",
+        "z_center": "Center_P"
+      },
+      "materials": [
+        {
+          "info": "fill",
+          "type": "saline",
+          "label_index": 0
+        }
+      ]
+    },
+    {
       "type": "TubeCuff_Primitive",
       "label": "Purdue Cuff",
       "def": {
@@ -188,6 +205,11 @@
     {
       "name": "Pitch_P",
       "expression": "1.5 [mm]",
+      "description": ""
+    },
+    {
+      "name": "Thk_fill_P",
+      "expression": "100 [um]",
       "description": ""
     }
   ]
