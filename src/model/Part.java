@@ -732,7 +732,7 @@ class Part {
                 mcp1.set("twistcomp", false);
                 mcp1.selection("face").named(im.get(hicsp1Label) + "_" + im.get(hicxp1Label));
                 mcp1.selection("edge").named(im.get("PC1"));
-                mcp1.selection("diredge").set(im.get(pcp1Label) + "(1)", 1); //TODO
+                mcp1.selection("diredge").set(im.get(pcp1Label) + "(1)", 1);
 
                 String sefp1Label = "Select End Face Part 1";
                 GeomFeature sefp1 = model.geom(id).create(im.next("ballsel", sefp1Label), "BallSelection");
@@ -1608,7 +1608,16 @@ class Part {
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[9]) + ".dom", "off"); // PC3
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[10]) + ".dom", "on"); // CUFF FINAL
 
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[1]) + ".pnt", "off"); // Cuffp1
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[3]) + ".pnt", "off"); // PC2
                 partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[4]) + ".pnt", "on"); // SRC
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[5]) + ".pnt", "off"); // Cuffp2
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[6]) + ".pnt", "off"); // Conductorp2
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[8]) + ".pnt", "off"); // Cuffp3
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[9]) + ".pnt", "off"); // PC3
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[10]) + ".pnt", "off"); // CUFF FINAL
+
+
 
                 // assign physics
                 String helix_pcsLabel = instanceLabel + " Current Source";
