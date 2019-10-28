@@ -1720,6 +1720,8 @@ class Part {
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[1]) + ".dom", "on"); // CONTACT FINAL
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[2]) + ".dom", "off"); // SRC
 
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[1]) + ".pnt", "off"); // CONTACT FINAL
+
                 // assign physics
                 String u_pcsLabel = instanceLabel + " Current Source";
                 String u_currentLabel = instanceLabel;
@@ -1749,6 +1751,9 @@ class Part {
                 partInstance.set("selkeepnoncontr", false);
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[0]) + ".dom", "off"); // CUFF XS
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[1]) + ".dom", "on"); // CUFF FINAL
+
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[1]) + ".pnt", "off"); // CUFF FINAL
+
                 break;
             case "CuffFill_Primitive":
                 // set instantiation parameters
