@@ -238,7 +238,7 @@
     }
   },
   "cuff": {
-    "preset": ["Madison.json"]
+    "preset": ["Pitt.json"]
   },
   "conductivities": {
     "silicone": {

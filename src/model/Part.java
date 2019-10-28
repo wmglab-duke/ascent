@@ -1681,7 +1681,17 @@ class Part {
 
                 // imports
                 partInstance.set("selkeepnoncontr", false);
+
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[1]) + ".dom", "off"); // SEL INNER EXCESS CONTACT
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[2]) + ".dom", "off"); // INNER CONTACT CUTTER
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[3]) + ".dom", "off"); // SEL OUTER EXCESS RECESS
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[4]) + ".dom", "off"); // SEL INNER EXCESS RECESS
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[5]) + ".dom", "off"); // OUTER CUTTER
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[6]) + ".dom", "on"); // FINAL RECESS
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[7]) + ".dom", "off"); // RECESS CROSS SECTION
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[8]) + ".dom", "off"); // OUTER RECESS CUTTER
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[9]) + ".dom", "off"); // RECESS PRE CUTS
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[10]) + ".dom", "off"); // INNER RECESS CUTTER
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[11]) + ".dom", "on"); // FINAL CONTACT
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[12]) + ".dom", "off"); // SEL OUTER EXCESS CONTACT
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[13]) + ".dom", "off"); // SEL OUTER EXCESS
@@ -1695,6 +1705,14 @@ class Part {
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[21]) + ".dom", "off"); // FINAL
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[22]) + ".dom", "off"); // INNER CUTTER
 
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[2]) + ".pnt", "off"); // INNER CONTACT CUTTER
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[5]) + ".pnt", "off"); // OUTER CUTTER
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[6]) + ".pnt", "off"); // FINAL RECESS
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[7]) + ".pnt", "off"); // RECESS CROSS SECTION
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[8]) + ".pnt", "off"); // OUTER RECESS CUTTER
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[9]) + ".pnt", "off"); // RECESS PRE CUTS
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[10]) + ".pnt", "off"); // INNER RECESS CUTTER
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[11]) + ".pnt", "off"); // FINAL CONTACT
                 partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[16]) + ".pnt", "on"); // SRC
                 partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[13]) + ".pnt", "off"); // SEL OUTER EXCESS
                 partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[14]) + ".pnt", "off"); // SEL INNER EXCESS

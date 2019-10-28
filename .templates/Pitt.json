@@ -1,6 +1,23 @@
 {
   "instances": [
     {
+      "type": "CuffFill_Primitive",
+      "label": "Pitt Cuff Fill",
+      "def": {
+        "Radius": "R_out_Pitt+Thk_fill_Pitt",
+        "Thk": "Thk_fill_Pitt",
+        "L": "L_Pitt",
+        "z_center": "Center_Pitt"
+      },
+      "materials": [
+        {
+          "info": "fill",
+          "type": "saline",
+          "label_index": 0
+        }
+      ]
+    },
+    {
       "type": "TubeCuff_Primitive",
       "label": "Pitt Cuff",
       "def": {
@@ -287,6 +304,11 @@
     {
       "name": "pitch_Pitt",
       "expression": "(1.025+0.475) [mm]",
+      "description": ""
+    },
+    {
+      "name": "Thk_fill_Pitt",
+      "expression": "100 [um]",
       "description": ""
     }
   ]
