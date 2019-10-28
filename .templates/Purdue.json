@@ -6,7 +6,7 @@
       "def": {
         "Radius": "R_out_P+Thk_fill_P",
         "Thk": "Thk_fill_P",
-        "L": "L_P",
+        "L": "L_P+2*Thk_fill_P",
         "z_center": "Center_P"
       },
       "materials": [

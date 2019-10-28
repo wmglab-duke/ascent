@@ -1379,9 +1379,9 @@ class Part {
                 GeomFeature cf = model.geom(id).create(im.next("cyl",cuffFillLabel), "Cylinder");
                 cf.label(cuffFillLabel);
                 cf.set("contributeto", im.get("CUFF FILL FINAL"));
-                cf.set("pos", new String[]{"0", "0", "z_center-(L/2)-Thk"});
+                cf.set("pos", new String[]{"0", "0", "z_center-(L/2)"});
                 cf.set("r", "Radius");
-                cf.set("h", "L+2*Thk");
+                cf.set("h", "L");
 
                 model.geom(id).run();
                 break;

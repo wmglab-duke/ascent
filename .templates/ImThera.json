@@ -6,7 +6,7 @@
       "def": {
         "Radius": "R_out_ITF+Thk_fill_IT",
         "Thk": "Thk_fill_IT",
-        "L": "L_IT",
+        "L": "L_IT+2*Thk_fill_IT",
         "z_center": "Center_IT"
       },
       "materials": [

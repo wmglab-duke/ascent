@@ -6,7 +6,7 @@
       "def": {
         "Radius": "R_out_Pitt+Thk_fill_Pitt",
         "Thk": "Thk_fill_Pitt",
-        "L": "L_Pitt",
+        "L": "L_Pitt+2*Thk_fill_Pitt",
         "z_center": "Center_Pitt"
       },
       "materials": [

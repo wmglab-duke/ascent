@@ -6,7 +6,7 @@
       "def": {
         "Radius": "r_cuff_in_LN+thk_cuff_LN+Thk_fill_LN",
         "Thk": "Thk_fill_LN",
-        "L": "L_cuff_LN+w_cuff_LN",
+        "L": "L_cuff_LN+w_cuff_LN+2*Thk_fill_LN",
         "z_center": "(z_nerve_LN/2)-(sep_elec_LN/2)"
       },
       "materials": [
@@ -23,7 +23,7 @@
       "def": {
         "Radius": "r_cuff_in_LN+thk_cuff_LN+Thk_fill_LN",
         "Thk": "Thk_fill_LN",
-        "L": "L_cuff_LN+w_cuff_LN",
+        "L": "L_cuff_LN+w_cuff_LN+2*Thk_fill_LN",
         "z_center": "(z_nerve_LN/2)+(sep_elec_LN/2)"
       },
       "materials": [

@@ -6,7 +6,7 @@
       "def": {
         "Radius": "R_out_CT+Thk_fill_CT",
         "Thk": "Thk_fill_CT",
-        "L": "L_CT",
+        "L": "L_CT+2*Thk_fill_CT",
         "z_center": "Center_CT"
       },
       "materials": [
