@@ -106,7 +106,7 @@
     },
     {
       "name": "Pitch_U",
-      "expression": "0.8 [mm]",
+      "expression": "1.1 [mm]",
       "description": ""
     },
     {
