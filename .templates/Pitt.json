@@ -1,6 +1,21 @@
 {
   "instances": [
     {
+      "type": "Medium_Primitive",
+      "label": "Pitt Medium",
+      "def": {
+        "Radius": "Radius_Pitt",
+        "Length": "Length_Pitt"
+      },
+      "materials": [
+        {
+          "info": "medium",
+          "type": "muscle",
+          "label_index": 0
+        }
+      ]
+    },
+    {
       "type": "CuffFill_Primitive",
       "label": "Pitt Cuff Fill",
       "def": {
@@ -45,7 +60,7 @@
       "type": "RectangleContact_Primitive",
       "label": "Pitt Contact 1",
       "def": {
-        "z_center": "(z_nerve_Pitt/2)+(pitch_Pitt/2)",
+        "z_center": "Center_Pitt+(pitch_Pitt/2)",
         "rotation_angle": "theta_pos_contact1_Pitt [deg]",
         "w_contact": "w_contact_Pitt",
         "z_contact": "z_contact_Pitt",
@@ -73,7 +88,7 @@
       "type": "RectangleContact_Primitive",
       "label": "Pitt Contact 2",
       "def": {
-        "z_center": "(z_nerve_Pitt/2)-(pitch_Pitt/2)",
+        "z_center": "Center_Pitt-(pitch_Pitt/2)",
         "rotation_angle": "theta_pos_contact2_Pitt [deg]",
         "w_contact": "w_contact_Pitt",
         "z_contact": "z_contact_Pitt",
@@ -101,7 +116,7 @@
       "type": "RectangleContact_Primitive",
       "label": "Pitt Contact 3",
       "def": {
-        "z_center": "(z_nerve_Pitt/2)+(pitch_Pitt/2)",
+        "z_center": "Center_Pitt+(pitch_Pitt/2)",
         "rotation_angle": "theta_pos_contact3_Pitt [deg]",
         "w_contact": "w_contact_Pitt",
         "z_contact": "z_contact_Pitt",
@@ -129,7 +144,7 @@
       "type": "RectangleContact_Primitive",
       "label": "Pitt Contact 4",
       "def": {
-        "z_center": "(z_nerve_Pitt/2)-(pitch_Pitt/2)",
+        "z_center": "Center_Pitt-(pitch_Pitt/2)",
         "rotation_angle": "theta_pos_contact4_Pitt [deg]",
         "w_contact": "w_contact_Pitt",
         "z_contact": "z_contact_Pitt",
@@ -168,7 +183,7 @@
     },
     {
       "name": "Center_Pitt",
-      "expression": "z_nerve_Pitt/2",
+      "expression": "Length_Pitt/2",
       "description": ""
     },
     {
@@ -252,11 +267,6 @@
       "description": ""
     },
     {
-      "name": "z_nerve_Pitt",
-      "expression": "100 [mm]",
-      "description": ""
-    },
-    {
       "name": "L_cuff_Pitt",
       "expression": "4.1917 [mm]",
       "description": ""
@@ -309,6 +319,16 @@
     {
       "name": "Thk_fill_Pitt",
       "expression": "100 [um]",
+      "description": ""
+    },
+    {
+      "name": "Radius_Pitt",
+      "expression": "5 [mm]",
+      "description": ""
+    },
+    {
+      "name": "Length_Pitt",
+      "expression": "50 [mm]",
       "description": ""
     }
   ]
