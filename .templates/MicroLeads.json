@@ -1,6 +1,21 @@
 {
   "instances": [
     {
+      "type": "Medium_Primitive",
+      "label": "MicroLeads Medium",
+      "def": {
+        "Radius": "Radius_U",
+        "Length": "Length_U"
+      },
+      "materials": [
+        {
+          "info": "medium",
+          "type": "muscle",
+          "label_index": 0
+        }
+      ]
+    },
+    {
       "type": "CuffFill_Primitive",
       "label": "MicroLeads Cuff Fill",
       "def": {
@@ -76,7 +91,7 @@
   "params": [
     {
       "name": "z_center_U",
-      "expression": "0",
+      "expression": "Length_U/2",
       "description": ""
     },
     {
@@ -117,6 +132,16 @@
     {
       "name": "Thk_fill_U",
       "expression": "100 [um]",
+      "description": ""
+    },
+    {
+      "name": "Radius_U",
+      "expression": "5 [mm]",
+      "description": ""
+    },
+    {
+      "name": "Length_U",
+      "expression": "50 [mm]",
       "description": ""
     }
   ]
