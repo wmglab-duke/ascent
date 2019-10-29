@@ -1,6 +1,21 @@
 {
   "instances": [
     {
+      "type": "Medium_Primitive",
+      "label": "Madison Medium",
+      "def": {
+        "Radius": "Radius_M",
+        "Length": "Length_M"
+      },
+      "materials": [
+        {
+          "info": "medium",
+          "type": "muscle",
+          "label_index": 0
+        }
+      ]
+    },
+    {
       "type": "CuffFill_Primitive",
       "label": "Madison Cuff Fill",
       "def": {
@@ -81,7 +96,7 @@
     },
     {
       "name": "Center_M",
-      "expression": "40 [mm]",
+      "expression": "Length_M/2",
       "description": ""
     },
     {
@@ -192,6 +207,16 @@
     {
       "name": "Thk_fill_M",
       "expression": "100 [um]",
+      "description": ""
+    },
+    {
+      "name": "Radius_M",
+      "expression": "10 [mm]",
+      "description": ""
+    },
+    {
+      "name": "Length_M",
+      "expression": "100 [mm]",
       "description": ""
     }
   ]
