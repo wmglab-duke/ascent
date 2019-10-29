@@ -1,6 +1,21 @@
 {
   "instances": [
     {
+      "type": "Medium_Primitive",
+      "label": "Enteromedics Medium",
+      "def": {
+        "Radius": "Radius_EM",
+        "Length": "Length_EM"
+      },
+      "materials": [
+        {
+          "info": "medium",
+          "type": "fat",
+          "label_index": 0
+        }
+      ]
+    },
+    {
       "type": "CuffFill_Primitive",
       "label": "Enteromedics Cuff Fill",
       "def": {
@@ -81,7 +96,7 @@
     },
     {
       "name": "Center_EM",
-      "expression": "20 [mm]",
+      "expression": "Length_EM/2",
       "description": ""
     },
     {
@@ -182,6 +197,16 @@
     {
       "name": "Thk_fill_EM",
       "expression": "100 [um]",
+      "description": ""
+    },
+    {
+      "name": "Radius_EM",
+      "expression": "10 [mm]",
+      "description": ""
+    },
+    {
+      "name": "Length_EM",
+      "expression": "100 [mm]",
       "description": ""
     }
   ]
