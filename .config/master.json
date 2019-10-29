@@ -238,7 +238,7 @@
     }
   },
   "cuff": {
-    "preset": ["ImThera.json"]
+    "preset": ["CorTec.json"]
   },
   "conductivities": {
     "silicone": {
