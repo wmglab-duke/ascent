@@ -250,7 +250,7 @@
       "units": "[S/m]"
     },
     "endoneurium": {
-      "value": "[1/6 1/6 1/1.75]",
+      "value": "{1/6, 1/6, 1/1.75}",
       "units": "[S/m]"
     },
     "epineurium": {
@@ -258,7 +258,7 @@
       "units": "[S/m]"
     },
     "muscle": {
-      "value": "[.086 .086 .35]",
+      "value": "{.086, .086, .35}",
       "units": "[S/m]"
     },
     "fat": {

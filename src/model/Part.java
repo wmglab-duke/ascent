@@ -1386,6 +1386,26 @@ class Part {
                 model.geom(id).run();
                 break;
             case "Medium_Primitive":
+
+                model.geom(id).inputParam().set("Radius", "10 [mm]");
+                model.geom(id).inputParam().set("Length", "100 [mm]");
+
+                im.labels = new String[]{
+                        "MEDIUM" //0
+                };
+
+                for (String cselMediumLabel: im.labels) {
+                    model.geom(id).selection().create(im.next("csel", cselMediumLabel), "CumulativeSelection")
+                            .label(cselMediumLabel);
+                }
+
+                String mediumLabel = "Medium";
+                GeomFeature m = model.geom(id).create(im.next("cyl", mediumLabel), "Cylinder");
+                m.label(mediumLabel);
+                m.set("r", "Radius");
+                m.set("h", "Length");
+                m.set("contributeto", im.get("MEDIUM"));
+
                 break;
             default:
                 throw new  IllegalArgumentException("No implementation for part primitive name: " + pseudonym);
@@ -1619,9 +1639,6 @@ class Part {
                 partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[12]) + ".pnt", "off"); // RECESS CUTTER OUT
                 partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[13]) + ".pnt", "off"); // BASE PLANE (PRE ROTATION)
 
-
-
-
                 // assign physics
                 String circle_pcsLabel = instanceLabel + " Current Source";
                 String circle_currentLabel = instanceLabel;
@@ -1842,6 +1859,33 @@ class Part {
 
                 break;
             case "Medium_Primitive":
+                // set instantiation parameters
+                String[] mediumParameters = {
+                        "Radius",
+                        "Length"
+                };
+
+                for (String param: mediumParameters) {
+                    partInstance.setEntry("inputexpr", (String) param, (String) itemObject.get(param));
+                }
+
+                // imports
+                partInstance.set("selkeepnoncontr", false);
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[0]) + ".dom", "on"); // MEDIUM
+
+                partInstance.setEntry("selkeepbnd", instanceID + "_" +  myIM.get(myLabels[0]) + ".bnd", "on"); // MEDIUM
+
+                // assign physics
+                String groundLabel = "Ground";
+                PhysicsFeature gnd = model.component("comp1").physics("ec").create(mw.im.next("gnd",groundLabel), "Ground", 2);
+                gnd.label(groundLabel);
+                gnd.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[0]) + "_bnd");
+
+//                gnd.selection().named("geom1_pi1_csel1_bnd");
+
+//                ((PhysicsFeature) mw.im.currentPointers.get(u_currentLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" +  myIM.get(myLabels[2]) + "_pnt"); // SRC
+
+
                 break;
             case "Fascicle":
                 // path = "path" + instanceLabel
