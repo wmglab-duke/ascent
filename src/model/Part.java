@@ -438,7 +438,7 @@ class Part {
                 model.geom(id).inputParam().set("L", "L_IT");
 
                 im.labels = new String[]{
-                        "CONTACT CUTTER IN",
+                        "CONTACT CUTTER IN", //0
                         "PRE CUT CONTACT",
                         "RECESS FINAL",
                         "RECESS OVERSHOOT",
@@ -1578,8 +1578,17 @@ class Part {
 
                 // imports
                 partInstance.set("selkeepnoncontr", false);
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[1]) + ".dom", "off"); // PRE CUT CONTACT
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[2]) + ".dom", "on"); // RECESS FINAL
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[3]) + ".dom", "off"); // RECESS OVERSHOOT
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[4]) + ".dom", "off"); // SRC
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[5]) + ".dom", "off"); // PLANE FOR CONTACT
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[6]) + ".dom", "on"); // CONTACT FINAL
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[7]) + ".dom", "off"); // CONTACT CUTTER OUT
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[8]) + ".dom", "off"); // BASE CONTACT PLANE (PRE ROTATION)
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[9]) + ".dom", "off"); // PLANE FOR RECESS
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[10]) + ".dom", "off"); // PRE CUT RECESS
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[11]) + ".dom", "off"); // RECESS CUTTER IN
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[12]) + ".dom", "off"); // RECESS CUTTER OUT
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[13]) + ".dom", "off"); // BASE PLANE (PRE ROTATION)
 
@@ -1592,7 +1601,6 @@ class Part {
                 partInstance.setEntry("selkeepbnd", instanceID + "_" +  myIM.get(myLabels[8]) + ".bnd", "off"); // CONTACT CUTTER OUT
                 partInstance.setEntry("selkeepbnd", instanceID + "_" +  myIM.get(myLabels[12]) + ".bnd", "off"); // RECESS CUTTER OUT
                 partInstance.setEntry("selkeepbnd", instanceID + "_" +  myIM.get(myLabels[13]) + ".bnd", "off"); // BASE PLANE (PRE ROTATION)
-
 
                 partInstance.setEntry("selkeepedg", instanceID + "_" +  myIM.get(myLabels[4]) + ".edg", "off"); // SRC
                 partInstance.setEntry("selkeepedg", instanceID + "_" +  myIM.get(myLabels[6]) + ".edg", "off"); // CONTACT FINAL
