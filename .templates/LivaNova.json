@@ -1,13 +1,28 @@
 {
   "instances": [
     {
+      "type": "Medium_Primitive",
+      "label": "LivaNova Medium",
+      "def": {
+        "Radius": "Radius_LN",
+        "Length": "Length_LN"
+      },
+      "materials": [
+        {
+          "info": "medium",
+          "type": "muscle",
+          "label_index": 0
+        }
+      ]
+    },
+    {
       "type": "CuffFill_Primitive",
       "label": "LivaNova Cuff Fill 1",
       "def": {
         "Radius": "r_cuff_in_LN+thk_cuff_LN+Thk_fill_LN",
         "Thk": "Thk_fill_LN",
         "L": "L_cuff_LN+w_cuff_LN+2*Thk_fill_LN",
-        "z_center": "(z_nerve_LN/2)-(sep_elec_LN/2)"
+        "z_center": "(Length_LN/2)-(sep_elec_LN/2)"
       },
       "materials": [
         {
@@ -24,7 +39,7 @@
         "Radius": "r_cuff_in_LN+thk_cuff_LN+Thk_fill_LN",
         "Thk": "Thk_fill_LN",
         "L": "L_cuff_LN+w_cuff_LN+2*Thk_fill_LN",
-        "z_center": "(z_nerve_LN/2)+(sep_elec_LN/2)"
+        "z_center": "(Length_LN/2)+(sep_elec_LN/2)"
       },
       "materials": [
         {
@@ -38,7 +53,7 @@
       "type": "HelicalCuffnContact_Primitive",
       "label": "LivaNova CuffnContact 1",
       "def": {
-        "Center": "(z_nerve_LN/2)-(sep_elec_LN/2)"
+        "Center": "(Length_LN/2)-(sep_elec_LN/2)"
       },
       "materials": [
         {
@@ -57,7 +72,7 @@
       "type": "HelicalCuffnContact_Primitive",
       "label": "LivaNova CuffnContact 2",
       "def": {
-        "Center": "(z_nerve_LN/2)+(sep_elec_LN/2)"
+        "Center": "(Length_LN/2)+(sep_elec_LN/2)"
       },
       "materials": [
         {
@@ -118,11 +133,6 @@
     {
       "name": "L_cuff_LN",
       "expression": "rev_cuff_LN*p_LN",
-      "description": ""
-    },
-    {
-      "name": "z_nerve_LN",
-      "expression": "200 [mm]",
       "description": ""
     },
     {
@@ -203,6 +213,16 @@
     {
       "name": "Thk_fill_LN",
       "expression": "100 [um]",
+      "description": ""
+    },
+    {
+      "name": "Radius_LN",
+      "expression": "10 [mm]",
+      "description": ""
+    },
+    {
+      "name": "Length_LN",
+      "expression": "100 [mm]",
       "description": ""
     }
   ]
