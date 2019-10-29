@@ -311,6 +311,10 @@ public class ModelWrapper {
         return true;
     }
 
+    public boolean addNerve() {
+        return true;
+    }
+
     /**
      *
      * @return
@@ -324,13 +328,9 @@ public class ModelWrapper {
                     "master.json"
             })).getData();
 
-
-
-            for(Object o: json_data.getJSONArray("fhdjlag")) {
-                String s = String.valueOf(o);
-
-
-            }
+//            for(Object o: json_data.getJSONArray("fhdjlag")) {
+//                String s = String.valueOf(o);
+//            }
 
             String fasciclesPath = String.join("/", new String[]{
                     this.root,
@@ -389,10 +389,15 @@ public class ModelWrapper {
             e.printStackTrace();
         }
 
+        // Build medium
+
+        // Read cuffs to build from master.json (cuff.preset) which links to JSON containing instantiations of parts
+        // needed to build cuff (and fill)
         JSONObject cuffObject = (JSONObject) configData.get("cuff");
         JSONArray cuffs = (JSONArray) cuffObject.get("preset");
         ArrayList<String> cuffFiles = new ArrayList<>();
 
+        // Build cuffs
         for (int i = 0; i < cuffs.length(); i++) {
             // make list of cuffs in model
             String cuff = cuffs.getString(i);
@@ -406,6 +411,9 @@ public class ModelWrapper {
             // add part instances needed to make the cuff
             mw.addPartInstances(cuff);
         }
+
+        // Build nerve
+        mw.addFascicles();
 
         model.component("comp1").geom("geom1").run("fin");
 

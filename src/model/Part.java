@@ -1881,11 +1881,6 @@ class Part {
                 gnd.label(groundLabel);
                 gnd.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[0]) + "_bnd");
 
-//                gnd.selection().named("geom1_pi1_csel1_bnd");
-
-//                ((PhysicsFeature) mw.im.currentPointers.get(u_currentLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" +  myIM.get(myLabels[2]) + "_pnt"); // SRC
-
-
                 break;
             case "Fascicle":
                 // path = "path" + instanceLabel
@@ -1897,7 +1892,7 @@ class Part {
                 // imports
 
                 break;
-            case "Nerve":
+            case "Epineurium":
                 // set instantiation parameters
 
                 // imports
