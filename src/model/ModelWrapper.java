@@ -416,6 +416,7 @@ public class ModelWrapper {
         }
 
         mw.loopCurrents();
+        mw.addFascicles();
 
         ModelUtil.disconnect();
         System.out.println("Disconnected from COMSOL Server");
