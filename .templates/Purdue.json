@@ -1,6 +1,38 @@
 {
   "instances": [
     {
+      "type": "Medium_Primitive",
+      "label": "Purdue Medium",
+      "def": {
+        "Radius": "Radius_P",
+        "Length": "Length_P"
+      },
+      "materials": [
+        {
+          "info": "medium",
+          "type": "muscle",
+          "label_index": 0
+        }
+      ]
+    },
+    {
+      "type": "CuffFill_Primitive",
+      "label": "Purdue Cuff Fill",
+      "def": {
+        "Radius": "R_out_P+Thk_fill_P",
+        "Thk": "Thk_fill_P",
+        "L": "L_P+2*Thk_fill_P",
+        "z_center": "Center_P"
+      },
+      "materials": [
+        {
+          "info": "fill",
+          "type": "saline",
+          "label_index": 0
+        }
+      ]
+    },
+    {
       "type": "TubeCuff_Primitive",
       "label": "Purdue Cuff",
       "def": {
@@ -77,7 +109,7 @@
     },
     {
       "name": "Center_P",
-      "expression": "50 [mm]",
+      "expression": "Length_P/2",
       "description": ""
     },
     {
@@ -118,11 +150,6 @@
     {
       "name": "Pitch_holecenter_holecenter_P",
       "expression": "NaN",
-      "description": ""
-    },
-    {
-      "name": "z_nerve_P",
-      "expression": "20 [mm]",
       "description": ""
     },
     {
@@ -188,6 +215,21 @@
     {
       "name": "Pitch_P",
       "expression": "1.5 [mm]",
+      "description": ""
+    },
+    {
+      "name": "Thk_fill_P",
+      "expression": "100 [um]",
+      "description": ""
+    },
+    {
+      "name": "Radius_P",
+      "expression": "5 [mm]",
+      "description": ""
+    },
+    {
+      "name": "Length_P",
+      "expression": "50 [mm]",
       "description": ""
     }
   ]

@@ -1,6 +1,38 @@
 {
   "instances": [
     {
+      "type": "Medium_Primitive",
+      "label": "Madison Medium",
+      "def": {
+        "Radius": "Radius_M",
+        "Length": "Length_M"
+      },
+      "materials": [
+        {
+          "info": "medium",
+          "type": "muscle",
+          "label_index": 0
+        }
+      ]
+    },
+    {
+      "type": "CuffFill_Primitive",
+      "label": "Madison Cuff Fill",
+      "def": {
+        "Radius": "R_out_M+Thk_fill_M",
+        "Thk": "Thk_fill_M",
+        "L": "L_M+2*Thk_fill_M",
+        "z_center": "Center_M"
+      },
+      "materials": [
+        {
+          "info": "fill",
+          "type": "saline",
+          "label_index": 0
+        }
+      ]
+    },
+    {
       "type": "TubeCuff_Primitive",
       "label": "Madison Cuff",
       "def": {
@@ -64,7 +96,7 @@
     },
     {
       "name": "Center_M",
-      "expression": "40 [mm]",
+      "expression": "Length_M/2",
       "description": ""
     },
     {
@@ -170,6 +202,21 @@
     {
       "name": "Rot_def_contact_M",
       "expression": "(Theta_M/2)-(Theta_contact_M/2)",
+      "description": ""
+    },
+    {
+      "name": "Thk_fill_M",
+      "expression": "100 [um]",
+      "description": ""
+    },
+    {
+      "name": "Radius_M",
+      "expression": "10 [mm]",
+      "description": ""
+    },
+    {
+      "name": "Length_M",
+      "expression": "100 [mm]",
       "description": ""
     }
   ]

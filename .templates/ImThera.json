@@ -1,6 +1,38 @@
 {
   "instances": [
     {
+      "type": "Medium_Primitive",
+      "label": "ImThera Medium",
+      "def": {
+        "Radius": "Radius_IT",
+        "Length": "Length_IT"
+      },
+      "materials": [
+        {
+          "info": "medium",
+          "type": "muscle",
+          "label_index": 0
+        }
+      ]
+    },
+    {
+      "type": "CuffFill_Primitive",
+      "label": "ImThera Cuff Fill",
+      "def": {
+        "Radius": "R_out_ITF+Thk_fill_IT",
+        "Thk": "Thk_fill_IT",
+        "L": "L_IT+2*Thk_fill_IT",
+        "z_center": "Center_IT"
+      },
+      "materials": [
+        {
+          "info": "fill",
+          "type": "saline",
+          "label_index": 0
+        }
+      ]
+    },
+    {
       "type": "TubeCuff_Primitive",
       "label": "ImThera Cuff",
       "def": {
@@ -233,7 +265,7 @@
     },
     {
       "name": "Center_IT",
-      "expression": "30 [mm]",
+      "expression": "Length_IT/2",
       "description": ""
     },
     {
@@ -319,11 +351,6 @@
     {
       "name": "r_cuff_in_pre_ITI",
       "expression": "(0.118/2) [inch]",
-      "description": ""
-    },
-    {
-      "name": "z_nerve_IT",
-      "expression": "20 [mm]",
       "description": ""
     },
     {
@@ -439,6 +466,21 @@
     {
       "name": "ang_contactcenter_contactcenter_pre_ITC",
       "expression": "51 [deg]",
+      "description": ""
+    },
+    {
+      "name": "Thk_fill_IT",
+      "expression": "100 [um]",
+      "description": ""
+    },
+    {
+      "name": "Radius_IT",
+      "expression": "10 [mm]",
+      "description": ""
+    },
+    {
+      "name": "Length_IT",
+      "expression": "100 [mm]",
       "description": ""
     }
   ]

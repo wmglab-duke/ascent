@@ -4,6 +4,7 @@ import com.comsol.model.GeomFeature;
 import com.comsol.model.Model;
 import com.comsol.model.ModelParam;
 import com.comsol.model.physics.PhysicsFeature;
+import com.comsol.nativejni.geom.Geom;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -87,17 +88,17 @@ class Part {
                 mp.set("Pitch_holecenter_holecenter", "0 [mm]");
 
                 im.labels = new String[]{
-                        "INNER CUFF SURFACE",
+                        "INNER CUFF SURFACE", //0
                         "OUTER CUFF SURFACE",
                         "CUFF FINAL",
                         "CUFF wGAP PRE HOLES",
                         "CUFF PRE GAP",
-                        "CUFF PRE GAP PRE HOLES",
+                        "CUFF PRE GAP PRE HOLES", //5
                         "CUFF GAP CROSS SECTION",
                         "CUFF GAP",
                         "CUFF PRE HOLES",
                         "HOLE 1",
-                        "HOLE 2",
+                        "HOLE 2", //10
                         "HOLES"
                 };
 
@@ -297,7 +298,7 @@ class Part {
                 mp.set("Rot_def", "0 [deg]");
 
                 im.labels = new String[]{
-                        "CONTACT CROSS SECTION",
+                        "CONTACT CROSS SECTION", //0
                         "RECESS CROSS SECTION",
                         "SRC",
                         "CONTACT FINAL",
@@ -437,7 +438,7 @@ class Part {
                 model.geom(id).inputParam().set("L", "L_IT");
 
                 im.labels = new String[]{
-                        "CONTACT CUTTER IN",
+                        "CONTACT CUTTER IN", //0
                         "PRE CUT CONTACT",
                         "RECESS FINAL",
                         "RECESS OVERSHOOT",
@@ -676,17 +677,17 @@ class Part {
                 model.geom(id).inputParam().set("Center", "Center_LN");
 
                 im.labels = new String[]{
-                        "PC1",
+                        "PC1", //0
                         "Cuffp1",
                         "SEL END P1",
                         "PC2",
                         "SRC",
-                        "Cuffp2",
+                        "Cuffp2", //5
                         "Conductorp2",
                         "SEL END P2",
                         "Cuffp3",
                         "PC3",
-                        "CUFF FINAL"
+                        "CUFF FINAL" //10
                 };
 
                 for (String cselHCCLabel: im.labels) {
@@ -731,7 +732,7 @@ class Part {
                 mcp1.set("twistcomp", false);
                 mcp1.selection("face").named(im.get(hicsp1Label) + "_" + im.get(hicxp1Label));
                 mcp1.selection("edge").named(im.get("PC1"));
-                mcp1.selection("diredge").set(im.get(pcp1Label) + "(1)", 1); //TODO
+                mcp1.selection("diredge").set(im.get(pcp1Label) + "(1)", 1);
 
                 String sefp1Label = "Select End Face Part 1";
                 GeomFeature sefp1 = model.geom(id).create(im.next("ballsel", sefp1Label), "BallSelection");
@@ -809,10 +810,8 @@ class Part {
                 mcp2c.label(mcp2cLabel);
                 mcp2c.set("contributeto", im.get("Conductorp2"));
                 mcp2c.set("crossfaces", true);
-                mcp2c.set("keep", false);
                 mcp2c.set("includefinal", false);
                 mcp2c.set("twistcomp", false);
-                mcp2c.set("selresult", true);
                 mcp2c.selection("face").named(im.get(hccsp2Label) + "_" + im.get(hccxp2Label));
                 mcp2c.selection("edge").named(im.get("PC2"));
                 mcp2c.selection("diredge").set(im.get(pcp2Label) + "(1)", 1);
@@ -866,13 +865,11 @@ class Part {
                 srch.set("contributeto", im.get("SRC"));
                 srch.set("p", new String[]{"cos(2*pi*rev_cuff_LN*(1.25/2.5))*((thk_elec_LN/2)+r_cuff_in_LN)", "sin(2*pi*rev_cuff_LN*(1.25/2.5))*((thk_elec_LN/2)+r_cuff_in_LN)", "Center"});
 
-                // NEW
                 String uspLabel = "Union Silicone Parts";
                 model.geom(id).create(im.next("uni", uspLabel), "Union");
                 model.geom(id).feature(im.get(uspLabel)).selection("input").set(im.get(mcp1Label), im.get(mcp2Label), im.get(mcp3Label));
                 model.geom(id).selection(im.get("CUFF FINAL")).label("CUFF FINAL");
                 model.geom(id).feature(im.get(uspLabel)).set("contributeto", im.get("CUFF FINAL"));
-                //
 
                 model.geom(id).run();
 
@@ -1173,6 +1170,243 @@ class Part {
 
                 model.geom(id).run();
                 break;
+            case "uContact_Primitive":
+                model.geom(id).inputParam().set("z_center", "z_center_U");
+                model.geom(id).inputParam().set("R_in", "R_in_U");
+                model.geom(id).inputParam().set("Tangent", "Tangent_U");
+                model.geom(id).inputParam().set("thk_contact", "thk_contact_U");
+                model.geom(id).inputParam().set("z_contact", "z_contact_U");
+
+                im.labels = new String[]{
+                        "CONTACT XS", //0
+                        "CONTACT FINAL",
+                        "SRC"
+                };
+
+                for (String cselUContactLabel: im.labels) {
+                    model.geom(id).selection().create(im.next("csel", cselUContactLabel), "CumulativeSelection")
+                            .label(cselUContactLabel);
+                }
+
+                String ucontactxsLabel = "Contact XS";
+                GeomFeature ucontactxs = model.geom(id).create(im.next("wp",ucontactxsLabel), "WorkPlane");
+                ucontactxs.label(ucontactxsLabel);
+                ucontactxs.set("contributeto", im.get("CONTACT XS"));
+                ucontactxs.set("quickz", "z_center-z_contact/2");
+                ucontactxs.set("unite", true);
+
+                String inLineLabel = "INLINE";
+                ucontactxs.geom().selection().create(im.next("csel",inLineLabel), "CumulativeSelection");
+                ucontactxs.geom().selection(im.get(inLineLabel)).label(inLineLabel);
+
+                String inLineUnionLabel = "INLINE_UNION";
+                ucontactxs.geom().selection().create(im.next("csel",inLineUnionLabel), "CumulativeSelection");
+                ucontactxs.geom().selection(im.get(inLineUnionLabel)).label(inLineUnionLabel);
+
+                String outLineLabel = "OUTLINE";
+                ucontactxs.geom().selection().create(im.next("csel",outLineLabel), "CumulativeSelection");
+                ucontactxs.geom().selection(im.get(outLineLabel)).label(outLineLabel);
+
+                String wpucontactxsLabel = "wpCONTACT XS";
+                ucontactxs.geom().selection().create(im.next("csel",wpucontactxsLabel), "CumulativeSelection");
+                ucontactxs.geom().selection(im.get(wpucontactxsLabel)).label(wpucontactxsLabel);
+
+                String roundInlineLabel = "Round Inline";
+                GeomFeature rIL = ucontactxs.geom().create(im.next("c",roundInlineLabel), "Circle");
+                rIL.label(roundInlineLabel);
+                rIL.set("contributeto", im.get(inLineLabel));
+                rIL.set("r", "R_in");
+
+                String rectInlineLabel = "Rect Inline";
+                GeomFeature rectIL = ucontactxs.geom().create(im.next("r",rectInlineLabel), "Rectangle");
+                rectIL.label(rectInlineLabel);
+                rectIL.set("contributeto", im.get(inLineLabel));
+                rectIL.set("pos", new String[]{"Tangent/2", "0"});
+                rectIL.set("base", "center");
+                rectIL.set("size", new String[]{"Tangent", "2*R_in"});
+
+                String uInlinePLabel = "Union Inline Parts";
+                GeomFeature uInline = ucontactxs.geom().create(im.next("uni",uInlinePLabel), "Union");
+                uInline.label(uInlinePLabel);
+                uInline.set("contributeto", im.get(inLineUnionLabel));
+                uInline.set("intbnd", false);
+                uInline.selection("input").named(im.get(inLineLabel));
+
+                String roLabel = "Round Outline";
+                GeomFeature ro = ucontactxs.geom().create(im.next("c",roLabel), "Circle");
+                ro.label(roLabel);
+                ro.set("contributeto", im.get(outLineLabel));
+                ro.set("r", "R_in+thk_contact");
+
+                String rectoLabel = "Rect Outline";
+                GeomFeature urect = ucontactxs.geom().create(im.next("r",rectoLabel), "Rectangle");
+                urect.label(rectoLabel);
+                urect.set("contributeto", im.get(outLineLabel));
+                urect.set("pos", new String[]{"Tangent/2", "0"});
+                urect.set("base", "center");
+                urect.set("size", new String[]{"Tangent", "2*R_in+2*thk_contact"});
+
+                String uOPLabel = "Union Outline Parts";
+                GeomFeature uOP = ucontactxs.geom().create(im.next("uni",uOPLabel), "Union");
+                uOP.label(uOPLabel);
+                uOP.set("contributeto", im.get(inLineUnionLabel));
+                uOP.set("intbnd", false);
+                uOP.selection("input").named(im.get(outLineLabel));
+
+                String diff2cxsLabel = "Diff to Contact XS";
+                GeomFeature diff2cxs = ucontactxs.geom().create(im.next("dif", diff2cxsLabel), "Difference");
+                diff2cxs.label(diff2cxsLabel);
+                diff2cxs.selection("input").named(im.get(outLineLabel));
+                diff2cxs.selection("input2").named(im.get(inLineLabel));
+
+                String umcLabel = "Make Contact";
+                GeomFeature umc = model.geom(id).create(im.next("ext",umcLabel), "Extrude");
+                umc.label(umcLabel);
+                umc.set("contributeto", im.get("CONTACT FINAL"));
+                umc.setIndex("distance", "z_contact", 0);
+                umc.selection("input").named(im.get("CONTACT XS"));
+
+                String usrcLabel = "Src";
+                GeomFeature usrc = model.geom(id).create(im.next("pt",usrcLabel), "Point");
+                usrc.label(usrcLabel);
+                usrc.set("contributeto", im.get("SRC"));
+                usrc.set("p", new String[]{"-R_in-(thk_contact/2)", "0", "z_center"});
+
+                model.geom(id).run();
+                break;
+            case "uCuff_Primitive":
+                model.geom(id).inputParam().set("z_center", "z_center_U");
+                model.geom(id).inputParam().set("R_in", "R_in_U");
+                model.geom(id).inputParam().set("Tangent", "Tangent_U");
+                model.geom(id).inputParam().set("R_out", "R_out_U");
+                model.geom(id).inputParam().set("L", "L_U");
+
+                im.labels = new String[]{
+                        "CUFF XS", //0
+                        "CUFF FINAL"
+                };
+
+                for (String cselUCuffLabel: im.labels) {
+                    model.geom(id).selection().create(im.next("csel", cselUCuffLabel), "CumulativeSelection")
+                            .label(cselUCuffLabel);
+                }
+
+                String ucCXSLabel = "Contact XS";
+                GeomFeature ucCXS = model.geom(id).create(im.next("wp",ucCXSLabel), "WorkPlane");
+                ucCXS.label(ucCXSLabel);
+                ucCXS.set("contributeto", im.get("CUFF XS"));
+                ucCXS.set("quickz", "z_center-L/2");
+                ucCXS.set("unite", true);
+
+                String ucInlineLabel = "INLINE";
+                ucCXS.geom().selection().create(im.next("csel",ucInlineLabel), "CumulativeSelection");
+                ucCXS.geom().selection(im.get(ucInlineLabel)).label(ucInlineLabel);
+
+                String ucInlineUnion = "INLINE_UNION";
+                ucCXS.geom().selection().create(im.next("csel",ucInlineUnion), "CumulativeSelection");
+                ucCXS.geom().selection(im.get(ucInlineUnion)).label(ucInlineUnion);
+
+                String ucOutlineLabel = "OUTLINE";
+                ucCXS.geom().selection().create(im.next("csel",ucOutlineLabel), "CumulativeSelection");
+                ucCXS.geom().selection(im.get(ucOutlineLabel)).label(ucOutlineLabel);
+
+                String ucContactXSLabel = "CONTACT XS";
+                ucCXS.geom().selection().create(im.next("csel",ucContactXSLabel), "CumulativeSelection");
+                ucCXS.geom().selection(im.get(ucContactXSLabel)).label(ucContactXSLabel);
+
+                String ucOutlineCuffLabel = "OUTLINE_CUFF";
+                ucCXS.geom().selection().create(im.next("csel",ucOutlineCuffLabel), "CumulativeSelection");
+                ucCXS.geom().selection(im.get(ucOutlineCuffLabel)).label(ucOutlineCuffLabel);
+
+                String ucCircleInlineLabel = "Round Inline";
+                GeomFeature ucCircleInline = ucCXS.geom().create(im.next("c",ucCircleInlineLabel), "Circle");
+                ucCircleInline.label(ucCircleInlineLabel);
+                ucCircleInline.set("contributeto", im.get(ucInlineLabel));
+                ucCircleInline.set("r", "R_in");
+
+                String ucRectInlineLabel = "Rect Inline";
+                GeomFeature ucRectInline = ucCXS.geom().create(im.next("r",ucRectInlineLabel), "Rectangle");
+                ucRectInline.label(ucRectInlineLabel);
+                ucRectInline.set("contributeto", im.get(ucInlineLabel));
+                ucRectInline.set("pos", new String[]{"Tangent/2", "0"});
+                ucRectInline.set("base", "center");
+                ucRectInline.set("size", new String[]{"Tangent", "2*R_in"});
+
+                String ucUnionInlineLabel = "Union Inline Parts";
+                GeomFeature ucUnionInline = ucCXS.geom().create(im.next("uni",ucUnionInlineLabel), "Union");
+                ucUnionInline.label(ucUnionInlineLabel);
+                ucUnionInline.set("contributeto", im.get("INLINE_UNION"));
+                ucUnionInline.set("intbnd", false);
+                ucUnionInline.selection("input").named(im.get("INLINE"));
+
+                String ucCircleOutlineLabel = "Cuff Outline";
+                GeomFeature ucCircleOutline = ucCXS.geom().create(im.next("c",ucCircleOutlineLabel), "Circle");
+                ucCircleOutline.label(ucCircleOutlineLabel);
+                ucCircleOutline.set("contributeto", im.get("OUTLINE_CUFF"));
+                ucCircleOutline.set("r", "R_out");
+
+                String ucDiffLabel = "Diff to Cuff XS";
+                GeomFeature ucDiff = ucCXS.geom().create(im.next("dif",ucDiffLabel), "Difference");
+                ucDiff.label(ucDiffLabel);
+                ucDiff.selection("input").named(im.get("OUTLINE_CUFF"));
+                ucDiff.selection("input2").named(im.get("INLINE_UNION"));
+
+                String ucExtLabel = "Make Cuff";
+                GeomFeature ucExt = model.geom(id).create(im.next("ext",ucExtLabel), "Extrude");
+                ucExt.label(ucExtLabel);
+                ucExt.set("contributeto", im.get("CUFF FINAL"));
+                ucExt.setIndex("distance", "L", 0);
+                ucExt.selection("input").named(im.get("CUFF XS"));
+
+                model.geom(id).run();
+                break;
+            case "CuffFill_Primitive":
+                model.geom(id).inputParam().set("Radius", "0.5 [mm]");
+                model.geom(id).inputParam().set("Thk", "100 [um]");
+                model.geom(id).inputParam().set("L", "2.5 [mm]");
+                model.geom(id).inputParam().set("z_center", "0");
+
+                im.labels = new String[]{
+                        "CUFF FILL FINAL", //0
+                };
+
+                for (String cselCuffFillLabel: im.labels) {
+                    model.geom(id).selection().create(im.next("csel", cselCuffFillLabel), "CumulativeSelection")
+                            .label(cselCuffFillLabel);
+                }
+
+                String cuffFillLabel = "Cuff Fill";
+                GeomFeature cf = model.geom(id).create(im.next("cyl",cuffFillLabel), "Cylinder");
+                cf.label(cuffFillLabel);
+                cf.set("contributeto", im.get("CUFF FILL FINAL"));
+                cf.set("pos", new String[]{"0", "0", "z_center-(L/2)"});
+                cf.set("r", "Radius");
+                cf.set("h", "L");
+
+                model.geom(id).run();
+                break;
+            case "Medium_Primitive":
+
+                model.geom(id).inputParam().set("Radius", "10 [mm]");
+                model.geom(id).inputParam().set("Length", "100 [mm]");
+
+                im.labels = new String[]{
+                        "MEDIUM" //0
+                };
+
+                for (String cselMediumLabel: im.labels) {
+                    model.geom(id).selection().create(im.next("csel", cselMediumLabel), "CumulativeSelection")
+                            .label(cselMediumLabel);
+                }
+
+                String mediumLabel = "Medium";
+                GeomFeature m = model.geom(id).create(im.next("cyl", mediumLabel), "Cylinder");
+                m.label(mediumLabel);
+                m.set("r", "Radius");
+                m.set("h", "Length");
+                m.set("contributeto", im.get("MEDIUM"));
+
+                break;
             default:
                 throw new  IllegalArgumentException("No implementation for part primitive name: " + pseudonym);
         }
@@ -1242,6 +1476,29 @@ class Part {
                 partInstance.set("selkeepnoncontr", false);
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[2]) + ".dom", "on"); // CUFF FINAL
 
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[1]) + ".dom", "off"); // OUTER CUFF SURFACE
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[3]) + ".dom", "off"); // CUFF wGAP PRE HOLES
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[4]) + ".dom", "off"); // CUFF PRE GAP
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[5]) + ".dom", "off"); // CUFF PRE GAP PRE HOLES
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[6]) + ".dom", "off"); // CUFF GAP CROSS SECTION
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[7]) + ".dom", "off"); // CUFF GAP
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[8]) + ".dom", "off"); // CUFF PRE HOLES
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[9]) + ".dom", "off"); // HOLE 1
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[10]) + ".dom", "off"); // HOLE 2
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[11]) + ".dom", "off"); // HOLES
+
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[1]) + ".pnt", "off"); // OUTER CUFF SURFACE
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[2]) + ".pnt", "off"); // CUFF FINAL
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[3]) + ".pnt", "off"); // CUFF wGAP PRE HOLES
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[4]) + ".pnt", "off"); // CUFF PRE GAP
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[5]) + ".pnt", "off"); // CUFF PRE GAP PRE HOLES
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[6]) + ".pnt", "off"); // CUFF GAP CROSS SECTION
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[7]) + ".pnt", "off"); // CUFF GAP
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[8]) + ".pnt", "off"); // CUFF PRE HOLES
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[9]) + ".pnt", "off"); // HOLE 1
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[10]) + ".pnt", "off"); // HOLE 2
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[11]) + ".pnt", "off"); // HOLES
+
                 break;
             case "RibbonContact_Primitive":
 
@@ -1262,9 +1519,15 @@ class Part {
 
                 // imports
                 partInstance.set("selkeepnoncontr", false);
-                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[2]) + ".pnt", "on"); // SRC
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[1]) + ".dom", "off"); // RECESS FINAL
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[2]) + ".dom", "off"); // SRC
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[3]) + ".dom", "on"); // CONTACT FINAL
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[4]) + ".dom", "on"); // RECESS FINAL
+
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[1]) + ".pnt", "off"); // RECESS CROSS SECTION
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[2]) + ".pnt", "on"); // SRC
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[3]) + ".pnt", "off"); // CONTACT FINAL
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[4]) + ".pnt", "off"); // RECESS FINAL
 
                 // assign physics
                 String ribbon_pcsLabel = instanceLabel + " Current Source";
@@ -1296,6 +1559,9 @@ class Part {
                 // imports
                 partInstance.set("selkeepnoncontr", false);
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[1]) + ".dom", "on"); // CONTACT FINAL
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[2]) + ".dom", "off"); // SRC
+
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[1]) + ".pnt", "off"); // CONTACT FINAL
                 partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[2]) + ".pnt", "on"); // SRC
 
                 // assign physics
@@ -1332,8 +1598,17 @@ class Part {
 
                 // imports
                 partInstance.set("selkeepnoncontr", false);
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[1]) + ".dom", "off"); // PRE CUT CONTACT
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[2]) + ".dom", "on"); // RECESS FINAL
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[3]) + ".dom", "off"); // RECESS OVERSHOOT
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[4]) + ".dom", "off"); // SRC
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[5]) + ".dom", "off"); // PLANE FOR CONTACT
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[6]) + ".dom", "on"); // CONTACT FINAL
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[7]) + ".dom", "off"); // CONTACT CUTTER OUT
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[8]) + ".dom", "off"); // BASE CONTACT PLANE (PRE ROTATION)
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[9]) + ".dom", "off"); // PLANE FOR RECESS
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[10]) + ".dom", "off"); // PRE CUT RECESS
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[11]) + ".dom", "off"); // RECESS CUTTER IN
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[12]) + ".dom", "off"); // RECESS CUTTER OUT
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[13]) + ".dom", "off"); // BASE PLANE (PRE ROTATION)
 
@@ -1347,16 +1622,22 @@ class Part {
                 partInstance.setEntry("selkeepbnd", instanceID + "_" +  myIM.get(myLabels[12]) + ".bnd", "off"); // RECESS CUTTER OUT
                 partInstance.setEntry("selkeepbnd", instanceID + "_" +  myIM.get(myLabels[13]) + ".bnd", "off"); // BASE PLANE (PRE ROTATION)
 
-
                 partInstance.setEntry("selkeepedg", instanceID + "_" +  myIM.get(myLabels[4]) + ".edg", "off"); // SRC
                 partInstance.setEntry("selkeepedg", instanceID + "_" +  myIM.get(myLabels[6]) + ".edg", "off"); // CONTACT FINAL
                 partInstance.setEntry("selkeepedg", instanceID + "_" +  myIM.get(myLabels[8]) + ".edg", "off"); // CONTACT CUTTER OUT
 
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[1]) + ".pnt", "off"); // PRE CUT CONTACT
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[2]) + ".pnt", "off"); // RECESS FINAL
                 partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[4]) + ".pnt", "on"); // CONTACT FINAL
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[5]) + ".pnt", "off"); // PLANE FOR CONTACT
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[6]) + ".pnt", "off"); // CONTACT FINAL
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[7]) + ".pnt", "off"); // CONTACT CUTTER OUT
                 partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[8]) + ".pnt", "off"); // CONTACT CUTTER OUT
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[9]) + ".pnt", "off"); // PLANE FOR RECESS
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[10]) + ".pnt", "off"); // PRE CUT RECESS
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[11]) + ".pnt", "off"); // RECESS CUTTER IN
                 partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[12]) + ".pnt", "off"); // RECESS CUTTER OUT
                 partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[13]) + ".pnt", "off"); // BASE PLANE (PRE ROTATION)
-
 
                 // assign physics
                 String circle_pcsLabel = instanceLabel + " Current Source";
@@ -1386,12 +1667,24 @@ class Part {
                 // imports
                 partInstance.set("selkeepnoncontr", false);
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[1]) + ".dom", "off"); // Cuffp1
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[3]) + ".dom", "off"); // PC2
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[4]) + ".dom", "off"); // SRC
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[5]) + ".dom", "off"); // Cuffp2
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[6]) + ".dom", "on"); // Conductorp2
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[8]) + ".dom", "off"); // Cuffp3
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[9]) + ".dom", "off"); // PC3
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[10]) + ".dom", "on"); // CUFF FINAL
 
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[1]) + ".pnt", "off"); // Cuffp1
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[3]) + ".pnt", "off"); // PC2
                 partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[4]) + ".pnt", "on"); // SRC
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[5]) + ".pnt", "off"); // Cuffp2
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[6]) + ".pnt", "off"); // Conductorp2
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[8]) + ".pnt", "off"); // Cuffp3
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[9]) + ".pnt", "off"); // PC3
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[10]) + ".pnt", "off"); // CUFF FINAL
+
+
 
                 // assign physics
                 String helix_pcsLabel = instanceLabel + " Current Source";
@@ -1426,7 +1719,17 @@ class Part {
 
                 // imports
                 partInstance.set("selkeepnoncontr", false);
+
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[1]) + ".dom", "off"); // SEL INNER EXCESS CONTACT
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[2]) + ".dom", "off"); // INNER CONTACT CUTTER
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[3]) + ".dom", "off"); // SEL OUTER EXCESS RECESS
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[4]) + ".dom", "off"); // SEL INNER EXCESS RECESS
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[5]) + ".dom", "off"); // OUTER CUTTER
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[6]) + ".dom", "on"); // FINAL RECESS
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[7]) + ".dom", "off"); // RECESS CROSS SECTION
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[8]) + ".dom", "off"); // OUTER RECESS CUTTER
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[9]) + ".dom", "off"); // RECESS PRE CUTS
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[10]) + ".dom", "off"); // INNER RECESS CUTTER
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[11]) + ".dom", "on"); // FINAL CONTACT
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[12]) + ".dom", "off"); // SEL OUTER EXCESS CONTACT
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[13]) + ".dom", "off"); // SEL OUTER EXCESS
@@ -1440,6 +1743,14 @@ class Part {
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[21]) + ".dom", "off"); // FINAL
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[22]) + ".dom", "off"); // INNER CUTTER
 
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[2]) + ".pnt", "off"); // INNER CONTACT CUTTER
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[5]) + ".pnt", "off"); // OUTER CUTTER
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[6]) + ".pnt", "off"); // FINAL RECESS
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[7]) + ".pnt", "off"); // RECESS CROSS SECTION
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[8]) + ".pnt", "off"); // OUTER RECESS CUTTER
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[9]) + ".pnt", "off"); // RECESS PRE CUTS
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[10]) + ".pnt", "off"); // INNER RECESS CUTTER
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[11]) + ".pnt", "off"); // FINAL CONTACT
                 partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[16]) + ".pnt", "on"); // SRC
                 partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[13]) + ".pnt", "off"); // SEL OUTER EXCESS
                 partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[14]) + ".pnt", "off"); // SEL INNER EXCESS
@@ -1474,6 +1785,103 @@ class Part {
                 ((PhysicsFeature) mw.im.currentPointers.get(square_currentLabel)).label(square_pcsLabel);
 
                 break;
+            case "uContact_Primitive":
+                // set instantiation parameters
+                String[] uContactParameters = {
+                        "z_center",
+                        "R_in",
+                        "Tangent",
+                        "thk_contact",
+                        "z_contact"
+                };
+
+                for (String param: uContactParameters) {
+                    partInstance.setEntry("inputexpr", (String) param, (String) itemObject.get(param));
+                }
+
+                // imports
+                partInstance.set("selkeepnoncontr", false);
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[0]) + ".dom", "off"); // CONTACT XS
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[1]) + ".dom", "on"); // CONTACT FINAL
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[2]) + ".dom", "off"); // SRC
+
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[1]) + ".pnt", "off"); // CONTACT FINAL
+
+                // assign physics
+                String u_pcsLabel = instanceLabel + " Current Source";
+                String u_currentLabel = instanceLabel;
+
+                mw.im.currentPointers.put(u_currentLabel,
+                        model.component("comp1").physics("ec").create(mw.im.next("pcs", u_pcsLabel), "PointCurrentSource", 0));
+
+                ((PhysicsFeature) mw.im.currentPointers.get(u_currentLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" +  myIM.get(myLabels[2]) + "_pnt"); // SRC
+                ((PhysicsFeature) mw.im.currentPointers.get(u_currentLabel)).set("Qjp", 0.001);
+                ((PhysicsFeature) mw.im.currentPointers.get(u_currentLabel)).label(u_pcsLabel);
+                break;
+            case "uCuff_Primitive":
+                // set instantiation parameters
+                String[] uCuffParameters = {
+                        "z_center",
+                        "R_in",
+                        "Tangent",
+                        "R_out",
+                        "L"
+                };
+
+                for (String param: uCuffParameters) {
+                    partInstance.setEntry("inputexpr", (String) param, (String) itemObject.get(param));
+                }
+
+                // imports
+                partInstance.set("selkeepnoncontr", false);
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[0]) + ".dom", "off"); // CUFF XS
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[1]) + ".dom", "on"); // CUFF FINAL
+
+                partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[1]) + ".pnt", "off"); // CUFF FINAL
+
+                break;
+            case "CuffFill_Primitive":
+                // set instantiation parameters
+                String[] cuffFillParameters = {
+                        "Radius",
+                        "Thk",
+                        "L",
+                        "z_center"
+                };
+
+                for (String param: cuffFillParameters) {
+                    partInstance.setEntry("inputexpr", (String) param, (String) itemObject.get(param));
+                }
+
+                // imports
+                partInstance.set("selkeepnoncontr", false);
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[0]) + ".dom", "on"); // CUFF FILL FINAL
+
+                break;
+            case "Medium_Primitive":
+                // set instantiation parameters
+                String[] mediumParameters = {
+                        "Radius",
+                        "Length"
+                };
+
+                for (String param: mediumParameters) {
+                    partInstance.setEntry("inputexpr", (String) param, (String) itemObject.get(param));
+                }
+
+                // imports
+                partInstance.set("selkeepnoncontr", false);
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[0]) + ".dom", "on"); // MEDIUM
+
+                partInstance.setEntry("selkeepbnd", instanceID + "_" +  myIM.get(myLabels[0]) + ".bnd", "on"); // MEDIUM
+
+                // assign physics
+                String groundLabel = "Ground";
+                PhysicsFeature gnd = model.component("comp1").physics("ec").create(mw.im.next("gnd",groundLabel), "Ground", 2);
+                gnd.label(groundLabel);
+                gnd.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[0]) + "_bnd");
+
+                break;
             case "Fascicle":
                 // path = "path" + instanceLabel
 
@@ -1484,7 +1892,7 @@ class Part {
                 // imports
 
                 break;
-            case "Nerve":
+            case "Epineurium":
                 // set instantiation parameters
 
                 // imports

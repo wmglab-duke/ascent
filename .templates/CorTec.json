@@ -1,6 +1,38 @@
 {
   "instances": [
     {
+      "type": "Medium_Primitive",
+      "label": "CorTec Medium",
+      "def": {
+        "Radius": "Radius_CT",
+        "Length": "Length_CT"
+      },
+      "materials": [
+        {
+          "info": "medium",
+          "type": "muscle",
+          "label_index": 0
+        }
+      ]
+    },
+    {
+      "type": "CuffFill_Primitive",
+      "label": "CorTec Cuff Fill",
+      "def": {
+        "Radius": "R_out_CT+Thk_fill_CT",
+        "Thk": "Thk_fill_CT",
+        "L": "L_CT+2*Thk_fill_CT",
+        "z_center": "Center_CT"
+      },
+      "materials": [
+        {
+          "info": "fill",
+          "type": "saline",
+          "label_index": 0
+        }
+      ]
+    },
+    {
       "type": "TubeCuff_Primitive",
       "label": "CorTec Cuff",
       "def": {
@@ -89,7 +121,7 @@
     },
     {
       "name": "Center_CT",
-      "expression": "10 [mm]",
+      "expression": "Length_CT/2",
       "description": ""
     },
     {
@@ -215,6 +247,21 @@
     {
       "name": "Pitch_CT",
       "expression": "1.5 [mm]",
+      "description": ""
+    },
+    {
+      "name": "Thk_fill_CT",
+      "expression": "100 [um]",
+      "description": ""
+    },
+    {
+      "name": "Radius_CT",
+      "expression": "10 [mm]",
+      "description": ""
+    },
+    {
+      "name": "Length_CT",
+      "expression": "50 [mm]",
       "description": ""
     }
   ]
