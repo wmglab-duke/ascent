@@ -6,13 +6,12 @@ import com.comsol.model.util.ModelUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
-import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 
 /**
  * model.ModelWrapper
@@ -321,6 +320,11 @@ public class ModelWrapper {
      */
     public boolean addFascicles() {
 
+        String partPrimitiveName = "Fascicle";
+        if (!this.im.hasPseudonym(partPrimitiveName)) {
+            Part.createPartPrimitive(this.im.next("part", partPrimitiveName), partPrimitiveName, this);
+        }
+
         try {
             JSONObject json_data = new JSONReader(String.join("/", new String[]{
                     this.root,
@@ -343,25 +347,30 @@ public class ModelWrapper {
                     "fascicles"
             });
 
-            try (Stream<Path> result = Files.walk(Paths.get(fasciclesPath))) {
-                for (Iterator<Path> it = result.iterator(); it.hasNext(); ) {
-                    Path p = it.next();
-                    if (p.toString().contains(".txt")) {
-                        String[] pathParts = p.toString().split("/");
-                        int length = pathParts.length;
-                        String fascicleName = (pathParts[length - 2] + pathParts[length - 3] + "_" + pathParts[length - 1])
-                                .replaceAll(".txt", "").replaceAll("s", "");
-                        System.out.println("fascicleName = " + fascicleName);
+            String[] dirs = new File(fasciclesPath).list();
+            if (dirs != null) {
+                int i = 0;
+                for (String dir: dirs) {
+                    if (! dir.contains(".")) {
+                        String fascicleName = "fascicle" + (i++);
+                        model.param().descr(fascicleName, dir);
+                        Part.createPartInstance(this.im.next("pi"), fascicleName, partPrimitiveName,this, null);
+                    }
+
+//                        String[] pathParts = dir.split("/");
+//                        int length = pathParts.length;
+//                        String fascicleName = (pathParts[length - 2] + pathParts[length - 3] + "_" + pathParts[length - 1])
+//                                .replaceAll(".txt", "").replaceAll("s", "");
+//                        System.out.println("fascicleName = " + fascicleName);
 
                         // TODO: figure out how to designate which part is being created
                         //  (i.e. distinguish instances from each other?)
-//                        Part.createPartInstance("Fascicle", fascicleName, this, null);
+//
+
+                        // set only description for parameter (stored as string)
+
                     }
                 }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
