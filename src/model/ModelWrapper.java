@@ -327,7 +327,10 @@ public class ModelWrapper {
         // loop through fascicle primitives and create in COMSOL
         for (String partPrimitiveName: partPrimitiveNames) {
             if (!this.im.hasPseudonym(partPrimitiveName)) {
-                Part.createPartPrimitive(this.im.next("part", partPrimitiveName), partPrimitiveName, this);
+                // TRY to create the part primitive (catch error if no existing implementation)
+                IdentifierManager partPrimitiveIM = Part.createPartPrimitive(this.im.next("part", partPrimitiveName), partPrimitiveName, this);
+                // add the returned id manager to the HashMap of IMs with the partName as its key
+                this.partPrimitiveIMs.put(partPrimitiveName, partPrimitiveIM);
             }
         }
 
@@ -343,8 +346,8 @@ public class ModelWrapper {
                     "data",
                     "samples",
                     (String) json_data.get("sample"),
-                    String.valueOf(0), // these 0's are temporary (for 3d models will need to change)
-                    String.valueOf(0),
+                    "0", // these 0's are temporary (for 3d models will need to change)
+                    "0",
                     (String) ((JSONObject) json_data.get("modes")).get("write"),
                     "fascicles"
             });
@@ -383,9 +386,8 @@ public class ModelWrapper {
                         // hand off to Part to build instance of fascicle
                         Part.createPartInstance(this.im.next("pi"), fascicleName, primitiveType,this, null, data);
                     }
-
-                    }
                 }
+            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
