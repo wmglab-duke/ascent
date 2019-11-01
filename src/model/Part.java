@@ -830,7 +830,7 @@ class Part {
                 hicsp3.label(hicsp3Label);
                 hicsp3.set("planetype", "faceparallel");
                 hicsp3.set("unite", true);
-                hicsp3.selection("face").named(im.get("SEL END P2")); // here
+                hicsp3.selection("face").named(im.get("SEL END P2"));
 
                 String hicssp3Label = "HELICAL INSULATOR CROSS SECTION P3";
                 hicsp3.geom().selection().create(im.next("csel", hicssp3Label), "CumulativeSelection");
@@ -1432,15 +1432,16 @@ class Part {
                 String icnameLabel = "InterpolationCurve";
                 GeomFeature ic = fascicleCICX.geom().create(im.next("ic",icnameLabel), icnameLabel);
                 ic.label("Trace");
-                ic.set("contributeto", "csel1");
+                ic.set("contributeto", im.get(icLabel));
                 ic.set("source", "file");
                 ic.set("filename", "D:\\Documents\\access\\data\\samples\\Pig13-1\\0\\0\\sectionwise2d\\fascicles\\1\\inners\\0.txt"); // this is what we need to figure out - how to get these? which type of fasc should be made, and what are the paths for inners or inner+outer
                 ic.set("rtol", 0.02);
 
                 String conv2solidLabel = "Convert to Trace to Cross Section";
-                GeomFeature conv2solid = fascicleCICX.geom().create(im.next("csol",conv2solidLabel), conv2solidLabel);
+                GeomFeature conv2solid = fascicleCICX.geom().create(im.next("csol",conv2solidLabel), "ConvertToSolid");
+
                 conv2solid.label(conv2solidLabel);
-                conv2solid.selection("input").named(im.get("INNERS_CI"));
+                conv2solid.selection("input").named(im.get(icLabel));
 
                 String makefascicleLabel = "Make Fascicle";
                 GeomFeature makefascicle = model.geom(id).create(im.next("ext",makefascicleLabel), "Extrude");
