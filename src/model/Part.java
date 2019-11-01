@@ -1481,7 +1481,6 @@ class Part {
         String entry = sigma.getJSONObject(materialName).getString("value");
 
         model.material(materialID).propertyGroup("def").set("electricconductivity", new String[]{entry});
-        return true;
     }
 
     /**
