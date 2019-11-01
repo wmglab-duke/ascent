@@ -361,7 +361,7 @@ public class ModelWrapper {
 
                         // this parameter is just for show/debugging purposes in the COMSOL GUI
                         // it is not actually used for primitive instantiation
-                        model.param().descr(fascicleName, dir);
+                        model.param().set(fascicleName, "NaN", dir);
 
                         // initialize data to send to Part.createPartInstance
                         HashMap<String, String[]> data = new HashMap<>();
