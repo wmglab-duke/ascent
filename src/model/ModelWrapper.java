@@ -444,14 +444,13 @@ public class ModelWrapper {
 
         model.component("comp1").geom("geom1").run("fin");
 
+        mw.loopCurrents();
+
         try {
             model.save("parts_test"); // TODO this dir needs to change
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        mw.loopCurrents();
-        mw.addFascicles();
 
         ModelUtil.disconnect();
         System.out.println("Disconnected from COMSOL Server");

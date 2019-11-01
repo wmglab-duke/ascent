@@ -871,7 +871,6 @@ class Part {
                 model.geom(id).feature(im.get(uspLabel)).set("contributeto", im.get("CUFF FINAL"));
 
                 model.geom(id).run();
-
                 break;
             case "RectangleContact_Primitive":
                 model.geom(id).inputParam().set("z_center", "0 [mm]");
@@ -1434,7 +1433,7 @@ class Part {
                 ic.label("Trace");
                 ic.set("contributeto", im.get(icLabel));
                 ic.set("source", "file");
-                ic.set("filename", "D:\\Documents\\access\\data\\samples\\Pig13-1\\0\\0\\sectionwise2d\\fascicles\\1\\inners\\0.txt"); // this is what we need to figure out - how to get these? which type of fasc should be made, and what are the paths for inners or inner+outer
+                ic.set("filename", "D:\\Documents\\access\\data\\samples\\Pig13-1\\0\\0\\sectionwise2d\\fascicles\\1\\inners\\0.txt"); // TODO
                 ic.set("rtol", 0.02);
 
                 String conv2solidLabel = "Convert to Trace to Cross Section";
@@ -1450,8 +1449,7 @@ class Part {
                 makefascicle.setIndex("distance", "z_nerve", 0);
                 makefascicle.selection("input").named(im.get("INNERS_CI"));
 
-                // imports
-
+                model.geom(id).run();
                 break;
             case "FascicleMesh":
                 // path = "path" + instanceLabel
@@ -1493,7 +1491,6 @@ class Part {
                                               JSONObject instanceParams) throws IllegalArgumentException {
 
         Model model = mw.getModel();
-
         GeomFeature partInstance = model.component("comp1").geom("geom1").create(instanceID, "PartInstance");
         partInstance.label(instanceLabel);
         partInstance.set("part", mw.im.get(pseudonym));
@@ -1936,32 +1933,6 @@ class Part {
                 gnd.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[0]) + "_bnd");
 
                 break;
-            case "FascicleCI":
-                // path = "path" + instanceLabel
-
-                // set instantiation parameters
-
-                //
-
-                // imports
-
-                break;
-            case "FascicleMesh":
-                // path = "path" + instanceLabel
-
-                // set instantiation parameters
-
-                //
-
-                // imports
-
-                break;
-            case "Epineurium":
-                // set instantiation parameters
-
-                // imports
-
-                break;
             default:
                 throw new IllegalArgumentException("No implementation for part instance name: " + pseudonym);
         }
@@ -1986,14 +1957,24 @@ class Part {
     public static void createNervePartInstance(String instanceID, String instanceLabel, String pseudonym, ModelWrapper mw,
                                                  HashMap<String, String[]> tracePaths) throws IllegalArgumentException {
 
+        Model model = mw.getModel();
+        GeomFeature partInstance = model.component("comp1").geom("geom1").create(instanceID, "PartInstance");
+        partInstance.label(instanceLabel);
+        partInstance.set("part", mw.im.get(pseudonym));
+
+        System.out.println(tracePaths);
+
         switch (pseudonym) {
-
             case "FascicleCI":
-                // path = "path" + instanceLabel
-
                 // set instantiation parameters
+                String[] fascicleCIParameters = {
+                        "z_nerve"
+                };
 
-                //
+                for (String param: fascicleCIParameters) {
+//                    partInstance.setEntry("inputexpr", (String) param, (String) itemObject.get(param));
+                    partInstance.setEntry("inputexpr", (String) param, "20000 [um]"); // TODO
+                }
 
                 // imports
 
