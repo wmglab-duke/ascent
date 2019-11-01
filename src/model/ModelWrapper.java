@@ -364,7 +364,7 @@ public class ModelWrapper {
                         HashMap<String, String[]> data = new HashMap<>();
 
                         // add inners and outers paths to array
-                        for (String type: new String[]{"inners", "outers"}) {
+                        for (String type: new String[]{"inners", "outer"}) {
                             data.put(type,
                                     new File(
                                             String.join("/", new String[]{fasciclesPath, dir, type})
