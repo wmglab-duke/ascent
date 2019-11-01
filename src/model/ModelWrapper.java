@@ -318,6 +318,7 @@ public class ModelWrapper {
      *
      * @return
      */
+    // TODO: add fascicle paths to mw so they can be accessed in parts
     public boolean addFascicles() {
 
         String partPrimitiveName = "Fascicle";
