@@ -235,7 +235,7 @@ public class ModelWrapper {
                 String instanceLabel = (String) itemObject.get("label");
                 String instanceID = this.im.next("pi", instanceLabel);
                 String type = (String) itemObject.get("type");
-                Part.createPartInstance(instanceID, instanceLabel, type , this, itemObject);
+                Part.createCuffPartInstance(instanceID, instanceLabel, type , this, itemObject);
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -385,7 +385,7 @@ public class ModelWrapper {
                         String primitiveType = data.get("inners").length == 1 ? partPrimitiveNames[0] : partPrimitiveNames[1];
 
                         // hand off to Part to build instance of fascicle
-                        Part.createPartInstance(this.im.next("pi"), fascicleName, primitiveType,this, null, data);
+                        Part.createCuffPartInstance(this.im.next("pi"), fascicleName, primitiveType,this, null, data);
                     }
                 }
             }

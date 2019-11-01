@@ -1484,11 +1484,6 @@ class Part {
         return true;
     }
 
-    public static boolean createPartInstance(String instanceID, String instanceLabel, String pseudonym, ModelWrapper mw,
-                                             JSONObject instanceParams) throws IllegalArgumentException {
-        return Part.createPartInstance(instanceID, instanceLabel, pseudonym, mw, instanceParams, null);
-    }
-
     /**
      *
      * @param instanceLabel
@@ -1496,8 +1491,8 @@ class Part {
      * @param mw
      * @return
      */
-    public static boolean createPartInstance(String instanceID, String instanceLabel, String pseudonym, ModelWrapper mw,
-                                             JSONObject instanceParams, HashMap<String, String[]> data) throws IllegalArgumentException {
+    public static boolean createCuffPartInstance(String instanceID, String instanceLabel, String pseudonym, ModelWrapper mw,
+                                                 JSONObject instanceParams) throws IllegalArgumentException {
 
         Model model = mw.getModel();
 
@@ -1986,6 +1981,44 @@ class Part {
                 model.component("comp1").material(mw.im.get(linkLabel)).set("link", mw.im.get(type));
                 model.component("comp1").material(mw.im.get(linkLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(selection) + "_dom");
             }
+        }
+
+        return true;
+    }
+
+    public static boolean createNervePartInstance(String instanceID, String instanceLabel, String pseudonym, ModelWrapper mw,
+                                                 HashMap<String, String[]> tracePaths) throws IllegalArgumentException {
+
+        switch (pseudonym) {
+
+            case "FascicleCI":
+                // path = "path" + instanceLabel
+
+                // set instantiation parameters
+
+                //
+
+                // imports
+
+                break;
+            case "FascicleMesh":
+                // path = "path" + instanceLabel
+
+                // set instantiation parameters
+
+                //
+
+                // imports
+
+                break;
+            case "Epineurium":
+                // set instantiation parameters
+
+                // imports
+
+                break;
+            default:
+                throw new IllegalArgumentException("No implementation for part instance name: " + pseudonym);
         }
 
         return true;
