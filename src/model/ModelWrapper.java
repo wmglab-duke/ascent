@@ -346,8 +346,8 @@ public class ModelWrapper {
                     "data",
                     "samples",
                     (String) json_data.get("sample"),
-                    String.valueOf(0), // these 0's are temporary (for 3d models will need to change)
-                    String.valueOf(0),
+                    "0", // these 0's are temporary (for 3d models will need to change)
+                    "0",
                     (String) ((JSONObject) json_data.get("modes")).get("write"),
                     "fascicles"
             });
