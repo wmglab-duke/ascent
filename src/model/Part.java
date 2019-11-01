@@ -1472,7 +1472,7 @@ class Part {
         return im;
     }
 
-    public static boolean defineMaterial(String materialID, String materialName, JSONObject master, ModelWrapper mw) {
+    public static void defineMaterial(String materialID, String materialName, JSONObject master, ModelWrapper mw) {
         Model model = mw.getModel();
         model.material().create(materialID, "Common", "");
         model.material(materialID).label(materialName);
@@ -1489,10 +1489,9 @@ class Part {
      * @param instanceLabel
      * @param pseudonym
      * @param mw
-     * @return
      */
-    public static boolean createCuffPartInstance(String instanceID, String instanceLabel, String pseudonym, ModelWrapper mw,
-                                                 JSONObject instanceParams) throws IllegalArgumentException {
+    public static void createCuffPartInstance(String instanceID, String instanceLabel, String pseudonym, ModelWrapper mw,
+                                              JSONObject instanceParams) throws IllegalArgumentException {
 
         Model model = mw.getModel();
 
@@ -1983,10 +1982,9 @@ class Part {
             }
         }
 
-        return true;
     }
 
-    public static boolean createNervePartInstance(String instanceID, String instanceLabel, String pseudonym, ModelWrapper mw,
+    public static void createNervePartInstance(String instanceID, String instanceLabel, String pseudonym, ModelWrapper mw,
                                                  HashMap<String, String[]> tracePaths) throws IllegalArgumentException {
 
         switch (pseudonym) {
@@ -2020,7 +2018,5 @@ class Part {
             default:
                 throw new IllegalArgumentException("No implementation for part instance name: " + pseudonym);
         }
-
-        return true;
     }
 }
