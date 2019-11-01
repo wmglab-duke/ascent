@@ -386,9 +386,8 @@ public class ModelWrapper {
                         // hand off to Part to build instance of fascicle
                         Part.createPartInstance(this.im.next("pi"), fascicleName, primitiveType,this, null, data);
                     }
-
-                    }
                 }
+            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
