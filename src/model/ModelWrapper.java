@@ -321,6 +321,8 @@ public class ModelWrapper {
     // TODO: add fascicle paths to mw so they can be accessed in parts
     public boolean addFascicles() {
 
+        boolean success = false;
+
         // define global part primitive names (MUST BE IDENTICAL IN Part)
         String[] partPrimitiveNames = new String[]{"FascicleCI", "FascicleMesh"};
 
@@ -385,7 +387,7 @@ public class ModelWrapper {
                         String primitiveType = data.get("inners").length == 1 ? partPrimitiveNames[0] : partPrimitiveNames[1];
 
                         // hand off to Part to build instance of fascicle
-                        Part.createCuffPartInstance(this.im.next("pi"), fascicleName, primitiveType,this, null, data);
+                        success = Part.createNervePartInstance(this.im.next("pi"), fascicleName, primitiveType,this, data);
                     }
                 }
             }
@@ -393,7 +395,7 @@ public class ModelWrapper {
             e.printStackTrace();
         }
 
-        return true;
+        return success;
     }
 
     public static void main(String[] args) {
