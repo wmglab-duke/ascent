@@ -1367,7 +1367,7 @@ class Part {
                 model.geom(id).inputParam().set("z_center", "0");
 
                 im.labels = new String[]{
-                        "CUFF FILL FINAL", //0
+                        "CUFF FILL FINAL" //0
                 };
 
                 for (String cselCuffFillLabel: im.labels) {
@@ -1405,6 +1405,62 @@ class Part {
                 m.set("r", "Radius");
                 m.set("h", "Length");
                 m.set("contributeto", im.get("MEDIUM"));
+
+                break;
+            case "FascicleCI":
+                model.geom(id).inputParam().set("z_nerve", "2000 [um]");
+
+                im.labels = new String[]{
+                        "INNERS_CI", //0
+                        "ENDONEURIUM"
+                };
+
+                for (String cselFascicleCILabel: im.labels) {
+                    model.geom(id).selection().create(im.next("csel", cselFascicleCILabel), "CumulativeSelection")
+                            .label(cselFascicleCILabel);
+                }
+
+                String fascicleCICXLabel = "Fascicle Cross Section";
+                GeomFeature fascicleCICX = model.geom(id).create(im.next("wp",fascicleCICXLabel), "WorkPlane");
+                fascicleCICX.label(fascicleCICXLabel);
+                fascicleCICX.set("contributeto", im.get("INNERS_CI"));
+                fascicleCICX.set("unite", true);
+
+                String icLabel = "IC";
+                fascicleCICX.geom().selection().create(im.next("csel",icLabel), "CumulativeSelection");
+                fascicleCICX.geom().selection(im.get(icLabel)).label(icLabel);
+
+                String icnameLabel = "InterpolationCurve";
+                GeomFeature ic = fascicleCICX.geom().create(im.next("ic",icnameLabel), icnameLabel);
+                ic.label("Trace");
+                ic.set("contributeto", "csel1");
+                ic.set("source", "file");
+                ic.set("filename", "D:\\Documents\\access\\data\\samples\\Pig13-1\\0\\0\\sectionwise2d\\fascicles\\1\\inners\\0.txt"); // this is what we need to figure out - how to get these? which type of fasc should be made, and what are the paths for inners or inner+outer
+                ic.set("rtol", 0.02);
+
+                String conv2solidLabel = "Convert to Trace to Cross Section";
+                GeomFeature conv2solid = fascicleCICX.geom().create(im.next("csol",conv2solidLabel), conv2solidLabel);
+                conv2solid.label(conv2solidLabel);
+                conv2solid.selection("input").named(im.get("INNERS_CI"));
+
+                String makefascicleLabel = "Make Fascicle";
+                GeomFeature makefascicle = model.geom(id).create(im.next("ext",makefascicleLabel), "Extrude");
+                makefascicle.label(makefascicleLabel);
+                makefascicle.set("contributeto", im.get("ENDONEURIUM"));
+                makefascicle.setIndex("distance", "z_nerve", 0);
+                makefascicle.selection("input").named(im.get("INNERS_CI"));
+
+                // imports
+
+                break;
+            case "FascicleMesh":
+                // path = "path" + instanceLabel
+
+                // set instantiation parameters
+
+                //
+
+                // imports
 
                 break;
             default:
@@ -1882,7 +1938,17 @@ class Part {
                 gnd.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[0]) + "_bnd");
 
                 break;
-            case "Fascicle":
+            case "FascicleCI":
+                // path = "path" + instanceLabel
+
+                // set instantiation parameters
+
+                //
+
+                // imports
+
+                break;
+            case "FascicleMesh":
                 // path = "path" + instanceLabel
 
                 // set instantiation parameters
