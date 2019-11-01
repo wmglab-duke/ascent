@@ -4,7 +4,6 @@ import com.comsol.model.GeomFeature;
 import com.comsol.model.Model;
 import com.comsol.model.ModelParam;
 import com.comsol.model.physics.PhysicsFeature;
-import com.comsol.nativejni.geom.Geom;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -1428,6 +1427,11 @@ class Part {
         return true;
     }
 
+    public static boolean createPartInstance(String instanceID, String instanceLabel, String pseudonym, ModelWrapper mw,
+                                             JSONObject instanceParams) throws IllegalArgumentException {
+        return Part.createPartInstance(instanceID, instanceLabel, pseudonym, mw, instanceParams, null);
+    }
+
     /**
      *
      * @param instanceLabel
@@ -1436,7 +1440,7 @@ class Part {
      * @return
      */
     public static boolean createPartInstance(String instanceID, String instanceLabel, String pseudonym, ModelWrapper mw,
-                                             JSONObject instanceParams) throws IllegalArgumentException {
+                                             JSONObject instanceParams, HashMap<String, String[]> data) throws IllegalArgumentException {
 
         Model model = mw.getModel();
 

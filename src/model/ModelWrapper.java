@@ -321,9 +321,14 @@ public class ModelWrapper {
     // TODO: add fascicle paths to mw so they can be accessed in parts
     public boolean addFascicles() {
 
-        String partPrimitiveName = "Fascicle";
-        if (!this.im.hasPseudonym(partPrimitiveName)) {
-            Part.createPartPrimitive(this.im.next("part", partPrimitiveName), partPrimitiveName, this);
+        // define global part primitive names (MUST BE IDENTICAL IN Part)
+        String[] partPrimitiveNames = new String[]{"FascicleCI", "FascicleMesh"};
+
+        // loop through fascicle primitives and create in COMSOL
+        for (String partPrimitiveName: partPrimitiveNames) {
+            if (!this.im.hasPseudonym(partPrimitiveName)) {
+                Part.createPartPrimitive(this.im.next("part", partPrimitiveName), partPrimitiveName, this);
+            }
         }
 
         try {
@@ -332,10 +337,6 @@ public class ModelWrapper {
                     ".config",
                     "master.json"
             })).getData();
-
-//            for(Object o: json_data.getJSONArray("fhdjlag")) {
-//                String s = String.valueOf(o);
-//            }
 
             String fasciclesPath = String.join("/", new String[]{
                     this.root,
@@ -354,21 +355,34 @@ public class ModelWrapper {
                 for (String dir: dirs) {
                     if (! dir.contains(".")) {
                         String fascicleName = "fascicle" + (i++);
+
+                        // this parameter is just for show/debugging purposes in the COMSOL GUI
+                        // it is not actually used for primitive instantiation
                         model.param().descr(fascicleName, dir);
-                        Part.createPartInstance(this.im.next("pi"), fascicleName, partPrimitiveName,this, null);
+
+                        // initialize data to send to Part.createPartInstance
+                        HashMap<String, String[]> data = new HashMap<>();
+
+                        // add inners and outers paths to array
+                        for (String type: new String[]{"inners", "outers"}) {
+                            data.put(type,
+                                    new File(
+                                            String.join("/", new String[]{fasciclesPath, dir, type})
+                                    ).list()
+                            );
+                        }
+
+                        // quick loop to make sure there are at least one of each inner and outer
+                        for (String[] arr: data.values()) {
+                            if (arr.length < 1) throw new IllegalStateException("There must be at least one of each inner and outer for fascicle " + i);
+                        }
+
+                        // do FascicleCI if only one inner, FascicleMesh otherwise
+                        String primitiveType = data.get("inners").length == 1 ? partPrimitiveNames[0] : partPrimitiveNames[1];
+
+                        // hand off to Part to build instance of fascicle
+                        Part.createPartInstance(this.im.next("pi"), fascicleName, primitiveType,this, null, data);
                     }
-
-//                        String[] pathParts = dir.split("/");
-//                        int length = pathParts.length;
-//                        String fascicleName = (pathParts[length - 2] + pathParts[length - 3] + "_" + pathParts[length - 1])
-//                                .replaceAll(".txt", "").replaceAll("s", "");
-//                        System.out.println("fascicleName = " + fascicleName);
-
-                        // TODO: figure out how to designate which part is being created
-                        //  (i.e. distinguish instances from each other?)
-//
-
-                        // set only description for parameter (stored as string)
 
                     }
                 }
