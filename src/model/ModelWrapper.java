@@ -325,15 +325,15 @@ public class ModelWrapper {
         String[] partPrimitiveNames = new String[]{"FascicleCI", "FascicleMesh"};
 
         // loop through fascicle primitives and create in COMSOL
-        for (String partPrimitiveName: partPrimitiveNames) {
-            if (!this.im.hasPseudonym(partPrimitiveName)) {
-                // TRY to create the part primitive (catch error if no existing implementation)
-                IdentifierManager partPrimitiveIM = Part.createPartPrimitive(this.im.next("part", partPrimitiveName), partPrimitiveName, this);
-
-                // add the returned id manager to the HashMap of IMs with the partName as its key
-                this.partPrimitiveIMs.put(partPrimitiveName, partPrimitiveIM);
-            }
-        }
+//        for (String partPrimitiveName: partPrimitiveNames) {
+//            if (!this.im.hasPseudonym(partPrimitiveName)) {
+//                // TRY to create the part primitive (catch error if no existing implementation)
+//                IdentifierManager partPrimitiveIM = Part.createPartPrimitive(this.im.next("part", partPrimitiveName), partPrimitiveName, this);
+//
+//                // add the returned id manager to the HashMap of IMs with the partName as its key
+//                this.partPrimitiveIMs.put(partPrimitiveName, partPrimitiveIM);
+//            }
+//        }
         try {
             JSONObject json_data = new JSONReader(String.join("/", new String[]{
                     this.root,
@@ -401,6 +401,13 @@ public class ModelWrapper {
                 model.component("comp1").geom("geom1").selection().create(im.next("csel",fasciclesLabel), "CumulativeSelection");
                 model.component("comp1").geom("geom1").selection(im.get(fasciclesLabel)).label(fasciclesLabel);
                 model.component("comp1").geom("geom1").feature(im.get(fasciclesUnionLabel)).set("contributeto", im.get(fasciclesLabel));
+
+                // Add materials
+                String fascicleMatLinkLabel = "Fascicle Material";
+                model.component("comp1").material().create(im.next("matlnk",fascicleMatLinkLabel), "Link");
+                model.component("comp1").material(im.get(fascicleMatLinkLabel)).selection().named("geom1" +"_" + im.get(fasciclesLabel) + "_dom");
+                model.component("comp1").material(im.get(fascicleMatLinkLabel)).label(fascicleMatLinkLabel);
+
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
