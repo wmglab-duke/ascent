@@ -1406,7 +1406,8 @@ class Part {
 
                 break;
             case "FascicleCI":
-                model.geom(id).inputParam().set("z_nerve", "2000 [um]");
+                model.geom(id).inputParam().set("z_nerve", "20000 [um]","test");
+                model.geom(id).inputParam().set("inner_path", "NaN","D:\\Documents\\access\\data\\samples\\Pig13-1\\0\\0\\sectionwise2d\\fascicles\\1\\inners\\0.txt");
 
                 im.labels = new String[]{
                         "INNERS_CI", //0
@@ -1433,7 +1434,8 @@ class Part {
                 ic.label("Trace");
                 ic.set("contributeto", im.get(icLabel));
                 ic.set("source", "file");
-                ic.set("filename", "D:\\Documents\\access\\data\\samples\\Pig13-1\\0\\0\\sectionwise2d\\fascicles\\1\\inners\\0.txt"); // TODO
+                String inner_path_test = "D:\\Documents\\access\\data\\samples\\Pig13-1\\0\\0\\sectionwise2d\\fascicles\\1\\inners\\0.txt";
+                ic.set("filename", inner_path_test); // TODO
                 ic.set("rtol", 0.02);
 
                 String conv2solidLabel = "Convert to Trace to Cross Section";
@@ -1961,8 +1963,6 @@ class Part {
         GeomFeature partInstance = model.component("comp1").geom("geom1").create(instanceID, "PartInstance");
         partInstance.label(instanceLabel);
         partInstance.set("part", mw.im.get(pseudonym));
-
-        System.out.println(tracePaths);
 
         switch (pseudonym) {
             case "FascicleCI":

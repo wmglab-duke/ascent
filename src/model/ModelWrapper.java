@@ -329,6 +329,7 @@ public class ModelWrapper {
             if (!this.im.hasPseudonym(partPrimitiveName)) {
                 // TRY to create the part primitive (catch error if no existing implementation)
                 IdentifierManager partPrimitiveIM = Part.createPartPrimitive(this.im.next("part", partPrimitiveName), partPrimitiveName, this);
+
                 // add the returned id manager to the HashMap of IMs with the partName as its key
                 this.partPrimitiveIMs.put(partPrimitiveName, partPrimitiveIM);
             }
@@ -367,7 +368,7 @@ public class ModelWrapper {
                         // initialize data to send to Part.createPartInstance
                         HashMap<String, String[]> data = new HashMap<>();
 
-                        // add inners and outers paths to array
+                        // add inners and outer files to array
                         for (String type: new String[]{"inners", "outer"}) {
                             data.put(type,
                                     new File(

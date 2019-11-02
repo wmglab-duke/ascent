@@ -35,7 +35,6 @@
   "sample": "Pig13-1",
   "modes": {
     "write": "sectionwise2d",
-    "NOTE": "the above property has not be integrated into the Python side of things",
     "mask_input": "INNERS",
     "nerve": "PRESENT",
     "reshape_nerve": "CIRCLE",
