@@ -1406,7 +1406,7 @@ class Part {
 
                 break;
             case "FascicleCI":
-                model.geom(id).inputParam().set("z_nerve", "20000 [um]","test");
+                model.geom(id).inputParam().set("z_nerve", "20000 [um]");
                 model.geom(id).inputParam().set("inner_path", "NaN","D:\\Documents\\access\\data\\samples\\Pig13-1\\0\\0\\sectionwise2d\\fascicles\\1\\inners\\0.txt");
 
                 im.labels = new String[]{
@@ -1589,6 +1589,7 @@ class Part {
                                               JSONObject instanceParams) throws IllegalArgumentException {
 
         Model model = mw.getModel();
+        model.component("comp1").geom("geom1").lengthUnit("\u00b5m");
         GeomFeature partInstance = model.component("comp1").geom("geom1").create(instanceID, "PartInstance");
         partInstance.label(instanceLabel);
         partInstance.set("part", mw.im.get(pseudonym));
@@ -2052,41 +2053,74 @@ class Part {
 
     }
 
-    public static void createNervePartInstance(String instanceID, String instanceLabel, String pseudonym, ModelWrapper mw,
+    public static void createNervePartInstance(String pseudonym, String name, String path, ModelWrapper mw,
                                                  HashMap<String, String[]> tracePaths) throws IllegalArgumentException {
 
         Model model = mw.getModel();
-        GeomFeature partInstance = model.component("comp1").geom("geom1").create(instanceID, "PartInstance");
-        partInstance.label(instanceLabel);
-        partInstance.set("part", mw.im.get(pseudonym));
+        IdentifierManager im = mw.im;
+
+        String inner_path = path + "/inners/" + tracePaths.get("inners")[0]; // TODO - numbering messed up and this can be cleaned
+        model.param().set(name, "NaN", inner_path);
 
         switch (pseudonym) {
             case "FascicleCI":
-                // set instantiation parameters
-                String[] fascicleCIParameters = {
-                        "z_nerve"
+
+                im.labels = new String[]{
+                        name + "_INNERS_CI", //0
+                        name + "_ENDONEURIUM"
                 };
 
-                for (String param: fascicleCIParameters) {
-//                    partInstance.setEntry("inputexpr", (String) param, (String) itemObject.get(param));
-                    partInstance.setEntry("inputexpr", (String) param, "20000 [um]"); // TODO
+                for (String cselFascicleCILabel: im.labels) {
+                    model.component("comp1").geom("geom1").selection().create(im.next("csel", cselFascicleCILabel), "CumulativeSelection")
+                            .label(cselFascicleCILabel);
                 }
 
-                // imports
+                String fascicleCICXLabel = name + "_Fascicle Cross Section";
+                GeomFeature fascicleCICX = model.component("comp1").geom("geom1").create(im.next("wp",fascicleCICXLabel), "WorkPlane");
+                fascicleCICX.label(fascicleCICXLabel);
+                fascicleCICX.set("contributeto", im.get(name + "_INNERS_CI"));
+                fascicleCICX.set("unite", true);
+
+                String icLabel = name + "_IC";
+                fascicleCICX.geom().selection().create(im.next("csel",icLabel), "CumulativeSelection");
+                fascicleCICX.geom().selection(im.get(icLabel)).label(icLabel);
+
+                String icnameLabel = name + "_InterpolationCurve";
+                GeomFeature ic = model.component("comp1").geom("geom1").feature(im.get(fascicleCICXLabel)).geom().create(im.next("ic", icnameLabel), "InterpolationCurve");
+                ic.label(icnameLabel);
+                ic.set("contributeto", im.get(icLabel));
+                ic.set("source", "file");
+                ic.set("filename", inner_path);
+                ic.set("rtol", 0.02);
+
+                String conv2solidLabel = name + "_Convert to Trace to Cross Section";
+                GeomFeature conv2solid = model.component("comp1").geom("geom1").feature(im.get(fascicleCICXLabel)).geom().create(im.next("csol",conv2solidLabel), "ConvertToSolid");
+                conv2solid.label(conv2solidLabel);
+                conv2solid.selection("input").named(im.get(icLabel));
+
+                String makefascicleLabel = name + "_Make Fascicle";
+                GeomFeature makefascicle = model.component("comp1").geom("geom1").create(im.next("ext",makefascicleLabel), "Extrude");
+                makefascicle.label(makefascicleLabel);
+                makefascicle.set("contributeto", im.get(name + "_ENDONEURIUM"));
+                makefascicle.setIndex("distance", "Length_EM", 0);
+                makefascicle.selection("input").named(im.get(name + "_INNERS_CI"));
 
                 break;
             case "FascicleMesh":
-                // set instantiation parameters
-                String[] fascicleMeshParameters = {
-                        "z_nerve"
-                };
-
-                for (String param: fascicleMeshParameters) {
-//                    partInstance.setEntry("inputexpr", (String) param, (String) itemObject.get(param));
-                    partInstance.setEntry("inputexpr", (String) param, "20000 [um]"); // TODO
-                }
-
-                // imports
+//                // set instantiation parameters
+//                String[] fascicleMeshParameters = {
+//                        "z_nerve"
+//                };
+//
+//                for (String param: fascicleMeshParameters) {
+////                    partInstance.setEntry("inputexpr", (String) param, (String) itemObject.get(param));
+//                    partInstance.setEntry("inputexpr", (String) param, "20000 [um]"); // TODO
+//                }
+//
+//                partInstance.setEntry("inputexpr", "inner_path", "testing 123"); // TODO
+//
+//
+//                // imports
 
                 break;
             case "Epineurium":
@@ -2098,5 +2132,9 @@ class Part {
             default:
                 throw new IllegalArgumentException("No implementation for part instance name: " + pseudonym);
         }
+
+        // if im was not edited for some reason, return null
+//        if (im.count() == 0) return null;
+//        return im;
     }
 }
