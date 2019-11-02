@@ -323,11 +323,9 @@ public class ModelWrapper {
 
         // define global part primitive names (MUST BE IDENTICAL IN Part)
         String[] partPrimitiveNames = new String[]{"FascicleCI", "FascicleMesh"};
-        System.out.println("here");
 
         // loop through fascicle primitives and create in COMSOL
         for (String partPrimitiveName: partPrimitiveNames) {
-            System.out.println(partPrimitiveName);
             if (!this.im.hasPseudonym(partPrimitiveName)) {
                 // TRY to create the part primitive (catch error if no existing implementation)
                 IdentifierManager partPrimitiveIM = Part.createPartPrimitive(this.im.next("part", partPrimitiveName), partPrimitiveName, this);
@@ -336,7 +334,6 @@ public class ModelWrapper {
                 this.partPrimitiveIMs.put(partPrimitiveName, partPrimitiveIM);
             }
         }
-        System.out.println("here");
         try {
             JSONObject json_data = new JSONReader(String.join("/", new String[]{
                     this.root,
@@ -355,7 +352,6 @@ public class ModelWrapper {
                     "fascicles"
             });
 
-            System.out.println("here");
             String[] dirs = new File(fasciclesPath).list();
             if (dirs != null) {
                 int i = 0;
@@ -363,19 +359,15 @@ public class ModelWrapper {
                     if (! dir.contains(".")) {
                         String fascicleName = "fascicle" + (i++);
 
-                        // this parameter is just for show/debugging purposes in the COMSOL GUI
-                        // it is not actually used for primitive instantiation
-
-                        model.param().set(fascicleName, "NaN", dir);
-
                         // initialize data to send to Part.createPartInstance
                         HashMap<String, String[]> data = new HashMap<>();
 
                         // add inners and outer files to array
+                        String path = String.join("/", new String[]{fasciclesPath, dir});
                         for (String type: new String[]{"inners", "outer"}) {
                             data.put(type,
                                     new File(
-                                            String.join("/", new String[]{fasciclesPath, dir, type})
+                                            String.join("/", new String[]{path, type})
                                     ).list()
                             );
                         }
