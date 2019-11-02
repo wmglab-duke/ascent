@@ -465,6 +465,13 @@ public class ModelWrapper {
 
         model.component("comp1").geom("geom1").run("fin");
 
+        // Mesh fascicles
+        String meshFascLabel = "Mesh Fascicles";
+        String meshFascSweLabel = "Mesh Fascicles Sweep";
+        model.component("comp1").mesh(mw.im.next("mesh",meshFascLabel)).create(mw.im.next("swe",meshFascSweLabel), "Sweep");
+        model.component("comp1").mesh(mw.im.get(meshFascLabel)).feature(mw.im.get(meshFascSweLabel)).selection().geom("geom1", 3);
+        model.component("comp1").mesh(mw.im.get(meshFascLabel)).feature(mw.im.get(meshFascSweLabel)).selection().named("geom1" + "_" + mw.im.get("FASCICLES") + "_dom");
+
         mw.loopCurrents();
 
         try {
