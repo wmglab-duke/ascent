@@ -389,9 +389,26 @@ public class ModelWrapper {
                         String primitiveType = data.get("inners").length == 1 ? partPrimitiveNames[0] : partPrimitiveNames[1];
 
                         // hand off to Part to build instance of fascicle
-                        Part.createNervePartInstance(this.im.next("pi"), fascicleName, primitiveType,this, data);
+                        Part.createNervePartInstance(primitiveType, fascicleName, path, this, data);
+//                        IdentifierManager nervePartIM = Part.createNervePartInstance(primitiveType, fascicleName, path, this, data);
+//                        this.nervePartIMs.put(fascicleName, nervePartIM);
                     }
                 }
+
+                // make list of fascicle extrusions to union for swept mesh
+                for (String dir: dirs) {
+                    System.out.println(dir);
+                }
+                // make union
+                String fasciclesUnionLabel = "Fascicles Union";
+                model.component("comp1").geom("geom1").create(im.next("uni",fasciclesUnionLabel), "Union");
+                model.component("comp1").geom("geom1").feature(im.get(fasciclesUnionLabel)).selection("input").set("ext1", "ext10", "ext14", "ext2", "ext24", "ext4", "ext46"); // TODO
+                model.component("comp1").geom("geom1").feature(im.get(fasciclesUnionLabel)).label(fasciclesUnionLabel);
+
+                String fasciclesLabel = "FASCICLES";
+                model.component("comp1").geom("geom1").selection().create(im.next("csel",fasciclesLabel), "CumulativeSelection");
+                model.component("comp1").geom("geom1").selection(im.get(fasciclesLabel)).label(fasciclesLabel);
+                model.component("comp1").geom("geom1").feature(im.get(fasciclesUnionLabel)).set("contributeto", im.get(fasciclesLabel));
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
