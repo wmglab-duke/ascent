@@ -1966,6 +1966,8 @@ class Part {
                             .label(cselFascicleMeshLabel);
                 }
 
+                // TODO
+
 //                String innersPlaneLabel = "Inners Geometry";
 //                GeomFeature innersPlane = model.geom(id).create(im.next("wp",innersPlaneLabel), "WorkPlane");
 //                innersPlane.set("contributeto", im.get("INNERS"));
