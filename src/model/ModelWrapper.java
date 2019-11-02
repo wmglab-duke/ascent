@@ -323,9 +323,11 @@ public class ModelWrapper {
 
         // define global part primitive names (MUST BE IDENTICAL IN Part)
         String[] partPrimitiveNames = new String[]{"FascicleCI", "FascicleMesh"};
+        System.out.println("here");
 
         // loop through fascicle primitives and create in COMSOL
         for (String partPrimitiveName: partPrimitiveNames) {
+            System.out.println(partPrimitiveName);
             if (!this.im.hasPseudonym(partPrimitiveName)) {
                 // TRY to create the part primitive (catch error if no existing implementation)
                 IdentifierManager partPrimitiveIM = Part.createPartPrimitive(this.im.next("part", partPrimitiveName), partPrimitiveName, this);
@@ -334,7 +336,7 @@ public class ModelWrapper {
                 this.partPrimitiveIMs.put(partPrimitiveName, partPrimitiveIM);
             }
         }
-
+        System.out.println("here");
         try {
             JSONObject json_data = new JSONReader(String.join("/", new String[]{
                     this.root,
@@ -353,6 +355,7 @@ public class ModelWrapper {
                     "fascicles"
             });
 
+            System.out.println("here");
             String[] dirs = new File(fasciclesPath).list();
             if (dirs != null) {
                 int i = 0;
