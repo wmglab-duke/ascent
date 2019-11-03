@@ -527,7 +527,7 @@ public class ModelWrapper {
         }
     }
 
-    public void contributeToUnion(String contributor, String[] unions) {
+    public void contributeToUnions(String contributor, String[] unions) {
 
     }
 
