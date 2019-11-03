@@ -1905,11 +1905,11 @@ class Part {
         Model model = mw.getModel();
         IdentifierManager im = mw.im;
 
-        String inner_path = path + "/inners/" + tracePaths.get("inners")[0]; // TODO - numbering messed up and this can be cleaned
-        model.param().set(name, "NaN", inner_path);
-
         switch (pseudonym) {
             case "FascicleCI":
+
+                String inner_path = path + "/inners/" + tracePaths.get("inners")[0]; // TODO - this can be cleaned
+                model.param().set(name, "NaN", inner_path);
 
                 String fascicleCI_Inner_Label = name + "_INNERS_CI";
                 String fascicleCI_Endo_Label = name + "_ENDONEURIUM";
@@ -1978,6 +1978,9 @@ class Part {
                 }
 
                 // TODO
+
+//                String inner_path = path + "/inners/" + tracePaths.get("inners")[0]; // TODO - this can be cleaned
+//                model.param().set(name, "NaN", inner_path);
 
 //                String innersPlaneLabel = "Inners Geometry";
 //                GeomFeature innersPlane = model.geom(id).create(im.next("wp",innersPlaneLabel), "WorkPlane");
