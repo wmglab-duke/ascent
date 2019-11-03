@@ -266,20 +266,22 @@ public class ModelWrapper {
             // for each material definition, create it (if not already existing)
             for (Object item: (JSONArray) data.get("instances")) {
                 JSONObject itemObject = (JSONObject) item;
-
-
                 JSONArray materials = itemObject.getJSONArray("materials");
 
                 for(Object o: materials) {
                     String materialName = ((JSONObject) o).getString("type");
+
                     // create the material definition if it has not already been created
                     if (! this.im.hasPseudonym(materialName)) {
                         // get next available (TOP LEVEL) "material" id
                         String materialID = this.im.next("mat", materialName);
+
                         try {
                             // TRY to create the material definition (catch error if no existing implementation)
                             Part.defineMaterial(materialID, materialName, master, this);
+
                         } catch (IllegalArgumentException e) {
+
                             e.printStackTrace();
                             return false;
                         }
@@ -379,27 +381,9 @@ public class ModelWrapper {
 
                         // hand off to Part to build instance of fascicle
                         Part.createNervePartInstance(fascicleType, fascicleName, path, this, data);
-//                        IdentifierManager nervePartIM = Part.createNervePartInstance(primitiveType, fascicleName, path, this, data);
-//                        this.nervePartIMs.put(fascicleName, nervePartIM);
-                        // TODO
                     }
                 }
 
-                // make list of fascicle extrusions to union for swept mesh
-//                for (String dir: dirs) {
-//                    System.out.println(dir);
-//                }
-
-                // make union
-//                String fasciclesUnionLabel = "Fascicles Union";
-//                model.component("comp1").geom("geom1").create(im.next("uni",fasciclesUnionLabel), "Union");
-//                model.component("comp1").geom("geom1").feature(im.get(fasciclesUnionLabel)).selection("input").set("ext1", "ext10", "ext14", "ext2", "ext24", "ext4", "ext46"); // TODO
-//                model.component("comp1").geom("geom1").feature(im.get(fasciclesUnionLabel)).label(fasciclesUnionLabel);
-//
-//                String fasciclesLabel = "FASCICLES";
-//                model.component("comp1").geom("geom1").selection().create(im.next("csel",fasciclesLabel), "CumulativeSelection");
-//                model.component("comp1").geom("geom1").selection(im.get(fasciclesLabel)).label(fasciclesLabel);
-//                model.component("comp1").geom("geom1").feature(im.get(fasciclesUnionLabel)).set("contributeto", im.get(fasciclesLabel));
 //
 //                // Add materials
 //                String fascicleMatLinkLabel = "Fascicle Material";
@@ -447,23 +431,20 @@ public class ModelWrapper {
     }
 
     public void createUnions() {
-        System.out.println("CREATE UNIONS");
         for (String union: ModelWrapper.ALL_UNIONS) {
-            System.out.println("union = " + union);
             String[] contributors = this.getUnionContributors(union);
-            System.out.println(Arrays.toString(contributors));
-            System.out.println(contributors.length);
             if (contributors.length > 0) {
-                System.out.println("b4");
                 model.component("comp1").geom("geom1").create(im.next("uni", union), "Union");
                 model.component("comp1").geom("geom1").feature(im.get(union)).set("keep", true);
                 model.component("comp1").geom("geom1").feature(im.get(union)).selection("input").set(contributors);
                 model.component("comp1").geom("geom1").feature(im.get(union)).label(union);
-                // TODO: contribute union to CSEL to make available for material links (figure out labeling)
-                System.out.println("after");
+
+                String unionCselLabel = union + "Csel";
+                model.component("comp1").geom("geom1").selection().create(im.next("csel",unionCselLabel), "CumulativeSelection");
+                model.component("comp1").geom("geom1").selection(im.get(unionCselLabel)).label(unionCselLabel);
+                model.component("comp1").geom("geom1").feature(im.get(union)).set("contributeto", im.get(unionCselLabel));
             }
         }
-        System.out.println("another one");
     }
     public static void main(String[] args) {
         // Start COMSOL Instance
@@ -488,9 +469,6 @@ public class ModelWrapper {
 
         // Define ModelWrapper class instance for model and projectPath
         ModelWrapper mw = new ModelWrapper(model, projectPath);
-
-        // Add medium
-        //mw.addMedium();
 
         // Add cuff
         // Load configuration data
@@ -530,7 +508,8 @@ public class ModelWrapper {
         // Create unions
         mw.createUnions();
 
-        // Add materials for medium and nerve addCuffMaterialDefinitions
+        // Add nerve mediums
+        //mw.addMedium();
 
         // Build the geometry
         model.component("comp1").geom("geom1").run("fin");
