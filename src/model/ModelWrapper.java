@@ -335,10 +335,10 @@ public class ModelWrapper {
             // Loop over all fascicle dirs
             String[] dirs = new File(fasciclesPath).list();
             if (dirs != null) {
-                int i = 0;
                 for (String dir: dirs) {
                     if (! dir.contains(".")) {
-                        String fascicleName = "fascicle" + (i++);
+                        int index = Integer.parseInt(dir);
+                        String fascicleName = "fascicle" + (index);
 
                         // Initialize data to send to Part.createPartInstance
                         HashMap<String, String[]> data = new HashMap<>();
@@ -355,7 +355,7 @@ public class ModelWrapper {
 
                         // Quick loop to make sure there are at least one of each inner and outer
                         for (String[] arr: data.values()) {
-                            if (arr.length < 1) throw new IllegalStateException("There must be at least one of each inner and outer for fascicle " + i);
+                            if (arr.length < 1) throw new IllegalStateException("There must be at least one of each inner and outer for fascicle " + index);
                         }
 
                         // do FascicleCI if only one inner, FascicleMesh otherwise
