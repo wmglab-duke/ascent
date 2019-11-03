@@ -449,14 +449,17 @@ public class ModelWrapper {
     public void createUnions() {
         System.out.println("CREATE UNIONS");
         for (String union: ModelWrapper.ALL_UNIONS) {
+            System.out.println("union = " + union);
             String[] contributors = this.getUnionContributors(union);
             System.out.println(Arrays.toString(contributors));
             System.out.println(contributors.length);
             if (contributors.length > 0) {
                 System.out.println("b4");
                 model.component("comp1").geom("geom1").create(im.next("uni", union), "Union");
+                model.component("comp1").geom("geom1").feature(im.get(union)).set("keep", true);
                 model.component("comp1").geom("geom1").feature(im.get(union)).selection("input").set(contributors);
                 model.component("comp1").geom("geom1").feature(im.get(union)).label(union);
+                // TODO: contribute union to CSEL to make available for material links (figure out labeling)
                 System.out.println("after");
             }
         }
@@ -530,7 +533,7 @@ public class ModelWrapper {
         // Add materials for medium and nerve addCuffMaterialDefinitions
 
         // Build the geometry
-//        model.component("comp1").geom("geom1").run("fin");
+        model.component("comp1").geom("geom1").run("fin");
 
         // Define mesh for nerve
 //        String meshFascLabel = "Mesh Fascicles";
