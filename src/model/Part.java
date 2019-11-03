@@ -1924,7 +1924,8 @@ class Part {
                             .label(cselFascicleCILabel);
                 }
 
-                mw.contributeToUnions();
+                String[] fascicleCIEndoUnions = {ModelWrapper.ALL_NERVE_PARTS_UNION, ModelWrapper.ENDO_UNION};
+                mw.contributeToUnions(im.get(fascicleCI_Endo_Label), fascicleCIEndoUnions);
 
                 String fascicleCICXLabel = name + "_Fascicle Cross Section";
                 GeomFeature fascicleCICX = model.component("comp1").geom("geom1").create(im.next("wp",fascicleCICXLabel), "WorkPlane");
