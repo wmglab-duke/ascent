@@ -1924,6 +1924,8 @@ class Part {
                             .label(cselFascicleCILabel);
                 }
 
+                mw.contributeToUnions();
+
                 String fascicleCICXLabel = name + "_Fascicle Cross Section";
                 GeomFeature fascicleCICX = model.component("comp1").geom("geom1").create(im.next("wp",fascicleCICXLabel), "WorkPlane");
                 fascicleCICX.label(fascicleCICXLabel);
