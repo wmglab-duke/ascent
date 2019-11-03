@@ -35,7 +35,6 @@ files for simulation (for Both)
     - Write `LaunchSim###.hoc`
     - (Small task)Build simulation folder structure
 * **Nov. 1** 
-
     * (Big ToDo)Standardized built-in data analysis
 * **Dec. 1**
     * FILTERING, SEARCHING, etc. (accessory)
