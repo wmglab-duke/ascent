@@ -15,7 +15,7 @@ cd ..
 ```
 
 ## Future Development Goals
-* **Finished Tasks** COMSOL-interfacing Java code to build models
+* **Finished Tasks**
     * add cuff specific parameters to master
     * clean up and annotate existing MATLAB code for building FEM's (electrode, nerve, general model parameters)
     * now incorporate into model) standardize geometry indexing 
@@ -24,22 +24,19 @@ cd ..
     * logic for fascicle representation from folder structures
     * Efficient saving of program states, split into higher-level nerve geometries (derived from mask data)
     * Progressbar: <a href="https://pypi.org/project/ppl/">https://pypi.org/project/ppl/</a>
-    * library of generic electrode geometries
-
-and fiber information (metadata and coordinates for extracting electric potentials)
+    * library of generic electrode geometries and fiber information (metadata and coordinates for extracting electric potentials)
 * **November 15**
     * Add nerve to model
     * Mesh and solve model (store mesh parameters in JSON)
     * Pulling out potentials and saving to file
         - API Java
         - Python code for saving potential coords; Java code for reading coords; java code for saving potentials
-* **Oct. 1** NEURON-interfacing Python code (to interface with preexisting NEURON code written in Hoc) to build launch
-files for simulation (for Both)
-    - Write `LaunchSim###.hoc`
-    - (Small task)Build simulation folder structure
-* **Nov. 1** 
-    * (Big ToDo)Standardized built-in data analysis
 * **Dec. 1**
+    - Write `LaunchSim###.hoc`
+    - Build simulation folder structure
+* **Dec. 15**
+    * (Big ToDo)Standardized built-in data analysis
+* **Jan 1.**
     * FILTERING, SEARCHING, etc. (accessory)
     * Streamline simulation indexing
     * Batching files from command line - save geom and mesh and resolve for different frequencies  (https://www.comsol.com/blogs/how-to-run-simulations-in-batch-mode-from-the-command-line/)
