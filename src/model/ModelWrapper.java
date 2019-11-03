@@ -386,9 +386,9 @@ public class ModelWrapper {
                 }
 
                 // make list of fascicle extrusions to union for swept mesh
-                for (String dir: dirs) {
-                    System.out.println(dir);
-                }
+//                for (String dir: dirs) {
+//                    System.out.println(dir);
+//                }
 
                 // make union
 //                String fasciclesUnionLabel = "Fascicles Union";
@@ -447,6 +447,7 @@ public class ModelWrapper {
     }
 
     public void createUnions() {
+        System.out.println("CREATE UNIONS");
         for (String union: ModelWrapper.ALL_UNIONS) {
             String[] contributors = this.getUnionContributors(union);
             if (contributors.length > 0) {
