@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -20,6 +21,15 @@ import java.util.HashMap;
  * when creating parts in the static class model.Parts.
  */
 public class ModelWrapper {
+
+
+    // UNION pseudonym constants
+    public static final String ALL_NERVE_PARTS_UNION = "all_nerve_parts_union";
+    public static final String ENDO_UNION = "endo_union";
+    public static final String PERI_UNION = "peri_union";
+
+    // associated union contributors for above constants
+    private HashMap<String, ArrayList<String>> union_contributors_ = new HashMap<>();
 
     // INSTANCE VARIABLES
 
@@ -47,6 +57,8 @@ public class ModelWrapper {
     ModelWrapper(Model model, String projectRoot) {
         this.model = model;
         this.root = projectRoot;
+
+
     }
 
     /**
@@ -506,5 +518,22 @@ public class ModelWrapper {
 
             current.set("Qjp", 0.001);
         }
+    }
+
+    public void initUnionContributors() {
+
+    }
+
+
+    public void contributeToUnion(String contibutor, String[] unions) {
+
+    }
+
+    public ArrayList<String> getUnion(String union) {
+        return null;
+    }
+
+    public void createUnions() {
+
     }
 }
