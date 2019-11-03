@@ -15,25 +15,22 @@ cd ..
 ```
 
 ## Future Development Goals
-*  **Monday, Sept. 16, 2019** COMSOL-interfacing Java code to build models
-    * Eric
+*  **Finished Tasks** COMSOL-interfacing Java code to build models
         - (**done**)add cuff specific parameters to master
         - (**done**) clean up and annotate existing MATLAB code for building FEM's (electrode, nerve, general model parameters)
-        - (**done**)Fix ImThera, make copy of FEM Builder and work from that
-        - (**done**)Fix LivaNova, make copy of FEM Builder and work from that
-        - (**super close**)Add nerve to FEMBuilder
-        - (**super close**)Mesh and solve FEMBuilder (store mesh parameters in JSON)
-    * Jake
-        - (**done**) now incorporate into FEMBuilder) standardize geometry indexing 
+        - (**done**) now incorporate into model) standardize geometry indexing 
         - (**done**) reading/writing data from Java, especially wrt JSON files
         - (**done**)IdentifierManager
+        - (**done**)logic for fascicle representation from folder structures
+        - (**done**) Efficient saving of program states, split into higher-level nerve geometries (derived from mask data)
+and fiber information (metadata and coordinates for extracting electric potentials)
+        - (**super close**)Add nerve to model
+        - (**super close**)Mesh and solve model (store mesh parameters in JSON)
         - (WIP)Pulling out potentials and saving to file
             -API Java
             -Python code for saving potential coords; Java code for reading coords; java code for saving potentials
-        - (waiting on Eric) general model geometry validation, particularly wrt electrodes (specific to each)
-
-    * Both
-        - (**done**)logic for fascicle representation from folder structures
+        - General model geometry validation, particularly wrt electrodes (specific to each)
+        
 * **Friday, Sept. 20, 2019** Extracting potentials from solved models, saving to file, and successfully loading for
 use in Python (for Both)
 * **Oct. 1** NEURON-interfacing Python code (to interface with preexisting NEURON code written in Hoc) to build launch
@@ -41,8 +38,7 @@ files for simulation (for Both)
     - Write `LaunchSim###.hoc`
     - (Small task)Build simulation folder structure
 * **Nov. 1** 
-    * (**done**) Efficient saving of program states, split into higher-level nerve geometries (derived from mask data)
-and fiber information (metadata and coordinates for extracting electric potentials)
+
     * (Big ToDo)Standardized built-in data analysis
     * (**RIP**)GUI - prompt user to input parameters based on previous inputs. Save to JSON.
 * **Dec. 1**
