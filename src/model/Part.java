@@ -1911,9 +1911,12 @@ class Part {
         switch (pseudonym) {
             case "FascicleCI":
 
+                String fascicleCI_Inner_Label = name + "_INNERS_CI";
+                String fascicleCI_Endo_Label = name + "_ENDONEURIUM";
+
                 im.labels = new String[]{
-                        name + "_INNERS_CI", //0
-                        name + "_ENDONEURIUM"
+                        fascicleCI_Inner_Label, //0
+                        fascicleCI_Endo_Label
                 };
 
                 for (String cselFascicleCILabel: im.labels) {

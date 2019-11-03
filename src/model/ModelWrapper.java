@@ -318,19 +318,10 @@ public class ModelWrapper {
     // TODO: add fascicle paths to mw so they can be accessed in parts
     public boolean addFascicles() {
 
-        // define global part primitive names (MUST BE IDENTICAL IN Part)
+        // define global nerve part names (MUST BE IDENTICAL IN Part)
         String[] partPrimitiveNames = new String[]{"FascicleCI", "FascicleMesh"};
 
-        // loop through fascicle primitives and create in COMSOL
-//        for (String partPrimitiveName: partPrimitiveNames) {
-//            if (!this.im.hasPseudonym(partPrimitiveName)) {
-//                // TRY to create the part primitive (catch error if no existing implementation)
-//                IdentifierManager partPrimitiveIM = Part.createPartPrimitive(this.im.next("part", partPrimitiveName), partPrimitiveName, this);
-//
-//                // add the returned id manager to the HashMap of IMs with the partName as its key
-//                this.partPrimitiveIMs.put(partPrimitiveName, partPrimitiveIM);
-//            }
-//        }
+        // Load configuration file
         try {
             JSONObject json_data = new JSONReader(String.join("/", new String[]{
                     this.root,
@@ -338,6 +329,7 @@ public class ModelWrapper {
                     "master.json"
             })).getData();
 
+            // Build path to fascicles
             String fasciclesPath = String.join("/", new String[]{
                     this.root,
                     "data",
@@ -349,6 +341,7 @@ public class ModelWrapper {
                     "fascicles"
             });
 
+            // Loop over all fascicle dirs
             String[] dirs = new File(fasciclesPath).list();
             if (dirs != null) {
                 int i = 0;
@@ -356,10 +349,10 @@ public class ModelWrapper {
                     if (! dir.contains(".")) {
                         String fascicleName = "fascicle" + (i++);
 
-                        // initialize data to send to Part.createPartInstance
+                        // Initialize data to send to Part.createPartInstance
                         HashMap<String, String[]> data = new HashMap<>();
 
-                        // add inners and outer files to array
+                        // Add inners and outer files to array
                         String path = String.join("/", new String[]{fasciclesPath, dir});
                         for (String type: new String[]{"inners", "outer"}) {
                             data.put(type,
@@ -369,7 +362,7 @@ public class ModelWrapper {
                             );
                         }
 
-                        // quick loop to make sure there are at least one of each inner and outer
+                        // Quick loop to make sure there are at least one of each inner and outer
                         for (String[] arr: data.values()) {
                             if (arr.length < 1) throw new IllegalStateException("There must be at least one of each inner and outer for fascicle " + i);
                         }
@@ -381,6 +374,7 @@ public class ModelWrapper {
                         Part.createNervePartInstance(primitiveType, fascicleName, path, this, data);
 //                        IdentifierManager nervePartIM = Part.createNervePartInstance(primitiveType, fascicleName, path, this, data);
 //                        this.nervePartIMs.put(fascicleName, nervePartIM);
+                        // TODO
                     }
                 }
 
@@ -388,6 +382,7 @@ public class ModelWrapper {
                 for (String dir: dirs) {
                     System.out.println(dir);
                 }
+
                 // make union
                 String fasciclesUnionLabel = "Fascicles Union";
                 model.component("comp1").geom("geom1").create(im.next("uni",fasciclesUnionLabel), "Union");
@@ -458,24 +453,37 @@ public class ModelWrapper {
             // make list of cuffs in model
             String cuff = cuffs.getString(i);
 
-            // add part primitives needed to make the cuff
+            // add part primitives for cuff
             mw.addCuffPartPrimitives(cuff);
 
-            // add material definitions needed to make the cuff
+            // add material definitions for cuff
             mw.addCuffMaterialDefinitions(cuff);
 
-            // add part instances needed to make the cuff
+            // add part instances for cuff
             mw.addCuffPartInstances(cuff);
         }
 
+        // Build the geometry
         model.component("comp1").geom("geom1").run("fin");
 
-        // Mesh fascicles
+        // Define mesh for nerve
         String meshFascLabel = "Mesh Fascicles";
         String meshFascSweLabel = "Mesh Fascicles Sweep";
         model.component("comp1").mesh(mw.im.next("mesh",meshFascLabel)).create(mw.im.next("swe",meshFascSweLabel), "Sweep");
         model.component("comp1").mesh(mw.im.get(meshFascLabel)).feature(mw.im.get(meshFascSweLabel)).selection().geom("geom1", 3);
         model.component("comp1").mesh(mw.im.get(meshFascLabel)).feature(mw.im.get(meshFascSweLabel)).selection().named("geom1" + "_" + mw.im.get("FASCICLES") + "_dom");
+
+        // Define mesh for remaining geometry (cuff, cuff fill, and medium)
+        // TODO
+
+        // Run mesh
+        // TODO
+        // Save
+
+        // Solve
+        // Adjust current sources
+        // TODO
+        // Save
 
         mw.loopCurrents();
 
