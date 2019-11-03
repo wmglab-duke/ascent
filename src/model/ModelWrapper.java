@@ -522,6 +522,9 @@ public class ModelWrapper {
 
     public void initUnionContributors() {
 
+        for(String unionLabel : new String[]{ModelWrapper.ENDO_UNION,ModelWrapper.ALL_NERVE_PARTS_UNION, ModelWrapper.PERI_UNION}) {
+
+        }
     }
 
     public void contributeToUnion(String contributor, String[] unions) {
