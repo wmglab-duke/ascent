@@ -1927,7 +1927,7 @@ class Part {
                 String fascicleCICXLabel = name + "_Fascicle Cross Section";
                 GeomFeature fascicleCICX = model.component("comp1").geom("geom1").create(im.next("wp",fascicleCICXLabel), "WorkPlane");
                 fascicleCICX.label(fascicleCICXLabel);
-                fascicleCICX.set("contributeto", im.get(name + "_INNERS_CI"));
+                fascicleCICX.set("contributeto", im.get(fascicleCI_Inner_Label));
                 fascicleCICX.set("unite", true);
 
                 String icLabel = name + "_IC";
@@ -1950,9 +1950,9 @@ class Part {
                 String makefascicleLabel = name + "_Make Fascicle";
                 GeomFeature makefascicle = model.component("comp1").geom("geom1").create(im.next("ext",makefascicleLabel), "Extrude");
                 makefascicle.label(makefascicleLabel);
-                makefascicle.set("contributeto", im.get(name + "_ENDONEURIUM"));
+                makefascicle.set("contributeto", im.get(fascicleCI_Endo_Label));
                 makefascicle.setIndex("distance", "Length_EM", 0); // TODO - load from master probs
-                makefascicle.selection("input").named(im.get(name + "_INNERS_CI"));
+                makefascicle.selection("input").named(im.get(fascicleCI_Inner_Label));
 
                 break;
             case "FascicleMesh":
