@@ -24,9 +24,9 @@ public class ModelWrapper {
 
 
     // UNION pseudonym constants
-    public static final String ALL_NERVE_PARTS_UNION = "all_nerve_parts_union";
-    public static final String ENDO_UNION = "endo_union";
-    public static final String PERI_UNION = "peri_union";
+    public static final String ALL_NERVE_PARTS_UNION = "allNervePartsUnion";
+    public static final String ENDO_UNION = "endoUnion";
+    public static final String PERI_UNION = "periUnion";
     public static final String[] ALL_UNIONS = new String[]{
             ModelWrapper.ENDO_UNION,
             ModelWrapper.ALL_NERVE_PARTS_UNION,
@@ -450,12 +450,17 @@ public class ModelWrapper {
         System.out.println("CREATE UNIONS");
         for (String union: ModelWrapper.ALL_UNIONS) {
             String[] contributors = this.getUnionContributors(union);
+            System.out.println(Arrays.toString(contributors));
+            System.out.println(contributors.length);
             if (contributors.length > 0) {
+                System.out.println("b4");
                 model.component("comp1").geom("geom1").create(im.next("uni", union), "Union");
                 model.component("comp1").geom("geom1").feature(im.get(union)).selection("input").set(contributors);
                 model.component("comp1").geom("geom1").feature(im.get(union)).label(union);
+                System.out.println("after");
             }
         }
+        System.out.println("another one");
     }
     public static void main(String[] args) {
         // Start COMSOL Instance
@@ -525,14 +530,14 @@ public class ModelWrapper {
         // Add materials for medium and nerve addCuffMaterialDefinitions
 
         // Build the geometry
-        model.component("comp1").geom("geom1").run("fin");
+//        model.component("comp1").geom("geom1").run("fin");
 
         // Define mesh for nerve
-        String meshFascLabel = "Mesh Fascicles";
-        String meshFascSweLabel = "Mesh Fascicles Sweep";
-        model.component("comp1").mesh(mw.im.next("mesh",meshFascLabel)).create(mw.im.next("swe",meshFascSweLabel), "Sweep");
-        model.component("comp1").mesh(mw.im.get(meshFascLabel)).feature(mw.im.get(meshFascSweLabel)).selection().geom("geom1", 3);
-        model.component("comp1").mesh(mw.im.get(meshFascLabel)).feature(mw.im.get(meshFascSweLabel)).selection().named("geom1" + "_" + mw.im.get("FASCICLES") + "_dom");
+//        String meshFascLabel = "Mesh Fascicles";
+//        String meshFascSweLabel = "Mesh Fascicles Sweep";
+//        model.component("comp1").mesh(mw.im.next("mesh",meshFascLabel)).create(mw.im.next("swe",meshFascSweLabel), "Sweep");
+//        model.component("comp1").mesh(mw.im.get(meshFascLabel)).feature(mw.im.get(meshFascSweLabel)).selection().geom("geom1", 3);
+//        model.component("comp1").mesh(mw.im.get(meshFascLabel)).feature(mw.im.get(meshFascSweLabel)).selection().named("geom1" + "_" + mw.im.get("FASCICLES") + "_dom");
 
         // Define mesh for remaining geometry (cuff, cuff fill, and medium)
         // TODO
