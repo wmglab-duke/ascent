@@ -39,16 +39,15 @@ use in Python (for Both)
 * **Oct. 1** NEURON-interfacing Python code (to interface with preexisting NEURON code written in Hoc) to build launch
 files for simulation (for Both)
     - Write `LaunchSim###.hoc`
-    - Build simulation folder structure
-    - Streamline simulation indexing
-    - Upload to Cluster and confirm successful simulation
+    - (Small task)Build simulation folder structure
 * **Nov. 1** 
     * (**done**) Efficient saving of program states, split into higher-level nerve geometries (derived from mask data)
 and fiber information (metadata and coordinates for extracting electric potentials)
-    * Standardized built-in data analysis
-    * GUI - prompt user to input parameters based on previous inputs. Save to JSON.
+    * (Big ToDo)Standardized built-in data analysis
+    * (**RIP**)GUI - prompt user to input parameters based on previous inputs. Save to JSON.
 * **Dec. 1**
     * FILTERING, SEARCHING, etc. (accessory)
+    * Streamline simulation indexing
 * Possible add-ons
     * Investigate methods of streamlining/standardizing interface with cluster computing service
     * Implement best-fit bounding ellipse for CuffInputMode (written to electrode_input.json).
