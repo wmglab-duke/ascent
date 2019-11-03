@@ -9,7 +9,6 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -19,8 +18,6 @@ import java.util.HashMap;
  * Master high-level class for managing a model, its metadata, and various critical operations such as creating parts
  * and extracting potentials. This class houses the "meaty" operations of actually interacting with the model object
  * when creating parts in the static class model.Parts.
- *
- * Up for consideration: where to house the meshing/solving/extracting code?
  */
 public class ModelWrapper {
 
@@ -241,8 +238,7 @@ public class ModelWrapper {
         return true;
     }
 
-    //
-    public boolean addCuffMaterialDefinitions(String name) {
+       public boolean addCuffMaterialDefinitions(String name) {
         // extract data from json
         try {
             JSONObject data = new JSONReader(String.join("/",
@@ -307,15 +303,10 @@ public class ModelWrapper {
         return true;
     }
 
-    public boolean addNerve() {
-        return true;
-    }
-
     /**
      *
      * @return
      */
-    // TODO: add fascicle paths to mw so they can be accessed in parts
     public boolean addFascicles() {
 
         // define global nerve part names (MUST BE IDENTICAL IN Part)
@@ -368,10 +359,10 @@ public class ModelWrapper {
                         }
 
                         // do FascicleCI if only one inner, FascicleMesh otherwise
-                        String primitiveType = data.get("inners").length == 1 ? partPrimitiveNames[0] : partPrimitiveNames[1];
+                        String fascicleType = data.get("inners").length == 1 ? partPrimitiveNames[0] : partPrimitiveNames[1];
 
                         // hand off to Part to build instance of fascicle
-                        Part.createNervePartInstance(primitiveType, fascicleName, path, this, data);
+                        Part.createNervePartInstance(fascicleType, fascicleName, path, this, data);
 //                        IdentifierManager nervePartIM = Part.createNervePartInstance(primitiveType, fascicleName, path, this, data);
 //                        this.nervePartIMs.put(fascicleName, nervePartIM);
                         // TODO
@@ -432,9 +423,10 @@ public class ModelWrapper {
         // Define ModelWrapper class instance for model and projectPath
         ModelWrapper mw = new ModelWrapper(model, projectPath);
 
-        // Add fascicles
-        mw.addFascicles();
+        // Add medium
+        //mw.addMedium();
 
+        // Add cuff
         // Load configuration data
         String configFile = "/.config/master.json";
         JSONObject configData = null;
@@ -463,6 +455,14 @@ public class ModelWrapper {
             mw.addCuffPartInstances(cuff);
         }
 
+        // Add epineurium
+        // TODO - how to do this so compatible with 3D in the future, load in shape (circle or ellipse) or PC
+
+        // Add fascicles
+        mw.addFascicles();
+
+        // Add materials for medium and nerve addCuffMaterialDefinitions
+
         // Build the geometry
         model.component("comp1").geom("geom1").run("fin");
 
@@ -484,6 +484,8 @@ public class ModelWrapper {
         // Adjust current sources
         // TODO
         // Save
+
+        // TODO, save time to process trace, build FEM Geometry, mesh, solve, extract potentials "TimeKeeper"
 
         mw.loopCurrents();
 
