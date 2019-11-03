@@ -1899,6 +1899,7 @@ class Part {
 
     }
 
+
     public static void createNervePartInstance(String pseudonym, String name, String path, ModelWrapper mw,
                                                  HashMap<String, String[]> tracePaths) throws IllegalArgumentException {
 
@@ -1923,9 +1924,6 @@ class Part {
                     model.component("comp1").geom("geom1").selection().create(im.next("csel", cselFascicleCILabel), "CumulativeSelection")
                             .label(cselFascicleCILabel);
                 }
-
-                String[] fascicleCIEndoUnions = {ModelWrapper.ALL_NERVE_PARTS_UNION, ModelWrapper.ENDO_UNION};
-                mw.contributeToUnions(im.get(fascicleCI_Endo_Label), fascicleCIEndoUnions);
 
                 String fascicleCICXLabel = name + "_Fascicle Cross Section";
                 GeomFeature fascicleCICX = model.component("comp1").geom("geom1").create(im.next("wp",fascicleCICXLabel), "WorkPlane");
@@ -1956,6 +1954,9 @@ class Part {
                 makefascicle.set("contributeto", im.get(fascicleCI_Endo_Label));
                 makefascicle.setIndex("distance", "Length_EM", 0); // TODO - load from master probs
                 makefascicle.selection("input").named(im.get(fascicleCI_Inner_Label));
+
+                String[] fascicleCIEndoUnions = {ModelWrapper.ALL_NERVE_PARTS_UNION, ModelWrapper.ENDO_UNION};
+                mw.contributeToUnions(im.get(makefascicleLabel), fascicleCIEndoUnions);
 
                 break;
             case "FascicleMesh":
