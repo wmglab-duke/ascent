@@ -1972,10 +1972,10 @@ class Part {
                             .label(cselFascicleMeshLabel);
                 }
 
-                if (! mw.im.hasPseudonym(ModelWrapper.MESH)) {
-                    model.component("comp1").geom("geom1").selection().create(im.next("csel", ModelWrapper.MESH), "CumulativeSelection")
-                            .label(ModelWrapper.MESH);
-                }
+//                if (! mw.im.hasPseudonym(ModelWrapper.MESH)) {
+//                    model.component("comp1").geom("geom1").selection().create(im.next("csel", ModelWrapper.MESH), "CumulativeSelection")
+//                            .label(ModelWrapper.MESH);
+//                }
 
                 // TODO
 
