@@ -15,30 +15,27 @@ cd ..
 ```
 
 ## Future Development Goals
-*  **Finished Tasks** COMSOL-interfacing Java code to build models
-    * (**done**) add cuff specific parameters to master
-    * (**done**) clean up and annotate existing MATLAB code for building FEM's (electrode, nerve, general model parameters)
-    * (**done**) now incorporate into model) standardize geometry indexing 
-    * (**done**) reading/writing data from Java, especially wrt JSON files
-    * (**done**) IdentifierManager
-    * (**done**) logic for fascicle representation from folder structures
-    * (**done**) Efficient saving of program states, split into higher-level nerve geometries (derived from mask data)
+* **Finished Tasks** COMSOL-interfacing Java code to build models
+    * add cuff specific parameters to master
+    * clean up and annotate existing MATLAB code for building FEM's (electrode, nerve, general model parameters)
+    * now incorporate into model) standardize geometry indexing 
+    * reading/writing data from Java, especially wrt JSON files
+    * IdentifierManager
+    * logic for fascicle representation from folder structures
+    * Efficient saving of program states, split into higher-level nerve geometries (derived from mask data)
 and fiber information (metadata and coordinates for extracting electric potentials)
-    * (**super close**) Add nerve to model
-    * (**super close**) Mesh and solve model (store mesh parameters in JSON)
-
-* (WIP) Pulling out potentials and saving to file
+* **November 15**
+    * Add nerve to model
+    * Mesh and solve model (store mesh parameters in JSON)
+    * Pulling out potentials and saving to file
         - API Java
         - Python code for saving potential coords; Java code for reading coords; java code for saving potentials
-
 * **Oct. 1** NEURON-interfacing Python code (to interface with preexisting NEURON code written in Hoc) to build launch
 files for simulation (for Both)
     - Write `LaunchSim###.hoc`
     - (Small task)Build simulation folder structure
 * **Nov. 1** 
-
     * (Big ToDo)Standardized built-in data analysis
-    * (**RIP**)GUI - prompt user to input parameters based on previous inputs. Save to JSON.
 * **Dec. 1**
     * FILTERING, SEARCHING, etc. (accessory)
     * Streamline simulation indexing
@@ -62,7 +59,7 @@ files for simulation (for Both)
 - `shutil`
 - `json`
 
-## Java 1.8 Dependencies (figure out streamlining?)
+## Java 1.8 Dependencies
 - Maven: `org.json:json:20190722` (saved in lib/)
 - must add to CLASSPATH: `<path-to-comsol>/COMSOL54/Multiphysics/plugins/`
 
