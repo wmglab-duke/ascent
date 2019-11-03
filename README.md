@@ -21,19 +21,19 @@ cd ..
         - (**done**) clean up and annotate existing MATLAB code for building FEM's (electrode, nerve, general model parameters)
         - (**done**)Fix ImThera, make copy of FEM Builder and work from that
         - (**done**)Fix LivaNova, make copy of FEM Builder and work from that
-        - Add nerve to FEMBuilder
-        - Mesh and solve FEMBuilder (store mesh parameters in JSON)
+        - (**super close**)Add nerve to FEMBuilder
+        - (**super close**)Mesh and solve FEMBuilder (store mesh parameters in JSON)
     * Jake
         - (**done**) now incorporate into FEMBuilder) standardize geometry indexing 
         - (**done**) reading/writing data from Java, especially wrt JSON files
-        - CIM added to FEMBuilder 
-        - Pulling out potentials and saving to file
+        - (**done**)IdentifierManager
+        - (WIP)Pulling out potentials and saving to file
             -API Java
             -Python code for saving potential coords; Java code for reading coords; java code for saving potentials
         - (waiting on Eric) general model geometry validation, particularly wrt electrodes (specific to each)
 
     * Both
-        - logic for fascicle representation from folder structures
+        - (**done**)logic for fascicle representation from folder structures
 * **Friday, Sept. 20, 2019** Extracting potentials from solved models, saving to file, and successfully loading for
 use in Python (for Both)
 * **Oct. 1** NEURON-interfacing Python code (to interface with preexisting NEURON code written in Hoc) to build launch
@@ -43,7 +43,7 @@ files for simulation (for Both)
     - Streamline simulation indexing
     - Upload to Cluster and confirm successful simulation
 * **Nov. 1** 
-    * Efficient saving of program states, split into higher-level nerve geometries (derived from mask data)
+    * (**done**) Efficient saving of program states, split into higher-level nerve geometries (derived from mask data)
 and fiber information (metadata and coordinates for extracting electric potentials)
     * Standardized built-in data analysis
     * GUI - prompt user to input parameters based on previous inputs. Save to JSON.
@@ -70,14 +70,12 @@ and fiber information (metadata and coordinates for extracting electric potentia
 - `json`
 
 ## Java 1.8 Dependencies (figure out streamlining?)
-- Maven: `com.googlecode.json-simple:json-simple:1.1`
+- Maven: `org.json:json:20190722` (saved in lib/)
 - must add to CLASSPATH: `<path-to-comsol>/COMSOL54/Multiphysics/plugins/`
-- if using IntelliJ, ensure presence of line in `access.iml`: `<component name="NewModuleRootManager" inherit-compiler-output="true">`
 
 ## Setup
 - IN COMSOL: Preferences -> Security -> Methods and Java Libraries -> File System Access -> All Files
 - Ensure that users have write permissions to the <COMSOL installation>/plugins
-- Add com.comsol.accessutils_1.0.0.jar to <COMSOL installation>\bin\comsolpath.txt, might need to adjust security settings to do this
 
 ## Source images
 The user must provide 3 types of files that will be used to construct the data filesystem. In addition to the type
