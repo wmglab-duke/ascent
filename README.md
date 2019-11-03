@@ -16,23 +16,21 @@ cd ..
 
 ## Future Development Goals
 *  **Finished Tasks** COMSOL-interfacing Java code to build models
-        - (**done**)add cuff specific parameters to master
-        - (**done**) clean up and annotate existing MATLAB code for building FEM's (electrode, nerve, general model parameters)
-        - (**done**) now incorporate into model) standardize geometry indexing 
-        - (**done**) reading/writing data from Java, especially wrt JSON files
-        - (**done**)IdentifierManager
-        - (**done**)logic for fascicle representation from folder structures
-        - (**done**) Efficient saving of program states, split into higher-level nerve geometries (derived from mask data)
+    * (**done**) add cuff specific parameters to master
+    * (**done**) clean up and annotate existing MATLAB code for building FEM's (electrode, nerve, general model parameters)
+    * (**done**) now incorporate into model) standardize geometry indexing 
+    * (**done**) reading/writing data from Java, especially wrt JSON files
+    * (**done**) IdentifierManager
+    * (**done**) logic for fascicle representation from folder structures
+    * (**done**) Efficient saving of program states, split into higher-level nerve geometries (derived from mask data)
 and fiber information (metadata and coordinates for extracting electric potentials)
-        - (**super close**)Add nerve to model
-        - (**super close**)Mesh and solve model (store mesh parameters in JSON)
-        - (WIP)Pulling out potentials and saving to file
-            -API Java
-            -Python code for saving potential coords; Java code for reading coords; java code for saving potentials
-        - General model geometry validation, particularly wrt electrodes (specific to each)
-        
-* **Friday, Sept. 20, 2019** Extracting potentials from solved models, saving to file, and successfully loading for
-use in Python (for Both)
+    * (**super close**) Add nerve to model
+    * (**super close**) Mesh and solve model (store mesh parameters in JSON)
+
+* (WIP) Pulling out potentials and saving to file
+        - API Java
+        - Python code for saving potential coords; Java code for reading coords; java code for saving potentials
+
 * **Oct. 1** NEURON-interfacing Python code (to interface with preexisting NEURON code written in Hoc) to build launch
 files for simulation (for Both)
     - Write `LaunchSim###.hoc`
