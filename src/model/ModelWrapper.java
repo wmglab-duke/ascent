@@ -27,9 +27,14 @@ public class ModelWrapper {
     public static final String ALL_NERVE_PARTS_UNION = "all_nerve_parts_union";
     public static final String ENDO_UNION = "endo_union";
     public static final String PERI_UNION = "peri_union";
+    public static final String[] ALL_UNIONS = new String[]{
+            ModelWrapper.ENDO_UNION,
+            ModelWrapper.ALL_NERVE_PARTS_UNION,
+            ModelWrapper.PERI_UNION
+    };
 
     // associated union contributors for above constants
-    private HashMap<String, ArrayList<String>> union_contributors_ = new HashMap<>();
+    private HashMap<String, ArrayList<String>> unionContributors = new HashMap<>();
 
     // INSTANCE VARIABLES
 
@@ -57,8 +62,7 @@ public class ModelWrapper {
     ModelWrapper(Model model, String projectRoot) {
         this.model = model;
         this.root = projectRoot;
-
-
+        this.initUnionContributors();
     }
 
     /**
@@ -520,22 +524,35 @@ public class ModelWrapper {
         }
     }
 
+    /**
+     * Call only from initializer!
+     * Initialize the ArrayLists in the unionContributors HashMap
+     */
     public void initUnionContributors() {
-
-        for(String unionLabel : new String[]{ModelWrapper.ENDO_UNION,ModelWrapper.ALL_NERVE_PARTS_UNION, ModelWrapper.PERI_UNION}) {
-
+        for(String unionLabel : ModelWrapper.ALL_UNIONS) {
+            this.unionContributors.put(unionLabel, new ArrayList<>());
         }
     }
 
     public void contributeToUnions(String contributor, String[] unions) {
-
+        for (String union: unions) {
+            this.unionContributors.get(union).add(contributor);
+        }
     }
 
-    public ArrayList<String> getUnion(String union) {
-        return null;
+    public String[] getUnionContributors(String union) {
+        if (! this.unionContributors.containsKey(union)) throw new IllegalArgumentException("No such union: " + union);
+        return this.unionContributors.get(union).toArray(new String[0]);
     }
 
     public void createUnions() {
-
+        for (String union: ModelWrapper.ALL_UNIONS) {
+            String[] contributors = this.getUnionContributors(union);
+            if (contributors.length > 0) {
+                model.component("comp1").geom("geom1").create(im.next("uni", union), "Union");
+                model.component("comp1").geom("geom1").feature(im.get(union)).selection("input").set(contributors);
+                model.component("comp1").geom("geom1").feature(im.get(union)).label(union);
+            }
+        }
     }
 }
