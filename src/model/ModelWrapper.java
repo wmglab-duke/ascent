@@ -515,11 +515,13 @@ public class ModelWrapper {
         model.component("comp1").geom("geom1").run("fin");
 
         // Define mesh for nerve
-//        String meshFascLabel = "Mesh Fascicles";
-//        String meshFascSweLabel = "Mesh Fascicles Sweep";
-//        model.component("comp1").mesh(mw.im.next("mesh",meshFascLabel)).create(mw.im.next("swe",meshFascSweLabel), "Sweep");
-//        model.component("comp1").mesh(mw.im.get(meshFascLabel)).feature(mw.im.get(meshFascSweLabel)).selection().geom("geom1", 3);
-//        model.component("comp1").mesh(mw.im.get(meshFascLabel)).feature(mw.im.get(meshFascSweLabel)).selection().named("geom1" + "_" + mw.im.get("FASCICLES") + "_dom");
+        String meshFascLabel = "Mesh Nerve";
+        String meshFascSweLabel = "Mesh Nerve Sweep";
+        model.component("comp1").mesh(mw.im.next("mesh",meshFascLabel)).create(mw.im.next("swe",meshFascSweLabel), "Sweep");
+        model.component("comp1").mesh(mw.im.get(meshFascLabel)).feature(mw.im.get(meshFascSweLabel)).selection().geom("geom1", 3);
+        model.component("comp1").mesh(mw.im.get(meshFascLabel)).feature(mw.im.get(meshFascSweLabel)).selection().named("geom1" + "_" + mw.im.get("allNervePartsUnionCsel") + "_dom");
+        model.component("comp1").mesh(mw.im.get(meshFascLabel)).feature("size").set("hauto", 1);
+        model.component("comp1").mesh(mw.im.get(meshFascLabel)).run(mw.im.get(meshFascSweLabel));
 
         // Define mesh for remaining geometry (cuff, cuff fill, and medium)
         // TODO
