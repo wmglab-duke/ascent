@@ -117,10 +117,6 @@ class Runner(Exceptionable, Configurable):
         jdk_path = self.load(os.path.join('.config', 'system.json')).get('jdk_path')
 
         project_path = self.load(os.path.join('.config', 'system.json')).get('project_path')
-        # TODO: @jake add value "project_path" to your system.json with the string below!
-        #       @eric you too when you get your laptop back
-        # "/Users/ericmusselman/Documents/access"
-        # "/Users/jakecariello/Box/Documents/Pipeline/access"
 
         core_name = 'ModelWrapper'
 
