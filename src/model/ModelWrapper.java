@@ -167,10 +167,7 @@ public class ModelWrapper {
      * @return success indicator (might remove this later)
      */
 
-    // TRY to initialize the part (catch error if no existing implementation)
-//            Part.createPartInstance(this.next("pi", name), name, this);
-
-    public boolean addPartPrimitives(String name) {
+    public boolean addCuffPartPrimitives(String name) {
         // extract data from json
         try {
             JSONObject data = new JSONReader(String.join("/",
@@ -221,7 +218,7 @@ public class ModelWrapper {
         return true;
     }
 
-    public boolean addPartInstances(String name) {
+    public boolean addCuffPartInstances(String name) {
         // extract data from json
         // name is something like Enteromedics.json
         try {
@@ -245,7 +242,7 @@ public class ModelWrapper {
     }
 
     //
-    public boolean addMaterialDefinitions(String name) {
+    public boolean addCuffMaterialDefinitions(String name) {
         // extract data from json
         try {
             JSONObject data = new JSONReader(String.join("/",
@@ -417,17 +414,33 @@ public class ModelWrapper {
     }
 
     public static void main(String[] args) {
+        // Start COMSOL Instance
         ModelUtil.connect("localhost", 2036);
         ModelUtil.initStandalone(false);
+
+        // Define model object
         Model model = ModelUtil.create("Model");
+
+        // Add 3D geometry to component node 1
         model.component().create("comp1", true);
         model.component("comp1").geom().create("geom1", 3);
+
+        // Add materials node to component node 1
         model.component("comp1").physics().create("ec", "ConductiveMedia", "geom1");
+
+        // and mesh node to component node 1
         model.component("comp1").mesh().create("mesh1");
 
+        // Take projectPath input to ModelWrapper and assign to string.
         String projectPath = args[0];
+
+        // Define ModelWrapper class instance for model and projectPath
         ModelWrapper mw = new ModelWrapper(model, projectPath);
 
+        // Add fascicles
+        mw.addFascicles();
+
+        // Load configuration data
         String configFile = "/.config/master.json";
         JSONObject configData = null;
         try {
@@ -436,13 +449,9 @@ public class ModelWrapper {
             e.printStackTrace();
         }
 
-        // Build medium
-
         // Read cuffs to build from master.json (cuff.preset) which links to JSON containing instantiations of parts
-        // needed to build cuff (and fill)
         JSONObject cuffObject = (JSONObject) configData.get("cuff");
         JSONArray cuffs = (JSONArray) cuffObject.get("preset");
-        ArrayList<String> cuffFiles = new ArrayList<>();
 
         // Build cuffs
         for (int i = 0; i < cuffs.length(); i++) {
@@ -450,17 +459,14 @@ public class ModelWrapper {
             String cuff = cuffs.getString(i);
 
             // add part primitives needed to make the cuff
-            mw.addPartPrimitives(cuff);
+            mw.addCuffPartPrimitives(cuff);
 
             // add material definitions needed to make the cuff
-            mw.addMaterialDefinitions(cuff);
+            mw.addCuffMaterialDefinitions(cuff);
 
             // add part instances needed to make the cuff
-            mw.addPartInstances(cuff);
+            mw.addCuffPartInstances(cuff);
         }
-
-        // Build nerve
-        mw.addFascicles();
 
         model.component("comp1").geom("geom1").run("fin");
 
