@@ -316,3 +316,4 @@ class SlideManager(Exceptionable, Configurable, Saveable):
         # write template for electrode input
         TemplateOutput.write(electrode_input, TemplateMode.ELECTRODE_INPUT, self)
 
+

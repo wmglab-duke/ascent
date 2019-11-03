@@ -391,21 +391,21 @@ public class ModelWrapper {
                 }
 
                 // make union
-                String fasciclesUnionLabel = "Fascicles Union";
-                model.component("comp1").geom("geom1").create(im.next("uni",fasciclesUnionLabel), "Union");
-                model.component("comp1").geom("geom1").feature(im.get(fasciclesUnionLabel)).selection("input").set("ext1", "ext10", "ext14", "ext2", "ext24", "ext4", "ext46"); // TODO
-                model.component("comp1").geom("geom1").feature(im.get(fasciclesUnionLabel)).label(fasciclesUnionLabel);
-
-                String fasciclesLabel = "FASCICLES";
-                model.component("comp1").geom("geom1").selection().create(im.next("csel",fasciclesLabel), "CumulativeSelection");
-                model.component("comp1").geom("geom1").selection(im.get(fasciclesLabel)).label(fasciclesLabel);
-                model.component("comp1").geom("geom1").feature(im.get(fasciclesUnionLabel)).set("contributeto", im.get(fasciclesLabel));
-
-                // Add materials
-                String fascicleMatLinkLabel = "Fascicle Material";
-                model.component("comp1").material().create(im.next("matlnk",fascicleMatLinkLabel), "Link");
-                model.component("comp1").material(im.get(fascicleMatLinkLabel)).selection().named("geom1" +"_" + im.get(fasciclesLabel) + "_dom");
-                model.component("comp1").material(im.get(fascicleMatLinkLabel)).label(fascicleMatLinkLabel);
+//                String fasciclesUnionLabel = "Fascicles Union";
+//                model.component("comp1").geom("geom1").create(im.next("uni",fasciclesUnionLabel), "Union");
+//                model.component("comp1").geom("geom1").feature(im.get(fasciclesUnionLabel)).selection("input").set("ext1", "ext10", "ext14", "ext2", "ext24", "ext4", "ext46"); // TODO
+//                model.component("comp1").geom("geom1").feature(im.get(fasciclesUnionLabel)).label(fasciclesUnionLabel);
+//
+//                String fasciclesLabel = "FASCICLES";
+//                model.component("comp1").geom("geom1").selection().create(im.next("csel",fasciclesLabel), "CumulativeSelection");
+//                model.component("comp1").geom("geom1").selection(im.get(fasciclesLabel)).label(fasciclesLabel);
+//                model.component("comp1").geom("geom1").feature(im.get(fasciclesUnionLabel)).set("contributeto", im.get(fasciclesLabel));
+//
+//                // Add materials
+//                String fascicleMatLinkLabel = "Fascicle Material";
+//                model.component("comp1").material().create(im.next("matlnk",fascicleMatLinkLabel), "Link");
+//                model.component("comp1").material(im.get(fascicleMatLinkLabel)).selection().named("geom1" +"_" + im.get(fasciclesLabel) + "_dom");
+//                model.component("comp1").material(im.get(fascicleMatLinkLabel)).label(fascicleMatLinkLabel);
 
             }
         } catch (FileNotFoundException e) {
@@ -415,6 +415,47 @@ public class ModelWrapper {
         return true;
     }
 
+
+    public void loopCurrents() {
+        for(String key: this.im.currentPointers.keySet()) {
+            System.out.println("Current pointer: " + key);
+            PhysicsFeature current = (PhysicsFeature) this.im.currentPointers.get(key);
+
+            current.set("Qjp", 0.001);
+        }
+    }
+
+    /**
+     * Call only from initializer!
+     * Initialize the ArrayLists in the unionContributors HashMap
+     */
+    public void initUnionContributors() {
+        for(String unionLabel : ModelWrapper.ALL_UNIONS) {
+            this.unionContributors.put(unionLabel, new ArrayList<>());
+        }
+    }
+
+    public void contributeToUnions(String contributor, String[] unions) {
+        for (String union: unions) {
+            this.unionContributors.get(union).add(contributor);
+        }
+    }
+
+    public String[] getUnionContributors(String union) {
+        if (! this.unionContributors.containsKey(union)) throw new IllegalArgumentException("No such union: " + union);
+        return this.unionContributors.get(union).toArray(new String[0]);
+    }
+
+    public void createUnions() {
+        for (String union: ModelWrapper.ALL_UNIONS) {
+            String[] contributors = this.getUnionContributors(union);
+            if (contributors.length > 0) {
+                model.component("comp1").geom("geom1").create(im.next("uni", union), "Union");
+                model.component("comp1").geom("geom1").feature(im.get(union)).selection("input").set(contributors);
+                model.component("comp1").geom("geom1").feature(im.get(union)).label(union);
+            }
+        }
+    }
     public static void main(String[] args) {
         // Start COMSOL Instance
         ModelUtil.connect("localhost", 2036);
@@ -477,6 +518,9 @@ public class ModelWrapper {
         // Add fascicles
         mw.addFascicles();
 
+        // Create unions
+        mw.createUnions();
+
         // Add materials for medium and nerve addCuffMaterialDefinitions
 
         // Build the geometry
@@ -512,47 +556,7 @@ public class ModelWrapper {
         }
 
         ModelUtil.disconnect();
+
         System.out.println("Disconnected from COMSOL Server");
-    }
-
-    public void loopCurrents() {
-        for(String key: this.im.currentPointers.keySet()) {
-            System.out.println("Current pointer: " + key);
-            PhysicsFeature current = (PhysicsFeature) this.im.currentPointers.get(key);
-
-            current.set("Qjp", 0.001);
-        }
-    }
-
-    /**
-     * Call only from initializer!
-     * Initialize the ArrayLists in the unionContributors HashMap
-     */
-    public void initUnionContributors() {
-        for(String unionLabel : ModelWrapper.ALL_UNIONS) {
-            this.unionContributors.put(unionLabel, new ArrayList<>());
-        }
-    }
-
-    public void contributeToUnions(String contributor, String[] unions) {
-        for (String union: unions) {
-            this.unionContributors.get(union).add(contributor);
-        }
-    }
-
-    public String[] getUnionContributors(String union) {
-        if (! this.unionContributors.containsKey(union)) throw new IllegalArgumentException("No such union: " + union);
-        return this.unionContributors.get(union).toArray(new String[0]);
-    }
-
-    public void createUnions() {
-        for (String union: ModelWrapper.ALL_UNIONS) {
-            String[] contributors = this.getUnionContributors(union);
-            if (contributors.length > 0) {
-                model.component("comp1").geom("geom1").create(im.next("uni", union), "Union");
-                model.component("comp1").geom("geom1").feature(im.get(union)).selection("input").set(contributors);
-                model.component("comp1").geom("geom1").feature(im.get(union)).label(union);
-            }
-        }
     }
 }
