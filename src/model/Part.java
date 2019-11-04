@@ -55,6 +55,7 @@ class Part {
 
     /**
      * Create a defined part primitive. There is a finite number of choices, as seen below in the switch.
+     * Fun fact: this method is nearly 1400 lines.
      * @param id the part primitive COMSOL id (unique) --> use mw.im.next in call (part)
      * @param pseudonym the global name for that part, as used in mw.im
      * @param mw the ModelWrapper to act upon
