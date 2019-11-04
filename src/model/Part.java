@@ -1,6 +1,7 @@
 package model;
 
 import com.comsol.model.GeomFeature;
+import com.comsol.model.Material;
 import com.comsol.model.Model;
 import com.comsol.model.ModelParam;
 import com.comsol.model.physics.PhysicsFeature;
@@ -1813,6 +1814,7 @@ class Part {
                 ((PhysicsFeature) mw.im.currentPointers.get(u_currentLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" +  myIM.get(myLabels[2]) + "_pnt"); // SRC
                 ((PhysicsFeature) mw.im.currentPointers.get(u_currentLabel)).set("Qjp", 0.001);
                 ((PhysicsFeature) mw.im.currentPointers.get(u_currentLabel)).label(u_pcsLabel);
+
                 break;
             case "uCuff_Primitive":
                 // set instantiation parameters
@@ -1882,7 +1884,7 @@ class Part {
                 throw new IllegalArgumentException("No implementation for part instance name: " + pseudonym);
         }
 
-        // assign materials
+        // assign cuff materials
         JSONArray materials = instanceParams.getJSONArray("materials");
         for(Object o: materials) {
             String type = ((JSONObject) o).getString("type");
@@ -1890,10 +1892,10 @@ class Part {
             String selection = myLabels[label_index];
             if(myIM.hasPseudonym(selection)) {
                 String linkLabel = String.join("/", new String[]{instanceLabel, selection, type});
-                model.component("comp1").material().create(mw.im.next("matlnk", linkLabel), "Link");
-                model.component("comp1").material(mw.im.get(linkLabel)).label(linkLabel);
-                model.component("comp1").material(mw.im.get(linkLabel)).set("link", mw.im.get(type));
-                model.component("comp1").material(mw.im.get(linkLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(selection) + "_dom");
+                Material mat = model.component("comp1").material().create(mw.im.next("matlnk", linkLabel), "Link");
+                mat.label(linkLabel);
+                mat.set("link", mw.im.get(type));
+                mat.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(selection) + "_dom");
             }
         }
 
@@ -2093,9 +2095,5 @@ class Part {
             default:
                 throw new IllegalArgumentException("No implementation for part instance name: " + pseudonym);
         }
-
-        // if im was not edited for some reason, return null
-//        if (im.count() == 0) return null;
-//        return im;
     }
 }

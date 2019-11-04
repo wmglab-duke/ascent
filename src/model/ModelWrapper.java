@@ -521,9 +521,6 @@ public class ModelWrapper {
         // Add fascicles
         mw.addFascicles();
 
-        // Add contact impedance for perineurium as necessary
-
-
         // Create unions
         mw.createUnions();
 
