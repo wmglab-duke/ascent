@@ -1961,12 +1961,11 @@ class Part {
 
                 // Add physics
                 String ciLabel = name + "_ContactImpedance";
-                model.component("comp1").physics("ec").create(im.next("ci",ciLabel), "ContactImpedance", 2);
-                model.component("comp1").physics("ec").feature(im.get(ciLabel)).selection().named("geom1_" + im.get(fascicleCI_Endo_Label) + "_bnd");
-                model.component("comp1").physics("ec").feature(im.get(ciLabel)).set("spec_type", "surfimp");
-                model.component("comp1").physics("ec").feature(im.get(ciLabel)).set("rhos", 999); // TODO
-                model.component("comp1").physics("ec").feature(im.get(ciLabel)).label(ciLabel);
-
+                PhysicsFeature ci =  model.component("comp1").physics("ec").create(im.next("ci",ciLabel), "ContactImpedance", 2);
+                ci.selection().named("geom1_" + im.get(fascicleCI_Endo_Label) + "_bnd");
+                ci.set("spec_type", "surfimp");
+                ci.set("rhos", 999); // TODO - need to set the value based on the measured thickness (this is in Python I think)
+                ci.label(ciLabel);
 
                 break;
             case "FascicleMesh":
