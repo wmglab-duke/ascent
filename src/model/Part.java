@@ -12,6 +12,12 @@ import java.util.HashMap;
 
 class Part {
 
+    /**
+     * REMOVE THIS METHOD IN FINAL PRODUCT
+     * Collection of example use cases of ModelWrapper that may be useful in Part.
+     * DO NOT CALL!
+     * @param mw ModelWrapper to act upon
+     */
     private static void examples(ModelWrapper mw) {
 
         Model model = mw.getModel();
@@ -47,22 +53,15 @@ class Part {
 
     }
 
-
-    public static IdentifierManager createPartPrimitive(String id, String pseudonym, ModelWrapper mw) throws IllegalArgumentException {
-        return Part.createPartPrimitive(id, pseudonym, mw, null);
-    }
-
     /**
-     *
-     * @param id
-     * @param pseudonym
-     * @param mw
-     * @param data
-     * @param data
-     * @return
+     * Create a defined part primitive. There is a finite number of choices, as seen below in the switch.
+     * @param id the part primitive COMSOL id (unique) --> use mw.im.next in call (part)
+     * @param pseudonym the global name for that part, as used in mw.im
+     * @param mw the ModelWrapper to act upon
+     * @return the local IdentifierManager for THIS PART PRIMITIVE --> save when called in ModelWrapper
+     * @throws IllegalArgumentException if an invalid pseudonym is passed in --> there is no such primitive to create
      */
-    public static IdentifierManager createPartPrimitive(String id, String pseudonym, ModelWrapper mw,
-                                              HashMap<String, Object> data) throws IllegalArgumentException {
+    public static IdentifierManager createPartPrimitive(String id, String pseudonym, ModelWrapper mw) throws IllegalArgumentException {
         Model model = mw.getModel();
 
         model.geom().create(id, "Part", 3);
@@ -73,6 +72,8 @@ class Part {
         IdentifierManager im = new IdentifierManager();
         ModelParam mp = model.geom(id).inputParam();
 
+        // prepare yourself for 1400 lines of pure COMSOL goodness
+        // a true behemoth of a switch
         switch (pseudonym) {
             case "TubeCuff_Primitive":
                 mp.set("N_holes", "1");
@@ -1415,6 +1416,13 @@ class Part {
         return im;
     }
 
+    /**
+     * Create a material!
+     * @param materialID the material COMSOL id (unique) --> use mw.im.next in call (mat)
+     * @param materialName the "pseudonym" for that material, matching the name in master.json
+     * @param master JSON data from master.json
+     * @param mw the ModelWrapper to act upon
+     */
     public static void defineMaterial(String materialID, String materialName, JSONObject master, ModelWrapper mw) {
         Model model = mw.getModel();
         model.material().create(materialID, "Common", "");
@@ -1427,10 +1435,13 @@ class Part {
     }
 
     /**
-     *
-     * @param instanceLabel
-     * @param pseudonym
-     * @param mw
+     * Create instance of an ALREADY CREATED part primitive
+     * @param instanceID the part instance COMSOL id (unique) --> use mw.im.next in call (pi)
+     * @param instanceLabel the name for this instance --> unique, and NOT the same as pseudonym
+     * @param pseudonym which primitive to create (it must have already been created in createPartPrimitive())
+     * @param mw the ModelWrapper to act upon
+     * @param instanceParams instance parameters as loaded in from the associated JSON configuration (in ModelWrapper)
+     * @throws IllegalArgumentException if the primitive specified by pseudonym has not been created
      */
     public static void createCuffPartInstance(String instanceID, String instanceLabel, String pseudonym, ModelWrapper mw,
                                               JSONObject instanceParams) throws IllegalArgumentException {
@@ -1901,7 +1912,15 @@ class Part {
 
     }
 
-
+    /**
+     * Build a part of the nerve.
+     * @param pseudonym the type of part to build (i.e. FascicleCI, FascicleMesh, Epineurium)
+     * @param name what to call this part (i.e. fascicle# or epi#)
+     * @param path the absolute (general) directory which holds the trace data in SECTIONWISE2D format
+     * @param mw the ModelWrapper which is acted upon
+     * @param tracePaths the relative (specific) paths to the required trace data (two keys: "inners" and "outer")
+     * @throws IllegalArgumentException there is not a nerve part to build of that type (for typos probably)
+     */
     public static void createNervePartInstance(String pseudonym, String name, String path, ModelWrapper mw,
                                                  HashMap<String, String[]> tracePaths) throws IllegalArgumentException {
 
