@@ -308,6 +308,9 @@ public class ModelWrapper {
             String endoMaterialID = this.im.next("mat", "endoneurium");
             Part.defineMaterial(endoMaterialID, "endoneurium", master, this);
 
+            String epiMaterialID = this.im.next("mat", "epineurium");
+            Part.defineMaterial(epiMaterialID, "epineurium", master, this);
+
             // Medium (muscle or fat?)
 
         } catch (FileNotFoundException e) {
@@ -531,6 +534,12 @@ public class ModelWrapper {
 //        model.component("comp1").material(mw.im.get(perineuriumMatLinkLabel)).selection().named("geom1" +"_" + mw.im.get("periUnionCsel") + "_dom");
 //        model.component("comp1").material(mw.im.get(perineuriumMatLinkLabel)).label(perineuriumMatLinkLabel);
 //        model.component("comp1").material(mw.im.get(perineuriumMatLinkLabel)).set("link", mw.im.get("perineurium_DC"));
+
+        String epineuriumMatLinkLabel = "epineurium material";
+        model.component("comp1").material().create(mw.im.next("matlnk",epineuriumMatLinkLabel), "Link");
+        model.component("comp1").material(mw.im.get(epineuriumMatLinkLabel)).selection().named("geom1" +"_" + mw.im.get("EPINEURIUM") + "_dom");
+        model.component("comp1").material(mw.im.get(epineuriumMatLinkLabel)).label(epineuriumMatLinkLabel);
+        model.component("comp1").material(mw.im.get(epineuriumMatLinkLabel)).set("link", mw.im.get("epineurium"));
 
         String fascicleMatLinkLabel = "endoneurium material";
         model.component("comp1").material().create(mw.im.next("matlnk",fascicleMatLinkLabel), "Link");
