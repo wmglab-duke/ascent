@@ -1966,7 +1966,7 @@ class Part {
                 PhysicsFeature ci =  model.component("comp1").physics("ec").create(im.next("ci",ciLabel), "ContactImpedance", 2);
                 ci.selection().named("geom1_" + im.get(fascicleCI_Endo_Label) + "_bnd");
                 ci.set("spec_type", "surfimp");
-                ci.set("rhos", 999); // TODO - need to set the value based on the measured thickness (this is in Python I think), also this if frequecy dependent
+                ci.set("rhos", 999); // TODO - need to set the value based on the measured thickness (this is in Python I think), also this is frequency dependent
                 ci.label(ciLabel);
 
                 break;
@@ -1983,13 +1983,6 @@ class Part {
                     model.component("comp1").geom("geom1").selection().create(im.next("csel", cselFascicleMeshLabel), "CumulativeSelection")
                             .label(cselFascicleMeshLabel);
                 }
-
-//                if (! mw.im.hasPseudonym(ModelWrapper.MESH)) {
-//                    model.component("comp1").geom("geom1").selection().create(im.next("csel", ModelWrapper.MESH), "CumulativeSelection")
-//                            .label(ModelWrapper.MESH);
-//                }
-
-                // TODO
 
 //                String inner_path = path + "/inners/" + tracePaths.get("inners")[0]; // TODO - this can be cleaned
 //                model.param().set(name, "NaN", inner_path);
@@ -2087,9 +2080,16 @@ class Part {
 
                 break;
             case "Epineurium":
-                // set instantiation parameters
+                im.labels = new String[]{
+                        name + "_EPINEURIUM" //0
+                };
 
-                // imports
+                for (String cselEpineuriumLabel: im.labels) {
+                    model.component("comp1").geom("geom1").selection().create(im.next("csel", cselEpineuriumLabel), "CumulativeSelection")
+                            .label(cselEpineuriumLabel);
+                }
+
+                
 
                 break;
             default:
