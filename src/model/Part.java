@@ -1955,8 +1955,18 @@ class Part {
                 makefascicle.setIndex("distance", "Length_EM", 0); // TODO - load from master probs
                 makefascicle.selection("input").named(im.get(fascicleCI_Inner_Label));
 
+                // Add fascicle domains to ALL_NERVE_PARTS_UNION and ENDO_UNION for later assigning to materials and mesh
                 String[] fascicleCIEndoUnions = {ModelWrapper.ALL_NERVE_PARTS_UNION, ModelWrapper.ENDO_UNION};
                 mw.contributeToUnions(im.get(makefascicleLabel), fascicleCIEndoUnions);
+
+                // Add physics
+                String ciLabel = name + "_ContactImpedance";
+                model.component("comp1").physics("ec").create(im.next("ci",ciLabel), "ContactImpedance", 2);
+                model.component("comp1").physics("ec").feature(im.get(ciLabel)).selection().named("geom1_" + im.get(fascicleCI_Endo_Label) + "_bnd");
+                model.component("comp1").physics("ec").feature(im.get(ciLabel)).set("spec_type", "surfimp");
+                model.component("comp1").physics("ec").feature(im.get(ciLabel)).set("rhos", 999); // TODO
+                model.component("comp1").physics("ec").feature(im.get(ciLabel)).label(ciLabel);
+
 
                 break;
             case "FascicleMesh":

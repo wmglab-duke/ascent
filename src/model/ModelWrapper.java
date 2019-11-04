@@ -1,5 +1,6 @@
 package model;
 
+import com.comsol.model.MeshFeature;
 import com.comsol.model.Model;
 import com.comsol.model.physics.PhysicsFeature;
 import com.comsol.model.util.ModelUtil;
@@ -295,6 +296,27 @@ public class ModelWrapper {
         return true;
     }
 
+    public boolean addBioMaterialDefinitions() {
+        // extract data from json
+        try {
+            JSONObject master = new JSONReader(String.join("/",
+                    new String[]{this.root, ".config", "master.json"})).getData();
+
+            String periMaterialID = this.im.next("mat", "perineurium_DC");
+            Part.defineMaterial(periMaterialID, "perineurium_DC", master, this);
+
+            String endoMaterialID = this.im.next("mat", "endoneurium");
+            Part.defineMaterial(endoMaterialID, "endoneurium", master, this);
+
+            // Medium (muscle or fat?)
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
     public boolean extractPotentials(String json_path) {
 
         // see todos below (unrelated to this method hahahah - HILARIOUS! ROFL!)
@@ -383,14 +405,6 @@ public class ModelWrapper {
                         Part.createNervePartInstance(fascicleType, fascicleName, path, this, data);
                     }
                 }
-
-//
-//                // Add materials
-//                String fascicleMatLinkLabel = "Fascicle Material";
-//                model.component("comp1").material().create(im.next("matlnk",fascicleMatLinkLabel), "Link");
-//                model.component("comp1").material(im.get(fascicleMatLinkLabel)).selection().named("geom1" +"_" + im.get(fasciclesLabel) + "_dom");
-//                model.component("comp1").material(im.get(fascicleMatLinkLabel)).label(fascicleMatLinkLabel);
-
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -499,17 +513,32 @@ public class ModelWrapper {
             mw.addCuffPartInstances(cuff);
         }
 
+        // Add
+        mw.addBioMaterialDefinitions();
+
         // Add epineurium
-        // TODO - how to do this so compatible with 3D in the future, load in shape (circle or ellipse) or PC
 
         // Add fascicles
         mw.addFascicles();
 
+        // Add contact impedance for perineurium as necessary
+
+
         // Create unions
         mw.createUnions();
 
-        // Add nerve mediums
-        //mw.addMedium();
+        // Add materials
+//        String perineuriumMatLinkLabel = "perineurium_DC material";
+//        model.component("comp1").material().create(mw.im.next("matlnk",perineuriumMatLinkLabel), "Link");
+//        model.component("comp1").material(mw.im.get(perineuriumMatLinkLabel)).selection().named("geom1" +"_" + mw.im.get("periUnionCsel") + "_dom");
+//        model.component("comp1").material(mw.im.get(perineuriumMatLinkLabel)).label(perineuriumMatLinkLabel);
+//        model.component("comp1").material(mw.im.get(perineuriumMatLinkLabel)).set("link", mw.im.get("perineurium_DC"));
+
+        String fascicleMatLinkLabel = "endoneurium material";
+        model.component("comp1").material().create(mw.im.next("matlnk",fascicleMatLinkLabel), "Link");
+        model.component("comp1").material(mw.im.get(fascicleMatLinkLabel)).selection().named("geom1" +"_" + mw.im.get("endoUnionCsel") + "_dom");
+        model.component("comp1").material(mw.im.get(fascicleMatLinkLabel)).label(fascicleMatLinkLabel);
+        model.component("comp1").material(mw.im.get(fascicleMatLinkLabel)).set("link", mw.im.get("endoneurium"));
 
         // Build the geometry
         model.component("comp1").geom("geom1").run("fin");
@@ -517,11 +546,11 @@ public class ModelWrapper {
         // Define mesh for nerve
         String meshFascLabel = "Mesh Nerve";
         String meshFascSweLabel = "Mesh Nerve Sweep";
-        model.component("comp1").mesh(mw.im.next("mesh",meshFascLabel)).create(mw.im.next("swe",meshFascSweLabel), "Sweep");
-        model.component("comp1").mesh(mw.im.get(meshFascLabel)).feature(mw.im.get(meshFascSweLabel)).selection().geom("geom1", 3);
-        model.component("comp1").mesh(mw.im.get(meshFascLabel)).feature(mw.im.get(meshFascSweLabel)).selection().named("geom1" + "_" + mw.im.get("allNervePartsUnionCsel") + "_dom");
-        model.component("comp1").mesh(mw.im.get(meshFascLabel)).feature("size").set("hauto", 1);
-        model.component("comp1").mesh(mw.im.get(meshFascLabel)).run(mw.im.get(meshFascSweLabel));
+        MeshFeature meshFasc = model.component("comp1").mesh(mw.im.next("mesh",meshFascLabel)).create(mw.im.next("swe",meshFascSweLabel), "Sweep");
+        meshFasc.selection().geom("geom1", 3);
+        meshFasc.selection().named("geom1" + "_" + mw.im.get("allNervePartsUnionCsel") + "_dom");
+        model.component("comp1").mesh(mw.im.get(meshFascLabel)).feature("size").set("hauto", 1); // TODO load in mesh params from master
+        //model.component("comp1").mesh(mw.im.get(meshFascLabel)).run(mw.im.get(meshFascSweLabel)); // commented out for dev
 
         // Define mesh for remaining geometry (cuff, cuff fill, and medium)
         // TODO
