@@ -39,7 +39,7 @@ public class ModelWrapper {
 
     // INSTANCE VARIABLES
 
-    // main model
+    // model
     private Model model;
 
     // top level identifier manager
@@ -147,7 +147,6 @@ public class ModelWrapper {
     }
 
     /**
-     *
      * @param destination full path to save to
      * @return success indicator
      */
@@ -156,7 +155,7 @@ public class ModelWrapper {
             this.model.save(destination);
             return true;
         } catch (IOException e) {
-            System.out.println("Failed to save to destination: " + destination);
+            e.printStackTrace();
             return false;
         }
     }
@@ -181,6 +180,11 @@ public class ModelWrapper {
      * @return success indicator (might remove this later)
      */
 
+    /**
+     * Create the required primitives for a given cuff json
+     * @param name json filename WITH extension (i.e. "LivaNova.json")
+     * @return success indicator
+     */
     public boolean addCuffPartPrimitives(String name) {
         // extract data from json
         try {
@@ -232,6 +236,12 @@ public class ModelWrapper {
         return true;
     }
 
+    /**
+     * Instantiate required primitives for given cuff
+     * NOTE: addCuffPartPrimitives() MUST be called first or there will be no primitives to instantiate
+     * @param name same formatting as in addCuffPartPrimitives()
+     * @return success indicator
+     */
     public boolean addCuffPartInstances(String name) {
         // extract data from json
         // name is something like Enteromedics.json
@@ -255,7 +265,13 @@ public class ModelWrapper {
         return true;
     }
 
-       public boolean addCuffMaterialDefinitions(String name) {
+    /**
+     * Create materials for the given CUFF. The material parameters can be found in master.json
+     * NOTE: this does not create materials required for the nerve, fascicles, etc. --- see addBioMaterialDefinitions()
+     * @param name same formatting as addCuffPartPrimitives
+     * @return success indicator
+     */
+    public boolean addCuffMaterialDefinitions(String name) {
         // extract data from json
         try {
             JSONObject data = new JSONReader(String.join("/",
@@ -296,6 +312,10 @@ public class ModelWrapper {
         return true;
     }
 
+    /**
+     * Create materials necessary for fascicles, nerve, surrounding media, etc. --- always called!
+     * @return success indicator
+     */
     public boolean addBioMaterialDefinitions() {
         // extract data from json
         try {
@@ -320,6 +340,11 @@ public class ModelWrapper {
         return true;
     }
 
+    /**
+     * TODO: UNFINISHED!!!!
+     * @param json_path to output from fiber_manager.py (see TEST_JSON_OUTPUT.json if exists)
+     * @return success indicator
+     */
     public boolean extractPotentials(String json_path) {
 
         // see todos below (unrelated to this method hahahah - HILARIOUS! ROFL!)
@@ -347,8 +372,9 @@ public class ModelWrapper {
     }
 
     /**
-     *
-     * @return
+     * Add all fascicles to model.
+     * TODO: finish implementation of meshing in the Part class
+     * @return success indicator
      */
     public boolean addFascicles() {
 
@@ -416,7 +442,10 @@ public class ModelWrapper {
         return true;
     }
 
-
+    /**
+     * Pre-built for-loop to iterate through all current sources in model (added in Part)
+     * Can be super useful for quickly setting different currents and possibly sweeping currents
+     */
     public void loopCurrents() {
         for(String key: this.im.currentPointers.keySet()) {
             System.out.println("Current pointer: " + key);
@@ -436,17 +465,30 @@ public class ModelWrapper {
         }
     }
 
+    /**
+     * Add string id for COMSOL element to the listed unions (which have not be "created" in COMSOL yet)
+     * @param contributor the string id to add (use actual id, not pseudonym)
+     * @param unions which unions to add it to  (use static pseudonym constants at top of class)
+     */
     public void contributeToUnions(String contributor, String[] unions) {
         for (String union: unions) {
             this.unionContributors.get(union).add(contributor);
         }
     }
 
+    /**
+     * @param union which union to from of which to get the contributors
+     * @return String array of the COMSOL id's of contributors (likely ext# or csel#)
+     */
     public String[] getUnionContributors(String union) {
         if (! this.unionContributors.containsKey(union)) throw new IllegalArgumentException("No such union: " + union);
         return this.unionContributors.get(union).toArray(new String[0]);
     }
 
+    /**
+     * Actually create the unions by looping through all defined ArrayLists and adding contents to a new union.
+     * Will not create a union of no elements in associated ArrayList (i.e. no Peri union if only contact impedance)
+     */
     public void createUnions() {
         for (String union: ModelWrapper.ALL_UNIONS) {
             String[] contributors = this.getUnionContributors(union);
@@ -463,6 +505,11 @@ public class ModelWrapper {
             }
         }
     }
+
+    /**
+     * Master procedure to run!
+     * @param args do not use
+     */
     public static void main(String[] args) {
         // Start COMSOL Instance
         ModelUtil.connect("localhost", 2036);
