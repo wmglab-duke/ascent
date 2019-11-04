@@ -2081,7 +2081,8 @@ class Part {
                 break;
             case "Epineurium":
                 im.labels = new String[]{
-                        name + "_EPINEURIUM" //0
+                        "EPINEURIUM", //0
+                        "EPIXS"
                 };
 
                 for (String cselEpineuriumLabel: im.labels) {
@@ -2089,7 +2090,22 @@ class Part {
                             .label(cselEpineuriumLabel);
                 }
 
-                
+                model.param().set("r_nerve", "1.6 [mm]");
+
+                String epineuriumXsLabel = "Epineurium Cross Section";
+                GeomFeature epineuriumXs = model.component("comp1").geom("geom1").create(im.next("wp",epineuriumXsLabel), "WorkPlane");
+                epineuriumXs.label("Epineurium Cross Section");
+                epineuriumXs.set("contributeto", im.get("EPIXS"));
+                epineuriumXs.set("unite", true);
+                epineuriumXs.geom().create("e1", "Ellipse");
+                epineuriumXs.geom().feature("e1").set("semiaxes", new String[]{"r_nerve", "r_nerve"});
+
+                String epiLabel = "Make Epineurium";
+                GeomFeature epi = model.component("comp1").geom("geom1").create(im.next("ext",epiLabel), "Extrude");
+                epi.label(epiLabel);
+                epi.set("contributeto", im.get("EPINEURIUM"));
+                epi.setIndex("distance", "Length_EM", 0); // TODO
+                epi.selection("input").named(im.get("EPIXS"));
 
                 break;
             default:

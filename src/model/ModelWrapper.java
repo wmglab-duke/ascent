@@ -517,6 +517,7 @@ public class ModelWrapper {
         mw.addBioMaterialDefinitions();
 
         // Add epineurium
+        Part.createNervePartInstance("Epineurium", null, null, mw, null);
 
         // Add fascicles
         mw.addFascicles();
