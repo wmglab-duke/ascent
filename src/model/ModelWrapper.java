@@ -528,7 +528,7 @@ public class ModelWrapper {
         mw.createUnions();
 
         // Add materials
-//        String perineuriumMatLinkLabel = "perineurium_DC material";
+//        String perineuriumMatLinkLabel = "perineurium_DC material"; // TODO frequency dependence
 //        model.component("comp1").material().create(mw.im.next("matlnk",perineuriumMatLinkLabel), "Link");
 //        model.component("comp1").material(mw.im.get(perineuriumMatLinkLabel)).selection().named("geom1" +"_" + mw.im.get("periUnionCsel") + "_dom");
 //        model.component("comp1").material(mw.im.get(perineuriumMatLinkLabel)).label(perineuriumMatLinkLabel);

@@ -1909,7 +1909,7 @@ class Part {
         switch (pseudonym) {
             case "FascicleCI":
 
-                String inner_path = path + "/inners/" + tracePaths.get("inners")[0]; // TODO - this can be cleaned
+                String inner_path = path + "/inners/" + tracePaths.get("inners")[0];
                 model.param().set(name, "NaN", inner_path);
 
                 String fascicleCI_Inner_Label = name + "_INNERS_CI";
@@ -1964,7 +1964,7 @@ class Part {
                 PhysicsFeature ci =  model.component("comp1").physics("ec").create(im.next("ci",ciLabel), "ContactImpedance", 2);
                 ci.selection().named("geom1_" + im.get(fascicleCI_Endo_Label) + "_bnd");
                 ci.set("spec_type", "surfimp");
-                ci.set("rhos", 999); // TODO - need to set the value based on the measured thickness (this is in Python I think)
+                ci.set("rhos", 999); // TODO - need to set the value based on the measured thickness (this is in Python I think), also this if frequecy dependent
                 ci.label(ciLabel);
 
                 break;

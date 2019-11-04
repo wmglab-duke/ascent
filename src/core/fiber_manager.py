@@ -23,7 +23,7 @@ class FiberManager(Exceptionable, Configurable, Saveable):
         Configurable.__init__(self, SetupMode.OLD, ConfigKey.MASTER, master_config)
 
         # set self manager
-        self.manager = slide_manager  # TODO would it be more clear to make all managers in this file slide_manager?
+        self.manager = slide_manager
 
         # initialize empty lists of fiber points
         self.xy_coordinates = None
