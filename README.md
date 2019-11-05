@@ -1,7 +1,7 @@
 # SPARC ACCESS: Automated Computational Cuff Electrode Stimulation Simulation
 
-## Future Development Goals
-* **Finished Tasks**
+## Development Goals
+* **Finished Tasks** (since September 1)
     * add cuff specific parameters to master
     * clean up and annotate existing MATLAB code for building FEM's (electrode, nerve, general model parameters)
     * now incorporate into model) standardize geometry indexing 
@@ -17,12 +17,12 @@
     * Pulling out potentials and saving to file
         - API Java
         - Python code for saving potential coords; Java code for reading coords; java code for saving potentials
-* **Dec. 1**
+* **December 1**
     - Write `LaunchSim###.hoc`
     - Build simulation folder structure
-* **Dec. 15**
+* **December 15**
     * (Big ToDo)Standardized built-in data analysis
-* **Jan 1.**
+* **January 1**
     * FILTERING, SEARCHING, etc. (accessory)
     * Streamline simulation indexing
     * Batching files from command line - save geom and mesh and resolve for different frequencies  (https://www.comsol.com/blogs/how-to-run-simulations-in-batch-mode-from-the-command-line/)
