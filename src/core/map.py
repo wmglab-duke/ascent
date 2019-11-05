@@ -1,10 +1,6 @@
 #!/usr/bin/env python3.7
 
 """
-File:       map.py
-Author:     Jake Cariello
-Created:    July 19, 2019
-
 Description:
 
     OVERVIEW
@@ -18,9 +14,9 @@ Description:
     Note that the functionality of this class is EXTREMELY dependent on the structure of the JSON files it deals with.
 
     I considered adding path-building functionality to this class, but ultimately decided to defer that functionality
-    to a "SlideManager" class (not created as of 7/24/2019). This was done so the configuration can be read and the
-    appropriate data store in the master configuration (or similar). That way, a COMSOL-interfacing program will be able
-    to easily src the data from one place.
+    to a "SlideManager" class. This was done so the configuration can be read and the appropriate data store in the
+    master configuration (or similar). That way, a COMSOL-interfacing program will be able to easily src the data from
+    one place.
 
     PROPERTIES
     data_root

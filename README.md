@@ -1,24 +1,11 @@
 # SPARC ACCESS: Automated Computational Cuff Electrode Stimulation Simulation
 
-## BIG NOTES FOR RUNNING AS JAVA STANDALONE:
-* `javac` from the Java 1.8 SDK.
-* `java` from `<COMSOL INSTALLATION>/java/maci64/jre/Contents/Home/bin/java`
-* In separate terminal, run `./comsol server`
-* In main Java file being ran, MUST run `ModelUtil.connect("localhost, 2036)`, `ModelUtil.initStandalone(true)`,
-ALL OTHER OPERATIONS, then finally `ModelUtil.disconnect()`
-* Example commands starting at the project root (facilitated by Runner.handoff):
-```
-cd src
-/Library/Java/JavaVirtualMachines/jdk1.8.0_221.jdk/Contents/Home/bin/javac -classpath /Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar:/Applications/COMSOL54/Multiphysics/plugins/* model/*.java
-/Applications/COMSOL54/Multiphysics/java/maci64/jre/Contents/Home/bin/java -cp .:$(echo /Applications/COMSOL54/Multiphysics/plugins/*.jar | tr ' ' ':'):/Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar model/FEMBuilder
-cd ..
-```
-
-## Future Development Goals
-* **Finished Tasks**
-    * add cuff specific parameters to master
-    * clean up and annotate existing MATLAB code for building FEM's (electrode, nerve, general model parameters)
-    * now incorporate into model) standardize geometry indexing 
+## Development Goals
+* **Finished Tasks** (since September 1)
+    * Implement each cuff as a sum of parts in a fully parameterized fashion
+    * Add cuff specific parameters to JSON files (saved by parameters for each instance)
+    * Clean up and annotate existing code for building FEM's (electrode, nerve, general model parameters)
+    * Incorporate parts into model and standardize geometry indexing 
     * reading/writing data from Java, especially wrt JSON files
     * IdentifierManager
     * logic for fascicle representation from folder structures
@@ -31,12 +18,12 @@ cd ..
     * Pulling out potentials and saving to file
         - API Java
         - Python code for saving potential coords; Java code for reading coords; java code for saving potentials
-* **Dec. 1**
+* **December 1**
     - Write `LaunchSim###.hoc`
     - Build simulation folder structure
-* **Dec. 15**
+* **December 15**
     * (Big ToDo)Standardized built-in data analysis
-* **Jan 1.**
+* **January 1**
     * FILTERING, SEARCHING, etc. (accessory)
     * Streamline simulation indexing
     * Batching files from command line - save geom and mesh and resolve for different frequencies  (https://www.comsol.com/blogs/how-to-run-simulations-in-batch-mode-from-the-command-line/)
@@ -55,8 +42,22 @@ cd ..
 - `json`
 
 ## Java 1.8 Dependencies
-- Maven: `org.json:json:20190722` (saved in lib/)
+- Maven: `org.json:json:20190722` (saved in `lib/`)
 - must add to CLASSPATH: `<path-to-comsol>/COMSOL54/Multiphysics/plugins/`
+
+## Notes for running COMSOL as standalone Java application:
+* `javac` from the Java 1.8 SDK.
+* `java` from `<COMSOL INSTALLATION>/java/maci64/jre/Contents/Home/bin/java`
+* In separate terminal, run `./comsol server`
+* In main Java file being ran, MUST run `ModelUtil.connect("localhost, 2036)`, `ModelUtil.initStandalone(true)`,
+ALL OTHER OPERATIONS, then finally `ModelUtil.disconnect()`
+* Example commands starting at the project root (facilitated by Runner.handoff):
+```
+cd src
+/Library/Java/JavaVirtualMachines/jdk1.8.0_221.jdk/Contents/Home/bin/javac -classpath /Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar:/Applications/COMSOL54/Multiphysics/plugins/* model/*.java
+/Applications/COMSOL54/Multiphysics/java/maci64/jre/Contents/Home/bin/java -cp .:$(echo /Applications/COMSOL54/Multiphysics/plugins/*.jar | tr ' ' ':'):/Users/jakecariello/Box/Documents/Pipeline/access/lib/json-20190722.jar model/FEMBuilder
+cd ..
+```
 
 ## Setup
 - IN COMSOL: Preferences -> Security -> Methods and Java Libraries -> File System Access -> All Files
