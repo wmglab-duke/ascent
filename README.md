@@ -5,7 +5,7 @@
     * Implement each cuff as a sum of parts in a fully parameterized fashion
     * Add cuff specific parameters to JSON files (saved by parameters for each instance)
     * Clean up and annotate existing code for building FEM's (electrode, nerve, general model parameters)
-    * now incorporate into model) standardize geometry indexing 
+    * Incorporate parts into model and standardize geometry indexing 
     * reading/writing data from Java, especially wrt JSON files
     * IdentifierManager
     * logic for fascicle representation from folder structures
