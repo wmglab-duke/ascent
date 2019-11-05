@@ -41,7 +41,7 @@
 - `json`
 
 ## Java 1.8 Dependencies
-- Maven: `org.json:json:20190722` (saved in lib/)
+- Maven: `org.json:json:20190722` (saved in `lib/`)
 - must add to CLASSPATH: `<path-to-comsol>/COMSOL54/Multiphysics/plugins/`
 
 ## Notes for running COMSOL as standalone Java application:
