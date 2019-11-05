@@ -407,6 +407,7 @@ public class ModelWrapper {
                 for (String dir: dirs) {
                     if (! dir.contains(".")) {
                         int index = Integer.parseInt(dir);
+//                        String fascicleName = String.valueOf(index);
                         String fascicleName = "fascicle" + (index);
 
                         // Initialize data to send to Part.createPartInstance
