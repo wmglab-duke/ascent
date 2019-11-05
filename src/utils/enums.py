@@ -161,6 +161,7 @@ class CuffInnerMode(Enum):
     CIRCLE = 0
     BOUNDING_BOX = 1
 
+
 class CuffMode(Enum):
     config = 'cuff_mode'
     parameters = 'cuff_parameters'

@@ -1,0 +1,23 @@
+{
+  "INNERS": [
+    {
+      "fascicle_index": null,
+      "peri_thickness": null,
+      "length_unit": "micrometer"
+    }
+  ],
+  "OUTERS": [
+    {
+      "fascicle_index": null,
+      "peri_thickness": null,
+      "length_unit": "micrometer"
+    }
+  ],
+  "INNERS_AND_OUTER": [
+    {
+      "fascicle_index": null,
+      "peri_thickness": null,
+      "length_unit": "micrometer"
+    }
+  ]
+}
