@@ -320,24 +320,11 @@ class SlideManager(Exceptionable, Configurable, Saveable):
 
         # load template for morphology output
         morphology_input: dict = TemplateOutput.read(TemplateMode.MORPHOLOGY)
+        print(morphology_input)
 
-        for cuff_inner_mode in CuffInnerMode:
+        for fascicle in enumerate(self.slides[0].fascicles):
+            print("hi")
 
-            string_mode = str(cuff_inner_mode).split('.')[1]
-
-            if cuff_inner_mode == CuffInnerMode.CIRCLE:
-
-                (minx, miny, maxx, maxy) = self.slides[0].nerve.polygon().bounds
-                electrode_input[string_mode]['r'] = max([(maxx - minx)/2, (maxy - miny)/2])
-
-            elif cuff_inner_mode == CuffInnerMode.BOUNDING_BOX:
-
-                (minx, miny, maxx, maxy) = self.slides[0].nerve.polygon().bounds
-                electrode_input[string_mode]['x'] = maxx - minx
-                electrode_input[string_mode]['y'] = maxy - miny
-
-            else:
-                pass
-
-        # write template for electrode input
-        TemplateOutput.write(electrode_input, TemplateMode.ELECTRODE_INPUT, self)
+        #
+        # # write template for electrode input
+        # TemplateOutput.write(electrode_input, TemplateMode.ELECTRODE_INPUT, self)
