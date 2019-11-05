@@ -156,6 +156,7 @@ class Runner(Exceptionable, Configurable):
         self.slide_manager.save(os.path.join(*path_parts, 'slide_manager.obj'))
         self.fiber_manager.save(os.path.join(*path_parts, 'fiber_manager.obj'))
 
+        self.slide_manager.output_morphology_data()
 
 
 

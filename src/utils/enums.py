@@ -178,3 +178,4 @@ class CuffMode(Enum):
 class TemplateMode(Enum):
     path = '.templates'
     ELECTRODE_INPUT = 'electrode_input.json'
+    MORPHOLOGY = 'morphology.json'
