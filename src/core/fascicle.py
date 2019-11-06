@@ -387,7 +387,6 @@ class Fascicle(Exceptionable):
         os.chdir(start)
 
     def output_morphology_data(self):
-
         inners = [{"area": inner.area()} for inner in self.inners]
         outer = {"area": self.outer.area()}
 
