@@ -11,48 +11,6 @@ import org.json.JSONObject;
 import java.util.HashMap;
 
 class Part {
-
-    /**
-     * REMOVE THIS METHOD IN FINAL PRODUCT
-     * Collection of example use cases of ModelWrapper that may be useful in Part.
-     * DO NOT CALL!
-     * @param mw ModelWrapper to act upon
-     */
-    private static void examples(ModelWrapper mw) {
-
-        Model model = mw.getModel();
-
-        // assume this is passed in (i.e. "id" in method below)
-        String partID = "pi1";
-
-        //  id's and pseudonyms
-        String wpPseudo = "MY_WORKPLANE";
-        String wpID = mw.next("wp", wpPseudo);
-
-        String swePseudo = "MY_SWEEP"; // I ~think~ it's a sweep?
-        String sweID = mw.next("swe", swePseudo);
-
-        String cselPseudo = "MY_CSEL";
-        String cselID = mw.next("csel", cselPseudo);
-
-        // create those items
-        model.geom(partID).create(wpID, "WorkPlane");
-        model.geom(partID).create(sweID, "Sweep");
-        model.geom(partID).selection().create(cselID, "CumulativeSelection");
-
-        // one mechanic, but not sure if this is how it actually works
-        // assuming this is first wp1_csel, should have the name "wp1_csel1"
-        model.geom(partID).feature(sweID).selection("face").named(mw.next(wpID + "_csel"));
-
-        // other possible mechanic: that name is just referring to already existing objects
-        model.geom(partID).feature(sweID).selection("face").named(wpID + "_" + cselID);
-
-        // also, other new thing: just instantiate a new CMI if need  to restart indexing for part
-        IdentifierManager thisPartIM = new IdentifierManager();
-        String restartedIDwp = thisPartIM.next("wp");
-
-    }
-
     /**
      * Create a defined part primitive. There is a finite number of choices, as seen below in the switch.
      * Fun fact: this method is nearly 1400 lines.
