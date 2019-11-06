@@ -1,4 +1,8 @@
 {
+  "Nerve": {
+    "length_unit": "micrometer",
+    "area": null
+  },
   "Fascicles": [
     {
       "length_unit": "micrometer",
