@@ -320,11 +320,13 @@ class SlideManager(Exceptionable, Configurable, Saveable):
 
         # load template for morphology output
         morphology_input: dict = TemplateOutput.read(TemplateMode.MORPHOLOGY)
-        print(morphology_input)
 
-        for fascicle in enumerate(self.slides[0].fascicles):
-            print("hi")
+        for slide in self.slides:
+            for fascicle_index, fascicle in enumerate(slide.fascicles):
+                morphology_input["Fascicles"][fascicle_index]["outer"]["area"] = fascicle.outer.area()
 
-        #
-        # # write template for electrode input
-        # TemplateOutput.write(electrode_input, TemplateMode.ELECTRODE_INPUT, self)
+                for inner_index, inner in enumerate(fascicle.inners):
+                    morphology_input["Fascicles"][fascicle_index]["inners"][inner_index]["area"] = inner.area()
+
+        # write template for electrode input
+        TemplateOutput.write(morphology_input, TemplateMode.MORPHOLOGY, self)
