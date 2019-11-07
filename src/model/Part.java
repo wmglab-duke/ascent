@@ -1874,20 +1874,32 @@ class Part {
     /**
      * Build a part of the nerve.
      * @param pseudonym the type of part to build (i.e. FascicleCI, FascicleMesh, Epineurium)
-     * @param name what to call this part (i.e. fascicle# or epi#)
+     * @param index what to call this part (i.e. fascicle# or epi#)
      * @param path the absolute (general) directory which holds the trace data in SECTIONWISE2D format
      * @param mw the ModelWrapper which is acted upon
      * @param tracePaths the relative (specific) paths to the required trace data (two keys: "inners" and "outer")
      * @throws IllegalArgumentException there is not a nerve part to build of that type (for typos probably)
      */
-    public static void createNervePartInstance(String pseudonym, String name, String path, ModelWrapper mw,
-                                                 HashMap<String, String[]> tracePaths) throws IllegalArgumentException {
+    public static void createNervePartInstance(String pseudonym, int index, String path, ModelWrapper mw,
+                                                 HashMap<String, String[]> tracePaths, JSONObject morphology_data) throws IllegalArgumentException {
 
         Model model = mw.getModel();
         IdentifierManager im = mw.im;
 
         switch (pseudonym) {
             case "FascicleCI":
+
+                String name = "fascicle" + (index);
+
+//                Object fascicle_morph = (JSONArray) morphology_data.get("Fascicles");
+//                JSONObject test = ((JSONArray) fascicle_morph).getJSONObject(index);
+//                JSONObject temp = (JSONObject) test.get("outer");
+//                System.out.println(temp.get("area"));
+
+                JSONObject fascicle = ((JSONArray) morphology_data.get("Fascicles")).getJSONObject(index);
+                JSONObject outer = (JSONObject) fascicle.get("outer");
+//                System.out.println(outer.get("area"));
+
 
                 String inner_path = path + "/inners/" + tracePaths.get("inners")[0];
                 model.param().set(name, "NaN", inner_path);
@@ -1944,17 +1956,19 @@ class Part {
                 PhysicsFeature ci =  model.component("comp1").physics("ec").create(im.next("ci",ciLabel), "ContactImpedance", 2);
                 ci.selection().named("geom1_" + im.get(fascicleCI_Endo_Label) + "_bnd");
                 ci.set("spec_type", "surfimp");
-                ci.set("rhos", 999); // TODO - need to set the value based on the measured thickness (this is in Python I think), also this is frequency dependent
+                ci.set("rhos", (double) outer.get("area")); // TODO - need to set the value based on the measured thickness (this is in Python I think), also this is frequency dependent
                 ci.label(ciLabel);
 
                 break;
             case "FascicleMesh":
 
+                String name2 = "fascicle" + (index);
+
                 im.labels = new String[]{
-                        name + "_INNERS", //0
-                        name + "_OUTER",
-                        name + "_PERINEURIUM",
-                        name + "_ENDONEURIUM"
+                        name2 + "_INNERS", //0
+                        name2 + "_OUTER",
+                        name2 + "_PERINEURIUM",
+                        name2 + "_ENDONEURIUM"
                 };
 
                 for (String cselFascicleMeshLabel: im.labels) {
@@ -2068,7 +2082,9 @@ class Part {
                             .label(cselEpineuriumLabel);
                 }
 
-                model.param().set("r_nerve", "1.6 [mm]");
+                JSONObject nerve = (JSONObject) morphology_data.get("Nerve");
+                model.param().set("a_nerve", (Double) nerve.get("area") + " [micrometer^2]");
+                model.param().set("r_nerve", "sqrt(a_nerve/pi)");
 
                 String epineuriumXsLabel = "Epineurium Cross Section";
                 GeomFeature epineuriumXs = model.component("comp1").geom("geom1").create(im.next("wp",epineuriumXsLabel), "WorkPlane");

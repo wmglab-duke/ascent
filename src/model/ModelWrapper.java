@@ -389,6 +389,14 @@ public class ModelWrapper {
                     "master.json"
             })).getData();
 
+            JSONObject morphology_data = new JSONReader(String.join("/", new String[]{
+                    this.root,
+                    "data",
+                    "samples",
+                    (String) json_data.get("sample"),
+                    "morphology.json"
+            })).getData();
+
             // Build path to fascicles
             String fasciclesPath = String.join("/", new String[]{
                     this.root,
@@ -432,7 +440,7 @@ public class ModelWrapper {
                         String fascicleType = data.get("inners").length == 1 ? partPrimitiveNames[0] : partPrimitiveNames[1];
 
                         // hand off to Part to build instance of fascicle
-                        Part.createNervePartInstance(fascicleType, fascicleName, path, this, data);
+                        Part.createNervePartInstance(fascicleType, index, path, this, data, morphology_data);
                     }
                 }
             }
@@ -512,38 +520,50 @@ public class ModelWrapper {
      * @param args do not use
      */
     public static void main(String[] args) {
+        // Take projectPath input to ModelWrapper and assign to string.
+        String projectPath = args[0];
+
+        // Load configuration data
+        String configFile = "/.config/master.json";
+        JSONObject configData = null;
+
+        try {
+            configData = new JSONReader(projectPath + configFile).getData();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        // Load morphology data
+        String morphologyFile = String.join("/", new String[]{
+                "data",
+                "samples",
+                (String) configData.get("sample"),
+                "morphology.json"
+        });
+
+        JSONObject morphologyData = null;
+        try {
+            morphologyData = new JSONReader(projectPath + "/" + morphologyFile).getData();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
         // Start COMSOL Instance
         ModelUtil.connect("localhost", 2036);
         ModelUtil.initStandalone(false);
 
         // Define model object
         Model model = ModelUtil.create("Model");
-
-        // Add 3D geometry to component node 1
+        // Add component node 1
         model.component().create("comp1", true);
+        // Add 3D geom to component node 1
         model.component("comp1").geom().create("geom1", 3);
-
         // Add materials node to component node 1
         model.component("comp1").physics().create("ec", "ConductiveMedia", "geom1");
-
         // and mesh node to component node 1
         model.component("comp1").mesh().create("mesh1");
-
-        // Take projectPath input to ModelWrapper and assign to string.
-        String projectPath = args[0];
-
         // Define ModelWrapper class instance for model and projectPath
         ModelWrapper mw = new ModelWrapper(model, projectPath);
-
-        // Add cuff
-        // Load configuration data
-        String configFile = "/.config/master.json";
-        JSONObject configData = null;
-        try {
-            configData = new JSONReader(projectPath + configFile).getData();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
 
         // Read cuffs to build from master.json (cuff.preset) which links to JSON containing instantiations of parts
         JSONObject cuffObject = (JSONObject) configData.get("cuff");
@@ -553,23 +573,18 @@ public class ModelWrapper {
         for (int i = 0; i < cuffs.length(); i++) {
             // make list of cuffs in model
             String cuff = cuffs.getString(i);
-
             // add part primitives for cuff
             mw.addCuffPartPrimitives(cuff);
-
             // add material definitions for cuff
             mw.addCuffMaterialDefinitions(cuff);
-
             // add part instances for cuff
             mw.addCuffPartInstances(cuff);
         }
 
-        // Add
+        // Add biological material definitions
         mw.addBioMaterialDefinitions();
-
         // Add epineurium
-        Part.createNervePartInstance("Epineurium", null, null, mw, null);
-
+        Part.createNervePartInstance("Epineurium", 0, null, mw, null, morphologyData);
         // Add fascicles
         mw.addFascicles();
 

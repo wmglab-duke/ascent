@@ -101,7 +101,7 @@
     },
     {
       "name": "R_in_EM",
-      "expression": "max(r_nerve_EM+thk_medium_gap_internal_EM,r_cuff_in_pre_EM)",
+      "expression": "max(r_nerve+thk_medium_gap_internal_EM,r_cuff_in_pre_EM)",
       "description": ""
     },
     {
@@ -137,11 +137,6 @@
     {
       "name": "Pitch_holecenter_holecenter_EM",
       "expression": "NaN",
-      "description": ""
-    },
-    {
-      "name": "r_nerve_EM",
-      "expression": "1.3 [mm]",
       "description": ""
     },
     {
