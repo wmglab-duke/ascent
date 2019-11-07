@@ -154,7 +154,7 @@ class Runner(Exceptionable, Configurable):
         print('SAVE ALL')
         path_parts = [self.path(ConfigKey.MASTER, 'samples_path'), self.search(ConfigKey.MASTER, 'sample')]
         self.slide_manager.save(os.path.join(*path_parts, 'slide_manager.obj'))
-        self.slide_manager.morphology_data()
+        self.slide_manager.output_morphology_data()
         self.fiber_manager.save(os.path.join(*path_parts, 'fiber_manager.obj'))
 
 
