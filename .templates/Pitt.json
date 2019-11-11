@@ -320,11 +320,6 @@
       "name": "Thk_fill_Pitt",
       "expression": "100 [um]",
       "description": ""
-    },
-    {
-      "name": "Radius_Pitt",
-      "expression": "5 [mm]",
-      "description": ""
     }
   ]
 }

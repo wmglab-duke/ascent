@@ -221,11 +221,6 @@
       "name": "Thk_fill_P",
       "expression": "100 [um]",
       "description": ""
-    },
-    {
-      "name": "Radius_P",
-      "expression": "5 [mm]",
-      "description": ""
     }
   ]
 }

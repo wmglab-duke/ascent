@@ -193,11 +193,6 @@
       "name": "Thk_fill_EM",
       "expression": "100 [um]",
       "description": ""
-    },
-    {
-      "name": "Radius_EM",
-      "expression": "10 [mm]",
-      "description": ""
     }
   ]
 }

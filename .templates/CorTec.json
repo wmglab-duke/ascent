@@ -253,11 +253,6 @@
       "name": "Thk_fill_CT",
       "expression": "100 [um]",
       "description": ""
-    },
-    {
-      "name": "Radius_CT",
-      "expression": "10 [mm]",
-      "description": ""
     }
   ]
 }

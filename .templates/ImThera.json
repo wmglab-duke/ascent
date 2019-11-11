@@ -467,11 +467,6 @@
       "name": "Thk_fill_IT",
       "expression": "100 [um]",
       "description": ""
-    },
-    {
-      "name": "Radius_IT",
-      "expression": "10 [mm]",
-      "description": ""
     }
   ]
 }

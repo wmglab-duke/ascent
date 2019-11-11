@@ -204,11 +204,6 @@
       "name": "Thk_fill_LN",
       "expression": "100 [um]",
       "description": ""
-    },
-    {
-      "name": "Radius_LN",
-      "expression": "10 [mm]",
-      "description": ""
     }
   ]
 }

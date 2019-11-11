@@ -133,11 +133,6 @@
       "name": "Thk_fill_U",
       "expression": "100 [um]",
       "description": ""
-    },
-    {
-      "name": "Radius_U",
-      "expression": "5 [mm]",
-      "description": ""
     }
   ]
 }
