@@ -238,7 +238,7 @@
     }
   },
   "cuff": {
-    "preset": ["Enteromedics.json"]
+    "preset": ["CorTec.json"]
   },
   "conductivities": {
     "silicone": {

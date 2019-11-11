@@ -5,7 +5,7 @@
       "label": "CorTec Medium",
       "def": {
         "Radius": "Radius_CT",
-        "Length": "Length_CT"
+        "Length": "z_nerve"
       },
       "materials": [
         {
@@ -121,7 +121,7 @@
     },
     {
       "name": "Center_CT",
-      "expression": "Length_CT/2",
+      "expression": "z_nerve/2",
       "description": ""
     },
     {
@@ -257,11 +257,6 @@
     {
       "name": "Radius_CT",
       "expression": "10 [mm]",
-      "description": ""
-    },
-    {
-      "name": "Length_CT",
-      "expression": "50 [mm]",
       "description": ""
     }
   ]
