@@ -5,7 +5,7 @@
       "label": "Madison Medium",
       "def": {
         "Radius": "Radius_M",
-        "Length": "Length_M"
+        "Length": "z_nerve"
       },
       "materials": [
         {
@@ -96,7 +96,7 @@
     },
     {
       "name": "Center_M",
-      "expression": "Length_M/2",
+      "expression": "z_nerve/2",
       "description": ""
     },
     {
@@ -212,11 +212,6 @@
     {
       "name": "Radius_M",
       "expression": "10 [mm]",
-      "description": ""
-    },
-    {
-      "name": "Length_M",
-      "expression": "100 [mm]",
       "description": ""
     }
   ]
