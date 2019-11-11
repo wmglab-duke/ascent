@@ -5,7 +5,7 @@
       "label": "LivaNova Medium",
       "def": {
         "Radius": "Radius_LN",
-        "Length": "Length_LN"
+        "Length": "z_nerve"
       },
       "materials": [
         {
@@ -22,7 +22,7 @@
         "Radius": "r_cuff_in_LN+thk_cuff_LN+Thk_fill_LN",
         "Thk": "Thk_fill_LN",
         "L": "L_cuff_LN+w_cuff_LN+2*Thk_fill_LN",
-        "z_center": "(Length_LN/2)-(sep_elec_LN/2)"
+        "z_center": "(z_nerve/2)-(sep_elec_LN/2)"
       },
       "materials": [
         {
@@ -39,7 +39,7 @@
         "Radius": "r_cuff_in_LN+thk_cuff_LN+Thk_fill_LN",
         "Thk": "Thk_fill_LN",
         "L": "L_cuff_LN+w_cuff_LN+2*Thk_fill_LN",
-        "z_center": "(Length_LN/2)+(sep_elec_LN/2)"
+        "z_center": "(z_nerve/2)+(sep_elec_LN/2)"
       },
       "materials": [
         {
@@ -53,7 +53,7 @@
       "type": "HelicalCuffnContact_Primitive",
       "label": "LivaNova CuffnContact 1",
       "def": {
-        "Center": "(Length_LN/2)-(sep_elec_LN/2)"
+        "Center": "(z_nerve/2)-(sep_elec_LN/2)"
       },
       "materials": [
         {
@@ -72,7 +72,7 @@
       "type": "HelicalCuffnContact_Primitive",
       "label": "LivaNova CuffnContact 2",
       "def": {
-        "Center": "(Length_LN/2)+(sep_elec_LN/2)"
+        "Center": "(z_nerve/2)+(sep_elec_LN/2)"
       },
       "materials": [
         {
@@ -151,11 +151,6 @@
       "description": ""
     },
     {
-      "name": "d_nerve_LN",
-      "expression": "r_nerve_LN*2",
-      "description": ""
-    },
-    {
       "name": "ID_30220_LN",
       "expression": "2 [mm]",
       "description": ""
@@ -167,17 +162,12 @@
     },
     {
       "name": "thk_medium_gap_internal_LN",
-      "expression": "0",
+      "expression": "Thk_fill_LN",
       "description": ""
     },
     {
       "name": "rev_cuff_LN",
-      "expression": "2.5*((r_nerve_LN+thk_medium_gap_internal_LN)<(ID_30220_LN/2))+((rev_BD_LN)*(sqrt((p_LN^2+pi^2*(ID_cuff_LN+thk_cuff_LN)^2)/(p_LN^2+pi^2*(d_nerve_LN+2*scar_thk_LN+thk_cuff_LN)^2))))*((r_nerve_LN+thk_medium_gap_internal_LN)>=(ID_30220_LN/2))",
-      "description": ""
-    },
-    {
-      "name": "r_nerve_LN",
-      "expression": "0.8 [mm]",
+      "expression": "2.5*((r_nerve+thk_medium_gap_internal_LN)<(ID_30220_LN/2))+((rev_BD_LN)*(sqrt((p_LN^2+pi^2*(ID_cuff_LN+thk_cuff_LN)^2)/(p_LN^2+pi^2*(r_nerve*2+2*scar_thk_LN+thk_cuff_LN)^2))))*((r_nerve+thk_medium_gap_internal_LN)>=(ID_30220_LN/2))",
       "description": ""
     },
     {
@@ -187,12 +177,12 @@
     },
     {
       "name": "r_cuff_in_LN",
-      "expression": "max(r_nerve_LN+thk_medium_gap_internal_LN,r_cuff_in_pre_LN)",
+      "expression": "max(r_nerve+thk_medium_gap_internal_LN,r_cuff_in_pre_LN)",
       "description": ""
     },
     {
       "name": "ID_cuff_LN",
-      "expression": "ID_30220_LN*((r_nerve_LN+thk_medium_gap_internal_LN)<(ID_30230_LN/2))+ID_30230_LN*((r_nerve_LN+thk_medium_gap_internal_LN)>=(ID_30230_LN/2))",
+      "expression": "ID_30220_LN*((r_nerve+thk_medium_gap_internal_LN)<(ID_30230_LN/2))+ID_30230_LN*((r_nerve+thk_medium_gap_internal_LN)>=(ID_30230_LN/2))",
       "description": ""
     },
     {
@@ -218,11 +208,6 @@
     {
       "name": "Radius_LN",
       "expression": "10 [mm]",
-      "description": ""
-    },
-    {
-      "name": "Length_LN",
-      "expression": "100 [mm]",
       "description": ""
     }
   ]
