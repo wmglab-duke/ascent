@@ -5,7 +5,7 @@
       "label": "MicroLeads Medium",
       "def": {
         "Radius": "Radius_U",
-        "Length": "Length_U"
+        "Length": "z_nerve"
       },
       "materials": [
         {
@@ -91,7 +91,7 @@
   "params": [
     {
       "name": "z_center_U",
-      "expression": "Length_U/2",
+      "expression": "z_nerve/2",
       "description": ""
     },
     {
@@ -137,11 +137,6 @@
     {
       "name": "Radius_U",
       "expression": "5 [mm]",
-      "description": ""
-    },
-    {
-      "name": "Length_U",
-      "expression": "50 [mm]",
       "description": ""
     }
   ]
