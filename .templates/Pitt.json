@@ -5,7 +5,7 @@
       "label": "Pitt Medium",
       "def": {
         "Radius": "Radius_Pitt",
-        "Length": "Length_Pitt"
+        "Length": "z_nerve"
       },
       "materials": [
         {
@@ -183,7 +183,7 @@
     },
     {
       "name": "Center_Pitt",
-      "expression": "Length_Pitt/2",
+      "expression": "z_nerve/2",
       "description": ""
     },
     {
@@ -324,11 +324,6 @@
     {
       "name": "Radius_Pitt",
       "expression": "5 [mm]",
-      "description": ""
-    },
-    {
-      "name": "Length_Pitt",
-      "expression": "50 [mm]",
       "description": ""
     }
   ]
