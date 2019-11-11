@@ -5,7 +5,7 @@
       "label": "Purdue Medium",
       "def": {
         "Radius": "Radius_P",
-        "Length": "Length_P"
+        "Length": "z_nerve"
       },
       "materials": [
         {
@@ -109,7 +109,7 @@
     },
     {
       "name": "Center_P",
-      "expression": "Length_P/2",
+      "expression": "z_nerve/2",
       "description": ""
     },
     {
@@ -225,11 +225,6 @@
     {
       "name": "Radius_P",
       "expression": "5 [mm]",
-      "description": ""
-    },
-    {
-      "name": "Length_P",
-      "expression": "50 [mm]",
       "description": ""
     }
   ]
