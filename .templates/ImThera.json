@@ -4,7 +4,7 @@
       "type": "Medium_Primitive",
       "label": "ImThera Medium",
       "def": {
-        "Radius": "Radius_IT",
+        "Radius": "r_ground",
         "Length": "z_nerve"
       },
       "materials": [

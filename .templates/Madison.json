@@ -4,7 +4,7 @@
       "type": "Medium_Primitive",
       "label": "Madison Medium",
       "def": {
-        "Radius": "Radius_M",
+        "Radius": "r_ground",
         "Length": "z_nerve"
       },
       "materials": [

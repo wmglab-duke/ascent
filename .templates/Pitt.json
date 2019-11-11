@@ -4,7 +4,7 @@
       "type": "Medium_Primitive",
       "label": "Pitt Medium",
       "def": {
-        "Radius": "Radius_Pitt",
+        "Radius": "r_ground",
         "Length": "z_nerve"
       },
       "materials": [

@@ -4,7 +4,7 @@
       "type": "Medium_Primitive",
       "label": "Enteromedics Medium",
       "def": {
-        "Radius": "Radius_EM",
+        "Radius": "r_ground",
         "Length": "z_nerve"
       },
       "materials": [

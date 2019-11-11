@@ -4,7 +4,7 @@
       "type": "Medium_Primitive",
       "label": "Purdue Medium",
       "def": {
-        "Radius": "Radius_P",
+        "Radius": "r_ground",
         "Length": "z_nerve"
       },
       "materials": [

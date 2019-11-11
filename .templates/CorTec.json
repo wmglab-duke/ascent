@@ -4,7 +4,7 @@
       "type": "Medium_Primitive",
       "label": "CorTec Medium",
       "def": {
-        "Radius": "Radius_CT",
+        "Radius": "r_ground",
         "Length": "z_nerve"
       },
       "materials": [
