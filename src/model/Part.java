@@ -1881,7 +1881,7 @@ class Part {
      * @throws IllegalArgumentException there is not a nerve part to build of that type (for typos probably)
      */
     public static void createNervePartInstance(String pseudonym, int index, String path, ModelWrapper mw,
-                                                 HashMap<String, String[]> tracePaths, JSONObject morphology_data) throws IllegalArgumentException {
+                                                 HashMap<String, String[]> tracePaths, JSONObject morphology_data, JSONObject master) throws IllegalArgumentException {
 
         Model model = mw.getModel();
         IdentifierManager im = mw.im;
@@ -1898,8 +1898,6 @@ class Part {
 
                 JSONObject fascicle = ((JSONArray) morphology_data.get("Fascicles")).getJSONObject(index);
                 JSONObject outer = (JSONObject) fascicle.get("outer");
-//                System.out.println(outer.get("area"));
-
 
                 String inner_path = path + "/inners/" + tracePaths.get("inners")[0];
                 model.param().set(name, "NaN", inner_path);
@@ -1944,7 +1942,8 @@ class Part {
                 GeomFeature makefascicle = model.component("comp1").geom("geom1").create(im.next("ext",makefascicleLabel), "Extrude");
                 makefascicle.label(makefascicleLabel);
                 makefascicle.set("contributeto", im.get(fascicleCI_Endo_Label));
-                makefascicle.setIndex("distance", "Length_EM", 0); // TODO - load from master probs
+
+                makefascicle.setIndex("distance", "z_nerve", 0); // TODO
                 makefascicle.selection("input").named(im.get(fascicleCI_Inner_Label));
 
                 // Add fascicle domains to ALL_NERVE_PARTS_UNION and ENDO_UNION for later assigning to materials and mesh
@@ -2098,7 +2097,8 @@ class Part {
                 GeomFeature epi = model.component("comp1").geom("geom1").create(im.next("ext",epiLabel), "Extrude");
                 epi.label(epiLabel);
                 epi.set("contributeto", im.get("EPINEURIUM"));
-                epi.setIndex("distance", "Length_EM", 0); // TODO
+
+                epi.setIndex("distance", "z_nerve", 0);
                 epi.selection("input").named(im.get("EPIXS"));
 
                 break;

@@ -5,7 +5,7 @@
       "label": "ImThera Medium",
       "def": {
         "Radius": "Radius_IT",
-        "Length": "Length_IT"
+        "Length": "z_nerve"
       },
       "materials": [
         {
@@ -265,7 +265,7 @@
     },
     {
       "name": "Center_IT",
-      "expression": "Length_IT/2",
+      "expression": "z_nerve/2",
       "description": ""
     },
     {
@@ -471,11 +471,6 @@
     {
       "name": "Radius_IT",
       "expression": "10 [mm]",
-      "description": ""
-    },
-    {
-      "name": "Length_IT",
-      "expression": "100 [mm]",
       "description": ""
     }
   ]

@@ -440,7 +440,7 @@ public class ModelWrapper {
                         String fascicleType = data.get("inners").length == 1 ? partPrimitiveNames[0] : partPrimitiveNames[1];
 
                         // hand off to Part to build instance of fascicle
-                        Part.createNervePartInstance(fascicleType, index, path, this, data, morphology_data);
+                        Part.createNervePartInstance(fascicleType, index, path, this, data, morphology_data, json_data);
                     }
                 }
             }
@@ -565,6 +565,14 @@ public class ModelWrapper {
         // Define ModelWrapper class instance for model and projectPath
         ModelWrapper mw = new ModelWrapper(model, projectPath);
 
+        // Set generic parameters
+        JSONObject nerve = (JSONObject) morphologyData.get("Nerve");
+        model.param().set("a_nerve", (Double) nerve.get("area") + " [micrometer^2]");
+        model.param().set("r_nerve", "sqrt(a_nerve/pi)");
+
+        Double length = (Double) ((JSONObject) configData.get("geometry")).get("z_nerve");
+        model.param().set("z_nerve", length);
+
         // Read cuffs to build from master.json (cuff.preset) which links to JSON containing instantiations of parts
         JSONObject cuffObject = (JSONObject) configData.get("cuff");
         JSONArray cuffs = (JSONArray) cuffObject.get("preset");
@@ -584,7 +592,7 @@ public class ModelWrapper {
         // Add biological material definitions
         mw.addBioMaterialDefinitions();
         // Add epineurium
-        Part.createNervePartInstance("Epineurium", 0, null, mw, null, morphologyData);
+        Part.createNervePartInstance("Epineurium", 0, null, mw, null, morphologyData, configData);
         // Add fascicles
         mw.addFascicles();
 
