@@ -20,6 +20,44 @@ class Part {
      * @return the local IdentifierManager for THIS PART PRIMITIVE --> save when called in ModelWrapper
      * @throws IllegalArgumentException if an invalid pseudonym is passed in --> there is no such primitive to create
      */
+    public static IdentifierManager createEnvironmentPartPrimitive(String id, String pseudonym, ModelWrapper mw) throws IllegalArgumentException {
+        switch (pseudonym) {
+            case "Medium_Primitive":
+                Model model = mw.getModel();
+
+                model.geom().create(id, "Part", 3);
+                model.geom(id).label(pseudonym);
+                model.geom(id).lengthUnit("\u00b5m");
+
+                // only used once per method, so ok to define outside the switch
+                IdentifierManager im = new IdentifierManager();
+                ModelParam mp = model.geom(id).inputParam();
+
+                model.geom(id).inputParam().set("Radius", "10 [mm]");
+                model.geom(id).inputParam().set("Length", "100 [mm]");
+
+                im.labels = new String[]{
+                        "MEDIUM" //0
+                };
+
+                for (String cselMediumLabel: im.labels) {
+                    model.geom(id).selection().create(im.next("csel", cselMediumLabel), "CumulativeSelection")
+                            .label(cselMediumLabel);
+                }
+
+                String mediumLabel = "Medium";
+                GeomFeature m = model.geom(id).create(im.next("cyl", mediumLabel), "Cylinder");
+                mp.label(mediumLabel);
+                mp.set("r", "Radius");
+                mp.set("h", "Length");
+                mp.set("contributeto", im.get("MEDIUM"));
+
+                break;
+            default:
+                throw new  IllegalArgumentException("No implementation for part primitive name: " + pseudonym);
+        }
+    }
+
     public static IdentifierManager createPartPrimitive(String id, String pseudonym, ModelWrapper mw) throws IllegalArgumentException {
         Model model = mw.getModel();
 

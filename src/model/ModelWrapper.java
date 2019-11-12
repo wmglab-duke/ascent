@@ -576,6 +576,10 @@ public class ModelWrapper {
         Double radius = (Double) ((JSONObject) configData.get("geometry")).get("radius");
         model.param().set("r_ground", radius);
 
+        String mediumString = "Medium";
+        String partID = mw.im.next("part", mediumString);
+        Part.createEnvironmentPartPrimitive(partID, mediumString, mw);
+
         // Read cuffs to build from master.json (cuff.preset) which links to JSON containing instantiations of parts
         JSONObject cuffObject = (JSONObject) configData.get("cuff");
         JSONArray cuffs = (JSONArray) cuffObject.get("preset");
