@@ -558,6 +558,8 @@ public class ModelWrapper {
         model.component().create("comp1", true);
         // Add 3D geom to component node 1
         model.component("comp1").geom().create("geom1", 3);
+        // Set default length units to micron
+        model.component("comp1").geom("geom1").lengthUnit("\u00b5m");
         // Add materials node to component node 1
         model.component("comp1").physics().create("ec", "ConductiveMedia", "geom1");
         // and mesh node to component node 1
@@ -576,9 +578,16 @@ public class ModelWrapper {
         Double radius = (Double) ((JSONObject) configData.get("geometry")).get("radius");
         model.param().set("r_ground", radius);
 
-        String mediumString = "Medium";
+        String mediumString = "Medium_Primitive";
         String partID = mw.im.next("part", mediumString);
         Part.createEnvironmentPartPrimitive(partID, mediumString, mw);
+
+        String instanceLabel = "This cuff's medium: TODO"; // TODO
+        String instanceID = mw.im.next("pi", instanceLabel);
+
+        Part.createEnvironmentPartInstance(instanceID, instanceLabel, mediumString, mw, configData);
+
+        System.out.println("after hello");
 
         // Read cuffs to build from master.json (cuff.preset) which links to JSON containing instantiations of parts
         JSONObject cuffObject = (JSONObject) configData.get("cuff");

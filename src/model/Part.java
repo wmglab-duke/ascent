@@ -21,20 +21,19 @@ class Part {
      * @throws IllegalArgumentException if an invalid pseudonym is passed in --> there is no such primitive to create
      */
     public static IdentifierManager createEnvironmentPartPrimitive(String id, String pseudonym, ModelWrapper mw) throws IllegalArgumentException {
+        Model model = mw.getModel();
+        // only used once per method, so ok to define outside the switch
+        IdentifierManager im = new IdentifierManager();
+        model.geom().create(id, "Part", 3);
+        ModelParam mp = model.geom(id).inputParam();
+
         switch (pseudonym) {
             case "Medium_Primitive":
-                Model model = mw.getModel();
-
-                model.geom().create(id, "Part", 3);
                 model.geom(id).label(pseudonym);
                 model.geom(id).lengthUnit("\u00b5m");
 
-                // only used once per method, so ok to define outside the switch
-                IdentifierManager im = new IdentifierManager();
-                ModelParam mp = model.geom(id).inputParam();
-
-                model.geom(id).inputParam().set("Radius", "10 [mm]");
-                model.geom(id).inputParam().set("Length", "100 [mm]");
+                mp.set("Radius", "10 [mm]");
+                mp.set("Length", "100 [mm]");
 
                 im.labels = new String[]{
                         "MEDIUM" //0
@@ -47,11 +46,56 @@ class Part {
 
                 String mediumLabel = "Medium";
                 GeomFeature m = model.geom(id).create(im.next("cyl", mediumLabel), "Cylinder");
-                mp.label(mediumLabel);
-                mp.set("r", "Radius");
-                mp.set("h", "Length");
-                mp.set("contributeto", im.get("MEDIUM"));
+                m.label(mediumLabel);
+                m.set("r", "Radius");
+                m.set("h", "Length");
+                m.set("contributeto", im.get("MEDIUM"));
 
+                break;
+            default:
+                throw new  IllegalArgumentException("No implementation for part primitive name: " + pseudonym);
+        }
+        return im;
+    }
+
+    public static void createEnvironmentPartInstance(String instanceID, String instanceLabel, String pseudonym, ModelWrapper mw,
+                                                     JSONObject instanceParams) throws IllegalArgumentException {
+        Model model = mw.getModel();
+
+        System.out.println(pseudonym);
+        System.out.println(instanceID);
+
+        System.out.println("hello");
+        GeomFeature partInstance = model.component("comp1").geom("geom1").create(instanceID, "PartInstance");
+        System.out.println("still thinking...");
+
+        switch(pseudonym) {
+            case "Medium_Primitive":
+
+                // set instantiation parameters
+                String[] mediumParameters = {
+                        "radius",
+                        "z_nerve"
+                };
+
+                JSONObject itemObject = (JSONObject) instanceParams.get("geometry");
+                System.out.println(itemObject);
+
+                for (String param: mediumParameters) {
+                    partInstance.setEntry("inputexpr", (String) param, (Double) itemObject.get(param));
+                }
+
+                // imports
+//                partInstance.set("selkeepnoncontr", false);
+//                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[0]) + ".dom", "on"); // MEDIUM
+//
+//                partInstance.setEntry("selkeepbnd", instanceID + "_" +  myIM.get(myLabels[0]) + ".bnd", "on"); // MEDIUM
+
+                // assign physics
+//                String groundLabel = "Ground";
+//                PhysicsFeature gnd = model.component("comp1").physics("ec").create(mw.im.next("gnd",groundLabel), "Ground", 2);
+//                gnd.label(groundLabel);
+//                gnd.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[0]) + "_bnd");
                 break;
             default:
                 throw new  IllegalArgumentException("No implementation for part primitive name: " + pseudonym);
@@ -1382,28 +1426,6 @@ class Part {
 
                 model.geom(id).run();
                 break;
-            case "Medium_Primitive":
-
-                model.geom(id).inputParam().set("Radius", "10 [mm]");
-                model.geom(id).inputParam().set("Length", "100 [mm]");
-
-                im.labels = new String[]{
-                        "MEDIUM" //0
-                };
-
-                for (String cselMediumLabel: im.labels) {
-                    model.geom(id).selection().create(im.next("csel", cselMediumLabel), "CumulativeSelection")
-                            .label(cselMediumLabel);
-                }
-
-                String mediumLabel = "Medium";
-                GeomFeature m = model.geom(id).create(im.next("cyl", mediumLabel), "Cylinder");
-                m.label(mediumLabel);
-                m.set("r", "Radius");
-                m.set("h", "Length");
-                m.set("contributeto", im.get("MEDIUM"));
-
-                break;
             default:
                 throw new  IllegalArgumentException("No implementation for part primitive name: " + pseudonym);
         }
@@ -1444,7 +1466,7 @@ class Part {
                                               JSONObject instanceParams) throws IllegalArgumentException {
 
         Model model = mw.getModel();
-        model.component("comp1").geom("geom1").lengthUnit("\u00b5m");
+
         GeomFeature partInstance = model.component("comp1").geom("geom1").create(instanceID, "PartInstance");
         partInstance.label(instanceLabel);
         partInstance.set("part", mw.im.get(pseudonym));
@@ -1864,30 +1886,6 @@ class Part {
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[0]) + ".dom", "on"); // CUFF FILL FINAL
 
                 break;
-            case "Medium_Primitive":
-                // set instantiation parameters
-                String[] mediumParameters = {
-                        "Radius",
-                        "Length"
-                };
-
-                for (String param: mediumParameters) {
-                    partInstance.setEntry("inputexpr", (String) param, (String) itemObject.get(param));
-                }
-
-                // imports
-                partInstance.set("selkeepnoncontr", false);
-                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[0]) + ".dom", "on"); // MEDIUM
-
-                partInstance.setEntry("selkeepbnd", instanceID + "_" +  myIM.get(myLabels[0]) + ".bnd", "on"); // MEDIUM
-
-                // assign physics
-                String groundLabel = "Ground";
-                PhysicsFeature gnd = model.component("comp1").physics("ec").create(mw.im.next("gnd",groundLabel), "Ground", 2);
-                gnd.label(groundLabel);
-                gnd.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[0]) + "_bnd");
-
-                break;
             default:
                 throw new IllegalArgumentException("No implementation for part instance name: " + pseudonym);
         }
@@ -2139,9 +2137,30 @@ class Part {
                 epi.setIndex("distance", "z_nerve", 0);
                 epi.selection("input").named(im.get("EPIXS"));
 
+
                 break;
             default:
                 throw new IllegalArgumentException("No implementation for part instance name: " + pseudonym);
         }
     }
 }
+
+/*
+    {
+            "type": "Medium_Primitive",
+            "label": "CorTec Medium",
+            "def": {
+            "Radius": "r_ground",
+            "Length": "z_nerve"
+            },
+            "materials": [
+            {
+            "info": "medium",
+            "type": "muscle",
+            "label_index": 0
+            }
+            ]
+            },
+
+
+ */
