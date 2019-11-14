@@ -572,10 +572,10 @@ public class ModelWrapper {
         model.param().set("a_nerve", nerve.get("area") + " [micrometer^2]");
         model.param().set("r_nerve", "sqrt(a_nerve/pi)");
 
-        Double length = ((JSONObject) configData.get("geometry")).getDouble("Length");
+        Double length = ((JSONObject) configData.get("medium")).getDouble("Length");
         model.param().set("z_nerve", length);
 
-        Double radius = ((JSONObject) configData.get("geometry")).getDouble("Radius");
+        Double radius = ((JSONObject) configData.get("medium")).getDouble("Radius");
         model.param().set("r_ground", radius);
 
         String mediumString = "Medium_Primitive";
@@ -589,9 +589,8 @@ public class ModelWrapper {
             e.printStackTrace();
         }
 
-        String instanceLabel = "Medium"; // TODO
+        String instanceLabel = "Medium";
         String instanceID = mw.im.next("pi", instanceLabel);
-
         Part.createEnvironmentPartInstance(instanceID, instanceLabel, mediumString, mw, configData);
 
         // Read cuffs to build from master.json (cuff.preset) which links to JSON containing instantiations of parts

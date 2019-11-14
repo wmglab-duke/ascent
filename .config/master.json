@@ -5,10 +5,11 @@
     "outer_thick_to_inner_diam": 0.03,
     "shrinkage_scale": 0.2
   },
-  "geometry": {
+  "medium": {
     "unit": "micrometer",
     "Length": 50000.0,
-    "Radius": 10000.0
+    "Radius": 10000.0,
+    "material": "fat"
   },
   "config": {
     "paths": {

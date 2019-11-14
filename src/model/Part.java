@@ -82,7 +82,7 @@ class Part {
                         "Length"
                 };
 
-                JSONObject itemObject = (JSONObject) instanceParams.get("geometry");
+                JSONObject itemObject = (JSONObject) instanceParams.get("medium");
                 for (String param: mediumParameters) {
                     partInstance.setEntry("inputexpr", param, (Double) itemObject.get(param));
                 }
