@@ -68,6 +68,11 @@ class Part {
         partInstance.label(instanceLabel);
         partInstance.set("part", mw.im.get(pseudonym));
 
+        IdentifierManager myIM = mw.getPartPrimitiveIM(pseudonym);
+        if (myIM == null) throw new IllegalArgumentException("IdentfierManager not created for name: " + pseudonym);
+
+        String[] myLabels = myIM.labels; // may be null, but that is ok if not used
+
         switch(pseudonym) {
             case "Medium_Primitive":
 
@@ -83,16 +88,16 @@ class Part {
                 }
 
                 // imports
-//                partInstance.set("selkeepnoncontr", false);
-//                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[0]) + ".dom", "on"); // MEDIUM
-//
-//                partInstance.setEntry("selkeepbnd", instanceID + "_" +  myIM.get(myLabels[0]) + ".bnd", "on"); // MEDIUM
+                partInstance.set("selkeepnoncontr", false);
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[0]) + ".dom", "on"); // MEDIUM
+
+                partInstance.setEntry("selkeepbnd", instanceID + "_" +  myIM.get(myLabels[0]) + ".bnd", "on"); // MEDIUM
 
                 // assign physics
-//                String groundLabel = "Ground";
-//                PhysicsFeature gnd = model.component("comp1").physics("ec").create(mw.im.next("gnd",groundLabel), "Ground", 2);
-//                gnd.label(groundLabel);
-//                gnd.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[0]) + "_bnd");
+                String groundLabel = "Ground";
+                PhysicsFeature gnd = model.component("comp1").physics("ec").create(mw.im.next("gnd",groundLabel), "Ground", 2);
+                gnd.label(groundLabel);
+                gnd.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[0]) + "_bnd");
                 break;
             default:
                 throw new  IllegalArgumentException("No implementation for part primitive name: " + pseudonym);

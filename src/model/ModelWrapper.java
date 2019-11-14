@@ -580,7 +580,14 @@ public class ModelWrapper {
 
         String mediumString = "Medium_Primitive";
         String partID = mw.im.next("part", mediumString);
-        Part.createEnvironmentPartPrimitive(partID, mediumString, mw);
+
+        try {
+            IdentifierManager partPrimitiveIM = Part.createEnvironmentPartPrimitive(partID, mediumString, mw);
+            mw.partPrimitiveIMs.put(mediumString, partPrimitiveIM);
+
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
 
         String instanceLabel = "Medium"; // TODO
         String instanceID = mw.im.next("pi", instanceLabel);
