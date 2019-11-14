@@ -1,21 +1,6 @@
 {
   "instances": [
     {
-      "type": "Medium_Primitive",
-      "label": "Enteromedics Medium",
-      "def": {
-        "Radius": "r_ground",
-        "Length": "z_nerve"
-      },
-      "materials": [
-        {
-          "info": "medium",
-          "type": "fat",
-          "label_index": 0
-        }
-      ]
-    },
-    {
       "type": "CuffFill_Primitive",
       "label": "Enteromedics Cuff Fill",
       "def": {
