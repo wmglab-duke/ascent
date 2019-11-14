@@ -296,11 +296,10 @@ public class ModelWrapper {
                         try {
                             // TRY to create the material definition (catch error if no existing implementation)
                             Part.defineMaterial(materialID, materialName, master, this);
-
                         } catch (IllegalArgumentException e) {
-
                             e.printStackTrace();
                             return false;
+
                         }
                     }
                 }
@@ -318,17 +317,25 @@ public class ModelWrapper {
      */
     public boolean addBioMaterialDefinitions() {
         // extract data from json
+
+
+
         try {
             JSONObject master = new JSONReader(String.join("/",
                     new String[]{this.root, ".config", "master.json"})).getData();
 
-            String periMaterialID = this.im.next("mat", "perineurium_DC");
+            // define medium based on the preset defined in the medium block in master.json
+            String mediumMaterial = ((JSONObject) master.get("medium")).getString("material");
+            String mediumMaterialID = this.im.next("mat", mediumMaterial);
+            Part.defineMaterial(mediumMaterialID, mediumMaterial, master, this);
+
+            String periMaterialID = this.im.next("mat", "perineurium_DC"); // todo for freq of interest
             Part.defineMaterial(periMaterialID, "perineurium_DC", master, this);
 
             String endoMaterialID = this.im.next("mat", "endoneurium");
             Part.defineMaterial(endoMaterialID, "endoneurium", master, this);
 
-            String epiMaterialID = this.im.next("mat", "epineurium");
+            String epiMaterialID = this.im.next("mat", "epineurium"); // todo if compound nerve
             Part.defineMaterial(epiMaterialID, "epineurium", master, this);
 
             // Medium (muscle or fat?)
@@ -520,13 +527,13 @@ public class ModelWrapper {
      * @param args do not use
      */
     public static void main(String[] args) {
+
         // Take projectPath input to ModelWrapper and assign to string.
         String projectPath = args[0];
 
         // Load configuration data
         String configFile = "/.config/master.json";
         JSONObject configData = null;
-
         try {
             configData = new JSONReader(projectPath + configFile).getData();
         } catch (FileNotFoundException e) {
@@ -540,7 +547,6 @@ public class ModelWrapper {
                 (String) configData.get("sample"),
                 "morphology.json"
         });
-
         JSONObject morphologyData = null;
         try {
             morphologyData = new JSONReader(projectPath + "/" + morphologyFile).getData();
@@ -567,7 +573,7 @@ public class ModelWrapper {
         // Define ModelWrapper class instance for model and projectPath
         ModelWrapper mw = new ModelWrapper(model, projectPath);
 
-        // Set generic parameters
+        // Set generic parameters - todo these are for compound nerves, what about single fascicle????
         JSONObject nerve = (JSONObject) morphologyData.get("Nerve");
         model.param().set("a_nerve", nerve.get("area") + " [micrometer^2]");
         model.param().set("r_nerve", "sqrt(a_nerve/pi)");
@@ -580,18 +586,20 @@ public class ModelWrapper {
 
         String mediumString = "Medium_Primitive";
         String partID = mw.im.next("part", mediumString);
-
         try {
             IdentifierManager partPrimitiveIM = Part.createEnvironmentPartPrimitive(partID, mediumString, mw);
             mw.partPrimitiveIMs.put(mediumString, partPrimitiveIM);
-
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
 
         String instanceLabel = "Medium";
         String instanceID = mw.im.next("pi", instanceLabel);
+        try {
         Part.createEnvironmentPartInstance(instanceID, instanceLabel, mediumString, mw, configData);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
 
         // Read cuffs to build from master.json (cuff.preset) which links to JSON containing instantiations of parts
         JSONObject cuffObject = (JSONObject) configData.get("cuff");
@@ -615,7 +623,6 @@ public class ModelWrapper {
         Part.createNervePartInstance("Epineurium", 0, null, mw, null, morphologyData, configData);
         // Add fascicles
         mw.addFascicles();
-
         // Create unions
         mw.createUnions();
 

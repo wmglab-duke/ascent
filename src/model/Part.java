@@ -102,6 +102,24 @@ class Part {
             default:
                 throw new  IllegalArgumentException("No implementation for part primitive name: " + pseudonym);
         }
+
+        // assign cuff materials
+        JSONObject medium = (JSONObject) instanceParams.get("medium");
+        System.out.println("1");
+        String mediumMaterial = medium.getString("material");
+        System.out.println("1");
+        String selection = myLabels[0];
+        System.out.println("1");
+        String linkLabel = String.join("/", new String[]{instanceLabel, selection, mediumMaterial});
+        System.out.println("1");
+        Material mat = model.component("comp1").material().create(mw.im.next("matlnk", linkLabel), "Link");
+        System.out.println("1");
+        mat.label(linkLabel);
+        System.out.println("1");
+        mat.set("link", mw.im.get(mediumMaterial));
+        System.out.println("1");
+        mat.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(selection) + "_dom");
+        System.out.println("1");
     }
 
     public static IdentifierManager createPartPrimitive(String id, String pseudonym, ModelWrapper mw) throws IllegalArgumentException {
