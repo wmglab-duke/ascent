@@ -572,10 +572,10 @@ public class ModelWrapper {
         model.param().set("a_nerve", nerve.get("area") + " [micrometer^2]");
         model.param().set("r_nerve", "sqrt(a_nerve/pi)");
 
-        Double length = ((JSONObject) configData.get("medium")).getDouble("Length");
+        Double length = ((JSONObject) configData.get("medium")).getDouble("length");
         model.param().set("z_nerve", length);
 
-        Double radius = ((JSONObject) configData.get("medium")).getDouble("Radius");
+        Double radius = ((JSONObject) configData.get("medium")).getDouble("radius");
         model.param().set("r_ground", radius);
 
         String mediumString = "Medium_Primitive";

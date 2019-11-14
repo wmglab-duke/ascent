@@ -34,8 +34,8 @@ class Part {
 
         switch (pseudonym) {
             case "Medium_Primitive":
-                mp.set("Radius", "10 [mm]");
-                mp.set("Length", "100 [mm]");
+                mp.set("radius", "10 [mm]");
+                mp.set("length", "100 [mm]");
 
                 im.labels = new String[]{
                         "MEDIUM" //0
@@ -49,8 +49,8 @@ class Part {
                 String mediumLabel = "Medium";
                 GeomFeature m = model.geom(id).create(im.next("cyl", mediumLabel), "Cylinder");
                 m.label(mediumLabel);
-                m.set("r", "Radius");
-                m.set("h", "Length");
+                m.set("r", "radius");
+                m.set("h", "length");
                 m.set("contributeto", im.get("MEDIUM"));
 
                 break;
@@ -78,8 +78,8 @@ class Part {
 
                 // set instantiation parameters
                 String[] mediumParameters = {
-                        "Radius",
-                        "Length"
+                        "radius",
+                        "length"
                 };
 
                 JSONObject itemObject = (JSONObject) instanceParams.get("medium");

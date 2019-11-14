@@ -7,8 +7,8 @@
   },
   "medium": {
     "unit": "micrometer",
-    "Length": 50000.0,
-    "Radius": 10000.0,
+    "length": 50000.0,
+    "radius": 10000.0,
     "material": "fat"
   },
   "config": {
