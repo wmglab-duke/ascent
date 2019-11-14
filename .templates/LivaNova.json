@@ -1,21 +1,6 @@
 {
   "instances": [
     {
-      "type": "Medium_Primitive",
-      "label": "LivaNova Medium",
-      "def": {
-        "Radius": "r_ground",
-        "Length": "z_nerve"
-      },
-      "materials": [
-        {
-          "info": "medium",
-          "type": "muscle",
-          "label_index": 0
-        }
-      ]
-    },
-    {
       "type": "CuffFill_Primitive",
       "label": "LivaNova Cuff Fill 1",
       "def": {
