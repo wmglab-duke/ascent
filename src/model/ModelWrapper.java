@@ -569,25 +569,23 @@ public class ModelWrapper {
 
         // Set generic parameters
         JSONObject nerve = (JSONObject) morphologyData.get("Nerve");
-        model.param().set("a_nerve", (Double) nerve.get("area") + " [micrometer^2]");
+        model.param().set("a_nerve", nerve.get("area") + " [micrometer^2]");
         model.param().set("r_nerve", "sqrt(a_nerve/pi)");
 
-        Double length = (Double) ((JSONObject) configData.get("geometry")).get("z_nerve");
+        Double length = ((JSONObject) configData.get("geometry")).getDouble("Length");
         model.param().set("z_nerve", length);
 
-        Double radius = (Double) ((JSONObject) configData.get("geometry")).get("radius");
+        Double radius = ((JSONObject) configData.get("geometry")).getDouble("Radius");
         model.param().set("r_ground", radius);
 
         String mediumString = "Medium_Primitive";
         String partID = mw.im.next("part", mediumString);
         Part.createEnvironmentPartPrimitive(partID, mediumString, mw);
 
-        String instanceLabel = "This cuff's medium: TODO"; // TODO
+        String instanceLabel = "Medium"; // TODO
         String instanceID = mw.im.next("pi", instanceLabel);
 
         Part.createEnvironmentPartInstance(instanceID, instanceLabel, mediumString, mw, configData);
-
-        System.out.println("after hello");
 
         // Read cuffs to build from master.json (cuff.preset) which links to JSON containing instantiations of parts
         JSONObject cuffObject = (JSONObject) configData.get("cuff");

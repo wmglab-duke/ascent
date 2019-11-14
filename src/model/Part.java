@@ -22,16 +22,18 @@ class Part {
      */
     public static IdentifierManager createEnvironmentPartPrimitive(String id, String pseudonym, ModelWrapper mw) throws IllegalArgumentException {
         Model model = mw.getModel();
+
+        // only used once per method, so ok to define outside the switch
+        model.geom().create(id, "Part", 3);
+        model.geom(id).label(pseudonym);
+        model.geom(id).lengthUnit("\u00b5m");
+
         // only used once per method, so ok to define outside the switch
         IdentifierManager im = new IdentifierManager();
-        model.geom().create(id, "Part", 3);
         ModelParam mp = model.geom(id).inputParam();
 
         switch (pseudonym) {
             case "Medium_Primitive":
-                model.geom(id).label(pseudonym);
-                model.geom(id).lengthUnit("\u00b5m");
-
                 mp.set("Radius", "10 [mm]");
                 mp.set("Length", "100 [mm]");
 
@@ -62,27 +64,22 @@ class Part {
                                                      JSONObject instanceParams) throws IllegalArgumentException {
         Model model = mw.getModel();
 
-        System.out.println(pseudonym);
-        System.out.println(instanceID);
-
-        System.out.println("hello");
         GeomFeature partInstance = model.component("comp1").geom("geom1").create(instanceID, "PartInstance");
-        System.out.println("still thinking...");
+        partInstance.label(instanceLabel);
+        partInstance.set("part", mw.im.get(pseudonym));
 
         switch(pseudonym) {
             case "Medium_Primitive":
 
                 // set instantiation parameters
                 String[] mediumParameters = {
-                        "radius",
-                        "z_nerve"
+                        "Radius",
+                        "Length"
                 };
 
                 JSONObject itemObject = (JSONObject) instanceParams.get("geometry");
-                System.out.println(itemObject);
-
                 for (String param: mediumParameters) {
-                    partInstance.setEntry("inputexpr", (String) param, (Double) itemObject.get(param));
+                    partInstance.setEntry("inputexpr", param, (Double) itemObject.get(param));
                 }
 
                 // imports
@@ -105,6 +102,7 @@ class Part {
     public static IdentifierManager createPartPrimitive(String id, String pseudonym, ModelWrapper mw) throws IllegalArgumentException {
         Model model = mw.getModel();
 
+        // only used once per method, so ok to define outside the switch
         model.geom().create(id, "Part", 3);
         model.geom(id).label(pseudonym);
         model.geom(id).lengthUnit("\u00b5m");
@@ -1496,7 +1494,7 @@ class Part {
                 };
 
                 for (String param: tubeCuffParameters) {
-                    partInstance.setEntry("inputexpr", (String) param, (String) itemObject.get(param));
+                    partInstance.setEntry("inputexpr", param, (String) itemObject.get(param));
                 }
 
                 // imports
@@ -1541,7 +1539,7 @@ class Part {
                 };
 
                 for (String param: ribbonContactParameters) {
-                    partInstance.setEntry("inputexpr", (String) param, (String) itemObject.get(param));
+                    partInstance.setEntry("inputexpr", param, (String) itemObject.get(param));
                 }
 
                 // imports
@@ -1580,7 +1578,7 @@ class Part {
                 };
 
                 for (String param: wireContactParameters) {
-                    partInstance.setEntry("inputexpr", (String) param, (String) itemObject.get(param));
+                    partInstance.setEntry("inputexpr", param, (String) itemObject.get(param));
                 }
 
                 // imports
@@ -1620,7 +1618,7 @@ class Part {
                 };
 
                 for (String param: circleContactParameters) {
-                    partInstance.setEntry("inputexpr", (String) param, (String) itemObject.get(param));
+                    partInstance.setEntry("inputexpr", param, (String) itemObject.get(param));
                 }
 
                 // imports
@@ -1686,7 +1684,7 @@ class Part {
                 };
 
                 for (String param: helicalCuffnContactParameters) {
-                    partInstance.setEntry("inputexpr", (String) param, (String) itemObject.get(param));
+                    partInstance.setEntry("inputexpr", param, (String) itemObject.get(param));
                 }
 
                 model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Center", (String) itemObject.get("Center"));
@@ -1741,7 +1739,7 @@ class Part {
                 };
 
                 for (String param: rectangleContactParameters) {
-                    partInstance.setEntry("inputexpr", (String) param, (String) itemObject.get(param));
+                    partInstance.setEntry("inputexpr", param, (String) itemObject.get(param));
                 }
 
                 // imports
@@ -1823,7 +1821,7 @@ class Part {
                 };
 
                 for (String param: uContactParameters) {
-                    partInstance.setEntry("inputexpr", (String) param, (String) itemObject.get(param));
+                    partInstance.setEntry("inputexpr", param, (String) itemObject.get(param));
                 }
 
                 // imports
@@ -1857,7 +1855,7 @@ class Part {
                 };
 
                 for (String param: uCuffParameters) {
-                    partInstance.setEntry("inputexpr", (String) param, (String) itemObject.get(param));
+                    partInstance.setEntry("inputexpr", param, (String) itemObject.get(param));
                 }
 
                 // imports
@@ -1878,7 +1876,7 @@ class Part {
                 };
 
                 for (String param: cuffFillParameters) {
-                    partInstance.setEntry("inputexpr", (String) param, (String) itemObject.get(param));
+                    partInstance.setEntry("inputexpr", param, (String) itemObject.get(param));
                 }
 
                 // imports
@@ -2118,7 +2116,7 @@ class Part {
                 }
 
                 JSONObject nerve = (JSONObject) morphology_data.get("Nerve");
-                model.param().set("a_nerve", (Double) nerve.get("area") + " [micrometer^2]");
+                model.param().set("a_nerve", nerve.get("area") + " [micrometer^2]");
                 model.param().set("r_nerve", "sqrt(a_nerve/pi)");
 
                 String epineuriumXsLabel = "Epineurium Cross Section";

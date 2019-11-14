@@ -7,8 +7,8 @@
   },
   "geometry": {
     "unit": "micrometer",
-    "z_nerve": 50000.0,
-    "radius": 10000.0
+    "Length": 50000.0,
+    "Radius": 10000.0
   },
   "config": {
     "paths": {
