@@ -27,17 +27,17 @@
     "data",
     "input",
     "samples",
-    "Pig13-1",
+    "Cadaver53-2",
     "map.json"
   ],
   "samples_path": [
     "data",
     "samples"
   ],
-  "sample": "Pig13-1",
+  "sample": "Cadaver53-2",
   "modes": {
     "write": "sectionwise2d",
-    "mask_input": "INNERS",
+    "mask_input": "INNER_AND_OUTER_SEPARATE",
     "nerve": "PRESENT",
     "reshape_nerve": "CIRCLE",
     "deform": "PHYSICS",
