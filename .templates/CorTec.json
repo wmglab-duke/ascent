@@ -161,7 +161,7 @@
     },
     {
       "name": "thk_medium_gap_internal_CT",
-      "expression": "10 [um]",
+      "expression": "20 [um]",
       "description": ""
     },
     {

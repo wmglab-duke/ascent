@@ -53,7 +53,7 @@
   "fiber_z_parameters": {
     "unit": "micrometer",
     "min": 0.0,
-    "max": 25000.0,
+    "max": 50000.0,
     "offsets": [0.0]
   },
   "fiber_xy_parameters": {

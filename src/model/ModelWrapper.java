@@ -626,7 +626,7 @@ public class ModelWrapper {
         mw.createUnions();
 
         // Add materials
-
+        System.out.println("Assigning nerve parts material links.");
         String epineuriumMatLinkLabel = "epineurium material";
         model.component("comp1").material().create(mw.im.next("matlnk",epineuriumMatLinkLabel), "Link");
         model.component("comp1").material(mw.im.get(epineuriumMatLinkLabel)).selection().named("geom1" +"_" + mw.im.get("EPINEURIUM") + "_dom");
@@ -646,29 +646,33 @@ public class ModelWrapper {
         model.component("comp1").material(mw.im.get(fascicleMatLinkLabel)).set("link", mw.im.get("endoneurium"));
 
         // Build the geometry
+        System.out.println("Building the FEM geometry.");
         model.component("comp1").geom("geom1").run("fin");
 
         try {
-            model.save("parts_test"); // TODO this dir needs to change
+            System.out.println("Saving the *.mph file before proceeding to mesh and solve.");
+            model.save("parts_test");
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         // Define mesh for nerve
-        String meshFascLabel = "Mesh Nerve";
-        String meshFascSweLabel = "Mesh Nerve Sweep";
-        MeshFeature meshFasc = model.component("comp1").mesh(mw.im.next("mesh",meshFascLabel)).create(mw.im.next("swe",meshFascSweLabel), "Sweep");
-        meshFasc.selection().geom("geom1", 3);
-        meshFasc.selection().named("geom1" + "_" + mw.im.get("allNervePartsUnionCsel") + "_dom");
-        model.component("comp1").mesh(mw.im.get(meshFascLabel)).feature("size").set("hauto", 1); // TODO load in mesh params from master
-        //model.component("comp1").mesh(mw.im.get(meshFascLabel)).run(mw.im.get(meshFascSweLabel)); // commented out for dev
+        String meshLabel = "Mesh";
+        String meshNerveSweLabel = "Mesh Nerve";
+        MeshFeature meshNerve = model.component("comp1").mesh(mw.im.next("mesh",meshLabel)).create(mw.im.next("swe",meshNerveSweLabel), "Sweep");
+        meshNerve.selection().geom("geom1", 3);
+        meshNerve.selection().named("geom1" + "_" + mw.im.get("allNervePartsUnionCsel") + "_dom");
+        model.component("comp1").mesh(mw.im.get(meshLabel)).feature(mw.im.get(meshNerveSweLabel)).set("facemethod", "tri");
+        model.component("comp1").mesh(mw.im.get(meshLabel)).feature("size").set("hauto", 1); // TODO load in mesh params from master
+        System.out.println("Meshing nerve parts... will take a while");
+        //model.component("comp1").mesh(mw.im.get(meshLabel)).run(mw.im.get(meshNerveSweLabel));
 
-        // Define mesh for remaining geometry (cuff, cuff fill, and medium)
-        // TODO
-
-        // Run mesh
-        // TODO
-        // Save
+        String meshRestFtetLabel = "Mesh Rest";
+        model.component("comp1").mesh(mw.im.get(meshLabel)).create(mw.im.next("ftet",meshRestFtetLabel), "FreeTet");
+        model.component("comp1").mesh(mw.im.get(meshLabel)).feature(mw.im.get(meshRestFtetLabel)).create("size1", "Size");
+        model.component("comp1").mesh(mw.im.get(meshLabel)).feature(mw.im.get(meshRestFtetLabel)).feature("size1").set("hauto", 1);
+        System.out.println("Meshing the rest... will also take a while");
+        //model.component("comp1").mesh(mw.im.get(meshLabel)).run(mw.im.get(meshRestFtetLabel));
 
         // Solve
         // Adjust current sources
