@@ -1938,21 +1938,15 @@ class Part {
         switch (pseudonym) {
             case "FascicleCI":
 
-                String name = "outer" + (index);
-                String name_area = name + "_area";
+                String ci_name = "outer" + index;
+                String name_area = ci_name + "_area";
+                String ci_inner_path = path + "/inners/" + tracePaths.get("inners")[0];
 
-                JSONObject fascicle = ((JSONArray) morphology_data.get("Fascicles")).getJSONObject(index);
-                Double area = ((JSONObject) fascicle.get("outer")).getDouble("area");
+                String ci_inner = tracePaths.get("inners")[0];
+                String ci_inner_index = ci_inner.split("\\.")[0];
 
-                String innerCI = tracePaths.get("inners")[0];
-                String ci_inner_index = innerCI.split("\\.")[0];
-
-                String inner_path = path + "/inners/" + tracePaths.get("inners")[0];
-
-                model.param().set(name_area, area + "[um^2]", inner_path);
-
-                String fascicleCI_Inner_Label = name + "_INNERS_CI";
-                String fascicleCI_Endo_Label = name + "_ENDONEURIUM";
+                String fascicleCI_Inner_Label = ci_name + "_INNERS_CI";
+                String fascicleCI_Endo_Label = ci_name + "_ENDONEURIUM";
 
                 im.labels = new String[]{
                         fascicleCI_Inner_Label, //0
@@ -1964,30 +1958,35 @@ class Part {
                             .label(cselFascicleCILabel);
                 }
 
-                String fascicleCICXLabel = name + " Inner Geometry";
+                JSONObject fascicle = ((JSONArray) morphology_data.get("Fascicles")).getJSONObject(index);
+                Double area = ((JSONObject) fascicle.get("outer")).getDouble("area");
+
+                model.param().set(name_area, area + "[um^2]", ci_inner_path);
+
+                String fascicleCICXLabel = ci_name + " Inner Geometry";
                 GeomFeature fascicleCICX = model.component("comp1").geom("geom1").create(im.next("wp",fascicleCICXLabel), "WorkPlane");
                 fascicleCICX.label(fascicleCICXLabel);
                 fascicleCICX.set("contributeto", im.get(fascicleCI_Inner_Label));
                 fascicleCICX.set("unite", true);
 
-                String icLabel = name + "_IC";
+                String icLabel = ci_name + "_IC";
                 fascicleCICX.geom().selection().create(im.next("csel",icLabel), "CumulativeSelection");
                 fascicleCICX.geom().selection(im.get(icLabel)).label(icLabel);
 
-                String icnameLabel = name + " Inner Trace " + ci_inner_index;;
+                String icnameLabel = ci_name + " Inner Trace " + ci_inner_index;;
                 GeomFeature ic = model.component("comp1").geom("geom1").feature(im.get(fascicleCICXLabel)).geom().create(im.next("ic", icnameLabel), "InterpolationCurve");
                 ic.label(icnameLabel);
                 ic.set("contributeto", im.get(icLabel));
                 ic.set("source", "file");
-                ic.set("filename", inner_path);
+                ic.set("filename", ci_inner_path);
                 ic.set("rtol", 0.02);
 
-                String conv2solidLabel = name + " Inner Surface " + ci_inner_index;
+                String conv2solidLabel = ci_name + " Inner Surface " + ci_inner_index;
                 GeomFeature conv2solid = model.component("comp1").geom("geom1").feature(im.get(fascicleCICXLabel)).geom().create(im.next("csol",conv2solidLabel), "ConvertToSolid");
                 conv2solid.label(conv2solidLabel);
                 conv2solid.selection("input").named(im.get(icLabel));
 
-                String makefascicleLabel = name + " Make Endoneurium";
+                String makefascicleLabel = ci_name + " Make Endoneurium";
                 GeomFeature makefascicle = model.component("comp1").geom("geom1").create(im.next("ext",makefascicleLabel), "Extrude");
                 makefascicle.label(makefascicleLabel);
                 makefascicle.set("contributeto", im.get(fascicleCI_Endo_Label));
@@ -1999,32 +1998,31 @@ class Part {
                 mw.contributeToUnions(im.get(makefascicleLabel), fascicleCIEndoUnions);
 
                 // Add physics
-                String ciLabel = name + " ContactImpedance";
+                String ciLabel = ci_name + " ContactImpedance";
                 PhysicsFeature ci =  model.component("comp1").physics("ec").create(im.next("ci",ciLabel), "ContactImpedance", 2);
+                ci.label(ciLabel);
                 ci.selection().named("geom1_" + im.get(fascicleCI_Endo_Label) + "_bnd");
                 ci.set("spec_type", "surfimp");
                 // if parameter in master is 3%
                 String rhos = "rho_peri*0.03*2*sqrt(" + name_area  + "/pi)"; // A = pi*r^2; r = sqrt(A/pi); d = 2*sqrt(A/pi); thk = 0.03*2*sqrt(A/pi); Rm = rho*thk
                 // elsif parameter in master is something else // TODO
                 ci.set("rhos", rhos);
-                ci.label(ciLabel);
 
                 break;
             case "FascicleMesh":
 
-                String name2 = "outer" + index;
-                String name2_area = name2 + "_area";
-                JSONObject fascicle2 = ((JSONArray) morphology_data.get("Fascicles")).getJSONObject(index);
-                Double outer_area = ((JSONObject) fascicle2.get("outer")).getDouble("area"); // TODO is this confusing? we don't use it
-                String inner_path2 = path + "/inners/" + tracePaths.get("inners")[0];
+                String mesh_name = "outer" + index;
 
-                String outer_path2 = path + "/outer/" + tracePaths.get("outer")[0];
+                String fascicleMesh_Inners_Label = mesh_name + "_INNERS";
+                String fascicleMesh_Outer_Label = mesh_name + "_OUTER";
+                String fascicleMesh_Peri_Label = mesh_name + "_PERINEURIUM";
+                String fascicleMesh_Endo_Label = mesh_name + "_ENDONEURIUM";
 
                 im.labels = new String[]{
-                        name2 + "_INNERS", //0
-                        name2 + "_OUTER",
-                        name2 + "_PERINEURIUM",
-                        name2 + "_ENDONEURIUM"
+                        fascicleMesh_Inners_Label, //0
+                        fascicleMesh_Outer_Label,
+                        fascicleMesh_Peri_Label,
+                        fascicleMesh_Endo_Label
                 };
 
                 for (String cselFascicleMeshLabel: im.labels) {
@@ -2032,11 +2030,9 @@ class Part {
                             .label(cselFascicleMeshLabel);
                 }
 
-                model.param().set(name2_area, outer_area + "[um^2]", inner_path2); // TODO
-
                 String innersPlaneLabel = "outer" + index + " Inners Geometry";
                 GeomFeature innersPlane = model.component("comp1").geom("geom1").create(im.next("wp",innersPlaneLabel), "WorkPlane");
-                innersPlane.set("contributeto", im.get(name2 + "_INNERS"));
+                innersPlane.set("contributeto", im.get(mesh_name + "_INNERS"));
                 innersPlane.set("selresult", true);
                 innersPlane.set("unite", true);
                 innersPlane.label(innersPlaneLabel);
@@ -2047,8 +2043,9 @@ class Part {
 
                 // loop over inners (make IC, convert to solid, add to inners_all)
                 for (String inner: tracePaths.get("inners")) {
-
+                    String mesh_inner_path = path + "/inners/" + inner;
                     String mesh_inner_index = inner.split("\\.")[0];
+
                     String icselLabel = "outer" + index + " IC" + mesh_inner_index;
                     innersPlane.geom().selection().create(im.next("csel",icselLabel), "CumulativeSelection");
                     innersPlane.geom().selection(im.get(icselLabel)).label(icselLabel);
@@ -2058,7 +2055,7 @@ class Part {
                     icMesh.label(icTraceLabel);
                     icMesh.set("contributeto", im.get(icselLabel));
                     icMesh.set("source", "file");
-                    icMesh.set("filename", path + "/inners/" + inner);
+                    icMesh.set("filename", mesh_inner_path);
                     icMesh.set("rtol", 0.02);
 
                     String icSurfLabel = "outer" + index + " Inner Surface " + mesh_inner_index;
@@ -2071,9 +2068,9 @@ class Part {
 
                 String outerPlaneLabel = "outer" + index + " Outer Geometry";
                 GeomFeature outerPlane = model.component("comp1").geom("geom1").create(im.next("wp",outerPlaneLabel), "WorkPlane");
-                outerPlane.set("contributeto", im.get(name2 + "_OUTER"));
-                outerPlane.set("unite", true);
                 outerPlane.label(outerPlaneLabel);
+                outerPlane.set("contributeto", im.get(mesh_name + "_OUTER"));
+                outerPlane.set("unite", true);
 
                 String oc1Label = "outer" + index + " OC";
                 outerPlane.geom().selection().create(im.next("csel",oc1Label), "CumulativeSelection");
@@ -2083,13 +2080,14 @@ class Part {
                 outerPlane.geom().selection().create(im.next("csel",outerselLabel), "CumulativeSelection");
                 outerPlane.geom().selection(im.get(outerselLabel)).label(outerselLabel);
 
+                String mesh_outer_path = path + "/outer/" + tracePaths.get("outer")[0];
                 String outeric1Label = "outer" + index + " Outer Trace";
                 GeomFeature outeric1 = outerPlane.geom().create(im.next("ic",outeric1Label), "InterpolationCurve");
+                outeric1.label(outeric1Label);
                 outeric1.set("contributeto", im.get(oc1Label));
                 outeric1.set("source", "file");
-                outeric1.set("filename", outer_path2);
+                outeric1.set("filename", mesh_outer_path);
                 outeric1.set("rtol", 0.02);
-                outeric1.label(outeric1Label);
 
                 String outericSurfaceLabel = "outer" + index + " Outer Surface";
                 outerPlane.geom().create(im.next("csol",outericSurfaceLabel), "ConvertToSolid");
@@ -2100,11 +2098,11 @@ class Part {
 
                 String makePeriLabel = "outer" + index + " Make Perineurium";
                 GeomFeature makePeri = model.component("comp1").geom("geom1").create(im.next("ext",makePeriLabel), "Extrude");
-                makePeri.set("contributeto", im.get(name2 + "_PERINEURIUM"));
+                makePeri.label(makePeriLabel);
+                makePeri.set("contributeto", im.get(fascicleMesh_Peri_Label));
                 makePeri.set("workplane", im.get(outerPlaneLabel));
                 makePeri.setIndex("distance", "z_nerve", 0);
-                makePeri.selection("input").named(im.get(name2 + "_OUTER"));
-                makePeri.label(makePeriLabel);
+                makePeri.selection("input").named(im.get(fascicleMesh_Outer_Label));
 
                 // Add fascicle domains to ALL_NERVE_PARTS_UNION and ENDO_UNION for later assigning to materials and mesh
                 String[] fascicleMeshPeriUnions = {ModelWrapper.ALL_NERVE_PARTS_UNION, ModelWrapper.PERI_UNION};
@@ -2112,11 +2110,11 @@ class Part {
 
                 String makeEndoLabel = "outer" + index + " Make Endoneurium";
                 GeomFeature makeEndo = model.component("comp1").geom("geom1").create(im.next("ext",makeEndoLabel), "Extrude");
-                makeEndo.set("contributeto", im.get(name2 + "_ENDONEURIUM"));
+                makeEndo.label(makeEndoLabel);
+                makeEndo.set("contributeto", im.get(fascicleMesh_Endo_Label));
                 makeEndo.set("workplane", im.get(innersPlaneLabel));
                 makeEndo.setIndex("distance", "z_nerve", 0);
-                makeEndo.selection("input").named(im.get(name2 + "_INNERS"));
-                makeEndo.label(makeEndoLabel);
+                makeEndo.selection("input").named(im.get(fascicleMesh_Inners_Label));
 
                 // Add fascicle domains to ALL_NERVE_PARTS_UNION and ENDO_UNION for later assigning to materials and mesh
                 String[] fascicleMeshEndoUnions = {ModelWrapper.ALL_NERVE_PARTS_UNION, ModelWrapper.ENDO_UNION};
