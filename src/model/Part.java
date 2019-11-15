@@ -98,21 +98,20 @@ class Part {
                 PhysicsFeature gnd = model.component("comp1").physics("ec").create(mw.im.next("gnd",groundLabel), "Ground", 2);
                 gnd.label(groundLabel);
                 gnd.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[0]) + "_bnd");
+
+                // assign domain material
+                JSONObject medium = (JSONObject) instanceParams.get("medium");
+                String mediumMaterial = medium.getString("material");
+                String selection = myLabels[0];
+                String linkLabel = String.join("/", new String[]{instanceLabel, selection, mediumMaterial});
+                Material mat = model.component("comp1").material().create(mw.im.next("matlnk", linkLabel), "Link");
+                mat.label(linkLabel);
+                mat.set("link", mw.im.get(mediumMaterial));
+                mat.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(selection) + "_dom");
                 break;
             default:
                 throw new  IllegalArgumentException("No implementation for part primitive name: " + pseudonym);
         }
-
-        // assign domain material
-        JSONObject medium = (JSONObject) instanceParams.get("medium");
-        String mediumMaterial = medium.getString("material");
-        String selection = myLabels[0];
-        String linkLabel = String.join("/", new String[]{instanceLabel, selection, mediumMaterial});
-        Material mat = model.component("comp1").material().create(mw.im.next("matlnk", linkLabel), "Link");
-        mat.label(linkLabel);
-        mat.set("link", mw.im.get(mediumMaterial));
-        mat.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(selection) + "_dom");
-
     }
 
     public static IdentifierManager createPartPrimitive(String id, String pseudonym, ModelWrapper mw) throws IllegalArgumentException {

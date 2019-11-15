@@ -318,8 +318,6 @@ public class ModelWrapper {
     public boolean addBioMaterialDefinitions() {
         // extract data from json
 
-
-
         try {
             JSONObject master = new JSONReader(String.join("/",
                     new String[]{this.root, ".config", "master.json"})).getData();
@@ -337,8 +335,6 @@ public class ModelWrapper {
 
             String epiMaterialID = this.im.next("mat", "epineurium"); // todo if compound nerve
             Part.defineMaterial(epiMaterialID, "epineurium", master, this);
-
-            // Medium (muscle or fat?)
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -576,7 +572,6 @@ public class ModelWrapper {
         model.param().set("r_nerve", "sqrt(a_nerve/pi)");
         model.param().set("rho_peri", "1149 [ohm*m]"); // TODO
 
-
         Double length = ((JSONObject) configData.get("medium")).getDouble("length");
         model.param().set("z_nerve", length);
 
@@ -591,6 +586,9 @@ public class ModelWrapper {
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
+
+        // Add biological material definitions
+        mw.addBioMaterialDefinitions();
 
         String instanceLabel = "Medium";
         String instanceID = mw.im.next("pi", instanceLabel);
@@ -616,8 +614,6 @@ public class ModelWrapper {
             mw.addCuffPartInstances(cuff);
         }
 
-        // Add biological material definitions
-        mw.addBioMaterialDefinitions();
         // Add epineurium
         Part.createNervePartInstance("Epineurium", 0, null, mw, null, morphologyData, configData);
         // Add fascicles
@@ -657,27 +653,35 @@ public class ModelWrapper {
         }
 
         // Define mesh for nerve
-        String meshLabel = "Mesh";
         String meshNerveSweLabel = "Mesh Nerve";
-        MeshFeature meshNerve = model.component("comp1").mesh(mw.im.next("mesh",meshLabel)).create(mw.im.next("swe",meshNerveSweLabel), "Sweep");
+        MeshFeature meshNerve = model.component("comp1").mesh("mesh1").create(mw.im.next("swe",meshNerveSweLabel), "Sweep");
         meshNerve.selection().geom("geom1", 3);
         meshNerve.selection().named("geom1" + "_" + mw.im.get("allNervePartsUnionCsel") + "_dom");
-        model.component("comp1").mesh(mw.im.get(meshLabel)).feature(mw.im.get(meshNerveSweLabel)).set("facemethod", "tri");
-        model.component("comp1").mesh(mw.im.get(meshLabel)).feature("size").set("hauto", 1); // TODO load in mesh params from master
+        model.component("comp1").mesh("mesh1").feature(mw.im.get(meshNerveSweLabel)).set("facemethod", "tri");
+        model.component("comp1").mesh("mesh1").feature("size").set("hauto", 1); // TODO load in mesh params from master
         System.out.println("Meshing nerve parts... will take a while");
-        //model.component("comp1").mesh(mw.im.get(meshLabel)).run(mw.im.get(meshNerveSweLabel));
+        model.component("comp1").mesh("mesh1").run(mw.im.get(meshNerveSweLabel));
 
         String meshRestFtetLabel = "Mesh Rest";
-        model.component("comp1").mesh(mw.im.get(meshLabel)).create(mw.im.next("ftet",meshRestFtetLabel), "FreeTet");
-        model.component("comp1").mesh(mw.im.get(meshLabel)).feature(mw.im.get(meshRestFtetLabel)).create("size1", "Size");
-        model.component("comp1").mesh(mw.im.get(meshLabel)).feature(mw.im.get(meshRestFtetLabel)).feature("size1").set("hauto", 1);
+        model.component("comp1").mesh("mesh1").create(mw.im.next("ftet",meshRestFtetLabel), "FreeTet");
+        model.component("comp1").mesh("mesh1").feature(mw.im.get(meshRestFtetLabel)).create("size1", "Size");
+        model.component("comp1").mesh("mesh1").feature(mw.im.get(meshRestFtetLabel)).feature("size1").set("hauto", 1);
         System.out.println("Meshing the rest... will also take a while");
-        //model.component("comp1").mesh(mw.im.get(meshLabel)).run(mw.im.get(meshRestFtetLabel));
+        model.component("comp1").mesh("mesh1").run(mw.im.get(meshRestFtetLabel));
 
         // Solve
-        // Adjust current sources
-        // TODO
+        model.study().create("std1");
+        model.study("std1").setGenConv(true);
+        model.study("std1").create("stat", "Stationary");
+        model.study("std1").feature("stat").activate("ec", true);
+
         // Save
+        try {
+            System.out.println("Saving the solved *.mph file.");
+            model.save("parts_test");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         // TODO, save time to process trace, build FEM Geometry, mesh, solve, extract potentials "TimeKeeper"
 

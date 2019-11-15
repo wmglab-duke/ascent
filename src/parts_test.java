@@ -5,7 +5,7 @@
 import com.comsol.model.*;
 import com.comsol.model.util.*;
 
-/** Model exported on Nov 15 2019, 15:02 by COMSOL 5.4.0.388. */
+/** Model exported on Nov 15 2019, 16:24 by COMSOL 5.4.0.388. */
 public class parts_test {
 
   public static Model run() {
@@ -40,6 +40,20 @@ public class parts_test {
     model.geom("part1").feature("cyl1").set("r", "radius");
     model.geom("part1").feature("cyl1").set("h", "length");
     model.geom("part1").feature("cyl1").set("contributeto", "csel1");
+
+    model.material().create("mat1", "Common", "");
+    model.material("mat1").label("fat");
+    model.material("mat1").propertyGroup("def").set("electricconductivity", new String[]{"1/30"});
+    model.material().create("mat2", "Common", "");
+    model.material("mat2").label("perineurium_DC");
+    model.material("mat2").propertyGroup("def").set("electricconductivity", new String[]{"1/1149"});
+    model.material().create("mat3", "Common", "");
+    model.material("mat3").label("endoneurium");
+    model.material("mat3").propertyGroup("def").set("electricconductivity", new String[]{"{1/6, 1/6, 1/1.75}"});
+    model.material().create("mat4", "Common", "");
+    model.material("mat4").label("epineurium");
+    model.material("mat4").propertyGroup("def").set("electricconductivity", new String[]{"1/6.3"});
+
     model.component("comp1").geom("geom1").create("pi1", "PartInstance");
     model.component("comp1").geom("geom1").feature("pi1").label("Medium");
     model.component("comp1").geom("geom1").feature("pi1").set("part", "part1");
@@ -55,7 +69,7 @@ public class parts_test {
 
     model.component("comp1").material().create("matlnk1", "Link");
     model.component("comp1").material("matlnk1").label("Medium/MEDIUM/fat");
-    model.component("comp1").material("matlnk1").set("link", (String) null);
+    model.component("comp1").material("matlnk1").set("link", "mat1");
     model.component("comp1").material("matlnk1").selection().named("geom1_pi1_csel1_dom");
 
     model.param().group().create("par1");
@@ -73,7 +87,7 @@ public class parts_test {
     model.param("par1").set("Pitch_holecenter_holecenter_CT", "NaN", "");
     model.param("par1").set("percent_circ_cuff_CT", "percent_circ_cuff_pre_CT*(r_cuff_in_pre_CT/R_in_CT)", "");
     model.param("par1").set("z_nerve_CT", "20 [mm]", "");
-    model.param("par1").set("thk_medium_gap_internal_CT", "10 [um]", "");
+    model.param("par1").set("thk_medium_gap_internal_CT", "20 [um]", "");
     model.param("par1").set("r_cuff_in_pre_CT", "150 [um]", "");
     model.param("par1").set("recess_CT", "0", "");
     model.param("par1").set("Thk_elec_CT", "0.025 [mm]", "");
@@ -346,15 +360,15 @@ public class parts_test {
          .set("p", new String[]{"(R_in+Recess+Thk_elec/2)*cos(Rot_def+Theta_contact/2)", "(R_in+Recess+Thk_elec/2)*sin(Rot_def+Theta_contact/2)", "Center"});
     model.geom("part4").run();
 
-    model.material().create("mat1", "Common", "");
-    model.material("mat1").label("saline");
-    model.material("mat1").propertyGroup("def").set("electricconductivity", new String[]{"1.76"});
-    model.material().create("mat2", "Common", "");
-    model.material("mat2").label("silicone");
-    model.material("mat2").propertyGroup("def").set("electricconductivity", new String[]{"10^(-12)"});
-    model.material().create("mat3", "Common", "");
-    model.material("mat3").label("platinum");
-    model.material("mat3").propertyGroup("def").set("electricconductivity", new String[]{"9.43*10^6"});
+    model.material().create("mat5", "Common", "");
+    model.material("mat5").label("saline");
+    model.material("mat5").propertyGroup("def").set("electricconductivity", new String[]{"1.76"});
+    model.material().create("mat6", "Common", "");
+    model.material("mat6").label("silicone");
+    model.material("mat6").propertyGroup("def").set("electricconductivity", new String[]{"10^(-12)"});
+    model.material().create("mat7", "Common", "");
+    model.material("mat7").label("platinum");
+    model.material("mat7").propertyGroup("def").set("electricconductivity", new String[]{"9.43*10^6"});
 
     model.component("comp1").geom("geom1").create("pi2", "PartInstance");
     model.component("comp1").geom("geom1").feature("pi2").label("CorTec Cuff Fill");
@@ -368,7 +382,7 @@ public class parts_test {
 
     model.component("comp1").material().create("matlnk2", "Link");
     model.component("comp1").material("matlnk2").label("CorTec Cuff Fill/CUFF FILL FINAL/saline");
-    model.component("comp1").material("matlnk2").set("link", "mat1");
+    model.component("comp1").material("matlnk2").set("link", "mat5");
     model.component("comp1").material("matlnk2").selection().named("geom1_pi2_csel1_dom");
 
     model.component("comp1").geom("geom1").create("pi3", "PartInstance");
@@ -413,7 +427,7 @@ public class parts_test {
 
     model.component("comp1").material().create("matlnk3", "Link");
     model.component("comp1").material("matlnk3").label("CorTec Cuff/CUFF FINAL/silicone");
-    model.component("comp1").material("matlnk3").set("link", "mat2");
+    model.component("comp1").material("matlnk3").set("link", "mat6");
     model.component("comp1").material("matlnk3").selection().named("geom1_pi3_csel3_dom");
 
     model.component("comp1").geom("geom1").create("pi4", "PartInstance");
@@ -443,22 +457,22 @@ public class parts_test {
 
     model.component("comp1").material().create("matlnk4", "Link");
     model.component("comp1").material("matlnk4").label("CorTec Contact 1/CONTACT FINAL/platinum");
-    model.component("comp1").material("matlnk4").set("link", "mat3");
+    model.component("comp1").material("matlnk4").set("link", "mat7");
+
+    return model;
+  }
+
+  public static Model run2(Model model) {
     model.component("comp1").material("matlnk4").selection().named("geom1_pi4_csel4_dom");
     model.component("comp1").material().create("matlnk5", "Link");
     model.component("comp1").material("matlnk5").label("CorTec Contact 1/RECESS FINAL/saline");
-    model.component("comp1").material("matlnk5").set("link", "mat1");
+    model.component("comp1").material("matlnk5").set("link", "mat5");
     model.component("comp1").material("matlnk5").selection().named("geom1_pi4_csel5_dom");
 
     model.component("comp1").geom("geom1").create("pi5", "PartInstance");
     model.component("comp1").geom("geom1").feature("pi5").label("CorTec Contact 2");
     model.component("comp1").geom("geom1").feature("pi5").set("part", "part4");
     model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "Thk_elec", "Thk_elec_CT");
-
-    return model;
-  }
-
-  public static Model run2(Model model) {
     model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "L_elec", "L_elec_CT");
     model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "R_in", "R_in_CT");
     model.component("comp1").geom("geom1").feature("pi5").setEntry("inputexpr", "Recess", "Recess_CT");
@@ -482,24 +496,12 @@ public class parts_test {
 
     model.component("comp1").material().create("matlnk6", "Link");
     model.component("comp1").material("matlnk6").label("CorTec Contact 2/CONTACT FINAL/platinum");
-    model.component("comp1").material("matlnk6").set("link", "mat3");
+    model.component("comp1").material("matlnk6").set("link", "mat7");
     model.component("comp1").material("matlnk6").selection().named("geom1_pi5_csel4_dom");
     model.component("comp1").material().create("matlnk7", "Link");
     model.component("comp1").material("matlnk7").label("CorTec Contact 2/RECESS FINAL/saline");
-    model.component("comp1").material("matlnk7").set("link", "mat1");
+    model.component("comp1").material("matlnk7").set("link", "mat5");
     model.component("comp1").material("matlnk7").selection().named("geom1_pi5_csel5_dom");
-    model.material().create("mat4", "Common", "");
-    model.material("mat4").label("fat");
-    model.material("mat4").propertyGroup("def").set("electricconductivity", new String[]{"1/30"});
-    model.material().create("mat5", "Common", "");
-    model.material("mat5").label("perineurium_DC");
-    model.material("mat5").propertyGroup("def").set("electricconductivity", new String[]{"1/1149"});
-    model.material().create("mat6", "Common", "");
-    model.material("mat6").label("endoneurium");
-    model.material("mat6").propertyGroup("def").set("electricconductivity", new String[]{"{1/6, 1/6, 1/1.75}"});
-    model.material().create("mat7", "Common", "");
-    model.material("mat7").label("epineurium");
-    model.material("mat7").propertyGroup("def").set("electricconductivity", new String[]{"1/6.3"});
 
     model.component("comp1").geom("geom1").selection().create("csel1", "CumulativeSelection");
     model.component("comp1").geom("geom1").selection("csel1").label("EPINEURIUM");
@@ -825,13 +827,13 @@ public class parts_test {
     model.component("comp1").geom("geom1").feature("wp10").set("selresult", true);
     model.component("comp1").geom("geom1").feature("wp10").set("unite", true);
     model.component("comp1").geom("geom1").feature("wp10").label("outer6 Inners Geometry");
+    model.component("comp1").geom("geom1").feature("wp10").geom().selection()
+         .create("csel34", "CumulativeSelection");
 
     return model;
   }
 
   public static Model run3(Model model) {
-    model.component("comp1").geom("geom1").feature("wp10").geom().selection()
-         .create("csel34", "CumulativeSelection");
     model.component("comp1").geom("geom1").feature("wp10").geom().selection("csel34").label("outer6 inners_all");
     model.component("comp1").geom("geom1").feature("wp10").geom().selection()
          .create("csel35", "CumulativeSelection");
@@ -1102,15 +1104,15 @@ public class parts_test {
     model.component("comp1").material().create("matlnk8", "Link");
     model.component("comp1").material("matlnk8").selection().named("geom1_csel1_dom");
     model.component("comp1").material("matlnk8").label("epineurium material");
-    model.component("comp1").material("matlnk8").set("link", "mat7");
+    model.component("comp1").material("matlnk8").set("link", "mat4");
     model.component("comp1").material().create("matlnk9", "Link");
     model.component("comp1").material("matlnk9").selection().named("geom1_csel57_dom");
     model.component("comp1").material("matlnk9").label("perineurium_DC material");
-    model.component("comp1").material("matlnk9").set("link", "mat5");
+    model.component("comp1").material("matlnk9").set("link", "mat2");
     model.component("comp1").material().create("matlnk10", "Link");
     model.component("comp1").material("matlnk10").selection().named("geom1_csel55_dom");
     model.component("comp1").material("matlnk10").label("endoneurium material");
-    model.component("comp1").material("matlnk10").set("link", "mat6");
+    model.component("comp1").material("matlnk10").set("link", "mat3");
 
     model.component("comp1").geom("geom1").run("fin");
 
@@ -1119,32 +1121,53 @@ public class parts_test {
     model.component("comp1").mesh("mesh1").feature("swe1").selection().named("geom1_csel56_dom");
     model.component("comp1").mesh("mesh1").feature("swe1").set("facemethod", "tri");
     model.component("comp1").mesh("mesh1").feature("size").set("hauto", 1);
-    model.component("comp1").mesh("mesh1").run();
+    model.component("comp1").mesh("mesh1").run("swe1");
+    model.component("comp1").mesh("mesh1").create("ftet1", "FreeTet");
+    model.component("comp1").mesh("mesh1").feature("ftet1").create("size1", "Size");
+    model.component("comp1").mesh("mesh1").feature("ftet1").feature("size1").set("hauto", 1);
+    model.component("comp1").mesh("mesh1").run("ftet1");
+
+    model.study().create("std1");
+    model.study("std1").setGenConv(true);
+    model.study("std1").create("stat", "Stationary");
+    model.study("std1").feature("stat").activate("ec", true);
 
     model.component("comp1").physics("ec").feature("pcs1").set("Qjp", 0.001);
     model.component("comp1").physics("ec").feature("pcs2").set("Qjp", 0.001);
 
     model.label("parts_test.mph");
 
-    model.component("comp1").mesh("mesh1").create("ftet1", "FreeTet");
-    model.component("comp1").mesh("mesh1").feature("ftet1").create("size1", "Size");
-    model.component("comp1").mesh("mesh1").feature("ftet1").feature("size1").set("hauto", 1);
-    model.component("comp1").mesh("mesh1").feature("ftet1").feature("size1").set("custom", true);
-    model.component("comp1").mesh("mesh1").feature("ftet1").feature("size1").set("hmaxactive", true);
-    model.component("comp1").mesh("mesh1").feature("ftet1").feature("size1").set("hminactive", true);
-    model.component("comp1").mesh("mesh1").feature("ftet1").feature("size1").set("hgradactive", true);
-    model.component("comp1").mesh("mesh1").feature("ftet1").feature("size1").set("hcurveactive", true);
-    model.component("comp1").mesh("mesh1").feature("ftet1").feature("size1").set("hnarrowactive", true);
-    model.component("comp1").mesh("mesh1").feature("ftet1").feature("size1").set("hmin", 2);
+    model.sol().create("sol1");
+    model.sol("sol1").study("std1");
 
-    model.component("comp1").view("view1").set("transparency", true);
+    model.study("std1").feature("stat").set("notlistsolnum", 1);
+    model.study("std1").feature("stat").set("notsolnum", "1");
+    model.study("std1").feature("stat").set("listsolnum", 1);
+    model.study("std1").feature("stat").set("solnum", "1");
 
-    model.param("par1").set("thk_medium_gap_internal_CT", "20 [um]");
+    model.sol("sol1").create("st1", "StudyStep");
+    model.sol("sol1").feature("st1").set("study", "std1");
+    model.sol("sol1").feature("st1").set("studystep", "stat");
+    model.sol("sol1").create("v1", "Variables");
+    model.sol("sol1").feature("v1").set("control", "stat");
+    model.sol("sol1").create("s1", "Stationary");
+    model.sol("sol1").feature("s1").create("fc1", "FullyCoupled");
+    model.sol("sol1").feature("s1").create("i1", "Iterative");
+    model.sol("sol1").feature("s1").feature("i1").set("linsolver", "cg");
+    model.sol("sol1").feature("s1").feature("i1").create("mg1", "Multigrid");
+    model.sol("sol1").feature("s1").feature("i1").feature("mg1").set("prefun", "amg");
+    model.sol("sol1").feature("s1").feature("fc1").set("linsolver", "i1");
+    model.sol("sol1").feature("s1").feature().remove("fcDef");
+    model.sol("sol1").attach("std1");
 
-    model.component("comp1").geom("geom1").run("fin");
-
-    model.component("comp1").mesh("mesh1").run("swe1");
-    model.component("comp1").mesh("mesh1").run("ftet1");
+    model.result().create("pg1", "PlotGroup3D");
+    model.result("pg1").label("Electric Potential (ec)");
+    model.result("pg1").set("frametype", "spatial");
+    model.result("pg1").set("data", "dset1");
+    model.result("pg1").feature().create("mslc1", "Multislice");
+    model.result("pg1").feature("mslc1").set("colortable", "RainbowLight");
+    model.result("pg1").feature("mslc1").set("data", "parent");
+    model.result().remove("pg1");
 
     return model;
   }
