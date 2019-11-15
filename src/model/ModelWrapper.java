@@ -442,7 +442,6 @@ public class ModelWrapper {
 
                         // do FascicleCI if only one inner, FascicleMesh otherwise
                         String fascicleType = data.get("inners").length == 1 ? partPrimitiveNames[0] : partPrimitiveNames[1];
-                        System.out.println(fascicleType);
 
                         // hand off to Part to build instance of fascicle
                         Part.createNervePartInstance(fascicleType, index, path, this, data, morphology_data, json_data);
