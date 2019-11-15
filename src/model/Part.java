@@ -2000,26 +2000,22 @@ class Part {
                 PhysicsFeature ci =  model.component("comp1").physics("ec").create(im.next("ci",ciLabel), "ContactImpedance", 2);
                 ci.selection().named("geom1_" + im.get(fascicleCI_Endo_Label) + "_bnd");
                 ci.set("spec_type", "surfimp");
-                // A = pi*r^2
-                // r = sqrt(A/pi)
-                // d = 2*sqrt(A/pi)
-                // thk = 0.03*2*sqrt(A/pi)
-                // Rm = rho*thk
-                String rhos = "rho_peri*0.03*2*sqrt(" + name_area  + "/pi)";
+                // if parameter in master is 3%
+                String rhos = "rho_peri*0.03*2*sqrt(" + name_area  + "/pi)"; // A = pi*r^2; r = sqrt(A/pi); d = 2*sqrt(A/pi); thk = 0.03*2*sqrt(A/pi); Rm = rho*thk
+                // elsif parameter in master is something else // TODO
                 ci.set("rhos", rhos);
                 ci.label(ciLabel);
 
                 break;
             case "FascicleMesh":
 
-                String name2 = "fascicle" + (index);
+                String name2 = "outer" + (index);
                 String name2_area = name2 + "_area";
                 JSONObject fascicle2 = ((JSONArray) morphology_data.get("Fascicles")).getJSONObject(index);
-                Double area2 = ((JSONObject) fascicle2.get("outer")).getDouble("area");
+                Double area2 = ((JSONObject) fascicle2.get("outer")).getDouble("area"); // TODO is this confusing? we don't use it
                 String inner_path2 = path + "/inners/" + tracePaths.get("inners")[0];
-                String outer_path2 = path + "/outer/" + tracePaths.get("outer")[0];
-                System.out.println(inner_path2);
 
+                String outer_path2 = path + "/outer/" + tracePaths.get("outer")[0];
 
                 im.labels = new String[]{
                         name2 + "_INNERS", //0
@@ -2033,63 +2029,47 @@ class Part {
                             .label(cselFascicleMeshLabel);
                 }
 
-                model.param().set(name2_area, area2 + "[um^2]", inner_path2);
+                model.param().set(name2_area, area2 + "[um^2]", inner_path2); // TODO
 
-                String innersPlaneLabel = "Inners Geometry";
+                String innersPlaneLabel = "outer" + index + " Inners Geometry";
                 GeomFeature innersPlane = model.component("comp1").geom("geom1").create(im.next("wp",innersPlaneLabel), "WorkPlane");
                 innersPlane.set("contributeto", im.get(name2 + "_INNERS"));
                 innersPlane.set("selresult", true);
                 innersPlane.set("unite", true);
-
-                String ic1selLabel = "IC1";
-                innersPlane.geom().selection().create(im.next("csel",ic1selLabel), "CumulativeSelection");
-                innersPlane.geom().selection(im.get(ic1selLabel)).label(ic1selLabel);
-
-                String ic2selLabel = "IC2";
-                innersPlane.geom().selection().create(im.next("csel",ic2selLabel), "CumulativeSelection");
-                innersPlane.geom().selection(im.get(ic2selLabel)).label(ic2selLabel);
+                innersPlane.label(innersPlaneLabel);
 
                 String innersselLabel = "inners_all";
                 innersPlane.geom().selection().create(im.next("csel",innersselLabel), "CumulativeSelection");
                 innersPlane.geom().selection(im.get(innersselLabel)).label(innersselLabel);
 
-                String ic1TraceLabel = "Inner Trace 1";
-                GeomFeature ic1 = innersPlane.geom().create(im.next("ic",ic1TraceLabel), "InterpolationCurve");
-                ic1.label(ic1TraceLabel);
-                ic1.set("contributeto", im.get("IC1"));
-                ic1.set("source", "file");
-                ic1.set("filename", inner_path2); // TODO
-                ic1.set("rtol", 0.02);
+                // loop over inners (make IC, convert to solid, add to inners_all)
+                for (String inner: tracePaths.get("inners")) {
+                    String inner_index = inner.split("\\.")[0];
+                    String icselLabel = "IC" + inner_index;
+                    innersPlane.geom().selection().create(im.next("csel",icselLabel), "CumulativeSelection");
+                    innersPlane.geom().selection(im.get(icselLabel)).label(icselLabel);
 
-                String ic1SurfLabel = "Inner Surface 1";
-                GeomFeature ic1Surf = innersPlane.geom().create(im.next("csol",ic1SurfLabel), "ConvertToSolid");
-                ic1Surf.label(ic1SurfLabel);
-                ic1Surf.set("contributeto", im.get(innersselLabel));
-                ic1Surf.set("keep", false);
-                ic1Surf.selection("input").named(im.get("IC1"));
+                    String icTraceLabel = "Inner Trace " + inner_index;
+                    GeomFeature icMesh = innersPlane.geom().create(im.next("ic",icTraceLabel), "InterpolationCurve");
+                    icMesh.label(icTraceLabel);
+                    icMesh.set("contributeto", im.get(icselLabel));
+                    icMesh.set("source", "file");
+                    icMesh.set("filename", path + "/inners/" + inner);
+                    icMesh.set("rtol", 0.02);
 
+                    String icSurfLabel = "Inner Surface " + inner_index;
+                    GeomFeature icSurf = innersPlane.geom().create(im.next("csol",icSurfLabel), "ConvertToSolid");
+                    icSurf.label(icSurfLabel);
+                    icSurf.set("contributeto", im.get(innersselLabel));
+                    icSurf.set("keep", false);
+                    icSurf.selection("input").named(im.get(icselLabel));
+                }
 
-
-//                String ic2TraceLabel = "Inner Trace 2";
-//                GeomFeature ic2 = innersPlane.geom().create(im.next("ic",ic2TraceLabel), "InterpolationCurve");
-//                ic2.label(ic2TraceLabel);
-//                ic2.set("contributeto", im.get("IC2"));
-//                ic2.set("source", "file");
-//                ic2.set("filename", "D:\\Documents\\access\\data\\samples\\Pig13-1\\0\\0\\sectionwise2d\\fascicles\\1\\inners\\0.txt"); // TODO
-//                ic2.set("rtol", 0.02);
-
-//                String ic2SurfLabel = "Inner Surface 2";
-//                GeomFeature ic2Surf = innersPlane.geom().create(im.next("csol",ic2SurfLabel), "ConvertToSolid");
-//                ic2Surf.label(ic2SurfLabel);
-//                ic2Surf.set("contributeto", im.get(innersselLabel));
-//                ic2Surf.set("keep", false);
-//                ic2Surf.selection("input").named(im.get("IC2"));
-
-
-                String outerPlaneLabel = "Outer Geometry";
+                String outerPlaneLabel = "outer" + index + " Outer Geometry";
                 GeomFeature outerPlane = model.component("comp1").geom("geom1").create(im.next("wp",outerPlaneLabel), "WorkPlane");
                 outerPlane.set("contributeto", im.get(name2 + "_OUTER"));
                 outerPlane.set("unite", true);
+                outerPlane.label(outerPlaneLabel);
 
                 String oc1Label = "OC1";
                 outerPlane.geom().selection().create(im.next("csel",oc1Label), "CumulativeSelection");
@@ -2112,23 +2092,25 @@ class Part {
                 outerPlane.geom().feature(im.get(outericSrufaceLabel)).selection("input").named(im.get(oc1Label));
                 outerPlane.geom().feature(im.get(outericSrufaceLabel)).set("contributeto", im.get(outersselLabel));
 
-                String makePeriLabel = "Make Perineurium";
+                String makePeriLabel = "outer" + index + " Make Perineurium";
                 GeomFeature makePeri = model.component("comp1").geom("geom1").create(im.next("ext",makePeriLabel), "Extrude");
                 makePeri.set("contributeto", im.get(name2 + "_PERINEURIUM"));
                 makePeri.set("workplane", im.get(outerPlaneLabel));
                 makePeri.setIndex("distance", "z_nerve", 0);
                 makePeri.selection("input").named(im.get(name2 + "_OUTER"));
+                makePeri.label(makePeriLabel);
 
                 // Add fascicle domains to ALL_NERVE_PARTS_UNION and ENDO_UNION for later assigning to materials and mesh
                 String[] fascicleMeshPeriUnions = {ModelWrapper.ALL_NERVE_PARTS_UNION, ModelWrapper.PERI_UNION};
                 mw.contributeToUnions(im.get(makePeriLabel), fascicleMeshPeriUnions);
 
-                String makeEndoLabel = "Make Endoneurium";
+                String makeEndoLabel = "outer" + index + " Make Endoneurium";
                 GeomFeature makeEndo = model.component("comp1").geom("geom1").create(im.next("ext",makeEndoLabel), "Extrude");
                 makeEndo.set("contributeto", im.get(name2 + "_ENDONEURIUM"));
                 makeEndo.set("workplane", im.get(innersPlaneLabel));
                 makeEndo.setIndex("distance", "z_nerve", 0);
                 makeEndo.selection("input").named(im.get(name2 + "_INNERS"));
+                makeEndo.label(makeEndoLabel);
 
                 // Add fascicle domains to ALL_NERVE_PARTS_UNION and ENDO_UNION for later assigning to materials and mesh
                 String[] fascicleMeshEndoUnions = {ModelWrapper.ALL_NERVE_PARTS_UNION, ModelWrapper.ENDO_UNION};

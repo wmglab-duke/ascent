@@ -422,9 +422,6 @@ public class ModelWrapper {
                 for (String dir: dirs) {
                     if (! dir.contains(".")) {
                         int index = Integer.parseInt(dir);
-//                        String fascicleName = String.valueOf(index);
-                        String fascicleName = "fascicle" + (index);
-
                         // Initialize data to send to Part.createPartInstance
                         HashMap<String, String[]> data = new HashMap<>();
 
@@ -647,7 +644,6 @@ public class ModelWrapper {
 //        model.component("comp1").material(mw.im.get(fascicleMatLinkLabel)).selection().named("geom1" +"_" + mw.im.get("endoUnionCsel") + "_dom");
 //        model.component("comp1").material(mw.im.get(fascicleMatLinkLabel)).label(fascicleMatLinkLabel);
 //        model.component("comp1").material(mw.im.get(fascicleMatLinkLabel)).set("link", mw.im.get("endoneurium"));
-        System.out.println("why");
 
         // Build the geometry
         model.component("comp1").geom("geom1").run("fin");
@@ -666,8 +662,6 @@ public class ModelWrapper {
         meshFasc.selection().named("geom1" + "_" + mw.im.get("allNervePartsUnionCsel") + "_dom");
         model.component("comp1").mesh(mw.im.get(meshFascLabel)).feature("size").set("hauto", 1); // TODO load in mesh params from master
         //model.component("comp1").mesh(mw.im.get(meshFascLabel)).run(mw.im.get(meshFascSweLabel)); // commented out for dev
-
-        System.out.println("here");
 
         // Define mesh for remaining geometry (cuff, cuff fill, and medium)
         // TODO
