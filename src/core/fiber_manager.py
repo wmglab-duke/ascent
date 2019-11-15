@@ -183,8 +183,9 @@ class FiberManager(Exceptionable, Configurable, Saveable):
             if plot:
                 self.manager.slides[0].plot(final=False, fix_aspect_ratio=True)
 
-                for point in np.reshape(fascicles, (-1, 2)):
-                    plt.plot(*point, 'r*')
+                # TODO
+                # for point in np.reshape(fascicles, (-1, 2)):
+                #     plt.plot(*point, 'r*')
 
                 plt.show()
         else:

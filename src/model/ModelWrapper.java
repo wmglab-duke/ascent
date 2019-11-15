@@ -442,6 +442,7 @@ public class ModelWrapper {
 
                         // do FascicleCI if only one inner, FascicleMesh otherwise
                         String fascicleType = data.get("inners").length == 1 ? partPrimitiveNames[0] : partPrimitiveNames[1];
+                        System.out.println(fascicleType);
 
                         // hand off to Part to build instance of fascicle
                         Part.createNervePartInstance(fascicleType, index, path, this, data, morphology_data, json_data);
@@ -638,7 +639,7 @@ public class ModelWrapper {
         model.component("comp1").material(mw.im.get(perineuriumMatLinkLabel)).selection().named("geom1" +"_" + mw.im.get("periUnionCsel") + "_dom");
         model.component("comp1").material(mw.im.get(perineuriumMatLinkLabel)).label(perineuriumMatLinkLabel);
         model.component("comp1").material(mw.im.get(perineuriumMatLinkLabel)).set("link", mw.im.get("perineurium_DC"));
-//
+
         String fascicleMatLinkLabel = "endoneurium material";
         model.component("comp1").material().create(mw.im.next("matlnk",fascicleMatLinkLabel), "Link");
         model.component("comp1").material(mw.im.get(fascicleMatLinkLabel)).selection().named("geom1" +"_" + mw.im.get("endoUnionCsel") + "_dom");
