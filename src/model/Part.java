@@ -2032,7 +2032,7 @@ class Part {
 
                 String innersPlaneLabel = "outer" + index + " Inners Geometry";
                 GeomFeature innersPlane = model.component("comp1").geom("geom1").create(im.next("wp",innersPlaneLabel), "WorkPlane");
-                innersPlane.set("contributeto", im.get(mesh_name + "_INNERS"));
+                innersPlane.set("contributeto", im.get(fascicleMesh_Inners_Label));
                 innersPlane.set("selresult", true);
                 innersPlane.set("unite", true);
                 innersPlane.label(innersPlaneLabel);
@@ -2069,7 +2069,7 @@ class Part {
                 String outerPlaneLabel = "outer" + index + " Outer Geometry";
                 GeomFeature outerPlane = model.component("comp1").geom("geom1").create(im.next("wp",outerPlaneLabel), "WorkPlane");
                 outerPlane.label(outerPlaneLabel);
-                outerPlane.set("contributeto", im.get(mesh_name + "_OUTER"));
+                outerPlane.set("contributeto", im.get(fascicleMesh_Outer_Label));
                 outerPlane.set("unite", true);
 
                 String oc1Label = "outer" + index + " OC";
