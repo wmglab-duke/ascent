@@ -577,6 +577,8 @@ public class ModelWrapper {
         JSONObject nerve = (JSONObject) morphologyData.get("Nerve");
         model.param().set("a_nerve", nerve.get("area") + " [micrometer^2]");
         model.param().set("r_nerve", "sqrt(a_nerve/pi)");
+        model.param().set("rho_peri", "1149 [ohm*m]");
+
 
         Double length = ((JSONObject) configData.get("medium")).getDouble("length");
         model.param().set("z_nerve", length);

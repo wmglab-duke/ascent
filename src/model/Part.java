@@ -1939,17 +1939,14 @@ class Part {
             case "FascicleCI":
 
                 String name = "fascicle" + (index);
-
-//                Object fascicle_morph = (JSONArray) morphology_data.get("Fascicles");
-//                JSONObject test = ((JSONArray) fascicle_morph).getJSONObject(index);
-//                JSONObject temp = (JSONObject) test.get("outer");
-//                System.out.println(temp.get("area"));
+                String name_area = name + "_area";
 
                 JSONObject fascicle = ((JSONArray) morphology_data.get("Fascicles")).getJSONObject(index);
-                JSONObject outer = (JSONObject) fascicle.get("outer");
+                Double area = ((JSONObject) fascicle.get("outer")).getDouble("area");
 
                 String inner_path = path + "/inners/" + tracePaths.get("inners")[0];
-                model.param().set(name, "NaN", inner_path);
+
+                model.param().set(name_area, area + "[um^2]", inner_path);
 
                 String fascicleCI_Inner_Label = name + "_INNERS_CI";
                 String fascicleCI_Endo_Label = name + "_ENDONEURIUM";
@@ -1992,7 +1989,7 @@ class Part {
                 makefascicle.label(makefascicleLabel);
                 makefascicle.set("contributeto", im.get(fascicleCI_Endo_Label));
 
-                makefascicle.setIndex("distance", "z_nerve", 0); // TODO
+                makefascicle.setIndex("distance", "z_nerve", 0);
                 makefascicle.selection("input").named(im.get(fascicleCI_Inner_Label));
 
                 // Add fascicle domains to ALL_NERVE_PARTS_UNION and ENDO_UNION for later assigning to materials and mesh
@@ -2004,7 +2001,13 @@ class Part {
                 PhysicsFeature ci =  model.component("comp1").physics("ec").create(im.next("ci",ciLabel), "ContactImpedance", 2);
                 ci.selection().named("geom1_" + im.get(fascicleCI_Endo_Label) + "_bnd");
                 ci.set("spec_type", "surfimp");
-                ci.set("rhos", (double) outer.get("area")); // TODO - need to set the value based on the measured thickness (this is in Python I think), also this is frequency dependent
+                // A = pi*r^2
+                // r = sqrt(A/pi)
+                // d = 2*sqrt(A/pi)
+                // thk = 0.03*2*sqrt(A/pi)
+                // Rm = rho*thk
+                String rhos = "rho_peri*0.03*2*sqrt(" + name_area  + "/pi)";
+                ci.set("rhos", rhos);
                 ci.label(ciLabel);
 
                 break;

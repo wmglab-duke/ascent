@@ -162,7 +162,7 @@
       "t_off": 19,
       "t_stop": 20,
       "time_unit": "ms",
-      "frequency_unit": "kHz"
+      "frequency_unit": "Hz"
     },
     "MONOPHASIC_PULSE_TRAIN": {
       "pulse_width": [
