@@ -275,8 +275,8 @@
       "units": "[S/m]"
     },
     "perineurium_DC": {
-      "value": "1149",
-      "units": "[ohm*m]"
+      "value": "1/1149",
+      "units": "[S/m]"
     }
   }
 }

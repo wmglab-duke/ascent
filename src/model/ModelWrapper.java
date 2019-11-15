@@ -574,7 +574,7 @@ public class ModelWrapper {
         JSONObject nerve = (JSONObject) morphologyData.get("Nerve");
         model.param().set("a_nerve", nerve.get("area") + " [micrometer^2]");
         model.param().set("r_nerve", "sqrt(a_nerve/pi)");
-        model.param().set("rho_peri", "1149 [ohm*m]");
+        model.param().set("rho_peri", "1149 [ohm*m]"); // TODO
 
 
         Double length = ((JSONObject) configData.get("medium")).getDouble("length");
@@ -626,24 +626,24 @@ public class ModelWrapper {
         mw.createUnions();
 
         // Add materials
-//        String perineuriumMatLinkLabel = "perineurium_DC material"; // TODO frequency dependence
-//        model.component("comp1").material().create(mw.im.next("matlnk",perineuriumMatLinkLabel), "Link");
-//        model.component("comp1").material(mw.im.get(perineuriumMatLinkLabel)).selection().named("geom1" +"_" + mw.im.get("periUnionCsel") + "_dom");
-//        model.component("comp1").material(mw.im.get(perineuriumMatLinkLabel)).label(perineuriumMatLinkLabel);
-//        model.component("comp1").material(mw.im.get(perineuriumMatLinkLabel)).set("link", mw.im.get("perineurium_DC"));
 
+        String epineuriumMatLinkLabel = "epineurium material";
+        model.component("comp1").material().create(mw.im.next("matlnk",epineuriumMatLinkLabel), "Link");
+        model.component("comp1").material(mw.im.get(epineuriumMatLinkLabel)).selection().named("geom1" +"_" + mw.im.get("EPINEURIUM") + "_dom");
+        model.component("comp1").material(mw.im.get(epineuriumMatLinkLabel)).label(epineuriumMatLinkLabel);
+        model.component("comp1").material(mw.im.get(epineuriumMatLinkLabel)).set("link", mw.im.get("epineurium"));
 
-//        String epineuriumMatLinkLabel = "epineurium material";
-//        model.component("comp1").material().create(mw.im.next("matlnk",epineuriumMatLinkLabel), "Link");
-//        model.component("comp1").material(mw.im.get(epineuriumMatLinkLabel)).selection().named("geom1" +"_" + mw.im.get("EPINEURIUM") + "_dom");
-//        model.component("comp1").material(mw.im.get(epineuriumMatLinkLabel)).label(epineuriumMatLinkLabel);
-//        model.component("comp1").material(mw.im.get(epineuriumMatLinkLabel)).set("link", mw.im.get("epineurium"));
+        String perineuriumMatLinkLabel = "perineurium_DC material"; // TODO frequency dependence
+        model.component("comp1").material().create(mw.im.next("matlnk",perineuriumMatLinkLabel), "Link");
+        model.component("comp1").material(mw.im.get(perineuriumMatLinkLabel)).selection().named("geom1" +"_" + mw.im.get("periUnionCsel") + "_dom");
+        model.component("comp1").material(mw.im.get(perineuriumMatLinkLabel)).label(perineuriumMatLinkLabel);
+        model.component("comp1").material(mw.im.get(perineuriumMatLinkLabel)).set("link", mw.im.get("perineurium_DC"));
 //
-//        String fascicleMatLinkLabel = "endoneurium material";
-//        model.component("comp1").material().create(mw.im.next("matlnk",fascicleMatLinkLabel), "Link");
-//        model.component("comp1").material(mw.im.get(fascicleMatLinkLabel)).selection().named("geom1" +"_" + mw.im.get("endoUnionCsel") + "_dom");
-//        model.component("comp1").material(mw.im.get(fascicleMatLinkLabel)).label(fascicleMatLinkLabel);
-//        model.component("comp1").material(mw.im.get(fascicleMatLinkLabel)).set("link", mw.im.get("endoneurium"));
+        String fascicleMatLinkLabel = "endoneurium material";
+        model.component("comp1").material().create(mw.im.next("matlnk",fascicleMatLinkLabel), "Link");
+        model.component("comp1").material(mw.im.get(fascicleMatLinkLabel)).selection().named("geom1" +"_" + mw.im.get("endoUnionCsel") + "_dom");
+        model.component("comp1").material(mw.im.get(fascicleMatLinkLabel)).label(fascicleMatLinkLabel);
+        model.component("comp1").material(mw.im.get(fascicleMatLinkLabel)).set("link", mw.im.get("endoneurium"));
 
         // Build the geometry
         model.component("comp1").geom("geom1").run("fin");
