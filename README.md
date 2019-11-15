@@ -12,8 +12,8 @@
     * Efficient saving of program states, split into higher-level nerve geometries (derived from mask data)
     * Progressbar: <a href="https://pypi.org/project/ppl/">https://pypi.org/project/ppl/</a>
     * library of generic electrode geometries and fiber information (metadata and coordinates for extracting electric potentials)
-* **November 15**
     * Add nerve to model
+* **November 15**
     * Mesh and solve model (store mesh parameters in JSON)
     * Pulling out potentials and saving to file
         - API Java
