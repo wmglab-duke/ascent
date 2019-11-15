@@ -103,23 +103,16 @@ class Part {
                 throw new  IllegalArgumentException("No implementation for part primitive name: " + pseudonym);
         }
 
-        // assign cuff materials
+        // assign domain material
         JSONObject medium = (JSONObject) instanceParams.get("medium");
-        System.out.println("1");
         String mediumMaterial = medium.getString("material");
-        System.out.println("1");
         String selection = myLabels[0];
-        System.out.println("1");
         String linkLabel = String.join("/", new String[]{instanceLabel, selection, mediumMaterial});
-        System.out.println("1");
         Material mat = model.component("comp1").material().create(mw.im.next("matlnk", linkLabel), "Link");
-        System.out.println("1");
         mat.label(linkLabel);
-        System.out.println("1");
         mat.set("link", mw.im.get(mediumMaterial));
-        System.out.println("1");
         mat.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(selection) + "_dom");
-        System.out.println("1");
+
     }
 
     public static IdentifierManager createPartPrimitive(String id, String pseudonym, ModelWrapper mw) throws IllegalArgumentException {
@@ -1925,7 +1918,6 @@ class Part {
                 mat.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(selection) + "_dom");
             }
         }
-
     }
 
     /**
@@ -2165,23 +2157,3 @@ class Part {
         }
     }
 }
-
-/*
-    {
-            "type": "Medium_Primitive",
-            "label": "CorTec Medium",
-            "def": {
-            "Radius": "r_ground",
-            "Length": "z_nerve"
-            },
-            "materials": [
-            {
-            "info": "medium",
-            "type": "muscle",
-            "label_index": 0
-            }
-            ]
-            },
-
-
- */
