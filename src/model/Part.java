@@ -1988,7 +1988,6 @@ class Part {
                 GeomFeature makefascicle = model.component("comp1").geom("geom1").create(im.next("ext",makefascicleLabel), "Extrude");
                 makefascicle.label(makefascicleLabel);
                 makefascicle.set("contributeto", im.get(fascicleCI_Endo_Label));
-
                 makefascicle.setIndex("distance", "z_nerve", 0);
                 makefascicle.selection("input").named(im.get(fascicleCI_Inner_Label));
 
@@ -2120,12 +2119,20 @@ class Part {
                 makePeri.setIndex("distance", "z_nerve", 0);
                 makePeri.selection("input").named(im.get(name2 + "_OUTER"));
 
+                // Add fascicle domains to ALL_NERVE_PARTS_UNION and ENDO_UNION for later assigning to materials and mesh
+                String[] fascicleMeshPeriUnions = {ModelWrapper.ALL_NERVE_PARTS_UNION, ModelWrapper.PERI_UNION};
+                mw.contributeToUnions(im.get(makePeriLabel), fascicleMeshPeriUnions);
+
                 String makeEndoLabel = "Make Endoneurium";
                 GeomFeature makeEndo = model.component("comp1").geom("geom1").create(im.next("ext",makeEndoLabel), "Extrude");
                 makeEndo.set("contributeto", im.get(name2 + "_ENDONEURIUM"));
                 makeEndo.set("workplane", im.get(innersPlaneLabel));
                 makeEndo.setIndex("distance", "z_nerve", 0);
                 makeEndo.selection("input").named(im.get(name2 + "_INNERS"));
+
+                // Add fascicle domains to ALL_NERVE_PARTS_UNION and ENDO_UNION for later assigning to materials and mesh
+                String[] fascicleMeshEndoUnions = {ModelWrapper.ALL_NERVE_PARTS_UNION, ModelWrapper.ENDO_UNION};
+                mw.contributeToUnions(im.get(makeEndoLabel), fascicleMeshEndoUnions);
 
                 break;
             case "Epineurium":
@@ -2155,10 +2162,12 @@ class Part {
                 GeomFeature epi = model.component("comp1").geom("geom1").create(im.next("ext",epiLabel), "Extrude");
                 epi.label(epiLabel);
                 epi.set("contributeto", im.get("EPINEURIUM"));
-
                 epi.setIndex("distance", "z_nerve", 0);
                 epi.selection("input").named(im.get("EPIXS"));
 
+                // Add epi domains to ALL_NERVE_PARTS_UNION for later assigning to materials and mesh
+                String[] epiUnions = {ModelWrapper.ALL_NERVE_PARTS_UNION};
+                mw.contributeToUnions(im.get(epiLabel), epiUnions);
 
                 break;
             default:
