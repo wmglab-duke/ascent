@@ -2087,16 +2087,16 @@ class Part {
                 GeomFeature outeric1 = outerPlane.geom().create(im.next("ic",outeric1Label), "InterpolationCurve");
                 outeric1.set("contributeto", im.get(oc1Label));
                 outeric1.set("source", "file");
-                outeric1.set("filename", outer_path2); // TODO
+                outeric1.set("filename", outer_path2);
                 outeric1.set("rtol", 0.02);
                 outeric1.label(outeric1Label);
 
-                String outericSrufaceLabel = "outer" + index + " Outer Surface";
-                outerPlane.geom().create(im.next("csol",outericSrufaceLabel), "ConvertToSolid");
-                outerPlane.geom().feature(im.get(outericSrufaceLabel)).set("keep", false);
-                outerPlane.geom().feature(im.get(outericSrufaceLabel)).selection("input").named(im.get(oc1Label));
-                outerPlane.geom().feature(im.get(outericSrufaceLabel)).set("contributeto", im.get(outerselLabel));
-                outerPlane.geom().feature(im.get(outericSrufaceLabel)).label(outericSrufaceLabel);
+                String outericSurfaceLabel = "outer" + index + " Outer Surface";
+                outerPlane.geom().create(im.next("csol",outericSurfaceLabel), "ConvertToSolid");
+                outerPlane.geom().feature(im.get(outericSurfaceLabel)).set("keep", false);
+                outerPlane.geom().feature(im.get(outericSurfaceLabel)).selection("input").named(im.get(oc1Label));
+                outerPlane.geom().feature(im.get(outericSurfaceLabel)).set("contributeto", im.get(outerselLabel));
+                outerPlane.geom().feature(im.get(outericSurfaceLabel)).label(outericSurfaceLabel);
 
                 String makePeriLabel = "outer" + index + " Make Perineurium";
                 GeomFeature makePeri = model.component("comp1").geom("geom1").create(im.next("ext",makePeriLabel), "Extrude");
