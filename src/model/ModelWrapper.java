@@ -391,7 +391,7 @@ public class ModelWrapper {
 
         // Load configuration file
         try {
-            JSONObject master_data = new JSONReader(String.join("/", new String[]{
+            JSONObject master = new JSONReader(String.join("/", new String[]{
                     this.root,
                     ".config",
                     "master.json"
@@ -401,7 +401,7 @@ public class ModelWrapper {
                     this.root,
                     "data",
                     "samples",
-                    (String) (master_data != null ? master_data.getJSONObject("sample").getString("name") : null),
+                    (String) (master != null ? master.getJSONObject("sample").getString("name") : null),
                     "morphology.json"
             })).getData();
 
@@ -410,15 +410,15 @@ public class ModelWrapper {
                     this.root,
                     "data",
                     "samples",
-                    (String) (master_data != null ? master_data.getJSONObject("sample").getString("name") : null),
+                    (String) (master != null ? master.getJSONObject("sample").getString("name") : null),
                     "0", // these 0's are temporary (for 3d models will need to change)
                     "0",
-                    (String) ((JSONObject) master_data.get("modes")).get("write"),
+                    (String) ((JSONObject) master.get("modes")).get("write"),
                     "fascicles"
             });
 
             // Add epineurium
-            String nerveMode = (String) master_data.getJSONObject("modes").get("nerve");
+            String nerveMode = (String) master.getJSONObject("modes").get("nerve");
             if (nerveMode.equals("PRESENT")) {
                 Part.createNervePartInstance("Epineurium", 0, null, this, null, morphology_data, master_data);
             }
@@ -451,7 +451,7 @@ public class ModelWrapper {
                         String fascicleType = data.get("inners").length == 1 ? fascicleTypes[0] : fascicleTypes[1];
 
                         // hand off to Part to build instance of fascicle
-                        Part.createNervePartInstance(fascicleType, index, path, this, data, morphology_data, master_data);
+                        Part.createNervePartInstance(fascicleType, index, path, this, data, morphology_data, master);
                     }
                 }
             }
@@ -537,9 +537,9 @@ public class ModelWrapper {
 
         // Load configuration data
         String configFile = "/.config/master.json";
-        JSONObject configData = null;
+        JSONObject master = null;
         try {
-            configData = new JSONReader(projectPath + configFile).getData();
+            master = new JSONReader(projectPath + configFile).getData();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -548,7 +548,7 @@ public class ModelWrapper {
         String morphologyFile = String.join("/", new String[]{
                 "data",
                 "samples",
-                (String) (configData != null ? configData.getJSONObject("sample").getString("name") : null),
+                (String) (master != null ? master.getJSONObject("sample").getString("name") : null),
                 "morphology.json"
         });
         JSONObject morphologyData = null;
@@ -584,11 +584,11 @@ public class ModelWrapper {
         model.param().set("rho_peri", "1149 [ohm*m]"); // TODO
 
         // Length of the FEM - will want to converge thresholds for this
-        double length = ((JSONObject) (Objects.requireNonNull(configData != null ? configData.get("medium") : null))).getDouble("length");
+        double length = ((JSONObject) (Objects.requireNonNull(master != null ? master.get("medium") : null))).getDouble("length");
         model.param().set("z_nerve", length);
 
         // Radius of the FEM - will want to converge thresholds for this
-        double radius = ((JSONObject) configData.get("medium")).getDouble("radius");
+        double radius = ((JSONObject) master.get("medium")).getDouble("radius");
         model.param().set("r_ground", radius);
 
         // Create part primitive for FEM medium
@@ -608,13 +608,13 @@ public class ModelWrapper {
         String instanceLabel = "Medium";
         String instanceID = mw.im.next("pi", instanceLabel);
         try {
-        Part.createEnvironmentPartInstance(instanceID, instanceLabel, mediumString, mw, configData);
+        Part.createEnvironmentPartInstance(instanceID, instanceLabel, mediumString, mw, master);
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
 
         // Read cuffs to build from master.json (cuff.preset) which links to JSON containing instantiations of parts
-        JSONObject cuffObject = (JSONObject) configData.get("cuff");
+        JSONObject cuffObject = (JSONObject) master.get("cuff");
         JSONArray cuffs = (JSONArray) cuffObject.get("preset");
 
         // Build cuffs
@@ -642,7 +642,7 @@ public class ModelWrapper {
         System.out.println("Assigning nerve parts material links.");
 
         // Add epineurium only if NerveMode == PRESENT
-        String nerveMode = (String) configData.getJSONObject("modes").get("nerve");
+        String nerveMode = (String) master.getJSONObject("modes").get("nerve");
         if (nerveMode.equals("PRESENT")) {
             String epineuriumMatLinkLabel = "epineurium material";
             PropFeature epineuriumMatLink = model.component("comp1").material().create(mw.im.next("matlnk",epineuriumMatLinkLabel), "Link");
