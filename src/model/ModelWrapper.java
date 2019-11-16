@@ -379,14 +379,14 @@ public class ModelWrapper {
      * TODO: finish implementation of meshing in the Part class
      * @return success indicator
      */
-    public boolean addFascicles() {
+    public boolean addNerve() {
 
         // define global nerve part names (MUST BE IDENTICAL IN Part)
-        String[] partPrimitiveNames = new String[]{"FascicleCI", "FascicleMesh"};
+        String[] fascicleTypes = new String[]{"FascicleCI", "FascicleMesh"};
 
         // Load configuration file
         try {
-            JSONObject json_data = new JSONReader(String.join("/", new String[]{
+            JSONObject master_data = new JSONReader(String.join("/", new String[]{
                     this.root,
                     ".config",
                     "master.json"
@@ -396,7 +396,7 @@ public class ModelWrapper {
                     this.root,
                     "data",
                     "samples",
-                    (String) json_data.get("sample"),
+                    (String) master_data.get("sample"),
                     "morphology.json"
             })).getData();
 
@@ -405,12 +405,15 @@ public class ModelWrapper {
                     this.root,
                     "data",
                     "samples",
-                    (String) json_data.get("sample"),
+                    (String) master_data.get("sample"),
                     "0", // these 0's are temporary (for 3d models will need to change)
                     "0",
-                    (String) ((JSONObject) json_data.get("modes")).get("write"),
+                    (String) ((JSONObject) master_data.get("modes")).get("write"),
                     "fascicles"
             });
+
+            // Add epineurium
+            Part.createNervePartInstance("Epineurium", 0, null, this, null, morphology_data, master_data);
 
             // Loop over all fascicle dirs
             String[] dirs = new File(fasciclesPath).list();
@@ -437,10 +440,10 @@ public class ModelWrapper {
                         }
 
                         // do FascicleCI if only one inner, FascicleMesh otherwise
-                        String fascicleType = data.get("inners").length == 1 ? partPrimitiveNames[0] : partPrimitiveNames[1];
+                        String fascicleType = data.get("inners").length == 1 ? fascicleTypes[0] : fascicleTypes[1];
 
                         // hand off to Part to build instance of fascicle
-                        Part.createNervePartInstance(fascicleType, index, path, this, data, morphology_data, json_data);
+                        Part.createNervePartInstance(fascicleType, index, path, this, data, morphology_data, master_data);
                     }
                 }
             }
@@ -614,10 +617,10 @@ public class ModelWrapper {
             mw.addCuffPartInstances(cuff);
         }
 
-        // Add epineurium
-        Part.createNervePartInstance("Epineurium", 0, null, mw, null, morphologyData, configData);
+//        // Add epineurium
+//        Part.createNervePartInstance("Epineurium", 0, null, mw, null, morphologyData, configData);
         // Add fascicles
-        mw.addFascicles();
+        mw.addNerve();
         // Create unions
         mw.createUnions();
 
@@ -660,14 +663,14 @@ public class ModelWrapper {
         model.component("comp1").mesh("mesh1").feature(mw.im.get(meshNerveSweLabel)).set("facemethod", "tri");
         model.component("comp1").mesh("mesh1").feature("size").set("hauto", 1); // TODO load in mesh params from master
         System.out.println("Meshing nerve parts... will take a while");
-        model.component("comp1").mesh("mesh1").run(mw.im.get(meshNerveSweLabel));
+        //model.component("comp1").mesh("mesh1").run(mw.im.get(meshNerveSweLabel)); // TODO
 
         String meshRestFtetLabel = "Mesh Rest";
         model.component("comp1").mesh("mesh1").create(mw.im.next("ftet",meshRestFtetLabel), "FreeTet");
         model.component("comp1").mesh("mesh1").feature(mw.im.get(meshRestFtetLabel)).create("size1", "Size");
         model.component("comp1").mesh("mesh1").feature(mw.im.get(meshRestFtetLabel)).feature("size1").set("hauto", 1);
         System.out.println("Meshing the rest... will also take a while");
-        model.component("comp1").mesh("mesh1").run(mw.im.get(meshRestFtetLabel));
+        //model.component("comp1").mesh("mesh1").run(mw.im.get(meshRestFtetLabel)); // TODO
 
         // Solve
         model.study().create("std1");
