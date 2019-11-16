@@ -644,17 +644,17 @@ public class ModelWrapper {
         }
 
         String perineuriumMatLinkLabel = "perineurium_DC material"; // TODO frequency dependence, only do this if there is an instance of the MESHFASCICLE
-        model.component("comp1").material().create(mw.im.next("matlnk",perineuriumMatLinkLabel), "Link");
-        model.component("comp1").material(mw.im.get(perineuriumMatLinkLabel)).selection().named("geom1" +"_" + mw.im.get("periUnionCsel") + "_dom");
-        model.component("comp1").material(mw.im.get(perineuriumMatLinkLabel)).label(perineuriumMatLinkLabel);
-        model.component("comp1").material(mw.im.get(perineuriumMatLinkLabel)).set("link", mw.im.get("perineurium_DC"));
+        PropFeature perineuriumMatLink = model.component("comp1").material().create(mw.im.next("matlnk",perineuriumMatLinkLabel), "Link");
+        perineuriumMatLink.selection().named("geom1" +"_" + mw.im.get("periUnionCsel") + "_dom");
+        perineuriumMatLink.label(perineuriumMatLinkLabel);
+        perineuriumMatLink.set("link", mw.im.get("perineurium_DC"));
 
         // Will always need to add endoneurium material
         String fascicleMatLinkLabel = "endoneurium material";
-        model.component("comp1").material().create(mw.im.next("matlnk",fascicleMatLinkLabel), "Link");
-        model.component("comp1").material(mw.im.get(fascicleMatLinkLabel)).selection().named("geom1" +"_" + mw.im.get("endoUnionCsel") + "_dom");
-        model.component("comp1").material(mw.im.get(fascicleMatLinkLabel)).label(fascicleMatLinkLabel);
-        model.component("comp1").material(mw.im.get(fascicleMatLinkLabel)).set("link", mw.im.get("endoneurium"));
+        PropFeature fascicleMatLink = model.component("comp1").material().create(mw.im.next("matlnk",fascicleMatLinkLabel), "Link");
+        fascicleMatLink.selection().named("geom1" +"_" + mw.im.get("endoUnionCsel") + "_dom");
+        fascicleMatLink.label(fascicleMatLinkLabel);
+        fascicleMatLink.set("link", mw.im.get("endoneurium"));
 
         // Build the geometry
         System.out.println("Building the FEM geometry.");
