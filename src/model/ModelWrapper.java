@@ -2,6 +2,7 @@ package model;
 
 import com.comsol.model.MeshFeature;
 import com.comsol.model.Model;
+import com.comsol.model.PropFeature;
 import com.comsol.model.physics.PhysicsFeature;
 import com.comsol.model.util.ModelUtil;
 import org.json.JSONArray;
@@ -636,10 +637,10 @@ public class ModelWrapper {
         String nerveMode = (String) configData.getJSONObject("modes").get("nerve");
         if (nerveMode.equals("PRESENT")) {
             String epineuriumMatLinkLabel = "epineurium material";
-            model.component("comp1").material().create(mw.im.next("matlnk",epineuriumMatLinkLabel), "Link");
-            model.component("comp1").material(mw.im.get(epineuriumMatLinkLabel)).selection().named("geom1" +"_" + mw.im.get("EPINEURIUM") + "_dom");
-            model.component("comp1").material(mw.im.get(epineuriumMatLinkLabel)).label(epineuriumMatLinkLabel);
-            model.component("comp1").material(mw.im.get(epineuriumMatLinkLabel)).set("link", mw.im.get("epineurium"));
+            PropFeature epineuriumMatLink = model.component("comp1").material().create(mw.im.next("matlnk",epineuriumMatLinkLabel), "Link");
+            epineuriumMatLink.selection().named("geom1" +"_" + mw.im.get("EPINEURIUM") + "_dom");
+            epineuriumMatLink.label(epineuriumMatLinkLabel);
+            epineuriumMatLink.set("link", mw.im.get("epineurium"));
         }
 
         String perineuriumMatLinkLabel = "perineurium_DC material"; // TODO frequency dependence, only do this if there is an instance of the MESHFASCICLE
