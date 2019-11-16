@@ -643,14 +643,15 @@ public class ModelWrapper {
             epineuriumMatLink.set("link", mw.im.get("epineurium"));
         }
 
-        System.out.println("here");
-        String perineuriumMatLinkLabel = "perineurium_DC material"; // TODO frequency dependence, only do this if there is an instance of the MESHFASCICLE
-        PropFeature perineuriumMatLink = model.component("comp1").material().create(mw.im.next("matlnk",perineuriumMatLinkLabel), "Link");
-        perineuriumMatLink.selection().named("geom1" +"_" + mw.im.get("periUnionCsel") + "_dom");
-        perineuriumMatLink.label(perineuriumMatLinkLabel);
-        perineuriumMatLink.set("link", mw.im.get("perineurium_DC"));
-        System.out.println("after");
-
+        // Add perineurium material only if there are any fascicles being meshed
+        if (mw.im.get("periUnionCsel") != null) {
+            String perineuriumMatLinkLabel = "perineurium_DC material"; // TODO frequency dependence, only do this if there is an instance of the MESHFASCICLE
+            PropFeature perineuriumMatLink = model.component("comp1").material().create(mw.im.next("matlnk",perineuriumMatLinkLabel), "Link");
+            perineuriumMatLink.selection().named("geom1" +"_" + mw.im.get("periUnionCsel") + "_dom");
+            perineuriumMatLink.label(perineuriumMatLinkLabel);
+            perineuriumMatLink.set("link", mw.im.get("perineurium_DC"));
+        }
+        
         // Will always need to add endoneurium material
         String fascicleMatLinkLabel = "endoneurium material";
         PropFeature fascicleMatLink = model.component("comp1").material().create(mw.im.next("matlnk",fascicleMatLinkLabel), "Link");
