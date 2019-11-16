@@ -34,7 +34,9 @@
     "data",
     "samples"
   ],
-  "sample": "Cadaver50-2",
+  "sample": {
+    "name": "Cadaver50-2"
+  },
   "modes": {
     "write": "sectionwise2d",
     "mask_input": "INNER_AND_OUTER_SEPARATE",

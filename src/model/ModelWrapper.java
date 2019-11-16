@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Objects;
 
 /**
  * model.ModelWrapper
@@ -396,7 +397,7 @@ public class ModelWrapper {
                     this.root,
                     "data",
                     "samples",
-                    (String) master_data.get("sample"),
+                    (String) (master_data != null ? master_data.getJSONObject("sample").getString("name") : null),
                     "morphology.json"
             })).getData();
 
@@ -405,7 +406,7 @@ public class ModelWrapper {
                     this.root,
                     "data",
                     "samples",
-                    (String) master_data.get("sample"),
+                    (String) (master_data != null ? master_data.getJSONObject("sample").getString("name") : null),
                     "0", // these 0's are temporary (for 3d models will need to change)
                     "0",
                     (String) ((JSONObject) master_data.get("modes")).get("write"),
@@ -413,7 +414,10 @@ public class ModelWrapper {
             });
 
             // Add epineurium
-            Part.createNervePartInstance("Epineurium", 0, null, this, null, morphology_data, master_data);
+            String nerveMode = (String) master_data.getJSONObject("modes").get("nerve");
+            if (nerveMode.equals("PRESENT")) {
+                Part.createNervePartInstance("Epineurium", 0, null, this, null, morphology_data, master_data);
+            }
 
             // Loop over all fascicle dirs
             String[] dirs = new File(fasciclesPath).list();
@@ -540,7 +544,7 @@ public class ModelWrapper {
         String morphologyFile = String.join("/", new String[]{
                 "data",
                 "samples",
-                (String) configData.get("sample"),
+                (String) (configData != null ? configData.getJSONObject("sample").getString("name") : null),
                 "morphology.json"
         });
         JSONObject morphologyData = null;
@@ -570,15 +574,15 @@ public class ModelWrapper {
         ModelWrapper mw = new ModelWrapper(model, projectPath);
 
         // Set generic parameters - todo these are for compound nerves, what about single fascicle????
-        JSONObject nerve = (JSONObject) morphologyData.get("Nerve");
+        JSONObject nerve = (JSONObject) Objects.requireNonNull(morphologyData).get("Nerve");
         model.param().set("a_nerve", nerve.get("area") + " [micrometer^2]");
         model.param().set("r_nerve", "sqrt(a_nerve/pi)");
         model.param().set("rho_peri", "1149 [ohm*m]"); // TODO
 
-        Double length = ((JSONObject) configData.get("medium")).getDouble("length");
+        double length = ((JSONObject) (Objects.requireNonNull(configData != null ? configData.get("medium") : null))).getDouble("length");
         model.param().set("z_nerve", length);
 
-        Double radius = ((JSONObject) configData.get("medium")).getDouble("radius");
+        double radius = ((JSONObject) configData.get("medium")).getDouble("radius");
         model.param().set("r_ground", radius);
 
         String mediumString = "Medium_Primitive";
@@ -617,20 +621,24 @@ public class ModelWrapper {
             mw.addCuffPartInstances(cuff);
         }
 
-//        // Add epineurium
-//        Part.createNervePartInstance("Epineurium", 0, null, mw, null, morphologyData, configData);
-        // Add fascicles
+        // Add nerve
         mw.addNerve();
+
         // Create unions
         mw.createUnions();
 
         // Add materials
         System.out.println("Assigning nerve parts material links.");
-        String epineuriumMatLinkLabel = "epineurium material";
-        model.component("comp1").material().create(mw.im.next("matlnk",epineuriumMatLinkLabel), "Link");
-        model.component("comp1").material(mw.im.get(epineuriumMatLinkLabel)).selection().named("geom1" +"_" + mw.im.get("EPINEURIUM") + "_dom");
-        model.component("comp1").material(mw.im.get(epineuriumMatLinkLabel)).label(epineuriumMatLinkLabel);
-        model.component("comp1").material(mw.im.get(epineuriumMatLinkLabel)).set("link", mw.im.get("epineurium"));
+
+        // Add epineurium
+        String nerveMode = (String) configData.getJSONObject("modes").get("nerve");
+        if (nerveMode.equals("PRESENT")) {
+            String epineuriumMatLinkLabel = "epineurium material";
+            model.component("comp1").material().create(mw.im.next("matlnk",epineuriumMatLinkLabel), "Link");
+            model.component("comp1").material(mw.im.get(epineuriumMatLinkLabel)).selection().named("geom1" +"_" + mw.im.get("EPINEURIUM") + "_dom");
+            model.component("comp1").material(mw.im.get(epineuriumMatLinkLabel)).label(epineuriumMatLinkLabel);
+            model.component("comp1").material(mw.im.get(epineuriumMatLinkLabel)).set("link", mw.im.get("epineurium"));
+        }
 
         String perineuriumMatLinkLabel = "perineurium_DC material"; // TODO frequency dependence
         model.component("comp1").material().create(mw.im.next("matlnk",perineuriumMatLinkLabel), "Link");
