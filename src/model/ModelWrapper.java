@@ -573,18 +573,21 @@ public class ModelWrapper {
         // Define ModelWrapper class instance for model and projectPath
         ModelWrapper mw = new ModelWrapper(model, projectPath);
 
-        // Set generic parameters - todo these are for compound nerves, what about single fascicle????
+        // Set generic parameters - todo these are for compound nerves, what about single fascicle???? -- CAN WE MOVE THIS
         JSONObject nerve = (JSONObject) Objects.requireNonNull(morphologyData).get("Nerve");
         model.param().set("a_nerve", nerve.get("area") + " [micrometer^2]");
         model.param().set("r_nerve", "sqrt(a_nerve/pi)");
         model.param().set("rho_peri", "1149 [ohm*m]"); // TODO
 
+        // Length of the FEM - will want to converge thresholds for this
         double length = ((JSONObject) (Objects.requireNonNull(configData != null ? configData.get("medium") : null))).getDouble("length");
         model.param().set("z_nerve", length);
 
+        // Radius of the FEM - will want to converge thresholds for this
         double radius = ((JSONObject) configData.get("medium")).getDouble("radius");
         model.param().set("r_ground", radius);
 
+        // Create part primitive for FEM medium
         String mediumString = "Medium_Primitive";
         String partID = mw.im.next("part", mediumString);
         try {
@@ -597,6 +600,7 @@ public class ModelWrapper {
         // Add biological material definitions
         mw.addBioMaterialDefinitions();
 
+        // Create part instance for FEM medium
         String instanceLabel = "Medium";
         String instanceID = mw.im.next("pi", instanceLabel);
         try {
@@ -623,14 +627,12 @@ public class ModelWrapper {
 
         // Add nerve
         mw.addNerve();
-
         // Create unions
         mw.createUnions();
-
         // Add materials
         System.out.println("Assigning nerve parts material links.");
 
-        // Add epineurium
+        // Add epineurium if NerveMode == PRESENT
         String nerveMode = (String) configData.getJSONObject("modes").get("nerve");
         if (nerveMode.equals("PRESENT")) {
             String epineuriumMatLinkLabel = "epineurium material";
@@ -640,12 +642,13 @@ public class ModelWrapper {
             model.component("comp1").material(mw.im.get(epineuriumMatLinkLabel)).set("link", mw.im.get("epineurium"));
         }
 
-        String perineuriumMatLinkLabel = "perineurium_DC material"; // TODO frequency dependence
+        String perineuriumMatLinkLabel = "perineurium_DC material"; // TODO frequency dependence, only do this if there is an instance of the MESHFASCICLE
         model.component("comp1").material().create(mw.im.next("matlnk",perineuriumMatLinkLabel), "Link");
         model.component("comp1").material(mw.im.get(perineuriumMatLinkLabel)).selection().named("geom1" +"_" + mw.im.get("periUnionCsel") + "_dom");
         model.component("comp1").material(mw.im.get(perineuriumMatLinkLabel)).label(perineuriumMatLinkLabel);
         model.component("comp1").material(mw.im.get(perineuriumMatLinkLabel)).set("link", mw.im.get("perineurium_DC"));
 
+        // Will always need to add endoneurium material
         String fascicleMatLinkLabel = "endoneurium material";
         model.component("comp1").material().create(mw.im.next("matlnk",fascicleMatLinkLabel), "Link");
         model.component("comp1").material(mw.im.get(fascicleMatLinkLabel)).selection().named("geom1" +"_" + mw.im.get("endoUnionCsel") + "_dom");
