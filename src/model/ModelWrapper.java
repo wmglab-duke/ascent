@@ -335,8 +335,11 @@ public class ModelWrapper {
             String endoMaterialID = this.im.next("mat", "endoneurium");
             Part.defineMaterial(endoMaterialID, "endoneurium", master, this);
 
-            String epiMaterialID = this.im.next("mat", "epineurium"); // todo if compound nerve
-            Part.defineMaterial(epiMaterialID, "epineurium", master, this);
+            String nerveMode = (String) master.getJSONObject("modes").get("nerve");
+            if (nerveMode.equals("PRESENT")) {
+                String epiMaterialID = this.im.next("mat", "epineurium");
+                Part.defineMaterial(epiMaterialID, "epineurium", master, this);
+            }
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -525,7 +528,7 @@ public class ModelWrapper {
 
     /**
      * Master procedure to run!
-     * @param args do not use
+     * @param args
      */
     public static void main(String[] args) {
 
@@ -630,6 +633,11 @@ public class ModelWrapper {
         mw.addNerve();
         // Create unions
         mw.createUnions();
+
+        // Build the geometry
+        System.out.println("Building the FEM geometry.");
+        model.component("comp1").geom("geom1").run("fin");
+
         // Add materials
         System.out.println("Assigning nerve parts material links.");
 
@@ -651,17 +659,13 @@ public class ModelWrapper {
             perineuriumMatLink.label(perineuriumMatLinkLabel);
             perineuriumMatLink.set("link", mw.im.get("perineurium_DC"));
         }
-        
+
         // Will always need to add endoneurium material
         String fascicleMatLinkLabel = "endoneurium material";
         PropFeature fascicleMatLink = model.component("comp1").material().create(mw.im.next("matlnk",fascicleMatLinkLabel), "Link");
         fascicleMatLink.selection().named("geom1" +"_" + mw.im.get("endoUnionCsel") + "_dom");
         fascicleMatLink.label(fascicleMatLinkLabel);
         fascicleMatLink.set("link", mw.im.get("endoneurium"));
-
-        // Build the geometry
-        System.out.println("Building the FEM geometry.");
-        model.component("comp1").geom("geom1").run("fin");
 
         try {
             System.out.println("Saving the *.mph file before proceeding to mesh and solve.");
@@ -692,6 +696,7 @@ public class ModelWrapper {
         model.study("std1").setGenConv(true);
         model.study("std1").create("stat", "Stationary");
         model.study("std1").feature("stat").activate("ec", true);
+        // TODO Run
 
         // Save
         try {
