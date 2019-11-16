@@ -27,7 +27,7 @@
     "data",
     "input",
     "samples",
-    "Cadaver50-2",
+    "Pig13-1",
     "map.json"
   ],
   "samples_path": [
@@ -35,7 +35,7 @@
     "samples"
   ],
   "sample": {
-    "name": "Cadaver50-2"
+    "name": "Pig13-1"
   },
   "modes": {
     "write": "sectionwise2d",
