@@ -128,7 +128,7 @@ class Waveform(Exceptionable, Configurable):
         temp_mammalian = 37                    # [degC]
         temp_room = 21                         # [degC]
         q10 = 1.5
-        rs37 = ((1/rs21)*(q10**((temp_mammalian-temp_room)/10)))**(-1) # [Ohm-m^2]
+        rs37 = ((1/rs21)*(q10**((temp_mammalian-temp_room)/10)))**(-1)  # [Ohm-m^2]
 
         # Convert to constant rho
         thk_weerasuriya = 0.00002175           # [m]
