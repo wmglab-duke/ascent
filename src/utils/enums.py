@@ -151,6 +151,26 @@ class WaveformMode(Enum):
     BIPHASIC_PULSE_TRAIN = 3
 
 
+#%% Perineurium Impedance
+
+@unique
+class PerineuriumImpedanceMode(Enum):
+    config = 'perineurium'
+
+    WEERASURIYA = 0
+
+
+#%% Perineurium Thickness
+
+@unique
+class PerineuriumThicknessMode(Enum):
+    config = 'perineurium'
+
+    MEASURED = 0
+    THREE_PERCENT_DIAM = 1
+    LINEAR_REGRESSION_PIGS = 2
+
+
 #%% Cuffs
 
 @unique

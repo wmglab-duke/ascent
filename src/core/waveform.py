@@ -64,7 +64,7 @@ class Waveform(Exceptionable, Configurable):
     @staticmethod
     def rho_weerasuriya(f=None):
         """
-        :return:
+        :return: TODO
         """
         w = 2*np.pi*f                          # f is in [Hz]
 
