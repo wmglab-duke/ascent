@@ -170,8 +170,8 @@
       "description": ""
     },
     {
-      "name": "recess_CT",
-      "expression": "0",
+      "name": "Recess_CT",
+      "expression": "0 [um]",
       "description": ""
     },
     {
@@ -191,7 +191,7 @@
     },
     {
       "name": "theta_contact_CT",
-      "expression": "360*(B_CT/(2*pi*(R_in_CT+recess_CT))) [deg]",
+      "expression": "360*(B_CT/(2*pi*(R_in_CT+Recess_CT))) [deg]",
       "description": ""
     },
     {
@@ -207,11 +207,6 @@
     {
       "name": "L_elec_CT",
       "expression": "0.3 [mm]",
-      "description": ""
-    },
-    {
-      "name": "Recess_CT",
-      "expression": "0 [mm]",
       "description": ""
     },
     {

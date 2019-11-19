@@ -420,7 +420,7 @@ public class ModelWrapper {
             // Add epineurium
             String nerveMode = (String) master.getJSONObject("modes").get("nerve");
             if (nerveMode.equals("PRESENT")) {
-                Part.createNervePartInstance("Epineurium", 0, null, this, null, morphology_data, master_data);
+                Part.createNervePartInstance("Epineurium", 0, null, this, null, morphology_data, master);
             }
 
             // Loop over all fascicle dirs
