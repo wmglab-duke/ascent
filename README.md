@@ -29,6 +29,20 @@
     * Batching files from command line - save geom and mesh and resolve for different frequencies  (https://www.comsol.com/blogs/how-to-run-simulations-in-batch-mode-from-the-command-line/)
 
 
+* **Wishlist**
+    * Nerve only mode - able to build FEM and assign materials without knowing cuff design
+    * Cuff only mode - anaogous to previous, but trying to finalize cuff design and don't want to deal with nerve yet
+    * 1 sim - 1 fiber to be more efficient
+    * Use thresholds from one fiber in nerve/fascicle to set smart bounds for thresholds of others
+    * Block characterize Vm on cluster - more info that just block/no block to inform search and make less manual
+    * Configutations for nerve + cuff geom, configurations for waveform + material props (since function of freq) + bounds, configurations for sims?
+    * Auto-converge - interpret results, built next fem, resubmit automagically
+    * Characteristic nerve (fascicle are circles with location and radius)
+    * Multiple contacts active at once
+    * Sweep freqs, sweep PWs
+    * Arbitrary waveform input
+    * ...
+
 ## Python 3.7 Dependencies (non-builtin)
 - `numpy`
 - `Pillow`
