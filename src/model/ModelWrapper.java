@@ -401,7 +401,7 @@ public class ModelWrapper {
                     this.root,
                     "data",
                     "samples",
-                    (String) (master != null ? master.getJSONObject("sample").getString("name") : null),
+                    master.getString("sample"),
                     "morphology.json"
             })).getData();
 
@@ -410,7 +410,7 @@ public class ModelWrapper {
                     this.root,
                     "data",
                     "samples",
-                    (String) (master != null ? master.getJSONObject("sample").getString("name") : null),
+                    master.getString("sample"),
                     "0", // these 0's are temporary (for 3d models will need to change)
                     "0",
                     (String) ((JSONObject) master.get("modes")).get("write"),
@@ -548,7 +548,7 @@ public class ModelWrapper {
         String morphologyFile = String.join("/", new String[]{
                 "data",
                 "samples",
-                (String) (master != null ? master.getJSONObject("sample").getString("name") : null),
+                master.getString("sample"),
                 "morphology.json"
         });
         JSONObject morphologyData = null;

@@ -49,7 +49,7 @@ class Runner(Exceptionable, Configurable):
         def load(path: str):
             return pickle.load(open(path, 'rb'))
 
-        path_parts = [self.path(ConfigKey.MASTER, 'samples_path'), self.search(ConfigKey.MASTER, 'sample', 'name')]
+        path_parts = [self.path(ConfigKey.MASTER, 'samples_path'), self.search(ConfigKey.MASTER, 'sample')]
 
         if not os.path.isfile(os.path.join(*path_parts, 'slide_manager.obj')):
             print('Existing slide manager not found. Performing full run.')
@@ -147,7 +147,7 @@ class Runner(Exceptionable, Configurable):
     def save_all(self):
 
         print('SAVE ALL')
-        path_parts = [self.path(ConfigKey.MASTER, 'samples_path'), self.search(ConfigKey.MASTER, 'sample', 'name')]
+        path_parts = [self.path(ConfigKey.MASTER, 'samples_path'), self.search(ConfigKey.MASTER, 'sample')]
         self.slide_manager.save(os.path.join(*path_parts, 'slide_manager.obj'))
         self.slide_manager.output_morphology_data()
         self.fiber_manager.save(os.path.join(*path_parts, 'fiber_manager.obj'))
