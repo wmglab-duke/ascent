@@ -1,6 +1,6 @@
 {
   "scale": {
-    "scale_bar_length": 500,
+    "scale_bar_length": 1000,
     "scale_bar_unit": "micrometer",
     "outer_thick_to_inner_diam": 0.03,
     "shrinkage_scale": 0.2
@@ -27,7 +27,7 @@
     "data",
     "input",
     "samples",
-    "Rat10-2",
+    "Cadaver50-2",
     "map.json"
   ],
   "samples_path": [
@@ -35,11 +35,11 @@
     "samples"
   ],
   "sample": {
-    "name": "Rat10-2"
+    "name": "Cadaver50-2"
   },
   "modes": {
     "write": "sectionwise2d",
-    "mask_input": "INNER_AND_OUTER_COMPILED",
+    "mask_input": "INNER_AND_OUTER_SEPARATE",
     "nerve": "PRESENT",
     "reshape_nerve": "CIRCLE",
     "deform": "PHYSICS",
