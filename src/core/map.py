@@ -116,7 +116,6 @@ class Map(Exceptionable, Configurable):
         :param number: number within that cassette (should narrow search to 1 slide)
         :return: the Slide object (note that the list is being indexed into at the end: [0])
         """
-        print('Slides {}'.format(self.slides))
         result = list(filter(lambda s: (s.cassette == cassette) and (s.number == number), self.slides))
         return result[0] if len(result) != 0 else None
 
@@ -130,7 +129,6 @@ class Map(Exceptionable, Configurable):
         # load in and compute parameters
         cassettes = self.search(ConfigKey.MASTER, *self.data_root, 'cassettes')
         allowed_diffs = self.search(ConfigKey.MASTER, *self.data_root, 'allowed_differences')
-        print('number regex: {}'.format(self.search(ConfigKey.MASTER, *self.data_root, 'number_regex')))
         number_regex = re.compile(self.search(ConfigKey.MASTER, *self.data_root, 'number_regex'))  # compile regex
         cassette_start_pos = self.search(ConfigKey.MASTER, *self.data_root, 'start_position')
         position = cassette_start_pos
@@ -148,23 +146,17 @@ class Map(Exceptionable, Configurable):
 
         # get files (assumes first iteration of os.walk)
         # files are always the 3rd item in a tuple returned by each iteration of os.walk
-        print(self.source_path)
-        print(os.listdir(self.source_path))
         files = [result for result in os.walk(self.source_path)][0][2]
-        print('files {}'.format(files))
 
         # %% master loop for finding positions
         for k, cassette_code in enumerate(cassettes):
-            print('k: {}\t cassette_code: {}'.format(k, cassette_code))
             cassette = []
             # find all files from this cassette
             filtered_files = list(filter(lambda f: re.search(cassette_code, f), files))
-            print('filtered files: {}'.format(filtered_files))
             for i, file in enumerate(filtered_files):
                 # we know that there MUST be a match now because it matched to the cassette name
                 match = number_regex.search(file).group(0)
                 # get the number from that match
-                print('match: {}'.format(match[:match.index('_')]))
                 number = int(match[:match.index('_')])
 
                 # NOTE: THIS FINDS POSITION ALONG Z-AXIS; COMMENTING OUT FOR NOW
@@ -189,7 +181,6 @@ class Map(Exceptionable, Configurable):
 
                 position = 0
                 if len(list(filter(lambda c: c.number == number, cassette))) == 0:
-                    print('ADDING TO CASSETTE LIST')
                     cassette.append(SlideInfo(cassette_code,
                                               number,
                                               position,

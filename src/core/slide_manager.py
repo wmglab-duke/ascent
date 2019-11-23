@@ -85,14 +85,12 @@ class SlideManager(Exceptionable, Configurable, Saveable):
                 os.chdir(directory_part)
 
                 if directory_part == sample:
-                    print('{}'.format(source_directory))
                     scale_source_file = os.path.join(start_directory,
                                                      *(source_directory.split(os.sep)),
                                                      '_'.join([sample,
                                                                cassette,
                                                                number,
                                                                MaskFileNames.SCALE_BAR.value]))
-                    print('source file: {}'.format(scale_source_file))
                     if os.path.exists(scale_source_file):
                         shutil.copy2(scale_source_file,  MaskFileNames.SCALE_BAR.value)
                     else:
@@ -142,8 +140,6 @@ class SlideManager(Exceptionable, Configurable, Saveable):
             cassette, number = (str(item) for item in (cassette, number))
 
             os.chdir(os.path.join(samples_path, sample, cassette, number, 'masks'))
-
-            print(os.getcwd())
 
             if not exists(MaskFileNames.RAW):
                 self.throw(18)

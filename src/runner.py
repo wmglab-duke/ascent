@@ -87,7 +87,7 @@ class Runner(Exceptionable, Configurable):
                                           map_mode=SetupMode.NEW)
 
         print('BUILD FILE STRUCTURE')
-        self.slide_manager.build_file_structure(True)
+        self.slide_manager.build_file_structure()
 
         print('POPULATE')
         self.slide_manager.populate()
