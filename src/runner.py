@@ -84,10 +84,10 @@ class Runner(Exceptionable, Configurable):
         print('\nSTART SLIDE MANAGER')
         self.slide_manager = SlideManager(self.configs[ConfigKey.MASTER.value],
                                           self.configs[ConfigKey.EXCEPTIONS.value],
-                                          map_mode=SetupMode.OLD)
+                                          map_mode=SetupMode.NEW)
 
         print('BUILD FILE STRUCTURE')
-        self.slide_manager.build_file_structure()
+        self.slide_manager.build_file_structure(True)
 
         print('POPULATE')
         self.slide_manager.populate()

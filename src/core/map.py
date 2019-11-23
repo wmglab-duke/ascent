@@ -81,16 +81,15 @@ class Map(Exceptionable, Configurable):
         self.slides: List[SlideInfo] = []
 
         if self.mode == SetupMode.NEW:
-            self.output_path = os.path.join(self.path(ConfigKey.MASTER, *self.data_root, 'paths', 'output'),
-                                            '{}.json'.format(dt.datetime.now().strftime('%m_%d_%Y')))
+            self.output_path = os.path.join(self.path(ConfigKey.MASTER, *self.data_root, 'paths', 'output'))
 
             # source DIRECTORY
             self.source_path = self.path(ConfigKey.MASTER, *self.data_root, 'paths', 'source',
-                                         is_dir=True, is_absolute=True)
+                                         is_dir=True, is_absolute=False)
 
             # build, resize, and write to file
             self.__build()
-            self.__resize()
+            # self.__resize()
             self.write()
 
         elif self.mode == SetupMode.OLD:
@@ -117,7 +116,9 @@ class Map(Exceptionable, Configurable):
         :param number: number within that cassette (should narrow search to 1 slide)
         :return: the Slide object (note that the list is being indexed into at the end: [0])
         """
-        return list(filter(lambda s: (s.cassette == cassette) and (s.number == number), self.slides))[0]
+        print('Slides {}'.format(self.slides))
+        result = list(filter(lambda s: (s.cassette == cassette) and (s.number == number), self.slides))
+        return result[0] if len(result) != 0 else None
 
     def __build(self):
         """
@@ -129,6 +130,7 @@ class Map(Exceptionable, Configurable):
         # load in and compute parameters
         cassettes = self.search(ConfigKey.MASTER, *self.data_root, 'cassettes')
         allowed_diffs = self.search(ConfigKey.MASTER, *self.data_root, 'allowed_differences')
+        print('number regex: {}'.format(self.search(ConfigKey.MASTER, *self.data_root, 'number_regex')))
         number_regex = re.compile(self.search(ConfigKey.MASTER, *self.data_root, 'number_regex'))  # compile regex
         cassette_start_pos = self.search(ConfigKey.MASTER, *self.data_root, 'start_position')
         position = cassette_start_pos
@@ -146,41 +148,52 @@ class Map(Exceptionable, Configurable):
 
         # get files (assumes first iteration of os.walk)
         # files are always the 3rd item in a tuple returned by each iteration of os.walk
+        print(self.source_path)
+        print(os.listdir(self.source_path))
         files = [result for result in os.walk(self.source_path)][0][2]
+        print('files {}'.format(files))
 
         # %% master loop for finding positions
         for k, cassette_code in enumerate(cassettes):
+            print('k: {}\t cassette_code: {}'.format(k, cassette_code))
             cassette = []
             # find all files from this cassette
             filtered_files = list(filter(lambda f: re.search(cassette_code, f), files))
+            print('filtered files: {}'.format(filtered_files))
             for i, file in enumerate(filtered_files):
                 # we know that there MUST be a match now because it matched to the cassette name
                 match = number_regex.search(file).group(0)
                 # get the number from that match
-                number = int(match[:len(match) - 1])
+                print('match: {}'.format(match[:match.index('_')]))
+                number = int(match[:match.index('_')])
 
+                # NOTE: THIS FINDS POSITION ALONG Z-AXIS; COMMENTING OUT FOR NOW
                 # if first slide in cassette
-                if i == 0:
-                    position = cassette_start_pos
-
-                else:
-                    # if only a difference of 1 between this slide's number and the last's
-                    diff = abs(number - int(cassette[i - 1].number))
-                    if diff in allowed_diffs:
-                        # rule: move 5um for consecutive slice (multiplied by number of skips)
-                        position += diff * normal_skip
-                    else:
-                        # rule: move 100um for skip in slides
-                        position += large_skip
-
-                    # if last slide in cassette, set next cassette start position and offset indices
-                    if (i + 1) == len(filtered_files):
-                        cassette_start_pos = position + cassette_skip  # account for trimming
+                # if i == 0:
+                #     position = cassette_start_pos
+                #
+                # else:
+                #     # if only a difference of 1 between this slide's number and the last's
+                #     diff = abs(number - int(cassette[i - 1].number))
+                #     if diff in allowed_diffs:
+                #         # rule: move 5um for consecutive slice (multiplied by number of skips)
+                #         position += diff * normal_skip
+                #     else:
+                #         # rule: move 100um for skip in slides
+                #         position += large_skip
+                #
+                #     # if last slide in cassette, set next cassette start position and offset indices
+                #     if (i + 1) == len(filtered_files):
+                #         cassette_start_pos = position + cassette_skip  # account for trimming
                 # add this to the current 'row' of slides
-                cassette.append(SlideInfo(cassette_code,
-                                          number,
-                                          position,
-                                          os.path.join(self.source_path, file)))
+
+                position = 0
+                if len(list(filter(lambda c: c.number == number, cassette))) == 0:
+                    print('ADDING TO CASSETTE LIST')
+                    cassette.append(SlideInfo(cassette_code,
+                                              number,
+                                              position,
+                                              self.source_path))
             # add this cassette to the total list of slides
             self.slides += cassette
 
@@ -222,10 +235,10 @@ class Map(Exceptionable, Configurable):
         result = []
         for slide in self.slides:
             result.append({
-                "cassette": slide.cassette,
+                "cassette": int(slide.cassette),
                 "number": slide.number,
                 "position": slide.position,
-                "directory": os.path.split(slide.raw_source)[0],
+                "directory": slide.directory[:-1].split(os.sep)
             })
 
         return json.dumps(result, indent=2)
