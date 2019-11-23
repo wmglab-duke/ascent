@@ -162,6 +162,8 @@ class Configurable:
 
         return list_results
 
+    def add(self, ):
+
 
 
     @staticmethod
