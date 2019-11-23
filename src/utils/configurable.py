@@ -47,7 +47,7 @@ class Configurable:
         if len([item for item in [mode, key, config] if item is None]) == 0:
             self.add(mode, key, config)
 
-    def add(self, mode: SetupMode, key: ConfigKey, config):
+    def add(self, mode: SetupMode, key: ConfigKey, config: Union[str, dict]):
 
         # either load up new data or used old, passed in data
         if mode == SetupMode.NEW:
