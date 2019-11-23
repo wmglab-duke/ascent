@@ -11,8 +11,17 @@ class SetupMode(Enum):
 
 @unique
 class ConfigKey(Enum):
-    MASTER = 'master'
-    EXCEPTIONS = 'exceptions'
+    # system
+    MESH = 'mesh'
+    MATERIALS = 'materials'
+    FIBER_Z = 'fiber_z'
+    CUFFS = 'cuffs'
+
+    # user
+    RUN = 'run'
+    SAMPLE = 'sample'
+    MODEL = 'model'
+    SIM = 'sim'
 
 
 #%% Trace functionality
