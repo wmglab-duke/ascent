@@ -18,7 +18,6 @@ Description:
     search
     path
     load
-    reload
     validate_path (ensures that it ends with .json)
 
 
@@ -27,7 +26,7 @@ Description:
 # builtins
 import json
 import os
-from typing import Type, List
+from typing import Type, List, Union
 
 # access
 from .enums import *
@@ -35,7 +34,7 @@ from .enums import *
 
 class Configurable:
 
-    def __init__(self, mode: SetupMode, key: ConfigKey, config):
+    def __init__(self, mode: SetupMode = None, key: ConfigKey = None, config: Union[str, dict] = None):
         """
         :param mode: SetupMode, determines if loads new JSON or uses old data
         :param key: choice of MASTER or EXCEPTIONS (or any other added separate configs)
@@ -45,11 +44,15 @@ class Configurable:
         if not hasattr(self, 'configs'):
             self.configs = dict()
 
+        if len([item for item in [mode, key, config] if item is None]) == 0:
+            self.add(mode, key, config)
+
+    def add(self, mode: SetupMode, key: ConfigKey, config):
+
         # either load up new data or used old, passed in data
         if mode == SetupMode.NEW:
-            self.config_path = config
-            self.validate_path(self.config_path)
-            self.configs[key.value] = self.load(self.config_path)
+            self.validate_path(config)
+            self.configs[key.value] = self.load(config)
 
         else:  # mode == SetupMode.OLD:
             self.configs[key.value] = config
@@ -104,18 +107,6 @@ class Configurable:
             # print('load "{}" --> key "{}"'.format(config, key))
             return json.load(handle)
 
-    def reload(self, key: ConfigKey, config_path: str = None):
-        """
-        Buffer public method to load data from JSON (for naming purposes)
-        :param key: type of config to reload
-        :param config_path: the path to the json, assuming already validated
-        """
-        if config_path is not None:  # this MUST be the case if it was loaded up via SetupMode.OLD
-            self.config_path = config_path
-            self.validate_path(config_path)
-
-        self.configs[key.value] = self.load(self.config_path)
-
     def search_mode(self, mode: Type[Enum]):
         """
         :param mode: an Enum mode that is being searched. it MUST have variable config, which is the name
@@ -161,10 +152,6 @@ class Configurable:
                                 '\tsource:\tsrc.utils.Configurable.search_multi_mode'.format(len(list_results), count))
 
         return list_results
-
-    def add(self, ):
-
-
 
     @staticmethod
     def validate_path(config_path: str):
