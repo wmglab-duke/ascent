@@ -105,17 +105,14 @@ class Runner(Exceptionable, Configurable):
         self.fiber_manager.fiber_z_coordinates(self.fiber_manager.xy_coordinates, save=True)
 
     def handoff(self):
-        comsol_path = self.load(os.path.join('.config', 'system.json')).get('comsol_path')
-        jdk_path = self.load(os.path.join('.config', 'system.json')).get('jdk_path')
-
-        project_path = self.load(os.path.join('.config', 'system.json')).get('project_path')
+        comsol_path = self.search(ConfigKey.ENV, 'comsol_path')
+        jdk_path = self.search(ConfigKey.ENV, 'jdk_path')
+        project_path = self.search(ConfigKey.ENV, 'project_path')
 
         core_name = 'ModelWrapper'
 
         if sys.platform.startswith('darwin') or sys.platform.startswith('linux'):  # macOS and linux
 
-
-            # TODO: RUN ./comsol server IN SEPARATE SHELL
             subprocess.Popen(['{}/bin/comsol'.format(comsol_path), 'server'], close_fds=True)
             os.chdir('src')
             os.system('{}/javac -classpath ../lib/json-20190722.jar:{}/plugins/* model/*.java -d ../bin'.format(jdk_path,
@@ -128,9 +125,7 @@ class Runner(Exceptionable, Configurable):
                                                                                                                            project_path))
             os.chdir('..')
 
-        else: # assume to be 'win64'
-
-            # TODO: RUN ./comsol server IN SEPARATE SHELL
+        else:  # assume to be 'win64'
             subprocess.Popen(['{}\\bin\\win64\\comsolmphserver.exe'.format(comsol_path)], close_fds=True)
             os.chdir('src')
             os.system('""{}\\javac" -cp "..\\lib\\json-20190722.jar";"{}\\plugins\\*" model\\*.java -d ..\\bin"'.format(jdk_path,

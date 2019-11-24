@@ -14,14 +14,22 @@ if len(sys.argv) != 2:
     print('INVALID number of arguments to start.py')
     exit(1)
 
+run_path = os.path.join('config', 'user', 'runs', '{}.json'.format(sys.argv[1]))
+if not os.path.exists(run_path):
+    print('INVALID run configuration path: {}'.format(run_path))
+
+env_path = os.path.join('config', 'system', 'env.json')
+if not os.path.exists(env_path):
+    print('INVALID env configuration path: {}'.format(env_path))
+
 # get main configuration file
 # master_config_file_path = os.path.join('.config', 'master.json')
-run_path = os.path.join('config', 'user', 'runs', '{}.json'.format(sys.argv[1]))
 # master_config_file_path = os.path.join('.config', 'master.json')
 
 # initialize Runner (loads in parameters)
 runner = Runner()
 runner.add(SetupMode.NEW, ConfigKey.RUN, run_path)
+runner.add(SetupMode.NEW, ConfigKey.ENV, env_path)
 
 # runner = Runner(master_config_file_path)
 
