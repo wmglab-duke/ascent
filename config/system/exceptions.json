@@ -179,9 +179,14 @@
     "text": "Pulse is longer than period (2x for biphasic).",
     "source": "src.core.Waveform.generate"
   },
-    {
+  {
     "code": 36,
     "text": "2*Pulse + Interphase is longer than period.",
     "source": "src.core.Waveform.generate"
+  },
+  {
+    "code": 37,
+    "text": "Missing config required by run configuration!",
+    "source": "src.Runner"
   }
 ]

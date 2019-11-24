@@ -38,29 +38,61 @@ class Runner(Exceptionable, Configurable):
         # init variables for later use
         self.slide_manager = None
         self.fiber_manager = None
-    def validate(self):
 
-        samples = self.search(Config.RUN, 'sample')
+    def load_configs(self) -> dict:
+
+        def validate_and_add(configs: dict, key: str, path: str):
+            self.validate_path(path)
+            if os.path.exists(path):
+                if key not in configs.keys():
+                    configs[key] = []
+                configs[key] += self.load(path)
+            else:
+                print('Missing {} config: {}'.format(key, path))
+                self.throw(37)
+
+        configs = dict()
+
+        sample = self.search(Config.RUN, 'sample')
         models = self.search(Config.RUN, 'models')
-        sims = self.search(Config.RUN, '')
+        sims = self.search(Config.RUN, 'sims')
 
-        sample_path = os.path.join('samples', str(), 'runs', '{}.json'.format(sys.argv[1]))
+        sample_path = os.path.join(
+            'samples',
+            str(sample),
+            'sample.json'
+        )
+        validate_and_add(configs, 'sample', sample_path)
 
+        model_paths = [os.path.join('samples',
+                                    str(sample),
+                                    'models',
+                                    str(model),
+                                    'model.json') for model in models]
+        for model_path in model_paths:
+            validate_and_add(configs, 'models', model_path)
+
+        sim_paths = [os.path.join('user',
+                                  'sims',
+                                  '{}.json'.format(sim)) for sim in sims]
+        for sim_path in sim_paths:
+            validate_and_add(configs, 'models', sim_path)
+
+        return configs
 
     def run(self, configs: dict):
         # load all json configs into memory
 
-
         # loop (constant sample)
 
-            # slide manager
+        # slide manager
 
-            # models
+        # models
 
-                # fiber manager(s)
-                fiber_manager.add(SetupMode.old, Config.model, configs["models"][index])
+        # fiber manager(s)
+        fiber_manager.add(SetupMode.old, Config.model, configs["models"][index])
 
-                # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials
+        # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials
 
     def smart_run(self):
 
@@ -138,25 +170,30 @@ class Runner(Exceptionable, Configurable):
 
             subprocess.Popen(['{}/bin/comsol'.format(comsol_path), 'server'], close_fds=True)
             os.chdir('src')
-            os.system('{}/javac -classpath ../lib/json-20190722.jar:{}/plugins/* model/*.java -d ../bin'.format(jdk_path,
-                                                                                                                comsol_path))
+            os.system(
+                '{}/javac -classpath ../lib/json-20190722.jar:{}/plugins/* model/*.java -d ../bin'.format(jdk_path,
+                                                                                                          comsol_path))
             # https://stackoverflow.com/questions/219585/including-all-the-jars-in-a-directory-within-the-java-classpath
             os.system('{}/java/maci64/jre/Contents/Home/bin/java '
-                      '-cp .:$(echo {}/plugins/*.jar | tr \' \' \':\'):../lib/json-20190722.jar:../bin model.{} {}'.format(comsol_path,
-                                                                                                                           comsol_path,
-                                                                                                                           core_name,
-                                                                                                                           project_path))
+                      '-cp .:$(echo {}/plugins/*.jar | tr \' \' \':\'):../lib/json-20190722.jar:../bin model.{} {}'.format(
+                comsol_path,
+                comsol_path,
+                core_name,
+                project_path))
             os.chdir('..')
 
         else:  # assume to be 'win64'
             subprocess.Popen(['{}\\bin\\win64\\comsolmphserver.exe'.format(comsol_path)], close_fds=True)
             os.chdir('src')
-            os.system('""{}\\javac" -cp "..\\lib\\json-20190722.jar";"{}\\plugins\\*" model\\*.java -d ..\\bin"'.format(jdk_path,
-                                                                                                                        comsol_path))
-            os.system('""{}\\java\\win64\\jre\\bin\\java" -cp "{}\\plugins\\*";"..\\lib\\json-20190722.jar";"..\\bin" model.{} {}"'.format(comsol_path,
-                                                                                                                                           comsol_path,
-                                                                                                                                           core_name,
-                                                                                                                                           project_path))
+            os.system('""{}\\javac" -cp "..\\lib\\json-20190722.jar";"{}\\plugins\\*" model\\*.java -d ..\\bin"'.format(
+                jdk_path,
+                comsol_path))
+            os.system(
+                '""{}\\java\\win64\\jre\\bin\\java" -cp "{}\\plugins\\*";"..\\lib\\json-20190722.jar";"..\\bin" model.{} {}"'.format(
+                    comsol_path,
+                    comsol_path,
+                    core_name,
+                    project_path))
             os.chdir('..')
 
     def save_all(self):
@@ -166,10 +203,6 @@ class Runner(Exceptionable, Configurable):
         self.slide_manager.save(os.path.join(*path_parts, 'slide_manager.obj'))
         self.slide_manager.output_morphology_data()
         self.fiber_manager.save(os.path.join(*path_parts, 'fiber_manager.obj'))
-
-
-
-
 
     # def run(self):
     #     self.map = Map(self.configs[Config.MASTER.value],
