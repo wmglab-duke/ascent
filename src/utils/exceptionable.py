@@ -33,7 +33,7 @@ class Exceptionable(Configurable):
         if mode == SetupMode.OLD:
             Configurable.__init__(self, mode, ConfigKey.EXCEPTIONS, config)
         else:  # mode == SetupMode.NEW
-            Configurable.__init__(self, mode, ConfigKey.EXCEPTIONS, os.path.join('config', 'system' 'exceptions.json'))
+            Configurable.__init__(self, mode, ConfigKey.EXCEPTIONS, os.path.join('config', 'system', 'exceptions.json'))
 
     def throw(self, code):
         """

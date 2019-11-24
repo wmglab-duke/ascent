@@ -10,13 +10,13 @@ from src.utils.enums import SetupMode, ConfigKey
 # START timer
 start = time.time()
 
-if len(sys.argv != 1):
+if len(sys.argv) != 2:
     print('INVALID number of arguments to start.py')
     exit(1)
 
 # get main configuration file
 # master_config_file_path = os.path.join('.config', 'master.json')
-run_path = os.path.join('config', 'user', 'runs', '{}.json'.format(sys.argv[0]))
+run_path = os.path.join('config', 'user', 'runs', '{}.json'.format(sys.argv[1]))
 # master_config_file_path = os.path.join('.config', 'master.json')
 
 # initialize Runner (loads in parameters)
