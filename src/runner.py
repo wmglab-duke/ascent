@@ -26,6 +26,7 @@ from src.utils import *
 
 
 class Runner(Exceptionable, Configurable):
+    # TODO: method for writing sim folder
 
     def __init__(self):
 
@@ -35,9 +36,6 @@ class Runner(Exceptionable, Configurable):
         # initialize Exceptionable super class
         Exceptionable.__init__(self, SetupMode.NEW)
 
-        # init variables for later use
-        self.slide_manager = None
-        self.fiber_manager = None
 
     def load_configs(self) -> dict:
 
@@ -81,26 +79,46 @@ class Runner(Exceptionable, Configurable):
         return configs
 
     def run(self, configs: dict):
+        # TODO: save .obj's to correct paths while looping
+        # TODO: implement overwrite checking
+
         # constant sample
 
         # load all json configs into memory
         configs = self.load_configs()
 
         # slide manager
-        slide_manager = SlideManager()
+        slide_manager = SlideManager(self.configs[Config.EXCEPTIONS.value], SetupMode.NEW)
         slide_manager.add(SetupMode.OLD, Config.SAMPLE, configs['sample'][0])
+        slide_manager.add(SetupMode.OLD, Config.RUN, self.configs[Config.RUN.value])
+
+        slide_manager.build_file_structure()
+
+        # TODO: fix in SlideManager
+        slide_manager.populate()
+
+        # TODO: fix in SlideManager
+        slide_manager.write(WriteMode.SECTIONWISE2D)
 
         # models
         for model_index, model in enumerate(configs['sample']['models']):
 
             # fiber manager(s)
+            # TODO: fix constructor in FiberManager
             fiber_manager = FiberManager()
+
+            # TODO: carry out rest of processes for FiberManager (see below)
+            # TODO: fix those associated processes in FiberManager
+
             fiber_manager.add(SetupMode.OLD, Config.MODEL, configs['models'][model_index])
 
             # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials
             self.handoff()
 
     def handoff(self):
+        # TODO: ModelWrapper side, make sure all paths are correct
+        # TODO: implement extract potentials
+
         comsol_path = self.search(Config.ENV, 'comsol_path')
         jdk_path = self.search(Config.ENV, 'jdk_path')
         project_path = self.search(Config.ENV, 'project_path')

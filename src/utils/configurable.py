@@ -34,7 +34,7 @@ from .enums import *
 
 class Configurable:
 
-    def __init__(self, mode: SetupMode = None, key: Config = None, config: Union[str, dict] = None):
+    def __init__(self, mode: SetupMode = None, key: Config = None, config: Union[str, dict, list] = None):
         """
         :param mode: SetupMode, determines if loads new JSON or uses old data
         :param key: choice of MASTER or EXCEPTIONS (or any other added separate configs)

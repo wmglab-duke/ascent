@@ -18,7 +18,7 @@ from src.utils import *
 
 class SlideManager(Exceptionable, Configurable, Saveable):
 
-    def __init__(self, master_config: dict, exception_config: list, map_mode: SetupMode):
+    def __init__(self, exception_config: list, map_mode: SetupMode):
         """
         :param master_config: preloaded configuration data for master
         :param exception_config: preloaded configuration data for exceptions
@@ -28,7 +28,7 @@ class SlideManager(Exceptionable, Configurable, Saveable):
 
         # Initializes superclasses
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
-        Configurable.__init__(self, SetupMode.OLD, Config.MASTER, master_config)
+        Configurable.__init__(self)
 
         # Initialize slides
         self.slides: List[Slide] = []
@@ -63,14 +63,16 @@ class SlideManager(Exceptionable, Configurable, Saveable):
         :param printing: bool, gives user console output
         """
 
+        sample_index = self.search(Config.RUN, 'sample')
+
         # get starting point so able to go back
         start_directory: str = os.getcwd()
 
         # go to samples root
-        samples_path: str = self.path(Config.MASTER, 'samples_path')
+        samples_path: str = os.path.join('samples')
 
-        # get sample name
-        sample: str = self.search(Config.MASTER, 'sample')
+        # get sample NAME
+        sample: str = self.search(Config.SAMPLE, 'sample')
 
         # loop through each slide
         for slide_info in self.map.slides:
@@ -78,13 +80,13 @@ class SlideManager(Exceptionable, Configurable, Saveable):
             cassette, number, _, source_directory = slide_info.data()
             cassette, number = (str(item) for item in (cassette, number))
 
-            for directory_part in samples_path, sample, cassette, number, 'masks':
+            for directory_part in samples_path, sample_index, 'slides', cassette, number, 'masks':
 
                 if not os.path.exists(directory_part):
                     os.makedirs(directory_part)
                 os.chdir(directory_part)
 
-                if directory_part == sample:
+                if directory_part == sample_index:
                     scale_source_file = os.path.join(start_directory,
                                                      *(source_directory.split(os.sep)),
                                                      '_'.join([sample,
