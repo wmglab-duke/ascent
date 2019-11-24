@@ -39,6 +39,22 @@ class Runner(Exceptionable, Configurable):
         self.slide_manager = None
         self.fiber_manager = None
 
+    def run(self, configs: dict):
+        # load all json configs into memory
+
+
+        # loop (constant sample)
+
+            # slide manager
+
+            # models
+
+                # fiber manager(s)
+                fiber_manager.add(SetupMode.old, ConfigKey.model, configs["models"][index])
+
+                # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials
+
+
     def smart_run(self):
 
         print('\nStarting smart run.')
