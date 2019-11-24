@@ -49,12 +49,13 @@ class Runner(Exceptionable, Configurable):
 
 
     def run(self, configs: dict):
+        # constant sample
+
         # load all json configs into memory
+        configs = self.load_configs()
 
-
-        # loop (constant sample)
         # slide manager
-        slide_manager.add(SetupMode.OLD, Config.SAMPLE, configs['sample'])
+        slide_manager.add(SetupMode.OLD, Config.SAMPLE, configs['sample'][0])
 
         # models
         for model_index, model in enumerate(configs['sample']['models']):
