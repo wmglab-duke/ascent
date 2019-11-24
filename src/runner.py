@@ -39,7 +39,6 @@ class Runner(Exceptionable, Configurable):
         self.slide_manager = None
         self.fiber_manager = None
 
-
     def load_configs(self) -> dict:
 
         def validate_and_add(configs: dict, key: str, path: str):
@@ -101,71 +100,6 @@ class Runner(Exceptionable, Configurable):
             # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials
             self.handoff()
 
-    def smart_run(self):
-
-        print('\nStarting smart run.')
-
-        def load(path: str):
-            return pickle.load(open(path, 'rb'))
-
-        path_parts = [self.path(Config.MASTER, 'samples_path'), self.search(Config.MASTER, 'sample')]
-
-        if not os.path.isfile(os.path.join(*path_parts, 'slide_manager.obj')):
-            print('Existing slide manager not found. Performing full run.')
-            self.full_run()
-
-        else:
-            print('Loading existing slide manager.')
-            self.slide_manager = load(os.path.join(*path_parts, 'slide_manager.obj'))
-
-            if os.path.isfile(os.path.join(*path_parts, 'fiber_manager.obj')):
-                print('Loading existing fiber manager.')
-                self.fiber_manager = load(os.path.join(*path_parts, 'fiber_manager.obj'))
-
-            else:
-                print('Existing fiber manager not found. Performing fiber run.')
-                self.fiber_run()
-
-        self.save_all()
-
-        if self.fiber_manager is not None:
-            self.fiber_manager.save_full_coordinates('TEST_JSON_OUTPUT.json')
-        else:
-            raise Exception('my dude, something went horribly wrong here')
-
-        self.handoff()
-
-    def full_run(self):
-        self.slide_run()
-        self.fiber_run()
-
-    def slide_run(self):
-        print('\nSTART SLIDE MANAGER')
-        self.slide_manager = SlideManager(self.configs[Config.MASTER.value],
-                                          self.configs[Config.EXCEPTIONS.value],
-                                          map_mode=SetupMode.NEW)
-
-        print('BUILD FILE STRUCTURE')
-        self.slide_manager.build_file_structure()
-
-        print('POPULATE')
-        self.slide_manager.populate()
-
-        print('WRITE')
-        self.slide_manager.write(WriteMode.SECTIONWISE2D)
-
-    def fiber_run(self):
-        print('\nSTART FIBER MANAGER')
-        self.fiber_manager = FiberManager(self.slide_manager,
-                                          self.configs[Config.MASTER.value],
-                                          self.configs[Config.EXCEPTIONS.value])
-
-        print('FIBER XY COORDINATES')
-        self.fiber_manager.fiber_xy_coordinates(plot=True, save=True)
-
-        print('FIBER Z COORDINATES')
-        self.fiber_manager.fiber_z_coordinates(self.fiber_manager.xy_coordinates, save=True)
-
     def handoff(self):
         comsol_path = self.search(Config.ENV, 'comsol_path')
         jdk_path = self.search(Config.ENV, 'jdk_path')
@@ -184,9 +118,9 @@ class Runner(Exceptionable, Configurable):
             # https://stackoverflow.com/questions/219585/including-all-the-jars-in-a-directory-within-the-java-classpath
             os.system('{}/java/maci64/jre/Contents/Home/bin/java '
                       '-cp .:$(echo {}/plugins/*.jar | tr \' \' \':\'):../lib/json-20190722.jar:../bin model.{} {} {}'.format(comsol_path,
-                                                                                                                           comsol_path,
-                                                                                                                           core_name,
-                                                                                                                           project_path,
+                                                                                                                              comsol_path,
+                                                                                                                              core_name,
+                                                                                                                              project_path,
                                                                                                                               run_path))
             os.chdir('..')
 
@@ -197,19 +131,84 @@ class Runner(Exceptionable, Configurable):
             os.system('""{}\\javac" -cp "..\\lib\\json-20190722.jar";"{}\\plugins\\*" model\\*.java -d ..\\bin"'.format(jdk_path,
                                                                                                                         comsol_path))
             os.system('""{}\\java\\win64\\jre\\bin\\java" -cp "{}\\plugins\\*";"..\\lib\\json-20190722.jar";"..\\bin" model.{} {} {}"'.format(comsol_path,
-                                                                                                                                           comsol_path,
-                                                                                                                                           core_name,
-                                                                                                                                           project_path,
-                                                                                                                                           run_path))
+                                                                                                                                              comsol_path,
+                                                                                                                                              core_name,
+                                                                                                                                              project_path,
+                                                                                                                                              run_path))
             os.chdir('..')
 
-    def save_all(self):
-
-        print('SAVE ALL')
-        path_parts = [self.path(Config.MASTER, 'samples_path'), self.search(Config.MASTER, 'sample')]
-        self.slide_manager.save(os.path.join(*path_parts, 'slide_manager.obj'))
-        self.slide_manager.output_morphology_data()
-        self.fiber_manager.save(os.path.join(*path_parts, 'fiber_manager.obj'))
+    # def smart_run(self):
+    #
+    #     print('\nStarting smart run.')
+    #
+    #     def load(path: str):
+    #         return pickle.load(open(path, 'rb'))
+    #
+    #     path_parts = [self.path(Config.MASTER, 'samples_path'), self.search(Config.MASTER, 'sample')]
+    #
+    #     if not os.path.isfile(os.path.join(*path_parts, 'slide_manager.obj')):
+    #         print('Existing slide manager not found. Performing full run.')
+    #         self.full_run()
+    #
+    #     else:
+    #         print('Loading existing slide manager.')
+    #         self.slide_manager = load(os.path.join(*path_parts, 'slide_manager.obj'))
+    #
+    #         if os.path.isfile(os.path.join(*path_parts, 'fiber_manager.obj')):
+    #             print('Loading existing fiber manager.')
+    #             self.fiber_manager = load(os.path.join(*path_parts, 'fiber_manager.obj'))
+    #
+    #         else:
+    #             print('Existing fiber manager not found. Performing fiber run.')
+    #             self.fiber_run()
+    #
+    #     self.save_all()
+    #
+    #     if self.fiber_manager is not None:
+    #         self.fiber_manager.save_full_coordinates('TEST_JSON_OUTPUT.json')
+    #     else:
+    #         raise Exception('my dude, something went horribly wrong here')
+    #
+    #     self.handoff()
+    #
+    # def full_run(self):
+    #     self.slide_run()
+    #     self.fiber_run()
+    #
+    # def slide_run(self):
+    #     print('\nSTART SLIDE MANAGER')
+    #     self.slide_manager = SlideManager(self.configs[Config.MASTER.value],
+    #                                       self.configs[Config.EXCEPTIONS.value],
+    #                                       map_mode=SetupMode.NEW)
+    #
+    #     print('BUILD FILE STRUCTURE')
+    #     self.slide_manager.build_file_structure()
+    #
+    #     print('POPULATE')
+    #     self.slide_manager.populate()
+    #
+    #     print('WRITE')
+    #     self.slide_manager.write(WriteMode.SECTIONWISE2D)
+    #
+    # def fiber_run(self):
+    #     print('\nSTART FIBER MANAGER')
+    #     self.fiber_manager = FiberManager(self.slide_manager,
+    #                                       self.configs[Config.MASTER.value],
+    #                                       self.configs[Config.EXCEPTIONS.value])
+    #
+    #     print('FIBER XY COORDINATES')
+    #     self.fiber_manager.fiber_xy_coordinates(plot=True, save=True)
+    #
+    #     print('FIBER Z COORDINATES')
+    #     self.fiber_manager.fiber_z_coordinates(self.fiber_manager.xy_coordinates, save=True)
+    #
+    # def save_all(self):
+    #
+    #     print('SAVE ALL')
+    #     path_parts = [self.path(Config.MASTER, 'samples_path'), self.search(Config.MASTER, 'sample')]
+    #     self.slide_manager.save(os.path.join(*path_parts, 'slide_manager.obj'))
+    #     self.slide_manager.output_morphology_data()
+    #     self.fiber_manager.save(os.path.join(*path_parts, 'fiber_manager.obj'))
 
     # def run(self):
     #     self.map = Map(self.configs[Config.MASTER.value],
