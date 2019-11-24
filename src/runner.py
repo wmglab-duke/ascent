@@ -39,6 +39,7 @@ class Runner(Exceptionable, Configurable):
         self.slide_manager = None
         self.fiber_manager = None
 
+
     def load_configs(self) -> dict:
 
         def validate_and_add(configs: dict, key: str, path: str):
@@ -81,18 +82,24 @@ class Runner(Exceptionable, Configurable):
         return configs
 
     def run(self, configs: dict):
-        # load all json configs into memory
+        # constant sample
 
-        # loop (constant sample)
+        # load all json configs into memory
+        configs = self.load_configs()
 
         # slide manager
+        slide_manager = SlideManager()
+        slide_manager.add(SetupMode.OLD, Config.SAMPLE, configs['sample'][0])
 
         # models
+        for model_index, model in enumerate(configs['sample']['models']):
 
-        # fiber manager(s)
-        fiber_manager.add(SetupMode.old, Config.model, configs["models"][index])
+            # fiber manager(s)
+            fiber_manager = FiberManager()
+            fiber_manager.add(SetupMode.OLD, Config.MODEL, configs['models'][model_index])
 
-        # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials
+            # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials
+            self.handoff()
 
     def smart_run(self):
 
@@ -163,6 +170,7 @@ class Runner(Exceptionable, Configurable):
         comsol_path = self.search(Config.ENV, 'comsol_path')
         jdk_path = self.search(Config.ENV, 'jdk_path')
         project_path = self.search(Config.ENV, 'project_path')
+        run_path = os.path.join(project_path, 'config', 'user', 'runs', '{}.json'.format(sys.argv[1]))
 
         core_name = 'ModelWrapper'
 
@@ -175,25 +183,24 @@ class Runner(Exceptionable, Configurable):
                                                                                                           comsol_path))
             # https://stackoverflow.com/questions/219585/including-all-the-jars-in-a-directory-within-the-java-classpath
             os.system('{}/java/maci64/jre/Contents/Home/bin/java '
-                      '-cp .:$(echo {}/plugins/*.jar | tr \' \' \':\'):../lib/json-20190722.jar:../bin model.{} {}'.format(
-                comsol_path,
-                comsol_path,
-                core_name,
-                project_path))
+                      '-cp .:$(echo {}/plugins/*.jar | tr \' \' \':\'):../lib/json-20190722.jar:../bin model.{} {} {}'.format(comsol_path,
+                                                                                                                           comsol_path,
+                                                                                                                           core_name,
+                                                                                                                           project_path,
+                                                                                                                              run_path))
             os.chdir('..')
 
         else:  # assume to be 'win64'
             subprocess.Popen(['{}\\bin\\win64\\comsolmphserver.exe'.format(comsol_path)], close_fds=True)
             os.chdir('src')
-            os.system('""{}\\javac" -cp "..\\lib\\json-20190722.jar";"{}\\plugins\\*" model\\*.java -d ..\\bin"'.format(
-                jdk_path,
-                comsol_path))
-            os.system(
-                '""{}\\java\\win64\\jre\\bin\\java" -cp "{}\\plugins\\*";"..\\lib\\json-20190722.jar";"..\\bin" model.{} {}"'.format(
-                    comsol_path,
-                    comsol_path,
-                    core_name,
-                    project_path))
+
+            os.system('""{}\\javac" -cp "..\\lib\\json-20190722.jar";"{}\\plugins\\*" model\\*.java -d ..\\bin"'.format(jdk_path,
+                                                                                                                        comsol_path))
+            os.system('""{}\\java\\win64\\jre\\bin\\java" -cp "{}\\plugins\\*";"..\\lib\\json-20190722.jar";"..\\bin" model.{} {} {}"'.format(comsol_path,
+                                                                                                                                           comsol_path,
+                                                                                                                                           core_name,
+                                                                                                                                           project_path,
+                                                                                                                                           run_path))
             os.chdir('..')
 
     def save_all(self):
