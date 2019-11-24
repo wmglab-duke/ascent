@@ -1,0 +1,310 @@
+{
+  "instances": [
+    {
+      "type": "CuffFill_Primitive",
+      "label": "Pitt Cuff Fill",
+      "def": {
+        "Radius": "R_out_Pitt+Thk_fill_Pitt",
+        "Thk": "Thk_fill_Pitt",
+        "L": "L_Pitt+2*Thk_fill_Pitt",
+        "z_center": "Center_Pitt"
+      },
+      "materials": [
+        {
+          "info": "fill",
+          "type": "saline",
+          "label_index": 0
+        }
+      ]
+    },
+    {
+      "type": "TubeCuff_Primitive",
+      "label": "Pitt Cuff",
+      "def": {
+        "N_holes": "N_holes_Pitt",
+        "Theta": "Theta_Pitt",
+        "Center": "Center_Pitt",
+        "R_in": "R_in_Pitt",
+        "R_out": "R_out_Pitt",
+        "L": "L_Pitt",
+        "Rot_def": "Rot_def_Pitt",
+        "D_hole": "D_hole_Pitt",
+        "Buffer_hole": "Buffer_hole_Pitt",
+        "L_holecenter_cuffseam": "L_holecenter_cuffseam_Pitt",
+        "Pitch_holecenter_holecenter": "Pitch_holecenter_holecenter_Pitt"
+      },
+      "materials": [
+        {
+          "info": "insulator",
+          "type": "silicone",
+          "label_index": 2
+        }
+      ]
+    },
+    {
+      "type": "RectangleContact_Primitive",
+      "label": "Pitt Contact 1",
+      "def": {
+        "z_center": "Center_Pitt+(pitch_Pitt/2)",
+        "rotation_angle": "theta_pos_contact1_Pitt [deg]",
+        "w_contact": "w_contact_Pitt",
+        "z_contact": "z_contact_Pitt",
+        "fillet_contact": "fillet_contact_Pitt",
+        "scale_morph_w_contact": "scale_morph_w_contact_Pitt",
+        "L_cuff": "L_cuff_Pitt",
+        "r_cuff_in": "R_in_Pitt",
+        "recess": "recess_Pitt",
+        "thk_contact": "thk_contact_Pitt"
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "type": "platinum",
+          "label_index": 11
+        },
+        {
+          "info": "recess",
+          "type": "saline",
+          "label_index": 6
+        }
+      ]
+    },
+    {
+      "type": "RectangleContact_Primitive",
+      "label": "Pitt Contact 2",
+      "def": {
+        "z_center": "Center_Pitt-(pitch_Pitt/2)",
+        "rotation_angle": "theta_pos_contact2_Pitt [deg]",
+        "w_contact": "w_contact_Pitt",
+        "z_contact": "z_contact_Pitt",
+        "fillet_contact": "fillet_contact_Pitt",
+        "scale_morph_w_contact": "scale_morph_w_contact_Pitt",
+        "L_cuff": "L_cuff_Pitt",
+        "r_cuff_in": "R_in_Pitt",
+        "recess": "recess_Pitt",
+        "thk_contact": "thk_contact_Pitt"
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "type": "platinum",
+          "label_index": 11
+        },
+        {
+          "info": "recess",
+          "type": "saline",
+          "label_index": 6
+        }
+      ]
+    },
+    {
+      "type": "RectangleContact_Primitive",
+      "label": "Pitt Contact 3",
+      "def": {
+        "z_center": "Center_Pitt+(pitch_Pitt/2)",
+        "rotation_angle": "theta_pos_contact3_Pitt [deg]",
+        "w_contact": "w_contact_Pitt",
+        "z_contact": "z_contact_Pitt",
+        "fillet_contact": "fillet_contact_Pitt",
+        "scale_morph_w_contact": "scale_morph_w_contact_Pitt",
+        "L_cuff": "L_cuff_Pitt",
+        "r_cuff_in": "R_in_Pitt",
+        "recess": "recess_Pitt",
+        "thk_contact": "thk_contact_Pitt"
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "type": "platinum",
+          "label_index": 11
+        },
+        {
+          "info": "recess",
+          "type": "saline",
+          "label_index": 6
+        }
+      ]
+    },
+    {
+      "type": "RectangleContact_Primitive",
+      "label": "Pitt Contact 4",
+      "def": {
+        "z_center": "Center_Pitt-(pitch_Pitt/2)",
+        "rotation_angle": "theta_pos_contact4_Pitt [deg]",
+        "w_contact": "w_contact_Pitt",
+        "z_contact": "z_contact_Pitt",
+        "fillet_contact": "fillet_contact_Pitt",
+        "scale_morph_w_contact": "scale_morph_w_contact_Pitt",
+        "L_cuff": "L_cuff_Pitt",
+        "r_cuff_in": "R_in_Pitt",
+        "recess": "recess_Pitt",
+        "thk_contact": "thk_contact_Pitt"
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "type": "platinum",
+          "label_index": 11
+        },
+        {
+          "info": "recess",
+          "type": "saline",
+          "label_index": 6
+        }
+      ]
+    }
+  ],
+
+  "params": [
+    {
+      "name": "N_holes_Pitt",
+      "expression": "0",
+      "description": ""
+    },
+    {
+      "name": "Theta_Pitt",
+      "expression": "percent_circ_cuff_Pitt*360 [deg]",
+      "description": ""
+    },
+    {
+      "name": "Center_Pitt",
+      "expression": "z_nerve/2",
+      "description": ""
+    },
+    {
+      "name": "R_in_Pitt",
+      "expression": "0.5 [mm]",
+      "description": "Could also be 0.6 or 0.7 mm, since the contacts are defined by angle not length this is only param that needs to be changed to use larger cuff"
+    },
+    {
+      "name": "R_out_Pitt",
+      "expression": "R_in_Pitt+thk_cuff_Pitt",
+      "description": ""
+    },
+    {
+      "name": "L_Pitt",
+      "expression": "4.1917 [mm]",
+      "description": ""
+    },
+    {
+      "name": "percent_circ_cuff_pre_Pitt",
+      "expression": "1",
+      "description": ""
+    },
+    {
+      "name": "percent_circ_cuff_Pitt",
+      "expression": "1",
+      "description": ""
+    },
+    {
+      "name": "Rot_def_Pitt",
+      "expression": "0",
+      "description": ""
+    },
+    {
+      "name": "D_hole_Pitt",
+      "expression": "NaN",
+      "description": ""
+    },
+    {
+      "name": "Buffer_hole_Pitt",
+      "expression": "NaN",
+      "description": ""
+    },
+    {
+      "name": "L_holecenter_cuffseam_Pitt",
+      "expression": "NaN",
+      "description": ""
+    },
+    {
+      "name": "Pitch_holecenter_holecenter_Pitt",
+      "expression": "NaN",
+      "description": ""
+    },
+    {
+      "name": "w_contact_Pitt",
+      "expression": "0.475 [mm]",
+      "description": ""
+    },
+    {
+      "name": "z_contact_Pitt",
+      "expression": "0.475 [mm]",
+      "description": ""
+    },
+    {
+      "name": "fillet_contact_Pitt",
+      "expression": "0.1 [mm]",
+      "description": ""
+    },
+    {
+      "name": "theta_contact_Pitt",
+      "expression": "((w_contact_Pitt*360)/(pi*2*R_in_Pitt)) [deg]",
+      "description": ""
+    },
+    {
+      "name": "w_contact_ext_Pitt",
+      "expression": "2*R_in_Pitt*sin(theta_contact_Pitt/2)",
+      "description": ""
+    },
+    {
+      "name": "scale_morph_w_contact_Pitt",
+      "expression": "w_contact_ext_Pitt/w_contact_Pitt",
+      "description": ""
+    },
+    {
+      "name": "L_cuff_Pitt",
+      "expression": "4.1917 [mm]",
+      "description": ""
+    },
+    {
+      "name": "thk_contact_Pitt",
+      "expression": "0.018 [mm]",
+      "description": ""
+    },
+    {
+      "name": "recess_Pitt",
+      "expression": "100 [um]",
+      "description": ""
+    },
+    {
+      "name": "thk_cuff_Pitt",
+      "expression": "0.275 [mm]",
+      "description": ""
+    },
+    {
+      "name": "zw_rot_Pitt",
+      "expression": "0 [deg]",
+      "description": ""
+    },
+    {
+      "name": "theta_pos_contact1_Pitt",
+      "expression": "(45+22.5) [deg]",
+      "description": ""
+    },
+    {
+      "name": "theta_pos_contact2_Pitt",
+      "expression": "(0+22.5) [deg]",
+      "description": ""
+    },
+    {
+      "name": "theta_pos_contact3_Pitt",
+      "expression": "(135+22.5) [deg]",
+      "description": ""
+    },
+    {
+      "name": "theta_pos_contact4_Pitt",
+      "expression": "(90+22.5) [deg]",
+      "description": ""
+    },
+    {
+      "name": "pitch_Pitt",
+      "expression": "(1.025+0.475) [mm]",
+      "description": ""
+    },
+    {
+      "name": "Thk_fill_Pitt",
+      "expression": "100 [um]",
+      "description": ""
+    }
+  ]
+}

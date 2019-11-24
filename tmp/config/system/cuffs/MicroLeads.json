@@ -1,0 +1,123 @@
+{
+  "instances": [
+    {
+      "type": "CuffFill_Primitive",
+      "label": "MicroLeads Cuff Fill",
+      "def": {
+        "Radius": "R_out_U+Thk_fill_U",
+        "Thk": "Thk_fill_U",
+        "L": "L_U+2*Thk_fill_U",
+        "z_center": "z_center_U"
+      },
+      "materials": [
+        {
+          "info": "fill",
+          "type": "saline",
+          "label_index": 0
+        }
+      ]
+    },
+    {
+      "type": "uCuff_Primitive",
+      "label": "MicroLeads Cuff",
+      "def": {
+        "z_center": "z_center_U",
+        "R_in": "R_in_U",
+        "Tangent": "Tangent_U",
+        "R_out": "R_out_U",
+        "L": "L_U"
+      },
+      "materials": [
+        {
+          "info": "insulator",
+          "type": "silicone",
+          "label_index": 1
+        }
+      ]
+    },
+    {
+      "type": "uContact_Primitive",
+      "label": "MicroLeads Contact 1",
+      "def": {
+        "z_center": "z_center_U-(Pitch_U/2)",
+        "R_in": "R_in_U",
+        "Tangent": "Tangent_U",
+        "thk_contact": "thk_contact_U",
+        "z_contact": "z_contact_U"
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "type": "platinum",
+          "label_index": 1
+        }
+      ]
+    },
+    {
+      "type": "uContact_Primitive",
+      "label": "MicroLeads Contact 2",
+      "def": {
+        "z_center": "z_center_U+(Pitch_U/2)",
+        "R_in": "R_in_U",
+        "Tangent": "Tangent_U",
+        "thk_contact": "thk_contact_U",
+        "z_contact": "z_contact_U"
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "type": "platinum",
+          "label_index": 1
+        }
+      ]
+    }
+  ],
+
+  "params": [
+    {
+      "name": "z_center_U",
+      "expression": "z_nerve/2",
+      "description": ""
+    },
+    {
+      "name": "R_in_U",
+      "expression": "138 [um]",
+      "description": ""
+    },
+    {
+      "name": "R_out_U",
+      "expression": "0.5 [mm]",
+      "description": ""
+    },
+    {
+      "name": "Tangent_U",
+      "expression": "322 [um]",
+      "description": ""
+    },
+    {
+      "name": "thk_contact_U",
+      "expression": "0.02 [mm]",
+      "description": ""
+    },
+    {
+      "name": "z_contact_U",
+      "expression": "0.7 [mm]",
+      "description": ""
+    },
+    {
+      "name": "Pitch_U",
+      "expression": "1.1 [mm]",
+      "description": ""
+    },
+    {
+      "name": "L_U",
+      "expression": "2.5 [mm]",
+      "description": ""
+    },
+    {
+      "name": "Thk_fill_U",
+      "expression": "100 [um]",
+      "description": ""
+    }
+  ]
+}
