@@ -55,13 +55,15 @@ class Runner(Exceptionable, Configurable):
         configs = self.load_configs()
 
         # slide manager
+        slide_manager = SlideManager()
         slide_manager.add(SetupMode.OLD, Config.SAMPLE, configs['sample'][0])
 
         # models
         for model_index, model in enumerate(configs['sample']['models']):
 
             # fiber manager(s)
-            fiber_manager.add(SetupMode.OLD, Config.model, configs['models'][model_index])
+            fiber_manager = FiberManager()
+            fiber_manager.add(SetupMode.OLD, Config.MODEL, configs['models'][model_index])
 
             # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials
             self.handoff()
