@@ -39,6 +39,15 @@ class Runner(Exceptionable, Configurable):
         self.slide_manager = None
         self.fiber_manager = None
 
+    def validate(self):
+
+        samples = self.search(ConfigKey.RUN, 'sample')
+        models = self.search(ConfigKey.RUN, 'models')
+        sims = self.search(ConfigKey.RUN, '')
+
+        sample_path = os.path.join('samples', str(), 'runs', '{}.json'.format(sys.argv[1]))
+
+
     def smart_run(self):
 
         print('\nStarting smart run.')
