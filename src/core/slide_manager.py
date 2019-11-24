@@ -28,14 +28,14 @@ class SlideManager(Exceptionable, Configurable, Saveable):
 
         # Initializes superclasses
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
-        Configurable.__init__(self, SetupMode.OLD, ConfigKey.MASTER, master_config)
+        Configurable.__init__(self, SetupMode.OLD, Config.MASTER, master_config)
 
         # Initialize slides
         self.slides: List[Slide] = []
 
         # Make a slide map
-        self.map = Map(self.configs[ConfigKey.MASTER.value],
-                       self.configs[ConfigKey.EXCEPTIONS.value],
+        self.map = Map(self.configs[Config.MASTER.value],
+                       self.configs[Config.EXCEPTIONS.value],
                        map_mode)
 
     def scale(self, scale_bar_mask_path: str, scale_bar_length: float):
@@ -67,10 +67,10 @@ class SlideManager(Exceptionable, Configurable, Saveable):
         start_directory: str = os.getcwd()
 
         # go to samples root
-        samples_path: str = self.path(ConfigKey.MASTER, 'samples_path')
+        samples_path: str = self.path(Config.MASTER, 'samples_path')
 
         # get sample name
-        sample: str = self.search(ConfigKey.MASTER, 'sample')
+        sample: str = self.search(Config.MASTER, 'sample')
 
         # loop through each slide
         for slide_info in self.map.slides:
@@ -126,10 +126,10 @@ class SlideManager(Exceptionable, Configurable, Saveable):
         # get starting point so able to go back
         start_directory: str = os.getcwd()
 
-        samples_path = self.path(ConfigKey.MASTER, 'samples_path')
+        samples_path = self.path(Config.MASTER, 'samples_path')
 
         # get sample name
-        sample: str = self.search(ConfigKey.MASTER, 'sample')
+        sample: str = self.search(Config.MASTER, 'sample')
 
         # create scale bar path
         scale_path = os.path.join(samples_path, sample, MaskFileNames.SCALE_BAR.value)
@@ -151,8 +151,8 @@ class SlideManager(Exceptionable, Configurable, Saveable):
             if mask_input_mode == MaskInputMode.INNERS:
                 if exists(MaskFileNames.INNERS):
                     fascicles = Fascicle.inner_to_list(MaskFileNames.INNERS.value,
-                                                       self.configs[ConfigKey.EXCEPTIONS.value],
-                                                       scale=1 + self.search(ConfigKey.MASTER,
+                                                       self.configs[Config.EXCEPTIONS.value],
+                                                       scale=1 + self.search(Config.MASTER,
                                                                              'scale',
                                                                              'outer_thick_to_inner_diam'))
                 else:
@@ -160,21 +160,21 @@ class SlideManager(Exceptionable, Configurable, Saveable):
 
             elif mask_input_mode == MaskInputMode.OUTERS:
                 # fascicles = Fascicle.outer_to_list(MaskFileNames.OUTERS.value,
-                #                                    self.configs[ConfigKey.EXCEPTIONS.value])
+                #                                    self.configs[Config.EXCEPTIONS.value])
                 self.throw(20)
 
             elif mask_input_mode == MaskInputMode.INNER_AND_OUTER_SEPARATE:
                 if exists(MaskFileNames.INNERS) and exists(MaskFileNames.OUTERS):
                     fascicles = Fascicle.separate_to_list(MaskFileNames.INNERS.value,
                                                           MaskFileNames.OUTERS.value,
-                                                          self.configs[ConfigKey.EXCEPTIONS.value])
+                                                          self.configs[Config.EXCEPTIONS.value])
                 else:
                     self.throw(22)
 
             elif mask_input_mode == MaskInputMode.INNER_AND_OUTER_COMPILED:
                 if exists(MaskFileNames.COMPILED):
                     fascicles = Fascicle.compiled_to_list(MaskFileNames.COMPILED.value,
-                                                          self.configs[ConfigKey.EXCEPTIONS.value])
+                                                          self.configs[Config.EXCEPTIONS.value])
                 else:
                     self.throw(23)
 
@@ -190,18 +190,18 @@ class SlideManager(Exceptionable, Configurable, Saveable):
                                                   cv2.RETR_TREE,
                                                   cv2.CHAIN_APPROX_SIMPLE)
                     nerve = Nerve(Trace([point + [0] for point in contour[0][:, 0, :]],
-                                        self.configs[ConfigKey.EXCEPTIONS.value]))
+                                        self.configs[Config.EXCEPTIONS.value]))
 
             else:  # nerve_mode == NerveMode.NOT_PRESENT:
                 self.throw(24)
 
             slide: Slide = Slide(fascicles,
                                  nerve,
-                                 self.configs[ConfigKey.EXCEPTIONS.value],
+                                 self.configs[Config.EXCEPTIONS.value],
                                  will_reposition=(deform_mode != DeformationMode.NONE))
 
             # shrinkage correction
-            slide.scale(1+self.search(ConfigKey.MASTER, "scale", "shrinkage_scale"))
+            slide.scale(1 + self.search(Config.MASTER, "scale", "shrinkage_scale"))
 
             # shift slide about (0,0)
             slide.move_center(np.array([0, 0]))
@@ -211,7 +211,7 @@ class SlideManager(Exceptionable, Configurable, Saveable):
             os.chdir(start_directory)
 
         if os.path.exists(scale_path):
-            self.scale(scale_path, self.search(ConfigKey.MASTER, 'scale', 'scale_bar_length'))
+            self.scale(scale_path, self.search(Config.MASTER, 'scale', 'scale_bar_length'))
         else:
             print(scale_path)
             self.throw(19)
@@ -253,8 +253,8 @@ class SlideManager(Exceptionable, Configurable, Saveable):
         start_directory: str = os.getcwd()
 
         # get path to sample
-        sample_path = os.path.join(self.path(ConfigKey.MASTER, 'samples_path'),
-                                   self.search(ConfigKey.MASTER, 'sample'))
+        sample_path = os.path.join(self.path(Config.MASTER, 'samples_path'),
+                                   self.search(Config.MASTER, 'sample'))
 
         # loop through the slide info (index i SHOULD correspond to slide in self.slides)
         # TODO: ensure self.slides matches up with self.map.slides

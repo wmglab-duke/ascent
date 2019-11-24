@@ -21,14 +21,14 @@ class Waveform(Exceptionable, Configurable):
         """
 
         # set up superclasses
-        Configurable.__init__(self, SetupMode.OLD, ConfigKey.MASTER, master_config)
+        Configurable.__init__(self, SetupMode.OLD, Config.MASTER, master_config)
         Exceptionable.__init__(self, SetupMode.OLD, exceptions_config)
 
         # get mode
         self.modes = self.search_multi_mode(WaveformMode)
 
         # get global vars data
-        global_parameters: dict = self.search(ConfigKey.MASTER,
+        global_parameters: dict = self.search(Config.MASTER,
                                               WaveformMode.parameters.value,
                                               WaveformMode.global_parameters.value)
 
@@ -168,12 +168,12 @@ def generate(self) -> List[np.ndarray]:
             path_to_specific_parameters = [WaveformMode.parameters, str(mode).split('.')[-1]]
 
             # loop on frequency (all modes have property)... WITHIN THIS LOOP: "switch" on wave type
-            for frequency in self.search(ConfigKey.MASTER, *path_to_specific_parameters, 'frequency'):
+            for frequency in self.search(Config.MASTER, *path_to_specific_parameters, 'frequency'):
 
                 if mode == WaveformMode.MONOPHASIC_PULSE_TRAIN:
 
                     # loop on pulse width
-                    for pw in self.search(ConfigKey.MASTER, *path_to_specific_parameters, 'pulse_width'):
+                    for pw in self.search(Config.MASTER, *path_to_specific_parameters, 'pulse_width'):
 
                         # ensure pulse fits in period
                         if pw > 1.0 / frequency:
@@ -197,14 +197,14 @@ def generate(self) -> List[np.ndarray]:
                 elif mode == WaveformMode.BIPHASIC_PULSE_TRAIN:
 
                     # loop on pulse width
-                    for pw in self.search(ConfigKey.MASTER, *path_to_specific_parameters, 'pulse_width'):
+                    for pw in self.search(Config.MASTER, *path_to_specific_parameters, 'pulse_width'):
 
                         # ensure fits within period
                         if 2 * pw > 1.0 / frequency:
                             self.throw(35)
 
                         # loop on inter phase
-                        for inter_phase in self.search(ConfigKey.MASTER, *path_to_specific_parameters, 'inter_phase'):
+                        for inter_phase in self.search(Config.MASTER, *path_to_specific_parameters, 'inter_phase'):
 
                             # ensures fits within period
                             if (2 * pw) + inter_phase > 1.0 / frequency:

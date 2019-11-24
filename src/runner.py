@@ -38,15 +38,29 @@ class Runner(Exceptionable, Configurable):
         # init variables for later use
         self.slide_manager = None
         self.fiber_manager = None
-
     def validate(self):
 
-        samples = self.search(ConfigKey.RUN, 'sample')
-        models = self.search(ConfigKey.RUN, 'models')
-        sims = self.search(ConfigKey.RUN, '')
+        samples = self.search(Config.RUN, 'sample')
+        models = self.search(Config.RUN, 'models')
+        sims = self.search(Config.RUN, '')
 
         sample_path = os.path.join('samples', str(), 'runs', '{}.json'.format(sys.argv[1]))
 
+
+    def run(self, configs: dict):
+        # load all json configs into memory
+
+
+        # loop (constant sample)
+
+            # slide manager
+
+            # models
+
+                # fiber manager(s)
+                fiber_manager.add(SetupMode.old, Config.model, configs["models"][index])
+
+                # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials
 
     def smart_run(self):
 
@@ -55,7 +69,7 @@ class Runner(Exceptionable, Configurable):
         def load(path: str):
             return pickle.load(open(path, 'rb'))
 
-        path_parts = [self.path(ConfigKey.MASTER, 'samples_path'), self.search(ConfigKey.MASTER, 'sample')]
+        path_parts = [self.path(Config.MASTER, 'samples_path'), self.search(Config.MASTER, 'sample')]
 
         if not os.path.isfile(os.path.join(*path_parts, 'slide_manager.obj')):
             print('Existing slide manager not found. Performing full run.')
@@ -88,8 +102,8 @@ class Runner(Exceptionable, Configurable):
 
     def slide_run(self):
         print('\nSTART SLIDE MANAGER')
-        self.slide_manager = SlideManager(self.configs[ConfigKey.MASTER.value],
-                                          self.configs[ConfigKey.EXCEPTIONS.value],
+        self.slide_manager = SlideManager(self.configs[Config.MASTER.value],
+                                          self.configs[Config.EXCEPTIONS.value],
                                           map_mode=SetupMode.NEW)
 
         print('BUILD FILE STRUCTURE')
@@ -104,8 +118,8 @@ class Runner(Exceptionable, Configurable):
     def fiber_run(self):
         print('\nSTART FIBER MANAGER')
         self.fiber_manager = FiberManager(self.slide_manager,
-                                          self.configs[ConfigKey.MASTER.value],
-                                          self.configs[ConfigKey.EXCEPTIONS.value])
+                                          self.configs[Config.MASTER.value],
+                                          self.configs[Config.EXCEPTIONS.value])
 
         print('FIBER XY COORDINATES')
         self.fiber_manager.fiber_xy_coordinates(plot=True, save=True)
@@ -114,9 +128,9 @@ class Runner(Exceptionable, Configurable):
         self.fiber_manager.fiber_z_coordinates(self.fiber_manager.xy_coordinates, save=True)
 
     def handoff(self):
-        comsol_path = self.search(ConfigKey.ENV, 'comsol_path')
-        jdk_path = self.search(ConfigKey.ENV, 'jdk_path')
-        project_path = self.search(ConfigKey.ENV, 'project_path')
+        comsol_path = self.search(Config.ENV, 'comsol_path')
+        jdk_path = self.search(Config.ENV, 'jdk_path')
+        project_path = self.search(Config.ENV, 'project_path')
 
         core_name = 'ModelWrapper'
 
@@ -148,7 +162,7 @@ class Runner(Exceptionable, Configurable):
     def save_all(self):
 
         print('SAVE ALL')
-        path_parts = [self.path(ConfigKey.MASTER, 'samples_path'), self.search(ConfigKey.MASTER, 'sample')]
+        path_parts = [self.path(Config.MASTER, 'samples_path'), self.search(Config.MASTER, 'sample')]
         self.slide_manager.save(os.path.join(*path_parts, 'slide_manager.obj'))
         self.slide_manager.output_morphology_data()
         self.fiber_manager.save(os.path.join(*path_parts, 'fiber_manager.obj'))
@@ -158,8 +172,8 @@ class Runner(Exceptionable, Configurable):
 
 
     # def run(self):
-    #     self.map = Map(self.configs[ConfigKey.MASTER.value],
-    #                         self.configs[ConfigKey.EXCEPTIONS.value],
+    #     self.map = Map(self.configs[Config.MASTER.value],
+    #                         self.configs[Config.EXCEPTIONS.value],
     #                         mode=SetupMode.NEW)
     #
     #     # TEST: Trace functionality
@@ -170,7 +184,7 @@ class Runner(Exceptionable, Configurable):
     #     #                     [4,  2, 0],
     #     #                     [2,  2, 0],
     #     #                     [0,  2, 0],
-    #     #                     [0,  1, 0]], self.configs[ConfigKey.EXCEPTIONS.value])
+    #     #                     [0,  1, 0]], self.configs[Config.EXCEPTIONS.value])
     #     # print('output path: {}'.format(self.trace.write(Trace.WriteMode.SECTIONWISE,
     #     #                                                 '/Users/jakecariello/Box/SPARCpy/data/output/test_trace')))
     #
@@ -178,17 +192,17 @@ class Runner(Exceptionable, Configurable):
     #     # print('exceptions_config_path:\t{}'.format(self.exceptions_config_path))
     #
     #     # TEST: retrieve data from config file
-    #     # print(self.search(ConfigKey.MASTER, 'test_array', 0, 'test'))
+    #     # print(self.search(Config.MASTER, 'test_array', 0, 'test'))
     #
     #     # TEST: throw error
     #     # self.throw(2)
     #
-    #     # self.slide = Slide([Fascicle(self.configs[ConfigKey.EXCEPTIONS.value],
+    #     # self.slide = Slide([Fascicle(self.configs[Config.EXCEPTIONS.value],
     #     #                              [self.trace],
     #     #                              self.trace)],
     #     #                    self.trace,
-    #     #                    self.configs[ConfigKey.MASTER.value],
-    #     #                    self.configs[ConfigKey.EXCEPTIONS.value])
+    #     #                    self.configs[Config.MASTER.value],
+    #     #                    self.configs[Config.EXCEPTIONS.value])
     #     pass
     #
     # def trace_test(self):
@@ -200,7 +214,7 @@ class Runner(Exceptionable, Configurable):
     #     # get contours and build corresponding traces
     #     # these are intentionally instance attributes so they can be inspected in the Python Console
     #     self.cnts, self.hierarchy = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    #     self.traces = [Trace(cnt[:, 0, :], self.configs[ConfigKey.EXCEPTIONS.value]) for cnt in self.cnts]
+    #     self.traces = [Trace(cnt[:, 0, :], self.configs[Config.EXCEPTIONS.value]) for cnt in self.cnts]
     #
     #     # plot formats
     #     formats = ['r', 'g', 'b']
@@ -255,7 +269,7 @@ class Runner(Exceptionable, Configurable):
     #     path = os.path.join('data', 'input', 'misc_traces', 'tracefile5.tif')
     #
     #     self.fascicles = Fascicle.inner_to_list(path,
-    #                                             self.configs[ConfigKey.EXCEPTIONS.value],
+    #                                             self.configs[Config.EXCEPTIONS.value],
     #                                             plot=True,
     #                                             scale=1.06)
     #
@@ -268,19 +282,19 @@ class Runner(Exceptionable, Configurable):
     #     # get contours and build corresponding traces
     #     # these are intentionally instance attributes so they can be inspected in the Python Console
     #     self.nerve_cnts, _ = cv2.findContours(self.img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    #     self.nerve = Nerve(Trace(self.nerve_cnts[0][:, 0, :], self.configs[ConfigKey.EXCEPTIONS.value]))
+    #     self.nerve = Nerve(Trace(self.nerve_cnts[0][:, 0, :], self.configs[Config.EXCEPTIONS.value]))
     #
     #     self.fascicles = Fascicle.separate_to_list(os.path.join('data', 'input', 'samples',
     #                                                             'Cadaver54-3', 'EndoneuriumMask.tif'),
     #                                                os.path.join('data', 'input', 'samples',
     #                                                             'Cadaver54-3','PerineuriumMask.tif'),
-    #                                                self.configs[ConfigKey.EXCEPTIONS.value],
+    #                                                self.configs[Config.EXCEPTIONS.value],
     #
     #
     #                                                plot=False)
     #     self.slide = Slide(self.fascicles, self.nerve,
-    #                        self.configs[ConfigKey.MASTER.value],
-    #                        self.configs[ConfigKey.EXCEPTIONS.value])
+    #                        self.configs[Config.MASTER.value],
+    #                        self.configs[Config.EXCEPTIONS.value])
     #
     #     self.slide.reposition_fascicles(self.slide.reshaped_nerve(ReshapeNerveMode.CIRCLE))
     #
@@ -292,15 +306,15 @@ class Runner(Exceptionable, Configurable):
     #     # get contours and build corresponding traces
     #     # these are intentionally instance attributes so they can be inspected in the Python Console
     #     self.nerve_cnts, _ = cv2.findContours(self.img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    #     self.nerve = Nerve(Trace(self.nerve_cnts[0][:, 0, :], self.configs[ConfigKey.EXCEPTIONS.value]))
+    #     self.nerve = Nerve(Trace(self.nerve_cnts[0][:, 0, :], self.configs[Config.EXCEPTIONS.value]))
     #
     #     self.fascicles = Fascicle.inner_to_list(os.path.join('data', 'input', 'samples',
     #                                                          'Pig11-3', 'FascMask.tif'),
-    #                                             self.configs[ConfigKey.EXCEPTIONS.value],
+    #                                             self.configs[Config.EXCEPTIONS.value],
     #                                             plot=False,
     #                                             scale=1.05)
     #     self.slide = Slide(self.fascicles, self.nerve,
-    #                        self.configs[ConfigKey.EXCEPTIONS.value],
+    #                        self.configs[Config.EXCEPTIONS.value],
     #                        will_reposition=True)
     #
     #     # self.slide.reposition_fascicles(self.slide.reshaped_nerve(ReshapeNerveMode.ELLIPSE))

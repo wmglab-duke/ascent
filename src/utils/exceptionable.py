@@ -18,7 +18,7 @@ Description:
 """
 
 from .configurable import Configurable
-from .enums import SetupMode, ConfigKey
+from .enums import SetupMode, Config
 import os
 
 
@@ -31,9 +31,9 @@ class Exceptionable(Configurable):
         """
 
         if mode == SetupMode.OLD:
-            Configurable.__init__(self, mode, ConfigKey.EXCEPTIONS, config)
+            Configurable.__init__(self, mode, Config.EXCEPTIONS, config)
         else:  # mode == SetupMode.NEW
-            Configurable.__init__(self, mode, ConfigKey.EXCEPTIONS, os.path.join('config', 'system', 'exceptions.json'))
+            Configurable.__init__(self, mode, Config.EXCEPTIONS, os.path.join('config', 'system', 'exceptions.json'))
 
     def throw(self, code):
         """
@@ -48,10 +48,10 @@ class Exceptionable(Configurable):
         """
 
         # force to exception 0 if incorrect bounds
-        if code not in range(1, len(self.configs[ConfigKey.EXCEPTIONS.value])):
+        if code not in range(1, len(self.configs[Config.EXCEPTIONS.value])):
             code = 0
 
-        exception = self.configs[ConfigKey.EXCEPTIONS.value][code]
+        exception = self.configs[Config.EXCEPTIONS.value][code]
         # note that the json purposefully has the redundant entry "code"
         # this is done for ease of use and organizational purposes
         raise Exception('\n\tcode:\t{}\n'

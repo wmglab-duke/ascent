@@ -65,7 +65,7 @@ class Map(Exceptionable, Configurable):
 
         # set up super classes
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
-        Configurable.__init__(self, SetupMode.OLD, ConfigKey.MASTER, main_config)
+        Configurable.__init__(self, SetupMode.OLD, Config.MASTER, main_config)
 
         # "root" of data within master config
         # stored as list because will be "splatted" later when using self.search and self.path
@@ -75,16 +75,16 @@ class Map(Exceptionable, Configurable):
         self.mode: SetupMode = mode
 
         # get sample string to pass to Map.Slide
-        self.sample = self.search(ConfigKey.MASTER, 'sample')
+        self.sample = self.search(Config.MASTER, 'sample')
 
         # init self.slides
         self.slides: List[SlideInfo] = []
 
         if self.mode == SetupMode.NEW:
-            self.output_path = os.path.join(self.path(ConfigKey.MASTER, *self.data_root, 'paths', 'output'))
+            self.output_path = os.path.join(self.path(Config.MASTER, *self.data_root, 'paths', 'output'))
 
             # source DIRECTORY
-            self.source_path = self.path(ConfigKey.MASTER, *self.data_root, 'paths', 'source',
+            self.source_path = self.path(Config.MASTER, *self.data_root, 'paths', 'source',
                                          is_dir=True, is_absolute=False)
 
             # build, resize, and write to file
@@ -94,8 +94,8 @@ class Map(Exceptionable, Configurable):
 
         elif self.mode == SetupMode.OLD:
             # source FILE
-            self.source_path = self.path(ConfigKey.MASTER, "map_path")
-            # self.source_path = self.path(ConfigKey.MASTER, *self.data_root, 'paths', 'old')
+            self.source_path = self.path(Config.MASTER, "map_path")
+            # self.source_path = self.path(Config.MASTER, *self.data_root, 'paths', 'old')
 
             self.output_path = self.source_path
 
@@ -127,15 +127,15 @@ class Map(Exceptionable, Configurable):
         Note: private method because this should only be called from the constructor
         """
         # load in and compute parameters
-        cassettes = self.search(ConfigKey.MASTER, *self.data_root, 'cassettes')
-        allowed_diffs = self.search(ConfigKey.MASTER, *self.data_root, 'allowed_differences')
-        number_regex = re.compile(self.search(ConfigKey.MASTER, *self.data_root, 'number_regex'))  # compile regex
-        cassette_start_pos = self.search(ConfigKey.MASTER, *self.data_root, 'start_position')
+        cassettes = self.search(Config.MASTER, *self.data_root, 'cassettes')
+        allowed_diffs = self.search(Config.MASTER, *self.data_root, 'allowed_differences')
+        number_regex = re.compile(self.search(Config.MASTER, *self.data_root, 'number_regex'))  # compile regex
+        cassette_start_pos = self.search(Config.MASTER, *self.data_root, 'start_position')
         position = cassette_start_pos
-        large_skip = self.search(ConfigKey.MASTER, *self.data_root, 'skips', 'large')
-        cassette_skip = self.search(ConfigKey.MASTER, *self.data_root, 'skips', 'cassette')
-        normal_skip = self.search(ConfigKey.MASTER, *self.data_root, 'skips', 'normal')
-        is_up = self.search(ConfigKey.MASTER, *self.data_root, 'skips', 'up')
+        large_skip = self.search(Config.MASTER, *self.data_root, 'skips', 'large')
+        cassette_skip = self.search(Config.MASTER, *self.data_root, 'skips', 'cassette')
+        normal_skip = self.search(Config.MASTER, *self.data_root, 'skips', 'normal')
+        is_up = self.search(Config.MASTER, *self.data_root, 'skips', 'up')
 
         # if the slides are not being placed in the upwards direction,
         # invert all the steps (they are expected to be negative)
@@ -194,8 +194,8 @@ class Map(Exceptionable, Configurable):
         """
 
         # get the data about the reference slides
-        start_slide_data = self.search(ConfigKey.MASTER, *self.data_root, 'resize_reference', 'start_slides')
-        end_slide_data = self.search(ConfigKey.MASTER, *self.data_root, 'resize_reference', 'end_slides')
+        start_slide_data = self.search(Config.MASTER, *self.data_root, 'resize_reference', 'start_slides')
+        end_slide_data = self.search(Config.MASTER, *self.data_root, 'resize_reference', 'end_slides')
 
         # get those slides from the data
         start_slides = [self.find(item.get('cassette'), item.get('number')) for item in start_slide_data]
@@ -203,7 +203,7 @@ class Map(Exceptionable, Configurable):
 
         # find reference distance and scale factor
         self.reference = Reference(start_slides, end_slides)
-        self.reference_distance = self.search(ConfigKey.MASTER, *self.data_root, 'resize_reference', 'distance')
+        self.reference_distance = self.search(Config.MASTER, *self.data_root, 'resize_reference', 'distance')
         self.scale = self.reference.scale_for_distance(self.reference_distance)
 
         # shift slides to 0 as origin and scale from there

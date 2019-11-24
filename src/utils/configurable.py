@@ -34,7 +34,7 @@ from .enums import *
 
 class Configurable:
 
-    def __init__(self, mode: SetupMode = None, key: ConfigKey = None, config: Union[str, dict] = None):
+    def __init__(self, mode: SetupMode = None, key: Config = None, config: Union[str, dict] = None):
         """
         :param mode: SetupMode, determines if loads new JSON or uses old data
         :param key: choice of MASTER or EXCEPTIONS (or any other added separate configs)
@@ -47,7 +47,7 @@ class Configurable:
         if len([item for item in [mode, key, config] if item is None]) == 0:
             self.add(mode, key, config)
 
-    def add(self, mode: SetupMode, key: ConfigKey, config: Union[str, dict]):
+    def add(self, mode: SetupMode, key: Config, config: Union[str, dict]):
 
         # either load up new data or used old, passed in data
         if mode == SetupMode.NEW:
@@ -57,7 +57,7 @@ class Configurable:
         else:  # mode == SetupMode.OLD:
             self.configs[key.value] = config
 
-    def search(self, key: ConfigKey, *args):
+    def search(self, key: Config, *args):
         """
         Get an item using "path" of args in the json config.
         :param key: type of config to search within
@@ -76,13 +76,13 @@ class Configurable:
                                 '\tsource:\tconfigurable.py'.format(type(arg), arg))
         return result
 
-    def path(self, key: ConfigKey, *args, is_dir: bool = False, is_absolute: bool = False):
+    def path(self, key: Config, *args, is_dir: bool = False, is_absolute: bool = False):
         """
         Build a path for an item specified in same style as self.search().
         Expects the item returned by self.search(key, *args) to be a list.
         :param is_absolute: flag to make the path absolute
         :param is_dir: if true, will add trailing slash (system nonspecific) to path
-        :param key: ConfigKey (choice of configurations from discrete enumeration)
+        :param key: Config (choice of configurations from discrete enumeration)
         :param args: "path" to desired path
         :return: final path to item (with system formatting!)
         """
@@ -137,7 +137,7 @@ class Configurable:
 
         for mode in modes:
 
-            modes_in_config = self.search(ConfigKey.MASTER, 'modes', mode.config.value)
+            modes_in_config = self.search(Config.MASTER, 'modes', mode.config.value)
 
             if not isinstance(modes_in_config, list):
                 modes_in_config = [modes_in_config]

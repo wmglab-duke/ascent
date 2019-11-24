@@ -10,7 +10,7 @@ class SetupMode(Enum):
 
 
 @unique
-class ConfigKey(Enum):
+class Config(Enum):
     # system
     MESH = 'mesh'
     MATERIALS = 'materials'

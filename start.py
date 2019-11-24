@@ -5,7 +5,7 @@ import time
 import sys
 
 from src import Runner
-from src.utils.enums import SetupMode, ConfigKey
+from src.utils.enums import SetupMode, Config
 
 # START timer
 start = time.time()
@@ -28,8 +28,8 @@ if not os.path.exists(env_path):
 
 # initialize Runner (loads in parameters)
 runner = Runner()
-runner.add(SetupMode.NEW, ConfigKey.RUN, run_path)
-runner.add(SetupMode.NEW, ConfigKey.ENV, env_path)
+runner.add(SetupMode.NEW, Config.RUN, run_path)
+runner.add(SetupMode.NEW, Config.ENV, env_path)
 
 # runner = Runner(master_config_file_path)
 
