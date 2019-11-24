@@ -38,6 +38,7 @@ class Runner(Exceptionable, Configurable):
         # init variables for later use
         self.slide_manager = None
         self.fiber_manager = None
+
     def validate(self):
 
         samples = self.search(Config.RUN, 'sample')
@@ -52,15 +53,17 @@ class Runner(Exceptionable, Configurable):
 
 
         # loop (constant sample)
+        # slide manager
+        slide_manager.add(SetupMode.OLD, Config.SAMPLE, configs['sample'])
 
-            # slide manager
+        # models
+        for model_index, model in enumerate(configs['sample']['models']):
 
-            # models
+            # fiber manager(s)
+            fiber_manager.add(SetupMode.OLD, Config.model, configs['models'][model_index])
 
-                # fiber manager(s)
-                fiber_manager.add(SetupMode.old, Config.model, configs["models"][index])
-
-                # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials
+            # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials
+            self.handoff()
 
     def smart_run(self):
 
@@ -131,6 +134,7 @@ class Runner(Exceptionable, Configurable):
         comsol_path = self.search(Config.ENV, 'comsol_path')
         jdk_path = self.search(Config.ENV, 'jdk_path')
         project_path = self.search(Config.ENV, 'project_path')
+        run_path = os.path.join(project_path, 'config', 'user', 'runs', '{}.json'.format(sys.argv[1]))
 
         core_name = 'ModelWrapper'
 
@@ -142,10 +146,11 @@ class Runner(Exceptionable, Configurable):
                                                                                                                 comsol_path))
             # https://stackoverflow.com/questions/219585/including-all-the-jars-in-a-directory-within-the-java-classpath
             os.system('{}/java/maci64/jre/Contents/Home/bin/java '
-                      '-cp .:$(echo {}/plugins/*.jar | tr \' \' \':\'):../lib/json-20190722.jar:../bin model.{} {}'.format(comsol_path,
+                      '-cp .:$(echo {}/plugins/*.jar | tr \' \' \':\'):../lib/json-20190722.jar:../bin model.{} {} {}'.format(comsol_path,
                                                                                                                            comsol_path,
                                                                                                                            core_name,
-                                                                                                                           project_path))
+                                                                                                                           project_path,
+                                                                                                                              run_path))
             os.chdir('..')
 
         else:  # assume to be 'win64'
@@ -153,10 +158,11 @@ class Runner(Exceptionable, Configurable):
             os.chdir('src')
             os.system('""{}\\javac" -cp "..\\lib\\json-20190722.jar";"{}\\plugins\\*" model\\*.java -d ..\\bin"'.format(jdk_path,
                                                                                                                         comsol_path))
-            os.system('""{}\\java\\win64\\jre\\bin\\java" -cp "{}\\plugins\\*";"..\\lib\\json-20190722.jar";"..\\bin" model.{} {}"'.format(comsol_path,
+            os.system('""{}\\java\\win64\\jre\\bin\\java" -cp "{}\\plugins\\*";"..\\lib\\json-20190722.jar";"..\\bin" model.{} {} {}"'.format(comsol_path,
                                                                                                                                            comsol_path,
                                                                                                                                            core_name,
-                                                                                                                                           project_path))
+                                                                                                                                           project_path,
+                                                                                                                                           run_path))
             os.chdir('..')
 
     def save_all(self):
