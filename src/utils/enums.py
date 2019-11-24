@@ -16,6 +16,8 @@ class ConfigKey(Enum):
     MATERIALS = 'materials'
     FIBER_Z = 'fiber_z'
     CUFFS = 'cuffs'
+    EXCEPTIONS = 'exceptions'
+    ENV = 'env'
 
     # user
     RUN = 'run'

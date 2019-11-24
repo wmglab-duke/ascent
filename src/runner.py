@@ -27,16 +27,13 @@ from src.utils import *
 
 class Runner(Exceptionable, Configurable):
 
-    def __init__(self, config_file_path: str):
+    def __init__(self):
 
         # initialize Configurable super class
-        Configurable.__init__(self, SetupMode.NEW, ConfigKey.MASTER, config_file_path)
-
-        # get config path info from config and set to class vars
-        self.exceptions_config_path = self.path(ConfigKey.MASTER, 'config', 'paths', 'exceptions')
+        Configurable.__init__(self)
 
         # initialize Exceptionable super class
-        Exceptionable.__init__(self, SetupMode.NEW, self.exceptions_config_path)
+        Exceptionable.__init__(self, SetupMode.NEW)
 
         # init variables for later use
         self.slide_manager = None

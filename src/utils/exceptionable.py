@@ -19,17 +19,21 @@ Description:
 
 from .configurable import Configurable
 from .enums import SetupMode, ConfigKey
+import os
 
 
 class Exceptionable(Configurable):
 
-    def __init__(self, mode: SetupMode, config):
+    def __init__(self, mode: SetupMode, config=None):
         """
         :param mode: SetupMode, determines if Configurable loads new JSON or uses old data
         :param config: if SetupMode.OLD, this is the data. if SetupMode.NEW, this is str path to JSON
         """
 
-        Configurable.__init__(self, mode, ConfigKey.EXCEPTIONS, config)
+        if mode == SetupMode.OLD:
+            Configurable.__init__(self, mode, ConfigKey.EXCEPTIONS, config)
+        else:  # mode == SetupMode.NEW
+            Configurable.__init__(self, mode, ConfigKey.EXCEPTIONS, os.path.join('config', 'system' 'exceptions.json'))
 
     def throw(self, code):
         """
