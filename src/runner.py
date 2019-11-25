@@ -103,18 +103,19 @@ class Runner(Exceptionable, Configurable):
 
         # models
         for model_index, model in enumerate(configs['sample']['models']):
+            for sim_index, sim in enumerate(configs['sample']['models']['sims']):
 
-            # fiber manager(s)
-            # TODO: fix constructor in FiberManager
-            fiber_manager = FiberManager()
+                # fiber manager(s)
+                # TODO: fix constructor in FiberManager
+                fiber_manager = FiberManager()
 
-            # TODO: carry out rest of processes for FiberManager (see below)
-            # TODO: fix those associated processes in FiberManager
+                # TODO: carry out rest of processes for FiberManager (see below)
+                # TODO: fix those associated processes in FiberManager
 
-            fiber_manager.add(SetupMode.OLD, Config.MODEL, configs['models'][model_index])
+                fiber_manager.add(SetupMode.OLD, Config.MODEL, configs['models'][model_index])
 
-            # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials
-            self.handoff()
+                # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials
+                self.handoff()
 
     def handoff(self):
         # TODO: ModelWrapper side, make sure all paths are correct
