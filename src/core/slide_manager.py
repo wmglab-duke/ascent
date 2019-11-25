@@ -127,10 +127,10 @@ class SlideManager(Exceptionable, Configurable, Saveable):
     def populate(self, deform_animate: bool = False):
 
         # get parameters (modes) from configuration file
-        mask_input_mode = self.search_mode(MaskInputMode)
-        nerve_mode = self.search_mode(NerveMode)
-        reshape_nerve_mode = self.search_mode(ReshapeNerveMode)
-        deform_mode = self.search_mode(DeformationMode)
+        mask_input_mode = self.search_mode(MaskInputMode, Config.SAMPLE)
+        nerve_mode = self.search_mode(NerveMode, Config.SAMPLE)
+        reshape_nerve_mode = self.search_mode(ReshapeNerveMode, Config.SAMPLE)
+        deform_mode = self.search_mode(DeformationMode, Config.SAMPLE)
 
         def exists(mask_file_name: MaskFileNames):
             return os.path.exists(mask_file_name.value)
@@ -138,10 +138,10 @@ class SlideManager(Exceptionable, Configurable, Saveable):
         # get starting point so able to go back
         start_directory: str = os.getcwd()
 
-        samples_path = self.path(Config.MASTER, 'samples_path')
+        samples_path = self.path(Config.SAMPLE, 'samples_path')
 
         # get sample name
-        sample: str = self.search(Config.MASTER, 'sample')
+        sample: str = self.search(Config.SAMPLE, 'sample')
 
         # create scale bar path
         scale_path = os.path.join(samples_path, sample, MaskFileNames.SCALE_BAR.value)
@@ -164,7 +164,7 @@ class SlideManager(Exceptionable, Configurable, Saveable):
                 if exists(MaskFileNames.INNERS):
                     fascicles = Fascicle.inner_to_list(MaskFileNames.INNERS.value,
                                                        self.configs[Config.EXCEPTIONS.value],
-                                                       scale=1 + self.search(Config.MASTER,
+                                                       scale=1 + self.search(Config.SAMPLE,
                                                                              'scale',
                                                                              'outer_thick_to_inner_diam'))
                 else:
@@ -213,7 +213,7 @@ class SlideManager(Exceptionable, Configurable, Saveable):
                                  will_reposition=(deform_mode != DeformationMode.NONE))
 
             # shrinkage correction
-            slide.scale(1 + self.search(Config.MASTER, "scale", "shrinkage_scale"))
+            slide.scale(1 + self.search(Config.SAMPLE, "scale", "shrinkage_scale"))
 
             # shift slide about (0,0)
             slide.move_center(np.array([0, 0]))
@@ -223,7 +223,7 @@ class SlideManager(Exceptionable, Configurable, Saveable):
             os.chdir(start_directory)
 
         if os.path.exists(scale_path):
-            self.scale(scale_path, self.search(Config.MASTER, 'scale', 'scale_bar_length'))
+            self.scale(scale_path, self.search(Config.SAMPLE, 'scale', 'scale_bar_length'))
         else:
             print(scale_path)
             self.throw(19)
@@ -265,8 +265,8 @@ class SlideManager(Exceptionable, Configurable, Saveable):
         start_directory: str = os.getcwd()
 
         # get path to sample
-        sample_path = os.path.join(self.path(Config.MASTER, 'samples_path'),
-                                   self.search(Config.MASTER, 'sample'))
+        sample_path = os.path.join(self.path(Config.SAMPLE, 'samples_path'),
+                                   self.search(Config.SAMPLE, 'sample'))
 
         # loop through the slide info (index i SHOULD correspond to slide in self.slides)
         # TODO: ensure self.slides matches up with self.map.slides
