@@ -114,6 +114,7 @@ class Runner(Exceptionable, Configurable):
                 # TODO: fix those associated processes in FiberManager
 
                 fiber_manager.add(SetupMode.OLD, Config.MODEL, configs['models'][model_index])
+                fiber_manager.add(SetupMode.OLD, Config.SIM, configs['sims'][sim_index])
 
                 # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials
                 self.handoff()

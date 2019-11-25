@@ -41,15 +41,15 @@ class FiberManager(Exceptionable, Configurable, Saveable):
         """
 
         # get required parameters from configuration JSON (using inherited Configurable methods)
-        xy_mode: FiberXYMode = self.search_mode(,FiberXYMode)
+        xy_mode: FiberXYMode = self.search_mode(FiberXYMode, Config.SIM)
         mode_name = str(xy_mode).split('.')[1]
-        xy_parameters: dict = self.search(Config.MASTER, xy_mode.parameters.value, mode_name)
+        xy_parameters: dict = self.search(Config.SIM, xy_mode.parameters.value, mode_name)
 
         # initialize result lists
         fascicles: List[List[List[tuple]]] = []
 
         # perform implemented mode
-        if self.search_mode(FiberZMode) == FiberZMode.EXTRUSION:
+        if self.search_mode(FiberZMode, Config.MODEL) == FiberZMode.EXTRUSION:
 
             if xy_mode == FiberXYMode.CENTROID:
                 for fascicle in self.manager.slides[0].fascicles:
@@ -211,7 +211,7 @@ class FiberManager(Exceptionable, Configurable, Saveable):
             "fiber_z_modes": [],
             "fiber_types": [],
             "subsets": [],
-            "offsets": self.search(Config.MASTER, FiberZMode.parameters.value, 'offsets'),
+            "offsets": self.search(Config.SIM, FiberZMode.parameters.value, 'offsets'),
             "fascicles": [],
             "inners": [],
             "fibers": []
@@ -235,7 +235,7 @@ class FiberManager(Exceptionable, Configurable, Saveable):
             # init next dimension
             offsets_dimension = []
             # find base z values
-            offsets = self.search(Config.MASTER, FiberZMode.parameters.value, 'offsets')
+            offsets = self.search(Config.SIM, FiberZMode.parameters.value, 'offsets')
             for offset in offsets:
                 random_offset = False
                 if offset is None:
@@ -269,25 +269,25 @@ class FiberManager(Exceptionable, Configurable, Saveable):
         #%% START ALGORITHM
 
         # get top-level fiber z generation
-        fiber_z_mode: FiberZMode = self.search_mode(FiberZMode)
+        fiber_z_mode: FiberZMode = self.search_mode(FiberZMode, Config.MODEL)
         self.fiber_metadata['fiber_z_modes'].append(fiber_z_mode)
 
         # all functionality is only defined for EXTRUSION as of now
         if fiber_z_mode == FiberZMode.EXTRUSION:
 
             # get the correct fiber lengths
-            fiber_length = self.search(Config.MASTER, 'medium', 'length')
+            fiber_length = self.search(Config.MODEL, 'medium', 'length')
             half_fiber_length = fiber_length / 2
 
             # search for all myelination modes (length of this corresponds to length of total modes looped through)
             # TODO: set values in FIBER TYPES ENUM to associated myel mode
-            myelination_modes = self.search_multi_mode(MyelinationMode)
+            myelination_modes = self.search_multi_mode(Config.SIM, MyelinationMode)
 
             # TODO: INTERPOLATION FOR MYELINATED
 
             # get all the fiber modes (BOTH myel and unmyel)
             fiber_modes: List[Union[MyelinatedFiberType, UnmyelinatedFiberType]] =\
-                self.search_multi_mode(modes=[MyelinatedFiberType, UnmyelinatedFiberType])
+                self.search_multi_mode(Config.SIM, modes=[MyelinatedFiberType, UnmyelinatedFiberType])
 
             # init first dimension
             fiber_mode_dimension = []
@@ -307,7 +307,7 @@ class FiberManager(Exceptionable, Configurable, Saveable):
                         paranodal_length_1,\
                         diameters,\
                         delta_zs,\
-                        paranodal_length_2s = (self.search(Config.MASTER, *fiber_mode_search_params, key) for key in
+                        paranodal_length_2s = (self.search(Config.FIBER_Z, *fiber_mode_search_params, key) for key in
                                                ['subset',
                                                 'node_length',
                                                 'paranodal_length_1',
@@ -364,7 +364,7 @@ class FiberManager(Exceptionable, Configurable, Saveable):
 
                 else:  # UNMYELINATED
 
-                    delta_zs: list = self.search(Config.MASTER, *fiber_mode_search_params, 'delta_zs')
+                    delta_zs: list = self.search(Config.FIBER_Z, *fiber_mode_search_params, 'delta_zs')
 
                     subsets_dimension = []
                     for delta_z in delta_zs:
