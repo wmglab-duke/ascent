@@ -86,8 +86,9 @@ class Runner(Exceptionable, Configurable):
         # load all json configs into memory
         configs = self.load_configs()
 
-        # create slide manager and run general processes
+        # init slide manager
         slide_manager = SlideManager(self.configs[Config.EXCEPTIONS.value])
+        # run processes with slide manager (see class for details)
         slide_manager\
             .add(SetupMode.OLD, Config.SAMPLE, configs['sample'][0])\
             .add(SetupMode.OLD, Config.RUN, self.configs[Config.RUN.value])\
@@ -96,23 +97,30 @@ class Runner(Exceptionable, Configurable):
             .populate()\
             .write(WriteMode.SECTIONWISE2D)
 
-        # models
+        # TODO: save slide manager here
+        slide_manager.save()
+
+        # iterate through models
         for model_index, model in enumerate(configs['models']):
 
+            # iterate through simulations
             for sim_index, sim in enumerate(configs['sims']):
 
-                # fiber manager(s)
-                # TODO: fix constructor in FiberManager
+                # init fiber manager
                 fiber_manager = FiberManager(slide_manager, self.configs[Config.EXCEPTIONS.value])
+                # run processes with fiber manager (see class for details)
+                fiber_manager\
+                    .add(SetupMode.OLD, Config.MODEL, configs['models'][model_index])\
+                    .add(SetupMode.OLD, Config.SIM, configs['sims'][sim_index])\
+                    .fiber_xy_coordinates(plot=True, save=True)\
+                    .fiber_z_coordinates(fiber_manager.xy_coordinates, save=True)
 
-                # TODO: carry out rest of processes for FiberManager (see below)
-                # TODO: fix those associated processes in FiberManager
+                # TODO: save fiber manager here
 
-                fiber_manager.add(SetupMode.OLD, Config.MODEL, configs['models'][model_index])
-                fiber_manager.add(SetupMode.OLD, Config.SIM, configs['sims'][sim_index])
+        # TODO: save all model and sim configs
 
-                # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials
-                self.handoff()
+        # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials
+        self.handoff()
 
     def handoff(self):
         # TODO: ModelWrapper side, make sure all paths are correct

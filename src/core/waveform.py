@@ -13,22 +13,41 @@ from src.utils.enums import *
 
 
 class Waveform(Exceptionable, Configurable):
+    """
+    Required (Config.) JSON's:
+        MODEL
+        SIM
+    """
 
-    def __init__(self, master_config: dict, exceptions_config: list):
+    def __init__(self, exceptions_config: list):
         """
-        :param master_config:
-        :param exceptions_config:
+        :param exceptions_config: preloaded exceptions.json data
         """
 
         # set up superclasses
-        Configurable.__init__(self, SetupMode.OLD, Config.MASTER, master_config)
+        Configurable.__init__(self)
         Exceptionable.__init__(self, SetupMode.OLD, exceptions_config)
 
+        # init instance variables
+        self.modes = \
+            self.dt = \
+            self.t_start = \
+            self.t_on = \
+            self.t_off = \
+            self.t_stop = \
+            self.time_unit = \
+            self.frequency_unit = None
+
+    def init_post_config(self):
+
+        if any([config.value not in self.configs.keys() for config in (Config.MODEL, Config.SIM)]):
+            self.throw(39)
+
         # get mode
-        self.modes = self.search_multi_mode(WaveformMode)
+        self.modes = self.search_multi_mode(Config.SIM, WaveformMode)
 
         # get global vars data
-        global_parameters: dict = self.search(Config.MASTER,
+        global_parameters: dict = self.search(Config.SIM,
                                               WaveformMode.parameters.value,
                                               WaveformMode.global_parameters.value)
 
@@ -61,8 +80,7 @@ class Waveform(Exceptionable, Configurable):
         if self.dt > min(time_params):
             self.throw(33)
 
-    @staticmethod
-    def rho_weerasuriya(f=None):
+    def rho_weerasuriya(self, f=None):
         """
         :return: TODO
         """
@@ -133,9 +151,9 @@ class Waveform(Exceptionable, Configurable):
         # Convert to constant rho
         thk_weerasuriya = 0.00002175           # [m]
         rho = rs37/thk_weerasuriya             # [Ohm-m]
-        return rho
+        self.configs[Config.MODEL.value]['rho_perineurium']['value'] = rho
 
-def generate(self) -> List[np.ndarray]:
+    def generate(self) -> List[np.ndarray]:
         """
         :return: list of 1d ndarrays, waveforms as specified by master configuration
         """

@@ -17,6 +17,11 @@ from src.utils import *
 
 
 class SlideManager(Exceptionable, Configurable, Saveable):
+    """
+    Required (Config.) JSON's:
+        SAMPLE
+        RUN
+    """
 
     def __init__(self, exception_config: list):
         """

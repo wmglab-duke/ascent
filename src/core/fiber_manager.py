@@ -32,8 +32,8 @@ class FiberManager(Exceptionable, Configurable, Saveable):
         # empty metadata
         self.fiber_metadata: Dict[str, list] = {}
 
-    def fiber_xy_coordinates(self, plot: bool = False, save: bool = False, buffer: float = 5.0) \
-            -> List[List[List[tuple]]]:
+    def fiber_xy_coordinates(self, plot: bool = False, save: bool = False, buffer: float = 5.0)\
+            -> 'FiberManager': # -> List[List[List[tuple]]]:
         """
         :return: tuple containing two lists of tuples,
                     1) first list of tuples is points [(x, y)]
@@ -195,9 +195,11 @@ class FiberManager(Exceptionable, Configurable, Saveable):
         if save:
             self.xy_coordinates = fascicles
 
-        return fascicles
 
-    def fiber_z_coordinates(self, xy_coordinates: List[List[List[Tuple[float]]]], save: bool = False):
+        return self
+
+    def fiber_z_coordinates(self, xy_coordinates: List[List[List[Tuple[float]]]], save: bool = False)\
+            -> 'FiberManager':
         """
         Finds coordinates to top of axon (1/2 to 1) then flips down to find bottom half
         :param save:
@@ -389,7 +391,8 @@ class FiberManager(Exceptionable, Configurable, Saveable):
             # return and save top dimension of z points list
             if save:
                 self.full_coordinates = fiber_mode_dimension
-            return fiber_mode_dimension
+
+            return self
 
         else:
             self.throw(31)
