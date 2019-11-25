@@ -102,8 +102,9 @@ class Runner(Exceptionable, Configurable):
         slide_manager.write(WriteMode.SECTIONWISE2D)
 
         # models
-        for model_index, model in enumerate(configs['sample']['models']):
-            for sim_index, sim in enumerate(configs['sample']['models']['sims']):
+        for model_index, model in enumerate(configs['models']):
+
+            for sim_index, sim in enumerate(configs['sims']):
 
                 # fiber manager(s)
                 # TODO: fix constructor in FiberManager
