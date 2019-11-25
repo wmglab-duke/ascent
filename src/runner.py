@@ -36,7 +36,6 @@ class Runner(Exceptionable, Configurable):
         # initialize Exceptionable super class
         Exceptionable.__init__(self, SetupMode.NEW)
 
-
     def load_configs(self) -> dict:
 
         def validate_and_add(configs: dict, key: str, path: str):
@@ -104,7 +103,7 @@ class Runner(Exceptionable, Configurable):
 
                 # fiber manager(s)
                 # TODO: fix constructor in FiberManager
-                fiber_manager = FiberManager()
+                fiber_manager = FiberManager(slide_manager, self.configs[Config.EXCEPTIONS.value])
 
                 # TODO: carry out rest of processes for FiberManager (see below)
                 # TODO: fix those associated processes in FiberManager
