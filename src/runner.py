@@ -78,7 +78,6 @@ class Runner(Exceptionable, Configurable):
         return configs
 
     def run(self):
-        # TODO: save .obj's to correct paths while looping
         # TODO: implement overwrite checking
 
         # constant sample
@@ -97,8 +96,9 @@ class Runner(Exceptionable, Configurable):
             .populate()\
             .write(WriteMode.SECTIONWISE2D)
 
-        # TODO: save slide manager here
-        slide_manager.save()
+        slide_manager.save(os.path.join('samples',
+                                        self.configs[Config.RUN.value]['sample'],
+                                        'sample.obj'))
 
         # iterate through models
         for model_index, model in enumerate(configs['models']):
