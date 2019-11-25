@@ -1,7 +1,6 @@
 {
   "modes": {
     "fiber_xy": "CENTROID",
-    "fiber_z": "EXTRUSION",
     "z_offset": "UNIFORM",
     "myel": ["MYELINATED"],
     "myel_fiber": ["MRG"],

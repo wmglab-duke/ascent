@@ -1,4 +1,7 @@
 {
+  "modes": {
+    "fiber_z": "EXTRUSION"
+  },
   "medium": {
     "bounds": {
       "unit": "micrometer",
