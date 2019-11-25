@@ -137,3 +137,5 @@ data/samples
 *.mph*
 *.class*
 out/
+samples/
+config/user
