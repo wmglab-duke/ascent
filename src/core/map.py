@@ -60,7 +60,7 @@ class Map(Exceptionable, Configurable):
         SAMPLE
     """
 
-    def __init__(self, exception_config, mode: SetupMode = SetupMode.NEW):
+    def __init__(self, exception_config):
         """
         :param main_config:
         :param exception_config:
@@ -70,6 +70,8 @@ class Map(Exceptionable, Configurable):
         # set up super classes
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
         Configurable.__init__(self)
+
+    def init_post_config(self, mode: SetupMode = SetupMode.NEW):
 
         # "root" of data within SAMPLE config
         # stored as list because will be "splatted" later when using self.search and self.path
@@ -105,6 +107,7 @@ class Map(Exceptionable, Configurable):
 
             self.output_path = self.source_path
 
+            print(self.output_path)
             # make sure ends in ".json" (defined in Configurable)
             self.validate_path(self.output_path)
 

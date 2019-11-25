@@ -43,7 +43,7 @@ class Runner(Exceptionable, Configurable):
             if os.path.exists(path):
                 if key not in configs.keys():
                     configs[key] = []
-                configs[key] += self.load(path)
+                configs[key] += [self.load(path)]
             else:
                 print('Missing {} config: {}'.format(key, path))
                 self.throw(37)
@@ -69,7 +69,8 @@ class Runner(Exceptionable, Configurable):
         for model_path in model_paths:
             validate_and_add(configs, 'models', model_path)
 
-        sim_paths = [os.path.join('user',
+        sim_paths = [os.path.join('config',
+                                  'user',
                                   'sims',
                                   '{}.json'.format(sim)) for sim in sims]
         for sim_path in sim_paths:

@@ -42,6 +42,7 @@ class SlideManager(Exceptionable, Configurable, Saveable):
         self.map = None
 
     def init_map(self, map_mode: SetupMode) -> 'SlideManager':
+        print(self.configs)
         """
         Initialize the map. NOTE: the Config.SAMPLE json must have been externally added.
         :param map_mode: should be old for now, but keeping as parameter in case needed in future
@@ -50,8 +51,9 @@ class SlideManager(Exceptionable, Configurable, Saveable):
             self.throw(38)
 
         # Make a slide map
-        self.map = Map(self.configs[Config.EXCEPTIONS.value], map_mode)
+        self.map = Map(self.configs[Config.EXCEPTIONS.value])
         self.map.add(SetupMode.OLD, Config.SAMPLE, self.configs[Config.SAMPLE.value])
+        self.map.init_post_config(map_mode)
 
         return self
 
@@ -103,6 +105,7 @@ class SlideManager(Exceptionable, Configurable, Saveable):
 
                 if not os.path.exists(directory_part):
                     os.makedirs(directory_part)
+                print(os.getcwd())
                 os.chdir(directory_part)
 
                 if directory_part == sample_index:
