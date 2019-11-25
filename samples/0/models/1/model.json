@@ -14,7 +14,7 @@
     "material": "fat"
   },
   "cuff": {
-    "preset": ["Enteromedics.json"],
+    "preset": ["LivaNova.json"],
     "shift": {
       "unit": "micrometer",
       "x": 0,

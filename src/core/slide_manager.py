@@ -42,7 +42,6 @@ class SlideManager(Exceptionable, Configurable, Saveable):
         self.map = None
 
     def init_map(self, map_mode: SetupMode) -> 'SlideManager':
-        print(self.configs)
         """
         Initialize the map. NOTE: the Config.SAMPLE json must have been externally added.
         :param map_mode: should be old for now, but keeping as parameter in case needed in future
@@ -101,16 +100,16 @@ class SlideManager(Exceptionable, Configurable, Saveable):
             cassette, number, _, source_directory = slide_info.data()
             cassette, number = (str(item) for item in (cassette, number))
 
-            for directory_part in samples_path, sample_index, 'slides', cassette, number, 'masks':
+            scale_was_copied = False
+            for directory_part in samples_path, str(sample_index), 'slides', cassette, number, 'masks':
 
                 if not os.path.exists(directory_part):
                     os.makedirs(directory_part)
-                print(os.getcwd())
                 os.chdir(directory_part)
 
-                if directory_part == sample_index:
+                if (directory_part == str(sample_index)) and not scale_was_copied:
                     scale_source_file = os.path.join(start_directory,
-                                                     *(source_directory.split(os.sep)),
+                                                     *source_directory,
                                                      '_'.join([sample,
                                                                cassette,
                                                                number,
@@ -120,9 +119,11 @@ class SlideManager(Exceptionable, Configurable, Saveable):
                     else:
                         raise Exception('{} not found'.format(scale_source_file))
 
+                    scale_was_copied = True
+
             for target_file in [item.value for item in MaskFileNames if item != MaskFileNames.SCALE_BAR]:
                 source_file = os.path.join(start_directory,
-                                           *(source_directory.split(os.sep)),
+                                           *source_directory,
                                            '_'.join([sample, cassette, number, target_file]))
                 if printing:
                     print('source: {}\ntarget: {}'.format(source_file, target_file))
@@ -152,20 +153,20 @@ class SlideManager(Exceptionable, Configurable, Saveable):
         # get starting point so able to go back
         start_directory: str = os.getcwd()
 
-        samples_path = self.path(Config.SAMPLE, 'samples_path')
+
 
         # get sample name
-        sample: str = self.search(Config.SAMPLE, 'sample')
+        sample: str = str(self.search(Config.RUN, 'sample'))
 
         # create scale bar path
-        scale_path = os.path.join(samples_path, sample, MaskFileNames.SCALE_BAR.value)
+        scale_path = os.path.join('samples', sample, MaskFileNames.SCALE_BAR.value)
 
         for slide_info in self.map.slides:
             # unpack data and force cast to string
             cassette, number, position, _ = slide_info.data()
             cassette, number = (str(item) for item in (cassette, number))
 
-            os.chdir(os.path.join(samples_path, sample, cassette, number, 'masks'))
+            os.chdir(os.path.join('samples', str(sample), 'slides', cassette, number, 'masks'))
 
             if not exists(MaskFileNames.RAW):
                 self.throw(18)
@@ -268,7 +269,7 @@ class SlideManager(Exceptionable, Configurable, Saveable):
                 warnings.warn('NO DEFORMATION is happening!')
 
             slide.nerve = slide.reshaped_nerve(reshape_nerve_mode)
-            slide.plot(fix_aspect_ratio=True, title=title)
+            # slide.plot(fix_aspect_ratio=True, title=title)
 
         return self
 
@@ -282,7 +283,7 @@ class SlideManager(Exceptionable, Configurable, Saveable):
 
         # get path to sample
         sample_path = os.path.join(self.path(Config.SAMPLE, 'samples_path'),
-                                   self.search(Config.RUN, 'sample'),
+                                   str(self.search(Config.RUN, 'sample')),
                                    'slides')
 
         # loop through the slide info (index i SHOULD correspond to slide in self.slides)

@@ -74,7 +74,7 @@ class Runner(Exceptionable, Configurable):
                                   'sims',
                                   '{}.json'.format(sim)) for sim in sims]
         for sim_path in sim_paths:
-            validate_and_add(configs, 'models', sim_path)
+            validate_and_add(configs, 'sims', sim_path)
 
         return configs
 
@@ -98,11 +98,12 @@ class Runner(Exceptionable, Configurable):
             .write(WriteMode.SECTIONWISE2D)
 
         slide_manager.save(os.path.join('samples',
-                                        self.configs[Config.RUN.value]['sample'],
+                                        str(self.configs[Config.RUN.value]['sample']),
                                         'sample.obj'))
 
         # iterate through models
         for model_index, model in enumerate(configs['models']):
+            print('MODEL {}'.format(model_index))
 
             # iterate through simulations
             for sim_index, sim in enumerate(configs['sims']):
@@ -113,12 +114,12 @@ class Runner(Exceptionable, Configurable):
                 fiber_manager\
                     .add(SetupMode.OLD, Config.MODEL, configs['models'][model_index])\
                     .add(SetupMode.OLD, Config.SIM, configs['sims'][sim_index])\
-                    .fiber_xy_coordinates(plot=True, save=True)\
+                    .fiber_xy_coordinates(plot=False, save=True)\
                     .fiber_z_coordinates(fiber_manager.xy_coordinates, save=True)
 
                 # TODO: save fiber manager here
                 fiber_manager.save(os.path.join('samples',
-                                                self.configs[Config.RUN.value]['sample'],
+                                                str(self.configs[Config.RUN.value]['sample']),
                                                 'models',
                                                 str(model_index),
                                                 'sims',
@@ -126,6 +127,7 @@ class Runner(Exceptionable, Configurable):
                                                 'sim.obj'))
 
         # TODO: save all model and sim configs
+        # TODO: create necessary directories for JSON's as well
 
         # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials
         self.handoff()

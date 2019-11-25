@@ -107,7 +107,6 @@ class Map(Exceptionable, Configurable):
 
             self.output_path = self.source_path
 
-            print(self.output_path)
             # make sure ends in ".json" (defined in Configurable)
             self.validate_path(self.output_path)
 

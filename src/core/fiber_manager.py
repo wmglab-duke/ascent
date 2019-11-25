@@ -2,6 +2,7 @@
 import json
 import random
 from typing import Dict, List, Tuple, Union
+import os
 
 # packages
 import numpy as np
@@ -37,6 +38,8 @@ class FiberManager(Exceptionable, Configurable, Saveable):
 
         # empty metadata
         self.fiber_metadata: Dict[str, list] = {}
+
+        self.add(SetupMode.NEW, Config.FIBER_Z, os.path.join('config', 'system', 'fiber_z.json'))
 
     def fiber_xy_coordinates(self, plot: bool = False, save: bool = False, buffer: float = 5.0)\
             -> 'FiberManager': # -> List[List[List[tuple]]]:
@@ -284,7 +287,7 @@ class FiberManager(Exceptionable, Configurable, Saveable):
         if fiber_z_mode == FiberZMode.EXTRUSION:
 
             # get the correct fiber lengths
-            fiber_length = self.search(Config.MODEL, 'medium', 'length')
+            fiber_length = self.search(Config.MODEL, 'medium', 'bounds', 'length')
             half_fiber_length = fiber_length / 2
 
             # search for all myelination modes (length of this corresponds to length of total modes looped through)
