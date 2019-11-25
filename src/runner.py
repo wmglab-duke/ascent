@@ -88,9 +88,10 @@ class Runner(Exceptionable, Configurable):
         configs = self.load_configs()
 
         # slide manager
-        slide_manager = SlideManager(self.configs[Config.EXCEPTIONS.value], SetupMode.NEW)
+        slide_manager = SlideManager(self.configs[Config.EXCEPTIONS.value])
         slide_manager.add(SetupMode.OLD, Config.SAMPLE, configs['sample'][0])
         slide_manager.add(SetupMode.OLD, Config.RUN, self.configs[Config.RUN.value])
+        slide_manager.init_map(SetupMode.OLD)
 
         slide_manager.build_file_structure()
 

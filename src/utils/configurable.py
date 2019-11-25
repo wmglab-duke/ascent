@@ -107,18 +107,19 @@ class Configurable:
             # print('load "{}" --> key "{}"'.format(config, key))
             return json.load(handle)
 
-    def search_mode(self, mode: Type[Enum]):
+    # TODO: fix in all instances
+    def search_mode(self, mode: Type[Enum], key: Config):
         """
         :param mode: an Enum mode that is being searched. it MUST have variable config, which is the name
                      to search for in the masterX.json file
         :return: the Enum version of the mode that is specified by the master config
         """
 
-        return self.search_multi_mode(mode=mode, count=1)[0]
+        return self.search_multi_mode(key=key, mode=mode, count=1)[0]
 
-    def search_multi_mode(self, mode: Type[Enum] = None, modes: List[Type[Enum]] = None, count: int = None) -> list:
+    def search_multi_mode(self, key: Config, mode: Type[Enum] = None, modes: List[Type[Enum]] = None, count: int = None) -> list:
         """
-
+        :param key:
         :param mode:
         :param modes:
         :param count:
@@ -137,7 +138,7 @@ class Configurable:
 
         for mode in modes:
 
-            modes_in_config = self.search(Config.MASTER, 'modes', mode.config.value)
+            modes_in_config = self.search(key, 'modes', mode.config.value)
 
             if not isinstance(modes_in_config, list):
                 modes_in_config = [modes_in_config]
