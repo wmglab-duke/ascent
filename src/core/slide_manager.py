@@ -18,7 +18,7 @@ from src.utils import *
 
 class SlideManager(Exceptionable, Configurable, Saveable):
 
-    def __init__(self, exception_config: list, map_mode: SetupMode):
+    def __init__(self, exception_config: list):
         """
         :param master_config: preloaded configuration data for master
         :param exception_config: preloaded configuration data for exceptions
@@ -33,10 +33,20 @@ class SlideManager(Exceptionable, Configurable, Saveable):
         # Initialize slides
         self.slides: List[Slide] = []
 
+        # Set instance variable map
+        self.map = None
+
+    def init_map(self, map_mode: SetupMode):
+        """
+        Initialize the map. NOTE: the Config.SAMPLE json must have been externally added.
+        :param map_mode: should be old for now, but keeping as parameter in case needed in future
+        """
+        if Config.SAMPLE.value not in self.configs.keys():
+            self.throw(38)
+
         # Make a slide map
-        self.map = Map(self.configs[Config.MASTER.value],
-                       self.configs[Config.EXCEPTIONS.value],
-                       map_mode)
+        self.map = Map(self.configs[Config.EXCEPTIONS.value], map_mode)
+        self.map.add(SetupMode.OLD, Config.SAMPLE, self.configs[Config.SAMPLE.value])
 
     def scale(self, scale_bar_mask_path: str, scale_bar_length: float):
         """

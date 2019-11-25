@@ -188,5 +188,10 @@
     "code": 37,
     "text": "Missing config required by run configuration!",
     "source": "src.Runner"
+  },
+  {
+    "code": 38,
+    "text": "Missing Config.SAMPLE configuration!",
+    "source": "src.SlideManager.init_map"
   }
 ]

@@ -56,7 +56,7 @@ from src.utils import *
 
 class Map(Exceptionable, Configurable):
 
-    def __init__(self, main_config, exception_config, mode: SetupMode = SetupMode.NEW):
+    def __init__(self, exception_config, mode: SetupMode = SetupMode.NEW):
         """
         :param main_config:
         :param exception_config:
@@ -65,7 +65,7 @@ class Map(Exceptionable, Configurable):
 
         # set up super classes
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
-        Configurable.__init__(self, SetupMode.OLD, Config.MASTER, main_config)
+        Configurable.__init__(self)
 
         # "root" of data within master config
         # stored as list because will be "splatted" later when using self.search and self.path
