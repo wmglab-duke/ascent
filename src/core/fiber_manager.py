@@ -15,6 +15,12 @@ from src.utils import *
 
 
 class FiberManager(Exceptionable, Configurable, Saveable):
+    """
+    Required (Config.) JSON's
+        MODEL
+        SIM
+        FIBER_Z
+    """
 
     def __init__(self, slide_manager: SlideManager, exception_config: list):
 

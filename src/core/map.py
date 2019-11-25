@@ -55,6 +55,10 @@ from src.utils import *
 
 
 class Map(Exceptionable, Configurable):
+    """
+    Required (Config.) JSON's
+        SAMPLE
+    """
 
     def __init__(self, exception_config, mode: SetupMode = SetupMode.NEW):
         """
