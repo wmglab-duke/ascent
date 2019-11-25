@@ -16,11 +16,11 @@ from src.utils import *
 
 class FiberManager(Exceptionable, Configurable, Saveable):
 
-    def __init__(self, slide_manager: SlideManager, master_config: dict, exception_config: list):
+    def __init__(self, slide_manager: SlideManager, exception_config: list):
 
         # Initializes superclasses
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
-        Configurable.__init__(self, SetupMode.OLD, Config.MASTER, master_config)
+        Configurable.__init__(self)
 
         # set self manager
         self.manager = slide_manager
@@ -32,7 +32,8 @@ class FiberManager(Exceptionable, Configurable, Saveable):
         # empty metadata
         self.fiber_metadata: Dict[str, list] = {}
 
-    def fiber_xy_coordinates(self, plot: bool = False, save: bool = False, buffer: float = 5.0) -> List[List[List[tuple]]]:
+    def fiber_xy_coordinates(self, plot: bool = False, save: bool = False, buffer: float = 5.0) \
+            -> List[List[List[tuple]]]:
         """
         :return: tuple containing two lists of tuples,
                     1) first list of tuples is points [(x, y)]
@@ -40,7 +41,7 @@ class FiberManager(Exceptionable, Configurable, Saveable):
         """
 
         # get required parameters from configuration JSON (using inherited Configurable methods)
-        xy_mode: FiberXYMode = self.search_mode(FiberXYMode)
+        xy_mode: FiberXYMode = self.search_mode(,FiberXYMode)
         mode_name = str(xy_mode).split('.')[1]
         xy_parameters: dict = self.search(Config.MASTER, xy_mode.parameters.value, mode_name)
 
