@@ -116,6 +116,13 @@ class Runner(Exceptionable, Configurable):
                     .fiber_z_coordinates(fiber_manager.xy_coordinates, save=True)
 
                 # TODO: save fiber manager here
+                fiber_manager.save(os.path.join('samples',
+                                                self.configs[Config.RUN.value]['sample'],
+                                                'models',
+                                                str(model_index),
+                                                'sims',
+                                                str(sim_index),
+                                                'sim.obj'))
 
         # TODO: save all model and sim configs
 
