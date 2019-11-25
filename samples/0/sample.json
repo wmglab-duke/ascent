@@ -1,0 +1,39 @@
+{
+  "sample": "Cadaver50-2",
+  "samples_path": [
+    "samples"
+  ],
+  "map_path": [
+    "data",
+    "input",
+    "samples",
+    "Cadaver50-2",
+    "map.json"
+  ],
+  "scale": {
+    "scale_bar_length": 1000,
+    "scale_bar_unit": "micrometer",
+    "outer_thick_to_inner_diam": 0.03,
+    "shrinkage_scale": 0.2
+  },
+  "modes": {
+    "write": "sectionwise2d",
+    "mask_input": "INNER_AND_OUTER_SEPARATE",
+    "nerve": "PRESENT",
+    "reshape_nerve": "CIRCLE",
+    "deform": "PHYSICS",
+    "cuff_inner": ["CIRCLE", "ELLIPSE", "BOUNDING_BOX"]
+  },
+  "slide_map": {
+    "cassettes": ["VN1_A", "VN1_B"],
+    "allowed_differences": [1, 2],
+    "start_position": 20000,
+    "number_regex": "([0-9]*)[.]",
+    "skips": {
+      "up": false,
+      "normal": 5,
+      "large": 120,
+      "cassette": 100
+    }
+  }
+}
