@@ -15,7 +15,7 @@ Description:
 
     I considered adding path-building functionality to this class, but ultimately decided to defer that functionality
     to a "SlideManager" class. This was done so the configuration can be read and the appropriate data store in the
-    master configuration (or similar). That way, a COMSOL-interfacing program will be able to easily src the data from
+    SAMPLE configuration (or similar). That way, a COMSOL-interfacing program will be able to easily src the data from
     one place.
 
     PROPERTIES
@@ -67,35 +67,37 @@ class Map(Exceptionable, Configurable):
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
         Configurable.__init__(self)
 
-        # "root" of data within master config
+        # "root" of data within SAMPLE config
         # stored as list because will be "splatted" later when using self.search and self.path
-        self.data_root: list = ['slide_map']
+        self.data_root = 'slide_map'
 
         # store mode if later requested by user (idk why they would want it though?)
         self.mode: SetupMode = mode
 
         # get sample string to pass to Map.Slide
-        self.sample = self.search(Config.MASTER, 'sample')
+        self.sample = self.search(Config.SAMPLE, 'sample')
 
         # init self.slides
         self.slides: List[SlideInfo] = []
 
         if self.mode == SetupMode.NEW:
-            self.output_path = os.path.join(self.path(Config.MASTER, *self.data_root, 'paths', 'output'))
-
-            # source DIRECTORY
-            self.source_path = self.path(Config.MASTER, *self.data_root, 'paths', 'source',
-                                         is_dir=True, is_absolute=False)
-
-            # build, resize, and write to file
-            self.__build()
-            # self.__resize()
-            self.write()
+            raise Exception('NOT IMPLEMENTED')
+            
+            # self.output_path = os.path.join(self.path(Config.SAMPLE, self.data_root, 'paths', 'output'))
+            # 
+            # # source DIRECTORY
+            # self.source_path = self.path(Config.SAMPLE, self.data_root, 'paths', 'source',
+            #                              is_dir=True, is_absolute=False)
+            # 
+            # # build, resize, and write to file
+            # self.__build()
+            # # self.__resize()
+            # self.write()
 
         elif self.mode == SetupMode.OLD:
             # source FILE
-            self.source_path = self.path(Config.MASTER, "map_path")
-            # self.source_path = self.path(Config.MASTER, *self.data_root, 'paths', 'old')
+            self.source_path = self.path(Config.SAMPLE, "map_path")
+            # self.source_path = self.path(Config.SAMPLE, self.data_root, 'paths', 'old')
 
             self.output_path = self.source_path
 
@@ -126,90 +128,96 @@ class Map(Exceptionable, Configurable):
 
         Note: private method because this should only be called from the constructor
         """
-        # load in and compute parameters
-        cassettes = self.search(Config.MASTER, *self.data_root, 'cassettes')
-        allowed_diffs = self.search(Config.MASTER, *self.data_root, 'allowed_differences')
-        number_regex = re.compile(self.search(Config.MASTER, *self.data_root, 'number_regex'))  # compile regex
-        cassette_start_pos = self.search(Config.MASTER, *self.data_root, 'start_position')
-        position = cassette_start_pos
-        large_skip = self.search(Config.MASTER, *self.data_root, 'skips', 'large')
-        cassette_skip = self.search(Config.MASTER, *self.data_root, 'skips', 'cassette')
-        normal_skip = self.search(Config.MASTER, *self.data_root, 'skips', 'normal')
-        is_up = self.search(Config.MASTER, *self.data_root, 'skips', 'up')
+        raise Exception('NOT IMPLEMENTED')
 
-        # if the slides are not being placed in the upwards direction,
-        # invert all the steps (they are expected to be negative)
-        if not is_up:
-            large_skip *= -1
-            cassette_skip *= -1
-            normal_skip *= -1
-
-        # get files (assumes first iteration of os.walk)
-        # files are always the 3rd item in a tuple returned by each iteration of os.walk
-        files = [result for result in os.walk(self.source_path)][0][2]
-
-        # %% master loop for finding positions
-        for k, cassette_code in enumerate(cassettes):
-            cassette = []
-            # find all files from this cassette
-            filtered_files = list(filter(lambda f: re.search(cassette_code, f), files))
-            for i, file in enumerate(filtered_files):
-                # we know that there MUST be a match now because it matched to the cassette name
-                match = number_regex.search(file).group(0)
-                # get the number from that match
-                number = int(match[:match.index('_')])
-
-                # NOTE: THIS FINDS POSITION ALONG Z-AXIS; COMMENTING OUT FOR NOW
-                # if first slide in cassette
-                # if i == 0:
-                #     position = cassette_start_pos
-                #
-                # else:
-                #     # if only a difference of 1 between this slide's number and the last's
-                #     diff = abs(number - int(cassette[i - 1].number))
-                #     if diff in allowed_diffs:
-                #         # rule: move 5um for consecutive slice (multiplied by number of skips)
-                #         position += diff * normal_skip
-                #     else:
-                #         # rule: move 100um for skip in slides
-                #         position += large_skip
-                #
-                #     # if last slide in cassette, set next cassette start position and offset indices
-                #     if (i + 1) == len(filtered_files):
-                #         cassette_start_pos = position + cassette_skip  # account for trimming
-                # add this to the current 'row' of slides
-
-                position = 0
-                if len(list(filter(lambda c: c.number == number, cassette))) == 0:
-                    cassette.append(SlideInfo(cassette_code,
-                                              number,
-                                              position,
-                                              self.source_path))
-            # add this cassette to the total list of slides
-            self.slides += cassette
+        #
+        # # load in and compute parameters
+        # cassettes = self.search(Config.SAMPLE, self.data_root, 'cassettes')
+        # allowed_diffs = self.search(Config.SAMPLE, self.data_root, 'allowed_differences')
+        # number_regex = re.compile(self.search(Config.SAMPLE, self.data_root, 'number_regex'))  # compile regex
+        # cassette_start_pos = self.search(Config.SAMPLE, self.data_root, 'start_position')
+        # position = cassette_start_pos
+        # large_skip = self.search(Config.SAMPLE, self.data_root, 'skips', 'large')
+        # cassette_skip = self.search(Config.SAMPLE, self.data_root, 'skips', 'cassette')
+        # normal_skip = self.search(Config.SAMPLE, self.data_root, 'skips', 'normal')
+        # is_up = self.search(Config.SAMPLE, self.data_root, 'skips', 'up')
+        #
+        # # if the slides are not being placed in the upwards direction,
+        # # invert all the steps (they are expected to be negative)
+        # if not is_up:
+        #     large_skip *= -1
+        #     cassette_skip *= -1
+        #     normal_skip *= -1
+        #
+        # # get files (assumes first iteration of os.walk)
+        # # files are always the 3rd item in a tuple returned by each iteration of os.walk
+        # files = [result for result in os.walk(self.source_path)][0][2]
+        #
+        # # %% SAMPLE loop for finding positions
+        # for k, cassette_code in enumerate(cassettes):
+        #     cassette = []
+        #     # find all files from this cassette
+        #     filtered_files = list(filter(lambda f: re.search(cassette_code, f), files))
+        #     for i, file in enumerate(filtered_files):
+        #         # we know that there MUST be a match now because it matched to the cassette name
+        #         match = number_regex.search(file).group(0)
+        #         # get the number from that match
+        #         number = int(match[:match.index('_')])
+        #
+        #         # NOTE: THIS FINDS POSITION ALONG Z-AXIS; COMMENTING OUT FOR NOW
+        #         # if first slide in cassette
+        #         # if i == 0:
+        #         #     position = cassette_start_pos
+        #         #
+        #         # else:
+        #         #     # if only a difference of 1 between this slide's number and the last's
+        #         #     diff = abs(number - int(cassette[i - 1].number))
+        #         #     if diff in allowed_diffs:
+        #         #         # rule: move 5um for consecutive slice (multiplied by number of skips)
+        #         #         position += diff * normal_skip
+        #         #     else:
+        #         #         # rule: move 100um for skip in slides
+        #         #         position += large_skip
+        #         #
+        #         #     # if last slide in cassette, set next cassette start position and offset indices
+        #         #     if (i + 1) == len(filtered_files):
+        #         #         cassette_start_pos = position + cassette_skip  # account for trimming
+        #         # add this to the current 'row' of slides
+        #
+        #         position = 0
+        #         if len(list(filter(lambda c: c.number == number, cassette))) == 0:
+        #             cassette.append(SlideInfo(cassette_code,
+        #                                       number,
+        #                                       position,
+        #                                       self.source_path))
+        #     # add this cassette to the total list of slides
+        #     self.slides += cassette
 
     def __resize(self):
         """
         Note: private method because user should not need to resize once built?
         """
+        
+        raise Exception('NOT IMPLEMENTED')
 
-        # get the data about the reference slides
-        start_slide_data = self.search(Config.MASTER, *self.data_root, 'resize_reference', 'start_slides')
-        end_slide_data = self.search(Config.MASTER, *self.data_root, 'resize_reference', 'end_slides')
 
-        # get those slides from the data
-        start_slides = [self.find(item.get('cassette'), item.get('number')) for item in start_slide_data]
-        end_slides = [self.find(item.get('cassette'), item.get('number')) for item in end_slide_data]
-
-        # find reference distance and scale factor
-        self.reference = Reference(start_slides, end_slides)
-        self.reference_distance = self.search(Config.MASTER, *self.data_root, 'resize_reference', 'distance')
-        self.scale = self.reference.scale_for_distance(self.reference_distance)
-
-        # shift slides to 0 as origin and scale from there
-        lowest_position = min([slide.position for slide in self.slides])
-        for slide in self.slides:
-            slide.position = round((slide.position - lowest_position) * self.scale)
+        # # get the data about the reference slides
+        # start_slide_data = self.search(Config.SAMPLE, self.data_root, 'resize_reference', 'start_slides')
+        # end_slide_data = self.search(Config.SAMPLE, self.data_root, 'resize_reference', 'end_slides')
+        # 
+        # # get those slides from the data
+        # start_slides = [self.find(item.get('cassette'), item.get('number')) for item in start_slide_data]
+        # end_slides = [self.find(item.get('cassette'), item.get('number')) for item in end_slide_data]
+        # 
+        # # find reference distance and scale factor
+        # self.reference = Reference(start_slides, end_slides)
+        # self.reference_distance = self.search(Config.SAMPLE, self.data_root, 'resize_reference', 'distance')
+        # self.scale = self.reference.scale_for_distance(self.reference_distance)
+        # 
+        # # shift slides to 0 as origin and scale from there
+        # lowest_position = min([slide.position for slide in self.slides])
+        # for slide in self.slides:
+        #     slide.position = round((slide.position - lowest_position) * self.scale)
 
     def write(self):
         """
