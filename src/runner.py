@@ -87,19 +87,15 @@ class Runner(Exceptionable, Configurable):
         # load all json configs into memory
         configs = self.load_configs()
 
-        # slide manager
+        # create slide manager and run general processes
         slide_manager = SlideManager(self.configs[Config.EXCEPTIONS.value])
-        slide_manager.add(SetupMode.OLD, Config.SAMPLE, configs['sample'][0])
-        slide_manager.add(SetupMode.OLD, Config.RUN, self.configs[Config.RUN.value])
-        slide_manager.init_map(SetupMode.OLD)
-
-        slide_manager.build_file_structure()
-
-        # TODO: fix in SlideManager
-        slide_manager.populate()
-
-        # TODO: fix in SlideManager
-        slide_manager.write(WriteMode.SECTIONWISE2D)
+        slide_manager\
+            .add(SetupMode.OLD, Config.SAMPLE, configs['sample'][0])\
+            .add(SetupMode.OLD, Config.RUN, self.configs[Config.RUN.value])\
+            .init_map(SetupMode.OLD)\
+            .build_file_structure()\
+            .populate()\
+            .write(WriteMode.SECTIONWISE2D)
 
         # models
         for model_index, model in enumerate(configs['models']):

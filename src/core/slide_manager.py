@@ -36,7 +36,7 @@ class SlideManager(Exceptionable, Configurable, Saveable):
         # Set instance variable map
         self.map = None
 
-    def init_map(self, map_mode: SetupMode):
+    def init_map(self, map_mode: SetupMode) -> 'SlideManager':
         """
         Initialize the map. NOTE: the Config.SAMPLE json must have been externally added.
         :param map_mode: should be old for now, but keeping as parameter in case needed in future
@@ -48,7 +48,9 @@ class SlideManager(Exceptionable, Configurable, Saveable):
         self.map = Map(self.configs[Config.EXCEPTIONS.value], map_mode)
         self.map.add(SetupMode.OLD, Config.SAMPLE, self.configs[Config.SAMPLE.value])
 
-    def scale(self, scale_bar_mask_path: str, scale_bar_length: float):
+        return self
+
+    def scale(self, scale_bar_mask_path: str, scale_bar_length: float) -> 'SlideManager':
         """
         Scale all slides to the correct unit.
         :param scale_bar_mask_path: path to binary mask with white straight scale bar
@@ -68,7 +70,9 @@ class SlideManager(Exceptionable, Configurable, Saveable):
         for slide in self.slides:
             slide.scale(factor)
 
-    def build_file_structure(self, printing: bool = False):
+        return self
+
+    def build_file_structure(self, printing: bool = False) -> 'SlideManager':
         """
         :param printing: bool, gives user console output
         """
@@ -124,13 +128,15 @@ class SlideManager(Exceptionable, Configurable, Saveable):
 
             os.chdir(start_directory)
 
-    def populate(self, deform_animate: bool = False):
+            return self
+
+    def populate(self, deform_animate: bool = False) -> 'SlideManager':
 
         # get parameters (modes) from configuration file
-        mask_input_mode = self.search_mode(MaskInputMode)
-        nerve_mode = self.search_mode(NerveMode)
-        reshape_nerve_mode = self.search_mode(ReshapeNerveMode)
-        deform_mode = self.search_mode(DeformationMode)
+        mask_input_mode = self.search_mode(MaskInputMode, Config.SAMPLE)
+        nerve_mode = self.search_mode(NerveMode, Config.SAMPLE)
+        reshape_nerve_mode = self.search_mode(ReshapeNerveMode, Config.SAMPLE)
+        deform_mode = self.search_mode(DeformationMode, Config.SAMPLE)
 
         def exists(mask_file_name: MaskFileNames):
             return os.path.exists(mask_file_name.value)
@@ -138,10 +144,10 @@ class SlideManager(Exceptionable, Configurable, Saveable):
         # get starting point so able to go back
         start_directory: str = os.getcwd()
 
-        samples_path = self.path(Config.MASTER, 'samples_path')
+        samples_path = self.path(Config.SAMPLE, 'samples_path')
 
         # get sample name
-        sample: str = self.search(Config.MASTER, 'sample')
+        sample: str = self.search(Config.SAMPLE, 'sample')
 
         # create scale bar path
         scale_path = os.path.join(samples_path, sample, MaskFileNames.SCALE_BAR.value)
@@ -164,7 +170,7 @@ class SlideManager(Exceptionable, Configurable, Saveable):
                 if exists(MaskFileNames.INNERS):
                     fascicles = Fascicle.inner_to_list(MaskFileNames.INNERS.value,
                                                        self.configs[Config.EXCEPTIONS.value],
-                                                       scale=1 + self.search(Config.MASTER,
+                                                       scale=1 + self.search(Config.SAMPLE,
                                                                              'scale',
                                                                              'outer_thick_to_inner_diam'))
                 else:
@@ -213,7 +219,7 @@ class SlideManager(Exceptionable, Configurable, Saveable):
                                  will_reposition=(deform_mode != DeformationMode.NONE))
 
             # shrinkage correction
-            slide.scale(1 + self.search(Config.MASTER, "scale", "shrinkage_scale"))
+            slide.scale(1 + self.search(Config.SAMPLE, "scale", "shrinkage_scale"))
 
             # shift slide about (0,0)
             slide.move_center(np.array([0, 0]))
@@ -223,7 +229,7 @@ class SlideManager(Exceptionable, Configurable, Saveable):
             os.chdir(start_directory)
 
         if os.path.exists(scale_path):
-            self.scale(scale_path, self.search(Config.MASTER, 'scale', 'scale_bar_length'))
+            self.scale(scale_path, self.search(Config.SAMPLE, 'scale', 'scale_bar_length'))
         else:
             print(scale_path)
             self.throw(19)
@@ -256,7 +262,9 @@ class SlideManager(Exceptionable, Configurable, Saveable):
             slide.nerve = slide.reshaped_nerve(reshape_nerve_mode)
             slide.plot(fix_aspect_ratio=True, title=title)
 
-    def write(self, mode: WriteMode):
+        return self
+
+    def write(self, mode: WriteMode) -> 'SlideManager':
         """
         Write entire list of slides.
          """
@@ -265,8 +273,9 @@ class SlideManager(Exceptionable, Configurable, Saveable):
         start_directory: str = os.getcwd()
 
         # get path to sample
-        sample_path = os.path.join(self.path(Config.MASTER, 'samples_path'),
-                                   self.search(Config.MASTER, 'sample'))
+        sample_path = os.path.join(self.path(Config.SAMPLE, 'samples_path'),
+                                   self.search(Config.RUN, 'sample'),
+                                   'slides')
 
         # loop through the slide info (index i SHOULD correspond to slide in self.slides)
         # TODO: ensure self.slides matches up with self.map.slides
@@ -302,7 +311,9 @@ class SlideManager(Exceptionable, Configurable, Saveable):
             # go back up to start directory, then to top of loop
             os.chdir(start_directory)
 
-    def make_electrode_input(self):
+        return self
+
+    def make_electrode_input(self) -> 'SlideManager':
 
         # load template for electrode input
         electrode_input: dict = TemplateOutput.read(TemplateMode.ELECTRODE_INPUT)
@@ -328,9 +339,13 @@ class SlideManager(Exceptionable, Configurable, Saveable):
         # write template for electrode input
         TemplateOutput.write(electrode_input, TemplateMode.ELECTRODE_INPUT, self)
 
-    def output_morphology_data(self):
+        return self
+
+    def output_morphology_data(self) -> 'SlideManager':
         nerve = Nerve.morphology_data(self.slides[0].nerve)
         fascicles = [fascicle.morphology_data() for fascicle in self.slides[0].fascicles]
 
         morphology_input = {"Nerve": nerve, "Fascicles": fascicles}
         TemplateOutput.write(morphology_input, TemplateMode.MORPHOLOGY, self)
+
+        return self

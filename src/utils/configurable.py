@@ -57,6 +57,8 @@ class Configurable:
         else:  # mode == SetupMode.OLD:
             self.configs[key.value] = config
 
+        return self
+
     def search(self, key: Config, *args):
         """
         Get an item using "path" of args in the json config.
