@@ -78,7 +78,7 @@ class Runner(Exceptionable, Configurable):
 
         return configs
 
-    def run(self, configs: dict):
+    def run(self):
         # TODO: save .obj's to correct paths while looping
         # TODO: implement overwrite checking
 
