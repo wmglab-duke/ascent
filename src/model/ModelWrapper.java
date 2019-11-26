@@ -737,7 +737,7 @@ public class ModelWrapper {
             meshNerve.selection().geom("geom1", 3);
             meshNerve.selection().named("geom1" + "_" + mw.im.get("allNervePartsUnionCsel") + "_dom");
             model.component("comp1").mesh("mesh1").feature(mw.im.get(meshNerveSweLabel)).set("facemethod", "tri");
-            model.component("comp1").mesh("mesh1").feature("size").set("hauto", 1); // TODO load in mesh params from master
+            model.component("comp1").mesh("mesh1").feature("size").set("hauto", 1); // TODO load in mesh params from model
             System.out.println("Meshing nerve parts... will take a while");
             //model.component("comp1").mesh("mesh1").run(mw.im.get(meshNerveSweLabel)); // TODO
 

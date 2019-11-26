@@ -115,7 +115,7 @@ class SlideManager(Exceptionable, Configurable, Saveable):
                                                                number,
                                                                MaskFileNames.SCALE_BAR.value]))
                     if os.path.exists(scale_source_file):
-                        shutil.copy2(scale_source_file,  MaskFileNames.SCALE_BAR.value)
+                        shutil.copy2(scale_source_file, MaskFileNames.SCALE_BAR.value)
                     else:
                         raise Exception('{} not found'.format(scale_source_file))
 
@@ -152,8 +152,6 @@ class SlideManager(Exceptionable, Configurable, Saveable):
 
         # get starting point so able to go back
         start_directory: str = os.getcwd()
-
-
 
         # get sample name
         sample: str = str(self.search(Config.RUN, 'sample'))
@@ -334,7 +332,7 @@ class SlideManager(Exceptionable, Configurable, Saveable):
             if cuff_inner_mode == CuffInnerMode.CIRCLE:
 
                 (minx, miny, maxx, maxy) = self.slides[0].nerve.polygon().bounds
-                electrode_input[string_mode]['r'] = max([(maxx - minx)/2, (maxy - miny)/2])
+                electrode_input[string_mode]['r'] = max([(maxx - minx) / 2, (maxy - miny) / 2])
 
             elif cuff_inner_mode == CuffInnerMode.BOUNDING_BOX:
 
