@@ -1,4 +1,5 @@
 from enum import Enum, unique
+import os
 
 
 #%% Core (backend) functionality
@@ -208,6 +209,6 @@ class CuffMode(Enum):
 
 @unique
 class TemplateMode(Enum):
-    path = '.templates'
+    path = os.path.join('config', 'templates')
     ELECTRODE_INPUT = 'electrode_input.json'
     MORPHOLOGY = 'morphology.json'
