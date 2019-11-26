@@ -110,7 +110,6 @@ class Configurable:
             # print('load "{}" --> key "{}"'.format(config, key))
             return json.load(handle)
 
-    # TODO: fix in all instances
     def search_mode(self, mode: Type[Enum], key: Config):
         """
         :param mode: an Enum mode that is being searched. it MUST have variable config, which is the name
