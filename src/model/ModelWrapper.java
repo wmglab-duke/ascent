@@ -5,6 +5,7 @@ import com.comsol.model.Model;
 import com.comsol.model.PropFeature;
 import com.comsol.model.physics.PhysicsFeature;
 import com.comsol.model.util.ModelUtil;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -175,14 +176,6 @@ public class ModelWrapper {
     }
 
     /**
-     * TODO: UNFINISHED
-     * Examples of parts: cuff, fascicle, etc.
-     * The method will automatically create required part primitives and pass the HashMap with their id's to model.Part
-     * @param name the name of the JSON configuration (same as unique indicator) for a given part
-     * @return success indicator (might remove this later)
-     */
-
-    /**
      * Create the required primitives for a given cuff json
      * @param name json filename WITH extension (i.e. "LivaNova.json")
      * @return success indicator
@@ -279,8 +272,8 @@ public class ModelWrapper {
             JSONObject data = new JSONReader(String.join("/",
                     new String[]{this.root, "config", "system", "cuffs", name})).getData();
 
-            JSONObject master = new JSONReader(String.join("/",
-                    new String[]{this.root, ".config", "master.json"})).getData();
+            JSONObject materials_config = new JSONReader(String.join("/",
+                    new String[]{this.root, "config", "system", "materials.json"})).getData();
 
             // for each material definition, create it (if not already existing)
             for (Object item: (JSONArray) data.get("instances")) {
@@ -297,7 +290,7 @@ public class ModelWrapper {
 
                         try {
                             // TRY to create the material definition (catch error if no existing implementation)
-                            Part.defineMaterial(materialID, materialName, master, this);
+                            Part.defineMaterial(materialID, materialName, materials_config, this);
                         } catch (IllegalArgumentException e) {
                             e.printStackTrace();
                             return false;

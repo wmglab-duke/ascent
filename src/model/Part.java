@@ -1455,12 +1455,12 @@ class Part {
      * @param master JSON data from master.json
      * @param mw the ModelWrapper to act upon
      */
-    public static void defineMaterial(String materialID, String materialName, JSONObject master, ModelWrapper mw) {
+    public static void defineMaterial(String materialID, String materialName, JSONObject materials_config, ModelWrapper mw) {
         Model model = mw.getModel();
         model.material().create(materialID, "Common", "");
         model.material(materialID).label(materialName);
 
-        JSONObject sigma = master.getJSONObject("conductivities");
+        JSONObject sigma = materials_config.getJSONObject("conductivities");
         String entry = sigma.getJSONObject(materialName).getString("value");
 
         model.material(materialID).propertyGroup("def").set("electricconductivity", new String[]{entry});
