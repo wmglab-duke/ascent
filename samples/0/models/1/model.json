@@ -29,9 +29,11 @@
     "unit": "celsius",
     "value": 37
   },
-  "rho_perineurium": {
-    "unit": "Ohm*m",
-    "value": 1149
+  "conductivities": {
+    "rho_perineurium": {
+      "unit": "Ohm*m",
+      "value": "1149"
+    }
   },
   "n_srcs": 0
 }

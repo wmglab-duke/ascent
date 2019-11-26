@@ -82,7 +82,7 @@ class Part {
                         "length"
                 };
 
-                JSONObject itemObject = (JSONObject) instanceParams.get("medium");
+                JSONObject itemObject = ((JSONObject) ((JSONObject) instanceParams.get("medium")).get("bounds"));
                 for (String param: mediumParameters) {
                     partInstance.setEntry("inputexpr", param, (Double) itemObject.get(param));
                 }
@@ -1452,16 +1452,16 @@ class Part {
      * Create a material!
      * @param materialID the material COMSOL id (unique) --> use mw.im.next in call (mat)
      * @param materialName the "pseudonym" for that material, matching the name in master.json
-     * @param master JSON data from master.json
+     * @param config JSON data from master.json
      * @param mw the ModelWrapper to act upon
      */
-    public static void defineMaterial(String materialID, String materialName, JSONObject master, ModelWrapper mw) {
+    public static void defineMaterial(String materialID, String materialName, JSONObject config, ModelWrapper mw) {
         Model model = mw.getModel();
         model.material().create(materialID, "Common", "");
         model.material(materialID).label(materialName);
 
-        JSONObject sigma = master.getJSONObject("conductivities");
-        String entry = sigma.getJSONObject(materialName).getString("value");
+        JSONObject sigma = config.getJSONObject("conductivities").getJSONObject(materialName);
+        String entry = sigma.getString("value");
 
         model.material(materialID).propertyGroup("def").set("electricconductivity", new String[]{entry});
     }

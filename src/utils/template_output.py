@@ -16,9 +16,10 @@ class TemplateOutput:
 
     @staticmethod
     def write(data: Union[list, dict], mode: TemplateMode, configurable: Configurable):
-        path = os.path.join(configurable.path(Config.MASTER, 'samples_path'),
-                            configurable.search(Config.MASTER, 'sample'),
+        path = os.path.join(configurable.path(Config.SAMPLE, 'samples_path'),
+                            str(configurable.search(Config.RUN, 'sample')),
                             mode.value)
+        print(path)
 
         with open(path, "w") as handle:
             handle.write(json.dumps(data, indent=2))
