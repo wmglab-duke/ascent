@@ -721,6 +721,7 @@ public class ModelWrapper {
             fascicleMatLink.label(fascicleMatLinkLabel);
             fascicleMatLink.set("link", mw.im.get("endoneurium"));
 
+            // TODO: saving here!!
             try {
                 System.out.println("Saving the *.mph file before proceeding to mesh and solve.");
                 model.save("parts_test");
