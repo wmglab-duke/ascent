@@ -31,8 +31,8 @@
   },
   "conductivities": {
     "rho_perineurium": {
-      "unit": "Ohm*m",
-      "value": "1149"
+      "unit": "[S/m]",
+      "value": "1/1149"
     }
   },
   "n_srcs": 0

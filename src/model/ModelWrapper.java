@@ -596,14 +596,13 @@ public class ModelWrapper {
             e.printStackTrace();
         }
 
-        ////////////
         JSONArray models_list = run.getJSONArray("models");
 
         for (int model_index = 0; model_index < models_list.length(); model_index++) {
             System.out.println("Making model index: " + model_index);
             String modelStr = String.valueOf(models_list.get(model_index));
 
-            String model_config_file = String.join("/", new String[]{
+            String modelFile = String.join("/", new String[]{
                     "samples",
                     sample,
                     "models",
@@ -613,7 +612,7 @@ public class ModelWrapper {
 
             JSONObject modelData = null;
             try {
-                modelData = new JSONReader(projectPath + "/" + model_config_file).getData();
+                modelData = new JSONReader(projectPath + "/" + modelFile).getData();
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
@@ -637,7 +636,6 @@ public class ModelWrapper {
             JSONObject nerve = (JSONObject) Objects.requireNonNull(morphologyData).get("Nerve");
             model.param().set("a_nerve", nerve.get("area") + " [micrometer^2]");
             model.param().set("r_nerve", "sqrt(a_nerve/pi)");
-            model.param().set("rho_peri", "1149 [ohm*m]"); // TODO
 
             // Length of the FEM - will want to converge thresholds for this
             double length = ((JSONObject) ((JSONObject) modelData.get("medium")).get("bounds")).getDouble("length");
@@ -709,11 +707,11 @@ public class ModelWrapper {
 
             // Add perineurium material only if there are any fascicles being meshed
             if (mw.im.get("periUnionCsel") != null) {
-                String perineuriumMatLinkLabel = "perineurium_DC material"; // TODO frequency dependence, only do this if there is an instance of the MESHFASCICLE
+                String perineuriumMatLinkLabel = "perineurium material";
                 PropFeature perineuriumMatLink = model.component("comp1").material().create(mw.im.next("matlnk",perineuriumMatLinkLabel), "Link");
                 perineuriumMatLink.selection().named("geom1" +"_" + mw.im.get("periUnionCsel") + "_dom");
                 perineuriumMatLink.label(perineuriumMatLinkLabel);
-                perineuriumMatLink.set("link", mw.im.get("perineurium_DC"));
+                perineuriumMatLink.set("link", mw.im.get("rho_perineurium"));
             }
 
             // Will always need to add endoneurium material
@@ -772,8 +770,6 @@ public class ModelWrapper {
                 e.printStackTrace();
             }
         }
-
-        ////////////
 
         ModelUtil.disconnect();
 

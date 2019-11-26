@@ -1972,7 +1972,7 @@ class Part {
                 fascicleCICX.geom().selection().create(im.next("csel",icLabel), "CumulativeSelection");
                 fascicleCICX.geom().selection(im.get(icLabel)).label(icLabel);
 
-                String icnameLabel = ci_name + " Inner Trace " + ci_inner_index;;
+                String icnameLabel = ci_name + " Inner Trace " + ci_inner_index;
                 GeomFeature ic = model.component("comp1").geom("geom1").feature(im.get(fascicleCICXLabel)).geom().create(im.next("ic", icnameLabel), "InterpolationCurve");
                 ic.label(icnameLabel);
                 ic.set("contributeto", im.get(icLabel));
