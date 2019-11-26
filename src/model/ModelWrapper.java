@@ -598,6 +598,7 @@ public class ModelWrapper {
 
         JSONArray models_list = run.getJSONArray("models");
 
+        // loop models
         for (int model_index = 0; model_index < models_list.length(); model_index++) {
             System.out.println("Making model index: " + model_index);
             String modelStr = String.valueOf(models_list.get(model_index));
@@ -629,6 +630,7 @@ public class ModelWrapper {
             model.component("comp1").physics().create("ec", "ConductiveMedia", "geom1");
             // and mesh node to component node 1
             model.component("comp1").mesh().create("mesh1");
+
             // Define ModelWrapper class instance for model and projectPath
             ModelWrapper mw = new ModelWrapper(model, projectPath);
 
@@ -764,8 +766,18 @@ public class ModelWrapper {
 
             mw.loopCurrents();
 
+            String mphFile = String.join("/", new String[]{
+                    projectPath,
+                    "samples",
+                    sample,
+                    "models",
+                    modelStr,
+                    "model.mph"
+            });
+
             try {
-                model.save("parts_test"); // TODO this dir needs to change
+                System.out.println("Saving MPH file to: " + mphFile);
+                model.save(mphFile);
             } catch (IOException e) {
                 e.printStackTrace();
             }
