@@ -101,6 +101,8 @@ class Runner(Exceptionable, Configurable):
                                         str(self.configs[Config.RUN.value]['sample']),
                                         'sample.obj'))
 
+        slide_manager.output_morphology_data()
+
         # iterate through models
         for model_index, model in enumerate(configs['models']):
             print('MODEL {}'.format(model_index))
