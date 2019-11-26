@@ -191,7 +191,7 @@ public class ModelWrapper {
         // extract data from json
         try {
             JSONObject data = new JSONReader(String.join("/",
-                    new String[]{this.root, ".templates", name})).getData();
+                    new String[]{this.root, "config", "system", "cuffs", name})).getData();
 
             // get the id for the next "par" (i.e. parameters section), and give it a name from the JSON file name
             String id = this.next("par", name);
@@ -249,7 +249,7 @@ public class ModelWrapper {
         // name is something like Enteromedics.json
         try {
             JSONObject data = new JSONReader(String.join("/",
-                    new String[]{this.root, ".templates", name})).getData();
+                    new String[]{this.root, "config", "system", "cuffs", name})).getData();
 
             // loop through all part instances
             for (Object item: (JSONArray) data.get("instances")) {
@@ -277,7 +277,7 @@ public class ModelWrapper {
         // extract data from json
         try {
             JSONObject data = new JSONReader(String.join("/",
-                    new String[]{this.root, ".templates", name})).getData();
+                    new String[]{this.root, "config", "system", "cuffs", name})).getData();
 
             JSONObject master = new JSONReader(String.join("/",
                     new String[]{this.root, ".config", "master.json"})).getData();
