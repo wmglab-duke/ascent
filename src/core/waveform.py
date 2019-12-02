@@ -8,11 +8,11 @@ import numpy as np
 import scipy.signal as sg
 
 # access
-from src.utils import Exceptionable, Configurable
+from src.utils import Exceptionable, Configurable, Saveable
 from src.utils.enums import *
 
 
-class Waveform(Exceptionable, Configurable):
+class Waveform(Exceptionable, Configurable, Saveable):
     """
     Required (Config.) JSON's:
         MODEL
@@ -151,7 +151,7 @@ class Waveform(Exceptionable, Configurable):
         # Convert to constant rho
         thk_weerasuriya = 0.00002175           # [m]
         rho = rs37/thk_weerasuriya             # [Ohm-m]
-        self.configs[Config.MODEL.value]['rho_perineurium']['value'] = rho
+        return rho
 
     def generate(self) -> List[np.ndarray]:
         """

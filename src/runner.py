@@ -107,6 +107,28 @@ class Runner(Exceptionable, Configurable):
         for model_index, model in enumerate(configs['models']):
             print('MODEL {}'.format(model_index))
 
+            # save rho_perineurium to model.json
+            waveform = Waveform(self.configs[Config.EXCEPTIONS.value])
+            waveform.add(SetupMode.OLD, Config.MODEL, configs['models'][model_index])
+
+            print('freq: {}'.format(configs['models'][model_index]['frequency']['value']))
+            rho = waveform.rho_weerasuriya(configs['models'][model_index]['frequency']['value'])
+
+            model_config: dict = configs['models'][model_index]
+            model_config['conductivities']['rho_perineurium']['value'] = rho
+
+            print('testing 123')
+            print(self.path(configs[Config.SAMPLE.value], 'samples_path'))
+
+            dest_path: str = os.path.join(self.path(configs[Config.SAMPLE], 'samples_path'),
+                                          str(self.search(configs[Config.RUN], 'sample')),
+                                          "models",
+                                          str(self.search(configs[Config.RUN], 'models')[model_index]))
+
+            TemplateOutput.write(model_config, dest_path)
+
+            print('here')
+
             # iterate through simulations
             for sim_index, sim in enumerate(configs['sims']):
 
