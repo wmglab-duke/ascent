@@ -21,6 +21,7 @@ import sys
 import subprocess
 
 # access
+from src.core.waveform import Waveform
 from src.core import *
 from src.utils import *
 
