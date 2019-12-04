@@ -66,7 +66,7 @@ class Configurable:
         :param args: list "path" to item within json (str or int)
         :return: final specified item
         """
-        # print(self.configs)
+
         result = self.configs[key.value]
         for arg in args:
             if isinstance(arg, str):
