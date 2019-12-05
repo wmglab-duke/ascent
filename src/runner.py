@@ -88,11 +88,6 @@ class Runner(Exceptionable, Configurable):
         configs = self.load_configs()
 
         # init slide manager
-        print('howdy')
-        print(self.configs)
-        print(Config.RUN.value)
-        print(self.configs[Config.RUN.value])
-
         slide_manager = SlideManager(self.configs[Config.EXCEPTIONS.value])
         # run processes with slide manager (see class for details)
         slide_manager\

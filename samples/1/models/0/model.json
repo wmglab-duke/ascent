@@ -1,0 +1,38 @@
+{
+  "modes": {
+    "fiber_z": "EXTRUSION"
+  },
+  "medium": {
+    "bounds": {
+      "unit": "micrometer",
+      "length": 50000.0,
+      "radius": 10000.0
+    },
+    "material": "fat"
+  },
+  "cuff": {
+    "preset": [
+      "Purdue.json"
+    ],
+    "shift": {
+      "unit": "micrometer",
+      "x": 0,
+      "y": 0
+    }
+  },
+  "frequency": {
+    "unit": "Hz",
+    "value": 1
+  },
+  "temperature": {
+    "unit": "celsius",
+    "value": 37
+  },
+  "conductivities": {
+    "rho_perineurium": {
+      "unit": "[S/m]",
+      "value": 1149
+    }
+  },
+  "n_srcs": 0
+}
