@@ -193,5 +193,10 @@
     "code": 38,
     "text": "Missing Config.SAMPLE configuration!",
     "source": "src.SlideManager.init_map"
+  },
+  {
+    "code": 39,
+    "text": "Cannot reposition monofascicle",
+    "source": "src.Slide.__init__"
   }
 ]
