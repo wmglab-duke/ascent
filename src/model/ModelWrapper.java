@@ -582,20 +582,6 @@ public class ModelWrapper {
             e.printStackTrace();
         }
 
-        // Load morphology data
-        String morphologyFile = String.join("/", new String[]{
-                "samples",
-                sample,
-                "morphology.json"
-        });
-
-        JSONObject morphologyData = null;
-        try {
-            morphologyData = new JSONReader(projectPath + "/" + morphologyFile).getData();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
         JSONArray models_list = run.getJSONArray("models");
 
         // loop models
@@ -635,7 +621,7 @@ public class ModelWrapper {
             ModelWrapper mw = new ModelWrapper(model, projectPath);
 
             // Set generic parameters - todo these are for compound nerves, what about single fascicle???? -- CAN WE MOVE THIS
-            JSONObject nerve = (JSONObject) Objects.requireNonNull(morphologyData).get("Nerve");
+            JSONObject nerve = (JSONObject) ((JSONObject) sampleData.get("Morphology")).get("Nerve");
             model.param().set("a_nerve", nerve.get("area") + " [micrometer^2]");
             model.param().set("r_nerve", "sqrt(a_nerve/pi)");
 

@@ -279,7 +279,7 @@ class SlideManager(Exceptionable, Configurable, Saveable):
         # get starting point so able to go back
         start_directory: str = os.getcwd()
 
-        # get path to sample
+        # get path to sample slides
         sample_path = os.path.join(self.path(Config.SAMPLE, 'samples_path'),
                                    str(self.search(Config.RUN, 'sample')),
                                    'slides')
@@ -353,6 +353,12 @@ class SlideManager(Exceptionable, Configurable, Saveable):
         fascicles = [fascicle.morphology_data() for fascicle in self.slides[0].fascicles]
 
         morphology_input = {"Nerve": nerve, "Fascicles": fascicles}
-        TemplateOutput.write(morphology_input, TemplateMode.MORPHOLOGY.value)
+        self.configs[Config.SAMPLE.value]["Morphology"] = morphology_input
+
+        sample_path = os.path.join(self.path(Config.SAMPLE, 'samples_path'),
+                                   str(self.search(Config.RUN, 'sample')),
+                                   'sample.json')
+
+        TemplateOutput.write(self.configs[Config.SAMPLE.value], sample_path)
 
         return self
