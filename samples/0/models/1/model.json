@@ -34,7 +34,7 @@
   "conductivities": {
     "rho_perineurium": {
       "unit": "[S/m]",
-      "value": 1053.3742428649368
+      "value": 1149
     }
   },
   "n_srcs": 0
