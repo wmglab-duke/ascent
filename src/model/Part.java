@@ -5,6 +5,7 @@ import com.comsol.model.Material;
 import com.comsol.model.Model;
 import com.comsol.model.ModelParam;
 import com.comsol.model.physics.PhysicsFeature;
+import org.eclipse.jetty.util.ajax.JSON;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -1935,7 +1936,7 @@ class Part {
      * @throws IllegalArgumentException there is not a nerve part to build of that type (for typos probably)
      */
     public static void createNervePartInstance(String pseudonym, int index, String path, ModelWrapper mw,
-                                                 HashMap<String, String[]> tracePaths, JSONObject morphology_data, JSONObject master) throws IllegalArgumentException {
+                                                 HashMap<String, String[]> tracePaths, JSONObject sampleData) throws IllegalArgumentException {
 
         Model model = mw.getModel();
         IdentifierManager im = mw.im;
@@ -1963,7 +1964,8 @@ class Part {
                             .label(cselFascicleCILabel);
                 }
 
-                JSONObject fascicle = ((JSONArray) morphology_data.get("Fascicles")).getJSONObject(index);
+                JSONObject fascicle = ((JSONArray) sampleData.getJSONObject("Morphology").get("Fascicles")).getJSONObject(index);
+
                 Double area = ((JSONObject) fascicle.get("outer")).getDouble("area");
 
                 model.param().set(name_area, area + "[um^2]", ci_inner_path);
@@ -2137,7 +2139,7 @@ class Part {
                             .label(cselEpineuriumLabel);
                 }
 
-                JSONObject nerve = (JSONObject) morphology_data.get("Nerve");
+                JSONObject nerve = (JSONObject) ((JSONObject) sampleData.get("Morphology")).get("Nerve");
                 model.param().set("a_nerve", nerve.get("area") + " [micrometer^2]");
                 model.param().set("r_nerve", "sqrt(a_nerve/pi)");
 

@@ -400,25 +400,18 @@ public class ModelWrapper {
      * TODO: finish implementation of meshing in the Part class
      * @return success indicator
      */
-    public boolean addNerve() {
+    public boolean addNerve(String sample) {
 
         // define global nerve part names (MUST BE IDENTICAL IN Part)
         String[] fascicleTypes = new String[]{"FascicleCI", "FascicleMesh"};
 
         // Load configuration file
         try {
-            JSONObject master = new JSONReader(String.join("/", new String[]{
+            JSONObject sampleData = new JSONReader(String.join("/", new String[]{
                     this.root,
-                    ".config",
-                    "master.json"
-            })).getData();
-
-            JSONObject morphology_data = new JSONReader(String.join("/", new String[]{
-                    this.root,
-                    "data",
                     "samples",
-                    master.getString("sample"),
-                    "morphology.json"
+                    sample,
+                    "sample.json"
             })).getData();
 
             // Build path to fascicles
@@ -426,17 +419,18 @@ public class ModelWrapper {
                     this.root,
                     "data",
                     "samples",
-                    master.getString("sample"),
+                    sampleData.getString("sample"),
                     "0", // these 0's are temporary (for 3d models will need to change)
                     "0",
-                    (String) ((JSONObject) master.get("modes")).get("write"),
+                    (String) ((JSONObject) sampleData.get("modes")).get("write"),
                     "fascicles"
             });
 
             // Add epineurium
-            String nerveMode = (String) master.getJSONObject("modes").get("nerve");
+            String nerveMode = (String) sampleData.getJSONObject("modes").get("nerve");
             if (nerveMode.equals("PRESENT")) {
-                Part.createNervePartInstance("Epineurium", 0, null, this, null, morphology_data, master);
+                Part.createNervePartInstance("Epineurium", 0,
+                        null, this, null, sampleData);
             }
 
             // Loop over all fascicle dirs
@@ -467,7 +461,7 @@ public class ModelWrapper {
                         String fascicleType = data.get("inners").length == 1 ? fascicleTypes[0] : fascicleTypes[1];
 
                         // hand off to Part to build instance of fascicle
-                        Part.createNervePartInstance(fascicleType, index, path, this, data, morphology_data, master);
+                        Part.createNervePartInstance(fascicleType, index, path, this, data, sampleData);
                     }
                 }
             }
@@ -672,7 +666,7 @@ public class ModelWrapper {
             }
 
             // Add nerve
-            mw.addNerve();
+            mw.addNerve(sample);
             // Create unions
             mw.createUnions();
 
