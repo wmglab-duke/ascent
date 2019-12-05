@@ -130,24 +130,20 @@ class Runner(Exceptionable, Configurable):
 
                 # init fiber manager
                 fiber_manager = FiberManager(slide_manager, self.configs[Config.EXCEPTIONS.value])
+
                 # run processes with fiber manager (see class for details)
                 fiber_manager\
                     .add(SetupMode.OLD, Config.MODEL, configs[Config.MODEL.value][model_index])\
                     .add(SetupMode.OLD, Config.SIM, configs[Config.SIM.value][sim_index])\
                     .fiber_xy_coordinates(plot=False, save=True)\
-                    .fiber_z_coordinates(fiber_manager.xy_coordinates, save=True)
-
-                # TODO: save fiber manager here
-                fiber_manager.save(os.path.join('samples',
-                                                str(self.configs[Config.RUN.value]['sample']),
-                                                'models',
-                                                str(model_index),
-                                                'sims',
-                                                str(sim_index),
-                                                'sim.obj'))
-
-        # TODO: save all model and sim configs
-        # TODO: create necessary directories for JSON's as well
+                    .fiber_z_coordinates(fiber_manager.xy_coordinates, save=True)\
+                    .save(os.path.join('samples',
+                                       str(self.configs[Config.RUN.value]['sample']),
+                                       'models',
+                                       str(self.configs[Config.RUN.value]['models'][model_index]),
+                                       'sims',
+                                       str(self.configs[Config.RUN.value]['sims'][sim_index]),
+                                       'sim.obj'))
 
         # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials
         self.handoff()

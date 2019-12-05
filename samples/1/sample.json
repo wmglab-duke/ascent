@@ -21,7 +21,7 @@
     "mask_input": "INNER_AND_OUTER_COMPILED",
     "nerve": "NOT_PRESENT",
     "reshape_nerve": "CIRCLE",
-    "deform": "NONE",
+    "deform": "PHYSICS",
     "cuff_inner": ["CIRCLE", "ELLIPSE", "BOUNDING_BOX"]
   },
   "slide_map": {
