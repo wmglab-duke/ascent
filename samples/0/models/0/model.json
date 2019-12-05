@@ -11,7 +11,9 @@
     "material": "fat"
   },
   "cuff": {
-    "preset": ["Enteromedics.json"],
+    "preset": [
+      "Enteromedics.json"
+    ],
     "shift": {
       "unit": "micrometer",
       "x": 0,
@@ -29,7 +31,7 @@
   "conductivities": {
     "rho_perineurium": {
       "unit": "[S/m]",
-      "value": "1/1149"
+      "value": 1053.3742428649368
     }
   },
   "n_srcs": 0

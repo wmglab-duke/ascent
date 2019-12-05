@@ -353,6 +353,6 @@ class SlideManager(Exceptionable, Configurable, Saveable):
         fascicles = [fascicle.morphology_data() for fascicle in self.slides[0].fascicles]
 
         morphology_input = {"Nerve": nerve, "Fascicles": fascicles}
-        TemplateOutput.write(morphology_input, TemplateMode.MORPHOLOGY, self)
+        TemplateOutput.write(morphology_input, TemplateMode.MORPHOLOGY.value)
 
         return self

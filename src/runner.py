@@ -88,10 +88,15 @@ class Runner(Exceptionable, Configurable):
         configs = self.load_configs()
 
         # init slide manager
+        print('howdy')
+        print(self.configs)
+        print(Config.RUN.value)
+        print(self.configs[Config.RUN.value])
+
         slide_manager = SlideManager(self.configs[Config.EXCEPTIONS.value])
         # run processes with slide manager (see class for details)
         slide_manager\
-            .add(SetupMode.OLD, Config.SAMPLE, configs['sample'][0])\
+            .add(SetupMode.OLD, Config.SAMPLE, configs[Config.SAMPLE.value][0])\
             .add(SetupMode.OLD, Config.RUN, self.configs[Config.RUN.value])\
             .init_map(SetupMode.OLD)\
             .build_file_structure()\
@@ -105,30 +110,25 @@ class Runner(Exceptionable, Configurable):
         slide_manager.output_morphology_data()
 
         # iterate through models
-        for model_index, model in enumerate(configs['models']):
+        for model_index, model in enumerate(configs[Config.MODEL.value]):
             print('MODEL {}'.format(model_index))
 
             # save rho_perineurium to model.json
             waveform = Waveform(self.configs[Config.EXCEPTIONS.value])
             waveform.add(SetupMode.OLD, Config.MODEL, configs['models'][model_index])
 
-            print('freq: {}'.format(configs['models'][model_index]['frequency']['value']))
             rho = waveform.rho_weerasuriya(configs['models'][model_index]['frequency']['value'])
 
-            model_config: dict = configs['models'][model_index]
+            model_config: dict = configs[Config.MODEL.value][model_index]
             model_config['conductivities']['rho_perineurium']['value'] = rho
 
-            print('testing 123')
-            print(self.path(configs[Config.SAMPLE.value], 'samples_path'))
-
-            dest_path: str = os.path.join(self.path(configs[Config.SAMPLE], 'samples_path'),
-                                          str(self.search(configs[Config.RUN], 'sample')),
-                                          "models",
-                                          str(self.search(configs[Config.RUN], 'models')[model_index]))
+            dest_path: str = os.path.join(*configs[Config.SAMPLE.value][0]['samples_path'],
+                                          str(self.configs[Config.RUN.value]['sample']),
+                                          'models',
+                                          str(self.configs[Config.RUN.value]['models'][model_index]),
+                                          'model.json')
 
             TemplateOutput.write(model_config, dest_path)
-
-            print('here')
 
             # iterate through simulations
             for sim_index, sim in enumerate(configs['sims']):
@@ -137,8 +137,8 @@ class Runner(Exceptionable, Configurable):
                 fiber_manager = FiberManager(slide_manager, self.configs[Config.EXCEPTIONS.value])
                 # run processes with fiber manager (see class for details)
                 fiber_manager\
-                    .add(SetupMode.OLD, Config.MODEL, configs['models'][model_index])\
-                    .add(SetupMode.OLD, Config.SIM, configs['sims'][sim_index])\
+                    .add(SetupMode.OLD, Config.MODEL, configs[Config.MODEL.value][model_index])\
+                    .add(SetupMode.OLD, Config.SIM, configs[Config.SIM.value][sim_index])\
                     .fiber_xy_coordinates(plot=False, save=True)\
                     .fiber_z_coordinates(fiber_manager.xy_coordinates, save=True)
 

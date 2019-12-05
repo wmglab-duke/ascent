@@ -1461,9 +1461,15 @@ class Part {
         model.material(materialID).label(materialName);
 
         JSONObject sigma = config.getJSONObject("conductivities").getJSONObject(materialName);
-        String entry = sigma.getString("value");
 
-        model.material(materialID).propertyGroup("def").set("electricconductivity", new String[]{entry});
+        if (materialName.equals("rho_perineurium")) {
+            Double entry_pre = sigma.getDouble("value");
+            String entry = entry_pre.toString();
+            model.material(materialID).propertyGroup("def").set("electricconductivity", new String[]{entry});
+        } else {
+            String entry = sigma.getString("value");
+            model.material(materialID).propertyGroup("def").set("electricconductivity", new String[]{entry});
+        }
     }
 
     /**

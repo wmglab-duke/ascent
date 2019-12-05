@@ -212,7 +212,3 @@ class TemplateMode(Enum):
     path = os.path.join('config', 'templates')
     ELECTRODE_INPUT = 'electrode_input.json'
     MORPHOLOGY = 'morphology.json'
-    SAMPLE = 'sample.json'
-    MODEL = 'model.json'
-    SIM = 'sim.json'
-    RUN = 'run.json'
