@@ -89,92 +89,92 @@
     "text": "Invalid scale center string.",
     "source": "src.core.Trace.scale"
   },
-    {
+  {
     "code": 18,
     "text": "Raw nerve micrograph does not exist.",
     "source": "src.core.Manager.populate"
   },
-    {
+  {
     "code": 19,
     "text": "Scale bar for nerve micrograph does not exist.",
     "source": "src.core.Manager.populate"
   },
-    {
+  {
     "code": 20,
     "text": "Outers only has not yet been developed.",
     "source": "src.core.Manager.populate"
   },
-    {
+  {
     "code": 21,
     "text": "Inner mask required for input mode INNERS.",
     "source": "src.core.Manager.populate"
   },
-    {
+  {
     "code": 22,
     "text": "Inner AND outer masks required for input mode INNER_AND_OUTER_SEPARATE.",
     "source": "src.core.Manager.populate"
   },
-    {
+  {
     "code": 23,
     "text": "Compiled masks required for input mode INNER_AND_OUTER_COMPILED.",
     "source": "src.core.Manager.populate"
   },
-    {
+  {
     "code": 24,
     "text": "NerveMode.NOT_PRESENT is not implemented.",
     "source": "src.core.Manager.populate"
   },
-    {
+  {
     "code": 25,
     "text": "Invalid path to write Fascicle to.",
     "source": "src.core.Fascicle.write"
   },
-    {
+  {
     "code": 26,
     "text": "Invalid path to write Slide to.",
     "source": "src.core.Slide.write"
   },
-    {
+  {
     "code": 27,
     "text": "Path to slide must have already been created.",
     "source": "src.core.Manager.write"
   },
-    {
+  {
     "code": 28,
     "text": "Unimplemented write mode.",
     "source": "src.core.Manager.write"
   },
-    {
+  {
     "code": 29,
     "text": "Either factor or distance MUST be provided.",
     "source": "src.core.Trace.offset"
   },
-    {
+  {
     "code": 30,
     "text": "That FiberZMode is not yet implemented.",
     "source": "src.core.Manager.fiber_xy_coordinates"
   },
-    {
+  {
     "code": 31,
     "text": "That FiberZMode is not yet implemented.",
     "source": "src.core.Manager.fiber_z_coordinates"
   },
-    {
+  {
     "code": 32,
     "text": "t_start, t_on, t_off, t_stop must be in order.",
     "source": "src.core.Waveform.validate_times"
   },
-    {
+  {
     "code": 33,
     "text": "dt is too large to create waveforms.",
     "source": "src.core.Waveform.validate_times"
   },
-    {
+  {
     "code": 34,
     "text": "WaveformMode chosen not yet implemented.",
     "source": "src.core.Waveform.generate"
   },
-    {
+  {
     "code": 35,
     "text": "Pulse is longer than period (2x for biphasic).",
     "source": "src.core.Waveform.generate"
@@ -196,7 +196,32 @@
   },
   {
     "code": 39,
-    "text": "Cannot reposition monofascicle",
+    "text": "Cannot deform monofascicle",
     "source": "src.Slide.__init__"
+  },
+  {
+    "code": 40,
+    "text": "Cannot reposition without NerveMode.PRESENT",
+    "source": "src.Slide.__init__"
+  },
+  {
+    "code": 41,
+    "text": "Method fascicles_too_close does not apply for monofascicle nerves",
+    "source": "src.Slide"
+  },
+  {
+    "code": 43,
+    "text": "Method fascicle_nerve_intersection does not apply for monofascicle nerves",
+    "source": "src.Slide"
+  },
+  {
+    "code": 44,
+    "text": "Method fascicles_outside_nerve does not apply for monofascicle nerves",
+    "source": "src.Slide"
+  },
+  {
+    "code": 45,
+    "text": "Method reshaped_nerve does not apply for monofascicle nerves",
+    "source": "src.Slide"
   }
 ]
