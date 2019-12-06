@@ -418,14 +418,16 @@ public class ModelWrapper {
             // Build path to fascicles
             String fasciclesPath = String.join("/", new String[]{
                     this.root,
-                    "data",
                     "samples",
-                    sampleData.getString("sample"),
+                    sample,
+                    "slides",
                     "0", // these 0's are temporary (for 3d models will need to change)
                     "0",
                     (String) ((JSONObject) sampleData.get("modes")).get("write"),
                     "fascicles"
             });
+
+            System.out.println("fasciclesPath: " + fasciclesPath);
 
             // Add epineurium
             String nerveMode = (String) sampleData.getJSONObject("modes").get("nerve");
