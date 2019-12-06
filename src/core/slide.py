@@ -177,7 +177,9 @@ class Slide(Exceptionable):
             plt.axes().set_aspect('equal', 'datalim')
 
         # loop through constituents and plot each
-        self.nerve.plot(plot_format='g-')
+        if not self.monofasc():
+            self.nerve.plot(plot_format='g-')
+
         for fascicle in self.fascicles:
             fascicle.plot(inner_format)
 
