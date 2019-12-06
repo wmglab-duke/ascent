@@ -50,6 +50,7 @@ class ReshapeNerveMode(Enum):
 
     CIRCLE = 0
     ELLIPSE = 1
+    NONE = 3
 
 
 @unique
