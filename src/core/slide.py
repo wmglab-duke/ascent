@@ -34,12 +34,17 @@ class Slide(Exceptionable):
         # init superclasses
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
 
+        self.nerve_mode = nerve_mode
+
         self.nerve: Nerve = nerve
         self.fascicles: List[Fascicle] = fascicles
 
         if not will_reposition:
             # do validation (default is specific!)
             self.validation()
+        else:
+            if self.nerve_mode == NerveMode.NOT_PRESENT:
+                self.throw(39)
 
     def validation(self, specific: bool = True, die: bool = True, tolerance: float = None) -> bool:
         """
