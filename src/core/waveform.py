@@ -2,6 +2,7 @@
 
 # builtins
 from typing import List
+import os
 
 # packages
 import numpy as np
@@ -80,7 +81,7 @@ class Waveform(Exceptionable, Configurable, Saveable):
         if self.dt > min(time_params):
             self.throw(33)
 
-    def rho_weerasuriya(self, f=None):
+    def rho_weerasuriya(self, f=None, all_configs=None):
         """
         Calculation of perineurium impedance using results from Weerasuriya 1984 (frog). Weerasuriya discussion
         indicates that Models A & B are better candidates than Models C & D, so I'll only consider the former pair.
@@ -89,7 +90,10 @@ class Waveform(Exceptionable, Configurable, Saveable):
 
         # f is in [Hz]
         if f < 10:                                  # stimulation for activation response, arbitrary cutoff of 10 Hz!
-            rho = 1149                              # [ohm-m]
+
+            materials_path = os.path.join('config', 'system', 'materials.json')
+            materials_config = self.load(materials_path)
+            rho = eval(materials_config['conductivities']['perineurium_DC']['value'])  # [ohm-m]
 
         else:                                       # stimulation at higher frequency for block
             w = 2*np.pi*f

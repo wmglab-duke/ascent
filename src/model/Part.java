@@ -5,7 +5,6 @@ import com.comsol.model.Material;
 import com.comsol.model.Model;
 import com.comsol.model.ModelParam;
 import com.comsol.model.physics.PhysicsFeature;
-import org.eclipse.jetty.util.ajax.JSON;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -1463,9 +1462,8 @@ class Part {
 
         JSONObject sigma = config.getJSONObject("conductivities").getJSONObject(materialName);
 
-        if (materialName.equals("rho_perineurium")) {
-            Double entry_pre = sigma.getDouble("value");
-            String entry = entry_pre.toString();
+        if (materialName.equals("sigma_perineurium")) {
+            String entry = materialName;
             model.material(materialID).propertyGroup("def").set("electricconductivity", new String[]{entry});
         } else {
             String entry = sigma.getString("value");
@@ -2011,7 +2009,7 @@ class Part {
                 ci.selection().named("geom1_" + im.get(fascicleCI_Endo_Label) + "_bnd");
                 ci.set("spec_type", "surfimp");
                 // if parameter in master is 3%
-                String rhos = "rho_peri*0.03*2*sqrt(" + name_area  + "/pi)"; // A = pi*r^2; r = sqrt(A/pi); d = 2*sqrt(A/pi); thk = 0.03*2*sqrt(A/pi); Rm = rho*thk
+                String rhos = "(1/sigma_perineurium)*0.03*2*sqrt(" + name_area  + "/pi)"; // A = pi*r^2; r = sqrt(A/pi); d = 2*sqrt(A/pi); thk = 0.03*2*sqrt(A/pi); Rm = rho*thk
                 // elsif parameter in master is something else // TODO
                 ci.set("rhos", rhos);
 

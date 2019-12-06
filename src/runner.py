@@ -115,7 +115,7 @@ class Runner(Exceptionable, Configurable):
             rho = waveform.rho_weerasuriya(all_configs['models'][model_index]['frequency']['value'])
 
             model_config: dict = all_configs[Config.MODEL.value][model_index]
-            model_config['conductivities']['rho_perineurium']['value'] = rho
+            model_config['conductivities']['sigma_perineurium']['value'] = 1/rho
 
             dest_path: str = os.path.join(*all_configs[Config.SAMPLE.value][0]['samples_path'],
                                           str(self.configs[Config.RUN.value]['sample']),

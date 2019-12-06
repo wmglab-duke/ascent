@@ -345,8 +345,8 @@ public class ModelWrapper {
             String mediumMaterialID = this.im.next("mat", mediumMaterial);
             Part.defineMaterial(mediumMaterialID, mediumMaterial, materials_config, this);
 
-            String periMaterialID = this.im.next("mat", "rho_perineurium"); // special case - frequency dependent impedance, attribute associated with model configuration
-            Part.defineMaterial(periMaterialID, "rho_perineurium", model_config, this);
+            String periMaterialID = this.im.next("mat", "sigma_perineurium"); // special case - frequency dependent impedance, attribute associated with model configuration
+            Part.defineMaterial(periMaterialID, "sigma_perineurium", model_config, this);
 
             String endoMaterialID = this.im.next("mat", "endoneurium");
             Part.defineMaterial(endoMaterialID, "endoneurium", materials_config, this);
@@ -626,6 +626,10 @@ public class ModelWrapper {
             // Radius of the FEM - will want to converge thresholds for this
             double radius = ((JSONObject) ((JSONObject) modelData.get("medium")).get("bounds")).getDouble("radius");
             model.param().set("r_ground", radius);
+
+            // Perineurium conductivity
+            double sigma_peri = ((JSONObject) ((JSONObject) modelData.get("conductivities")).get("sigma_perineurium")).getDouble("value");
+            model.param().set("sigma_perineurium", sigma_peri + " [S/m]"); // [S/m]
 
             // Create part primitive for FEM medium
             String mediumString = "Medium_Primitive";

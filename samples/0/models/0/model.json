@@ -29,9 +29,9 @@
     "value": 37
   },
   "conductivities": {
-    "rho_perineurium": {
+    "sigma_perineurium": {
       "unit": "[S/m]",
-      "value": 1149
+      "value": 0.0008703220191470844
     }
   },
   "n_srcs": 0
