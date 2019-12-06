@@ -427,8 +427,6 @@ public class ModelWrapper {
                     "fascicles"
             });
 
-            System.out.println("fasciclesPath: " + fasciclesPath);
-
             // Add epineurium
             String nerveMode = (String) sampleData.getJSONObject("modes").get("nerve");
             if (nerveMode.equals("PRESENT")) {
