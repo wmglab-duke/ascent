@@ -190,9 +190,12 @@ class Slide(Exceptionable):
         :param factor: scale factor, only knows how to scale around its own centroid
         """
 
-        center = list(self.nerve.centroid())
+        if self.monofasc():
+            center = list(self.fascicles[0].centroid())
+        else:
+            center = list(self.nerve.centroid())
+            self.nerve.scale(factor, center)
 
-        self.nerve.scale(factor, center)
         for fascicle in self.fascicles:
             fascicle.scale(factor, center)
 

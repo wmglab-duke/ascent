@@ -22,11 +22,21 @@
     "nerve": "NOT_PRESENT",
     "reshape_nerve": "NONE",
     "deform": "NONE",
-    "cuff_inner": ["CIRCLE", "ELLIPSE", "BOUNDING_BOX"]
+    "cuff_inner": [
+      "CIRCLE",
+      "ELLIPSE",
+      "BOUNDING_BOX"
+    ]
   },
   "slide_map": {
-    "cassettes": ["VN1_A", "VN1_B"],
-    "allowed_differences": [1, 2],
+    "cassettes": [
+      "VN1_A",
+      "VN1_B"
+    ],
+    "allowed_differences": [
+      1,
+      2
+    ],
     "start_position": 20000,
     "number_regex": "([0-9]*)[.]",
     "skips": {
@@ -37,6 +47,19 @@
     }
   },
   "Morphology": {
-    "tbd": true
+    "Nerve": null,
+    "Fascicles": [
+      {
+        "length_unit": "micrometer",
+        "outer": {
+          "area": 58837.59074380164
+        },
+        "inners": [
+          {
+            "area": 53552.57652892562
+          }
+        ]
+      }
+    ]
   }
 }
