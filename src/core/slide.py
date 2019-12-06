@@ -153,6 +153,7 @@ class Slide(Exceptionable):
         fascicle repositioning
         """
 
+        if self.monofasc():
         if mode == ReshapeNerveMode.CIRCLE:
             return self.nerve.to_circle()
         elif mode == ReshapeNerveMode.ELLIPSE:
