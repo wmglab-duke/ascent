@@ -227,8 +227,13 @@ class Slide(Exceptionable):
             # keep track of starting place
             sub_start = os.getcwd()
 
-            # write nerve and fascicles
-            for items, folder in [([self.nerve], 'nerve'), (self.fascicles, 'fascicles')]:
+            # write nerve (if not monofasc) and fascicles
+            if self.monofasc():
+                trace_list = [(self.fascicles, 'fascicles')]
+            else:
+                trace_list = [([self.nerve], 'nerve'), (self.fascicles, 'fascicles')]
+
+            for items, folder in trace_list:
                 # build path if not already existing
                 if not os.path.exists(folder):
                     os.makedirs(folder)
