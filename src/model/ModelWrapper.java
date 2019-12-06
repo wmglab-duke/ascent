@@ -235,9 +235,10 @@ public class ModelWrapper {
      * Instantiate required primitives for given cuff
      * NOTE: addCuffPartPrimitives() MUST be called first or there will be no primitives to instantiate
      * @param name same formatting as in addCuffPartPrimitives()
+     * @param modelData
      * @return success indicator
      */
-    public boolean addCuffPartInstances(String name) {
+    public boolean addCuffPartInstances(String name, JSONObject modelData) {
         // extract data from json
         // name is something like Enteromedics.json
         try {
@@ -251,7 +252,7 @@ public class ModelWrapper {
                 String instanceLabel = (String) itemObject.get("label");
                 String instanceID = this.im.next("pi", instanceLabel);
                 String type = (String) itemObject.get("type");
-                Part.createCuffPartInstance(instanceID, instanceLabel, type , this, itemObject);
+                Part.createCuffPartInstance(instanceID, instanceLabel, type , this, itemObject, modelData);
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -666,7 +667,7 @@ public class ModelWrapper {
                 // add material definitions for cuff
                 mw.addCuffMaterialDefinitions(cuff);
                 // add part instances for cuff
-                mw.addCuffPartInstances(cuff);
+                mw.addCuffPartInstances(cuff, modelData);
             }
 
             // Add nerve

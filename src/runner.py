@@ -149,7 +149,6 @@ class Runner(Exceptionable, Configurable):
         self.handoff()
 
     def handoff(self):
-        # TODO: ModelWrapper side, make sure all paths are correct
         # TODO: implement extract potentials
 
         comsol_path = self.search(Config.ENV, 'comsol_path')

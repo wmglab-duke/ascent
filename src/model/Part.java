@@ -1481,13 +1481,20 @@ class Part {
      * @throws IllegalArgumentException if the primitive specified by pseudonym has not been created
      */
     public static void createCuffPartInstance(String instanceID, String instanceLabel, String pseudonym, ModelWrapper mw,
-                                              JSONObject instanceParams) throws IllegalArgumentException {
+                                              JSONObject instanceParams, JSONObject modelData) throws IllegalArgumentException {
 
         Model model = mw.getModel();
 
         GeomFeature partInstance = model.component("comp1").geom("geom1").create(instanceID, "PartInstance");
         partInstance.label(instanceLabel);
         partInstance.set("part", mw.im.get(pseudonym));
+
+        int cuff_shift_x = ((JSONObject) modelData.getJSONObject("cuff")).getJSONObject("shift").getInt("x");
+        int cuff_shift_y = ((JSONObject) modelData.getJSONObject("cuff")).getJSONObject("shift").getInt("y");
+        int cuff_shift_z = ((JSONObject) modelData.getJSONObject("cuff")).getJSONObject("shift").getInt("z");
+
+        partInstance.set("displ", new int[]{cuff_shift_x, cuff_shift_y, cuff_shift_z}); // moves cuff around the nerve
+
         JSONObject itemObject = instanceParams.getJSONObject("def");
         IdentifierManager myIM = mw.getPartPrimitiveIM(pseudonym);
         if (myIM == null) throw new IllegalArgumentException("IdentfierManager not created for name: " + pseudonym);
