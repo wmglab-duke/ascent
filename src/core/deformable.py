@@ -47,8 +47,6 @@ class Deformable(Exceptionable):
         :return: tuple of a list of total movement vectors and total angle rotated for each fascicle
         """
 
-        # TODO: convergence studies of morph count and morph_index_step
-
         # copy the "contents" so multiple deformations are possible
         contents = [trace.deepcopy() for trace in self.contents]
 

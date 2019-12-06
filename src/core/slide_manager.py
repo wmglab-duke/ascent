@@ -217,11 +217,9 @@ class SlideManager(Exceptionable, Configurable, Saveable):
                     nerve = Nerve(Trace([point + [0] for point in contour[0][:, 0, :]],
                                         self.configs[Config.EXCEPTIONS.value]))
 
-            else:  # nerve_mode == NerveMode.NOT_PRESENT:
-                self.throw(24)
-
             slide: Slide = Slide(fascicles,
                                  nerve,
+                                 nerve_mode,
                                  self.configs[Config.EXCEPTIONS.value],
                                  will_reposition=(deform_mode != DeformationMode.NONE))
 

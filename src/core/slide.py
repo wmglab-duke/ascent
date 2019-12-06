@@ -21,7 +21,8 @@ from src.utils import *
 
 class Slide(Exceptionable):
 
-    def __init__(self, fascicles: List[Fascicle], nerve: Nerve, exception_config: list, will_reposition: bool = False):
+    def __init__(self, fascicles: List[Fascicle], nerve: Nerve, nerve_mode: NerveMode, exception_config: list,
+                 will_reposition: bool = False):
         """
         :param fascicles: List of fascicles
         :param nerve: Nerve (effectively is a Trace)
@@ -48,6 +49,9 @@ class Slide(Exceptionable):
         :param tolerance: minimum separation distance for unit you are currently in
         :return: Boolean for True (no intersection) or False (issues with geometry overlap)
         """
+
+        if self.monofasc():
+            return True
 
         if specific:
             if self.fascicle_fascicle_intersection():

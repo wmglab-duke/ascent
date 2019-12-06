@@ -20,8 +20,8 @@
     "write": "sectionwise2d",
     "mask_input": "INNER_AND_OUTER_COMPILED",
     "nerve": "NOT_PRESENT",
-    "reshape_nerve": "CIRCLE",
-    "deform": "PHYSICS",
+    "reshape_nerve": "NONE",
+    "deform": "NONE",
     "cuff_inner": ["CIRCLE", "ELLIPSE", "BOUNDING_BOX"]
   },
   "slide_map": {
