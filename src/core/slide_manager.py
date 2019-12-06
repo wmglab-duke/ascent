@@ -244,11 +244,14 @@ class SlideManager(Exceptionable, Configurable, Saveable):
             print('\tslide {} of {}'.format(1 + i, len(self.slides)))
             title = ''
 
+            if nerve_mode == NerveMode.NOT_PRESENT and deform_mode is not None:
+                self.throw(40)
+
             if deform_mode == DeformationMode.PHYSICS:
                 print('\t\tsetting up physics')
                 deformable = Deformable.from_slide(slide, ReshapeNerveMode.CIRCLE)
                 morph_count = 36
-                title = 'morph count: {}'.format(morph_count)
+                # title = 'morph count: {}'.format(morph_count)
                 movements, rotations = deformable.deform(morph_count=morph_count,
                                                          render=deform_animate,
                                                          minimum_distance=10.0)
