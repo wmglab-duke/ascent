@@ -133,11 +133,16 @@ class Slide(Exceptionable):
         :param point: the point of the new slide center
         """
 
-        # get shift from nerve centroid and point argument
-        shift = list(point - np.array(self.nerve.centroid())) + [0]
+        if self.monofasc():
+            # get shift from nerve centroid and point argument
+            shift = list(point - np.array(self.fascicles[0].centroid())) + [0]
+        else:
+            # get shift from nerve centroid and point argument
+            shift = list(point - np.array(self.nerve.centroid())) + [0]
 
-        # apply shift to nerve trace and all fascicles
-        self.nerve.shift(shift)
+            # apply shift to nerve trace and all fascicles
+            self.nerve.shift(shift)
+
         for fascicle in self.fascicles:
             fascicle.shift(shift)
 
