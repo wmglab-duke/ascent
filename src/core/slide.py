@@ -46,6 +46,9 @@ class Slide(Exceptionable):
             if self.nerve_mode == NerveMode.NOT_PRESENT:
                 self.throw(39)
 
+    def monofasc(self) -> bool:
+        return self.nerve_mode == NerveMode.NOT_PRESENT
+
     def validation(self, specific: bool = True, die: bool = True, tolerance: float = None) -> bool:
         """
         Checks to make sure nerve geometry is not overlapping itself
@@ -84,6 +87,9 @@ class Slide(Exceptionable):
         :return: Boolean for True for fascicles too close as defined by tolerance
         """
 
+        if self.monofasc():
+            self.throw(41)
+
         if tolerance is None:
             return False
         else:
@@ -96,6 +102,9 @@ class Slide(Exceptionable):
         :return: True if any fascicle intersects another fascicle, otherwise False
         """
 
+        if self.monofasc():
+            self.throw(42)
+
         pairs = itertools.combinations(self.fascicles, 2)
         return any([first.intersects(second) for first, second in pairs])
 
@@ -104,12 +113,18 @@ class Slide(Exceptionable):
         :return: True if any fascicle intersects the nerve, otherwise False
         """
 
+        if self.monofasc():
+            self.throw(43)
+
         return any([fascicle.intersects(self.nerve) for fascicle in self.fascicles])
 
     def fascicles_outside_nerve(self) -> bool:
         """
         :return: True if any fascicle lies outside the nerve, otherwise False
         """
+
+        if self.monofasc():
+            self.throw(44)
 
         return any([not fascicle.within_nerve(self.nerve) for fascicle in self.fascicles])
 
