@@ -209,9 +209,12 @@ class Slide(Exceptionable):
         :param angle: angle in radians, only knows how to rotate around its own centroid
         """
 
-        center = list(self.nerve.centroid())
+        if self.monofasc():
+            center = list(self.fascicles[0].centroid())
+        else:
+            center = list(self.nerve.centroid())
+            self.nerve.rotate(angle, center)
 
-        self.nerve.rotate(angle, center)
         for fascicle in self.fascicles:
             fascicle.rotate(angle, center)
 
