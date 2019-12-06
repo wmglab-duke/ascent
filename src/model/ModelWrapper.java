@@ -617,10 +617,16 @@ public class ModelWrapper {
             // Define ModelWrapper class instance for model and projectPath
             ModelWrapper mw = new ModelWrapper(model, projectPath);
 
-            // Set generic parameters - todo these are for compound nerves, what about single fascicle???? -- CAN WE MOVE THIS
-            JSONObject nerve = (JSONObject) ((JSONObject) sampleData.get("Morphology")).get("Nerve");
-            model.param().set("a_nerve", nerve.get("area") + " [micrometer^2]");
-            model.param().set("r_nerve", "sqrt(a_nerve/pi)");
+            // Set generic parameters
+            JSONObject morphology = (JSONObject) sampleData.get("Morphology");
+            if (morphology.isNull("Nerve")) {
+                model.param().set("a_nerve", "NaN");
+                model.param().set("r_nerve", "NaN");
+            } else {
+                JSONObject nerve = (JSONObject) morphology.get("Nerve");
+                model.param().set("a_nerve", nerve.get("area") + " [micrometer^2]");
+                model.param().set("r_nerve", "sqrt(a_nerve/pi)");
+            }
 
             // Length of the FEM - will want to converge thresholds for this
             double length = ((JSONObject) ((JSONObject) modelData.get("medium")).get("bounds")).getDouble("length");
