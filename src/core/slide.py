@@ -154,6 +154,8 @@ class Slide(Exceptionable):
         """
 
         if self.monofasc():
+            self.throw(45)
+
         if mode == ReshapeNerveMode.CIRCLE:
             return self.nerve.to_circle()
         elif mode == ReshapeNerveMode.ELLIPSE:
