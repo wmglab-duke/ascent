@@ -244,7 +244,7 @@ class SlideManager(Exceptionable, Configurable, Saveable):
             print('\tslide {} of {}'.format(1 + i, len(self.slides)))
             title = ''
 
-            if nerve_mode == NerveMode.NOT_PRESENT and deform_mode is not None:
+            if nerve_mode == NerveMode.NOT_PRESENT and deform_mode is not DeformationMode.NONE:
                 self.throw(40)
 
             if deform_mode == DeformationMode.PHYSICS:
@@ -267,7 +267,8 @@ class SlideManager(Exceptionable, Configurable, Saveable):
                 import warnings
                 warnings.warn('NO DEFORMATION is happening!')
 
-            slide.nerve = slide.reshaped_nerve(reshape_nerve_mode)
+            if nerve_mode is not NerveMode.NOT_PRESENT:
+                slide.nerve = slide.reshaped_nerve(reshape_nerve_mode)
             # slide.plot(fix_aspect_ratio=True, title=title)
 
         return self
@@ -350,10 +351,17 @@ class SlideManager(Exceptionable, Configurable, Saveable):
         return self
 
     def output_morphology_data(self) -> 'SlideManager':
-        nerve = Nerve.morphology_data(self.slides[0].nerve)
+
+        nerve_mode = self.search_mode(NerveMode, Config.SAMPLE)
+
         fascicles = [fascicle.morphology_data() for fascicle in self.slides[0].fascicles]
 
-        morphology_input = {"Nerve": nerve, "Fascicles": fascicles}
+        if nerve_mode == NerveMode.PRESENT:
+            nerve = Nerve.morphology_data(self.slides[0].nerve)
+            morphology_input = {"Nerve": nerve, "Fascicles": fascicles}
+        else:
+            morphology_input = {"Nerve": None, "Fascicles": fascicles}
+
         self.configs[Config.SAMPLE.value]["Morphology"] = morphology_input
 
         sample_path = os.path.join(self.path(Config.SAMPLE, 'samples_path'),
