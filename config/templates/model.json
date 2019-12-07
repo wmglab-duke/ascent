@@ -7,7 +7,7 @@
   },
   "medium": {
     "bounds": {
-      "unit": "micrometer",
+      "unit": "[micrometer]",
       "length": 50000.0,
       "radius": 10000.0
     },
@@ -18,10 +18,14 @@
       "Enteromedics.json"
     ],
     "shift": {
-      "unit": "micrometer",
+      "unit": "[micrometer]",
       "x": 0,
       "y": 0,
       "z": 0
+    },
+    "rotate": {
+      "unit": "[degree]",
+      "ang": 0
     }
   },
   "frequency": {

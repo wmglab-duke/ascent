@@ -48,12 +48,10 @@
   },
   "Morphology": {
     "Nerve": {
-      "length_unit": "micrometer",
       "area": 8001580.919855978
     },
     "Fascicles": [
       {
-        "length_unit": "micrometer",
         "outer": {
           "area": 66004.8194215303
         },
@@ -67,7 +65,6 @@
         ]
       },
       {
-        "length_unit": "micrometer",
         "outer": {
           "area": 180084.6689845129
         },
@@ -78,7 +75,6 @@
         ]
       },
       {
-        "length_unit": "micrometer",
         "outer": {
           "area": 52339.11046728485
         },
@@ -89,7 +85,6 @@
         ]
       },
       {
-        "length_unit": "micrometer",
         "outer": {
           "area": 137621.87287451254
         },
@@ -100,7 +95,6 @@
         ]
       },
       {
-        "length_unit": "micrometer",
         "outer": {
           "area": 262874.946018305
         },
@@ -111,7 +105,6 @@
         ]
       },
       {
-        "length_unit": "micrometer",
         "outer": {
           "area": 821858.6185288192
         },
@@ -122,7 +115,6 @@
         ]
       },
       {
-        "length_unit": "micrometer",
         "outer": {
           "area": 477370.4773774561
         },
@@ -136,7 +128,6 @@
         ]
       },
       {
-        "length_unit": "micrometer",
         "outer": {
           "area": 94106.83104572249
         },
@@ -147,7 +138,6 @@
         ]
       },
       {
-        "length_unit": "micrometer",
         "outer": {
           "area": 138392.4665902137
         },
@@ -158,7 +148,6 @@
         ]
       },
       {
-        "length_unit": "micrometer",
         "outer": {
           "area": 370065.6877629172
         },
@@ -175,7 +164,6 @@
         ]
       },
       {
-        "length_unit": "micrometer",
         "outer": {
           "area": 9512.979420331592
         },

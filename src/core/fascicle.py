@@ -390,4 +390,4 @@ class Fascicle(Exceptionable):
         inners = [{"area": inner.area()} for inner in self.inners]
         outer = {"area": self.outer.area()}
 
-        return {"length_unit": "micrometer", "outer": outer, "inners": inners}
+        return {"outer": outer, "inners": inners}

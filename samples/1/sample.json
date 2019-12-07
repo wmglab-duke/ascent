@@ -50,7 +50,6 @@
     "Nerve": null,
     "Fascicles": [
       {
-        "length_unit": "micrometer",
         "outer": {
           "area": 58837.59074380164
         },
