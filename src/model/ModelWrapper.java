@@ -617,26 +617,40 @@ public class ModelWrapper {
 
             // Set generic parameters
             JSONObject morphology = (JSONObject) sampleData.get("Morphology");
+            String morphology_unit = ((JSONObject) sampleData.get("scale")).getString("scale_bar_unit");
+
             if (morphology.isNull("Nerve")) {
                 model.param().set("a_nerve", "NaN");
                 model.param().set("r_nerve", "NaN");
             } else {
                 JSONObject nerve = (JSONObject) morphology.get("Nerve");
-                model.param().set("a_nerve", nerve.get("area") + " [micrometer^2]");
+                model.param().set("a_nerve", nerve.get("area") + " [" + morphology_unit + "^2]");
                 model.param().set("r_nerve", "sqrt(a_nerve/pi)");
             }
 
+            String cuff_shift_unit = modelData.getJSONObject("cuff").getJSONObject("shift").getString("unit");
+            String cuff_rot_unit = modelData.getJSONObject("cuff").getJSONObject("rotate").getString("unit");
+
+            // Cuff positioning in the model
+            model.param().set("cuff_shift_x", modelData.getJSONObject("cuff").getJSONObject("shift").getInt("x") + " " + cuff_shift_unit);
+            model.param().set("cuff_shift_y", modelData.getJSONObject("cuff").getJSONObject("shift").getInt("y") + " " + cuff_shift_unit);
+            model.param().set("cuff_shift_z", modelData.getJSONObject("cuff").getJSONObject("shift").getInt("z") + " " + cuff_shift_unit);
+            model.param().set("cuff_rot", modelData.getJSONObject("cuff").getJSONObject("rotate").getInt("ang") + " " + cuff_rot_unit);
+
+            String bounds_unit = ((JSONObject) ((JSONObject) modelData.get("medium")).get("bounds")).getString("unit");
+
             // Length of the FEM - will want to converge thresholds for this
             double length = ((JSONObject) ((JSONObject) modelData.get("medium")).get("bounds")).getDouble("length");
-            model.param().set("z_nerve", length);
+            model.param().set("z_nerve", length + " " + bounds_unit);
 
             // Radius of the FEM - will want to converge thresholds for this
             double radius = ((JSONObject) ((JSONObject) modelData.get("medium")).get("bounds")).getDouble("radius");
-            model.param().set("r_ground", radius);
+            model.param().set("r_ground", radius + " " + bounds_unit);
 
             // Perineurium conductivity
+            String peri_sigma_unit = ((JSONObject) ((JSONObject) modelData.get("conductivities")).get("sigma_perineurium")).getString("unit");
             double sigma_peri = ((JSONObject) ((JSONObject) modelData.get("conductivities")).get("sigma_perineurium")).getDouble("value");
-            model.param().set("sigma_perineurium", sigma_peri + " [S/m]"); // [S/m]
+            model.param().set("sigma_perineurium", sigma_peri + " " + peri_sigma_unit);
 
             // Create part primitive for FEM medium
             String mediumString = "Medium_Primitive";
@@ -683,6 +697,7 @@ public class ModelWrapper {
 
             // Build the geometry
             System.out.println("Building the FEM geometry.");
+
             model.component("comp1").geom("geom1").run("fin");
 
             // Add materials

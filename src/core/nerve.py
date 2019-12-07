@@ -11,4 +11,4 @@ class Nerve(Trace):
         Trace.__init__(self, trace.points, trace.configs[Config.EXCEPTIONS.value])
 
     def morphology_data(self):
-        return {"length_unit": "micrometer", "area": self.area()}
+        return {"area": self.area()}

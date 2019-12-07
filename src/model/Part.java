@@ -1489,11 +1489,8 @@ class Part {
         partInstance.label(instanceLabel);
         partInstance.set("part", mw.im.get(pseudonym));
 
-        int cuff_shift_x = ((JSONObject) modelData.getJSONObject("cuff")).getJSONObject("shift").getInt("x");
-        int cuff_shift_y = ((JSONObject) modelData.getJSONObject("cuff")).getJSONObject("shift").getInt("y");
-        int cuff_shift_z = ((JSONObject) modelData.getJSONObject("cuff")).getJSONObject("shift").getInt("z");
-
-        partInstance.set("displ", new int[]{cuff_shift_x, cuff_shift_y, cuff_shift_z}); // moves cuff around the nerve
+        partInstance.set("displ", new String[]{"cuff_shift_x", "cuff_shift_y", "cuff_shift_z"}); // moves cuff around the nerve
+        partInstance.set("rot", "cuff_rot");
 
         JSONObject itemObject = instanceParams.getJSONObject("def");
         IdentifierManager myIM = mw.getPartPrimitiveIM(pseudonym);
@@ -1970,10 +1967,10 @@ class Part {
                 }
 
                 JSONObject fascicle = ((JSONArray) sampleData.getJSONObject("Morphology").get("Fascicles")).getJSONObject(index);
+                String morphology_unit = ((JSONObject) sampleData.get("scale")).getString("scale_bar_unit");
 
                 Double area = ((JSONObject) fascicle.get("outer")).getDouble("area");
-
-                model.param().set(name_area, area + "[um^2]", ci_inner_path);
+                model.param().set(name_area, area + " [" + morphology_unit + "^2]", ci_inner_path);
 
                 String fascicleCICXLabel = ci_name + " Inner Geometry";
                 GeomFeature fascicleCICX = model.component("comp1").geom("geom1").create(im.next("wp",fascicleCICXLabel), "WorkPlane");
@@ -2143,10 +2140,6 @@ class Part {
                     model.component("comp1").geom("geom1").selection().create(im.next("csel", cselEpineuriumLabel), "CumulativeSelection")
                             .label(cselEpineuriumLabel);
                 }
-
-                JSONObject nerve = (JSONObject) ((JSONObject) sampleData.get("Morphology")).get("Nerve");
-                model.param().set("a_nerve", nerve.get("area") + " [micrometer^2]");
-                model.param().set("r_nerve", "sqrt(a_nerve/pi)");
 
                 String epineuriumXsLabel = "Epineurium Cross Section";
                 GeomFeature epineuriumXs = model.component("comp1").geom("geom1").create(im.next("wp",epineuriumXsLabel), "WorkPlane");
