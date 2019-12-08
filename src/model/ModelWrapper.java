@@ -633,24 +633,37 @@ public class ModelWrapper {
                 nerveParams.set("r_nerve", "sqrt(a_nerve/pi)");
             }
 
+            // Cuff positioning in the model
+            String cuffConformationParamsLabel = "Cuff Conformation Parameters";
+            ModelParamGroup cuffConformationParams = model.param().group().create(cuffConformationParamsLabel);
+            cuffConformationParams.label(cuffConformationParamsLabel);
+
             String cuff_shift_unit = modelData.getJSONObject("cuff").getJSONObject("shift").getString("unit");
             String cuff_rot_unit = modelData.getJSONObject("cuff").getJSONObject("rotate").getString("unit");
+            Integer cuff_shift_x = modelData.getJSONObject("cuff").getJSONObject("shift").getInt("x");
+            Integer cuff_shift_y = modelData.getJSONObject("cuff").getJSONObject("shift").getInt("y");
+            Integer cuff_shift_z = modelData.getJSONObject("cuff").getJSONObject("shift").getInt("z");
+            Integer cuff_rot = modelData.getJSONObject("cuff").getJSONObject("rotate").getInt("ang");
 
-            // Cuff positioning in the model
-            model.param().set("cuff_shift_x", modelData.getJSONObject("cuff").getJSONObject("shift").getInt("x") + " " + cuff_shift_unit);
-            model.param().set("cuff_shift_y", modelData.getJSONObject("cuff").getJSONObject("shift").getInt("y") + " " + cuff_shift_unit);
-            model.param().set("cuff_shift_z", modelData.getJSONObject("cuff").getJSONObject("shift").getInt("z") + " " + cuff_shift_unit);
-            model.param().set("cuff_rot", modelData.getJSONObject("cuff").getJSONObject("rotate").getInt("ang") + " " + cuff_rot_unit);
+
+            cuffConformationParams.set("cuff_shift_x", cuff_shift_x + " " + cuff_shift_unit);
+            cuffConformationParams.set("cuff_shift_y", cuff_shift_y + " " + cuff_shift_unit);
+            cuffConformationParams.set("cuff_shift_z", cuff_shift_z + " " + cuff_shift_unit);
+            cuffConformationParams.set("cuff_rot",  cuff_rot + " " + cuff_rot_unit);
+
+            String mediumParamsLabel = "Medium Parameters";
+            ModelParamGroup mediumParams = model.param().group().create(mediumParamsLabel);
+            mediumParams.label(mediumParamsLabel);
 
             String bounds_unit = ((JSONObject) ((JSONObject) modelData.get("medium")).get("bounds")).getString("unit");
 
             // Length of the FEM - will want to converge thresholds for this
             double length = ((JSONObject) ((JSONObject) modelData.get("medium")).get("bounds")).getDouble("length");
-            model.param().set("z_nerve", length + " " + bounds_unit);
+            mediumParams.set("z_nerve", length + " " + bounds_unit);
 
             // Radius of the FEM - will want to converge thresholds for this
             double radius = ((JSONObject) ((JSONObject) modelData.get("medium")).get("bounds")).getDouble("radius");
-            model.param().set("r_ground", radius + " " + bounds_unit);
+            mediumParams.set("r_ground", radius + " " + bounds_unit);
 
             // Perineurium conductivity
             String materialParamsLabel = "Material Parameters";
