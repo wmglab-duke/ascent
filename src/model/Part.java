@@ -1949,7 +1949,7 @@ class Part {
      * @throws IllegalArgumentException there is not a nerve part to build of that type (for typos probably)
      */
     public static void createNervePartInstance(String pseudonym, int index, String path, ModelWrapper mw,
-                                                 HashMap<String, String[]> tracePaths, JSONObject sampleData) throws IllegalArgumentException {
+                                                 HashMap<String, String[]> tracePaths, JSONObject sampleData, ModelParamGroup nerveParams) throws IllegalArgumentException {
 
         Model model = mw.getModel();
         IdentifierManager im = mw.im;
@@ -1981,7 +1981,7 @@ class Part {
                 String morphology_unit = ((JSONObject) sampleData.get("scale")).getString("scale_bar_unit");
 
                 Double area = ((JSONObject) fascicle.get("outer")).getDouble("area");
-                model.param().set(name_area, area + " [" + morphology_unit + "^2]", ci_inner_path);
+                nerveParams.set(name_area, area + " [" + morphology_unit + "^2]", ci_inner_path);
 
                 String fascicleCICXLabel = ci_name + " Inner Geometry";
                 GeomFeature fascicleCICX = model.component("comp1").geom("geom1").create(im.next("wp",fascicleCICXLabel), "WorkPlane");
@@ -2024,7 +2024,7 @@ class Part {
                 ci.selection().named("geom1_" + im.get(fascicleCI_Endo_Label) + "_bnd");
                 ci.set("spec_type", "surfimp");
                 // if parameter in master is 3%
-                String rhos = "(1/sigma_perineurium)*0.03*2*sqrt(" + name_area  + "/pi)"; // A = pi*r^2; r = sqrt(A/pi); d = 2*sqrt(A/pi); thk = 0.03*2*sqrt(A/pi); Rm = rho*thk
+                String rhos = "(1/perineurium)*0.03*2*sqrt(" + name_area  + "/pi)"; // A = pi*r^2; r = sqrt(A/pi); d = 2*sqrt(A/pi); thk = 0.03*2*sqrt(A/pi); Rm = rho*thk
                 // elsif parameter in master is something else // TODO
                 ci.set("rhos", rhos);
 

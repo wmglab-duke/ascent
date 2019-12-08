@@ -402,7 +402,7 @@ public class ModelWrapper {
      * TODO: finish implementation of meshing in the Part class
      * @return success indicator
      */
-    public boolean addNerve(String sample) {
+    public boolean addNerve(String sample, ModelParamGroup nerveParams) {
 
         // define global nerve part names (MUST BE IDENTICAL IN Part)
         String[] fascicleTypes = new String[]{"FascicleCI", "FascicleMesh"};
@@ -432,7 +432,7 @@ public class ModelWrapper {
             String nerveMode = (String) sampleData.getJSONObject("modes").get("nerve");
             if (nerveMode.equals("PRESENT")) {
                 Part.createNervePartInstance("Epineurium", 0,
-                        null, this, null, sampleData);
+                        null, this, null, sampleData, nerveParams);
             }
 
             // Loop over all fascicle dirs
@@ -463,7 +463,7 @@ public class ModelWrapper {
                         String fascicleType = data.get("inners").length == 1 ? fascicleTypes[0] : fascicleTypes[1];
 
                         // hand off to Part to build instance of fascicle
-                        Part.createNervePartInstance(fascicleType, index, path, this, data, sampleData);
+                        Part.createNervePartInstance(fascicleType, index, path, this, data, sampleData, nerveParams);
                     }
                 }
             }
@@ -620,13 +620,17 @@ public class ModelWrapper {
             JSONObject morphology = (JSONObject) sampleData.get("Morphology");
             String morphology_unit = ((JSONObject) sampleData.get("scale")).getString("scale_bar_unit");
 
+            String nerveParamsLabal = "Nerve Parameters";
+            ModelParamGroup nerveParams = model.param().group().create(nerveParamsLabal);
+            nerveParams.label(nerveParamsLabal);
+
             if (morphology.isNull("Nerve")) {
-                model.param().set("a_nerve", "NaN");
-                model.param().set("r_nerve", "NaN");
+                nerveParams.set("a_nerve", "NaN");
+                nerveParams.set("r_nerve", "NaN");
             } else {
                 JSONObject nerve = (JSONObject) morphology.get("Nerve");
-                model.param().set("a_nerve", nerve.get("area") + " [" + morphology_unit + "^2]");
-                model.param().set("r_nerve", "sqrt(a_nerve/pi)");
+                nerveParams.set("a_nerve", nerve.get("area") + " [" + morphology_unit + "^2]");
+                nerveParams.set("r_nerve", "sqrt(a_nerve/pi)");
             }
 
             String cuff_shift_unit = modelData.getJSONObject("cuff").getJSONObject("shift").getString("unit");
