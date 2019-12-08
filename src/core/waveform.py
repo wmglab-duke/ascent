@@ -174,7 +174,7 @@ class Waveform(Exceptionable, Configurable, Saveable):
 
     def generate(self) -> List[np.ndarray]:
         """
-        :return: list of 1d ndarrays, waveforms as specified by master configuration
+        :return: list of 1d ndarrays, waveforms as specified by configuration
         """
 
         # helper function to pad the start and end of signal with zeroes
@@ -205,12 +205,12 @@ class Waveform(Exceptionable, Configurable, Saveable):
             path_to_specific_parameters = [WaveformMode.parameters, str(mode).split('.')[-1]]
 
             # loop on frequency (all modes have property)... WITHIN THIS LOOP: "switch" on wave type
-            for frequency in self.search(Config.MASTER, *path_to_specific_parameters, 'frequency'): # TODO
+            for frequency in self.search(Config.MODEL, *path_to_specific_parameters, 'frequency'): # TODO
 
                 if mode == WaveformMode.MONOPHASIC_PULSE_TRAIN:
 
                     # loop on pulse width
-                    for pw in self.search(Config.MASTER, *path_to_specific_parameters, 'pulse_width'):
+                    for pw in self.search(Config.SIM, *path_to_specific_parameters, 'pulse_width'):
 
                         # ensure pulse fits in period
                         if pw > 1.0 / frequency:
@@ -234,14 +234,14 @@ class Waveform(Exceptionable, Configurable, Saveable):
                 elif mode == WaveformMode.BIPHASIC_PULSE_TRAIN:
 
                     # loop on pulse width
-                    for pw in self.search(Config.MASTER, *path_to_specific_parameters, 'pulse_width'):
+                    for pw in self.search(Config.SIM, *path_to_specific_parameters, 'pulse_width'):
 
                         # ensure fits within period
                         if 2 * pw > 1.0 / frequency:
                             self.throw(35)
 
                         # loop on inter phase
-                        for inter_phase in self.search(Config.MASTER, *path_to_specific_parameters, 'inter_phase'):
+                        for inter_phase in self.search(Config.SIM, *path_to_specific_parameters, 'inter_phase'):
 
                             # ensures fits within period
                             if (2 * pw) + inter_phase > 1.0 / frequency:
