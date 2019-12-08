@@ -2,39 +2,45 @@
   "conductivities": {
     "silicone": {
       "value": "10^(-12)",
-      "units": "[S/m]"
+      "unit": "[S/m]"
     },
     "platinum": {
       "value": "9.43*10^6",
-      "units": "[S/m]"
+      "unit": "[S/m]"
     },
     "endoneurium": {
-      "value": "{1/6, 1/6, 1/1.75}",
-      "units": "[S/m]"
+      "value": "anisotropic",
+      "sigma_x": "1/6",
+      "sigma_y": "1/6",
+      "sigma_z": "1/1.175",
+      "unit": "[S/m]"
     },
     "epineurium": {
       "value": "1/6.3",
-      "units": "[S/m]"
+      "unit": "[S/m]"
     },
     "muscle": {
-      "value": "{.086, .086, .35}",
-      "units": "[S/m]"
+      "value": "anisotropic",
+      "sigma_x": ".086",
+      "sigma_y": ".086",
+      "sigma_z": ".35",
+      "unit": "[S/m]"
     },
     "fat": {
       "value": "1/30",
-      "units": "[S/m]"
+      "unit": "[S/m]"
     },
     "encapsulation": {
       "value": "1/6.3",
-      "units": "[S/m]"
+      "unit": "[S/m]"
     },
     "saline": {
       "value": "1.76",
-      "units": "[S/m]"
+      "unit": "[S/m]"
     },
     "perineurium_DC": {
       "value": "1149",
-      "units": "[ohm*m]"
+      "unit": "[ohm*m]"
     }
   }
 }

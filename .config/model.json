@@ -23,7 +23,7 @@
     "unit": "celsius",
     "value": 37
   },
-  "rho_perineurium": {
+  "perineurium": {
     "unit": "Ohm*m",
     "value": 1149
   },

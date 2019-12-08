@@ -2,6 +2,7 @@ package model;
 
 import com.comsol.model.MeshFeature;
 import com.comsol.model.Model;
+import com.comsol.model.ModelParamGroup;
 import com.comsol.model.PropFeature;
 import com.comsol.model.physics.PhysicsFeature;
 import com.comsol.model.util.ModelUtil;
@@ -267,7 +268,7 @@ public class ModelWrapper {
      * @param name same formatting as addCuffPartPrimitives
      * @return success indicator
      */
-    public boolean addCuffMaterialDefinitions(String name) {
+    public boolean addCuffMaterialDefinitions(String name, ModelParamGroup materialParams) {
         // extract data from json
         try {
             JSONObject data = new JSONReader(String.join("/",
@@ -291,7 +292,7 @@ public class ModelWrapper {
 
                         try {
                             // TRY to create the material definition (catch error if no existing implementation)
-                            Part.defineMaterial(materialID, materialName, materials_config, this);
+                            Part.defineMaterial(materialID, materialName, materials_config, this, materialParams);
                         } catch (IllegalArgumentException e) {
                             e.printStackTrace();
                             return false;
@@ -311,7 +312,7 @@ public class ModelWrapper {
      * Create materials necessary for fascicles, nerve, surrounding media, etc. --- always called!
      * @return success indicator
      */
-    public boolean addBioMaterialDefinitions(String sample, String model) {
+    public boolean addBioMaterialDefinitions(String sample, String model, ModelParamGroup materialParams) {
         // extract data from json
 
         try {
@@ -344,18 +345,18 @@ public class ModelWrapper {
             // define medium based on the preset defined in the medium block in master.json
             String mediumMaterial = ((JSONObject) model_config.get("medium")).getString("material");
             String mediumMaterialID = this.im.next("mat", mediumMaterial);
-            Part.defineMaterial(mediumMaterialID, mediumMaterial, materials_config, this);
+            Part.defineMaterial(mediumMaterialID, mediumMaterial, materials_config, this, materialParams);
 
-            String periMaterialID = this.im.next("mat", "sigma_perineurium"); // special case - frequency dependent impedance, attribute associated with model configuration
-            Part.defineMaterial(periMaterialID, "sigma_perineurium", model_config, this);
+            String periMaterialID = this.im.next("mat", "perineurium"); // special case - frequency dependent impedance, attribute associated with model configuration
+            Part.defineMaterial(periMaterialID, "perineurium", model_config, this, materialParams);
 
             String endoMaterialID = this.im.next("mat", "endoneurium");
-            Part.defineMaterial(endoMaterialID, "endoneurium", materials_config, this);
+            Part.defineMaterial(endoMaterialID, "endoneurium", materials_config, this, materialParams);
 
             String nerveMode = (String) sample_config.getJSONObject("modes").get("nerve");
             if (nerveMode.equals("PRESENT")) {
                 String epiMaterialID = this.im.next("mat", "epineurium");
-                Part.defineMaterial(epiMaterialID, "epineurium", materials_config, this);
+                Part.defineMaterial(epiMaterialID, "epineurium", materials_config, this, materialParams);
             }
 
         } catch (FileNotFoundException e) {
@@ -648,9 +649,13 @@ public class ModelWrapper {
             model.param().set("r_ground", radius + " " + bounds_unit);
 
             // Perineurium conductivity
-            String peri_sigma_unit = ((JSONObject) ((JSONObject) modelData.get("conductivities")).get("sigma_perineurium")).getString("unit");
-            double sigma_peri = ((JSONObject) ((JSONObject) modelData.get("conductivities")).get("sigma_perineurium")).getDouble("value");
-            model.param().set("sigma_perineurium", sigma_peri + " " + peri_sigma_unit);
+            String materialParamsLabel = "Material Parameters";
+            ModelParamGroup materialParams = model.param().group().create(materialParamsLabel);
+            materialParams.label(materialParamsLabel);
+
+            String peri_sigma_unit = ((JSONObject) ((JSONObject) modelData.get("conductivities")).get("perineurium")).getString("unit");
+            double sigma_peri = ((JSONObject) ((JSONObject) modelData.get("conductivities")).get("perineurium")).getDouble("value");
+            materialParams.set("perineurium", sigma_peri + " " + peri_sigma_unit);
 
             // Create part primitive for FEM medium
             String mediumString = "Medium_Primitive";
@@ -663,7 +668,7 @@ public class ModelWrapper {
             }
 
             // Add biological material definitions
-            mw.addBioMaterialDefinitions(sample, modelStr);
+            mw.addBioMaterialDefinitions(sample, modelStr, materialParams);
 
             // Create part instance for FEM medium
             String instanceLabel = "Medium";
@@ -685,13 +690,13 @@ public class ModelWrapper {
                 // add part primitives for cuff
                 mw.addCuffPartPrimitives(cuff);
                 // add material definitions for cuff
-                mw.addCuffMaterialDefinitions(cuff);
+                mw.addCuffMaterialDefinitions(cuff, materialParams);
                 // add part instances for cuff
                 mw.addCuffPartInstances(cuff, modelData);
             }
 
             // Add nerve
-            mw.addNerve(sample);
+            mw.addNerve(sample, nerveParams);
             // Create unions
             mw.createUnions();
 
@@ -719,7 +724,7 @@ public class ModelWrapper {
                 PropFeature perineuriumMatLink = model.component("comp1").material().create(mw.im.next("matlnk",perineuriumMatLinkLabel), "Link");
                 perineuriumMatLink.selection().named("geom1" +"_" + mw.im.get("periUnionCsel") + "_dom");
                 perineuriumMatLink.label(perineuriumMatLinkLabel);
-                perineuriumMatLink.set("link", mw.im.get("rho_perineurium"));
+                perineuriumMatLink.set("link", mw.im.get("perineurium"));
             }
 
             // Will always need to add endoneurium material

@@ -1,9 +1,6 @@
 package model;
 
-import com.comsol.model.GeomFeature;
-import com.comsol.model.Material;
-import com.comsol.model.Model;
-import com.comsol.model.ModelParam;
+import com.comsol.model.*;
 import com.comsol.model.physics.PhysicsFeature;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -1455,19 +1452,33 @@ class Part {
      * @param config JSON data from master.json
      * @param mw the ModelWrapper to act upon
      */
-    public static void defineMaterial(String materialID, String materialName, JSONObject config, ModelWrapper mw) {
+    public static void defineMaterial(String materialID, String materialName, JSONObject config, ModelWrapper mw, ModelParamGroup materialParams) {
+
         Model model = mw.getModel();
         model.material().create(materialID, "Common", "");
         model.material(materialID).label(materialName);
 
         JSONObject sigma = config.getJSONObject("conductivities").getJSONObject(materialName);
+        String entry = sigma.getString("value");
+        String unit = sigma.getString("unit");
 
-        if (materialName.equals("sigma_perineurium")) {
-            String entry = materialName;
-            model.material(materialID).propertyGroup("def").set("electricconductivity", new String[]{entry});
+        if (entry.equals("anisotropic")) {
+            String entry_x = sigma.getString("sigma_x");
+            String entry_y = sigma.getString("sigma_y");
+            String entry_z = sigma.getString("sigma_z");
+
+            materialParams.set(materialName + "_x", "(" + entry_x + ")" + " " + unit);
+            materialParams.set(materialName + "_y", "(" + entry_y + ")" + " " + unit);
+            materialParams.set(materialName + "_z", "(" + entry_z + ")" + " " + unit);
+
+            model.material(materialID).propertyGroup("def").set("electricconductivity", "{" +
+                    materialName + "_x, " +
+                    materialName + "_y, " +
+                    materialName + "_z" +
+                    "}");
         } else {
-            String entry = sigma.getString("value");
-            model.material(materialID).propertyGroup("def").set("electricconductivity", new String[]{entry});
+            materialParams.set(materialName, "(" + entry + ")" + " " + unit);
+            model.material(materialID).propertyGroup("def").set("electricconductivity", materialName);
         }
     }
 

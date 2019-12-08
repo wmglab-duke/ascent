@@ -37,9 +37,9 @@
     "value": 37
   },
   "conductivities": {
-    "sigma_perineurium": {
+    "perineurium": {
       "unit": "[S/m]",
-      "value": 0.0008703220191470844
+      "value": "0.0008703220191470844"
     }
   },
   "n_srcs": 0
