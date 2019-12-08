@@ -223,5 +223,15 @@
     "code": 45,
     "text": "Method reshaped_nerve does not apply for monofascicle nerves",
     "source": "src.Slide"
+  },
+  {
+    "code": 46,
+    "text": "Temperature required in degrees celsius",
+    "source": "src.core.Waveform"
+  },
+  {
+    "code": 47,
+    "text": "Temperature dependent perineurium not yet implemented for high frequencies",
+    "source": "src.core.Waveform"
   }
 ]

@@ -88,8 +88,15 @@ class Waveform(Exceptionable, Configurable, Saveable):
         :return: rho [ohm-m]
         """
 
+        if self.search(Config.MODEL, "temperature", "unit") != "celsius":
+            self.throw(46)
+
+        temp = int(self.search(Config.MODEL, "temperature", "value"))  # [degC] 37 for mammalian
+
         # f is in [Hz]
         if f < 10:                                  # stimulation for activation response, arbitrary cutoff of 10 Hz!
+            if temp != 37:
+                self.throw(47)
 
             materials_path = os.path.join('config', 'system', 'materials.json')
             materials_config = self.load(materials_path)
@@ -155,10 +162,9 @@ class Waveform(Exceptionable, Configurable, Saveable):
             rs21 = np.mean([za_mag, zb_mag])       # [ohm-m^2]
 
             # Adjust for temperature - Use Q10 of 1.5, Shift to 37degC
-            temp_mammalian = 37                    # [degC]
             temp_room = 21                         # [degC]
             q10 = 1.5
-            rs37 = ((1/rs21)*(q10**((temp_mammalian-temp_room)/10)))**(-1)  # [Ohm-m^2]
+            rs37 = ((1/rs21)*(q10**((temp-temp_room)/10)))**(-1)  # [Ohm-m^2]
 
             # Convert to constant rho
             thk_weerasuriya = 0.00002175           # [m]
@@ -199,7 +205,7 @@ class Waveform(Exceptionable, Configurable, Saveable):
             path_to_specific_parameters = [WaveformMode.parameters, str(mode).split('.')[-1]]
 
             # loop on frequency (all modes have property)... WITHIN THIS LOOP: "switch" on wave type
-            for frequency in self.search(Config.MASTER, *path_to_specific_parameters, 'frequency'):
+            for frequency in self.search(Config.MASTER, *path_to_specific_parameters, 'frequency'): # TODO
 
                 if mode == WaveformMode.MONOPHASIC_PULSE_TRAIN:
 
