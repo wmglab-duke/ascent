@@ -1467,18 +1467,20 @@ class Part {
             String entry_y = sigma.getString("sigma_y");
             String entry_z = sigma.getString("sigma_z");
 
-            materialParams.set(materialName + "_x", "(" + entry_x + ")" + " " + unit);
-            materialParams.set(materialName + "_y", "(" + entry_y + ")" + " " + unit);
-            materialParams.set(materialName + "_z", "(" + entry_z + ")" + " " + unit);
+            materialParams.set("sigma_" + materialName + "_x", "(" + entry_x + ")" + " " + unit);
+            materialParams.set("sigma_" + materialName + "_y", "(" + entry_y + ")" + " " + unit);
+            materialParams.set("sigma_" + materialName + "_z", "(" + entry_z + ")" + " " + unit);
 
             model.material(materialID).propertyGroup("def").set("electricconductivity", "{" +
-                    materialName + "_x, " +
-                    materialName + "_y, " +
-                    materialName + "_z" +
-                    "}");
+                    "sigma_" + materialName + "_x, " +
+                    "sigma_" + materialName + "_y, " +
+                    "sigma_" + materialName + "_z" +
+                    "}"
+                    );
         } else {
-            materialParams.set(materialName, "(" + entry + ")" + " " + unit);
-            model.material(materialID).propertyGroup("def").set("electricconductivity", materialName);
+            materialParams.set("sigma_" + materialName, "(" + entry + ")" + " " + unit);
+
+            model.material(materialID).propertyGroup("def").set("electricconductivity", "sigma_" + materialName);
         }
     }
 

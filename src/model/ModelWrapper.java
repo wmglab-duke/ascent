@@ -675,7 +675,7 @@ public class ModelWrapper {
 
             String peri_sigma_unit = ((JSONObject) ((JSONObject) modelData.get("conductivities")).get("perineurium")).getString("unit");
             double sigma_peri = ((JSONObject) ((JSONObject) modelData.get("conductivities")).get("perineurium")).getDouble("value");
-            materialParams.set("perineurium", sigma_peri + " " + peri_sigma_unit);
+            materialParams.set("sigma_perineurium", sigma_peri + " " + peri_sigma_unit);
 
             // Create part primitive for FEM medium
             String mediumString = "Medium_Primitive";
