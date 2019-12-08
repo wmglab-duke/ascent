@@ -82,6 +82,14 @@ class NerveMode(Enum):
 
 
 @unique
+class CIPerineuriumThicknessMode(Enum):
+    config = 'ci_perineurium_thickness'
+
+    PIG_INHOUSE = 0
+    GRINBERG_2008 = 1
+
+
+@unique
 class DeformationMode(Enum):
     config = 'deform'
 

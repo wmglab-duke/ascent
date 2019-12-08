@@ -633,6 +633,10 @@ public class ModelWrapper {
                 nerveParams.set("r_nerve", "sqrt(a_nerve/pi)");
             }
 
+            JSONObject CICoeffs = modelData.getJSONObject("ci_perineurium_thickness").getJSONObject("coefficients");
+            nerveParams.set("ci_a", CICoeffs.getDouble("a") + " [" + CICoeffs.getString("unit") + "/" + CICoeffs.getString("unit") + "]");
+            nerveParams.set("ci_b", CICoeffs.getDouble("b") + " [" + CICoeffs.getString("unit") + "]");
+
             // Cuff positioning in the model
             String cuffConformationParamsLabel = "Cuff Conformation Parameters";
             ModelParamGroup cuffConformationParams = model.param().group().create(cuffConformationParamsLabel);
@@ -644,7 +648,6 @@ public class ModelWrapper {
             Integer cuff_shift_y = modelData.getJSONObject("cuff").getJSONObject("shift").getInt("y");
             Integer cuff_shift_z = modelData.getJSONObject("cuff").getJSONObject("shift").getInt("z");
             Integer cuff_rot = modelData.getJSONObject("cuff").getJSONObject("rotate").getInt("ang");
-
 
             cuffConformationParams.set("cuff_shift_x", cuff_shift_x + " " + cuff_shift_unit);
             cuffConformationParams.set("cuff_shift_y", cuff_shift_y + " " + cuff_shift_unit);

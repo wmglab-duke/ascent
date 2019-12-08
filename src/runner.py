@@ -118,6 +118,19 @@ class Runner(Exceptionable, Configurable):
             model_config: dict = all_configs[Config.MODEL.value][model_index]
             model_config['conductivities']['perineurium']['value'] = str(sigma_double)
 
+            ci_perineurium_thickness_mode = all_configs['models'][model_index]['modes']['ci_perineurium_thickness']
+            ci_params_path = os.path.join('config', 'system', 'ci_perineurium_thickness.json')
+            ci_params = self.load(ci_params_path)
+
+            model_config['ci_perineurium_thickness']['coefficients']['a'] = \
+                ci_params["ci_perineurium_thickness"][ci_perineurium_thickness_mode]['a']
+
+            model_config['ci_perineurium_thickness']['coefficients']['b'] = \
+                ci_params["ci_perineurium_thickness"][ci_perineurium_thickness_mode]['b']
+
+            model_config['ci_perineurium_thickness']['coefficients']['unit'] = \
+                ci_params["ci_perineurium_thickness"][ci_perineurium_thickness_mode]['unit']
+
             dest_path: str = os.path.join(*all_configs[Config.SAMPLE.value][0]['samples_path'],
                                           str(self.configs[Config.RUN.value]['sample']),
                                           'models',

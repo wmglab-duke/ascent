@@ -3,7 +3,8 @@
     "tbd": true
   },
   "modes": {
-    "fiber_z": "EXTRUSION"
+    "fiber_z": "EXTRUSION",
+    "ci_perineurium_thickness": "PIG_INHOUSE"
   },
   "medium": {
     "bounds": {
@@ -40,6 +41,13 @@
     "perineurium": {
       "unit": "[S/m]",
       "value": "0.0008703220191470844"
+    }
+  },
+  "ci_perineurium_thickness": {
+    "coefficients": {
+      "unit": "micrometer",
+      "a": 0.015706,
+      "b": 5.1028
     }
   },
   "n_srcs": 0

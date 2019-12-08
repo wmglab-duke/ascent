@@ -1,6 +1,7 @@
 {
   "modes": {
-    "fiber_z": "EXTRUSION"
+    "fiber_z": "EXTRUSION",
+    "ci_perineurium_thickness": "GRINBERG_2008"
   },
   "medium": {
     "bounds": {
@@ -36,7 +37,14 @@
   "conductivities": {
     "perineurium": {
       "unit": "[S/m]",
-      "value": 0.0008703220191470844
+      "value": "0.0008703220191470844"
+    }
+  },
+  "ci_perineurium_thickness": {
+    "coefficients": {
+      "a": 0.015706,
+      "b": 5.1028,
+      "unit": "micrometer"
     }
   },
   "n_srcs": 0
