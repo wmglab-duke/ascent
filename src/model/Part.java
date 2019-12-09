@@ -325,6 +325,25 @@ class Part {
                 econ_makehole1.set("h", "(R_out-R_in)+Buffer_hole");
                 econ_makehole1.set("rat", "R_out/R_in");
 
+                String ifg2hLabel = "If (Gap AND 2 Holes)";
+                GeomFeature if_gap2holes = model.geom(id).create(im.next("if", ifg2hLabel), "If");
+                if_gap2holes.label(ifg2hLabel);
+                if_gap2holes.set("condition", "N_holes==2");
+
+                String econmhs2Label = "Make Hole Shape 2";
+                GeomFeature econ_makehole2 = model.geom(id).create(im.next("econ",econmhs2Label), "ECone");
+                econ_makehole2.label(econmhs2Label);
+                econ_makehole2.set("contributeto", im.get("HOLES"));
+                econ_makehole2.set("pos", new String[]{"R_in-Buffer_hole/2", "0", "Center-Pitch_holecenter_holecenter/2"});
+                econ_makehole2.set("axis", new int[]{1, 0, 0});
+                econ_makehole2.set("semiaxes", new String[]{"D_hole/2", "D_hole/2"});
+                econ_makehole2.set("h", "(R_out-R_in)+Buffer_hole");
+                econ_makehole2.set("rat", "R_out/R_in");
+
+                String endifg2hLabel = "End If (Gap AND 2 Holes)";
+                GeomFeature endifg2h = model.geom(id).create(im.next("endif", endifg2hLabel), "EndIf");
+                endifg2h.label(endifg2hLabel);
+
                 String rotphic1Label = "Position Hole in Cuff 1";
                 GeomFeature rot_position_hole1 = model.geom(id).create(im.next("rot",rotphic1Label), "Rotate");
                 rot_position_hole1.label(rotphic1Label);
