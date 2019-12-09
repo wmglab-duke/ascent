@@ -16,7 +16,7 @@
   },
   "cuff": {
     "preset": [
-      "Enteromedics.json"
+      "ImThera.json"
     ],
     "shift": {
       "unit": "[micrometer]",
@@ -27,6 +27,9 @@
     "rotate": {
       "unit": "[degree]",
       "ang": 0
+    },
+    "fill": {
+      "material": "saline"
     }
   },
   "frequency": {

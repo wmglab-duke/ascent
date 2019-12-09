@@ -12,7 +12,6 @@
       "materials": [
         {
           "info": "fill",
-          "type": "saline",
           "label_index": 0
         }
       ]
@@ -61,7 +60,6 @@
         },
         {
           "info": "recess",
-          "type": "saline",
           "label_index": 4
         }
       ]
@@ -86,7 +84,6 @@
         },
         {
           "info": "recess",
-          "type": "saline",
           "label_index": 4
         }
       ]

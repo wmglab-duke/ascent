@@ -12,7 +12,6 @@
       "materials": [
         {
           "info": "fill",
-          "type": "saline",
           "label_index": 0
         }
       ]

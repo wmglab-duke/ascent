@@ -36,11 +36,13 @@ class Part {
 
                 im.labels = new String[]{
                         "MEDIUM" //0
+
                 };
 
                 for (String cselMediumLabel: im.labels) {
                     model.geom(id).selection().create(im.next("csel", cselMediumLabel), "CumulativeSelection")
                             .label(cselMediumLabel);
+
                 }
 
                 String mediumLabel = "Medium";
@@ -51,8 +53,10 @@ class Part {
                 m.set("contributeto", im.get("MEDIUM"));
 
                 break;
+
             default:
                 throw new  IllegalArgumentException("No implementation for part primitive name: " + pseudonym);
+
         }
         return im;
     }
@@ -77,11 +81,13 @@ class Part {
                 String[] mediumParameters = {
                         "radius",
                         "length"
+
                 };
 
                 JSONObject itemObject = ((JSONObject) ((JSONObject) instanceParams.get("medium")).get("bounds"));
                 for (String param: mediumParameters) {
                     partInstance.setEntry("inputexpr", param, (Double) itemObject.get(param));
+
                 }
 
                 // imports
@@ -105,9 +111,12 @@ class Part {
                 mat.label(linkLabel);
                 mat.set("link", mw.im.get(mediumMaterial));
                 mat.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(selection) + "_dom");
+
                 break;
+
             default:
                 throw new  IllegalArgumentException("No implementation for part primitive name: " + pseudonym);
+
         }
     }
 
@@ -152,11 +161,13 @@ class Part {
                         "HOLE 1",
                         "HOLE 2", //10
                         "HOLES"
+
                 };
 
                 for (String cselTCLabel: im.labels) {
                     model.geom(id).selection().create(im.next("csel", cselTCLabel), "CumulativeSelection")
                             .label(cselTCLabel);
+
                 }
 
                 String micsLabel = "Make Inner Cuff Surface";
@@ -338,7 +349,9 @@ class Part {
                 endif.label(endifLabel);
 
                 model.geom(id).run();
+
                 break;
+
             case "RibbonContact_Primitive":
 
                 mp.set("Thk_elec", "0.1 [mm]");
@@ -355,11 +368,13 @@ class Part {
                         "SRC",
                         "CONTACT FINAL",
                         "RECESS FINAL"
+
                 };
 
                 for (String cselRiCLabel: im.labels) {
                     model.geom(id).selection().create(im.next("csel", cselRiCLabel), "CumulativeSelection")
                             .label(cselRiCLabel);
+
                 }
 
                 String wpccxLabel = "Contact Cross Section";
@@ -428,7 +443,9 @@ class Part {
                 src.set("p", new String[]{"(R_in+Recess+Thk_elec/2)*cos(Rot_def+Theta_contact/2)", "(R_in+Recess+Thk_elec/2)*sin(Rot_def+Theta_contact/2)", "Center"});
 
                 model.geom(id).run();
+
                 break;
+
             case "WireContact_Primitive":
                 model.geom(id).inputParam().set("R_conductor", "r_conductor_P");
                 model.geom(id).inputParam().set("R_in", "R_in_P");
@@ -441,11 +458,13 @@ class Part {
                         "CONTACT CROSS SECTION",
                         "CONTACT FINAL",
                         "SRC"
+
                 };
 
                 for (String cselWCLabel: im.labels) {
                     model.geom(id).selection().create(im.next("csel", cselWCLabel), "CumulativeSelection")
                             .label(cselWCLabel);
+
                 }
 
                 String contactxsLabel = "Contact Cross Section";
@@ -475,8 +494,11 @@ class Part {
                 source.label(sourceLabel);
                 source.set("contributeto", im.get("SRC"));
                 source.set("p", new String[]{"(R_in-R_conductor-Sep_conductor)*cos(Theta_conductor/2)", "(R_in-R_conductor-Sep_conductor)*sin(Theta_conductor/2)", "Center"});
+
                 model.geom(id).run();
+
                 break;
+
             case "CircleContact_Primitive":
                 model.geom(id).inputParam().set("Recess", "Recess_ITC");
                 model.geom(id).inputParam().set("Rotation_angle", "0 [deg]");
@@ -504,11 +526,13 @@ class Part {
                         "RECESS CUTTER IN",
                         "RECESS CUTTER OUT",
                         "BASE PLANE (PRE ROTATION)"
+
                 };
 
                 for (String cselCCLabel: im.labels) {
                     model.geom(id).selection().create(im.next("csel", cselCCLabel), "CumulativeSelection")
                             .label(cselCCLabel);
+
                 }
 
                 String bpprLabel = "Base Plane (Pre Rrotation)";
@@ -724,7 +748,9 @@ class Part {
                 srcc.set("p", new String[]{"(R_in+Recess+Contact_depth/2)*cos(Rotation_angle)", "(R_in+Recess+Contact_depth/2)*sin(Rotation_angle)", "Center"});
 
                 model.geom(id).run();
+
                 break;
+
             case "HelicalCuffnContact_Primitive":
                 model.geom(id).inputParam().set("Center", "Center_LN");
 
@@ -740,11 +766,13 @@ class Part {
                         "Cuffp3",
                         "PC3",
                         "CUFF FINAL" //10
+
                 };
 
                 for (String cselHCCLabel: im.labels) {
                     model.geom(id).selection().create(im.next("csel", cselHCCLabel), "CumulativeSelection")
                             .label(cselHCCLabel);
+
                 }
 
                 String hicsp1Label = "Helical Insulator Cross Section Part 1";
@@ -924,7 +952,9 @@ class Part {
                 model.geom(id).feature(im.get(uspLabel)).set("contributeto", im.get("CUFF FINAL"));
 
                 model.geom(id).run();
+
                 break;
+
             case "RectangleContact_Primitive":
                 model.geom(id).inputParam().set("z_center", "0 [mm]");
                 model.geom(id).inputParam().set("rotation_angle", "0 [deg]");
@@ -961,11 +991,13 @@ class Part {
                         "OUTER CUFF CUTTER", //20
                         "FINAL",
                         "INNER CUTTER"
+
                 };
 
                 for (String cselReCLabel: im.labels) {
                     model.geom(id).selection().create(im.next("csel", cselReCLabel), "CumulativeSelection")
                             .label(cselReCLabel);
+
                 }
 
                 String bpprsLabel = "base plane (pre rotation)";
@@ -1220,7 +1252,9 @@ class Part {
                 srcs.set("p", new String[]{"(R_in_Pitt+recess_Pitt+(thk_contact_Pitt/2))*cos(rotation_angle)", "(R_in_Pitt+recess_Pitt+(thk_contact_Pitt/2))*sin(rotation_angle)", "z_center"});
 
                 model.geom(id).run();
+
                 break;
+
             case "uContact_Primitive":
                 model.geom(id).inputParam().set("z_center", "z_center_U");
                 model.geom(id).inputParam().set("R_in", "R_in_U");
@@ -1232,11 +1266,13 @@ class Part {
                         "CONTACT XS", //0
                         "CONTACT FINAL",
                         "SRC"
+
                 };
 
                 for (String cselUContactLabel: im.labels) {
                     model.geom(id).selection().create(im.next("csel", cselUContactLabel), "CumulativeSelection")
                             .label(cselUContactLabel);
+
                 }
 
                 String ucontactxsLabel = "Contact XS";
@@ -1324,7 +1360,9 @@ class Part {
                 usrc.set("p", new String[]{"-R_in-(thk_contact/2)", "0", "z_center"});
 
                 model.geom(id).run();
+
                 break;
+
             case "uCuff_Primitive":
                 model.geom(id).inputParam().set("z_center", "z_center_U");
                 model.geom(id).inputParam().set("R_in", "R_in_U");
@@ -1335,11 +1373,13 @@ class Part {
                 im.labels = new String[]{
                         "CUFF XS", //0
                         "CUFF FINAL"
+
                 };
 
                 for (String cselUCuffLabel: im.labels) {
                     model.geom(id).selection().create(im.next("csel", cselUCuffLabel), "CumulativeSelection")
                             .label(cselUCuffLabel);
+
                 }
 
                 String ucCXSLabel = "Contact XS";
@@ -1410,7 +1450,9 @@ class Part {
                 ucExt.selection("input").named(im.get("CUFF XS"));
 
                 model.geom(id).run();
+
                 break;
+
             case "CuffFill_Primitive":
                 model.geom(id).inputParam().set("Radius", "0.5 [mm]");
                 model.geom(id).inputParam().set("Thk", "100 [um]");
@@ -1419,11 +1461,13 @@ class Part {
 
                 im.labels = new String[]{
                         "CUFF FILL FINAL" //0
+
                 };
 
                 for (String cselCuffFillLabel: im.labels) {
                     model.geom(id).selection().create(im.next("csel", cselCuffFillLabel), "CumulativeSelection")
                             .label(cselCuffFillLabel);
+
                 }
 
                 String cuffFillLabel = "Cuff Fill";
@@ -1435,14 +1479,18 @@ class Part {
                 cf.set("h", "L");
 
                 model.geom(id).run();
+
                 break;
+
             default:
                 throw new  IllegalArgumentException("No implementation for part primitive name: " + pseudonym);
+
         }
 
         // if im was not edited for some reason, return null
         if (im.count() == 0) return null;
         return im;
+
     }
 
     /**
@@ -1477,10 +1525,11 @@ class Part {
                     "sigma_" + materialName + "_z" +
                     "}"
                     );
+
         } else {
             materialParams.set("sigma_" + materialName, "(" + entry + ")" + " " + unit);
-
             model.material(materialID).propertyGroup("def").set("electricconductivity", "sigma_" + materialName);
+
         }
     }
 
@@ -1528,10 +1577,12 @@ class Part {
                         "Buffer_hole",
                         "L_holecenter_cuffseam",
                         "Pitch_holecenter_holecenter"
+
                 };
 
                 for (String param: tubeCuffParameters) {
                     partInstance.setEntry("inputexpr", param, (String) itemObject.get(param));
+
                 }
 
                 // imports
@@ -1562,6 +1613,7 @@ class Part {
                 partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[11]) + ".pnt", "off"); // HOLES
 
                 break;
+
             case "RibbonContact_Primitive":
 
                 // set instantiation parameters
@@ -1573,15 +1625,17 @@ class Part {
                         "Center",
                         "Theta_contact",
                         "Rot_def"
+
                 };
 
                 for (String param: ribbonContactParameters) {
                     partInstance.setEntry("inputexpr", param, (String) itemObject.get(param));
+
                 }
 
                 // imports
                 partInstance.set("selkeepnoncontr", false);
-                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[1]) + ".dom", "off"); // RECESS FINAL
+                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[1]) + ".dom", "off"); // RECESS CROSS SECTION
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[2]) + ".dom", "off"); // SRC
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[3]) + ".dom", "on"); // CONTACT FINAL
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[4]) + ".dom", "on"); // RECESS FINAL
@@ -1601,7 +1655,9 @@ class Part {
                 ((PhysicsFeature) mw.im.currentPointers.get(ribbon_currentLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" +  myIM.get(myLabels[2]) + "_pnt"); // SRC
                 ((PhysicsFeature) mw.im.currentPointers.get(ribbon_currentLabel)).set("Qjp", 0.001);
                 ((PhysicsFeature) mw.im.currentPointers.get(ribbon_currentLabel)).label(ribbon_pcsLabel);
+
                 break;
+
             case "WireContact_Primitive":
 
                 // set instantiation parameters
@@ -1612,10 +1668,12 @@ class Part {
                         "Pitch",
                         "Sep_conductor",
                         "Theta_conductor"
+
                 };
 
                 for (String param: wireContactParameters) {
                     partInstance.setEntry("inputexpr", param, (String) itemObject.get(param));
+
                 }
 
                 // imports
@@ -1638,6 +1696,7 @@ class Part {
                 ((PhysicsFeature) mw.im.currentPointers.get(wire_currentLabel)).label(wire_pcsLabel);
 
                 break;
+
             case "CircleContact_Primitive":
 
                 // set instantiation parameters
@@ -1652,10 +1711,12 @@ class Part {
                         "A_ellipse_contact",
                         "Diam_contact",
                         "L"
+
                 };
 
                 for (String param: circleContactParameters) {
                     partInstance.setEntry("inputexpr", param, (String) itemObject.get(param));
+
                 }
 
                 // imports
@@ -1718,10 +1779,12 @@ class Part {
                 // set instantiation parameters
                 String[] helicalCuffnContactParameters = {
                         "Center"
+
                 };
 
                 for (String param: helicalCuffnContactParameters) {
                     partInstance.setEntry("inputexpr", param, (String) itemObject.get(param));
+
                 }
 
                 model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Center", (String) itemObject.get("Center"));
@@ -1746,8 +1809,6 @@ class Part {
                 partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[9]) + ".pnt", "off"); // PC3
                 partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[10]) + ".pnt", "off"); // CUFF FINAL
 
-
-
                 // assign physics
                 String helix_pcsLabel = instanceLabel + " Current Source";
                 String helix_currentLabel = instanceLabel;
@@ -1758,7 +1819,9 @@ class Part {
                 ((PhysicsFeature) mw.im.currentPointers.get(helix_currentLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" +  myIM.get(myLabels[4]) + "_pnt"); // SRC
                 ((PhysicsFeature) mw.im.currentPointers.get(helix_currentLabel)).set("Qjp", 0.001);
                 ((PhysicsFeature) mw.im.currentPointers.get(helix_currentLabel)).label(helix_pcsLabel);
+
                 break;
+
             case "RectangleContact_Primitive":
 
               // set instantiation parameters
@@ -1773,10 +1836,12 @@ class Part {
                         "r_cuff_in",
                         "recess",
                         "thk_contact"
+
                 };
 
                 for (String param: rectangleContactParameters) {
                     partInstance.setEntry("inputexpr", param, (String) itemObject.get(param));
+
                 }
 
                 // imports
@@ -1847,6 +1912,7 @@ class Part {
                 ((PhysicsFeature) mw.im.currentPointers.get(square_currentLabel)).label(square_pcsLabel);
 
                 break;
+
             case "uContact_Primitive":
                 // set instantiation parameters
                 String[] uContactParameters = {
@@ -1855,10 +1921,12 @@ class Part {
                         "Tangent",
                         "thk_contact",
                         "z_contact"
+
                 };
 
                 for (String param: uContactParameters) {
                     partInstance.setEntry("inputexpr", param, (String) itemObject.get(param));
+
                 }
 
                 // imports
@@ -1881,6 +1949,7 @@ class Part {
                 ((PhysicsFeature) mw.im.currentPointers.get(u_currentLabel)).label(u_pcsLabel);
 
                 break;
+
             case "uCuff_Primitive":
                 // set instantiation parameters
                 String[] uCuffParameters = {
@@ -1889,10 +1958,12 @@ class Part {
                         "Tangent",
                         "R_out",
                         "L"
+
                 };
 
                 for (String param: uCuffParameters) {
                     partInstance.setEntry("inputexpr", param, (String) itemObject.get(param));
+
                 }
 
                 // imports
@@ -1903,6 +1974,7 @@ class Part {
                 partInstance.setEntry("selkeeppnt", instanceID + "_" +  myIM.get(myLabels[1]) + ".pnt", "off"); // CUFF FINAL
 
                 break;
+
             case "CuffFill_Primitive":
                 // set instantiation parameters
                 String[] cuffFillParameters = {
@@ -1910,10 +1982,12 @@ class Part {
                         "Thk",
                         "L",
                         "z_center"
+
                 };
 
                 for (String param: cuffFillParameters) {
                     partInstance.setEntry("inputexpr", param, (String) itemObject.get(param));
+
                 }
 
                 // imports
@@ -1921,25 +1995,40 @@ class Part {
                 partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[0]) + ".dom", "on"); // CUFF FILL FINAL
 
                 break;
+
             default:
                 throw new IllegalArgumentException("No implementation for part instance name: " + pseudonym);
+
         }
 
         // assign cuff materials
         JSONArray materials = instanceParams.getJSONArray("materials");
         for(Object o: materials) {
-            String type = ((JSONObject) o).getString("type");
+
             int label_index = ((JSONObject) o).getInt("label_index");
             String selection = myLabels[label_index];
+            String type;
+
+            if (((JSONObject) o).getString("info").equals("fill") ||
+                    ((JSONObject) o).getString("info").equals("recess")) { // if info is fill or recess
+                type = modelData.getJSONObject("cuff").getJSONObject("fill").getString("material");
+
+            } else {
+                type = ((JSONObject) o).getString("type");
+
+            }
+
             if(myIM.hasPseudonym(selection)) {
                 String linkLabel = String.join("/", new String[]{instanceLabel, selection, type});
                 Material mat = model.component("comp1").material().create(mw.im.next("matlnk", linkLabel), "Link");
                 mat.label(linkLabel);
                 mat.set("link", mw.im.get(type));
                 mat.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(selection) + "_dom");
+
             }
         }
     }
+
 
     /**
      * Build a part of the nerve.
@@ -2029,6 +2118,7 @@ class Part {
                 ci.set("rhos", rhos);
 
                 break;
+
             case "FascicleMesh":
 
                 String mesh_name = "outer" + index;
@@ -2141,6 +2231,7 @@ class Part {
                 mw.contributeToUnions(im.get(makeEndoLabel), fascicleMeshEndoUnions);
 
                 break;
+
             case "Epineurium":
                 im.labels = new String[]{
                         "EPINEURIUM", //0
@@ -2172,8 +2263,10 @@ class Part {
                 mw.contributeToUnions(im.get(epiLabel), epiUnions);
 
                 break;
+
             default:
                 throw new IllegalArgumentException("No implementation for part instance name: " + pseudonym);
+
         }
     }
 }

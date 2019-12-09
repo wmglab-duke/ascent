@@ -12,7 +12,6 @@
       "materials": [
         {
           "info": "fill",
-          "type": "encapsulation",
           "label_index": 0
         }
       ]
@@ -29,7 +28,6 @@
       "materials": [
         {
           "info": "fill",
-          "type": "encapsulation",
           "label_index": 0
         }
       ]

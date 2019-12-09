@@ -32,6 +32,7 @@ public class ModelWrapper {
     public static final String ALL_NERVE_PARTS_UNION = "allNervePartsUnion";
     public static final String ENDO_UNION = "endoUnion";
     public static final String PERI_UNION = "periUnion";
+
     public static final String[] ALL_UNIONS = new String[]{
             ModelWrapper.ENDO_UNION,
             ModelWrapper.ALL_NERVE_PARTS_UNION,
@@ -268,7 +269,7 @@ public class ModelWrapper {
      * @param name same formatting as addCuffPartPrimitives
      * @return success indicator
      */
-    public boolean addCuffMaterialDefinitions(String name, ModelParamGroup materialParams) {
+    public boolean addCuffMaterialDefinitions(JSONObject modelData, String name, ModelParamGroup materialParams) {
         // extract data from json
         try {
             JSONObject data = new JSONReader(String.join("/",
@@ -283,7 +284,16 @@ public class ModelWrapper {
                 JSONArray materials = itemObject.getJSONArray("materials");
 
                 for(Object o: materials) {
-                    String materialName = ((JSONObject) o).getString("type");
+                    String materialName;
+
+                    if (((JSONObject) o).getString("info").equals("fill") ||
+                            ((JSONObject) o).getString("info").equals("recess")) { // if info is fill or recess
+                        materialName = modelData.getJSONObject("cuff").getJSONObject("fill").getString("material");
+
+                    } else {
+                        materialName = ((JSONObject) o).getString("type");
+
+                    }
 
                     // create the material definition if it has not already been created
                     if (! this.im.hasPseudonym(materialName)) {
@@ -524,8 +534,10 @@ public class ModelWrapper {
     public void createUnions() {
         for (String union: ModelWrapper.ALL_UNIONS) {
             String[] contributors = this.getUnionContributors(union);
+
             if (contributors.length > 0) {
                 model.component("comp1").geom("geom1").create(im.next("uni", union), "Union");
+
                 model.component("comp1").geom("geom1").feature(im.get(union)).set("keep", true);
                 model.component("comp1").geom("geom1").feature(im.get(union)).selection("input").set(contributors);
                 model.component("comp1").geom("geom1").feature(im.get(union)).label(union);
@@ -534,6 +546,7 @@ public class ModelWrapper {
                 model.component("comp1").geom("geom1").selection().create(im.next("csel",unionCselLabel), "CumulativeSelection");
                 model.component("comp1").geom("geom1").selection(im.get(unionCselLabel)).label(unionCselLabel);
                 model.component("comp1").geom("geom1").feature(im.get(union)).set("contributeto", im.get(unionCselLabel));
+
             }
         }
     }
@@ -542,7 +555,7 @@ public class ModelWrapper {
      * Master procedure to run!
      * @param args
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
 
         // Take projectPath input to ModelWrapper and assign to string.
         String projectPath = args[0];
@@ -596,6 +609,19 @@ public class ModelWrapper {
             JSONObject modelData = null;
             try {
                 modelData = new JSONReader(projectPath + "/" + modelFile).getData();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+
+            String materialsFile = String.join("/", new String[]{
+                    "config",
+                    "system",
+                    "materials.json"
+            });
+
+            JSONObject materialsData = null;
+            try {
+                materialsData = new JSONReader(projectPath + "/" + materialsFile).getData();
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
@@ -710,9 +736,17 @@ public class ModelWrapper {
                 // add part primitives for cuff
                 mw.addCuffPartPrimitives(cuff);
                 // add material definitions for cuff
-                mw.addCuffMaterialDefinitions(cuff, materialParams);
+                mw.addCuffMaterialDefinitions(modelData, cuff, materialParams);
                 // add part instances for cuff
                 mw.addCuffPartInstances(cuff, modelData);
+            }
+
+            // Add fill
+            String materialName = modelData.getJSONObject("cuff").getJSONObject("fill").getString("material");
+            // if doesnt exist
+            if (! mw.im.hasPseudonym(materialName)) {
+                String materialID = mw.im.next("mat", materialName);
+                Part.defineMaterial(materialID, materialName, materialsData, mw, materialParams);
             }
 
             // Add nerve
