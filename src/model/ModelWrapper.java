@@ -191,7 +191,7 @@ public class ModelWrapper {
             // get the id for the next "par" (i.e. parameters section), and give it a name from the JSON file name
             String id = this.next("par", name);
             model.param().group().create(id);
-            model.param(id).label(name.split("\\.")[0]);
+            model.param(id).label(name.split("\\.")[0] + " Parameters");
 
             // loop through all parameters in file, and set in parameters
             for (Object item : (JSONArray) data.get("params")) {
