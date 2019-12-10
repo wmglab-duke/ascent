@@ -35,7 +35,7 @@
     * 1 sim - 1 fiber to be more efficient
     * Use thresholds from one fiber in nerve/fascicle to set smart bounds for thresholds of others
     * Block characterize Vm on cluster - more info that just block/no block to inform search and make less manual
-    * Configutations for nerve + cuff geom, configurations for waveform + material props (since function of freq) + bounds, configurations for sims?
+    * (done) Configutations for nerve + cuff geom, configurations for waveform + material props (since function of freq) + bounds, configurations for sims?
     * Auto-converge - interpret results, built next fem, resubmit automagically
     * Characteristic nerve (fascicle are circles with location and radius)
     * Multiple contacts active at once
