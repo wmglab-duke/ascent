@@ -125,16 +125,17 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-######### START JAKE ADDITIONS
 # PyCharm specific
 .idea/
 
+# User-specific machine settings
+config/system/env.json
+
 # don't include data b/c this may get pretty big at some point
-data/samples
-#data/input/samples
+samples/
+#samples
 *r.tif
-*system.json
 *.mph*
 *.class*
 out/
-/config/system/env.json
+
