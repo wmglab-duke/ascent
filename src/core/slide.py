@@ -21,7 +21,8 @@ from src.utils import *
 
 class Slide(Exceptionable):
 
-    def __init__(self, fascicles: List[Fascicle], nerve: Nerve, exception_config: list, will_reposition: bool = False):
+    def __init__(self, fascicles: List[Fascicle], nerve: Nerve, nerve_mode: NerveMode, exception_config: list,
+                 will_reposition: bool = False):
         """
         :param fascicles: List of fascicles
         :param nerve: Nerve (effectively is a Trace)
@@ -33,12 +34,20 @@ class Slide(Exceptionable):
         # init superclasses
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
 
+        self.nerve_mode = nerve_mode
+
         self.nerve: Nerve = nerve
         self.fascicles: List[Fascicle] = fascicles
 
         if not will_reposition:
             # do validation (default is specific!)
             self.validation()
+        else:
+            if self.nerve_mode == NerveMode.NOT_PRESENT:
+                self.throw(39)
+
+    def monofasc(self) -> bool:
+        return self.nerve_mode == NerveMode.NOT_PRESENT
 
     def validation(self, specific: bool = True, die: bool = True, tolerance: float = None) -> bool:
         """
@@ -48,6 +57,9 @@ class Slide(Exceptionable):
         :param tolerance: minimum separation distance for unit you are currently in
         :return: Boolean for True (no intersection) or False (issues with geometry overlap)
         """
+
+        if self.monofasc():
+            return True
 
         if specific:
             if self.fascicle_fascicle_intersection():
@@ -75,6 +87,9 @@ class Slide(Exceptionable):
         :return: Boolean for True for fascicles too close as defined by tolerance
         """
 
+        if self.monofasc():
+            self.throw(41)
+
         if tolerance is None:
             return False
         else:
@@ -87,6 +102,9 @@ class Slide(Exceptionable):
         :return: True if any fascicle intersects another fascicle, otherwise False
         """
 
+        if self.monofasc():
+            self.throw(42)
+
         pairs = itertools.combinations(self.fascicles, 2)
         return any([first.intersects(second) for first, second in pairs])
 
@@ -95,12 +113,18 @@ class Slide(Exceptionable):
         :return: True if any fascicle intersects the nerve, otherwise False
         """
 
+        if self.monofasc():
+            self.throw(43)
+
         return any([fascicle.intersects(self.nerve) for fascicle in self.fascicles])
 
     def fascicles_outside_nerve(self) -> bool:
         """
         :return: True if any fascicle lies outside the nerve, otherwise False
         """
+
+        if self.monofasc():
+            self.throw(44)
 
         return any([not fascicle.within_nerve(self.nerve) for fascicle in self.fascicles])
 
@@ -109,11 +133,16 @@ class Slide(Exceptionable):
         :param point: the point of the new slide center
         """
 
-        # get shift from nerve centroid and point argument
-        shift = list(point - np.array(self.nerve.centroid())) + [0]
+        if self.monofasc():
+            # get shift from nerve centroid and point argument
+            shift = list(point - np.array(self.fascicles[0].centroid())) + [0]
+        else:
+            # get shift from nerve centroid and point argument
+            shift = list(point - np.array(self.nerve.centroid())) + [0]
 
-        # apply shift to nerve trace and all fascicles
-        self.nerve.shift(shift)
+            # apply shift to nerve trace and all fascicles
+            self.nerve.shift(shift)
+
         for fascicle in self.fascicles:
             fascicle.shift(shift)
 
@@ -123,6 +152,9 @@ class Slide(Exceptionable):
         :return: a copy of the nerve with reshaped nerve boundary, preserves point count which is SUPER critical for
         fascicle repositioning
         """
+
+        if self.monofasc():
+            self.throw(45)
 
         if mode == ReshapeNerveMode.CIRCLE:
             return self.nerve.to_circle()
@@ -145,7 +177,9 @@ class Slide(Exceptionable):
             plt.axes().set_aspect('equal', 'datalim')
 
         # loop through constituents and plot each
-        self.nerve.plot(plot_format='g-')
+        if not self.monofasc():
+            self.nerve.plot(plot_format='g-')
+
         for fascicle in self.fascicles:
             fascicle.plot(inner_format)
 
@@ -161,9 +195,12 @@ class Slide(Exceptionable):
         :param factor: scale factor, only knows how to scale around its own centroid
         """
 
-        center = list(self.nerve.centroid())
+        if self.monofasc():
+            center = list(self.fascicles[0].centroid())
+        else:
+            center = list(self.nerve.centroid())
+            self.nerve.scale(factor, center)
 
-        self.nerve.scale(factor, center)
         for fascicle in self.fascicles:
             fascicle.scale(factor, center)
 
@@ -172,9 +209,12 @@ class Slide(Exceptionable):
         :param angle: angle in radians, only knows how to rotate around its own centroid
         """
 
-        center = list(self.nerve.centroid())
+        if self.monofasc():
+            center = list(self.fascicles[0].centroid())
+        else:
+            center = list(self.nerve.centroid())
+            self.nerve.rotate(angle, center)
 
-        self.nerve.rotate(angle, center)
         for fascicle in self.fascicles:
             fascicle.rotate(angle, center)
 
@@ -195,8 +235,13 @@ class Slide(Exceptionable):
             # keep track of starting place
             sub_start = os.getcwd()
 
-            # write nerve and fascicles
-            for items, folder in [([self.nerve], 'nerve'), (self.fascicles, 'fascicles')]:
+            # write nerve (if not monofasc) and fascicles
+            if self.monofasc():
+                trace_list = [(self.fascicles, 'fascicles')]
+            else:
+                trace_list = [([self.nerve], 'nerve'), (self.fascicles, 'fascicles')]
+
+            for items, folder in trace_list:
                 # build path if not already existing
                 if not os.path.exists(folder):
                     os.makedirs(folder)

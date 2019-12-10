@@ -1,0 +1,54 @@
+{
+  "modes": {
+    "fiber_z": "EXTRUSION",
+    "ci_perineurium_thickness": "GRINBERG_2008"
+  },
+  "medium": {
+    "bounds": {
+      "unit": "[micrometer]",
+      "length": 50000.0,
+      "radius": 10000.0
+    },
+    "material": "fat"
+  },
+  "cuff": {
+    "preset": [
+      "Purdue.json"
+    ],
+    "shift": {
+      "unit": "[micrometer]",
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "rotate": {
+      "unit": "[degree]",
+      "ang": 0
+    },
+    "fill": {
+      "material": "saline"
+    }
+  },
+  "frequency": {
+    "unit": "Hz",
+    "value": 1
+  },
+  "temperature": {
+    "unit": "celsius",
+    "value": 37
+  },
+  "conductivities": {
+    "perineurium": {
+      "unit": "[S/m]",
+      "value": "0.0008703220191470844"
+    }
+  },
+  "ci_perineurium_thickness": {
+    "coefficients": {
+      "a": 0.03,
+      "b": 0,
+      "unit": "micrometer"
+    }
+  },
+  "n_srcs": 0
+}

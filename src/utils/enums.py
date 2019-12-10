@@ -1,4 +1,5 @@
 from enum import Enum, unique
+import os
 
 
 #%% Core (backend) functionality
@@ -10,9 +11,20 @@ class SetupMode(Enum):
 
 
 @unique
-class ConfigKey(Enum):
-    MASTER = 'master'
+class Config(Enum):
+    # system
+    MESH = 'mesh'
+    MATERIALS = 'materials'
+    FIBER_Z = 'fiber_z'
+    CUFFS = 'cuffs'
     EXCEPTIONS = 'exceptions'
+    ENV = 'env'
+
+    # user
+    RUN = 'run'
+    SAMPLE = 'sample'
+    MODEL = 'models'
+    SIM = 'sims'
 
 
 #%% Trace functionality
@@ -38,6 +50,7 @@ class ReshapeNerveMode(Enum):
 
     CIRCLE = 0
     ELLIPSE = 1
+    NONE = 3
 
 
 @unique
@@ -66,6 +79,14 @@ class NerveMode(Enum):
 
     PRESENT = 1
     NOT_PRESENT = 0
+
+
+@unique
+class CIPerineuriumThicknessMode(Enum):
+    config = 'ci_perineurium_thickness'
+
+    PIG_INHOUSE = 0
+    GRINBERG_2008 = 1
 
 
 @unique
@@ -142,7 +163,7 @@ class UnmyelinatedFiberType(Enum):
 @unique
 class WaveformMode(Enum):
     config = 'waveform'
-    parameters = 'waveform_parameters'
+    parameters = 'extracellular_stim'
     global_parameters = 'global'
 
     MONOPHASIC_PULSE_TRAIN = 0
@@ -197,6 +218,6 @@ class CuffMode(Enum):
 
 @unique
 class TemplateMode(Enum):
-    path = '.templates'
+    path = os.path.join('config', 'templates')
     ELECTRODE_INPUT = 'electrode_input.json'
     MORPHOLOGY = 'morphology.json'

@@ -199,10 +199,10 @@
     }
   },
   "slide_map": {
-    "cassettes": ["VN1_A", "VN1_B"],
-    "allowed_differences": [1, 2],
-    "start_position": 20000,
-    "number_regex": "([0-9]*)[.]",
+    "cassettes": ["0"],
+    "allowed_differences": [0],
+    "start_position": 0,
+    "number_regex": "([0-9]*)[_][a-z]",
     "skips": {
       "up": false,
       "normal": 5,
@@ -210,8 +210,8 @@
       "cassette": 100
     },
     "paths": {
-      "output": ["data", "output", "maps"],
-      "source": ["Users", "jakecariello", "Box", "19P866_05292019"],
+      "output": ["data", "input", "samples", "Cadaver50-2", "map.json"],
+      "source": ["data", "input", "samples", "Cadaver50-2"],
       "old": ["data", "output", "maps", "07_24_2019.json"]
     },
     "resize_reference": {

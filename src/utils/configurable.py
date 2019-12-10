@@ -18,7 +18,6 @@ Description:
     search
     path
     load
-    reload
     validate_path (ensures that it ends with .json)
 
 
@@ -27,7 +26,7 @@ Description:
 # builtins
 import json
 import os
-from typing import Type, List
+from typing import Type, List, Union
 
 # access
 from .enums import *
@@ -35,7 +34,7 @@ from .enums import *
 
 class Configurable:
 
-    def __init__(self, mode: SetupMode, key: ConfigKey, config):
+    def __init__(self, mode: SetupMode = None, key: Config = None, config: Union[str, dict, list] = None):
         """
         :param mode: SetupMode, determines if loads new JSON or uses old data
         :param key: choice of MASTER or EXCEPTIONS (or any other added separate configs)
@@ -45,22 +44,29 @@ class Configurable:
         if not hasattr(self, 'configs'):
             self.configs = dict()
 
+        if len([item for item in [mode, key, config] if item is None]) == 0:
+            self.add(mode, key, config)
+
+    def add(self, mode: SetupMode, key: Config, config: Union[str, dict]):
+
         # either load up new data or used old, passed in data
         if mode == SetupMode.NEW:
-            self.config_path = config
-            self.validate_path(self.config_path)
-            self.configs[key.value] = self.load(self.config_path)
+            self.validate_path(config)
+            self.configs[key.value] = self.load(config)
 
         else:  # mode == SetupMode.OLD:
             self.configs[key.value] = config
 
-    def search(self, key: ConfigKey, *args):
+        return self
+
+    def search(self, key: Config, *args):
         """
         Get an item using "path" of args in the json config.
         :param key: type of config to search within
         :param args: list "path" to item within json (str or int)
         :return: final specified item
         """
+
         result = self.configs[key.value]
         for arg in args:
             if isinstance(arg, str):
@@ -73,13 +79,13 @@ class Configurable:
                                 '\tsource:\tconfigurable.py'.format(type(arg), arg))
         return result
 
-    def path(self, key: ConfigKey, *args, is_dir: bool = False, is_absolute: bool = False):
+    def path(self, key: Config, *args, is_dir: bool = False, is_absolute: bool = False):
         """
         Build a path for an item specified in same style as self.search().
         Expects the item returned by self.search(key, *args) to be a list.
         :param is_absolute: flag to make the path absolute
         :param is_dir: if true, will add trailing slash (system nonspecific) to path
-        :param key: ConfigKey (choice of configurations from discrete enumeration)
+        :param key: Config (choice of configurations from discrete enumeration)
         :param args: "path" to desired path
         :return: final path to item (with system formatting!)
         """
@@ -104,30 +110,18 @@ class Configurable:
             # print('load "{}" --> key "{}"'.format(config, key))
             return json.load(handle)
 
-    def reload(self, key: ConfigKey, config_path: str = None):
-        """
-        Buffer public method to load data from JSON (for naming purposes)
-        :param key: type of config to reload
-        :param config_path: the path to the json, assuming already validated
-        """
-        if config_path is not None:  # this MUST be the case if it was loaded up via SetupMode.OLD
-            self.config_path = config_path
-            self.validate_path(config_path)
-
-        self.configs[key.value] = self.load(self.config_path)
-
-    def search_mode(self, mode: Type[Enum]):
+    def search_mode(self, mode: Type[Enum], key: Config):
         """
         :param mode: an Enum mode that is being searched. it MUST have variable config, which is the name
                      to search for in the masterX.json file
         :return: the Enum version of the mode that is specified by the master config
         """
 
-        return self.search_multi_mode(mode=mode, count=1)[0]
+        return self.search_multi_mode(key=key, mode=mode, count=1)[0]
 
-    def search_multi_mode(self, mode: Type[Enum] = None, modes: List[Type[Enum]] = None, count: int = None) -> list:
+    def search_multi_mode(self, key: Config, mode: Type[Enum] = None, modes: List[Type[Enum]] = None, count: int = None) -> list:
         """
-
+        :param key:
         :param mode:
         :param modes:
         :param count:
@@ -146,7 +140,7 @@ class Configurable:
 
         for mode in modes:
 
-            modes_in_config = self.search(ConfigKey.MASTER, 'modes', mode.config.value)
+            modes_in_config = self.search(key, 'modes', mode.config.value)
 
             if not isinstance(modes_in_config, list):
                 modes_in_config = [modes_in_config]
@@ -161,8 +155,6 @@ class Configurable:
                                 '\tsource:\tsrc.utils.Configurable.search_multi_mode'.format(len(list_results), count))
 
         return list_results
-
-
 
     @staticmethod
     def validate_path(config_path: str):

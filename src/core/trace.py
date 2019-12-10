@@ -379,7 +379,7 @@ class Trace(Exceptionable):
         # add column of z-values (should all be the same)
         points = np.append(points,  np.c_[self.points[:, 2]], axis=1)
 
-        return Trace(points, self.configs[ConfigKey.EXCEPTIONS.value])
+        return Trace(points, self.configs[Config.EXCEPTIONS.value])
 
     #%% output
     def plot(self, plot_format: str = 'k-'):

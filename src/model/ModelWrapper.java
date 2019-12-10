@@ -2,9 +2,11 @@ package model;
 
 import com.comsol.model.MeshFeature;
 import com.comsol.model.Model;
+import com.comsol.model.ModelParamGroup;
 import com.comsol.model.PropFeature;
 import com.comsol.model.physics.PhysicsFeature;
 import com.comsol.model.util.ModelUtil;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -30,6 +32,7 @@ public class ModelWrapper {
     public static final String ALL_NERVE_PARTS_UNION = "allNervePartsUnion";
     public static final String ENDO_UNION = "endoUnion";
     public static final String PERI_UNION = "periUnion";
+
     public static final String[] ALL_UNIONS = new String[]{
             ModelWrapper.ENDO_UNION,
             ModelWrapper.ALL_NERVE_PARTS_UNION,
@@ -175,14 +178,6 @@ public class ModelWrapper {
     }
 
     /**
-     * TODO: UNFINISHED
-     * Examples of parts: cuff, fascicle, etc.
-     * The method will automatically create required part primitives and pass the HashMap with their id's to model.Part
-     * @param name the name of the JSON configuration (same as unique indicator) for a given part
-     * @return success indicator (might remove this later)
-     */
-
-    /**
      * Create the required primitives for a given cuff json
      * @param name json filename WITH extension (i.e. "LivaNova.json")
      * @return success indicator
@@ -191,12 +186,12 @@ public class ModelWrapper {
         // extract data from json
         try {
             JSONObject data = new JSONReader(String.join("/",
-                    new String[]{this.root, ".templates", name})).getData();
+                    new String[]{this.root, "config", "system", "cuffs", name})).getData();
 
             // get the id for the next "par" (i.e. parameters section), and give it a name from the JSON file name
             String id = this.next("par", name);
             model.param().group().create(id);
-            model.param(id).label(name.split("\\.")[0]);
+            model.param(id).label(name.split("\\.")[0] + " Parameters");
 
             // loop through all parameters in file, and set in parameters
             for (Object item : (JSONArray) data.get("params")) {
@@ -242,14 +237,15 @@ public class ModelWrapper {
      * Instantiate required primitives for given cuff
      * NOTE: addCuffPartPrimitives() MUST be called first or there will be no primitives to instantiate
      * @param name same formatting as in addCuffPartPrimitives()
+     * @param modelData
      * @return success indicator
      */
-    public boolean addCuffPartInstances(String name) {
+    public boolean addCuffPartInstances(String name, JSONObject modelData) {
         // extract data from json
         // name is something like Enteromedics.json
         try {
             JSONObject data = new JSONReader(String.join("/",
-                    new String[]{this.root, ".templates", name})).getData();
+                    new String[]{this.root, "config", "system", "cuffs", name})).getData();
 
             // loop through all part instances
             for (Object item: (JSONArray) data.get("instances")) {
@@ -258,7 +254,7 @@ public class ModelWrapper {
                 String instanceLabel = (String) itemObject.get("label");
                 String instanceID = this.im.next("pi", instanceLabel);
                 String type = (String) itemObject.get("type");
-                Part.createCuffPartInstance(instanceID, instanceLabel, type , this, itemObject);
+                Part.createCuffPartInstance(instanceID, instanceLabel, type , this, itemObject, modelData);
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -273,14 +269,14 @@ public class ModelWrapper {
      * @param name same formatting as addCuffPartPrimitives
      * @return success indicator
      */
-    public boolean addCuffMaterialDefinitions(String name) {
+    public boolean addCuffMaterialDefinitions(JSONObject modelData, String name, ModelParamGroup materialParams) {
         // extract data from json
         try {
             JSONObject data = new JSONReader(String.join("/",
-                    new String[]{this.root, ".templates", name})).getData();
+                    new String[]{this.root, "config", "system", "cuffs", name})).getData();
 
-            JSONObject master = new JSONReader(String.join("/",
-                    new String[]{this.root, ".config", "master.json"})).getData();
+            JSONObject materials_config = new JSONReader(String.join("/",
+                    new String[]{this.root, "config", "system", "materials.json"})).getData();
 
             // for each material definition, create it (if not already existing)
             for (Object item: (JSONArray) data.get("instances")) {
@@ -288,7 +284,16 @@ public class ModelWrapper {
                 JSONArray materials = itemObject.getJSONArray("materials");
 
                 for(Object o: materials) {
-                    String materialName = ((JSONObject) o).getString("type");
+                    String materialName;
+
+                    if (((JSONObject) o).getString("info").equals("fill") ||
+                            ((JSONObject) o).getString("info").equals("recess")) { // if info is fill or recess
+                        materialName = modelData.getJSONObject("cuff").getJSONObject("fill").getString("material");
+
+                    } else {
+                        materialName = ((JSONObject) o).getString("type");
+
+                    }
 
                     // create the material definition if it has not already been created
                     if (! this.im.hasPseudonym(materialName)) {
@@ -297,7 +302,7 @@ public class ModelWrapper {
 
                         try {
                             // TRY to create the material definition (catch error if no existing implementation)
-                            Part.defineMaterial(materialID, materialName, master, this);
+                            Part.defineMaterial(materialID, materialName, materials_config, this, materialParams);
                         } catch (IllegalArgumentException e) {
                             e.printStackTrace();
                             return false;
@@ -317,28 +322,51 @@ public class ModelWrapper {
      * Create materials necessary for fascicles, nerve, surrounding media, etc. --- always called!
      * @return success indicator
      */
-    public boolean addBioMaterialDefinitions() {
+    public boolean addBioMaterialDefinitions(String sample, String model, ModelParamGroup materialParams) {
         // extract data from json
 
         try {
-            JSONObject master = new JSONReader(String.join("/",
-                    new String[]{this.root, ".config", "master.json"})).getData();
+            JSONObject sample_config = new JSONReader(String.join("/",
+                    new String[]{
+                            this.root,
+                            "samples",
+                            sample,
+                            "sample.json"
+            })).getData();
+
+            JSONObject model_config = new JSONReader(String.join("/",
+                    new String[]{
+                            this.root,
+                            "samples",
+                            sample,
+                            "models",
+                            model,
+                            "model.json"
+            })).getData();
+
+            JSONObject materials_config = new JSONReader(String.join("/",
+                    new String[]{
+                            this.root,
+                            "config",
+                            "system",
+                            "materials.json"
+            })).getData();
 
             // define medium based on the preset defined in the medium block in master.json
-            String mediumMaterial = ((JSONObject) master.get("medium")).getString("material");
+            String mediumMaterial = ((JSONObject) model_config.get("medium")).getString("material");
             String mediumMaterialID = this.im.next("mat", mediumMaterial);
-            Part.defineMaterial(mediumMaterialID, mediumMaterial, master, this);
+            Part.defineMaterial(mediumMaterialID, mediumMaterial, materials_config, this, materialParams);
 
-            String periMaterialID = this.im.next("mat", "perineurium_DC"); // todo for freq of interest
-            Part.defineMaterial(periMaterialID, "perineurium_DC", master, this);
+            String periMaterialID = this.im.next("mat", "perineurium"); // special case - frequency dependent impedance, attribute associated with model configuration
+            Part.defineMaterial(periMaterialID, "perineurium", model_config, this, materialParams);
 
             String endoMaterialID = this.im.next("mat", "endoneurium");
-            Part.defineMaterial(endoMaterialID, "endoneurium", master, this);
+            Part.defineMaterial(endoMaterialID, "endoneurium", materials_config, this, materialParams);
 
-            String nerveMode = (String) master.getJSONObject("modes").get("nerve");
+            String nerveMode = (String) sample_config.getJSONObject("modes").get("nerve");
             if (nerveMode.equals("PRESENT")) {
                 String epiMaterialID = this.im.next("mat", "epineurium");
-                Part.defineMaterial(epiMaterialID, "epineurium", master, this);
+                Part.defineMaterial(epiMaterialID, "epineurium", materials_config, this, materialParams);
             }
 
         } catch (FileNotFoundException e) {
@@ -384,43 +412,37 @@ public class ModelWrapper {
      * TODO: finish implementation of meshing in the Part class
      * @return success indicator
      */
-    public boolean addNerve() {
+    public boolean addNerve(String sample, ModelParamGroup nerveParams) {
 
         // define global nerve part names (MUST BE IDENTICAL IN Part)
         String[] fascicleTypes = new String[]{"FascicleCI", "FascicleMesh"};
 
         // Load configuration file
         try {
-            JSONObject master = new JSONReader(String.join("/", new String[]{
+            JSONObject sampleData = new JSONReader(String.join("/", new String[]{
                     this.root,
-                    ".config",
-                    "master.json"
-            })).getData();
-
-            JSONObject morphology_data = new JSONReader(String.join("/", new String[]{
-                    this.root,
-                    "data",
                     "samples",
-                    master.getString("sample"),
-                    "morphology.json"
+                    sample,
+                    "sample.json"
             })).getData();
 
             // Build path to fascicles
             String fasciclesPath = String.join("/", new String[]{
                     this.root,
-                    "data",
                     "samples",
-                    master.getString("sample"),
+                    sample,
+                    "slides",
                     "0", // these 0's are temporary (for 3d models will need to change)
                     "0",
-                    (String) ((JSONObject) master.get("modes")).get("write"),
+                    (String) ((JSONObject) sampleData.get("modes")).get("write"),
                     "fascicles"
             });
 
             // Add epineurium
-            String nerveMode = (String) master.getJSONObject("modes").get("nerve");
+            String nerveMode = (String) sampleData.getJSONObject("modes").get("nerve");
             if (nerveMode.equals("PRESENT")) {
-                Part.createNervePartInstance("Epineurium", 0, null, this, null, morphology_data, master);
+                Part.createNervePartInstance("Epineurium", 0,
+                        null, this, null, sampleData, nerveParams);
             }
 
             // Loop over all fascicle dirs
@@ -451,7 +473,7 @@ public class ModelWrapper {
                         String fascicleType = data.get("inners").length == 1 ? fascicleTypes[0] : fascicleTypes[1];
 
                         // hand off to Part to build instance of fascicle
-                        Part.createNervePartInstance(fascicleType, index, path, this, data, morphology_data, master);
+                        Part.createNervePartInstance(fascicleType, index, path, this, data, sampleData, nerveParams);
                     }
                 }
             }
@@ -512,8 +534,10 @@ public class ModelWrapper {
     public void createUnions() {
         for (String union: ModelWrapper.ALL_UNIONS) {
             String[] contributors = this.getUnionContributors(union);
+
             if (contributors.length > 0) {
                 model.component("comp1").geom("geom1").create(im.next("uni", union), "Union");
+
                 model.component("comp1").geom("geom1").feature(im.get(union)).set("keep", true);
                 model.component("comp1").geom("geom1").feature(im.get(union)).selection("input").set(contributors);
                 model.component("comp1").geom("geom1").feature(im.get(union)).label(union);
@@ -522,6 +546,7 @@ public class ModelWrapper {
                 model.component("comp1").geom("geom1").selection().create(im.next("csel",unionCselLabel), "CumulativeSelection");
                 model.component("comp1").geom("geom1").selection(im.get(unionCselLabel)).label(unionCselLabel);
                 model.component("comp1").geom("geom1").feature(im.get(union)).set("contributeto", im.get(unionCselLabel));
+
             }
         }
     }
@@ -530,190 +555,299 @@ public class ModelWrapper {
      * Master procedure to run!
      * @param args
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
 
         // Take projectPath input to ModelWrapper and assign to string.
         String projectPath = args[0];
 
-        // Load configuration data
-        String configFile = "/.config/master.json";
-        JSONObject master = null;
-        try {
-            master = new JSONReader(projectPath + configFile).getData();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        // Load morphology data
-        String morphologyFile = String.join("/", new String[]{
-                "data",
-                "samples",
-                master.getString("sample"),
-                "morphology.json"
-        });
-        JSONObject morphologyData = null;
-        try {
-            morphologyData = new JSONReader(projectPath + "/" + morphologyFile).getData();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        // Take runPath input to ModelWrapper and assign to string
+        String runPath = args[1];
 
         // Start COMSOL Instance
         ModelUtil.connect("localhost", 2036);
         ModelUtil.initStandalone(false);
 
-        // Define model object
-        Model model = ModelUtil.create("Model");
-        // Add component node 1
-        model.component().create("comp1", true);
-        // Add 3D geom to component node 1
-        model.component("comp1").geom().create("geom1", 3);
-        // Set default length units to micron
-        model.component("comp1").geom("geom1").lengthUnit("\u00b5m");
-        // Add materials node to component node 1
-        model.component("comp1").physics().create("ec", "ConductiveMedia", "geom1");
-        // and mesh node to component node 1
-        model.component("comp1").mesh().create("mesh1");
-        // Define ModelWrapper class instance for model and projectPath
-        ModelWrapper mw = new ModelWrapper(model, projectPath);
-
-        // Set generic parameters - todo these are for compound nerves, what about single fascicle???? -- CAN WE MOVE THIS
-        JSONObject nerve = (JSONObject) Objects.requireNonNull(morphologyData).get("Nerve");
-        model.param().set("a_nerve", nerve.get("area") + " [micrometer^2]");
-        model.param().set("r_nerve", "sqrt(a_nerve/pi)");
-        model.param().set("rho_peri", "1149 [ohm*m]"); // TODO
-
-        // Length of the FEM - will want to converge thresholds for this
-        double length = ((JSONObject) (Objects.requireNonNull(master != null ? master.get("medium") : null))).getDouble("length");
-        model.param().set("z_nerve", length);
-
-        // Radius of the FEM - will want to converge thresholds for this
-        double radius = ((JSONObject) master.get("medium")).getDouble("radius");
-        model.param().set("r_ground", radius);
-
-        // Create part primitive for FEM medium
-        String mediumString = "Medium_Primitive";
-        String partID = mw.im.next("part", mediumString);
+        // Load configuration data
+        JSONObject run = null;
         try {
-            IdentifierManager partPrimitiveIM = Part.createEnvironmentPartPrimitive(partID, mediumString, mw);
-            mw.partPrimitiveIMs.put(mediumString, partPrimitiveIM);
-        } catch (IllegalArgumentException e) {
+            run = new JSONReader(runPath).getData();
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
 
-        // Add biological material definitions
-        mw.addBioMaterialDefinitions();
+        String sample = String.valueOf(Objects.requireNonNull(run).getInt("sample"));
 
-        // Create part instance for FEM medium
-        String instanceLabel = "Medium";
-        String instanceID = mw.im.next("pi", instanceLabel);
+        // Load morphology data
+        String sampleFile = String.join("/", new String[]{
+                "samples",
+                sample,
+                "sample.json"
+        });
+
+        JSONObject sampleData = null;
         try {
-        Part.createEnvironmentPartInstance(instanceID, instanceLabel, mediumString, mw, master);
-        } catch (IllegalArgumentException e) {
+            sampleData = new JSONReader(projectPath + "/" + sampleFile).getData();
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
 
-        // Read cuffs to build from master.json (cuff.preset) which links to JSON containing instantiations of parts
-        JSONObject cuffObject = (JSONObject) master.get("cuff");
-        JSONArray cuffs = (JSONArray) cuffObject.get("preset");
+        JSONArray models_list = run.getJSONArray("models");
 
-        // Build cuffs
-        for (int i = 0; i < cuffs.length(); i++) {
-            // make list of cuffs in model
-            String cuff = cuffs.getString(i);
-            // add part primitives for cuff
-            mw.addCuffPartPrimitives(cuff);
-            // add material definitions for cuff
-            mw.addCuffMaterialDefinitions(cuff);
-            // add part instances for cuff
-            mw.addCuffPartInstances(cuff);
-        }
+        // loop models
+        for (int model_index = 0; model_index < models_list.length(); model_index++) {
+            System.out.println("Making model index: " + model_index);
+            String modelStr = String.valueOf(models_list.get(model_index));
 
-        // Add nerve
-        mw.addNerve();
-        // Create unions
-        mw.createUnions();
+            String modelFile = String.join("/", new String[]{
+                    "samples",
+                    sample,
+                    "models",
+                    modelStr,
+                    "model.json"
+            });
 
-        // Build the geometry
-        System.out.println("Building the FEM geometry.");
-        model.component("comp1").geom("geom1").run("fin");
+            JSONObject modelData = null;
+            try {
+                modelData = new JSONReader(projectPath + "/" + modelFile).getData();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
 
-        // Add materials
-        System.out.println("Assigning nerve parts material links.");
+            String materialsFile = String.join("/", new String[]{
+                    "config",
+                    "system",
+                    "materials.json"
+            });
 
-        // Add epineurium only if NerveMode == PRESENT
-        String nerveMode = (String) master.getJSONObject("modes").get("nerve");
-        if (nerveMode.equals("PRESENT")) {
-            String epineuriumMatLinkLabel = "epineurium material";
-            PropFeature epineuriumMatLink = model.component("comp1").material().create(mw.im.next("matlnk",epineuriumMatLinkLabel), "Link");
-            epineuriumMatLink.selection().named("geom1" +"_" + mw.im.get("EPINEURIUM") + "_dom");
-            epineuriumMatLink.label(epineuriumMatLinkLabel);
-            epineuriumMatLink.set("link", mw.im.get("epineurium"));
-        }
+            JSONObject materialsData = null;
+            try {
+                materialsData = new JSONReader(projectPath + "/" + materialsFile).getData();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
 
-        // Add perineurium material only if there are any fascicles being meshed
-        if (mw.im.get("periUnionCsel") != null) {
-            String perineuriumMatLinkLabel = "perineurium_DC material"; // TODO frequency dependence, only do this if there is an instance of the MESHFASCICLE
-            PropFeature perineuriumMatLink = model.component("comp1").material().create(mw.im.next("matlnk",perineuriumMatLinkLabel), "Link");
-            perineuriumMatLink.selection().named("geom1" +"_" + mw.im.get("periUnionCsel") + "_dom");
-            perineuriumMatLink.label(perineuriumMatLinkLabel);
-            perineuriumMatLink.set("link", mw.im.get("perineurium_DC"));
-        }
+            // Define model object
+            Model model = ModelUtil.create("Model");
+            // Add component node 1
+            model.component().create("comp1", true);
+            // Add 3D geom to component node 1
+            model.component("comp1").geom().create("geom1", 3);
+            // Set default length units to micron
+            model.component("comp1").geom("geom1").lengthUnit("\u00b5m");
+            // Add materials node to component node 1
+            model.component("comp1").physics().create("ec", "ConductiveMedia", "geom1");
+            // and mesh node to component node 1
+            model.component("comp1").mesh().create("mesh1");
 
-        // Will always need to add endoneurium material
-        String fascicleMatLinkLabel = "endoneurium material";
-        PropFeature fascicleMatLink = model.component("comp1").material().create(mw.im.next("matlnk",fascicleMatLinkLabel), "Link");
-        fascicleMatLink.selection().named("geom1" +"_" + mw.im.get("endoUnionCsel") + "_dom");
-        fascicleMatLink.label(fascicleMatLinkLabel);
-        fascicleMatLink.set("link", mw.im.get("endoneurium"));
+            // Define ModelWrapper class instance for model and projectPath
+            ModelWrapper mw = new ModelWrapper(model, projectPath);
 
-        try {
-            System.out.println("Saving the *.mph file before proceeding to mesh and solve.");
-            model.save("parts_test");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            // Set generic parameters
+            JSONObject morphology = (JSONObject) sampleData.get("Morphology");
+            String morphology_unit = ((JSONObject) sampleData.get("scale")).getString("scale_bar_unit");
 
-        // Define mesh for nerve
-        String meshNerveSweLabel = "Mesh Nerve";
-        MeshFeature meshNerve = model.component("comp1").mesh("mesh1").create(mw.im.next("swe",meshNerveSweLabel), "Sweep");
-        meshNerve.selection().geom("geom1", 3);
-        meshNerve.selection().named("geom1" + "_" + mw.im.get("allNervePartsUnionCsel") + "_dom");
-        model.component("comp1").mesh("mesh1").feature(mw.im.get(meshNerveSweLabel)).set("facemethod", "tri");
-        model.component("comp1").mesh("mesh1").feature("size").set("hauto", 1); // TODO load in mesh params from master
-        System.out.println("Meshing nerve parts... will take a while");
-        //model.component("comp1").mesh("mesh1").run(mw.im.get(meshNerveSweLabel)); // TODO
+            String nerveParamsLabal = "Nerve Parameters";
+            ModelParamGroup nerveParams = model.param().group().create(nerveParamsLabal);
+            nerveParams.label(nerveParamsLabal);
 
-        String meshRestFtetLabel = "Mesh Rest";
-        model.component("comp1").mesh("mesh1").create(mw.im.next("ftet",meshRestFtetLabel), "FreeTet");
-        model.component("comp1").mesh("mesh1").feature(mw.im.get(meshRestFtetLabel)).create("size1", "Size");
-        model.component("comp1").mesh("mesh1").feature(mw.im.get(meshRestFtetLabel)).feature("size1").set("hauto", 1);
-        System.out.println("Meshing the rest... will also take a while");
-        //model.component("comp1").mesh("mesh1").run(mw.im.get(meshRestFtetLabel)); // TODO
+            if (morphology.isNull("Nerve")) {
+                nerveParams.set("a_nerve", "NaN");
+                nerveParams.set("r_nerve", "NaN");
+            } else {
+                JSONObject nerve = (JSONObject) morphology.get("Nerve");
+                nerveParams.set("a_nerve", nerve.get("area") + " [" + morphology_unit + "^2]");
+                nerveParams.set("r_nerve", "sqrt(a_nerve/pi)");
+            }
 
-        // Solve
-        model.study().create("std1");
-        model.study("std1").setGenConv(true);
-        model.study("std1").create("stat", "Stationary");
-        model.study("std1").feature("stat").activate("ec", true);
-        // TODO Run
+            JSONObject CICoeffs = modelData.getJSONObject("ci_perineurium_thickness").getJSONObject("coefficients");
+            nerveParams.set("ci_a", CICoeffs.getDouble("a") + " [" + CICoeffs.getString("unit") + "/" + CICoeffs.getString("unit") + "]");
+            nerveParams.set("ci_b", CICoeffs.getDouble("b") + " [" + CICoeffs.getString("unit") + "]");
 
-        // Save
-        try {
-            System.out.println("Saving the solved *.mph file.");
-            model.save("parts_test");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            // Cuff positioning in the model
+            String cuffConformationParamsLabel = "Cuff Conformation Parameters";
+            ModelParamGroup cuffConformationParams = model.param().group().create(cuffConformationParamsLabel);
+            cuffConformationParams.label(cuffConformationParamsLabel);
 
-        // TODO, save time to process trace, build FEM Geometry, mesh, solve, extract potentials "TimeKeeper"
+            String cuff_shift_unit = modelData.getJSONObject("cuff").getJSONObject("shift").getString("unit");
+            String cuff_rot_unit = modelData.getJSONObject("cuff").getJSONObject("rotate").getString("unit");
+            Integer cuff_shift_x = modelData.getJSONObject("cuff").getJSONObject("shift").getInt("x");
+            Integer cuff_shift_y = modelData.getJSONObject("cuff").getJSONObject("shift").getInt("y");
+            Integer cuff_shift_z = modelData.getJSONObject("cuff").getJSONObject("shift").getInt("z");
+            Integer cuff_rot = modelData.getJSONObject("cuff").getJSONObject("rotate").getInt("ang");
 
-        mw.loopCurrents();
+            cuffConformationParams.set("cuff_shift_x", cuff_shift_x + " " + cuff_shift_unit);
+            cuffConformationParams.set("cuff_shift_y", cuff_shift_y + " " + cuff_shift_unit);
+            cuffConformationParams.set("cuff_shift_z", cuff_shift_z + " " + cuff_shift_unit);
+            cuffConformationParams.set("cuff_rot",  cuff_rot + " " + cuff_rot_unit);
 
-        try {
-            model.save("parts_test"); // TODO this dir needs to change
-        } catch (IOException e) {
-            e.printStackTrace();
+            String mediumParamsLabel = "Medium Parameters";
+            ModelParamGroup mediumParams = model.param().group().create(mediumParamsLabel);
+            mediumParams.label(mediumParamsLabel);
+
+            String bounds_unit = ((JSONObject) ((JSONObject) modelData.get("medium")).get("bounds")).getString("unit");
+
+            // Length of the FEM - will want to converge thresholds for this
+            double length = ((JSONObject) ((JSONObject) modelData.get("medium")).get("bounds")).getDouble("length");
+            mediumParams.set("z_nerve", length + " " + bounds_unit);
+
+            // Radius of the FEM - will want to converge thresholds for this
+            double radius = ((JSONObject) ((JSONObject) modelData.get("medium")).get("bounds")).getDouble("radius");
+            mediumParams.set("r_ground", radius + " " + bounds_unit);
+
+            // Perineurium conductivity
+            String materialParamsLabel = "Material Parameters";
+            ModelParamGroup materialParams = model.param().group().create(materialParamsLabel);
+            materialParams.label(materialParamsLabel);
+
+            String peri_sigma_unit = ((JSONObject) ((JSONObject) modelData.get("conductivities")).get("perineurium")).getString("unit");
+            double sigma_peri = ((JSONObject) ((JSONObject) modelData.get("conductivities")).get("perineurium")).getDouble("value");
+            materialParams.set("sigma_perineurium", sigma_peri + " " + peri_sigma_unit);
+
+            // Create part primitive for FEM medium
+            String mediumString = "Medium_Primitive";
+            String partID = mw.im.next("part", mediumString);
+            try {
+                IdentifierManager partPrimitiveIM = Part.createEnvironmentPartPrimitive(partID, mediumString, mw);
+                mw.partPrimitiveIMs.put(mediumString, partPrimitiveIM);
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            }
+
+            // Add biological material definitions
+            mw.addBioMaterialDefinitions(sample, modelStr, materialParams);
+
+            // Create part instance for FEM medium
+            String instanceLabel = "Medium";
+            String instanceID = mw.im.next("pi", instanceLabel);
+            try {
+                Part.createEnvironmentPartInstance(instanceID, instanceLabel, mediumString, mw, modelData);
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            }
+
+            // Read cuffs to build from master.json (cuff.preset) which links to JSON containing instantiations of parts
+            JSONObject cuffObject = (JSONObject) modelData.get("cuff");
+            JSONArray cuffs = (JSONArray) cuffObject.get("preset");
+
+            // Build cuffs
+            for (int i = 0; i < cuffs.length(); i++) {
+                // make list of cuffs in model
+                String cuff = cuffs.getString(i);
+                // add part primitives for cuff
+                mw.addCuffPartPrimitives(cuff);
+                // add material definitions for cuff
+                mw.addCuffMaterialDefinitions(modelData, cuff, materialParams);
+                // add part instances for cuff
+                mw.addCuffPartInstances(cuff, modelData);
+            }
+
+            // Add fill
+            String materialName = modelData.getJSONObject("cuff").getJSONObject("fill").getString("material");
+            // if doesnt exist
+            if (! mw.im.hasPseudonym(materialName)) {
+                String materialID = mw.im.next("mat", materialName);
+                Part.defineMaterial(materialID, materialName, materialsData, mw, materialParams);
+            }
+
+            // Add nerve
+            mw.addNerve(sample, nerveParams);
+            // Create unions
+            mw.createUnions();
+
+            // Build the geometry
+            System.out.println("Building the FEM geometry.");
+
+            model.component("comp1").geom("geom1").run("fin");
+
+            // Add materials
+            System.out.println("Assigning nerve parts material links.");
+
+            // Add epineurium only if NerveMode == PRESENT
+            String nerveMode = (String) Objects.requireNonNull(sampleData).getJSONObject("modes").get("nerve");
+            if (nerveMode.equals("PRESENT")) {
+                String epineuriumMatLinkLabel = "epineurium material";
+                PropFeature epineuriumMatLink = model.component("comp1").material().create(mw.im.next("matlnk",epineuriumMatLinkLabel), "Link");
+                epineuriumMatLink.selection().named("geom1" +"_" + mw.im.get("EPINEURIUM") + "_dom");
+                epineuriumMatLink.label(epineuriumMatLinkLabel);
+                epineuriumMatLink.set("link", mw.im.get("epineurium"));
+            }
+
+            // Add perineurium material only if there are any fascicles being meshed
+            if (mw.im.get("periUnionCsel") != null) {
+                String perineuriumMatLinkLabel = "perineurium material";
+                PropFeature perineuriumMatLink = model.component("comp1").material().create(mw.im.next("matlnk",perineuriumMatLinkLabel), "Link");
+                perineuriumMatLink.selection().named("geom1" +"_" + mw.im.get("periUnionCsel") + "_dom");
+                perineuriumMatLink.label(perineuriumMatLinkLabel);
+                perineuriumMatLink.set("link", mw.im.get("perineurium"));
+            }
+
+            // Will always need to add endoneurium material
+            String fascicleMatLinkLabel = "endoneurium material";
+            PropFeature fascicleMatLink = model.component("comp1").material().create(mw.im.next("matlnk",fascicleMatLinkLabel), "Link");
+            fascicleMatLink.selection().named("geom1" +"_" + mw.im.get("endoUnionCsel") + "_dom");
+            fascicleMatLink.label(fascicleMatLinkLabel);
+            fascicleMatLink.set("link", mw.im.get("endoneurium"));
+
+
+            // TODO: saving here!!
+            try {
+                System.out.println("Saving the *.mph file before proceeding to mesh and solve.");
+                model.save("parts_test");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            // Define mesh for nerve
+            String meshNerveSweLabel = "Mesh Nerve";
+            MeshFeature meshNerve = model.component("comp1").mesh("mesh1").create(mw.im.next("swe",meshNerveSweLabel), "Sweep");
+            meshNerve.selection().geom("geom1", 3);
+            meshNerve.selection().named("geom1" + "_" + mw.im.get("allNervePartsUnionCsel") + "_dom");
+            model.component("comp1").mesh("mesh1").feature(mw.im.get(meshNerveSweLabel)).set("facemethod", "tri");
+            model.component("comp1").mesh("mesh1").feature("size").set("hauto", 1); // TODO load in mesh params from model
+            System.out.println("Meshing nerve parts... will take a while");
+            //model.component("comp1").mesh("mesh1").run(mw.im.get(meshNerveSweLabel)); // TODO
+
+            String meshRestFtetLabel = "Mesh Rest";
+            model.component("comp1").mesh("mesh1").create(mw.im.next("ftet",meshRestFtetLabel), "FreeTet");
+            model.component("comp1").mesh("mesh1").feature(mw.im.get(meshRestFtetLabel)).create("size1", "Size");
+            model.component("comp1").mesh("mesh1").feature(mw.im.get(meshRestFtetLabel)).feature("size1").set("hauto", 1);
+            System.out.println("Meshing the rest... will also take a while");
+            //model.component("comp1").mesh("mesh1").run(mw.im.get(meshRestFtetLabel)); // TODO
+
+            // Solve
+            model.study().create("std1");
+            model.study("std1").setGenConv(true);
+            model.study("std1").create("stat", "Stationary");
+            model.study("std1").feature("stat").activate("ec", true);
+            // TODO Run
+
+            // Save
+            try {
+                System.out.println("Saving the solved *.mph file.");
+                model.save("parts_test");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            // TODO, save time to process trace, build FEM Geometry, mesh, solve, extract potentials "TimeKeeper"
+
+            mw.loopCurrents();
+
+            String mphFile = String.join("/", new String[]{
+                    projectPath,
+                    "samples",
+                    sample,
+                    "models",
+                    modelStr,
+                    "model.mph"
+            });
+
+            try {
+                System.out.println("Saving MPH file to: " + mphFile);
+                model.save(mphFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         ModelUtil.disconnect();

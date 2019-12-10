@@ -1,0 +1,205 @@
+{
+  "instances": [
+    {
+      "type": "CuffFill_Primitive",
+      "label": "Purdue Cuff Fill",
+      "def": {
+        "Radius": "R_out_P+Thk_fill_P",
+        "Thk": "Thk_fill_P",
+        "L": "L_P+2*Thk_fill_P",
+        "z_center": "Center_P"
+      },
+      "materials": [
+        {
+          "info": "fill",
+          "label_index": 0
+        }
+      ]
+    },
+    {
+      "type": "TubeCuff_Primitive",
+      "label": "Purdue Cuff",
+      "def": {
+        "N_holes": "N_holes_P",
+        "Theta": "Theta_P",
+        "Center": "Center_P",
+        "R_in": "R_in_P",
+        "R_out": "R_out_P",
+        "L": "L_P",
+        "Rot_def": "Rot_def_P",
+        "D_hole": "D_hole_P",
+        "Buffer_hole": "Buffer_hole_P",
+        "L_holecenter_cuffseam": "L_holecenter_cuffseam_P",
+        "Pitch_holecenter_holecenter": "Pitch_holecenter_holecenter_P",
+      },
+      "materials": [
+        {
+          "info": "insulator",
+          "type": "silicone",
+          "label_index": 2
+        }
+      ]
+    },
+    {
+      "type": "WireContact_Primitive",
+      "label": "Purdue Contact 1",
+      "def": {
+        "R_conductor": "r_conductor_P",
+        "R_in": "R_in_P",
+        "Center": "Center_P-(Pitch_P/2)",
+        "Pitch": "Pitch_P",
+        "Sep_conductor": "sep_conductor_P",
+        "Theta_conductor": "theta_conductor_P"
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "type": "platinum",
+          "label_index": 1
+        }
+      ]
+    },
+    {
+      "type": "WireContact_Primitive",
+      "label": "Purdue Contact 2",
+      "def": {
+        "R_conductor": "r_conductor_P",
+        "R_in": "R_in_P",
+        "Center": "Center_P+(Pitch_P/2)",
+        "Pitch": "Pitch_P",
+        "Sep_conductor": "sep_conductor_P",
+        "Theta_conductor": "theta_conductor_P"
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "type": "platinum",
+          "label_index": 1
+        }
+      ]
+    }
+  ],
+
+  "params": [
+    {
+      "name": "N_holes_P",
+      "expression": "0",
+      "description": ""
+    },
+    {
+      "name": "Theta_P",
+      "expression": "percent_circ_cuff_P*360 [deg]",
+      "description": ""
+    },
+    {
+      "name": "Center_P",
+      "expression": "z_nerve/2",
+      "description": ""
+    },
+    {
+      "name": "R_in_P",
+      "expression": "max(r_nerve+thk_medium_gap_internal_P+2*r_conductor_P+sep_conductor_P,r_cuff_in_pre_P)",
+      "description": ""
+    },
+    {
+      "name": "R_out_P",
+      "expression": "R_in_P+thk_cuff_P",
+      "description": ""
+    },
+    {
+      "name": "L_P",
+      "expression": "3.5 [mm]",
+      "description": ""
+    },
+    {
+      "name": "Rot_def_P",
+      "expression": "-((theta_cuff_P-theta_conductor_P)/2)",
+      "description": ""
+    },
+    {
+      "name": "D_hole_P",
+      "expression": "NaN",
+      "description": ""
+    },
+    {
+      "name": "Buffer_hole_P",
+      "expression": "NaN",
+      "description": ""
+    },
+    {
+      "name": "L_holecenter_cuffseam_P",
+      "expression": "NaN",
+      "description": ""
+    },
+    {
+      "name": "Pitch_holecenter_holecenter_P",
+      "expression": "NaN",
+      "description": ""
+    },
+    {
+      "name": "percent_circ_cuff_P",
+      "expression": "percent_circ_cuff_pre_P*(r_cuff_in_pre_P/R_in_P)",
+      "description": ""
+    },
+    {
+      "name": "percent_circ_cuff_pre_P",
+      "expression": "1",
+      "description": ""
+    },
+    {
+      "name": "r_cuff_in_pre_P",
+      "expression": "317.5 [um]",
+      "description": ""
+    },
+    {
+      "name": "thk_medium_gap_internal_P",
+      "expression": "0",
+      "description": ""
+    },
+    {
+      "name": "r_conductor_P",
+      "expression": "37.5 [um]",
+      "description": ""
+    },
+    {
+      "name": "sep_conductor_P",
+      "expression": "10 [um]",
+      "description": ""
+    },
+    {
+      "name": "thk_cuff_P",
+      "expression": "0.279 [mm]",
+      "description": ""
+    },
+    {
+      "name": "theta_cuff_P",
+      "expression": "percent_circ_cuff_P*360 [deg]",
+      "description": ""
+    },
+    {
+      "name": "theta_conductor_P",
+      "expression": "percent_circ_conductor_P*360 [deg]",
+      "description": ""
+    },
+    {
+      "name": "percent_circ_conductor_pre_P",
+      "expression": "0.8",
+      "description": ""
+    },
+    {
+      "name": "percent_circ_conductor_P",
+      "expression": "percent_circ_conductor_pre_P*((r_cuff_in_pre_P-sep_conductor_P-2*r_conductor_P)/(R_in_P-sep_conductor_P-2*r_conductor_P))",
+      "description": ""
+    },
+    {
+      "name": "Pitch_P",
+      "expression": "1.5 [mm]",
+      "description": ""
+    },
+    {
+      "name": "Thk_fill_P",
+      "expression": "100 [um]",
+      "description": ""
+    }
+  ]
+}

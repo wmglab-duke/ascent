@@ -137,3 +137,4 @@ data/samples
 *.mph*
 *.class*
 out/
+/config/system/env.json

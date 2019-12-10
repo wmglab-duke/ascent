@@ -1,0 +1,181 @@
+{
+  "instances": [
+    {
+      "type": "CuffFill_Primitive",
+      "label": "Enteromedics Cuff Fill",
+      "def": {
+        "Radius": "R_out_EM+Thk_fill_EM",
+        "Thk": "Thk_fill_EM",
+        "L": "L_EM+2*Thk_fill_EM",
+        "z_center": "Center_EM"
+      },
+      "materials": [
+        {
+          "info": "fill",
+          "label_index": 0
+        }
+      ]
+    },
+    {
+      "type": "TubeCuff_Primitive",
+      "label": "Enteromedics Cuff",
+      "def": {
+        "N_holes": "N_holes_EM",
+        "Theta": "Theta_EM",
+        "Center": "Center_EM",
+        "R_in": "R_in_EM",
+        "R_out": "R_out_EM",
+        "L": "L_EM",
+        "Rot_def": "Rot_def_EM",
+        "D_hole": "D_hole_EM",
+        "Buffer_hole": "Buffer_hole_EM",
+        "L_holecenter_cuffseam": "L_holecenter_cuffseam_EM",
+        "Pitch_holecenter_holecenter": "Pitch_holecenter_holecenter_EM"
+      },
+      "materials": [
+        {
+          "info": "insulator",
+          "type": "silicone",
+          "label_index": 2
+        }
+      ]
+    },
+    {
+      "type": "RibbonContact_Primitive",
+      "label": "Enteromedics Contact 1",
+      "def": {
+        "Thk_elec": "Thk_elec_EM",
+        "L_elec": "L_elec_EM",
+        "R_in": "R_in_EM",
+        "Recess": "Recess_EM",
+        "Center": "Center_EM",
+        "Theta_contact": "Theta_contact_EM",
+        "Rot_def": "0 [deg]"
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "type": "platinum",
+          "label_index": 3
+        },
+        {
+          "info": "recess",
+          "label_index": 4
+        }
+      ]
+    }
+  ],
+
+  "params": [
+    {
+      "name": "N_holes_EM",
+      "expression": "0",
+      "description": "number of holes"
+    },
+    {
+      "name": "Theta_EM",
+      "expression": "Theta_contact_EM+((2*(360*arc_ext_EM)/(2*pi*R_in_EM)) [deg])",
+      "description": "test"
+    },
+    {
+      "name": "Center_EM",
+      "expression": "z_nerve/2",
+      "description": ""
+    },
+    {
+      "name": "R_in_EM",
+      "expression": "max(r_nerve+thk_medium_gap_internal_EM,r_cuff_in_pre_EM)",
+      "description": ""
+    },
+    {
+      "name": "R_out_EM",
+      "expression": "R_in_EM+thk_cuff_EM",
+      "description": ""
+    },
+    {
+      "name": "L_EM",
+      "expression": "3*L_elec_EM",
+      "description": ""
+    },
+    {
+      "name": "Rot_def_EM",
+      "expression": "-(360*arc_ext_EM)/(2*pi*R_in_EM)",
+      "description": ""
+    },
+    {
+      "name": "D_hole_EM",
+      "expression": "NaN",
+      "description": ""
+    },
+    {
+      "name": "Buffer_hole_EM",
+      "expression": "NaN",
+      "description": ""
+    },
+    {
+      "name": "L_holecenter_cuffseam_EM",
+      "expression": "NaN",
+      "description": ""
+    },
+    {
+      "name": "Pitch_holecenter_holecenter_EM",
+      "expression": "NaN",
+      "description": ""
+    },
+    {
+      "name": "thk_medium_gap_internal_EM",
+      "expression": "0 [mm]",
+      "description": ""
+    },
+    {
+      "name": "r_cuff_in_pre_EM",
+      "expression": "1.651 [mm]",
+      "description": ""
+    },
+    {
+      "name": "thk_cuff_EM",
+      "expression": "1 [mm]",
+      "description": ""
+    },
+    {
+      "name": "L_elec_EM",
+      "expression": "1.397 [mm]",
+      "description": ""
+    },
+    {
+      "name": "arc_ext_EM",
+      "expression": "0.5 [mm]",
+      "description": ""
+    },
+    {
+      "name": "theta_contact_pre_EM",
+      "expression": "256.4287 [deg]",
+      "description": ""
+    },
+    {
+      "name": "Theta_contact_EM",
+      "expression": "theta_contact_pre_EM*(r_cuff_in_pre_EM/R_in_EM)",
+      "description": ""
+    },
+    {
+      "name": "z_nerve_EM",
+      "expression": "20 [mm]",
+      "description": ""
+    },
+    {
+      "name": "Thk_elec_EM",
+      "expression": "0.1 [mm]",
+      "description": ""
+    },
+    {
+      "name": "Recess_EM",
+      "expression": "0 [mm]",
+      "description": ""
+    },
+    {
+      "name": "Thk_fill_EM",
+      "expression": "100 [um]",
+      "description": ""
+    }
+  ]
+}

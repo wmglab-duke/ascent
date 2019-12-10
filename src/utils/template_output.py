@@ -2,7 +2,7 @@ import json
 import os
 from typing import Union
 
-from src.utils import Configurable, ConfigKey
+from src.utils import Configurable, Config
 from .enums import TemplateMode
 
 
@@ -15,10 +15,6 @@ class TemplateOutput:
             return json.load(handle)
 
     @staticmethod
-    def write(data: Union[list, dict], mode: TemplateMode, configurable: Configurable):
-        path = os.path.join(configurable.path(ConfigKey.MASTER, 'samples_path'),
-                            configurable.search(ConfigKey.MASTER, 'sample'),
-                            mode.value)
-
-        with open(path, "w") as handle:
+    def write(data: Union[list, dict], dest_path):
+        with open(dest_path, "w") as handle:
             handle.write(json.dumps(data, indent=2))

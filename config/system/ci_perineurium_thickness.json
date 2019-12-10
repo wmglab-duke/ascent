@@ -1,0 +1,14 @@
+{
+  "ci_perineurium_thickness": {
+    "PIG_INHOUSE": {
+      "unit": "micrometer",
+      "a": 0.015706,
+      "b": 5.1028
+    },
+    "GRINBERG_2008": {
+      "unit": "micrometer",
+      "a": 0.03,
+      "b": 0
+    }
+  }
+}

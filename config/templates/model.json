@@ -1,0 +1,57 @@
+{
+  "mesh": {
+    "tbd": true
+  },
+  "modes": {
+    "fiber_z": "EXTRUSION",
+    "ci_perineurium_thickness": "PIG_INHOUSE"
+  },
+  "medium": {
+    "bounds": {
+      "unit": "[micrometer]",
+      "length": 50000.0,
+      "radius": 10000.0
+    },
+    "material": "fat"
+  },
+  "cuff": {
+    "preset": [
+      "Enteromedics.json"
+    ],
+    "shift": {
+      "unit": "[micrometer]",
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "rotate": {
+      "unit": "[degree]",
+      "ang": 0
+    },
+    "fill": {
+      "material": "saline"
+    }
+  },
+  "frequency": {
+    "unit": "Hz",
+    "value": 1
+  },
+  "temperature": {
+    "unit": "celsius",
+    "value": 37
+  },
+  "conductivities": {
+    "perineurium": {
+      "unit": "[S/m]",
+      "value": "1/1149"
+    }
+  },
+  "ci_perineurium_thickness": {
+    "coefficients": {
+      "unit": true,
+      "a": true,
+      "b": true
+    }
+  },
+  "n_srcs": 0
+}

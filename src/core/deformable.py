@@ -10,7 +10,7 @@ from shapely.geometry import LineString, Point
 
 # access
 from src.core import Trace, Slide
-from src.utils import Exceptionable, SetupMode, ReshapeNerveMode, ConfigKey
+from src.utils import Exceptionable, SetupMode, ReshapeNerveMode, Config
 
 
 class Deformable(Exceptionable):
@@ -46,8 +46,6 @@ class Deformable(Exceptionable):
         :param minimum_distance: separation between original inputs
         :return: tuple of a list of total movement vectors and total angle rotated for each fascicle
         """
-
-        # TODO: convergence studies of morph count and morph_index_step
 
         # copy the "contents" so multiple deformations are possible
         contents = [trace.deepcopy() for trace in self.contents]
@@ -248,7 +246,7 @@ class Deformable(Exceptionable):
         contents = [fascicle.outer.deepcopy() for fascicle in slide.fascicles]
 
         # exception configuration data
-        exception_config_data = slide.configs[ConfigKey.EXCEPTIONS.value]
+        exception_config_data = slide.configs[Config.EXCEPTIONS.value]
 
         # return new object
         return Deformable(exception_config_data, boundary_start, boundary_end, contents)
