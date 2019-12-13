@@ -51,9 +51,7 @@
       "dt_initSS": 10
     },
     "MONOPHASIC_PULSE_TRAIN": {
-      "pulse_width": [
-        0.1
-      ],
+      "pulse_width": [0.1],
       "digits": 1
     },
     "SINUSOID": {
@@ -63,12 +61,8 @@
       "digits": 1
     },
     "BIPHASIC_PULSE_TRAIN": {
-      "pulse_width": [
-        0.1
-      ],
-      "inter_phase": [
-        1
-      ],
+      "pulse_width": [0.1],
+      "inter_phase": [1],
       "digits": 1
     }
   },
