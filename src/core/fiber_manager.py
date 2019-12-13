@@ -287,7 +287,7 @@ class FiberManager(Exceptionable, Configurable, Saveable):
         if fiber_z_mode == FiberZMode.EXTRUSION:
 
             # get the correct fiber lengths
-            fiber_length = self.search(Config.MODEL, 'medium', 'bounds', 'length')
+            fiber_length = self.search(Config.MODEL, 'medium', 'bounds', 'length')  # TODO - want this to be separate for model (model config) and for fiber (sim config)
             half_fiber_length = fiber_length / 2
 
             # search for all myelination modes (length of this corresponds to length of total modes looped through)
