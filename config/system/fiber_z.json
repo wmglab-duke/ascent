@@ -73,27 +73,19 @@
     "UNMYELINATED": {
       "SUNDT": {
         "units": "micrometer",
-        "delta_zs": [
-          8.333
-        ]
+        "delta_z": 8.333
       },
       "TIGERHOLM": {
         "units": "micrometer",
-        "delta_zs": [
-          8.333
-        ]
+        "delta_z": 8.333
       },
       "RATTAY": {
         "units": "micrometer",
-        "delta_zs": [
-          8.333
-        ]
+        "delta_z": 8.333
       },
       "SCHILD": {
         "units": "micrometer",
-        "delta_zs": [
-          8.333
-        ]
+        "delta_z": 8.333
       }
     }
   }
