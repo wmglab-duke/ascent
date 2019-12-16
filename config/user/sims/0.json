@@ -3,7 +3,7 @@
     "fiber_xy": "CENTROID",
     "z_offset": "UNIFORM",
     "myel": ["MYELINATED"],
-    "myel_fiber": ["MRG_INTERPOLATION"],
+    "myel_fiber": ["MRG"],
     "fiberD": [3],
     "node_channels": true,
     "passive_end_nodes": true,
