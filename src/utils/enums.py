@@ -145,6 +145,7 @@ class MyelinatedFiberType(Enum):
     NONE = None
     MRG = 0
     B_FIBER = 1
+    MRG_INTERPOLATION = 2
 
 
 @unique

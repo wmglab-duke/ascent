@@ -4,6 +4,7 @@
     "z_offset": "UNIFORM",
     "myel": ["MYELINATED"],
     "myel_fiber": ["MRG"],
+    "fiberD": [3],
     "node_channels": true,
     "passive_end_nodes": true,
     "unmyel_fiber": [],
@@ -50,9 +51,7 @@
       "dt_initSS": 10
     },
     "MONOPHASIC_PULSE_TRAIN": {
-      "pulse_width": [
-        0.1
-      ],
+      "pulse_width": [0.1],
       "digits": 1
     },
     "SINUSOID": {
@@ -62,12 +61,8 @@
       "digits": 1
     },
     "BIPHASIC_PULSE_TRAIN": {
-      "pulse_width": [
-        0.1
-      ],
-      "inter_phase": [
-        1
-      ],
+      "pulse_width": [0.1],
+      "inter_phase": [1],
       "digits": 1
     }
   },

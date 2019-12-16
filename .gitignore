@@ -138,4 +138,5 @@ samples/
 *.mph*
 *.class*
 out/
+*env.json
 
