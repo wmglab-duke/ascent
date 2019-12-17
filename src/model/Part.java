@@ -1519,13 +1519,25 @@ class Part {
      * @param config JSON data from master.json
      * @param mw the ModelWrapper to act upon
      */
-    public static void defineMaterial(String materialID, String materialName, JSONObject config, ModelWrapper mw, ModelParamGroup materialParams) {
+    public static void defineMaterial(String materialID, String materialName, JSONObject modelData, JSONObject config, ModelWrapper mw, ModelParamGroup materialParams) {
 
         Model model = mw.getModel();
         model.material().create(materialID, "Common", "");
         model.material(materialID).label(materialName);
 
-        JSONObject sigma = config.getJSONObject("conductivities").getJSONObject(materialName);
+        JSONObject sigma;
+
+        // if the material is defined explicitly in the model.json file, then the program will use the value stored in
+        // model.json, otherwise it will use the conductivity value stored in the materials.json file. This ties material
+        // parameters used to a specific model.
+        if (!modelData.getJSONObject("conductivities").has(materialName)) {
+            sigma = config.getJSONObject("conductivities").getJSONObject(materialName);
+
+        } else {
+            sigma = modelData.getJSONObject("conductivities").getJSONObject(materialName);
+
+        }
+
         String entry = sigma.getString("value");
         String unit = sigma.getString("unit");
 

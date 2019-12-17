@@ -302,7 +302,7 @@ public class ModelWrapper {
 
                         try {
                             // TRY to create the material definition (catch error if no existing implementation)
-                            Part.defineMaterial(materialID, materialName, materials_config, this, materialParams);
+                            Part.defineMaterial(materialID, materialName, modelData, materials_config, this, materialParams);
                         } catch (IllegalArgumentException e) {
                             e.printStackTrace();
                             return false;
@@ -355,18 +355,18 @@ public class ModelWrapper {
             // define medium based on the preset defined in the medium block in master.json
             String mediumMaterial = ((JSONObject) model_config.get("medium")).getString("material");
             String mediumMaterialID = this.im.next("mat", mediumMaterial);
-            Part.defineMaterial(mediumMaterialID, mediumMaterial, materials_config, this, materialParams);
+            Part.defineMaterial(mediumMaterialID, mediumMaterial, model_config, materials_config, this, materialParams);
 
             String periMaterialID = this.im.next("mat", "perineurium"); // special case - frequency dependent impedance, attribute associated with model configuration
-            Part.defineMaterial(periMaterialID, "perineurium", model_config, this, materialParams);
+            Part.defineMaterial(periMaterialID, "perineurium", model_config, materials_config, this, materialParams);
 
             String endoMaterialID = this.im.next("mat", "endoneurium");
-            Part.defineMaterial(endoMaterialID, "endoneurium", materials_config, this, materialParams);
+            Part.defineMaterial(endoMaterialID, "endoneurium", model_config, materials_config, this, materialParams);
 
             String nerveMode = (String) sample_config.getJSONObject("modes").get("nerve");
             if (nerveMode.equals("PRESENT")) {
                 String epiMaterialID = this.im.next("mat", "epineurium");
-                Part.defineMaterial(epiMaterialID, "epineurium", materials_config, this, materialParams);
+                Part.defineMaterial(epiMaterialID, "epineurium", model_config, materials_config, this, materialParams);
             }
 
         } catch (FileNotFoundException e) {
@@ -746,7 +746,7 @@ public class ModelWrapper {
             // if doesnt exist
             if (! mw.im.hasPseudonym(materialName)) {
                 String materialID = mw.im.next("mat", materialName);
-                Part.defineMaterial(materialID, materialName, materialsData, mw, materialParams);
+                Part.defineMaterial(materialID, materialName, modelData, materialsData, mw, materialParams);
             }
 
             // Add nerve
