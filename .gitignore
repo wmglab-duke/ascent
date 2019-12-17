@@ -128,9 +128,6 @@ dmypy.json
 # PyCharm specific
 .idea/
 
-# User-specific machine settings
-config/system/env*
-
 # don't include data b/c this may get pretty big at some point
 samples/
 #samples
