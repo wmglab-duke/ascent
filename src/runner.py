@@ -146,10 +146,6 @@ class Runner(Exceptionable, Configurable):
                 # init fiber manager
                 fiber_manager = FiberManager(slide_manager, self.configs[Config.EXCEPTIONS.value])
 
-                print(str(self.configs[Config.RUN.value]['sample']))
-                print(str(self.configs[Config.RUN.value]['models'][model_index]))
-                print(str(self.configs[Config.RUN.value]['sims'][sim_index]))
-
                 # run processes with fiber manager (see class for details)
                 fiber_manager\
                     .add(SetupMode.OLD, Config.MODEL, all_configs[Config.MODEL.value][model_index])\

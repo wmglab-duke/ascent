@@ -323,7 +323,8 @@ class FiberManager(Exceptionable, Configurable, Saveable):
                             paranodal_length_2s = (self.search(Config.FIBER_Z,
                                                                MyelinationMode.parameters.value,
                                                                str(fiber_mode),
-                                                               key) for key in
+                                                               key)
+                                                   for key in
                                                    ['node_length',
                                                     'paranodal_length_1',
                                                     'diameters',
@@ -339,14 +340,28 @@ class FiberManager(Exceptionable, Configurable, Saveable):
                             deltax, \
                             inter_length \
                             = (self.search(Config.FIBER_Z,
-                                           MyelinationMode.parameters.value, str(fiber_mode), key) for key in
+                                           MyelinationMode.parameters.value,
+                                           str(fiber_mode),
+                                           key)
+                               for key in
                                ['node_length',
                                 'paranodal_length_1',
                                 'paranodal_length_2',
                                 'deltax',
                                 'inter_length'])
 
-                        print(deltax)
+                        fiberDs = fiber["diameters"]
+
+                        for fiberD in fiberDs:
+                            print("fiberD: " + str(fiberD))
+                            paranodal_length_2 = eval(paranodal_length_2)
+                            # inter_length = eval(inter_length)
+                            deltax = 1
+
+                            print('lolz')
+                            print(paranodal_length_2)
+                            print(eval(inter_length))
+
 
                     # self.fiber_metadata['subsets'].append(subset)
 
