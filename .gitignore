@@ -129,7 +129,7 @@ dmypy.json
 .idea/
 
 # don't include data b/c this may get pretty big at some point
-#samples/
+samples/
 #samples
 *r.tif
 *.mph*
