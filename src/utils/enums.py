@@ -143,7 +143,7 @@ class MyelinatedFiberType(Enum):
     config = 'myel_fiber'
 
     NONE = None
-    MRG = 0
+    MRG_DISCRETE = 0
     B_FIBER = 1
     MRG_INTERPOLATION = 2
 

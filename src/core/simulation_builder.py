@@ -54,14 +54,14 @@ class SimulationBuilder(Exceptionable, Configurable, Saveable):
         elif myel_modes[0] == MyelinationMode.MYELINATED:
             print("here2")
             fiber_type = 2
-            if myel_fiber_modes[0] == MyelinatedFiberType.MRG:
-                fiber_type_str = "MRG"
+            if myel_fiber_modes[0] == MyelinatedFiberType.MRG_DISCRETE:
+                fiber_type_str = "MRG_DISCRETE"
             elif myel_fiber_modes[0] == MyelinatedFiberType.MRG_INTERPOLATION:
                 fiber_type_str = "MRGInterp"
             elif myel_fiber_modes[0] == MyelinatedFiberType.B_FIBER:
                 fiber_type_str = "B"
 
-        print(fiber_type) 
+        print(fiber_type)
         print("here")
         file_object.write("fiber_type = %0.0f "
                           "// fiber_type = 1 for unmyelinated; fiber_type = 2 for myelinated; "

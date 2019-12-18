@@ -1,7 +1,7 @@
 {
   "fiber_type_parameters": {
     "unit": "micrometers",
-    "MRG": {
+    "MRG_DISCRETE": {
       "units": "micrometer",
       "myelinated": true,
       "sampling": "discrete",
