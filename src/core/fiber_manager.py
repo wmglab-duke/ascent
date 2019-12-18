@@ -320,16 +320,17 @@ class FiberManager(Exceptionable, Configurable, Saveable):
                             paranodal_length_1,\
                             diameters,\
                             delta_zs,\
-                            paranodal_length_2s = (self.search(Config.FIBER_Z,
-                                                               MyelinationMode.parameters.value,
-                                                               str(fiber_mode),
-                                                               key)
-                                                   for key in
-                                                   ['node_length',
-                                                    'paranodal_length_1',
-                                                    'diameters',
-                                                    'delta_zs',
-                                                    'paranodal_length_2s'])
+                            paranodal_length_2s \
+                            = (self.search(Config.FIBER_Z,
+                                           MyelinationMode.parameters.value,
+                                           str(fiber_mode),
+                                           key)
+                               for key in
+                               ['node_length',
+                                'paranodal_length_1',
+                                'diameters',
+                                'delta_zs',
+                                'paranodal_length_2s'])
 
                     elif sampling_mode == MyelinatedSamplingType.INTERPOLATION.value:
                         print("inside interp")
