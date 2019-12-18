@@ -289,39 +289,51 @@ class FiberManager(Exceptionable, Configurable, Saveable):
             fiber_length = self.search(Config.MODEL, 'medium', 'bounds', 'length')  # TODO - want this to be separate for model (model config) and for fiber (sim config)
             half_fiber_length = fiber_length / 2
 
-            print(Config.SIM.value)
             fibers = self.search(Config.SIM, "fibers")
-            print(Config.SIM)
-            print("fibers")
-            print(fibers)
 
             # init first dimension
             fiber_mode_dimension = []
             # loop through paired fiber mode and myelination modes
-            for fiber_mode, myelination_mode in zip(fiber_modes, myelination_modes):
+            for fiber in fibers:
+                fiber_mode = fiber["type"]
+
+                # use key from above to get myelination mode from fiber_z
+                myelination_mode = self.search(Config.FIBER_Z,
+                                               MyelinationMode.parameters.value,
+                                               fiber_mode,
+                                               "myelinated")
+
+                sampling_mode = self.search(Config.FIBER_Z,
+                                            MyelinationMode.parameters.value,
+                                            fiber_mode,
+                                            "sampling")
 
                 self.fiber_metadata['fiber_types'].append(fiber_mode)
 
-                fiber_mode_search_params = [MyelinationMode.parameters.value,
-                                            *[str(m).split('.')[-1] for m in (myelination_mode, fiber_mode)]]
-
-                if myelination_mode == MyelinationMode.MYELINATED:
+                if myelination_mode:  # MYELINATED
 
                     # load in all the required specifications for finding myelinated z coordinates
-                    subset, \
-                        node_length,\
-                        paranodal_length_1,\
-                        diameters,\
-                        delta_zs,\
-                        paranodal_length_2s = (self.search(Config.FIBER_Z, *fiber_mode_search_params, key) for key in
-                                               ['subset',
-                                                'node_length',
-                                                'paranodal_length_1',
-                                                'diameters',
-                                                'delta_zs',
-                                                'paranodal_length_2s'])
+                    if sampling_mode == MyelinatedSamplingType.DISCRETE:
+                        print("inside discrete")
 
-                    self.fiber_metadata['subsets'].append(subset)
+                        node_length,\
+                            paranodal_length_1,\
+                            diameters,\
+                            delta_zs,\
+                            paranodal_length_2s = (self.search(Config.FIBER_Z,
+                                                               MyelinationMode.parameters.value,
+                                                               str(fiber_mode),
+                                                               key) for key in
+                                                   ['node_length',
+                                                    'paranodal_length_1',
+                                                    'diameters',
+                                                    'delta_zs',
+                                                    'paranodal_length_2s'])
+
+                    elif sampling_mode == MyelinatedSamplingType.INTERPOLATION:
+                        print("inside interp")
+
+                    # self.fiber_metadata['subsets'].append(subset)
 
                     # init next dimension
                     subsets_dimension = []

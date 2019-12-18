@@ -149,6 +149,13 @@ class MyelinatedFiberType(Enum):
 
 
 @unique
+class MyelinatedSamplingType(Enum):
+
+    DISCRETE = "discrete"
+    INTERPOLATION = "interp"
+
+
+@unique
 class UnmyelinatedFiberType(Enum):
     config = 'unmyel_fiber'
 

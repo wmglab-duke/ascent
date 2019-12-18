@@ -10,7 +10,6 @@
     {
       "type": "MRG_DISCRETE",
       "units": "micrometer",
-      "myelinated": true,
       "diameters": [1, 2, 5.7],
       "min": [0.0, 0.0, 0.0],
       "max": [50000.0, 50000.0, 50000.0],
@@ -19,7 +18,6 @@
     {
       "type": "MRG_INTERPOLATION",
       "units": "micrometer",
-      "myelinated": true,
       "diameters": [2, 4, 6],
       "min": [0.0, 0.0, 0.0],
       "max": [50000.0, 50000.0, 50000.0],
@@ -28,7 +26,6 @@
     {
       "type": "B",
       "units": "micrometer",
-      "myelinated": true,
       "diameters": [1, 2],
       "min": [0.0, 0.0],
       "max": [50000.0, 50000.0],
@@ -37,7 +34,6 @@
     {
       "type": "TIGERHOLM",
       "units": "micrometer",
-      "myelinated": false,
       "dxs": [0.1, 0.2],
       "min": [0.0, 0.0],
       "max": [50000.0, 50000.0],
