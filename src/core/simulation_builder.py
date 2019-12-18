@@ -61,7 +61,7 @@ class SimulationBuilder(Exceptionable, Configurable, Saveable):
             elif myel_fiber_modes[0] == MyelinatedFiberType.B_FIBER:
                 fiber_type_str = "B"
 
-        print(fiber_type)
+        print(fiber_type) 
         print("here")
         file_object.write("fiber_type = %0.0f "
                           "// fiber_type = 1 for unmyelinated; fiber_type = 2 for myelinated; "
