@@ -57,7 +57,7 @@ class SimulationBuilder(Exceptionable, Configurable, Saveable):
             if myel_fiber_modes[0] == MyelinatedFiberType.MRG_DISCRETE:
                 fiber_type_str = "MRG_DISCRETE"
             elif myel_fiber_modes[0] == MyelinatedFiberType.MRG_INTERPOLATION:
-                fiber_type_str = "MRGInterp"
+                fiber_type_str = "MRG_INTERP"
             elif myel_fiber_modes[0] == MyelinatedFiberType.B_FIBER:
                 fiber_type_str = "B"
 
