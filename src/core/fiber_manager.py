@@ -42,7 +42,7 @@ class FiberManager(Exceptionable, Configurable, Saveable):
         self.add(SetupMode.NEW, Config.FIBER_Z, os.path.join('config', 'system', 'fiber_z.json'))
 
     def fiber_xy_coordinates(self, plot: bool = False, save: bool = False, buffer: float = 5.0)\
-            -> 'FiberManager': # -> List[List[List[tuple]]]:
+            -> 'FiberManager':  # -> List[List[List[tuple]]]:
         """
         :return: tuple containing two lists of tuples,
                     1) first list of tuples is points [(x, y)]

@@ -21,6 +21,7 @@ import sys
 import subprocess
 
 # access
+from src.core.simulation_builder import SimulationBuilder
 from src.core.waveform import Waveform
 from src.core import *
 from src.utils import *
@@ -158,6 +159,15 @@ class Runner(Exceptionable, Configurable):
                                        'sims',
                                        str(self.configs[Config.RUN.value]['sims'][sim_index]),
                                        'sim.obj'))
+
+                simulation_builder = SimulationBuilder(self.configs[Config.EXCEPTIONS.value])
+                simulation_builder\
+                    .add(SetupMode.OLD, Config.MODEL, all_configs[Config.MODEL.value][model_index])\
+                    .add(SetupMode.OLD, Config.SIM, all_configs[Config.SIM.value][sim_index])\
+                    .build_hoc()
+
+                print("made hoc")
+
 
         # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials
         self.handoff()
