@@ -303,17 +303,17 @@ class FiberManager(Exceptionable, Configurable, Saveable):
                                                fiber_mode,
                                                "myelinated")
 
-                sampling_mode = self.search(Config.FIBER_Z,
-                                            MyelinationMode.parameters.value,
-                                            fiber_mode,
-                                            "sampling")
-
                 self.fiber_metadata['fiber_types'].append(fiber_mode)
 
                 if myelination_mode:  # MYELINATED
 
+                    sampling_mode = self.search(Config.FIBER_Z,
+                                                MyelinationMode.parameters.value,
+                                                fiber_mode,
+                                                "sampling")
+
                     # load in all the required specifications for finding myelinated z coordinates
-                    if sampling_mode == MyelinatedSamplingType.DISCRETE:
+                    if sampling_mode == MyelinatedSamplingType.DISCRETE.value:
                         print("inside discrete")
 
                         node_length,\
@@ -330,8 +330,23 @@ class FiberManager(Exceptionable, Configurable, Saveable):
                                                     'delta_zs',
                                                     'paranodal_length_2s'])
 
-                    elif sampling_mode == MyelinatedSamplingType.INTERPOLATION:
+                    elif sampling_mode == MyelinatedSamplingType.INTERPOLATION.value:
                         print("inside interp")
+
+                        node_length, \
+                            paranodal_length_1, \
+                            paranodal_length_2, \
+                            deltax, \
+                            inter_length \
+                            = (self.search(Config.FIBER_Z,
+                                           MyelinationMode.parameters.value, str(fiber_mode), key) for key in
+                               ['node_length',
+                                'paranodal_length_1',
+                                'paranodal_length_2',
+                                'deltax',
+                                'inter_length'])
+
+                        print(deltax)
 
                     # self.fiber_metadata['subsets'].append(subset)
 
