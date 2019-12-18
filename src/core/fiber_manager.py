@@ -221,8 +221,7 @@ class FiberManager(Exceptionable, Configurable, Saveable):
         self.fiber_metadata = {
             "fiber_z_modes": [],
             "fiber_types": [],
-            "subsets": [],
-            "offsets": self.search(Config.SIM, FiberZMode.parameters.value, 'offsets'),
+            "offsets": [],
             "fascicles": [],
             "inners": [],
             "fibers": []
@@ -290,15 +289,11 @@ class FiberManager(Exceptionable, Configurable, Saveable):
             fiber_length = self.search(Config.MODEL, 'medium', 'bounds', 'length')  # TODO - want this to be separate for model (model config) and for fiber (sim config)
             half_fiber_length = fiber_length / 2
 
-            # search for all myelination modes (length of this corresponds to length of total modes looped through)
-            # TODO: set values in FIBER TYPES ENUM to associated myel mode
-            myelination_modes = self.search_multi_mode(Config.SIM, MyelinationMode)
-
-            # TODO: INTERPOLATION FOR MYELINATED
-
-            # get all the fiber modes (BOTH myel and unmyel)
-            fiber_modes: List[Union[MyelinatedFiberType, UnmyelinatedFiberType]] =\
-                self.search_multi_mode(Config.SIM, modes=[MyelinatedFiberType, UnmyelinatedFiberType])
+            print(Config.SIM.value)
+            fibers = self.search(Config.SIM, "fibers")
+            print(Config.SIM)
+            print("fibers")
+            print(fibers)
 
             # init first dimension
             fiber_mode_dimension = []
