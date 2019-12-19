@@ -1,13 +1,12 @@
-<HEADER> 
 
 //***************** Environment *****************
-celsius = 37 // [degC]
+celsius   = 37 // [degC]
 
-//***************** Time ************************
-dt = 0.001 // [ms]
-tstop = 500 // [ms]
-n_tsteps = 500001 // [unitless]
-t_initSS = -200 // [ms]
+//***************** Global Time ******************
+dt        = 0.001 // [ms]
+tstop     = 500 // [ms]
+n_tsteps  = 500001 // [unitless]
+t_initSS  = -200 // [ms]
 dt_initSS = 10 // [ms]
 
 //***************** Fiber Parameters *************
@@ -22,25 +21,25 @@ strdef fiberD_str
 fiberD_str = "TBD" // fiber diameter
 
 //***************** Intracellular Stim ***********
-IntraStim_PulseTrain_delay = 50 // [ms]
-IntraStim_PulseTrain_pw = 0 // [ms]
+IntraStim_PulseTrain_delay    = 50 // [ms]
+IntraStim_PulseTrain_pw       = 0 // [ms]
 IntraStim_PulseTrain_traindur = tstop - IntraStim_PulseTrain_delay // [ms]
-IntraStim_PulseTrain_freq = 1 // [ms]
-IntraStim_PulseTrain_amp = 1.7432 // [nA]
-IntraStim_PulseTrain_ind = 2 // Index of node where intracellular stim is placed [unitless]
+IntraStim_PulseTrain_freq     = 1 // [ms]
+IntraStim_PulseTrain_amp      = 1.7432 // [nA]
+IntraStim_PulseTrain_ind      = 2 // Index of node where intracellular stim is placed [unitless]
 
 //***************** Extracellular Stim ***********
 strdef VeTime_fname
-VeTime_fname = "TBD"
+VeTime_fname            = "TBD"
 flag_extracellular_stim = 1
 
 //***************** Recording ********************
-saveflag_Vm_time = 0
-saveflag_gating_time = 0
-saveflag_Vm_space = 0
+saveflag_Vm_time      = 0
+saveflag_gating_time  = 0
+saveflag_Vm_space     = 0
 saveflag_gating_space = 0
-saveflag_Ve = 0
-saveflag_Istim = 0
+saveflag_Ve           = 0
+saveflag_Istim        = 0
 
 //***************** Classification Checkpoints ***
 Nchecknodes = 0
@@ -76,16 +75,18 @@ N_minAPs  = 1
 flag_whichstim  = 0
 
 //***************** Batching Parameters **********
-Nmodels = 1
+Nmodels  = 1
 ModelNum = 0
-Nfasc = 0
-Namp = 2
-Nfreq  = 1
+Nfasc    = 0
+Namp     = 2
+Nfreq    = 1
 
 objref stimamp_values
 stimamp_values = new Vector(Namp,0)
 stimamp_values.x[0] = 0
 stimamp_values.x[1] = 0
+strdef num_Axons_fname
+num_Axons_fname = "TBD"
 
 objref Vefreq_values
 Vefreq_values = new Vector(Nfreq,0)

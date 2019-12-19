@@ -24,26 +24,21 @@ class SimulationBuilder(Exceptionable, Configurable, Saveable):
 
             # if CFiber - loop diameters and dx
 
-            # search SIM config for parameters and assign to variables
-            # see fiber manager 318 for template -- todo
-            # search FIBER config for parameters and assign to variables
-
             file_object = open("Launch%0.0f.hoc" % fiber_type_index, "w")
-            file_object.write("<HEADER> \n")
 
             # ENVIRONMENT
             file_object.write("\n//***************** Environment *****************\n")
-            file_object.write("celsius = %0.0f // [degC]\n" % self.search(Config.MODEL, "temperature", "value"))
+            file_object.write("celsius   = %0.0f // [degC]\n" % self.search(Config.MODEL, "temperature", "value"))
 
             # TIME PARAMETERS
-            file_object.write("\n//***************** Time ************************\n")
+            file_object.write("\n//***************** Global Time ******************\n")
             dt = self.search(Config.SIM, "extracellular_stim", "global", "dt")
-            file_object.write("dt = %0.3f // [ms]\n" % dt)
+            file_object.write("dt        = %0.3f // [ms]\n" % dt)
             tstop = self.search(Config.SIM, "extracellular_stim", "global", "stop")
-            file_object.write("tstop = %0.0f // [ms]\n" % tstop)
+            file_object.write("tstop     = %0.0f // [ms]\n" % tstop)
             n_tsteps = math.floor(tstop / dt) + 1
-            file_object.write("n_tsteps = %0.0f // [unitless]\n" % n_tsteps)
-            file_object.write("t_initSS = %0.0f // [ms]\n" % self.search(Config.SIM, "extracellular_stim", "global", "initSS"))
+            file_object.write("n_tsteps  = %0.0f // [unitless]\n" % n_tsteps)
+            file_object.write("t_initSS  = %0.0f // [ms]\n" % self.search(Config.SIM, "extracellular_stim", "global", "initSS"))
             file_object.write("dt_initSS = %0.0f // [ms]\n" % self.search(Config.SIM, "extracellular_stim", "global", "dt_initSS"))
 
             # FIBER PARAMETERS
@@ -72,9 +67,9 @@ class SimulationBuilder(Exceptionable, Configurable, Saveable):
                                           fiber_model,
                                           "node_channels"))
 
-            #  axonnodes - TODO, what is the dimension in fiber manager
+            axonnodes = 9999999  # TODO, what is the dimension in fiber manager
             file_object.write("axonnodes = %0.0f "
-                              "// must match up with ExtractPotentials\n" % 99999)
+                              "// must match up with ExtractPotentials\n" % axonnodes)
 
             file_object.write("passive_end_nodes = %0.0f "
                               "// passive_end_nodes = 1 to make both end nodes passive; 0 otherwise\n" %
@@ -83,36 +78,35 @@ class SimulationBuilder(Exceptionable, Configurable, Saveable):
                                           fiber_model,
                                           "passive_end_nodes"))
 
-            #  fiberD - TODO, what is the diameter
+            fiberD = 999999  #  fiberD - TODO, what is the diameter
             file_object.write("fiberD = %0.0f "
-                              "// fiber diameter\n" % 99999)
+                              "// fiber diameter\n" % fiberD)
 
             file_object.write("strdef fiberD_str\n")
-
-            file_object.write("fiberD_str = \"%s\" // fiber diameter\n" % "TBD")
+            file_object.write("fiberD_str = \"%s\" // fiber diameter\n" % "TBD")  # todo
 
             file_object.write("\n//***************** Intracellular Stim ***********\n")
-            file_object.write("IntraStim_PulseTrain_delay = %0.0f // [ms]\n" % self.search(Config.SIM, "intracellular_stim", "times", "IntraStim_PulseTrain_delay"))
-            file_object.write("IntraStim_PulseTrain_pw = %0.0f // [ms]\n" % self.search(Config.SIM, "intracellular_stim", "times", "pw"))
+            file_object.write("IntraStim_PulseTrain_delay    = %0.0f // [ms]\n" % self.search(Config.SIM, "intracellular_stim", "times", "IntraStim_PulseTrain_delay"))
+            file_object.write("IntraStim_PulseTrain_pw       = %0.0f // [ms]\n" % self.search(Config.SIM, "intracellular_stim", "times", "pw"))
             file_object.write("IntraStim_PulseTrain_traindur = tstop - IntraStim_PulseTrain_delay // [ms]\n")
-            file_object.write("IntraStim_PulseTrain_freq = %0.0f // [ms]\n" % self.search(Config.SIM, "intracellular_stim", "freq", "value"))  # TODO unit?
-            file_object.write("IntraStim_PulseTrain_amp = %0.4f // [nA]\n" % self.search(Config.SIM, "intracellular_stim", "amp", "value"))  # TODO unit?
-            file_object.write("IntraStim_PulseTrain_ind = %0.0f "
+            file_object.write("IntraStim_PulseTrain_freq     = %0.0f // [ms]\n" % self.search(Config.SIM, "intracellular_stim", "freq", "value"))
+            file_object.write("IntraStim_PulseTrain_amp      = %0.4f // [nA]\n" % self.search(Config.SIM, "intracellular_stim", "amp", "value"))
+            file_object.write("IntraStim_PulseTrain_ind      = %0.0f "
                               "// Index of node where intracellular stim is placed [unitless]\n" %
                               self.search(Config.SIM, "intracellular_stim", "ind"))
 
             file_object.write("\n//***************** Extracellular Stim ***********\n")
             file_object.write("strdef VeTime_fname\n")
-            file_object.write("VeTime_fname = \"%s\"\n" % "TBD")
+            file_object.write("VeTime_fname            = \"%s\"\n" % "TBD")
             file_object.write("flag_extracellular_stim = %0.0f\n" % 1)
 
             file_object.write("\n//***************** Recording ********************\n")
-            file_object.write("saveflag_Vm_time = %0.0f\n" % self.search(Config.SIM, "save_flags", "vm_time"))
-            file_object.write("saveflag_gating_time = %0.0f\n" % self.search(Config.SIM, "save_flags", "gating_time"))
-            file_object.write("saveflag_Vm_space = %0.0f\n" % self.search(Config.SIM, "save_flags", "vm_space"))
+            file_object.write("saveflag_Vm_time      = %0.0f\n" % self.search(Config.SIM, "save_flags", "vm_time"))
+            file_object.write("saveflag_gating_time  = %0.0f\n" % self.search(Config.SIM, "save_flags", "gating_time"))
+            file_object.write("saveflag_Vm_space     = %0.0f\n" % self.search(Config.SIM, "save_flags", "vm_space"))
             file_object.write("saveflag_gating_space = %0.0f\n" % self.search(Config.SIM, "save_flags", "gating_space"))
-            file_object.write("saveflag_Ve = %0.0f\n" % self.search(Config.SIM, "save_flags", "ve"))
-            file_object.write("saveflag_Istim = %0.0f\n" % self.search(Config.SIM, "save_flags", "istim"))
+            file_object.write("saveflag_Ve           = %0.0f\n" % self.search(Config.SIM, "save_flags", "ve"))
+            file_object.write("saveflag_Istim        = %0.0f\n" % self.search(Config.SIM, "save_flags", "istim"))
 
             file_object.write("\n//***************** Classification Checkpoints ***\n")
             file_object.write("Nchecknodes = %0.0f\n" % self.search(Config.SIM, "check_points", "n_checknodes"))
@@ -154,15 +148,18 @@ class SimulationBuilder(Exceptionable, Configurable, Saveable):
             freqs = [20]  # todo
             Nfreq = len(freqs)
 
-            file_object.write("Nmodels = %0.0f\n" % 1)
+            file_object.write("Nmodels  = %0.0f\n" % 1)
             file_object.write("ModelNum = %0.0f\n" % 0)  # todo
-            file_object.write("Nfasc = %0.0f\n" % 0)  # todo
-            file_object.write("Namp = %0.0f\n" % len(amps))
-            file_object.write("Nfreq  = %0.0f\n" % len(freqs))
+            file_object.write("Nfasc    = %0.0f\n" % 0)  # todo
+            file_object.write("Namp     = %0.0f\n" % len(amps))
+            file_object.write("Nfreq    = %0.0f\n" % len(freqs))
             file_object.write("\nobjref stimamp_values\n")
             file_object.write("stimamp_values = new Vector(Namp,%0.0f)\n" % 0)
             for amp in range(len(amps)):
                 file_object.write("stimamp_values.x[%0.0f] = %0.0f\n" % (amp, 0))
+
+            file_object.write("strdef num_Axons_fname\n")
+            file_object.write("num_Axons_fname = \"%s\"\n" % "TBD")
 
             file_object.write("\nobjref Vefreq_values\n")
             file_object.write("Vefreq_values = new Vector(Nfreq,%0.0f)\n" % 0)
