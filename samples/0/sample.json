@@ -25,7 +25,7 @@
     "mask_input": "INNER_AND_OUTER_SEPARATE",
     "nerve": "PRESENT",
     "reshape_nerve": "CIRCLE",
-    "deform": "PHYSICS",
+    "deform": "NONE",
     "cuff_inner": [
       "CIRCLE",
       "ELLIPSE",
@@ -52,7 +52,7 @@
   },
   "Morphology": {
     "Nerve": {
-      "area": 8001580.919855978
+      "area": 8001580.919855985
     },
     "Fascicles": [
       {
@@ -143,27 +143,27 @@
       },
       {
         "outer": {
-          "area": 138392.4665902137
+          "area": 138392.46659021382
         },
         "inners": [
           {
-            "area": 105716.2106696193
+            "area": 105716.21066961915
           }
         ]
       },
       {
         "outer": {
-          "area": 370065.6877629172
+          "area": 370065.68776291824
         },
         "inners": [
           {
-            "area": 94509.46626217631
+            "area": 94509.46626217637
           },
           {
-            "area": 179158.03004138172
+            "area": 179158.03004138198
           },
           {
-            "area": 11130.070332730604
+            "area": 11130.070332730586
           }
         ]
       },

@@ -139,13 +139,14 @@ class MyelinationMode(Enum):
 
 
 @unique
-class MyelinatedFiberType(Enum):
+class FiberGeometry(Enum):
     config = 'myel_fiber'
 
     NONE = None
-    MRG_DISCRETE = 0
-    B_FIBER = 1
-    MRG_INTERPOLATION = 2
+    MRG_DISCRETE = "MRG_DISCRETE"
+    MRG_INTERPOLATION = "MRG_INTERPOLATION"
+    B_FIBER = "B_FIBER"
+    C_FIBER = "C_FIBER"
 
 
 @unique

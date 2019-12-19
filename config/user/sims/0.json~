@@ -62,8 +62,9 @@
       "angle_offset": 0.0
     }
   },
+
   "extracellular_stim": {
-    "flag": 1,
+    "flag": true,
     "global": {
       "unit": "ms",
       "dt": 0.001,
@@ -91,7 +92,7 @@
     }
   },
   "intracellular_stim": {
-    "flag": 0,
+    "flag": false,
     "times": {
       "unit": "ms",
       "pw": 0.1,

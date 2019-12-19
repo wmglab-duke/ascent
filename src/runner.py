@@ -151,14 +151,14 @@ class Runner(Exceptionable, Configurable):
                     .add(SetupMode.OLD, Config.MODEL, all_configs[Config.MODEL.value][model_index])\
                     .add(SetupMode.OLD, Config.SIM, all_configs[Config.SIM.value][sim_index])\
                     .fiber_xy_coordinates(plot=False, save=True)\
-                    .fiber_z_coordinates(fiber_manager.xy_coordinates, save=True)\
-                    .save(os.path.join('samples',
-                                       str(self.configs[Config.RUN.value]['sample']),
-                                       'models',
-                                       str(self.configs[Config.RUN.value]['models'][model_index]),
-                                       'sims',
-                                       str(self.configs[Config.RUN.value]['sims'][sim_index]),
-                                       'sim.obj'))
+                    # .fiber_z_coordinates(fiber_manager.xy_coordinates, save=True)\
+                    # .save(os.path.join('samples',
+                    #                    str(self.configs[Config.RUN.value]['sample']),
+                    #                    'models',
+                    #                    str(self.configs[Config.RUN.value]['models'][model_index]),
+                    #                    'sims',
+                    #                    str(self.configs[Config.RUN.value]['sims'][sim_index]),
+                    #                    'sim.obj'))
 
                 simulation_builder = SimulationBuilder(self.configs[Config.EXCEPTIONS.value])
                 simulation_builder\
@@ -170,7 +170,7 @@ class Runner(Exceptionable, Configurable):
 
 
         # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials
-        self.handoff()
+        #self.handoff()
 
     def handoff(self):
         # TODO: implement extract potentials

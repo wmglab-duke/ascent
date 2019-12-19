@@ -458,7 +458,7 @@ class FiberManager(Exceptionable, Configurable, Saveable):
         """
         EXPORTABLE_ENUMS = {
             'FiberZMode': FiberZMode,
-            'MyelinatedFiberType': MyelinatedFiberType,
+            'MyelinatedFiberType': FiberGeometry,
             'UnmyelinatedFiberType': UnmyelinatedFiberType
         }
 
