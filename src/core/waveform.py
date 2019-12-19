@@ -205,7 +205,7 @@ class Waveform(Exceptionable, Configurable, Saveable):
             path_to_specific_parameters = [WaveformMode.parameters, str(mode).split('.')[-1]]
 
             # loop on frequency (all modes have property)... WITHIN THIS LOOP: "switch" on wave type
-            for frequency in self.search(Config.MODEL, *path_to_specific_parameters, 'frequency'): # TODO
+            for frequency in self.search(Config.MODEL, *path_to_specific_parameters, 'frequency'):
 
                 if mode == WaveformMode.MONOPHASIC_PULSE_TRAIN:
 

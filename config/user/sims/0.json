@@ -34,7 +34,7 @@
     {
       "type": "TIGERHOLM",
       "units": "micrometer",
-      "delta_zs": [0.1, 0.2],
+      "diameters": [1, 2],
       "min": [0.0, 0.0],
       "max": [50000.0, 50000.0],
       "offsets": [0.0, 0.0]
