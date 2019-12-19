@@ -16,6 +16,7 @@
     "outer_thick_to_inner_diam": 0.03,
     "shrinkage_scale": 0.2
   },
+  "min_fascicle_separation": 10.0,
   "modes": {
     "write": "sectionwise2d",
     "mask_input": "INNER_AND_OUTER_SEPARATE",
