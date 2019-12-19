@@ -252,7 +252,7 @@ class SlideManager(Exceptionable, Configurable, Saveable):
                 deformable = Deformable.from_slide(slide, ReshapeNerveMode.CIRCLE)
                 morph_count = 36
                 # title = 'morph count: {}'.format(morph_count)
-                dist = self.search(Config.SAMPLE, "min_fascicle_separation")
+                dist = self.search(Config.SAMPLE, "min_fascicle_separation", "dist")
                 movements, rotations = deformable.deform(morph_count=morph_count,
                                                          render=deform_animate,
                                                          minimum_distance=dist)
