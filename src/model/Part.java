@@ -2145,6 +2145,7 @@ class Part {
                 ci.label(ciLabel);
                 ci.selection().named("geom1_" + im.get(fascicleCI_Endo_Label) + "_bnd");
                 ci.set("spec_type", "surfimp");
+                // TODO
                 String rhos = "(1/perineurium)*(ci_a*2*sqrt(" + name_area  + "/pi)+ci_b)"; // A = pi*r^2; r = sqrt(A/pi); d = 2*sqrt(A/pi); thk = 0.03*2*sqrt(A/pi); Rm = rho*thk
                 ci.set("rhos", rhos);
 
