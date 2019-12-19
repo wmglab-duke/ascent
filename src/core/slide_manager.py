@@ -252,17 +252,15 @@ class SlideManager(Exceptionable, Configurable, Saveable):
                 deformable = Deformable.from_slide(slide, ReshapeNerveMode.CIRCLE)
                 morph_count = 36
                 # title = 'morph count: {}'.format(morph_count)
+                dist = self.search(Config.SAMPLE, "min_fascicle_separation", "dist")
                 movements, rotations = deformable.deform(morph_count=morph_count,
                                                          render=deform_animate,
-                                                         minimum_distance=10.0)
-                # TODO make the separation distance between fascicles and fascicles with nerve a
-                #  parameter from configuration
+                                                         minimum_distance=dist)
                 for move, angle, fascicle in zip(movements, rotations, slide.fascicles):
                     fascicle.shift(list(move) + [0])
                     fascicle.rotate(angle)
             elif deform_mode == DeformationMode.JITTER:
-                slide.reposition_fascicles(slide.reshaped_nerve(reshape_nerve_mode), 5)
-                # TODO isnt this value (5) supposed to be 10 to be consistent with physics?
+                slide.reposition_fascicles(slide.reshaped_nerve(reshape_nerve_mode), 10)
             else:  # must be DeformationMode.NONE
                 import warnings
                 warnings.warn('NO DEFORMATION is happening!')

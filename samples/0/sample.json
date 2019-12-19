@@ -16,6 +16,10 @@
     "outer_thick_to_inner_diam": 0.03,
     "shrinkage_scale": 0.2
   },
+  "min_fascicle_separation": {
+    "dist": 10.0,
+    "units": "micrometer"
+  },
   "modes": {
     "write": "sectionwise2d",
     "mask_input": "INNER_AND_OUTER_SEPARATE",
@@ -48,7 +52,7 @@
   },
   "Morphology": {
     "Nerve": {
-      "area": 8001580.919855985
+      "area": 8001580.919855978
     },
     "Fascicles": [
       {
@@ -139,27 +143,27 @@
       },
       {
         "outer": {
-          "area": 138392.46659021385
+          "area": 138392.4665902137
         },
         "inners": [
           {
-            "area": 105716.21066961942
+            "area": 105716.2106696193
           }
         ]
       },
       {
         "outer": {
-          "area": 370065.6877629175
+          "area": 370065.6877629172
         },
         "inners": [
           {
-            "area": 94509.46626217633
+            "area": 94509.46626217631
           },
           {
-            "area": 179158.03004138166
+            "area": 179158.03004138172
           },
           {
-            "area": 11130.070332730602
+            "area": 11130.070332730604
           }
         ]
       },

@@ -314,13 +314,13 @@ class FiberManager(Exceptionable, Configurable, Saveable):
 
                     # load in all the required specifications for finding myelinated z coordinates
                     if sampling_mode == MyelinatedSamplingType.DISCRETE.value:
-                        print("inside discrete")
 
                         node_length,\
                             paranodal_length_1,\
                             diameters,\
                             delta_zs,\
-                            paranodal_length_2s \
+                            paranodal_length_2s, \
+                            inter_length_str \
                             = (self.search(Config.FIBER_Z,
                                            MyelinationMode.parameters.value,
                                            str(fiber_mode),
@@ -330,16 +330,22 @@ class FiberManager(Exceptionable, Configurable, Saveable):
                                 'paranodal_length_1',
                                 'diameters',
                                 'delta_zs',
-                                'paranodal_length_2s'])
+                                'paranodal_length_2s'
+                                'inter_length'])
+
+                        inter_lengths = []
+
+                        for diameter in diameters:
+                            inter_length = eval(inter_length_str)
+                            inter_lengths.append(inter_length)
 
                     elif sampling_mode == MyelinatedSamplingType.INTERPOLATION.value:
-                        print("inside interp")
 
                         node_length, \
                             paranodal_length_1, \
-                            paranodal_length_2, \
-                            deltax, \
-                            inter_length \
+                            paranodal_length_2_str, \
+                            delta_z_str, \
+                            inter_length_str \
                             = (self.search(Config.FIBER_Z,
                                            MyelinationMode.parameters.value,
                                            str(fiber_mode),
@@ -348,31 +354,33 @@ class FiberManager(Exceptionable, Configurable, Saveable):
                                ['node_length',
                                 'paranodal_length_1',
                                 'paranodal_length_2',
-                                'deltax',
+                                'delta_z',
                                 'inter_length'])
 
-                        fiberDs = fiber["diameters"]
+                        diameters = fiber["diameters"]
+                        paranodal_length_2s = []
+                        delta_zs = []
+                        inter_lengths = []
 
-                        for fiberD in fiberDs:
-                            print("fiberD: " + str(fiberD))
-                            paranodal_length_2 = eval(paranodal_length_2)
-                            # inter_length = eval(inter_length)
-                            deltax = 1
+                        for diameter in diameters:
+                            paranodal_length_2 = eval(paranodal_length_2_str)
+                            paranodal_length_2s.append(paranodal_length_2)
 
-                            print('lolz')
-                            print(paranodal_length_2)
-                            print(eval(inter_length))
+                            if diameter >= 5.26:
+                                delta_z = eval(delta_z_str["diameter_greater_or_equal_5.26um"])
+                            else:
+                                delta_z = eval(delta_z_str["diameter_less_5.26um"])
 
+                            delta_zs.append(delta_z)
 
-                    # self.fiber_metadata['subsets'].append(subset)
+                            inter_length = eval(inter_length_str)
+                            inter_lengths.append(inter_length)
 
-                    # init next dimension
-                    subsets_dimension = []
-                    for subset_index, (diameter, delta_z, paranodal_length_2) in enumerate(zip(diameters,
-                                                                                               delta_zs,
-                                                                                               paranodal_length_2s)):
-
-                        inter_length = (delta_z - node_length - (2 * paranodal_length_1) - (2 * paranodal_length_2)) / 6
+                    for subset_index, (diameter, delta_z, paranodal_length_2, inter_length) in \
+                            enumerate(zip(diameters,
+                                          delta_zs,
+                                          paranodal_length_2s,
+                                          inter_lengths)):
 
                         if diameter in subset:
                             z_steps: List = []
@@ -413,7 +421,7 @@ class FiberManager(Exceptionable, Configurable, Saveable):
 
                 else:  # UNMYELINATED
 
-                    delta_zs: list = self.search(Config.FIBER_Z, *fiber_mode_search_params, 'delta_zs')
+                    delta_zs: list = self.search(Config.FIBER_Z, fiber_mode, 'delta_zs')
 
                     subsets_dimension = []
                     for delta_z in delta_zs:
