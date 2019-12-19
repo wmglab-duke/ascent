@@ -260,8 +260,7 @@ class SlideManager(Exceptionable, Configurable, Saveable):
                     fascicle.shift(list(move) + [0])
                     fascicle.rotate(angle)
             elif deform_mode == DeformationMode.JITTER:
-                slide.reposition_fascicles(slide.reshaped_nerve(reshape_nerve_mode), 5)
-                # TODO isnt this value (5) supposed to be 10 to be consistent with physics?
+                slide.reposition_fascicles(slide.reshaped_nerve(reshape_nerve_mode), 10)
             else:  # must be DeformationMode.NONE
                 import warnings
                 warnings.warn('NO DEFORMATION is happening!')
