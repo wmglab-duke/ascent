@@ -187,7 +187,8 @@ class WaveformMode(Enum):
 class PerineuriumImpedanceMode(Enum):
     config = 'perineurium'
 
-    WEERASURIYA = 0
+    GRINBERG_2008 = 0
+    PIG_INHOUSE = 1
 
 
 #%% Perineurium Thickness
