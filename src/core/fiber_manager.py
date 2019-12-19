@@ -337,9 +337,9 @@ class FiberManager(Exceptionable, Configurable, Saveable):
 
                         node_length, \
                             paranodal_length_1, \
-                            paranodal_length_2, \
-                            deltax, \
-                            inter_length \
+                            paranodal_length_2_str, \
+                            deltax_str, \
+                            inter_length_str \
                             = (self.search(Config.FIBER_Z,
                                            MyelinationMode.parameters.value,
                                            str(fiber_mode),
@@ -352,26 +352,28 @@ class FiberManager(Exceptionable, Configurable, Saveable):
                                 'inter_length'])
 
                         fiberDs = fiber["diameters"]
+                        paranodal_length_2s = []
+                        deltaxs = []
+                        inter_lengths = []
 
-                        for fiberD in fiberDs:
-                            print("fiberD: " + str(fiberD))
-                            paranodal_length_2i = eval(paranodal_length_2)
+                        for fiberD_index, fiberD in enumerate(fiberDs):
+                            paranodal_length_2 = eval(paranodal_length_2_str)
+                            paranodal_length_2s.append(paranodal_length_2)
+
                             if fiberD >= 5.26:
-                                print("was more")
-                                print(deltax["fiberD_greater_or_equal_5.26um"])
-                                deltaxi = eval(deltax["fiberD_greater_or_equal_5.26um"])
+                                deltax = eval(deltax_str["fiberD_greater_or_equal_5.26um"])
                             else:
-                                print("was less")
-                                print(deltax["fiberD_less_5.26um"])
-                                deltaxi = eval(deltax["fiberD_less_5.26um"])
+                                deltax = eval(deltax_str["fiberD_less_5.26um"])
 
-                            print("deltax")
-                            print(deltaxi)
+                            deltaxs.append(deltax)
 
-                            # inter_length = eval(inter_length)
+                            inter_length = eval(inter_length_str)
+                            inter_lengths.append(inter_length)
 
-                            print('lolz')
-                            print(paranodal_length_2i)
+                        print("cowboy")
+                        print(paranodal_length_2s)
+                        print(deltaxs)
+                        print(inter_lengths)
                             # print(eval(inter_length))
 
 
