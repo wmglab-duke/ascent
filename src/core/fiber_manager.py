@@ -421,7 +421,7 @@ class FiberManager(Exceptionable, Configurable, Saveable):
 
                 else:  # UNMYELINATED
 
-                    delta_zs: list = self.search(Config.FIBER_Z, *fiber_mode_search_params, 'delta_zs')
+                    delta_zs: list = self.search(Config.FIBER_Z, fiber_mode, 'delta_zs')
 
                     subsets_dimension = []
                     for delta_z in delta_zs:
