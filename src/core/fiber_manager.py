@@ -357,12 +357,16 @@ class FiberManager(Exceptionable, Configurable, Saveable):
                             print("fiberD: " + str(fiberD))
                             paranodal_length_2i = eval(paranodal_length_2)
                             if fiberD >= 5.26:
-                                deltax = eval(deltax["fiberD_greater_or_equal_5"])
+                                print("was more")
+                                print(deltax["fiberD_greater_or_equal_5.26um"])
+                                deltaxi = eval(deltax["fiberD_greater_or_equal_5.26um"])
                             else:
                                 print("was less")
-                                deltax = eval(deltax["fiberD_less_5.26um"])
+                                print(deltax["fiberD_less_5.26um"])
+                                deltaxi = eval(deltax["fiberD_less_5.26um"])
 
-                            print(deltax)
+                            print("deltax")
+                            print(deltaxi)
 
                             # inter_length = eval(inter_length)
 
