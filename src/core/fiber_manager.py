@@ -338,7 +338,7 @@ class FiberManager(Exceptionable, Configurable, Saveable):
                         node_length, \
                             paranodal_length_1, \
                             paranodal_length_2_str, \
-                            deltax_str, \
+                            delta_z_str, \
                             inter_length_str \
                             = (self.search(Config.FIBER_Z,
                                            MyelinationMode.parameters.value,
@@ -348,12 +348,12 @@ class FiberManager(Exceptionable, Configurable, Saveable):
                                ['node_length',
                                 'paranodal_length_1',
                                 'paranodal_length_2',
-                                'deltax',
+                                'delta_z',
                                 'inter_length'])
 
                         fiberDs = fiber["diameters"]
                         paranodal_length_2s = []
-                        deltaxs = []
+                        delta_zs = []
                         inter_lengths = []
 
                         for fiberD_index, fiberD in enumerate(fiberDs):
@@ -361,21 +361,14 @@ class FiberManager(Exceptionable, Configurable, Saveable):
                             paranodal_length_2s.append(paranodal_length_2)
 
                             if fiberD >= 5.26:
-                                deltax = eval(deltax_str["fiberD_greater_or_equal_5.26um"])
+                                delta_z = eval(delta_z_str["fiberD_greater_or_equal_5.26um"])
                             else:
-                                deltax = eval(deltax_str["fiberD_less_5.26um"])
+                                delta_z = eval(delta_z_str["fiberD_less_5.26um"])
 
-                            deltaxs.append(deltax)
+                            delta_zs.append(delta_z)
 
                             inter_length = eval(inter_length_str)
                             inter_lengths.append(inter_length)
-
-                        print("cowboy")
-                        print(paranodal_length_2s)
-                        print(deltaxs)
-                        print(inter_lengths)
-                            # print(eval(inter_length))
-
 
                     # self.fiber_metadata['subsets'].append(subset)
 
