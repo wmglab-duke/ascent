@@ -18,7 +18,7 @@
   },
   "modes": {
     "write": "sectionwise2d",
-    "mask_input": "INNER_AND_OUTER_SEPARATE",
+    "mask_input": "INNERS",
     "nerve": "PRESENT",
     "reshape_nerve": "CIRCLE",
     "deform": "PHYSICS",

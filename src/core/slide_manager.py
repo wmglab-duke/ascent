@@ -41,6 +41,10 @@ class SlideManager(Exceptionable, Configurable, Saveable):
         # Set instance variable map
         self.map = None
 
+        self.add(SetupMode.NEW, Config.CI_PERINEURIUM_THICKNESS, os.path.join('config',
+                                                                              'system',
+                                                                              'ci_peri_thickness.json'))
+
     def init_map(self, map_mode: SetupMode) -> 'SlideManager':
         """
         Initialize the map. NOTE: the Config.SAMPLE json must have been externally added.
@@ -174,17 +178,18 @@ class SlideManager(Exceptionable, Configurable, Saveable):
 
             # load fascicles and check that the files exist
             if mask_input_mode == MaskInputMode.INNERS:
+
                 if exists(MaskFileNames.INNERS):
-                    peri_thick_mode = self.search_mode(PerineuriumImpedanceMode, Config.SAMPLE)
-                    print("COWBOY")
-                    print(peri_thick_mode)
-                    #  TODO - for inner and outer use measured thickness - make sure this is happening
+                    peri_thick_mode: PerineuriumThicknessMode = self.search_mode(PerineuriumThicknessMode,
+                                                                                 Config.SAMPLE)
+
+                    perineurium_thk_info: dict = self.search(Config.CI_PERINEURIUM_THICKNESS,
+                                                             PerineuriumThicknessMode.parameters.value,
+                                                             str(peri_thick_mode).split('.')[-1])
 
                     fascicles = Fascicle.inner_to_list(MaskFileNames.INNERS.value,
                                                        self.configs[Config.EXCEPTIONS.value],
-                                                       scale=1 + self.search(Config.SAMPLE,
-                                                                             'scale',
-                                                                             'outer_thick_to_inner_diam'))  # TODO - based on rules! this is to make virtual outer from inner
+                                                       fit=perineurium_thk_info)
                 else:
                     self.throw(21)
 

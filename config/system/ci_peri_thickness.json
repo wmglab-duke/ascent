@@ -1,5 +1,5 @@
 {
-  "ci_perineurium_thickness": {
+  "ci_perineurium_thickness_parameters": {
     "PIG_INHOUSE": {
       "unit": "micrometer",
       "a": 0.015706,

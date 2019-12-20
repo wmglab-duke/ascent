@@ -19,7 +19,7 @@ from src.utils import Exceptionable, SetupMode, WriteMode
 
 class Fascicle(Exceptionable):
 
-    def __init__(self, exception_config, outer: Trace, inners: List[Trace] = None, outer_scale: float = None):
+    def __init__(self, exception_config, outer: Trace, inners: List[Trace] = None, outer_scale: dict = None):
         """
         Fascicle can be created with either:
          option 1: an outer and any number of inners
@@ -185,7 +185,7 @@ class Fascicle(Exceptionable):
         return np.array(self.all_traces())[np.where(areas == np.min(areas))][0]
 
 
-    def __endoneurium_setup(self, factor: float):
+    def __endoneurium_setup(self, fit: float):
         """
         If you only gave an outer, treat it as an inner, and use offset to create new outer
         :param factor: how much bigger to make the outer from the inner (i.e. 1.03 is a 3% perineurium
@@ -196,18 +196,15 @@ class Fascicle(Exceptionable):
         if self.outer_scale is None:
             self.throw(14)
 
-        if factor < 1:
-            self.throw(15)
-
         # set single inner trace
         self.inners = [self.outer.deepcopy()]
 
         # scale up outer trace
-        self.outer.offset(factor=factor)
+        self.outer.offset(fit=fit)
 
     @staticmethod
     def compiled_to_list(img_path: str, exception_config,
-                         plot: bool = False, scale: float = None, z: float = 0) -> List['Fascicle']:
+                         plot: bool = False, fit: dict = None, z: float = 0) -> List['Fascicle']:
         """
         Example usage:
             fascicles = Fascicle.compiled_to_list(my_image_path, ... )
@@ -224,7 +221,7 @@ class Fascicle(Exceptionable):
 
         :param z:
         :param img_path:
-        :param scale:
+        :param fit:
         :param plot:
         :param exception_config:
         :return: list of Fascicles derived from the single image
@@ -280,7 +277,7 @@ class Fascicle(Exceptionable):
                 if len(inner_traces) > 0:
                     fascicles.append(Fascicle(exception_config, outer_trace, inner_traces))
                 else:  # inners only case
-                    fascicles.append(Fascicle(exception_config, outer_trace, outer_scale=scale))
+                    fascicles.append(Fascicle(exception_config, outer_trace, outer_scale=fit))
 
                 if plot:
                     fascicles[i].plot()
@@ -351,8 +348,8 @@ class Fascicle(Exceptionable):
 
     @staticmethod
     def inner_to_list(img_path: str, exception_config,
-                      plot: bool = False, scale: float = None, z: float = 0) -> List['Fascicle']:
-        return Fascicle.compiled_to_list(img_path, exception_config, plot, scale, z)
+                      plot: bool = False, fit: dict = None, z: float = 0) -> List['Fascicle']:
+        return Fascicle.compiled_to_list(img_path, exception_config, plot, fit, z)
 
     def write(self, mode: WriteMode, path: str):
         """

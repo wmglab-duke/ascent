@@ -19,6 +19,7 @@ class Config(Enum):
     CUFFS = 'cuffs'
     EXCEPTIONS = 'exceptions'
     ENV = 'env'
+    CI_PERINEURIUM_THICKNESS = 'ci_perineurium_thickness'
 
     # user
     RUN = 'run'
@@ -184,22 +185,12 @@ class WaveformMode(Enum):
 #%% Perineurium Impedance
 
 @unique
-class PerineuriumImpedanceMode(Enum):
-    config = 'perineurium'
+class PerineuriumThicknessMode(Enum):
+    config = 'ci_perineurium_thickness'
+    parameters = 'ci_perineurium_thickness_parameters'
 
     GRINBERG_2008 = 0
     PIG_INHOUSE = 1
-
-
-#%% Perineurium Thickness
-
-@unique
-class PerineuriumThicknessMode(Enum):
-    config = 'perineurium'
-
-    MEASURED = 0
-    THREE_PERCENT_DIAM = 1
-    LINEAR_REGRESSION_PIGS = 2
 
 
 #%% Cuffs

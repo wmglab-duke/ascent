@@ -68,10 +68,10 @@ class Trace(Exceptionable):
         # required for mutating method
         self.__update()
 
-    def offset(self, factor: float = None, distance: float = None):
+    def offset(self, fit: dict = None, distance: float = None):
         """
         NOT AN AFFINE TRANSFORMATION
-        :param factor: used to scale up by a factor if you are offsetting the boundary by a factor
+        :param fit: used to scale up by a factor if you are offsetting the boundary by a linear fit
         :param distance: used to scale by a discrete distance
         """
 
@@ -84,9 +84,9 @@ class Trace(Exceptionable):
         # add points to clipper
         pco.AddPath(tuple_points, pyclipper.JT_SQUARE, pyclipper.ET_CLOSEDPOLYGON)
 
-        if factor is not None:
+        if fit is not None:
             # find offset distance from factor and mean radius
-            distance: float = self.mean_radius() * (factor - 1)
+            distance: float = fit.get("a") * 2*self.mean_radius() + fit.get("b")
         elif distance is None:
             self.throw(29)
 

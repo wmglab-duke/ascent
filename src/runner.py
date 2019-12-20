@@ -109,28 +109,29 @@ class Runner(Exceptionable, Configurable):
         for model_index, model in enumerate(all_configs[Config.MODEL.value]):
             print('MODEL {}'.format(model_index))
 
+            model_config = all_configs[Config.MODEL.value][model_index]
+
             # save rho_perineurium to model.json
             waveform = Waveform(self.configs[Config.EXCEPTIONS.value])
-            waveform.add(SetupMode.OLD, Config.MODEL, all_configs['models'][model_index])
+            waveform.add(SetupMode.OLD, Config.MODEL, model_config)
 
-            rho_double = waveform.rho_weerasuriya(all_configs['models'][model_index]['frequency']['value'])
+            rho_double = waveform.rho_weerasuriya(model_config.get('frequency').get('value'))
             sigma_double = 1/rho_double
 
-            model_config: dict = all_configs[Config.MODEL.value][model_index]
             model_config['conductivities']['perineurium']['value'] = str(sigma_double)
 
-            ci_perineurium_thickness_mode = all_configs['models'][model_index]['modes']['ci_perineurium_thickness']
-            ci_params_path = os.path.join('config', 'system', 'ci_perineurium_thickness.json')
+            ci_perineurium_thickness_mode = model_config.get('modes').get('ci_perineurium_thickness')
+            ci_params_path = os.path.join('config', 'system', 'ci_peri_thickness.json')
             ci_params = self.load(ci_params_path)
 
             model_config['ci_perineurium_thickness']['coefficients']['a'] = \
-                ci_params["ci_perineurium_thickness"][ci_perineurium_thickness_mode]['a']
+                ci_params[PerineuriumThicknessMode.parameters.value][ci_perineurium_thickness_mode]['a']
 
             model_config['ci_perineurium_thickness']['coefficients']['b'] = \
-                ci_params["ci_perineurium_thickness"][ci_perineurium_thickness_mode]['b']
+                ci_params[PerineuriumThicknessMode.parameters.value][ci_perineurium_thickness_mode]['b']
 
             model_config['ci_perineurium_thickness']['coefficients']['unit'] = \
-                ci_params["ci_perineurium_thickness"][ci_perineurium_thickness_mode]['unit']
+                ci_params[PerineuriumThicknessMode.parameters.value][ci_perineurium_thickness_mode]['unit']
 
             dest_path: str = os.path.join(*all_configs[Config.SAMPLE.value][0]['samples_path'],
                                           str(self.configs[Config.RUN.value]['sample']),
@@ -165,9 +166,6 @@ class Runner(Exceptionable, Configurable):
                     .add(SetupMode.OLD, Config.MODEL, all_configs[Config.MODEL.value][model_index])\
                     .add(SetupMode.OLD, Config.SIM, all_configs[Config.SIM.value][sim_index])\
                     .build_hoc()
-
-                print("made hoc")
-
 
         # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials
         #self.handoff()
