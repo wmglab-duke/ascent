@@ -2145,9 +2145,25 @@ class Part {
                 ci.label(ciLabel);
                 ci.selection().named("geom1_" + im.get(fascicleCI_Endo_Label) + "_bnd");
                 ci.set("spec_type", "surfimp");
-                // TODO
-                String rhos = "(1/perineurium)*(ci_a*2*sqrt(" + name_area  + "/pi)+ci_b)"; // A = pi*r^2; r = sqrt(A/pi); d = 2*sqrt(A/pi); thk = 0.03*2*sqrt(A/pi); Rm = rho*thk
-                ci.set("rhos", rhos);
+                // if inners only
+                String mask_input_mode = ((JSONObject) sampleData.getJSONObject("modes")).getString("mask_input");
+
+                String separate = "INNER_AND_OUTER_SEPARATE";
+                String compiled = "INNER_AND_OUTER_COMPILED";
+                String inners = "INNERS";
+                String outers = "OUTERS";
+
+                if ((mask_input_mode.compareTo(separate)) == 0 || (mask_input_mode.compareTo(compiled)) == 0) {
+                    System.out.println("we have both inners and outers so use the thickness measured!");
+
+                } else if ((mask_input_mode.compareTo(inners)) == 0 || (mask_input_mode.compareTo(outers)) == 0) {
+                    String rhos = "(1/perineurium)*(ci_a*2*sqrt(" + name_area  + "/pi)+ci_b)"; // A = pi*r^2; r = sqrt(A/pi); d = 2*sqrt(A/pi); thk = 0.03*2*sqrt(A/pi); Rm = rho*thk
+                    ci.set("rhos", rhos);
+
+                }
+                // WIP TODO
+                // else inners and outers
+
 
                 break;
 
