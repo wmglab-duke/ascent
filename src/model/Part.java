@@ -2099,7 +2099,7 @@ class Part {
                             .label(cselFascicleCILabel);
                 }
 
-                JSONObject fascicle = ((JSONArray) sampleData.getJSONObject("Morphology").get("Fascicles")).getJSONObject(index);
+                JSONObject fascicle = sampleData.getJSONObject("Morphology").getJSONArray("Fascicles").getJSONObject(index);
                 String morphology_unit = ((JSONObject) sampleData.get("scale")).getString("scale_bar_unit");
 
                 Double area = ((JSONObject) fascicle.get("outer")).getDouble("area");

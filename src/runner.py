@@ -168,7 +168,7 @@ class Runner(Exceptionable, Configurable):
                     .build_hoc()
 
         # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials
-        #self.handoff()
+        self.handoff()
 
     def handoff(self):
         # TODO: implement extract potentials
