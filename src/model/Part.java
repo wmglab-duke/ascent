@@ -29,34 +29,29 @@ class Part {
         IdentifierManager im = new IdentifierManager();
         ModelParam mp = model.geom(id).inputParam();
 
-        switch (pseudonym) {
-            case "Medium_Primitive":
-                mp.set("radius", "10 [mm]");
-                mp.set("length", "100 [mm]");
+        if ("Medium_Primitive".equals(pseudonym)) {
+            mp.set("radius", "10 [mm]");
+            mp.set("length", "100 [mm]");
 
-                im.labels = new String[]{
-                        "MEDIUM" //0
+            im.labels = new String[]{
+                    "MEDIUM" //0
 
-                };
+            };
 
-                for (String cselMediumLabel: im.labels) {
-                    model.geom(id).selection().create(im.next("csel", cselMediumLabel), "CumulativeSelection")
-                            .label(cselMediumLabel);
+            for (String cselMediumLabel : im.labels) {
+                model.geom(id).selection().create(im.next("csel", cselMediumLabel), "CumulativeSelection")
+                        .label(cselMediumLabel);
 
-                }
+            }
 
-                String mediumLabel = "Medium";
-                GeomFeature m = model.geom(id).create(im.next("cyl", mediumLabel), "Cylinder");
-                m.label(mediumLabel);
-                m.set("r", "radius");
-                m.set("h", "length");
-                m.set("contributeto", im.get("MEDIUM"));
-
-                break;
-
-            default:
-                throw new  IllegalArgumentException("No implementation for part primitive name: " + pseudonym);
-
+            String mediumLabel = "Medium";
+            GeomFeature m = model.geom(id).create(im.next("cyl", mediumLabel), "Cylinder");
+            m.label(mediumLabel);
+            m.set("r", "radius");
+            m.set("h", "length");
+            m.set("contributeto", im.get("MEDIUM"));
+        } else {
+            throw new IllegalArgumentException("No implementation for part primitive name: " + pseudonym);
         }
         return im;
     }
@@ -74,49 +69,42 @@ class Part {
 
         String[] myLabels = myIM.labels; // may be null, but that is ok if not used
 
-        switch(pseudonym) {
-            case "Medium_Primitive":
+        if ("Medium_Primitive".equals(pseudonym)) {// set instantiation parameters
+            String[] mediumParameters = {
+                    "radius",
+                    "length"
 
-                // set instantiation parameters
-                String[] mediumParameters = {
-                        "radius",
-                        "length"
+            };
 
-                };
+            JSONObject itemObject = ((JSONObject) ((JSONObject) instanceParams.get("medium")).get("bounds"));
+            for (String param : mediumParameters) {
+                partInstance.setEntry("inputexpr", param, (Double) itemObject.get(param));
 
-                JSONObject itemObject = ((JSONObject) ((JSONObject) instanceParams.get("medium")).get("bounds"));
-                for (String param: mediumParameters) {
-                    partInstance.setEntry("inputexpr", param, (Double) itemObject.get(param));
+            }
 
-                }
+            // imports
+            partInstance.set("selkeepnoncontr", false);
+            partInstance.setEntry("selkeepdom", instanceID + "_" + myIM.get(myLabels[0]) + ".dom", "on"); // MEDIUM
 
-                // imports
-                partInstance.set("selkeepnoncontr", false);
-                partInstance.setEntry("selkeepdom", instanceID + "_" +  myIM.get(myLabels[0]) + ".dom", "on"); // MEDIUM
+            partInstance.setEntry("selkeepbnd", instanceID + "_" + myIM.get(myLabels[0]) + ".bnd", "on"); // MEDIUM
 
-                partInstance.setEntry("selkeepbnd", instanceID + "_" +  myIM.get(myLabels[0]) + ".bnd", "on"); // MEDIUM
+            // assign physics
+            String groundLabel = "Ground";
+            PhysicsFeature gnd = model.component("comp1").physics("ec").create(mw.im.next("gnd", groundLabel), "Ground", 2);
+            gnd.label(groundLabel);
+            gnd.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[0]) + "_bnd");
 
-                // assign physics
-                String groundLabel = "Ground";
-                PhysicsFeature gnd = model.component("comp1").physics("ec").create(mw.im.next("gnd",groundLabel), "Ground", 2);
-                gnd.label(groundLabel);
-                gnd.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[0]) + "_bnd");
-
-                // assign domain material
-                JSONObject medium = (JSONObject) instanceParams.get("medium");
-                String mediumMaterial = medium.getString("material");
-                String selection = myLabels[0];
-                String linkLabel = String.join("/", new String[]{instanceLabel, selection, mediumMaterial});
-                Material mat = model.component("comp1").material().create(mw.im.next("matlnk", linkLabel), "Link");
-                mat.label(linkLabel);
-                mat.set("link", mw.im.get(mediumMaterial));
-                mat.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(selection) + "_dom");
-
-                break;
-
-            default:
-                throw new  IllegalArgumentException("No implementation for part primitive name: " + pseudonym);
-
+            // assign domain material
+            JSONObject medium = (JSONObject) instanceParams.get("medium");
+            String mediumMaterial = medium.getString("material");
+            String selection = myLabels[0];
+            String linkLabel = String.join("/", new String[]{instanceLabel, selection, mediumMaterial});
+            Material mat = model.component("comp1").material().create(mw.im.next("matlnk", linkLabel), "Link");
+            mat.label(linkLabel);
+            mat.set("link", mw.im.get(mediumMaterial));
+            mat.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(selection) + "_dom");
+        } else {
+            throw new IllegalArgumentException("No implementation for part primitive name: " + pseudonym);
         }
     }
 
@@ -1678,14 +1666,12 @@ class Part {
 
                 // assign physics
                 String ribbon_pcsLabel = instanceLabel + " Current Source";
-                String ribbon_currentLabel = instanceLabel;
-
-                mw.im.currentPointers.put(ribbon_currentLabel,
+                mw.im.currentPointers.put(instanceLabel,
                         model.component("comp1").physics("ec").create(mw.im.next("pcs", ribbon_pcsLabel), "PointCurrentSource", 0));
 
-                ((PhysicsFeature) mw.im.currentPointers.get(ribbon_currentLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" +  myIM.get(myLabels[2]) + "_pnt"); // SRC
-                ((PhysicsFeature) mw.im.currentPointers.get(ribbon_currentLabel)).set("Qjp", 0.001);
-                ((PhysicsFeature) mw.im.currentPointers.get(ribbon_currentLabel)).label(ribbon_pcsLabel);
+                ((PhysicsFeature) mw.im.currentPointers.get(instanceLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" +  myIM.get(myLabels[2]) + "_pnt"); // SRC
+                ((PhysicsFeature) mw.im.currentPointers.get(instanceLabel)).set("Qjp", 0.001);
+                ((PhysicsFeature) mw.im.currentPointers.get(instanceLabel)).label(ribbon_pcsLabel);
 
                 break;
 
@@ -1717,14 +1703,12 @@ class Part {
 
                 // assign physics
                 String wire_pcsLabel = instanceLabel + " Current Source";
-                String wire_currentLabel = instanceLabel;
-
-                mw.im.currentPointers.put(wire_currentLabel,
+                mw.im.currentPointers.put(instanceLabel,
                         model.component("comp1").physics("ec").create(mw.im.next("pcs", wire_pcsLabel), "PointCurrentSource", 0));
 
-                ((PhysicsFeature) mw.im.currentPointers.get(wire_currentLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" +  myIM.get(myLabels[2]) + "_pnt"); // SRC
-                ((PhysicsFeature) mw.im.currentPointers.get(wire_currentLabel)).set("Qjp", 0.001);
-                ((PhysicsFeature) mw.im.currentPointers.get(wire_currentLabel)).label(wire_pcsLabel);
+                ((PhysicsFeature) mw.im.currentPointers.get(instanceLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" +  myIM.get(myLabels[2]) + "_pnt"); // SRC
+                ((PhysicsFeature) mw.im.currentPointers.get(instanceLabel)).set("Qjp", 0.001);
+                ((PhysicsFeature) mw.im.currentPointers.get(instanceLabel)).label(wire_pcsLabel);
 
                 break;
 
@@ -1795,14 +1779,12 @@ class Part {
 
                 // assign physics
                 String circle_pcsLabel = instanceLabel + " Current Source";
-                String circle_currentLabel = instanceLabel;
-
-                mw.im.currentPointers.put(circle_currentLabel,
+                mw.im.currentPointers.put(instanceLabel,
                         model.component("comp1").physics("ec").create(mw.im.next("pcs", circle_pcsLabel), "PointCurrentSource", 0));
 
-                ((PhysicsFeature) mw.im.currentPointers.get(circle_currentLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" +  myIM.get(myLabels[4]) + "_pnt"); // SRC
-                ((PhysicsFeature) mw.im.currentPointers.get(circle_currentLabel)).set("Qjp", 0.001);
-                ((PhysicsFeature) mw.im.currentPointers.get(circle_currentLabel)).label(circle_pcsLabel);
+                ((PhysicsFeature) mw.im.currentPointers.get(instanceLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" +  myIM.get(myLabels[4]) + "_pnt"); // SRC
+                ((PhysicsFeature) mw.im.currentPointers.get(instanceLabel)).set("Qjp", 0.001);
+                ((PhysicsFeature) mw.im.currentPointers.get(instanceLabel)).label(circle_pcsLabel);
 
                 break;
             case "HelicalCuffnContact_Primitive":
@@ -1842,14 +1824,12 @@ class Part {
 
                 // assign physics
                 String helix_pcsLabel = instanceLabel + " Current Source";
-                String helix_currentLabel = instanceLabel;
-
-                mw.im.currentPointers.put(helix_currentLabel,
+                mw.im.currentPointers.put(instanceLabel,
                         model.component("comp1").physics("ec").create(mw.im.next("pcs", helix_pcsLabel), "PointCurrentSource", 0));
 
-                ((PhysicsFeature) mw.im.currentPointers.get(helix_currentLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" +  myIM.get(myLabels[4]) + "_pnt"); // SRC
-                ((PhysicsFeature) mw.im.currentPointers.get(helix_currentLabel)).set("Qjp", 0.001);
-                ((PhysicsFeature) mw.im.currentPointers.get(helix_currentLabel)).label(helix_pcsLabel);
+                ((PhysicsFeature) mw.im.currentPointers.get(instanceLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" +  myIM.get(myLabels[4]) + "_pnt"); // SRC
+                ((PhysicsFeature) mw.im.currentPointers.get(instanceLabel)).set("Qjp", 0.001);
+                ((PhysicsFeature) mw.im.currentPointers.get(instanceLabel)).label(helix_pcsLabel);
 
                 break;
 
@@ -1933,14 +1913,12 @@ class Part {
 
                 // assign physics
                 String square_pcsLabel = instanceLabel + " Current Source";
-                String square_currentLabel = instanceLabel;
-
-                mw.im.currentPointers.put(square_currentLabel,
+                mw.im.currentPointers.put(instanceLabel,
                         model.component("comp1").physics("ec").create(mw.im.next("pcs", square_pcsLabel), "PointCurrentSource", 0));
 
-                ((PhysicsFeature) mw.im.currentPointers.get(square_currentLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" +  myIM.get(myLabels[16]) + "_pnt"); // SRC
-                ((PhysicsFeature) mw.im.currentPointers.get(square_currentLabel)).set("Qjp", 0.001);
-                ((PhysicsFeature) mw.im.currentPointers.get(square_currentLabel)).label(square_pcsLabel);
+                ((PhysicsFeature) mw.im.currentPointers.get(instanceLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" +  myIM.get(myLabels[16]) + "_pnt"); // SRC
+                ((PhysicsFeature) mw.im.currentPointers.get(instanceLabel)).set("Qjp", 0.001);
+                ((PhysicsFeature) mw.im.currentPointers.get(instanceLabel)).label(square_pcsLabel);
 
                 break;
 
@@ -1970,14 +1948,12 @@ class Part {
 
                 // assign physics
                 String u_pcsLabel = instanceLabel + " Current Source";
-                String u_currentLabel = instanceLabel;
-
-                mw.im.currentPointers.put(u_currentLabel,
+                mw.im.currentPointers.put(instanceLabel,
                         model.component("comp1").physics("ec").create(mw.im.next("pcs", u_pcsLabel), "PointCurrentSource", 0));
 
-                ((PhysicsFeature) mw.im.currentPointers.get(u_currentLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" +  myIM.get(myLabels[2]) + "_pnt"); // SRC
-                ((PhysicsFeature) mw.im.currentPointers.get(u_currentLabel)).set("Qjp", 0.001);
-                ((PhysicsFeature) mw.im.currentPointers.get(u_currentLabel)).label(u_pcsLabel);
+                ((PhysicsFeature) mw.im.currentPointers.get(instanceLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" +  myIM.get(myLabels[2]) + "_pnt"); // SRC
+                ((PhysicsFeature) mw.im.currentPointers.get(instanceLabel)).set("Qjp", 0.001);
+                ((PhysicsFeature) mw.im.currentPointers.get(instanceLabel)).label(u_pcsLabel);
 
                 break;
 
@@ -2145,7 +2121,7 @@ class Part {
                 ci.selection().named("geom1_" + im.get(fascicleCI_Endo_Label) + "_bnd");
                 ci.set("spec_type", "surfimp");
                 // if inners only
-                String mask_input_mode = ((JSONObject) sampleData.getJSONObject("modes")).getString("mask_input");
+                String mask_input_mode = sampleData.getJSONObject("modes").getString("mask_input");
 
                 String separate = "INNER_AND_OUTER_SEPARATE";
                 String compiled = "INNER_AND_OUTER_COMPILED";
@@ -2156,32 +2132,29 @@ class Part {
                     String name_area_inner = ci_inner_name + "_area";
                     String name_area_outer = ci_outer_name + "_area";
 
-                    Double inner_area = ((JSONObject) fascicle.get("inner")).getDouble("area");
+                    Double inner_area = ((JSONObject) fascicle.getJSONArray("inners").get(0)).getDouble("area");
                     Double outer_area = ((JSONObject) fascicle.get("outer")).getDouble("area");
 
                     nerveParams.set(name_area_inner, inner_area + " [" + morphology_unit + "^2]", ci_inner_path);
                     nerveParams.set(name_area_outer, outer_area + " [" + morphology_unit + "^2]", ci_outer_path);
 
-                    String rhos = "(1/perineurium)*(sqrt(" + name_area_outer  + "/pi) - sqrt(" + name_area_inner  + "/pi))"; // A = pi*r^2; r = sqrt(A/pi); thk = sqrt(A_out/pi)-sqrt(A_in/pi); Rm = rho*thk
+                    String rhos = "(1/sigma_perineurium)*(sqrt(" + name_area_outer  + "/pi) - sqrt(" + name_area_inner  + "/pi))"; // A = pi*r^2; r = sqrt(A/pi); thk = sqrt(A_out/pi)-sqrt(A_in/pi); Rm = rho*thk
                     ci.set("rhos", rhos);
 
                 } else if (mask_input_mode.compareTo(inners) == 0) {
                     String name_area_inner = ci_inner_name + "_area";
 
-                    Double inner_area = ((JSONObject) fascicle.get("inner")).getDouble("area");
+                    Double inner_area = ((JSONObject) fascicle.getJSONArray("inners").get(0)).getDouble("area");
 
                     nerveParams.set(name_area_inner, inner_area + " [" + morphology_unit + "^2]", ci_inner_path);
 
-                    String rhos = "(1/perineurium)*(ci_a*2*sqrt(" + name_area_inner  + "/pi)+ci_b)"; // A = pi*r^2; r = sqrt(A/pi); d = 2*sqrt(A/pi); thk = 0.03*2*sqrt(A/pi); Rm = rho*thk
+                    String rhos = "(1/sigma_perineurium)*(ci_a*2*sqrt(" + name_area_inner  + "/pi)+ci_b)"; // A = pi*r^2; r = sqrt(A/pi); d = 2*sqrt(A/pi); thk = 0.03*2*sqrt(A/pi); Rm = rho*thk
                     ci.set("rhos", rhos);
 
                 } else if (mask_input_mode.compareTo(outers) == 0) {
                     System.out.println("OUTERS ONLY NOT IMPLEMENTED - NO PERI CONTACT IMPEDANCE SET");
 
                 }
-                // WIP TODO
-                // else inners and outers
-
 
                 break;
 
