@@ -2079,15 +2079,17 @@ class Part {
         switch (pseudonym) {
             case "FascicleCI":
 
-                String ci_name = "outer" + index;
-                String name_area = ci_name + "_area";
+                String ci_outer_name = "outer" + index;
+                String ci_inner_name = "inner" + index;
+
                 String ci_inner_path = path + "/inners/" + tracePaths.get("inners")[0];
+                String ci_outer_path = path + "/outer/" + tracePaths.get("outer")[0];
 
                 String ci_inner = tracePaths.get("inners")[0];
                 String ci_inner_index = ci_inner.split("\\.")[0];
 
-                String fascicleCI_Inner_Label = ci_name + "_INNERS_CI";
-                String fascicleCI_Endo_Label = ci_name + "_ENDONEURIUM";
+                String fascicleCI_Inner_Label = ci_inner_name + "_INNERS_CI";
+                String fascicleCI_Endo_Label = ci_inner_name + "_ENDONEURIUM";
 
                 im.labels = new String[]{
                         fascicleCI_Inner_Label, //0
@@ -2102,20 +2104,17 @@ class Part {
                 JSONObject fascicle = sampleData.getJSONObject("Morphology").getJSONArray("Fascicles").getJSONObject(index);
                 String morphology_unit = ((JSONObject) sampleData.get("scale")).getString("scale_bar_unit");
 
-                Double area = ((JSONObject) fascicle.get("outer")).getDouble("area");
-                nerveParams.set(name_area, area + " [" + morphology_unit + "^2]", ci_inner_path);
-
-                String fascicleCICXLabel = ci_name + " Inner Geometry";
+                String fascicleCICXLabel = ci_inner_name + " Inner Geometry";
                 GeomFeature fascicleCICX = model.component("comp1").geom("geom1").create(im.next("wp",fascicleCICXLabel), "WorkPlane");
                 fascicleCICX.label(fascicleCICXLabel);
                 fascicleCICX.set("contributeto", im.get(fascicleCI_Inner_Label));
                 fascicleCICX.set("unite", true);
 
-                String icLabel = ci_name + "_IC";
+                String icLabel = ci_inner_name + "_IC";
                 fascicleCICX.geom().selection().create(im.next("csel",icLabel), "CumulativeSelection");
                 fascicleCICX.geom().selection(im.get(icLabel)).label(icLabel);
 
-                String icnameLabel = ci_name + " Inner Trace " + ci_inner_index;
+                String icnameLabel = ci_inner_name + " Inner Trace " + ci_inner_index;
                 GeomFeature ic = model.component("comp1").geom("geom1").feature(im.get(fascicleCICXLabel)).geom().create(im.next("ic", icnameLabel), "InterpolationCurve");
                 ic.label(icnameLabel);
                 ic.set("contributeto", im.get(icLabel));
@@ -2123,12 +2122,12 @@ class Part {
                 ic.set("filename", ci_inner_path);
                 ic.set("rtol", 0.02);
 
-                String conv2solidLabel = ci_name + " Inner Surface " + ci_inner_index;
+                String conv2solidLabel = ci_inner_name + " Inner Surface " + ci_inner_index;
                 GeomFeature conv2solid = model.component("comp1").geom("geom1").feature(im.get(fascicleCICXLabel)).geom().create(im.next("csol",conv2solidLabel), "ConvertToSolid");
                 conv2solid.label(conv2solidLabel);
                 conv2solid.selection("input").named(im.get(icLabel));
 
-                String makefascicleLabel = ci_name + " Make Endoneurium";
+                String makefascicleLabel = ci_inner_name + " Make Endoneurium";
                 GeomFeature makefascicle = model.component("comp1").geom("geom1").create(im.next("ext",makefascicleLabel), "Extrude");
                 makefascicle.label(makefascicleLabel);
                 makefascicle.set("contributeto", im.get(fascicleCI_Endo_Label));
@@ -2140,7 +2139,7 @@ class Part {
                 mw.contributeToUnions(im.get(makefascicleLabel), fascicleCIEndoUnions);
 
                 // Add physics
-                String ciLabel = ci_name + " ContactImpedance";
+                String ciLabel = ci_inner_name + " ContactImpedance";
                 PhysicsFeature ci =  model.component("comp1").physics("ec").create(im.next("ci",ciLabel), "ContactImpedance", 2);
                 ci.label(ciLabel);
                 ci.selection().named("geom1_" + im.get(fascicleCI_Endo_Label) + "_bnd");
@@ -2154,11 +2153,30 @@ class Part {
                 String outers = "OUTERS";
 
                 if ((mask_input_mode.compareTo(separate)) == 0 || (mask_input_mode.compareTo(compiled)) == 0) {
-                    System.out.println("we have both inners and outers so use the thickness measured!");
+                    String name_area_inner = ci_inner_name + "_area";
+                    String name_area_outer = ci_outer_name + "_area";
 
-                } else if ((mask_input_mode.compareTo(inners)) == 0 || (mask_input_mode.compareTo(outers)) == 0) {
-                    String rhos = "(1/perineurium)*(ci_a*2*sqrt(" + name_area  + "/pi)+ci_b)"; // A = pi*r^2; r = sqrt(A/pi); d = 2*sqrt(A/pi); thk = 0.03*2*sqrt(A/pi); Rm = rho*thk
+                    Double inner_area = ((JSONObject) fascicle.get("inner")).getDouble("area");
+                    Double outer_area = ((JSONObject) fascicle.get("outer")).getDouble("area");
+
+                    nerveParams.set(name_area_inner, inner_area + " [" + morphology_unit + "^2]", ci_inner_path);
+                    nerveParams.set(name_area_outer, outer_area + " [" + morphology_unit + "^2]", ci_outer_path);
+
+                    String rhos = "(1/perineurium)*(sqrt(" + name_area_outer  + "/pi) - sqrt(" + name_area_inner  + "/pi))"; // A = pi*r^2; r = sqrt(A/pi); thk = sqrt(A_out/pi)-sqrt(A_in/pi); Rm = rho*thk
                     ci.set("rhos", rhos);
+
+                } else if (mask_input_mode.compareTo(inners) == 0) {
+                    String name_area_inner = ci_inner_name + "_area";
+
+                    Double inner_area = ((JSONObject) fascicle.get("inner")).getDouble("area");
+
+                    nerveParams.set(name_area_inner, inner_area + " [" + morphology_unit + "^2]", ci_inner_path);
+
+                    String rhos = "(1/perineurium)*(ci_a*2*sqrt(" + name_area_inner  + "/pi)+ci_b)"; // A = pi*r^2; r = sqrt(A/pi); d = 2*sqrt(A/pi); thk = 0.03*2*sqrt(A/pi); Rm = rho*thk
+                    ci.set("rhos", rhos);
+
+                } else if (mask_input_mode.compareTo(outers) == 0) {
+                    System.out.println("OUTERS ONLY NOT IMPLEMENTED - NO PERI CONTACT IMPEDANCE SET");
 
                 }
                 // WIP TODO
