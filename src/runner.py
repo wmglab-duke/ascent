@@ -83,7 +83,8 @@ class Runner(Exceptionable, Configurable):
     def run(self):
         # TODO: implement overwrite checking
 
-        # constant sample
+        # NOTE: single sample per Runner, so no looping of samples
+        #       possible addition of functionality for looping samples in start.py
 
         # load all json configs into memory
         all_configs = self.load_configs()
@@ -99,47 +100,20 @@ class Runner(Exceptionable, Configurable):
             .populate()\
             .write(WriteMode.SECTIONWISE2D)
 
+        # save associated sample.obj
         slide_manager.save(os.path.join('samples',
                                         str(self.configs[Config.RUN.value]['sample']),
                                         'sample.obj'))
 
+        # output fascicle inner and outer areas to associated sample.json
         slide_manager.output_morphology_data()
 
         # iterate through models
         for model_index, model in enumerate(all_configs[Config.MODEL.value]):
             print('MODEL {}'.format(model_index))
 
-            model_config = all_configs[Config.MODEL.value][model_index]
-
-            # save rho_perineurium to model.json
-            waveform = Waveform(self.configs[Config.EXCEPTIONS.value])
-            waveform.add(SetupMode.OLD, Config.MODEL, model_config)
-
-            rho_double = waveform.rho_weerasuriya(model_config.get('frequency').get('value'))
-            sigma_double = 1/rho_double
-
-            model_config['conductivities']['perineurium']['value'] = str(sigma_double)
-
-            ci_perineurium_thickness_mode = model_config.get('modes').get('ci_perineurium_thickness')
-            ci_params_path = os.path.join('config', 'system', 'ci_peri_thickness.json')
-            ci_params = self.load(ci_params_path)
-
-            model_config['ci_perineurium_thickness']['coefficients']['a'] = \
-                ci_params[PerineuriumThicknessMode.parameters.value][ci_perineurium_thickness_mode]['a']
-
-            model_config['ci_perineurium_thickness']['coefficients']['b'] = \
-                ci_params[PerineuriumThicknessMode.parameters.value][ci_perineurium_thickness_mode]['b']
-
-            model_config['ci_perineurium_thickness']['coefficients']['unit'] = \
-                ci_params[PerineuriumThicknessMode.parameters.value][ci_perineurium_thickness_mode]['unit']
-
-            dest_path: str = os.path.join(*all_configs[Config.SAMPLE.value][0]['samples_path'],
-                                          str(self.configs[Config.RUN.value]['sample']),
-                                          'models',
-                                          str(self.configs[Config.RUN.value]['models'][model_index]),
-                                          'model.json')
-
-            TemplateOutput.write(model_config, dest_path)
+            # use current model index to compute electrical parameters (SAVES to file in method)
+            self.compute_electrical_parameters(all_configs, model_index)
 
             # iterate through simulations
             for sim_index, sim in enumerate(all_configs['sims']):
@@ -430,3 +404,40 @@ class Runner(Exceptionable, Configurable):
     #
     #     # self.slide.reposition_fascicles(self.slide.reshaped_nerve(ReshapeNerveMode.ELLIPSE))
     #     self.slide.reposition_fascicles(self.slide.reshaped_nerve(ReshapeNerveMode.CIRCLE))
+
+    def compute_electrical_parameters(self, all_configs, model_index):
+
+        # fetch current model config using the index
+        model_config = all_configs[Config.MODEL.value][model_index]
+
+        # initialize Waveform object
+        waveform = Waveform(self.configs[Config.EXCEPTIONS.value])
+
+        # add model config to Waveform object, enabling it to generate waveforms
+        waveform.add(SetupMode.OLD, Config.MODEL, model_config)
+
+        # compute rho and sigma from waveform instance
+        rho_double = waveform.rho_weerasuriya(model_config.get('frequency').get('value'))
+        sigma_double = 1/rho_double
+
+        model_config['conductivities']['perineurium']['value'] = str(sigma_double)
+
+        ci_perineurium_thickness_mode = model_config.get('modes').get('ci_perineurium_thickness')
+        ci_params = self.load(os.path.join('config', 'system', 'ci_peri_thickness.json'))
+
+        model_config['ci_perineurium_thickness']['coefficients']['a'] = \
+            ci_params[PerineuriumThicknessMode.parameters.value][ci_perineurium_thickness_mode]['a']
+
+        model_config['ci_perineurium_thickness']['coefficients']['b'] = \
+            ci_params[PerineuriumThicknessMode.parameters.value][ci_perineurium_thickness_mode]['b']
+
+        model_config['ci_perineurium_thickness']['coefficients']['unit'] = \
+            ci_params[PerineuriumThicknessMode.parameters.value][ci_perineurium_thickness_mode]['unit']
+
+        dest_path: str = os.path.join(*all_configs[Config.SAMPLE.value][0]['samples_path'],
+                                      str(self.configs[Config.RUN.value]['sample']),
+                                      'models',
+                                      str(self.configs[Config.RUN.value]['models'][model_index]),
+                                      'model.json')
+
+        TemplateOutput.write(model_config, dest_path)
