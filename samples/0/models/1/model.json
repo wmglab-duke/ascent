@@ -1,6 +1,19 @@
 {
   "mesh": {
-    "tbd": true
+    "nerve": {
+      "hmax": 1000,
+      "hmin": 10,
+      "hgrad": 1.3,
+      "hcurve": 0.2,
+      "hnarrow": 1
+    },
+    "rest": {
+      "hmax": 1000,
+      "hmin": 10,
+      "hgrad": 1.3,
+      "hcurve": 0.2,
+      "hnarrow": 1
+    }
   },
   "modes": {
     "fiber_z": "EXTRUSION",

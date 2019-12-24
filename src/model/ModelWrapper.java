@@ -802,17 +802,72 @@ public class ModelWrapper {
             MeshFeature meshNerve = model.component("comp1").mesh("mesh1").create(mw.im.next("swe",meshNerveSweLabel), "Sweep");
             meshNerve.selection().geom("geom1", 3);
             meshNerve.selection().named("geom1" + "_" + mw.im.get("allNervePartsUnionCsel") + "_dom");
-            model.component("comp1").mesh("mesh1").feature(mw.im.get(meshNerveSweLabel)).set("facemethod", "tri");
-            model.component("comp1").mesh("mesh1").feature("size").set("hauto", 1); // TODO load in mesh params from model
+            meshNerve.set("facemethod", "tri");
+            meshNerve.label(meshNerveSweLabel);
+
+            String meshNerveSizeInfoLabel = "Mesh Nerve Size Info";
+            MeshFeature meshNerveSizeInfo = meshNerve.create(mw.im.next("size",meshNerveSizeInfoLabel), "Size");
+            meshNerveSizeInfo.label(meshNerveSizeInfoLabel);
+
+            JSONObject nerveMeshParams = modelData.getJSONObject("mesh").getJSONObject("nerve");
+            meshNerveSizeInfo.set("custom", true);
+            meshNerveSizeInfo.set("hmaxactive", true);
+            meshNerveSizeInfo.set("hmax", nerveMeshParams.getDouble("hmax"));
+            meshNerveSizeInfo.set("hminactive", true);
+            meshNerveSizeInfo.set("hmin", nerveMeshParams.getDouble("hmin"));
+            meshNerveSizeInfo.set("hgradactive", true);
+            meshNerveSizeInfo.set("hgrad", nerveMeshParams.getDouble("hgrad"));
+            meshNerveSizeInfo.set("hcurveactive", true);
+            meshNerveSizeInfo.set("hcurve", nerveMeshParams.getDouble("hcurve"));
+
+            meshNerveSizeInfo.set("hnarrowactive", true);
+            meshNerveSizeInfo.set("hnarrow", nerveMeshParams.getDouble("hnarrow"));
+
             System.out.println("Meshing nerve parts... will take a while");
-            //model.component("comp1").mesh("mesh1").run(mw.im.get(meshNerveSweLabel)); // TODO
+//            model.component("comp1").mesh("mesh1").run(mw.im.get(meshNerveSweLabel)); // TODO
+            //PROGRESS METHODS
 
             String meshRestFtetLabel = "Mesh Rest";
-            model.component("comp1").mesh("mesh1").create(mw.im.next("ftet",meshRestFtetLabel), "FreeTet");
-            model.component("comp1").mesh("mesh1").feature(mw.im.get(meshRestFtetLabel)).create("size1", "Size");
-            model.component("comp1").mesh("mesh1").feature(mw.im.get(meshRestFtetLabel)).feature("size1").set("hauto", 1);
+            MeshFeature meshRest = model.component("comp1").mesh("mesh1").create(mw.im.next("ftet",meshRestFtetLabel), "FreeTet");
+            meshRest.selection().geom("geom1", 3);
+            meshRest.selection().remaining();
+            meshRest.label(meshRestFtetLabel);
+
+            String meshRestSizeInfoLabel = "Mesh Rest Size Info";
+            MeshFeature meshRestSizeInfo = meshRest.create(mw.im.next("size",meshRestSizeInfoLabel), "Size");
+            meshRestSizeInfo.label(meshRestSizeInfoLabel);
+
+            JSONObject restMeshParams = modelData.getJSONObject("mesh").getJSONObject("rest");
+            meshRestSizeInfo.set("custom", true);
+            meshRestSizeInfo.set("hmaxactive", true);
+            meshRestSizeInfo.set("hmax", restMeshParams.getDouble("hmax"));
+            meshRestSizeInfo.set("hminactive", true);
+            meshRestSizeInfo.set("hmin", restMeshParams.getDouble("hmin"));
+            meshRestSizeInfo.set("hgradactive", true);
+            meshRestSizeInfo.set("hgrad", restMeshParams.getDouble("hgrad"));
+            meshRestSizeInfo.set("hcurveactive", true);
+            meshRestSizeInfo.set("hcurve", restMeshParams.getDouble("hcurve"));
+            meshRestSizeInfo.set("hnarrowactive", true);
+            meshRestSizeInfo.set("hnarrow", restMeshParams.getDouble("hnarrow"));
+
             System.out.println("Meshing the rest... will also take a while");
-            //model.component("comp1").mesh("mesh1").run(mw.im.get(meshRestFtetLabel)); // TODO
+//            model.component("comp1").mesh("mesh1").run(mw.im.get(meshRestFtetLabel)); // TODO
+
+            ///////
+
+            Integer number_elements = model.component("comp1").mesh("mesh1").getNumElem();
+            System.out.println("=================");
+            //double hv = model.mesh("mesh1").feature("size").getDouble("hauto")
+
+//            a = model.component("comp1").mesh("mesh1").getNumElem();
+//            b = model.component("comp1").mesh("mesh1").getMinQuality("tet");
+//            c = model.component("comp1").mesh("mesh1").getMeanQuality("tet");
+//            d = model.component("comp1").mesh("mesh1").getMinVolume("tet");
+//            e = model.component("comp1").mesh("mesh1").getVolume("tet");
+
+
+
+            System.out.println(number_elements);
 
             // Solve
             model.study().create("std1");
