@@ -12,7 +12,10 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -824,12 +827,25 @@ public class ModelWrapper {
             meshNerveSizeInfo.set("hnarrow", nerveMeshParams.getDouble("hnarrow"));
 
             System.out.println("Meshing nerve parts... will take a while");
-            System.out.println(nerveMeshParams);
 
             long nerveMeshStartTime = System.nanoTime();
-            model.component("comp1").mesh("mesh1").run(mw.im.get(meshNerveSweLabel));
+//            model.component("comp1").mesh("mesh1").run(mw.im.get(meshNerveSweLabel));
             long estimatedNerveMeshTime = System.nanoTime() - nerveMeshStartTime;
             nerveMeshParams.put("mesh_time",estimatedNerveMeshTime);
+
+//            Path currentRelativePath = Paths.get("");
+//            String s = currentRelativePath.toAbsolutePath().toString();
+//            System.out.println("Current relative path is: " + s);
+
+//            try (FileWriter file = new FileWriter("../" + modelFile)) {
+//                file.write(nerveMeshParams.toString());
+//                System.out.println("SAVED");
+//
+//            } catch (IOException e) {
+//                System.out.println("NOT SAVED");
+//                e.printStackTrace();
+//            }
+
 
             //PROGRESS METHODS
 
@@ -859,15 +875,14 @@ public class ModelWrapper {
             System.out.println("Meshing the rest... will also take a while");
 
             long restMeshStartTime = System.nanoTime();
-            model.component("comp1").mesh("mesh1").run(mw.im.get(meshRestFtetLabel));
+//            model.component("comp1").mesh("mesh1").run(mw.im.get(meshRestFtetLabel));
             long estimatedRestMeshTime = System.nanoTime() - restMeshStartTime;
             restMeshParams.put("mesh_time",estimatedRestMeshTime);
 
-            modelData.getJSONObject("mesh").getJSONObject("rest").put("mesh_time", 6);
 
             ///////
 
-            Integer number_elements = model.component("comp1").mesh("mesh1").getNumElem();
+//            Integer number_elements = model.component("comp1").mesh("mesh1").getNumElem();
             //double hv = model.mesh("mesh1").feature("size").getDouble("hauto")
 
 //            a = model.component("comp1").mesh("mesh1").getNumElem();
@@ -876,9 +891,24 @@ public class ModelWrapper {
 //            d = model.component("comp1").mesh("mesh1").getMinVolume("tet");
 //            e = model.component("comp1").mesh("mesh1").getVolume("tet");
 
-
-
-            System.out.println(number_elements);
+            // put nerve to mesh, rest to mesh, mesh to modelData
+//            JSONObject mesh = modelData.getJSONObject("mesh");
+//            mesh.put("nerve", nerveMeshParams);
+//            mesh.put("rest", restMeshParams);
+//            modelData.put("mesh", mesh);
+//
+//            try (FileWriter file = new FileWriter("../" + modelFile)) {
+//                String output = modelData.toString();
+//                System.out.println(output);
+//                System.out.println("SAVED");
+//
+//            } catch (IOException e) {
+//                System.out.println("NOT SAVED");
+//                e.printStackTrace();
+//            }
+//
+//
+//            System.out.println(number_elements);
 
             // Solve
             model.study().create("std1");
