@@ -824,7 +824,13 @@ public class ModelWrapper {
             meshNerveSizeInfo.set("hnarrow", nerveMeshParams.getDouble("hnarrow"));
 
             System.out.println("Meshing nerve parts... will take a while");
-//            model.component("comp1").mesh("mesh1").run(mw.im.get(meshNerveSweLabel)); // TODO
+            System.out.println(nerveMeshParams);
+
+            long nerveMeshStartTime = System.nanoTime();
+            model.component("comp1").mesh("mesh1").run(mw.im.get(meshNerveSweLabel));
+            long estimatedNerveMeshTime = System.nanoTime() - nerveMeshStartTime;
+            nerveMeshParams.put("mesh_time",estimatedNerveMeshTime);
+
             //PROGRESS METHODS
 
             String meshRestFtetLabel = "Mesh Rest";
@@ -851,12 +857,17 @@ public class ModelWrapper {
             meshRestSizeInfo.set("hnarrow", restMeshParams.getDouble("hnarrow"));
 
             System.out.println("Meshing the rest... will also take a while");
-//            model.component("comp1").mesh("mesh1").run(mw.im.get(meshRestFtetLabel)); // TODO
+
+            long restMeshStartTime = System.nanoTime();
+            model.component("comp1").mesh("mesh1").run(mw.im.get(meshRestFtetLabel));
+            long estimatedRestMeshTime = System.nanoTime() - restMeshStartTime;
+            restMeshParams.put("mesh_time",estimatedRestMeshTime);
+
+            modelData.getJSONObject("mesh").getJSONObject("rest").put("mesh_time", 6);
 
             ///////
 
             Integer number_elements = model.component("comp1").mesh("mesh1").getNumElem();
-            System.out.println("=================");
             //double hv = model.mesh("mesh1").feature("size").getDouble("hauto")
 
 //            a = model.component("comp1").mesh("mesh1").getNumElem();

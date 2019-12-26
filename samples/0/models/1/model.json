@@ -5,14 +5,16 @@
       "hmin": 10,
       "hgrad": 1.3,
       "hcurve": 0.2,
-      "hnarrow": 1
+      "hnarrow": 1,
+      "mesh_time": "tbd"
     },
     "rest": {
       "hmax": 1000,
       "hmin": 10,
       "hgrad": 1.3,
       "hcurve": 0.2,
-      "hnarrow": 1
+      "hnarrow": 1,
+      "mesh_time": "tbd"
     }
   },
   "modes": {
