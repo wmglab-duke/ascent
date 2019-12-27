@@ -892,20 +892,21 @@ public class ModelWrapper {
 //            e = model.component("comp1").mesh("mesh1").getVolume("tet");
 
             // put nerve to mesh, rest to mesh, mesh to modelData
-//            JSONObject mesh = modelData.getJSONObject("mesh");
-//            mesh.put("nerve", nerveMeshParams);
-//            mesh.put("rest", restMeshParams);
-//            modelData.put("mesh", mesh);
-//
-//            try (FileWriter file = new FileWriter("../" + modelFile)) {
-//                String output = modelData.toString();
-//                System.out.println(output);
-//                System.out.println("SAVED");
-//
-//            } catch (IOException e) {
-//                System.out.println("NOT SAVED");
-//                e.printStackTrace();
-//            }
+            JSONObject mesh = modelData.getJSONObject("mesh");
+            mesh.put("nerve", nerveMeshParams);
+            mesh.put("rest", restMeshParams);
+            modelData.put("mesh", mesh);
+
+            try (FileWriter file = new FileWriter("../" + modelFile)) {
+                String output = modelData.toString();
+                file.write(output);
+                System.out.println(output);
+                System.out.println("SAVED");
+
+            } catch (IOException e) {
+                System.out.println("NOT SAVED");
+                e.printStackTrace();
+            }
 //
 //
 //            System.out.println(number_elements);
