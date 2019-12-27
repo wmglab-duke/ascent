@@ -833,20 +833,6 @@ public class ModelWrapper {
             long estimatedNerveMeshTime = System.nanoTime() - nerveMeshStartTime;
             nerveMeshParams.put("mesh_time",estimatedNerveMeshTime/Math.pow(10,6)); // convert nanos to millis
 
-//            Path currentRelativePath = Paths.get("");
-//            String s = currentRelativePath.toAbsolutePath().toString();
-//            System.out.println("Current relative path is: " + s);
-
-//            try (FileWriter file = new FileWriter("../" + modelFile)) {
-//                file.write(nerveMeshParams.toString());
-//                System.out.println("SAVED");
-//
-//            } catch (IOException e) {
-//                System.out.println("NOT SAVED");
-//                e.printStackTrace();
-//            }
-
-
             //PROGRESS METHODS
 
             String meshRestFtetLabel = "Mesh Rest";
@@ -879,22 +865,29 @@ public class ModelWrapper {
             long estimatedRestMeshTime = System.nanoTime() - restMeshStartTime;
             restMeshParams.put("mesh_time",estimatedRestMeshTime/Math.pow(10,6)); // convert nanos to millis
 
+            String quality_measure = "vollength";
+            model.component("comp1").mesh("mesh1").stat().setQualityMeasure(quality_measure);
+            // could instead use: skewness, maxangle, volcircum, vollength, condition, growth...
 
-            ///////
+            Integer number_elements = model.component("comp1").mesh("mesh1").getNumElem("all");
+            Double min_quality = model.component("comp1").mesh("mesh1").getMinQuality("all");
+            Double mean_quality = model.component("comp1").mesh("mesh1").getMeanQuality("all");
+            Double min_volume = model.component("comp1").mesh("mesh1").getMinVolume("all");
+            Double volume = model.component("comp1").mesh("mesh1").getVolume("all");
 
-//            Integer number_elements = model.component("comp1").mesh("mesh1").getNumElem();
-            //double hv = model.mesh("mesh1").feature("size").getDouble("hauto")
-
-//            a = model.component("comp1").mesh("mesh1").getNumElem();
-//            b = model.component("comp1").mesh("mesh1").getMinQuality("tet");
-//            c = model.component("comp1").mesh("mesh1").getMeanQuality("tet");
-//            d = model.component("comp1").mesh("mesh1").getMinVolume("tet");
-//            e = model.component("comp1").mesh("mesh1").getVolume("tet");
+            JSONObject meshStats = modelData.getJSONObject("mesh").getJSONObject("stats");
+            meshStats.put("number_elements", number_elements);
+            meshStats.put("min_quality", min_quality);
+            meshStats.put("mean_quality", mean_quality);
+            meshStats.put("min_volume", min_volume);
+            meshStats.put("volume", volume);
+            meshStats.put("quality_measure", quality_measure);
 
             // put nerve to mesh, rest to mesh, mesh to modelData
             JSONObject mesh = modelData.getJSONObject("mesh");
             mesh.put("nerve", nerveMeshParams);
             mesh.put("rest", restMeshParams);
+            mesh.put("stats", meshStats);
             modelData.put("mesh", mesh);
 
             try (FileWriter file = new FileWriter("../" + modelFile)) {

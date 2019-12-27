@@ -36,15 +36,25 @@
   }},
   "mesh": {
     "rest": {
-      "mesh_time": 76681.292063,
+      "mesh_time": 75929.812355,
+      "time_units": "ms",
       "hcurve": 0.2,
       "hmin": 10,
       "hnarrow": 1,
       "hmax": 1000,
       "hgrad": 1.3
     },
+    "stats": {
+      "volume": 1.569E13,
+      "min_quality": 1.63E-4,
+      "min_volume": 35.99,
+      "quality_measure": "vollength",
+      "number_elements": 1581800,
+      "mean_quality": 0.5081
+    },
     "nerve": {
-      "mesh_time": 4691.452024,
+      "mesh_time": 4040.695851,
+      "time_units": "ms",
       "hcurve": 0.2,
       "hmin": 10,
       "hnarrow": 1,
