@@ -78,8 +78,17 @@ class Part {
 
             JSONObject itemObject = ((JSONObject) ((JSONObject) instanceParams.get("medium")).get("bounds"));
             for (String param : mediumParameters) {
-                partInstance.setEntry("inputexpr", param, (Double) itemObject.get(param));
+                // if double
+                Object testObject = itemObject.get(param);
+                if(testObject instanceof Integer){
+                    // if int
+                    partInstance.setEntry("inputexpr", param, (Integer) itemObject.get(param));
 
+                } else {
+                    // if double
+                    partInstance.setEntry("inputexpr", param, (Double) itemObject.get(param));
+
+                }
             }
 
             // imports
