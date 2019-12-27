@@ -829,9 +829,9 @@ public class ModelWrapper {
             System.out.println("Meshing nerve parts... will take a while");
 
             long nerveMeshStartTime = System.nanoTime();
-//            model.component("comp1").mesh("mesh1").run(mw.im.get(meshNerveSweLabel));
+            model.component("comp1").mesh("mesh1").run(mw.im.get(meshNerveSweLabel));
             long estimatedNerveMeshTime = System.nanoTime() - nerveMeshStartTime;
-            nerveMeshParams.put("mesh_time",estimatedNerveMeshTime);
+            nerveMeshParams.put("mesh_time",estimatedNerveMeshTime/Math.pow(10,6)); // convert nanos to millis
 
 //            Path currentRelativePath = Paths.get("");
 //            String s = currentRelativePath.toAbsolutePath().toString();
@@ -875,9 +875,9 @@ public class ModelWrapper {
             System.out.println("Meshing the rest... will also take a while");
 
             long restMeshStartTime = System.nanoTime();
-//            model.component("comp1").mesh("mesh1").run(mw.im.get(meshRestFtetLabel));
+            model.component("comp1").mesh("mesh1").run(mw.im.get(meshRestFtetLabel));
             long estimatedRestMeshTime = System.nanoTime() - restMeshStartTime;
-            restMeshParams.put("mesh_time",estimatedRestMeshTime);
+            restMeshParams.put("mesh_time",estimatedRestMeshTime/Math.pow(10,6)); // convert nanos to millis
 
 
             ///////
@@ -898,13 +898,10 @@ public class ModelWrapper {
             modelData.put("mesh", mesh);
 
             try (FileWriter file = new FileWriter("../" + modelFile)) {
-                String output = modelData.toString();
+                String output = modelData.toString(2);
                 file.write(output);
-                System.out.println(output);
-                System.out.println("SAVED");
 
             } catch (IOException e) {
-                System.out.println("NOT SAVED");
                 e.printStackTrace();
             }
 //

@@ -1,72 +1,64 @@
 {
-  "mesh": {
-    "nerve": {
-      "hmax": 1000,
-      "hmin": 10,
-      "hgrad": 1.3,
-      "hcurve": 0.2,
-      "hnarrow": 1,
-      "mesh_time": "tbd"
-    },
-    "rest": {
-      "hmax": 1000,
-      "hmin": 10,
-      "hgrad": 1.3,
-      "hcurve": 0.2,
-      "hnarrow": 1,
-      "mesh_time": "tbd"
-    }
-  },
   "modes": {
     "fiber_z": "EXTRUSION",
     "ci_perineurium_thickness": "PIG_INHOUSE"
   },
+  "n_srcs": 0,
+  "temperature": {
+    "unit": "celsius",
+    "value": 37
+  },
   "medium": {
+    "material": "fat",
     "bounds": {
       "unit": "[micrometer]",
-      "length": 50000.0,
-      "radius": 10000.0
-    },
-    "material": "fat"
+      "length": 50000,
+      "radius": 10000
+    }
   },
   "cuff": {
-    "preset": [
-      "LivaNova.json"
-    ],
+    "rotate": {
+      "unit": "[degree]",
+      "ang": 0
+    },
     "shift": {
       "unit": "[micrometer]",
       "x": 0,
       "y": 0,
       "z": 0
     },
-    "rotate": {
-      "unit": "[degree]",
-      "ang": 0
+    "preset": ["LivaNova.json"],
+    "fill": {"material": "saline"}
+  },
+  "conductivities": {"perineurium": {
+    "unit": "[S/m]",
+    "value": "0.0008703220191470844"
+  }},
+  "mesh": {
+    "rest": {
+      "mesh_time": 83832.993848,
+      "hcurve": 0.2,
+      "hmin": 10,
+      "hnarrow": 1,
+      "hmax": 1000,
+      "hgrad": 1.3
     },
-    "fill": {
-      "material": "saline"
+    "nerve": {
+      "mesh_time": 7404.67549,
+      "hcurve": 0.2,
+      "hmin": 10,
+      "hnarrow": 1,
+      "hmax": 1000,
+      "hgrad": 1.3
     }
   },
+  "ci_perineurium_thickness": {"coefficients": {
+    "a": 0.015706,
+    "unit": "micrometer",
+    "b": 5.1028
+  }},
   "frequency": {
     "unit": "Hz",
     "value": 1
-  },
-  "temperature": {
-    "unit": "celsius",
-    "value": 37
-  },
-  "conductivities": {
-    "perineurium": {
-      "unit": "[S/m]",
-      "value": "0.0008703220191470844"
-    }
-  },
-  "ci_perineurium_thickness": {
-    "coefficients": {
-      "unit": "micrometer",
-      "a": 0.015706,
-      "b": 5.1028
-    }
-  },
-  "n_srcs": 0
+  }
 }
