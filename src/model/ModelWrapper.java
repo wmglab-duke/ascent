@@ -897,9 +897,6 @@ public class ModelWrapper {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-//
-//
-//            System.out.println(number_elements);
 
             // Solve
             model.study().create("std1");

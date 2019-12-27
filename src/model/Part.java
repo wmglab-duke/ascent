@@ -1543,9 +1543,9 @@ class Part {
             String entry_y = sigma.getString("sigma_y");
             String entry_z = sigma.getString("sigma_z");
 
-            materialParams.set("sigma_" + materialName + "_x", "(" + entry_x + ")" + " " + unit);
-            materialParams.set("sigma_" + materialName + "_y", "(" + entry_y + ")" + " " + unit);
-            materialParams.set("sigma_" + materialName + "_z", "(" + entry_z + ")" + " " + unit);
+            materialParams.set("sigma_" + materialName + "_x", "(" + entry_x + ")");
+            materialParams.set("sigma_" + materialName + "_y", "(" + entry_y + ")");
+            materialParams.set("sigma_" + materialName + "_z", "(" + entry_z + ")");
 
             model.material(materialID).propertyGroup("def").set("electricconductivity", "{" +
                     "sigma_" + materialName + "_x, " +
