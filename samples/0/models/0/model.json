@@ -36,7 +36,7 @@
   }},
   "mesh": {
     "rest": {
-      "mesh_time": 81048.758291,
+      "mesh_time": 74752.774295,
       "time_units": "ms",
       "hcurve": 0.2,
       "hmin": 10,
@@ -53,7 +53,7 @@
       "mean_quality": 0.5081
     },
     "nerve": {
-      "mesh_time": 3883.981562,
+      "mesh_time": 4317.106028,
       "time_units": "ms",
       "hcurve": 0.2,
       "hmin": 10,

@@ -1547,12 +1547,11 @@ class Part {
             materialParams.set("sigma_" + materialName + "_y", "(" + entry_y + ")");
             materialParams.set("sigma_" + materialName + "_z", "(" + entry_z + ")");
 
-            model.material(materialID).propertyGroup("def").set("electricconductivity", "{" +
-                    "sigma_" + materialName + "_x, " +
-                    "sigma_" + materialName + "_y, " +
-                    "sigma_" + materialName + "_z" +
-                    "}"
-                    );
+            model.material(materialID).propertyGroup("def").set("electricconductivity", new String[]{
+                    "sigma_endoneurium_x", "0", "0",
+                    "0", "sigma_endoneurium_y", "0",
+                    "0", "0", "sigma_endoneurium_z"});
+
 
         } else {
             materialParams.set("sigma_" + materialName, "(" + entry + ")" + " " + unit);
