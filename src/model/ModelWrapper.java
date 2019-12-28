@@ -891,6 +891,11 @@ public class ModelWrapper {
             mesh.put("stats", meshStats);
             modelData.put("mesh", mesh);
 
+            JSONObject solver = modelData.getJSONObject("solver");
+            String version = ModelUtil.getComsolVersion(); //The getComsolVersion method returns the current COMSOL Multiphysics
+            solver.put("name",version);
+            modelData.put("solver", solver);
+
             try (FileWriter file = new FileWriter("../" + modelFile)) {
                 String output = modelData.toString(2);
                 file.write(output);

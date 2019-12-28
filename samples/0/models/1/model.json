@@ -37,7 +37,7 @@
   }},
   "mesh": {
     "rest": {
-      "mesh_time": 1.23E-4,
+      "mesh_time": 1.39E-4,
       "time_units": "ms",
       "hcurve": 0.2,
       "hmin": 10,
@@ -54,7 +54,7 @@
       "mean_quality": 0
     },
     "nerve": {
-      "mesh_time": 1.21E-4,
+      "mesh_time": 1.1E-4,
       "time_units": "ms",
       "hcurve": 0.2,
       "hmin": 10,
@@ -68,6 +68,7 @@
     "unit": "micrometer",
     "b": 5.1028
   }},
+  "solver": {"name": "COMSOL Multiphysics 5.4 (Build: 388)"},
   "frequency": {
     "unit": "Hz",
     "value": 1
