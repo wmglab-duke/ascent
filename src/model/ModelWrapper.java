@@ -569,6 +569,7 @@ public class ModelWrapper {
         // Start COMSOL Instance
         ModelUtil.connect("localhost", 2036);
         ModelUtil.initStandalone(false);
+        ModelUtil.showProgress(null);
 
         // Load configuration data
         JSONObject run = null;
