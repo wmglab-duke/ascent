@@ -829,7 +829,7 @@ public class ModelWrapper {
             System.out.println("Meshing nerve parts... will take a while");
 
             long nerveMeshStartTime = System.nanoTime();
-            model.component("comp1").mesh("mesh1").run(mw.im.get(meshNerveSweLabel));
+//            model.component("comp1").mesh("mesh1").run(mw.im.get(meshNerveSweLabel));
             long estimatedNerveMeshTime = System.nanoTime() - nerveMeshStartTime;
             nerveMeshParams.put("mesh_time",estimatedNerveMeshTime/Math.pow(10,6)); // convert nanos to millis
 
@@ -861,7 +861,7 @@ public class ModelWrapper {
             System.out.println("Meshing the rest... will also take a while");
 
             long restMeshStartTime = System.nanoTime();
-            model.component("comp1").mesh("mesh1").run(mw.im.get(meshRestFtetLabel));
+//            model.component("comp1").mesh("mesh1").run(mw.im.get(meshRestFtetLabel));
             long estimatedRestMeshTime = System.nanoTime() - restMeshStartTime;
             restMeshParams.put("mesh_time",estimatedRestMeshTime/Math.pow(10,6)); // convert nanos to millis
 
@@ -930,7 +930,13 @@ public class ModelWrapper {
             model.sol("sol1").feature("s1").feature("fc1").set("linsolver", "i1");
             model.sol("sol1").feature("s1").feature().remove("fcDef");
             model.sol("sol1").attach("std1");
-            model.sol("sol1").runAll();
+
+            JSONObject solutionInfo = modelData.getJSONObject("solution");
+
+            long runSolStartTime = System.nanoTime();
+//            model.sol("sol1").runAll();
+            long estimatedRunSolTime = System.nanoTime() - runSolStartTime;
+            solutionInfo.put("sol_time",estimatedRunSolTime/Math.pow(10,6)); // convert nanos to millis
 
             model.result().create("pg1", "PlotGroup3D");
             model.result("pg1").label("Electric Potential (ec)");

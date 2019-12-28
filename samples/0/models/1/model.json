@@ -3,6 +3,7 @@
     "fiber_z": "EXTRUSION",
     "ci_perineurium_thickness": "PIG_INHOUSE"
   },
+  "solution": {"sol_time": 0},
   "n_srcs": 0,
   "temperature": {
     "unit": "celsius",
@@ -36,7 +37,7 @@
   }},
   "mesh": {
     "rest": {
-      "mesh_time": 69890.140815,
+      "mesh_time": 1.23E-4,
       "time_units": "ms",
       "hcurve": 0.2,
       "hmin": 10,
@@ -45,15 +46,15 @@
       "hgrad": 1.3
     },
     "stats": {
-      "volume": 1.569E13,
-      "min_quality": 1.888E-4,
-      "min_volume": 7.149,
+      "volume": 0,
+      "min_quality": 0,
+      "min_volume": 0,
       "quality_measure": "vollength",
-      "number_elements": 2070031,
-      "mean_quality": 0.5627
+      "number_elements": 0,
+      "mean_quality": 0
     },
     "nerve": {
-      "mesh_time": 8920.102929,
+      "mesh_time": 1.21E-4,
       "time_units": "ms",
       "hcurve": 0.2,
       "hmin": 10,
