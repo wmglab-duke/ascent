@@ -491,8 +491,9 @@ public class ModelWrapper {
      * Pre-built for-loop to iterate through all current sources in model (added in Part)
      * Can be super useful for quickly setting different currents and possibly sweeping currents
      */
-    public void loopCurrents(String projectPath, String sample, String modelStr) {
+    public void loopCurrents(JSONObject modelData, String projectPath, String sample, String modelStr) {
 
+        long runSolStartTime = System.nanoTime();
         for(String key_on: this.im.currentPointers.keySet()) {
 
             System.out.println("Current pointer: " + key_on);
@@ -501,7 +502,7 @@ public class ModelWrapper {
             String src = current_on.tag();
             current_on.set("Qjp", 0.001); // turn on current
 
-//            model.sol("sol1").runAll();
+            model.sol("sol1").runAll();
 
             String mphFile = String.join("/", new String[]{
                     projectPath,
@@ -514,7 +515,7 @@ public class ModelWrapper {
             });
 
             try {
-                System.out.println("Saving MPH file to: " + mphFile);
+                System.out.println("Saving MPH (mesh and solution) file to: " + mphFile);
                 model.save(mphFile);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -523,6 +524,12 @@ public class ModelWrapper {
             current_on.set("Qjp", 0.000); // reset current
 
         }
+
+        JSONObject solution = modelData.getJSONObject("solution");
+        long estimatedRunSolTime = System.nanoTime() - runSolStartTime;
+        solution.put("sol_time", estimatedRunSolTime/Math.pow(10,6)); // convert nanos to millis
+        solution.put("time_units", "ms"); // convert nanos to millis
+        modelData.put("solution", solution);
     }
 
     /**
@@ -852,10 +859,27 @@ public class ModelWrapper {
             meshNerveSizeInfo.set("hnarrowactive", true);
             meshNerveSizeInfo.set("hnarrow", nerveMeshParams.getDouble("hnarrow"));
 
+            // Saved model pre-mesh for debugging
+            String geomFile = String.join("/", new String[]{
+                    projectPath,
+                    "samples",
+                    sample,
+                    "models",
+                    modelStr,
+                    "model.mph"
+            });
+
+            try {
+                System.out.println("Saving MPH (pre-mesh) file to: " + geomFile);
+                model.save(geomFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             System.out.println("Meshing nerve parts... will take a while");
 
             long nerveMeshStartTime = System.nanoTime();
-//            model.component("comp1").mesh("mesh1").run(mw.im.get(meshNerveSweLabel));
+            model.component("comp1").mesh("mesh1").run(mw.im.get(meshNerveSweLabel));
             long estimatedNerveMeshTime = System.nanoTime() - nerveMeshStartTime;
             nerveMeshParams.put("mesh_time",estimatedNerveMeshTime/Math.pow(10,6)); // convert nanos to millis
 
@@ -887,7 +911,7 @@ public class ModelWrapper {
             System.out.println("Meshing the rest... will also take a while");
 
             long restMeshStartTime = System.nanoTime();
-//            model.component("comp1").mesh("mesh1").run(mw.im.get(meshRestFtetLabel));
+            model.component("comp1").mesh("mesh1").run(mw.im.get(meshRestFtetLabel));
             long estimatedRestMeshTime = System.nanoTime() - restMeshStartTime;
             restMeshParams.put("mesh_time",estimatedRestMeshTime/Math.pow(10,6)); // convert nanos to millis
 
@@ -921,18 +945,7 @@ public class ModelWrapper {
             solver.put("name",version);
             modelData.put("solver", solver);
 
-            try (FileWriter file = new FileWriter("../" + modelFile)) {
-                String output = modelData.toString(2);
-                file.write(output);
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
             // Solve
-
-            // TODO page 809 progress
-
             model.study().create("std1");
             model.study("std1").setGenConv(true);
             model.study("std1").create("stat", "Stationary");
@@ -962,13 +975,6 @@ public class ModelWrapper {
             model.sol("sol1").feature("s1").feature().remove("fcDef");
             model.sol("sol1").attach("std1");
 
-            JSONObject solutionInfo = modelData.getJSONObject("solution");
-            long runSolStartTime = System.nanoTime();
-//            model.sol("sol1").runAll();
-            long estimatedRunSolTime = System.nanoTime() - runSolStartTime;
-            solutionInfo.put("sol_time",estimatedRunSolTime/Math.pow(10,6)); // convert nanos to millis
-            // todo
-
             model.result().create("pg1", "PlotGroup3D");
             model.result("pg1").label("Electric Potential (ec)");
             model.result("pg1").set("frametype", "spatial");
@@ -980,25 +986,32 @@ public class ModelWrapper {
             model.result("pg1").run();
             model.result("pg1").set("data", "dset1");
 
-            // TODO, save time to process trace, build FEM Geometry, mesh, solve, extract potentials "TimeKeeper"
+            // Saved meshed model
+            String mphFile = String.join("/", new String[]{
+                    projectPath,
+                    "samples",
+                    sample,
+                    "models",
+                    modelStr,
+                    "model.mph"
+            });
 
-            mw.loopCurrents(projectPath, sample, modelStr);
+            try {
+                System.out.println("Saving MPH (mesh only) file to: " + mphFile);
+                model.save(mphFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
-//            String mphFile = String.join("/", new String[]{
-//                    projectPath,
-//                    "samples",
-//                    sample,
-//                    "models",
-//                    modelStr,
-//                    "model.mph"
-//            });
-//
-//            try {
-//                System.out.println("Saving MPH file to: " + mphFile);
-//                model.save(mphFile);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
+            mw.loopCurrents(modelData, projectPath, sample, modelStr);
+
+            try (FileWriter file = new FileWriter("../" + modelFile)) {
+                String output = modelData.toString(2);
+                file.write(output);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         ModelUtil.disconnect();
