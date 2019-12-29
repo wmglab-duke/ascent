@@ -491,12 +491,37 @@ public class ModelWrapper {
      * Pre-built for-loop to iterate through all current sources in model (added in Part)
      * Can be super useful for quickly setting different currents and possibly sweeping currents
      */
-    public void loopCurrents() {
-        for(String key: this.im.currentPointers.keySet()) {
-            System.out.println("Current pointer: " + key);
-            PhysicsFeature current = (PhysicsFeature) this.im.currentPointers.get(key);
+    public void loopCurrents(String projectPath, String sample, String modelStr) {
 
-            current.set("Qjp", 0.001);
+        for(String key_on: this.im.currentPointers.keySet()) {
+
+            System.out.println("Current pointer: " + key_on);
+
+            PhysicsFeature current_on = (PhysicsFeature) this.im.currentPointers.get(key_on);
+            String src = current_on.tag();
+            current_on.set("Qjp", 0.001); // turn on current
+
+//            model.sol("sol1").runAll();
+
+            String mphFile = String.join("/", new String[]{
+                    projectPath,
+                    "samples",
+                    sample,
+                    "models",
+                    modelStr,
+                    "bases",
+                    src + ".mph"
+            });
+
+            try {
+                System.out.println("Saving MPH file to: " + mphFile);
+                model.save(mphFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            current_on.set("Qjp", 0.000); // reset current
+
         }
     }
 
@@ -569,7 +594,7 @@ public class ModelWrapper {
         // Start COMSOL Instance
         ModelUtil.connect("localhost", 2036);
         ModelUtil.initStandalone(false);
-        ModelUtil.showProgress(null);
+//        ModelUtil.showProgress(null);
 
         // Load configuration data
         JSONObject run = null;
@@ -938,11 +963,11 @@ public class ModelWrapper {
             model.sol("sol1").attach("std1");
 
             JSONObject solutionInfo = modelData.getJSONObject("solution");
-
             long runSolStartTime = System.nanoTime();
 //            model.sol("sol1").runAll();
             long estimatedRunSolTime = System.nanoTime() - runSolStartTime;
             solutionInfo.put("sol_time",estimatedRunSolTime/Math.pow(10,6)); // convert nanos to millis
+            // todo
 
             model.result().create("pg1", "PlotGroup3D");
             model.result("pg1").label("Electric Potential (ec)");
@@ -957,23 +982,23 @@ public class ModelWrapper {
 
             // TODO, save time to process trace, build FEM Geometry, mesh, solve, extract potentials "TimeKeeper"
 
-            mw.loopCurrents();
+            mw.loopCurrents(projectPath, sample, modelStr);
 
-            String mphFile = String.join("/", new String[]{
-                    projectPath,
-                    "samples",
-                    sample,
-                    "models",
-                    modelStr,
-                    "model.mph"
-            });
-
-            try {
-                System.out.println("Saving MPH file to: " + mphFile);
-                model.save(mphFile);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+//            String mphFile = String.join("/", new String[]{
+//                    projectPath,
+//                    "samples",
+//                    sample,
+//                    "models",
+//                    modelStr,
+//                    "model.mph"
+//            });
+//
+//            try {
+//                System.out.println("Saving MPH file to: " + mphFile);
+//                model.save(mphFile);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
         }
 
         ModelUtil.disconnect();
