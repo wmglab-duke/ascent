@@ -4,8 +4,8 @@
     "ci_perineurium_thickness": "PIG_INHOUSE"
   },
   "solution": {
-    "sol_time": 400357.156544,
-    "time_units": "ms"
+    "time_units": "ms",
+    "sol_time": 283142.205309
   },
   "n_srcs": 0,
   "temperature": {
@@ -40,7 +40,7 @@
   }},
   "mesh": {
     "rest": {
-      "mesh_time": 70392.199064,
+      "mesh_time": 56230.898104,
       "time_units": "ms",
       "hcurve": 0.2,
       "hmin": 10,
@@ -50,14 +50,14 @@
     },
     "stats": {
       "volume": 1.569E13,
-      "min_quality": 1.63E-4,
-      "min_volume": 35.99,
+      "min_quality": 1.797E-4,
+      "min_volume": 85.34,
       "quality_measure": "vollength",
-      "number_elements": 1581800,
-      "mean_quality": 0.5081
+      "number_elements": 1582124,
+      "mean_quality": 0.5084
     },
     "nerve": {
-      "mesh_time": 3919.880209,
+      "mesh_time": 3111.474824,
       "time_units": "ms",
       "hcurve": 0.2,
       "hmin": 10,
