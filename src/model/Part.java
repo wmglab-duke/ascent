@@ -1521,7 +1521,8 @@ class Part {
      * @param config JSON data from master.json
      * @param mw the ModelWrapper to act upon
      */
-    public static void defineMaterial(String materialID, String materialName, JSONObject modelData, JSONObject config, ModelWrapper mw, ModelParamGroup materialParams) {
+    public static void defineMaterial(String materialID, String materialName, JSONObject modelData, JSONObject config,
+                                      ModelWrapper mw, ModelParamGroup materialParams) {
 
         Model model = mw.getModel();
         model.material().create(materialID, "Common", "");
@@ -1534,14 +1535,11 @@ class Part {
         // parameters used to a specific model.
         if (!modelData.getJSONObject("conductivities").has(materialName)) {
             sigma = config.getJSONObject("conductivities").getJSONObject(materialName);
-
         } else {
             sigma = modelData.getJSONObject("conductivities").getJSONObject(materialName);
-
         }
 
         String entry = sigma.getString("value");
-        String unit = sigma.getString("unit");
 
         if (entry.equals("anisotropic")) {
             String entry_x = sigma.getString("sigma_x");
@@ -1555,13 +1553,12 @@ class Part {
             model.material(materialID).propertyGroup("def").set("electricconductivity", new String[]{
                     "sigma_endoneurium_x", "0", "0",
                     "0", "sigma_endoneurium_y", "0",
-                    "0", "0", "sigma_endoneurium_z"});
-
-
+                    "0", "0", "sigma_endoneurium_z"
+            });
         } else {
+            String unit = sigma.getString("unit");
             materialParams.set("sigma_" + materialName, "(" + entry + ")" + " " + unit);
             model.material(materialID).propertyGroup("def").set("electricconductivity", "sigma_" + materialName);
-
         }
     }
 

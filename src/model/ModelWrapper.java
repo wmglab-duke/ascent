@@ -318,39 +318,30 @@ public class ModelWrapper {
         try {
             JSONObject data = new JSONReader(String.join("/",
                     new String[]{this.root, "config", "system", "cuffs", name})).getData();
-
             JSONObject materials_config = new JSONReader(String.join("/",
                     new String[]{this.root, "config", "system", "materials.json"})).getData();
-
             // for each material definition, create it (if not already existing)
             for (Object item: (JSONArray) data.get("instances")) {
                 JSONObject itemObject = (JSONObject) item;
                 JSONArray materials = itemObject.getJSONArray("materials");
-
                 for(Object o: materials) {
                     String materialName;
-
                     if (((JSONObject) o).getString("info").equals("fill") ||
                             ((JSONObject) o).getString("info").equals("recess")) { // if info is fill or recess
                         materialName = modelData.getJSONObject("cuff").getJSONObject("fill").getString("material");
-
                     } else {
                         materialName = ((JSONObject) o).getString("type");
-
                     }
-
                     // create the material definition if it has not already been created
                     if (! this.im.hasPseudonym(materialName)) {
                         // get next available (TOP LEVEL) "material" id
                         String materialID = this.im.next("mat", materialName);
-
                         try {
                             // TRY to create the material definition (catch error if no existing implementation)
                             Part.defineMaterial(materialID, materialName, modelData, materials_config, this, materialParams);
                         } catch (IllegalArgumentException e) {
                             e.printStackTrace();
                             return false;
-
                         }
                     }
                 }
@@ -393,16 +384,12 @@ public class ModelWrapper {
             if (nerveMode.equals("PRESENT")) {
                 String epiMaterialID = this.im.next("mat", "epineurium");
                 Part.defineMaterial(epiMaterialID, "epineurium", model_config, materials_config, this, materialParams);
-
             }
-
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             return false;
-
         }
         return true;
-
     }
 
     /**

@@ -32,12 +32,16 @@
       "z": 0
     },
     "preset": "Enteromedics.json",
-    "fill": {"material": "saline"}
+    "fill": {
+      "material": "saline"
+    }
   },
-  "conductivities": {"perineurium": {
+  "conductivities": {
+    "perineurium": {
     "unit": "[S/m]",
     "value": "0.0008703220191470844"
-  }},
+    }
+  },
   "mesh": {
     "rest": {
       "mesh_time": 59397.950617,
@@ -71,7 +75,9 @@
     "unit": "micrometer",
     "b": 5.1028
   }},
-  "solver": {"name": "COMSOL Multiphysics 5.4 (Build: 388)"},
+  "solver": {
+    "name": "COMSOL Multiphysics 5.4 (Build: 388)"
+  },
   "frequency": {
     "unit": "Hz",
     "value": 1
