@@ -5,7 +5,7 @@
   },
   "solution": {
     "time_units": "ms",
-    "sol_time": 283142.205309
+    "sol_time": 288039.773313
   },
   "n_srcs": 0,
   "temperature": {
@@ -31,7 +31,7 @@
       "y": 0,
       "z": 0
     },
-    "preset": ["Enteromedics.json"],
+    "preset": "Enteromedics.json",
     "fill": {"material": "saline"}
   },
   "conductivities": {"perineurium": {
@@ -40,7 +40,7 @@
   }},
   "mesh": {
     "rest": {
-      "mesh_time": 56230.898104,
+      "mesh_time": 59397.950617,
       "time_units": "ms",
       "hcurve": 0.2,
       "hmin": 10,
@@ -57,7 +57,7 @@
       "mean_quality": 0.5084
     },
     "nerve": {
-      "mesh_time": 3111.474824,
+      "mesh_time": 3185.196073,
       "time_units": "ms",
       "hcurve": 0.2,
       "hmin": 10,

@@ -44,9 +44,7 @@
     "material": "fat"
   },
   "cuff": {
-    "preset": [
-      "Enteromedics.json"
-    ],
+    "preset": "Enteromedics.json",
     "shift": {
       "unit": "[micrometer]",
       "x": 0,

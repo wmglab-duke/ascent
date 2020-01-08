@@ -5,7 +5,7 @@
   },
   "solution": {
     "time_units": "ms",
-    "sol_time": 913924.948606
+    "sol_time": 924189.024431
   },
   "n_srcs": 0,
   "temperature": {
@@ -31,7 +31,7 @@
       "y": 0,
       "z": 0
     },
-    "preset": ["LivaNova.json"],
+    "preset": "LivaNova.json",
     "fill": {"material": "saline"}
   },
   "conductivities": {"perineurium": {
@@ -40,7 +40,7 @@
   }},
   "mesh": {
     "rest": {
-      "mesh_time": 50718.529221,
+      "mesh_time": 50334.550533,
       "time_units": "ms",
       "hcurve": 0.2,
       "hmin": 10,
@@ -57,7 +57,7 @@
       "mean_quality": 0.5626
     },
     "nerve": {
-      "mesh_time": 4528.994453,
+      "mesh_time": 4536.71988,
       "time_units": "ms",
       "hcurve": 0.2,
       "hmin": 10,
