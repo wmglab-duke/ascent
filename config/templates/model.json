@@ -1,6 +1,35 @@
 {
   "mesh": {
-    "tbd": true
+    "rest": {
+      "mesh_time": true,
+      "time_units": "ms",
+      "hcurve": 0.2,
+      "hmin": 10,
+      "hnarrow": 1,
+      "hmax": 1000,
+      "hgrad": 1.3
+    },
+    "stats": {
+      "volume": true,
+      "min_quality": true,
+      "min_volume": true,
+      "quality_measure": "vollength",
+      "number_elements": true,
+      "mean_quality": true
+    },
+    "nerve": {
+      "mesh_time": true,
+      "time_units": "ms",
+      "hcurve": 0.2,
+      "hmin": 10,
+      "hnarrow": 1,
+      "hmax": 1000,
+      "hgrad": 1.3
+    }
+  },
+  "solution": {
+    "time_units": "ms",
+    "sol_time": true
   },
   "modes": {
     "fiber_z": "EXTRUSION",
@@ -53,5 +82,8 @@
       "b": true
     }
   },
-  "n_srcs": 0
+  "solver": {
+    "name": true
+  },
+  "n_srcs": true
 }
