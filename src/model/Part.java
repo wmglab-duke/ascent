@@ -2244,27 +2244,35 @@ class Part {
      * @param config JSON data from master.json
      * @param mw the ModelWrapper to act upon
      */
-    public static void defineMaterial(String materialID, String function, JSONObject modelData, JSONObject config,
+    public static void defineMaterial(String materialID, String function, JSONObject modelData, JSONObject materialsData,
                                       ModelWrapper mw, ModelParamGroup materialParams) {
 
         Model model = mw.getModel();
         model.material().create(materialID, "Common", "");
         model.material(materialID).label(function);
 
-        JSONObject sigma;
-        String material;
-        String materialDescription;
+        JSONObject sigma = null;
+        String materialDescription = null;
 
         // if the material is defined explicitly in the model.json file, then the program will use the value stored in
-        // model.json, otherwise it will use the conductivity value stored in the materials.json file. This ties material
-        // parameters used to a specific model.
-        if (modelData.getJSONObject("conductivities").getJSONObject("defaults").has(function)) {
-            material = modelData.getJSONObject("conductivities").getJSONObject("defaults").getString(function);
-            sigma = config.getJSONObject("conductivities").getJSONObject(material);
-            materialDescription = "default: " + material;
-        } else {
-            sigma = modelData.getJSONObject("conductivities").getJSONObject("custom").getJSONObject(function);
+        // model.json (CUSTOM), otherwise it will use the conductivity value stored in the materials.json file (DEFAULT).
+        // This ties material parameters used to a specific model.
+
+        JSONObject model_conductivities = modelData.getJSONObject("conductivities");
+        Object material_assignment = model_conductivities.get(function);
+
+        if (material_assignment instanceof String) {
+            // REFERENCING PRE-DEFINED MATERIAL IN JSON
+            // Load in JSONObject from materials_config
+            sigma = materialsData.getJSONObject("conductivities").getJSONObject((String) material_assignment);
+            materialDescription = "default: " + material_assignment;
+
+        } else if (material_assignment instanceof JSONObject) {
+            // CUSTOM DEFINED MATERIAL DIRECTLY IN MODEL CONFIG
+            // Load in JSONObject from model_config
+            sigma = (JSONObject) material_assignment;
             materialDescription = "custom: " + sigma.getString("label");
+
         }
         String entry = sigma.getString("value");
 
