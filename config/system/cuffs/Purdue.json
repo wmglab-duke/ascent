@@ -35,7 +35,6 @@
       "materials": [
         {
           "info": "insulator",
-          "type": "silicone",
           "label_index": 2
         }
       ]
@@ -54,7 +53,6 @@
       "materials": [
         {
           "info": "conductor",
-          "type": "platinum",
           "label_index": 1
         }
       ]
@@ -73,7 +71,6 @@
       "materials": [
         {
           "info": "conductor",
-          "type": "platinum",
           "label_index": 1
         }
       ]

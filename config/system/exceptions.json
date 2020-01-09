@@ -233,5 +233,10 @@
     "code": 47,
     "text": "Temperature dependent perineurium not yet implemented for high frequencies",
     "source": "src.core.Waveform"
+  },
+  {
+    "code": 48,
+    "text": "Rho perineurium method not implemented",
+    "source": "src.core.Runner"
   }
 ]

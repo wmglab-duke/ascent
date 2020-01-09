@@ -1,0 +1,100 @@
+{
+  "modes": {
+    "rho_perineurium_method": "RHO_WEERASURIYA",
+    "fiber_z": "EXTRUSION",
+    "ci_perineurium_thickness": "PIG_INHOUSE"
+  },
+  "solution": {
+    "time_units": "ms",
+    "sol_time": 318790.541589
+  },
+  "n_srcs": 0,
+  "temperature": {
+    "unit": "celsius",
+    "value": 37
+  },
+  "medium": {
+    "bounds": {
+      "unit": "[micrometer]",
+      "length": 50000,
+      "radius": 10000
+    }
+  },
+  "cuff": {
+    "rotate": {
+      "unit": "[degree]",
+      "ang": 0
+    },
+    "shift": {
+      "unit": "[micrometer]",
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "preset": "Enteromedics.json"
+  },
+  "conductivities": {
+    "defaults": {
+      "recess": "saline",
+      "medium": "fat",
+      "fill": "saline",
+      "conductor": "platinum",
+      "endoneurium": "endoneurium",
+      "epineurium": "epineurium"
+    },
+    "custom": {
+      "perineurium": {
+        "unit": "[S/m]",
+        "label": "RHO_WEERASURIYA",
+        "value": "0.0008703220191470844"
+      },
+      "insulator": {
+        "unit": "[S/m]",
+        "label": "weird silicone",
+        "value": "0.1"
+      }
+    }
+  },
+  "mesh": {
+    "rest": {
+      "mesh_time": 56585.696436,
+      "time_units": "ms",
+      "hcurve": 0.2,
+      "hmin": 10,
+      "hnarrow": 1,
+      "hmax": 1000,
+      "hgrad": 1.3
+    },
+    "stats": {
+      "volume": 15690000000000.0,
+      "min_quality": 0.0001797,
+      "min_volume": 85.34,
+      "quality_measure": "vollength",
+      "number_elements": 1582124,
+      "mean_quality": 0.5084
+    },
+    "nerve": {
+      "mesh_time": 3748.977941,
+      "time_units": "ms",
+      "hcurve": 0.2,
+      "hmin": 10,
+      "hnarrow": 1,
+      "hmax": 1000,
+      "hgrad": 1.3
+    }
+  },
+  "ci_perineurium_thickness": {
+    "coefficients": {
+      "a": 0.015706,
+      "unit": "micrometer",
+      "b": 5.1028
+    }
+  },
+  "solver": {
+    "name": "COMSOL Multiphysics 5.4 (Build: 388)"
+  },
+  "frequency": {
+    "unit": "Hz",
+    "value": 1
+  }
+}

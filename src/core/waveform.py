@@ -83,7 +83,7 @@ class Waveform(Exceptionable, Configurable, Saveable):
     def rho_weerasuriya(self, f=None, all_configs=None):
         """
         Calculation of perineurium impedance using results from Weerasuriya 1984 (frog). Weerasuriya discussion
-        indicates that Models A & B are better candidates than Models C & D, so I'll only consider the former pair.
+        indicates that Models A & B are better candidates than Models C & D, so we only consider the former pair.
         :return: rho [ohm-m]
         """
 
@@ -99,7 +99,7 @@ class Waveform(Exceptionable, Configurable, Saveable):
 
             materials_path = os.path.join('config', 'system', 'materials.json')
             materials_config = self.load(materials_path)
-            rho = eval(materials_config['conductivities']['perineurium_DC']['value'])  # [ohm-m]
+            rho = eval(materials_config['conductivities']['weerasuriya_perineurium_DC']['value'])  # [ohm-m] // TODO
 
         else:                                       # stimulation at higher frequency for block
             w = 2*np.pi*f
