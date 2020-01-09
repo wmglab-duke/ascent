@@ -191,7 +191,7 @@ class PerineuriumThicknessMode(Enum):
 class PerineuriumResistivityMode(Enum):
     config = 'rho_perineurium_method'
 
-    RHO_WEERASURIYA = 0
+    RHO_WEERASURIYA = 'RHO_WEERASURIYA'
 
 
 #%% Cuffs

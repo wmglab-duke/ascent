@@ -466,9 +466,9 @@ class Runner(Exceptionable, Configurable):
         waveform.add(SetupMode.OLD, Config.MODEL, model_config)
 
         # compute rho and sigma from waveform instance
-        print('b4')
 
-        if model_config.get('modes').get('rho_perineurium_method') == 'RHO_WEERASURIYA':  # TODO ENUMIFY
+        if model_config.get('modes').get(PerineuriumResistivityMode.config.value) == \
+                PerineuriumResistivityMode.RHO_WEERASURIYA.value:
             freq_double = model_config.get('frequency').get('value')
             rho_double = waveform.rho_weerasuriya(freq_double)
             sigma_double = 1/rho_double
