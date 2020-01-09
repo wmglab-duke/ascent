@@ -59,6 +59,9 @@ class Part {
 
     }
 
+    /**
+     * TODO
+     */
     public static void createEnvironmentPartInstance(String instanceID, String instanceLabel, String pseudonym, ModelWrapper mw,
                                                      JSONObject instanceParams) throws IllegalArgumentException {
         Model model = mw.getModel();
@@ -106,23 +109,13 @@ class Part {
             gnd.label(groundLabel);
             gnd.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[0]) + "_bnd");
 
-//            // assign domain material
-//            JSONObject medium = (JSONObject) instanceParams.get("medium");
-//            String mediumMaterial = medium.getString("material");
-//            String selection = myLabels[0];
-//            String linkLabel = String.join("/", new String[]{instanceLabel, selection, mediumMaterial});
-//            Material mat = model.component("comp1").material().create(mw.im.next("matlnk", linkLabel), "Link"); // TODO
-//            mat.label(linkLabel);
-//            mat.set("link", mw.im.get(mediumMaterial)); // TODO
-//            mat.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(selection) + "_dom");
-
         } else {
             throw new IllegalArgumentException("No implementation for part primitive name: " + pseudonym);
 
         }
     }
 
-    public static IdentifierManager createPartPrimitive(String id, String pseudonym, ModelWrapper mw) throws IllegalArgumentException {
+    public static IdentifierManager createCuffPartPrimitive(String id, String pseudonym, ModelWrapper mw) throws IllegalArgumentException {
         Model model = mw.getModel();
 
         // only used once per method, so ok to define outside the switch
@@ -1515,58 +1508,10 @@ class Part {
     }
 
     /**
-     * Create a material!
-     * @param materialID the material COMSOL id (unique) --> use mw.im.next in call (mat)
-     * @param materialName the "pseudonym" for that material, matching the name in master.json
-     * @param config JSON data from master.json
-     * @param mw the ModelWrapper to act upon
-     */
-    public static void defineMaterial(String materialID, String materialName, JSONObject modelData, JSONObject config,
-                                      ModelWrapper mw, ModelParamGroup materialParams) {
-
-        Model model = mw.getModel();
-        model.material().create(materialID, "Common", "");
-        model.material(materialID).label(materialName);
-
-        JSONObject sigma;
-
-        // if the material is defined explicitly in the model.json file, then the program will use the value stored in
-        // model.json, otherwise it will use the conductivity value stored in the materials.json file. This ties material
-        // parameters used to a specific model.
-        if (!modelData.getJSONObject("conductivities").has(materialName)) {
-            sigma = config.getJSONObject("conductivities").getJSONObject(materialName);
-        } else {
-            sigma = modelData.getJSONObject("conductivities").getJSONObject(materialName);
-        }
-
-        String entry = sigma.getString("value");
-
-        if (entry.equals("anisotropic")) {
-            String entry_x = sigma.getString("sigma_x");
-            String entry_y = sigma.getString("sigma_y");
-            String entry_z = sigma.getString("sigma_z");
-
-            materialParams.set("sigma_" + materialName + "_x", "(" + entry_x + ")");
-            materialParams.set("sigma_" + materialName + "_y", "(" + entry_y + ")");
-            materialParams.set("sigma_" + materialName + "_z", "(" + entry_z + ")");
-
-            model.material(materialID).propertyGroup("def").set("electricconductivity", new String[]{
-                    "sigma_endoneurium_x", "0", "0",
-                    "0", "sigma_endoneurium_y", "0",
-                    "0", "0", "sigma_endoneurium_z"
-            });
-        } else {
-            String unit = sigma.getString("unit");
-            materialParams.set("sigma_" + materialName, "(" + entry + ")" + " " + unit);
-            model.material(materialID).propertyGroup("def").set("electricconductivity", "sigma_" + materialName);
-        }
-    }
-
-    /**
      * Create instance of an ALREADY CREATED part primitive
      * @param instanceID the part instance COMSOL id (unique) --> use mw.im.next in call (pi)
      * @param instanceLabel the name for this instance --> unique, and NOT the same as pseudonym
-     * @param pseudonym which primitive to create (it must have already been created in createPartPrimitive())
+     * @param pseudonym which primitive to create (it must have already been created in createCuffPartPrimitive())
      * @param mw the ModelWrapper to act upon
      * @param instanceParams instance parameters as loaded in from the associated JSON configuration (in ModelWrapper)
      * @throws IllegalArgumentException if the primitive specified by pseudonym has not been created
@@ -2019,51 +1964,6 @@ class Part {
         }
     }
 
-    // TODO COMMENTED OUT TEMPORARILY
-
-    public static void addCuffPartMaterialAssignment(String instanceID, String instanceLabel, String pseudonym, ModelWrapper mw,
-            JSONObject instanceParams, JSONObject modelData) throws IllegalArgumentException {
-
-        Model model = mw.getModel();
-
-        IdentifierManager myIM = mw.getPartPrimitiveIM(pseudonym);
-        if (myIM == null) throw new IllegalArgumentException("IdentfierManager not created for name: " + pseudonym);
-
-        String[] myLabels = myIM.labels; // may be null, but that is ok if not used
-
-        // assign cuff materials
-        JSONArray materials = instanceParams.getJSONArray("materials");
-        for(Object o: materials) {
-
-            int label_index = ((JSONObject) o).getInt("label_index");
-            String selection = myLabels[label_index];
-            String type;
-
-            if (((JSONObject) o).getString("info").equals("fill") ||
-                    ((JSONObject) o).getString("info").equals("recess")) { // if info is fill or recess
-                type = modelData.getJSONObject("cuff").getJSONObject("fill").getString("material");
-
-            } else {
-                type = ((JSONObject) o).getString("type");
-
-            }
-
-            if(myIM.hasPseudonym(selection)) {
-                String linkLabel = String.join("/", new String[]{instanceLabel, selection, type});
-                Material mat = model.component("comp1").material().create(mw.im.next("matlnk", linkLabel), "Link"); // TODO
-                mat.label(linkLabel);
-                mat.set("link", mw.im.get(type));
-                mat.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(selection) + "_dom");
-
-            }
-        }
-    }
-
-
-
-
-
-
     /**
      * Build a part of the nerve.
      * @param pseudonym the type of part to build (i.e. FascicleCI, FascicleMesh, Epineurium)
@@ -2074,7 +1974,7 @@ class Part {
      * @throws IllegalArgumentException there is not a nerve part to build of that type (for typos probably)
      */
     public static void createNervePartInstance(String pseudonym, int index, String path, ModelWrapper mw,
-                                                 HashMap<String, String[]> tracePaths, JSONObject sampleData, ModelParamGroup nerveParams) throws IllegalArgumentException {
+                                               HashMap<String, String[]> tracePaths, JSONObject sampleData, ModelParamGroup nerveParams) throws IllegalArgumentException {
 
         Model model = mw.getModel();
         IdentifierManager im = mw.im;
@@ -2334,6 +2234,87 @@ class Part {
             default:
                 throw new IllegalArgumentException("No implementation for part instance name: " + pseudonym);
 
+        }
+    }
+
+    /**
+     * Create a material!
+     * @param materialID the material COMSOL id (unique) --> use mw.im.next in call (mat#)
+     * @param function the "pseudonym" for that material, matching the name in master.json TODO
+     * @param config JSON data from master.json
+     * @param mw the ModelWrapper to act upon
+     */
+    public static void defineMaterial(String materialID, String function, JSONObject modelData, JSONObject config,
+                                      ModelWrapper mw, ModelParamGroup materialParams) {
+
+        Model model = mw.getModel();
+        model.material().create(materialID, "Common", "");
+        model.material(materialID).label(function);
+
+        JSONObject sigma;
+        String material;
+        String materialDescription;
+
+        // if the material is defined explicitly in the model.json file, then the program will use the value stored in
+        // model.json, otherwise it will use the conductivity value stored in the materials.json file. This ties material
+        // parameters used to a specific model.
+        if (modelData.getJSONObject("conductivities").getJSONObject("defaults").has(function)) {
+            material = modelData.getJSONObject("conductivities").getJSONObject("defaults").getString(function);
+            sigma = config.getJSONObject("conductivities").getJSONObject(material);
+            materialDescription = "default: " + material;
+        } else {
+            sigma = modelData.getJSONObject("conductivities").getJSONObject("custom").getJSONObject(function);
+            materialDescription = "custom: " + sigma.getString("label");
+        }
+        String entry = sigma.getString("value");
+
+        if (entry.equals("anisotropic")) {
+            String entry_x = sigma.getString("sigma_x");
+            String entry_y = sigma.getString("sigma_y");
+            String entry_z = sigma.getString("sigma_z");
+
+            materialParams.set("sigma_" + function + "_x", "(" + entry_x + ")", materialDescription);
+            materialParams.set("sigma_" + function + "_y", "(" + entry_y + ")", materialDescription);
+            materialParams.set("sigma_" + function + "_z", "(" + entry_z + ")", materialDescription);
+
+            model.material(materialID).propertyGroup("def").set("electricconductivity", new String[]{
+                    "sigma_endoneurium_x", "0", "0",
+                    "0", "sigma_endoneurium_y", "0",
+                    "0", "0", "sigma_endoneurium_z"
+            });
+        } else {
+            String unit = sigma.getString("unit");
+            materialParams.set("sigma_" + function, "(" + entry + ")" + " " + unit, materialDescription);
+            model.material(materialID).propertyGroup("def").set("electricconductivity", "sigma_" + function);
+        }
+    }
+
+    public static void addCuffPartMaterialAssignment(String instanceLabel, String pseudonym, ModelWrapper mw,
+            JSONObject instanceParams) throws IllegalArgumentException {
+
+        Model model = mw.getModel();
+
+        IdentifierManager myIM = mw.getPartPrimitiveIM(pseudonym);
+        if (myIM == null) throw new IllegalArgumentException("IdentfierManager not created for name: " + pseudonym);
+
+        String[] myLabels = myIM.labels; // may be null, but that is ok if not used
+
+        // assign cuff materials
+        JSONArray materials = instanceParams.getJSONArray("materials");
+        for(Object o: materials) {
+
+            int label_index = ((JSONObject) o).getInt("label_index");
+            String selection = myLabels[label_index];
+            String info = ((JSONObject) o).getString("info");
+
+            if(myIM.hasPseudonym(selection)) {
+                String linkLabel = String.join("/", new String[]{instanceLabel, selection, info});
+                Material mat = model.component("comp1").material().create(mw.im.next("matlnk", linkLabel), "Link"); // TODO
+                mat.label(linkLabel);
+                mat.set("link", mw.im.get(info));
+                mat.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(selection) + "_dom");
+
+            }
         }
     }
 }

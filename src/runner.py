@@ -420,7 +420,7 @@ class Runner(Exceptionable, Configurable):
         rho_double = waveform.rho_weerasuriya(model_config.get('frequency').get('value'))
         sigma_double = 1/rho_double
 
-        model_config['conductivities']['perineurium']['value'] = str(sigma_double)
+        model_config['conductivities']['custom']['perineurium']['value'] = str(sigma_double)
 
         ci_perineurium_thickness_mode = model_config.get('modes').get('ci_perineurium_thickness')
         ci_params = self.load(os.path.join('config', 'system', 'ci_peri_thickness.json'))
