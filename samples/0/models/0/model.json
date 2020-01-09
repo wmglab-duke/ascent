@@ -34,25 +34,21 @@
     "preset": "Enteromedics.json"
   },
   "conductivities": {
-    "defaults": {
-      "recess": "saline",
-      "medium": "fat",
-      "fill": "saline",
-      "conductor": "platinum",
-      "endoneurium": "endoneurium",
-      "epineurium": "epineurium"
+    "fill": "saline",
+    "insulator": {
+      "value": "0.1",
+      "unit": "[S/m]",
+      "label": "weird silicone"
     },
-    "custom": {
-      "perineurium": {
-        "unit": "[S/m]",
-        "label": "RHO_WEERASURIYA",
-        "value": "0.0008703220191470844"
-      },
-      "insulator": {
-        "unit": "[S/m]",
-        "label": "weird silicone",
-        "value": "0.1"
-      }
+    "conductor": "platinum",
+    "recess": "saline",
+    "medium": "fat",
+    "endoneurium": "endoneurium",
+    "epineurium": "epineurium",
+    "perineurium": {
+      "value": "0.0008703220191470844",
+      "unit": "[S/m]",
+      "label": "RHO_WEERASURIYA @ 1 Hz"
     }
   },
   "mesh": {

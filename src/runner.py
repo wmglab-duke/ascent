@@ -113,8 +113,9 @@ class Runner(Exceptionable, Configurable):
             # use current model index to compute electrical parameters ... SAVES to file in method
             self.compute_electrical_parameters(all_configs, model_index)
 
-            # use current model index to computer maximum cuff shift (radius) .. SAVES to file in method
-            self.compute_cuff_shift(all_configs, model_index, slide_manager)
+            # # use current model index to computer maximum cuff shift (radius) .. SAVES to file in method
+            # self.compute_cuff_shift(all_configs, model_index, slide_manager)
+            # TODO
 
             # iterate through simulations
             for sim_index, sim in enumerate(all_configs['sims']):
@@ -227,7 +228,7 @@ class Runner(Exceptionable, Configurable):
         model_config = all_configs[Config.MODEL.value][model_index]
 
         # fetch cuff config
-        cuff_config = self.load(model_config['cuff']['preset'][0])
+        cuff_config = self.load(model_config['cuff']['preset'])
 
         # if len
         # TODO: LEFT OFF HERE 12/23/19
@@ -466,14 +467,14 @@ class Runner(Exceptionable, Configurable):
         waveform.add(SetupMode.OLD, Config.MODEL, model_config)
 
         # compute rho and sigma from waveform instance
-        print('b4')
 
         if model_config.get('modes').get('rho_perineurium_method') == 'RHO_WEERASURIYA':  # TODO ENUMIFY
             freq_double = model_config.get('frequency').get('value')
+            freq_unit = model_config.get('frequency').get('unit')
             rho_double = waveform.rho_weerasuriya(freq_double)
             sigma_double = 1/rho_double
-            model_config['conductivities']['custom']['perineurium']['value'] = str(sigma_double)
-            model_config['conductivities']['custom']['perineurium']['label'] = 'RHO_WEERASURIYA'  # @ freq_double
+            model_config['conductivities']['perineurium']['value'] = str(sigma_double)
+            model_config['conductivities']['perineurium']['label'] = "RHO_WEERASURIYA @ %d %s" % (freq_double, freq_unit)
         else:
             self.throw(48)
 
