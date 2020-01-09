@@ -2,7 +2,6 @@
 
 # builtins
 from typing import List
-import os
 
 # packages
 import numpy as np

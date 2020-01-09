@@ -19,9 +19,10 @@
       "Enteromedics.json"
     ],
     "shift": {
+      "on": true,
       "unit": "[micrometer]",
-      "x": 0,
-      "y": 0,
+      "r": 0,
+      "theta": 0,
       "z": 0
     },
     "rotate": {

@@ -216,6 +216,11 @@ class FiberManager(Exceptionable, Configurable, Saveable):
         user is able to filter points to only find z coordinates for desired fascicles/inners/fibers
         :return: see param return_points
         """
+        # TODO: 12/23/19
+        #       This method is kind of crappy as of now. It stores output in a multidimensional list, but
+        #       this should NOT be the case. Instead, we'll store in a multidimensional dict so that data
+        #       is accessible by "indexing" in the order of parameters, as opposed to needing to find indices.
+        #       Addressing cuff shifting first, then coming back to this.
 
         # reset fiber metadata
         self.fiber_metadata = {
