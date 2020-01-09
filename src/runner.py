@@ -417,10 +417,16 @@ class Runner(Exceptionable, Configurable):
         waveform.add(SetupMode.OLD, Config.MODEL, model_config)
 
         # compute rho and sigma from waveform instance
-        rho_double = waveform.rho_weerasuriya(model_config.get('frequency').get('value'))
-        sigma_double = 1/rho_double
+        print('b4')
 
-        model_config['conductivities']['custom']['perineurium']['value'] = str(sigma_double)
+        if model_config.get('modes').get('rho_perineurium_method') == 'RHO_WEERASURIYA':  # TODO ENUMIFY
+            freq_double = model_config.get('frequency').get('value')
+            rho_double = waveform.rho_weerasuriya(freq_double)
+            sigma_double = 1/rho_double
+            model_config['conductivities']['custom']['perineurium']['value'] = str(sigma_double)
+            model_config['conductivities']['custom']['perineurium']['label'] = 'RHO_WEERASURIYA'  # @ freq_double
+        else:
+            self.throw(48)
 
         ci_perineurium_thickness_mode = model_config.get('modes').get('ci_perineurium_thickness')
         ci_params = self.load(os.path.join('config', 'system', 'ci_peri_thickness.json'))

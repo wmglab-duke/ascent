@@ -1,11 +1,12 @@
 {
   "modes": {
+    "rho_perineurium_method": "RHO_WEERASURIYA",
     "fiber_z": "EXTRUSION",
     "ci_perineurium_thickness": "PIG_INHOUSE"
   },
   "solution": {
     "time_units": "ms",
-    "sol_time": 288039.773313
+    "sol_time": 318790.541589
   },
   "n_srcs": 0,
   "temperature": {
@@ -34,29 +35,29 @@
   },
   "conductivities": {
     "defaults": {
-      "conductor": "platinum",
-      "fill": "saline",
       "recess": "saline",
       "medium": "fat",
+      "fill": "saline",
+      "conductor": "platinum",
       "endoneurium": "endoneurium",
       "epineurium": "epineurium"
     },
     "custom": {
-      "insulator": {
-        "label": "weird silicone",
-        "unit": "[S/m]",
-        "value": "0"
-      },
       "perineurium": {
-        "label": "weird perineurium",
         "unit": "[S/m]",
+        "label": "RHO_WEERASURIYA",
         "value": "0.0008703220191470844"
+      },
+      "insulator": {
+        "unit": "[S/m]",
+        "label": "weird silicone",
+        "value": "0.1"
       }
     }
   },
   "mesh": {
     "rest": {
-      "mesh_time": 59397.950617,
+      "mesh_time": 56585.696436,
       "time_units": "ms",
       "hcurve": 0.2,
       "hmin": 10,
@@ -73,7 +74,7 @@
       "mean_quality": 0.5084
     },
     "nerve": {
-      "mesh_time": 3185.196073,
+      "mesh_time": 3748.977941,
       "time_units": "ms",
       "hcurve": 0.2,
       "hmin": 10,

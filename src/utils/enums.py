@@ -20,6 +20,8 @@ class Config(Enum):
     EXCEPTIONS = 'exceptions'
     ENV = 'env'
     CI_PERINEURIUM_THICKNESS = 'ci_perineurium_thickness'
+    PERINEURIUM_RESISTIVITY = 'perineurium_resistivity'
+
 
     # user
     RUN = 'run'
@@ -83,11 +85,10 @@ class NerveMode(Enum):
 
 
 @unique
-class CIPerineuriumThicknessMode(Enum):
-    config = 'ci_perineurium_thickness'
+class PerineuriumResistivityMode(Enum):
+    config = 'rho_perineurium_method'
 
-    PIG_INHOUSE = 0
-    GRINBERG_2008 = 1
+    RHO_WEERASURIYA = 0
 
 
 @unique
