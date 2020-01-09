@@ -85,6 +85,13 @@ class NerveMode(Enum):
 
 
 @unique
+class PerineuriumResistivityMode(Enum):
+    config = 'rho_perineurium_method'
+
+    RHO_WEERASURIYA = 0
+
+
+@unique
 class DeformationMode(Enum):
     config = 'deform'
 
@@ -185,13 +192,6 @@ class PerineuriumThicknessMode(Enum):
 
     GRINBERG_2008 = 0
     PIG_INHOUSE = 1
-
-
-@unique
-class PerineuriumResistivityMode(Enum):
-    config = 'rho_perineurium_method'
-
-    RHO_WEERASURIYA = 0
 
 
 #%% Cuffs
