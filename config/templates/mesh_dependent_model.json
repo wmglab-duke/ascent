@@ -1,89 +1,62 @@
 {
-  "mesh": {
-    "rest": {
-      "mesh_time": false,
-      "time_units": "ms",
-      "hcurve": true,
-      "hmin": true,
-      "hnarrow": true,
-      "hmax": true,
-      "hgrad": true
-    },
-    "stats": {
-      "volume": false,
-      "min_quality": false,
-      "min_volume": false,
-      "quality_measure": "vollength",
-      "number_elements": false,
-      "mean_quality": false
-    },
-    "nerve": {
-      "mesh_time": false,
-      "time_units": "ms",
-      "hcurve": true,
-      "hmin": true,
-      "hnarrow": true,
-      "hmax": true,
-      "hgrad": true
-    }
-  },
-  "solution": {
-    "time_units": "ms",
-    "sol_time": true
-  },
   "modes": {
+    "rho_perineurium_method": false,
     "fiber_z": true,
-    "ci_perineurium_thickness": false
+    "ci_perineurium_thickness": true
   },
+  "solution": false,
+  "temperature": false,
   "medium": {
     "bounds": {
-      "unit": "[micrometer]",
+      "unit": true,
       "length": true,
       "radius": true
-    },
-    "material": false
+    }
   },
   "cuff": {
-    "preset": [
-      true
-    ],
+    "rotate": {
+      "unit": true,
+      "ang": true
+    },
     "shift": {
-      "unit": "[micrometer]",
+      "unit": true,
       "x": true,
       "y": true,
       "z": true
     },
-    "rotate": {
-      "unit": "[degree]",
-      "ang": true
+    "preset": true
+  },
+  "conductivities": false,
+  "mesh": {
+    "rest": {
+      "mesh_time": false,
+      "time_units": true,
+      "hcurve": true,
+      "hmin": true,
+      "hnarrow": true,
+      "hmax": true,
+      "hgrad": true
     },
-    "fill": {
-      "material": false
-    }
-  },
-  "frequency": {
-    "unit": "Hz",
-    "value": false
-  },
-  "temperature": {
-    "unit": "celsius",
-    "value": false
-  },
-  "conductivities": {
-    "perineurium": {
-      "unit": "[S/m]",
-      "value": false
+    "stats": false,
+    "nerve": {
+      "mesh_time": false,
+      "time_units": true,
+      "hcurve": true,
+      "hmin": true,
+      "hnarrow": true,
+      "hmax": true,
+      "hgrad": true
     }
   },
   "ci_perineurium_thickness": {
     "coefficients": {
+      "a": 0.015706,
       "unit": "micrometer",
-      "a": false,
-      "b": false
+      "b": 5.1028
     }
   },
   "solver": {
     "name": true
   },
-  "n_srcs": true
+  "frequency": false
 }
