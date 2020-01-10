@@ -1,5 +1,7 @@
 package model;
 
+import org.json.JSONObject;
+
 import java.util.*;
 
 public class IdentifierManager {
@@ -73,10 +75,11 @@ public class IdentifierManager {
 
     /**
      *
-     * @param map
+     * @param jsonObject
      * @return
      */
-    public static IdentifierManager fromMap(Map<String, String> map) {
+    public static IdentifierManager fromJSONObject(JSONObject jsonObject) {
+        // TODO
         return null;
     }
 
@@ -85,7 +88,8 @@ public class IdentifierManager {
      * @param idm
      * @return
      */
-    public static Map<String, String> toMap(IdentifierManager idm) {
+    public static JSONObject toJSONObject(IdentifierManager idm) {
+        // TODO
         return null;
     }
 }
