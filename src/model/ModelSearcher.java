@@ -48,7 +48,7 @@ public class ModelSearcher {
 
             if (fileParts[fileParts.length - 1].equals("model.json")) {
 
-                JSONObject target = new JSONReader(file.toString()).getData();
+                JSONObject target = JSONio.read(file.toString());
                 if (ModelSearcher.meshMatch(reference, query, target)) {
                     return Match.fromMeshPath(
                             String.join("/", Arrays.copyOfRange(fileParts, 0, fileParts.length - 1))
