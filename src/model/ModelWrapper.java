@@ -831,9 +831,20 @@ public class ModelWrapper {
             ////////////////
 
 
-            String quality_measure = "vollength";
+            // put nerve to mesh, rest to mesh, mesh to modelData
+            JSONObject mesh = modelData.getJSONObject("mesh");
+            mesh.put("nerve", nerveMeshParams);
+            mesh.put("rest", restMeshParams);
+            modelData.put("mesh", mesh);
+
+            // LOOPING/SEARCHING AT MODEL LEVEL IS HERE // TODO
+
+            // MESH STATISTICS
+            String quality_measure = modelData.getJSONObject("mesh")
+                    .getJSONObject("stats")
+                    .getString("quality_measure");
             model.component("comp1").mesh("mesh1").stat().setQualityMeasure(quality_measure);
-            // could instead use: skewness, maxangle, volcircum, vollength, condition, growth...
+            // could use: skewness, maxangle, volcircum, vollength, condition, growth...
 
             Integer number_elements = model.component("comp1").mesh("mesh1").getNumElem("all");
             Double min_quality = model.component("comp1").mesh("mesh1").getMinQuality("all");
@@ -849,12 +860,9 @@ public class ModelWrapper {
             meshStats.put("volume", volume);
             meshStats.put("quality_measure", quality_measure);
 
-            // put nerve to mesh, rest to mesh, mesh to modelData
-            JSONObject mesh = modelData.getJSONObject("mesh");
-            mesh.put("nerve", nerveMeshParams);
-            mesh.put("rest", restMeshParams);
             mesh.put("stats", meshStats);
             modelData.put("mesh", mesh);
+
 
             System.out.println("DONE MESHING");
 
