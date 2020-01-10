@@ -55,16 +55,16 @@ for i in range(num_fascicle):
         # 3rd elem = angle in degrees between x-axis of the Cartesian base
         #            and the corresponding semi-axis
         ellipse = ((x_fasc[i], y_fasc[i]), (fasc_diameters[i], fasc_diameters[i]), 0)
-		fascicle.append(shapely.geometry.Point(ellipse[0]).buffer(1))
-		shapely.affinity.scale(fascicle[i], int(ellipse[1][0]), int(ellipse[1][1]))
+        fascicle.append(shapely.geometry.Point(ellipse[0]).buffer(1))
+        shapely.affinity.scale(fascicle[i], int(ellipse[1][0]), int(ellipse[1][1]))
 
-		# 
+        #
         # # Let create the ellipse along x and y:
         # fascicle.append(shapely.affinity.scale(shapely.geometry.Point(ellipse[0]).buffer(1))
 
         # chk = 0
         # for fasc_comp in range(0, i - 1):
-		# 	fascicle[fasc_comp]
+        # 	fascicle[fasc_comp]
     # 	fascicle.
 
     #         tmp = np.sqrt((x_fasc[i] - x_fasc[fasc_comp]) ** 2 + (y_fasc[i] - y_fasc[fasc_comp]) ** 2)
