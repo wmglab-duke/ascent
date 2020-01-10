@@ -109,10 +109,9 @@ public class IdentifierManager {
 
     /**
      *
-     * @param idm instance to "JSON-ify"
      * @return JSONObject where all the instance variables have been entered as values with their names as keys
      */
-    public JSONObject toJSONObject(IdentifierManager idm) {
+    public JSONObject toJSONObject() {
         Map<String, Object> map = new HashMap<>();
         map.put("identifierStates", this.identifierStates);
         map.put("identifierPseudonyms", this.identifierPseudonyms);

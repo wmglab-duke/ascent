@@ -1,4 +1,5 @@
 {
+  "mesh_optimization": true,
   "overwrite": false,
   "sample": 1,
   "models": [

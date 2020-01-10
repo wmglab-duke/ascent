@@ -1,6 +1,7 @@
 package model;
 
 import com.comsol.model.Model;
+import com.comsol.model.util.ModelUtil;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -104,9 +105,24 @@ public class ModelSearcher {
             this.idm = idm;
         }
 
+        /**
+         *
+         * @param path
+         * @return
+         */
         public static Match fromMeshPath(String path) {
-            // TODO
-            return null;
+            try {
+                JSONObject modelConfig = JSONio.read(path + "/model.json");
+                Model mph = ModelUtil.loadCopy("new_model", path + "/mesh/mesh.mph");
+                IdentifierManager idm = IdentifierManager.fromJSONObject(JSONio.read(path + "/mesh/idm.json"));
+
+                return new Match(modelConfig, mph,idm);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+
         }
 
         public JSONObject getModelConfig() {

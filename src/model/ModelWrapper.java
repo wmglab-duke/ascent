@@ -567,7 +567,22 @@ public class ModelWrapper {
             e.printStackTrace();
         }
 
+        JSONObject meshReferenceData = null;
+        try {
+            meshReferenceData = JSONio.read(String.join("/", new String[]{projectPath, "config", "templates", "mesh_dependent_model.json"});
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
         JSONArray models_list = run.getJSONArray("models");
+
+
+        // variables for optimization looping
+        JSONObject previousModelData = null;
+        Model previousMph = null;
+        IdentifierManager previousIDM = null;
+        boolean skipMesh = false;
+
 
         // loop models
         for (int model_index = 0; model_index < models_list.length(); model_index++) {
@@ -590,13 +605,64 @@ public class ModelWrapper {
                 e.printStackTrace();
             }
 
+            // Read cuff to build from model.json (cuff.preset) which links to JSON containing instantiations of parts
+            JSONObject cuffObject = (JSONObject) modelData.get("cuff");
+            String cuff = cuffObject.getString("preset");
+
+            Model model = null;
+            ModelWrapper mw = null;
+
             // TODO: insert optimization logic here
+            // if optimizing
+            if ((Boolean) run.get("recycle_meshes")) {
+                try {
+                    // if prev is not null AND prev is mesh match:
+                    if ((previousModelData != null) && (ModelSearcher.meshMatch(meshReferenceData, modelData, previousModelData))) {
+
+                            // set current mph and idm/im
+                            model = ModelUtil.loadCopy(ModelUtil.uniquetag("Model"), previousMph.getFilePath());
+                            mw = new ModelWrapper(model, projectPath);
+                            mw.im = IdentifierManager.fromJSONObject(new JSONObject(previousIDM.toJSONObject().toString()));
+
+                            skipMesh = true;
+                    }
+
+                    else {
+                        // search via recursive dir dive
+                        ModelSearcher modelSearcher = new ModelSearcher(String.join("/", new String[]{
+                                projectPath,
+                                "samples",
+                                sample,
+                                "models"
+                        }));
+                        ModelSearcher.Match meshMatch = modelSearcher.searchMeshMatch(modelData, meshReferenceData);
+
+                        // if there was a mesh match
+                        if (meshMatch != null) {
+                            model = meshMatch.getMph();
+                            mw = new ModelWrapper(model, projectPath);
+                            mw.im = IdentifierManager.fromJSONObject(new JSONObject(meshMatch.getIdm().toJSONObject().toString()));
+
+                            previousMph = ModelUtil.loadCopy(ModelUtil.uniquetag("Model"), model.getFilePath());
+                            previousIDM = IdentifierManager.fromJSONObject(new JSONObject(mw.im.toJSONObject().toString()));
+
+                            skipMesh = true;
+                        }
+
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    System.exit(1);
+                }
+
+            }
+
+
             /* pseudo-code
 
             if optimizing:
                 if prev is not null AND prev is mesh match:
 
-                    current model config = prev model config (copy unnecessary)
                     current mph = prev mph COPY
                     current IDM = prev IDM COPY
 
@@ -611,7 +677,6 @@ public class ModelWrapper {
 
                         else: (found mesh match)
 
-                            current model config = found model config
                             current mph = found mesh mph
                             current IDM = found mesh IDM
 
@@ -623,263 +688,277 @@ public class ModelWrapper {
 
              */
 
-            // Define model object
-            Model model = ModelUtil.create("Model");
-            // Add component node 1
-            model.component().create("comp1", true);
-            // Add 3D geom to component node 1
-            model.component("comp1").geom().create("geom1", 3);
-            // Set default length units to micron
-            model.component("comp1").geom("geom1").lengthUnit("\u00b5m");
-            // Add materials node to component node 1
-            model.component("comp1").physics().create("ec", "ConductiveMedia", "geom1");
-            // and mesh node to component node 1
-            model.component("comp1").mesh().create("mesh1");
+            // START PRE MESH
+            if (! skipMesh) {
 
-            // Define ModelWrapper class instance for model and projectPath
-            ModelWrapper mw = new ModelWrapper(model, projectPath);
+                // Define model object
+                model = ModelUtil.create("Model");
+                // Add component node 1
+                model.component().create("comp1", true);
+                // Add 3D geom to component node 1
+                model.component("comp1").geom().create("geom1", 3);
+                // Set default length units to micron
+                model.component("comp1").geom("geom1").lengthUnit("\u00b5m");
+                // Add materials node to component node 1
+                model.component("comp1").physics().create("ec", "ConductiveMedia", "geom1");
+                // and mesh node to component node 1
+                model.component("comp1").mesh().create("mesh1");
 
-            // FEM MODEL GEOMETRY
-            // Set NERVE MORPHOLOGY parameters
-            JSONObject morphology = (JSONObject) sampleData.get("Morphology");
-            String morphology_unit = ((JSONObject) sampleData.get("scale")).getString("scale_bar_unit");
+                // Define ModelWrapper class instance for model and projectPath
+                mw = new ModelWrapper(model, projectPath);
 
-            String nerveParamsLabal = "Nerve Parameters";
-            ModelParamGroup nerveParams = model.param().group().create(nerveParamsLabal);
-            nerveParams.label(nerveParamsLabal);
+                // FEM MODEL GEOMETRY
+                // Set NERVE MORPHOLOGY parameters
+                JSONObject morphology = (JSONObject) sampleData.get("Morphology");
+                String morphology_unit = ((JSONObject) sampleData.get("scale")).getString("scale_bar_unit");
 
-            if (morphology.isNull("Nerve")) {
-                nerveParams.set("a_nerve", "NaN");
-                nerveParams.set("r_nerve", "NaN");
-            } else {
-                JSONObject nerve = (JSONObject) morphology.get("Nerve");
-                nerveParams.set("a_nerve", nerve.get("area") + " [" + morphology_unit + "^2]");
-                nerveParams.set("r_nerve", "sqrt(a_nerve/pi)");
-            }
+                String nerveParamsLabal = "Nerve Parameters";
+                ModelParamGroup nerveParams = model.param().group().create(nerveParamsLabal);
+                nerveParams.label(nerveParamsLabal);
 
-            String ciCoeffsFile = String.join("/", new String[]{
-                    "config",
-                    "system",
-                    "ci_peri_thickness.json"
-            });
+                if (morphology.isNull("Nerve")) {
+                    nerveParams.set("a_nerve", "NaN");
+                    nerveParams.set("r_nerve", "NaN");
+                } else {
+                    JSONObject nerve = (JSONObject) morphology.get("Nerve");
+                    nerveParams.set("a_nerve", nerve.get("area") + " [" + morphology_unit + "^2]");
+                    nerveParams.set("r_nerve", "sqrt(a_nerve/pi)");
+                }
 
-            JSONObject ciCoeffsData = null;
-            try {
-                ciCoeffsData = JSONio.read(projectPath + "/" + ciCoeffsFile);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
+                String ciCoeffsFile = String.join("/", new String[]{
+                        "config",
+                        "system",
+                        "ci_peri_thickness.json"
+                });
 
-            String ci_mode = sampleData.getJSONObject("modes").getString("ci_perineurium_thickness");
-            JSONObject myCICoeffs = ciCoeffsData.getJSONObject("ci_perineurium_thickness_parameters").getJSONObject(ci_mode);
+                JSONObject ciCoeffsData = null;
+                try {
+                    ciCoeffsData = JSONio.read(projectPath + "/" + ciCoeffsFile);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
 
-            nerveParams.set("ci_a", myCICoeffs.getDouble("a") + " [" + myCICoeffs.getString("unit") + "/" + myCICoeffs.getString("unit") + "]");
-            nerveParams.set("ci_b", myCICoeffs.getDouble("b") + " [" + myCICoeffs.getString("unit") + "]");
+                String ci_mode = sampleData.getJSONObject("modes").getString("ci_perineurium_thickness");
+                JSONObject myCICoeffs = ciCoeffsData.getJSONObject("ci_perineurium_thickness_parameters").getJSONObject(ci_mode);
 
-            // Set CUFF POSITIONING parameters
-            String cuffConformationParamsLabel = "Cuff Conformation Parameters";
-            ModelParamGroup cuffConformationParams = model.param().group().create(cuffConformationParamsLabel);
-            cuffConformationParams.label(cuffConformationParamsLabel);
+                nerveParams.set("ci_a", myCICoeffs.getDouble("a") + " [" + myCICoeffs.getString("unit") + "/" + myCICoeffs.getString("unit") + "]");
+                nerveParams.set("ci_b", myCICoeffs.getDouble("b") + " [" + myCICoeffs.getString("unit") + "]");
 
-            String cuff_shift_unit = modelData.getJSONObject("cuff").getJSONObject("shift").getString("unit");
-            String cuff_rot_unit = modelData.getJSONObject("cuff").getJSONObject("rotate").getString("unit");
-            Integer cuff_shift_x = modelData.getJSONObject("cuff").getJSONObject("shift").getInt("x");
-            Integer cuff_shift_y = modelData.getJSONObject("cuff").getJSONObject("shift").getInt("y");
-            Integer cuff_shift_z = modelData.getJSONObject("cuff").getJSONObject("shift").getInt("z");
-            Integer cuff_rot = modelData.getJSONObject("cuff").getJSONObject("rotate").getInt("ang");
+                // Set CUFF POSITIONING parameters
+                String cuffConformationParamsLabel = "Cuff Conformation Parameters";
+                ModelParamGroup cuffConformationParams = model.param().group().create(cuffConformationParamsLabel);
+                cuffConformationParams.label(cuffConformationParamsLabel);
 
-            cuffConformationParams.set("cuff_shift_x", cuff_shift_x + " " + cuff_shift_unit);
-            cuffConformationParams.set("cuff_shift_y", cuff_shift_y + " " + cuff_shift_unit);
-            cuffConformationParams.set("cuff_shift_z", cuff_shift_z + " " + cuff_shift_unit);
-            cuffConformationParams.set("cuff_rot",  cuff_rot + " " + cuff_rot_unit);
+                String cuff_shift_unit = modelData.getJSONObject("cuff").getJSONObject("shift").getString("unit");
+                String cuff_rot_unit = modelData.getJSONObject("cuff").getJSONObject("rotate").getString("unit");
+                Integer cuff_shift_x = modelData.getJSONObject("cuff").getJSONObject("shift").getInt("x");
+                Integer cuff_shift_y = modelData.getJSONObject("cuff").getJSONObject("shift").getInt("y");
+                Integer cuff_shift_z = modelData.getJSONObject("cuff").getJSONObject("shift").getInt("z");
+                Integer cuff_rot = modelData.getJSONObject("cuff").getJSONObject("rotate").getInt("ang");
 
-            // Set MEDIUM parameters
-            String mediumParamsLabel = "Medium Parameters";
-            ModelParamGroup mediumParams = model.param().group().create(mediumParamsLabel);
-            mediumParams.label(mediumParamsLabel);
+                cuffConformationParams.set("cuff_shift_x", cuff_shift_x + " " + cuff_shift_unit);
+                cuffConformationParams.set("cuff_shift_y", cuff_shift_y + " " + cuff_shift_unit);
+                cuffConformationParams.set("cuff_shift_z", cuff_shift_z + " " + cuff_shift_unit);
+                cuffConformationParams.set("cuff_rot",  cuff_rot + " " + cuff_rot_unit);
 
-            String bounds_unit = ((JSONObject) ((JSONObject) modelData.get("medium")).get("bounds")).getString("unit");
+                // Set MEDIUM parameters
+                String mediumParamsLabel = "Medium Parameters";
+                ModelParamGroup mediumParams = model.param().group().create(mediumParamsLabel);
+                mediumParams.label(mediumParamsLabel);
 
-            // Length of the FEM - will want to converge thresholds for this
-            double length = ((JSONObject) ((JSONObject) modelData.get("medium")).get("bounds")).getDouble("length");
-            mediumParams.set("z_nerve", length + " " + bounds_unit);
+                String bounds_unit = ((JSONObject) ((JSONObject) modelData.get("medium")).get("bounds")).getString("unit");
 
-            // Radius of the FEM - will want to converge thresholds for this
-            double radius = ((JSONObject) ((JSONObject) modelData.get("medium")).get("bounds")).getDouble("radius");
-            mediumParams.set("r_ground", radius + " " + bounds_unit);
+                // Length of the FEM - will want to converge thresholds for this
+                double length = ((JSONObject) ((JSONObject) modelData.get("medium")).get("bounds")).getDouble("length");
+                mediumParams.set("z_nerve", length + " " + bounds_unit);
 
-            // Create PART PRIMITIVE for MEDIUM
-            String mediumString = "Medium_Primitive";
-            String partID = mw.im.next("part", mediumString);
-            try {
-                IdentifierManager partPrimitiveIM = Part.createEnvironmentPartPrimitive(partID, mediumString, mw);
-                mw.partPrimitiveIMs.put(mediumString, partPrimitiveIM);
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            }
+                // Radius of the FEM - will want to converge thresholds for this
+                double radius = ((JSONObject) ((JSONObject) modelData.get("medium")).get("bounds")).getDouble("radius");
+                mediumParams.set("r_ground", radius + " " + bounds_unit);
 
-            // Create PART INSTANCE for MEDIUM
-            String instanceLabel = "Medium";
-            String instanceID = mw.im.next("pi", instanceLabel);
-            try {
-                Part.createEnvironmentPartInstance(instanceID, instanceLabel, mediumString, mw, modelData);
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            }
+                // Create PART PRIMITIVE for MEDIUM
+                String mediumString = "Medium_Primitive";
+                String partID = mw.im.next("part", mediumString);
+                try {
+                    IdentifierManager partPrimitiveIM = Part.createEnvironmentPartPrimitive(partID, mediumString, mw);
+                    mw.partPrimitiveIMs.put(mediumString, partPrimitiveIM);
+                } catch (IllegalArgumentException e) {
+                    e.printStackTrace();
+                }
 
-            // Read cuff to build from model.json (cuff.preset) which links to JSON containing instantiations of parts
-            JSONObject cuffObject = (JSONObject) modelData.get("cuff");
-            String cuff = cuffObject.getString("preset");
+                // Create PART INSTANCE for MEDIUM
+                String instanceLabel = "Medium";
+                String instanceID = mw.im.next("pi", instanceLabel);
+                try {
+                    Part.createEnvironmentPartInstance(instanceID, instanceLabel, mediumString, mw, modelData);
+                } catch (IllegalArgumentException e) {
+                    e.printStackTrace();
+                }
 
-            // add PART PRIMITIVES for CUFF
-            mw.addCuffPartPrimitives(cuff);
+                // add PART PRIMITIVES for CUFF
+                mw.addCuffPartPrimitives(cuff);
 
-            // add PART INSTANCES for cuff
-            mw.addCuffPartInstances(cuff, modelData);
+                // add PART INSTANCES for cuff
+                mw.addCuffPartInstances(cuff, modelData);
 
-            // add NERVE (Fascicles CI/MESH and EPINEURIUM)
-            // there are no primitives/instances for nerve parts, just build them
-            mw.addNerve(sample, nerveParams);
+                // add NERVE (Fascicles CI/MESH and EPINEURIUM)
+                // there are no primitives/instances for nerve parts, just build them
+                mw.addNerve(sample, nerveParams);
 
-            // create UNIONS
-            mw.createUnions();
+                // create UNIONS
+                mw.createUnions();
 
-            // BUILD GEOMETRY
-            System.out.println("Building the FEM geometry.");
+                // BUILD GEOMETRY
+                System.out.println("Building the FEM geometry.");
 
-            // Saved model pre-run geometry for debugging
-            String geomFile = String.join("/", new String[]{
-                    projectPath,
-                    "samples",
-                    sample,
-                    "models",
-                    modelStr,
-                    "model.mph"
-            });
+                // Saved model pre-run geometry for debugging
+                String geomFile = String.join("/", new String[]{
+                        projectPath,
+                        "samples",
+                        sample,
+                        "models",
+                        modelStr,
+                        "debug_geom.mph"
+                });
 
-            try {
-                System.out.println("Saving MPH (pre-geom_run) file to: " + geomFile);
-                model.save(geomFile);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+                try {
+                    System.out.println("Saving MPH (pre-geom_run) file to: " + geomFile);
+                    model.save(geomFile);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
-            model.component("comp1").geom("geom1").run("fin");
+                model.component("comp1").geom("geom1").run("fin");
 
-            // MESH
-            // define MESH for NERVE
-            String meshNerveSweLabel = "Mesh Nerve";
-            MeshFeature meshNerve = model.component("comp1").mesh("mesh1").create(mw.im.next("swe",meshNerveSweLabel), "Sweep");
-            meshNerve.selection().geom("geom1", 3);
-            meshNerve.selection().named("geom1" + "_" + mw.im.get("allNervePartsUnionCsel") + "_dom");
-            meshNerve.set("facemethod", "tri");
-            meshNerve.label(meshNerveSweLabel);
+                // MESH
+                // define MESH for NERVE
+                String meshNerveSweLabel = "Mesh Nerve";
+                MeshFeature meshNerve = model.component("comp1").mesh("mesh1").create(mw.im.next("swe",meshNerveSweLabel), "Sweep");
+                meshNerve.selection().geom("geom1", 3);
+                meshNerve.selection().named("geom1" + "_" + mw.im.get("allNervePartsUnionCsel") + "_dom");
+                meshNerve.set("facemethod", "tri");
+                meshNerve.label(meshNerveSweLabel);
 
-            String meshNerveSizeInfoLabel = "Mesh Nerve Size Info";
-            MeshFeature meshNerveSizeInfo = meshNerve.create(mw.im.next("size",meshNerveSizeInfoLabel), "Size");
-            meshNerveSizeInfo.label(meshNerveSizeInfoLabel);
+                String meshNerveSizeInfoLabel = "Mesh Nerve Size Info";
+                MeshFeature meshNerveSizeInfo = meshNerve.create(mw.im.next("size",meshNerveSizeInfoLabel), "Size");
+                meshNerveSizeInfo.label(meshNerveSizeInfoLabel);
 
-            JSONObject nerveMeshParams = modelData.getJSONObject("mesh").getJSONObject("nerve");
-            meshNerveSizeInfo.set("custom", true);
-            meshNerveSizeInfo.set("hmaxactive", true);
-            meshNerveSizeInfo.set("hmax", nerveMeshParams.getDouble("hmax"));
-            meshNerveSizeInfo.set("hminactive", true);
-            meshNerveSizeInfo.set("hmin", nerveMeshParams.getDouble("hmin"));
-            meshNerveSizeInfo.set("hgradactive", true);
-            meshNerveSizeInfo.set("hgrad", nerveMeshParams.getDouble("hgrad"));
-            meshNerveSizeInfo.set("hcurveactive", true);
-            meshNerveSizeInfo.set("hcurve", nerveMeshParams.getDouble("hcurve"));
-            meshNerveSizeInfo.set("hnarrowactive", true);
-            meshNerveSizeInfo.set("hnarrow", nerveMeshParams.getDouble("hnarrow"));
+                JSONObject nerveMeshParams = modelData.getJSONObject("mesh").getJSONObject("nerve");
+                meshNerveSizeInfo.set("custom", true);
+                meshNerveSizeInfo.set("hmaxactive", true);
+                meshNerveSizeInfo.set("hmax", nerveMeshParams.getDouble("hmax"));
+                meshNerveSizeInfo.set("hminactive", true);
+                meshNerveSizeInfo.set("hmin", nerveMeshParams.getDouble("hmin"));
+                meshNerveSizeInfo.set("hgradactive", true);
+                meshNerveSizeInfo.set("hgrad", nerveMeshParams.getDouble("hgrad"));
+                meshNerveSizeInfo.set("hcurveactive", true);
+                meshNerveSizeInfo.set("hcurve", nerveMeshParams.getDouble("hcurve"));
+                meshNerveSizeInfo.set("hnarrowactive", true);
+                meshNerveSizeInfo.set("hnarrow", nerveMeshParams.getDouble("hnarrow"));
 
-            String meshRestFtetLabel = "Mesh Rest";
-            MeshFeature meshRest = model.component("comp1").mesh("mesh1").create(mw.im.next("ftet",meshRestFtetLabel), "FreeTet");
-            meshRest.selection().geom("geom1", 3);
-            meshRest.selection().remaining();
-            meshRest.label(meshRestFtetLabel);
+                String meshRestFtetLabel = "Mesh Rest";
+                MeshFeature meshRest = model.component("comp1").mesh("mesh1").create(mw.im.next("ftet",meshRestFtetLabel), "FreeTet");
+                meshRest.selection().geom("geom1", 3);
+                meshRest.selection().remaining();
+                meshRest.label(meshRestFtetLabel);
 
-            String meshRestSizeInfoLabel = "Mesh Rest Size Info";
-            MeshFeature meshRestSizeInfo = meshRest.create(mw.im.next("size",meshRestSizeInfoLabel), "Size");
-            meshRestSizeInfo.label(meshRestSizeInfoLabel);
+                String meshRestSizeInfoLabel = "Mesh Rest Size Info";
+                MeshFeature meshRestSizeInfo = meshRest.create(mw.im.next("size",meshRestSizeInfoLabel), "Size");
+                meshRestSizeInfo.label(meshRestSizeInfoLabel);
 
-            JSONObject restMeshParams = modelData.getJSONObject("mesh").getJSONObject("rest");
-            meshRestSizeInfo.set("custom", true);
-            meshRestSizeInfo.set("hmaxactive", true);
-            meshRestSizeInfo.set("hmax", restMeshParams.getDouble("hmax"));
-            meshRestSizeInfo.set("hminactive", true);
-            meshRestSizeInfo.set("hmin", restMeshParams.getDouble("hmin"));
-            meshRestSizeInfo.set("hgradactive", true);
-            meshRestSizeInfo.set("hgrad", restMeshParams.getDouble("hgrad"));
-            meshRestSizeInfo.set("hcurveactive", true);
-            meshRestSizeInfo.set("hcurve", restMeshParams.getDouble("hcurve"));
-            meshRestSizeInfo.set("hnarrowactive", true);
-            meshRestSizeInfo.set("hnarrow", restMeshParams.getDouble("hnarrow"));
+                JSONObject restMeshParams = modelData.getJSONObject("mesh").getJSONObject("rest");
+                meshRestSizeInfo.set("custom", true);
+                meshRestSizeInfo.set("hmaxactive", true);
+                meshRestSizeInfo.set("hmax", restMeshParams.getDouble("hmax"));
+                meshRestSizeInfo.set("hminactive", true);
+                meshRestSizeInfo.set("hmin", restMeshParams.getDouble("hmin"));
+                meshRestSizeInfo.set("hgradactive", true);
+                meshRestSizeInfo.set("hgrad", restMeshParams.getDouble("hgrad"));
+                meshRestSizeInfo.set("hcurveactive", true);
+                meshRestSizeInfo.set("hcurve", restMeshParams.getDouble("hcurve"));
+                meshRestSizeInfo.set("hnarrowactive", true);
+                meshRestSizeInfo.set("hnarrow", restMeshParams.getDouble("hnarrow"));
 
-            // Saved model pre-mesh for debugging
-            try {
-                System.out.println("Saving MPH (pre-mesh) file to: " + geomFile);
-                model.save(geomFile);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+                // Saved model pre-mesh for debugging
+                try {
+                    System.out.println("Saving MPH (pre-mesh) file to: " + geomFile);
+                    model.save(geomFile);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
-            System.out.println("Meshing nerve parts... will take a while");
+                System.out.println("Meshing nerve parts... will take a while");
 
-            long nerveMeshStartTime = System.nanoTime();
-            model.component("comp1").mesh("mesh1").run(mw.im.get(meshNerveSweLabel));
-            long estimatedNerveMeshTime = System.nanoTime() - nerveMeshStartTime;
-            nerveMeshParams.put("mesh_time",estimatedNerveMeshTime/Math.pow(10,6)); // convert nanos to millis
+                long nerveMeshStartTime = System.nanoTime();
+                model.component("comp1").mesh("mesh1").run(mw.im.get(meshNerveSweLabel));
+                long estimatedNerveMeshTime = System.nanoTime() - nerveMeshStartTime;
+                nerveMeshParams.put("mesh_time",estimatedNerveMeshTime/Math.pow(10,6)); // convert nanos to millis
 
-            System.out.println("Meshing the rest... will also take a while");
+                System.out.println("Meshing the rest... will also take a while");
 
-            long restMeshStartTime = System.nanoTime();
-            model.component("comp1").mesh("mesh1").run(mw.im.get(meshRestFtetLabel));
-            long estimatedRestMeshTime = System.nanoTime() - restMeshStartTime;
-            restMeshParams.put("mesh_time",estimatedRestMeshTime/Math.pow(10,6)); // convert nanos to millis
-            ////////////////
+                long restMeshStartTime = System.nanoTime();
+                model.component("comp1").mesh("mesh1").run(mw.im.get(meshRestFtetLabel));
+                long estimatedRestMeshTime = System.nanoTime() - restMeshStartTime;
+                restMeshParams.put("mesh_time",estimatedRestMeshTime/Math.pow(10,6)); // convert nanos to millis
 
 
-            // put nerve to mesh, rest to mesh, mesh to modelData
-            JSONObject mesh = modelData.getJSONObject("mesh");
-            mesh.put("nerve", nerveMeshParams);
-            mesh.put("rest", restMeshParams);
-            modelData.put("mesh", mesh);
+                // put nerve to mesh, rest to mesh, mesh to modelData
+                JSONObject mesh = modelData.getJSONObject("mesh");
+                mesh.put("nerve", nerveMeshParams);
+                mesh.put("rest", restMeshParams);
+                modelData.put("mesh", mesh);
 
+                // MESH STATISTICS
+                String quality_measure = modelData.getJSONObject("mesh")
+                        .getJSONObject("stats")
+                        .getString("quality_measure");
+                model.component("comp1").mesh("mesh1").stat().setQualityMeasure(quality_measure);
+                // could use: skewness, maxangle, volcircum, vollength, condition, growth...
+
+                Integer number_elements = model.component("comp1").mesh("mesh1").getNumElem("all");
+                Double min_quality = model.component("comp1").mesh("mesh1").getMinQuality("all");
+                Double mean_quality = model.component("comp1").mesh("mesh1").getMeanQuality("all");
+                Double min_volume = model.component("comp1").mesh("mesh1").getMinVolume("all");
+                Double volume = model.component("comp1").mesh("mesh1").getVolume("all");
+
+                JSONObject meshStats = modelData.getJSONObject("mesh").getJSONObject("stats");
+                meshStats.put("number_elements", number_elements);
+                meshStats.put("min_quality", min_quality);
+                meshStats.put("mean_quality", mean_quality);
+                meshStats.put("min_volume", min_volume);
+                meshStats.put("volume", volume);
+                meshStats.put("quality_measure", quality_measure);
+
+                mesh.put("stats", meshStats);
+                modelData.put("mesh", mesh);
+
+
+                System.out.println("DONE MESHING");
+            //////////////// START POST MESH
+            //////////////// TODO: SAVE IDM.JSON and MESH.MPH HERE
             // LOOPING/SEARCHING AT MODEL LEVEL IS HERE // TODO
 
-            // MESH STATISTICS
-            String quality_measure = modelData.getJSONObject("mesh")
-                    .getJSONObject("stats")
-                    .getString("quality_measure");
-            model.component("comp1").mesh("mesh1").stat().setQualityMeasure(quality_measure);
-            // could use: skewness, maxangle, volcircum, vollength, condition, growth...
+                String meshFile = String.join("/", new String[]{
+                        projectPath,
+                        "samples",
+                        sample,
+                        "models",
+                        modelStr,
+                        "mesh",
+                        "mesh.mph"
+                });
 
-            Integer number_elements = model.component("comp1").mesh("mesh1").getNumElem("all");
-            Double min_quality = model.component("comp1").mesh("mesh1").getMinQuality("all");
-            Double mean_quality = model.component("comp1").mesh("mesh1").getMeanQuality("all");
-            Double min_volume = model.component("comp1").mesh("mesh1").getMinVolume("all");
-            Double volume = model.component("comp1").mesh("mesh1").getVolume("all");
+                try {
+                    System.out.println("Saving MPH (post-mesh) file to: " + meshFile);
+                    model.save(meshFile);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
-            JSONObject meshStats = modelData.getJSONObject("mesh").getJSONObject("stats");
-            meshStats.put("number_elements", number_elements);
-            meshStats.put("min_quality", min_quality);
-            meshStats.put("mean_quality", mean_quality);
-            meshStats.put("min_volume", min_volume);
-            meshStats.put("volume", volume);
-            meshStats.put("quality_measure", quality_measure);
-
-            mesh.put("stats", meshStats);
-            modelData.put("mesh", mesh);
-
-
-            System.out.println("DONE MESHING");
-
-            try {
-                System.out.println("Saving MPH (post-mesh) file to: " + geomFile);
-                model.save(geomFile);
-            } catch (IOException e) {
-                e.printStackTrace();
             }
+
+            // IMPORTANT THAT MODEL IS NOT NULL HERE!!
+            assert model != null;
 
             // add MATERIAL DEFINITIONS
             String materialParamsLabel = "Material Parameters";
@@ -1021,7 +1100,11 @@ public class ModelWrapper {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            ModelUtil.remove(model.tag());
         }
+
+
 
         ModelUtil.disconnect();
         System.out.println("Disconnected from COMSOL Server");
