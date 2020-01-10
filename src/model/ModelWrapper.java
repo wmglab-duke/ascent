@@ -3,7 +3,6 @@ package model;
 import com.comsol.model.*;
 import com.comsol.model.physics.PhysicsFeature;
 import com.comsol.model.util.ModelUtil;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -11,9 +10,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -580,6 +576,39 @@ public class ModelWrapper {
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
+
+            // TODO: insert optimization logic here
+            /* pseudo-code
+
+            if optimizing:
+                if prev is not null AND prev is mesh match:
+
+                    current model config = prev model config (copy unnecessary)
+                    current mph = prev mph COPY
+                    current IDM = prev IDM COPY
+
+                    skip mesh = true
+
+                else:
+                    search via recursive dir dive:
+
+                        if no mesh match:
+
+                            skip mesh = false
+
+                        else: (found mesh match)
+
+                            current model config = found model config
+                            current mph = found mesh mph
+                            current IDM = found mesh IDM
+
+                            prev model config = found model config (copy unnecessary)
+                            prev mph = found mesh COPY
+                            prev IDM = found mesh IDM COPY
+
+
+
+             */
 
             // Define model object
             Model model = ModelUtil.create("Model");

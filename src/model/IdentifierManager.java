@@ -70,4 +70,22 @@ public class IdentifierManager {
     public boolean hasPseudonym(String pseudonym) {
         return this.identifierPseudonyms.containsKey(pseudonym);
     }
+
+    /**
+     *
+     * @param map
+     * @return
+     */
+    public static IdentifierManager fromMap(Map<String, String> map) {
+        return null;
+    }
+
+    /**
+     *
+     * @param idm
+     * @return
+     */
+    public static Map<String, String> toMap(IdentifierManager idm) {
+        return null;
+    }
 }
