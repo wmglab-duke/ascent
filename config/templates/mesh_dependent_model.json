@@ -48,13 +48,6 @@
       "hgrad": true
     }
   },
-  "ci_perineurium_thickness": {
-    "coefficients": {
-      "a": 0.015706,
-      "unit": "micrometer",
-      "b": 5.1028
-    }
-  },
   "solver": {
     "name": true
   },

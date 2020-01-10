@@ -644,9 +644,24 @@ public class ModelWrapper {
                 nerveParams.set("r_nerve", "sqrt(a_nerve/pi)");
             }
 
-            JSONObject CICoeffs = modelData.getJSONObject("ci_perineurium_thickness").getJSONObject("coefficients");
-            nerveParams.set("ci_a", CICoeffs.getDouble("a") + " [" + CICoeffs.getString("unit") + "/" + CICoeffs.getString("unit") + "]");
-            nerveParams.set("ci_b", CICoeffs.getDouble("b") + " [" + CICoeffs.getString("unit") + "]");
+            String ciCoeffsFile = String.join("/", new String[]{
+                    "config",
+                    "system",
+                    "ci_peri_thickness.json"
+            });
+
+            JSONObject ciCoeffsData = null;
+            try {
+                ciCoeffsData = new JSONReader(projectPath + "/" + ciCoeffsFile).getData();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+
+            String ci_mode = sampleData.getJSONObject("modes").getString("ci_perineurium_thickness");
+            JSONObject myCICoeffs = ciCoeffsData.getJSONObject("ci_perineurium_thickness_parameters").getJSONObject(ci_mode);
+
+            nerveParams.set("ci_a", myCICoeffs.getDouble("a") + " [" + myCICoeffs.getString("unit") + "/" + myCICoeffs.getString("unit") + "]");
+            nerveParams.set("ci_b", myCICoeffs.getDouble("b") + " [" + myCICoeffs.getString("unit") + "]");
 
             // Set CUFF POSITIONING parameters
             String cuffConformationParamsLabel = "Cuff Conformation Parameters";

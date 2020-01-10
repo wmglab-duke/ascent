@@ -78,13 +78,6 @@
       "hgrad": 1.3
     }
   },
-  "ci_perineurium_thickness": {
-    "coefficients": {
-      "a": 0.015706,
-      "unit": "micrometer",
-      "b": 5.1028
-    }
-  },
   "solver": {
     "name": "COMSOL Multiphysics 5.4 (Build: 388)"
   },

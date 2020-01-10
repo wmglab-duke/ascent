@@ -185,43 +185,6 @@ class Runner(Exceptionable, Configurable):
                                                                                                                                               run_path))
             os.chdir('..')
 
-    def compute_electrical_parameters(self, all_configs, model_index):
-
-        # fetch current model config using the index
-        model_config = all_configs[Config.MODEL.value][model_index]
-
-        # initialize Waveform object
-        waveform = Waveform(self.configs[Config.EXCEPTIONS.value])
-
-        # add model config to Waveform object, enabling it to generate waveforms
-        waveform.add(SetupMode.OLD, Config.MODEL, model_config)
-
-        # compute rho and sigma from waveform instance
-        rho_double = waveform.rho_weerasuriya(model_config.get('frequency').get('value'))
-        sigma_double = 1/rho_double
-
-        model_config['conductivities']['perineurium']['value'] = str(sigma_double)
-
-        ci_perineurium_thickness_mode = model_config.get('modes').get('ci_perineurium_thickness')
-        ci_params = self.load(os.path.join('config', 'system', 'ci_peri_thickness.json'))
-
-        model_config['ci_perineurium_thickness']['coefficients']['a'] = \
-            ci_params[PerineuriumThicknessMode.parameters.value][ci_perineurium_thickness_mode]['a']
-
-        model_config['ci_perineurium_thickness']['coefficients']['b'] = \
-            ci_params[PerineuriumThicknessMode.parameters.value][ci_perineurium_thickness_mode]['b']
-
-        model_config['ci_perineurium_thickness']['coefficients']['unit'] = \
-            ci_params[PerineuriumThicknessMode.parameters.value][ci_perineurium_thickness_mode]['unit']
-
-        dest_path: str = os.path.join(*all_configs[Config.SAMPLE.value][0]['samples_path'],
-                                      str(self.configs[Config.RUN.value]['sample']),
-                                      'models',
-                                      str(self.configs[Config.RUN.value]['models'][model_index]),
-                                      'model.json')
-
-        TemplateOutput.write(model_config, dest_path)
-
     def compute_cuff_shift(self, all_configs, model_index, slide_manager):
 
         # fetch current model config using the index
@@ -478,18 +441,6 @@ class Runner(Exceptionable, Configurable):
             model_config['conductivities']['perineurium']['label'] = "RHO_WEERASURIYA @ %d %s" % (freq_double, freq_unit)
         else:
             self.throw(48)
-
-        ci_perineurium_thickness_mode = model_config.get('modes').get('ci_perineurium_thickness')
-        ci_params = self.load(os.path.join('config', 'system', 'ci_peri_thickness.json'))
-
-        model_config['ci_perineurium_thickness']['coefficients']['a'] = \
-            ci_params[PerineuriumThicknessMode.parameters.value][ci_perineurium_thickness_mode]['a']
-
-        model_config['ci_perineurium_thickness']['coefficients']['b'] = \
-            ci_params[PerineuriumThicknessMode.parameters.value][ci_perineurium_thickness_mode]['b']
-
-        model_config['ci_perineurium_thickness']['coefficients']['unit'] = \
-            ci_params[PerineuriumThicknessMode.parameters.value][ci_perineurium_thickness_mode]['unit']
 
         dest_path: str = os.path.join(*all_configs[Config.SAMPLE.value][0]['samples_path'],
                                       str(self.configs[Config.RUN.value]['sample']),
