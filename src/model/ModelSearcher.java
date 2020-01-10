@@ -48,9 +48,9 @@ public class ModelSearcher {
 
             if (fileParts[fileParts.length - 1].equals("model.json")) {
 
-                JSONObject target = new JSONReader(file.toString()).getData();
-                if (ModelSearcher.meshMatch(query, reference, target)) {
-                    return Match.fromPath(
+                JSONObject target = JSONio.read(file.toString());
+                if (ModelSearcher.meshMatch(reference, query, target)) {
+                    return Match.fromMeshPath(
                             String.join("/", Arrays.copyOfRange(fileParts, 0, fileParts.length - 1))
                     );
                 }
@@ -59,19 +59,19 @@ public class ModelSearcher {
         return null;
     }
 
-    public static boolean meshMatch(JSONObject query, JSONObject reference, JSONObject target) {
+    public static boolean meshMatch(JSONObject reference, JSONObject query1, JSONObject query2) {
         Map<String, Object> rMap = reference.toMap();
-        Map<String, Object> qMap = query.toMap();
-        Map<String, Object> tMap = target.toMap();
+        Map<String, Object> q1Map = query1.toMap();
+        Map<String, Object> q2Map = query2.toMap();
 
         for (String rKey : rMap.keySet()) {
-            if (qMap.containsKey(rKey) && tMap.containsKey(rKey)) {
+            if (q1Map.containsKey(rKey) && q2Map.containsKey(rKey)) {
                 // the current value from the reference
                 Object rVal = rMap.get(rKey);
 
-                // if that value is a Boolean and is TRUE, check corresponding values in query and target
+                // if that value is a Boolean and is TRUE, check corresponding values in query1 and query2
                 if ((rVal instanceof Boolean) && ((Boolean) rVal)) {
-                    if (!qMap.get(rKey).equals(tMap.get(rKey))) {
+                    if (!q1Map.get(rKey).equals(q2Map.get(rKey))) {
                         return false; // a value DOES NOT MATCH
                     }
                 }
@@ -80,15 +80,14 @@ public class ModelSearcher {
                 else {
                     assert rVal instanceof JSONObject;
                     ModelSearcher.meshMatch(
-                            (JSONObject) qMap.get(rKey),
                             (JSONObject) rVal,
-                            (JSONObject) tMap.get(rKey)
+                            (JSONObject) q1Map.get(rKey),
+                            (JSONObject) q2Map.get(rKey)
 
                     );
                 }
             }
         }
-
         return true;
     }
 
@@ -105,8 +104,8 @@ public class ModelSearcher {
             this.idm = idm;
         }
 
-        public static Match fromPath(String path) {
-            // TODO;
+        public static Match fromMeshPath(String path) {
+            // TODO
             return null;
         }
 

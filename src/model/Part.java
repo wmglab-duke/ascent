@@ -1621,12 +1621,13 @@ class Part {
 
                 // assign physics
                 String ribbon_pcsLabel = instanceLabel + " Current Source";
-                mw.im.currentPointers.put(instanceLabel,
-                        model.component("comp1").physics("ec").create(mw.im.next("pcs", ribbon_pcsLabel), "PointCurrentSource", 0));
+                String id = mw.im.next("pcs", ribbon_pcsLabel);
+                PhysicsFeature pf = model.component("comp1").physics("ec").create(id, "PointCurrentSource", 0);
+                mw.im.currentIDs.put(instanceLabel, id);
 
-                ((PhysicsFeature) mw.im.currentPointers.get(instanceLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[2]) + "_pnt"); // SRC
-                ((PhysicsFeature) mw.im.currentPointers.get(instanceLabel)).set("Qjp", 0.000);
-                ((PhysicsFeature) mw.im.currentPointers.get(instanceLabel)).label(ribbon_pcsLabel);
+                pf.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[2]) + "_pnt"); // SRC
+                pf.set("Qjp", 0.000);
+                pf.label(ribbon_pcsLabel);
 
                 break;
 
@@ -1658,12 +1659,14 @@ class Part {
 
                 // assign physics
                 String wire_pcsLabel = instanceLabel + " Current Source";
-                mw.im.currentPointers.put(instanceLabel,
-                        model.component("comp1").physics("ec").create(mw.im.next("pcs", wire_pcsLabel), "PointCurrentSource", 0));
+                id = mw.im.next("pcs", wire_pcsLabel);
+                pf = model.component("comp1").physics("ec").create(id, "PointCurrentSource", 0);
+                mw.im.currentIDs.put(instanceLabel, id);
 
-                ((PhysicsFeature) mw.im.currentPointers.get(instanceLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[2]) + "_pnt"); // SRC
-                ((PhysicsFeature) mw.im.currentPointers.get(instanceLabel)).set("Qjp", 0.000);
-                ((PhysicsFeature) mw.im.currentPointers.get(instanceLabel)).label(wire_pcsLabel);
+
+                pf.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[2]) + "_pnt"); // SRC
+                pf.set("Qjp", 0.000);
+                pf.label(wire_pcsLabel);
 
                 break;
 
@@ -1734,12 +1737,13 @@ class Part {
 
                 // assign physics
                 String circle_pcsLabel = instanceLabel + " Current Source";
-                mw.im.currentPointers.put(instanceLabel,
-                        model.component("comp1").physics("ec").create(mw.im.next("pcs", circle_pcsLabel), "PointCurrentSource", 0));
+                id = mw.im.next("pcs", circle_pcsLabel);
+                pf = model.component("comp1").physics("ec").create(id, "PointCurrentSource", 0);
+                mw.im.currentIDs.put(instanceLabel, id);
 
-                ((PhysicsFeature) mw.im.currentPointers.get(instanceLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[4]) + "_pnt"); // SRC
-                ((PhysicsFeature) mw.im.currentPointers.get(instanceLabel)).set("Qjp", 0.000);
-                ((PhysicsFeature) mw.im.currentPointers.get(instanceLabel)).label(circle_pcsLabel);
+                pf.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[4]) + "_pnt"); // SRC
+                pf.set("Qjp", 0.000);
+                pf.label(circle_pcsLabel);
 
                 break;
             case "HelicalCuffnContact_Primitive":
@@ -1779,12 +1783,13 @@ class Part {
 
                 // assign physics
                 String helix_pcsLabel = instanceLabel + " Current Source";
-                mw.im.currentPointers.put(instanceLabel,
-                        model.component("comp1").physics("ec").create(mw.im.next("pcs", helix_pcsLabel), "PointCurrentSource", 0));
+                id = mw.im.next("pcs", helix_pcsLabel);
+                pf = model.component("comp1").physics("ec").create(id, "PointCurrentSource", 0);
+                mw.im.currentIDs.put(instanceLabel, id);
 
-                ((PhysicsFeature) mw.im.currentPointers.get(instanceLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[4]) + "_pnt"); // SRC
-                ((PhysicsFeature) mw.im.currentPointers.get(instanceLabel)).set("Qjp", 0.000);
-                ((PhysicsFeature) mw.im.currentPointers.get(instanceLabel)).label(helix_pcsLabel);
+                pf.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[4]) + "_pnt"); // SRC
+                pf.set("Qjp", 0.000);
+                pf.label(helix_pcsLabel);
 
                 break;
 
@@ -1868,12 +1873,13 @@ class Part {
 
                 // assign physics
                 String square_pcsLabel = instanceLabel + " Current Source";
-                mw.im.currentPointers.put(instanceLabel,
-                        model.component("comp1").physics("ec").create(mw.im.next("pcs", square_pcsLabel), "PointCurrentSource", 0));
+                id = mw.im.next("pcs", square_pcsLabel);
+                pf = model.component("comp1").physics("ec").create(id, "PointCurrentSource", 0);
+                mw.im.currentIDs.put(instanceLabel, id);
 
-                ((PhysicsFeature) mw.im.currentPointers.get(instanceLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[16]) + "_pnt"); // SRC
-                ((PhysicsFeature) mw.im.currentPointers.get(instanceLabel)).set("Qjp", 0.000);
-                ((PhysicsFeature) mw.im.currentPointers.get(instanceLabel)).label(square_pcsLabel);
+                pf.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[16]) + "_pnt"); // SRC
+                pf.set("Qjp", 0.000);
+                pf.label(square_pcsLabel);
 
                 break;
 
@@ -1903,12 +1909,13 @@ class Part {
 
                 // assign physics
                 String u_pcsLabel = instanceLabel + " Current Source";
-                mw.im.currentPointers.put(instanceLabel,
-                        model.component("comp1").physics("ec").create(mw.im.next("pcs", u_pcsLabel), "PointCurrentSource", 0));
+                id = mw.im.next("pcs", u_pcsLabel);
+                pf = model.component("comp1").physics("ec").create(id, "PointCurrentSource", 0);
+                mw.im.currentIDs.put(instanceLabel, id);
 
-                ((PhysicsFeature) mw.im.currentPointers.get(instanceLabel)).selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[2]) + "_pnt"); // SRC
-                ((PhysicsFeature) mw.im.currentPointers.get(instanceLabel)).set("Qjp", 0.000);
-                ((PhysicsFeature) mw.im.currentPointers.get(instanceLabel)).label(u_pcsLabel);
+                pf.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[2]) + "_pnt"); // SRC
+                pf.set("Qjp", 0.000);
+                pf.label(u_pcsLabel);
 
                 break;
 
@@ -2241,8 +2248,10 @@ class Part {
      * Create a material!
      * @param materialID the material COMSOL id (unique) --> use mw.im.next in call (mat#)
      * @param function the "pseudonym" for that material, matching the name in master.json TODO
-     * @param config JSON data from master.json
+     * @param modelData JSON data from master.json
+     * @param materialsData TODO insert description
      * @param mw the ModelWrapper to act upon
+     * @param materialParams TODO insert description
      */
     public static void defineMaterial(String materialID, String function, JSONObject modelData, JSONObject materialsData,
                                       ModelWrapper mw, ModelParamGroup materialParams) {

@@ -182,8 +182,10 @@ public class ModelWrapper {
     public boolean addCuffPartPrimitives(String name) {
         // extract data from json
         try {
-            JSONObject data = new JSONReader(String.join("/",
-                    new String[]{this.root, "config", "system", "cuffs", name})).getData();
+            JSONObject data = JSONio.read(
+                    String.join("/", new String[]{this.root, "config", "system", "cuffs", name})
+            );
+
 
             // get the id for the next "par" (i.e. parameters section), and give it a name from the JSON file name
             String id = this.next("par", name);
@@ -242,8 +244,9 @@ public class ModelWrapper {
         // extract data from json
         // name is something like Enteromedics.json
         try {
-            JSONObject data = new JSONReader(String.join("/",
-                    new String[]{this.root, "config", "system", "cuffs", name})).getData();
+            JSONObject data = JSONio.read(
+                    String.join("/", new String[]{this.root, "config", "system", "cuffs", name})
+            );
 
             // loop through all part instances
             for (Object item: (JSONArray) data.get("instances")) {
@@ -287,8 +290,9 @@ public class ModelWrapper {
     public boolean addMaterialDefinitions(ArrayList<String> materials, JSONObject modelData, ModelParamGroup materialParams) {
         // extract data from json
         try {
-            JSONObject materialsData = new JSONReader(String.join("/",
-                    new String[]{this.root, "config", "system", "materials.json"})).getData();
+            JSONObject materialsData = JSONio.read(
+                    String.join("/", new String[]{this.root, "config", "system", "materials.json"})
+            );
 
             for (String function:materials) {
                 if (! this.im.hasPseudonym(function)) {
@@ -315,7 +319,9 @@ public class ModelWrapper {
         // TODO: Simulation folders; sorting through configuration files VIA PYTHON
         // TODO: FORCE THE USER TO STAGE/COMMIT CHANGES BEFORE RUNNING; add Git Commit ID/number to config file
         try {
-            JSONObject json_data = new JSONReader(String.join("/", new String[]{root, json_path})).getData();
+            JSONObject json_data = JSONio.read(
+                    String.join("/", new String[]{root, json_path})
+            );
 
             double[][] coordinates = new double[3][5];
             String id = this.next("interp");
@@ -347,12 +353,14 @@ public class ModelWrapper {
 
         // Load configuration file
         try {
-            JSONObject sampleData = new JSONReader(String.join("/", new String[]{
-                    this.root,
-                    "samples",
-                    sample,
-                    "sample.json"
-            })).getData();
+            JSONObject sampleData = JSONio.read(
+                    String.join("/", new String[]{
+                            this.root,
+                            "samples",
+                            sample,
+                            "sample.json"
+                    })
+            );
 
             // Build path to fascicles
             String fasciclesPath = String.join("/", new String[]{
@@ -421,12 +429,17 @@ public class ModelWrapper {
     public void loopCurrents(JSONObject modelData, String projectPath, String sample, String modelStr) {
 
         long runSolStartTime = System.nanoTime();
-        for(String key_on: this.im.currentPointers.keySet()) {
+        for(String key_on: this.im.currentIDs.keySet()) {
 
             System.out.println("Current pointer: " + key_on);
 
-            PhysicsFeature current_on = (PhysicsFeature) this.im.currentPointers.get(key_on);
-            String src = current_on.tag();
+            // old design where pointers were stored instead of IDs
+            //PhysicsFeature current_on = (PhysicsFeature) this.im.currentPointers.get(key_on);
+
+            String src = this.im.get(key_on);
+
+            PhysicsFeature current_on = model.physics("ec").feature(src);
+
             current_on.set("Qjp", 0.001); // turn on current
 
             model.sol("sol1").runAll();
@@ -533,7 +546,7 @@ public class ModelWrapper {
         // Load RUN configuration data
         JSONObject run = null;
         try {
-            run = new JSONReader(runPath).getData();
+            run = JSONio.read(runPath);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -549,7 +562,7 @@ public class ModelWrapper {
 
         JSONObject sampleData = null;
         try {
-            sampleData = new JSONReader(projectPath + "/" + sampleFile).getData();
+            sampleData = JSONio.read(projectPath + "/" + sampleFile);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -572,7 +585,7 @@ public class ModelWrapper {
 
             JSONObject modelData = null;
             try {
-                modelData = new JSONReader(projectPath + "/" + modelFile).getData();
+                modelData = JSONio.read(projectPath + "/" + modelFile);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
@@ -652,7 +665,7 @@ public class ModelWrapper {
 
             JSONObject ciCoeffsData = null;
             try {
-                ciCoeffsData = new JSONReader(projectPath + "/" + ciCoeffsFile).getData();
+                ciCoeffsData = JSONio.read(projectPath + "/" + ciCoeffsFile);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
@@ -880,8 +893,8 @@ public class ModelWrapper {
             }
             mw.addMaterialDefinitions(bio_materials, modelData, materialParams);
 
-            JSONObject cuffData = new JSONReader(String.join("/",
-                    new String[]{mw.root, "config", "system", "cuffs", cuff})).getData();
+            JSONObject cuffData = JSONio.read(String.join("/",
+                    new String[]{mw.root, "config", "system", "cuffs", cuff}));
 
             ArrayList<String> cuff_materials = new ArrayList<>();
             // loop through all part instances
