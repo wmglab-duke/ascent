@@ -421,12 +421,17 @@ public class ModelWrapper {
     public void loopCurrents(JSONObject modelData, String projectPath, String sample, String modelStr) {
 
         long runSolStartTime = System.nanoTime();
-        for(String key_on: this.im.currentPointers.keySet()) {
+        for(String key_on: this.im.currentIDs.keySet()) {
 
             System.out.println("Current pointer: " + key_on);
 
-            PhysicsFeature current_on = (PhysicsFeature) this.im.currentPointers.get(key_on);
-            String src = current_on.tag();
+            // old design where pointers were stored instead of IDs
+            //PhysicsFeature current_on = (PhysicsFeature) this.im.currentPointers.get(key_on);
+
+            String src = this.im.get(key_on);
+
+            PhysicsFeature current_on = model.physics("ec").feature(src);
+
             current_on.set("Qjp", 0.001); // turn on current
 
             model.sol("sol1").runAll();

@@ -10,7 +10,15 @@ public class IdentifierManager {
     private HashMap<String, String> identifierPseudonyms = new HashMap<>();
 
     public String[] labels = null;
-    public HashMap<String, Object> currentPointers = new HashMap<>();
+    public HashMap<String, String> currentIDs = new HashMap<>();
+
+    public void setIdentifierStates(HashMap<String, Integer> identifierStates) {
+        this.identifierStates = identifierStates;
+    }
+
+    public void setIdentifierPseudonyms(HashMap<String, String> identifierPseudonyms) {
+        this.identifierPseudonyms = identifierPseudonyms;
+    }
 
     /**
      *
@@ -79,8 +87,25 @@ public class IdentifierManager {
      * @return
      */
     public static IdentifierManager fromJSONObject(JSONObject jsonObject) {
-        // TODO
-        return null;
+
+        Map<String, Object> map = jsonObject.toMap();
+
+        IdentifierManager idm = new IdentifierManager();
+
+
+        assert map.get("identifierStates") instanceof HashMap;
+        idm.setIdentifierStates((HashMap<String, Integer>) map.get("identifierStates"));
+
+        assert map.get("identifierPseudonyms") instanceof HashMap;
+        idm.setIdentifierPseudonyms((HashMap<String, String>) map.get("identifierPseudonyms"));
+
+        assert map.get("labels") instanceof String[];
+        idm.labels = (String[]) map.get("labels");
+
+        assert map.get("currentIDs") instanceof HashMap;
+        idm.currentIDs = (HashMap<String, String>) map.get("currentIDs");
+
+        return idm;
     }
 
     /**
