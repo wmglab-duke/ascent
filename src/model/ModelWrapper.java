@@ -602,6 +602,7 @@ public class ModelWrapper {
             try {
                 modelData = JSONio.read(projectPath + "/" + modelFile);
             } catch (FileNotFoundException e) {
+                System.out.println("Failed to read model data.");
                 e.printStackTrace();
             }
 
@@ -618,6 +619,7 @@ public class ModelWrapper {
             // TODO: insert optimization logic here
             // if optimizing
             if ((Boolean) run.get("recycle_meshes")) {
+                System.out.println("Entering mesh recycling logic.");
                 try {
                     // if prev is not null AND prev is mesh match:
                     assert meshReferenceData != null;
@@ -640,7 +642,7 @@ public class ModelWrapper {
                                 sample,
                                 "models"
                         }));
-                        ModelSearcher.Match meshMatch = modelSearcher.searchMeshMatch(modelData, meshReferenceData);
+                        ModelSearcher.Match meshMatch = modelSearcher.searchMeshMatch(modelData, meshReferenceData, projectPath + "/" + modelFile);
 
                         // if there was a mesh match
                         if (meshMatch != null) {
@@ -656,12 +658,14 @@ public class ModelWrapper {
 
                     }
                 } catch (IOException e) {
+                    System.out.println("Issue with mesh recycling logic.");
                     e.printStackTrace();
                     System.exit(1);
                 }
 
             }
 
+            System.out.println("End mesh recycling logic.");
 
             /* pseudo-code
 
@@ -695,6 +699,8 @@ public class ModelWrapper {
 
             // START PRE MESH
             if (! skipMesh) {
+
+                System.out.println("Running pre-mesh procedure.");
 
                 // Define model object
                 model = ModelUtil.create("Model");
@@ -955,6 +961,7 @@ public class ModelWrapper {
                     System.out.println("Saving MPH (post-mesh) file to: " + meshFile);
                     model.save(meshFile);
                 } catch (IOException e) {
+                    System.out.println("Failed to save!!");
                     e.printStackTrace();
                 }
 

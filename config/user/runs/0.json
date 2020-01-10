@@ -1,5 +1,5 @@
 {
-  "recycle_meshes": true,
+  "recycle_meshes": false,
   "overwrite": false,
   "sample": 0,
   "models": [
