@@ -12,10 +12,16 @@ public class IdentifierManager {
     public String[] labels = null;
     public HashMap<String, String> currentIDs = new HashMap<>();
 
+    /**
+     * @param identifierStates set
+     */
     public void setIdentifierStates(HashMap<String, Integer> identifierStates) {
         this.identifierStates = identifierStates;
     }
 
+    /**
+     * @param identifierPseudonyms set
+     */
     public void setIdentifierPseudonyms(HashMap<String, String> identifierPseudonyms) {
         this.identifierPseudonyms = identifierPseudonyms;
     }
@@ -103,8 +109,8 @@ public class IdentifierManager {
 
     /**
      *
-     * @param idm
-     * @return
+     * @param idm instance to "JSON-ify"
+     * @return JSONObject where all the instance variables have been entered as values with their names as keys
      */
     public JSONObject toJSONObject(IdentifierManager idm) {
         Map<String, Object> map = new HashMap<>();
