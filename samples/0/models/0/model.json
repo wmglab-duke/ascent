@@ -6,7 +6,7 @@
   },
   "solution": {
     "time_units": "ms",
-    "sol_time": 318790.541589
+    "sol_time": 468835.865839
   },
   "temperature": {
     "unit": "celsius",
@@ -33,26 +33,26 @@
     "preset": "Enteromedics.json"
   },
   "conductivities": {
+    "recess": "saline",
+    "perineurium": {
+      "unit": "[S/m]",
+      "label": "RHO_WEERASURIYA @ 1 Hz",
+      "value": "0.0008703220191470844"
+    },
+    "medium": "fat",
     "fill": "saline",
     "insulator": {
-      "value": "0.1",
       "unit": "[S/m]",
-      "label": "weird silicone"
+      "label": "weird silicone",
+      "value": "0.1"
     },
     "conductor": "platinum",
-    "recess": "saline",
-    "medium": "fat",
     "endoneurium": "endoneurium",
-    "epineurium": "epineurium",
-    "perineurium": {
-      "value": "0.0008703220191470844",
-      "unit": "[S/m]",
-      "label": "RHO_WEERASURIYA @ 1 Hz"
-    }
+    "epineurium": "epineurium"
   },
   "mesh": {
     "rest": {
-      "mesh_time": 56585.696436,
+      "mesh_time": 74378.248329,
       "time_units": "ms",
       "hcurve": 0.2,
       "hmin": 10,
@@ -62,14 +62,14 @@
     },
     "stats": {
       "volume": 15690000000000.0,
-      "min_quality": 0.0001797,
-      "min_volume": 85.34,
+      "min_quality": 0.000163,
+      "min_volume": 35.99,
       "quality_measure": "vollength",
-      "number_elements": 1582124,
-      "mean_quality": 0.5084
+      "number_elements": 1581800,
+      "mean_quality": 0.5081
     },
     "nerve": {
-      "mesh_time": 3748.977941,
+      "mesh_time": 4374.167848,
       "time_units": "ms",
       "hcurve": 0.2,
       "hmin": 10,
