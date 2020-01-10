@@ -823,6 +823,8 @@ public class ModelWrapper {
             model.component("comp1").mesh("mesh1").run(mw.im.get(meshRestFtetLabel));
             long estimatedRestMeshTime = System.nanoTime() - restMeshStartTime;
             restMeshParams.put("mesh_time",estimatedRestMeshTime/Math.pow(10,6)); // convert nanos to millis
+            ////////////////
+
 
             // put nerve to mesh, rest to mesh, mesh to modelData
             JSONObject mesh = modelData.getJSONObject("mesh");
