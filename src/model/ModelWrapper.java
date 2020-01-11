@@ -569,7 +569,7 @@ public class ModelWrapper {
 
         JSONObject meshReferenceData = null;
         try {
-            meshReferenceData = JSONio.read(String.join("/", new String[]{projectPath, "config", "templates", "mesh_dependent_model.json"});
+            meshReferenceData = JSONio.read(String.join("/", new String[]{projectPath, "config", "templates", "mesh_dependent_model.json"}));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -602,6 +602,7 @@ public class ModelWrapper {
             try {
                 modelData = JSONio.read(projectPath + "/" + modelFile);
             } catch (FileNotFoundException e) {
+                System.out.println("Failed to read model data.");
                 e.printStackTrace();
             }
 
@@ -612,15 +613,21 @@ public class ModelWrapper {
             Model model = null;
             ModelWrapper mw = null;
 
+            String mediumString = "Medium_Primitive";
+            String instanceLabel = "Medium";
+
             // TODO: insert optimization logic here
             // if optimizing
             if ((Boolean) run.get("recycle_meshes")) {
+                System.out.println("Entering mesh recycling logic.");
                 try {
                     // if prev is not null AND prev is mesh match:
+                    assert meshReferenceData != null;
                     if ((previousModelData != null) && (ModelSearcher.meshMatch(meshReferenceData, modelData, previousModelData))) {
 
                             // set current mph and idm/im
-                            model = ModelUtil.loadCopy(ModelUtil.uniquetag("Model"), previousMph.getFilePath());
+                        assert previousMph != null;
+                        model = ModelUtil.loadCopy(ModelUtil.uniquetag("Model"), previousMph.getFilePath());
                             mw = new ModelWrapper(model, projectPath);
                             mw.im = IdentifierManager.fromJSONObject(new JSONObject(previousIDM.toJSONObject().toString()));
 
@@ -635,7 +642,7 @@ public class ModelWrapper {
                                 sample,
                                 "models"
                         }));
-                        ModelSearcher.Match meshMatch = modelSearcher.searchMeshMatch(modelData, meshReferenceData);
+                        ModelSearcher.Match meshMatch = modelSearcher.searchMeshMatch(modelData, meshReferenceData, projectPath + "/" + modelFile);
 
                         // if there was a mesh match
                         if (meshMatch != null) {
@@ -651,12 +658,14 @@ public class ModelWrapper {
 
                     }
                 } catch (IOException e) {
+                    System.out.println("Issue with mesh recycling logic.");
                     e.printStackTrace();
                     System.exit(1);
                 }
 
             }
 
+            System.out.println("End mesh recycling logic.");
 
             /* pseudo-code
 
@@ -690,6 +699,8 @@ public class ModelWrapper {
 
             // START PRE MESH
             if (! skipMesh) {
+
+                System.out.println("Running pre-mesh procedure.");
 
                 // Define model object
                 model = ModelUtil.create("Model");
@@ -777,7 +788,6 @@ public class ModelWrapper {
                 mediumParams.set("r_ground", radius + " " + bounds_unit);
 
                 // Create PART PRIMITIVE for MEDIUM
-                String mediumString = "Medium_Primitive";
                 String partID = mw.im.next("part", mediumString);
                 try {
                     IdentifierManager partPrimitiveIM = Part.createEnvironmentPartPrimitive(partID, mediumString, mw);
@@ -786,8 +796,9 @@ public class ModelWrapper {
                     e.printStackTrace();
                 }
 
+
+
                 // Create PART INSTANCE for MEDIUM
-                String instanceLabel = "Medium";
                 String instanceID = mw.im.next("pi", instanceLabel);
                 try {
                     Part.createEnvironmentPartInstance(instanceID, instanceLabel, mediumString, mw, modelData);
@@ -934,9 +945,6 @@ public class ModelWrapper {
 
 
                 System.out.println("DONE MESHING");
-            //////////////// START POST MESH
-            //////////////// TODO: SAVE IDM.JSON and MESH.MPH HERE
-            // LOOPING/SEARCHING AT MODEL LEVEL IS HERE // TODO
 
                 String meshFile = String.join("/", new String[]{
                         projectPath,
@@ -949,16 +957,25 @@ public class ModelWrapper {
                 });
 
                 try {
+                    // save mesh.mph !!!!
                     System.out.println("Saving MPH (post-mesh) file to: " + meshFile);
                     model.save(meshFile);
                 } catch (IOException e) {
+                    System.out.println("Failed to save!!");
                     e.printStackTrace();
                 }
 
+                // save IDM !!!!
+                previousIDM = IdentifierManager.fromJSONObject(new JSONObject(mw.im.toJSONObject().toString()));
+
+                // save previous model config !!!!
+                previousModelData = modelData;
             }
 
+            //////////////// START POST MESH
             // IMPORTANT THAT MODEL IS NOT NULL HERE!!
             assert model != null;
+            assert sampleData != null;
 
             // add MATERIAL DEFINITIONS
             String materialParamsLabel = "Material Parameters";

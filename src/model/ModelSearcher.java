@@ -41,9 +41,18 @@ public class ModelSearcher {
      * @param reference
      * @return
      */
-    public ModelSearcher.Match searchMeshMatch(JSONObject query, JSONObject reference) throws IOException {
+    public ModelSearcher.Match searchMeshMatch(JSONObject query, JSONObject reference, String queryPath) throws IOException {
+
+        System.out.println("queryPath = " + queryPath);
 
         for (Path file : Files.walk(this.root).toArray(Path[]::new)) {
+
+            System.out.println("file = " + file.toString());
+
+            // skip the query so not counting self
+            if (queryPath.equals(file.toString())) {
+                continue;
+            }
 
             String[] fileParts = file.toString().split("/");
 
@@ -79,11 +88,10 @@ public class ModelSearcher {
 
                 // else, that value must be a JSONObject; therefore, recurse
                 else {
-                    assert rVal instanceof JSONObject;
                     ModelSearcher.meshMatch(
-                            (JSONObject) rVal,
-                            (JSONObject) q1Map.get(rKey),
-                            (JSONObject) q2Map.get(rKey)
+                            new JSONObject(rVal),
+                            new JSONObject(q1Map.get(rKey)),
+                            new JSONObject(q2Map.get(rKey))
 
                     );
                 }
