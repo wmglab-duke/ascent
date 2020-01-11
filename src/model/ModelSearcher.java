@@ -4,12 +4,15 @@ import com.comsol.model.Model;
 import com.comsol.model.util.ModelUtil;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class ModelSearcher {
 
@@ -59,16 +62,37 @@ public class ModelSearcher {
             if (fileParts[fileParts.length - 1].equals("model.json")) {
 
                 JSONObject target = JSONio.read(file.toString());
-                if (ModelSearcher.meshMatch(reference, query, target)) {
-                    return Match.fromMeshPath(
-                            String.join("/", Arrays.copyOfRange(fileParts, 0, fileParts.length - 1))
-                    );
+                String directory = String.join("/", Arrays.copyOfRange(fileParts, 0, fileParts.length - 1));
+                if (ModelSearcher.meshMatch(reference, query, target) && ModelSearcher.meshFilesExist(directory)) {
+                    System.out.println("MATCH!! Using directory: " + directory);
+                    return Match.fromMeshPath(directory);
                 }
             }
         }
         return null;
     }
 
+    private static boolean meshFilesExist(String directory) {
+        String[] filenames = {
+                directory + "/model.json",
+                directory + "/mesh/mesh.mph",
+                directory + "/mesh/im.json"
+        };
+        for (String filename: filenames) {
+            System.out.println("Checking existence of: " + filename);
+            if (! new File(filename).exists()) return false;
+        }
+        System.out.println("MESH FILES EXIST");
+        return true;
+    }
+
+    /**
+     *
+     * @param reference
+     * @param query1
+     * @param query2
+     * @return
+     */
     public static boolean meshMatch(JSONObject reference, JSONObject query1, JSONObject query2) {
         Map<String, Object> rMap = reference.toMap();
         Map<String, Object> q1Map = query1.toMap();
@@ -81,36 +105,43 @@ public class ModelSearcher {
 
                 // if that value is a Boolean and is TRUE, check corresponding values in query1 and query2
                 if ((rVal instanceof Boolean) && ((Boolean) rVal)) {
-                    if (!q1Map.get(rKey).equals(q2Map.get(rKey))) {
+                    // ^ is XOR operator
+                    if ((q1Map.containsKey(rKey) ^ q2Map.containsKey(rKey)) || !q1Map.get(rKey).equals(q2Map.get(rKey))) {
+//                        System.out.println("\t\tA value does not match here: " + q1Map.get(rKey).toString() + " and " + q2Map.get(rKey).toString());
                         return false; // a value DOES NOT MATCH
                     }
                 }
 
-                // else, that value must be a JSONObject; therefore, recurse
-                else {
-                    ModelSearcher.meshMatch(
-                            new JSONObject(rVal),
-                            new JSONObject(q1Map.get(rKey)),
-                            new JSONObject(q2Map.get(rKey))
-
+                // rVal is NOT boolean
+                else if (! (rVal instanceof Boolean)) {
+                    // recurse!
+                    boolean match = ModelSearcher.meshMatch(
+                            new JSONObject((Map<String, Object>) rVal),
+                            new JSONObject((Map<String, Object>) q1Map.get(rKey)),
+                            new JSONObject((Map<String, Object>) q2Map.get(rKey))
                     );
+                    if (! match) return false;
                 }
+                // in case that rVal is boolean: false, do nothing --> go to next key
             }
         }
         return true;
     }
-
 
     public static class Match {
 
         private JSONObject modelConfig;
         private Model mph;
         private IdentifierManager im;
+        private String path;
+        private HashMap<String, IdentifierManager> partPrimitiveIMs;
 
-        public Match(JSONObject modelConfig, Model mph, IdentifierManager im) {
+        public Match(JSONObject modelConfig, Model mph, IdentifierManager im, HashMap<String, IdentifierManager> partPrimitiveIMs, String path) {
             this.modelConfig = modelConfig;
             this.mph = mph;
             this.im = im;
+            this.partPrimitiveIMs = partPrimitiveIMs;
+            this.path = path;
         }
 
         /**
@@ -120,11 +151,23 @@ public class ModelSearcher {
          */
         public static Match fromMeshPath(String path) {
             try {
+
                 JSONObject modelConfig = JSONio.read(path + "/model.json");
-                Model mph = ModelUtil.loadCopy("new_model", path + "/mesh/mesh.mph");
+                Model mph = ModelUtil.loadCopy(ModelUtil.uniquetag("Model"), path + "/mesh/mesh.mph");
                 IdentifierManager im = IdentifierManager.fromJSONObject(JSONio.read(path + "/mesh/im.json"));
 
-                return new Match(modelConfig, mph,im);
+                HashMap<String, IdentifierManager> ppims = new HashMap<>();
+                File ppimPath = new File(path + "/mesh/ppim/");
+                assert ppimPath.exists();
+                for (String filename : Objects.requireNonNull(ppimPath.list())) {
+                    String[] fileParts = filename.split("/");
+                    ppims.put(
+                            fileParts[fileParts.length - 1],
+                            IdentifierManager.fromJSONObject(JSONio.read(filename))
+                    );
+                }
+
+                return new Match(modelConfig, mph, im, ppims, path);
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -143,6 +186,14 @@ public class ModelSearcher {
 
         public IdentifierManager getIdm() {
             return im;
+        }
+
+        public String getPath() {
+            return path;
+        }
+
+        public HashMap<String, IdentifierManager> getPartPrimitiveIMs() {
+            return partPrimitiveIMs;
         }
     }
 }

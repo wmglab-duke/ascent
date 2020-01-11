@@ -576,6 +576,7 @@ public class ModelWrapper {
         JSONObject previousModelData = null;
         Model previousMph = null;
         IdentifierManager previousIM = null;
+        HashMap<String, IdentifierManager> previousPPIMs = null;
         boolean skipMesh = false;
 
 
@@ -625,6 +626,13 @@ public class ModelWrapper {
                         model = ModelUtil.loadCopy(ModelUtil.uniquetag("Model"), previousMph.getFilePath());
                             mw = new ModelWrapper(model, projectPath);
                             mw.im = IdentifierManager.fromJSONObject(new JSONObject(previousIM.toJSONObject().toString()));
+                            mw.partPrimitiveIMs = new HashMap<>();
+                            for (String name : previousPPIMs.keySet()) {
+                                mw.partPrimitiveIMs.put(
+                                        name,
+                                        IdentifierManager.fromJSONObject(new JSONObject(previousPPIMs.get(name).toJSONObject().toString()))
+                                );
+                            }
 
                             skipMesh = true;
                     }
@@ -641,12 +649,21 @@ public class ModelWrapper {
 
                         // if there was a mesh match
                         if (meshMatch != null) {
+
                             model = meshMatch.getMph();
                             mw = new ModelWrapper(model, projectPath);
                             mw.im = IdentifierManager.fromJSONObject(new JSONObject(meshMatch.getIdm().toJSONObject().toString()));
+                            mw.partPrimitiveIMs = meshMatch.getPartPrimitiveIMs();
 
-                            previousMph = ModelUtil.loadCopy(ModelUtil.uniquetag("Model"), model.getFilePath());
+                            previousMph = ModelUtil.loadCopy(ModelUtil.uniquetag("Model"), meshMatch.getPath() + "/mesh/mesh.mph");
                             previousIM = IdentifierManager.fromJSONObject(new JSONObject(mw.im.toJSONObject().toString()));
+                            previousPPIMs = new HashMap<>();
+                            for (String name : meshMatch.getPartPrimitiveIMs().keySet()) {
+                                mw.partPrimitiveIMs.put(
+                                        name,
+                                        IdentifierManager.fromJSONObject(new JSONObject(meshMatch.getPartPrimitiveIMs().get(name).toJSONObject().toString()))
+                                );
+                            }
 
                             skipMesh = true;
                         }
@@ -941,6 +958,22 @@ public class ModelWrapper {
 
                 System.out.println("DONE MESHING");
 
+                // ensure that the path for mesh files can be created
+                String meshPath = String.join("/", new String[]{
+                        projectPath,
+                        "samples",
+                        sample,
+                        "models",
+                        modelStr,
+                        "mesh",
+                });
+                assert new File(meshPath).exists() || new File(meshPath).mkdir();
+
+                // ditto for ppims
+                System.out.println("Creating PPIM dirs");
+                String ppimPath = meshPath + "/ppim";
+                assert new File(ppimPath).exists() || new File(ppimPath).mkdir();
+
                 String meshFile = String.join("/", new String[]{
                         projectPath,
                         "samples",
@@ -973,6 +1006,13 @@ public class ModelWrapper {
                 // save IM !!!!
                 previousIM = IdentifierManager.fromJSONObject(new JSONObject(mw.im.toJSONObject().toString()));
                 JSONio.write(imFile, mw.im.toJSONObject()); // write to file
+
+                // save ppIMs !!!!
+                previousPPIMs = new HashMap<>();
+                for (String name : mw.partPrimitiveIMs.keySet()) {
+                    previousPPIMs.put(name, mw.partPrimitiveIMs.get(name));
+                    JSONio.write(ppimPath + "/" + name + ".json", mw.partPrimitiveIMs.get(name).toJSONObject());
+                }
 
                 // save previous model config !!!!
                 previousModelData = modelData;
