@@ -105,12 +105,12 @@ public class ModelSearcher {
 
         private JSONObject modelConfig;
         private Model mph;
-        private IdentifierManager idm;
+        private IdentifierManager im;
 
-        public Match(JSONObject modelConfig, Model mph, IdentifierManager idm) {
+        public Match(JSONObject modelConfig, Model mph, IdentifierManager im) {
             this.modelConfig = modelConfig;
             this.mph = mph;
-            this.idm = idm;
+            this.im = im;
         }
 
         /**
@@ -122,9 +122,9 @@ public class ModelSearcher {
             try {
                 JSONObject modelConfig = JSONio.read(path + "/model.json");
                 Model mph = ModelUtil.loadCopy("new_model", path + "/mesh/mesh.mph");
-                IdentifierManager idm = IdentifierManager.fromJSONObject(JSONio.read(path + "/mesh/idm.json"));
+                IdentifierManager im = IdentifierManager.fromJSONObject(JSONio.read(path + "/mesh/im.json"));
 
-                return new Match(modelConfig, mph,idm);
+                return new Match(modelConfig, mph,im);
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -142,7 +142,7 @@ public class ModelSearcher {
         }
 
         public IdentifierManager getIdm() {
-            return idm;
+            return im;
         }
     }
 }

@@ -6,19 +6,17 @@
   },
   "solution": {
     "time_units": "ms",
-    "sol_time": 413989.526393
+    "sol_time": 343220.326359
   },
   "temperature": {
     "unit": "celsius",
     "value": 37
   },
-  "medium": {
-    "bounds": {
-      "unit": "[micrometer]",
-      "length": 50000,
-      "radius": 10000
-    }
-  },
+  "medium": {"bounds": {
+    "unit": "[micrometer]",
+    "length": 50000,
+    "radius": 10000
+  }},
   "cuff": {
     "rotate": {
       "unit": "[degree]",
@@ -52,7 +50,7 @@
   },
   "mesh": {
     "rest": {
-      "mesh_time": 70639.036766,
+      "mesh_time": 68521.200499,
       "time_units": "ms",
       "hcurve": 0.2,
       "hmin": 10,
@@ -61,15 +59,15 @@
       "hgrad": 1.3
     },
     "stats": {
-      "volume": 15690000000000.0,
-      "min_quality": 0.000163,
+      "volume": 1.569E13,
+      "min_quality": 1.63E-4,
       "min_volume": 35.99,
       "quality_measure": "vollength",
       "number_elements": 1581800,
       "mean_quality": 0.5081
     },
     "nerve": {
-      "mesh_time": 4347.991983,
+      "mesh_time": 3292.57957,
       "time_units": "ms",
       "hcurve": 0.2,
       "hmin": 10,
@@ -78,9 +76,7 @@
       "hgrad": 1.3
     }
   },
-  "solver": {
-    "name": "COMSOL Multiphysics 5.4 (Build: 388)"
-  },
+  "solver": {"name": "COMSOL Multiphysics 5.4 (Build: 388)"},
   "frequency": {
     "unit": "Hz",
     "value": 1

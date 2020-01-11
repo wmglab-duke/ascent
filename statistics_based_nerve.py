@@ -1,3 +1,5 @@
+#!/usr/bin/env python3.7
+
 from copy import deepcopy
 import random
 
@@ -12,7 +14,7 @@ import shapely.affinity
 d_nerve = 400
 mu_fasc = 120
 std_fasc = 30
-num_fascicle = 1
+num_fascicle = 3
 n_std_limit = 2
 min_fascicle_separation = 10
 max_iter = 1000
@@ -65,7 +67,7 @@ for i in range(num_fascicle):
         for fasc_comp in range(0, i - 1):
             print('fascicle intersects')
 
-            if fascicles[fasc_comp].intersects(fascicle_attempt):
+            if fascicles[fasc_comp].boundary.intersects(fascicle_attempt.boundary):
                 print('intersects')
                 chk = 1
                 break

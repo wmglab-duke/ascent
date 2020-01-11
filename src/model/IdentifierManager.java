@@ -88,23 +88,27 @@ public class IdentifierManager {
     }
 
     /**
-     * @param jsonObject data that PERFECTLY matches structure of IDM in a Map fashion (see implementation)
-     * @return constructed IDM
+     * @param jsonObject data that PERFECTLY matches structure of IM in a Map fashion (see implementation)
+     * @return constructed IM
      */
     public static IdentifierManager fromJSONObject(JSONObject jsonObject) {
         Map<String, Object> map = jsonObject.toMap();
-        IdentifierManager idm = new IdentifierManager();
+        IdentifierManager im = new IdentifierManager();
 
         assert map.get("identifierStates") instanceof HashMap;
-        idm.setIdentifierStates((HashMap<String, Integer>) map.get("identifierStates"));
+        im.setIdentifierStates((HashMap<String, Integer>) map.get("identifierStates"));
         assert map.get("identifierPseudonyms") instanceof HashMap;
-        idm.setIdentifierPseudonyms((HashMap<String, String>) map.get("identifierPseudonyms"));
+        im.setIdentifierPseudonyms((HashMap<String, String>) map.get("identifierPseudonyms"));
         assert map.get("labels") instanceof String[];
-        idm.labels = (String[]) map.get("labels");
+        Object[] buffer = ((ArrayList<Object>) map.get("labels")).toArray(new Object[0]);
+        im.labels = new String[buffer.length];
+        for (int i = 0; i < buffer.length; i += 1) {
+            im.labels[i] = (String) buffer[i];
+        }
         assert map.get("currentIDs") instanceof HashMap;
-        idm.currentIDs = (HashMap<String, String>) map.get("currentIDs");
+        im.currentIDs = (HashMap<String, String>) map.get("currentIDs");
 
-        return idm;
+        return im;
     }
 
     /**
