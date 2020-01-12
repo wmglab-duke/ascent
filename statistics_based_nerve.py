@@ -1,3 +1,5 @@
+#!/usr/bin/env python3.7
+
 from copy import deepcopy
 
 import random
@@ -11,9 +13,11 @@ import matplotlib.pyplot as plt
 
 
 d_nerve = 400
+
 mu_fasc = 50
 std_fasc = 10
 num_fascicle = 25
+
 n_std_limit = 2
 min_fascicle_separation = 5
 max_iter = 1000

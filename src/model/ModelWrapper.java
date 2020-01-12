@@ -429,19 +429,13 @@ public class ModelWrapper {
     public void loopCurrents(JSONObject modelData, String projectPath, String sample, String modelStr) {
 
         long runSolStartTime = System.nanoTime();
+        int index = 0;
         for(String key_on: this.im.currentIDs.keySet()) {
 
             System.out.println("Current pointer: " + key_on);
-
-            // old design where pointers were stored instead of IDs
-            //PhysicsFeature current_on = (PhysicsFeature) this.im.currentPointers.get(key_on);
-
-            String src = this.im.get(key_on);
-
+            String src = this.im.currentIDs.get(key_on);
             PhysicsFeature current_on = model.physics("ec").feature(src);
-
             current_on.set("Qjp", 0.001); // turn on current
-
             model.sol("sol1").runAll();
 
             String mphFile = String.join("/", new String[]{
@@ -451,7 +445,7 @@ public class ModelWrapper {
                     "models",
                     modelStr,
                     "bases",
-                    src + ".mph"
+                    index + ".mph"
             });
 
             try {
@@ -463,6 +457,7 @@ public class ModelWrapper {
 
             current_on.set("Qjp", 0.000); // reset current
 
+            index += 1;
         }
 
         JSONObject solution = modelData.getJSONObject("solution");
@@ -580,7 +575,8 @@ public class ModelWrapper {
         // variables for optimization looping
         JSONObject previousModelData = null;
         Model previousMph = null;
-        IdentifierManager previousIDM = null;
+        IdentifierManager previousIM = null;
+        HashMap<String, IdentifierManager> previousPPIMs = null;
         boolean skipMesh = false;
 
 
@@ -625,11 +621,18 @@ public class ModelWrapper {
                     assert meshReferenceData != null;
                     if ((previousModelData != null) && (ModelSearcher.meshMatch(meshReferenceData, modelData, previousModelData))) {
 
-                            // set current mph and idm/im
+                            // set current mph and im/im
                         assert previousMph != null;
                         model = ModelUtil.loadCopy(ModelUtil.uniquetag("Model"), previousMph.getFilePath());
                             mw = new ModelWrapper(model, projectPath);
-                            mw.im = IdentifierManager.fromJSONObject(new JSONObject(previousIDM.toJSONObject().toString()));
+                            mw.im = IdentifierManager.fromJSONObject(new JSONObject(previousIM.toJSONObject().toString()));
+                            mw.partPrimitiveIMs = new HashMap<>();
+                            for (String name : previousPPIMs.keySet()) {
+                                mw.partPrimitiveIMs.put(
+                                        name,
+                                        IdentifierManager.fromJSONObject(new JSONObject(previousPPIMs.get(name).toJSONObject().toString()))
+                                );
+                            }
 
                             skipMesh = true;
                     }
@@ -646,12 +649,21 @@ public class ModelWrapper {
 
                         // if there was a mesh match
                         if (meshMatch != null) {
+
                             model = meshMatch.getMph();
                             mw = new ModelWrapper(model, projectPath);
                             mw.im = IdentifierManager.fromJSONObject(new JSONObject(meshMatch.getIdm().toJSONObject().toString()));
+                            mw.partPrimitiveIMs = meshMatch.getPartPrimitiveIMs();
 
-                            previousMph = ModelUtil.loadCopy(ModelUtil.uniquetag("Model"), model.getFilePath());
-                            previousIDM = IdentifierManager.fromJSONObject(new JSONObject(mw.im.toJSONObject().toString()));
+                            previousMph = ModelUtil.loadCopy(ModelUtil.uniquetag("Model"), meshMatch.getPath() + "/mesh/mesh.mph");
+                            previousIM = IdentifierManager.fromJSONObject(new JSONObject(mw.im.toJSONObject().toString()));
+                            previousPPIMs = new HashMap<>();
+                            for (String name : meshMatch.getPartPrimitiveIMs().keySet()) {
+                                mw.partPrimitiveIMs.put(
+                                        name,
+                                        IdentifierManager.fromJSONObject(new JSONObject(meshMatch.getPartPrimitiveIMs().get(name).toJSONObject().toString()))
+                                );
+                            }
 
                             skipMesh = true;
                         }
@@ -673,7 +685,7 @@ public class ModelWrapper {
                 if prev is not null AND prev is mesh match:
 
                     current mph = prev mph COPY
-                    current IDM = prev IDM COPY
+                    current IM = prev IM COPY
 
                     skip mesh = true
 
@@ -687,11 +699,11 @@ public class ModelWrapper {
                         else: (found mesh match)
 
                             current mph = found mesh mph
-                            current IDM = found mesh IDM
+                            current IM = found mesh IM
 
                             prev model config = found model config (copy unnecessary)
                             prev mph = found mesh COPY
-                            prev IDM = found mesh IDM COPY
+                            prev IM = found mesh IM COPY
 
 
 
@@ -946,6 +958,22 @@ public class ModelWrapper {
 
                 System.out.println("DONE MESHING");
 
+                // ensure that the path for mesh files can be created
+                String meshPath = String.join("/", new String[]{
+                        projectPath,
+                        "samples",
+                        sample,
+                        "models",
+                        modelStr,
+                        "mesh",
+                });
+                assert new File(meshPath).exists() || new File(meshPath).mkdir();
+
+                // ditto for ppims
+                System.out.println("Creating PPIM dirs");
+                String ppimPath = meshPath + "/ppim";
+                assert new File(ppimPath).exists() || new File(ppimPath).mkdir();
+
                 String meshFile = String.join("/", new String[]{
                         projectPath,
                         "samples",
@@ -965,8 +993,26 @@ public class ModelWrapper {
                     e.printStackTrace();
                 }
 
-                // save IDM !!!!
-                previousIDM = IdentifierManager.fromJSONObject(new JSONObject(mw.im.toJSONObject().toString()));
+                String imFile = String.join("/", new String[]{
+                        projectPath,
+                        "samples",
+                        sample,
+                        "models",
+                        modelStr,
+                        "mesh",
+                        "im.json"
+                });
+
+                // save IM !!!!
+                previousIM = IdentifierManager.fromJSONObject(new JSONObject(mw.im.toJSONObject().toString()));
+                JSONio.write(imFile, mw.im.toJSONObject()); // write to file
+
+                // save ppIMs !!!!
+                previousPPIMs = new HashMap<>();
+                for (String name : mw.partPrimitiveIMs.keySet()) {
+                    previousPPIMs.put(name, mw.partPrimitiveIMs.get(name));
+                    JSONio.write(ppimPath + "/" + name + ".json", mw.partPrimitiveIMs.get(name).toJSONObject());
+                }
 
                 // save previous model config !!!!
                 previousModelData = modelData;
@@ -1092,21 +1138,21 @@ public class ModelWrapper {
             model.result("pg1").set("data", "dset1");
 
             // Saved meshed model
-            String mphFile = String.join("/", new String[]{
-                    projectPath,
-                    "samples",
-                    sample,
-                    "models",
-                    modelStr,
-                    "model.mph"
-            });
-
-            try {
-                System.out.println("Saving MPH (mesh only) file to: " + mphFile);
-                model.save(mphFile);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+//            String mphFile = String.join("/", new String[]{
+//                    projectPath,
+//                    "samples",
+//                    sample,
+//                    "models",
+//                    modelStr,
+//                    "model.mph"
+//            });
+//
+//            try {
+//                System.out.println("Saving MPH (mesh only) file to: " + mphFile);
+//                model.save(mphFile);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
 
             mw.loopCurrents(modelData, projectPath, sample, modelStr);
 
