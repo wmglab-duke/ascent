@@ -5,6 +5,7 @@ import os
 import random
 import sys
 import time
+import warnings
 from io import BytesIO
 
 import scipy.stats as stats
@@ -58,31 +59,71 @@ n_std_ecc_limit = mockConfig.get('n_std_ecc_limit')
 min_fascicle_separation = mockConfig.get('min_fascicle_separation')
 
 # choose maximum number of iterations for program to attempt to place fascicle
-max_iter = mockConfig.get('max_iter')
+max_attempt_iter = mockConfig.get('max_attempt_iter')
 
 # figure settings
 fig_margin = mockConfig.get('fig_margin')
 fig_dpi = mockConfig.get('fig_dpi')
 
 # CALCULATE FASCICLE DIAMS (as if circle, major and minor axes same length)
-lower_fasc_diam, upper_fasc_diam = mu_fasc_diam - n_std_diam_limit * std_fasc_diam, \
-             mu_fasc_diam + n_std_diam_limit * std_fasc_diam
-fasc_diam_dist = stats.truncnorm((lower_fasc_diam - mu_fasc_diam) / std_fasc_diam,
-                    (upper_fasc_diam - mu_fasc_diam) / std_fasc_diam,
-                    loc=mu_fasc_diam,
-                    scale=std_fasc_diam)
+if n_std_diam_limit == 0 and std_fasc_diam != 0:
+    raise Exception('Conflicting input arguments for std_fasc_diam and n_std_diam_limit')
 
-fasc_diams = np.sort(fasc_diam_dist.rvs(num_fascicle_attempt))[::-1].T
+if std_fasc_diam == 0:
+    fasc_diams = np.ones(num_fascicle_attempt)*mu_fasc_diam
+    upper_fasc_diam = mu_fasc_diam
+    lower_fasc_diam = mu_fasc_diam
+else:
+    lower_fasc_diam, upper_fasc_diam = mu_fasc_diam - n_std_diam_limit * std_fasc_diam, \
+                                       mu_fasc_diam + n_std_diam_limit * std_fasc_diam
+    fasc_diam_dist = stats.truncnorm((lower_fasc_diam - mu_fasc_diam) / std_fasc_diam,
+                                     (upper_fasc_diam - mu_fasc_diam) / std_fasc_diam,
+                                     loc=mu_fasc_diam,
+                                     scale=std_fasc_diam)
+
+    fasc_diams = np.sort(fasc_diam_dist.rvs(num_fascicle_attempt))[::-1].T
+
 fasc_areas = np.pi*(fasc_diams/2)**2
+mockConfig['upper_fasc_diam'] = upper_fasc_diam
+mockConfig['lower_fasc_diam'] = lower_fasc_diam
 
 # CALCULATE FASCICLE ECCENTRICITY
-lower_fasc_ecc, upper_fasc_ecc = mu_fasc_ecc - n_std_ecc_limit * std_fasc_ecc, \
-                                   mu_fasc_ecc + n_std_ecc_limit * std_fasc_ecc
-fascEccDist = stats.truncnorm((lower_fasc_ecc - mu_fasc_ecc) / std_fasc_ecc,
-                               (upper_fasc_ecc - mu_fasc_ecc) / std_fasc_ecc,
-                               loc=mu_fasc_ecc,
-                               scale=std_fasc_ecc)
-fasc_eccs = fascEccDist.rvs(num_fascicle_attempt)
+if n_std_ecc_limit == 0 and std_fasc_ecc != 0:
+    raise Exception('Conflicting input arguments for std_fasc_ecc and n_std_ecc_limit')
+
+if mu_fasc_ecc >= 1:
+    raise Exception('Mean eccentricity value exceeds 1. Eccentricity only defined in range [0,1).')
+
+if std_fasc_ecc == 0:
+    fasc_eccs = np.ones(num_fascicle_attempt)*mu_fasc_ecc
+    upper_fasc_ecc = mu_fasc_ecc
+    lower_fasc_ecc = mu_fasc_ecc
+else:
+    lower_fasc_ecc, upper_fasc_ecc = mu_fasc_ecc - n_std_ecc_limit * std_fasc_ecc,\
+                                     mu_fasc_ecc + n_std_ecc_limit * std_fasc_ecc
+    if upper_fasc_ecc >= 1:
+        upper_fasc_ecc = 0.99
+        upper_fasc_ecc_warning = "Eccentricity only defined in range (0,1], " \
+                                 "overwrote upper_fasc_ecc, now = {}".format(upper_fasc_ecc)
+        warnings.warn(upper_fasc_ecc_warning)
+
+    if lower_fasc_ecc < 0:
+        lower_fasc_ecc = 0
+        lower_fasc_ecc_warning = "Eccentricity only defined in range (0,1], " \
+              "overwrote lower_fasc_ecc, now = {}".format(lower_fasc_ecc)
+        warnings.warn(lower_fasc_ecc_warning)
+
+    fascEccDist = stats.truncnorm((lower_fasc_ecc - mu_fasc_ecc) / std_fasc_ecc,
+                                  (upper_fasc_ecc - mu_fasc_ecc) / std_fasc_ecc,
+                                  loc=mu_fasc_ecc,
+                                  scale=std_fasc_ecc)
+    fasc_eccs = fascEccDist.rvs(num_fascicle_attempt)
+
+mockConfig['upper_fasc_ecc'] = upper_fasc_ecc
+mockConfig['lower_fasc_ecc'] = lower_fasc_ecc
+
+if True in [fasc_ecc >= 1 for fasc_ecc in fasc_eccs]:
+    raise Exception('A resulting eccentricity value exceeds 1. Eccentricity only defined in range [0,1).')
 
 # CALCULATE FASCICLE ROTATIONS
 fasc_rots = [360*random.random() for _ in range(num_fascicle_attempt)]
@@ -115,7 +156,7 @@ for i in range(num_fascicle_attempt):
     while True:
         n_itr[i] += 1
 
-        if n_itr[i] > max_iter:
+        if n_itr[i] > max_attempt_iter:
             skipped_fascicles_index.append(i)
             break
 
