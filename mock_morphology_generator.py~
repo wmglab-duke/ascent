@@ -24,16 +24,16 @@ if len(sys.argv) != 2:
     print('INVALID number of arguments to mock_morphology_generator.py')
     exit(1)
 
-mock_file = os.path.join('config', 'user', 'mock_samples', '{}.json'.format(sys.argv[1]))
-with open(mock_file, "r") as handle:
+mockFile = os.path.join('config', 'user', 'mock_samples', '{}.json'.format(sys.argv[1]))
+with open(mockFile, "r") as handle:
     mockConfig: dict = json.load(handle)
 
 # define sample ID
-sample_str = mockConfig.get('sample_str')
-project_path = os.getcwd()
-sample_dir = os.path.join(project_path, 'data', 'input', 'samples', sample_str)
-if not os.path.exists(os.path.join(project_path, sample_dir)):
-    os.makedirs(os.path.join(project_path, sample_dir))
+sampleStr = mockConfig.get('sampleStr')
+projectPath = os.getcwd()
+sampleDir = os.path.join(projectPath, 'data', 'input', 'samples', sampleStr)
+if not os.path.exists(os.path.join(projectPath, sampleDir)):
+    os.makedirs(os.path.join(projectPath, sampleDir))
 
 # define scalebar length
 scalebar_length = mockConfig.get('scalebar_length')
@@ -67,13 +67,13 @@ fig_dpi = mockConfig.get('fig_dpi')
 # CALCULATE FASCICLE DIAMS (as if circle, major and minor axes same length)
 lower_fasc_diam, upper_fasc_diam = mu_fasc_diam - n_std_diam_limit * std_fasc_diam, \
              mu_fasc_diam + n_std_diam_limit * std_fasc_diam
-fasc_diam_dist = stats.truncnorm((lower_fasc_diam - mu_fasc_diam) / std_fasc_diam,
+fascDiamDist = stats.truncnorm((lower_fasc_diam - mu_fasc_diam) / std_fasc_diam,
                     (upper_fasc_diam - mu_fasc_diam) / std_fasc_diam,
                     loc=mu_fasc_diam,
                     scale=std_fasc_diam)
 
-fasc_diams = np.sort(fasc_diam_dist.rvs(num_fascicle_attempt))[::-1].T
-fasc_areas = np.pi*(fasc_diams/2)**2
+fascDiams = np.sort(fascDiamDist.rvs(num_fascicle_attempt))[::-1].T
+fascAreas = np.pi*(fascDiams/2)**2
 
 # CALCULATE FASCICLE ECCENTRICITY
 lower_fasc_ecc, upper_fasc_ecc = mu_fasc_ecc - n_std_ecc_limit * std_fasc_ecc, \
@@ -148,7 +148,7 @@ if len(fascicles) < num_fascicle_attempt:
 
 mockConfig['num_fascicle_placed'] = len(fascicles)
 
-with open(os.path.join(project_path, sample_dir, 'mock.json'), "w") as handle:
+with open(os.path.join(projectPath, sampleDir, 'mock.json'), "w") as handle:
     handle.write(json.dumps(mockConfig, indent=2))
 
 
@@ -176,7 +176,7 @@ nerveFig.savefig(pngNerve, dpi=fig_dpi, format='png')
 pngNerve.seek(0)
 imgNerve = create_opencv_image_from_stringio(pngNerve)
 _, bw_img_nerve = cv2.threshold(imgNerve, 127, 255, cv2.THRESH_BINARY)
-cv2.imwrite(os.path.join(project_path, sample_dir, '{}_0_0_n.tif'.format(sample_str)), bw_img_nerve)
+cv2.imwrite(os.path.join(projectPath, sampleDir, '{}_0_0_n.tif'.format(sampleStr)), bw_img_nerve)
 
 # FASCICLES BINARY IMAGE
 fasciclesFig = plt.figure(2)
@@ -195,7 +195,7 @@ fasciclesFig.savefig(pngFascicles, dpi=fig_dpi, format='png')
 pngFascicles.seek(0)
 imgFascicles = create_opencv_image_from_stringio(pngFascicles)
 ret, bw_img_fascicles = cv2.threshold(imgFascicles, 127, 255, cv2.THRESH_BINARY)
-cv2.imwrite(os.path.join(project_path, sample_dir, '{}_0_0_i.tif'.format(sample_str)), bw_img_fascicles)
+cv2.imwrite(os.path.join(projectPath, sampleDir, '{}_0_0_i.tif'.format(sampleStr)), bw_img_fascicles)
 
 # SCALEBAR BINARY IMAGE
 scalebarFig = plt.figure(3)
@@ -210,7 +210,7 @@ scalebarFig.savefig(pngScaleBar, dpi=fig_dpi, format='png')
 pngScaleBar.seek(0)
 imgScaleBar = create_opencv_image_from_stringio(pngScaleBar)
 _, bw_img_scalebar = cv2.threshold(imgScaleBar, 127, 255, cv2.THRESH_BINARY)
-cv2.imwrite(os.path.join(project_path, sample_dir, '{}_0_0_s.tif'.format(sample_str)), bw_img_scalebar)
+cv2.imwrite(os.path.join(projectPath, sampleDir, '{}_0_0_s.tif'.format(sampleStr)), bw_img_scalebar)
 
 # N = stats.norm(loc=mu_fasc, scale=std_fasc)
 # fig, ax = plt.subplots(2, sharex=True)
