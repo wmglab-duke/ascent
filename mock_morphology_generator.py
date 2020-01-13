@@ -1,7 +1,10 @@
 #!/usr/bin/env python3.7
+
 import json
 import os
 import random
+import sys
+import time
 from io import BytesIO
 
 import scipy.stats as stats
@@ -14,45 +17,56 @@ import matplotlib.pyplot as plt
 
 import cv2
 
-mockFile = os.path.join('config', 'user', 'mock_samples', 'mock_sample.json')
+# START timer
+start = time.time()
+
+if len(sys.argv) != 2:
+    print('INVALID number of arguments to mock_morphology_generator.py')
+    exit(1)
+
+mockFile = os.path.join('config', 'user', 'mock_samples', '{}.json'.format(sys.argv[1]))
 with open(mockFile, "r") as handle:
-    mockConfig = json.load(handle)
+    mockConfig: dict = json.load(handle)
 
 # define sample ID
-sampleStr = 'Alien1-1'
+sampleStr = mockConfig.get('sampleStr')
 projectPath = os.getcwd()
 sampleDir = os.path.join(projectPath, 'data', 'input', 'samples', sampleStr)
 if not os.path.exists(os.path.join(projectPath, sampleDir)):
     os.makedirs(os.path.join(projectPath, sampleDir))
 
 # define scalebar length
-scalebar_length = 100
+scalebar_length = mockConfig.get('scalebar_length')
 
 # choose nerve diameter [um]
-d_nerve = 400
+d_nerve = mockConfig.get("d_nerve")
 
-# choose fascicle area [um^2]
-mu_fasc_area = 3000
-std_fasc_area = 1500
-n_std_area_limit = 2
+# choose fascicle area [um^2]: A = pi*(d/2)**2
+mu_fasc_diam = mockConfig.get('mu_fasc_diam')
+std_fasc_diam = mockConfig.get('std_fasc_diam')
+n_std_diam_limit = mockConfig.get('n_std_diam_limit')
+
+mu_fasc_area = np.pi*(mu_fasc_diam/2)**2  # TODO these are wrong!
+std_fasc_area = np.pi*(std_fasc_diam/2)**2
+n_std_area_limit = np.pi*(n_std_diam_limit/2)**2
 
 # choose number of fascicles
-num_fascicle = 30
+num_fascicle_attempt = mockConfig.get('num_fascicle_attempt')
 
 # choose fascicle eccentricity (
-mu_fasc_ecc = 0.4
-std_fasc_ecc = 0.2
-n_std_ecc_limit = 2
+mu_fasc_ecc = mockConfig.get('mu_fasc_ecc')
+std_fasc_ecc = mockConfig.get('std_fasc_ecc')
+n_std_ecc_limit = mockConfig.get('n_std_ecc_limit')
 
 # choose minumum fascicle distance
-min_fascicle_separation = 5
+min_fascicle_separation = mockConfig.get('min_fascicle_separation')
 
 # choose maximum number of iterations for program to attempt to place fascicle
-max_iter = 1000
+max_iter = mockConfig.get('max_iter')
 
 # figure settings
-fig_margin = 1.2
-fig_dpi = 1000
+fig_margin = mockConfig.get('fig_margin')
+fig_dpi = mockConfig.get('fig_dpi')
 
 # CALCULATE FASCICLE AREAS
 lower_fasc_area, upper_fasc_area = mu_fasc_area - n_std_area_limit * std_fasc_area, \
@@ -61,7 +75,7 @@ fascAreaDist = stats.truncnorm((lower_fasc_area - mu_fasc_area) / std_fasc_area,
                     (upper_fasc_area - mu_fasc_area) / std_fasc_area,
                     loc=mu_fasc_area,
                     scale=std_fasc_area)
-fasc_areas = np.sort(fascAreaDist.rvs(num_fascicle))[::-1].T
+fasc_areas = np.sort(fascAreaDist.rvs(num_fascicle_attempt))[::-1].T
 
 # CALCULATE FASCICLE ECCENTRICITY
 lower_fasc_ecc, upper_fasc_ecc = mu_fasc_ecc - n_std_ecc_limit * std_fasc_ecc, \
@@ -70,10 +84,10 @@ fascEccDist = stats.truncnorm((lower_fasc_ecc - mu_fasc_ecc) / std_fasc_ecc,
                                (upper_fasc_ecc - mu_fasc_ecc) / std_fasc_ecc,
                                loc=mu_fasc_ecc,
                                scale=std_fasc_ecc)
-fasc_eccs = fascEccDist.rvs(num_fascicle)
+fasc_eccs = fascEccDist.rvs(num_fascicle_attempt)
 
 # CALCULATE FASCICLE ROTATIONS
-fasc_rots = [360*random.random() for _ in range(num_fascicle)]
+fasc_rots = [360*random.random() for _ in range(num_fascicle_attempt)]
 
 # CALCULATE FASCICLE MAJOR AND MINOR AXES
 a_axes = [((area**2)/((np.pi**2)*(1-(ecc**2))))**(1/4) for area, ecc in zip(fasc_areas, fasc_eccs)]
@@ -97,7 +111,7 @@ skipped_fascicles_index = []
 nerve = shapely.geometry.Point(0, 0).buffer(d_nerve/2)
 
 # DEFINE/PLACE FASCICLES
-for i in range(num_fascicle):
+for i in range(num_fascicle_attempt):
     n_itr.append(0)
 
     while True:
@@ -130,9 +144,14 @@ for i in range(num_fascicle):
             break
 
 # print to console any fascicle diameters that were skipped
-if len(fascicles) < num_fascicle:
+if len(fascicles) < num_fascicle_attempt:
     print('ATTENTION: Either re-run program or reduce #/size/separation distance fascicles')
-    print('User requested {} fascicles, but program could only place {}'.format(num_fascicle, len(fascicles)))
+    print('User requested {} fascicles, but program could only place {}'.format(num_fascicle_attempt, len(fascicles)))
+
+mockConfig['num_fascicle_placed'] = len(fascicles)
+
+with open(os.path.join(projectPath, sampleDir, 'mock.json'), "w") as handle:
+    handle.write(json.dumps(mockConfig, indent=2))
 
 
 # https://inneka.com/ml/opencv/how-to-read-image-from-in-memory-buffer-stringio-or-from-url-with-opencv-python-library/
@@ -200,3 +219,10 @@ cv2.imwrite(os.path.join(projectPath, sampleDir, '{}_0_0_s.tif'.format(sampleStr
 # ax[0].hist(X.rvs(10000), density=True)
 # ax[1].hist(N.rvs(10000), density=True)
 # plt.show
+
+# END timer
+end = time.time()
+print('\nruntime: {}'.format(end - start))
+
+# cleanup for console viewing/inspecting
+del start, end
