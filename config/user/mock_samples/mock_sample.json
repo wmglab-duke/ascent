@@ -1,6 +1,6 @@
 {
   "sampleStr": "Alien1-1",
-  "length_units": "um",
+  "length_unit": "um",
   "scalebar_length": 100,
   "d_nerve": 400,
   "mu_fasc_area": 3000,
