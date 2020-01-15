@@ -147,8 +147,6 @@ class Runner(Exceptionable, Configurable):
         self.handoff()
 
     def handoff(self):
-        # TODO: implement extract potentials
-
         comsol_path = self.search(Config.ENV, 'comsol_path')
         jdk_path = self.search(Config.ENV, 'jdk_path')
         project_path = self.search(Config.ENV, 'project_path')
