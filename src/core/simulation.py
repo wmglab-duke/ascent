@@ -12,6 +12,8 @@ class Simulation(Exceptionable, Configurable, Saveable):
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
         Configurable.__init__(self)
 
+        self.factors = dict()
+
     def resolve_product(self):
         n_dimensions = self.search(Config.SIM, "n_dimensions")
         # ONE fibers type, list with diff parameters
