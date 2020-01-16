@@ -124,7 +124,7 @@ class Runner(Exceptionable, Configurable):
                 .output_morphology_data()
 
         # iterate through models
-        for model_index, model in enumerate(all_configs[Config.MODEL.value]):
+        for model_index, model_config in enumerate(all_configs[Config.MODEL.value]):
             print('MODEL {}'.format(model_index))
 
             # use current model index to compute electrical parameters ... SAVES to file in method
@@ -135,7 +135,7 @@ class Runner(Exceptionable, Configurable):
             # TODO
 
             # iterate through simulations
-            for sim_index, sim in enumerate(all_configs['sims']):
+            for sim_index, sim_config in enumerate(all_configs['sims']):
                 sim_obj_dir = os.path.join(
                     'samples',
                     str(self.configs[Config.RUN.value]['sample']),
@@ -147,7 +147,7 @@ class Runner(Exceptionable, Configurable):
 
                 sim_obj_file = os.path.join(
                     sim_obj_dir,
-                    'fm.obj'
+                    'sim.obj'
                 )
 
                 # init fiber manager
@@ -167,10 +167,12 @@ class Runner(Exceptionable, Configurable):
                     #     .fiber_xy_coordinates(plot=False, save=True) \
                     #     .save(fiber_manager_file)
 
-                    simulation = Simulation(sample, self.configs[Config.EXCEPTIONS.value])
+                    simulation: Simulation = Simulation(sample, self.configs[Config.EXCEPTIONS.value])
                     simulation \
-                        .add(SetupMode.OLD, Config.MODEL, model) \
-                        .add(SetupMode.OLD, Config.SIM, sim) \
+                        .add(SetupMode.OLD, Config.MODEL, model_config) \
+                        .add(SetupMode.OLD, Config.SIM, sim_config) \
+                        .resolve_product() \
+                        .write_waveforms() \
                         .fiber_xy_coordinates(plot=False, save=True) \
                         .fiber_z_coordinates(save=True) \
                         .save_coordinates(format='.dat', mode='xyz') \
@@ -188,6 +190,21 @@ class Runner(Exceptionable, Configurable):
 
         # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials
         self.handoff()
+
+        #  continue by using simulation objects
+        for model_index, model_config in enumerate(all_configs[Config.MODEL.value]):
+            for sim_index, sim_conifig in enumerate(all_configs['sims']):
+                load(os.path.join(
+                    'samples',
+                    str(self.configs[Config.RUN.value]['sample']),
+                    'models',
+                    str(model_index),
+                    'sims',
+                    str(self.configs[Config.RUN.value]['sims'][sim_index]),
+                    'sim.obj'
+                )).build_sims()
+
+
 
     def handoff(self):
         comsol_path = self.search(Config.ENV, 'comsol_path')
