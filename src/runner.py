@@ -142,7 +142,7 @@ class Runner(Exceptionable, Configurable):
                     .add(SetupMode.OLD, Config.MODEL, all_configs[Config.MODEL.value][model_index])\
                     .add(SetupMode.OLD, Config.SIM, all_configs[Config.SIM.value][sim_index])\
                     .make_folders()\
-                    .build_hoc()\
+                    .write_launch_hocs()\
                     .copy_waveforms()\
                     .copy_ve_data()
 

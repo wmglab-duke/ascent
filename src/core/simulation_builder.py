@@ -1,6 +1,8 @@
+import itertools
 import math
+from typing import List
 
-import numpy as np
+from org.json import JSONArray
 
 from src.utils import *
 
@@ -14,7 +16,11 @@ class SimulationBuilder(Exceptionable, Configurable, Saveable):
 
         self.add(SetupMode.NEW, Config.FIBER_Z, os.path.join('config', 'system', 'fiber_z.json'))
 
-    def build_hoc(self):
+    def define_sim_indices(self, args: List[List[JSONArray]]):
+        return itertools.product(args)
+        pass
+
+    def write_launch_hocs(self):
         """
         Write file LaunchSim###.hoc
         :return:
@@ -171,17 +177,6 @@ class SimulationBuilder(Exceptionable, Configurable, Saveable):
         :return:
         """
         pass
-
-    def copy_ve_data(self):
-        pass
-
-    def copy_waveforms(self):
-        """
-
-        :return:
-        """
-        for waveform in self.search(Config.SIM, 'extracellular_stim', 'waveforms'):
-            pass
 
     def make_folders(self):
         """
