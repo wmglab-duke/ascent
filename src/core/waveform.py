@@ -38,6 +38,8 @@ class Waveform(Exceptionable, Configurable, Saveable):
             self.time_unit = \
             self.frequency_unit = None
 
+        self.waves = None
+
 
     def init_post_config(self):
 
@@ -172,7 +174,7 @@ class Waveform(Exceptionable, Configurable, Saveable):
 
         return rho                                 # [ohm-m]
 
-    def generate(self) -> List[np.ndarray]:
+    def generate(self):
         """
         :return: list of 1d ndarrays, waveforms as specified by configuration
         """
@@ -272,7 +274,7 @@ class Waveform(Exceptionable, Configurable, Saveable):
                 else:
                     self.throw(34)
 
-        return waves
+        self.waves = waves
 
     def write(self, mode: WriteMode, path: str):
         """
@@ -280,13 +282,13 @@ class Waveform(Exceptionable, Configurable, Saveable):
         :param path:
         :return:
         """
-        path += WriteMode.file_endings.value[mode.value]
 
-        dt = self.search(Config.SIM, "extracellular_stim", "global", "dt")
-        tstop = self.search(Config.SIM, "extracellular_stim", "global", "tstop")
-        wave = np.zeros(10)  # TODO
-        wave = np.insert(wave, 0, tstop, axis=0)
-        wave = np.insert(wave, 0, dt, axis=0)
+        for i, wave in enumerate(self.waves):
+            write_mode = WriteMode.file_endings.value[mode.value]
+            filepath = os.path.join(path, '{}{}'.format(i, write_mode))
 
-        with open(path, "wb") as f:
-            f.write(wave)
+            dt = self.search(Config.SIM, "extracellular_stim", "global", "dt")
+            tstop = self.search(Config.SIM, "extracellular_stim", "global", "tstop")
+            wave = np.insert(wave, 0, tstop, axis=0)
+            wave = np.insert(wave, 0, dt, axis=0)
+            np.save(filepath, wave)

@@ -143,7 +143,8 @@ class Runner(Exceptionable, Configurable):
                     .add(SetupMode.OLD, Config.SIM, all_configs[Config.SIM.value][sim_index])\
                     .make_folders()\
                     .build_hoc()\
-                    .write_waveforms()
+                    .copy_waveforms()\
+                    .copy_ve_data()
 
 
         # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials

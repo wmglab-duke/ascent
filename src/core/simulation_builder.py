@@ -172,14 +172,16 @@ class SimulationBuilder(Exceptionable, Configurable, Saveable):
         """
         pass
 
-    def write_ve_data(self):
+    def copy_ve_data(self):
         pass
 
-    def write_waveforms(self):
+    def copy_waveforms(self):
         """
+
         :return:
         """
-        path
+        for waveform in self.search(Config.SIM, 'extracellular_stim', 'waveforms'):
+            pass
 
     def make_folders(self):
         """

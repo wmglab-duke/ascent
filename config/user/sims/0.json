@@ -74,20 +74,22 @@
       "initSS": -200,
       "dt_initSS": 10
     },
-    "MONOPHASIC_PULSE_TRAIN": {
-      "pulse_width": [0.1],
-      "digits": 1
-    },
-    "SINUSOID": {
-      "digits": 10
-    },
-    "BIPHASIC_FULL_DUTY": {
-      "digits": 1
-    },
-    "BIPHASIC_PULSE_TRAIN": {
-      "pulse_width": [0.1],
-      "inter_phase": [1],
-      "digits": 1
+    "waveforms": {
+      "MONOPHASIC_PULSE_TRAIN": {
+        "pulse_width": [0.1],
+        "digits": 1
+      },
+      "SINUSOID": {
+        "digits": 10
+      },
+      "BIPHASIC_FULL_DUTY": {
+        "digits": 1
+      },
+      "BIPHASIC_PULSE_TRAIN": {
+        "pulse_width": [0.1],
+        "inter_phase": [1],
+        "digits": 1
+      }
     }
   },
   "intracellular_stim": {
