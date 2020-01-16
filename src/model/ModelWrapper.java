@@ -659,6 +659,7 @@ public class ModelWrapper {
                             previousIM = IdentifierManager.fromJSONObject(new JSONObject(mw.im.toJSONObject().toString()));
                             previousPPIMs = new HashMap<>();
                             for (String name : meshMatch.getPartPrimitiveIMs().keySet()) {
+                                System.out.println("Adding part primitive IM with name: " + name);
                                 mw.partPrimitiveIMs.put(
                                         name,
                                         IdentifierManager.fromJSONObject(new JSONObject(meshMatch.getPartPrimitiveIMs().get(name).toJSONObject().toString()))
@@ -967,12 +968,21 @@ public class ModelWrapper {
                         modelStr,
                         "mesh",
                 });
-                assert new File(meshPath).exists() || new File(meshPath).mkdir();
+                File meshPathFile = new File(meshPath);
+                if (! meshPathFile.exists()) {
+                    boolean success = meshPathFile.mkdirs();
+                    assert success;
+                }
+
 
                 // ditto for ppims
                 System.out.println("Creating PPIM dirs");
                 String ppimPath = meshPath + "/ppim";
-                assert new File(ppimPath).exists() || new File(ppimPath).mkdir();
+                File ppimPathFile = new File(ppimPath);
+                if (! ppimPathFile.exists()) {
+                    boolean success = ppimPathFile.mkdirs();
+                    assert success;
+                }
 
                 String meshFile = String.join("/", new String[]{
                         projectPath,
@@ -1008,6 +1018,8 @@ public class ModelWrapper {
                 JSONio.write(imFile, mw.im.toJSONObject()); // write to file
 
                 // save ppIMs !!!!
+                //File ppimPathFile = new File(ppimPath);
+                //assert ppimPathFile.exists() || ppimPathFile.mkdir();
                 previousPPIMs = new HashMap<>();
                 for (String name : mw.partPrimitiveIMs.keySet()) {
                     previousPPIMs.put(name, mw.partPrimitiveIMs.get(name));

@@ -158,12 +158,12 @@ public class ModelSearcher {
 
                 HashMap<String, IdentifierManager> ppims = new HashMap<>();
                 File ppimPath = new File(path + "/mesh/ppim/");
-                assert ppimPath.exists();
                 for (String filename : Objects.requireNonNull(ppimPath.list())) {
-                    String[] fileParts = filename.split("/");
+                    String[] fileParts = filename.split("\\.");
+                    System.out.println("file path = " + ppimPath.toString() + "/" + filename);
                     ppims.put(
-                            fileParts[fileParts.length - 1],
-                            IdentifierManager.fromJSONObject(JSONio.read(filename))
+                            fileParts[0],
+                            IdentifierManager.fromJSONObject(JSONio.read(ppimPath.toString() + "/" + filename))
                     );
                 }
 
