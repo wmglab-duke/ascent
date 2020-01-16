@@ -1,11 +1,11 @@
 {
   "n_dimensions": 3,
   "modes": {
-    "fiber_xy": "CENTROID",
-    "z_offset": "UNIFORM",
+    "fiber_xy": ["CENTROID"],
+    "z_offset": ["UNIFORM"],
     "node_channels": true,
     "passive_end_nodes": true,
-    "waveform": ["BIPHASIC_PULSE_TRAIN"]
+    "waveform": "BIPHASIC_PULSE_TRAIN"
   },
   "fibers": {
       "type": "MRG_DISCRETE",
