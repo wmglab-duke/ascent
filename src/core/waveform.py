@@ -38,10 +38,13 @@ class Waveform(Exceptionable, Configurable, Saveable):
             self.time_unit = \
             self.frequency_unit = None
 
+        self.waves = None
+
+
     def init_post_config(self):
 
         if any([config.value not in self.configs.keys() for config in (Config.MODEL, Config.SIM)]):
-            self.throw(39)
+            self.throw(39) # TODO NOT WRITTEN - INCORRECT INDEX
 
         # get mode
         self.modes = self.search_multi_mode(Config.SIM, WaveformMode)
@@ -171,7 +174,7 @@ class Waveform(Exceptionable, Configurable, Saveable):
 
         return rho                                 # [ohm-m]
 
-    def generate(self) -> List[np.ndarray]:
+    def generate(self):
         """
         :return: list of 1d ndarrays, waveforms as specified by configuration
         """
@@ -271,12 +274,21 @@ class Waveform(Exceptionable, Configurable, Saveable):
                 else:
                     self.throw(34)
 
-        return waves
+        self.waves = waves
 
+    def write(self, mode: WriteMode, path: str):
+        """
+        :param mode:
+        :param path:
+        :return:
+        """
 
+        for i, wave in enumerate(self.waves):
+            write_mode = WriteMode.file_endings.value[mode.value]
+            filepath = os.path.join(path, '{}{}'.format(i, write_mode))
 
-
-
-
-
-
+            dt = self.search(Config.SIM, "extracellular_stim", "global", "dt")
+            tstop = self.search(Config.SIM, "extracellular_stim", "global", "tstop")
+            wave = np.insert(wave, 0, tstop, axis=0)
+            wave = np.insert(wave, 0, dt, axis=0)
+            np.save(filepath, wave)

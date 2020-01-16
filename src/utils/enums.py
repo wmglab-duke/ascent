@@ -42,7 +42,8 @@ class WriteMode(Enum):
     SECTIONWISE = 0
     SECTIONWISE2D = 1
     DATA = 2
-    file_endings = ['.txt', '.txt', '.dat']
+    HOC = 3
+    file_endings = ['.txt', '.txt', '.dat', '.hoc']
 
 
 #%% Higher-level Manager functionality
