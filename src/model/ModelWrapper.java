@@ -76,7 +76,8 @@ public class ModelWrapper {
      */
     ModelWrapper(Model model, String projectRoot, String defaultSaveDestination) {
         this(model, projectRoot);
-        this.dest = defaultSaveDestination;
+        this.initUnionContributors();
+        this.dest = defaultSaveDestination; // TODO do we ever use this.dest?????
     }
 
 
@@ -343,7 +344,6 @@ public class ModelWrapper {
 
     /**
      * Add all fascicles to model.
-     * TODO: finish implementation of meshing in the Part class
      * @return success indicator
      */
     public boolean addNerve(String sample, ModelParamGroup nerveParams) {
@@ -609,8 +609,8 @@ public class ModelWrapper {
             Model model = null;
             ModelWrapper mw = null;
 
-            String mediumString = "Medium_Primitive";
-            String instanceLabel = "Medium";
+            String mediumPrimitiveString = "Medium_Primitive";
+            String instanceLabelMedium = "Medium";
 
             // TODO: insert optimization logic here
             // if optimizing
@@ -800,10 +800,10 @@ public class ModelWrapper {
                 mediumParams.set("r_ground", radius + " " + bounds_unit);
 
                 // Create PART PRIMITIVE for MEDIUM
-                String partID = mw.im.next("part", mediumString);
+                String partID = mw.im.next("part", mediumPrimitiveString);
                 try {
-                    IdentifierManager partPrimitiveIM = Part.createEnvironmentPartPrimitive(partID, mediumString, mw);
-                    mw.partPrimitiveIMs.put(mediumString, partPrimitiveIM);
+                    IdentifierManager partPrimitiveIM = Part.createEnvironmentPartPrimitive(partID, mediumPrimitiveString, mw);
+                    mw.partPrimitiveIMs.put(mediumPrimitiveString, partPrimitiveIM);
                 } catch (IllegalArgumentException e) {
                     e.printStackTrace();
                 }
@@ -811,9 +811,9 @@ public class ModelWrapper {
 
 
                 // Create PART INSTANCE for MEDIUM
-                String instanceID = mw.im.next("pi", instanceLabel);
+                String instanceID = mw.im.next("pi", instanceLabelMedium);
                 try {
-                    Part.createEnvironmentPartInstance(instanceID, instanceLabel, mediumString, mw, modelData);
+                    Part.createEnvironmentPartInstance(instanceID, instanceLabelMedium, mediumPrimitiveString, mw, modelData);
                 } catch (IllegalArgumentException e) {
                     e.printStackTrace();
                 }
@@ -1052,15 +1052,15 @@ public class ModelWrapper {
             // Add material assignments (links)
             // DOMAIN
             String mediumMaterial = mw.im.get("medium");
-            IdentifierManager myIM = mw.getPartPrimitiveIM(mediumString);
-            if (myIM == null) throw new IllegalArgumentException("IdentfierManager not created for name: " + mediumString);
+            IdentifierManager myIM = mw.getPartPrimitiveIM(mediumPrimitiveString);
+            if (myIM == null) throw new IllegalArgumentException("IdentfierManager not created for name: " + mediumPrimitiveString);
             String[] myLabels = myIM.labels; // may be null, but that is ok if not used
             String selection = myLabels[0];
-            String linkLabel = String.join("/", new String[]{instanceLabel, selection, "medium"});
+            String linkLabel = String.join("/", new String[]{instanceLabelMedium, selection, "medium"});
             Material mat = model.component("comp1").material().create(mw.im.next("matlnk", linkLabel), "Link");
             mat.label(linkLabel);
             mat.set("link", mediumMaterial);
-            mat.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(selection) + "_dom");
+            mat.selection().named("geom1_" + mw.im.get(instanceLabelMedium) + "_" + myIM.get(selection) + "_dom");
 
             // CUFF
             mw.addCuffPartMaterialAssignments(cuffData);
