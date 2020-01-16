@@ -1,7 +1,7 @@
 import itertools
 
-from core import Sample
-from utils import Exceptionable, Configurable, Saveable, SetupMode, Config
+from src.core import Sample
+from src.utils import Exceptionable, Configurable, Saveable, SetupMode, Config
 
 
 class Simulation(Exceptionable, Configurable, Saveable):
@@ -33,7 +33,10 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
         pass
 
-    def write_waveforms(self):
+    def write_waveforms(self, factors, product):
+        # factors list of dictionaries, each has name and value (which has a length)
+        # within extracellular stim, if key in factors:
+        #     do
         pass
 
     def fiber_xy_coordinates(self):
