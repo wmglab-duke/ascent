@@ -136,7 +136,7 @@ class Runner(Exceptionable, Configurable):
 
             # iterate through simulations
             for sim_index, sim in enumerate(all_configs['sims']):
-                fiber_manager_dir = os.path.join(
+                sim_obj_dir = os.path.join(
                     'samples',
                     str(self.configs[Config.RUN.value]['sample']),
                     'models',
@@ -145,36 +145,46 @@ class Runner(Exceptionable, Configurable):
                     str(self.configs[Config.RUN.value]['sims'][sim_index])
                 )
 
-                fiber_manager_file = os.path.join(
-                    fiber_manager_dir,
+                sim_obj_file = os.path.join(
+                    sim_obj_dir,
                     'fm.obj'
                 )
 
                 # init fiber manager
                 # fiber_manager = None
-                if smart and (not stupid) and os.path.exists(fiber_manager_file):
+                if smart and (not stupid) and os.path.exists(sim_obj_file):
                     pass
                     # fiber_manager = load(fiber_manager_file)
                 else:
-                    os.makedirs(fiber_manager_dir)
+                    os.makedirs(sim_obj_dir)
                     fiber_manager = FiberManager(sample, self.configs[Config.EXCEPTIONS.value])
 
                     # run processes with fiber manager (see class for details)
                         # .fiber_z_coordinates(fiber_manager.xy_coordinates, save=True)\
-                    fiber_manager \
+                    # fiber_manager \
+                    #     .add(SetupMode.OLD, Config.MODEL, model) \
+                    #     .add(SetupMode.OLD, Config.SIM, sim) \
+                    #     .fiber_xy_coordinates(plot=False, save=True) \
+                    #     .save(fiber_manager_file)
+
+                    simulation = Simulation(sample, self.configs[Config.EXCEPTIONS.value])
+                    simulation \
                         .add(SetupMode.OLD, Config.MODEL, model) \
                         .add(SetupMode.OLD, Config.SIM, sim) \
                         .fiber_xy_coordinates(plot=False, save=True) \
-                        .save(fiber_manager_file)
+                        .fiber_z_coordinates(save=True) \
+                        .save_coordinates(format='.dat', mode='xyz') \
+                        .save(sim_obj_file)
 
-                simulation_builder = SimulationBuilder(sim, self.configs[Config.EXCEPTIONS.value])
-                simulation_builder \
-                    .add(SetupMode.OLD, Config.MODEL, model) \
-                    .add(SetupMode.OLD, Config.SIM, sim) \
-                    # .make_folders() \
-                    # .build_hoc() \
-                    # .copy_waveforms() \
-                    # .copy_ve_data()
+
+                # simulation_builder = SimulationBuilder(sim, self.configs[Config.EXCEPTIONS.value])
+                # simulation_builder \
+                #     .add(SetupMode.OLD, Config.MODEL, model) \
+                #     .add(SetupMode.OLD, Config.SIM, sim) \
+                #     # .make_folders() \
+                #     # .build_hoc() \
+                #     # .copy_waveforms() \
+                #     # .copy_ve_data()
 
         # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials
         self.handoff()
