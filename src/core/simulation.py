@@ -9,3 +9,10 @@ class Simulation(Exceptionable, Configurable, Saveable):
         # Initializes superclasses
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
         Configurable.__init__(self)
+
+    def fiber_xy_coordinates(self):
+        pass
+
+    def fiber_z_coordinates(self):
+        pass
+
