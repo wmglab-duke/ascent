@@ -13,6 +13,8 @@ Description:
 
 """
 # builtins
+import pickle
+
 import sys
 
 # packages
@@ -78,8 +80,8 @@ class Runner(Exceptionable, Configurable):
 
         return configs
 
-    def run(self):
-        # TODO: implement overwrite checking
+    def run(self, smart: bool = True):
+        stupid = False
 
         # NOTE: single sample per Runner, so no looping of samples
         #       possible addition of functionality for looping samples in start.py
@@ -87,24 +89,32 @@ class Runner(Exceptionable, Configurable):
         # load all json configs into memory
         all_configs = self.load_configs()
 
-        # init slide manager
-        slide_manager = SlideManager(self.configs[Config.EXCEPTIONS.value])
-        # run processes with slide manager (see class for details)
-        slide_manager\
-            .add(SetupMode.OLD, Config.SAMPLE, all_configs[Config.SAMPLE.value][0])\
-            .add(SetupMode.OLD, Config.RUN, self.configs[Config.RUN.value])\
-            .init_map(SetupMode.OLD)\
-            .build_file_structure()\
-            .populate()\
-            .write(WriteMode.SECTIONWISE2D)
+        def load(path: str):
+            return pickle.load(open(path, 'rb'))
 
-        # save associated sample.obj
-        slide_manager.save(os.path.join('samples',
-                                        str(self.configs[Config.RUN.value]['sample']),
-                                        'sample.obj'))
-
-        # output fascicle inner and outer areas to associated sample.json
-        slide_manager.output_morphology_data()
+        sample_file = os.path.join(
+            'samples',
+            str(self.configs[Config.RUN.value]['sample']),
+            'sample.obj'
+        )
+        # instantiate sample
+        sample = None
+        if smart and os.path.exists(sample_file):
+            print('Found existing sample!')
+            sample = load(sample_file)
+        else:
+            # init slide manager
+            sample = Sample(self.configs[Config.EXCEPTIONS.value])
+            # run processes with slide manager (see class for details)
+            sample \
+                .add(SetupMode.OLD, Config.SAMPLE, all_configs[Config.SAMPLE.value][0]) \
+                .add(SetupMode.OLD, Config.RUN, self.configs[Config.RUN.value]) \
+                .init_map(SetupMode.OLD) \
+                .build_file_structure() \
+                .populate() \
+                .write(WriteMode.SECTIONWISE2D)\
+                .save(os.path.join(sample_file))\
+                .output_morphology_data()
 
         # iterate through models
         for model_index, model in enumerate(all_configs[Config.MODEL.value]):
@@ -114,108 +124,54 @@ class Runner(Exceptionable, Configurable):
             self.compute_electrical_parameters(all_configs, model_index)
 
             # # use current model index to computer maximum cuff shift (radius) .. SAVES to file in method
-            # self.compute_cuff_shift(all_configs, model_index, slide_manager)
+            # self.compute_cuff_shift(all_configs, model_index, sample)
             # TODO
 
             # iterate through simulations
             for sim_index, sim in enumerate(all_configs['sims']):
+                fiber_manager_dir = os.path.join(
+                    'samples',
+                    str(self.configs[Config.RUN.value]['sample']),
+                    'models',
+                    str(model_index),
+                    'sims',
+                    str(self.configs[Config.RUN.value]['sims'][sim_index])
+                )
+
+                fiber_manager_file = os.path.join(
+                    fiber_manager_dir,
+                    'fm.obj'
+                )
 
                 # init fiber manager
-                fiber_manager = FiberManager(slide_manager, self.configs[Config.EXCEPTIONS.value])
+                # fiber_manager = None
+                if smart and (not stupid) and os.path.exists(fiber_manager_file):
+                    pass
+                    # fiber_manager = load(fiber_manager_file)
+                else:
+                    os.makedirs(fiber_manager_dir)
+                    fiber_manager = FiberManager(sample, self.configs[Config.EXCEPTIONS.value])
 
-                # run processes with fiber manager (see class for details)
-                fiber_manager\
-                    .add(SetupMode.OLD, Config.MODEL, all_configs[Config.MODEL.value][model_index])\
-                    .add(SetupMode.OLD, Config.SIM, all_configs[Config.SIM.value][sim_index])\
-                    .fiber_xy_coordinates(plot=False, save=True)\
-                    # .fiber_z_coordinates(fiber_manager.xy_coordinates, save=True)\
-                    # .save(os.path.join('samples',
-                    #                    str(self.configs[Config.RUN.value]['sample']),
-                    #                    'models',
-                    #                    str(self.configs[Config.RUN.value]['models'][model_index]),
-                    #                    'sims',
-                    #                    str(self.configs[Config.RUN.value]['sims'][sim_index]),
-                    #                    'sim.obj'))
-
-                simulation_builder = SimulationBuilder(self.configs[Config.EXCEPTIONS.value])
-                simulation_builder\
-                    .add(SetupMode.OLD, Config.MODEL, all_configs[Config.MODEL.value][model_index])\
-                    .add(SetupMode.OLD, Config.SIM, all_configs[Config.SIM.value][sim_index])\
-                    .make_folders()\
-                    .build_hoc()\
-                    .copy_waveforms()\
-                    .copy_ve_data()
-
-
-        # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials
-        self.handoff()
-
-    def smart_run(self):
-
-        # NOTE: single sample per Runner, so no looping of samples
-        #       possible addition of functionality for looping samples in start.py
-
-        # load all json configs into memory
-        all_configs = self.load_configs()
-
-        # init slide manager
-        slide_manager = SlideManager(self.configs[Config.EXCEPTIONS.value])
-        # run processes with slide manager (see class for details)
-        slide_manager \
-            .add(SetupMode.OLD, Config.SAMPLE, all_configs[Config.SAMPLE.value][0]) \
-            .add(SetupMode.OLD, Config.RUN, self.configs[Config.RUN.value]) \
-            .init_map(SetupMode.OLD) \
-            .build_file_structure() \
-            .populate() \
-            .write(WriteMode.SECTIONWISE2D)
-
-        # save associated sample.obj
-        slide_manager.save(os.path.join('samples',
-                                        str(self.configs[Config.RUN.value]['sample']),
-                                        'sample.obj'))
-
-        # output fascicle inner and outer areas to associated sample.json
-        slide_manager.output_morphology_data()
-
-        # iterate through models
-        for model_index, model in enumerate(all_configs[Config.MODEL.value]):
-            print('MODEL {}'.format(model_index))
-
-            # use current model index to compute electrical parameters ... SAVES to file in method
-            self.compute_electrical_parameters(all_configs, model_index)
-
-            # # use current model index to computer maximum cuff shift (radius) .. SAVES to file in method
-            # self.compute_cuff_shift(all_configs, model_index, slide_manager)
-            # TODO
-
-            # iterate through simulations
-            for sim_index, sim in enumerate(all_configs['sims']):
-
-                # init fiber manager
-                fiber_manager = FiberManager(slide_manager, self.configs[Config.EXCEPTIONS.value])
-
-                # run processes with fiber manager (see class for details)
-                fiber_manager \
-                    .add(SetupMode.OLD, Config.MODEL, all_configs[Config.MODEL.value][model_index]) \
-                    .add(SetupMode.OLD, Config.SIM, all_configs[Config.SIM.value][sim_index]) \
-                    .fiber_xy_coordinates(plot=False, save=True) \
-                    # .fiber_z_coordinates(fiber_manager.xy_coordinates, save=True)\
-                # .save(os.path.join('samples',
-                #                    str(self.configs[Config.RUN.value]['sample']),
-                #                    'models',
-                #                    str(self.configs[Config.RUN.value]['models'][model_index]),
-                #                    'sims',
-                #                    str(self.configs[Config.RUN.value]['sims'][sim_index]),
-                #                    'sim.obj'))
+                    # run processes with fiber manager (see class for details)
+                        # .fiber_z_coordinates(fiber_manager.xy_coordinates, save=True)\
+                    fiber_manager \
+                        .add(SetupMode.OLD, Config.MODEL, model) \
+                        .add(SetupMode.OLD, Config.SIM, sim) \
+                        .fiber_xy_coordinates(plot=False, save=True) \
+                        .save(fiber_manager_file)
 
                 simulation_builder = SimulationBuilder(self.configs[Config.EXCEPTIONS.value])
                 simulation_builder \
                     .add(SetupMode.OLD, Config.MODEL, all_configs[Config.MODEL.value][model_index]) \
                     .add(SetupMode.OLD, Config.SIM, all_configs[Config.SIM.value][sim_index]) \
-                    .build_hoc()
+                    # .make_folders() \
+                    # .build_hoc() \
+                    # .copy_waveforms() \
+                    # .copy_ve_data()
 
         # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials
         self.handoff()
+
 
     def handoff(self):
         comsol_path = self.search(Config.ENV, 'comsol_path')
@@ -254,7 +210,7 @@ class Runner(Exceptionable, Configurable):
                                                                                                                                               run_path))
             os.chdir('..')
 
-    def compute_cuff_shift(self, all_configs, model_index, slide_manager):
+    def compute_cuff_shift(self, all_configs, model_index, sample):
 
         # fetch current model config using the index
         model_config = all_configs[Config.MODEL.value][model_index]
@@ -274,13 +230,13 @@ class Runner(Exceptionable, Configurable):
     #
     #     path_parts = [self.path(Config.MASTER, 'samples_path'), self.search(Config.MASTER, 'sample')]
     #
-    #     if not os.path.isfile(os.path.join(*path_parts, 'slide_manager.obj')):
+    #     if not os.path.isfile(os.path.join(*path_parts, 'sample.obj')):
     #         print('Existing slide manager not found. Performing full run.')
     #         self.full_run()
     #
     #     else:
     #         print('Loading existing slide manager.')
-    #         self.slide_manager = load(os.path.join(*path_parts, 'slide_manager.obj'))
+    #         self.sample = load(os.path.join(*path_parts, 'sample.obj'))
     #
     #         if os.path.isfile(os.path.join(*path_parts, 'fiber_manager.obj')):
     #             print('Loading existing fiber manager.')
@@ -305,22 +261,22 @@ class Runner(Exceptionable, Configurable):
     #
     # def slide_run(self):
     #     print('\nSTART SLIDE MANAGER')
-    #     self.slide_manager = SlideManager(self.configs[Config.MASTER.value],
+    #     self.sample = Sample(self.configs[Config.MASTER.value],
     #                                       self.configs[Config.EXCEPTIONS.value],
     #                                       map_mode=SetupMode.NEW)
     #
     #     print('BUILD FILE STRUCTURE')
-    #     self.slide_manager.build_file_structure()
+    #     self.sample.build_file_structure()
     #
     #     print('POPULATE')
-    #     self.slide_manager.populate()
+    #     self.sample.populate()
     #
     #     print('WRITE')
-    #     self.slide_manager.write(WriteMode.SECTIONWISE2D)
+    #     self.sample.write(WriteMode.SECTIONWISE2D)
     #
     # def fiber_run(self):
     #     print('\nSTART FIBER MANAGER')
-    #     self.fiber_manager = FiberManager(self.slide_manager,
+    #     self.fiber_manager = FiberManager(self.sample,
     #                                       self.configs[Config.MASTER.value],
     #                                       self.configs[Config.EXCEPTIONS.value])
     #
@@ -334,8 +290,8 @@ class Runner(Exceptionable, Configurable):
     #
     #     print('SAVE ALL')
     #     path_parts = [self.path(Config.MASTER, 'samples_path'), self.search(Config.MASTER, 'sample')]
-    #     self.slide_manager.save(os.path.join(*path_parts, 'slide_manager.obj'))
-    #     self.slide_manager.output_morphology_data()
+    #     self.sample.save(os.path.join(*path_parts, 'sample.obj'))
+    #     self.sample.output_morphology_data()
     #     self.fiber_manager.save(os.path.join(*path_parts, 'fiber_manager.obj'))
 
     # def run(self):

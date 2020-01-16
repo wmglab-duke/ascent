@@ -14,7 +14,7 @@ Description:
     Note that the functionality of this class is EXTREMELY dependent on the structure of the JSON files it deals with.
 
     I considered adding path-building functionality to this class, but ultimately decided to defer that functionality
-    to a "SlideManager" class. This was done so the configuration can be read and the appropriate data store in the
+    to a "Sample" class. This was done so the configuration can be read and the appropriate data store in the
     SAMPLE configuration (or similar). That way, a COMSOL-interfacing program will be able to easily src the data from
     one place.
 

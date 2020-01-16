@@ -32,8 +32,8 @@ public class JSONReader {
             JSONObject data = new JSONReader(".templates/CorTec.json").getData();
             for (Object item: (JSONArray) data.get("data")) {
                 JSONObject itemObject = (JSONObject) item;
-                System.out.println("expression: " + itemObject.get("expression"));
-                System.out.println("name: " + itemObject.get("name"));
+//                System.out.println("expression: " + itemObject.get("expression"));
+//                System.out.println("name: " + itemObject.get("name"));
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();

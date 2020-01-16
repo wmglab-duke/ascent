@@ -46,11 +46,11 @@ public class ModelSearcher {
      */
     public ModelSearcher.Match searchMeshMatch(JSONObject query, JSONObject reference, String queryPath) throws IOException {
 
-        System.out.println("queryPath = " + queryPath);
+//        System.out.println("queryPath = " + queryPath);
 
         for (Path file : Files.walk(this.root).toArray(Path[]::new)) {
 
-            System.out.println("file = " + file.toString());
+//            System.out.println("file = " + file.toString());
 
             // skip the query so not counting self
             if (queryPath.equals(file.toString())) {
@@ -64,7 +64,7 @@ public class ModelSearcher {
                 JSONObject target = JSONio.read(file.toString());
                 String directory = String.join("/", Arrays.copyOfRange(fileParts, 0, fileParts.length - 1));
                 if (ModelSearcher.meshMatch(reference, query, target) && ModelSearcher.meshFilesExist(directory)) {
-                    System.out.println("MATCH!! Using directory: " + directory);
+//                    System.out.println("MATCH!! Using directory: " + directory);
                     return Match.fromMeshPath(directory);
                 }
             }
@@ -79,10 +79,10 @@ public class ModelSearcher {
                 directory + "/mesh/im.json"
         };
         for (String filename: filenames) {
-            System.out.println("Checking existence of: " + filename);
+//            System.out.println("Checking existence of: " + filename);
             if (! new File(filename).exists()) return false;
         }
-        System.out.println("MESH FILES EXIST");
+//        System.out.println("MESH FILES EXIST");
         return true;
     }
 

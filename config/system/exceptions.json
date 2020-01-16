@@ -192,7 +192,7 @@
   {
     "code": 38,
     "text": "Missing Config.SAMPLE configuration!",
-    "source": "src.SlideManager.init_map"
+    "source": "src.Sample.init_map"
   },
   {
     "code": 39,

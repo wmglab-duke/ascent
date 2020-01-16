@@ -11,7 +11,7 @@ from shapely.affinity import scale
 from shapely.geometry import LineString, Point
 
 # access
-from .slide_manager import SlideManager
+from .sample import Sample
 from src.utils import *
 
 
@@ -23,14 +23,14 @@ class FiberManager(Exceptionable, Configurable, Saveable):
         FIBER_Z
     """
 
-    def __init__(self, slide_manager: SlideManager, exception_config: list):
+    def __init__(self, sample: Sample, exception_config: list):
 
         # Initializes superclasses
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
         Configurable.__init__(self)
 
         # set self manager
-        self.manager = slide_manager
+        self.manager = sample
 
         # initialize empty lists of fiber points
         self.xy_coordinates = None

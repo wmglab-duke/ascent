@@ -16,7 +16,7 @@ from .deformable import Deformable
 from src.utils import *
 
 
-class SlideManager(Exceptionable, Configurable, Saveable):
+class Sample(Exceptionable, Configurable, Saveable):
     """
     Required (Config.) JSON's:
         SAMPLE
@@ -45,7 +45,7 @@ class SlideManager(Exceptionable, Configurable, Saveable):
                                                                               'system',
                                                                               'ci_peri_thickness.json'))
 
-    def init_map(self, map_mode: SetupMode) -> 'SlideManager':
+    def init_map(self, map_mode: SetupMode) -> 'Sample':
         """
         Initialize the map. NOTE: the Config.SAMPLE json must have been externally added.
         :param map_mode: should be old for now, but keeping as parameter in case needed in future
@@ -60,7 +60,7 @@ class SlideManager(Exceptionable, Configurable, Saveable):
 
         return self
 
-    def scale(self, scale_bar_mask_path: str, scale_bar_length: float) -> 'SlideManager':
+    def scale(self, scale_bar_mask_path: str, scale_bar_length: float) -> 'Sample':
         """
         Scale all slides to the correct unit.
         :param scale_bar_mask_path: path to binary mask with white straight scale bar
@@ -82,7 +82,7 @@ class SlideManager(Exceptionable, Configurable, Saveable):
 
         return self
 
-    def build_file_structure(self, printing: bool = False) -> 'SlideManager':
+    def build_file_structure(self, printing: bool = False) -> 'Sample':
         """
         :param printing: bool, gives user console output
         """
@@ -143,7 +143,7 @@ class SlideManager(Exceptionable, Configurable, Saveable):
 
             return self
 
-    def populate(self, deform_animate: bool = False) -> 'SlideManager':
+    def populate(self, deform_animate: bool = False) -> 'Sample':
 
         # get parameters (modes) from configuration file
         mask_input_mode = self.search_mode(MaskInputMode, Config.SAMPLE)
@@ -281,7 +281,7 @@ class SlideManager(Exceptionable, Configurable, Saveable):
 
         return self
 
-    def write(self, mode: WriteMode) -> 'SlideManager':
+    def write(self, mode: WriteMode) -> 'Sample':
         """
         Write entire list of slides.
          """
@@ -330,7 +330,7 @@ class SlideManager(Exceptionable, Configurable, Saveable):
 
         return self
 
-    def make_electrode_input(self) -> 'SlideManager':
+    def make_electrode_input(self) -> 'Sample':
 
         # load template for electrode input
         electrode_input: dict = TemplateOutput.read(TemplateMode.ELECTRODE_INPUT)
@@ -358,7 +358,7 @@ class SlideManager(Exceptionable, Configurable, Saveable):
 
         return self
 
-    def output_morphology_data(self) -> 'SlideManager':
+    def output_morphology_data(self) -> 'Sample':
 
         nerve_mode = self.search_mode(NerveMode, Config.SAMPLE)
 

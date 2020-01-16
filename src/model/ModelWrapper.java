@@ -333,7 +333,7 @@ public class ModelWrapper {
 
             double[][][] data = model.result().numerical(id).getData();
 
-            System.out.println("data.toString() = " + Arrays.deepToString(data));
+//            System.out.println("data.toString() = " + Arrays.deepToString(data));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             return false;
@@ -432,7 +432,7 @@ public class ModelWrapper {
         int index = 0;
         for(String key_on: this.im.currentIDs.keySet()) {
 
-            System.out.println("Current pointer: " + key_on);
+            System.out.println("Solving with current source: " + key_on);
             String src = this.im.currentIDs.get(key_on);
             PhysicsFeature current_on = model.physics("ec").feature(src);
             current_on.set("Qjp", 0.001); // turn on current
