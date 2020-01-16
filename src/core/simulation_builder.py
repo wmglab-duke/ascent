@@ -2,13 +2,13 @@ import itertools
 import math
 from typing import List
 
-from org.json import JSONArray
+import numpy as np
 
 from src.utils import *
 
 
 class SimulationBuilder(Exceptionable, Configurable, Saveable):
-    def __init__(self, exception_config):
+    def __init__(self, sim_config, exception_config):
 
         # Initializes superclasses
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
@@ -16,7 +16,7 @@ class SimulationBuilder(Exceptionable, Configurable, Saveable):
 
         self.add(SetupMode.NEW, Config.FIBER_Z, os.path.join('config', 'system', 'fiber_z.json'))
 
-    def define_sim_indices(self, args: List[List[JSONArray]]):
+    def define_sim_indices(self, args: List[List[np.array]]):
         return itertools.product(args)
         pass
 

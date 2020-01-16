@@ -137,14 +137,15 @@ class Runner(Exceptionable, Configurable):
                     #                    str(self.configs[Config.RUN.value]['sims'][sim_index]),
                     #                    'sim.obj'))
 
-                simulation_builder = SimulationBuilder(self.configs[Config.EXCEPTIONS.value])
+                simulation_builder = SimulationBuilder(sim, self.configs[Config.EXCEPTIONS.value])
                 simulation_builder\
-                    .add(SetupMode.OLD, Config.MODEL, all_configs[Config.MODEL.value][model_index])\
-                    .add(SetupMode.OLD, Config.SIM, all_configs[Config.SIM.value][sim_index])\
-                    .make_folders()\
-                    .write_launch_hocs()\
-                    .copy_waveforms()\
-                    .copy_ve_data()
+                    .add(SetupMode.OLD, Config.MODEL, model)\
+                    .add(SetupMode.OLD, Config.SIM, sim)
+                sub_sims =
+                    # .make_folders()\
+                    # .write_launch_hocs()\
+                    # .copy_waveforms()\
+                    # .copy_ve_data()
 
 
         # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials
