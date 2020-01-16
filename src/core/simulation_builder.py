@@ -1,5 +1,7 @@
 import math
 
+import numpy as np
+
 from src.utils import *
 
 
@@ -17,8 +19,9 @@ class SimulationBuilder(Exceptionable, Configurable, Saveable):
         Write file LaunchSim###.hoc
         :return:
         """
-
-        file_object = open("Launch%0.0f.hoc" % 0, "w")
+        write_mode = WriteMode.HOC
+        file_name = "launch.{}".format(WriteMode.file_endings.value[write_mode.value])
+        file_object = open(file_name, "w")
 
         # ENVIRONMENT
         file_object.write("\n//***************** Environment *****************\n")
@@ -162,7 +165,7 @@ class SimulationBuilder(Exceptionable, Configurable, Saveable):
 
         file_object.close()
 
-    def build_slurm(self):
+    def write_slurm(self):
         """
         Write file StartSim###.slurm
         :return:
@@ -172,7 +175,20 @@ class SimulationBuilder(Exceptionable, Configurable, Saveable):
     def write_ve_data(self):
         pass
 
-    def make_waveform(self):
-        pass
+    def write_waveforms(self):
+        """
+        :return:
+        """
+        path
 
-    # need to save xy fiber data somewhere...
+    def make_folders(self):
+        """
+        :return:
+        """
+
+
+
+
+
+
+# need to save xy fiber data somewhere...

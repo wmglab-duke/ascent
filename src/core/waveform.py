@@ -38,10 +38,11 @@ class Waveform(Exceptionable, Configurable, Saveable):
             self.time_unit = \
             self.frequency_unit = None
 
+
     def init_post_config(self):
 
         if any([config.value not in self.configs.keys() for config in (Config.MODEL, Config.SIM)]):
-            self.throw(39)
+            self.throw(39) # TODO NOT WRITTEN - INCORRECT INDEX
 
         # get mode
         self.modes = self.search_multi_mode(Config.SIM, WaveformMode)
@@ -273,10 +274,19 @@ class Waveform(Exceptionable, Configurable, Saveable):
 
         return waves
 
+    def write(self, mode: WriteMode, path: str):
+        """
+        :param mode:
+        :param path:
+        :return:
+        """
+        path += WriteMode.file_endings.value[mode.value]
 
+        dt = self.search(Config.SIM, "extracellular_stim", "global", "dt")
+        tstop = self.search(Config.SIM, "extracellular_stim", "global", "tstop")
+        wave = np.zeros(10)  # TODO
+        wave = np.insert(wave, 0, tstop, axis=0)
+        wave = np.insert(wave, 0, dt, axis=0)
 
-
-
-
-
-
+        with open(path, "wb") as f:
+            f.write(wave)

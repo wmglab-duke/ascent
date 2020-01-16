@@ -141,7 +141,10 @@ class Runner(Exceptionable, Configurable):
                 simulation_builder\
                     .add(SetupMode.OLD, Config.MODEL, all_configs[Config.MODEL.value][model_index])\
                     .add(SetupMode.OLD, Config.SIM, all_configs[Config.SIM.value][sim_index])\
-                    .build_hoc()
+                    .make_folders()\
+                    .build_hoc()\
+                    .write_waveforms()
+
 
         # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials
         self.handoff()
