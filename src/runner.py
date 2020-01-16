@@ -92,6 +92,7 @@ class Runner(Exceptionable, Configurable):
         def load(path: str):
             return pickle.load(open(path, 'rb'))
 
+
         sample_file = os.path.join(
             'samples',
             str(self.configs[Config.RUN.value]['sample']),
@@ -160,10 +161,10 @@ class Runner(Exceptionable, Configurable):
                         .fiber_xy_coordinates(plot=False, save=True) \
                         .save(fiber_manager_file)
 
-                simulation_builder = SimulationBuilder(self.configs[Config.EXCEPTIONS.value])
+                simulation_builder = SimulationBuilder(sim, self.configs[Config.EXCEPTIONS.value])
                 simulation_builder \
-                    .add(SetupMode.OLD, Config.MODEL, all_configs[Config.MODEL.value][model_index]) \
-                    .add(SetupMode.OLD, Config.SIM, all_configs[Config.SIM.value][sim_index]) \
+                    .add(SetupMode.OLD, Config.MODEL, model) \
+                    .add(SetupMode.OLD, Config.SIM, sim) \
                     # .make_folders() \
                     # .build_hoc() \
                     # .copy_waveforms() \

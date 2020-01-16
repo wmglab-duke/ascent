@@ -1,4 +1,5 @@
 {
+  "n_dimension": 3,
   "modes": {
     "fiber_xy": "CENTROID",
     "z_offset": "UNIFORM",
