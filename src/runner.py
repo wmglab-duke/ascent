@@ -80,7 +80,13 @@ class Runner(Exceptionable, Configurable):
 
         return configs
 
+
     def run(self, smart: bool = True):
+        """
+
+        :param smart:
+        :return:
+        """
         stupid = False
 
         # NOTE: single sample per Runner, so no looping of samples
@@ -172,7 +178,6 @@ class Runner(Exceptionable, Configurable):
 
         # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials
         self.handoff()
-
 
     def handoff(self):
         comsol_path = self.search(Config.ENV, 'comsol_path')
