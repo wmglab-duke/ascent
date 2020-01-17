@@ -14,7 +14,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
         self.factors = dict()
 
-    def resolve_product(self):
+    def resolve_factors(self):
         n_dimensions = self.search(Config.SIM, "n_dimensions")
         # ONE fibers type, list with diff parameters
         # ONE waveforms type, list with diff parameters

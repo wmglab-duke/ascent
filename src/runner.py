@@ -21,7 +21,6 @@ import sys
 import subprocess
 
 # access
-from src.core.simulation_builder import SimulationBuilder
 from src.core.waveform import Waveform
 from src.core import *
 from src.utils import *
@@ -171,7 +170,7 @@ class Runner(Exceptionable, Configurable):
                     simulation \
                         .add(SetupMode.OLD, Config.MODEL, model_config) \
                         .add(SetupMode.OLD, Config.SIM, sim_config) \
-                        # .resolve_product() \
+                        # .resolve_factors() \
                         # .write_waveforms() \
                         # .fiber_xy_coordinates(plot=False, save=True) \
                         # .fiber_z_coordinates(save=True) \
