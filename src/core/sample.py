@@ -41,6 +41,9 @@ class Sample(Exceptionable, Configurable, Saveable):
         # Set instance variable map
         self.map = None
 
+        # Set instance variable morphology
+        self.morphology = dict()
+
         self.add(SetupMode.NEW, Config.CI_PERINEURIUM_THICKNESS, os.path.join('config',
                                                                               'system',
                                                                               'ci_peri_thickness.json'))
@@ -378,4 +381,5 @@ class Sample(Exceptionable, Configurable, Saveable):
 
         TemplateOutput.write(self.configs[Config.SAMPLE.value], sample_path)
 
+        self.morphology = morphology_input
         return self

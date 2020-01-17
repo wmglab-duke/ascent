@@ -119,9 +119,9 @@ class Runner(Exceptionable, Configurable):
                 .init_map(SetupMode.OLD) \
                 .build_file_structure() \
                 .populate() \
-                .write(WriteMode.SECTIONWISE2D)\
-                .save(os.path.join(sample_file))\
-                .output_morphology_data()
+                .write(WriteMode.SECTIONWISE2D) \
+                .output_morphology_data() \
+                .save(os.path.join(sample_file))
 
         # iterate through models
         for model_index, model_config in enumerate(all_configs[Config.MODEL.value]):
@@ -171,12 +171,12 @@ class Runner(Exceptionable, Configurable):
                     simulation \
                         .add(SetupMode.OLD, Config.MODEL, model_config) \
                         .add(SetupMode.OLD, Config.SIM, sim_config) \
-                        .resolve_product() \
-                        .write_waveforms() \
-                        .fiber_xy_coordinates(plot=False, save=True) \
-                        .fiber_z_coordinates(save=True) \
-                        .save_coordinates(format='.dat', mode='xyz') \
-                        .save(sim_obj_file)
+                        # .resolve_product() \
+                        # .write_waveforms() \
+                        # .fiber_xy_coordinates(plot=False, save=True) \
+                        # .fiber_z_coordinates(save=True) \
+                        # .save_coordinates(format='.dat', mode='xyz') \
+                        # .save(sim_obj_file)
 
 
                 # simulation_builder = SimulationBuilder(sim, self.configs[Config.EXCEPTIONS.value])
