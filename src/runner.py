@@ -155,8 +155,9 @@ class Runner(Exceptionable, Configurable):
                     pass
                     # fiber_manager = load(fiber_manager_file)
                 else:
-                    os.makedirs(sim_obj_dir)
-                    fiber_manager = FiberManager(sample, self.configs[Config.EXCEPTIONS.value])
+                    if not os.path.exists(sim_obj_dir):
+                        os.makedirs(sim_obj_dir)
+                    # fiber_manager = FiberManager(sample, self.configs[Config.EXCEPTIONS.value])
 
                     # run processes with fiber manager (see class for details)
                         # .fiber_z_coordinates(fiber_manager.xy_coordinates, save=True)\
@@ -170,7 +171,8 @@ class Runner(Exceptionable, Configurable):
                     simulation \
                         .add(SetupMode.OLD, Config.MODEL, model_config) \
                         .add(SetupMode.OLD, Config.SIM, sim_config) \
-                        # .resolve_factors() \
+                        .resolve_factors() #\
+                    exit(0)
                         # .write_waveforms() \
                         # .fiber_xy_coordinates(plot=False, save=True) \
                         # .fiber_z_coordinates(save=True) \

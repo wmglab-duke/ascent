@@ -15,23 +15,24 @@ class Simulation(Exceptionable, Configurable, Saveable):
         self.factors = dict()
 
     def resolve_factors(self):
-        n_dimensions = self.search(Config.SIM, "n_dimensions")
-        # ONE fibers type, list with diff parameters
-        # ONE waveforms type, list with diff parameters
+        if len(self.factors.items()) > 0:
+            self.factors = dict()
 
-        factors: dict
+        def search(dictionary, remaining_n_dims):
+            if remaining_n_dims < 1:
+                return
+            for key, value in dictionary.items():
+                if type(value) == list and len(value) > 1:
+                    self.factors[key] = value
+                    remaining_n_dims -= 1
+                elif type(value) == dict:
+                    search(value, remaining_n_dims)
 
-        def recursive_search(n_dimensions_remaining, current_search_dictionary):
-            pass
-        #
-        # # loop through all keys, for each key, check if value is a list
-        # if a list, check for number of values.
-        #     if greater than one, add key/path to dimensions
-        # if counter dimensions == n_dimensions break out
-        # if current value of key is type dictionary, then recursively go through dictionary
-        # itertools.product([1,2,3], ['a','b'], [4,5])
-
-        pass
+        LOOPABLE = ['fibers', 'waveform']
+        search(
+            {key: value for key, value in self.configs[Config.SIM.value].items() if key in LOOPABLE},
+            self.search(Config.SIM, "n_dimensions")
+        )
 
     def write_waveforms(self, factors, product):
         # factors list of dictionaries, each has name and value (which has a length)
@@ -48,7 +49,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
     def save_coordinates(self):
         pass
 
-
     ############################
 
     def build_sims(self):
@@ -61,10 +61,9 @@ class Simulation(Exceptionable, Configurable, Saveable):
     def _build_file_structure(self):
         pass
 
-    def _copy_trees(self, trees = None):
+    def _copy_trees(self, trees=None):
         if trees is None:
             trees = ['Ve_data', 'waveforms']
 
     def _build_hoc(self):
         pass
-
