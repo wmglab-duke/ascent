@@ -6,10 +6,7 @@ import com.comsol.model.util.ModelUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -314,33 +311,127 @@ public class ModelWrapper {
      * @param json_path to output from fiber_manager.py (see TEST_JSON_OUTPUT.json if exists)
      * @return success indicator
      */
-    public boolean extractPotentials(String json_path) {
+    public boolean extractPotentials() {
 
-        // see todos below (unrelated to this method hahahah - HILARIOUS! ROFL!)
-        // TODO: Simulation folders; sorting through configuration files VIA PYTHON
-        // TODO: FORCE THE USER TO STAGE/COMMIT CHANGES BEFORE RUNNING; add Git Commit ID/number to config file
-        try {
-            JSONObject json_data = JSONio.read(
-                    String.join("/", new String[]{root, json_path})
-            );
+        double[][] coordinates = new double[3][18];
+        coordinates[0][0] = 0;
+        coordinates[1][0] = 0;
+        coordinates[2][0] = 0;
 
-            double[][] coordinates = new double[3][5];
-            String id = this.next("interp");
+        coordinates[0][1] = 0;
+        coordinates[1][1] = 0;
+        coordinates[2][1] = 3000;
 
-            model.result().numerical().create(id, "Interp");
-            model.result().numerical(id).set("expr", "V");
-            model.result().numerical(id).setInterpolationCoordinates(coordinates);
+        coordinates[0][2] = 0;
+        coordinates[1][2] = 0;
+        coordinates[2][2] = 6000;
 
-            double[][][] data = model.result().numerical(id).getData();
+        coordinates[0][3] = 0;
+        coordinates[1][3] = 0;
+        coordinates[2][3] = 9000;
 
-//            System.out.println("data.toString() = " + Arrays.deepToString(data));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return false;
-        }
+        coordinates[0][4] = 0;
+        coordinates[1][4] = 0;
+        coordinates[2][4] = 12000;
+
+        coordinates[0][5] = 0;
+        coordinates[1][5] = 0;
+        coordinates[2][5] = 15000;
+
+        coordinates[0][6] = 0;
+        coordinates[1][6] = 0;
+        coordinates[2][6] = 18000;
+
+        coordinates[0][7] = 0;
+        coordinates[1][7] = 0;
+        coordinates[2][7] = 21000;
+
+        coordinates[0][8] = 0;
+        coordinates[1][8] = 0;
+        coordinates[2][8] = 24000;
+
+        coordinates[0][9] = 0;
+        coordinates[1][9] = 0;
+        coordinates[2][9] = 27000;
+
+        coordinates[0][10] = 0;
+        coordinates[1][10] = 0;
+        coordinates[2][10] = 30000;
+
+        coordinates[0][11] = 0;
+        coordinates[1][11] = 0;
+        coordinates[2][11] = 33000;
+
+        coordinates[0][12] = 0;
+        coordinates[1][12] = 0;
+        coordinates[2][12] = 36000;
+
+        coordinates[0][13] = 0;
+        coordinates[1][13] = 0;
+        coordinates[2][13] = 39000;
+
+        coordinates[0][14] = 0;
+        coordinates[1][14] = 0;
+        coordinates[2][14] = 42000;
+
+        coordinates[0][15] = 0;
+        coordinates[1][15] = 0;
+        coordinates[2][15] = 45000;
+
+        coordinates[0][16] = 0;
+        coordinates[1][16] = 0;
+        coordinates[2][16] = 48000;
+
+        coordinates[0][17] = 0;
+        coordinates[1][17] = 0;
+        coordinates[2][17] = 50000;
+
+        String id = this.next("interp");
+        model.result().numerical().create(id, "Interp");
+        model.result().numerical(id).set("expr", "V");
+        model.result().numerical(id).setInterpolationCoordinates(coordinates);
+        double[][][] data = model.result().numerical(id).getData();
+
+        System.out.println(data[0][0][0]);
+        System.out.println(data[0][0][1]);
+        System.out.println(data[0][0][2]);
+        System.out.println(data[0][0][3]);
+        System.out.println(data[0][0][4]);
+        System.out.println(data[0][0][5]);
+
+        System.out.println(data[0][0][6]);
+        System.out.println(data[0][0][7]);
+        System.out.println(data[0][0][8]);
+        System.out.println(data[0][0][9]);
+        System.out.println(data[0][0][10]);
+        System.out.println(data[0][0][11]);
+
+        System.out.println(data[0][0][12]);
+        System.out.println(data[0][0][13]);
+        System.out.println(data[0][0][14]);
+        System.out.println(data[0][0][15]);
+        System.out.println(data[0][0][16]);
+        System.out.println(data[0][0][17]);
 
         return true;
     }
+
+    private String getScalar(NumericalFeature num) {
+        double[][] array = num.getData(0);
+        double A = array[0][0];
+        return Double.toString(A);
+    }
+
+//    public static void write (String filename, double[][][]x) throws IOException {
+//        BufferedWriter outputWriter = null;
+//        outputWriter = new BufferedWriter(new FileWriter(filename));
+//        for (int i = 0; i < x.length; i++) {
+//            outputWriter.write(Double.toString(x[0][i]) + x[1][i] + x[2][i]);
+//            outputWriter.newLine();
+//        }
+//        outputWriter.flush();
+//        outputWriter.close();
+//    }
 
     /**
      * Add all fascicles to model.
@@ -454,6 +545,8 @@ public class ModelWrapper {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            extractPotentials();
 
             current_on.set("Qjp", 0.000); // reset current
 
@@ -634,6 +727,7 @@ public class ModelWrapper {
                                 );
                             }
 
+                            System.out.println("skipMesh = true;");
                             skipMesh = true;
                     }
 
