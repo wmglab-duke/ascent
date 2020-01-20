@@ -418,14 +418,27 @@ public class ModelWrapper {
         return true;
     }
 
+//    private static void writeNumbers(double[][][] dataInput) throws IOException {
+//        System.out.println("here");
+//        DataOutputStream output = new DataOutputStream(new FileOutputStream("D:\\Documents\\access\\samples\\0\\models\\0\\bases\\filename.dat"));
+//        for (int i = 0; i < 10; i++) {
+//            output.writeChars(Double.toString(dataInput[0][0][i]));
+//            System.out.println(i);
+//        }
+//        output.close();
+//    }
+
     private static void writeNumbers(double[][][] dataInput) throws IOException {
         System.out.println("here");
-        DataOutputStream output = new DataOutputStream(new FileOutputStream("D:\\Documents\\access\\samples\\0\\models\\0\\bases\\filename.dat"));
+        File file = new File ("D:\\Documents\\access\\samples\\0\\models\\0\\bases\\filename.dat");
+        file.getParentFile().mkdirs();
+        PrintWriter printWriter = new PrintWriter ("filename.dat");
+
         for (int i = 0; i < 10; i++) {
-            output.writeUTF(""+dataInput[0][0][i]);
+            printWriter.println (Double.toString(dataInput[0][0][i]));
             System.out.println(i);
         }
-        output.close();
+        printWriter.close();
     }
 
 //    public static void write (String filename, double[][][]x) throws IOException {
