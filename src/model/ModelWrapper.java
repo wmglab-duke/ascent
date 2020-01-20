@@ -311,7 +311,7 @@ public class ModelWrapper {
      * @param json_path to output from fiber_manager.py (see TEST_JSON_OUTPUT.json if exists)
      * @return success indicator
      */
-    public boolean extractPotentials() {
+    public boolean extractPotentials() throws IOException {
 
         double[][] coordinates = new double[3][18];
         coordinates[0][0] = 0;
@@ -413,13 +413,19 @@ public class ModelWrapper {
         System.out.println(data[0][0][16]);
         System.out.println(data[0][0][17]);
 
+        writeNumbers(data);
+
         return true;
     }
 
-    private String getScalar(NumericalFeature num) {
-        double[][] array = num.getData(0);
-        double A = array[0][0];
-        return Double.toString(A);
+    private static void writeNumbers(double[][][] dataInput) throws IOException {
+        System.out.println("here");
+        DataOutputStream output = new DataOutputStream(new FileOutputStream("D:\\Documents\\access\\samples\\0\\models\\0\\bases\\filename.dat"));
+        for (int i = 0; i < 10; i++) {
+            output.writeUTF(""+dataInput[0][0][i]);
+            System.out.println(i);
+        }
+        output.close();
     }
 
 //    public static void write (String filename, double[][][]x) throws IOException {
@@ -517,7 +523,7 @@ public class ModelWrapper {
      * Pre-built for-loop to iterate through all current sources in model (added in Part)
      * Can be super useful for quickly setting different currents and possibly sweeping currents
      */
-    public void loopCurrents(JSONObject modelData, String projectPath, String sample, String modelStr) {
+    public void loopCurrents(JSONObject modelData, String projectPath, String sample, String modelStr) throws IOException {
 
         long runSolStartTime = System.nanoTime();
         int index = 0;
@@ -618,7 +624,7 @@ public class ModelWrapper {
      * Master procedure to run!
      * @param args
      */
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) throws IOException {
 
         // Take projectPath input to ModelWrapper and assign to string.
         String projectPath = args[0];
