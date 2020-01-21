@@ -413,7 +413,9 @@ public class ModelWrapper {
         System.out.println(data[0][0][16]);
         System.out.println(data[0][0][17]);
 
-        writeNumbers(data);
+        String path = "D:\\Documents\\access\\samples\\0\\models\\0\\bases\\filename.txt";
+
+        writeNumbers(data, path);
 
         return true;
     }
@@ -428,15 +430,12 @@ public class ModelWrapper {
 //        output.close();
 //    }
 
-    private static void writeNumbers(double[][][] dataInput) throws IOException {
-        System.out.println("here");
-        File file = new File ("D:\\Documents\\access\\samples\\0\\models\\0\\bases\\filename.dat");
-        file.getParentFile().mkdirs();
-        PrintWriter printWriter = new PrintWriter ("filename.dat");
+    private static void writeNumbers(double[][][] dataInput, String path) throws IOException {
+        PrintWriter printWriter = new PrintWriter(path);
+        Integer len = dataInput.length;
 
-        for (int i = 0; i < 10; i++) {
-            printWriter.println (Double.toString(dataInput[0][0][i]));
-            System.out.println(i);
+        for (int i = 0; i < len; i++) {
+            printWriter.println(dataInput[0][0][i]);
         }
         printWriter.close();
     }
