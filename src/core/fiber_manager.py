@@ -503,10 +503,9 @@ class FiberManager(Exceptionable, Configurable, Saveable):
         :return:
         """
         length = 5
-        x = y = z = np.arange(0, length, 1).reshape((length, 1))
+        x = y = z = np.arange(0, length, 1).reshape((length, 1))  # column vectors
         coords = np.concatenate((x, y, z), axis=1)
 
         with open(path, "w") as handle:
-            np.savetxt(path, coords, fmt='%1.3f')
-            # path is *.dat file
+            np.savetxt(path, coords, fmt='%1.3f')  # path is *.dat file
 
