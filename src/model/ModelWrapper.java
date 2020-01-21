@@ -308,83 +308,57 @@ public class ModelWrapper {
 
     /**
      * TODO: UNFINISHED!!!!
-     * @param json_path to output from fiber_manager.py (see TEST_JSON_OUTPUT.json if exists)
      * @return success indicator
      */
     public boolean extractPotentials() throws IOException {
 
-        double[][] coordinates = new double[3][18];
-        coordinates[0][0] = 0;
-        coordinates[1][0] = 0;
-        coordinates[2][0] = 0;
+        // Load coordinates (x,y,z) from file in form coordinates[0][i] = [x] in micron,
+        //                                            coordinates[1][i] = [y] in micron,
+        //                                            coordinates[2][i] = [z] in micron
 
-        coordinates[0][1] = 0;
-        coordinates[1][1] = 0;
-        coordinates[2][1] = 3000;
+        double[][] coordinatesLoaded = new double[10][3];
+        coordinatesLoaded[0][0] = 0;
+        coordinatesLoaded[0][1] = 0;
+        coordinatesLoaded[0][2] = 0;
 
-        coordinates[0][2] = 0;
-        coordinates[1][2] = 0;
-        coordinates[2][2] = 6000;
+        coordinatesLoaded[1][0] = 0;
+        coordinatesLoaded[1][1] = 0;
+        coordinatesLoaded[1][2] = 1000;
 
-        coordinates[0][3] = 0;
-        coordinates[1][3] = 0;
-        coordinates[2][3] = 9000;
+        coordinatesLoaded[2][0] = 0;
+        coordinatesLoaded[2][1] = 0;
+        coordinatesLoaded[2][2] = 2000;
 
-        coordinates[0][4] = 0;
-        coordinates[1][4] = 0;
-        coordinates[2][4] = 12000;
+        coordinatesLoaded[3][0] = 0;
+        coordinatesLoaded[3][1] = 0;
+        coordinatesLoaded[3][2] = 3000;
 
-        coordinates[0][5] = 0;
-        coordinates[1][5] = 0;
-        coordinates[2][5] = 15000;
+        coordinatesLoaded[4][0] = 0;
+        coordinatesLoaded[4][1] = 0;
+        coordinatesLoaded[4][2] = 4000;
 
-        coordinates[0][6] = 0;
-        coordinates[1][6] = 0;
-        coordinates[2][6] = 18000;
+        coordinatesLoaded[5][0] = 0;
+        coordinatesLoaded[5][1] = 0;
+        coordinatesLoaded[5][2] = 5000;
 
-        coordinates[0][7] = 0;
-        coordinates[1][7] = 0;
-        coordinates[2][7] = 21000;
+        coordinatesLoaded[6][0] = 0;
+        coordinatesLoaded[6][1] = 0;
+        coordinatesLoaded[6][2] = 6000;
 
-        coordinates[0][8] = 0;
-        coordinates[1][8] = 0;
-        coordinates[2][8] = 24000;
+        coordinatesLoaded[7][0] = 0;
+        coordinatesLoaded[7][1] = 0;
+        coordinatesLoaded[7][2] = 7000;
 
-        coordinates[0][9] = 0;
-        coordinates[1][9] = 0;
-        coordinates[2][9] = 27000;
+        coordinatesLoaded[8][0] = 0;
+        coordinatesLoaded[8][1] = 0;
+        coordinatesLoaded[8][2] = 8000;
 
-        coordinates[0][10] = 0;
-        coordinates[1][10] = 0;
-        coordinates[2][10] = 30000;
+        coordinatesLoaded[9][0] = 0;
+        coordinatesLoaded[9][1] = 0;
+        coordinatesLoaded[9][2] = 9000;
 
-        coordinates[0][11] = 0;
-        coordinates[1][11] = 0;
-        coordinates[2][11] = 33000;
-
-        coordinates[0][12] = 0;
-        coordinates[1][12] = 0;
-        coordinates[2][12] = 36000;
-
-        coordinates[0][13] = 0;
-        coordinates[1][13] = 0;
-        coordinates[2][13] = 39000;
-
-        coordinates[0][14] = 0;
-        coordinates[1][14] = 0;
-        coordinates[2][14] = 42000;
-
-        coordinates[0][15] = 0;
-        coordinates[1][15] = 0;
-        coordinates[2][15] = 45000;
-
-        coordinates[0][16] = 0;
-        coordinates[1][16] = 0;
-        coordinates[2][16] = 48000;
-
-        coordinates[0][17] = 0;
-        coordinates[1][17] = 0;
-        coordinates[2][17] = 50000;
+        double[][] coordinates;
+        coordinates = transposeMatrix(coordinatesLoaded);
 
         String id = this.next("interp");
         model.result().numerical().create(id, "Interp");
@@ -392,50 +366,32 @@ public class ModelWrapper {
         model.result().numerical(id).setInterpolationCoordinates(coordinates);
         double[][][] data = model.result().numerical(id).getData();
 
-        System.out.println(data[0][0][0]);
-        System.out.println(data[0][0][1]);
-        System.out.println(data[0][0][2]);
-        System.out.println(data[0][0][3]);
-        System.out.println(data[0][0][4]);
-        System.out.println(data[0][0][5]);
-
-        System.out.println(data[0][0][6]);
-        System.out.println(data[0][0][7]);
-        System.out.println(data[0][0][8]);
-        System.out.println(data[0][0][9]);
-        System.out.println(data[0][0][10]);
-        System.out.println(data[0][0][11]);
-
-        System.out.println(data[0][0][12]);
-        System.out.println(data[0][0][13]);
-        System.out.println(data[0][0][14]);
-        System.out.println(data[0][0][15]);
-        System.out.println(data[0][0][16]);
-        System.out.println(data[0][0][17]);
+        System.out.println(data.length);
+        System.out.println("here");
 
         String path = "D:\\Documents\\access\\samples\\0\\models\\0\\bases\\filename.txt";
 
-        writeNumbers(data, path);
+        writeVe(data, path);
 
         return true;
     }
 
-//    private static void writeNumbers(double[][][] dataInput) throws IOException {
-//        System.out.println("here");
-//        DataOutputStream output = new DataOutputStream(new FileOutputStream("D:\\Documents\\access\\samples\\0\\models\\0\\bases\\filename.dat"));
-//        for (int i = 0; i < 10; i++) {
-//            output.writeChars(Double.toString(dataInput[0][0][i]));
-//            System.out.println(i);
-//        }
-//        output.close();
-//    }
+    // https://stackoverflow.com/questions/15449711/transpose-double-matrix-with-a-java-function
+    public static double[][] transposeMatrix(double [][] m){
+        double[][] temp = new double[m[0].length][m.length];
+        for (int i = 0; i < m.length; i++)
+            for (int j = 0; j < m[0].length; j++)
+                temp[j][i] = m[i][j];
+        return temp;
+    }
 
-    private static void writeNumbers(double[][][] dataInput, String path) throws IOException {
+    private static void writeVe(double[][][] data, String path) throws IOException {
         PrintWriter printWriter = new PrintWriter(path);
-        Integer len = dataInput.length;
+        int len = data[0][0].length; // number of coordinates
 
+        printWriter.println(len); // print number of coordinates at the top of Ve file
         for (int i = 0; i < len; i++) {
-            printWriter.println(dataInput[0][0][i]);
+            printWriter.println(data[0][0][i]); // one Ve value for each coordinate triplet
         }
         printWriter.close();
     }
