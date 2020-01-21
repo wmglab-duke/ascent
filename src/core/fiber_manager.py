@@ -503,7 +503,8 @@ class FiberManager(Exceptionable, Configurable, Saveable):
         :return:
         """
         length = 5
-        x = y = z = np.arange(0, length, 1).reshape((length, 1))  # column vectors
+        x = y = np.arange(0, length, 1).reshape((length, 1))  # column vectors
+        z = np.arange(0, 5000, 1000).reshape((length, 1))
         coords = np.concatenate((x, y, z), axis=1)
 
         with open(path, "w") as handle:

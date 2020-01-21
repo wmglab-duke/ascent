@@ -313,51 +313,52 @@ public class ModelWrapper {
         //                                            coordinates[1][i] = [y] in micron,
         //                                            coordinates[2][i] = [z] in micron
 
-        double[][] coordinatesLoaded = new double[10][3];
-        coordinatesLoaded[0][0] = 0;
-        coordinatesLoaded[0][1] = 0;
-        coordinatesLoaded[0][2] = 0;
+        // TODO - block below works...
+//        double[][] coordinatesLoaded = new double[10][3];
+//        coordinatesLoaded[0][0] = 0;
+//        coordinatesLoaded[0][1] = 0;
+//        coordinatesLoaded[0][2] = 0;
+//
+//        coordinatesLoaded[1][0] = 0;
+//        coordinatesLoaded[1][1] = 0;
+//        coordinatesLoaded[1][2] = 1000;
+//
+//        coordinatesLoaded[2][0] = 0;
+//        coordinatesLoaded[2][1] = 0;
+//        coordinatesLoaded[2][2] = 2000;
+//
+//        coordinatesLoaded[3][0] = 0;
+//        coordinatesLoaded[3][1] = 0;
+//        coordinatesLoaded[3][2] = 3000;
+//
+//        coordinatesLoaded[4][0] = 0;
+//        coordinatesLoaded[4][1] = 0;
+//        coordinatesLoaded[4][2] = 4000;
+//
+//        coordinatesLoaded[5][0] = 0;
+//        coordinatesLoaded[5][1] = 0;
+//        coordinatesLoaded[5][2] = 5000;
+//
+//        coordinatesLoaded[6][0] = 0;
+//        coordinatesLoaded[6][1] = 0;
+//        coordinatesLoaded[6][2] = 6000;
+//
+//        coordinatesLoaded[7][0] = 0;
+//        coordinatesLoaded[7][1] = 0;
+//        coordinatesLoaded[7][2] = 7000;
+//
+//        coordinatesLoaded[8][0] = 0;
+//        coordinatesLoaded[8][1] = 0;
+//        coordinatesLoaded[8][2] = 8000;
+//
+//        coordinatesLoaded[9][0] = 0;
+//        coordinatesLoaded[9][1] = 0;
+//        coordinatesLoaded[9][2] = 9000;
 
-        coordinatesLoaded[1][0] = 0;
-        coordinatesLoaded[1][1] = 0;
-        coordinatesLoaded[1][2] = 1000;
+        String src_path = "D:\\Documents\\access\\test.txt";
 
-        coordinatesLoaded[2][0] = 0;
-        coordinatesLoaded[2][1] = 0;
-        coordinatesLoaded[2][2] = 2000;
-
-        coordinatesLoaded[3][0] = 0;
-        coordinatesLoaded[3][1] = 0;
-        coordinatesLoaded[3][2] = 3000;
-
-        coordinatesLoaded[4][0] = 0;
-        coordinatesLoaded[4][1] = 0;
-        coordinatesLoaded[4][2] = 4000;
-
-        coordinatesLoaded[5][0] = 0;
-        coordinatesLoaded[5][1] = 0;
-        coordinatesLoaded[5][2] = 5000;
-
-        coordinatesLoaded[6][0] = 0;
-        coordinatesLoaded[6][1] = 0;
-        coordinatesLoaded[6][2] = 6000;
-
-        coordinatesLoaded[7][0] = 0;
-        coordinatesLoaded[7][1] = 0;
-        coordinatesLoaded[7][2] = 7000;
-
-        coordinatesLoaded[8][0] = 0;
-        coordinatesLoaded[8][1] = 0;
-        coordinatesLoaded[8][2] = 8000;
-
-        coordinatesLoaded[9][0] = 0;
-        coordinatesLoaded[9][1] = 0;
-        coordinatesLoaded[9][2] = 9000;
-
-        String src_path = "D:\\Documents\\access\\test.dat";
-//        double[][] coordinatesLoaded = readCoords(src_path);
-        demo(src_path);
-
+        double[][] coordinatesLoaded;
+        coordinatesLoaded = demo(src_path);
         double[][] coordinates;
         coordinates = transposeMatrix(coordinatesLoaded);
 
@@ -367,9 +368,7 @@ public class ModelWrapper {
         model.result().numerical(id).setInterpolationCoordinates(coordinates);
         double[][][] data = model.result().numerical(id).getData();
 
-
         String dest_path = "D:\\Documents\\access\\samples\\0\\models\\0\\bases\\filename.txt";
-
         writeVe(data, dest_path);
 
         return true;
@@ -395,83 +394,28 @@ public class ModelWrapper {
         printWriter.close();
     }
 
-    // https://stackoverflow.com/questions/10257981/read-text-file-into-an-array
-//    private static double[][] readCoords(String path) throws IOException {
-//        BufferedReader reader = new BufferedReader(new FileReader(path));
-//        long n_rows = reader.lines().count();
-//        System.out.println("n_rows: " + n_rows);
-//        double[][] coords = new double[(int) n_rows][3];
-//
-//        System.out.println("in readCoords");
-//
-//        String line;
-//        int rowCounter = 0;
-//        while ((line = reader.readLine()) != null) {
-//            //read the line
-//            System.out.println(line);
-//            Scanner scanner = new Scanner(line);
-//            //now split line using char you want and save it to array
-//            int colCounter = 0;
-//            for (String token : line.split("\\s+")) {
-//                //add element to array here
-//                coords[rowCounter][colCounter] = Double.parseDouble(token);
-//                System.out.println(Double.parseDouble(token));
-//                colCounter++;
-//            }
-//            rowCounter++;
-//        }
-//        reader.close();
-//        return coords;
-//    }
-
-//    private static void readCoords(String path) throws IOException {
-//
-//        BufferedReader abc = new BufferedReader(new FileReader(path));
-//        List<String> lines = new ArrayList<>();
-//
-//        //
-//        long n_lines = abc.lines().count();
-//        System.out.println("pre");
-//        System.out.println(n_lines);
-//        System.out.println(abc.readLine());
-//        System.out.println("post");
-//        double[][] coords = new double[(int) n_lines][3];
-//        //
-//
-//        String line = null;
-//        while((line = abc.readLine()) != null) {
-//            System.out.println(line);
-//            lines.add(line);
-//            System.out.println(lines);
-//        }
-//        abc.close();
-//
-//        System.out.println("end");
-//
-//        // If you want to convert to a String[]
-////        String[] data = lines.toArray(new double[][]);
-//    }
-
-    public static void demo(String path) {
+    public static double[][] demo(String path) {
         String thisLine = null;
 
-        System.out.println("COWBOY THIS ISH");
         try {
-            System.out.println("in");
             // open input stream test.txt for reading purpose.
             BufferedReader br = new BufferedReader(new FileReader(path));
-            System.out.println("out");
+            long rows = br.lines().count();
+            double[][] coords = new double[(int) rows][3];
+            int row_ind = 0;
             while ((thisLine = br.readLine()) != null) {
-                System.out.println("within");
-                System.out.println(thisLine);
                 String[] parts = thisLine.split("\\s+");
-                System.out.println(parts[0]);
-                System.out.println(parts[1]);
-                System.out.println(parts[2]);
-
+                for(int i = 0; i < parts.length; i++) {
+                    coords[row_ind][i] = Double.parseDouble(parts[i]);
+                }
+                row_ind++;
             }
+            br.close();
+            return coords;
+
         } catch(Exception e) {
             e.printStackTrace();
+            return null;
         }
     }
 
