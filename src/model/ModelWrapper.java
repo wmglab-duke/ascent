@@ -7,10 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * model.ModelWrapper
@@ -357,6 +354,10 @@ public class ModelWrapper {
         coordinatesLoaded[9][1] = 0;
         coordinatesLoaded[9][2] = 9000;
 
+        String src_path = "D:\\Documents\\access\\test.dat";
+//        double[][] coordinatesLoaded = readCoords(src_path);
+        demo(src_path);
+
         double[][] coordinates;
         coordinates = transposeMatrix(coordinatesLoaded);
 
@@ -366,12 +367,10 @@ public class ModelWrapper {
         model.result().numerical(id).setInterpolationCoordinates(coordinates);
         double[][][] data = model.result().numerical(id).getData();
 
-        System.out.println(data.length);
-        System.out.println("here");
 
-        String path = "D:\\Documents\\access\\samples\\0\\models\\0\\bases\\filename.txt";
+        String dest_path = "D:\\Documents\\access\\samples\\0\\models\\0\\bases\\filename.txt";
 
-        writeVe(data, path);
+        writeVe(data, dest_path);
 
         return true;
     }
@@ -396,16 +395,86 @@ public class ModelWrapper {
         printWriter.close();
     }
 
-//    public static void write (String filename, double[][][]x) throws IOException {
-//        BufferedWriter outputWriter = null;
-//        outputWriter = new BufferedWriter(new FileWriter(filename));
-//        for (int i = 0; i < x.length; i++) {
-//            outputWriter.write(Double.toString(x[0][i]) + x[1][i] + x[2][i]);
-//            outputWriter.newLine();
+    // https://stackoverflow.com/questions/10257981/read-text-file-into-an-array
+//    private static double[][] readCoords(String path) throws IOException {
+//        BufferedReader reader = new BufferedReader(new FileReader(path));
+//        long n_rows = reader.lines().count();
+//        System.out.println("n_rows: " + n_rows);
+//        double[][] coords = new double[(int) n_rows][3];
+//
+//        System.out.println("in readCoords");
+//
+//        String line;
+//        int rowCounter = 0;
+//        while ((line = reader.readLine()) != null) {
+//            //read the line
+//            System.out.println(line);
+//            Scanner scanner = new Scanner(line);
+//            //now split line using char you want and save it to array
+//            int colCounter = 0;
+//            for (String token : line.split("\\s+")) {
+//                //add element to array here
+//                coords[rowCounter][colCounter] = Double.parseDouble(token);
+//                System.out.println(Double.parseDouble(token));
+//                colCounter++;
+//            }
+//            rowCounter++;
 //        }
-//        outputWriter.flush();
-//        outputWriter.close();
+//        reader.close();
+//        return coords;
 //    }
+
+//    private static void readCoords(String path) throws IOException {
+//
+//        BufferedReader abc = new BufferedReader(new FileReader(path));
+//        List<String> lines = new ArrayList<>();
+//
+//        //
+//        long n_lines = abc.lines().count();
+//        System.out.println("pre");
+//        System.out.println(n_lines);
+//        System.out.println(abc.readLine());
+//        System.out.println("post");
+//        double[][] coords = new double[(int) n_lines][3];
+//        //
+//
+//        String line = null;
+//        while((line = abc.readLine()) != null) {
+//            System.out.println(line);
+//            lines.add(line);
+//            System.out.println(lines);
+//        }
+//        abc.close();
+//
+//        System.out.println("end");
+//
+//        // If you want to convert to a String[]
+////        String[] data = lines.toArray(new double[][]);
+//    }
+
+    public static void demo(String path) {
+        String thisLine = null;
+
+        System.out.println("COWBOY THIS ISH");
+        try {
+            System.out.println("in");
+            // open input stream test.txt for reading purpose.
+            BufferedReader br = new BufferedReader(new FileReader(path));
+            System.out.println("out");
+            while ((thisLine = br.readLine()) != null) {
+                System.out.println("within");
+                System.out.println(thisLine);
+                String[] parts = thisLine.split("\\s+");
+                System.out.println(parts[0]);
+                System.out.println(parts[1]);
+                System.out.println(parts[2]);
+
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     /**
      * Add all fascicles to model.
