@@ -7,6 +7,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -304,72 +306,33 @@ public class ModelWrapper {
     }
 
     /**
-     * TODO: UNFINISHED!!!!
      * @return success indicator
      */
-    public boolean extractPotentials() throws IOException {
+    public boolean extractPotentials(String coords_path, String ve_path) throws IOException {
 
-        // Load coordinates (x,y,z) from file in form coordinates[0][i] = [x] in micron,
-        //                                            coordinates[1][i] = [y] in micron,
-        //                                            coordinates[2][i] = [z] in micron
+        // Load coordinates (x,y,z) from file in form: top line is number of rows of coords (int)
+        //                                             coordinates[0][i] = [x] in micron, (double)
+        //                                             coordinates[1][i] = [y] in micron, (double)
+        //                                             coordinates[2][i] = [z] in micron  (double)
+        //
 
-        // TODO - block below works...
-//        double[][] coordinatesLoaded = new double[10][3];
-//        coordinatesLoaded[0][0] = 0;
-//        coordinatesLoaded[0][1] = 0;
-//        coordinatesLoaded[0][2] = 0;
-//
-//        coordinatesLoaded[1][0] = 0;
-//        coordinatesLoaded[1][1] = 0;
-//        coordinatesLoaded[1][2] = 1000;
-//
-//        coordinatesLoaded[2][0] = 0;
-//        coordinatesLoaded[2][1] = 0;
-//        coordinatesLoaded[2][2] = 2000;
-//
-//        coordinatesLoaded[3][0] = 0;
-//        coordinatesLoaded[3][1] = 0;
-//        coordinatesLoaded[3][2] = 3000;
-//
-//        coordinatesLoaded[4][0] = 0;
-//        coordinatesLoaded[4][1] = 0;
-//        coordinatesLoaded[4][2] = 4000;
-//
-//        coordinatesLoaded[5][0] = 0;
-//        coordinatesLoaded[5][1] = 0;
-//        coordinatesLoaded[5][2] = 5000;
-//
-//        coordinatesLoaded[6][0] = 0;
-//        coordinatesLoaded[6][1] = 0;
-//        coordinatesLoaded[6][2] = 6000;
-//
-//        coordinatesLoaded[7][0] = 0;
-//        coordinatesLoaded[7][1] = 0;
-//        coordinatesLoaded[7][2] = 7000;
-//
-//        coordinatesLoaded[8][0] = 0;
-//        coordinatesLoaded[8][1] = 0;
-//        coordinatesLoaded[8][2] = 8000;
-//
-//        coordinatesLoaded[9][0] = 0;
-//        coordinatesLoaded[9][1] = 0;
-//        coordinatesLoaded[9][2] = 9000;
-
-        String src_path = "D:\\Documents\\access\\test.txt";
-
+        // Read in coords for axon segments as defined and saved to file in Python
         double[][] coordinatesLoaded;
-        coordinatesLoaded = demo(src_path);
+        coordinatesLoaded = loadCoords(coords_path);
+
+        // Transpose saved coordinates (we like to save (x,y,z) as column vectors, but COMSOL wants as rows)
         double[][] coordinates;
         coordinates = transposeMatrix(coordinatesLoaded);
 
+        // Get Ve from COMSOL
         String id = this.next("interp");
         model.result().numerical().create(id, "Interp");
         model.result().numerical(id).set("expr", "V");
         model.result().numerical(id).setInterpolationCoordinates(coordinates);
         double[][][] data = model.result().numerical(id).getData();
 
-        String dest_path = "D:\\Documents\\access\\samples\\0\\models\\0\\bases\\filename.txt";
-        writeVe(data, dest_path);
+        // Save Ve from COMSOL at coords probed to file in bases
+        writeVe(data, ve_path);
 
         return true;
     }
@@ -384,7 +347,9 @@ public class ModelWrapper {
     }
 
     private static void writeVe(double[][][] data, String path) throws IOException {
-        PrintWriter printWriter = new PrintWriter(path);
+        File f = new File(path);
+
+        PrintWriter printWriter = new PrintWriter(f.getAbsolutePath());
         int len = data[0][0].length; // number of coordinates
 
         printWriter.println(len); // print number of coordinates at the top of Ve file
@@ -394,31 +359,33 @@ public class ModelWrapper {
         printWriter.close();
     }
 
-    public static double[][] demo(String path) {
-        String thisLine = null;
+    public double[][] loadCoords(String path) throws FileNotFoundException {
+        File f = new File(path);
+        Scanner scan = new Scanner(f);
 
+        String thisLine = null;
         try {
-            // open input stream test.txt for reading purpose.
-            BufferedReader br = new BufferedReader(new FileReader(path));
-            long rows = br.lines().count();
-            double[][] coords = new double[(int) rows][3];
+            String rows = scan.nextLine();
+            int n_rows = Integer.parseInt(rows);
+            double[][] coords = new double[n_rows][3];
             int row_ind = 0;
-            while ((thisLine = br.readLine()) != null) {
+            while (scan.hasNextLine()) {
+                thisLine = scan.nextLine();
                 String[] parts = thisLine.split("\\s+");
                 for(int i = 0; i < parts.length; i++) {
                     coords[row_ind][i] = Double.parseDouble(parts[i]);
                 }
                 row_ind++;
             }
-            br.close();
+            scan.close();
             return coords;
 
         } catch(Exception e) {
             e.printStackTrace();
             return null;
+
         }
     }
-
 
     /**
      * Add all fascicles to model.
@@ -533,7 +500,9 @@ public class ModelWrapper {
                 e.printStackTrace();
             }
 
-            extractPotentials();
+            String src_path = "D:\\Documents\\access\\test.txt";
+            String dest_path = "D:\\Documents\\access\\samples\\0\\models\\0\\bases\\filename.txt";
+            extractPotentials(src_path, dest_path);
 
             current_on.set("Qjp", 0.000); // reset current
 
