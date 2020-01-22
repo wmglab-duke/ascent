@@ -313,8 +313,6 @@ public class ModelWrapper {
         //                                             coordinates[1][i] = [y] in micron, (double)
         //                                             coordinates[2][i] = [z] in micron  (double)
 
-        System.out.println("in extract potentials");
-
         // Read in coords for axon segments as defined and saved to file in Python
         double[][] coordinatesLoaded;
         coordinatesLoaded = readCoords(coords_path);
@@ -513,13 +511,12 @@ public class ModelWrapper {
             try {
                 System.out.println("Saving MPH (mesh and solution) file to: " + mphFile);
                 model.save(mphFile);
-                System.out.println("failed here");
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-            String src_path =  "D:\\Documents\\access\\samples\\0\\models\\0\\coords\\0.txt";
-            String dest_path = "D:\\Documents\\access\\samples\\0\\models\\0\\bases\\0\\ve\\0.txt";
+            String src_path =  "D:\\Documents\\access\\samples\\0\\models\\0\\coords\\0.dat";
+            String dest_path = "D:\\Documents\\access\\samples\\0\\models\\0\\bases\\0\\ve\\0.dat";
             extractPotentials(src_path, dest_path);
 
             current_on.set("Qjp", 0.000); // reset current
