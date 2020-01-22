@@ -7,8 +7,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -314,11 +312,12 @@ public class ModelWrapper {
         //                                             coordinates[0][i] = [x] in micron, (double)
         //                                             coordinates[1][i] = [y] in micron, (double)
         //                                             coordinates[2][i] = [z] in micron  (double)
-        //
+
+        System.out.println("in extract potentials");
 
         // Read in coords for axon segments as defined and saved to file in Python
         double[][] coordinatesLoaded;
-        coordinatesLoaded = loadCoords(coords_path);
+        coordinatesLoaded = readCoords(coords_path);
 
         // Transpose saved coordinates (we like to save (x,y,z) as column vectors, but COMSOL wants as rows)
         double[][] coordinates;
@@ -329,46 +328,56 @@ public class ModelWrapper {
         model.result().numerical().create(id, "Interp");
         model.result().numerical(id).set("expr", "V");
         model.result().numerical(id).setInterpolationCoordinates(coordinates);
-        double[][][] data = model.result().numerical(id).getData();
+        double[][][] ve = model.result().numerical(id).getData();
 
-        // Save Ve from COMSOL at coords probed to file in bases
-        writeVe(data, ve_path);
+        // Save Ve from COMSOL (at coords probed) to file in bases
+        writeVe(ve, ve_path);
 
         return true;
     }
 
     // https://stackoverflow.com/questions/15449711/transpose-double-matrix-with-a-java-function
     public static double[][] transposeMatrix(double [][] m){
+        // pre-allocated array of doubles for transposed matrix
         double[][] temp = new double[m[0].length][m.length];
+
         for (int i = 0; i < m.length; i++)
             for (int j = 0; j < m[0].length; j++)
                 temp[j][i] = m[i][j];
+
         return temp;
     }
 
-    private static void writeVe(double[][][] data, String path) throws IOException {
-        File f = new File(path);
+    private static boolean writeVe(double[][][] ve, String ve_path) throws IOException {
+        PrintWriter printWriter = new PrintWriter(ve_path);
+        int len = ve[0][0].length; // number of coordinates
 
-        PrintWriter printWriter = new PrintWriter(f.getAbsolutePath());
-        int len = data[0][0].length; // number of coordinates
-
-        printWriter.println(len); // print number of coordinates at the top of Ve file
+        // write to file: number of coordintates top line,
+        // then one Ve value for each coordinate  (x,y,z) for subsequent lines
+        printWriter.println(len);
         for (int i = 0; i < len; i++) {
-            printWriter.println(data[0][0][i]); // one Ve value for each coordinate triplet
+            printWriter.println(ve[0][0][i]);
         }
-        printWriter.close();
+        printWriter.close(); // close printWriter
+
+        return true;
     }
 
-    public double[][] loadCoords(String path) throws FileNotFoundException {
-        File f = new File(path);
+    public double[][] readCoords(String coords_path) throws FileNotFoundException {
+        File f = new File(coords_path);
         Scanner scan = new Scanner(f);
 
         String thisLine = null;
         try {
+            // save rows (number of coords) at top line... so number of lines in file is (number of coords +1)
             String rows = scan.nextLine();
             int n_rows = Integer.parseInt(rows);
+
+            // pre-allocated array of doubles for coords in file (3 columns by default for (x,y,z)
             double[][] coords = new double[n_rows][3];
             int row_ind = 0;
+
+            // while there are more lines to scan
             while (scan.hasNextLine()) {
                 thisLine = scan.nextLine();
                 String[] parts = thisLine.split("\\s+");
@@ -377,13 +386,20 @@ public class ModelWrapper {
                 }
                 row_ind++;
             }
+
+            if (n_rows != row_ind) {
+                throw new Exception("Number of coordinates (rows) in coords file " +
+                        "does not match header in file: " + coords_path);
+            }
+
             scan.close();
+
             return coords;
 
         } catch(Exception e) {
             e.printStackTrace();
-            return null;
 
+            return null;
         }
     }
 
@@ -490,18 +506,20 @@ public class ModelWrapper {
                     "models",
                     modelStr,
                     "bases",
+                    Integer.toString(index),
                     index + ".mph"
             });
 
             try {
                 System.out.println("Saving MPH (mesh and solution) file to: " + mphFile);
                 model.save(mphFile);
+                System.out.println("failed here");
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-            String src_path = "D:\\Documents\\access\\test.txt";
-            String dest_path = "D:\\Documents\\access\\samples\\0\\models\\0\\bases\\filename.txt";
+            String src_path =  "D:\\Documents\\access\\samples\\0\\models\\0\\coords\\0.txt";
+            String dest_path = "D:\\Documents\\access\\samples\\0\\models\\0\\bases\\0\\ve\\0.txt";
             extractPotentials(src_path, dest_path);
 
             current_on.set("Qjp", 0.000); // reset current
