@@ -171,7 +171,8 @@ class Runner(Exceptionable, Configurable):
                     simulation \
                         .add(SetupMode.OLD, Config.MODEL, model_config) \
                         .add(SetupMode.OLD, Config.SIM, sim_config) \
-                        .resolve_factors() #\
+                        .resolve_factors() \
+                        .write_waveforms()
                     # exit(0)
                         # .write_waveforms() \
                         # .fiber_xy_coordinates(plot=False, save=True) \
@@ -190,7 +191,7 @@ class Runner(Exceptionable, Configurable):
                 #     # .copy_ve_data()
 
         # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials
-        self.handoff()
+        # self.handoff()
 
         #  continue by using simulation objects
         for model_index, model_config in enumerate(all_configs[Config.MODEL.value]):
