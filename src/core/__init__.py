@@ -7,3 +7,5 @@ from src.core.sample import Sample
 from src.core.fiber_manager import FiberManager
 from src.core.deformable import Deformable
 from src.core.simulation import Simulation
+from src.core.waveform2 import Waveform2
+from src.core.waveform import Waveform
