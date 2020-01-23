@@ -167,19 +167,18 @@ class Runner(Exceptionable, Configurable):
                     #     .fiber_xy_coordinates(plot=False, save=True) \
                     #     .save(fiber_manager_file)
 
-                    simulation: Simulation = Simulation(sample, self.configs[Config.EXCEPTIONS.value])
-                    simulation \
+                    self.simulation: Simulation = Simulation(sample, self.configs[Config.EXCEPTIONS.value])
+                    self.simulation \
                         .add(SetupMode.OLD, Config.MODEL, model_config) \
                         .add(SetupMode.OLD, Config.SIM, sim_config) \
                         .resolve_factors() \
-                        .write_waveforms()
-                    # exit(0)
                         # .write_waveforms() \
+                        # .write_fibers() \
                         # .fiber_xy_coordinates(plot=False, save=True) \
                         # .fiber_z_coordinates(save=True) \
                         # .save_coordinates(format='.dat', mode='xyz') \
                         # .save(sim_obj_file)
-
+                    exit(0)
 
                 # simulation_builder = SimulationBuilder(sim, self.configs[Config.EXCEPTIONS.value])
                 # simulation_builder \
