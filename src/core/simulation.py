@@ -1,3 +1,8 @@
+import copy
+
+import itertools
+
+from .waveform import Waveform
 from src.core import Sample
 from src.utils import Exceptionable, Configurable, Saveable, SetupMode, Config
 
@@ -12,7 +17,11 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
         self.sample = sample
         self.factors = dict()
-        self.products = dict()
+        self.wave_product = []
+        self.wave_key = []
+        self.fiber_product = []
+        self.fiber_key = []
+        self.master_product = []
 
 # TODO, sum C_i = 0 (contact weights), sum abs(C_i) = 2 unless monopolar in which case =1
 
@@ -21,35 +30,63 @@ class Simulation(Exceptionable, Configurable, Saveable):
         if len(self.factors.items()) > 0:
             self.factors = dict()
 
-        def search(dictionary, remaining_n_dims, sub):
-            print(sub)
+        def search(dictionary, remaining_n_dims, path):
             if remaining_n_dims < 1:
                 return
             for key, value in dictionary.items():
                 if type(value) == list and len(value) > 1:
-                    print('adding key {} to sub {}'.format(key, sub))
-                    self.factors[sub][key] = value
+                    # print('adding key {} to sub {}'.format(key, sub))
+                    self.factors[path + '.' + key] = value
                     remaining_n_dims -= 1
                 elif type(value) == dict:
-                    print('recurse: {}'.format(value))
-                    search(value, remaining_n_dims, sub)
+                    # print('recurse: {}'.format(value))
+                    search(value, remaining_n_dims, path + '.' + key)
 
         for flag in ['fibers', 'waveform']:
-            self.factors[flag] = dict()
             search(
                 self.configs[Config.SIM.value][flag],
                 self.search(Config.SIM, "n_dimensions"),
                 flag
             )
 
+        return self
 
 
     def write_fibers(self):
+
+
+
         pass
 
     def write_waveforms(self):
+        self.waveforms = []
+        wave_factors = {key: value for key, value in self.factors.items() if key.split('.')[0] == 'waveform'}
 
-        loopable = ['fibers', 'waveform']
+        self.wave_key = list(wave_factors.keys())
+        self.wave_product = list(itertools.product(*wave_factors.values()))
+
+        for wave_set in self.wave_product:
+
+            sim_copy = copy.deepcopy(self.configs[Config.SIM.value])
+            for path, value in zip(self.wave_key, list(wave_set)):
+                path_parts = path.split('.')
+                pointer = sim_copy
+                for path_part in path_parts[:-1]:
+                    pointer = pointer[path_part]
+                pointer[path_parts[-1]] = value
+
+            waveform = Waveform(self.configs[Config.EXCEPTIONS.value])
+            waveform \
+                .add(SetupMode.OLD, Config.SIM, sim_copy) \
+                .add(SetupMode.OLD, Config.MODEL, self.configs[Config.MODEL.value]) \
+                .init_post_config() \
+                .generate()
+
+            self.waveforms.append(waveform)
+
+
+
+
         # search(
         #     {key: value for key, value in self.configs[Config.SIM.value].items() if key in loopable},
         #     self.search(Config.SIM, "n_dimensions")

@@ -48,7 +48,7 @@
       "dt_initSS": 10
     },
     "MONOPHASIC_PULSE_TRAIN": {
-      "pulse_width": [0.1],
+      "pulse_width": [0.1, 0.2],
       "digits": 1
     }
   },
