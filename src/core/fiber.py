@@ -10,4 +10,4 @@ class Fiber(Exceptionable, Configurable, Saveable):
 
     """
 
-    def 
+    def
