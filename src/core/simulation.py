@@ -41,10 +41,11 @@ class Simulation(Exceptionable, Configurable, Saveable):
         # factors list of dictionaries, each has name and value (which has a length)
         # within extracellular stim, if key in factors:
         #     do
+
         print("within write_waveforms")
+        print(self.factors)
 
 
-        pass
 
     def fiber_xy_coordinates(self):
         pass
