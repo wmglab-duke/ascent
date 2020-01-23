@@ -1,10 +1,11 @@
 import copy
+import os
 
 import itertools
 
 from .waveform import Waveform
 from src.core import Sample
-from src.utils import Exceptionable, Configurable, Saveable, SetupMode, Config
+from src.utils import Exceptionable, Configurable, Saveable, SetupMode, Config, WriteMode
 
 
 class Simulation(Exceptionable, Configurable, Saveable):
@@ -58,14 +59,18 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
         pass
 
-    def write_waveforms(self):
+    def write_waveforms(self, sim_directory: str):
+        directory = os.path.join(sim_directory, 'waveforms')
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
         self.waveforms = []
         wave_factors = {key: value for key, value in self.factors.items() if key.split('.')[0] == 'waveform'}
 
         self.wave_key = list(wave_factors.keys())
         self.wave_product = list(itertools.product(*wave_factors.values()))
 
-        for wave_set in self.wave_product:
+        for i, wave_set in enumerate(self.wave_product):
 
             sim_copy = copy.deepcopy(self.configs[Config.SIM.value])
             for path, value in zip(self.wave_key, list(wave_set)):
@@ -80,9 +85,11 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 .add(SetupMode.OLD, Config.SIM, sim_copy) \
                 .add(SetupMode.OLD, Config.MODEL, self.configs[Config.MODEL.value]) \
                 .init_post_config() \
-                .generate()
+                .generate() \
+                .write(WriteMode.DATA, os.path.join(directory, str(i)))
 
             self.waveforms.append(waveform)
+
 
 
 

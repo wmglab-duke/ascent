@@ -6,6 +6,7 @@ import os
 # packages
 import numpy as np
 import scipy.signal as sg
+import matplotlib.pyplot as plt
 
 # access
 from src.utils import Exceptionable, Configurable, Saveable
@@ -37,7 +38,7 @@ class Waveform(Exceptionable, Configurable, Saveable):
             self.stop = \
             self.unit = None
 
-        self.wave = None
+        self.wave: np.ndarray = None
 
     def init_post_config(self):
 
@@ -55,16 +56,16 @@ class Waveform(Exceptionable, Configurable, Saveable):
 
         # unpack global variables
         self.dt, \
-        self.start, \
-        self.on, \
-        self.off, \
-        self.stop, \
-        self.unit = [global_parameters.get(key) for key in ['dt',
-                                                                 'start',
-                                                                 'on',
-                                                                 'off',
-                                                                 'stop',
-                                                                 'unit']]
+            self.start, \
+            self.on, \
+            self.off, \
+            self.stop, \
+            self.unit = [global_parameters.get(key) for key in ['dt',
+                                                                'start',
+                                                                'on',
+                                                                'off',
+                                                                'stop',
+                                                                'unit']]
 
         self.validate_times()
 
@@ -78,7 +79,6 @@ class Waveform(Exceptionable, Configurable, Saveable):
         time_params = [self.start, self.on, self.off, self.stop]
         if sorted(time_params) != time_params:
             self.throw(32)
-
 
     def rho_weerasuriya(self, f=None, all_configs=None):
         """
@@ -197,9 +197,7 @@ class Waveform(Exceptionable, Configurable, Saveable):
         # for ease of parameter src later on
         path_to_specific_parameters = ['waveform', self.mode_str]
 
-
-
-        frequency = self.search(Config.MODEL, 'frequency', 'value')
+        frequency = self.search(Config.MODEL, 'frequency', 'value') / 1000  # scale for ms
 
         if self.mode == WaveformMode.MONOPHASIC_PULSE_TRAIN:
 
@@ -272,17 +270,29 @@ class Waveform(Exceptionable, Configurable, Saveable):
 
     def write(self, mode: WriteMode, path: str):
         """
-        :param mode:
+        :param mode: usually DATA
         :param path:
         :return:
         """
+        plt.figure()
+        plt.plot(self.wave)
+        plt.show()
 
-        for i, wave in enumerate(self.waves):
-            write_mode = WriteMode.file_endings.value[mode.value]
-            filepath = os.path.join(path, '{}{}'.format(i, write_mode))
 
-            dt = self.search(Config.SIM, "extracellular_stim", "global", "dt")
-            tstop = self.search(Config.SIM, "extracellular_stim", "global", "tstop")
-            wave = np.insert(wave, 0, tstop, axis=0)
-            wave = np.insert(wave, 0, dt, axis=0)
-            np.save(filepath, wave)
+        print(path + WriteMode.file_endings.value[mode.value])
+        np.savetxt(
+            path + WriteMode.file_endings.value[mode.value],
+            np.concatenate(([self.dt, self.stop], self.wave)),
+            fmt='%.10f'
+        )
+        return self
+
+        # for i, wave in enumerate(self.waves):
+        #     write_mode = WriteMode.file_endings.value[mode.value]
+        #     filepath = os.path.join(path, '{}{}'.format(i, write_mode))
+        #
+        #     dt = self.search(Config.SIM, "extracellular_stim", "global", "dt")
+        #     tstop = self.search(Config.SIM, "extracellular_stim", "global", "tstop")
+        #     wave = np.insert(wave, 0, tstop, axis=0)
+        #     wave = np.insert(wave, 0, dt, axis=0)
+        #     np.save(filepath, wave)

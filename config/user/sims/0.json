@@ -43,13 +43,12 @@
       "start": 0,
       "on": 1,
       "off": 49,
-      "stop": 50,
+      "stop": [50, 100],
       "initSS": -200,
       "dt_initSS": 10
     },
-    "MONOPHASIC_PULSE_TRAIN": {
-      "pulse_width": [0.1, 0.2],
-      "digits": 1
+    "BIPHASIC_FULL_DUTY": {
+      "digits": 10
     }
   },
   "intracellular_stim": {
