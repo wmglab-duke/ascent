@@ -384,9 +384,6 @@ public class ModelWrapper {
                         for(int point_ind = 0; point_ind < bases.length; point_ind ++) {
                             for(int base_ind = 0; base_ind < src_combo.length; base_ind ++){
                                 ve[point_ind] += bases[point_ind][base_ind]*src_combo[base_ind];
-                                // TODO - set restrictions or throw warnings for weightings that aren't Q-balance
-                                //  also for weightings that don't have amplitude of
-                                //  (sum positive = 1, and sum negative = -1)
                             }
                         }
                         // and save ve to file
