@@ -3,6 +3,7 @@ package model;
 import com.comsol.model.*;
 import com.comsol.model.physics.PhysicsFeature;
 import com.comsol.model.util.ModelUtil;
+import org.eclipse.jetty.util.ajax.JSON;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -303,10 +304,101 @@ public class ModelWrapper {
         return true;
     }
 
-    /**
-     * @return success indicator
-     */
-    public boolean extractPotentials(String coords_path, String ve_path) throws IOException {
+    public void extractAllPotentials(String projectPath, String run_path) throws IOException {
+        JSONObject runData = JSONio.read(run_path);
+        int sample = runData.getInt("sample");
+
+        JSONArray models_list = runData.getJSONArray("models");
+        JSONArray sims_list = runData.getJSONArray("sims");
+
+        for(int model_ind = 0; model_ind < models_list.length(); model_ind++) {
+            int model_num = (int) models_list.get(model_ind);
+
+            for(int sim_ind = 0; sim_ind < sims_list.length(); sim_ind++) {
+                int sim_num = (int) sims_list.get(sim_ind);
+
+                String sim_path = String.join("/", new String[]{
+                        "config",
+                        "user",
+                        "sims",
+                        sim_num + ".json"
+                });
+                JSONObject simData = JSONio.read(sim_path);
+
+                String coord_dir = String.join("/", new String[]{
+                        "samples",
+                        Integer.toString(sample),
+                        "models",
+                        Integer.toString(model_num),
+                        "sims",
+                        Integer.toString(sim_num),
+                        "fibers"
+                });
+
+                String ve_dir = String.join("/", new String[]{
+                        "samples",
+                        Integer.toString(sample),
+                        "models",
+                        Integer.toString(model_num),
+                        "sims",
+                        Integer.toString(sim_num),
+                        "ve"
+                });
+
+                File f = new File(projectPath + coord_dir);
+                String[] fiber_coords;
+                fiber_coords = f.list();
+
+                for (String fiber_coord:fiber_coords) {
+                    String coord_path = projectPath + coord_dir + fiber_coord;
+
+                    // loop over active_src setting
+                    JSONArray src_combo_list = simData.getJSONArray("active_srcs");
+                    for(int src_combo_ind = 0; src_combo_ind < src_combo_list.length(); src_combo_ind++) {
+                        double[] src_combo = (double[]) src_combo_list.get(src_combo_ind);
+
+                        // load bases
+                        double[][] bases = new double[0][];
+                        for(int src_on_ind = 0; src_on_ind < src_combo.length; src_on_ind ++) {
+                            String bases_path = String.join("/", new String[]{
+                                    "samples",
+                                    Integer.toString(sample),
+                                    "models",
+                                    Integer.toString(model_num),
+                                    "bases",
+                                    sim_num + ".mph"
+                            });
+
+                            Model model = ModelUtil.load("Model", bases_path);
+
+                            double[] basis_vec = extractPotentials(model, coord_path);
+                            bases = new double[basis_vec.length][src_combo.length];
+                            for(int point_ind = 0; point_ind < basis_vec.length; point_ind ++) {
+                                bases[point_ind][src_on_ind] = basis_vec[point_ind];
+                            }
+                        }
+
+                        // combine bases
+                        // for each point (row), then across bases (column) multiply by src_combo and add
+                        double[] ve = new double[bases.length];
+                        for(int point_ind = 0; point_ind < bases.length; point_ind ++) {
+                            for(int base_ind = 0; base_ind < src_combo.length; base_ind ++){
+                                ve[point_ind] += bases[point_ind][base_ind]*src_combo[base_ind];
+                            }
+                        }
+                        // and save ve to file
+                        String ve_path = ve_dir + fiber_coord;
+                        writeVe(ve, ve_path);
+                    }
+                }
+            }
+        }
+    }
+
+        /**
+         * @return success indicator
+         */
+    public double[] extractPotentials(Model model, String coords_path) throws IOException {
 
         // Load coordinates (x,y,z) from file in form: top line is number of rows of coords (int)
         //                                             coordinates[0][i] = [x] in micron, (double)
@@ -326,12 +418,14 @@ public class ModelWrapper {
         model.result().numerical().create(id, "Interp");
         model.result().numerical(id).set("expr", "V");
         model.result().numerical(id).setInterpolationCoordinates(coordinates);
-        double[][][] ve = model.result().numerical(id).getData();
+        double[][][] ve_pre = model.result().numerical(id).getData();
+        int len = ve_pre[0][0].length; // number of coordinates
 
-        // Save Ve from COMSOL (at coords probed) to file in bases
-        writeVe(ve, ve_path);
-
-        return true;
+        double[] ve = new double[len];
+        for (int i = 0; i < len; i++) {
+            ve[i] = ve_pre[0][0][i];
+        }
+        return ve;
     }
 
     // https://stackoverflow.com/questions/15449711/transpose-double-matrix-with-a-java-function
@@ -346,15 +440,15 @@ public class ModelWrapper {
         return temp;
     }
 
-    private static boolean writeVe(double[][][] ve, String ve_path) throws IOException {
+    private static boolean writeVe(double[] ve, String ve_path) throws IOException {
         PrintWriter printWriter = new PrintWriter(ve_path);
-        int len = ve[0][0].length; // number of coordinates
+        int len = ve.length; // number of coordinates
 
         // write to file: number of coordintates top line,
         // then one Ve value for each coordinate  (x,y,z) for subsequent lines
         printWriter.println(len);
         for (int i = 0; i < len; i++) {
-            printWriter.println(ve[0][0][i]);
+            printWriter.println(ve[i]);
         }
         printWriter.close(); // close printWriter
 
@@ -515,9 +609,9 @@ public class ModelWrapper {
                 e.printStackTrace();
             }
 
-            String src_path =  "D:\\Documents\\access\\samples\\0\\models\\0\\coords\\0.dat";
-            String dest_path = "D:\\Documents\\access\\samples\\0\\models\\0\\bases\\0\\ve\\0.dat";
-            extractPotentials(src_path, dest_path);
+//            String src_path =  "D:\\Documents\\access\\samples\\0\\models\\0\\coords\\0.dat";
+//            String dest_path = "D:\\Documents\\access\\samples\\0\\models\\0\\bases\\0\\ve\\0.dat";
+//            extractPotentials(src_path, dest_path);
 
             current_on.set("Qjp", 0.000); // reset current
 
@@ -1232,6 +1326,8 @@ public class ModelWrapper {
 //            }
 
             mw.loopCurrents(modelData, projectPath, sample, modelStr);
+
+            mw.extractAllPotentials(projectPath, runPath);
 
             try (FileWriter file = new FileWriter("../" + modelFile)) {
                 String output = modelData.toString(2);
