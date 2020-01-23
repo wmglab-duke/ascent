@@ -14,6 +14,8 @@ class Simulation(Exceptionable, Configurable, Saveable):
         self.factors = dict()
         self.products = dict()
 
+# TODO, sum C_i = 0 (contact weights), sum abs(C_i) = 2 unless monopolar in which case =1
+
     def resolve_factors(self):
 
         if len(self.factors.items()) > 0:
