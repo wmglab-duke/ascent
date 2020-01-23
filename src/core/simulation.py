@@ -1,5 +1,3 @@
-import itertools
-
 from src.core import Sample
 from src.utils import Exceptionable, Configurable, Saveable, SetupMode, Config
 
@@ -12,29 +10,41 @@ class Simulation(Exceptionable, Configurable, Saveable):
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
         Configurable.__init__(self)
 
+        self.sample = sample
         self.factors = dict()
+        self.products = dict()
 
     def resolve_factors(self):
         if len(self.factors.items()) > 0:
             self.factors = dict()
 
-        def search(dictionary, remaining_n_dims):
+        def search(dictionary, remaining_n_dims, sub):
+            print(sub)
             if remaining_n_dims < 1:
                 return
             for key, value in dictionary.items():
                 if type(value) == list and len(value) > 1:
-                    self.factors[key] = value
+                    print('adding key {} to sub {}'.format(key, sub))
+                    self.factors[sub][key] = value
                     remaining_n_dims -= 1
                 elif type(value) == dict:
-                    search(value, remaining_n_dims)
+                    print('recurse: {}'.format(value))
+                    search(value, remaining_n_dims, sub)
 
-        LOOPABLE = ['fibers', 'waveform']
-        search(
-            {key: value for key, value in self.configs[Config.SIM.value].items() if key in LOOPABLE},
-            self.search(Config.SIM, "n_dimensions")
-        )
+        for flag in ['fibers', 'waveform']:
+            self.factors[flag] = dict()
+            search(
+                self.configs[Config.SIM.value][flag],
+                self.search(Config.SIM, "n_dimensions"),
+                flag
+            )
 
-    def write_waveforms(self, factors, product):
+
+
+    def write_fibers(self):
+        pass
+
+    def write_waveforms(self):
         # factors list of dictionaries, each has name and value (which has a length)
         # within extracellular stim, if key in factors:
         #     do
