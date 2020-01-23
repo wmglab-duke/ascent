@@ -53,8 +53,39 @@ class Simulation(Exceptionable, Configurable, Saveable):
         return self
 
 
-    def write_fibers(self):
+    def write_fibers(self, sim_directory: str):
+        # loop PARAMS in here, but loop HISTOLOGY in FiberSet object
+        # TODO: finish method!
 
+        directory = os.path.join(sim_directory, 'fibers')
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+        self.fiber_sets = []
+        wave_factors = {key: value for key, value in self.factors.items() if key.split('.')[0] == 'waveform'}
+
+        self.wave_key = list(wave_factors.keys())
+        self.wave_product = list(itertools.product(*wave_factors.values()))
+
+        for i, wave_set in enumerate(self.wave_product):
+
+            sim_copy = copy.deepcopy(self.configs[Config.SIM.value])
+            for path, value in zip(self.wave_key, list(wave_set)):
+                path_parts = path.split('.')
+                pointer = sim_copy
+                for path_part in path_parts[:-1]:
+                    pointer = pointer[path_part]
+                pointer[path_parts[-1]] = value
+
+            waveform = Waveform(self.configs[Config.EXCEPTIONS.value])
+            waveform \
+                .add(SetupMode.OLD, Config.SIM, sim_copy) \
+                .add(SetupMode.OLD, Config.MODEL, self.configs[Config.MODEL.value]) \
+                .init_post_config() \
+                .generate() \
+                .write(WriteMode.DATA, os.path.join(directory, str(i)))
+
+            self.waveforms.append(waveform)
 
 
         pass
