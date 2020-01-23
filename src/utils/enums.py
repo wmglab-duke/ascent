@@ -168,7 +168,6 @@ class UnmyelinatedFiberType(Enum):
 @unique
 class WaveformMode(Enum):
     config = 'waveform'
-    parameters = 'extracellular_stim'
     global_parameters = 'global'
 
     MONOPHASIC_PULSE_TRAIN = 0

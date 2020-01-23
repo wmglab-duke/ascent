@@ -2,7 +2,7 @@ import copy
 
 import itertools
 
-from .waveform2 import Waveform2
+from .waveform import Waveform
 from src.core import Sample
 from src.utils import Exceptionable, Configurable, Saveable, SetupMode, Config
 
@@ -73,7 +73,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
                     pointer = pointer[path_part]
                 pointer[path_parts[-1]] = value
 
-            waveform = Waveform2(self.configs[Config.EXCEPTIONS.value])
+            waveform = Waveform(self.configs[Config.EXCEPTIONS.value])
             waveform \
                 .add(SetupMode.OLD, Config.SIM, sim_copy) \
                 .add(SetupMode.OLD, Config.MODEL, self.configs[Config.MODEL.value]) \

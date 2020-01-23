@@ -21,7 +21,7 @@ import sys
 import subprocess
 
 # access
-from core import Sample, Simulation, Waveform2
+from core import Sample, Simulation, Waveform
 from src.utils import *
 
 
@@ -172,12 +172,12 @@ class Runner(Exceptionable, Configurable):
                         .add(SetupMode.OLD, Config.SIM, sim_config) \
                         .resolve_factors() \
                         .write_waveforms() \
+                        .save(sim_obj_file)
                         # .write_fibers() \
                         # .fiber_xy_coordinates(plot=False, save=True) \
                         # .fiber_z_coordinates(save=True) \
                         # .save_coordinates(format='.dat', mode='xyz') \
-                        # .save(sim_obj_file)
-                    exit(0)
+
 
                 # simulation_builder = SimulationBuilder(sim, self.configs[Config.EXCEPTIONS.value])
                 # simulation_builder \
@@ -482,7 +482,7 @@ class Runner(Exceptionable, Configurable):
         model_config = all_configs[Config.MODEL.value][model_index]
 
         # initialize Waveform object
-        waveform = Waveform2(self.configs[Config.EXCEPTIONS.value])
+        waveform = Waveform(self.configs[Config.EXCEPTIONS.value])
 
         # add model config to Waveform object, enabling it to generate waveforms
         waveform.add(SetupMode.OLD, Config.MODEL, model_config)
