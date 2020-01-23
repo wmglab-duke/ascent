@@ -3,6 +3,8 @@
 # packages
 
 # access
+from typing import Dict
+
 import numpy as np
 
 from src.utils import *
@@ -22,6 +24,14 @@ class Fiber(Exceptionable, Configurable, Saveable):
         # set up superclasses
         Configurable.__init__(self)
         Exceptionable.__init__(self, SetupMode.OLD, exceptions_config)
+
+        # initialize empty lists of fiber points
+        self.xy_coordinates = None
+        self.full_coordinates = None
+
+        # empty metadata
+        self.fiber_metadata: Dict[str, list] = {}
+        self.add(SetupMode.NEW, Config.FIBER_Z, os.path.join('config', 'system', 'fiber_z.json'))
 
         # init instance variables
         # self.mode = \
