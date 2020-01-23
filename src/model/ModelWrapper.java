@@ -305,27 +305,26 @@ public class ModelWrapper {
     }
 
     public void extractAllPotentials(String projectPath, String run_path) throws IOException {
-        JSONObject runData = JSONio.read(run_path);
-        int sample = runData.getInt("sample");
+        JSONObject runData = JSONio.read(run_path); // read in run configuration data
+        int sample = runData.getInt("sample"); // get sample number
+        JSONArray models_list = runData.getJSONArray("models"); // get models list
+        JSONArray sims_list = runData.getJSONArray("sims"); // get sims list
 
-        JSONArray models_list = runData.getJSONArray("models");
-        JSONArray sims_list = runData.getJSONArray("sims");
+        for(int model_ind = 0; model_ind < models_list.length(); model_ind++) { // loop over models
+            int model_num = (int) models_list.get(model_ind); // get model number for index in models list
 
-        for(int model_ind = 0; model_ind < models_list.length(); model_ind++) {
-            int model_num = (int) models_list.get(model_ind);
+            for(int sim_ind = 0; sim_ind < sims_list.length(); sim_ind++) { // loop over sims
+                int sim_num = (int) sims_list.get(sim_ind); // get sim number for index in sims list
 
-            for(int sim_ind = 0; sim_ind < sims_list.length(); sim_ind++) {
-                int sim_num = (int) sims_list.get(sim_ind);
-
-                String sim_path = String.join("/", new String[]{
+                String sim_path = String.join("/", new String[]{ // build path to sim config file
                         "config",
                         "user",
                         "sims",
                         sim_num + ".json"
                 });
-                JSONObject simData = JSONio.read(sim_path);
+                JSONObject simData = JSONio.read(sim_path); // load sim configuration data
 
-                String coord_dir = String.join("/", new String[]{
+                String coord_dir = String.join("/", new String[]{ // build path to directory of fibers coordinates
                         "samples",
                         Integer.toString(sample),
                         "models",
@@ -335,7 +334,7 @@ public class ModelWrapper {
                         "fibers"
                 });
 
-                String ve_dir = String.join("/", new String[]{
+                String ve_dir = String.join("/", new String[]{ // build path to directory of ve for each fiber coordinate
                         "samples",
                         Integer.toString(sample),
                         "models",
@@ -345,16 +344,16 @@ public class ModelWrapper {
                         "ve"
                 });
 
-                File f = new File(projectPath + coord_dir);
-                String[] fiber_coords;
-                fiber_coords = f.list();
+                File f_coords = new File(projectPath + coord_dir);
+                String[] fiber_coords_list;
+                fiber_coords_list = f_coords.list(); // create list of fiber coords (one for each fiber)
 
-                for (String fiber_coord:fiber_coords) {
-                    String coord_path = projectPath + coord_dir + fiber_coord;
+                for (String fiber_coords:fiber_coords_list) { // loop over fiber coords in list of fiber coords
+                    String coord_path = projectPath + coord_dir + fiber_coords; // build path to coordinates
 
                     // loop over active_src setting
-                    JSONArray src_combo_list = simData.getJSONArray("active_srcs");
-                    for(int src_combo_ind = 0; src_combo_ind < src_combo_list.length(); src_combo_ind++) {
+                    JSONArray src_combo_list = simData.getJSONArray("active_srcs"); // get array of contact combo weightings
+                    for(int src_combo_ind = 0; src_combo_ind < src_combo_list.length(); src_combo_ind++) { // loop over weighting combo
                         double[] src_combo = (double[]) src_combo_list.get(src_combo_ind);
 
                         // load bases
@@ -366,12 +365,13 @@ public class ModelWrapper {
                                     "models",
                                     Integer.toString(model_num),
                                     "bases",
-                                    sim_num + ".mph"
+                                    src_on_ind + ".mph"
                             });
 
                             Model model = ModelUtil.load("Model", bases_path);
 
                             double[] basis_vec = extractPotentials(model, coord_path);
+
                             bases = new double[basis_vec.length][src_combo.length];
                             for(int point_ind = 0; point_ind < basis_vec.length; point_ind ++) {
                                 bases[point_ind][src_on_ind] = basis_vec[point_ind];
@@ -384,10 +384,13 @@ public class ModelWrapper {
                         for(int point_ind = 0; point_ind < bases.length; point_ind ++) {
                             for(int base_ind = 0; base_ind < src_combo.length; base_ind ++){
                                 ve[point_ind] += bases[point_ind][base_ind]*src_combo[base_ind];
+                                // TODO - set restrictions or throw warnings for weightings that aren't Q-balance
+                                //  also for weightings that don't have amplitude of
+                                //  (sum positive = 1, and sum negative = -1)
                             }
                         }
                         // and save ve to file
-                        String ve_path = ve_dir + fiber_coord;
+                        String ve_path = ve_dir + fiber_coords;
                         writeVe(ve, ve_path);
                     }
                 }
