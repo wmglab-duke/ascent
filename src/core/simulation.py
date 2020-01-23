@@ -15,6 +15,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
         self.products = dict()
 
     def resolve_factors(self):
+
         if len(self.factors.items()) > 0:
             self.factors = dict()
 
@@ -45,10 +46,17 @@ class Simulation(Exceptionable, Configurable, Saveable):
         pass
 
     def write_waveforms(self):
-        # factors list of dictionaries, each has name and value (which has a length)
-        # within extracellular stim, if key in factors:
-        #     do
-        pass
+
+        loopable = ['fibers', 'waveform']
+        # search(
+        #     {key: value for key, value in self.configs[Config.SIM.value].items() if key in loopable},
+        #     self.search(Config.SIM, "n_dimensions")
+        # )
+
+        return self
+
+
+
 
     def fiber_xy_coordinates(self):
         pass
@@ -63,6 +71,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
     def build_sims(self):
         pass
+        print("here")
         # loop cartesian product
         # build_file_structure()
         # build_hoc()

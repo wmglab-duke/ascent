@@ -6,14 +6,8 @@ import com.comsol.model.util.ModelUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Objects;
+import java.io.*;
+import java.util.*;
 
 /**
  * model.ModelWrapper
@@ -310,36 +304,101 @@ public class ModelWrapper {
     }
 
     /**
-     * TODO: UNFINISHED!!!!
-     * @param json_path to output from fiber_manager.py (see TEST_JSON_OUTPUT.json if exists)
      * @return success indicator
      */
-    public boolean extractPotentials(String json_path) {
+    public boolean extractPotentials(String coords_path, String ve_path) throws IOException {
 
-        // see todos below (unrelated to this method hahahah - HILARIOUS! ROFL!)
-        // TODO: Simulation folders; sorting through configuration files VIA PYTHON
-        // TODO: FORCE THE USER TO STAGE/COMMIT CHANGES BEFORE RUNNING; add Git Commit ID/number to config file
-        try {
-            JSONObject json_data = JSONio.read(
-                    String.join("/", new String[]{root, json_path})
-            );
+        // Load coordinates (x,y,z) from file in form: top line is number of rows of coords (int)
+        //                                             coordinates[0][i] = [x] in micron, (double)
+        //                                             coordinates[1][i] = [y] in micron, (double)
+        //                                             coordinates[2][i] = [z] in micron  (double)
 
-            double[][] coordinates = new double[3][5];
-            String id = this.next("interp");
+        // Read in coords for axon segments as defined and saved to file in Python
+        double[][] coordinatesLoaded;
+        coordinatesLoaded = readCoords(coords_path);
 
-            model.result().numerical().create(id, "Interp");
-            model.result().numerical(id).set("expr", "V");
-            model.result().numerical(id).setInterpolationCoordinates(coordinates);
+        // Transpose saved coordinates (we like to save (x,y,z) as column vectors, but COMSOL wants as rows)
+        double[][] coordinates;
+        coordinates = transposeMatrix(coordinatesLoaded);
 
-            double[][][] data = model.result().numerical(id).getData();
+        // Get Ve from COMSOL
+        String id = this.next("interp");
+        model.result().numerical().create(id, "Interp");
+        model.result().numerical(id).set("expr", "V");
+        model.result().numerical(id).setInterpolationCoordinates(coordinates);
+        double[][][] ve = model.result().numerical(id).getData();
 
-//            System.out.println("data.toString() = " + Arrays.deepToString(data));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return false;
-        }
+        // Save Ve from COMSOL (at coords probed) to file in bases
+        writeVe(ve, ve_path);
 
         return true;
+    }
+
+    // https://stackoverflow.com/questions/15449711/transpose-double-matrix-with-a-java-function
+    public static double[][] transposeMatrix(double [][] m){
+        // pre-allocated array of doubles for transposed matrix
+        double[][] temp = new double[m[0].length][m.length];
+
+        for (int i = 0; i < m.length; i++)
+            for (int j = 0; j < m[0].length; j++)
+                temp[j][i] = m[i][j];
+
+        return temp;
+    }
+
+    private static boolean writeVe(double[][][] ve, String ve_path) throws IOException {
+        PrintWriter printWriter = new PrintWriter(ve_path);
+        int len = ve[0][0].length; // number of coordinates
+
+        // write to file: number of coordintates top line,
+        // then one Ve value for each coordinate  (x,y,z) for subsequent lines
+        printWriter.println(len);
+        for (int i = 0; i < len; i++) {
+            printWriter.println(ve[0][0][i]);
+        }
+        printWriter.close(); // close printWriter
+
+        return true;
+    }
+
+    public double[][] readCoords(String coords_path) throws FileNotFoundException {
+        File f = new File(coords_path);
+        Scanner scan = new Scanner(f);
+
+        String thisLine = null;
+        try {
+            // save rows (number of coords) at top line... so number of lines in file is (number of coords +1)
+            String rows = scan.nextLine();
+            int n_rows = Integer.parseInt(rows);
+
+            // pre-allocated array of doubles for coords in file (3 columns by default for (x,y,z)
+            double[][] coords = new double[n_rows][3];
+            int row_ind = 0;
+
+            // while there are more lines to scan
+            while (scan.hasNextLine()) {
+                thisLine = scan.nextLine();
+                String[] parts = thisLine.split("\\s+");
+                for(int i = 0; i < parts.length; i++) {
+                    coords[row_ind][i] = Double.parseDouble(parts[i]);
+                }
+                row_ind++;
+            }
+
+            if (n_rows != row_ind) {
+                throw new Exception("Number of coordinates (rows) in coords file " +
+                        "does not match header in file: " + coords_path);
+            }
+
+            scan.close();
+
+            return coords;
+
+        } catch(Exception e) {
+            e.printStackTrace();
+
+            return null;
+        }
     }
 
     /**
@@ -426,7 +485,7 @@ public class ModelWrapper {
      * Pre-built for-loop to iterate through all current sources in model (added in Part)
      * Can be super useful for quickly setting different currents and possibly sweeping currents
      */
-    public void loopCurrents(JSONObject modelData, String projectPath, String sample, String modelStr) {
+    public void loopCurrents(JSONObject modelData, String projectPath, String sample, String modelStr) throws IOException {
 
         long runSolStartTime = System.nanoTime();
         int index = 0;
@@ -445,6 +504,7 @@ public class ModelWrapper {
                     "models",
                     modelStr,
                     "bases",
+                    Integer.toString(index),
                     index + ".mph"
             });
 
@@ -454,6 +514,10 @@ public class ModelWrapper {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            String src_path =  "D:\\Documents\\access\\samples\\0\\models\\0\\coords\\0.dat";
+            String dest_path = "D:\\Documents\\access\\samples\\0\\models\\0\\bases\\0\\ve\\0.dat";
+            extractPotentials(src_path, dest_path);
 
             current_on.set("Qjp", 0.000); // reset current
 
@@ -525,7 +589,7 @@ public class ModelWrapper {
      * Master procedure to run!
      * @param args
      */
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) throws IOException {
 
         // Take projectPath input to ModelWrapper and assign to string.
         String projectPath = args[0];
@@ -634,6 +698,7 @@ public class ModelWrapper {
                                 );
                             }
 
+                            System.out.println("skipMesh = true;");
                             skipMesh = true;
                     }
 

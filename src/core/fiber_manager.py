@@ -498,3 +498,15 @@ class FiberManager(Exceptionable, Configurable, Saveable):
         print('done writing file')
         # raise Exception('forcing this to DIE')
 
+    def save_ve_test(self, path: str):
+        """
+        :return:
+        """
+        length = 5
+        x = y = np.arange(0, length, 1).reshape((length, 1))  # column vectors
+        z = np.arange(0, 5000, 1000).reshape((length, 1))
+        coords = np.concatenate((x, y, z), axis=1)
+
+        with open(path, "w") as handle:
+            np.savetxt(path, coords, fmt='%1.3f')  # path is *.dat file
+
