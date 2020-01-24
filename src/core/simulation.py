@@ -138,10 +138,16 @@ class Simulation(Exceptionable, Configurable, Saveable):
         #  /potentials key (index ) - values pXsrcs
         # index of the line is s, write row containing of p and src index to file
         cuff = self.search(Config.MODEL, "cuff","preset")
-        src_combo_list = self.search(Config.SIM, "active_srcs")
-
+        if cuff in self.configs[Config.SIM.value]["active_srcs"].keys():
+            active_srcs_list = self.search(Config.SIM, "active_srcs", cuff)
+        else:
+            active_srcs_list = self.search(Config.SIM, "active_srcs", "default")
+            print("WARNING: Attempting to use default value for active_srcs: {}".format(src_combo_list))
         # using default of is the cuff name present?
-        if sum(src_combo_list)
+
+        if sum(active_srcs_list) is not 0:
+            self.throw(49)
+        if sum(abs(active_srcs_list)) is not 2:
 
     ############################
 

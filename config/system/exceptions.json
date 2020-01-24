@@ -238,5 +238,10 @@
     "code": 48,
     "text": "Rho perineurium method not implemented",
     "source": "src.core.Runner"
+  },
+  {
+    "code": 49,
+    "text": "active_srcs_list provided does not abide by current conservation",
+    "source": "src.core.Simulation"
   }
 ]
