@@ -1,6 +1,9 @@
 {
   "n_dimensions": 3,
-  "active_srcs": [1],
+  "active_srcs": {
+    "Enteromedics": [1],
+    "default": [1, -1]
+  },
   "fibers": {
     "mode": "MRG_DISCRETE",
     "units": "micrometer",
