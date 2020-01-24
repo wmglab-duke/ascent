@@ -343,6 +343,8 @@ public class ModelWrapper {
                         "ve"
                 });
 
+                // TODO - index for fiber type
+
                 File f_coords = new File(projectPath + coord_dir);
                 String[] fiber_coords_list;
                 fiber_coords_list = f_coords.list(); // create list of fiber coords (one for each fiber)
