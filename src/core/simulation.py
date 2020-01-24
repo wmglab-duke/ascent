@@ -130,7 +130,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
         return self
 
-    def validate_srcs(self):
+    def validate_srcs(self, sim_directory):
         #  /potentials key (index ) - values pXsrcs
         # index of the line is s, write row containing of p and src index to file
         cuff = self.search(Config.MODEL, "cuff", "preset")
@@ -162,7 +162,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
             output[i] = active_src_select[0], fiberset_select[0]
 
         # write to file
-        filepath = 
+        filepath = os.path.join(sim_directory, "potentials", "key.dat")
         np.save(filepath, output)
         return self
 
