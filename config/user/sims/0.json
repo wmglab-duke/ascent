@@ -8,6 +8,7 @@
   "fibers": {
     "mode": "MRG_DISCRETE",
     "units": "micrometer",
+    "xy_trace_buffer": 5.0,
     "z_parameters": {
       "diameters": [1, 2, 5.7],
       "min": 0.0,

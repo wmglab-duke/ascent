@@ -7,6 +7,7 @@ from typing import Dict
 
 import numpy as np
 
+from core import Sample
 from src.utils import *
 
 
@@ -17,7 +18,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         SIM
     """
 
-    def __init__(self, exceptions_config: list):
+    def __init__(self, sample: Sample, exceptions_config: list):
         """
         :param exceptions_config: preloaded exceptions.json data
         """
@@ -27,14 +28,9 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         Exceptionable.__init__(self, SetupMode.OLD, exceptions_config)
 
         # initialize empty lists of fiber points
-        self.xy_coordinates = None
-        self.full_coordinates = None
-
-        # empty metadata
-        self.fiber_metadata: Dict[str, list] = {}
-        self.add(SetupMode.NEW, Config.FIBER_Z, os.path.join('config', 'system', 'fiber_z.json'))
-
         self.fibers = None
+
+        self.add(SetupMode.NEW, Config.FIBER_Z, os.path.join('config', 'system', 'fiber_z.json'))
 
     def init_post_config(self):
         if any([config.value not in self.configs.keys() for config in (Config.MODEL, Config.SIM)]):
@@ -44,6 +40,10 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         """
         :return:
         """
+        fibers_xy = self.generate_xy()
+        self.fibers = self.generate_z(fibers_xy)
+
+
         fibers = None
 
         self.fibers = fibers
@@ -54,6 +54,16 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         :param path:
         :return:
         """
-        filepath = 'None'
-        fiber = 'None'
-        np.save(filepath, fiber)
+        for i, fiber in enumerate(self.fibers):
+            np.savetxt(
+                os.path.join(path, str(i) + WriteMode.file_endings.value[mode.value]),
+                np.concatenate(([len(fiber)], fiber)),
+                fmt='%.5f'
+            )
+        return self
+
+    def generate_xy(self) -> np.ndarray:
+        return []
+
+    def generate_z(self, fibers_xy):
+        pass

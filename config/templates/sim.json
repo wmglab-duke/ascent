@@ -1,8 +1,14 @@
 {
   "n_dimensions": 3,
+  "active_srcs": {
+    "Enteromedics": [[1]],
+    "CorTec": [[1]],
+    "default": [[1, -1]]
+  },
   "fibers": {
     "mode": "MRG_DISCRETE",
     "units": "micrometer",
+    "xy_trace_buffer": 5.0,
     "z_parameters": {
       "diameters": [1, 2, 5.7],
       "min": 0.0,
