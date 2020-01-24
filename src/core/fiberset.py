@@ -54,9 +54,13 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         :param path:
         :return:
         """
-        filepath = 'None'
-        fiber = 'None'
-        np.save(filepath, fiber)
+        for i, fiber in enumerate(self.fibers):
+            np.savetxt(
+                os.path.join(path, str(i) + WriteMode.file_endings.value[mode.value]),
+                np.concatenate(([len(fiber)], fiber)),
+                fmt='%.5f'
+            )
+        return self
 
     def generate_xy(self) -> np.ndarray:
         return []

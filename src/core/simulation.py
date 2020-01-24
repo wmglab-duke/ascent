@@ -70,6 +70,11 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
         for i, fiberset_set in enumerate(self.fiberset_product):
 
+            fiberset_directory = os.path.join(directory, str(i))
+
+            if not os.path.exists(fiberset_directory):
+                os.makedirs(fiberset_directory)
+
             sim_copy = self._copy_and_edit_config(self.configs[Config.SIM.value], self.fiberset_key, list(fiberset_set))
 
             fiberset = FiberSet(self.sample, self.configs[Config.EXCEPTIONS.value])
@@ -77,7 +82,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 .add(SetupMode.OLD, Config.SIM, sim_copy) \
                 .add(SetupMode.OLD, Config.MODEL, self.configs[Config.MODEL.value]) \
                 .generate() \
-                .write(WriteMode.DATA, os.path.join(directory, str(i)))
+                .write(WriteMode.DATA, fiberset_directory)
 
             self.fibersets.append(fiberset)
 
