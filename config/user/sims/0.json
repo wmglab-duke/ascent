@@ -1,5 +1,6 @@
 {
   "n_dimensions": 3,
+  "active_srcs": [1],
   "fibers": {
     "mode": "MRG_DISCRETE",
     "units": "micrometer",

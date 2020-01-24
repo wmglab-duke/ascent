@@ -3,6 +3,8 @@ import os
 
 import itertools
 
+from org.json import JSONArray
+
 from .waveform import Waveform
 from src.core import Sample
 from src.utils import Exceptionable, Configurable, Saveable, SetupMode, Config, WriteMode
@@ -132,25 +134,22 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
         return self
 
+    def validate_srcs(self):
+        #  /potentials key (index ) - values pXsrcs
+        # index of the line is s, write row containing of p and src index to file
+        src_combo_list = self.search(Config.SIM, "active_srcs")
+        if sum*()
 
-
-
-    def fiber_xy_coordinates(self):
-        pass
-
-    def fiber_z_coordinates(self):
-        pass
-
-    def save_coordinates(self):
-        pass
 
     ############################
+
 
     def build_sims(self):
         pass
         print("here")
         # loop cartesian product
         # build_file_structure()
+        # build paths
         # build_hoc()
         # copy_trees()
 
