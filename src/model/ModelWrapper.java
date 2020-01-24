@@ -357,17 +357,15 @@ public class ModelWrapper {
                 File f_key = new File(key_path);
                 Scanner scan_key = new Scanner(f_key);
 
-                String thisLine = null;
+                String thisLine;
 
                 // save rows (number of coords) at top line... so number of lines in file is (number of coords +1)
                 String products = scan_key.nextLine();
                 int n_products = Integer.parseInt(products);
 
-                // pre-allocated array of doubles for products in file (2 columns by default for
-                // (active_src_select,fiberset_select)
+                // pre-allocated array of doubles for products in file (2 columns by default for (active_src_select,fiberset_select)
                 int[][] prods = new int[n_products][2];
                 int row_ind = 0;
-
                 // while there are more lines to scan
                 while (scan_key.hasNextLine()) {
                     thisLine = scan_key.nextLine();
@@ -378,7 +376,6 @@ public class ModelWrapper {
                     row_ind++;
                 }
 
-                ///////////////////
                 for (int i = 0; i < n_products; i++) {
                     int ind_active_src_select = prods[i][0];
                     int ind_fiberset_select = prods[i][1];
@@ -431,8 +428,9 @@ public class ModelWrapper {
                         }
                     }
                 }
-                //////////////////
-                
+            }
+        }
+    }
 
 //                String[] fiber_coords_list;
 //                fiber_coords_list = f_coords.list(); // create list of fiber coords (one for each fiber)
@@ -481,9 +479,7 @@ public class ModelWrapper {
 //                        writeVe(ve, ve_path);
 //                    }
 //                }
-            }
-        }
-    }
+
 
         /**
          * @return success indicator
