@@ -54,7 +54,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         :param path:
         :return:
         """
-        for i, fiber in enumerate(self.fibers):
+        for i, fiber in enumerate(self.fibers if self.fibers is not None else []):
             np.savetxt(
                 os.path.join(path, str(i) + WriteMode.file_endings.value[mode.value]),
                 np.concatenate(([len(fiber)], fiber)),
@@ -64,9 +64,9 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
     def _generate_xy(self) -> np.ndarray:
         # get required parameters from configuration JSON (using inherited Configurable methods)
-        xy_mode_name: str = self.search(Config.SIM, 'fibers', 'mode')
+        xy_mode_name: str = self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode')
         xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
-        xy_parameters: dict = self.search(Config.SIM, xy_mode.parameters.value)
+        xy_parameters: dict = self.search(Config.SIM, 'fibers', 'xy_parameters')
 
         # initialize result lists
         points: List[Tuple[float]] = []

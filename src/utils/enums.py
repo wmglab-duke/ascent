@@ -99,7 +99,7 @@ class DeformationMode(Enum):
 @unique
 class FiberXYMode(Enum):
     config = 'fiber_xy'
-    parameters = 'fiber_xy_parameters'
+    parameters = 'xy_parameters'
 
     UNIFORM_DENSITY = 0  # all fascicles have same fiber DENSITY, randomized positions within each fascicle
     UNIFORM_COUNT = 1  # all fascicles have save fiber COUNT, same randomization of positions within each fascicle
