@@ -10,7 +10,7 @@ import numpy as np
 from src.utils import *
 
 
-class Fiber(Exceptionable, Configurable, Saveable):
+class FiberSet(Exceptionable, Configurable, Saveable):
     """
     Required (Config.) JSON's:
         MODEL

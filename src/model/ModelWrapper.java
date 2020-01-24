@@ -3,7 +3,6 @@ package model;
 import com.comsol.model.*;
 import com.comsol.model.physics.PhysicsFeature;
 import com.comsol.model.util.ModelUtil;
-import org.eclipse.jetty.util.ajax.JSON;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -383,7 +382,7 @@ public class ModelWrapper {
                         double[] ve = new double[bases.length];
                         for(int point_ind = 0; point_ind < bases.length; point_ind ++) {
                             for(int base_ind = 0; base_ind < src_combo.length; base_ind ++){
-                                ve[point_ind] += bases[point_ind][base_ind]*src_combo[base_ind];
+                                ve[point_ind] += bases[point_ind][base_ind] * src_combo[base_ind];
                             }
                         }
                         // and save ve to file
