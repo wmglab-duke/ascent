@@ -379,6 +379,7 @@ public class ModelWrapper {
                             }
                         }
 
+                        // TODO using default of is the cuff name present?
                         // combine bases
                         // for each point (row), then across bases (column) multiply by src_combo and add
                         double[] ve = new double[bases.length];

@@ -138,6 +138,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
         #  /potentials key (index ) - values pXsrcs
         # index of the line is s, write row containing of p and src index to file
         src_combo_list = self.search(Config.SIM, "active_srcs")
+        # using default of is the cuff name present?
         if sum*()
 
     ############################
