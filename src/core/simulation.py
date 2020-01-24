@@ -30,7 +30,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
     # TODO, sum C_i = 0 (contact weights), sum abs(C_i) = 2 unless monopolar in which case =1
 
-    def resolve_factors(self):
+    def resolve_factors(self) -> 'Simulation':
 
         if len(self.factors.items()) > 0:
             self.factors = dict()
@@ -56,7 +56,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
         return self
 
-    def write_fibers(self, sim_directory: str):
+    def write_fibers(self, sim_directory: str) -> 'Simulation':
         # loop PARAMS in here, but loop HISTOLOGY in FiberSet object
         # TODO: finish method!
 
@@ -88,9 +88,9 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
             self.fibersets.append(fiberset)
 
-        pass
+        return self
 
-    def write_waveforms(self, sim_directory: str):
+    def write_waveforms(self, sim_directory: str) -> 'Simulation':
         directory = os.path.join(sim_directory, 'waveforms')
         if not os.path.exists(directory):
             os.makedirs(directory)
@@ -119,7 +119,8 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 .add(SetupMode.OLD, Config.MODEL, self.configs[Config.MODEL.value]) \
                 .init_post_config() \
                 .generate() \
-                .write(WriteMode.DATA, os.path.join(directory, str(i)))
+                .write(WriteMode.DATA, os.path.join(directory, str(i))) \
+                # .plot()
 
             self.waveforms.append(waveform)
 
@@ -130,7 +131,12 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
         return self
 
+<<<<<<< HEAD
     def validate_srcs(self, sim_directory):
+=======
+
+    def validate_srcs(self, filepath) -> 'Simulation':
+>>>>>>> 77909d22944d43d4db218bd0b842ca70457e9f10
         #  /potentials key (index ) - values pXsrcs
         # index of the line is s, write row containing of p and src index to file
         cuff = self.search(Config.MODEL, "cuff", "preset")
@@ -168,14 +174,14 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
     ############################
 
-    def build_sims(self):
-        pass
+    def build_sims(self) -> 'Simulation':
         print("here")
         # loop cartesian product
         # build_file_structure()
         # build paths
         # build_hoc()
         # copy_trees()
+        return self
 
     def _build_file_structure(self):
         pass

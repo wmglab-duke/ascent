@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from shapely.affinity import scale
 from shapely.geometry import LineString, Point
 
-from core import Sample
+from .sample import Sample
 from src.utils import *
 
 
