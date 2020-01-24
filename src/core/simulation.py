@@ -131,7 +131,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
         return self
 
-    def validate_srcs(self, filepath) -> 'Simulation':
+    def validate_srcs(self, sim_directory) -> 'Simulation':
         #  /potentials key (index ) - values pXsrcs
         # index of the line is s, write row containing of p and src index to file
         cuff = self.search(Config.MODEL, "cuff", "preset")
