@@ -7,6 +7,7 @@ from typing import Dict
 
 import numpy as np
 
+from core import Sample
 from src.utils import *
 
 
@@ -17,7 +18,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         SIM
     """
 
-    def __init__(self, exceptions_config: list):
+    def __init__(self, sample: Sample, exceptions_config: list):
         """
         :param exceptions_config: preloaded exceptions.json data
         """

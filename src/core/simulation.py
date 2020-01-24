@@ -68,25 +68,18 @@ class Simulation(Exceptionable, Configurable, Saveable):
         self.fiberset_key = list(fiberset_factors.keys())
         self.fiberset_product = list(itertools.product(*fiberset_factors.values()))
 
-        for i, wave_set in enumerate(self.fiber_product):
+        for i, fiberset_set in enumerate(self.fiberset_product):
 
-            sim_copy = copy.deepcopy(self.configs[Config.SIM.value])
-            for path, value in zip(self.fiber_key, list(wave_set)):
-                path_parts = path.split('.')
-                pointer = sim_copy
-                for path_part in path_parts[:-1]:
-                    pointer = pointer[path_part]
-                pointer[path_parts[-1]] = value
+            sim_copy = self._copy_and_edit_config(self.configs[Config.SIM.value], self.fiberset_key, list(fiberset_set))
 
-            fiberset = FiberSet(self.configs[Config.EXCEPTIONS.value])
+            fiberset = FiberSet(self.sample, self.configs[Config.EXCEPTIONS.value])
             fiberset \
                 .add(SetupMode.OLD, Config.SIM, sim_copy) \
                 .add(SetupMode.OLD, Config.MODEL, self.configs[Config.MODEL.value]) \
-                .init_post_config() \
                 .generate() \
                 .write(WriteMode.DATA, os.path.join(directory, str(i)))
 
-            self.waveforms.append(fiberset)
+            self.fibersets.append(fiberset)
 
 
         pass
@@ -104,13 +97,15 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
         for i, wave_set in enumerate(self.wave_product):
 
-            sim_copy = copy.deepcopy(self.configs[Config.SIM.value])
-            for path, value in zip(self.wave_key, list(wave_set)):
-                path_parts = path.split('.')
-                pointer = sim_copy
-                for path_part in path_parts[:-1]:
-                    pointer = pointer[path_part]
-                pointer[path_parts[-1]] = value
+            sim_copy = self._copy_and_edit_config(self.configs[Config.SIM.value], self.wave_key, list(wave_set))
+
+            # sim_copy = copy.deepcopy(self.configs[Config.SIM.value])
+            # for path, value in zip(self.wave_key, list(wave_set)):
+            #     path_parts = path.split('.')
+            #     pointer = sim_copy
+            #     for path_part in path_parts[:-1]:
+            #         pointer = pointer[path_part]
+            #     pointer[path_parts[-1]] = value
 
             waveform = Waveform(self.configs[Config.EXCEPTIONS.value])
             waveform \
@@ -161,3 +156,15 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
     def _build_hoc(self):
         pass
+
+    ############################
+
+    def _copy_and_edit_config(self, config, key, set):
+        cp = copy.deepcopy(config)
+        for path, value in zip(key, list(set)):
+            path_parts = path.split('.')
+            pointer = cp
+            for path_part in path_parts[:-1]:
+                pointer = pointer[path_part]
+            pointer[path_parts[-1]] = value
+        return cp
