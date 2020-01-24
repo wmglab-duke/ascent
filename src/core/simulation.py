@@ -3,7 +3,10 @@ import os
 
 import itertools
 
-from . import FiberSet, Waveform
+import numpy as np
+
+from .fiberset import FiberSet
+from .waveform import Waveform
 from src.core import Sample
 from src.utils import Exceptionable, Configurable, Saveable, SetupMode, Config, WriteMode
 
@@ -25,7 +28,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
         self.src_product = []
         self.master_product = []
 
-# TODO, sum C_i = 0 (contact weights), sum abs(C_i) = 2 unless monopolar in which case =1
+    # TODO, sum C_i = 0 (contact weights), sum abs(C_i) = 2 unless monopolar in which case =1
 
     def resolve_factors(self):
 
@@ -52,7 +55,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
             )
 
         return self
-
 
     def write_fibers(self, sim_directory: str):
         # loop PARAMS in here, but loop HISTOLOGY in FiberSet object
@@ -88,7 +90,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
             self.waveforms.append(fiberset)
 
-
         pass
 
     def write_waveforms(self, sim_directory: str):
@@ -122,10 +123,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
             self.waveforms.append(waveform)
 
-
-
-
-
         # search(
         #     {key: value for key, value in self.configs[Config.SIM.value].items() if key in loopable},
         #     self.search(Config.SIM, "n_dimensions")
@@ -133,25 +130,42 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
         return self
 
-
-    def validate_srcs(self):
+    def validate_srcs(self, filepath):
         #  /potentials key (index ) - values pXsrcs
         # index of the line is s, write row containing of p and src index to file
-        cuff = self.search(Config.MODEL, "cuff","preset")
+        cuff = self.search(Config.MODEL, "cuff", "preset")
         if cuff in self.configs[Config.SIM.value]["active_srcs"].keys():
             active_srcs_list = self.search(Config.SIM, "active_srcs", cuff)
+
         else:
             active_srcs_list = self.search(Config.SIM, "active_srcs", "default")
-            print("WARNING: Attempting to use default value for active_srcs: {}".format(src_combo_list))
-        # using default of is the cuff name present?
+            print("WARNING: Attempting to use default value for active_srcs: {}".format(active_srcs_list))
 
-        if sum(active_srcs_list) is not 0:
-            self.throw(49)
-        if sum(abs(active_srcs_list)) is not 2:
-            self.throw(50)
+        for active_srcs in active_srcs_list:
+            active_src_abs = [abs(src_weight) for src_weight in active_srcs]
+            if len(active_srcs) == 1:
+                if sum(active_srcs) is not 1:
+                    self.throw(50)
+            else:
+                if sum(active_srcs) is not 0:
+                    self.throw(49)
+                if sum(active_src_abs) is not 2:
+                    self.throw(50)
+
+        potentials_product = list(itertools.product(list(enumerate(active_srcs_list)),
+                                                    list(enumerate(self.fiberset_product))
+                                                    ))
+
+        # loop over product
+        output = []
+        for i, (active_src_select, fiberset_select) in enumerate(potentials_product):
+            output[i] = active_src_select[0], fiberset_select[0]
+
+        # write to file
+        np.save(filepath, output)
+        return self
 
     ############################
-
 
     def build_sims(self):
         pass
@@ -164,6 +178,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
     def _build_file_structure(self):
         pass
+
     def _copy_trees(self, trees=None):
         if trees is None:
             trees = ['Ve_data', 'waveforms']
