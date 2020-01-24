@@ -137,9 +137,11 @@ class Simulation(Exceptionable, Configurable, Saveable):
     def validate_srcs(self):
         #  /potentials key (index ) - values pXsrcs
         # index of the line is s, write row containing of p and src index to file
+        cuff = self.search(Config.MODEL, "cuff","preset")
         src_combo_list = self.search(Config.SIM, "active_srcs")
+
         # using default of is the cuff name present?
-        if sum*()
+        if sum(src_combo_list)
 
     ############################
 
