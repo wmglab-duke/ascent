@@ -172,8 +172,8 @@ class Runner(Exceptionable, Configurable):
                         .add(SetupMode.OLD, Config.SIM, sim_config) \
                         .resolve_factors() \
                         .write_waveforms(sim_obj_dir) \
+                        .write_fibers() \
                         .save(sim_obj_file)
-                        # .write_fibers() \
                         # .fiber_xy_coordinates(plot=False, save=True) \
                         # .fiber_z_coordinates(save=True) \
                         # .save_coordinates(format='.dat', mode='xyz') \
