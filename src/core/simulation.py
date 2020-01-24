@@ -160,7 +160,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
         # loop over product
         output = [len(potentials_product)]
         for (active_src_select, fiberset_select) in potentials_product:
-            output.append(active_src_select[0], fiberset_select[0])
+            output.append((active_src_select[0], fiberset_select[0]))
 
         # write to file
         filepath = os.path.join(sim_directory, "potentials", "key.dat")
