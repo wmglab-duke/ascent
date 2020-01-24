@@ -85,6 +85,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                             points.append(inner.centroid())
 
             elif xy_mode == FiberXYMode.UNIFORM_DENSITY:
+                # DENSITY UNIT: axons / um^2
 
                 # this determines whether the density should be determined top-down or bottom-up
                 # case top_down == true: fetch target density and cap minimum axons if too low
@@ -186,12 +187,10 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                                 points.append(point)
 
             if plot:
+                plt.figure()
                 self.sample.slides[0].plot(final=False, fix_aspect_ratio=True)
-
-                # TODO
-                # for point in np.reshape(fascicles, (-1, 2)):
-                #     plt.plot(*point, 'r*')
-
+                for point in points:
+                    plt.plot(point[0], point[1], 'r*')
                 plt.show()
         else:
             self.throw(30)
