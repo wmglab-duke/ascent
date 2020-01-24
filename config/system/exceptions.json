@@ -243,5 +243,10 @@
     "code": 49,
     "text": "active_srcs_list provided does not abide by current conservation",
     "source": "src.core.Simulation"
+  },
+  {
+    "code": 50,
+    "text": "active_srcs_list provided does not abide by unitary current input response",
+    "source": "src.core.Simulation"
   }
 ]

@@ -148,6 +148,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
         if sum(active_srcs_list) is not 0:
             self.throw(49)
         if sum(abs(active_srcs_list)) is not 2:
+            self.throw(50)
 
     ############################
 
