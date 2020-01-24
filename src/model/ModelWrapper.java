@@ -343,7 +343,49 @@ public class ModelWrapper {
                         "ve"
                 });
 
-                // TODO - index for fiber type
+                String key_path = String.join("/", new String[]{ // build path to key (fiberset x srcs) file
+                        "samples",
+                        Integer.toString(sample),
+                        "models",
+                        Integer.toString(model_num),
+                        "sims",
+                        Integer.toString(sim_num),
+                        "potentials",
+                        "key.dat"
+                });
+
+                ///////
+
+                File f_key = new File(key_path);
+                Scanner scan_key = new Scanner(f_key);
+
+                String thisLine = null;
+
+                // save rows (number of coords) at top line... so number of lines in file is (number of coords +1)
+                String rows = scan_key.nextLine();
+                int n_rows = Integer.parseInt(rows);
+
+                // pre-allocated array of doubles for coords in file (3 columns by default for (x,y,z)
+                double[][] coords = new double[n_rows][3];
+                int row_ind = 0;
+
+                // while there are more lines to scan
+                while (scan.hasNextLine()) {
+                    thisLine = scan.nextLine();
+                    String[] parts = thisLine.split("\\s+");
+                    for(int i = 0; i < parts.length; i++) {
+                        coords[row_ind][i] = Double.parseDouble(parts[i]);
+                    }
+                    row_ind++;
+                }
+
+
+                ///////
+
+
+
+
+
 
                 File f_coords = new File(projectPath + coord_dir);
                 String[] fiber_coords_list;
@@ -379,7 +421,6 @@ public class ModelWrapper {
                             }
                         }
 
-                        // TODO using default of is the cuff name present?
                         // combine bases
                         // for each point (row), then across bases (column) multiply by src_combo and add
                         double[] ve = new double[bases.length];
@@ -388,6 +429,7 @@ public class ModelWrapper {
                                 ve[point_ind] += bases[point_ind][base_ind] * src_combo[base_ind];
                             }
                         }
+
                         // and save ve to file
                         String ve_path = ve_dir + fiber_coords;
                         writeVe(ve, ve_path);
