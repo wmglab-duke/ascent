@@ -1,8 +1,8 @@
 {
   "n_dimensions": 3,
   "active_srcs": {
-    "Enteromedics": [[1]],
-    "CorTec": [[1]],
+    "Enteromedics.json": [[1]],
+    "CorTec.json": [[1]],
     "default": [[1, -1]]
   },
   "fibers": {

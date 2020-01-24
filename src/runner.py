@@ -173,6 +173,7 @@ class Runner(Exceptionable, Configurable):
                         .resolve_factors() \
                         .write_waveforms(sim_obj_dir) \
                         .write_fibers() \
+                        .validate_srcs() \
                         .save(sim_obj_file)
                         # .fiber_xy_coordinates(plot=False, save=True) \
                         # .fiber_z_coordinates(save=True) \
