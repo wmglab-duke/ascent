@@ -354,53 +354,47 @@ public class ModelWrapper {
                         "key.dat"
                 });
 
-                ///////
-
                 File f_key = new File(key_path);
                 Scanner scan_key = new Scanner(f_key);
 
                 String thisLine = null;
 
                 // save rows (number of coords) at top line... so number of lines in file is (number of coords +1)
-                String rows = scan_key.nextLine();
-                int n_rows = Integer.parseInt(rows);
+                String products = scan_key.nextLine();
+                int n_products = Integer.parseInt(products);
 
-                // pre-allocated array of doubles for coords in file (3 columns by default for (x,y,z)
-                double[][] coords = new double[n_rows][3];
+                // pre-allocated array of doubles for products in file (2 columns by default for
+                // (active_src_select,fiberset_select)
+                int[][] prods = new int[n_products][2];
                 int row_ind = 0;
 
                 // while there are more lines to scan
-                while (scan.hasNextLine()) {
-                    thisLine = scan.nextLine();
+                while (scan_key.hasNextLine()) {
+                    thisLine = scan_key.nextLine();
                     String[] parts = thisLine.split("\\s+");
                     for(int i = 0; i < parts.length; i++) {
-                        coords[row_ind][i] = Double.parseDouble(parts[i]);
+                        prods[row_ind][i] = Integer.parseInt(parts[i]);
                     }
                     row_ind++;
                 }
 
+                ///////////////////
+                for (int i = 0; i < n_products; i++) {
+                    int ind_active_src_select = prods[i][0];
+                    int ind_fiberset_select = prods[i][1];
 
-                ///////
+                    File f_coords = new File(projectPath + coord_dir + ind_fiberset_select);
+                    String[] fiber_coords_list = f_coords.list(); // create list of fiber coords (one for each fiber)
 
-
-
-
-
-
-                File f_coords = new File(projectPath + coord_dir);
-                String[] fiber_coords_list;
-                fiber_coords_list = f_coords.list(); // create list of fiber coords (one for each fiber)
-
-                for (String fiber_coords:fiber_coords_list) { // loop over fiber coords in list of fiber coords
-                    String coord_path = projectPath + coord_dir + fiber_coords; // build path to coordinates
-
-                    // loop over active_src setting
+                    // loop fiber_coords_list
                     JSONArray src_combo_list = simData.getJSONArray("active_srcs"); // get array of contact combo weightings
-                    for(int src_combo_ind = 0; src_combo_ind < src_combo_list.length(); src_combo_ind++) { // loop over weighting combo
-                        double[] src_combo = (double[]) src_combo_list.get(src_combo_ind);
+                    double[] src_combo = (double[]) src_combo_list.get(ind_active_src_select);
+
+                    assert fiber_coords_list != null;
+                    for (String fiber_coords:fiber_coords_list) { // loop over fiber coords in list of fiber coords
+                        String coord_path = projectPath + coord_dir + fiber_coords; // build path to coordinates
 
                         // load bases
-                        double[][] bases = new double[0][];
                         for(int src_on_ind = 0; src_on_ind < src_combo.length; src_on_ind ++) {
                             String bases_path = String.join("/", new String[]{
                                     "samples",
@@ -415,26 +409,78 @@ public class ModelWrapper {
 
                             double[] basis_vec = extractPotentials(model, coord_path);
 
-                            bases = new double[basis_vec.length][src_combo.length];
+                            double[][] bases = new double[basis_vec.length][src_combo.length];
                             for(int point_ind = 0; point_ind < basis_vec.length; point_ind ++) {
                                 bases[point_ind][src_on_ind] = basis_vec[point_ind];
                             }
-                        }
 
-                        // combine bases
-                        // for each point (row), then across bases (column) multiply by src_combo and add
-                        double[] ve = new double[bases.length];
-                        for(int point_ind = 0; point_ind < bases.length; point_ind ++) {
-                            for(int base_ind = 0; base_ind < src_combo.length; base_ind ++){
-                                ve[point_ind] += bases[point_ind][base_ind] * src_combo[base_ind];
+                            // for each point (row), then across bases (column) multiply by src_combo and add
+                            double[] ve = new double[bases.length];
+                            for(int point_ind = 0; point_ind < bases.length; point_ind ++) {
+                                for(int base_ind = 0; base_ind < src_combo.length; base_ind ++){
+                                    ve[point_ind] += bases[point_ind][base_ind] * src_combo[base_ind];
+                                }
                             }
+                            // and save ve to file
+                            String ve_path = String.join("/", new String[]{
+                                    ve_dir,
+                                    Integer.toString(i),
+                                    fiber_coords
+                            });
+                            writeVe(ve, ve_path);
                         }
-
-                        // and save ve to file
-                        String ve_path = ve_dir + fiber_coords;
-                        writeVe(ve, ve_path);
                     }
                 }
+                //////////////////
+                
+
+//                String[] fiber_coords_list;
+//                fiber_coords_list = f_coords.list(); // create list of fiber coords (one for each fiber)
+//
+//                for (String fiber_coords:fiber_coords_list) { // loop over fiber coords in list of fiber coords
+//                    String coord_path = projectPath + coord_dir + fiber_coords; // build path to coordinates
+//
+//                    // loop over active_src setting
+//                    JSONArray src_combo_list = simData.getJSONArray("active_srcs"); // get array of contact combo weightings
+//                    for(int src_combo_ind = 0; src_combo_ind < src_combo_list.length(); src_combo_ind++) { // loop over weighting combo
+//                        double[] src_combo = (double[]) src_combo_list.get(src_combo_ind);
+//
+//                        // load bases
+//                        double[][] bases = new double[0][];
+//                        for(int src_on_ind = 0; src_on_ind < src_combo.length; src_on_ind ++) {
+//                            String bases_path = String.join("/", new String[]{
+//                                    "samples",
+//                                    Integer.toString(sample),
+//                                    "models",
+//                                    Integer.toString(model_num),
+//                                    "bases",
+//                                    src_on_ind + ".mph"
+//                            });
+//
+//                            Model model = ModelUtil.load("Model", bases_path);
+//
+//                            double[] basis_vec = extractPotentials(model, coord_path);
+//
+//                            bases = new double[basis_vec.length][src_combo.length];
+//                            for(int point_ind = 0; point_ind < basis_vec.length; point_ind ++) {
+//                                bases[point_ind][src_on_ind] = basis_vec[point_ind];
+//                            }
+//                        }
+//
+//                        // combine bases
+//                        // for each point (row), then across bases (column) multiply by src_combo and add
+//                        double[] ve = new double[bases.length];
+//                        for(int point_ind = 0; point_ind < bases.length; point_ind ++) {
+//                            for(int base_ind = 0; base_ind < src_combo.length; base_ind ++){
+//                                ve[point_ind] += bases[point_ind][base_ind] * src_combo[base_ind];
+//                            }
+//                        }
+//
+//                        // and save ve to file
+//                        String ve_path = ve_dir + fiber_coords;
+//                        writeVe(ve, ve_path);
+//                    }
+//                }
             }
         }
     }
