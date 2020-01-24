@@ -6,6 +6,7 @@
     "default": [[1, -1]]
   },
   "fibers": {
+    "plot": true,
     "mode": "MRG_DISCRETE",
     "units": "micrometer",
     "xy_trace_buffer": 5.0,
