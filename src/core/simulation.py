@@ -131,6 +131,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
         return self
 
+
     def validate_srcs(self, filepath) -> 'Simulation':
         #  /potentials key (index ) - values pXsrcs
         # index of the line is s, write row containing of p and src index to file
@@ -163,6 +164,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
             output[i] = active_src_select[0], fiberset_select[0]
 
         # write to file
+        filepath = 'dummy value'
         np.save(filepath, output)
         return self
 
