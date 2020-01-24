@@ -11,7 +11,7 @@
     "units": "micrometer",
     "xy_trace_buffer": 5.0,
     "z_parameters": {
-      "diameters": [1, 2, 5.7],
+      "diameters": 1,
       "min": 0.0,
       "max": 50000.0,
       "offsets": 0.0
@@ -19,9 +19,9 @@
     "xy_parameters": [
       {
         "mode": "UNIFORM_DENSITY",
-        "top_down": false,
+        "top_down": true,
         "minimum_number": 0,
-        "maximum_number": 20,
+        "maximum_number": 1000,
         "target_density": 0.0005,
         "target_number": 4
       },
