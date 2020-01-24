@@ -268,15 +268,17 @@ class Waveform(Exceptionable, Configurable, Saveable):
 
         return self
 
+    def plot(self):
+        plt.figure()
+        plt.plot(self.wave)
+        plt.show()
+
     def write(self, mode: WriteMode, path: str):
         """
         :param mode: usually DATA
         :param path:
         :return:
         """
-        plt.figure()
-        plt.plot(self.wave)
-        plt.show()
 
 
         print(path + WriteMode.file_endings.value[mode.value])
