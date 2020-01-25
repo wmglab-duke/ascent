@@ -194,7 +194,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
             self._build_file_structure(sim_obj_dir, t)
             shutil.copyfile(source_waveform_path, destination_waveform_path)
-            # self._copy_trees()
+            shutil.copytree(source_potentials_dir, destination_potentials_path)
             # self._build_hoc()
 
 
