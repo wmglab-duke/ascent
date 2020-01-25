@@ -193,11 +193,13 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
             r = prod[1]
             source_waveform_path = os.path.join(sim_obj_dir, "waveforms", "{}.dat".format(r))
-            destination_waveform_path = os.path.join(sim_obj_dir, str(t), "data", "inputs", "waveform.dat")
+            destination_waveform_path = os.path.join(sim_obj_dir, "n_sims", str(t), "data", "inputs", "waveform.dat")
 
             self._build_file_structure(sim_obj_dir, t)
             shutil.copyfile(source_waveform_path, destination_waveform_path)
-            # shutil.copytree(source_potentials_dir, destination_potentials_dir)
+
+
+        # shutil.copytree(source_potentials_dir, destination_potentials_dir)
             # self._build_hoc(sim_obj_dir)
 
 
@@ -209,7 +211,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
     @staticmethod
     def _build_file_structure(sim_obj_dir, t):
-        sim_dir = os.path.join(sim_obj_dir, str(t))
+        sim_dir = os.path.join(sim_obj_dir, "n_sims", str(t))
 
         if not os.path.exists(sim_dir):
             subfolder_names = ["inputs", "outputs"]
