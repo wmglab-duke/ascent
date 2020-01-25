@@ -195,18 +195,17 @@ class Runner(Exceptionable, Configurable):
                     str(self.configs[Config.RUN.value]['sims'][sim_index]),
                     'sim.obj'
                 )
-                print(sim_obj_path)
-                sim_obj_dir = os.path.join(
+
+                sim_dir = os.path.join(
                     'samples',
                     str(self.configs[Config.RUN.value]['sample']),
                     'models',
                     str(model_index),
                     'sims',
-                    str(self.configs[Config.RUN.value]['sims'][sim_index]),
-                    'n_sims'
+                    str(self.configs[Config.RUN.value]['sims'][sim_index])
                 )
 
-                load(sim_obj_path).build_sims(sim_obj_dir)
+                load(sim_obj_path).build_sims(sim_dir)
 
     def handoff(self):
         comsol_path = self.search(Config.ENV, 'comsol_path')
