@@ -861,7 +861,7 @@ public class ModelWrapper {
                             previousIM = IdentifierManager.fromJSONObject(new JSONObject(mw.im.toJSONObject().toString()));
                             previousPPIMs = new HashMap<>();
                             for (String name : meshMatch.getPartPrimitiveIMs().keySet()) {
-                                System.out.println("Adding part primitive IM with name: " + name);
+//                                System.out.println("Adding part primitive IM with name: " + name);
                                 mw.partPrimitiveIMs.put(
                                         name,
                                         IdentifierManager.fromJSONObject(new JSONObject(meshMatch.getPartPrimitiveIMs().get(name).toJSONObject().toString()))
