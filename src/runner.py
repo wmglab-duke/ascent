@@ -102,10 +102,13 @@ class Runner(Exceptionable, Configurable):
             str(self.configs[Config.RUN.value]['sample']),
             'sample.obj'
         )
+
+        print('SAMPLE {}'.format(self.configs[Config.RUN.value]['sample']))
+
         # instantiate sample
         sample = None
         if smart and os.path.exists(sample_file):
-            print('Found existing sample!')
+            print('Found existing sample: {}'.format(self.configs[Config.RUN.value]['sample']))
             sample = load(sample_file)
         else:
             # init slide manager
@@ -123,7 +126,7 @@ class Runner(Exceptionable, Configurable):
 
         # iterate through models
         for model_index, model_config in enumerate(all_configs[Config.MODEL.value]):
-            print('MODEL {}'.format(model_index))
+            print('    MODEL {}'.format(model_index))
 
             # use current model index to compute electrical parameters ... SAVES to file in method
             self.compute_electrical_parameters(all_configs, model_index)
@@ -134,6 +137,7 @@ class Runner(Exceptionable, Configurable):
 
             # iterate through simulations
             for sim_index, sim_config in enumerate(all_configs['sims']):
+                print('        SIM {}'.format(sim_index))
                 sim_obj_dir = os.path.join(
                     'samples',
                     str(self.configs[Config.RUN.value]['sample']),
@@ -151,6 +155,7 @@ class Runner(Exceptionable, Configurable):
                 # init fiber manager
                 # fiber_manager = None
                 if smart and (not stupid) and os.path.exists(sim_obj_file):
+                    print('Found existing sim object for sim: {}'.format(sim_index))
                     pass
                     # fiber_manager = load(fiber_manager_file)
                 else:

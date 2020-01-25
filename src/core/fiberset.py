@@ -3,6 +3,7 @@
 # packages
 
 # access
+from random import random
 from typing import Dict, List, Tuple
 
 import numpy as np
@@ -55,11 +56,14 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         :return:
         """
         for i, fiber in enumerate(self.fibers if self.fibers is not None else []):
-            np.savetxt(
-                os.path.join(path, str(i) + WriteMode.file_endings.value[mode.value]),
-                np.concatenate(([len(fiber)], fiber)),
-                fmt='%.5f'
-            )
+            with open(os.path.join(path, str(i) + WriteMode.file_endings.value[mode.value]), 'w') as f:
+                for row in [len(fiber)] + list(fiber):
+                    if not isinstance(row, int):
+                        for el in row:
+                            f.write(str(el)+' ')
+                    else:
+                        f.write(str(row)+' ')
+                    f.write("\n")
         return self
 
     def _generate_xy(self) -> np.ndarray:
@@ -195,7 +199,180 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         else:
             self.throw(30)
 
-        return []
+        return points
 
-    def _generate_z(self, fibers_xy):
-        pass
+    def _generate_z(self, fibers_xy: np.ndarray) -> np.ndarray:
+
+        fibers = []
+
+        def clip(values: list, start, end, myel: bool, is_points: bool = False) -> list:
+
+            step = 1
+            if myel:
+                step = 11
+
+            while start - (values[0] if not is_points else values[0][-1]) > 0.1:
+                values = values[step:]
+
+            while (values[-1] if not is_points else values[-1][-1]) - end > 0.1:
+                values = values[:-step]
+
+            return values
+
+        def build_fibers_with_offset(zs: list, myel: bool, length: float, dz: float, additional_offset: float = 0):
+
+            # init empty fiber (points) list
+            fiber = []
+
+            # get offset param - NOTE: raw value is a FRACTION of dz (explanation for multiplication by dz)
+            offset = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'offset') * dz
+
+            random_offset = False
+            if offset is None:
+                offset = 0.0
+                random_offset = True
+            z_offset = clip([z + offset + additional_offset for z in zs], dz, length - dz, myel)
+            for x, y in fibers_xy:
+                random_offset_value = dz * (random.random() - 0.5) if random_offset else 0
+                fiber.append([(x, y, z + random_offset_value) for z in z_offset])
+
+            return fiber
+
+        # %% START ALGORITHM
+
+        # get top-level fiber z generation
+        fiber_z_mode: FiberZMode = self.search_mode(FiberZMode, Config.MODEL)
+
+        # all functionality is only defined for EXTRUSION as of now
+        if fiber_z_mode == FiberZMode.EXTRUSION:
+
+            # get the correct fiber lengths
+            model_length = self.search(Config.MODEL, 'medium', 'bounds', 'length')
+            fiber_length = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'length')
+            half_fiber_length = fiber_length / 2
+            z_shift_to_center = (model_length - fiber_length) / 2.0
+
+            ### SUPER IMPORTANT THAT THIS IS TRUE!
+            assert model_length >= fiber_length
+
+            fiber_parameters = self.search(Config.SIM, "fibers")
+
+            fiber_geometry_mode_name: str = self.search(Config.SIM, 'fibers', 'mode')
+            fiber_geometry_mode: FiberGeometry = \
+                [mode for mode in FiberGeometry if str(mode).split('.')[-1] == fiber_geometry_mode_name][0]
+
+            # use key from above to get myelination mode from fiber_z
+            myelinated: bool = self.search(
+                Config.FIBER_Z,
+                MyelinationMode.parameters.value,
+                fiber_geometry_mode_name,
+                "myelinated"
+            )
+
+            diameter = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'diameter')
+
+            if myelinated:  # MYELINATED
+
+                delta_z = \
+                    paranodal_length_2 = \
+                    inter_length = None
+
+                sampling_mode = self.search(Config.FIBER_Z,
+                                            MyelinationMode.parameters.value,
+                                            fiber_geometry_mode_name,
+                                            "sampling")
+
+                node_length, \
+                paranodal_length_1, \
+                inter_length_str = (
+                    self.search(Config.FIBER_Z, MyelinationMode.parameters.value, fiber_geometry_mode_name, key)
+                    for key in ('node_length', 'paranodal_length_1', 'inter_length')
+                )
+
+                # load in all the required specifications for finding myelinated z coordinates
+                if sampling_mode == MyelinatedSamplingType.DISCRETE.value:
+
+                    diameters, \
+                    delta_zs, \
+                    paranodal_length_2s = (
+                        self.search(Config.FIBER_Z, MyelinationMode.parameters.value, fiber_geometry_mode_name, key)
+                        for key in ('diameters', 'delta_zs', 'paranodal_length_2s')
+                    )
+
+                    diameter_index = diameters.index(diameter)
+                    delta_z = delta_zs[diameter_index]
+                    paranodal_length_2 = paranodal_length_2s[diameter_index]
+                    inter_length = eval(inter_length_str)
+
+                elif sampling_mode == MyelinatedSamplingType.INTERPOLATION.value:
+
+                    paranodal_length_2_str, \
+                    delta_z_str = (
+                        self.search(Config.FIBER_Z, MyelinationMode.parameters.value, fiber_geometry_mode_name, key)
+                        for key in ('paranodal_length_2', 'delta_z')
+                    )
+                    paranodal_length_2 = eval(paranodal_length_2_str)
+
+
+                    if diameter >= 5.26:
+                        delta_z = eval(delta_z_str["diameter_greater_or_equal_5.26um"])
+                    else:
+                        delta_z = eval(delta_z_str["diameter_less_5.26um"])
+
+                    inter_length = eval(inter_length_str)
+
+                z_steps: List = []
+                while (sum(z_steps) - half_fiber_length) < 0.001:
+                    z_steps += [(node_length / 2) + (paranodal_length_1 / 2),
+                                (paranodal_length_1 / 2) + (paranodal_length_2 / 2),
+                                (paranodal_length_2 / 2) + (inter_length / 2),
+                                *([inter_length] * 5),
+                                (inter_length / 2) + (paranodal_length_2 / 2),
+                                (paranodal_length_2 / 2) + (paranodal_length_1 / 2),
+                                (paranodal_length_1 / 2) + (node_length / 2)]
+
+                # account for difference between last node z and half fiber length -> must shift extra distance
+                z_shift_to_center += abs(sum(z_steps) - half_fiber_length)
+
+                reverse_z_steps = z_steps.copy()
+                reverse_z_steps.reverse()
+
+                # concat, cumsum, and other stuff to get final list of z points
+                zs = np.array(
+                    list(
+                        np.cumsum(
+                            np.concatenate(
+                                ([0], reverse_z_steps, z_steps)
+                            )
+                        )
+                    ),
+                )
+
+                # TODO: assign value correctly here
+                fibers = [
+                    clip(fiber, 0, model_length, myelinated, is_points=True)
+                    for fiber in build_fibers_with_offset(zs, myelinated, fiber_length, delta_z, z_shift_to_center)
+                ]
+
+
+            else:  # UNMYELINATED
+
+                delta_z = self.search(Config.FIBER_Z, fiber_geometry_mode_name, 'delta_zs')
+                z_top_half = np.arange(fiber_length / 2, fiber_length + delta_z, delta_z)
+                z_bottom_half = -np.flip(z_top_half) + fiber_length
+                while z_top_half[-1] > fiber_length:
+                    # trim top of top half
+                    z_top_half = z_top_half[:-1]
+                    z_bottom_half = z_bottom_half[1:]
+
+                fibers = build_fibers_with_offset(list(np.concatenate((z_bottom_half[:-1], z_top_half))),
+                                                 myelinated,
+                                                 fiber_length,
+                                                 delta_z,
+                                                 z_shift_to_center)
+
+
+        else:
+            self.throw(31)
+
+        return fibers

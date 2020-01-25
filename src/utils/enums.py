@@ -110,7 +110,7 @@ class FiberXYMode(Enum):
 @unique
 class FiberZMode(Enum):
     config = 'fiber_z'
-    parameters = 'fiber_z_parameters'
+    parameters = 'z_parameters'
 
     EXTRUSION = 0
     LOFTED = 1

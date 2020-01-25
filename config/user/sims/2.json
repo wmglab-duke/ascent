@@ -7,40 +7,18 @@
   },
   "fibers": {
     "plot": false,
-    "mode": "MRG_DISCRETE",
+    "mode": "MRG_INTERPOLATION",
     "units": "micrometer",
     "xy_trace_buffer": 5.0,
     "z_parameters": {
-      "diameter": 1,
+      "diameter": [1, 2, 2.5],
       "length": 50000.0,
-      "offset": 0.0
+      "offset": 0
     },
-    "xy_parameters": [
-      {
-        "mode": "UNIFORM_DENSITY",
-        "top_down": true,
-        "minimum_number": 0,
-        "maximum_number": 100,
-        "target_density": 0.0005,
-        "target_number": 4
-      },
-      {
-        "mode": "UNIFORM_COUNT",
-        "count": 5
-      },
-      {
-        "mode": "CENTROID",
-        "no parameters needed!": "so true dude..."
-      },
-      {
-        "mode": "WHEEL",
-        "spoke_count": 5,
-        "point_count_per_spoke": 5,
-        "find_centroid": true,
-        "angle_offset_is_in_degrees": true,
-        "angle_offset": 0.0
-      }
-    ]
+    "xy_parameters": {
+      "mode": "CENTROID",
+      "no parameters needed!": "so true dude..."
+    }
   },
   "waveform": {
     "global": {

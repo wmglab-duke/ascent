@@ -6,15 +6,14 @@
     "default": [[1, -1]]
   },
   "fibers": {
-    "plot": true,
+    "plot": false,
     "mode": "MRG_DISCRETE",
     "units": "micrometer",
     "xy_trace_buffer": 5.0,
     "z_parameters": {
-      "diameters": [1, 2, 5.7],
-      "min": 0.0,
-      "max": 50000.0,
-      "offsets": 0.0
+      "diameter": [1, 2, 5.7],
+      "length": 50000.0,
+      "offset": 0.0
     },
     "xy_parameters": [
       {
