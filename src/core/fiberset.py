@@ -1,8 +1,3 @@
-# builtins
-
-# packages
-
-# access
 from random import random
 from typing import List, Tuple
 

@@ -38,12 +38,12 @@ class Runner(Exceptionable, Configurable):
 
     def load_configs(self) -> dict:
 
-        def validate_and_add(configs: dict, key: str, path: str):
+        def validate_and_add(config_source: dict, key: str, path: str):
             self.validate_path(path)
             if os.path.exists(path):
-                if key not in configs.keys():
-                    configs[key] = []
-                configs[key] += [self.load(path)]
+                if key not in config_source.keys():
+                    config_source[key] = []
+                config_source[key] += [self.load(path)]
             else:
                 print('Missing {} config: {}'.format(key, path))
                 self.throw(37)
@@ -78,7 +78,6 @@ class Runner(Exceptionable, Configurable):
 
         return configs
 
-
     def run(self, smart: bool = True):
         """
 
@@ -96,7 +95,6 @@ class Runner(Exceptionable, Configurable):
         def load(path: str):
             return pickle.load(open(path, 'rb'))
 
-
         sample_file = os.path.join(
             'samples',
             str(self.configs[Config.RUN.value]['sample']),
@@ -106,7 +104,6 @@ class Runner(Exceptionable, Configurable):
         print('SAMPLE {}'.format(self.configs[Config.RUN.value]['sample']))
 
         # instantiate sample
-        sample = None
         if smart and os.path.exists(sample_file):
             print('Found existing sample: {}'.format(self.configs[Config.RUN.value]['sample']))
             sample = load(sample_file)
@@ -164,27 +161,22 @@ class Runner(Exceptionable, Configurable):
                     # fiber_manager = FiberManager(sample, self.configs[Config.EXCEPTIONS.value])
 
                     # run processes with fiber manager (see class for details)
-                        # .fiber_z_coordinates(fiber_manager.xy_coordinates, save=True)\
+                    # .fiber_z_coordinates(fiber_manager.xy_coordinates, save=True)\
                     # fiber_manager \
                     #     .add(SetupMode.OLD, Config.MODEL, model) \
                     #     .add(SetupMode.OLD, Config.SIM, sim) \
                     #     .fiber_xy_coordinates(plot=False, save=True) \
                     #     .save(fiber_manager_file)
 
-                    self.simulation: Simulation = Simulation(sample, self.configs[Config.EXCEPTIONS.value])
-                    self.simulation \
+                    simulation: Simulation = Simulation(sample, self.configs[Config.EXCEPTIONS.value])
+                    simulation \
                         .add(SetupMode.OLD, Config.MODEL, model_config) \
                         .add(SetupMode.OLD, Config.SIM, sim_config) \
                         .resolve_factors() \
                         .write_waveforms(sim_obj_dir) \
                         .write_fibers(sim_obj_dir) \
                         .validate_srcs(sim_obj_dir) \
-                        .build_sims(sim_obj_dir) \
                         .save(sim_obj_file)
-                        # .fiber_xy_coordinates(plot=False, save=True) \
-                        # .fiber_z_coordinates(save=True) \
-                        # .save_coordinates(format='.dat', mode='xyz') \
-
 
                 # simulation_builder = SimulationBuilder(sim, self.configs[Config.EXCEPTIONS.value])
                 # simulation_builder \
@@ -223,8 +215,6 @@ class Runner(Exceptionable, Configurable):
 
                 load(sim_obj_path).build_sims(sim_obj_dir)
 
-
-
     def handoff(self):
         comsol_path = self.search(Config.ENV, 'comsol_path')
         jdk_path = self.search(Config.ENV, 'jdk_path')
@@ -242,24 +232,29 @@ class Runner(Exceptionable, Configurable):
                                                                                                           comsol_path))
             # https://stackoverflow.com/questions/219585/including-all-the-jars-in-a-directory-within-the-java-classpath
             os.system('{}/java/maci64/jre/Contents/Home/bin/java '
-                      '-cp .:$(echo {}/plugins/*.jar | tr \' \' \':\'):../lib/json-20190722.jar:../bin model.{} {} {}'.format(comsol_path,
-                                                                                                                              comsol_path,
-                                                                                                                              core_name,
-                                                                                                                              project_path,
-                                                                                                                              run_path))
+                      '-cp .:$(echo {}/plugins/*.jar | '
+                      'tr \' \' \':\'):../lib/json-20190722.jar:../bin model.{} {} {}'.format(comsol_path,
+                                                                                              comsol_path,
+                                                                                              core_name,
+                                                                                              project_path,
+                                                                                              run_path))
             os.chdir('..')
 
         else:  # assume to be 'win64'
             subprocess.Popen(['{}\\bin\\win64\\comsolmphserver.exe'.format(comsol_path)], close_fds=True)
             os.chdir('src')
 
-            os.system('""{}\\javac" -cp "..\\lib\\json-20190722.jar";"{}\\plugins\\*" model\\*.java -d ..\\bin"'.format(jdk_path,
-                                                                                                                        comsol_path))
-            os.system('""{}\\java\\win64\\jre\\bin\\java" -cp "{}\\plugins\\*";"..\\lib\\json-20190722.jar";"..\\bin" model.{} {} {}"'.format(comsol_path,
-                                                                                                                                              comsol_path,
-                                                                                                                                              core_name,
-                                                                                                                                              project_path,
-                                                                                                                                              run_path))
+            os.system('""{}\\javac" '
+                      '-cp "..\\lib\\json-20190722.jar";"{}\\plugins\\*" '
+                      'model\\*.java -d ..\\bin"'.format(jdk_path,
+                                                         comsol_path))
+            os.system('""{}\\java\\win64\\jre\\bin\\java" '
+                      '-cp "{}\\plugins\\*";"..\\lib\\json-20190722.jar";"..\\bin" '
+                      'model.{} {} {}"'.format(comsol_path,
+                                               comsol_path,
+                                               core_name,
+                                               project_path,
+                                               run_path))
             os.chdir('..')
 
     def compute_cuff_shift(self, all_configs, model_index, sample):
@@ -273,7 +268,7 @@ class Runner(Exceptionable, Configurable):
         # if len
         # TODO: LEFT OFF HERE 12/23/19
 
-# def smart_run(self):
+    # def smart_run(self):
     #
     #     print('\nStarting smart run.')
     #
@@ -513,9 +508,10 @@ class Runner(Exceptionable, Configurable):
             freq_double = model_config.get('frequency').get('value')
             freq_unit = model_config.get('frequency').get('unit')
             rho_double = waveform.rho_weerasuriya(freq_double)
-            sigma_double = 1/rho_double
+            sigma_double = 1 / rho_double
             model_config['conductivities']['perineurium']['value'] = str(sigma_double)
-            model_config['conductivities']['perineurium']['label'] = "RHO_WEERASURIYA @ %d %s" % (freq_double, freq_unit)
+            model_config['conductivities']['perineurium']['label'] = "RHO_WEERASURIYA @ %d %s" % (freq_double,
+                                                                                                  freq_unit)
         else:
             self.throw(48)
 
