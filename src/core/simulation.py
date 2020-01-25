@@ -2,6 +2,7 @@ import copy
 import os
 
 import itertools
+import shutil
 
 import numpy as np
 
@@ -184,9 +185,15 @@ class Simulation(Exceptionable, Configurable, Saveable):
         prods = list(itertools.product(s_s, r_s))
         for t, prod in enumerate(prods):
             s = prod[0]
+            source_potentials_dir = os.path.join(sim_obj_dir, "potentials", str(s))
+            destination_potentials_path = os.path.join(sim_obj_dir, str(t), "data", "inputs")
+
             r = prod[1]
+            source_waveform_path = os.path.join(sim_obj_dir, "waveforms", "{}.dat".format(r))
+            destination_waveform_path = os.path.join(sim_obj_dir, str(t), "data", "inputs", "waveform.dat")
 
             self._build_file_structure(sim_obj_dir, t)
+            shutil.copyfile(source_waveform_path, destination_waveform_path)
             # self._copy_trees()
             # self._build_hoc()
 
@@ -209,7 +216,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
     @staticmethod
     def _copy_trees(self, trees=None):
         if trees is None:
-            trees = ['Ve_data', 'waveforms']
+            trees = ['potentials', 'waveforms']
 
     def _build_hoc(self):
         pass
