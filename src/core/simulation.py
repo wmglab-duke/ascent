@@ -180,7 +180,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
     ############################
 
-    def build_sims(self, sim_obj_dir) -> 'Simulation':
+    def build_sims(self, sim_dir) -> 'Simulation':
         # loop cartesian product
         s_s = [0, 1]
         r_s = [0, 1]
@@ -188,18 +188,16 @@ class Simulation(Exceptionable, Configurable, Saveable):
         prods = list(itertools.product(s_s, r_s))
         for t, prod in enumerate(prods):
             s = prod[0]
-            source_potentials_dir = os.path.join(sim_obj_dir, "potentials", str(s))
-            destination_potentials_dir = os.path.join(sim_obj_dir, "n_sims", str(t), "data", "inputs")
+            source_potentials_dir = os.path.join(sim_dir, "potentials", str(s))
+            destination_potentials_dir = os.path.join(sim_dir, "n_sims", str(t), "data", "inputs")
 
             r = prod[1]
-            source_waveform_path = os.path.join(sim_obj_dir, "waveforms", "{}.dat".format(r))
-            destination_waveform_path = os.path.join(sim_obj_dir, "n_sims", str(t), "data", "inputs", "waveform.dat")
+            source_waveform_path = os.path.join(sim_dir, "waveforms", "{}.dat".format(r))
+            destination_waveform_path = os.path.join(sim_dir, "n_sims", str(t), "data", "inputs", "waveform.dat")
 
-            self._build_file_structure(sim_obj_dir, t)
+            self._build_file_structure(sim_dir, t)
             shutil.copyfile(source_waveform_path, destination_waveform_path)
-
-
-        # shutil.copytree(source_potentials_dir, destination_potentials_dir)
+            shutil.copytree(source_potentials_dir, destination_potentials_dir)
             # self._build_hoc(sim_obj_dir)
 
 
