@@ -174,6 +174,7 @@ class Runner(Exceptionable, Configurable):
                         .write_waveforms(sim_obj_dir) \
                         .write_fibers(sim_obj_dir) \
                         .validate_srcs(sim_obj_dir) \
+                        .build_sims(sim_obj_dir) \
                         .save(sim_obj_file)
                         # .fiber_xy_coordinates(plot=False, save=True) \
                         # .fiber_z_coordinates(save=True) \

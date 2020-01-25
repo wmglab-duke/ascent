@@ -28,8 +28,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
         self.src_product = []
         self.master_product = []
 
-    # TODO, sum C_i = 0 (contact weights), sum abs(C_i) = 2 unless monopolar in which case =1
-
     def resolve_factors(self) -> 'Simulation':
 
         if len(self.factors.items()) > 0:
@@ -178,17 +176,29 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
     ############################
 
-    def build_sims(self) -> 'Simulation':
+    def build_sims(self, sim_obj_dir) -> 'Simulation':
         # loop cartesian product
+        ts = []
+        for t in ts:
+            self._build_file_structure(sim_obj_dir, t)
+
+
         # build_file_structure()
         # build paths
         # build_hoc()
         # copy_trees()
         return self
 
-    def _build_file_structure(self):
-        pass
+    @staticmethod
+    def _build_file_structure(self, sim_obj_dir, t):
+        sim_dir = os.path.join(sim_obj_dir, t)
 
+        if not os.path.exists(sim_dir):
+            subfolder_names = ["inputs", "outputs"]
+            for subfolder_name in subfolder_names:
+                os.makedirs(os.path.join(sim_dir, "data", subfolder_name))
+
+    @staticmethod
     def _copy_trees(self, trees=None):
         if trees is None:
             trees = ['Ve_data', 'waveforms']
