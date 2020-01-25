@@ -633,7 +633,6 @@ public class ModelWrapper {
                     "models",
                     modelStr,
                     "bases",
-                    Integer.toString(index),
                     index + ".mph"
             });
 
