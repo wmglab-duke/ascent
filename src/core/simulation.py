@@ -189,7 +189,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
         for t, prod in enumerate(prods):
             s = prod[0]
             source_potentials_dir = os.path.join(sim_obj_dir, "potentials", str(s))
-            destination_potentials_dir = os.path.join(sim_obj_dir, str(t), "data", "inputs")
+            destination_potentials_dir = os.path.join(sim_obj_dir, "n_sims", str(t), "data", "inputs")
 
             r = prod[1]
             source_waveform_path = os.path.join(sim_obj_dir, "waveforms", "{}.dat".format(r))
