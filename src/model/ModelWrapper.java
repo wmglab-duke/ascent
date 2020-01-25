@@ -316,6 +316,7 @@ public class ModelWrapper {
                 int sim_num = (int) sims_list.get(sim_ind); // get sim number for index in sims list
 
                 String sim_config_path = String.join("/", new String[]{ // build path to sim config file
+                        projectPath,
                         "config",
                         "user",
                         "sims",
@@ -324,6 +325,7 @@ public class ModelWrapper {
                 JSONObject simData = JSONio.read(sim_config_path); // load sim configuration data
 
                 String sim_dir = String.join("/", new String[]{ // build path to directory of fibers coordinates
+                        projectPath,
                         "samples",
                         Integer.toString(sample),
                         "models",
@@ -388,6 +390,7 @@ public class ModelWrapper {
 
                         // load bases
                         String bases_directory = String.join("/", new String[]{
+                                projectPath,
                                 "samples",
                                 Integer.toString(sample),
                                 "models",
