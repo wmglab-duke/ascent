@@ -704,10 +704,6 @@ public class ModelWrapper {
                 e.printStackTrace();
             }
 
-//            String src_path =  "D:\\Documents\\access\\samples\\0\\models\\0\\coords\\0.dat";
-//            String dest_path = "D:\\Documents\\access\\samples\\0\\models\\0\\bases\\0\\ve\\0.dat";
-//            extractPotentials(src_path, dest_path);
-
             current_on.set("Qjp", 0.000); // reset current
 
             index += 1;
