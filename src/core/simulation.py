@@ -183,16 +183,16 @@ class Simulation(Exceptionable, Configurable, Saveable):
     def build_sims(self, sim_dir) -> 'Simulation':
         # loop cartesian product
         s_s = [0, 1]
-        r_s = [0, 1]
+        q_s = [0, 1]
 
-        prods = list(itertools.product(s_s, r_s))
+        prods = list(itertools.product(s_s, q_s))
         for t, prod in enumerate(prods):
             s = prod[0]
             source_potentials_dir = os.path.join(sim_dir, "potentials", str(s))
             destination_potentials_dir = os.path.join(sim_dir, "n_sims", str(t), "data", "inputs")
 
-            r = prod[1]
-            source_waveform_path = os.path.join(sim_dir, "waveforms", "{}.dat".format(r))
+            q = prod[1]
+            source_waveform_path = os.path.join(sim_dir, "waveforms", "{}.dat".format(q))
             destination_waveform_path = os.path.join(sim_dir, "n_sims", str(t), "data", "inputs", "waveform.dat")
 
             self._build_file_structure(sim_dir, t)
