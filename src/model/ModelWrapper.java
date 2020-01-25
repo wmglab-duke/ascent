@@ -346,7 +346,7 @@ public class ModelWrapper {
 
                 String coord_dir = String.join("/", new String[]{ // build path to directory of fibers coordinates
                         sim_dir,
-                        "fibers"
+                        "fibersets"
                 });
 
                 String ve_dir = String.join("/", new String[]{ // build path to directory of ve for each fiber coordinate
@@ -386,19 +386,28 @@ public class ModelWrapper {
                     int ind_active_src_select = prods[i][0];
                     int ind_fiberset_select = prods[i][1];
 
-                    File f_coords = new File(String.join("/", new String[]{projectPath, coord_dir, Integer.toString(ind_fiberset_select)}));
+                    File f_coords = new File(String.join("/", new String[]{coord_dir, Integer.toString(ind_fiberset_select)}));
                     String[] fiber_coords_list = f_coords.list(); // create list of fiber coords (one for each fiber)
 
+//                    System.out.println("f_coords = " + f_coords.toString());
                     // loop fiber_coords_list
                     JSONObject active_srcs = simData.getJSONObject("active_srcs"); // get array of contact combo weightings
                     String cuff = modelData.getJSONObject("cuff").getString("preset");
                     JSONArray src_combo_list = active_srcs.getJSONArray(cuff);
-                    Double[] src_combo = src_combo_list.getJSONArray(ind_active_src_select).toList().toArray(new Double[0]);
-
+                    Object[] src_combo_buffer = src_combo_list.getJSONArray(ind_active_src_select).toList().toArray(new Object[0]);
+                    Double[] src_combo = new Double[src_combo_buffer.length];
+                    for (int j = 0; j < src_combo_buffer.length; j += 1) {
+                        if (src_combo_buffer[i].getClass() == Integer.class) {
+                            src_combo[j] = ((Integer) src_combo_buffer[j]).doubleValue();
+                        } else {
+                            src_combo[j] = (Double) src_combo_buffer[j];
+                        }
+                    }
                     assert fiber_coords_list != null;
+//                    System.out.println("fiber_coords_list = " + Arrays.toString(fiber_coords_list));
                     for (int q = 0; q < fiber_coords_list.length; q++) { // loop over fiber coords in list of fiber coords
                         String fiber_coords = fiber_coords_list[q];
-                        String coord_path = String.join("/", new String[]{projectPath, coord_dir, fiber_coords}); // build path to coordinates
+                        String coord_path = String.join("/", new String[]{coord_dir, fiber_coords}); // build path to coordinates
 
                         // load bases
                         String bases_directory = String.join("/", new String[]{
@@ -415,9 +424,9 @@ public class ModelWrapper {
                         assert bases_paths != null;
                         double[][] bases = new double[bases_paths.length][];
                         for(int basis_ind = 0; basis_ind < bases_paths.length; basis_ind ++) {
-
-                            Model model = ModelUtil.load("Model", bases_paths[basis_ind]);
-
+                            System.out.println("bases_paths = " + Arrays.toString(bases_paths));
+                            Model model = ModelUtil.load("Model", bases_directory + "/" + bases_paths[basis_ind]);
+                            System.out.println("coord_path = " + coord_path);
                             double[] basis_vec = extractPotentials(model, coord_path);
 
                             bases[basis_ind] = new double[basis_vec.length];
