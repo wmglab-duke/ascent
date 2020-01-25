@@ -186,7 +186,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
         for t, prod in enumerate(prods):
             s = prod[0]
             source_potentials_dir = os.path.join(sim_obj_dir, "potentials", str(s))
-            destination_potentials_path = os.path.join(sim_obj_dir, str(t), "data", "inputs")
+            destination_potentials_dir = os.path.join(sim_obj_dir, str(t), "data", "inputs")
 
             r = prod[1]
             source_waveform_path = os.path.join(sim_obj_dir, "waveforms", "{}.dat".format(r))
@@ -194,7 +194,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
             self._build_file_structure(sim_obj_dir, t)
             shutil.copyfile(source_waveform_path, destination_waveform_path)
-            shutil.copytree(source_potentials_dir, destination_potentials_path)
+            shutil.copytree(source_potentials_dir, destination_potentials_dir)
             # self._build_hoc()
 
 
