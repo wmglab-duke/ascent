@@ -162,9 +162,12 @@ class Simulation(Exceptionable, Configurable, Saveable):
             output.append((active_src_select[0], fiberset_select[0]))
 
         # write to file
-        filepath = os.path.join(sim_directory, "potentials", "key.dat")
+        key_file_dir = os.path.join(sim_directory, "potentials", "key.dat")
+        key_filepath = os.path.join(sim_directory, "potentials", "key.dat")
+        if not os.path.exists(key_file_dir):
+            os.mkdir(key_file_dir)
 
-        with open(filepath, 'w') as f:
+        with open(key_filepath, 'w') as f:
             for row in output:
                 if not isinstance(row, int):
                     for el in row:
@@ -195,7 +198,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
             self._build_file_structure(sim_obj_dir, t)
             shutil.copyfile(source_waveform_path, destination_waveform_path)
             # shutil.copytree(source_potentials_dir, destination_potentials_dir)
-            self._build_hoc(sim_obj_dir)
+            # self._build_hoc(sim_obj_dir)
 
 
         # build_file_structure()
