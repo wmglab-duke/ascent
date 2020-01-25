@@ -304,6 +304,8 @@ public class ModelWrapper {
     }
 
     public void extractAllPotentials(String projectPath, String run_path) throws IOException {
+        System.out.println("Extracting/writing all potentials - skips if file already exists");
+
         JSONObject runData = JSONio.read(run_path); // read in run configuration data
         int sample = runData.getInt("sample"); // get sample number
         JSONArray models_list = runData.getJSONArray("models"); // get models list
@@ -408,6 +410,8 @@ public class ModelWrapper {
                     for (int q = 0; q < fiber_coords_list.length; q++) { // loop over fiber coords in list of fiber coords
                         String fiber_coords = fiber_coords_list[q];
                         String coord_path = String.join("/", new String[]{coord_dir, Integer.toString(ind_fiberset_select), fiber_coords}); // build path to coordinates
+
+                        if (new File(coord_path).exists()) continue;
 
                         // load bases
                         String bases_directory = String.join("/", new String[]{
