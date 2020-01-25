@@ -164,13 +164,21 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
         # write to file
         filepath = os.path.join(sim_directory, "potentials", "key.dat")
-        np.save(filepath, output)
+
+        with open(filepath, 'w') as f:
+            for row in output:
+                if not isinstance(row, int):
+                    for el in row:
+                        f.write(str(el)+' ')
+                else:
+                    f.write(str(row)+' ')
+                f.write("\n")
+
         return self
 
     ############################
 
     def build_sims(self) -> 'Simulation':
-        print("here")
         # loop cartesian product
         # build_file_structure()
         # build paths
