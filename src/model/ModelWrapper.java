@@ -312,6 +312,16 @@ public class ModelWrapper {
         for(int model_ind = 0; model_ind < models_list.length(); model_ind++) { // loop over models
             int model_num = (int) models_list.get(model_ind); // get model number for index in models list
 
+            String model_config_path = String.join("/", new String[]{ // build path to sim config file
+                    projectPath,
+                    "samples",
+                    Integer.toString(sample),
+                    "models",
+                    Integer.toString(model_num),
+                    "model.json"
+            });
+            JSONObject modelData = JSONio.read(model_config_path); // load sim configuration data
+
             for(int sim_ind = 0; sim_ind < sims_list.length(); sim_ind++) { // loop over sims
                 int sim_num = (int) sims_list.get(sim_ind); // get sim number for index in sims list
 
@@ -380,8 +390,10 @@ public class ModelWrapper {
                     String[] fiber_coords_list = f_coords.list(); // create list of fiber coords (one for each fiber)
 
                     // loop fiber_coords_list
-                    JSONArray src_combo_list = simData.getJSONArray("active_srcs"); // get array of contact combo weightings
-                    double[] src_combo = (double[]) src_combo_list.get(ind_active_src_select); // TODO might fail
+                    JSONObject active_srcs = simData.getJSONObject("active_srcs"); // get array of contact combo weightings
+                    String cuff = modelData.getJSONObject("cuff").getString("preset");
+                    JSONArray src_combo_list = active_srcs.getJSONArray(cuff);
+                    Double[] src_combo = src_combo_list.getJSONArray(ind_active_src_select).toList().toArray(new Double[0]);
 
                     assert fiber_coords_list != null;
                     for (int q = 0; q < fiber_coords_list.length; q++) { // loop over fiber coords in list of fiber coords
