@@ -14,6 +14,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+/*
+TODO: allow mesh match with self if mesh.mph does exist and bases/ is empty
+ */
+
 public class ModelSearcher {
 
     private Path root;
@@ -50,21 +54,14 @@ public class ModelSearcher {
 
         for (Path file : Files.walk(this.root).toArray(Path[]::new)) {
 
-//            System.out.println("file = " + file.toString());
-
-            // skip the query so not counting self
-            if (queryPath.equals(file.toString())) {
-                continue;
-            }
+//            System.out.println("file = " + file.toString())
 
             String[] fileParts = file.toString().split("/");
 
             if (fileParts[fileParts.length - 1].equals("model.json")) {
-
                 JSONObject target = JSONio.read(file.toString());
                 String directory = String.join("/", Arrays.copyOfRange(fileParts, 0, fileParts.length - 1));
                 if (ModelSearcher.meshMatch(reference, query, target) && ModelSearcher.meshFilesExist(directory)) {
-//                    System.out.println("MATCH!! Using directory: " + directory);
                     return Match.fromMeshPath(directory);
                 }
             }

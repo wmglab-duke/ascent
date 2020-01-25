@@ -357,7 +357,7 @@ public class ModelWrapper {
 
                 // save rows (number of coords) at top line... so number of lines in file is (number of coords +1)
                 String products = scan_key.nextLine();
-                int n_products = Integer.parseInt(products);
+                int n_products = Integer.parseInt(products.trim());
 
                 // pre-allocated array of doubles for products in file (2 columns by default for (active_src_select,fiberset_select)
                 int[][] prods = new int[n_products][2];
@@ -627,7 +627,6 @@ public class ModelWrapper {
             String src = this.im.currentIDs.get(key_on);
             PhysicsFeature current_on = model.physics("ec").feature(src);
             current_on.set("Qjp", 0.001); // turn on current
-            model.sol("sol1").runAll();
 
             String mphFile = String.join("/", new String[]{
                     projectPath,
@@ -638,6 +637,13 @@ public class ModelWrapper {
                     "bases",
                     index + ".mph"
             });
+
+            if (! new File(mphFile).exists()) {
+                model.sol("sol1").runAll();
+            } else {
+                System.out.println("Skipping solving " + key_on + " because found existing file: " + mphFile);
+            }
+
 
             try {
                 System.out.println("Saving MPH (mesh and solution) file to: " + mphFile);
