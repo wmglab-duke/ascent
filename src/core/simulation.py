@@ -162,7 +162,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
             output.append((active_src_select[0], fiberset_select[0]))
 
         # write to file
-        key_file_dir = os.path.join(sim_directory, "potentials", "key.dat")
+        key_file_dir = os.path.join(sim_directory, "potentials")
         key_filepath = os.path.join(sim_directory, "potentials", "key.dat")
         if not os.path.exists(key_file_dir):
             os.mkdir(key_file_dir)
