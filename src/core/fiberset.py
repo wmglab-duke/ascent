@@ -4,15 +4,15 @@
 
 # access
 from random import random
-from typing import Dict, List, Tuple
+from typing import List, Tuple
 
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 from shapely.affinity import scale
 from shapely.geometry import LineString, Point
 
-from .sample import Sample
 from src.utils import *
+from .sample import Sample
 
 
 class FiberSet(Exceptionable, Configurable, Saveable):
@@ -60,9 +60,9 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                 for row in [len(fiber)] + list(fiber):
                     if not isinstance(row, int):
                         for el in row:
-                            f.write(str(el)+' ')
+                            f.write(str(el) + ' ')
                     else:
-                        f.write(str(row)+' ')
+                        f.write(str(row) + ' ')
                     f.write("\n")
         return self
 
@@ -219,7 +219,8 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
             return values
 
-        def build_fibers_with_offset(zs: list, myel: bool, length: float, dz: float, additional_offset: float = 0):
+        def build_fibers_with_offset(z_values: list, myel: bool, length: float, dz: float,
+                                     additional_offset: float = 0):
 
             # init empty fiber (points) list
             fiber = []
@@ -231,7 +232,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             if offset is None:
                 offset = 0.0
                 random_offset = True
-            z_offset = clip([z + offset + additional_offset for z in zs], dz, length - dz, myel)
+            z_offset = clip([z + offset + additional_offset for z in z_values], dz, length - dz, myel)
             for x, y in fibers_xy:
                 random_offset_value = dz * (random.random() - 0.5) if random_offset else 0
                 fiber.append([(x, y, z + random_offset_value) for z in z_offset])
@@ -252,14 +253,10 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             half_fiber_length = fiber_length / 2
             z_shift_to_center = (model_length - fiber_length) / 2.0
 
-            ### SUPER IMPORTANT THAT THIS IS TRUE!
+            # SUPER IMPORTANT THAT THIS IS TRUE!
             assert model_length >= fiber_length
 
-            fiber_parameters = self.search(Config.SIM, "fibers")
-
             fiber_geometry_mode_name: str = self.search(Config.SIM, 'fibers', 'mode')
-            fiber_geometry_mode: FiberGeometry = \
-                [mode for mode in FiberGeometry if str(mode).split('.')[-1] == fiber_geometry_mode_name][0]
 
             # use key from above to get myelination mode from fiber_z
             myelinated: bool = self.search(
@@ -282,9 +279,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                                             fiber_geometry_mode_name,
                                             "sampling")
 
-                node_length, \
-                paranodal_length_1, \
-                inter_length_str = (
+                node_length, paranodal_length_1, inter_length_str = (
                     self.search(Config.FIBER_Z, MyelinationMode.parameters.value, fiber_geometry_mode_name, key)
                     for key in ('node_length', 'paranodal_length_1', 'inter_length')
                 )
@@ -292,9 +287,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                 # load in all the required specifications for finding myelinated z coordinates
                 if sampling_mode == MyelinatedSamplingType.DISCRETE.value:
 
-                    diameters, \
-                    delta_zs, \
-                    paranodal_length_2s = (
+                    diameters, delta_zs, paranodal_length_2s = (
                         self.search(Config.FIBER_Z, MyelinationMode.parameters.value, fiber_geometry_mode_name, key)
                         for key in ('diameters', 'delta_zs', 'paranodal_length_2s')
                     )
@@ -306,13 +299,11 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
                 elif sampling_mode == MyelinatedSamplingType.INTERPOLATION.value:
 
-                    paranodal_length_2_str, \
-                    delta_z_str = (
+                    paranodal_length_2_str, delta_z_str = (
                         self.search(Config.FIBER_Z, MyelinationMode.parameters.value, fiber_geometry_mode_name, key)
                         for key in ('paranodal_length_2', 'delta_z')
                     )
                     paranodal_length_2 = eval(paranodal_length_2_str)
-
 
                     if diameter >= 5.26:
                         delta_z = eval(delta_z_str["diameter_greater_or_equal_5.26um"])
@@ -354,7 +345,6 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                     for fiber in build_fibers_with_offset(zs, myelinated, fiber_length, delta_z, z_shift_to_center)
                 ]
 
-
             else:  # UNMYELINATED
 
                 delta_z = self.search(Config.FIBER_Z, fiber_geometry_mode_name, 'delta_zs')
@@ -366,11 +356,10 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                     z_bottom_half = z_bottom_half[1:]
 
                 fibers = build_fibers_with_offset(list(np.concatenate((z_bottom_half[:-1], z_top_half))),
-                                                 myelinated,
-                                                 fiber_length,
-                                                 delta_z,
-                                                 z_shift_to_center)
-
+                                                  myelinated,
+                                                  fiber_length,
+                                                  delta_z,
+                                                  z_shift_to_center)
 
         else:
             self.throw(31)
