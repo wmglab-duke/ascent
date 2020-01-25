@@ -178,9 +178,11 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
     def build_sims(self, sim_obj_dir) -> 'Simulation':
         # loop cartesian product
-        ts = []
+        ts = [1, 2, 3]
         for t in ts:
             self._build_file_structure(sim_obj_dir, t)
+            # self._copy_trees()
+            # self._build_hoc()
 
 
         # build_file_structure()
@@ -190,8 +192,9 @@ class Simulation(Exceptionable, Configurable, Saveable):
         return self
 
     @staticmethod
-    def _build_file_structure(self, sim_obj_dir, t):
-        sim_dir = os.path.join(sim_obj_dir, t)
+    def _build_file_structure(sim_obj_dir, t):
+        sim_dir = os.path.join(sim_obj_dir, str(t))
+        print(sim_dir)
 
         if not os.path.exists(sim_dir):
             subfolder_names = ["inputs", "outputs"]
