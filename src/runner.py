@@ -179,7 +179,7 @@ class Runner(Exceptionable, Configurable):
                         .save(sim_obj_file)
 
         # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials
-        self.handoff()
+        # self.handoff()
 
         #  continue by using simulation objects
         for model_index, model_config in enumerate(all_configs[Config.MODEL.value]):

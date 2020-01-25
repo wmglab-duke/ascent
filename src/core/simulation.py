@@ -182,8 +182,12 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
     def build_sims(self, sim_dir) -> 'Simulation':
         # loop cartesian product
-        s_s = [0, 1]
-        q_s = [0, 1]
+
+        key_filepath = os.path.join(sim_dir, "potentials", "key.dat")  # s is line number
+        f = open(key_filepath, "r")
+        contents = f.read()
+        s_s = range(int(contents[0])-1)
+        q_s = range(len(self.wave_product))
 
         prods = list(itertools.product(s_s, q_s))
         for t, prod in enumerate(prods):
