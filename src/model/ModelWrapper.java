@@ -397,7 +397,7 @@ public class ModelWrapper {
                     Object[] src_combo_buffer = src_combo_list.getJSONArray(ind_active_src_select).toList().toArray(new Object[0]);
                     Double[] src_combo = new Double[src_combo_buffer.length];
                     for (int j = 0; j < src_combo_buffer.length; j += 1) {
-                        if (src_combo_buffer[i].getClass() == Integer.class) {
+                        if (src_combo_buffer[j].getClass() == Integer.class) {
                             src_combo[j] = ((Integer) src_combo_buffer[j]).doubleValue();
                         } else {
                             src_combo[j] = (Double) src_combo_buffer[j];
@@ -407,7 +407,7 @@ public class ModelWrapper {
 //                    System.out.println("fiber_coords_list = " + Arrays.toString(fiber_coords_list));
                     for (int q = 0; q < fiber_coords_list.length; q++) { // loop over fiber coords in list of fiber coords
                         String fiber_coords = fiber_coords_list[q];
-                        String coord_path = String.join("/", new String[]{coord_dir, fiber_coords}); // build path to coordinates
+                        String coord_path = String.join("/", new String[]{coord_dir, Integer.toString(ind_fiberset_select), fiber_coords}); // build path to coordinates
 
                         // load bases
                         String bases_directory = String.join("/", new String[]{
@@ -424,27 +424,39 @@ public class ModelWrapper {
                         assert bases_paths != null;
                         double[][] bases = new double[bases_paths.length][];
                         for(int basis_ind = 0; basis_ind < bases_paths.length; basis_ind ++) {
-                            System.out.println("bases_paths = " + Arrays.toString(bases_paths));
+//                            System.out.println("base path = " + bases_directory + "/" + bases_paths[basis_ind]);
                             Model model = ModelUtil.load("Model", bases_directory + "/" + bases_paths[basis_ind]);
-                            System.out.println("coord_path = " + coord_path);
+//                            System.out.println("coord_path = " + coord_path);
                             double[] basis_vec = extractPotentials(model, coord_path);
+
+//                            System.out.println("basis_vec = " + Arrays.toString(basis_vec));
+//                            System.out.println("\n\n\n\n");
+//                            System.out.println("bases = " + Arrays.deepToString(bases));
 
                             bases[basis_ind] = new double[basis_vec.length];
                             System.arraycopy(basis_vec, 0, bases[basis_ind], 0, basis_vec.length);
 
                             // for each point (row), then across bases (column) multiply by src_combo and add
-                            double[] ve = new double[bases.length];
+                            double[] ve = new double[basis_vec.length];
                             for(int base_ind = 0; base_ind < bases.length; base_ind ++){
                                 for(int point_ind = 0; point_ind < bases[base_ind].length; point_ind ++) {
+//                                    System.out.println("point_ind = " + point_ind);
+//                                    System.out.println("base_ind = " + base_ind);
                                     ve[point_ind] += bases[base_ind][point_ind] * src_combo[base_ind];
                                 }
                             }
+
                             // and save ve to file
                             String ve_path = String.join("/", new String[]{
                                     ve_dir,
                                     Integer.toString(i),
                                     q + ".dat"
                             });
+
+                            if (! new File(ve_dir + "/" + i).exists()) {
+                                new File(ve_dir + "/" + i).mkdirs();
+                            }
+
                             writeVe(ve, ve_path);
                         }
                     }
@@ -472,13 +484,27 @@ public class ModelWrapper {
         double[][] coordinates;
         coordinates = transposeMatrix(coordinatesLoaded);
 
+
+
+
         // Get Ve from COMSOL
         String id = this.next("interp");
         model.result().numerical().create(id, "Interp");
         model.result().numerical(id).set("expr", "V");
         model.result().numerical(id).setInterpolationCoordinates(coordinates);
         double[][][] ve_pre = model.result().numerical(id).getData();
+//        System.out.println("ve_pre = " + Arrays.toString(ve_pre));
+
+//        System.out.println("start loop");
+//        for (double[][] one : ve_pre) {
+//            for (double[] two : one) {
+//                System.out.println(Arrays.toString(two));
+//            }
+//        }
+//        System.out.println("end loop");
+
         int len = ve_pre[0][0].length; // number of coordinates
+
 
         double[] ve = new double[len];
         for (int i = 0; i < len; i++) {
@@ -522,7 +548,7 @@ public class ModelWrapper {
         try {
             // save rows (number of coords) at top line... so number of lines in file is (number of coords +1)
             String rows = scan.nextLine();
-            int n_rows = Integer.parseInt(rows);
+            int n_rows = Integer.parseInt(rows.trim());
 
             // pre-allocated array of doubles for coords in file (3 columns by default for (x,y,z)
             double[][] coords = new double[n_rows][3];
@@ -659,16 +685,21 @@ public class ModelWrapper {
                     index + ".mph"
             });
 
+            boolean save = true;
+
             if (! new File(mphFile).exists()) {
                 model.sol("sol1").runAll();
             } else {
-                System.out.println("Skipping solving " + key_on + " because found existing file: " + mphFile);
+                save = false;
+                System.out.println("Skipping solving and saving for basis " + key_on + " because found existing file: " + mphFile);
             }
 
 
             try {
-                System.out.println("Saving MPH (mesh and solution) file to: " + mphFile);
-                model.save(mphFile);
+                if (save) {
+                    System.out.println("Saving MPH (mesh and solution) file to: " + mphFile);
+                    model.save(mphFile);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -1408,5 +1439,6 @@ public class ModelWrapper {
 
         ModelUtil.disconnect();
         System.out.println("Disconnected from COMSOL Server");
+        System.exit(0);
     }
 }
