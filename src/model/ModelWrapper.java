@@ -339,7 +339,7 @@ public class ModelWrapper {
 
                 String ve_dir = String.join("/", new String[]{ // build path to directory of ve for each fiber coordinate
                         sim_dir,
-                        "ve"
+                        "potentials"
                 });
 
                 String key_path = String.join("/", new String[]{ // build path to key (fiberset x srcs) file
