@@ -27,7 +27,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
         self.fiberset_product = []
         self.fiberset_key = []
         self.src_product = []
-        self.master_product = []
+        self.master_product_indices = []
 
     def resolve_factors(self) -> 'Simulation':
 
@@ -191,6 +191,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
         q_s = range(len(self.wave_product))
 
         prods = list(itertools.product(s_s, q_s))
+        self.master_product_indices = prods
         for t, prod in enumerate(prods):
             s = prod[0]
             source_potentials_dir = os.path.join(sim_dir, "potentials", str(s))
