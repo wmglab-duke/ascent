@@ -178,17 +178,8 @@ class Runner(Exceptionable, Configurable):
                         .validate_srcs(sim_obj_dir) \
                         .save(sim_obj_file)
 
-                # simulation_builder = SimulationBuilder(sim, self.configs[Config.EXCEPTIONS.value])
-                # simulation_builder \
-                #     .add(SetupMode.OLD, Config.MODEL, model) \
-                #     .add(SetupMode.OLD, Config.SIM, sim) \
-                #     # .make_folders() \
-                #     # .build_hoc() \
-                #     # .copy_waveforms() \
-                #     # .copy_ve_data()
-
         # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials
-        # self.handoff()
+        self.handoff()
 
         #  continue by using simulation objects
         for model_index, model_config in enumerate(all_configs[Config.MODEL.value]):
