@@ -315,42 +315,35 @@ public class ModelWrapper {
             for(int sim_ind = 0; sim_ind < sims_list.length(); sim_ind++) { // loop over sims
                 int sim_num = (int) sims_list.get(sim_ind); // get sim number for index in sims list
 
-                // TODO make by parts - and add
-                String sim_path = String.join("/", new String[]{ // build path to sim config file
+                String sim_config_path = String.join("/", new String[]{ // build path to sim config file
                         "config",
                         "user",
                         "sims",
                         sim_num + ".json"
                 });
-                JSONObject simData = JSONio.read(sim_path); // load sim configuration data
+                JSONObject simData = JSONio.read(sim_config_path); // load sim configuration data
 
-                String coord_dir = String.join("/", new String[]{ // build path to directory of fibers coordinates
+                String sim_dir = String.join("/", new String[]{ // build path to directory of fibers coordinates
                         "samples",
                         Integer.toString(sample),
                         "models",
                         Integer.toString(model_num),
                         "sims",
-                        Integer.toString(sim_num),
+                        Integer.toString(sim_num)
+                });
+
+                String coord_dir = String.join("/", new String[]{ // build path to directory of fibers coordinates
+                        sim_dir,
                         "fibers"
                 });
 
                 String ve_dir = String.join("/", new String[]{ // build path to directory of ve for each fiber coordinate
-                        "samples",
-                        Integer.toString(sample),
-                        "models",
-                        Integer.toString(model_num),
-                        "sims",
-                        Integer.toString(sim_num),
+                        sim_dir,
                         "ve"
                 });
 
                 String key_path = String.join("/", new String[]{ // build path to key (fiberset x srcs) file
-                        "samples",
-                        Integer.toString(sample),
-                        "models",
-                        Integer.toString(model_num),
-                        "sims",
-                        Integer.toString(sim_num),
+                        sim_dir,
                         "potentials",
                         "key.dat"
                 });
