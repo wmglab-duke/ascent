@@ -437,38 +437,20 @@ public class ModelWrapper {
                                 s ->Pattern.matches("[0-9]+\\.mph", s)
                         ).toArray(String[]::new);
 
-//                        if (!Pattern.matches("[0-9]+\\.mph", bases_paths[basis_ind])) {
-//                            System.out.println("\t^ SKIPPING dir");
-//                            continue;
-//                        }
-
                         double[][] bases = new double[bases_paths.length][];
                         for(int basis_ind = 0; basis_ind < bases_paths.length; basis_ind ++) {
                             // and save ve to file
 
-
-                            System.out.println("PRE");
                             String dir = bases_directory + "/" + bases_paths[basis_ind];
-                            System.out.println(dir);
-
-
-
                             File file = new File(dir);
 //                            System.out.println("base path = " + bases_directory + "/" + bases_paths[basis_ind]);
                             while(!file.canWrite() || !file.canRead()) {
                                 System.out.println("waiting");
                                 // wait!
                             }
-                            System.out.println("pased");
 
                             Model model = ModelUtil.load("Model", dir);
-//                            System.out.println("coord_path = " + coord_path);
-                            System.out.println("HOWDY");
                             double[] basis_vec = extractPotentials(model, coord_path);
-
-//                            System.out.println("basis_vec = " + Arrays.toString(basis_vec));
-//                            System.out.println("\n\n\n\n");
-//                            System.out.println("bases = " + Arrays.deepToString(bases));
 
                             bases[basis_ind] = new double[basis_vec.length];
                             System.arraycopy(basis_vec, 0, bases[basis_ind], 0, basis_vec.length);
@@ -476,10 +458,6 @@ public class ModelWrapper {
                             // for each point (row), then across bases (column) multiply by src_combo and add
                             double[] ve = new double[basis_vec.length];
                             for(int point_ind = 0; point_ind < basis_vec.length; point_ind ++) {
-//                                System.out.println("point_ind = " + point_ind);
-//                                System.out.println("base_ind = " + basis_ind);
-//                                System.out.println("src_combo = " + src_combo[basis_ind]);
-//                                System.out.println("here");
                                 ve[point_ind] += bases[basis_ind][point_ind] * src_combo[basis_ind];
                             }
 
@@ -507,7 +485,6 @@ public class ModelWrapper {
         //                                             coordinates[0][i] = [x] in micron, (double)
         //                                             coordinates[1][i] = [y] in micron, (double)
         //                                             coordinates[2][i] = [z] in micron  (double)
-        System.out.println("In Extract Potentials");
 
         // Read in coords for axon segments as defined and saved to file in Python
         double[][] coordinatesLoaded;
@@ -517,27 +494,14 @@ public class ModelWrapper {
         double[][] coordinates;
         coordinates = transposeMatrix(coordinatesLoaded);
 
-
-
-
         // Get Ve from COMSOL
         String id = this.next("interp");
         model.result().numerical().create(id, "Interp");
         model.result().numerical(id).set("expr", "V");
         model.result().numerical(id).setInterpolationCoordinates(coordinates);
         double[][][] ve_pre = model.result().numerical(id).getData();
-//        System.out.println("ve_pre = " + Arrays.toString(ve_pre));
-
-//        System.out.println("start loop");
-//        for (double[][] one : ve_pre) {
-//            for (double[] two : one) {
-//                System.out.println(Arrays.toString(two));
-//            }
-//        }
-//        System.out.println("end loop");
 
         int len = ve_pre[0][0].length; // number of coordinates
-
 
         double[] ve = new double[len];
         for (int i = 0; i < len; i++) {
