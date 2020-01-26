@@ -23,14 +23,14 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         return itertools.product(args)
         pass
 
-    def _build_hoc(self, sim_obj_dir):
+    def build_hoc(self, sim_obj_dir):
         """
         Write file LaunchSim###.hoc
         :return:
         """
 
         write_mode = WriteMode.HOC
-        file_path = os.path.join(sim_obj_dir, "launch{}".format(WriteMode.file_endings.value[write_mode.value]))
+        file_path = os.path.join(self.dest_dir, "launch{}".format(WriteMode.file_endings.value[write_mode.value]))
         file_object = open(file_path, "w")
 
         # ENVIRONMENT
@@ -52,20 +52,19 @@ class HocWriter(Exceptionable, Configurable, Saveable):
 
         # FIBER PARAMETERS
         file_object.write("\n//***************** Fiber Parameters *************\n")
-        #  fiber model dict TODO
         fibers: dict = self.search(Config.SIM, "fibers")
-        fiber_model = fibers.get("type")
+        fiber_model = fibers.get("mode")
 
         fiber_model_info: dict = self.search(Config.FIBER_Z, Config.MyelinationMode.parameters.value, fiber_model)
 
         file_object.write("fiber_type = %0.0f "
                           "// fiber_type = 1 for unmyelinated; fiber_type = 2 for myelinated; "
                           "fiber_type = 3 for c fiber built from cFiberBuilder.hoc\n"
-                          % fiber_model_info.get("fiber_type"))
+                          % fiber_model_info.get("neuron_flag"))
 
         file_object.write("strdef fiber_type_str\n")
         file_object.write("fiber_type_str = \"%s\"\n" %
-                          fiber_model_info.get("fiber_type_str"))
+                          fiber_model_info.get("str"))
 
         file_object.write("node_channels = %0.0f "
                           "// node_channels = 0 for MRG; node_channels = 1 for Schild 1994\n" %
@@ -79,7 +78,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                           "// passive_end_nodes = 1 to make both end nodes passive; 0 otherwise\n" %
                           fiber_model_info.get("passive_end_nodes"))
 
-        fiberD = self.search(Config.SIM, "fibers", "diameter")
+        fiberD = self.search(Config.SIM, "fibers", "z_parameters", "diameter")
         file_object.write("fiberD = %0.0f "
                           "// fiber diameter\n" % fiberD)
 
@@ -100,7 +99,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
 
         file_object.write("\n//***************** Extracellular Stim ***********\n")
         file_object.write("strdef VeTime_fname\n")
-        file_object.write("VeTime_fname            = \"%s\"\n" % "TBD")
+        file_object.write("VeTime_fname            = \"%s\"\n" % "waveform.dat")
         file_object.write("flag_extracellular_stim = %0.0f\n" % 1)
 
         file_object.write("\n//***************** Recording ********************\n")
@@ -135,11 +134,14 @@ class HocWriter(Exceptionable, Configurable, Saveable):
 
         file_object.write("objref stimamp_top_init\n")
         file_object.write("objref stimamp_top_init = new Vector(%0.0f,%0.0f)\n\n" % (num_fasc, 0))
+
         for fasc in range(num_fasc):  # TODO stimamptops and stimampbottoms
             file_object.write("stimamp_bottom_init.x[%0.0f]        "
-                              "= %0.4f // [mA] initial lower bound of binary search for thresh\n" % (fasc, 0.090000))
+                              "= %0.4f // [mA] initial lower bound of binary search for thresh\n"
+                              % (fasc, 0.090000))
             file_object.write("stimamp_top_init.x[%0.0f]           "
-                              "= %0.4f // [mA] initial upper bound of binary search for thresh for extracellular stim\n" % (fasc, 0.100000))
+                              "= %0.4f // [mA] initial upper bound of binary search for thresh for extracellular stim\n"
+                              % (fasc, 0.100000))
 
         file_object.write("\nap_thresh = %0.0f\n" % threshold.get("thresh"))
         file_object.write("N_minAPs  = %0.0f\n" % threshold.get("n_min_aps"))
@@ -151,9 +153,10 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         freqs = [self.search(Config.MODEL, "frequency", "value")/1000]
         Nfreq = len(freqs)
 
+        # TODO up to here
         file_object.write("Nmodels  = %0.0f\n" % 1)
-        file_object.write("ModelNum = %0.0f\n" % 0)  # todo
-        file_object.write("Nfasc    = %0.0f\n" % 0)  # todo
+        file_object.write("ModelNum = %0.0f\n" % 0)
+        file_object.write("Nfasc    = %0.0f\n" % 0)
         file_object.write("Namp     = %0.0f\n" % Namp)
         file_object.write("Nfreq    = %0.0f\n" % Nfreq)
         file_object.write("\nobjref stimamp_values\n")
