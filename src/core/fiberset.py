@@ -71,7 +71,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         for fascicle in self.sample.slides[0].fascicles:
             for outer in fascicle.out:
                 for inner in fascicle.inners:
-
+                    
 
 
         return out_to_fib, out_to_in
