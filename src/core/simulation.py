@@ -190,8 +190,8 @@ class Simulation(Exceptionable, Configurable, Saveable):
     ############################
 
     def build_sims(self, sim_dir) -> 'Simulation':
-        # loop cartesian product
 
+        # loop cartesian product
         key_filepath = os.path.join(sim_dir, "potentials", "key.dat")  # s is line number
         f = open(key_filepath, "r")
         contents = f.read()
@@ -200,10 +200,11 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
         prods = list(itertools.product(s_s, q_s))
         self.master_product_indices = prods
+
         for t, prod in enumerate(prods):
             s = prod[0]
-            source_potentials_dir = os.path.join(sim_dir, "potentials", str(s))
-            destination_potentials_dir = os.path.join(sim_dir, "n_sims", str(t), "data", "inputs")
+            # source_potentials_dir = os.path.join(sim_dir, "potentials", str(s))
+            # destination_potentials_dir = os.path.join(sim_dir, "n_sims", str(t), "data", "inputs")
 
             q = prod[1]
             source_waveform_path = os.path.join(sim_dir, "waveforms", "{}.dat".format(q))
@@ -211,12 +212,12 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
             self._build_file_structure(sim_dir, t)
 
-            if not os.path.exists(destination_potentials_dir):
-                os.makedirs(destination_potentials_dir)
-
-            for root, dirs, files in os.walk(source_potentials_dir):
-                for file in files:
-                    shutil.copyfile(os.path.join(root, file), os.path.join(destination_potentials_dir, file))
+            # if not os.path.exists(destination_potentials_dir):
+            #     os.makedirs(destination_potentials_dir)
+            #
+            # for root, dirs, files in os.walk(source_potentials_dir):
+            #     for file in files:
+            #         shutil.copyfile(os.path.join(root, file), os.path.join(destination_potentials_dir, file))
 
             if not os.path.isfile(destination_waveform_path):
                 shutil.copyfile(source_waveform_path, destination_waveform_path)
@@ -244,16 +245,16 @@ class Simulation(Exceptionable, Configurable, Saveable):
             p = fiberset_ind
             for root, dirs, files in os.walk(os.path.join(sim_dir, 'potentials', str(p))):
                 for file in files:
-                    print('FILE: {}'.format(file))
+                    # print('FILE: {}'.format(file))
                     q = int(file.split('.')[0])
                     l, k = self.indices_fib_to_n(p, q)
                     filename = 'inner{}_fiber{}.dat'.format(l, k)
-                    print('\tfilename: {}'.format(filename))
+                    # print('\tfilename: {}'.format(filename))
                     directory = os.path.join(sim_dir, 'n_sims', str(t), 'data', 'inputs')
                     if not os.path.exists(directory):
                         os.makedirs(directory)
-                    print(os.path.join(sim_dir, 'potentials', str(potentials_ind), str(q) + '.dat'))
-                    print(os.path.join(directory, filename) + '\n\n')
+                    # print(os.path.join(sim_dir, 'potentials', str(potentials_ind), str(q) + '.dat'))
+                    # print(os.path.join(directory, filename) + '\n\n')
                     shutil.copyfile(
                         os.path.join(sim_dir, 'potentials', str(potentials_ind), str(q) + '.dat'),
                         os.path.join(directory, filename)
