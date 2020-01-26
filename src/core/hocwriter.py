@@ -8,11 +8,14 @@ from src.utils import *
 
 
 class HocWriter(Exceptionable, Configurable, Saveable):
-    def __init__(self, sim_config, exception_config):
+    def __init__(self, source_dir, dest_dir, exception_config):
 
         # Initializes superclasses
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
         Configurable.__init__(self)
+
+        self.source_dir = source_dir
+        self.dest_dir = dest_dir
 
         self.add(SetupMode.NEW, Config.FIBER_Z, os.path.join('config', 'system', 'fiber_z.json'))
 

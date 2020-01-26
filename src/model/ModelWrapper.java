@@ -432,8 +432,16 @@ public class ModelWrapper {
                         });
 
                         String[] bases_paths = new File(bases_directory).list();
-
                         assert bases_paths != null;
+                        bases_paths = Arrays.stream(bases_paths).filter(
+                                s ->Pattern.matches("[0-9]+\\.mph", s)
+                        ).toArray(String[]::new);
+
+//                        if (!Pattern.matches("[0-9]+\\.mph", bases_paths[basis_ind])) {
+//                            System.out.println("\t^ SKIPPING dir");
+//                            continue;
+//                        }
+
                         double[][] bases = new double[bases_paths.length][];
                         for(int basis_ind = 0; basis_ind < bases_paths.length; basis_ind ++) {
                             // and save ve to file
@@ -443,10 +451,7 @@ public class ModelWrapper {
                             String dir = bases_directory + "/" + bases_paths[basis_ind];
                             System.out.println(dir);
 
-                            if (!Pattern.matches("[0-9]+\\.mph", bases_paths[basis_ind])) {
-                                System.out.println("\t^ SKIPPING dir");
-                                continue;
-                            }
+
 
                             File file = new File(dir);
 //                            System.out.println("base path = " + bases_directory + "/" + bases_paths[basis_ind]);
@@ -470,12 +475,12 @@ public class ModelWrapper {
 
                             // for each point (row), then across bases (column) multiply by src_combo and add
                             double[] ve = new double[basis_vec.length];
-                            for(int base_ind = 0; base_ind < bases.length; base_ind ++){
-                                for(int point_ind = 0; point_ind < bases[base_ind].length; point_ind ++) {
-//                                    System.out.println("point_ind = " + point_ind);
-//                                    System.out.println("base_ind = " + base_ind);
-                                    ve[point_ind] += bases[base_ind][point_ind] * src_combo[base_ind];
-                                }
+                            for(int point_ind = 0; point_ind < basis_vec.length; point_ind ++) {
+//                                System.out.println("point_ind = " + point_ind);
+//                                System.out.println("base_ind = " + basis_ind);
+//                                System.out.println("src_combo = " + src_combo[basis_ind]);
+//                                System.out.println("here");
+                                ve[point_ind] += bases[basis_ind][point_ind] * src_combo[basis_ind];
                             }
 
 
