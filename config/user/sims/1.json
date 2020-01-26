@@ -39,25 +39,30 @@
     "flag": false,
     "times": {
       "unit": "ms",
-      "pw": 1
+      "pw": 1,
+      "IntraStim_PulseTrain_delay": 0
     },
     "freq": {
       "unit": "Hz",
       "value": 1
     },
+    "amp": {
+      "unit": "nA",
+      "value": 1
+    },
     "ind": 2
   },
   "save_flags": {
-    "vm_time": false,
-    "gating_time": false,
-    "vm_space": false,
-    "gating_space": false,
-    "ve": false,
-    "istim": false
+    "vm_time": 0,
+    "gating_time": 0,
+    "vm_space": 0,
+    "gating_space": 0,
+    "ve": 0,
+    "istim": 0
   },
   "threshold": {
-    "thresh": true,
-    "block_thresh": false,
+    "thresh": 30,
+    "block_thresh": 0,
     "resolution": 0.01,
     "vm": {
       "unit": "mV",

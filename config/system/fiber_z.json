@@ -2,6 +2,9 @@
   "fiber_type_parameters": {
     "unit": "micrometers",
     "MRG_DISCRETE": {
+      "neuron_flag": 2,
+      "geom_determination_method": 0,
+      "str": "MRG",
       "units": "micrometer",
       "myelinated": true,
       "sampling": "discrete",
@@ -53,6 +56,8 @@
       "passive_end_nodes": 1
     },
     "B_FIBER": {
+      "neuron_flag": 2,
+      "geom_determination_method": 2,
       "units": "micrometer",
       "myelinated": true,
       "sampling": "interp",
@@ -68,6 +73,8 @@
       "passive_end_nodes": 1
     },
     "MRG_INTERPOLATION": {
+      "neuron_flag": 2,
+      "geom_determination_method": 1,
       "units": "micrometer",
       "myelinated": true,
       "sampling": "interp",
@@ -86,6 +93,8 @@
       "passive_end_nodes": 1
     },
     "SUNDT": {
+      "neuron_flag": 3,
+      "str": "CFiber",
       "units": "micrometer",
       "myelinated": false,
       "sampling": "discrete",
@@ -96,6 +105,8 @@
       "passive_end_nodes": 1
     },
     "TIGERHOLM": {
+      "neuron_flag": 3,
+      "str": "CFiber",
       "units": "micrometer",
       "myelinated": false,
       "sampling": "discrete",
@@ -106,6 +117,8 @@
       "passive_end_nodes": 1
     },
     "RATTAY": {
+      "neuron_flag": 3,
+      "str": "CFiber",
       "units": "micrometer",
       "myelinated": false,
       "sampling": "discrete",
@@ -116,6 +129,8 @@
       "passive_end_nodes": 1
     },
     "SCHILD": {
+      "neuron_flag": 3,
+      "str": "CFiber",
       "units": "micrometer",
       "myelinated": false,
       "sampling": "discrete",
