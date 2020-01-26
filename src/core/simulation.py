@@ -201,8 +201,16 @@ class Simulation(Exceptionable, Configurable, Saveable):
             destination_waveform_path = os.path.join(sim_dir, "n_sims", str(t), "data", "inputs", "waveform.dat")
 
             self._build_file_structure(sim_dir, t)
-            shutil.copyfile(source_waveform_path, destination_waveform_path)
-            shutil.copytree(source_potentials_dir, destination_potentials_dir)
+
+            if not os.path.exists(destination_potentials_dir):
+                os.makedirs(destination_potentials_dir)
+
+            for root, dirs, files in os.walk(source_potentials_dir):
+                for file in files:
+                    shutil.copyfile(os.path.join(root, file), os.path.join(destination_potentials_dir, file))
+
+            if not os.path.isfile(destination_waveform_path):
+                shutil.copyfile(source_waveform_path, destination_waveform_path)
             # self._build_hoc(sim_obj_dir)
 
 

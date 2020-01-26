@@ -411,7 +411,14 @@ public class ModelWrapper {
                         String fiber_coords = fiber_coords_list[q];
                         String coord_path = String.join("/", new String[]{coord_dir, Integer.toString(ind_fiberset_select), fiber_coords}); // build path to coordinates
 
-                        if (new File(coord_path).exists()) continue;
+                        String ve_path = String.join("/", new String[]{
+                                ve_dir,
+                                Integer.toString(i),
+                                q + ".dat"
+                        });
+//                        System.out.println("ve_path = " + ve_path);
+
+                        if (new File(ve_path).exists()) continue;
 
                         // load bases
                         String bases_directory = String.join("/", new String[]{
@@ -428,6 +435,9 @@ public class ModelWrapper {
                         assert bases_paths != null;
                         double[][] bases = new double[bases_paths.length][];
                         for(int basis_ind = 0; basis_ind < bases_paths.length; basis_ind ++) {
+                            // and save ve to file
+
+
 //                            System.out.println("base path = " + bases_directory + "/" + bases_paths[basis_ind]);
                             Model model = ModelUtil.load("Model", bases_directory + "/" + bases_paths[basis_ind]);
 //                            System.out.println("coord_path = " + coord_path);
@@ -450,12 +460,6 @@ public class ModelWrapper {
                                 }
                             }
 
-                            // and save ve to file
-                            String ve_path = String.join("/", new String[]{
-                                    ve_dir,
-                                    Integer.toString(i),
-                                    q + ".dat"
-                            });
 
                             if (! new File(ve_dir + "/" + i).exists()) {
                                 new File(ve_dir + "/" + i).mkdirs();
@@ -703,6 +707,14 @@ public class ModelWrapper {
                 if (save) {
                     System.out.println("Saving MPH (mesh and solution) file to: " + mphFile);
                     model.save(mphFile);
+
+                    File mphFileFile = new File(mphFile);
+
+                    while(!mphFileFile.canWrite() || !mphFileFile.canRead()) {
+                        System.out.println("waiting");
+                        // wait!
+                    }
+
                 }
             } catch (IOException e) {
                 e.printStackTrace();
