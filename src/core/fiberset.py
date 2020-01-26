@@ -68,18 +68,18 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         out_to_fib = []
         out_to_in = []
 
-        for i, fascicle in enumerate(self.sample.slides[0].fascicles):
-            inner_ind = 0
-            # outer = fascicle.outer
-            out_to_in.append([])
-            out_to_fib.append([])
-            for j, inner in enumerate(fascicle.inners):
-                out_to_in[i].append(inner_ind)
-                out_to_fib[i].append([])
-                inner_ind += 1
-                for q, fiber in enumerate(fibers_xy):
-                    if Point(fiber).within(inner.polygon()):
-                        out_to_fib[i][j].append(q)
+        inner_ind = 0
+        for ind_fascicle, fascicle in enumerate(self.sample.slides[0].fascicles):
+            for i, outer in enumerate(fascicle.out):
+                out_to_in.append([])
+                out_to_fib.append([])
+                for j, inner in enumerate(fascicle.inners):
+                    out_to_in[i].append(inner_ind)
+                    out_to_fib[i].append([])
+                    inner_ind += 1
+                    for q, fiber in enumerate(fibers_xy):
+                        if Point(fiber).within(inner):
+                            out_to_fib[i][j].append(q)
 
         return out_to_fib, out_to_in
 
