@@ -237,19 +237,23 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
                 n_sim_dir = os.path.join(sim_dir, "n_sims", str(t))
                 hocwriter = HocWriter(sim_dir, n_sim_dir, self.configs[Config.EXCEPTIONS.value])
-                hocwriter \
-                    .add(SetupMode.OLD, Config.SIM, sim_copy) \
-                    .build_hoc(sim_dir)
+                # hocwriter \
+                #     .add(SetupMode.OLD, Config.SIM, sim_copy) \
+                #     .build_hoc(sim_dir)
 
             p = fiberset_ind
             for root, dirs, files in os.walk(os.path.join(sim_dir, 'potentials', str(p))):
                 for file in files:
+                    print('FILE: {}'.format(file))
                     q = int(file.split('.')[0])
                     l, k = self.indices_fib_to_n(p, q)
                     filename = 'inner{}_fiber{}.dat'.format(l, k)
+                    print('\tfilename: {}'.format(filename))
                     directory = os.path.join(sim_dir, 'n_sims', str(t), 'data', 'inputs')
                     if not os.path.exists(directory):
                         os.makedirs(directory)
+                    print(os.path.join(sim_dir, 'potentials', str(potentials_ind), str(q) + '.dat'))
+                    print(os.path.join(directory, filename) + '\n\n')
                     shutil.copyfile(
                         os.path.join(sim_dir, 'potentials', str(potentials_ind), str(q) + '.dat'),
                         os.path.join(directory, filename)
