@@ -213,6 +213,9 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 shutil.copyfile(source_waveform_path, destination_waveform_path)
             # self._build_hoc(sim_obj_dir)
 
+            n_sim_dir = os.path.join(sim_dir, "n_sims", str(t))
+
+
 
         # build_file_structure()
         # build paths

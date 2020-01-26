@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 import java.io.*;
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * model.ModelWrapper
@@ -441,6 +442,12 @@ public class ModelWrapper {
                             System.out.println("PRE");
                             String dir = bases_directory + "/" + bases_paths[basis_ind];
                             System.out.println(dir);
+
+                            if (!Pattern.matches("[0-9]\\.mph", bases_paths[basis_ind])) {
+                                System.out.println("\t^ SKIPPING dir");
+                                continue;
+                            }
+
                             File file = new File(dir);
 //                            System.out.println("base path = " + bases_directory + "/" + bases_paths[basis_ind]);
                             while(!file.canWrite() || !file.canRead()) {
