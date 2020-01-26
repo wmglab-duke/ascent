@@ -68,8 +68,8 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         out_to_fib = []
         out_to_in = []
 
+        inner_ind = 0
         for ind_fascicle, fascicle in enumerate(self.sample.slides[0].fascicles):
-            inner_ind = 0
             for i, outer in enumerate(fascicle.out):
                 out_to_in.append([])
                 out_to_fib.append([])
