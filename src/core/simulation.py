@@ -27,10 +27,12 @@ class Simulation(Exceptionable, Configurable, Saveable):
         self.wave_key = []
         self.fiberset_product = []
         self.fiberset_key = []
+        self.fiberset_map_pairs = []
         self.src_product = []
         self.src_key = []
         self.potentials_product = []
         self.master_product_indices = []  # order: potentials (active_src, fiberset), waveform
+        self.fiberset_maps = []
 
     def resolve_factors(self) -> 'Simulation':
 
@@ -43,11 +45,11 @@ class Simulation(Exceptionable, Configurable, Saveable):
             for key, value in dictionary.items():
                 if type(value) == list and len(value) > 1:
                     # print('adding key {} to sub {}'.format(key, sub))
-                    self.factors[path + '.' + key] = value
+                    self.factors[path + '->' + key] = value
                     remaining_n_dims -= 1
                 elif type(value) == dict:
                     # print('recurse: {}'.format(value))
-                    search(value, remaining_n_dims, path + '.' + key)
+                    search(value, remaining_n_dims, path + '->' + key)
 
         for flag in ['fibers', 'waveform']:
             search(
@@ -66,7 +68,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
             os.makedirs(directory)
 
         self.fibersets = []
-        fiberset_factors = {key: value for key, value in self.factors.items() if key.split('.')[0] == 'fibers'}
+        fiberset_factors = {key: value for key, value in self.factors.items() if key.split('->')[0] == 'fibers'}
 
         self.fiberset_key = list(fiberset_factors.keys())
         self.fiberset_product = list(itertools.product(*fiberset_factors.values()))
@@ -87,6 +89,8 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 .generate() \
                 .write(WriteMode.DATA, fiberset_directory)
 
+            self.fiberset_map_pairs.append(fiberset.fibers_map)
+
             self.fibersets.append(fiberset)
 
         return self
@@ -97,7 +101,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
             os.makedirs(directory)
 
         self.waveforms = []
-        wave_factors = {key: value for key, value in self.factors.items() if key.split('.')[0] == 'waveform'}
+        wave_factors = {key: value for key, value in self.factors.items() if key.split('->')[0] == 'waveform'}
 
         self.wave_key = list(wave_factors.keys())
         self.wave_product = list(itertools.product(*wave_factors.values()))
@@ -158,7 +162,8 @@ class Simulation(Exceptionable, Configurable, Saveable):
             list(range(len(self.fiberset_product)))
         ))
 
-        self.src_key = [".".join(["active_src", cuff])]
+        self.src_key = ['->'.join(['active_srcs', cuff])]
+        self.src_product = active_srcs_list
 
         # loop over product
         output = [len(self.potentials_product)]
@@ -218,7 +223,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
         for t, (potentials_ind, waveform_ind) in enumerate(self.master_product_indices):
             active_src_ind, fiberset_ind = self.potentials_product[potentials_ind]
-            print("1: {}\n2: {}\n3: {}\n".format(active_src_ind, fiberset_ind, waveform_ind))
+            # print("1: {}\n2: {}\n3: {}\n".format(active_src_ind, fiberset_ind, waveform_ind))
 
             active_src_vals = self.src_product[active_src_ind]
             wave_vals = self.wave_product[waveform_ind]
@@ -256,7 +261,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
             cp = copy.deepcopy(config)
 
         for path, value in zip(key, list(set)):
-            path_parts = path.split('.')
+            path_parts = path.split('->')
             pointer = cp
             for path_part in path_parts[:-1]:
                 pointer = pointer[path_part]
