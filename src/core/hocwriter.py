@@ -39,7 +39,6 @@ class HocWriter(Exceptionable, Configurable, Saveable):
 
         # TIME PARAMETERS
         file_object.write("\n//***************** Global Time ******************\n")
-        #  extracellular_stim dict TODO
         extracellular_stim: dict = self.search(Config.SIM, "waveform", "global")
         dt = extracellular_stim.get("dt")
         file_object.write("dt        = %0.3f // [ms]\n" % dt)

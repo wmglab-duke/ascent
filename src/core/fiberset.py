@@ -29,6 +29,8 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         # initialize empty lists of fiber points
         self.sample = sample
         self.fibers = None
+        self.out_to_fib = None
+        self.out_to_in = None
         self.add(SetupMode.NEW, Config.FIBER_Z, os.path.join('config', 'system', 'fiber_z.json'))
 
     def init_post_config(self):
@@ -41,6 +43,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         :return:
         """
         fibers_xy = self._generate_xy()
+        self.out_to_fib, self.out_to_in = self._generate_maps(fibers_xy)
         self.fibers = self._generate_z(fibers_xy)
         return self
 
@@ -60,6 +63,19 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                         f.write(str(row) + ' ')
                     f.write("\n")
         return self
+
+    def _generate_maps(self, fibers_xy) -> Tuple[List, List]:
+        out_to_fib = []
+        out_to_in = []
+
+        for fascicle in self.sample.slides[0].fascicles:
+            for outer in fascicle.out:
+                for inner in fascicle.inners:
+
+
+
+        return out_to_fib, out_to_in
+
 
     def _generate_xy(self) -> np.ndarray:
         # get required parameters from configuration JSON (using inherited Configurable methods)
