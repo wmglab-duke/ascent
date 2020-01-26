@@ -6,6 +6,7 @@ import shutil
 
 import numpy as np
 
+from .hocwriter import HocWriter
 from .fiberset import FiberSet
 from .waveform import Waveform
 from src.core import Sample
@@ -27,7 +28,9 @@ class Simulation(Exceptionable, Configurable, Saveable):
         self.fiberset_product = []
         self.fiberset_key = []
         self.src_product = []
-        self.master_product_indices = []
+        self.src_key = []
+        self.potentials_product = []
+        self.master_product_indices = []  # order: potentials (active_src, fiberset), waveform
 
     def resolve_factors(self) -> 'Simulation':
 
@@ -100,7 +103,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
         self.wave_product = list(itertools.product(*wave_factors.values()))
 
         for i, wave_set in enumerate(self.wave_product):
-
             sim_copy = self._copy_and_edit_config(self.configs[Config.SIM.value], self.wave_key, list(wave_set))
 
             # sim_copy = copy.deepcopy(self.configs[Config.SIM.value])
@@ -151,15 +153,17 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 if sum(active_src_abs) is not 2:
                     self.throw(50)
 
-        potentials_product = list(itertools.product(
-            list(enumerate(active_srcs_list)),
-            list(enumerate(self.fiberset_product))
+        self.potentials_product = list(itertools.product(
+            list(range(len(active_srcs_list))),
+            list(range(len(self.fiberset_product)))
         ))
 
+        self.src_key = [".".join(["active_src", cuff])]
+
         # loop over product
-        output = [len(potentials_product)]
-        for (active_src_select, fiberset_select) in potentials_product:
-            output.append((active_src_select[0], fiberset_select[0]))
+        output = [len(self.potentials_product)]
+        for active_src_select, fiberset_select in self.potentials_product:
+            output.append((active_src_select, fiberset_select))
 
         # write to file
         key_file_dir = os.path.join(sim_directory, "potentials")
@@ -171,9 +175,9 @@ class Simulation(Exceptionable, Configurable, Saveable):
             for row in output:
                 if not isinstance(row, int):
                     for el in row:
-                        f.write(str(el)+' ')
+                        f.write(str(el) + ' ')
                 else:
-                    f.write(str(row)+' ')
+                    f.write(str(row) + ' ')
                 f.write("\n")
 
         return self
@@ -186,7 +190,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
         key_filepath = os.path.join(sim_dir, "potentials", "key.dat")  # s is line number
         f = open(key_filepath, "r")
         contents = f.read()
-        s_s = range(int(contents[0])-1)
+        s_s = range(int(contents[0]))
         q_s = range(len(self.wave_product))
 
         prods = list(itertools.product(s_s, q_s))
@@ -212,7 +216,25 @@ class Simulation(Exceptionable, Configurable, Saveable):
             if not os.path.isfile(destination_waveform_path):
                 shutil.copyfile(source_waveform_path, destination_waveform_path)
 
-            n_sim_dir = os.path.join(sim_dir, "n_sims", str(t))
+        for t, (potentials_ind, waveform_ind) in enumerate(self.master_product_indices):
+            active_src_ind, fiberset_ind = self.potentials_product[potentials_ind]
+            print("1: {}\n2: {}\n3: {}\n".format(active_src_ind, fiberset_ind, waveform_ind))
+
+            active_src_vals = self.src_product[active_src_ind]
+            wave_vals = self.wave_product[waveform_ind]
+            fiberset_vals = self.fiberset_product[fiberset_ind]
+
+            sim_copy = copy.deepcopy(self.configs[Config.SIM.value])
+            for keys, vals in zip(
+                    [self.src_key, self.wave_key, self.fiberset_key], [active_src_vals, wave_vals, fiberset_vals]
+            ):
+                sim_copy = self._copy_and_edit_config(sim_copy, keys, list(vals), copy_again=False)
+
+                n_sim_dir = os.path.join(sim_dir, "n_sims", str(t))
+                hocwriter = HocWriter(sim_dir, n_sim_dir, self.configs[Config.EXCEPTIONS.value])
+                hocwriter \
+                    .add(SetupMode.OLD, Config.SIM, sim_copy) \
+                    .build_hoc(sim_dir)
 
         # build_hoc()
         return self
@@ -228,8 +250,11 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
     ############################
 
-    def _copy_and_edit_config(self, config, key, set):
-        cp = copy.deepcopy(config)
+    def _copy_and_edit_config(self, config, key, set, copy_again=True):
+        cp = config
+        if copy_again:
+            cp = copy.deepcopy(config)
+
         for path, value in zip(key, list(set)):
             path_parts = path.split('.')
             pointer = cp
