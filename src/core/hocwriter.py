@@ -23,7 +23,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         return itertools.product(args)
         pass
 
-    def _build_hoc(self, sim_obj_dir):
+    def build_hoc(self, sim_obj_dir):
         """
         Write file LaunchSim###.hoc
         :return:
@@ -153,9 +153,10 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         freqs = [self.search(Config.MODEL, "frequency", "value")/1000]
         Nfreq = len(freqs)
 
+        # TODO up to here
         file_object.write("Nmodels  = %0.0f\n" % 1)
-        file_object.write("ModelNum = %0.0f\n" % 0)  # todo
-        file_object.write("Nfasc    = %0.0f\n" % 0)  # todo
+        file_object.write("ModelNum = %0.0f\n" % 0)
+        file_object.write("Nfasc    = %0.0f\n" % 0)
         file_object.write("Namp     = %0.0f\n" % Namp)
         file_object.write("Nfreq    = %0.0f\n" % Nfreq)
         file_object.write("\nobjref stimamp_values\n")
