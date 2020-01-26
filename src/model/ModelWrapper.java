@@ -443,7 +443,7 @@ public class ModelWrapper {
                             String dir = bases_directory + "/" + bases_paths[basis_ind];
                             System.out.println(dir);
 
-                            if (!Pattern.matches("[0-9]\\.mph", bases_paths[basis_ind])) {
+                            if (!Pattern.matches("[0-9]+\\.mph", bases_paths[basis_ind])) {
                                 System.out.println("\t^ SKIPPING dir");
                                 continue;
                             }
