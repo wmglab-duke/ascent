@@ -1,5 +1,6 @@
 import copy
 import os
+from typing import Tuple, List
 
 import itertools
 import shutil
@@ -27,12 +28,11 @@ class Simulation(Exceptionable, Configurable, Saveable):
         self.wave_key = []
         self.fiberset_product = []
         self.fiberset_key = []
-        self.fiberset_map_pairs = []
+        self.fiberset_map_pairs: List[Tuple[List, List]] = []
         self.src_product = []
         self.src_key = []
         self.potentials_product = []
         self.master_product_indices = []  # order: potentials (active_src, fiberset), waveform
-        self.fiberset_maps = []
 
     def resolve_factors(self) -> 'Simulation':
 
@@ -89,7 +89,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 .generate() \
                 .write(WriteMode.DATA, fiberset_directory)
 
-            self.fiberset_map_pairs.append(fiberset.fibers_map)
+            self.fiberset_map_pairs.append((fiberset.out_to_fib, fiberset.out_to_in))
 
             self.fibersets.append(fiberset)
 
@@ -243,6 +243,37 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
         # build_hoc()
         return self
+
+    def indices_fib_to_n(self, p, q) -> Tuple[int, int]:
+        """
+        :param p: fiberset index
+        :param q: fiber index within fiberset
+        :return: (l, k) as in "inner<l>_axon<k>.dat" for NEURON sim
+        """
+
+        def search(arr, target) -> Tuple[int, int, int]:
+            for a, outer in enumerate(arr):
+                for b, inner in enumerate(outer):
+                    for c, fib in enumerate(inner):
+                        if fib == target:
+                            return a, b, c
+
+        out_fib, out_in = self.fiberset_map_pairs[p]
+        i, j, k = search(out_fib, q)
+        return out_in[i][j], k
+
+    def indices_n_to_fib(self, p, l, k) -> Tuple[int, int]:
+
+        def search(arr, target) -> Tuple[int, int]:
+            for a, outer in enumerate(arr):
+                for b, inner in enumerate(outer):
+                    if inner == target:
+                        return a, b
+
+        out_fib, out_in = self.fiberset_map_pairs[p]
+        i, j = search(out_in, l)
+        return out_fib[i][j][k]
+
 
     @staticmethod
     def _build_file_structure(sim_obj_dir, t):
