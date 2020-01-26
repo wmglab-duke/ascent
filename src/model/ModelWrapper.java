@@ -838,7 +838,7 @@ public class ModelWrapper {
         HashMap<String, IdentifierManager> previousPPIMs = null;
         boolean skipMesh = false;
 
-        // loop models
+        // loop MODELS
         for (int model_index = 0; model_index < models_list.length(); model_index++) {
             Model model = null;
             ModelWrapper mw = null;
