@@ -57,7 +57,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
     def write_fibers(self, sim_directory: str) -> 'Simulation':
         # loop PARAMS in here, but loop HISTOLOGY in FiberSet object
-        # TODO: finish method!
 
         directory = os.path.join(sim_directory, 'fibersets')
         if not os.path.exists(directory):

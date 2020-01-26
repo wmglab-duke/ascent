@@ -779,35 +779,31 @@ public class ModelWrapper {
      * @param args
      */
     public static void main(String[] args) throws IOException {
-
-        // Take projectPath input to ModelWrapper and assign to string.
-        String projectPath = args[0];
-
-        // Take runPath input to ModelWrapper and assign to string
-        String runPath = args[1];
-
         // Start COMSOL Instance
         ModelUtil.connect("localhost", 2036);
         ModelUtil.initStandalone(false);
 //        ModelUtil.showProgress(null); // if you want to see COMSOL progress (as it makes all geometry, runs, etc.)
 
+        // Take projectPath input to ModelWrapper and assign to string.
+        String projectPath = args[0];
+
         // Load RUN configuration data
+        String runPath = args[1]; // Take runPath input to ModelWrapper and assign to string
         JSONObject run = null;
         try {
             run = JSONio.read(runPath);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+        JSONArray models_list = run.getJSONArray("models"); // get array of COMSOL models
 
         // Load SAMPLE configuration data
         String sample = String.valueOf(Objects.requireNonNull(run).getInt("sample"));
-
         String sampleFile = String.join("/", new String[]{
                 "samples",
                 sample,
                 "sample.json"
         });
-
         JSONObject sampleData = null;
         try {
             sampleData = JSONio.read(projectPath + "/" + sampleFile);
@@ -815,15 +811,13 @@ public class ModelWrapper {
             e.printStackTrace();
         }
 
+        // Load mesh_dependence_model configuration data
         JSONObject meshReferenceData = null;
         try {
             meshReferenceData = JSONio.read(String.join("/", new String[]{projectPath, "config", "templates", "mesh_dependent_model.json"}));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-
-        JSONArray models_list = run.getJSONArray("models");
-
 
         // variables for optimization looping
         JSONObject previousModelData = null;
@@ -832,9 +826,11 @@ public class ModelWrapper {
         HashMap<String, IdentifierManager> previousPPIMs = null;
         boolean skipMesh = false;
 
-
         // loop models
         for (int model_index = 0; model_index < models_list.length(); model_index++) {
+            Model model = null;
+            ModelWrapper mw = null;
+
             System.out.println("Making model index: " + model_index);
             String modelStr = String.valueOf(models_list.get(model_index));
 
@@ -846,7 +842,6 @@ public class ModelWrapper {
                     modelStr,
                     "model.json"
             });
-
             JSONObject modelData = null;
             try {
                 modelData = JSONio.read(projectPath + "/" + modelFile);
@@ -859,13 +854,9 @@ public class ModelWrapper {
             JSONObject cuffObject = (JSONObject) modelData.get("cuff");
             String cuff = cuffObject.getString("preset");
 
-            Model model = null;
-            ModelWrapper mw = null;
-
             String mediumPrimitiveString = "Medium_Primitive";
             String instanceLabelMedium = "Medium";
 
-            // TODO: insert optimization logic here
             // if optimizing
             if ((Boolean) run.get("recycle_meshes")) {
                 System.out.println("Entering mesh recycling logic.");
@@ -874,7 +865,7 @@ public class ModelWrapper {
                     assert meshReferenceData != null;
                     if ((previousModelData != null) && (ModelSearcher.meshMatch(meshReferenceData, modelData, previousModelData))) {
 
-                            // set current mph and im/im
+                        // set current mph and im/im
                         assert previousMph != null;
                         model = ModelUtil.loadCopy(ModelUtil.uniquetag("Model"), previousMph.getFilePath());
                             mw = new ModelWrapper(model, projectPath);
