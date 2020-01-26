@@ -438,9 +438,20 @@ public class ModelWrapper {
                             // and save ve to file
 
 
+                            System.out.println("PRE");
+                            String dir = bases_directory + "/" + bases_paths[basis_ind];
+                            System.out.println(dir);
+                            File file = new File(dir);
 //                            System.out.println("base path = " + bases_directory + "/" + bases_paths[basis_ind]);
-                            Model model = ModelUtil.load("Model", bases_directory + "/" + bases_paths[basis_ind]);
+                            while(!file.canWrite() || !file.canRead()) {
+                                System.out.println("waiting");
+                                // wait!
+                            }
+                            System.out.println("pased");
+
+                            Model model = ModelUtil.load("Model", dir);
 //                            System.out.println("coord_path = " + coord_path);
+                            System.out.println("HOWDY");
                             double[] basis_vec = extractPotentials(model, coord_path);
 
 //                            System.out.println("basis_vec = " + Arrays.toString(basis_vec));
@@ -466,6 +477,7 @@ public class ModelWrapper {
                             }
 
                             writeVe(ve, ve_path);
+                            ModelUtil.remove(model.tag());
                         }
                     }
                 }
@@ -483,6 +495,7 @@ public class ModelWrapper {
         //                                             coordinates[0][i] = [x] in micron, (double)
         //                                             coordinates[1][i] = [y] in micron, (double)
         //                                             coordinates[2][i] = [z] in micron  (double)
+        System.out.println("In Extract Potentials");
 
         // Read in coords for axon segments as defined and saved to file in Python
         double[][] coordinatesLoaded;
@@ -1424,6 +1437,8 @@ public class ModelWrapper {
 //            }
 
             mw.loopCurrents(modelData, projectPath, sample, modelStr);
+
+            ModelUtil.remove(model.tag());
 
             mw.extractAllPotentials(projectPath, runPath);
 
