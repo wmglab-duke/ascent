@@ -407,7 +407,6 @@ public class ModelWrapper {
                         }
                     }
                     assert fiber_coords_list != null;
-//                    System.out.println("fiber_coords_list = " + Arrays.toString(fiber_coords_list));
                     for (int q = 0; q < fiber_coords_list.length; q++) { // loop over fiber coords in list of fiber coords
                         String fiber_coords = fiber_coords_list[q];
                         String coord_path = String.join("/", new String[]{coord_dir, Integer.toString(ind_fiberset_select), fiber_coords}); // build path to coordinates
@@ -417,7 +416,6 @@ public class ModelWrapper {
                                 Integer.toString(i),
                                 q + ".dat"
                         });
-//                        System.out.println("ve_path = " + ve_path);
 
                         if (new File(ve_path).exists()) continue;
 
@@ -443,7 +441,6 @@ public class ModelWrapper {
 
                             String dir = bases_directory + "/" + bases_paths[basis_ind];
                             File file = new File(dir);
-//                            System.out.println("base path = " + bases_directory + "/" + bases_paths[basis_ind]);
                             while(!file.canWrite() || !file.canRead()) {
                                 System.out.println("waiting");
                                 // wait!
@@ -460,7 +457,6 @@ public class ModelWrapper {
                             for(int point_ind = 0; point_ind < basis_vec.length; point_ind ++) {
                                 ve[point_ind] += bases[basis_ind][point_ind] * src_combo[basis_ind];
                             }
-
 
                             if (! new File(ve_dir + "/" + i).exists()) {
                                 new File(ve_dir + "/" + i).mkdirs();
@@ -485,6 +481,8 @@ public class ModelWrapper {
         //                                             coordinates[0][i] = [x] in micron, (double)
         //                                             coordinates[1][i] = [y] in micron, (double)
         //                                             coordinates[2][i] = [z] in micron  (double)
+
+        System.out.println("coords_path: " + coords_path);
 
         // Read in coords for axon segments as defined and saved to file in Python
         double[][] coordinatesLoaded;
@@ -567,7 +565,6 @@ public class ModelWrapper {
             }
 
             scan.close();
-
             return coords;
 
         } catch(Exception e) {
@@ -1395,23 +1392,6 @@ public class ModelWrapper {
             model.result("pg1").run();
             model.result("pg1").set("data", "dset1");
 
-            // Saved meshed model
-//            String mphFile = String.join("/", new String[]{
-//                    projectPath,
-//                    "samples",
-//                    sample,
-//                    "models",
-//                    modelStr,
-//                    "model.mph"
-//            });
-//
-//            try {
-//                System.out.println("Saving MPH (mesh only) file to: " + mphFile);
-//                model.save(mphFile);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-
             mw.loopCurrents(modelData, projectPath, sample, modelStr);
 
             ModelUtil.remove(model.tag());
@@ -1425,11 +1405,7 @@ public class ModelWrapper {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-            ModelUtil.remove(model.tag());
         }
-
-
 
         ModelUtil.disconnect();
         System.out.println("Disconnected from COMSOL Server");
