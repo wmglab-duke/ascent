@@ -44,7 +44,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         file_object.write("dt        = %0.3f // [ms]\n" % dt)
         tstop = extracellular_stim.get("stop")
         file_object.write("tstop     = %0.0f // [ms]\n" % tstop)
-        n_tsteps = np.math.floor(tstop / dt) + 1
+        n_tsteps = np.math.floor(tstop / dt) # todo is this right
         file_object.write("n_tsteps  = %0.0f // [unitless]\n" % n_tsteps)
         file_object.write("t_initSS  = %0.0f // [ms]\n" % extracellular_stim.get("initSS"))
         file_object.write("dt_initSS = %0.0f // [ms]\n" % extracellular_stim.get("dt_initSS"))
@@ -65,7 +65,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                           "// node_channels = 0 for MRG; node_channels = 1 for Schild 1994\n" %
                           fiber_model_info.get("node_channels"))
 
-        fibernodes = 499  # TODO, what is the dimension in fiber manager
+        fibernodes = 42  # TODO, what is the dimension in fiber manager
         file_object.write("fibernodes = %0.0f "
                           "// must match up with ExtractPotentials\n" % fibernodes)
 
@@ -132,20 +132,21 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         file_object.write("Nfreq    = %0.0f\n" % num_freqs)
 
         file_object.write("\nobjref stimamp_bottom_init\n")
-        file_object.write("objref stimamp_bottom_init = new Vector(%0.0f,%0.0f)\n" % (num_inners, 0))
+        file_object.write("stimamp_bottom_init = new Vector(%0.0f,%0.0f)\n" % (num_inners, 0))
 
         file_object.write("objref stimamp_top_init\n")
-        file_object.write("objref stimamp_top_init = new Vector(%0.0f,%0.0f)\n\n" % (num_inners, 0))
+        file_object.write("stimamp_top_init = new Vector(%0.0f,%0.0f)\n\n" % (num_inners, 0))
 
         for fasc in range(num_inners):
             file_object.write("stimamp_bottom_init.x[%0.0f]        "
                               "= %0.4f // [mA] initial lower bound of binary search for thresh\n"
-                              % (fasc, 0.090000))
+                              % (fasc, 0.010000))
             file_object.write("stimamp_top_init.x[%0.0f]           "
                               "= %0.4f // [mA] initial upper bound of binary search for thresh for extracellular stim\n"
                               % (fasc, 0.100000))
 
-        file_object.write("\nap_thresh = %0.0f\n" % threshold.get("thresh"))
+        file_object.write("\nap_thresh = %0.0f\n" % threshold.get("thresh_flag"))
+        file_object.write("\nthresh_resoln = %0.3f\n" % threshold.get("resolution"))
         file_object.write("N_minAPs  = %0.0f\n" % threshold.get("n_min_aps"))
         file_object.write("\nflag_whichstim  = %0.0f\n" % 0)
 
@@ -156,7 +157,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
             file_object.write("stimamp_values.x[%0.0f] = %0.0f\n" % (amp, 0))
 
         file_object.write("strdef num_fibers_fname\n")
-        file_object.write("num_fibers_fname = \"%s\"\n" % "TBD")
+        file_object.write("num_fibers_fname = \"%s\"\n" % "data/inputs/numfibers_per_inner.dat")
 
         file_object.write("\nobjref Vefreq_values\n")
         file_object.write("Vefreq_values = new Vector(Nfreq,%0.0f)\n" % 0)

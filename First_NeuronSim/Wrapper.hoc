@@ -245,6 +245,7 @@ proc run_all(){local myinner, myfiber, myfreq, myamp, mypw, myisi
 
 	}   else if (find_thresh == 1){
 		FindThresh(myinner)
+		print "here2"
 		RunSim(stimamp)
 
 		// Save data			
@@ -308,17 +309,15 @@ trun = startsw()
 // Code beyond this point (til pc.done()) is only executed by the master.
 // The master must now post jobs to the bulletin board.
 
-proc batchrun() {local model_ind, inner_ind, fiber_ind, Vefreq_ind, stimamp_ind, pw_ind, isi_ind
-	for model_ind = 0, Nmodels-1 {
-		for inner_ind = 0, Ninners-1 {
-			for fiber_ind = 0, fiber_values.x[inner_ind]-1 {
-				for Vefreq_ind = 0, Nfreq-1 {
-					for stimamp_ind = 0, Namp-1 {
-						for pw_ind = 0, Npw-1 {
-							for isi_ind = 0, Nisi-1 {
-								// mymodel, myinner, myfiber, myfreq, myamp, mypw, myisi
-								pc.submit("run_all",inner_values.x[inner_ind],fiber_ind,Vefreq_values.x[Vefreq_ind],stimamp_values.x[stimamp_ind],pw_values.x[pw_ind],isi_values.x[isi_ind])
-							}
+proc batchrun() {local inner_ind, fiber_ind, Vefreq_ind, stimamp_ind, pw_ind, isi_ind
+	for inner_ind = 0, Ninners-1 {
+		for fiber_ind = 0, fiber_values.x[inner_ind]-1 {
+			for Vefreq_ind = 0, Nfreq-1 {
+				for stimamp_ind = 0, Namp-1 {
+					for pw_ind = 0, Npw-1 {
+						for isi_ind = 0, Nisi-1 {
+							// myinner, myfiber, myfreq, myamp, mypw, myisi
+							pc.submit("run_all",inner_values.x[inner_ind],fiber_ind,Vefreq_values.x[Vefreq_ind],stimamp_values.x[stimamp_ind],pw_values.x[pw_ind],isi_values.x[isi_ind])
 						}
 					}
 				}
@@ -334,7 +333,7 @@ batchrun()
 // Save the runtime to a file
 objref f_runtime
 f_runtime = new File()
-f_runtime.wopen("Data/Outputs/run_time.dat")
+f_runtime.wopen("data/outputs/run_time.dat")
 f_runtime.printf("Run time: %f seconds", startsw()-trun)
 f_runtime.close()
 {pc.done()}

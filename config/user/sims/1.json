@@ -11,7 +11,7 @@
     "units": "micrometer",
     "xy_trace_buffer": 5.0,
     "z_parameters": {
-      "diameter": 1,
+      "diameter": 10,
       "length": 50000.0,
       "offset": 0
     },
@@ -31,24 +31,26 @@
       "initSS": -200,
       "dt_initSS": 10
     },
-    "BIPHASIC_FULL_DUTY": {
-      "digits": 10
+    "BIPHASIC_PULSE_TRAIN": {
+      "pulse_width": 0.1,
+      "inter_phase": 1,
+      "digits": 1
     }
   },
   "intracellular_stim": {
     "flag": false,
     "times": {
       "unit": "ms",
-      "pw": 1,
+      "pw": 0,
       "IntraStim_PulseTrain_delay": 0
     },
     "freq": {
       "unit": "Hz",
-      "value": 1
+      "value": 0
     },
     "amp": {
       "unit": "nA",
-      "value": 1
+      "value": 0
     },
     "ind": 2
   },
