@@ -81,7 +81,6 @@ proc RunSim() {local myamp
 	
 	// Time loop
 	for t_ind=0, n_tsteps-1 {
-		//print "t = ", t_ind*dt, "ms"
 		for seg_ind = 0, fibertotal-1 {
 			if (flag_extracellular_stim == 1) {
 				s[seg_ind].sec.e_extracellular(0.5) = stimamp_extra * VeTime_data.x[t_ind] * VeSpace_data.x[seg_ind]
