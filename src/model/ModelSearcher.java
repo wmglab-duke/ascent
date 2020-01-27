@@ -14,10 +14,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-/*
-TODO: allow mesh match with self if mesh.mph does exist and bases/ is empty
- */
-
 public class ModelSearcher {
 
     private Path root;

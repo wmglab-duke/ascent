@@ -13,14 +13,14 @@ import java.util.regex.Pattern;
 /**
  * model.ModelWrapper
  *
- * Master high-level class for managing a model, its metadata, and various critical operations such as creating parts
- * and extracting potentials. This class houses the "meaty" operations of actually interacting with the model object
- * when creating parts in the static class model.Parts.
+ * Master high-level class for managing a model, its metadata, and various critical operations such as creating parts,
+ * assigning physics, and extracting potentials. This class houses the "meaty" operations of actually interacting with
+ * the model object when creating parts in the static class model.Parts.
  */
 public class ModelWrapper {
 
 
-    // UNION pseudonym constants
+    // UNION PSEUDONYM CONSTANTS
     public static final String ALL_NERVE_PARTS_UNION = "allNervePartsUnion";
     public static final String ENDO_UNION = "endoUnion";
     public static final String PERI_UNION = "periUnion";
@@ -30,28 +30,21 @@ public class ModelWrapper {
             ModelWrapper.ALL_NERVE_PARTS_UNION,
             ModelWrapper.PERI_UNION
     };
-
     // associated union contributors for above constants
     private HashMap<String, ArrayList<String>> unionContributors = new HashMap<>();
 
     // INSTANCE VARIABLES
+    private Model model; // model
 
-    // model
-    private Model model;
+    public IdentifierManager im = new IdentifierManager(); // top level identifier manager
 
-    // top level identifier manager
-    public IdentifierManager im = new IdentifierManager();
-
-    // managing parts within COMSOL
-    private HashMap<String, IdentifierManager> partPrimitiveIMs = new HashMap<>();
+    private HashMap<String, IdentifierManager> partPrimitiveIMs = new HashMap<>(); // for managing parts within COMSOL
 
     // directory structure
     private String root;
     private String dest;
 
-
     // CONSTRUCTORS
-
     /**
      * Default constructor (minimum of 2 arguments)
      * @param model com.comsol.model.Model object is REQUIRED
@@ -72,12 +65,10 @@ public class ModelWrapper {
     ModelWrapper(Model model, String projectRoot, String defaultSaveDestination) {
         this(model, projectRoot);
         this.initUnionContributors();
-        this.dest = defaultSaveDestination; // TODO do we ever use this.dest?????
+        this.dest = defaultSaveDestination;
     }
 
-
     // ACCESSOR/MUTATOR METHODS
-
     /**
      * @return the model
      */
@@ -114,7 +105,6 @@ public class ModelWrapper {
     }
 
     // OTHER METHODS
-
     /**
      * call method on im (IdentifierManager)... see class for details
      */
@@ -178,20 +168,18 @@ public class ModelWrapper {
     public boolean addCuffPartPrimitives(String name) {
         // extract data from json
         try {
-            JSONObject data = JSONio.read(
+            JSONObject cuffData = JSONio.read(
                     String.join("/", new String[]{this.root, "config", "system", "cuffs", name})
             );
 
-
-            // get the id for the next "par" (i.e. parameters section), and give it a name from the JSON file name
+            // get the id for the next "par" (i.e., parameters section), and give it a name from the JSON file name
             String id = this.next("par", name);
             model.param().group().create(id);
             model.param(id).label(name.split("\\.")[0] + " Parameters");
 
             // loop through all parameters in file, and set in parameters
-            for (Object item : (JSONArray) data.get("params")) {
+            for (Object item : (JSONArray) cuffData.get("params")) {
                 JSONObject itemObject = (JSONObject) item;
-
                 model.param(id).set(
                         (String) itemObject.get("name"),
                         (String) itemObject.get("expression"),
@@ -200,7 +188,7 @@ public class ModelWrapper {
             }
 
             // for each required part primitive, create it (if not already existing)
-            for (Object item: (JSONArray) data.get("instances")) {
+            for (Object item: (JSONArray) cuffData.get("instances")) {
                 JSONObject itemObject = (JSONObject) item;
                 String partPrimitiveName = (String) itemObject.get("type"); // quick cast to String
 
@@ -237,15 +225,14 @@ public class ModelWrapper {
      * @return success indicator
      */
     public boolean addCuffPartInstances(String name, JSONObject modelData) {
-        // extract data from json
-        // name is something like Enteromedics.json
+        // extract data from json (name is something like Enteromedics.json)
         try {
-            JSONObject data = JSONio.read(
+            JSONObject cuffData = JSONio.read(
                     String.join("/", new String[]{this.root, "config", "system", "cuffs", name})
             );
 
             // loop through all part instances
-            for (Object item: (JSONArray) data.get("instances")) {
+            for (Object item: (JSONArray) cuffData.get("instances")) {
                 JSONObject itemObject = (JSONObject) item;
 
                 String instanceLabel = (String) itemObject.get("label");
@@ -258,15 +245,14 @@ public class ModelWrapper {
             return false;
         }
         return true;
-
     }
 
     /**
-     * TODO
+     * Assign previously defined materials to domains in part instances
+     * @param cuffData is loaded JSON data for a defined cuff
      */
     public boolean addCuffPartMaterialAssignments(JSONObject cuffData) {
-        // extract data from json
-        // name is something like Enteromedics.json
+        // extract data from json, its name is something like Enteromedics.json
         // loop through all part instances
         for (Object item: (JSONArray) cuffData.get("instances")) {
             JSONObject itemObject = (JSONObject) item;
@@ -276,20 +262,20 @@ public class ModelWrapper {
             Part.addCuffPartMaterialAssignment(instanceLabel, type, this, itemObject);
         }
         return true;
-
     }
 
     /**
-     * Create materials necessary for fascicles, nerve, surrounding media, etc. --- always called!
+     * Create materials necessary for fascicles, nerve, surrounding media, etc.
      * @return success indicator
      */
     public boolean addMaterialDefinitions(ArrayList<String> materials, JSONObject modelData, ModelParamGroup materialParams) {
-        // extract data from json
         try {
+            // load system defined materials JSON into memory
             JSONObject materialsData = JSONio.read(
                     String.join("/", new String[]{this.root, "config", "system", "materials.json"})
             );
 
+            // add material definition for those materials that are needed in the instantiated parts
             for (String function:materials) {
                 if (! this.im.hasPseudonym(function)) {
                     String materialID = this.im.next("mat", function);
@@ -304,6 +290,11 @@ public class ModelWrapper {
         return true;
     }
 
+    /**
+     * For each fiber set created on the Python side of things, extract potentials and save to file
+     * @param projectPath - path of
+     * @param run_path
+     */
     public void extractAllPotentials(String projectPath, String run_path) throws IOException {
         System.out.println("Extracting/writing all potentials - skips if file already exists");
 
@@ -392,7 +383,6 @@ public class ModelWrapper {
                     File f_coords = new File(String.join("/", new String[]{coord_dir, Integer.toString(ind_fiberset_select)}));
                     String[] fiber_coords_list = f_coords.list(); // create list of fiber coords (one for each fiber)
 
-//                    System.out.println("f_coords = " + f_coords.toString());
                     // loop fiber_coords_list
                     JSONObject active_srcs = simData.getJSONObject("active_srcs"); // get array of contact combo weightings
                     String cuff = modelData.getJSONObject("cuff").getString("preset");
@@ -428,6 +418,13 @@ public class ModelWrapper {
                                 Integer.toString(model_num),
                                 "bases"
                         });
+
+                        // if bases directory does not yet exist, make it
+                        File basesPathFile = new File(bases_directory);
+                        if (! basesPathFile.exists()) {
+                            boolean success = basesPathFile.mkdirs();
+                            assert success;
+                        }
 
                         String[] bases_paths = new File(bases_directory).list();
                         assert bases_paths != null;
@@ -482,23 +479,20 @@ public class ModelWrapper {
         //                                             coordinates[1][i] = [y] in micron, (double)
         //                                             coordinates[2][i] = [z] in micron  (double)
 
-        System.out.println("coords_path: " + coords_path);
-
-        // Read in coords for axon segments as defined and saved to file in Python
+        // read in coords for axon segments as defined and saved to file in Python
         double[][] coordinatesLoaded;
         coordinatesLoaded = readCoords(coords_path);
 
-        // Transpose saved coordinates (we like to save (x,y,z) as column vectors, but COMSOL wants as rows)
+        // transpose saved coordinates (we like to save (x,y,z) as column vectors, but COMSOL wants as rows)
         double[][] coordinates;
         coordinates = transposeMatrix(coordinatesLoaded);
 
-        // Get Ve from COMSOL
+        // get Ve from COMSOL
         String id = this.next("interp");
         model.result().numerical().create(id, "Interp");
         model.result().numerical(id).set("expr", "V");
         model.result().numerical(id).setInterpolationCoordinates(coordinates);
         double[][][] ve_pre = model.result().numerical(id).getData();
-
         int len = ve_pre[0][0].length; // number of coordinates
 
         double[] ve = new double[len];
@@ -516,7 +510,6 @@ public class ModelWrapper {
         for (int i = 0; i < m.length; i++)
             for (int j = 0; j < m[0].length; j++)
                 temp[j][i] = m[i][j];
-
         return temp;
     }
 
@@ -531,7 +524,6 @@ public class ModelWrapper {
             printWriter.println(ve[i]);
         }
         printWriter.close(); // close printWriter
-
         return true;
     }
 
@@ -566,10 +558,8 @@ public class ModelWrapper {
 
             scan.close();
             return coords;
-
         } catch(Exception e) {
             e.printStackTrace();
-
             return null;
         }
     }
@@ -642,15 +632,12 @@ public class ModelWrapper {
 
                         // hand off to Part to build instance of fascicle
                         Part.createNervePartInstance(fascicleType, index, path, this, data, sampleData, nerveParams);
-
                     }
                 }
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-
         }
-
         return true;
     }
 
@@ -669,6 +656,22 @@ public class ModelWrapper {
             PhysicsFeature current_on = model.physics("ec").feature(src);
             current_on.set("Qjp", 0.001); // turn on current
 
+            String bases_directory = String.join("/", new String[]{
+                    projectPath,
+                    "samples",
+                    sample,
+                    "models",
+                    modelStr,
+                    "bases"
+            });
+
+            // if bases directory does not yet exist, make it
+            File basesPathFile = new File(bases_directory);
+            if (! basesPathFile.exists()) {
+                boolean success = basesPathFile.mkdirs();
+                assert success;
+            }
+
             String mphFile = String.join("/", new String[]{
                     projectPath,
                     "samples",
@@ -680,14 +683,12 @@ public class ModelWrapper {
             });
 
             boolean save = true;
-
             if (! new File(mphFile).exists()) {
                 model.sol("sol1").runAll();
             } else {
                 save = false;
                 System.out.println("Skipping solving and saving for basis " + key_on + " because found existing file: " + mphFile);
             }
-
 
             try {
                 if (save) {
@@ -700,7 +701,6 @@ public class ModelWrapper {
                         System.out.println("waiting");
                         // wait!
                     }
-
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -1051,8 +1051,6 @@ public class ModelWrapper {
                 } catch (IllegalArgumentException e) {
                     e.printStackTrace();
                 }
-
-
 
                 // Create PART INSTANCE for MEDIUM
                 String instanceID = mw.im.next("pi", instanceLabelMedium);
