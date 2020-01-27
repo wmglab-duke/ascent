@@ -1,0 +1,135 @@
+/*
+Author: Nikki Pelot
+Date created: February 3, 2016
+
+Description:
+- Set up recording for any parameters of interest
+
+Important notes:
+- If using passive end nodes, the MRG gating parameters aren't defined for the first and last nodes. If Nchecknodes == axonnodes, then populate the gating parameter vectors with zeros for the first and last nodes.
+- Assume checknode_values same for recording Vm & gating parameters.
+- Record Ve(t) in time loop. Only prepare vector here.
+
+Variables that must be defined in wrapper/params file:
+- saveflag_Vm_time, saveflag_gating_time, saveflag_Vm_space, saveflag_gating_space, saveflag_Ve, saveflag_Istim
+- n_tsteps
+- axonnodes
+- Nchecknodes (# values in checknode_values)
+- checknodes_values (vector)
+*/
+
+objref savevec_Vm_time, savevec_m_time, savevec_h_time, savevec_mp_time, savevec_s_time
+objref savevec_Vm_space, savevec_m_space, savevec_h_space, savevec_mp_space, savevec_s_space
+objref savevec_Ve, savevec_Istim
+
+// Load template for 1D array of objects
+load_file("ObjectArray_1d.hoc")
+
+proc Recording() {
+
+	// ***** Record Vm(t) at checknode_values
+	if (saveflag_Vm_time == 1) {
+		savevec_Vm_time = new O1d(Nchecknodes)
+
+		for i=0, Nchecknodes - 1 {
+			ind_tmp = checknode_values.x[i]
+			
+			savevec_Vm_time.o[i] = new Vector(n_tsteps,0)
+
+			if (!(fiber_type == 2)) { // if fiber is not myelinated, do not reference by node
+				savevec_Vm_time.o[i].record(&s[ind_tmp].sec.v(0.5),dt)
+			} else {
+				savevec_Vm_time.o[i].record(&node[ind_tmp].v(0.5),dt)
+			}
+		}
+	}
+
+	
+	// ***** Record MRG gating param's vs time at checknode_values
+	if (saveflag_gating_time == 1) {
+		savevec_m_time = new O1d(Nchecknodes)
+		savevec_h_time = new O1d(Nchecknodes)
+		savevec_mp_time = new O1d(Nchecknodes)
+		savevec_s_time = new O1d(Nchecknodes)
+		
+		// Set up the recording vectors for the gating parameters for all checknodes
+		// Leave populated with only zeros for first & last nodes if listed in checknode_values and if using passive end nodes.
+		// WHY? If using passive end nodes, the MRG gating parameters aren't defined for the first and last nodes.
+		for i=0, Nchecknodes - 1 {
+			ind_tmp = checknode_values.x[i]
+			
+			savevec_m_time.o[i] = new Vector(n_tsteps,0)
+			savevec_h_time.o[i] = new Vector(n_tsteps,0)
+			savevec_mp_time.o[i] = new Vector(n_tsteps,0)
+			savevec_s_time.o[i] = new Vector(n_tsteps,0)
+			
+			// If not an end node or there aren't passive end nodes, then record gating params
+			if ((!(ind_tmp == 0) && !(ind_tmp == Nchecknodes - 1)) || (passive_end_nodes == 0)) {
+				if (fiber_type == 1) {
+					savevec_m_time.o[i].record(&node[ind_tmp].m_axnode_unmyel(0.5),dt)
+					// savevec_m_time.o[i].record(&s[11*ind_tmp].sec.m_axnode_unmyel(0.5),dt)
+					savevec_h_time.o[i].record(&node[ind_tmp].h_axnode_unmyel(0.5),dt)
+					// savevec_h_time.o[i].record(&s[11*i].sec.h_axnode_unmyel(0.5),dt)
+					savevec_mp_time.o[i].record(&node[ind_tmp].mp_axnode_unmyel(0.5),dt)
+					// savevec_mp_time.o[i].record(&s[11*i].sec.mp_axnode_unmyel(0.5),dt)
+					savevec_s_time.o[i].record(&node[ind_tmp].s_axnode_unmyel(0.5),dt)
+					// savevec_s_time.o[i].record(&s[11*i].sec.s_axnode_unmyel(0.5),dt)
+				} else if (fiber_type == 2) {
+					savevec_m_time.o[i].record(&node[ind_tmp].m_axnode_myel(0.5),dt)
+					// savevec_m_time.o[i].record(&s[11*ind_tmp].sec.m_axnode_myel(0.5),dt)
+					savevec_h_time.o[i].record(&node[ind_tmp].h_axnode_myel(0.5),dt)
+					// savevec_h_time.o[i].record(&s[11*i].sec.h_axnode_myel(0.5),dt)
+					savevec_mp_time.o[i].record(&node[ind_tmp].mp_axnode_myel(0.5),dt)
+					// savevec_mp_time.o[i].record(&s[11*i].sec.mp_axnode_myel(0.5),dt)
+					savevec_s_time.o[i].record(&node[ind_tmp].s_axnode_myel(0.5),dt)
+					// savevec_s_time.o[i].record(&s[11*i].sec.s_axnode_myel(0.5),dt)
+				} else {
+					print "WARNING - saveflag_gating_time == 1 is only currently supported for fiber_type values 1 (MRG unmyelinated) & 2 (MRG myelinated)"
+				}
+			} else {
+				//print "passive: node #", i
+			}
+		}
+	}
+	
+	
+	// ***** Create vector to record Vm(x) at specified time points. Do actual recording in time loop.
+	if (saveflag_Vm_space == 1) {
+		savevec_Vm_space = new O1d(Nchecktimes)
+		
+		for i=0, Nchecktimes - 1 {
+			savevec_Vm_space.o[i] = new Vector(axonnodes,0)
+		}
+	}
+	
+	
+	// ***** Create vector to record MRG gating param's vs x at specified time points. Do actual recording in time loop.
+	if (saveflag_gating_space == 1) {
+		savevec_m_space = new O1d(Nchecktimes)
+		savevec_h_space = new O1d(Nchecktimes)
+		savevec_mp_space = new O1d(Nchecktimes)
+		savevec_s_space = new O1d(Nchecktimes)
+		
+		for i=0, Nchecktimes - 1 {
+			savevec_m_space.o[i] = new Vector(axonnodes,0)
+			savevec_h_space.o[i] = new Vector(axonnodes,0)
+			savevec_mp_space.o[i] = new Vector(axonnodes,0)
+			savevec_s_space.o[i] = new Vector(axonnodes,0)
+		}
+	}
+	
+	
+	// ***** Create vector to record Ve(t) at one location. Do actual recording in time loop.
+	if (flag_extracellular_stim == 1 && saveflag_Ve == 1) {
+		savevec_Ve = new O1d(1)
+		savevec_Ve.o[0] = new Vector(n_tsteps,0)
+	}
+
+	
+	// ***** Record Istim(t) (created in IntracellularStim.hoc).
+	if (saveflag_Istim == 1) {
+		savevec_Istim = new O1d(1)
+		savevec_Istim.o[0] = new Vector(n_tsteps,0)
+		savevec_Istim.o[0].record(&stim.i,dt)
+	}	
+}
