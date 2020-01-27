@@ -76,7 +76,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
         for i, fiberset_set in enumerate(self.fiberset_product):
 
             fiberset_directory = os.path.join(directory, str(i))
-
             if not os.path.exists(fiberset_directory):
                 os.makedirs(fiberset_directory)
 
@@ -90,7 +89,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 .write(WriteMode.DATA, fiberset_directory)
 
             self.fiberset_map_pairs.append((fiberset.out_to_fib, fiberset.out_to_in))
-
             self.fibersets.append(fiberset)
 
         return self
@@ -109,14 +107,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
         for i, wave_set in enumerate(self.wave_product):
             sim_copy = self._copy_and_edit_config(self.configs[Config.SIM.value], self.wave_key, list(wave_set))
 
-            # sim_copy = copy.deepcopy(self.configs[Config.SIM.value])
-            # for path, value in zip(self.wave_key, list(wave_set)):
-            #     path_parts = path.split('.')
-            #     pointer = sim_copy
-            #     for path_part in path_parts[:-1]:
-            #         pointer = pointer[path_part]
-            #     pointer[path_parts[-1]] = value
-
             waveform = Waveform(self.configs[Config.EXCEPTIONS.value])
             waveform \
                 .add(SetupMode.OLD, Config.SIM, sim_copy) \
@@ -128,16 +118,11 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
             self.waveforms.append(waveform)
 
-        # search(
-        #     {key: value for key, value in self.configs[Config.SIM.value].items() if key in loopable},
-        #     self.search(Config.SIM, "n_dimensions")
-        # )
-
         return self
 
     def validate_srcs(self, sim_directory) -> 'Simulation':
         #  /potentials key (index ) - values pXsrcs
-        # index of the line is s, write row containing of p and src index to file
+        # index of the line is s, write row containing of (p and src index) to file
         cuff = self.search(Config.MODEL, "cuff", "preset")
         if cuff in self.configs[Config.SIM.value]["active_srcs"].keys():
             active_srcs_list = self.search(Config.SIM, "active_srcs", cuff)
@@ -202,30 +187,18 @@ class Simulation(Exceptionable, Configurable, Saveable):
         self.master_product_indices = prods
 
         for t, prod in enumerate(prods):
-            s = prod[0]
-            # source_potentials_dir = os.path.join(sim_dir, "potentials", str(s))
-            # destination_potentials_dir = os.path.join(sim_dir, "n_sims", str(t), "data", "inputs")
-
+            # s = prod[0]
             q = prod[1]
             source_waveform_path = os.path.join(sim_dir, "waveforms", "{}.dat".format(q))
             destination_waveform_path = os.path.join(sim_dir, "n_sims", str(t), "data", "inputs", "waveform.dat")
 
             self._build_file_structure(sim_dir, t)
 
-            # if not os.path.exists(destination_potentials_dir):
-            #     os.makedirs(destination_potentials_dir)
-            #
-            # for root, dirs, files in os.walk(source_potentials_dir):
-            #     for file in files:
-            #         shutil.copyfile(os.path.join(root, file), os.path.join(destination_potentials_dir, file))
-
             if not os.path.isfile(destination_waveform_path):
                 shutil.copyfile(source_waveform_path, destination_waveform_path)
 
         for t, (potentials_ind, waveform_ind) in enumerate(self.master_product_indices):
             active_src_ind, fiberset_ind = self.potentials_product[potentials_ind]
-            # print("1: {}\n2: {}\n3: {}\n".format(active_src_ind, fiberset_ind, waveform_ind))
-
             active_src_vals = self.src_product[active_src_ind]
             wave_vals = self.wave_product[waveform_ind]
             fiberset_vals = self.fiberset_product[fiberset_ind]
@@ -235,26 +208,24 @@ class Simulation(Exceptionable, Configurable, Saveable):
                     [self.src_key, self.wave_key, self.fiberset_key], [active_src_vals, wave_vals, fiberset_vals]
             ):
                 sim_copy = self._copy_and_edit_config(sim_copy, keys, list(vals), copy_again=False)
+                print(sim_copy)
 
                 n_sim_dir = os.path.join(sim_dir, "n_sims", str(t))
                 hocwriter = HocWriter(sim_dir, n_sim_dir, self.configs[Config.EXCEPTIONS.value])
-                # hocwriter \
-                #     .add(SetupMode.OLD, Config.SIM, sim_copy) \
-                #     .build_hoc(sim_dir)
+                hocwriter \
+                    .add(SetupMode.OLD, Config.MODEL, self.configs[Config.MODEL.value]) \
+                    .add(SetupMode.OLD, Config.SIM, sim_copy) \
+                    .build_hoc()
 
             p = fiberset_ind
             for root, dirs, files in os.walk(os.path.join(sim_dir, 'potentials', str(p))):
                 for file in files:
-                    # print('FILE: {}'.format(file))
                     q = int(file.split('.')[0])
                     l, k = self.indices_fib_to_n(p, q)
                     filename = 'inner{}_fiber{}.dat'.format(l, k)
-                    # print('\tfilename: {}'.format(filename))
                     directory = os.path.join(sim_dir, 'n_sims', str(t), 'data', 'inputs')
                     if not os.path.exists(directory):
                         os.makedirs(directory)
-                    # print(os.path.join(sim_dir, 'potentials', str(potentials_ind), str(q) + '.dat'))
-                    # print(os.path.join(directory, filename) + '\n\n')
                     shutil.copyfile(
                         os.path.join(sim_dir, 'potentials', str(potentials_ind), str(q) + '.dat'),
                         os.path.join(directory, filename)

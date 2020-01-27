@@ -908,17 +908,14 @@ public class ModelWrapper {
                                         IdentifierManager.fromJSONObject(new JSONObject(meshMatch.getPartPrimitiveIMs().get(name).toJSONObject().toString()))
                                 );
                             }
-
                             skipMesh = true;
                         }
-
                     }
                 } catch (IOException e) {
                     System.out.println("Issue with mesh recycling logic.");
                     e.printStackTrace();
                     System.exit(1);
                 }
-
             }
 
             System.out.println("End mesh recycling logic.");

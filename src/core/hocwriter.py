@@ -23,7 +23,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         return itertools.product(args)
         pass
 
-    def build_hoc(self, sim_obj_dir):
+    def build_hoc(self):
         """
         Write file LaunchSim###.hoc
         :return:
@@ -43,6 +43,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         dt = extracellular_stim.get("dt")
         file_object.write("dt        = %0.3f // [ms]\n" % dt)
         tstop = extracellular_stim.get("stop")
+        print(tstop)
         file_object.write("tstop     = %0.0f // [ms]\n" % tstop)
         n_tsteps = np.math.floor(tstop / dt) + 1
         file_object.write("n_tsteps  = %0.0f // [unitless]\n" % n_tsteps)
