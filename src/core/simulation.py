@@ -208,7 +208,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
                     [self.src_key, self.wave_key, self.fiberset_key], [active_src_vals, wave_vals, fiberset_vals]
             ):
                 sim_copy = self._copy_and_edit_config(sim_copy, keys, list(vals), copy_again=False)
-                print(sim_copy)
 
                 n_sim_dir = os.path.join(sim_dir, "n_sims", str(t))
                 hocwriter = HocWriter(sim_dir, n_sim_dir, self.configs[Config.EXCEPTIONS.value])
