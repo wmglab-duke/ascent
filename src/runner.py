@@ -158,15 +158,6 @@ class Runner(Exceptionable, Configurable):
                 else:
                     if not os.path.exists(sim_obj_dir):
                         os.makedirs(sim_obj_dir)
-                    # fiber_manager = FiberManager(sample, self.configs[Config.EXCEPTIONS.value])
-
-                    # run processes with fiber manager (see class for details)
-                    # .fiber_z_coordinates(fiber_manager.xy_coordinates, save=True)\
-                    # fiber_manager \
-                    #     .add(SetupMode.OLD, Config.MODEL, model) \
-                    #     .add(SetupMode.OLD, Config.SIM, sim) \
-                    #     .fiber_xy_coordinates(plot=False, save=True) \
-                    #     .save(fiber_manager_file)
 
                     simulation: Simulation = Simulation(sample, self.configs[Config.EXCEPTIONS.value])
                     simulation \

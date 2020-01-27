@@ -103,6 +103,8 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
         self.wave_key = list(wave_factors.keys())
         self.wave_product = list(itertools.product(*wave_factors.values()))
+        print("here")
+        print(self.wave_product)
 
         for i, wave_set in enumerate(self.wave_product):
             sim_copy = self._copy_and_edit_config(self.configs[Config.SIM.value], self.wave_key, list(wave_set))
@@ -121,16 +123,23 @@ class Simulation(Exceptionable, Configurable, Saveable):
         return self
 
     def validate_srcs(self, sim_directory) -> 'Simulation':
-        #  /potentials key (index ) - values pXsrcs
-        # index of the line is s, write row containing of (p and src index) to file
+        # potentials key (s) = (r x p)
+        # index of line in output is s, write row containing of (r and p) to file
+
+        # if active_srcs in sim config has key for the cuff in your model, use the list of contact weights
         cuff = self.search(Config.MODEL, "cuff", "preset")
         if cuff in self.configs[Config.SIM.value]["active_srcs"].keys():
             active_srcs_list = self.search(Config.SIM, "active_srcs", cuff)
-
         else:
+            # otherwise, use the default weights (generally you don't want to rely on this as cuffs have different
+            # numbers of contacts
             active_srcs_list = self.search(Config.SIM, "active_srcs", "default")
             print("WARNING: Attempting to use default value for active_srcs: {}".format(active_srcs_list))
 
+        #  loop over the contact weights, make sure the the values obey two rules:
+        #      (1) current conservation
+        #      (2) unitary amounts solved for bases in COMSOL: if n_srcs > 1 then sum(abs) = 2, sum = 0
+        #                                                      if n_srcs = 1 then = 1 (special case)
         for active_srcs in active_srcs_list:
             active_src_abs = [abs(src_weight) for src_weight in active_srcs]
             if len(active_srcs) == 1:
