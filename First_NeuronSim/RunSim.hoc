@@ -23,8 +23,8 @@ Input arg's:
 */
 
 // Set up the APCount; check all nodes in case tstop is too short for AP to reach checknode1
-objref apc[axonnodes]
-for node_ind=0, axonnodes-1 {
+objref apc[fibernodes]
+for node_ind=0, fibernodes-1 {
 	if (fiber_type == 2) {// myelinated fiber
 		s[node_ind*11].sec apc[node_ind] = new APCount(0.5)
 	} else {
@@ -62,7 +62,7 @@ proc RunSim() {local myamp
 	*/	
 
 	finitialize(v_init)
-	for seg_ind = 0, axontotal-1 {
+	for seg_ind = 0, fibertotal-1 {
 		s[seg_ind].sec.e_extracellular(0.5) = 0
 	}
 	
@@ -82,7 +82,7 @@ proc RunSim() {local myamp
 	// Time loop
 	for t_ind=0, n_tsteps-1 {
 		//print "t = ", t_ind*dt, "ms"
-		for seg_ind = 0, axontotal-1 {
+		for seg_ind = 0, fibertotal-1 {
 			if (flag_extracellular_stim == 1) {
 				s[seg_ind].sec.e_extracellular(0.5) = stimamp_extra * VeTime_data.x[t_ind] * VeSpace_data.x[seg_ind]
 			}
@@ -106,7 +106,7 @@ proc RunSim() {local myamp
 						
 						if ((saveflag_gating_space == 1) && ((seg_ind%11) == 0)) {
 							// Can't save gating params of end nodes if using passive end nodes
-							if (!((passive_end_nodes == 1) && ((seg_ind == 0)||(seg_ind == axontotal-1)))) {
+							if (!((passive_end_nodes == 1) && ((seg_ind == 0)||(seg_ind == fibertotal-1)))) {
 								// Redundant check because error check above should indicate that it's only implemented for myelinated fibers
 								if (fiber_type == 2) {
 									savevec_m_space.o[time_save_ind].x[seg_ind/11]  = node[seg_ind/11].m_axnode_myel(0.5)
@@ -141,7 +141,7 @@ proc RunSim() {local myamp
 				N_APs = 1    
 			}
 		} else if (find_block_thresh == 0) {
-			for node_ind=0, axonnodes-1 {
+			for node_ind=0, fibernodes-1 {
 				// Find the max # of APs at any give node
 				if (apc[node_ind].n >= N_APs) {
 					N_APs = apc[node_ind].n			// Detected an action potential

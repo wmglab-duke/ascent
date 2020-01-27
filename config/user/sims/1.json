@@ -61,7 +61,7 @@
     "istim": 0
   },
   "threshold": {
-    "thresh": 30,
+    "thresh_flag": 1,
     "block_thresh": 0,
     "resolution": 0.01,
     "vm": {
@@ -71,8 +71,8 @@
     "n_min_aps": 1
   },
   "check_points": {
-    "n_checknodes": 0,
-    "n_checktimes": 0
+    "n_checknodes": 3,
+    "n_checktimes": 4
   },
   "terminal_nodes": {
     "node_channels": true,

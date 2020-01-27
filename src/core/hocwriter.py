@@ -91,7 +91,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
 
         file_object.write("\n//***************** Extracellular Stim ***********\n")
         file_object.write("strdef VeTime_fname\n")
-        file_object.write("VeTime_fname            = \"%s\"\n" % os.path.join("data", "inputs", "waveform.dat"))
+        file_object.write("VeTime_fname            = \"%s\"\n" % "data/inputs/waveform.dat")
         file_object.write("flag_extracellular_stim = %0.0f\n" % 1)
 
         file_object.write("\n//***************** Recording ********************\n")
@@ -114,20 +114,30 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         file_object.write("find_thresh = %0.0f "
                           "// find_thresh = 0 if not doing threshold search; "
                           "find_thresh = 1 if looking for threshold\n"
-                          % threshold.get("thresh"))
+                          % threshold.get("thresh_flag"))
         file_object.write("find_block_thresh = %0.0f "
                           "// If find_thresh==1, can also set find_block_thresh = 1 "
                           "to find block thresholds instead of activation threshold\n"
-                          % threshold.get("block_thresh")) // TODO
+                          % threshold.get("block_thresh"))
 
         num_inners = 7  # TODO number of fascicles here - get the dimension from fibermanager?
+        amps = [0]
+        num_amps = len(amps)
+        freqs = [self.search(Config.MODEL, "frequency", "value")/1000]
+        num_freqs = len(freqs)
+
+        file_object.write("Nmodels    = %0.0f\n" % 1)
+        file_object.write("Ninners    = %0.0f\n" % num_inners)
+        file_object.write("Namp     = %0.0f\n" % num_amps)
+        file_object.write("Nfreq    = %0.0f\n" % num_freqs)
+
         file_object.write("\nobjref stimamp_bottom_init\n")
         file_object.write("objref stimamp_bottom_init = new Vector(%0.0f,%0.0f)\n" % (num_inners, 0))
 
         file_object.write("objref stimamp_top_init\n")
         file_object.write("objref stimamp_top_init = new Vector(%0.0f,%0.0f)\n\n" % (num_inners, 0))
 
-        for fasc in range(num_inners):  # TODO stimamptops and stimampbottoms
+        for fasc in range(num_inners):
             file_object.write("stimamp_bottom_init.x[%0.0f]        "
                               "= %0.4f // [mA] initial lower bound of binary search for thresh\n"
                               % (fasc, 0.090000))
@@ -140,14 +150,6 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         file_object.write("\nflag_whichstim  = %0.0f\n" % 0)
 
         file_object.write("\n//***************** Batching Parameters **********\n")
-        amps = [0]
-        Namp = len(amps)
-        freqs = [self.search(Config.MODEL, "frequency", "value")/1000]
-        Nfreq = len(freqs)
-
-        file_object.write("Nfasc    = %0.0f\n" % 0)
-        file_object.write("Namp     = %0.0f\n" % Namp)
-        file_object.write("Nfreq    = %0.0f\n" % 1)
         file_object.write("\nobjref stimamp_values\n")
         file_object.write("stimamp_values = new Vector(Namp,%0.0f)\n" % 0)
         for amp in range(len(amps)):
@@ -163,8 +165,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
 
         file_object.write("\nload_file(\"Wrapper.hoc\")\n")
 
-        # if C Fiber then dz and len too
-
+        # if C Fiber then dz and len too // TODO
         file_object.close()
 
     def write_slurm(self):

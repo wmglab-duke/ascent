@@ -38,25 +38,25 @@ if ((flag_whichstim == 0) && (flag_extracellular_stim == 0)) {
 }
 
 // ***************************************************************************
-// Createfiber_Unmyel.hoc
+// CreateFiber_Unmyel.hoc
 if (fiber_type == 1) {
-	load_file("Createfiber_Unmyel.hoc")
+	load_file("CreateFiber_Unmyel.hoc")
 	Createfiber_Unmyel()
 }
 
 // ***************************************************************************
-// Createfiber_Myel.hoc	
+// CreateFiber_Myel.hoc	
 if (fiber_type == 2) {
-	load_file("Createfiber_Myel.hoc")
-	Createfiber_Myel()
+	load_file("CreateFiber_Myel.hoc")
+	CreateFiber_Myel()
 }
 
 // ***************************************************************************
 // cFiberBuilder.hoc
 load_file("cFiberBuilder.hoc")
 if (fiber_type == 3) {
-	load_file("Createfiber_CFiber.hoc")
-	Createfiber_CFiber() 
+	load_file("CreateFiber_CFiber.hoc")
+	CreateFiber_CFiber() 
 }
 
 	   if 	(fiber_type == 1) { 	v_init = -88.3 				// [mV]
@@ -197,14 +197,13 @@ if (find_thresh == 1){
 	load_file("Saving_Thresh.hoc")
 }
 
-proc run_all(){local mymodel, myinner, myfiber, myfreq, myamp, mypw, myisi
-	mymodel = $1
-	myinner  = $2
-	myfiber  = $3
-	myfreq  = $4
-	myamp   = $5
-	mypw    = $6
-	myisi   = $7
+proc run_all(){local myinner, myfiber, myfreq, myamp, mypw, myisi
+	myinner  = $1
+	myfiber  = $2
+	myfreq  = $3
+	myamp   = $4
+	mypw    = $5
+	myisi   = $6
 	
 	// Set PW of intracellular stim
 	stim1.PW = mypw
@@ -216,7 +215,7 @@ proc run_all(){local mymodel, myinner, myfiber, myfreq, myamp, mypw, myisi
 	trun_individual = startsw()
 	
 	// Read in Ve(x)
-	sprint(VeSpace_fname, "data/inputs/oinner%d_fiber%d_%s.dat",mymodel,fiber_type_str,myinner,myfiber,fiberD_str)
+	sprint(VeSpace_fname, "data/inputs/inner%d_fiber%d.dat",	myinner,myfiber)
 	VeSpace_read()
 	// Convert to mV (required for e_extracellular)
 	VeSpace_data = VeSpace_data.mul(1000)
@@ -225,9 +224,9 @@ proc run_all(){local mymodel, myinner, myfiber, myfreq, myamp, mypw, myisi
 		RunSim(myamp)
 		
 		// Save data
-		sprint(Ve_fname_output, 			 "data/outputs/Ve_inner%d_fiber%d_Vblocamp%fmA%fkHz.dat", 			 myinner, myfiber, myamp, myfreq)
-		sprint(Istim_fname_output,   		 "data/outputs/Istim_inner%d_fiber%d_Vblocamp%fmA%fkHz.dat", 			 myinner, myfiber, myamp, myfreq)
-		sprint(fname_output_Vm_time, 		 "data/outputs/Vm_time_inner%d_fiber%d_Vblocamp%fmA%fkHz.dat", 		 myinner, myfiber, myamp, myfreq)
+		sprint(Ve_fname_output, 			 "data/outputs/Ve_inner%d_fiber%d_Vblocamp%fmA%fkHz.dat", 			   myinner, myfiber, myamp, myfreq)
+		sprint(Istim_fname_output,   		 "data/outputs/Istim_inner%d_fiber%d_Vblocamp%fmA%fkHz.dat", 		   myinner, myfiber, myamp, myfreq)
+		sprint(fname_output_Vm_time, 		 "data/outputs/Vm_time_inner%d_fiber%d_Vblocamp%fmA%fkHz.dat", 		   myinner, myfiber, myamp, myfreq)
 		sprint(fname_output_gating_m_time,   "data/outputs/gating_m_time_inner%d_fiber%d_Vblocamp%fmA%fkHz.dat",   myinner, myfiber, myamp, myfreq)
 		sprint(fname_output_gating_h_time,   "data/outputs/gating_h_time_inner%d_fiber%d_Vblocamp%fmA%fkHz.dat",   myinner, myfiber, myamp, myfreq)
 		sprint(fname_output_gating_mp_time,  "data/outputs/gating_mp_time_inner%d_fiber%d_Vblocamp%fmA%fkHz.dat",  myinner, myfiber, myamp, myfreq)
@@ -266,11 +265,11 @@ proc run_all(){local mymodel, myinner, myfiber, myfreq, myamp, mypw, myisi
 		
 		// Save individual run time (for each simulation)
 		trun_individual = startsw() - trun_individual
-		sprint(runtime_fname_output, "data/outputs/runtime_inner%d_fiber%d.dat", mymodel, myinner, myfiber)
+		sprint(runtime_fname_output, "data/outputs/runtime_inner%d_fiber%d.dat", myinner, myfiber)
 		Saving_Runtime()
 		
 		// Save threshold value
-		sprint(thresh_fname_output, "data/outputs/thresh_inner%d_fiber%d.dat", mymodel, myinner, myfiber)
+		sprint(thresh_fname_output, "data/outputs/thresh_inner%d_fiber%d.dat", myinner, myfiber)
 		Saving_Thresh()
 	} 
 }
@@ -278,21 +277,17 @@ proc run_all(){local mymodel, myinner, myfiber, myfreq, myamp, mypw, myisi
 // ***************************************************************************
 // Loop through model numbers, innericles (different Ve(x) profiles), Ve amplitudes, Ve freq's, fibers (multiple within 1 innericle)
 
-objref model_values
-model_values = new Vector(Nmodels,0)
-model_values.x[0] = ModelNum
-
 objref inner_values
-inner_values = new Vector(Ninner,0)
+inner_values = new Vector(Ninners,0)
 
-for inner_ind = 0, Ninner-1 {
-	inner_values.x[inner_ind] = inner_ind+1
+for inner_ind = 0, Ninners-1 {
+	inner_values.x[inner_ind] = inner_ind
 }
 
 objref num_fibers_file, fiber_values
 num_fibers_file = new File()
 num_fibers_file.ropen(num_fibers_fname)
-fiber_values = new Vector(Ninner)
+fiber_values = new Vector(Ninners)
 fiber_values.scanf(num_fibers_file)
 num_fibers_file.close()
 
@@ -315,14 +310,14 @@ trun = startsw()
 
 proc batchrun() {local model_ind, inner_ind, fiber_ind, Vefreq_ind, stimamp_ind, pw_ind, isi_ind
 	for model_ind = 0, Nmodels-1 {
-		for inner_ind = 0, Ninner-1 {
-			for fiber_ind = 1, fiber_values.x[inner_ind] {
+		for inner_ind = 0, Ninners-1 {
+			for fiber_ind = 0, fiber_values.x[inner_ind]-1 {
 				for Vefreq_ind = 0, Nfreq-1 {
 					for stimamp_ind = 0, Namp-1 {
 						for pw_ind = 0, Npw-1 {
 							for isi_ind = 0, Nisi-1 {
 								// mymodel, myinner, myfiber, myfreq, myamp, mypw, myisi
-								pc.submit("run_all",model_values.x[model_ind],inner_values.x[inner_ind],fiber_ind,Vefreq_values.x[Vefreq_ind],stimamp_values.x[stimamp_ind],pw_values.x[pw_ind],isi_values.x[isi_ind])
+								pc.submit("run_all",inner_values.x[inner_ind],fiber_ind,Vefreq_values.x[Vefreq_ind],stimamp_values.x[stimamp_ind],pw_values.x[pw_ind],isi_values.x[isi_ind])
 							}
 						}
 					}
