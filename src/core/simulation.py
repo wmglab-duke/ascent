@@ -1,4 +1,5 @@
 import copy
+import json
 import os
 from typing import Tuple, List
 
@@ -211,6 +212,9 @@ class Simulation(Exceptionable, Configurable, Saveable):
             sim_copy = self._copy_and_edit_config(self.configs[Config.SIM.value], self.src_key, active_src_vals, copy_again=False)
             sim_copy = self._copy_and_edit_config(self.configs[Config.SIM.value], self.wave_key, wave_vals, copy_again=False)
             sim_copy = self._copy_and_edit_config(self.configs[Config.SIM.value], self.fiberset_key, fiberset_vals, copy_again=False)
+
+            with open(os.path.join(sim_dir, "n_sims", str(t), "{}.json".format(t)), "w") as handle:
+                handle.write(json.dumps(sim_copy, indent=2))
 
             n_sim_dir = os.path.join(sim_dir, "n_sims", str(t))
             hocwriter = HocWriter(sim_dir, n_sim_dir, self.configs[Config.EXCEPTIONS.value])
