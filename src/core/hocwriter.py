@@ -74,7 +74,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                           fiber_model_info.get("passive_end_nodes"))
 
         fiberD = self.search(Config.SIM, "fibers", "z_parameters", "diameter")
-        file_object.write("fiberD = %0.0f "
+        file_object.write("fiberD = %0.1f "
                           "// fiber diameter\n" % fiberD)
 
         intracellular_stim: dict = self.search(Config.SIM, "intracellular_stim")
