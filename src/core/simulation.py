@@ -197,6 +197,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
         for t, (potentials_ind, waveform_ind) in enumerate(self.master_product_indices):
             # build file structure sim/#/n_sims/t/data/(inputs and outputs)
             self._build_file_structure(sim_dir, t)
+            nsim_inputs_directory = os.path.join(sim_dir, 'n_sims', str(t), 'data', 'inputs')
 
             # copy corresponding waveform to sim/#/n_sims/t/data/(inputs)
             source_waveform_path = os.path.join(sim_dir, "waveforms", "{}.dat".format(waveform_ind))
@@ -204,18 +205,25 @@ class Simulation(Exceptionable, Configurable, Saveable):
             if not os.path.isfile(destination_waveform_path):
                 shutil.copyfile(source_waveform_path, destination_waveform_path)
 
+            # get source, waveform, and fiberset values for the corresponding neuron simulation t
             active_src_ind, fiberset_ind = self.potentials_product[potentials_ind]
             active_src_vals = self.src_product[active_src_ind]
             wave_vals = self.wave_product[waveform_ind]
             fiberset_vals = self.fiberset_product[fiberset_ind]
 
-            sim_copy = self._copy_and_edit_config(self.configs[Config.SIM.value], self.src_key, active_src_vals, copy_again=False)
-            sim_copy = self._copy_and_edit_config(sim_copy, self.wave_key, wave_vals, copy_again=False)
-            sim_copy = self._copy_and_edit_config(sim_copy, self.fiberset_key, fiberset_vals, copy_again=False)
+            # pair down simulation config to no lists of parameters (corresponding to the neuron simulation index t)
+            sim_copy = self._copy_and_edit_config(self.configs[Config.SIM.value],
+                                                  self.src_key, active_src_vals, copy_again=False)
+            sim_copy = self._copy_and_edit_config(sim_copy,
+                                                  self.wave_key, wave_vals, copy_again=False)
+            sim_copy = self._copy_and_edit_config(sim_copy,
+                                                  self.fiberset_key, fiberset_vals, copy_again=False)
 
+            # save the paired down simulation config to its corresponding neuron simulation t folder
             with open(os.path.join(sim_dir, "n_sims", str(t), "{}.json".format(t)), "w") as handle:
                 handle.write(json.dumps(sim_copy, indent=2))
 
+            # add config and write launch.hoc
             n_sim_dir = os.path.join(sim_dir, "n_sims", str(t))
             hocwriter = HocWriter(sim_dir, n_sim_dir, self.configs[Config.EXCEPTIONS.value])
             hocwriter \
@@ -223,19 +231,43 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 .add(SetupMode.OLD, Config.SIM, sim_copy) \
                 .build_hoc()
 
+            # copy in potentials data into neuron simulation data/inputs folder
+            # the potentials files are matched to their inner and fiber index, and saved in destination folder with
+            # this naming convention... this allows for control of upper/lower bounds for thresholds by fascicle
+            # (useful since within a fascicle thresholds should be similar)
             p = fiberset_ind
+            inner_list = []
+            fiber_list = []
             for root, dirs, files in os.walk(os.path.join(sim_dir, 'potentials', str(p))):
                 for file in files:
                     q = int(file.split('.')[0])
                     l, k = self.indices_fib_to_n(p, q)
+
+                    is_member = np.in1d(l, inner_list)
+                    if not is_member:
+                        inner_list.append(l)
+                        if len(fiber_list) < len(inner_list):
+                            fiber_list.append(0)
+                        fiber_list[inner_list.index(l)] += 1
+
+
                     filename = 'inner{}_fiber{}.dat'.format(l, k)
-                    directory = os.path.join(sim_dir, 'n_sims', str(t), 'data', 'inputs')
-                    if not os.path.exists(directory):
-                        os.makedirs(directory)
+                    if not os.path.exists(nsim_inputs_directory):
+                        os.makedirs(nsim_inputs_directory)
                     shutil.copyfile(
                         os.path.join(sim_dir, 'potentials', str(potentials_ind), str(q) + '.dat'),
-                        os.path.join(directory, filename)
+                        os.path.join(nsim_inputs_directory, filename)
                     )
+
+            # write fibers per inner key to file
+            _, fiber_list = zip(*sorted(zip(inner_list, fiber_list)))
+            np.
+            mode = WriteMode.DATA
+            np.savetxt(
+                os.path.join(nsim_inputs_directory,
+                             "numfibers_per_inner{}".format(WriteMode.file_endings.value[mode.value])),
+                fiber_list,
+                fmt='%0.0f')
 
         return self
 

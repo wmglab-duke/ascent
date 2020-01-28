@@ -12,9 +12,9 @@ dt_initSS = 10 // [ms]
 //***************** Fiber Parameters *************
 fiber_type = 2 // fiber_type = 1 for unmyelinated; fiber_type = 2 for myelinated; fiber_type = 3 for c fiber built from cFiberBuilder.hoc
 node_channels = 0 // node_channels = 0 for MRG; node_channels = 1 for Schild 1994
-fibernodes = 42 // must match up with ExtractPotentials
+fibernodes = 99 // must match up with ExtractPotentials
 passive_end_nodes = 1 // passive_end_nodes = 1 to make both end nodes passive; 0 otherwise
-fiberD = 10 // fiber diameter
+fiberD = 5.7 // fiber diameter
 
 //***************** Intracellular Stim ***********
 IntraStim_PulseTrain_delay    = 0 // [ms]
@@ -55,19 +55,19 @@ objref stimamp_top_init
 stimamp_top_init = new Vector(7,0)
 
 stimamp_bottom_init.x[0]        = 0.0100 // [mA] initial lower bound of binary search for thresh
-stimamp_top_init.x[0]           = 0.5000 // [mA] initial upper bound of binary search for thresh for extracellular stim
+stimamp_top_init.x[0]           = 0.1000 // [mA] initial upper bound of binary search for thresh for extracellular stim
 stimamp_bottom_init.x[1]        = 0.0100 // [mA] initial lower bound of binary search for thresh
-stimamp_top_init.x[1]           = 0.5000 // [mA] initial upper bound of binary search for thresh for extracellular stim
+stimamp_top_init.x[1]           = 0.1000 // [mA] initial upper bound of binary search for thresh for extracellular stim
 stimamp_bottom_init.x[2]        = 0.0100 // [mA] initial lower bound of binary search for thresh
-stimamp_top_init.x[2]           = 0.5000 // [mA] initial upper bound of binary search for thresh for extracellular stim
+stimamp_top_init.x[2]           = 0.1000 // [mA] initial upper bound of binary search for thresh for extracellular stim
 stimamp_bottom_init.x[3]        = 0.0100 // [mA] initial lower bound of binary search for thresh
-stimamp_top_init.x[3]           = 0.5000 // [mA] initial upper bound of binary search for thresh for extracellular stim
+stimamp_top_init.x[3]           = 0.1000 // [mA] initial upper bound of binary search for thresh for extracellular stim
 stimamp_bottom_init.x[4]        = 0.0100 // [mA] initial lower bound of binary search for thresh
-stimamp_top_init.x[4]           = 0.5000 // [mA] initial upper bound of binary search for thresh for extracellular stim
+stimamp_top_init.x[4]           = 0.1000 // [mA] initial upper bound of binary search for thresh for extracellular stim
 stimamp_bottom_init.x[5]        = 0.0100 // [mA] initial lower bound of binary search for thresh
-stimamp_top_init.x[5]           = 0.5000 // [mA] initial upper bound of binary search for thresh for extracellular stim
+stimamp_top_init.x[5]           = 0.1000 // [mA] initial upper bound of binary search for thresh for extracellular stim
 stimamp_bottom_init.x[6]        = 0.0100 // [mA] initial lower bound of binary search for thresh
-stimamp_top_init.x[6]           = 0.5000 // [mA] initial upper bound of binary search for thresh for extracellular stim
+stimamp_top_init.x[6]           = 0.1000 // [mA] initial upper bound of binary search for thresh for extracellular stim
 
 ap_thresh = 1
 

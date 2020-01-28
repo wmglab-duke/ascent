@@ -44,7 +44,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         file_object.write("dt        = %0.3f // [ms]\n" % dt)
         tstop = extracellular_stim.get("stop")
         file_object.write("tstop     = %0.0f // [ms]\n" % tstop)
-        n_tsteps = np.math.floor(tstop / dt) # todo is this right
+        n_tsteps = np.math.floor(tstop / dt)
         file_object.write("n_tsteps  = %0.0f // [unitless]\n" % n_tsteps)
         file_object.write("t_initSS  = %0.0f // [ms]\n" % extracellular_stim.get("initSS"))
         file_object.write("dt_initSS = %0.0f // [ms]\n" % extracellular_stim.get("dt_initSS"))

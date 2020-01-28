@@ -285,13 +285,3 @@ class Waveform(Exceptionable, Configurable, Saveable):
             fmt='%.10f'
         )
         return self
-
-        # for i, wave in enumerate(self.waves):
-        #     write_mode = WriteMode.file_endings.value[mode.value]
-        #     filepath = os.path.join(path, '{}{}'.format(i, write_mode))
-        #
-        #     dt = self.search(Config.SIM, "extracellular_stim", "global", "dt")
-        #     tstop = self.search(Config.SIM, "extracellular_stim", "global", "tstop")
-        #     wave = np.insert(wave, 0, tstop, axis=0)
-        #     wave = np.insert(wave, 0, dt, axis=0)
-        #     np.save(filepath, wave)
