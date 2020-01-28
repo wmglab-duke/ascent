@@ -210,8 +210,8 @@ class Simulation(Exceptionable, Configurable, Saveable):
             fiberset_vals = self.fiberset_product[fiberset_ind]
 
             sim_copy = self._copy_and_edit_config(self.configs[Config.SIM.value], self.src_key, active_src_vals, copy_again=False)
-            sim_copy = self._copy_and_edit_config(self.configs[Config.SIM.value], self.wave_key, wave_vals, copy_again=False)
-            sim_copy = self._copy_and_edit_config(self.configs[Config.SIM.value], self.fiberset_key, fiberset_vals, copy_again=False)
+            sim_copy = self._copy_and_edit_config(sim_copy, self.wave_key, wave_vals, copy_again=False)
+            sim_copy = self._copy_and_edit_config(sim_copy, self.fiberset_key, fiberset_vals, copy_again=False)
 
             with open(os.path.join(sim_dir, "n_sims", str(t), "{}.json".format(t)), "w") as handle:
                 handle.write(json.dumps(sim_copy, indent=2))
