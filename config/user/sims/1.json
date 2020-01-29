@@ -73,8 +73,7 @@
     "n_min_aps": 1
   },
   "check_points": {
-    "n_checknodes": 3,
-    "n_checktimes": 4
+    "n_checknodes": 3
   },
   "terminal_nodes": {
     "node_channels": true,

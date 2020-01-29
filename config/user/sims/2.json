@@ -1,17 +1,17 @@
 {
-  "n_dimensions": 3,
+  "n_dimensions": 1,
   "active_srcs": {
-    "Enteromedics.json": [[1.0]],
-    "CorTec.json": [[1.0]],
-    "default": [[1.0, -1.0]]
+    "Enteromedics.json": [[1]],
+    "CorTec.json": [[1]],
+    "default": [[1, -1]]
   },
   "fibers": {
     "plot": false,
-    "mode": "MRG_INTERPOLATION",
+    "mode": "TIGERHOLM",
     "units": "micrometer",
     "xy_trace_buffer": 5.0,
     "z_parameters": {
-      "diameter": [1, 2, 2.5],
+      "diameter": 0.8,
       "length": 50000.0,
       "offset": 0
     },
@@ -27,37 +27,44 @@
       "start": 0,
       "on": 1,
       "off": 49,
-      "stop": [50, 100],
+      "stop": 50,
       "initSS": -200,
       "dt_initSS": 10
     },
-    "BIPHASIC_FULL_DUTY": {
-      "digits": 10
+    "BIPHASIC_PULSE_TRAIN": {
+      "pulse_width": 0.1,
+      "inter_phase": 1,
+      "digits": 1
     }
   },
   "intracellular_stim": {
     "flag": false,
     "times": {
       "unit": "ms",
-      "pw": 1
+      "pw": 0,
+      "IntraStim_PulseTrain_delay": 0
     },
     "freq": {
       "unit": "Hz",
-      "value": 1
+      "value": 0
+    },
+    "amp": {
+      "unit": "nA",
+      "value": 0
     },
     "ind": 2
   },
   "save_flags": {
-    "vm_time": false,
-    "gating_time": false,
-    "vm_space": false,
-    "gating_space": false,
-    "ve": false,
-    "istim": false
+    "vm_time": 0,
+    "gating_time": 0,
+    "vm_space": 0,
+    "gating_space": 0,
+    "ve": 0,
+    "istim": 0
   },
   "threshold": {
-    "thresh": true,
-    "block_thresh": false,
+    "thresh_flag": 1,
+    "block_thresh": 0,
     "resolution": 0.01,
     "vm": {
       "unit": "mV",
@@ -66,8 +73,7 @@
     "n_min_aps": 1
   },
   "check_points": {
-    "n_checknodes": 0,
-    "n_checktimes": 0
+    "n_checknodes": 3
   },
   "terminal_nodes": {
     "node_channels": true,

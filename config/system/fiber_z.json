@@ -93,40 +93,44 @@
       "units": "micrometer",
       "myelinated": false,
       "sampling": "discrete",
-      "delta_z": 8.333,
+      "delta_zs": 8.333,
       "node_channels": 0,
       "fiber_type": 3,
-      "passive_end_nodes": 1
+      "passive_end_nodes": 1,
+      "channels_type": 1
     },
     "TIGERHOLM": {
       "neuron_flag": 3,
       "units": "micrometer",
       "myelinated": false,
       "sampling": "discrete",
-      "delta_z": 8.333,
+      "delta_zs": 8.333,
       "node_channels": 0,
       "fiber_type": 3,
-      "passive_end_nodes": 1
+      "passive_end_nodes": 1,
+      "channels_type": 2
     },
     "RATTAY": {
       "neuron_flag": 3,
       "units": "micrometer",
       "myelinated": false,
       "sampling": "discrete",
-      "delta_z": 8.333,
+      "delta_zs": 8.333,
       "node_channels": 0,
       "fiber_type": 3,
-      "passive_end_nodes": 1
+      "passive_end_nodes": 1,
+      "channels_type": 3
     },
     "SCHILD": {
       "neuron_flag": 3,
       "units": "micrometer",
       "myelinated": false,
       "sampling": "discrete",
-      "delta_z": 8.333,
+      "delta_zs": 8.333,
       "node_channels": 1,
       "fiber_type": 3,
-      "passive_end_nodes": 1
+      "passive_end_nodes": 1,
+      "channels_type": 4
     }
   }
 }
