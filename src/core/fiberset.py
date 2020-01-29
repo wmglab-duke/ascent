@@ -355,7 +355,6 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                     ),
                 )
 
-                # TODO: assign value correctly here
                 fibers = [
                     clip(fiber, 0, model_length, myelinated, is_points=True)
                     for fiber in build_fibers_with_offset(zs, myelinated, fiber_length, delta_z, z_shift_to_center)
@@ -363,8 +362,11 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
             else:  # UNMYELINATED
 
-                delta_z = self.search(Config.FIBER_Z, fiber_geometry_mode_name, 'delta_zs')
-                z_top_half = np.arange(fiber_length / 2, fiber_length + delta_z, delta_z)
+                delta_zs = self.search(Config.FIBER_Z,
+                                       MyelinationMode.parameters.value,
+                                       fiber_geometry_mode_name,
+                                       'delta_zs')
+                z_top_half = np.arange(fiber_length / 2, fiber_length + delta_zs, delta_zs)
                 z_bottom_half = -np.flip(z_top_half) + fiber_length
                 while z_top_half[-1] > fiber_length:
                     # trim top of top half
@@ -374,7 +376,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                 fibers = build_fibers_with_offset(list(np.concatenate((z_bottom_half[:-1], z_top_half))),
                                                   myelinated,
                                                   fiber_length,
-                                                  delta_z,
+                                                  delta_zs,
                                                   z_shift_to_center)
 
         else:

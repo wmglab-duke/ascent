@@ -113,7 +113,8 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         file_object.write("flag_extracellular_stim = %0.0f\n" % 1)
 
         file_object.write("\n//***************** Recording ********************\n")
-        save_flags: dict = self.search(Config.SIM, "save_flags")
+        save_flags: dict = self.search(Config.
+                                       SIM, "save_flags")
 
         file_object.write("saveflag_Vm_time      = %0.0f\n" % save_flags.get("vm_time"))
         file_object.write("saveflag_gating_time  = %0.0f\n" % save_flags.get("gating_time"))
