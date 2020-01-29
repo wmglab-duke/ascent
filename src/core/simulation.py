@@ -194,6 +194,14 @@ class Simulation(Exceptionable, Configurable, Saveable):
         prods = list(itertools.product(s_s, q_s))
         self.master_product_indices = prods
 
+        n_inners = 0
+        for fascicle in self.sample.morphology['Fascicles']:
+            n_inners += len(fascicle["inners"])
+
+        n_fiber_coords = []
+        for fiberset in self.fibersets:
+            n_fiber_coords.append(len(fiberset.fibers[0]))
+
         for t, (potentials_ind, waveform_ind) in enumerate(self.master_product_indices):
             # build file structure sim/#/n_sims/t/data/(inputs and outputs)
             self._build_file_structure(sim_dir, t)
@@ -229,7 +237,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
             hocwriter \
                 .add(SetupMode.OLD, Config.MODEL, self.configs[Config.MODEL.value]) \
                 .add(SetupMode.OLD, Config.SIM, sim_copy) \
-                .build_hoc()
+                .build_hoc(n_inners, n_fiber_coords[fiberset_ind])
 
             # copy in potentials data into neuron simulation data/inputs folder
             # the potentials files are matched to their inner and fiber index, and saved in destination folder with

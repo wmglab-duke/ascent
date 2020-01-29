@@ -23,7 +23,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         return itertools.product(args)
         pass
 
-    def build_hoc(self):
+    def build_hoc(self, n_inners, n_fiber_coords):
         """
         Write file LaunchSim###.hoc
         :return:
@@ -65,7 +65,11 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                           "// node_channels = 0 for MRG; node_channels = 1 for Schild 1994\n" %
                           fiber_model_info.get("node_channels"))
 
-        fibernodes = 42  # TODO, what is the dimension in fiber manager
+        if fiber_model_info.get("neuron_flag") == 2:
+            fibernodes = 1+(n_fiber_coords-1)/11
+        elif fiber_model_info.get("neuron_flag") == 3:
+            fibernodes = n_fiber_coords
+
         file_object.write("fibernodes = %0.0f "
                           "// must match up with ExtractPotentials\n" % fibernodes)
 
@@ -120,7 +124,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                           "to find block thresholds instead of activation threshold\n"
                           % threshold.get("block_thresh"))
 
-        num_inners = 7  # TODO number of fascicles here - get the dimension from fibermanager?
+        num_inners = n_inners
         amps = [0]
         num_amps = len(amps)
         freqs = [self.search(Config.MODEL, "frequency", "value")/1000]
@@ -146,7 +150,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                               % (fasc, 0.100000))
 
         file_object.write("\nap_thresh = %0.0f\n" % threshold.get("thresh_flag"))
-        file_object.write("\nthresh_resoln = %0.3f\n" % threshold.get("resolution"))
+        file_object.write("\nthresh_resoln = %0.2f\n" % threshold.get("resolution"))
         file_object.write("N_minAPs  = %0.0f\n" % threshold.get("n_min_aps"))
         file_object.write("\nflag_whichstim  = %0.0f\n" % 0)
 
