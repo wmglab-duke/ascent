@@ -320,17 +320,16 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                         for key in ('paranodal_length_2', 'delta_z', 'inter_length')
                     )
                     paranodal_length_2 = eval(paranodal_length_2_str)
-                    inter_length = eval(inter_length_str)
 
                     if fiber_geometry_mode_name == FiberGeometry.B_FIBER.value:
+                        inter_length = eval(inter_length_str)
                         delta_z = eval(delta_z_str)
-                    elif fiber_geometry_mode_name is FiberGeometry.MRG_INTERPOLATION.value:
+                    elif fiber_geometry_mode_name == FiberGeometry.MRG_INTERPOLATION.value:
                         if diameter >= 5.26:
                             delta_z = eval(delta_z_str["diameter_greater_or_equal_5.26um"])
                         else:
                             delta_z = eval(delta_z_str["diameter_less_5.26um"])
-
-                    inter_length = eval(inter_length_str)
+                        inter_length = eval(inter_length_str)
 
                 z_steps: List = []
                 while (sum(z_steps) - half_fiber_length) < 0.001:

@@ -56,7 +56,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         fiber_model_info: dict = self.search(Config.FIBER_Z, MyelinationMode.parameters.value, fiber_model)
 
         # if myelinated
-        if fiber_model_info.get("neuron_flag") == 2 and fiber_model is not FiberGeometry.B_FIBER.value:
+        if fiber_model_info.get("neuron_flag") == 2 and fiber_model != FiberGeometry.B_FIBER.value:
             file_object.write("geometry_determination_method = %0.0f "
                               "// geometry_determination_method = 0 for preset fiber diameters; "
                               "geometry_determination_method = 1 for MRG-based geometry interpolation; "
@@ -64,7 +64,12 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                               % fiber_model_info.get("geom_determination_method"))
             file_object.write("flag_model_b_fiber = %0.0f\n" % 0)
 
-        if fiber_model_info.get("neuron_flag") == 2 and fiber_model is FiberGeometry.B_FIBER.value:
+        if fiber_model_info.get("neuron_flag") == 2 and fiber_model == FiberGeometry.B_FIBER.value:
+            file_object.write("geometry_determination_method = %0.0f "
+                              "// geometry_determination_method = 0 for preset fiber diameters; "
+                              "geometry_determination_method = 1 for MRG-based geometry interpolation; "
+                              "geometry_determination_method = 2 for GeometryBuilder fits from SPARC Y2Q1\n"
+                              % fiber_model_info.get("geom_determination_method"))
             file_object.write("flag_model_b_fiber = %0.0f\n" % 1)
 
         file_object.write("fiber_type = %0.0f "
