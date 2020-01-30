@@ -28,7 +28,7 @@ for node_ind=0, axonnodes-1 {
 	if (fiber_type == 2) {// myelinated fiber
 		s[node_ind*11].sec apc[node_ind] = new APCount(0.5)
 	} else {
-		s[node_ind].sec apc[node_ind] = new APCount(0.5)
+		s[node_ind].sec    apc[node_ind] = new APCount(0.5)
 	}
 	apc[node_ind].thresh = ap_thresh	
 }
@@ -51,7 +51,7 @@ proc RunSim() {local myamp
 			s[IntraStim_PulseTrain_ind2].sec stim2.amp = myamp
 		}
 	}
-	
+
 	// Initialize
 	/*
 	if (find_block_thresh == 1) {	
@@ -59,7 +59,7 @@ proc RunSim() {local myamp
 	} else {
 		check_AP = 0 // check_AP = 0 -> no AP; start by assuming there won't be an AP
 	}
-	*/
+	*/	
 
 	finitialize(v_init)
 	for seg_ind = 0, axontotal-1 {
@@ -68,14 +68,14 @@ proc RunSim() {local myamp
 	
 	//fcurrent()
 	// Allow time for model to read steady-state using large dt before actually starting stimulation
-	t = t_initSS			// Start before t=0
+	t     = t_initSS			// Start before t=0
 	dtsav = dt
-	dt = dt_initSS			// Large dt
+	dt    = dt_initSS			// Large dt
 	while (t <= -dt) {
 		fadvance()
 	}
 	dt = dtsav
-	t = 0
+	t  = 0
 	fcurrent()
 	frecord_init()
 	
@@ -109,10 +109,10 @@ proc RunSim() {local myamp
 							if (!((passive_end_nodes == 1) && ((seg_ind == 0)||(seg_ind == axontotal-1)))) {
 								// Redundant check because error check above should indicate that it's only implemented for myelinated fibers
 								if (fiber_type == 2) {
-									savevec_m_space.o[time_save_ind].x[seg_ind/11] = node[seg_ind/11].m_axnode_myel(0.5)
-									savevec_h_space.o[time_save_ind].x[seg_ind/11] = node[seg_ind/11].h_axnode_myel(0.5)
+									savevec_m_space.o[time_save_ind].x[seg_ind/11]  = node[seg_ind/11].m_axnode_myel(0.5)
+									savevec_h_space.o[time_save_ind].x[seg_ind/11]  = node[seg_ind/11].h_axnode_myel(0.5)
 									savevec_mp_space.o[time_save_ind].x[seg_ind/11] = node[seg_ind/11].mp_axnode_myel(0.5)
-									savevec_s_space.o[time_save_ind].x[seg_ind/11] = node[seg_ind/11].s_axnode_myel(0.5)
+									savevec_s_space.o[time_save_ind].x[seg_ind/11]  = node[seg_ind/11].s_axnode_myel(0.5)
 								}
 							}
 						}
@@ -130,20 +130,17 @@ proc RunSim() {local myamp
 	if (find_thresh == 1) {
 		print "Checking for AP"
 		N_APs = 0
-		if (N_APs >= N_minAPs) {
-			execerror("Must initialize N_APs less than N_minAPs for FindThresh.hoc to work")
-		}
 		
 		if (find_block_thresh == 1) {
-			for node_ind = checknode_values.x[3], axonnodes-1 {
-				if (apc[node_ind].time > 100) { // Detected at least one AP, so didn't get block, so need to raise the lower bound (N_APs<N_minAPs) on the binary search
-					//print apc[node_ind].time
-					//check_AP = 0			// Detected an action potential
-				} else { // Didn't detect an AP, so got block, so need to drop the upper bound (N_APs>=N_minAPs) on the binary search
-					N_APs = N_minAPs + 1    
-				}
+			node_ind = checknode_values.x[2]
+			if (apc[node_ind].time > 30) { // Detected at least one AP, so didn't get block, so need to raise the lower bound (N_APs<N_minAPs) on the binary search
+				//print apc[node_ind].time
+				//check_AP = 0			// Detected an action potential
+				N_APs = 0
+			} else { // Didn't detect an AP, so got block, so need to drop the upper bound (N_APs>=N_minAPs) on the binary search
+				N_APs = 1    
 			}
-		} else {
+		} else if (find_block_thresh == 0) {
 			for node_ind=0, axonnodes-1 {
 				// Find the max # of APs at any give node
 				if (apc[node_ind].n >= N_APs) {
@@ -157,5 +154,4 @@ proc RunSim() {local myamp
 			}
 		}
 	}
-	
 }
