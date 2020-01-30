@@ -26,7 +26,7 @@ Dependencies:
 if (fiber_type == 1) {
 	axonnodes = 20000
 	fiberd = 1
-	deltax = 5.0
+	deltaz = 5.0
 
 	load_file("CreateAxon_Unmyel.hoc")
 	CreateAxon_Unmyel()
@@ -59,7 +59,7 @@ IntraStim_PulseTrain_pw					= 0.1									// [ms]
 IntraStim_PulseTrain_traindur			= tstop-IntraStim_PulseTrain_delay		// [ms]
 IntraStim_PulseTrain_freq				= 100									// [Hz]
 IntraStim_PulseTrain_amp				= 20									// [nA]
-IntraStim_PulseTrain_ind 				= int(6000/deltax)						// Index of node where intracellular stim is placed[unitless]
+IntraStim_PulseTrain_ind 				= int(6000/deltaz)						// Index of node where intracellular stim is placed[unitless]
 
 load_file("IntracellularStim.hoc")
 IntraStim_PulseTrain()
@@ -152,11 +152,11 @@ if (Nchecknodes == axonnodes) {
 		checknode_values.x[i] = i
 	}
 } else {
-	axon_length = (axonnodes-1)*deltax				// length of axon [um]
-	checknode_values.x[0] = int(15000/deltax)
+	axon_length = (axonnodes-1)*deltaz				// length of axon [um]
+	checknode_values.x[0] = int(15000/deltaz)
 	checknode_values.x[1] = int(0.5*(axonnodes-1))
-	checknode_values.x[2] = int((axon_length-15000)/deltax)
-	checknode_values.x[3] = int((axon_length-5000)/deltax)
+	checknode_values.x[2] = int((axon_length-15000)/deltaz)
+	checknode_values.x[3] = int((axon_length-5000)/deltaz)
 }
 
 // Time points to record Vm and gating params vs x

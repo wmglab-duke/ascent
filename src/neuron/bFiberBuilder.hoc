@@ -58,8 +58,8 @@ revVer = 1
 		nodelength	= 1.0						// Length of node of Ranvier [um]
 		paralength1	= 3  						// Length of MYSA [um]
 
-		if (fiberD==2) 			{axonD=1.6 nodeD=1.4 paraD1=1.4 paraD2=1.6 deltax=200 paralength2=10 nl=30}
-		interlength=(deltax-nodelength-(2*paralength1)-(2*paralength2))/6
+		if (fiberD==2) 			{axonD=1.6 nodeD=1.4 paraD1=1.4 paraD2=1.6 deltaz=200 paralength2=10 nl=30}
+		interlength=(deltaz-nodelength-(2*paralength1)-(2*paralength2))/6
 
 	} else if(geomVer == 1){
 		gb = new GeometryBuilder(fiberD)

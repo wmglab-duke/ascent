@@ -102,7 +102,7 @@ fiberD_str = "2000nm"
 if (fiber_type == 1) {
 	axonnodes = 20001
 	fiberd = 1
-	deltax = 5.0
+	deltaz = 5.0
 
 	load_file("CreateAxon_Unmyel.hoc")
 	CreateAxon_Unmyel()
@@ -133,8 +133,8 @@ if (fiber_type == 3) {
 
 	//axonnodes = 20001
 	//fiberd = 2
-	//deltax = 5.0
-	//len = axonnodes*deltax
+	//deltaz = 5.0
+	//len = axonnodes*deltaz
 	//c_fiber_model_type = 2 // type 1:Sundt 2:Tigerholm 3:Rattay 4:Schild 
 	
 	load_file("cFiberBuilder.hoc")
@@ -154,8 +154,8 @@ if (fiber_type == 3) {
 
 objref stim1, stim2
 
-IntraStim_PulseTrain_ind1 				= 2//int(6000/deltax)						// Index of node where intracellular stim is placed[unitless]
-IntraStim_PulseTrain_ind2 				= 2//int(6000/deltax)						// Index of node where intracellular stim is placed[unitless]
+IntraStim_PulseTrain_ind1 				= 2//int(6000/deltaz)						// Index of node where intracellular stim is placed[unitless]
+IntraStim_PulseTrain_ind2 				= 2//int(6000/deltaz)						// Index of node where intracellular stim is placed[unitless]
 
 if (fiber_type == 2) {// if myelinated fiber, convert node index to compartment index
 	intrastim_ind_tmp1 = IntraStim_PulseTrain_ind1*11
@@ -228,21 +228,21 @@ if (Nchecknodes == axonnodes) {
 		checknode_values.x[i] = i
 	}
 } else {
-	axon_length = (axonnodes-1)*deltax				// length of axon [um]
-	checknode_values.x[0] = int(axon_length*0.25/deltax)
-	checknode_values.x[1] = int(axon_length*0.5/deltax)
-	checknode_values.x[2] = int(axon_length*0.75/deltax)
+	axon_length = (axonnodes-1)*deltaz				// length of axon [um]
+	checknode_values.x[0] = int(axon_length*0.25/deltaz)
+	checknode_values.x[1] = int(axon_length*0.5/deltaz)
+	checknode_values.x[2] = int(axon_length*0.75/deltaz)
 	
 	/*
-	checknode_values.x[0] = int(15000/deltax)
+	checknode_values.x[0] = int(15000/deltaz)
 	checknode_values.x[1] = int(0.5*(axonnodes-1))
-	checknode_values.x[2] = int((axon_length-15000)/deltax)
-	checknode_values.x[3] = int((axon_length-5000)/deltax)
+	checknode_values.x[2] = int((axon_length-15000)/deltaz)
+	checknode_values.x[3] = int((axon_length-5000)/deltaz)
 	*/
 }
 
 // Time points to record Vm and gating params vs x
-//Nchecktimes = 4
+Nchecktimes = 4
 
 objref checktime_values_ms, checktime_values
 checktime_values_ms = new Vector(Nchecktimes,0)

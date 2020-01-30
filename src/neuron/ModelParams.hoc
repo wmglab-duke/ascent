@@ -30,7 +30,7 @@ proc model_globals() {
 	if (fiber_type == 1) {
 		axonnodes	= 20000
 		fiberd 		= 1							// Diameter of unmyelinated axon [um]
-		deltax		= 5.0						// Length of segments of unmyelinated axon [um]
+		deltaz		= 5.0						// Length of segments of unmyelinated axon [um]
 		
 	// Myelinated fiber
 	} else if (fiber_type == 2) {
@@ -45,7 +45,7 @@ proc model_globals() {
 	IntraStim_PulseTrain_traindur			= tstop-IntraStim_PulseTrain_delay		// [ms]
 	IntraStim_PulseTrain_freq				= 100									// [Hz]
 	IntraStim_PulseTrain_amp				= 20									// [nA]
-	IntraStim_PulseTrain_ind 				= int(6000/deltax)						// Index of node where intracellular stim is placed[unitless]
+	IntraStim_PulseTrain_ind 				= int(6000/deltaz)						// Index of node where intracellular stim is placed[unitless]
 	
 	// Extracellular test stimulus parameters
 	strdef VeTime_fname
@@ -88,11 +88,11 @@ proc model_globals() {
 			checknode_values.x[i] 	= i
 		}
 	} else {
-		axon_length = axonnodes*deltax				// Length of axon [um]
-		checknode_values.x[0] 		= int(15000/deltax)
+		axon_length = axonnodes*deltaz				// Length of axon [um]
+		checknode_values.x[0] 		= int(15000/deltaz)
 		checknode_values.x[1] 		= int(0.5*(axonnodes-1))
-		checknode_values.x[2] 		= int((axon_length-15000)/deltax)
-		checknode_values.x[3] 		= int((axon_length-5000)/deltax)
+		checknode_values.x[2] 		= int((axon_length-15000)/deltaz)
+		checknode_values.x[3] 		= int((axon_length-5000)/deltaz)
 	}
 	
 	// Define node where Ve(t) is recorded

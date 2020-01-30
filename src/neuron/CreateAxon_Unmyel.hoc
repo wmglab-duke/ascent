@@ -9,7 +9,7 @@ Description:
 Variables that must be defined in wrapper/params file:
 - axonnodes
 - fiberd
-- deltax
+- deltaz
 - passive_end_nodes
 */
 
@@ -40,7 +40,7 @@ proc CreateAxon_Unmyel() {
 			s[i]	= new SectionRef()
 			nseg	= 1
 			diam	= fiberd
-			L		= deltax
+			L		= deltaz
 			Ra		= rhoa/10000
 			cm		= 2
 			
