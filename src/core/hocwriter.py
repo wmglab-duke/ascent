@@ -23,7 +23,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         return itertools.product(args)
         pass
 
-    def build_hoc(self, n_inners, n_fiber_coords):
+    def build_hoc(self, n_inners, n_fiber_coords, n_tsteps):
         """
         Write file LaunchSim###.hoc
         :return:
@@ -44,7 +44,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         file_object.write("dt        = %0.3f // [ms]\n" % dt)
         tstop = extracellular_stim.get("stop")
         file_object.write("tstop     = %0.0f // [ms]\n" % tstop)
-        file_object.write("n_tsteps  = int(tstop/dt) + 1 // [unitless]\n")
+        file_object.write("n_tsteps  =%0.0f // [unitless]\n" % n_tsteps)
         file_object.write("t_initSS  = %0.0f // [ms]\n" % extracellular_stim.get("initSS"))
         file_object.write("dt_initSS = %0.0f // [ms]\n" % extracellular_stim.get("dt_initSS"))
 
@@ -56,14 +56,15 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         fiber_model_info: dict = self.search(Config.FIBER_Z, MyelinationMode.parameters.value, fiber_model)
 
         # if myelinated
-        if fiber_model_info.get("neuron_flag") == 2 and fiber_model is not Config.FiberGeometry.B_FIBER.value:
+        if fiber_model_info.get("neuron_flag") == 2 and fiber_model is not FiberGeometry.B_FIBER.value:
             file_object.write("geometry_determination_method = %0.0f "
                               "// geometry_determination_method = 0 for preset fiber diameters; "
                               "geometry_determination_method = 1 for MRG-based geometry interpolation; "
                               "geometry_determination_method = 2 for GeometryBuilder fits from SPARC Y2Q1\n"
                               % fiber_model_info.get("geom_determination_method"))
+            file_object.write("flag_model_b_fiber = %0.0f\n" % 0)
 
-        if fiber_model_info.get("neuron_flag") == 2 and fiber_model is Config.FiberGeometry.B_FIBER.value:
+        if fiber_model_info.get("neuron_flag") == 2 and fiber_model is FiberGeometry.B_FIBER.value:
             file_object.write("flag_model_b_fiber = %0.0f\n" % 1)
 
         file_object.write("fiber_type = %0.0f "
@@ -92,7 +93,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                               "4:Schild model "
                               "for c fiber built from cFiberBuilder.hoc\n".format(channels))
             deltaz = fiber_model_info.get("delta_zs")
-            file_object.write("deltax = %0.1f \n" % deltaz)
+            file_object.write("deltaz = %0.3f \n" % deltaz)
             file_object.write("len                           = axonnodes*deltaz\n")
 
 

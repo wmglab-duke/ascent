@@ -231,13 +231,15 @@ class Simulation(Exceptionable, Configurable, Saveable):
             with open(os.path.join(sim_dir, "n_sims", str(t), "{}.json".format(t)), "w") as handle:
                 handle.write(json.dumps(sim_copy, indent=2))
 
+            n_tsteps = len(self.waveforms[waveform_ind].wave)
+
             # add config and write launch.hoc
             n_sim_dir = os.path.join(sim_dir, "n_sims", str(t))
             hocwriter = HocWriter(sim_dir, n_sim_dir, self.configs[Config.EXCEPTIONS.value])
             hocwriter \
                 .add(SetupMode.OLD, Config.MODEL, self.configs[Config.MODEL.value]) \
                 .add(SetupMode.OLD, Config.SIM, sim_copy) \
-                .build_hoc(n_inners, n_fiber_coords[fiberset_ind])
+                .build_hoc(n_inners, n_fiber_coords[fiberset_ind], n_tsteps)
 
             # copy in potentials data into neuron simulation data/inputs folder
             # the potentials files are matched to their inner and fiber index, and saved in destination folder with
