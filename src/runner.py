@@ -123,7 +123,7 @@ class Runner(Exceptionable, Configurable):
 
         # iterate through models
         for model_index, model_config in enumerate(all_configs[Config.MODEL.value]):
-            print('    MODEL {}'.format(model_index))
+            print('    MODEL {}'.format(self.configs[Config.RUN.value]['models'][model_index]))
 
             # use current model index to compute electrical parameters ... SAVES to file in method
             self.compute_electrical_parameters(all_configs, model_index)
@@ -134,7 +134,7 @@ class Runner(Exceptionable, Configurable):
 
             # iterate through simulations
             for sim_index, sim_config in enumerate(all_configs['sims']):
-                print('        SIM {}'.format(sim_index))
+                print('        SIM {}'.format(self.configs[Config.RUN.value]['sims'][sim_index]))
                 sim_obj_dir = os.path.join(
                     'samples',
                     str(self.configs[Config.RUN.value]['sample']),
