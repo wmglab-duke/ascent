@@ -27,12 +27,12 @@
       "start": 0,
       "on": 1,
       "off": 49,
-      "stop": [50, 100],
+      "stop": 50,
       "initSS": -200,
       "dt_initSS": 10
     },
     "BIPHASIC_PULSE_TRAIN": {
-      "pulse_width": [0.1, 0.2, 0.5],
+      "pulse_width": 0.1,
       "inter_phase": 1,
       "digits": 1
     }

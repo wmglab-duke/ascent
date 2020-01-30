@@ -315,16 +315,20 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
                 elif sampling_mode == MyelinatedSamplingType.INTERPOLATION.value:
 
-                    paranodal_length_2_str, delta_z_str = (
+                    paranodal_length_2_str, delta_z_str, inter_length_str = (
                         self.search(Config.FIBER_Z, MyelinationMode.parameters.value, fiber_geometry_mode_name, key)
-                        for key in ('paranodal_length_2', 'delta_z')
+                        for key in ('paranodal_length_2', 'delta_z', 'inter_length')
                     )
                     paranodal_length_2 = eval(paranodal_length_2_str)
+                    inter_length = eval(inter_length_str)
 
-                    if diameter >= 5.26:
-                        delta_z = eval(delta_z_str["diameter_greater_or_equal_5.26um"])
-                    else:
-                        delta_z = eval(delta_z_str["diameter_less_5.26um"])
+                    if fiber_geometry_mode_name == FiberGeometry.B_FIBER.value:
+                        delta_z = eval(delta_z_str)
+                    elif fiber_geometry_mode_name is FiberGeometry.MRG_INTERPOLATION.value:
+                        if diameter >= 5.26:
+                            delta_z = eval(delta_z_str["diameter_greater_or_equal_5.26um"])
+                        else:
+                            delta_z = eval(delta_z_str["diameter_less_5.26um"])
 
                     inter_length = eval(inter_length_str)
 
