@@ -39,8 +39,10 @@ proc Recording() {
 			if (!(fiber_type == 2)) { // if fiber is not myelinated, do not reference by node
 				savevec_Vm_time.o[i].record(&s[ind_tmp].sec.v(0.5),dt)
 			} else {
-				savevec_Vm_time.o[i].record(&node[ind_tmp].v(0.5),dt)
+				savevec_Vm_time.o[i].record(&s[ind_tmp*11].sec.v(0.5),dt)
 			}
+
+			//savevec_Vm_time.o[i].record(&s[11*ind_tmp].sec.v(0.5),dt)
 		}
 	}
 
@@ -120,7 +122,7 @@ proc Recording() {
 	
 	
 	// ***** Create vector to record Ve(t) at one location. Do actual recording in time loop.
-	if (flag_extracellular_stim == 1 && saveflag_Ve == 1) {
+	if (saveflag_Ve == 1) {
 		savevec_Ve = new O1d(1)
 		savevec_Ve.o[0] = new Vector(n_tsteps,0)
 	}
@@ -128,8 +130,11 @@ proc Recording() {
 	
 	// ***** Record Istim(t) (created in IntracellularStim.hoc).
 	if (saveflag_Istim == 1) {
-		savevec_Istim = new O1d(1)
+		savevec_Istim = new O1d(2)
 		savevec_Istim.o[0] = new Vector(n_tsteps,0)
-		savevec_Istim.o[0].record(&stim.i,dt)
+		savevec_Istim.o[0].record(&stim1.i,dt)
+		
+		savevec_Istim.o[1] = new Vector(n_tsteps,0)
+		savevec_Istim.o[1].record(&stim2.i,dt)
 	}	
 }

@@ -1,0 +1,62 @@
+begintemplate GeometryBuilder
+public nodelength, MYSAlength, FLUTlength, interlength, axonD, nodeD, MYSAD, FLUTD, nl
+
+proc init(){
+    fiberD = $1
+    fiberDtoAxonD = 0
+    axonDtoNL = 0
+    nodelength = 1
+    MYSAlength = 3
+
+    //
+    n = numarg()
+    if (n>1){
+        // Fiber D to Axon D option. 
+        // 0: Fazan 1997 Proximal, 1: Fazan 1997 Distal
+        // 2: Berthold 1983, 3: Friede 1967, 4: Combined Fazan P, Fazan D & Friede
+        fiberDtoAxonD = $2
+    }
+
+    if (n>2){
+        //Axon D to # myelin lamellae option
+        // 0: Friede 1967 (linear), 1: Berthold 1983 (quadratic)
+        axonDtoNL = $3
+    }
+
+    FLUTlength = -0.171 * fiberD^2 + 6.48 * fiberD + -0.935
+
+
+    if(fiberDtoAxonD == 0){
+        //Fazan Proximal
+        axonD = 0.553 * fiberD + -0.024
+    } else if(fiberDtoAxonD == 1){
+        //Fazan Distal
+        axonD = 0.688 * fiberD + -0.337
+    } else if(fiberDtoAxonD == 2){
+        // Berthold
+        axonD = 0.0156 * fiberD^2 + 0.392 * fiberD + 0.188
+    } else if(fiberDtoAxonD == 3){
+        // Friede
+        axonD = 0.684 * fiberD + 0.0821
+    } else if(fiberDtoAxonD == 4){
+        //Combined Fazan Proximal, Fazan Distal, and Friede. Berthold excluded for not being vagus data
+        axonD = 0.621 * fiberD - 0.121
+    }
+
+    nodeD = 0.321 * axonD + 0.37
+    
+
+    if(axonDtoNL == 0){
+        nl = int(17.4 * axonD + -1.74)
+    } else if (axonDtoNL == 1){
+        nl = int(-1.17 * axonD^2 + 24.9 * axonD + 17.7)
+    }
+
+    MYSAD = nodeD
+    FLUTD = axonD
+
+    interlength = ((-3.22 * fiberD^2 + 148 * fiberD + -128) - nodelength - 2*MYSAlength - 2*FLUTlength)/6
+
+}
+
+endtemplate GeometryBuilder

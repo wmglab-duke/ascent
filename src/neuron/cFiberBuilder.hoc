@@ -5,15 +5,15 @@ begintemplate cFiberBuilder
 //	type: 1:Sundt Model 2:Tigerholm model 3:Rattay model 4:Schild model
 // All axon channels come from original models which were simplified to a 1D cable
 
-public fiberD, nsegments, dz, Length,v
+public fiberD, nsegments, dx, Length,v
 public section, sl, section_coord, node
 objref section[1], section_coord, sl, conductances
 create node[1]
 
 proc global_parameters(){
-	dz=segdensity //um//segment length which is for rattay which is most dense out of the fibers used
-	nsegments = int(len/dz)
-	Length = nsegments*dz
+	dx=segdensity //um//segment length which is for rattay which is most dense out of the fibers used
+	nsegments = int(len/dx)
+	Length = nsegments*dx
   }
 
 proc build(){ 
@@ -27,10 +27,10 @@ proc build(){
 			ii = i
 			section[i] = new SectionRef()
 			sl.append(section[i])
-			section_coord.x[ii] = (.5*dz + i*dz - Length/2) * 1e-6
+			section_coord.x[ii] = (.5*dx + i*dx - Length/2) * 1e-6
 			nseg = 1
 			diam = fiberD
-			L  = dz
+			L  = dx
 			if(i==0 || i==(nsegments-1)){
 				insert pas
 				g_pas = 0.0001

@@ -34,10 +34,10 @@ proc Saving() {
 	
 	// ***** Save MRG gating param's vs time at checknode_values
 	if (saveflag_gating_time == 1) {
-		SaveTimeCourse(fname_output_gating_m_time,  "m_node", checknode_values,  "", savevec_m_time)
-		SaveTimeCourse(fname_output_gating_h_time,  "h_node", checknode_values,  "", savevec_h_time)
+		SaveTimeCourse(fname_output_gating_m_time, "m_node", checknode_values, "", savevec_m_time)
+		SaveTimeCourse(fname_output_gating_h_time, "h_node", checknode_values, "", savevec_h_time)
 		SaveTimeCourse(fname_output_gating_mp_time, "mp_node", checknode_values, "", savevec_mp_time)
-		SaveTimeCourse(fname_output_gating_s_time,  "s_node", checknode_values,  "", savevec_s_time)
+		SaveTimeCourse(fname_output_gating_s_time, "s_node", checknode_values, "", savevec_s_time)
 	}
 
 	
@@ -49,10 +49,10 @@ proc Saving() {
 	
 	// ***** Save gating param vs space at checknode_times
 	if (saveflag_gating_space == 1) {
-		SaveSpatialDist(fname_output_gating_m_space,  "m_time", checktime_values_ms,  "ms", savevec_m_space)
-		SaveSpatialDist(fname_output_gating_h_space,  "h_time", checktime_values_ms,  "ms", savevec_h_space)
+		SaveSpatialDist(fname_output_gating_m_space, "m_time", checktime_values_ms, "ms", savevec_m_space)
+		SaveSpatialDist(fname_output_gating_h_space, "h_time", checktime_values_ms, "ms", savevec_h_space)
 		SaveSpatialDist(fname_output_gating_mp_space, "mp_time", checktime_values_ms, "ms", savevec_mp_space)
-		SaveSpatialDist(fname_output_gating_s_space,  "s_time", checktime_values_ms,  "ms", savevec_s_space)
+		SaveSpatialDist(fname_output_gating_s_space, "s_time", checktime_values_ms, "ms", savevec_s_space)
 	}
 	
 	
@@ -71,7 +71,9 @@ proc Saving() {
 	
 	// ***** Save Istim(t) (created in IntracellularStim.hoc).
 	if (saveflag_Istim == 1) {
-		Istim_suffix_tmp = new Vector(1,1)
+		Istim_suffix_tmp = new Vector(2)
+		Istim_suffix_tmp.x[0] = 1
+		Istim_suffix_tmp.x[1] = 2
 		SaveTimeCourse(Istim_fname_output, "Istim", Istim_suffix_tmp, "(nA)", savevec_Istim)
 	}
 }

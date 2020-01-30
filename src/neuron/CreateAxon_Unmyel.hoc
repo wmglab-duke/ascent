@@ -16,7 +16,7 @@ Variables that must be defined in wrapper/params file:
 create node[1]
 objref s[1]
 
-proc CreateFiber_Unmyel() {
+proc CreateAxon_Unmyel() {
 	//  Electrical parameters
 	rhoa	= 0.7e6 						// [ohm-um]
 	mycm	= 0.1 							// lamella membrane; [uF/cm2]

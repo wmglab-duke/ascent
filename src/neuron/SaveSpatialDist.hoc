@@ -3,7 +3,7 @@ Author: Nikki Pelot
 Date created: March 11, 2016
 
 Description:
-- Generalized procedure to save spatial distribution (across nodes of Ranvier)
+- Generalized procedure to save spatial distribution (across nodes of Ranver)
 
 Important notes:
 - 
@@ -17,11 +17,11 @@ strdef myfname, mycolprefix, mycolunits
 objref output_file
 
 proc SaveSpatialDist() {localobj mydata, mycolsuffix_vec
-	myfname         = $s1
-	mycolprefix     = $s2
+	myfname = $s1
+	mycolprefix = $s2
 	mycolsuffix_vec = $o3
-	mycolunits      = $s4
-	mydata          = $o5
+	mycolunits = $s4
+	mydata = $o5
 
 	output_file = new File()
 	output_file.wopen(myfname)

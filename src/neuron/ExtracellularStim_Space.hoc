@@ -4,15 +4,15 @@ Date created: January 28, 2016
 
 Description:
 - Load Ve(x) in mV from text file into NEURON vectors.
-- First line in text file: fibertotal (length of Ve(x)).
+- First line in text file: axontotal (length of Ve(x)).
 - Subsequent lines: One Ve(x) value per line.
 
 Variables that must be defined in wrapper/params file:
-- fibertotal (total number of segments = # points in Ve(x))
+- axontotal (total number of segments = # points in Ve(x))
 - VeSpace_fname: String with Ve(x) filename
 */
 
-objref fibertotal_tmp
+objref axontotal_tmp
 objref VeSpace_file, VeSpace_data
 
 // Read in Ve(x)
@@ -20,18 +20,18 @@ proc VeSpace_read() {
 	VeSpace_file = new File()
 	VeSpace_file.ropen(VeSpace_fname)
 	
-	// Read in fibertotal used to generate the potentials
+	// Read in axontotal used to generate the potentials
 	// Make sure it matches the value being used in NEURON
-	fibertotal_tmp = new Vector(1)
-	fibertotal_tmp.scanf(VeSpace_file,1)
+	axontotal_tmp = new Vector(1)
+	axontotal_tmp.scanf(VeSpace_file,1)
 	
 	// Error checking
-	if (fibertotal_tmp.x[0] != fibertotal) {
-		execerror("Need fibertotal_tmp from VeSpace file to match fibertotal used in NEURON.")
+	if (axontotal_tmp.x[0] != axontotal) {
+		execerror("Need axontotal_tmp from VeSpace file to match axontotal used in NEURON.")
 	}
 	
 	// Read in Ve(x)
-	VeSpace_data = new Vector(fibertotal)
+	VeSpace_data = new Vector(axontotal)
 	VeSpace_data.scanf(VeSpace_file)
 	
 	// Close file
