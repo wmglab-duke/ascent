@@ -1,0 +1,161 @@
+/*
+Author: Nikki Pelot
+Date created: February 4, 2016
+
+Description:
+- Initialize model neuron
+- Take large time steps from t<0 to t=0 to initialize to SS
+- Time loop, including applying and recording Ve
+
+Important notes:
+- Only check for AP if find_thresh == 1.
+
+Variables that must be defined in wrapper/params file:
+- t_initSS
+- dt_initSS
+- v_init
+- checknode_Ve_values
+- ap_thresh
+
+Input arg's: 
+- Extracellular stimulation amplitude
+- Intracellular stimulation amplitude
+*/
+
+// Set up the APCount; check all nodes in case tstop is too short for AP to reach checknode1
+objref apc[axonnodes]
+for node_ind=0, axonnodes-1 {
+	if (fiber_type == 2) {// myelinated fiber
+		s[node_ind*11].sec apc[node_ind] = new APCount(0.5)
+	} else {
+		s[node_ind].sec apc[node_ind] = new APCount(0.5)
+	}
+	apc[node_ind].thresh = ap_thresh	
+}
+
+proc RunSim() {local myamp
+	myamp = $1
+	
+	if (flag_whichstim == 0) {
+		stimamp_extra = myamp
+	} else if (flag_whichstim == 1) {
+		if (fiber_type == 2) {// myelinated fiber
+			s[IntraStim_PulseTrain_ind1*11].sec stim1.amp = myamp
+		} else {
+			s[IntraStim_PulseTrain_ind1].sec stim1.amp = myamp
+		}
+	} else if (flag_whichstim == 2) {
+		if (fiber_type == 2) {// myelinated fiber
+			s[IntraStim_PulseTrain_ind2*11].sec stim2.amp = myamp
+		} else {
+			s[IntraStim_PulseTrain_ind2].sec stim2.amp = myamp
+		}
+	}
+	
+	// Initialize
+	/*
+	if (find_block_thresh == 1) {	
+		check_AP = 1 // check_AP = 1 -> blocked (misnomer); start by assuming waveform will block
+	} else {
+		check_AP = 0 // check_AP = 0 -> no AP; start by assuming there won't be an AP
+	}
+	*/
+
+	finitialize(v_init)
+	for seg_ind = 0, axontotal-1 {
+		s[seg_ind].sec.e_extracellular(0.5) = 0
+	}
+	
+	//fcurrent()
+	// Allow time for model to read steady-state using large dt before actually starting stimulation
+	t = t_initSS			// Start before t=0
+	dtsav = dt
+	dt = dt_initSS			// Large dt
+	while (t <= -dt) {
+		fadvance()
+	}
+	dt = dtsav
+	t = 0
+	fcurrent()
+	frecord_init()
+	
+	// Time loop
+	for t_ind=0, n_tsteps-1 {
+		//print "t = ", t_ind*dt, "ms"
+		for seg_ind = 0, axontotal-1 {
+			if (flag_extracellular_stim == 1) {
+				s[seg_ind].sec.e_extracellular(0.5) = stimamp_extra * VeTime_data.x[t_ind] * VeSpace_data.x[seg_ind]
+			}
+			
+			// Record Vm and/or gating vs x at single time points
+			if ((saveflag_Vm_space == 1) || (saveflag_gating_space == 1)) {
+				if (!(fiber_type == 2)) {
+					execerror("Vm(x) and gating(x) recording only set up for myelinated fibers")
+				}
+			
+				// Loop through time points where I want to save spatial distribution
+				for time_save_ind = 0, Nchecktimes-1 {
+					//print "time_save_ind: ", time_save_ind
+					
+					// Save data if time point is correct and if node of Ranvier
+					
+					if ((t_ind == checktime_values.x[time_save_ind]) && ((seg_ind%11) == 0)) {
+						if  (saveflag_Vm_space == 1) {
+							savevec_Vm_space.o[time_save_ind].x[seg_ind/11] = node[seg_ind/11].v(0.5)
+						}
+						
+						if ((saveflag_gating_space == 1) && ((seg_ind%11) == 0)) {
+							// Can't save gating params of end nodes if using passive end nodes
+							if (!((passive_end_nodes == 1) && ((seg_ind == 0)||(seg_ind == axontotal-1)))) {
+								// Redundant check because error check above should indicate that it's only implemented for myelinated fibers
+								if (fiber_type == 2) {
+									savevec_m_space.o[time_save_ind].x[seg_ind/11] = node[seg_ind/11].m_axnode_myel(0.5)
+									savevec_h_space.o[time_save_ind].x[seg_ind/11] = node[seg_ind/11].h_axnode_myel(0.5)
+									savevec_mp_space.o[time_save_ind].x[seg_ind/11] = node[seg_ind/11].mp_axnode_myel(0.5)
+									savevec_s_space.o[time_save_ind].x[seg_ind/11] = node[seg_ind/11].s_axnode_myel(0.5)
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		if (flag_extracellular_stim == 1 && saveflag_Ve == 1) {
+			savevec_Ve.o[0].x[t_ind] = s[checknode_Ve_values.x[0]].sec.e_extracellular(0.5)
+		}
+		fadvance()
+	}
+	
+	// Check for at least one action potential at at least one node of Ranvier
+	if (find_thresh == 1) {
+		print "Checking for AP"
+		N_APs = 0
+		if (N_APs >= N_minAPs) {
+			execerror("Must initialize N_APs less than N_minAPs for FindThresh.hoc to work")
+		}
+		
+		if (find_block_thresh == 1) {
+			for node_ind = checknode_values.x[3], axonnodes-1 {
+				if (apc[node_ind].time > 100) { // Detected at least one AP, so didn't get block, so need to raise the lower bound (N_APs<N_minAPs) on the binary search
+					//print apc[node_ind].time
+					//check_AP = 0			// Detected an action potential
+				} else { // Didn't detect an AP, so got block, so need to drop the upper bound (N_APs>=N_minAPs) on the binary search
+					N_APs = N_minAPs + 1    
+				}
+			}
+		} else {
+			for node_ind=0, axonnodes-1 {
+				// Find the max # of APs at any give node
+				if (apc[node_ind].n >= N_APs) {
+					N_APs = apc[node_ind].n			// Detected an action potential
+				}
+				/*
+				if (apc[node_ind].n >= N_minAPs) {
+					check_AP = 1			// Detected an action potential
+				}
+				*/
+			}
+		}
+	}
+	
+}

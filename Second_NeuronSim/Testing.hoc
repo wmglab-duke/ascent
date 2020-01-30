@@ -1,0 +1,299 @@
+// Create parallel context instance
+objref pc
+pc = new ParallelContext()
+
+// General parameters
+celsius		= 37						// [degC]
+dt 			= 0.001
+tstop 		= 2							// [ms]
+n_tsteps 	= int(tstop/dt) + 1			// int truncates twds zero; +1 accounts for the time point at t=0 [unitless]
+fiber_type  = 2							// fiber_type = 1 for unmyelinated; fiber_type = 2 for myelinated
+passive_end_nodes = 1					// passive_end_nodse = 1 to make both end nodes passive; 0 otherwise
+if (!((passive_end_nodes == 0) || (passive_end_nodes == 1))) {
+	print "passive_end_nodes must be set to 0 or 1"
+	execerror("passive_end_nodes must be set to 0 or 1")
+}
+find_thresh = 1 						// find_thresh = 0 if not doing threshold search; find_thresh = 1 if looking for threshold
+
+
+// ***************************************************************************
+// Test CreateAxon_Unmyel.hoc
+/*
+Dependencies:
+- None.
+*/
+
+if (fiber_type == 1) {
+	axonnodes = 20000
+	fiberd = 1
+	deltax = 5.0
+
+	load_file("CreateAxon_Unmyel.hoc")
+	CreateAxon_Unmyel()
+	print "Done CreateAxon_Unmyel" 
+}
+// ***************************************************************************
+// Test CreateAxon_Myel.hoc	
+/*
+Dependencies:
+- None.
+*/
+
+if (fiber_type == 2) {
+	axonnodes = 201
+	fiberD = 7.3
+
+	load_file("CreateAxon_Myel.hoc")
+	CreateAxon_Myel()
+	print "Done CreateAxon_Myel"
+}
+// ***************************************************************************	
+// Test IntracellularStim.hoc
+/*
+Dependencies:
+- Use CreateAxon_Unmyel.hoc OR CreateAxon_Myel.hoc
+*/
+
+IntraStim_PulseTrain_delay				= 25									// [ms]
+IntraStim_PulseTrain_pw					= 0.1									// [ms]
+IntraStim_PulseTrain_traindur			= tstop-IntraStim_PulseTrain_delay		// [ms]
+IntraStim_PulseTrain_freq				= 100									// [Hz]
+IntraStim_PulseTrain_amp				= 20									// [nA]
+IntraStim_PulseTrain_ind 				= int(6000/deltax)						// Index of node where intracellular stim is placed[unitless]
+
+load_file("IntracellularStim.hoc")
+IntraStim_PulseTrain()
+print "Done IntracellularStim"
+
+// ***************************************************************************
+// Test ExtracellularStim_Space.hoc
+/*
+Dependencies:
+- Use CreateAxon_Unmyel.hoc OR CreateAxon_Myel.hoc because need axontotal.
+*/
+
+strdef VeSpace_fname
+if (fiber_type == 1) {
+	VeSpace_fname = "Model119_Fascicle1_Axon1.dat"
+} else if (fiber_type == 2) {
+	VeSpace_fname = "Model119_FiberD5-7_Fascicle1_Axon1.dat"
+}
+
+load_file("ExtracellularStim_Space.hoc")
+
+VeSpace_read()
+/*
+for i = 0,3 {
+	VeSpace_read()
+	print " VeSpace_data.x[100]: ", VeSpace_data.x[100]
+	print "Done ExtracellularStim_Space"
+}
+*/
+// ***************************************************************************
+// Scale Ve(x)
+
+model_num = 119
+
+// Convert to mV (required for e_extracellular)
+VeSpace_data = VeSpace_data.mul(1000)
+
+// Scale by Iapplied so that amplitudes are millivolts per milliamp applied at the electrode
+strdef VeSpace_Iapplied_fname
+objref Iapplied_file, Iapplied
+VeSpace_Iapplied_fname = "Model119_TotalAppliedCurrent.dat"
+Iapplied_file = new File()
+Iapplied_file.ropen(VeSpace_Iapplied_fname)
+Iapplied = new Vector(1)
+Iapplied.scanf(Iapplied_file)
+Iapplied_file.close()
+VeSpace_data = VeSpace_data.mul(1/Iapplied.x[0])
+
+// ***************************************************************************
+// Test ExtracellularStim_Time.hoc
+/*
+Dependencies:
+- None.
+*/
+
+strdef VeTime_fname
+//VeTime_fname = "RectFullDC_dt0.001ms_tstop10ms_tstart1ms_tend10ms_freq5kHz_PW1-0.1ms_interphase0ms_PW2-0.1_20160205.txt"
+VeTime_fname = "SinglePulse_dt0.001ms_tstop2ms_tstart1ms_PW0.1ms_20160207.dat"
+
+load_file("ExtracellularStim_Time.hoc")
+VeTime_read()
+print "Done ExtracellularStim_Time"
+
+// ***************************************************************************
+// Test Recording.hoc
+// Test with Nchecknodes = axontotal and != axontotal
+/*
+Dependencies:
+- Use CreateAxon_Unmyel.hoc OR CreateAxon_Myel.hoc
+- Use IntracellularStim.hoc
+*/
+
+saveflag_Vm_time 		= 1
+saveflag_gating_time 	= 1
+saveflag_Vm_space		= 1
+saveflag_gating_space 	= 1
+saveflag_Ve 			= 1
+saveflag_Istim 			= 1
+
+
+// Locations to record Vm and gating params vs time
+Nchecknodes 	= 4
+//Nchecknodes 	= axonnodes
+
+objref checknode_values
+checknode_values = new Vector(Nchecknodes,0)
+
+if (Nchecknodes == axonnodes) {
+	for i = 0, axonnodes - 1 {
+		checknode_values.x[i] = i
+	}
+} else {
+	axon_length = (axonnodes-1)*deltax				// length of axon [um]
+	checknode_values.x[0] = int(15000/deltax)
+	checknode_values.x[1] = int(0.5*(axonnodes-1))
+	checknode_values.x[2] = int((axon_length-15000)/deltax)
+	checknode_values.x[3] = int((axon_length-5000)/deltax)
+}
+
+// Time points to record Vm and gating params vs x
+Nchecktimes = 2
+
+objref checktime_values_ms, checktime_values
+checktime_values_ms = new Vector(Nchecktimes,0)
+checktime_values = new Vector(Nchecktimes,0)
+
+// Check times in milliseconds
+/*
+checktime_values_ms.x[0] = 19.962
+checktime_values_ms.x[1] = 19.988
+*/
+
+checktime_values_ms.x[0] = 0.468
+checktime_values_ms.x[1] = 1.846
+
+// Check time indices
+for i = 0, Nchecktimes-1 {
+	checktime_values.x[i] = int(checktime_values_ms.x[i]/dt)
+}
+
+load_file("Recording.hoc")
+Recording()
+print "Done Recording"
+
+// ***************************************************************************
+// Test RunSim.hoc
+/*
+Dependencies:
+- Use CreateAxon_Unmyel.hoc OR CreateAxon_Myel.hoc
+- Use ExtracellularStim_Time.hoc
+- Use ExtracellularStim_Space.hoc
+- Use IntracellularStim.hoc if recording Istim.
+- Use Recording.hoc
+*/
+
+t_initSS	= -200						// [ms]
+dt_initSS	= 10						// [ms]
+	   if 	(fiber_type == 1) { 	v_init = -88.3 				// [mV]
+} else if   (fiber_type == 2) { 	v_init = -80 				// [mV]
+}
+
+objref checknode_Ve_values
+checknode_Ve_values 			= new Vector(1,0)
+if (fiber_type == 1) {
+	checknode_Ve_values.x[0]	= int((axonnodes-1)/2)
+} else {
+	checknode_Ve_values.x[0]	= 11*int((axonnodes-1)/2)
+}
+
+ap_thresh			= -20						// threshold at which AP is detected [mV]
+
+load_file("RunSim.hoc")
+current_amp = 4.2 // [mA]
+RunSim(current_amp,IntraStim_PulseTrain_amp)
+print "Done RunSim"
+
+
+// ***************************************************************************
+// Test FindThresh.hoc
+/*
+Dependencies:
+- Use CreateAxon_Unmyel.hoc OR CreateAxon_Myel.hoc
+- Use ExtracellularStim_Time.hoc
+- Use ExtracellularStim_Space.hoc
+- Use IntracellularStim.hoc if recording Istim.
+- Use Recording.hoc
+- Use RunSim.hoc
+*/
+/*
+thresh_resoln		= 0.01				// resolution of threshold for extracellular stim [fraction change]
+stimamp_bottom_init	= 0					// initial lower bound of binary search for thresh [mA]
+stimamp_top_init	= -2e3				// initial upper bound of binary search for thresh for extracellular stim [mA]
+
+load_file("FindThresh.hoc")
+FindThresh(1)
+print "Done FindThresh"
+*/
+/*
+	for fiber_ind = 0, Nfibers-1 {
+		for PW_ind = 0, Npw-1 {
+			pc.submit("find_thresh", cntr, PW_values.x[PW_ind], PW_ind, fiber_ind)
+			cntr = cntr+1
+		}
+	}
+
+	// If a result is ready, get it. If not, pick a job to do.
+	while (pc.working()) {
+		key = pc.retval()
+		pc.look_take(key)
+		
+		vec_results_returned = pc.upkvec()
+		istim		= vec_results_returned.x[0]
+		PW	 		= vec_results_returned.x[1]
+		PW_ind		= vec_results_returned.x[2]
+		fiber_num	= vec_results_returned.x[3]
+		
+		threshold_values[PW_ind].x[fiber_num] = istim	
+	}
+*/
+
+// ***************************************************************************
+// Test Saving.hoc
+/*
+Dependencies:
+- Use CreateAxon_Unmyel.hoc OR CreateAxon_Myel.hoc
+- Use IntracellularStim.hoc
+- Use Recording.hoc
+- Can test with or without RunSim.hoc. Without, need to define checknode_Ve_values.
+*/
+
+
+strdef fname_output_Vm_time
+strdef fname_output_Vm_space
+strdef fname_output_gating_m_time, fname_output_gating_h_time, fname_output_gating_mp_time, fname_output_gating_s_time
+strdef fname_output_gating_m_space, fname_output_gating_h_space, fname_output_gating_mp_space, fname_output_gating_s_space
+strdef Ve_fname_output, Istim_fname_output
+fname_output_Vm_time = "Vm_time_tmp.dat"
+fname_output_Vm_space = "Vm_space_tmp.dat"
+fname_output_gating_m_time = "gating_m_time_tmp.dat"
+fname_output_gating_h_time = "gating_h_time_tmp.dat"
+fname_output_gating_mp_time = "gating_mp_time_tmp.dat"
+fname_output_gating_s_time = "gating_s_time_tmp.dat"
+fname_output_gating_m_space = "gating_m_space_tmp.dat"
+fname_output_gating_h_space = "gating_h_space_tmp.dat"
+fname_output_gating_mp_space = "gating_mp_space_tmp.dat"
+fname_output_gating_s_space = "gating_s_space_tmp.dat"
+
+Ve_fname_output = "Ve_tmp.dat"
+Istim_fname_output = "Istim_tmp.dat"
+
+load_file("Saving.hoc")
+Saving()
+print "Done Saving"
+
+
+
+// ***************************************************************************

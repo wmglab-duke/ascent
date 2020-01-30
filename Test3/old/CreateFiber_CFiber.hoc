@@ -1,0 +1,18 @@
+objref s[1]
+create node[1]
+objref fiber
+
+proc CreateFiber_CFiber() {
+    objref s[fibernodes]
+
+    fiber = new cFiberBuilder(fiberD,len,c_fiber_model_type,celsius,deltaz)
+
+    
+	for i = 0, fibernodes-1 {
+		s[i] = fiber.section[i]
+	}
+
+    fibertotal = fibernodes
+
+    v_init_c_fiber = fiber.v
+}

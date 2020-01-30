@@ -1,0 +1,46 @@
+/*
+Author: Nikki Pelot
+Date created: March 11, 2016
+
+Description:
+- Generalized procedure to save spatial distribution (across nodes of Ranver)
+
+Important notes:
+- 
+
+Variables that must be defined in wrapper/params file:
+None.
+*/
+
+// There is no "localstr", so just define the strings here
+strdef myfname, mycolprefix, mycolunits
+objref output_file
+
+proc SaveSpatialDist() {localobj mydata, mycolsuffix_vec
+	myfname = $s1
+	mycolprefix = $s2
+	mycolsuffix_vec = $o3
+	mycolunits = $s4
+	mydata = $o5
+
+	output_file = new File()
+	output_file.wopen(myfname)
+
+	// Column headers
+	output_file.printf("Node# ")
+	for col_ind = 0, mycolsuffix_vec.size()-1 {
+		output_file.printf("%s%f%s ", mycolprefix, mycolsuffix_vec.x[col_ind], mycolunits)
+	}
+	output_file.printf("\n")
+
+	// Node # & associated data for each row
+	for node_ind = 0, axonnodes-1 {
+		output_file.printf("%d ", node_ind+1)
+		for col_ind = 0, mycolsuffix_vec.size()-1 {
+			output_file.printf("%f ", mydata.o[col_ind].x[node_ind])
+		}
+		output_file.printf("\n")
+	}
+
+	output_file.close()
+}

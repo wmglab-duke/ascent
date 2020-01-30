@@ -1,0 +1,18 @@
+objref s[1]
+create node[1]
+objref fiber
+
+proc CreateAxon_CFiber() {
+    objref s[axonnodes]
+
+    fiber = new cFiberBuilder(fiberD,len,c_fiber_model_type,celsius,deltax)
+
+    
+	for i = 0, axonnodes-1 {
+		s[i] = fiber.section[i]
+	}
+
+    axontotal = axonnodes
+
+    v_init_c_fiber = fiber.v
+}

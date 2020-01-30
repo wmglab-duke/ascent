@@ -1,0 +1,30 @@
+/*
+Author: Nikki Pelot
+Date created: February 14, 2016
+
+Description:
+- Save # parallel processors, current processor's number, and runtime to file (in seconds)
+
+Important notes:
+- 
+
+Variables that must be defined in wrapper/params file:
+- trun_individual
+- runtime_fname_output
+*/
+
+objref output_file_runtime
+
+proc Saving_Runtime() {
+	// Open file for writing
+	output_file_runtime = new File()
+	output_file_runtime.wopen(runtime_fname_output)
+	
+	// Print output to file
+	output_file_runtime.printf("%d\n", pc.nhost)
+	output_file_runtime.printf("%d\n", pc.id)
+	output_file_runtime.printf("%f\n", trun_individual)
+	
+	// Close file
+	output_file_runtime.close()
+}

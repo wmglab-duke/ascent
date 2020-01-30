@@ -87,9 +87,6 @@
     },
     "n_min_aps": 1
   },
-  "check_points": {
-    "n_checknodes": 0
-  },
   "terminal_nodes": {
     "node_channels": true,
     "passive_end_nodes": true

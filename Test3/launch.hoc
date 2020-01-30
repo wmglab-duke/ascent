@@ -1,0 +1,110 @@
+
+//***************** Environment *****************
+celsius   = 37 // [degC]
+
+//***************** Global Time ******************
+dt        = 0.001 // [ms]
+tstop     = 50 // [ms]
+n_tsteps  = 50000 // [unitless]
+t_initSS  = -200 // [ms]
+dt_initSS = 10 // [ms]
+
+//***************** Fiber Parameters *************
+fiber_type = 3 // fiber_type = 1 for unmyelinated; fiber_type = 2 for myelinated; fiber_type = 3 for c fiber built from cFiberBuilder.hoc
+node_channels = 0 // node_channels = 0 for MRG; node_channels = 1 for Schild 1994
+axonnodes = 5999 // must match up with ExtractPotentials
+c_fiber_model_type            = 2 // type: 1:Sundt Model 2:Tigerholm model 3:Rattay model 4:Schild model for c fiber built from cFiberBuilder.hoc
+deltax = 8.3 
+len                           = axonnodes*deltax
+passive_end_nodes = 1 // passive_end_nodes = 1 to make both end nodes passive; 0 otherwise
+fiberD = 0.8 // fiber diameter
+
+//***************** Intracellular Stim ***********
+IntraStim_PulseTrain_delay    = 0 // [ms]
+IntraStim_PulseTrain_pw       = 0 // [ms]
+IntraStim_PulseTrain_traindur = tstop - IntraStim_PulseTrain_delay // [ms]
+IntraStim_PulseTrain_freq     = 0 // [ms]
+IntraStim_PulseTrain_amp      = 0.0000 // [nA]
+IntraStim_PulseTrain_ind      = 2 // Index of node where intracellular stim is placed [unitless]
+
+//***************** Extracellular Stim ***********
+strdef VeTime_fname
+VeTime_fname            = "data/inputs/waveform.dat"
+flag_extracellular_stim = 1
+
+//***************** Recording ********************
+saveflag_Vm_time      = 0
+saveflag_gating_time  = 0
+saveflag_Vm_space     = 0
+saveflag_gating_space = 0
+saveflag_Ve           = 0
+saveflag_Istim        = 0
+
+//***************** Classification Checkpoints ***
+Nchecknodes = 3
+Nchecktimes = 4
+
+//***************** Threshold Parameters *********
+find_thresh = 1 // find_thresh = 0 if not doing threshold search; find_thresh = 1 if looking for threshold
+find_block_thresh = 0 // If find_thresh==1, can also set find_block_thresh = 1 to find block thresholds instead of activation threshold
+Nmodels    = 1
+Ninners    = 15
+Namp     = 1
+Nfreq    = 1
+
+objref stimamp_bottom_init
+stimamp_bottom_init = new Vector(15,0)
+objref stimamp_top_init
+stimamp_top_init = new Vector(15,0)
+
+stimamp_bottom_init.x[0]        = 0.0100 // [mA] initial lower bound of binary search for thresh
+stimamp_top_init.x[0]           = 0.1000 // [mA] initial upper bound of binary search for thresh for extracellular stim
+stimamp_bottom_init.x[1]        = 0.0100 // [mA] initial lower bound of binary search for thresh
+stimamp_top_init.x[1]           = 0.1000 // [mA] initial upper bound of binary search for thresh for extracellular stim
+stimamp_bottom_init.x[2]        = 0.0100 // [mA] initial lower bound of binary search for thresh
+stimamp_top_init.x[2]           = 0.1000 // [mA] initial upper bound of binary search for thresh for extracellular stim
+stimamp_bottom_init.x[3]        = 0.0100 // [mA] initial lower bound of binary search for thresh
+stimamp_top_init.x[3]           = 0.1000 // [mA] initial upper bound of binary search for thresh for extracellular stim
+stimamp_bottom_init.x[4]        = 0.0100 // [mA] initial lower bound of binary search for thresh
+stimamp_top_init.x[4]           = 0.1000 // [mA] initial upper bound of binary search for thresh for extracellular stim
+stimamp_bottom_init.x[5]        = 0.0100 // [mA] initial lower bound of binary search for thresh
+stimamp_top_init.x[5]           = 0.1000 // [mA] initial upper bound of binary search for thresh for extracellular stim
+stimamp_bottom_init.x[6]        = 0.0100 // [mA] initial lower bound of binary search for thresh
+stimamp_top_init.x[6]           = 0.1000 // [mA] initial upper bound of binary search for thresh for extracellular stim
+stimamp_bottom_init.x[7]        = 0.0100 // [mA] initial lower bound of binary search for thresh
+stimamp_top_init.x[7]           = 0.1000 // [mA] initial upper bound of binary search for thresh for extracellular stim
+stimamp_bottom_init.x[8]        = 0.0100 // [mA] initial lower bound of binary search for thresh
+stimamp_top_init.x[8]           = 0.1000 // [mA] initial upper bound of binary search for thresh for extracellular stim
+stimamp_bottom_init.x[9]        = 0.0100 // [mA] initial lower bound of binary search for thresh
+stimamp_top_init.x[9]           = 0.1000 // [mA] initial upper bound of binary search for thresh for extracellular stim
+stimamp_bottom_init.x[10]        = 0.0100 // [mA] initial lower bound of binary search for thresh
+stimamp_top_init.x[10]           = 0.1000 // [mA] initial upper bound of binary search for thresh for extracellular stim
+stimamp_bottom_init.x[11]        = 0.0100 // [mA] initial lower bound of binary search for thresh
+stimamp_top_init.x[11]           = 0.1000 // [mA] initial upper bound of binary search for thresh for extracellular stim
+stimamp_bottom_init.x[12]        = 0.0100 // [mA] initial lower bound of binary search for thresh
+stimamp_top_init.x[12]           = 0.1000 // [mA] initial upper bound of binary search for thresh for extracellular stim
+stimamp_bottom_init.x[13]        = 0.0100 // [mA] initial lower bound of binary search for thresh
+stimamp_top_init.x[13]           = 0.1000 // [mA] initial upper bound of binary search for thresh for extracellular stim
+stimamp_bottom_init.x[14]        = 0.0100 // [mA] initial lower bound of binary search for thresh
+stimamp_top_init.x[14]           = 0.1000 // [mA] initial upper bound of binary search for thresh for extracellular stim
+
+ap_thresh = 1
+
+thresh_resoln = 0.01
+N_minAPs  = 1
+
+flag_whichstim  = 0
+
+//***************** Batching Parameters **********
+
+objref stimamp_values
+stimamp_values = new Vector(Namp,0)
+stimamp_values.x[0] = 0
+strdef num_fibers_fname
+num_fibers_fname = "data/inputs/numfibers_per_inner.dat"
+
+objref Vefreq_values
+Vefreq_values = new Vector(Nfreq,0)
+Vefreq_values.x[0] = 0
+
+load_file("Wrapper.hoc")

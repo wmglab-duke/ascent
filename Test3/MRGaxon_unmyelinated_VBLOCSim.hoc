@@ -1,0 +1,486 @@
+/*--------------------------------------------------------------------
+2/02
+Cameron C. McIntyre
+SIMULATION OF PNS MYELINATED AXON
+
+This model is described in detail in:
+
+McIntyre CC, Richardson AG, and Grill WM. Modeling the excitability of
+mammalian nerve fibers: influence of afterpotentials on the recovery
+cycle. Journal of Neurophysiology 87:995-1006, 2002.
+
+This model can not be used with NEURON v5.1 as errors in the
+extracellular mechanism of v5.1 exist related to xc. The original
+stimulations were run on v4.3.1. NEURON v5.2 has corrected the 
+limitations in v5.1 and can be used to run this model.
+
+11/12
+Modified by N. Pelot to simulate VBLOC
+----------------------------------------------------------------------*/
+
+//load_proc("nrnmainmenu")
+
+// Create parallel context instance
+objref pc
+pc = new ParallelContext()
+
+print "number of processors: ", pc.nhost
+
+// ******************************************* Define parameters *************************************************
+proc model_globals() {
+	celsius		= 37						// [degC]
+	v_init		= -88.3 						// [mV]
+	dt			= 0.005 					// [ms]
+	tstop 		= 250						// [ms]
+	n_tsteps 	= int(tstop/dt) + 1			// int truncates twds zero; +1 accounts for the time point at t=0 [unitless]
+
+//Start before t=0 with large fixed timestep to allow the system to reach SS
+	t_initSS	= -200						// [ms]
+	dt_initSS	= 10						// [ms]
+	
+//Topological parameters [unitless]//		
+	axonnodes	= 20000
+	paranodes1  = 0//2*(axonnodes-1)  		// MYSA paranodes
+	paranodes2  = 0//2*(axonnodes-1)  		// FLUT paranodes
+	axoninter   = 0//6*(axonnodes-1)  		// STIN internodes
+	axontotal 	= axonnodes //+ paranodes1 + paranodes2 + axoninter
+
+	/*
+	paranodes1=40
+	paranodes2=40	
+	axoninter=120			
+	axontotal=221			 
+	*/
+
+//Morphological parameters//	
+	fiberD		= 1							// choose from 1, 2, 5.7, 7.3, 8.7, 10.0, 11.5, 12.8, 14.0, 15.0, 16.0; [um]
+	nodelength	= 5.0						// [um]
+	paralength1	= 3  						// [um]
+	space_p1	= 0.002						// [??]
+	space_p2	= 0.004						// [??]
+	space_i		= 0.004						// [??]
+	nodeD 		= 1							// Diameter of unmyelinated axon [um]
+	nl 			= 25						// Used for passive end nodes
+
+//Intracellular test stimulus parameters//
+	delay				= 25							// [ms]
+	pw					= 0.1						// [ms]
+	traindur1			= tstop-delay				// [ms]
+	ifreq				= 100						// [Hz]
+	istim				= 0//20						// [nA]
+	//x_intracellstim_ind = int(axonnodes/10)			// [unitless]
+	
+//VBLOC stimulation parameters//
+	Nvblocamp 			= 9							// number of stimulation amplitudes to try
+	Nvblocfreq 			= 4							// number of stimulation frequencies to try
+	
+	// VBLOC
+	vblocdelay1			= 1							// [ms]
+	//vblocpw1			= 0.1						// [ms]
+	vblocdur1			= tstop - vblocdelay1		// [ms]
+	//vblocfreq1			= 5000						// [Hz]
+	vblocistim1			= -1						//
+	
+	//vblocdelay2			= vblocdelay1 + vblocpw1	// [ms]	
+	//vblocpw2			= vblocpw1					// [ms]
+	//vblocdur2			= tstop - vblocdelay2		// [ms]
+	//vblocfreq2			= vblocfreq1				// [Hz]
+	vblocistim2			= -1 * vblocistim1			//
+
+	// nodes where Vm is recorded [unitless]
+	Nchecknodes 		= 4						// number of nodes at which Vm(t) is recorded
+	
+	/*
+	// node where the extracellular stimulation (Ve) is recorded 
+	checknode1			= int(axonnodes/2)
+	
+	// nodes where Vm is recorded [unitless]
+	checknode2 			= int(0.25*axonnodes)
+	checknode3 			= int(0.5*axonnodes)
+	checknode4 			= int(0.75*axonnodes)
+	*/
+	
+	// Model numbers are coded in modelnumbers.xlsx.
+	Nmodel				= 1							// number of different models (meshes, element order, length and radius of the medium, etc. in COMSOL)
+	Nfasc				= 30							// number of fascicles within axons being simulated
+	Naxon				= 1							// number of axons per fascicle being simulated
+	
+//Electrical parameters//		
+	rhoa	= 0.7e6 						// [ohm-um]
+	mycm	= 0.1 							// lamella membrane; [uF/cm2]
+	mygm	= 0.001 						// lamella membrane; [S/cm2]
+	rhoe	= 1000  						// resistivity of extracellular medium; [ohm-cm]
+	
+	}
+model_globals ()
+
+// Define models, fascicles, and axons to try
+objref model_values, fasc_values, axon_values
+model_values = new Vector(Nmodel,0)
+fasc_values = new Vector(Nfasc,0)
+axon_values = new Vector(Naxon,0)
+
+model_values.x[0] = 119
+
+for K = 0, Nfasc-1 {
+	fasc_values.x[K] = K+1
+}
+
+axon_values.x[0] = 1
+
+// Define vector of VBLOC amplitudes to try [mA]
+objref vblocamp_values
+vblocamp_values = new Vector(Nvblocamp,0)
+//vblocamp_values.x[0] = 8
+for K = 0, Nvblocamp-1 {
+	vblocamp_values.x[K] = K
+}
+
+// Define vector of VBLOC frequencies to try [Hz]
+objref vblocfreq_values
+vblocfreq_values = new Vector(Nvblocfreq,0)
+//vblocfreq_values.x[0] = 1000
+vblocfreq_values.x[0] = 5000
+vblocfreq_values.x[1] = 10000
+vblocfreq_values.x[2] = 15000
+vblocfreq_values.x[3] = 20000
+
+
+proc dependent_var() {
+	// [um]
+	/*
+	if (fiberD==1) 			{axonD=0.8 nodeD=0.7 paraD1=0.7 paraD2=0.8 deltax=200 paralength2=10 nl=20}
+	if (fiberD==2) 			{axonD=1.6 nodeD=1.4 paraD1=1.4 paraD2=1.6 deltax=200 paralength2=10 nl=30}
+	if (fiberD==5.7) {g=0.605 axonD=3.4 nodeD=1.9 paraD1=1.9 paraD2=3.4 deltax=500 paralength2=35 nl=80}
+	if (fiberD==7.3) {g=0.630 axonD=4.6 nodeD=2.4 paraD1=2.4 paraD2=4.6 deltax=750 paralength2=38 nl=100}
+	if (fiberD==8.7) {g=0.661 axonD=5.8 nodeD=2.8 paraD1=2.8 paraD2=5.8 deltax=1000 paralength2=40 nl=110}
+	if (fiberD==10.0) {g=0.690 axonD=6.9 nodeD=3.3 paraD1=3.3 paraD2=6.9 deltax=1150 paralength2=46 nl=120}
+	if (fiberD==11.5) {g=0.700 axonD=8.1 nodeD=3.7 paraD1=3.7 paraD2=8.1 deltax=1250 paralength2=50 nl=130}
+	if (fiberD==12.8) {g=0.719 axonD=9.2 nodeD=4.2 paraD1=4.2 paraD2=9.2 deltax=1350 paralength2=54 nl=135}
+	if (fiberD==14.0) {g=0.739 axonD=10.4 nodeD=4.7 paraD1=4.7 paraD2=10.4 deltax=1400 paralength2=56 nl=140}
+	if (fiberD==15.0) {g=0.767 axonD=11.5 nodeD=5.0 paraD1=5.0 paraD2=11.5 deltax=1450 paralength2=58 nl=145}
+	if (fiberD==16.0) {g=0.791 axonD=12.7 nodeD=5.5 paraD1=5.5 paraD2=12.7 deltax=1500 paralength2=60 nl=150}
+	*/
+	Rpn0=(rhoa*.01)/(PI*((((nodeD/2)+space_p1)^2)-((nodeD/2)^2)))
+	/*
+	Rpn1=(rhoa*.01)/(PI*((((paraD1/2)+space_p1)^2)-((paraD1/2)^2)))
+	Rpn2=(rhoa*.01)/(PI*((((paraD2/2)+space_p2)^2)-((paraD2/2)^2)))
+	Rpx=(rhoa*.01)/(PI*((((axonD/2)+space_i)^2)-((axonD/2)^2)))
+	interlength=(deltax-nodelength-(2*paralength1)-(2*paralength2))/6
+	//print interlength
+	*/
+	}
+dependent_var()
+
+// ********************************************** Create model ****************************************************
+create node[axonnodes]
+//access node[0]	//APD
+objref x_axon
+x_axon = new Vector(axontotal,0)
+
+objref checknode_values
+checknode_values = new Vector(Nchecknodes,0)
+
+// s is a pointer to all the elements of the neuron (i.e. dendrites, soma, axon)
+// s[i] = new SectionRef()
+//  - keeps a pointer reference to a given section
+//objref s[axontotal]
+
+proc initialize(){
+	for i=0,axonnodes-1 {
+		node[i]{					
+			//s[i*11] = new SectionRef()
+			//print i*11
+			nseg	= 1
+			diam	= nodeD
+			L		= nodelength
+			Ra		= rhoa/10000
+			cm		= 2
+			
+			// Passive end nodes
+			if(i == 0 || i == axonnodes-1){
+				insert pas
+				g_pas = 0.0001
+				e_pas = -70
+				insert extracellular
+				xg      = mygm/(nl*2) 
+				xc      = mycm/(nl*2) 
+			} else {
+				insert axnode
+				insert extracellular xraxial=Rpn0 
+				xg=1e10 // short circuit
+				xc=0    // short circuit
+			}
+			
+			}
+		}
+
+	for i=0, axonnodes-2 {
+		connect node[i](0), node[i+1](1)
+		}
+
+	// set up vector with x coordinates of centres of each node
+	x_axon.x[0] = nodelength/2
+	for i = 1, axonnodes-1 {
+		x_axon.x[i] = x_axon.x[i-1] + nodelength
+	}
+	
+	// convert from um to mm
+	x_axon = x_axon.mul(1/1000)
+	
+	// node where intracellular test stim is placed
+	// 6mm from left end of 60mm fiber
+	x_intracellstim_ind = int(6000/nodelength)			// [unitless]
+	
+	// node where the extracellular stimulation (Ve) is recorded 
+	// Halfway along the fiber
+	checknode1			= int((axonnodes-1)/2)
+	
+	// nodes where Vm(t) is recorded [unitless]
+	// 15mm from end of 60mm fiber; halfway along fiber; 45mm from end
+	axon_length = axonnodes*nodelength				// length of axon [um]
+	checknode_values.x[0] = int(15000/nodelength)
+	checknode_values.x[1] = int(0.5*(axonnodes-1))
+	checknode_values.x[2] = int((axon_length-15000)/nodelength)
+	checknode_values.x[3] = int((axon_length-5000)/nodelength)
+}
+initialize()
+
+// **************************************** Read in extracellular potentials *********************************************
+//prepare variables to read in the extracellular potentials
+objref Ve_file, Ve_data, Ve_data_scaled, I_file, Iapplied
+strdef fname
+
+proc Ve_read() {local mymodel, myfasc, myaxon, myvblocamp
+	mymodel = $1
+	myfasc = $2
+	myaxon = $3
+	myvblocamp = $4
+
+	sprint(fname, "Data/Model%d/Model%d_Fascicle%d_Axon%d.dat", mymodel, mymodel, myfasc, myaxon)
+	print fname
+	Ve_file = new File()
+	Ve_file.ropen(fname)
+	Ve_data = new Vector(axonnodes)
+	Ve_data.scanf(Ve_file)
+	Ve_file.close()
+	// convert to mV (required for e_extracellular)
+	Ve_data = Ve_data.mul(1000)
+	
+	sprint(fname, "Data/Model%d/Model%d_TotalAppliedCurrent.dat", mymodel, mymodel)
+	I_file = new File()
+	I_file.ropen(fname)
+	Iapplied = new Vector(1)
+	Iapplied.scanf(I_file)
+	I_file.close()
+	
+	// Scale Ve data for desired stimulation amplitude
+	Ve_data_scaled = new Vector(axonnodes)
+	Ve_data_scaled = Ve_data.mul(myvblocamp/Iapplied.x[0])
+}
+
+// ******************************************** Recording & stimulation **************************************************
+// recording vectors
+objref Ve_vblocstim
+Ve_vblocstim = new Vector(n_tsteps,0)
+
+objref test_stim
+test_stim = new Vector(n_tsteps,0)
+
+objref volmem[Nchecknodes]
+for i=0, Nchecknodes - 1 {
+	volmem[i] = new Vector(n_tsteps,0)
+	volmem[i].record(&node[checknode_values.x[i]].v(0.5),dt)
+}
+
+//intracellular and extracellular stimuli//
+objectvar stim, vblocstim1, vblocstim2
+create myelec1, myelec2
+
+proc stimul() {local dtsav, myvblocfreq, myvblocpw
+	myvblocfreq = $1
+	myvblocpw = (1000/myvblocfreq)/2 // 1000-> conversion from seconds to milliseconds
+
+	node[x_intracellstim_ind]{
+		//print x_intracellstim_ind
+		stim=new trainIClamp()
+		stim.loc(.5)
+		stim.del=delay
+		stim.PW=pw
+		stim.train = traindur1
+		stim.freq=ifreq
+		stim.amp=istim
+	}
+		
+	myelec1 {
+		vblocstim1=new trainIClamp()
+		vblocstim1.loc(.5)
+		vblocstim1.del		=vblocdelay1
+		vblocstim1.PW		=myvblocpw//vblocpw1
+		vblocstim1.train	=vblocdur1
+		vblocstim1.freq		=myvblocfreq//vblocfreq1
+		vblocstim1.amp		=vblocistim1
+	}
+	
+	myelec2 {
+		vblocstim2=new trainIClamp()
+		vblocstim2.loc(.5)
+		vblocstim2.del		=vblocdelay1 + myvblocpw//vblocdelay2
+		vblocstim2.PW		=myvblocpw//vblocpw2
+		vblocstim2.train	=tstop - vblocstim2.del//vblocdur2
+		vblocstim2.freq		=myvblocfreq//vblocfreq2
+		vblocstim2.amp		=vblocistim2
+	}
+	
+	finitialize(v_init)
+	for K = 0, axontotal-1 {
+		node[K].e_extracellular(0.5) = 0
+	}
+	
+	//fcurrent()
+	// Allow time for model to read steady-state using large dt before actually starting stimulation
+	t = t_initSS			// start before t=0
+	dtsav = dt
+	dt = dt_initSS			// large dt
+	while (t <= -dt) {
+		fadvance()
+	}
+	dt = dtsav
+	t = 0
+	fcurrent()
+	frecord_init()
+	
+	for J=0, n_tsteps-1 {
+		for K = 0, axontotal-1 {
+		
+			tmp = vblocstim1.i + vblocstim2.i
+			if (tmp == 0) {
+				node[K].e_extracellular(0.5) = 0
+			} else if (tmp > 0) {
+				node[K].e_extracellular(0.5) = Ve_data_scaled.x[K]
+				//node[K].e_extracellular(0.5) = 0
+			} else if (tmp < 0) {
+				node[K].e_extracellular(0.5) = -Ve_data_scaled.x[K]
+				//node[K].e_extracellular(0.5) = 0
+			} else {
+				print "ERROR: Problem with stimulus"
+				execerror("ERROR: Problem with stimulus")
+				stop
+			}
+			
+		}
+		Ve_vblocstim.x[J] = node[checknode1].e_extracellular(0.5)
+		test_stim.x[J] = stim.i
+		fadvance()
+	}
+}
+
+// ********************************************** Save data ****************************************************
+objref f1
+
+proc save_data() {local mymodel, myfasc, myaxon, myvblocamp, myvblocfreq
+	mymodel = $1
+	myfasc = $2
+	myaxon = $3
+	myvblocamp = $4
+	myvblocfreq = $5
+
+	sprint(fname, "Data/Model%d/%dHz/Model%d_FiberD1_Fascicle%d_Axon%d_Vblocamp%f_output.dat", mymodel, myvblocfreq, mymodel, myfasc, myaxon, myvblocamp)
+
+	// Save data for the current axon
+	f1 = new File()
+	f1.wopen(fname)
+		//f1.printf("Time(ms) test_stim(nA) Ve_node%d(mV) Vm_node%d(mV) Vm_node%d(mV) Vm_node%d(mV) Vm_node%d(mV)\n", checknode1, checknode2, checknode3, checknode4, checknode5)
+	f1.printf("Time(ms) test_stim(nA) Ve_node%d(mV) ", checknode1)
+	for i = 0, Nchecknodes-1 {
+		f1.printf("Vm_node%d(mV) ", checknode_values.x[i])
+	}
+	f1.printf("\n")
+	
+	for J = 0, n_tsteps-1 {
+		f1.printf("%f ", J*dt)
+		f1.printf("%f ", test_stim.x[J])
+		f1.printf("%f ", Ve_vblocstim.x[J])
+		for i = 0, Nchecknodes-1 {
+			f1.printf("%f ", volmem[i].x[J])
+		}
+		f1.printf("\n")
+	}
+	
+	f1.close()
+	
+	print "finished saving ", fname
+}
+
+// ********************************************** Plot data ****************************************************
+
+objref gstim1, gstim2, g1
+
+proc plot_data() {
+	gstim2 = new Graph()
+	//xf = i_vblocstim.size - 1 // # of elements in volmem minus 1
+	gstim2.size(0,tstop,-8,8)
+	Ve_vblocstim.plot(gstim2,dt)
+
+	g1 = new Graph()
+	//xf = volmem[0].size - 1 // # of elements in volmem minus 1
+	g1.size(0,tstop,-150,50)
+	volmem[checknode1].plot(g1,dt)
+}
+//plot_data()
+
+// ********************************* Call stimulation & saving procedures ****************************************
+proc run_all(){local mymodel, myfasc, myaxon, myvblocamp, myvblocfreq
+	mymodel = $1
+	myfasc = $2
+	myaxon = $3
+	myvblocamp = $4
+	myvblocfreq = $5
+	
+	Ve_read(mymodel, myfasc, myaxon, myvblocamp)
+	stimul(myvblocfreq)
+	save_data(mymodel, myfasc, myaxon, myvblocamp, myvblocfreq)
+}
+
+// *********************************************** Batch run *****************************************************
+
+trun = startsw()
+
+// Start execute loop on the workers
+{pc.runworker()}
+// Code beyond this point (til pc.done()) is only executed by the master.
+// The master must now post jobs to the bulletin board.
+
+proc batchrun() { local model_ind, fasc_ind, axon_ind, vblocamp_ind, vblocfreq_ind
+
+	for vblocfreq_ind = 0, Nvblocfreq-1 {
+		for model_ind = 0, Nmodel-1 {
+			for fasc_ind = 0, Nfasc-1 {
+				for axon_ind = 0, Naxon-1 {
+					for vblocamp_ind = 0, Nvblocamp-1 {
+						pc.submit("run_all",model_values.x[model_ind],fasc_values.x[fasc_ind],axon_values.x[axon_ind],vblocamp_values.x[vblocamp_ind],vblocfreq_values.x[vblocfreq_ind])
+					}
+				}
+			}
+		}
+	}
+
+	// If a result is ready, get it. If not, pick a job to do.
+	while (pc.working()) {
+	}
+	
+}
+batchrun()
+
+
+// Save the runtime to a file
+objref f_runtime
+f_runtime = new File()
+f_runtime.wopen("Data/run_time.dat")
+f_runtime.printf("Run time: %f seconds", startsw()-trun)
+f_runtime.close()
+//print "Run time: ", startsw()-trun, "seconds"
+
+{pc.done()}
+
+quit()

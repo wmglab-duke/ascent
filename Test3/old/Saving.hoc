@@ -1,0 +1,77 @@
+/*
+Author: Nikki Pelot
+Date created: February 3, 2016
+
+Description:
+- Save recorded vectors to text files.
+
+Important notes:
+- 
+
+Variables that must be defined in wrapper/params file:
+- checknode_Ve_values
+- fname_output_Vm_time
+- fname_output_Vm_space
+- fname_output_gating_m_time, fname_output_gating_h_time, fname_output_gating_mp_time, fname_output_gating_s_time
+- fname_output_gating_m_space, fname_output_gating_h_space, fname_output_gating_mp_space, fname_output_gating_s_space
+- Ve_fname_output
+- Istim_fname_output
+*/
+
+load_file("SaveTimeCourse.hoc")
+load_file("SaveSpatialDist.hoc")
+
+objref Istim_suffix_tmp
+objref checknode_Ve_values_tmp
+
+proc Saving() {
+
+	// ***** Save Vm(t) at checknode_values
+	if (saveflag_Vm_time == 1) {
+		SaveTimeCourse(fname_output_Vm_time, "Vm_node", checknode_values, "(mV)", savevec_Vm_time)
+	}
+
+	
+	// ***** Save MRG gating param's vs time at checknode_values
+	if (saveflag_gating_time == 1) {
+		SaveTimeCourse(fname_output_gating_m_time,  "m_node", checknode_values,  "", savevec_m_time)
+		SaveTimeCourse(fname_output_gating_h_time,  "h_node", checknode_values,  "", savevec_h_time)
+		SaveTimeCourse(fname_output_gating_mp_time, "mp_node", checknode_values, "", savevec_mp_time)
+		SaveTimeCourse(fname_output_gating_s_time,  "s_node", checknode_values,  "", savevec_s_time)
+	}
+
+	
+	// ***** Save Vm(x) at checknode_times
+	if (saveflag_Vm_space == 1) {
+		SaveSpatialDist(fname_output_Vm_space, "Vm_time", checktime_values_ms, "ms(mV)", savevec_Vm_space)
+	}
+	
+	
+	// ***** Save gating param vs space at checknode_times
+	if (saveflag_gating_space == 1) {
+		SaveSpatialDist(fname_output_gating_m_space,  "m_time", checktime_values_ms,  "ms", savevec_m_space)
+		SaveSpatialDist(fname_output_gating_h_space,  "h_time", checktime_values_ms,  "ms", savevec_h_space)
+		SaveSpatialDist(fname_output_gating_mp_space, "mp_time", checktime_values_ms, "ms", savevec_mp_space)
+		SaveSpatialDist(fname_output_gating_s_space,  "s_time", checktime_values_ms,  "ms", savevec_s_space)
+	}
+	
+	
+	// ***** Save Ve(t) at one location.
+	if (saveflag_Ve == 1) {
+		if (fiber_type == 1) {
+			SaveTimeCourse(Ve_fname_output, "Ve_node", checknode_Ve_values, "(mV)", savevec_Ve)
+		} else if (fiber_type == 2) {
+			// For myelinated fibers, label the column title with the node of Ranvier #, not the segment #
+			checknode_Ve_values_tmp = new Vector(checknode_Ve_values.size(),0)
+			checknode_Ve_values_tmp.copy(checknode_Ve_values)
+			SaveTimeCourse(Ve_fname_output, "Ve_node", checknode_Ve_values_tmp.mul(1/11), "(mV)", savevec_Ve)
+		}
+	}
+
+	
+	// ***** Save Istim(t) (created in IntracellularStim.hoc).
+	if (saveflag_Istim == 1) {
+		Istim_suffix_tmp = new Vector(1,1)
+		SaveTimeCourse(Istim_fname_output, "Istim", Istim_suffix_tmp, "(nA)", savevec_Istim)
+	}
+}

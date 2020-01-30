@@ -1,0 +1,400 @@
+/*
+Author: Nikki Pelot, adopted for SPARC Pipeline by Eric Musselman
+Date created: February 8, 2016
+
+Description:
+
+Instructions:
+- Open NEURON's rxvt sh
+- mpiexec -n <# processors> nrniv -mpi <.hoc filename including ".hoc" file extension>
+*/
+
+// Create parallel context instance
+objref pc
+pc = new ParallelContext()
+print "number of processors: ", pc.nhost
+
+if (!((passive_end_nodes == 0) || (passive_end_nodes == 1))) {
+	print "passive_end_nodes must be set to 0 or 1"
+	execerror("passive_end_nodes must be set to 0 or 1")
+}
+if (passive_end_nodes==0) {
+	print "WARNING - Even though passive_end_nodes was set to 0, all fibers built with cFiberBuilder.hoc (fiber_type = 3, all c_fiber_model_type values) will have passive end nodes..."
+}
+
+/*
+Extracellular [flag_whichstim=0], single intracellular pulse (stim1) [1], two intracellular pulses & change amplitude of second (stim2) [2]
+If find_thresh = 1, define the stimulus for which you want to find thresh.
+If find_thresh = 0, define the stimulus for which you want to test the stim amplitudes in 
+*/
+if (flag_whichstim == 2) {
+	print "WARNING - Probably need to set N_minAPs = 2; currently, N_minAPs = ", N_minAPs
+} else {
+	print "WARNING - Probably need to set N_minAPs = 1; currently, N_minAPs = ", N_minAPs
+}
+
+// Turn on/off extracellular stim
+if ((flag_whichstim == 0) && (flag_extracellular_stim == 0)) {
+	execerror("Want to find_thresh for extracellular stim, so need flag_extracellular_stim = 1")
+}
+
+// ***************************************************************************
+// Createfiber_Unmyel.hoc
+if (fiber_type == 1) {
+	load_file("CreateFiber_Unmyel.hoc")
+	CreateFiber_Unmyel()
+}
+
+// ***************************************************************************
+// Createfiber_Myel.hoc	
+if (fiber_type == 2) {
+	load_file("CreateFiber_Myel.hoc")
+	CreateFiber_Myel()
+}
+
+// ***************************************************************************
+// cFiberBuilder.hoc
+load_file("cFiberBuilder.hoc")
+if (fiber_type == 3) {
+	load_file("CreateFiber_CFiber.hoc")
+	Createfiber_CFiber() 
+}
+
+	   if 	(fiber_type == 1) { 	v_init = -88.3 				// [mV]
+} else if   (fiber_type == 2) { 	v_init = -80 				// [mV]
+} else if 	(fiber_type == 3) {		v_init = v_init_c_fiber		// [mV]
+}
+
+// ***************************************************************************	
+// Train of intracellular pulses - automate
+// NOTE: Define pulsewidth and interspike interval in pw_values and isi_values further down in Wrapper
+
+objref stim1, stim2
+
+IntraStim_PulseTrain_ind1 				= 2//int(6000/deltax)						// Index of node where intracellular stim is placed[unitless]
+IntraStim_PulseTrain_ind2 				= 2//int(6000/deltax)						// Index of node where intracellular stim is placed[unitless]
+
+if (fiber_type == 2) {// if myelinated fiber, convert node index to compartment index
+	intrastim_ind_tmp1 = IntraStim_PulseTrain_ind1*11
+	intrastim_ind_tmp2 = IntraStim_PulseTrain_ind2*11
+} else {
+	intrastim_ind_tmp1 = IntraStim_PulseTrain_ind1
+	intrastim_ind_tmp2 = IntraStim_PulseTrain_ind2
+}
+
+s[intrastim_ind_tmp1].sec {
+	stim1 		= new trainIClamp()
+	stim1.loc(.5)
+	stim1.del 	= 60 					// Delay to first pulse [ms]
+	stim1.PW	= 0.1					// Defined in pw_values [ms]
+	stim1.train = tstop-stim1.del 		// Duration of train of pulses [ms]
+	stim1.freq	= 1 					// Frequency of pulses [Hz]
+	stim1.amp	= 2.652099    			// Stim amplitude [nA]
+}
+
+s[intrastim_ind_tmp2].sec {
+	stim2 		= new trainIClamp()
+	stim2.loc(.5)
+	//stim2.del 	= 5 				// Defined according to stim1.del and isi_values [ms]
+	//stim2.PW	= 						// Defined in pw_values [ms]
+	//stim2.train = tstop-stim1.del 	// Defined later once stim2.del is computed [ms]
+	//stim2.freq	= 1 				// Frequency of pulses [Hz]
+	//stim2.amp	= 0 					// Stim amplitude [nA]
+}
+
+// ***************************************************************************	
+// IntracellularStim.hoc
+load_file("IntracellularStim.hoc")
+IntraStim_PulseTrain()
+
+// ***************************************************************************
+// ExtracellularStim_Time.hoc
+load_file("ExtracellularStim_Time.hoc")
+if (flag_extracellular_stim == 1) {
+	VeTime_read()
+}
+
+// ***************************************************************************
+// ExtracellularStim_Space.hoc
+strdef VeSpace_fname
+load_file("ExtracellularStim_Space.hoc")
+
+// ***************************************************************************
+// Recording.hoc
+objref checknode_values
+checknode_values = new Vector(Nchecknodes,0)
+
+if (Nchecknodes == fibernodes) {
+	for i = 0, fibernodes - 1 {
+		checknode_values.x[i] = i
+	}
+} else {
+
+	if (fiber_type == 2) { // MRG
+		fiber_length = (fibernodes-1)*deltax				// length of fiber [um]
+		checknode_values.x[0] = int(1000/deltax)
+		checknode_values.x[1] = int(0.5*(fibernodes-1))
+		checknode_values.x[2] = int((fiber_length-1000)/deltax)
+	}
+
+	if (fiber_type == 3) { // CFiber
+		fiber_length = (fibernodes-1)*deltax				// length of fiber [um]
+		checknode_values.x[0] = int(0.02*(fibernodes-1))
+		checknode_values.x[1] = int(0.5*(fibernodes-1))
+		checknode_values.x[2] = int(0.98*(fibernodes-1))
+
+		/*checknode_values.x[0] = int(0.02*(fibernodes-1))
+		checknode_values.x[1] = int(0.04*(fibernodes-1))
+		checknode_values.x[2] = int(0.06*(fibernodes-1))
+		checknode_values.x[3] = int(0.08*(fibernodes-1))
+		checknode_values.x[4] = int(0.1*(fibernodes-1))
+		checknode_values.x[5] = int(0.12*(fibernodes-1))
+		checknode_values.x[6] = int(0.14*(fibernodes-1))
+		checknode_values.x[7] = int(0.16*(fibernodes-1))
+		checknode_values.x[8] = int(0.18*(fibernodes-1))
+		checknode_values.x[9] = int(0.2*(fibernodes-1))
+		checknode_values.x[10] = int(0.22*(fibernodes-1))
+		checknode_values.x[11] = int(0.24*(fibernodes-1))
+		checknode_values.x[12] = int(0.26*(fibernodes-1))
+		checknode_values.x[13] = int(0.28*(fibernodes-1))
+		checknode_values.x[14] = int(0.3*(fibernodes-1))
+		checknode_values.x[15] = int(0.32*(fibernodes-1))
+		checknode_values.x[16] = int(0.34*(fibernodes-1))
+		checknode_values.x[17] = int(0.36*(fibernodes-1))
+		checknode_values.x[18] = int(0.38*(fibernodes-1))
+		checknode_values.x[19] = int(0.4*(fibernodes-1))
+		checknode_values.x[20] = int(0.42*(fibernodes-1))
+		checknode_values.x[21] = int(0.44*(fibernodes-1))
+		checknode_values.x[22] = int(0.46*(fibernodes-1))
+		checknode_values.x[23] = int(0.48*(fibernodes-1))
+		checknode_values.x[24] = int(0.5*(fibernodes-1))
+		checknode_values.x[25] = int(0.52*(fibernodes-1))
+		checknode_values.x[26] = int(0.54*(fibernodes-1))
+		checknode_values.x[27] = int(0.56*(fibernodes-1))
+		checknode_values.x[28] = int(0.58*(fibernodes-1))
+		checknode_values.x[29] = int(0.6*(fibernodes-1))
+		checknode_values.x[30] = int(0.62*(fibernodes-1))
+		checknode_values.x[31] = int(0.64*(fibernodes-1))
+		checknode_values.x[32] = int(0.66*(fibernodes-1))
+		checknode_values.x[33] = int(0.68*(fibernodes-1))
+		checknode_values.x[34] = int(0.7*(fibernodes-1))
+		checknode_values.x[35] = int(0.72*(fibernodes-1))
+		checknode_values.x[36] = int(0.74*(fibernodes-1))
+		checknode_values.x[37] = int(0.76*(fibernodes-1))
+		checknode_values.x[38] = int(0.78*(fibernodes-1))
+		checknode_values.x[39] = int(0.8*(fibernodes-1))
+		checknode_values.x[40] = int(0.82*(fibernodes-1))
+		checknode_values.x[41] = int(0.84*(fibernodes-1))
+		checknode_values.x[42] = int(0.86*(fibernodes-1))
+		checknode_values.x[43] = int(0.88*(fibernodes-1))
+		checknode_values.x[44] = int(0.9*(fibernodes-1))
+		checknode_values.x[45] = int(0.92*(fibernodes-1))
+		checknode_values.x[46] = int(0.94*(fibernodes-1))
+		checknode_values.x[47] = int(0.96*(fibernodes-1))
+		checknode_values.x[48] = int(0.98*(fibernodes-1))
+		checknode_values.x[49] = int(1*(fibernodes-1))
+		*/
+	}
+}
+
+// Time points to record Vm and gating params vs x
+objref checktime_values_ms, checktime_values
+checktime_values_ms = new Vector(Nchecktimes,0)
+checktime_values    = new Vector(Nchecktimes,0)
+
+// Check times in milliseconds
+checktime_values_ms.x[0] = 249.025
+checktime_values_ms.x[1] = 249.05
+checktime_values_ms.x[2] = 249.1
+checktime_values_ms.x[3] = 249.2
+
+// Check time indices
+for i = 0, Nchecktimes-1 {
+	checktime_values.x[i] = int(checktime_values_ms.x[i]/dt)
+}
+
+objref checknode_Ve_values
+checknode_Ve_values 			= new Vector(1,0)
+if (fiber_type == 2) {
+	checknode_Ve_values.x[0]	= 11*int((fibernodes-1)/2)
+} else {
+	checknode_Ve_values.x[0]	= int((fibernodes-1)/2)
+}
+
+load_file("Recording.hoc")
+Recording()
+
+// ***************************************************************************
+// Call sequence of procedures/functions for each sim
+load_file("RunSim.hoc")
+
+strdef fname_output_Vm_time
+strdef fname_output_Vm_space
+strdef fname_output_gating_m_time, fname_output_gating_h_time, fname_output_gating_mp_time, fname_output_gating_s_time
+strdef fname_output_gating_m_space, fname_output_gating_h_space, fname_output_gating_mp_space, fname_output_gating_s_space
+strdef Ve_fname_output, Istim_fname_output
+strdef runtime_fname_output
+strdef thresh_fname_output
+strdef stim_units
+
+if (flag_whichstim == 0) {
+	stim_units = "mA"
+} else if ((flag_whichstim == 1) || (flag_whichstim == 2)) {
+	stim_units = "nA"
+}
+
+load_file("Saving.hoc")
+load_file("Saving_Runtime.hoc")
+
+if (find_thresh == 1){
+	load_file("FindThresh.hoc")
+	load_file("Saving_Thresh.hoc")
+}
+
+proc run_all(){local mymodel, myfasc, myfiber, myfreq, myamp, mypw, myisi
+	mymodel = $1
+	myfasc  = $2
+	myfiber  = $3
+	myfreq  = $4
+	myamp   = $5
+	mypw    = $6
+	myisi   = $7
+	
+	// Set PW of intracellular stim
+	stim1.PW = mypw
+	stim2.PW = mypw
+	
+	// Set ISI between intracellular stim and duration of second stim train
+	stim2.del =  stim1.del + myisi
+	stim2.train = tstop - stim2.del
+	trun_individual = startsw()
+	
+	// Read in Ve(x)
+	sprint(VeSpace_fname, "Data/Inputs/Model%d_%s_Fascicle%d_fiber%d_%s.dat",mymodel,fiber_type_str,myfasc,myfiber,fiberD_str)
+	VeSpace_read()
+	// Convert to mV (required for e_extracellular)
+	VeSpace_data = VeSpace_data.mul(1000)
+	
+	if (find_thresh == 0) {
+		RunSim(myamp)
+		
+		// Save data
+		sprint(Ve_fname_output, 			 "Data/Outputs/Model%d/Ve_fasc%d_fiber%d_Vblocamp%fmA%fkHz.dat", 			 mymodel, myfasc, myfiber, myamp, myfreq)
+		sprint(Istim_fname_output,   		 "Data/Outputs/Model%d/Istim_fasc%d_fiber%d_Vblocamp%fmA%fkHz.dat", 			 mymodel, myfasc, myfiber, myamp, myfreq)
+		sprint(fname_output_Vm_time, 		 "Data/Outputs/Model%d/Vm_time_fasc%d_fiber%d_Vblocamp%fmA%fkHz.dat", 		 mymodel, myfasc, myfiber, myamp, myfreq)
+		sprint(fname_output_gating_m_time,   "Data/Outputs/Model%d/gating_m_time_fasc%d_fiber%d_Vblocamp%fmA%fkHz.dat",   mymodel, myfasc, myfiber, myamp, myfreq)
+		sprint(fname_output_gating_h_time,   "Data/Outputs/Model%d/gating_h_time_fasc%d_fiber%d_Vblocamp%fmA%fkHz.dat",   mymodel, myfasc, myfiber, myamp, myfreq)
+		sprint(fname_output_gating_mp_time,  "Data/Outputs/Model%d/gating_mp_time_fasc%d_fiber%d_Vblocamp%fmA%fkHz.dat",  mymodel, myfasc, myfiber, myamp, myfreq)
+		sprint(fname_output_gating_s_time,   "Data/Outputs/Model%d/gating_s_time_fasc%d_fiber%d_Vblocamp%fmA%fkHz.dat",   mymodel, myfasc, myfiber, myamp, myfreq)
+		sprint(fname_output_Vm_space, 		 "Data/Outputs/Model%d/Vm_space_fasc%d_fiber%d_Vblocamp%fmA%fkHz.dat",        mymodel, myfasc, myfiber, myamp, myfreq)
+		sprint(fname_output_gating_m_space,  "Data/Outputs/Model%d/gating_m_space_fasc%d_fiber%d_Vblocamp%fmA%fkHz.dat",  mymodel, myfasc, myfiber, myamp, myfreq)
+		sprint(fname_output_gating_h_space,  "Data/Outputs/Model%d/gating_h_space_fasc%d_fiber%d_Vblocamp%fmA%fkHz.dat",  mymodel, myfasc, myfiber, myamp, myfreq)
+		sprint(fname_output_gating_mp_space, "Data/Outputs/Model%d/gating_mp_space_fasc%d_fiber%d_Vblocamp%fmA%fkHz.dat", mymodel, myfasc, myfiber, myamp, myfreq)
+		sprint(fname_output_gating_s_space,  "Data/Outputs/Model%d/gating_s_space_fasc%d_fiber%d_Vblocamp%fmA%fkHz.dat",  mymodel, myfasc, myfiber, myamp, myfreq)
+		Saving()
+		
+		// Save individual run time (for each simulation)
+		trun_individual = startsw() - trun_individual
+		sprint(runtime_fname_output, "Data/Outputs/Model%d/runtime_fasc%d_fiber%d_Vblocamp%f.dat", mymodel, myfasc, myfiber, myamp)
+		Saving_Runtime()
+
+	}   else if (find_thresh == 1){
+		FindThresh(myfasc)
+		RunSim(stimamp)
+
+		// Save data			
+		sprint(Ve_fname_output,              "Data/Outputs/Model%d/Ve_fasc%d_fiber%d.dat",              mymodel, myfasc, myfiber)
+		sprint(Istim_fname_output,           "Data/Outputs/Model%d/Istim_fasc%d_fiber%d.dat",           mymodel, myfasc, myfiber)
+		sprint(fname_output_Vm_time,         "Data/Outputs/Model%d/Vm_time_fasc%d_fiber%d.dat",         mymodel, myfasc, myfiber)
+		sprint(fname_output_gating_m_time,   "Data/Outputs/Model%d/gating_m_time_fasc%d_fiber%d.dat",   mymodel, myfasc, myfiber)
+		sprint(fname_output_gating_h_time,   "Data/Outputs/Model%d/gating_h_time_fasc%d_fiber%d.dat",   mymodel, myfasc, myfiber)
+		sprint(fname_output_gating_mp_time,  "Data/Outputs/Model%d/gating_mp_time_fasc%d_fiber%d.dat",  mymodel, myfasc, myfiber)
+		sprint(fname_output_gating_s_time,   "Data/Outputs/Model%d/gating_s_time_fasc%d_fiber%d.dat",   mymodel, myfasc, myfiber)
+		sprint(fname_output_Vm_space,        "Data/Outputs/Model%d/Vm_space_fasc%d_fiber%d.dat",        mymodel, myfasc, myfiber)
+		sprint(fname_output_gating_m_space,  "Data/Outputs/Model%d/gating_m_space_fasc%d_fiber%d.dat",  mymodel, myfasc, myfiber)
+		sprint(fname_output_gating_h_space,  "Data/Outputs/Model%d/gating_h_space_fasc%d_fiber%d.dat",  mymodel, myfasc, myfiber)
+		sprint(fname_output_gating_mp_space, "Data/Outputs/Model%d/gating_mp_space_fasc%d_fiber%d.dat", mymodel, myfasc, myfiber)
+		sprint(fname_output_gating_s_space,  "Data/Outputs/Model%d/gating_s_space_fasc%d_fiber%d.dat",  mymodel, myfasc, myfiber) // for ALL
+		
+		Saving()
+		
+		// Save individual run time (for each simulation)
+		trun_individual = startsw() - trun_individual
+		sprint(runtime_fname_output, "Data/Outputs/Model%d/runtime_fasc%d_fiber%d.dat", mymodel, myfasc, myfiber)
+		Saving_Runtime()
+		
+		// Save threshold value
+		sprint(thresh_fname_output, "Data/Outputs/Model%d/thresh_fasc%d_fiber%d.dat", mymodel, myfasc, myfiber)
+		Saving_Thresh()
+	} 
+}
+
+// ***************************************************************************
+// Loop through model numbers, fascicles (different Ve(x) profiles), Ve amplitudes, Ve freq's, fibers (multiple within 1 fascicle)
+
+objref model_values
+model_values = new Vector(Nmodels,0)
+model_values.x[0] = ModelNum
+
+objref fasc_values
+fasc_values = new Vector(Nfasc,0)
+
+for fasc_ind = 0, Nfasc-1 {
+	fasc_values.x[fasc_ind] = fasc_ind+1
+}
+
+objref num_fibers_file, fiber_values
+num_fibers_file = new File()
+num_fibers_file.ropen(num_fibers_fname)
+fiber_values = new Vector(Nfasc)
+fiber_values.scanf(num_fibers_file)
+num_fibers_file.close()
+
+Npw = 1 // Number of intracellular PWs to test; applied to both Istim1 & Istim2
+objref pw_values
+pw_values = new Vector(Npw,0)
+pw_values.x[0] = 0.1 // [ms]
+
+Nisi = 1 // Number of interspike intervals to test (between intracellular stim 1 & 2)
+objref isi_values
+isi_values = new Vector(Nisi,0)
+isi_values.x[0] = 0 // [ms]
+
+trun = startsw()
+
+// Start execute loop on the workers
+{pc.runworker()}
+// Code beyond this point (til pc.done()) is only executed by the master.
+// The master must now post jobs to the bulletin board.
+
+proc batchrun() {local model_ind, fasc_ind, fiber_ind, Vefreq_ind, stimamp_ind, pw_ind, isi_ind
+	for model_ind = 0, Nmodels-1 {
+		for fasc_ind = 0, Nfasc-1 {
+			for fiber_ind = 1, fiber_values.x[fasc_ind] {
+				for Vefreq_ind = 0, Nfreq-1 {
+					for stimamp_ind = 0, Namp-1 {
+						for pw_ind = 0, Npw-1 {
+							for isi_ind = 0, Nisi-1 {
+								// mymodel, myfasc, myfiber, myfreq, myamp, mypw, myisi
+								pc.submit("run_all",model_values.x[model_ind],fasc_values.x[fasc_ind],fiber_ind,Vefreq_values.x[Vefreq_ind],stimamp_values.x[stimamp_ind],pw_values.x[pw_ind],isi_values.x[isi_ind])
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	// If a result is ready, get it. If not, pick a job to do.
+	while (pc.working()) {
+	}
+}
+batchrun()
+
+// Save the runtime to a file
+objref f_runtime
+f_runtime = new File()
+f_runtime.wopen("Data/Outputs/run_time.dat")
+f_runtime.printf("Run time: %f seconds", startsw()-trun)
+f_runtime.close()
+{pc.done()}
+//quit()
