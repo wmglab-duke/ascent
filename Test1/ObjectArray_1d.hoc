@@ -1,7 +1,0 @@
-begintemplate O1d
-public o
-objref o[1]
-proc init() {
-  objref o[$1]
-}
-endtemplate O1d
