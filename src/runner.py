@@ -129,8 +129,7 @@ class Runner(Exceptionable, Configurable):
             self.compute_electrical_parameters(all_configs, model_index)
 
             # # use current model index to computer maximum cuff shift (radius) .. SAVES to file in method
-            # self.compute_cuff_shift(all_configs, model_index, sample)
-            # TODO
+            self.compute_cuff_shift(all_configs, model_index, sample)
 
             # iterate through simulations
             for sim_index, sim_config in enumerate(all_configs['sims']):
