@@ -133,7 +133,7 @@ proc RunSim() {local myamp
 		
 		if (find_block_thresh == 1) {
 			node_ind = checknode_values.x[2]
-			if (apc[node_ind].time > 30) { // Detected at least one AP, so didn't get block, so need to raise the lower bound (N_APs<N_minAPs) on the binary search
+			if (apc[node_ind].time > IntraStim_PulseTrain_delay) { // Detected at least one AP, so didn't get block, so need to raise the lower bound (N_APs<N_minAPs) on the binary search
 				//print apc[node_ind].time
 				//check_AP = 0			// Detected an action potential
 				N_APs = 0
