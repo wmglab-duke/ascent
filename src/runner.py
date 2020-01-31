@@ -21,8 +21,15 @@ import sys
 import subprocess
 
 # access
+from copy import deepcopy
+
+import numpy as np
+
 from src.core import Sample, Simulation, Waveform
 from src.utils import *
+from shapely.geometry import Point
+from matplotlib import pyplot as plt
+from descartes import PolygonPatch
 
 
 class Runner(Exceptionable, Configurable):
@@ -245,10 +252,33 @@ class Runner(Exceptionable, Configurable):
         model_config = all_configs[Config.MODEL.value][model_index]
 
         # fetch cuff config
-        cuff_config = self.load(model_config['cuff']['preset'])
+        cuff = self.load(os.path.join("config", "system", "cuffs", model_config['cuff']['preset']))
 
-        # if len
-        # TODO: LEFT OFF HERE 12/23/19
+        r_in = 2000
+        id_boundary = Point(0, 0).buffer(r_in)  # get inner cuff boundary from cuff configuration
+        nerve = deepcopy(sample.slides[0].nerve)  # get nerve from slide
+
+        sep = 10  # parameter in model config file
+        step = 1  # hard coded step size [um]
+
+        angle_deg = 45  # parameter in cuff config file
+        angle = angle_deg * np.pi/180
+
+        x_shift = 0  # initialize cuff shift values
+        y_shift = 0
+
+        x_step = step * np.cos(angle)
+        y_step = step * np.sin(angle)
+
+        while nerve.polygon().boundary.distance(id_boundary.boundary) >= sep:
+            nerve.shift([x_step, y_step, 0])
+
+            x_shift += x_step
+            y_shift += y_step
+
+        x_shift -= x_step
+        y_shift -= y_step
+
 
     # def smart_run(self):
     #
