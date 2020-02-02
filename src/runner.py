@@ -24,16 +24,14 @@ import subprocess
 from copy import deepcopy
 
 import numpy as np
+from descartes import PolygonPatch
 
 from src.core import Sample, Simulation, Waveform
 from src.utils import *
-from shapely.geometry import Point
+from shapely.geometry import Point, MultiLineString
 from matplotlib import pyplot as plt
-from descartes import PolygonPatch
-
 
 class Runner(Exceptionable, Configurable):
-    # TODO: method for writing sim folder
 
     def __init__(self):
 
@@ -254,8 +252,8 @@ class Runner(Exceptionable, Configurable):
         # fetch cuff config
         cuff = self.load(os.path.join("config", "system", "cuffs", model_config['cuff']['preset']))
 
-        r_in = 2000
-        id_boundary = Point(0, 0).buffer(r_in)  # get inner cuff boundary from cuff configuration
+        r_in = 2000  # get inner cuff boundary from cuff configuration
+        id_boundary = Point(0, 0).buffer(r_in)
         nerve = deepcopy(sample.slides[0].nerve)  # get nerve from slide
 
         sep = 10  # parameter in model config file
@@ -279,6 +277,59 @@ class Runner(Exceptionable, Configurable):
         x_shift -= x_step
         y_shift -= y_step
 
+        r_microleads_in = 100
+        l_microleads = 300
+        w_microleads = 200
+
+        coords = [((0, -w_microleads/2),
+                   (l_microleads, -w_microleads/2)),
+                  ((l_microleads, w_microleads/2),
+                   (0, w_microleads/2))]
+        box = MultiLineString(coords)
+
+        points = np.vstack([self.points, self.points[0]])
+        plt.plot(points[:, 0], points[:, 1])
+
+        fig = plt.figure()
+        ax = fig.add_subplot(1)
+
+        # patch = PolygonPatch(box)
+        # ax.add_patch(patch)
+
+        plt.show()
+
+    def compute_electrical_parameters(self, all_configs, model_index):
+
+        # fetch current model config using the index
+        model_config = all_configs[Config.MODEL.value][model_index]
+
+        # initialize Waveform object
+        waveform = Waveform(self.configs[Config.EXCEPTIONS.value])
+
+        # add model config to Waveform object, enabling it to generate waveforms
+        waveform.add(SetupMode.OLD, Config.MODEL, model_config)
+
+        # compute rho and sigma from waveform instance
+
+        if model_config.get('modes').get(PerineuriumResistivityMode.config.value) == \
+                PerineuriumResistivityMode.RHO_WEERASURIYA.value:
+            freq_double = model_config.get('frequency').get('value')
+            freq_unit = model_config.get('frequency').get('unit')
+            rho_double = waveform.rho_weerasuriya(freq_double)
+            sigma_double = 1 / rho_double
+            model_config['conductivities']['perineurium']['value'] = str(sigma_double)
+            model_config['conductivities']['perineurium']['label'] = "RHO_WEERASURIYA @ %d %s" % (freq_double,
+                                                                                                  freq_unit)
+        else:
+            self.throw(48)
+
+        dest_path: str = os.path.join(*all_configs[Config.SAMPLE.value][0]['samples_path'],
+                                      str(self.configs[Config.RUN.value]['sample']),
+                                      'models',
+                                      str(self.configs[Config.RUN.value]['models'][model_index]),
+                                      'model.json')
+
+        TemplateOutput.write(model_config, dest_path)
 
     # def smart_run(self):
     #
@@ -502,35 +553,3 @@ class Runner(Exceptionable, Configurable):
     #     # self.slide.reposition_fascicles(self.slide.reshaped_nerve(ReshapeNerveMode.ELLIPSE))
     #     self.slide.reposition_fascicles(self.slide.reshaped_nerve(ReshapeNerveMode.CIRCLE))
 
-    def compute_electrical_parameters(self, all_configs, model_index):
-
-        # fetch current model config using the index
-        model_config = all_configs[Config.MODEL.value][model_index]
-
-        # initialize Waveform object
-        waveform = Waveform(self.configs[Config.EXCEPTIONS.value])
-
-        # add model config to Waveform object, enabling it to generate waveforms
-        waveform.add(SetupMode.OLD, Config.MODEL, model_config)
-
-        # compute rho and sigma from waveform instance
-
-        if model_config.get('modes').get(PerineuriumResistivityMode.config.value) == \
-                PerineuriumResistivityMode.RHO_WEERASURIYA.value:
-            freq_double = model_config.get('frequency').get('value')
-            freq_unit = model_config.get('frequency').get('unit')
-            rho_double = waveform.rho_weerasuriya(freq_double)
-            sigma_double = 1 / rho_double
-            model_config['conductivities']['perineurium']['value'] = str(sigma_double)
-            model_config['conductivities']['perineurium']['label'] = "RHO_WEERASURIYA @ %d %s" % (freq_double,
-                                                                                                  freq_unit)
-        else:
-            self.throw(48)
-
-        dest_path: str = os.path.join(*all_configs[Config.SAMPLE.value][0]['samples_path'],
-                                      str(self.configs[Config.RUN.value]['sample']),
-                                      'models',
-                                      str(self.configs[Config.RUN.value]['models'][model_index]),
-                                      'model.json')
-
-        TemplateOutput.write(model_config, dest_path)
