@@ -14,6 +14,7 @@ Description:
 """
 # builtins
 import pickle
+import random
 
 import sys
 
@@ -30,6 +31,7 @@ from src.core import Sample, Simulation, Waveform
 from src.utils import *
 from shapely.geometry import Point, MultiLineString, Polygon
 from matplotlib import pyplot as plt
+
 
 class Runner(Exceptionable, Configurable):
 
@@ -252,6 +254,154 @@ class Runner(Exceptionable, Configurable):
         # fetch cuff config
         cuff = self.load(os.path.join("config", "system", "cuffs", model_config['cuff']['preset']))
 
+        # Data conventions: A point is a pair of floats (x, y).
+        # A circle is a triple of floats (center x, center y, radius).
+
+        # Returns the smallest circle that encloses all the given points. Runs in expected O(n) time, randomized.
+        # Input: A sequence of pairs of floats or ints, e.g. [(0,5), (3.1,-2.7)].
+        # Output: A triple of floats representing a circle.
+        # Note: If 0 points are given, None is returned. If 1 point is given, a circle of radius 0 is returned.
+        #
+        # Initially: No boundary points known
+        def make_circle(points):
+            # Convert to float and randomize order
+            shuffled = [(float(x), float(y)) for (x, y) in points]
+            random.shuffle(shuffled)
+
+            # Progressively add points to circle or recompute circle
+            c = None
+            for (i, p) in enumerate(shuffled):
+                if c is None or not is_in_circle(c, p):
+                    c = _make_circle_one_point(shuffled[: i + 1], p)
+            return c
+
+        # One boundary point known
+        def _make_circle_one_point(points, p):
+            c = (p[0], p[1], 0.0)
+            for (i, q) in enumerate(points):
+                if not is_in_circle(c, q):
+                    if c[2] == 0.0:
+                        c = make_diameter(p, q)
+                    else:
+                        c = _make_circle_two_points(points[: i + 1], p, q)
+            return c
+
+        # Two boundary points known
+        def _make_circle_two_points(points, p, q):
+            circ = make_diameter(p, q)
+            left = None
+            right = None
+            px, py = p
+            qx, qy = q
+
+            # For each point not in the two-point circle
+            for r in points:
+                if is_in_circle(circ, r):
+                    continue
+
+                # Form a circumcircle and classify it on left or right side
+                cross = _cross_product(px, py, qx, qy, r[0], r[1])
+                c = make_circumcircle(p, q, r)
+                if c is None:
+                    continue
+                elif cross > 0.0 and (
+                        left is None or _cross_product(px, py, qx, qy, c[0], c[1]) > _cross_product(px, py, qx, qy,
+                                                                                                    left[0], left[1])):
+                    left = c
+                elif cross < 0.0 and (
+                        right is None or _cross_product(px, py, qx, qy, c[0], c[1]) < _cross_product(px, py, qx, qy,
+                                                                                                     right[0],
+                                                                                                     right[1])):
+                    right = c
+
+            # Select which circle to return
+            if left is None and right is None:
+                return circ
+            elif left is None:
+                return right
+            elif right is None:
+                return left
+            else:
+                return left if (left[2] <= right[2]) else right
+
+        def make_diameter(a, b):
+            cx = (a[0] + b[0]) / 2.0
+            cy = (a[1] + b[1]) / 2.0
+            r0 = np.math.hypot(cx - a[0], cy - a[1])
+            r1 = np.math.hypot(cx - b[0], cy - b[1])
+            return cx, cy, max(r0, r1)
+
+        def make_circumcircle(a, b, c):
+            # Mathematical algorithm from Wikipedia: Circumscribed circle
+            ox = (min(a[0], b[0], c[0]) + max(a[0], b[0], c[0])) / 2.0
+            oy = (min(a[1], b[1], c[1]) + max(a[1], b[1], c[1])) / 2.0
+            ax = a[0] - ox
+            ay = a[1] - oy
+            bx = b[0] - ox
+            by = b[1] - oy
+            cx = c[0] - ox
+            cy = c[1] - oy
+            d = (ax * (by - cy) + bx * (cy - ay) + cx * (ay - by)) * 2.0
+            if d == 0.0:
+                return None
+            x = ox + ((ax * ax + ay * ay) * (by - cy) + (bx * bx + by * by) * (cy - ay) + (cx * cx + cy * cy) * (
+                        ay - by)) / d
+            y = oy + ((ax * ax + ay * ay) * (cx - bx) + (bx * bx + by * by) * (ax - cx) + (cx * cx + cy * cy) * (
+                        bx - ax)) / d
+            ra = np.math.hypot(x - a[0], y - a[1])
+            rb = np.math.hypot(x - b[0], y - b[1])
+            rc = np.math.hypot(x - c[0], y - c[1])
+            return x, y, max(ra, rb, rc)
+
+        _MULTIPLICATIVE_EPSILON = 1 + 1e-14
+
+        def is_in_circle(c, p):
+            return c is not None and np.math.hypot(p[0] - c[0], p[1] - c[1]) <= c[2] * _MULTIPLICATIVE_EPSILON
+
+        # Returns twice the signed area of the triangle defined by (x0, y0), (x1, y1), (x2, y2).
+        def _cross_product(x0, y0, x1, y1, x2, y2):
+            return (x1 - x0) * (y2 - y0) - (y1 - y0) * (x2 - x0)
+
+        def smallest_enclosing_circle_naive(points):
+            # Returns the smallest enclosing circle in O(n^4) time using the naive algorithm.
+            # https://www.nayuki.io/res/smallest-enclosing-circle/smallestenclosingcircle-test.py
+
+            # Degenerate cases
+            if len(points) == 0:
+                return None
+            elif len(points) == 1:
+                return points[0][0], points[0][1], 0
+
+            # Try all unique pairs
+            result = None
+            for i in range(len(points)):
+                p = points[i]
+                for j in range(i + 1, len(points)):
+                    q = points[j]
+                    c = make_diameter(p, q)
+                    if (result is None or c[2] < result[2]) and \
+                            all(is_in_circle(c, r) for r in points):
+                        result = c
+            if result is not None:
+                return result  # This optimization is not mathematically proven
+
+            # Try all unique triples
+            for i in range(len(points)):
+                p = points[i]
+                for j in range(i + 1, len(points)):
+                    q = points[j]
+                    for k in range(j + 1, len(points)):
+                        r = points[k]
+                        c = make_circumcircle(p, q, r)
+                        if c is not None and (result is None or c[2] < result[2]) and \
+                                all(is_in_circle(c, s) for s in points):
+                            result = c
+
+            if result is None:
+                raise AssertionError()
+
+            return result
+
         # if nervemode is present, use r_nerve from nerve -> r_nerve
         # else if nervemode is not present, find minimum bounding circle of the nerve and center it at (0,0) -> r_nerve
 
@@ -273,30 +423,39 @@ class Runner(Exceptionable, Configurable):
         l_microleads = 300
         w_microleads = 200
 
-        p1 = Point(0, -w_microleads/2)
-        p2 = Point(l_microleads, -w_microleads/2)
-        p3 = Point(l_microleads, w_microleads/2)
-        p4 = Point(0, w_microleads/2)
+        p1 = Point(0, -w_microleads / 2)
+        p2 = Point(l_microleads, -w_microleads / 2)
+        p3 = Point(l_microleads, w_microleads / 2)
+        p4 = Point(0, w_microleads / 2)
         point_list = [p1, p2, p3, p4, p1]
         poly = Polygon([[p.x, p.y] for p in point_list])
 
         mergedpoly = poly.union(id_boundary)  # TODO use this for MicroLeads
 
-        nerve = deepcopy(sample.slides[0].nerve)  # get nerve from slide
+        nerve_copy = deepcopy(sample.slides[0].nerve)  # get nerve from slide
+        print("here")
+        print("input")
+        print(len(nerve_copy.points))
+        nerve_copy.down_sample(DownSampleMode.KEEP, 50)
+        print(len(nerve_copy.points))
+        circle = smallest_enclosing_circle_naive(nerve_copy.points)
 
-        cirle = nerve._smallest_enclosing_circle_naive()
+        outer_circle = Point(circle[0], circle[1]).buffer(circle[2])
+
+        print("hello")
+        print(circle)
 
         sep = 10  # parameter in model config file
         step = 1  # hard coded step size [um]
 
-        angle = angle_deg * np.pi/180
+        angle = angle_deg * np.pi / 180
         x_shift = 0  # initialize cuff shift values
         y_shift = 0
         x_step = step * np.cos(angle)
         y_step = step * np.sin(angle)
 
-        while nerve.polygon().boundary.distance(mergedpoly.boundary) >= sep:
-            nerve.shift([x_step, y_step, 0])
+        while nerve_copy.polygon().boundary.distance(mergedpoly.boundary) >= sep:
+            nerve_copy.shift([x_step, y_step, 0])
 
             x_shift += x_step
             y_shift += y_step
@@ -305,10 +464,13 @@ class Runner(Exceptionable, Configurable):
             y_shift -= y_step
 
         x, y = mergedpoly.exterior.xy
+        x2, y2 = outer_circle.boundary.xy
         # union with id_boundary
         fig = plt.figure()
         ax = fig.add_subplot(111)
         ax.plot(x, y)
+        ax.plot(x2, y2)
+        ax.plot(nerve_copy.points)
         # nerve.plot()
 
         plt.show()
@@ -568,4 +730,3 @@ class Runner(Exceptionable, Configurable):
     #
     #     # self.slide.reposition_fascicles(self.slide.reshaped_nerve(ReshapeNerveMode.ELLIPSE))
     #     self.slide.reposition_fascicles(self.slide.reshaped_nerve(ReshapeNerveMode.CIRCLE))
-

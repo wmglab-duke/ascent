@@ -14,7 +14,6 @@ from shapely.affinity import scale, rotate
 from shapely.ops import nearest_points
 import pyclipper
 import pymunk
-from core import smallestenclosingcircle
 
 # access
 from src.utils import *
@@ -214,48 +213,6 @@ class Trace(Exceptionable):
                 points.append(coordinate)
 
         return points
-
-    def smallest_enclosing_circle_naive(self, points):
-        # Returns the smallest enclosing circle in O(n^4) time using the naive algorithm.
-        # https://www.nayuki.io/res/smallest-enclosing-circle/smallestenclosingcircle-test.py
-
-        if self.__min_circle is None:
-            # Degenerate cases
-            if len(points) == 0:
-                return None
-            elif len(points) == 1:
-                return points[0][0], points[0][1], 0
-
-            # Try all unique pairs
-            result = None
-            for i in range(len(points)):
-                p = points[i]
-                for j in range(i + 1, len(points)):
-                    q = points[j]
-                    c = smallestenclosingcircle.make_diameter(p, q)
-                    if (result is None or c[2] < result[2]) and \
-                            all(smallestenclosingcircle.is_in_circle(c, r) for r in points):
-                        result = c
-            if result is not None:
-                return result  # This optimization is not mathematically proven
-
-            # Try all unique triples
-            for i in range(len(points)):
-                p = points[i]
-                for j in range(i + 1, len(points)):
-                    q = points[j]
-                    for k in range(j + 1, len(points)):
-                        r = points[k]
-                        c = smallestenclosingcircle.make_circumcircle(p, q, r)
-                        if c is not None and (result is None or c[2] < result[2]) and \
-                                all(smallestenclosingcircle.is_in_circle(c, s) for s in points):
-                            result = c
-
-            if result is None:
-                raise AssertionError()
-            self.__min_circle = result
-
-        return self.__min_circle
 
     def within(self, outer: 'Trace') -> bool:
         """
