@@ -432,18 +432,15 @@ class Runner(Exceptionable, Configurable):
 
         mergedpoly = poly.union(id_boundary)  # TODO use this for MicroLeads
 
-        nerve_copy = deepcopy(sample.slides[0].nerve)  # get nerve from slide
-        print("here")
-        print("input")
-        print(len(nerve_copy.points))
-        nerve_copy.down_sample(DownSampleMode.KEEP, 50)
-        print(len(nerve_copy.points))
+        if NerveMode.NOT_PRESENT:
+            nerve_copy = deepcopy(sample.slides[0].fascicles[0].outer)
+        elif NerveMode.PRESENT:
+            nerve_copy = deepcopy(sample.slides[0].nerve)  # get nerve from slide
+
+        nerve_copy.down_sample(DownSampleMode.KEEP, 20)
         circle = smallest_enclosing_circle_naive(nerve_copy.points)
 
         outer_circle = Point(circle[0], circle[1]).buffer(circle[2])
-
-        print("hello")
-        print(circle)
 
         sep = 10  # parameter in model config file
         step = 1  # hard coded step size [um]
@@ -463,14 +460,15 @@ class Runner(Exceptionable, Configurable):
             x_shift -= x_step
             y_shift -= y_step
 
-        x, y = mergedpoly.exterior.xy
+        # x, y = mergedpoly.exterior.xy
         x2, y2 = outer_circle.boundary.xy
         # union with id_boundary
         fig = plt.figure()
         ax = fig.add_subplot(111)
-        ax.plot(x, y)
-        ax.plot(x2, y2)
-        ax.plot(nerve_copy.points)
+        # ax.plot(x, y)
+        ax.plot(x2, y2, 'k-')
+        ax.plot(nerve_copy.points[:,0], nerve_copy.points[:,1], 'k-')
+        # ax.plot(nerve_copy.points)
         # nerve.plot()
 
         plt.show()
