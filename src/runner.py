@@ -130,11 +130,11 @@ class Runner(Exceptionable, Configurable):
         for model_index, model_config in enumerate(all_configs[Config.MODEL.value]):
             print('    MODEL {}'.format(self.configs[Config.RUN.value]['models'][model_index]))
 
+            # use current model index to computer maximum cuff shift (radius) .. SAVES to file in method
+            self.compute_cuff_shift(all_configs, model_index, sample)
+
             # use current model index to compute electrical parameters ... SAVES to file in method
             self.compute_electrical_parameters(all_configs, model_index)
-
-            # # use current model index to computer maximum cuff shift (radius) .. SAVES to file in method
-            self.compute_cuff_shift(all_configs, model_index, sample)
 
             # iterate through simulations
             for sim_index, sim_config in enumerate(all_configs['sims']):
@@ -252,21 +252,23 @@ class Runner(Exceptionable, Configurable):
         # fetch cuff config
         cuff = self.load(os.path.join("config", "system", "cuffs", model_config['cuff']['preset']))
 
+        # if nervemode is present, use r_nerve from nerve -> r_nerve
+        # else if nervemode is not present, find minimum bounding circle of the nerve and center it at (0,0) -> r_nerve
+
+        # CorTec: r_nerve, thk_medium_gap_internal_CT, r_cuff_in_pre_CT
+        # Enteromedics: r_nerve, thk_medium_gap_internal_EM, r_cuff_in_pre_EM
+        # ImThera: r_nerve, thk_medium_gap_internal_IT, r_cuff_in_pre_ITI
+        # LivaNova: r_nerve, thk_medium_gap_internal_LN, r_cuff_in_pre_LN
+        # Madison: r_nerve, thk_medium_gap_internal_M, r_cuff_in_pre_M
+        # MicroLeads: R_in_U (constant), L_U, Tangent_U
+        # Pitt: R_in_Pitt (constant)
+        # Purdue: r_nerve, thk_medium_gap_internal_P, r_conductor_P, sep_conductor_P, r_cuff_in_pre_P (this is not like the others)
+
+
+
         r_in = 100  # get inner cuff boundary from cuff configuration
+        angle_deg = 45  # parameter in cuff configuration file
         id_boundary = Point(0, 0).buffer(r_in)  # TODO use this for Enteromedics, Cortec. ImThera, LN, Madison, Pitt, Purdue
-        nerve = deepcopy(sample.slides[0].nerve)  # get nerve from slide
-
-        sep = 10  # parameter in model config file
-        step = 1  # hard coded step size [um]
-
-        angle_deg = 45  # parameter in cuff config file
-        angle = angle_deg * np.pi/180
-
-        x_shift = 0  # initialize cuff shift values
-        y_shift = 0
-
-        x_step = step * np.cos(angle)
-        y_step = step * np.sin(angle)
 
         r_microleads_in = 100
         l_microleads = 300
@@ -280,6 +282,17 @@ class Runner(Exceptionable, Configurable):
         poly = Polygon([[p.x, p.y] for p in point_list])
 
         mergedpoly = poly.union(id_boundary)  # TODO use this for MicroLeads
+
+        nerve = deepcopy(sample.slides[0].nerve)  # get nerve from slide
+
+        sep = 10  # parameter in model config file
+        step = 1  # hard coded step size [um]
+
+        angle = angle_deg * np.pi/180
+        x_shift = 0  # initialize cuff shift values
+        y_shift = 0
+        x_step = step * np.cos(angle)
+        y_step = step * np.sin(angle)
 
         while nerve.polygon().boundary.distance(mergedpoly.boundary) >= sep:
             nerve.shift([x_step, y_step, 0])
@@ -299,9 +312,6 @@ class Runner(Exceptionable, Configurable):
 
         plt.show()
         print("here")
-
-    def plot_bounds(ax, ob, zorder=1, alpha=1):
-        x, y = zip(*list((p.x, p.y) for p in ob.boundary))
 
     def compute_electrical_parameters(self, all_configs, model_index):
 
