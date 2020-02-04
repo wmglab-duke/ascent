@@ -14,6 +14,7 @@ from shapely.affinity import scale, rotate
 from shapely.ops import nearest_points
 import pyclipper
 import pymunk
+from core import smallestenclosingcircle
 
 # access
 from src.utils import *
@@ -36,6 +37,7 @@ class Trace(Exceptionable):
         self.__polygon = None
         self.__centroid = None
         self.__int_points = None
+        self.__min_circle = None
 
         # set up superclass
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
@@ -47,7 +49,7 @@ class Trace(Exceptionable):
         self.points = None  # must declare instance variable in __init__ at some point!
         self.append(points)
 
-    #%% public, MUTATING methods
+    # %% public, MUTATING methods
     def append(self, points):
         """
         :param points: nx3 ndarray, where each row is a point [x, y, z]
@@ -86,7 +88,7 @@ class Trace(Exceptionable):
 
         if fit is not None:
             # find offset distance from factor and mean radius
-            distance: float = fit.get("a") * 2*self.mean_radius() + fit.get("b")
+            distance: float = fit.get("a") * 2 * self.mean_radius() + fit.get("b")
         elif distance is None:
             self.throw(29)
 
@@ -172,14 +174,14 @@ class Trace(Exceptionable):
         # required for mutating method
         self.__update()
 
-    #%% public, NON-MUTATING methods
+    # %% public, NON-MUTATING methods
     def count(self) -> int:
         """
         :return: number of rows in self.points (i.e. number of points)
         """
         return np.shape(self.points)[0]
 
-    #%% dependent on shapely.geometry.Polygon (ALL 2D GEOMETRY)
+    # %% dependent on shapely.geometry.Polygon (ALL 2D GEOMETRY)
     def polygon(self) -> Polygon:
         """
         :return: shape of polygon as a shapely.geometry.Polygon (ALL 2D geometry)
@@ -212,6 +214,48 @@ class Trace(Exceptionable):
                 points.append(coordinate)
 
         return points
+
+    def smallest_enclosing_circle_naive(self, points):
+        # Returns the smallest enclosing circle in O(n^4) time using the naive algorithm.
+        # https://www.nayuki.io/res/smallest-enclosing-circle/smallestenclosingcircle-test.py
+
+        if self.__min_circle is None:
+            # Degenerate cases
+            if len(points) == 0:
+                return None
+            elif len(points) == 1:
+                return points[0][0], points[0][1], 0
+
+            # Try all unique pairs
+            result = None
+            for i in range(len(points)):
+                p = points[i]
+                for j in range(i + 1, len(points)):
+                    q = points[j]
+                    c = smallestenclosingcircle.make_diameter(p, q)
+                    if (result is None or c[2] < result[2]) and \
+                            all(smallestenclosingcircle.is_in_circle(c, r) for r in points):
+                        result = c
+            if result is not None:
+                return result  # This optimization is not mathematically proven
+
+            # Try all unique triples
+            for i in range(len(points)):
+                p = points[i]
+                for j in range(i + 1, len(points)):
+                    q = points[j]
+                    for k in range(j + 1, len(points)):
+                        r = points[k]
+                        c = smallestenclosingcircle.make_circumcircle(p, q, r)
+                        if c is not None and (result is None or c[2] < result[2]) and \
+                                all(smallestenclosingcircle.is_in_circle(c, s) for s in points):
+                            result = c
+
+            if result is None:
+                raise AssertionError()
+            self.__min_circle = result
+
+        return self.__min_circle
 
     def within(self, outer: 'Trace') -> bool:
         """
@@ -289,7 +333,7 @@ class Trace(Exceptionable):
         else:
             return distance, nearest_points(self_c, other.polygon().boundary)
 
-    #%% contour-dependent (cv2)
+    # %% contour-dependent (cv2)
     def contour(self) -> np.ndarray:
         """
         Builds a "fake" contour so that cv2 can analyze it (independent of the image)
@@ -377,11 +421,11 @@ class Trace(Exceptionable):
         points = (rot_mat @ np.array([x, y])).T + [u, v]
 
         # add column of z-values (should all be the same)
-        points = np.append(points,  np.c_[self.points[:, 2]], axis=1)
+        points = np.append(points, np.c_[self.points[:, 2]], axis=1)
 
         return Trace(points, self.configs[Config.EXCEPTIONS.value])
 
-    #%% output
+    # %% output
     def plot(self, plot_format: str = 'k-'):
         """
         :param plot_format: the plt.plot format spec (see matplotlib docs)
@@ -404,7 +448,7 @@ class Trace(Exceptionable):
         :return: string full path including extension that was written to
         """
         # add extension
-        #path += mode.value
+        # path += mode.value
         path += WriteMode.file_endings.value[mode.value]
 
         try:
@@ -495,7 +539,7 @@ class Trace(Exceptionable):
                                            radius=1.0))
         return segments
 
-    #%% private utility methods
+    # %% private utility methods
     def __update(self):
         self.__int_points = self.__int32(self.points)
         self.__contour = None

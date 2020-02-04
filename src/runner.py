@@ -262,9 +262,8 @@ class Runner(Exceptionable, Configurable):
         # Madison: r_nerve, thk_medium_gap_internal_M, r_cuff_in_pre_M
         # MicroLeads: R_in_U (constant), L_U, Tangent_U
         # Pitt: R_in_Pitt (constant)
-        # Purdue: r_nerve, thk_medium_gap_internal_P, r_conductor_P, sep_conductor_P, r_cuff_in_pre_P (this is not like the others)
-
-
+        # Purdue: r_nerve, thk_medium_gap_internal_P, r_conductor_P,
+        #   sep_conductor_P, r_cuff_in_pre_P (this is not like the others)
 
         r_in = 100  # get inner cuff boundary from cuff configuration
         angle_deg = 45  # parameter in cuff configuration file
@@ -284,6 +283,8 @@ class Runner(Exceptionable, Configurable):
         mergedpoly = poly.union(id_boundary)  # TODO use this for MicroLeads
 
         nerve = deepcopy(sample.slides[0].nerve)  # get nerve from slide
+
+        cirle = nerve._smallest_enclosing_circle_naive()
 
         sep = 10  # parameter in model config file
         step = 1  # hard coded step size [um]
