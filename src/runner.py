@@ -28,7 +28,7 @@ from descartes import PolygonPatch
 
 from src.core import Sample, Simulation, Waveform
 from src.utils import *
-from shapely.geometry import Point, MultiLineString
+from shapely.geometry import Point, MultiLineString, Polygon
 from matplotlib import pyplot as plt
 
 class Runner(Exceptionable, Configurable):
@@ -252,8 +252,8 @@ class Runner(Exceptionable, Configurable):
         # fetch cuff config
         cuff = self.load(os.path.join("config", "system", "cuffs", model_config['cuff']['preset']))
 
-        r_in = 2000  # get inner cuff boundary from cuff configuration
-        id_boundary = Point(0, 0).buffer(r_in)
+        r_in = 100  # get inner cuff boundary from cuff configuration
+        id_boundary = Point(0, 0).buffer(r_in)  # TODO use this for Enteromedics, Cortec. ImThera, LN, Madison, Pitt, Purdue
         nerve = deepcopy(sample.slides[0].nerve)  # get nerve from slide
 
         sep = 10  # parameter in model config file
@@ -268,35 +268,40 @@ class Runner(Exceptionable, Configurable):
         x_step = step * np.cos(angle)
         y_step = step * np.sin(angle)
 
-        while nerve.polygon().boundary.distance(id_boundary.boundary) >= sep:
+        r_microleads_in = 100
+        l_microleads = 300
+        w_microleads = 200
+
+        p1 = Point(0, -w_microleads/2)
+        p2 = Point(l_microleads, -w_microleads/2)
+        p3 = Point(l_microleads, w_microleads/2)
+        p4 = Point(0, w_microleads/2)
+        point_list = [p1, p2, p3, p4, p1]
+        poly = Polygon([[p.x, p.y] for p in point_list])
+
+        mergedpoly = poly.union(id_boundary)  # TODO use this for MicroLeads
+
+        while nerve.polygon().boundary.distance(mergedpoly.boundary) >= sep:
             nerve.shift([x_step, y_step, 0])
 
             x_shift += x_step
             y_shift += y_step
 
-        x_shift -= x_step
-        y_shift -= y_step
+            x_shift -= x_step
+            y_shift -= y_step
 
-        r_microleads_in = 100
-        l_microleads = 300
-        w_microleads = 200
-
-        coords = [((0, -w_microleads/2),
-                   (l_microleads, -w_microleads/2)),
-                  ((l_microleads, w_microleads/2),
-                   (0, w_microleads/2))]
-        box = MultiLineString(coords)
-
-        points = np.vstack([self.points, self.points[0]])
-        plt.plot(points[:, 0], points[:, 1])
-
+        x, y = mergedpoly.exterior.xy
+        # union with id_boundary
         fig = plt.figure()
-        ax = fig.add_subplot(1)
-
-        # patch = PolygonPatch(box)
-        # ax.add_patch(patch)
+        ax = fig.add_subplot(111)
+        ax.plot(x, y)
+        # nerve.plot()
 
         plt.show()
+        print("here")
+
+    def plot_bounds(ax, ob, zorder=1, alpha=1):
+        x, y = zip(*list((p.x, p.y) for p in ob.boundary))
 
     def compute_electrical_parameters(self, all_configs, model_index):
 
