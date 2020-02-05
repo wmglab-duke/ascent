@@ -248,10 +248,5 @@
     "code": 50,
     "text": "active_srcs_list provided does not abide by unitary current input response",
     "source": "src.core.Simulation"
-  },
-  {
-    "code": 51,
-    "text": "cuff chosen is too small for nerve sample provided",
-    "source": "src.core.Runner"
   }
 ]

@@ -251,13 +251,22 @@ class Runner(Exceptionable, Configurable):
 
         # fetch current model config using the index
         model_config = all_configs[Config.MODEL.value][model_index]
+        angle_deg = 180  # parameter in cuff configuration file # TODO
 
         # fetch cuff config
         cuff = self.load(os.path.join("config", "system", "cuffs", model_config['cuff']['preset']))
 
-        # if nervemode is present, use r_nerve from nerve -> r_nerve
-        # else if nervemode is not present, find minimum bounding circle of the nerve and center it at (0,0) -> r_nerve
+        nerve_copy: Trace
+        if NerveMode.NOT_PRESENT:
+            nerve_copy = deepcopy(sample.slides[0].fascicles[0].outer)
+        elif NerveMode.PRESENT:
+            nerve_copy = deepcopy(sample.slides[0].nerve)  # get nerve from slide
 
+        # (1) find minimum bounding circle of sample (r_circ_min_sample)
+        nerve_copy.down_sample(DownSampleMode.KEEP, 10)  # downsample nerve trace to speed up computation
+        circle = nerve_copy.smallest_enclosing_circle_naive()  # find smallest enclosing circle of nerve
+
+        # (2) get inner boundary of the chosen cuff
         # CorTec: r_nerve, thk_medium_gap_internal_CT, r_cuff_in_pre_CT
         # Enteromedics: r_nerve, thk_medium_gap_internal_EM, r_cuff_in_pre_EM
         # ImThera: r_nerve, thk_medium_gap_internal_IT, r_cuff_in_pre_ITI
@@ -268,37 +277,29 @@ class Runner(Exceptionable, Configurable):
         # Purdue: r_nerve, thk_medium_gap_internal_P, r_conductor_P,
         #   sep_conductor_P, r_cuff_in_pre_P (this is not like the others)
 
-        r_in = 200  # get inner cuff boundary from cuff configuration
-        angle_deg = 270  # parameter in cuff configuration file
-        id_boundary = Point(0, 0).buffer(r_in)  # TODO use this for Enteromedics, Cortec. ImThera, LN, Madison, Pitt, Purdue
-
+        r_cuff_in = 150  # TODO
         r_microleads_in = 100
         l_microleads = 300
         w_microleads = 200
-
         p1 = Point(0, -w_microleads / 2)
         p2 = Point(l_microleads, -w_microleads / 2)
         p3 = Point(l_microleads, w_microleads / 2)
         p4 = Point(0, w_microleads / 2)
         point_list = [p1, p2, p3, p4, p1]
         poly = Polygon([[p.x, p.y] for p in point_list])
+        id_boundary = Point(0, 0).buffer(r_microleads_in)  # TODO use this for Enteromedics, Cortec. ImThera, LN, Madison, Pitt, Purdue
 
         mergedpoly = poly.union(id_boundary)  # TODO use this for MicroLeads
 
-        nerve_copy: Trace
-        if NerveMode.NOT_PRESENT:
-            nerve_copy = deepcopy(sample.slides[0].fascicles[0].outer)
-        elif NerveMode.PRESENT:
-            nerve_copy = deepcopy(sample.slides[0].nerve)  # get nerve from slide
+        # (3) check to see if r_circ_min_sample < r_cuff_in - if not, throw error!
+        if circle[2] >= r_cuff_in:
+            self.throw(51)
+        else:
+            if nerve_copy.polygon().boundary.overlaps(mergedpoly.boundary):  # there is overlap
+                #  center the sample by its circ_min_sample, then shift
+                pass
 
-        nerve_copy.down_sample(DownSampleMode.KEEP, 10)
-        circle = nerve_copy.smallest_enclosing_circle_naive()
-
-        center_x = circle[0]
-        center_y = circle[1]
-
-        outer_circle = Point(center_x, center_y).buffer(circle[2])
-
+        # (4) shift until nerve is within a certain distance of the boundary
         sep = 10  # parameter in model config file
         step = 1  # hard coded step size [um]
 
@@ -307,18 +308,13 @@ class Runner(Exceptionable, Configurable):
         y_shift = 0
         x_step = step * np.cos(angle)
         y_step = step * np.sin(angle)
+        center_x = circle[0]
+        center_y = circle[1]
 
-        # while nerve_copy.polygon().boundary.distance(mergedpoly.boundary) >= sep:
-        #     nerve_copy.shift([x_step, y_step, 0])
-        #
-        #     x_shift += x_step
-        #     y_shift += y_step
-
-        while outer_circle.boundary.distance(mergedpoly.boundary) >= sep:
+        while nerve_copy.polygon().boundary.distance(mergedpoly.boundary) >= sep:
             nerve_copy.shift([x_step, y_step, 0])
             center_x += x_step
             center_y += y_step
-            outer_circle = Point(center_x, center_y).buffer(circle[2])
 
         x_shift -= x_step
         y_shift -= y_step
@@ -326,18 +322,19 @@ class Runner(Exceptionable, Configurable):
         center_y -= y_step
 
         x, y = mergedpoly.exterior.xy
-        x2, y2 = outer_circle.boundary.xy
+        # x2, y2 = outer_circle.boundary.xy
         # union with id_boundary
         fig = plt.figure()
         ax = fig.add_subplot(111)
         ax.plot(x, y, 'r-')
-        ax.plot(x2 + x_shift, y2 + y_shift, 'k-')
+        # ax.plot(x2 + x_shift, y2 + y_shift, 'k-')
         ax.plot(nerve_copy.points[:, 0], nerve_copy.points[:, 1], 'k-')
         # ax.plot(nerve_copy.points)
         # nerve.plot()
 
         plt.show()
         print("here")
+
 
     def compute_electrical_parameters(self, all_configs, model_index):
 
