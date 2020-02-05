@@ -133,7 +133,7 @@ class Runner(Exceptionable, Configurable):
             print('    MODEL {}'.format(self.configs[Config.RUN.value]['models'][model_index]))
 
             # use current model index to computer maximum cuff shift (radius) .. SAVES to file in method
-            # self.compute_cuff_shift(all_configs, model_index, sample)
+            self.compute_cuff_shift(all_configs, model_index, sample)
 
             # use current model index to compute electrical parameters ... SAVES to file in method
             self.compute_electrical_parameters(all_configs, model_index)
@@ -254,7 +254,7 @@ class Runner(Exceptionable, Configurable):
 
         # fetch cuff config
         cuff = self.load(os.path.join("config", "system", "cuffs", model_config['cuff']['preset']))
-
+        print(cuff["params"]["R_in_Pitt"])
         nerve_copy: Trace
         if NerveMode.NOT_PRESENT:
             nerve_copy = deepcopy(sample.slides[0].fascicles[0].outer)
