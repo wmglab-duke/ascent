@@ -76,26 +76,30 @@ class Part {
         String[] myLabels = myIM.labels; // may be null, but that is ok if not used
 
         if ("Medium_Primitive".equals(pseudonym)) {// set instantiation parameters
-            String[] mediumParameters = {
-                    "radius",
-                    "length"
+//            String[] mediumParameters = {
+//                    "radius",
+//                    "length"
+//
+//            };
+//
+//            JSONObject itemObject = ((JSONObject) ((JSONObject) instanceParams.get("medium")).get("bounds"));
+//
+//            for (String param : mediumParameters) {
+//
+//                Object testObject = itemObject.get(param);
+//                if(testObject instanceof Integer){
+//                    // if int
+//                    partInstance.setEntry("inputexpr", param, (Integer) itemObject.get(param));
+//
+//                } else {
+//                    // if double
+//                    partInstance.setEntry("inputexpr", param, (Double) itemObject.get(param));
+//
+//                }
+//            }
 
-            };
-
-            JSONObject itemObject = ((JSONObject) ((JSONObject) instanceParams.get("medium")).get("bounds"));
-            for (String param : mediumParameters) {
-
-                Object testObject = itemObject.get(param);
-                if(testObject instanceof Integer){
-                    // if int
-                    partInstance.setEntry("inputexpr", param, (Integer) itemObject.get(param));
-
-                } else {
-                    // if double
-                    partInstance.setEntry("inputexpr", param, (Double) itemObject.get(param));
-
-                }
-            }
+            partInstance.setEntry("inputexpr", "radius", "r_ground");
+            partInstance.setEntry("inputexpr", "length", "z_nerve");
 
             // imports
             partInstance.set("selkeepnoncontr", false);
