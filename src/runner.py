@@ -27,6 +27,7 @@ from copy import deepcopy
 import numpy as np
 from descartes import PolygonPatch
 
+from core import Trace
 from src.core import Sample, Simulation, Waveform
 from src.utils import *
 from shapely.geometry import Point, MultiLineString, Polygon
@@ -267,8 +268,8 @@ class Runner(Exceptionable, Configurable):
         # Purdue: r_nerve, thk_medium_gap_internal_P, r_conductor_P,
         #   sep_conductor_P, r_cuff_in_pre_P (this is not like the others)
 
-        r_in = 100  # get inner cuff boundary from cuff configuration
-        angle_deg = 45  # parameter in cuff configuration file
+        r_in = 200  # get inner cuff boundary from cuff configuration
+        angle_deg = 270  # parameter in cuff configuration file
         id_boundary = Point(0, 0).buffer(r_in)  # TODO use this for Enteromedics, Cortec. ImThera, LN, Madison, Pitt, Purdue
 
         r_microleads_in = 100
@@ -284,15 +285,19 @@ class Runner(Exceptionable, Configurable):
 
         mergedpoly = poly.union(id_boundary)  # TODO use this for MicroLeads
 
+        nerve_copy: Trace
         if NerveMode.NOT_PRESENT:
             nerve_copy = deepcopy(sample.slides[0].fascicles[0].outer)
         elif NerveMode.PRESENT:
             nerve_copy = deepcopy(sample.slides[0].nerve)  # get nerve from slide
 
-        nerve_copy.down_sample(DownSampleMode.KEEP, 20)
-        circle = smallest_enclosing_circle_naive(nerve_copy.points)
+        nerve_copy.down_sample(DownSampleMode.KEEP, 10)
+        circle = nerve_copy.smallest_enclosing_circle_naive()
 
-        outer_circle = Point(circle[0], circle[1]).buffer(circle[2])
+        center_x = circle[0]
+        center_y = circle[1]
+
+        outer_circle = Point(center_x, center_y).buffer(circle[2])
 
         sep = 10  # parameter in model config file
         step = 1  # hard coded step size [um]
@@ -303,23 +308,31 @@ class Runner(Exceptionable, Configurable):
         x_step = step * np.cos(angle)
         y_step = step * np.sin(angle)
 
-        while nerve_copy.polygon().boundary.distance(mergedpoly.boundary) >= sep:
+        # while nerve_copy.polygon().boundary.distance(mergedpoly.boundary) >= sep:
+        #     nerve_copy.shift([x_step, y_step, 0])
+        #
+        #     x_shift += x_step
+        #     y_shift += y_step
+
+        while outer_circle.boundary.distance(mergedpoly.boundary) >= sep:
             nerve_copy.shift([x_step, y_step, 0])
+            center_x += x_step
+            center_y += y_step
+            outer_circle = Point(center_x, center_y).buffer(circle[2])
 
-            x_shift += x_step
-            y_shift += y_step
+        x_shift -= x_step
+        y_shift -= y_step
+        center_x -= x_step
+        center_y -= y_step
 
-            x_shift -= x_step
-            y_shift -= y_step
-
-        # x, y = mergedpoly.exterior.xy
+        x, y = mergedpoly.exterior.xy
         x2, y2 = outer_circle.boundary.xy
         # union with id_boundary
         fig = plt.figure()
         ax = fig.add_subplot(111)
-        # ax.plot(x, y)
-        ax.plot(x2, y2, 'k-')
-        ax.plot(nerve_copy.points[:,0], nerve_copy.points[:,1], 'k-')
+        ax.plot(x, y, 'r-')
+        ax.plot(x2 + x_shift, y2 + y_shift, 'k-')
+        ax.plot(nerve_copy.points[:, 0], nerve_copy.points[:, 1], 'k-')
         # ax.plot(nerve_copy.points)
         # nerve.plot()
 

@@ -497,6 +497,7 @@ class Trace(Exceptionable):
         return segments
 
         # %% METHODS ADAPTED FROM: https://www.nayuki.io/res/smallest-enclosing-circle/smallestenclosingcircle-test.py
+
         # Data conventions: A point is a pair of floats (x, y).
         # A circle is a triple of floats (center x, center y, radius).
 
@@ -596,7 +597,7 @@ class Trace(Exceptionable):
         rc = np.math.hypot(x - c[0], y - c[1])
         return x, y, max(ra, rb, rc)
 
-    def is_in_circle(c, p):
+    def is_in_circle(self, c, p):
         _MULTIPLICATIVE_EPSILON = 1 + 1e-14
         return c is not None and np.math.hypot(p[0] - c[0], p[1] - c[1]) <= c[2] * _MULTIPLICATIVE_EPSILON
 
