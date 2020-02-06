@@ -288,13 +288,13 @@ class Runner(Exceptionable, Configurable):
         ).real  # [um] (scaled from any arbitrary length unit)
 
         # get center and radius of min_bound circle
-        x, y, r_bound = deepcopy(
+        nerve_copy = deepcopy(
             sample.slides[0].nerve
             if nerve_present == NerveMode.PRESENT
             else sample.slides[0].fascicles[0]
-        )\
-            .down_sample(DownSampleMode.KEEP, 10)\
-            .smallest_enclosing_circle_naive()
+        )
+        nerve_copy.down_sample(DownSampleMode.KEEP, 10)
+        x, y, r_bound = nerve_copy.smallest_enclosing_circle_naive()
 
         # calculate final necessary radius by adding buffer
         r_f = r_bound + cuff_r_buffer
