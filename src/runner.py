@@ -134,7 +134,18 @@ class Runner(Exceptionable, Configurable):
             print('    MODEL {}'.format(self.configs[Config.RUN.value]['models'][model_index]))
 
             # use current model index to computer maximum cuff shift (radius) .. SAVES to file in method
-            self.compute_cuff_shift(all_configs, model_index, sample)
+            model_config = self.compute_cuff_shift(model_config, sample)
+
+            model_config_file_name = os.path.join(
+                'samples',
+                str(self.configs[Config.RUN.value]['sample']),
+                'models',
+                str(model_index),
+                'model.json'
+            )
+
+            # write edited model config in place
+            TemplateOutput.write(model_config, model_config_file_name)
 
             # use current model index to compute electrical parameters ... SAVES to file in method
             self.compute_electrical_parameters(all_configs, model_index)
@@ -248,7 +259,7 @@ class Runner(Exceptionable, Configurable):
             os.chdir('..')
 
 
-    def compute_cuff_shift_2(self, model_config: dict, sample: Sample):
+    def compute_cuff_shift(self, model_config: dict, sample: Sample):
 
         # add temporary model configuration
         self.add(SetupMode.OLD, Config.MODEL, model_config)
@@ -282,21 +293,64 @@ class Runner(Exceptionable, Configurable):
         # calculate final necessary radius by adding buffer
         r_f = r_bound + cuff_r_buffer
 
-        # account for MANUAL/AUTOMATIC rotation!
-        # calculate rotation for cuff (theta_f - see drawing)
-        #     for above, use fact of deformable to decide on r_f
+        # get initial cuff radius
+        r_i_str: str = [item["expression"] for item in cuff_config["params"]
+                        if item["name"] == '_'.join(['r_cuff_in_pre', cuff_code])][0]
+        r_i: float = Quantity(
+            Quantity(
+                r_i_str.translate(r_i_str.maketrans('', '', ' []')),
+                scale='m'
+            ),
+            scale='um'
+        ).real  # [um] (scaled from any arbitrary length unit)
 
-        # if not r_f <= (r_cuff_max if deformable else r_cuff):
-        #     throw exception (cannot fit within cuff)
+        # fetch initial cuff rotation (convert to rads)
+        theta_i = cuff_config.get('angle_to_contacts_deg') * 2 * np.pi / 360
 
-        # write to file
+        # angle to center of circle from origin
+        theta_c = np.arctan2(y, x)
+
+        # fetch cuff rotation mode
+        cuff_rotation_mode: CuffRotationMode = self.search_mode(CuffRotationMode, Config.MODEL)
+
+        # initialize final rotation
+        theta_f: float = None
+
+        # LOGIC TIME
+
+        if cuff_rotation_mode == CuffRotationMode.MANUAL:
+            theta_f = theta_i
+        else:  # cuff_rotation_mode == CuffRotationMode.AUTOMATIC
+            theta_f = theta_c - ((r_i / r_f) * theta_i)
+
+        # fetch boolean for cuff expandability
+        expandable: bool = cuff_config['expandable']
+
+        # check radius iff not expandable
+        if not expandable:
+            R_in_str: str = [item["expression"] for item in cuff_config["params"]
+                            if item["name"] == '_'.join(['R_in', cuff_code])][0]
+            R_in: float = Quantity(
+                Quantity(
+                    r_i_str.translate(R_in_str.maketrans('', '', ' []')),
+                    scale='m'
+                ),
+                scale='um'
+            ).real  # [um] (scaled from any arbitrary length unit)
+
+            if not r_f <= R_in:
+                self.throw(51)
+
+        # remove (pop) temporary model configuration
+        model_config = self.remove(Config.MODEL)
+        model_config['cuff']['rotate']['ang'] = theta_f * 360 / (2 * np.pi)
+        model_config['shift']['x'] = x
+        model_config['shift']['y'] = y
+
+        return model_config
 
 
-        # remove temporary model configuration
-        self.remove(Config.MODEL)
-
-
-    def compute_cuff_shift(self, all_configs, model_index, sample):
+    def compute_cuff_shift_old(self, all_configs, model_index, sample):
 
         # fetch current model config using the index
         model_config = all_configs[Config.MODEL.value][model_index]
