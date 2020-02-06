@@ -1,4 +1,5 @@
 {
+  "code": "CT",
   "instances": [
     {
       "type": "CuffFill_Primitive",
@@ -225,8 +226,5 @@
     }
   ],
 
-  "nerve_fit": {
-    "thk_medium_gap_internal": 0,
-    "r_cuff_in_pre": 0
-  }
+  "expandable": true
 }

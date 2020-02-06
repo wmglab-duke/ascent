@@ -1,4 +1,5 @@
 {
+  "code": "IT",
   "instances": [
     {
       "type": "CuffFill_Primitive",
@@ -438,5 +439,7 @@
       "expression": "100 [um]",
       "description": ""
     }
-  ]
+  ],
+
+  "expandable": true
 }
