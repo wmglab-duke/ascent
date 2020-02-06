@@ -293,7 +293,8 @@ class Runner(Exceptionable, Configurable):
             if nerve_present == NerveMode.PRESENT
             else sample.slides[0].fascicles[0]
         )
-        nerve_copy.down_sample(DownSampleMode.KEEP, 10)
+
+        nerve_copy.down_sample(DownSampleMode.KEEP, 20)
         x, y, r_bound = nerve_copy.smallest_enclosing_circle_naive()
 
         # calculate final necessary radius by adding buffer
