@@ -353,9 +353,9 @@ class Runner(Exceptionable, Configurable):
 
         # remove (pop) temporary model configuration
         model_config = self.remove(Config.MODEL)
-        model_config['cuff']['rotate']['ang'] = theta_f * 360 / (2 * np.pi)
-        model_config['shift']['x'] = x
-        model_config['shift']['y'] = y
+        model_config['cuff']['rotate']['ang'] = -theta_f * 360 / (2 * np.pi)
+        model_config['cuff']['shift']['x'] = x
+        model_config['cuff']['shift']['y'] = y
 
         return model_config
 
