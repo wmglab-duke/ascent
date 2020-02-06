@@ -30,7 +30,7 @@
         "D_hole": "D_hole_P",
         "Buffer_hole": "Buffer_hole_P",
         "L_holecenter_cuffseam": "L_holecenter_cuffseam_P",
-        "Pitch_holecenter_holecenter": "Pitch_holecenter_holecenter_P",
+        "Pitch_holecenter_holecenter": "Pitch_holecenter_holecenter_P"
       },
       "materials": [
         {
