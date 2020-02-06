@@ -296,6 +296,11 @@
       "name": "Thk_fill_Pitt",
       "expression": "100 [um]",
       "description": ""
+    },
+    {
+      "name": "thk_medium_gap_internal_Pitt",
+      "expression": "10 [um]",
+      "description": ""
     }
   ],
 
