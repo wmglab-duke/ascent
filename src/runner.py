@@ -134,7 +134,7 @@ class Runner(Exceptionable, Configurable):
             print('    MODEL {}'.format(self.configs[Config.RUN.value]['models'][model_index]))
 
             # use current model index to computer maximum cuff shift (radius) .. SAVES to file in method
-            model_config = self.compute_cuff_shift(model_config, sample)
+            model_config = self.compute_cuff_shift(model_config, sample, all_configs[Config.SAMPLE.value][0])
 
             model_config_file_name = os.path.join(
                 'samples',
@@ -259,13 +259,14 @@ class Runner(Exceptionable, Configurable):
             os.chdir('..')
 
 
-    def compute_cuff_shift(self, model_config: dict, sample: Sample):
+    def compute_cuff_shift(self, model_config: dict, sample: Sample, sample_config: dict):
 
         # add temporary model configuration
         self.add(SetupMode.OLD, Config.MODEL, model_config)
+        self.add(SetupMode.OLD, Config.SAMPLE, sample_config)
 
         # fetch nerve mode
-        nerve_present: NerveMode = self.search_mode(NerveMode, Config.MODEL)
+        nerve_present: NerveMode = self.search_mode(NerveMode, Config.SAMPLE)
 
         # fetch cuff config
         cuff_config: dict = self.load(os.path.join("config", "system", "cuffs", model_config['cuff']['preset']))
@@ -340,6 +341,9 @@ class Runner(Exceptionable, Configurable):
 
             if not r_f <= R_in:
                 self.throw(51)
+
+        # remove sample config
+        self.remove(Config.SAMPLE)
 
         # remove (pop) temporary model configuration
         model_config = self.remove(Config.MODEL)
