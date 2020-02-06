@@ -246,6 +246,42 @@ class Runner(Exceptionable, Configurable):
                                                run_path))
             os.chdir('..')
 
+
+    def compute_cuff_shift_2(self, model_config: dict, sample: Sample):
+
+        # query deformation mode
+        self.add(SetupMode.OLD, Config.MODEL, model_config)
+
+        nerve_present: NerveMode = self.search_mode(NerveMode, Config.MODEL)
+        cuff_config: dict = self.load(os.path.join("config", "system", "cuffs", model_config['cuff']['preset']))
+        cuff_code: str = cuff_config['code']
+        cuff_r_buffer_str: str = cuff_config['_'.join(['thk_medium_gap_internal', cuff_code])]
+
+        self.remove(Config.MODEL)
+
+        # get center and radius of min_bound circle
+        x, y, r_bound = (sample.slides[0].nerve if nerve_present == NerveMode.PRESENT
+                         else sample.slides[0].fascicles[0]).smallest_enclosing_circle_naive()
+
+        # calculate final necessary radius by adding buffer
+        r_f = r_bound + 'BUFFER'
+
+
+        # find minimum bounding circle of the sample
+        # calculate r_f: add buffer to radius for cuff
+        # shift = x, y of circle center
+
+        # calculate rotation for cuff (theta_f - see drawing)
+        #     for above, use fact of deformable to decide on r_f
+
+        # if not r_f <= (r_cuff_max if deformable else r_cuff):
+        #     throw exception (cannot fit within cuff)
+
+        # write to file
+
+
+
+
     def compute_cuff_shift(self, all_configs, model_index, sample):
 
         # fetch current model config using the index
@@ -275,10 +311,10 @@ class Runner(Exceptionable, Configurable):
         # ImThera:      r_nerve, thk_medium_gap_internal_IT, r_cuff_in_pre_ITI
         # LivaNova:     r_nerve, thk_medium_gap_internal_LN, r_cuff_in_pre_LN
         # Madison:      r_nerve, thk_medium_gap_internal_M,  r_cuff_in_pre_M
+        # Purdue:       r_nerve, thk_medium_gap_internal_P,  r_cuff_in_pre_P
 
-        # MicroLeads:   R_in_U (constant), L_U, Tangent_U
+        # MicroLeads:   R_in_U (constant)
         # Pitt:         R_in_Pitt (constant)
-        # Purdue:       r_nerve, thk_medium_gap_internal_P, r_conductor_P, sep_conductor_P, r_cuff_in_pre_P
 
         r_cuff_in = 150  # TODO
         r_microleads_in = 100

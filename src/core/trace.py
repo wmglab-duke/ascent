@@ -526,14 +526,14 @@ class Trace(Exceptionable):
         for (i, q) in enumerate(points):
             if not self.is_in_circle(c, q):
                 if c[2] == 0.0:
-                    c = self.make_diameter(p, q)
+                    c = self._make_diameter(p, q)
                 else:
                     c = self._make_circle_two_points(points[: i + 1], p, q)
         return c
 
     # Two boundary points known
     def _make_circle_two_points(self, points, p, q):
-        circ = self.make_diameter(p, q)
+        circ = self._make_diameter(p, q)
         left = None
         right = None
         px, py = p
@@ -546,7 +546,7 @@ class Trace(Exceptionable):
 
             # Form a circumcircle and classify it on left or right side
             cross = self._cross_product(px, py, qx, qy, r[0], r[1])
-            c = self.make_circumcircle(p, q, r)
+            c = self._make_circumcircle(p, q, r)
             if c is None:
                 continue
             elif cross > 0.0 and (
@@ -568,14 +568,14 @@ class Trace(Exceptionable):
         else:
             return left if (left[2] <= right[2]) else right
 
-    def make_diameter(self, a, b):
+    def _make_diameter(self, a, b):
         cx = (a[0] + b[0]) / 2.0
         cy = (a[1] + b[1]) / 2.0
         r0 = np.math.hypot(cx - a[0], cy - a[1])
         r1 = np.math.hypot(cx - b[0], cy - b[1])
         return cx, cy, max(r0, r1)
 
-    def make_circumcircle(self, a, b, c):
+    def _make_circumcircle(self, a, b, c):
         # Mathematical algorithm from Wikipedia: Circumscribed circle
         ox = (min(a[0], b[0], c[0]) + max(a[0], b[0], c[0])) / 2.0
         oy = (min(a[1], b[1], c[1]) + max(a[1], b[1], c[1])) / 2.0
@@ -605,7 +605,7 @@ class Trace(Exceptionable):
     def _cross_product(x0, y0, x1, y1, x2, y2):
         return (x1 - x0) * (y2 - y0) - (y1 - y0) * (x2 - x0)
 
-    def smallest_enclosing_circle_naive(self):
+    def smallest_enclosing_circle_naive(self) -> Tuple[float, float, float]:
         # Returns the smallest enclosing circle in O(n^4) time using the naive algorithm.
 
         # Degenerate cases
@@ -620,7 +620,7 @@ class Trace(Exceptionable):
             p = self.points[i]
             for j in range(i + 1, len(self.points)):
                 q = self.points[j]
-                c = self.make_diameter(p, q)
+                c = self._make_diameter(p, q)
                 if (result is None or c[2] < result[2]) and \
                         all(self.is_in_circle(c, r) for r in self.points):
                     result = c
@@ -634,7 +634,7 @@ class Trace(Exceptionable):
                 q = self.points[j]
                 for k in range(j + 1, len(self.points)):
                     r = self.points[k]
-                    c = self.make_circumcircle(p, q, r)
+                    c = self._make_circumcircle(p, q, r)
                     if c is not None and (result is None or c[2] < result[2]) and \
                             all(self.is_in_circle(c, s) for s in self.points):
                         result = c

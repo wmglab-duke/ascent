@@ -59,6 +59,10 @@ class Configurable:
 
         return self
 
+    # TODO: documentation
+    def remove(self, key: Config):
+        self.configs.pop(key.value, None)
+
     def search(self, key: Config, *args):
         """
         Get an item using "path" of args in the json config.
