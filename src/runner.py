@@ -336,9 +336,9 @@ class Runner(Exceptionable, Configurable):
               "If you changed cuff design from default, you will need to update these values.")
 
         # MicroLeads:   R_in_U (constant)
-            # default angle:
+            # default angle: 180
         # Pitt:         R_in_Pitt (constant)
-            # default angle:
+            # default angle: 90
 
         r_cuff_in = 150  # TODO
         r_microleads_in = 100
