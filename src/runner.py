@@ -318,6 +318,10 @@ class Runner(Exceptionable, Configurable):
             # default angle: 160.9
         # Purdue:       r_nerve, thk_medium_gap_internal_P,  r_cuff_in_pre_P
             # default angle: 144
+        print("WARNING: direction of nerve placement in the cuff using hardcoded values for default cuffs."
+              "If you changed cuff design from default, you will need to update these values.")
+
+
 
 
         # MicroLeads:   R_in_U (constant)
