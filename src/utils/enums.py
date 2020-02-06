@@ -2,7 +2,7 @@ from enum import Enum, unique
 import os
 
 
-#%% Core (backend) functionality
+# %% Core (backend) functionality
 
 @unique
 class SetupMode(Enum):
@@ -22,7 +22,6 @@ class Config(Enum):
     CI_PERINEURIUM_THICKNESS = 'ci_perineurium_thickness'
     PERINEURIUM_RESISTIVITY = 'perineurium_resistivity'
 
-
     # user
     RUN = 'run'
     SAMPLE = 'sample'
@@ -30,7 +29,7 @@ class Config(Enum):
     SIM = 'sims'
 
 
-#%% Trace functionality
+# %% Trace functionality
 
 @unique
 class DownSampleMode(Enum):
@@ -46,7 +45,7 @@ class WriteMode(Enum):
     file_endings = ['.txt', '.txt', '.dat', '.hoc']
 
 
-#%% Higher-level Manager functionality
+# %% Higher-level Manager functionality
 
 @unique
 class ReshapeNerveMode(Enum):
@@ -94,7 +93,7 @@ class DeformationMode(Enum):
     PHYSICS = 1
 
 
-#%% Fiber Position and Type
+# %% Fiber Position and Type
 
 @unique
 class FiberXYMode(Enum):
@@ -172,7 +171,7 @@ class UnmyelinatedFiberType(Enum):
     SCHILD = 3
 
 
-#%% Waveforms
+# %% Waveforms
 
 @unique
 class WaveformMode(Enum):
@@ -185,7 +184,7 @@ class WaveformMode(Enum):
     BIPHASIC_PULSE_TRAIN = 3
 
 
-#%% Perineurium Impedance
+# %% Perineurium Impedance
 
 @unique
 class PerineuriumThicknessMode(Enum):
@@ -203,7 +202,7 @@ class PerineuriumResistivityMode(Enum):
     RHO_WEERASURIYA = 'RHO_WEERASURIYA'
 
 
-#%% Cuffs
+# %% Cuffs
 
 @unique
 class CuffInnerMode(Enum):
@@ -225,7 +224,13 @@ class CuffMode(Enum):
     IMTHERA = 4
 
 
-#%% Templates
+class CuffRotationMode(Enum):
+    config = 'cuff_rotation_mode'
+    AUTOMATIC = True
+    MANUAL = False
+
+
+# %% Templates
 
 @unique
 class TemplateMode(Enum):
