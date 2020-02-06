@@ -115,6 +115,11 @@
       "name": "Thk_fill_U",
       "expression": "100 [um]",
       "description": ""
+    },
+    {
+      "name": "thk_medium_gap_internal_U",
+      "expression": "10 [um]",
+      "description": ""
     }
   ],
 
