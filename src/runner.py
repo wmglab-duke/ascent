@@ -254,7 +254,11 @@ class Runner(Exceptionable, Configurable):
 
         # fetch cuff config
         cuff = self.load(os.path.join("config", "system", "cuffs", model_config['cuff']['preset']))
-        print(cuff["params"]["R_in_Pitt"])
+
+        thk_medium_gap_internal_CT = [item["expression"] for item in cuff["params"]
+                                      if item["name"] == "thk_medium_gap_internal_CT"]
+        print(thk_medium_gap_internal_CT)
+
         nerve_copy: Trace
         if NerveMode.NOT_PRESENT:
             nerve_copy = deepcopy(sample.slides[0].fascicles[0].outer)
@@ -266,15 +270,15 @@ class Runner(Exceptionable, Configurable):
         circle = nerve_copy.smallest_enclosing_circle_naive()  # find smallest enclosing circle of nerve
 
         # (2) get inner boundary of the chosen cuff
-        # CorTec: r_nerve, thk_medium_gap_internal_CT, r_cuff_in_pre_CT
+        # CorTec:       r_nerve, thk_medium_gap_internal_CT, r_cuff_in_pre_CT
         # Enteromedics: r_nerve, thk_medium_gap_internal_EM, r_cuff_in_pre_EM
-        # ImThera: r_nerve, thk_medium_gap_internal_IT, r_cuff_in_pre_ITI
-        # LivaNova: r_nerve, thk_medium_gap_internal_LN, r_cuff_in_pre_LN
-        # Madison: r_nerve, thk_medium_gap_internal_M, r_cuff_in_pre_M
-        # MicroLeads: R_in_U (constant), L_U, Tangent_U
-        # Pitt: R_in_Pitt (constant)
-        # Purdue: r_nerve, thk_medium_gap_internal_P, r_conductor_P,
-        #   sep_conductor_P, r_cuff_in_pre_P (this is not like the others)
+        # ImThera:      r_nerve, thk_medium_gap_internal_IT, r_cuff_in_pre_ITI
+        # LivaNova:     r_nerve, thk_medium_gap_internal_LN, r_cuff_in_pre_LN
+        # Madison:      r_nerve, thk_medium_gap_internal_M,  r_cuff_in_pre_M
+
+        # MicroLeads:   R_in_U (constant), L_U, Tangent_U
+        # Pitt:         R_in_Pitt (constant)
+        # Purdue:       r_nerve, thk_medium_gap_internal_P, r_conductor_P, sep_conductor_P, r_cuff_in_pre_P
 
         r_cuff_in = 150  # TODO
         r_microleads_in = 100
@@ -286,7 +290,8 @@ class Runner(Exceptionable, Configurable):
         p4 = Point(0, w_microleads / 2)
         point_list = [p1, p2, p3, p4, p1]
         poly = Polygon([[p.x, p.y] for p in point_list])
-        id_boundary = Point(0, 0).buffer(r_microleads_in)  # TODO use this for Enteromedics, Cortec. ImThera, LN, Madison, Pitt, Purdue
+        id_boundary = Point(0, 0).buffer(
+            r_microleads_in)  # TODO use this for Enteromedics, Cortec. ImThera, LN, Madison, Pitt, Purdue
 
         mergedpoly = poly.union(id_boundary)  # TODO use this for MicroLeads
 
@@ -333,7 +338,6 @@ class Runner(Exceptionable, Configurable):
 
         plt.show()
         print("here")
-
 
     def compute_electrical_parameters(self, all_configs, model_index):
 
