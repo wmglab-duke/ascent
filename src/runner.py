@@ -291,7 +291,7 @@ class Runner(Exceptionable, Configurable):
         nerve_copy = deepcopy(
             sample.slides[0].nerve
             if nerve_present == NerveMode.PRESENT
-            else sample.slides[0].fascicles[0]
+            else sample.slides[0].fascicles[0].outer
         )
 
         nerve_copy.down_sample(DownSampleMode.KEEP, 20)
