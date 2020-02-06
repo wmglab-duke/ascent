@@ -275,10 +275,10 @@ class Runner(Exceptionable, Configurable):
         # ImThera:      r_nerve, thk_medium_gap_internal_IT, r_cuff_in_pre_ITI
         # LivaNova:     r_nerve, thk_medium_gap_internal_LN, r_cuff_in_pre_LN
         # Madison:      r_nerve, thk_medium_gap_internal_M,  r_cuff_in_pre_M
+        # Purdue:       r_nerve, thk_medium_gap_internal_P, r_conductor_P, sep_conductor_P, r_cuff_in_pre_P
 
         # MicroLeads:   R_in_U (constant), L_U, Tangent_U
         # Pitt:         R_in_Pitt (constant)
-        # Purdue:       r_nerve, thk_medium_gap_internal_P, r_conductor_P, sep_conductor_P, r_cuff_in_pre_P
 
         r_cuff_in = 150  # TODO
         r_microleads_in = 100

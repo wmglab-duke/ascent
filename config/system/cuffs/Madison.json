@@ -185,5 +185,7 @@
       "expression": "100 [um]",
       "description": ""
     }
-  ]
+  ],
+
+  "expandable": true
 }
