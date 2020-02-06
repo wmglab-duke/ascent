@@ -265,7 +265,7 @@ class Runner(Exceptionable, Configurable):
         self.add(SetupMode.OLD, Config.MODEL, model_config)
 
         # fetch nerve mode
-        nerve_present: NerveMode = self.search_mode(NerveMode, Config.MODEL)
+        nerve_present: NerveMode = self.search_mode(NerveMode, Config.SAMPLE)
 
         # fetch cuff config
         cuff_config: dict = self.load(os.path.join("config", "system", "cuffs", model_config['cuff']['preset']))
