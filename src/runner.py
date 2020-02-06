@@ -25,6 +25,7 @@ import subprocess
 from copy import deepcopy
 
 import numpy as np
+from quantiphy import Quantity
 
 from src.core import Trace
 from src.core import Sample, Simulation, Waveform
@@ -249,28 +250,39 @@ class Runner(Exceptionable, Configurable):
 
     def compute_cuff_shift_2(self, model_config: dict, sample: Sample):
 
-        # query deformation mode
+        # add temporary model configuration
         self.add(SetupMode.OLD, Config.MODEL, model_config)
 
+        # fetch nerve mode
         nerve_present: NerveMode = self.search_mode(NerveMode, Config.MODEL)
-        cuff_config: dict = self.load(os.path.join("config", "system", "cuffs", model_config['cuff']['preset']))
-        cuff_code: str = cuff_config['code']
-        cuff_r_buffer_str: str = cuff_config['_'.join(['thk_medium_gap_internal', cuff_code])]
 
-        self.remove(Config.MODEL)
+        # fetch cuff config
+        cuff_config: dict = self.load(os.path.join("config", "system", "cuffs", model_config['cuff']['preset']))
+
+        # fetch 1-2 letter code for cuff (ex: 'CT')
+        cuff_code: str = cuff_config['code']
+
+        # fetch radius buffer string (ex: '0.003 [in]')
+        cuff_r_buffer_str: str = [item["expression"] for item in cuff_config["params"]
+                                  if item["name"] == '_'.join(['thk_medium_gap_internal', cuff_code])][0]
+
+        # calculate value of radius buffer in micrometers (ex: 76.2)
+        cuff_r_buffer: float = Quantity(
+            Quantity(
+                cuff_r_buffer_str.translate(cuff_r_buffer_str.maketrans('', '', ' []')),
+                scale='m'
+            ),
+            scale='um'
+        ).real  # [um] (scaled from any arbitrary length unit)
 
         # get center and radius of min_bound circle
         x, y, r_bound = (sample.slides[0].nerve if nerve_present == NerveMode.PRESENT
                          else sample.slides[0].fascicles[0]).smallest_enclosing_circle_naive()
 
         # calculate final necessary radius by adding buffer
-        r_f = r_bound + 'BUFFER'
+        r_f = r_bound + cuff_r_buffer
 
-
-        # find minimum bounding circle of the sample
-        # calculate r_f: add buffer to radius for cuff
-        # shift = x, y of circle center
-
+        # account for MANUAL/AUTOMATIC rotation!
         # calculate rotation for cuff (theta_f - see drawing)
         #     for above, use fact of deformable to decide on r_f
 
@@ -280,6 +292,8 @@ class Runner(Exceptionable, Configurable):
         # write to file
 
 
+        # remove temporary model configuration
+        self.remove(Config.MODEL)
 
 
     def compute_cuff_shift(self, all_configs, model_index, sample):
