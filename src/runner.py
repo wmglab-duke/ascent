@@ -307,14 +307,17 @@ class Runner(Exceptionable, Configurable):
 
         # (2) get inner boundary of the chosen cuff
         # CorTec:       r_nerve, thk_medium_gap_internal_CT, r_cuff_in_pre_CT
-            # default angle: Theta_contact_CT/2
+            # default angle: Theta_contact_CT/2 (229.12/2 deg for default values)
         # Enteromedics: r_nerve, thk_medium_gap_internal_EM, r_cuff_in_pre_EM
-            # default angle: Theta_contact_EM/2
+            # default angle: theta_contact_pre_EM/2 (256.4287/2 deg for default values)
         # ImThera:      r_nerve, thk_medium_gap_internal_IT, r_cuff_in_pre_ITI
-            # default angle: 180
+            # default angle: its complicated but (180 for default valus)
         # LivaNova:     r_nerve, thk_medium_gap_internal_LN, r_cuff_in_pre_LN
+            # default angle: 90
         # Madison:      r_nerve, thk_medium_gap_internal_M,  r_cuff_in_pre_M
+            # default angle: 160.9
         # Purdue:       r_nerve, thk_medium_gap_internal_P,  r_cuff_in_pre_P
+            # default angle: 144
 
 
         # MicroLeads:   R_in_U (constant)
