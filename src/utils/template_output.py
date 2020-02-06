@@ -2,7 +2,6 @@ import json
 import os
 from typing import Union
 
-from src.utils import Configurable, Config
 from .enums import TemplateMode
 
 
