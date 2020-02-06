@@ -188,5 +188,6 @@
     }
   ],
 
-  "expandable": true
+  "expandable": true,
+  "angle_to_contacts_deg": 160.9
 }

@@ -321,11 +321,10 @@ class Runner(Exceptionable, Configurable):
         print("WARNING: direction of nerve placement in the cuff using hardcoded values for default cuffs."
               "If you changed cuff design from default, you will need to update these values.")
 
-
-
-
         # MicroLeads:   R_in_U (constant)
+            # default angle:
         # Pitt:         R_in_Pitt (constant)
+            # default angle:
 
         r_cuff_in = 150  # TODO
         r_microleads_in = 100
