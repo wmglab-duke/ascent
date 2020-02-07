@@ -294,6 +294,8 @@ class Runner(Exceptionable, Configurable):
         nerve_copy.down_sample(DownSampleMode.KEEP, 10)
         x, y, r_bound = nerve_copy.smallest_enclosing_circle_naive()
 
+        theta_c = np.atan2(y, x)
+
         # calculate final necessary radius by adding buffer
         r_f = r_bound + cuff_r_buffer
 
@@ -351,9 +353,9 @@ class Runner(Exceptionable, Configurable):
         model_config = self.remove(Config.MODEL)
 
         if cuff_shift_mode == CuffShiftMode.MIN_CIRCLE_BOUNDARY:
-            model_config['cuff']['rotate']['pos_ang'] = theta_f * 360 / (2 * np.pi)
-            model_config['cuff']['shift']['x'] = x + (r_i - r_f) * np.cos(theta_f)
-            model_config['cuff']['shift']['y'] = y + (r_i - r_f) * np.sin(theta_f)
+            model_config['cuff']['rotate']['pos_ang'] = (theta_f - theta_i + theta_c) * 360 / (2 * np.pi)
+            model_config['cuff']['shift']['x'] = x + (r_i - r_f) * np.cos(theta_c)
+            model_config['cuff']['shift']['y'] = y + (r_i - r_f) * np.sin(theta_c)
         elif cuff_shift_mode == CuffShiftMode.TRACE_BOUNDARY:
             id_boundary = Point(0, 0).buffer(r_i)
             center_x = 0
