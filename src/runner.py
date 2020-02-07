@@ -168,11 +168,9 @@ class Runner(Exceptionable, Configurable):
                 )
 
                 # init fiber manager
-                # fiber_manager = None
                 if smart and (not stupid) and os.path.exists(sim_obj_file):
                     print('Found existing sim object for sim: {}'.format(sim_index))
                     pass
-                    # fiber_manager = load(fiber_manager_file)
                 else:
                     if not os.path.exists(sim_obj_dir):
                         os.makedirs(sim_obj_dir)
@@ -258,7 +256,6 @@ class Runner(Exceptionable, Configurable):
                                                run_path))
             os.chdir('..')
 
-
     def compute_cuff_shift(self, model_config: dict, sample: Sample, sample_config: dict):
 
         # add temporary model configuration
@@ -287,7 +284,7 @@ class Runner(Exceptionable, Configurable):
             scale='um'
         ).real  # [um] (scaled from any arbitrary length unit)
 
-        # get center and radius of min_bound circle
+        # get center and radius of nerve's min_bound circle
         nerve_copy = deepcopy(
             sample.slides[0].nerve
             if nerve_present == NerveMode.PRESENT
@@ -461,7 +458,6 @@ class Runner(Exceptionable, Configurable):
         # nerve.plot()
 
         plt.show()
-        print("here")
 
     def compute_electrical_parameters(self, all_configs, model_index):
 
