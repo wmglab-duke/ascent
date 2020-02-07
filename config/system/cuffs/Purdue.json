@@ -151,7 +151,7 @@
     },
     {
       "name": "thk_medium_gap_internal_P",
-      "expression": "0",
+      "expression": "0 [um]",
       "description": ""
     },
     {
@@ -202,5 +202,9 @@
   ],
 
   "expandable": true,
-  "angle_to_contacts_deg": 144
+  "angle_to_contacts_deg": 144,
+  "offset": {
+    "sep_conductor_P": 1,
+    "r_conductor_P": 2
+  }
 }

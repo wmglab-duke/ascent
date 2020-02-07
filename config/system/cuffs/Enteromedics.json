@@ -179,5 +179,7 @@
   ],
 
   "expandable": true,
-  "angle_to_contacts_deg": 128.21
+  "angle_to_contacts_deg": 128.21,
+  "offset": {
+  }
 }

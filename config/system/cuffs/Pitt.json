@@ -305,5 +305,7 @@
   ],
 
   "expandable": false,
-  "angle_to_contacts_deg": 90
+  "angle_to_contacts_deg": 90,
+  "offset": {
+  }
 }

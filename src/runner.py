@@ -294,7 +294,7 @@ class Runner(Exceptionable, Configurable):
         nerve_copy.down_sample(DownSampleMode.KEEP, 10)
         x, y, r_bound = nerve_copy.smallest_enclosing_circle_naive()
 
-        theta_c = np.atan2(y, x)
+        theta_c = np.arctan2(y, x)
 
         # calculate final necessary radius by adding buffer
         r_f = r_bound + cuff_r_buffer
@@ -342,7 +342,25 @@ class Runner(Exceptionable, Configurable):
                 if r_i < r_f:
                     theta_f = (r_f / r_i - 1) * theta_i
                 else:
-                    theta_f = theta_i
+                    theta_f = 0
+
+        #
+        offset = 0
+        for key, coef in cuff_config["offset"].items():
+            value_strs = [item["expression"] for item in cuff_config["params"] if item['name'] == key]
+            value_str: str = value_strs[0]
+            print("key: {}".format(key))
+            value: float = Quantity(
+                Quantity(
+                    value_str.translate(value_str.maketrans('', '', ' []')),
+                    scale='m'
+                ),
+                scale='um'
+            ).real  # [um] (scaled from any arbitrary length unit)
+            print("coef: {}".format(coef))
+            print("value: {}".format(value))
+            offset += coef * value
+            print("offset: {}".format(offset))
 
         # remove sample config
         self.remove(Config.SAMPLE)
@@ -353,11 +371,11 @@ class Runner(Exceptionable, Configurable):
         model_config = self.remove(Config.MODEL)
 
         if cuff_shift_mode == CuffShiftMode.MIN_CIRCLE_BOUNDARY:
-            model_config['cuff']['rotate']['pos_ang'] = (theta_f - theta_i + theta_c) * 360 / (2 * np.pi)
-            model_config['cuff']['shift']['x'] = x + (r_i - r_f) * np.cos(theta_c)
-            model_config['cuff']['shift']['y'] = y + (r_i - r_f) * np.sin(theta_c)
+            model_config['cuff']['rotate']['pos_ang'] = (theta_f - theta_i + theta_c + np.pi) * 360 / (2 * np.pi)
+            model_config['cuff']['shift']['x'] = x + (r_i - offset - r_f) * np.cos(theta_c)
+            model_config['cuff']['shift']['y'] = y + (r_i - offset - r_f) * np.sin(theta_c)
         elif cuff_shift_mode == CuffShiftMode.TRACE_BOUNDARY:
-            id_boundary = Point(0, 0).buffer(r_i)
+            id_boundary = Point(0, 0).buffer(r_i - offset)
             center_x = 0
             center_y = 0
             step = 1
