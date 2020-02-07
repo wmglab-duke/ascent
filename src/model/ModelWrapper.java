@@ -1018,12 +1018,13 @@ public class ModelWrapper {
                 Integer cuff_shift_x = modelData.getJSONObject("cuff").getJSONObject("shift").getInt("x");
                 Integer cuff_shift_y = modelData.getJSONObject("cuff").getJSONObject("shift").getInt("y");
                 Integer cuff_shift_z = modelData.getJSONObject("cuff").getJSONObject("shift").getInt("z");
-                Integer cuff_rot = modelData.getJSONObject("cuff").getJSONObject("rotate").getInt("ang");
+                Integer cuff_rot_pos = modelData.getJSONObject("cuff").getJSONObject("rotate").getInt("pos_ang");
+                Integer cuff_rot_add = modelData.getJSONObject("cuff").getJSONObject("rotate").getInt("add_ang");
 
                 cuffConformationParams.set("cuff_shift_x", cuff_shift_x + " " + cuff_shift_unit);
                 cuffConformationParams.set("cuff_shift_y", cuff_shift_y + " " + cuff_shift_unit);
                 cuffConformationParams.set("cuff_shift_z", cuff_shift_z + " " + cuff_shift_unit);
-                cuffConformationParams.set("cuff_rot",  cuff_rot + " " + cuff_rot_unit);
+                cuffConformationParams.set("cuff_rot",  cuff_rot_pos + cuff_rot_add + " " + cuff_rot_unit);
 
                 // Set MEDIUM parameters
                 String mediumParamsLabel = "Medium Parameters";

@@ -230,6 +230,12 @@ class CuffRotationMode(Enum):
     MANUAL = False
 
 
+class CuffShiftMode(Enum):
+    config = 'cuff_shift_mode'
+    MIN_CIRCLE_BOUNDARY = 0
+    TRACE_BOUNDARY = 1
+
+
 # %% Templates
 
 @unique

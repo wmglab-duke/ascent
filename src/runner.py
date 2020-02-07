@@ -291,173 +291,290 @@ class Runner(Exceptionable, Configurable):
             else sample.slides[0].fascicles[0].outer
         )
 
-        nerve_copy.down_sample(DownSampleMode.KEEP, 20)
+        nerve_copy.down_sample(DownSampleMode.KEEP, 10)
         x, y, r_bound = nerve_copy.smallest_enclosing_circle_naive()
 
         # calculate final necessary radius by adding buffer
         r_f = r_bound + cuff_r_buffer
 
-        # get initial cuff radius
-        r_i_str: str = [item["expression"] for item in cuff_config["params"]
-                        if item["name"] == '_'.join(['r_cuff_in_pre', cuff_code])][0]
-        r_i: float = Quantity(
-            Quantity(
-                r_i_str.translate(r_i_str.maketrans('', '', ' []')),
-                scale='m'
-            ),
-            scale='um'
-        ).real  # [um] (scaled from any arbitrary length unit)
-
         # fetch initial cuff rotation (convert to rads)
         theta_i = cuff_config.get('angle_to_contacts_deg') * 2 * np.pi / 360
 
-        # angle to center of circle from origin
-        theta_c = np.arctan2(y, x)
-
         # fetch cuff rotation mode
         cuff_rotation_mode: CuffRotationMode = self.search_mode(CuffRotationMode, Config.MODEL)
-
-        # initialize final rotation
-        theta_f: float = None
-
-        # LOGIC TIME
-
-        if cuff_rotation_mode == CuffRotationMode.MANUAL:
-            theta_f = theta_i
-        else:  # cuff_rotation_mode == CuffRotationMode.AUTOMATIC
-            theta_f = theta_c - ((r_i / r_f) * theta_i)
 
         # fetch boolean for cuff expandability
         expandable: bool = cuff_config['expandable']
 
         # check radius iff not expandable
         if not expandable:
-            R_in_str: str = [item["expression"] for item in cuff_config["params"]
-                            if item["name"] == '_'.join(['R_in', cuff_code])][0]
-            R_in: float = Quantity(
+            r_i_str: str = [item["expression"] for item in cuff_config["params"]
+                             if item["name"] == '_'.join(['R_in', cuff_code])][0]
+            r_i: float = Quantity(
                 Quantity(
-                    r_i_str.translate(R_in_str.maketrans('', '', ' []')),
+                    r_i_str.translate(r_i_str.maketrans('', '', ' []')),
                     scale='m'
                 ),
                 scale='um'
             ).real  # [um] (scaled from any arbitrary length unit)
 
-            if not r_f <= R_in:
+            if not r_f <= r_i:
                 self.throw(51)
+
+            theta_f = theta_i
+        else:
+            # get initial cuff radius
+            r_i_str: str = [item["expression"] for item in cuff_config["params"]
+                            if item["name"] == '_'.join(['r_cuff_in_pre', cuff_code])][0]
+            r_i: float = Quantity(
+                Quantity(
+                    r_i_str.translate(r_i_str.maketrans('', '', ' []')),
+                    scale='m'
+                ),
+                scale='um'
+            ).real  # [um] (scaled from any arbitrary length unit)
+
+            if cuff_rotation_mode == CuffRotationMode.MANUAL:
+                theta_f = theta_i
+            else:  # cuff_rotation_mode == CuffRotationMode.AUTOMATIC
+                if r_i < r_f:
+                    theta_f = (r_f / r_i - 1) * theta_i
+                else:
+                    theta_f = theta_i
 
         # remove sample config
         self.remove(Config.SAMPLE)
 
+        cuff_shift_mode: CuffShiftMode = self.search_mode(CuffShiftMode, Config.MODEL)
+
         # remove (pop) temporary model configuration
         model_config = self.remove(Config.MODEL)
-        model_config['cuff']['rotate']['ang'] = -theta_f * 360 / (2 * np.pi)
-        model_config['cuff']['shift']['x'] = x
-        model_config['cuff']['shift']['y'] = y
+
+        if cuff_shift_mode == CuffShiftMode.MIN_CIRCLE_BOUNDARY:
+            model_config['cuff']['rotate']['pos_ang'] = theta_f * 360 / (2 * np.pi)
+            model_config['cuff']['shift']['x'] = x + (r_i - r_f) * np.cos(theta_f)
+            model_config['cuff']['shift']['y'] = y + (r_i - r_f) * np.sin(theta_f)
+        elif cuff_shift_mode == CuffShiftMode.TRACE_BOUNDARY:
+            id_boundary = Point(0, 0).buffer(r_i)
+            center_x = 0
+            center_y = 0
+            step = 1
+            x_step = step * np.cos(theta_f)
+            y_step = step * np.sin(theta_f)
+            while nerve_copy.polygon().boundary.distance(id_boundary.boundary) >= cuff_r_buffer:
+                nerve_copy.shift([x_step, y_step, 0])
+                center_x += x_step
+                center_y += y_step
+            center_x -= x_step
+            center_y -= y_step
+            model_config['cuff']['rotate']['pos_ang'] = theta_f * 360 / (2 * np.pi)
+            model_config['cuff']['shift']['x'] = center_x
+            model_config['cuff']['shift']['y'] = center_y
 
         return model_config
 
+    # def compute_cuff_shift_feb6(self, model_config: dict, sample: Sample, sample_config: dict):
+    #
+    #     # add temporary model configuration
+    #     self.add(SetupMode.OLD, Config.MODEL, model_config)
+    #     self.add(SetupMode.OLD, Config.SAMPLE, sample_config)
+    #
+    #     # fetch nerve mode
+    #     nerve_present: NerveMode = self.search_mode(NerveMode, Config.SAMPLE)
+    #
+    #     # fetch cuff config
+    #     cuff_config: dict = self.load(os.path.join("config", "system", "cuffs", model_config['cuff']['preset']))
+    #
+    #     # fetch 1-2 letter code for cuff (ex: 'CT')
+    #     cuff_code: str = cuff_config['code']
+    #
+    #     # fetch radius buffer string (ex: '0.003 [in]')
+    #     cuff_r_buffer_str: str = [item["expression"] for item in cuff_config["params"]
+    #                               if item["name"] == '_'.join(['thk_medium_gap_internal', cuff_code])][0]
+    #
+    #     # calculate value of radius buffer in micrometers (ex: 76.2)
+    #     cuff_r_buffer: float = Quantity(
+    #         Quantity(
+    #             cuff_r_buffer_str.translate(cuff_r_buffer_str.maketrans('', '', ' []')),
+    #             scale='m'
+    #         ),
+    #         scale='um'
+    #     ).real  # [um] (scaled from any arbitrary length unit)
+    #
+    #     # get center and radius of nerve's min_bound circle
+    #     nerve_copy = deepcopy(
+    #         sample.slides[0].nerve
+    #         if nerve_present == NerveMode.PRESENT
+    #         else sample.slides[0].fascicles[0].outer
+    #     )
+    #
+    #     nerve_copy.down_sample(DownSampleMode.KEEP, 20)
+    #     x, y, r_bound = nerve_copy.smallest_enclosing_circle_naive()
+    #
+    #     # calculate final necessary radius by adding buffer
+    #     r_f = r_bound + cuff_r_buffer
+    #
+    #     # get initial cuff radius
+    #     r_i_str: str = [item["expression"] for item in cuff_config["params"]
+    #                     if item["name"] == '_'.join(['r_cuff_in_pre', cuff_code])][0]
+    #     r_i: float = Quantity(
+    #         Quantity(
+    #             r_i_str.translate(r_i_str.maketrans('', '', ' []')),
+    #             scale='m'
+    #         ),
+    #         scale='um'
+    #     ).real  # [um] (scaled from any arbitrary length unit)
+    #
+    #     # fetch initial cuff rotation (convert to rads)
+    #     theta_i = cuff_config.get('angle_to_contacts_deg') * 2 * np.pi / 360
+    #
+    #     # angle to center of circle from origin
+    #     theta_c = np.arctan2(y, x)
+    #
+    #     # fetch cuff rotation mode
+    #     cuff_rotation_mode: CuffRotationMode = self.search_mode(CuffRotationMode, Config.MODEL)
+    #
+    #     # initialize final rotation
+    #     theta_f: float = None
+    #
+    #     # LOGIC TIME
+    #
+    #     if cuff_rotation_mode == CuffRotationMode.MANUAL:
+    #         theta_f = theta_i
+    #     else:  # cuff_rotation_mode == CuffRotationMode.AUTOMATIC
+    #         theta_f = theta_c - ((r_i / r_f) * theta_i)
+    #
+    #     # fetch boolean for cuff expandability
+    #     expandable: bool = cuff_config['expandable']
+    #
+    #     # check radius iff not expandable
+    #     if not expandable:
+    #         R_in_str: str = [item["expression"] for item in cuff_config["params"]
+    #                         if item["name"] == '_'.join(['R_in', cuff_code])][0]
+    #         R_in: float = Quantity(
+    #             Quantity(
+    #                 r_i_str.translate(R_in_str.maketrans('', '', ' []')),
+    #                 scale='m'
+    #             ),
+    #             scale='um'
+    #         ).real  # [um] (scaled from any arbitrary length unit)
+    #
+    #         if not r_f <= R_in:
+    #             self.throw(51)
+    #
+    #     # remove sample config
+    #     self.remove(Config.SAMPLE)
+    #
+    #     # remove (pop) temporary model configuration
+    #     model_config = self.remove(Config.MODEL)
+    #     model_config['cuff']['rotate']['ang'] = -theta_f * 360 / (2 * np.pi)
+    #     model_config['cuff']['shift']['x'] = x
+    #     model_config['cuff']['shift']['y'] = y
+    #
+    #     return model_config
 
-    def compute_cuff_shift_old(self, all_configs, model_index, sample):
 
-        # fetch current model config using the index
-        model_config = all_configs[Config.MODEL.value][model_index]
-        angle_deg = 180  # parameter in cuff configuration file # TODO
-
-        # fetch cuff config
-        cuff = self.load(os.path.join("config", "system", "cuffs", model_config['cuff']['preset']))
-
-        thk_medium_gap_internal_CT = [item["expression"] for item in cuff["params"]
-                                      if item["name"] == "thk_medium_gap_internal_CT"]
-        print(thk_medium_gap_internal_CT)
-
-        nerve_copy: Trace
-        if NerveMode.NOT_PRESENT:
-            nerve_copy = deepcopy(sample.slides[0].fascicles[0].outer)
-        elif NerveMode.PRESENT:
-            nerve_copy = deepcopy(sample.slides[0].nerve)  # get nerve from slide
-
-        # (1) find minimum bounding circle of sample (r_circ_min_sample)
-        nerve_copy.down_sample(DownSampleMode.KEEP, 10)  # downsample nerve trace to speed up computation
-        circle = nerve_copy.smallest_enclosing_circle_naive()  # find smallest enclosing circle of nerve
-
-        # (2) get inner boundary of the chosen cuff
-        # CorTec:       r_nerve, thk_medium_gap_internal_CT, r_cuff_in_pre_CT
-            # default angle: Theta_contact_CT/2 (229.12/2 deg for default values)
-        # Enteromedics: r_nerve, thk_medium_gap_internal_EM, r_cuff_in_pre_EM
-            # default angle: theta_contact_pre_EM/2 (256.4287/2 deg for default values)
-        # ImThera:      r_nerve, thk_medium_gap_internal_IT, r_cuff_in_pre_ITI
-            # default angle: its complicated but (180 for default valus)
-        # LivaNova:     r_nerve, thk_medium_gap_internal_LN, r_cuff_in_pre_LN
-            # default angle: 90
-        # Madison:      r_nerve, thk_medium_gap_internal_M,  r_cuff_in_pre_M
-            # default angle: 160.9
-        # Purdue:       r_nerve, thk_medium_gap_internal_P,  r_cuff_in_pre_P
-            # default angle: 144
-        print("WARNING: direction of nerve placement in the cuff using hardcoded values for default cuffs."
-              "If you changed cuff design from default, you will need to update these values.")
-
-        # MicroLeads:   R_in_U (constant)
-            # default angle: 180
-        # Pitt:         R_in_Pitt (constant)
-            # default angle: 90
-
-        r_cuff_in = 150  # TODO
-        r_microleads_in = 100
-        l_microleads = 300
-        w_microleads = 200
-        p1 = Point(0, -w_microleads / 2)
-        p2 = Point(l_microleads, -w_microleads / 2)
-        p3 = Point(l_microleads, w_microleads / 2)
-        p4 = Point(0, w_microleads / 2)
-        point_list = [p1, p2, p3, p4, p1]
-        poly = Polygon([[p.x, p.y] for p in point_list])
-        id_boundary = Point(0, 0).buffer(
-            r_microleads_in)  # TODO use this for Enteromedics, Cortec. ImThera, LN, Madison, Pitt, Purdue
-
-        mergedpoly = poly.union(id_boundary)  # TODO use this for MicroLeads
-
-        # (3) check to see if r_circ_min_sample < r_cuff_in - if not, throw error!
-        if circle[2] >= r_cuff_in:
-            self.throw(51)
-        else:
-            if nerve_copy.polygon().boundary.overlaps(mergedpoly.boundary):  # there is overlap
-                #  center the sample by its circ_min_sample, then shift
-                pass
-
-        # (4) shift until nerve is within a certain distance of the boundary
-        sep = 10  # parameter in model config file
-        step = 1  # hard coded step size [um]
-
-        angle = angle_deg * np.pi / 180
-        x_shift = 0  # initialize cuff shift values
-        y_shift = 0
-        x_step = step * np.cos(angle)
-        y_step = step * np.sin(angle)
-        center_x = circle[0]
-        center_y = circle[1]
-
-        while nerve_copy.polygon().boundary.distance(mergedpoly.boundary) >= sep:
-            nerve_copy.shift([x_step, y_step, 0])
-            center_x += x_step
-            center_y += y_step
-
-        x_shift -= x_step
-        y_shift -= y_step
-        center_x -= x_step
-        center_y -= y_step
-
-        x, y = mergedpoly.exterior.xy
-        # x2, y2 = outer_circle.boundary.xy
-        # union with id_boundary
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
-        ax.plot(x, y, 'r-')
-        # ax.plot(x2 + x_shift, y2 + y_shift, 'k-')
-        ax.plot(nerve_copy.points[:, 0], nerve_copy.points[:, 1], 'k-')
-        # ax.plot(nerve_copy.points)
-        # nerve.plot()
-
-        plt.show()
+    # def compute_cuff_shift_old(self, all_configs, model_index, sample):
+    #
+    #     # fetch current model config using the index
+    #     model_config = all_configs[Config.MODEL.value][model_index]
+    #     angle_deg = 180  # parameter in cuff configuration file # TODO
+    #
+    #     # fetch cuff config
+    #     cuff = self.load(os.path.join("config", "system", "cuffs", model_config['cuff']['preset']))
+    #
+    #     thk_medium_gap_internal_CT = [item["expression"] for item in cuff["params"]
+    #                                   if item["name"] == "thk_medium_gap_internal_CT"]
+    #     print(thk_medium_gap_internal_CT)
+    #
+    #     nerve_copy: Trace
+    #     if NerveMode.NOT_PRESENT:
+    #         nerve_copy = deepcopy(sample.slides[0].fascicles[0].outer)
+    #     elif NerveMode.PRESENT:
+    #         nerve_copy = deepcopy(sample.slides[0].nerve)  # get nerve from slide
+    #
+    #     # (1) find minimum bounding circle of sample (r_circ_min_sample)
+    #     nerve_copy.down_sample(DownSampleMode.KEEP, 10)  # downsample nerve trace to speed up computation
+    #     circle = nerve_copy.smallest_enclosing_circle_naive()  # find smallest enclosing circle of nerve
+    #
+    #     # (2) get inner boundary of the chosen cuff
+    #     # CorTec:       r_nerve, thk_medium_gap_internal_CT, r_cuff_in_pre_CT
+    #         # default angle: Theta_contact_CT/2 (229.12/2 deg for default values)
+    #     # Enteromedics: r_nerve, thk_medium_gap_internal_EM, r_cuff_in_pre_EM
+    #         # default angle: theta_contact_pre_EM/2 (256.4287/2 deg for default values)
+    #     # ImThera:      r_nerve, thk_medium_gap_internal_IT, r_cuff_in_pre_ITI
+    #         # default angle: its complicated but (180 for default valus)
+    #     # LivaNova:     r_nerve, thk_medium_gap_internal_LN, r_cuff_in_pre_LN
+    #         # default angle: 90
+    #     # Madison:      r_nerve, thk_medium_gap_internal_M,  r_cuff_in_pre_M
+    #         # default angle: 160.9
+    #     # Purdue:       r_nerve, thk_medium_gap_internal_P,  r_cuff_in_pre_P
+    #         # default angle: 144
+    #     print("WARNING: direction of nerve placement in the cuff using hardcoded values for default cuffs."
+    #           "If you changed cuff design from default, you will need to update these values.")
+    #
+    #     # MicroLeads:   R_in_U (constant)
+    #         # default angle: 180
+    #     # Pitt:         R_in_Pitt (constant)
+    #         # default angle: 90
+    #
+    #     r_cuff_in = 150  # TODO
+    #     r_microleads_in = 100
+    #     l_microleads = 300
+    #     w_microleads = 200
+    #     p1 = Point(0, -w_microleads / 2)
+    #     p2 = Point(l_microleads, -w_microleads / 2)
+    #     p3 = Point(l_microleads, w_microleads / 2)
+    #     p4 = Point(0, w_microleads / 2)
+    #     point_list = [p1, p2, p3, p4, p1]
+    #     poly = Polygon([[p.x, p.y] for p in point_list])
+    #     id_boundary = Point(0, 0).buffer(
+    #         r_microleads_in)  # TODO use this for Enteromedics, Cortec. ImThera, LN, Madison, Pitt, Purdue
+    #
+    #     mergedpoly = poly.union(id_boundary)  # TODO use this for MicroLeads
+    #
+    #     # (3) check to see if r_circ_min_sample < r_cuff_in - if not, throw error!
+    #     if circle[2] >= r_cuff_in:
+    #         self.throw(51)
+    #     else:
+    #         if nerve_copy.polygon().boundary.overlaps(mergedpoly.boundary):  # there is overlap
+    #             #  center the sample by its circ_min_sample, then shift
+    #             pass
+    #
+    #     # (4) shift until nerve is within a certain distance of the boundary
+    #     sep = 10  # parameter in model config file
+    #     step = 1  # hard coded step size [um]
+    #
+    #     angle = angle_deg * np.pi / 180
+    #     x_shift = 0  # initialize cuff shift values
+    #     y_shift = 0
+    #     x_step = step * np.cos(angle)
+    #     y_step = step * np.sin(angle)
+    #     center_x = circle[0]
+    #     center_y = circle[1]
+    #
+    #     while nerve_copy.polygon().boundary.distance(mergedpoly.boundary) >= sep:
+    #         nerve_copy.shift([x_step, y_step, 0])
+    #         center_x += x_step
+    #         center_y += y_step
+    #
+    #     x_shift -= x_step
+    #     y_shift -= y_step
+    #     center_x -= x_step
+    #     center_y -= y_step
+    #
+    #     x, y = mergedpoly.exterior.xy
+    #     # x2, y2 = outer_circle.boundary.xy
+    #     # union with id_boundary
+    #     fig = plt.figure()
+    #     ax = fig.add_subplot(111)
+    #     ax.plot(x, y, 'r-')
+    #     # ax.plot(x2 + x_shift, y2 + y_shift, 'k-')
+    #     ax.plot(nerve_copy.points[:, 0], nerve_copy.points[:, 1], 'k-')
+    #     # ax.plot(nerve_copy.points)
+    #     # nerve.plot()
+    #
+    #     plt.show()
 
     def compute_electrical_parameters(self, all_configs, model_index):
 

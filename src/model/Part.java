@@ -2034,7 +2034,7 @@ class Part {
                 ic.set("contributeto", im.get(icLabel));
                 ic.set("source", "file");
                 ic.set("filename", ci_inner_path);
-                ic.set("rtol", 0.02);
+                ic.set("rtol", 0.005); // TODO load from model param
 
                 String conv2solidLabel = ci_inner_name + " Inner Surface " + ci_inner_index;
                 GeomFeature conv2solid = model.component("comp1").geom("geom1").feature(im.get(fascicleCICXLabel)).geom().create(im.next("csol",conv2solidLabel), "ConvertToSolid");
