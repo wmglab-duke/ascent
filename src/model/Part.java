@@ -63,7 +63,7 @@ class Part {
      * TODO
      */
     public static void createEnvironmentPartInstance(String instanceID, String instanceLabel, String pseudonym, ModelWrapper mw,
-                                                     JSONObject instanceParams) throws IllegalArgumentException {
+                                                     JSONObject modelData) throws IllegalArgumentException {
         Model model = mw.getModel();
 
         GeomFeature partInstance = model.component("comp1").geom("geom1").create(instanceID, "PartInstance");
@@ -76,29 +76,7 @@ class Part {
         String[] myLabels = myIM.labels; // may be null, but that is ok if not used
 
         if ("Medium_Primitive".equals(pseudonym)) {// set instantiation parameters
-//            String[] mediumParameters = {
-//                    "radius",
-//                    "length"
-//
-//            };
-//
-//            JSONObject itemObject = ((JSONObject) ((JSONObject) instanceParams.get("medium")).get("bounds"));
-//
-//            for (String param : mediumParameters) {
-//
-//                Object testObject = itemObject.get(param);
-//                if(testObject instanceof Integer){
-//                    // if int
-//                    partInstance.setEntry("inputexpr", param, (Integer) itemObject.get(param));
-//
-//                } else {
-//                    // if double
-//                    partInstance.setEntry("inputexpr", param, (Double) itemObject.get(param));
-//
-//                }
-//            }
-
-            partInstance.setEntry("inputexpr", "radius", "r_ground");
+            partInstance.setEntry("inputexpr", "radius", "r_medium");
             partInstance.setEntry("inputexpr", "length", "z_nerve");
 
             // imports
@@ -107,11 +85,13 @@ class Part {
 
             partInstance.setEntry("selkeepbnd", instanceID + "_" + myIM.get(myLabels[0]) + ".bnd", "on"); // MEDIUM
 
-            // assign physics
-            String groundLabel = "Ground";
-            PhysicsFeature gnd = model.component("comp1").physics("ec").create(mw.im.next("gnd", groundLabel), "Ground", 2);
-            gnd.label(groundLabel);
-            gnd.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[0]) + "_bnd");
+            if (modelData.getJSONObject("medium").getBoolean("distant_ground")) {
+                // assign physics
+                String groundLabel = "Ground";
+                PhysicsFeature gnd = model.component("comp1").physics("ec").create(mw.im.next("gnd", groundLabel), "Ground", 2);
+                gnd.label(groundLabel);
+                gnd.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[0]) + "_bnd");
+            }
 
         } else {
             throw new IllegalArgumentException("No implementation for part primitive name: " + pseudonym);
@@ -1985,7 +1965,7 @@ class Part {
      * @throws IllegalArgumentException there is not a nerve part to build of that type (for typos probably)
      */
     public static void createNervePartInstance(String pseudonym, int index, String path, ModelWrapper mw,
-                                               HashMap<String, String[]> tracePaths, JSONObject sampleData, ModelParamGroup nerveParams) throws IllegalArgumentException {
+                                               HashMap<String, String[]> tracePaths, JSONObject sampleData, ModelParamGroup nerveParams, JSONObject modelData) throws IllegalArgumentException {
 
         Model model = mw.getModel();
         IdentifierManager im = mw.im;
@@ -2034,7 +2014,7 @@ class Part {
                 ic.set("contributeto", im.get(icLabel));
                 ic.set("source", "file");
                 ic.set("filename", ci_inner_path);
-                ic.set("rtol", 0.005); // TODO load from model param
+                ic.set("rtol", modelData.getDouble("trace_interp_tol"));
 
                 String conv2solidLabel = ci_inner_name + " Inner Surface " + ci_inner_index;
                 GeomFeature conv2solid = model.component("comp1").geom("geom1").feature(im.get(fascicleCICXLabel)).geom().create(im.next("csol",conv2solidLabel), "ConvertToSolid");

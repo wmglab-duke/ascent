@@ -568,7 +568,7 @@ public class ModelWrapper {
      * Add all fascicles to model.
      * @return success indicator
      */
-    public boolean addNerve(String sample, ModelParamGroup nerveParams) {
+    public boolean addNerve(String sample, ModelParamGroup nerveParams, JSONObject modelData) {
 
         // define global nerve part names (MUST BE IDENTICAL IN Part)
         String[] fascicleTypes = new String[]{"FascicleCI", "FascicleMesh"};
@@ -600,7 +600,7 @@ public class ModelWrapper {
             String nerveMode = (String) sampleData.getJSONObject("modes").get("nerve");
             if (nerveMode.equals("PRESENT")) {
                 Part.createNervePartInstance("Epineurium", 0,
-                        null, this, null, sampleData, nerveParams);
+                        null, this, null, sampleData, nerveParams, modelData);
             }
 
             // Loop over all fascicle dirs
@@ -631,7 +631,8 @@ public class ModelWrapper {
                         String fascicleType = data.get("inners").length == 1 ? fascicleTypes[0] : fascicleTypes[1];
 
                         // hand off to Part to build instance of fascicle
-                        Part.createNervePartInstance(fascicleType, index, path, this, data, sampleData, nerveParams);
+                        Part.createNervePartInstance(fascicleType, index, path, this,
+                                data, sampleData, nerveParams, modelData);
                     }
                 }
             }
@@ -945,9 +946,6 @@ public class ModelWrapper {
                             prev model config = found model config (copy unnecessary)
                             prev mph = found mesh COPY
                             prev IM = found mesh IM COPY
-
-
-
              */
 
             // START PRE MESH
@@ -982,7 +980,7 @@ public class ModelWrapper {
 
                 if (morphology.isNull("Nerve")) {
                     nerveParams.set("a_nerve", "NaN");
-                    nerveParams.set("r_nerve", "NaN");
+                    nerveParams.set("r_nerve", modelData.getDouble("min_radius_enclosing_circle") + " [" + morphology_unit + "]");
                 } else {
                     JSONObject nerve = (JSONObject) morphology.get("Nerve");
                     nerveParams.set("a_nerve", nerve.get("area") + " [" + morphology_unit + "^2]");
@@ -1039,7 +1037,7 @@ public class ModelWrapper {
 
                 // Radius of the FEM - will want to converge thresholds for this
                 double radius = ((JSONObject) ((JSONObject) modelData.get("medium")).get("bounds")).getDouble("radius");
-                mediumParams.set("r_ground", radius + " " + bounds_unit);
+                mediumParams.set("r_medium", radius + " " + bounds_unit);
 
                 // Create PART PRIMITIVE for MEDIUM
                 String partID = mw.im.next("part", mediumPrimitiveString);
@@ -1066,7 +1064,7 @@ public class ModelWrapper {
 
                 // add NERVE (Fascicles CI/MESH and EPINEURIUM)
                 // there are no primitives/instances for nerve parts, just build them
-                mw.addNerve(sample, nerveParams);
+                mw.addNerve(sample, nerveParams, modelData);
 
                 // create UNIONS
                 mw.createUnions();

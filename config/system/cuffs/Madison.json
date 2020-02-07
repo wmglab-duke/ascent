@@ -143,7 +143,7 @@
     },
     {
       "name": "thk_medium_gap_internal_M",
-      "expression": "0",
+      "expression": "10 [um]",
       "description": ""
     },
     {

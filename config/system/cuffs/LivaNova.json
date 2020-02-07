@@ -121,11 +121,6 @@
       "description": ""
     },
     {
-      "name": "r_ground_LN",
-      "expression": "5 [mm]",
-      "description": ""
-    },
-    {
       "name": "scar_thk_LN",
       "expression": "100 [micrometer]",
       "description": ""
@@ -142,7 +137,7 @@
     },
     {
       "name": "thk_medium_gap_internal_LN",
-      "expression": "Thk_fill_LN",
+      "expression": "10 [um]",
       "description": ""
     },
     {
@@ -152,8 +147,8 @@
     },
     {
       "name": "r_cuff_in_pre_LN",
-      "expression": "0.5*ID_cuff_LN",
-      "description": ""
+      "expression": "1 [mm]",
+      "description": "0.5*ID_cuff_LN: this needs to be automated, because in case of 3 mm ID = 1.5 mm"
     },
     {
       "name": "r_cuff_in_LN",
