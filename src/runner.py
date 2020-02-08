@@ -369,38 +369,48 @@ class Runner(Exceptionable, Configurable):
         model_config['min_radius_enclosing_circle'] = r_bound
 
         if cuff_shift_mode == CuffShiftMode.MIN_CIRCLE_BOUNDARY:
-            model_config['cuff']['rotate']['pos_ang'] = (theta_f - theta_i + theta_c + np.pi) * 360 / (2 * np.pi)
-            model_config['cuff']['shift']['x'] = x + (r_i - offset - r_f) * np.cos(theta_c)
-            model_config['cuff']['shift']['y'] = y + (r_i - offset - r_f) * np.sin(theta_c)
+            if r_i < r_f:
+                model_config['cuff']['rotate']['pos_ang'] = (theta_f - theta_i + theta_c + np.pi) * 360 / (2 * np.pi)
+                model_config['cuff']['shift']['x'] = x
+                model_config['cuff']['shift']['y'] = y
+            else:
+                model_config['cuff']['rotate']['pos_ang'] = (theta_f - theta_i + theta_c + np.pi) * 360 / (2 * np.pi)
+                model_config['cuff']['shift']['x'] = x + (r_i - offset - r_f) * np.cos(theta_c)
+                model_config['cuff']['shift']['y'] = y + (r_i - offset - r_f) * np.sin(theta_c)
 
         elif cuff_shift_mode == CuffShiftMode.TRACE_BOUNDARY:
-            id_boundary = Point(0, 0).buffer(r_i - offset)
-            n_boundary = Point(x, y).buffer(r_f)
+            if r_i < r_f:
+                model_config['cuff']['rotate']['pos_ang'] = theta_f * 360 / (2 * np.pi)
+                model_config['cuff']['shift']['x'] = x
+                model_config['cuff']['shift']['y'] = y
+            else:
+                id_boundary = Point(0, 0).buffer(r_i - offset)
+                n_boundary = Point(x, y).buffer(r_f)
 
-            if id_boundary.boundary.distance(n_boundary.boundary) < cuff_r_buffer:
-                nerve_copy.shift([x, y, 0])
-                print("WARNING: NERVE CENTERED ABOUT MIN CIRCLE CENTER (BEFORE PLACEMENT) BECAUSE "
-                      "CENTROID PLACEMENT VIOLATED REQUIRED CUFF BUFFER DISTANCE\n")
+                if id_boundary.boundary.distance(n_boundary.boundary) < cuff_r_buffer:
+                    nerve_copy.shift([x, y, 0])
+                    print("WARNING: NERVE CENTERED ABOUT MIN CIRCLE CENTER (BEFORE PLACEMENT) BECAUSE "
+                          "CENTROID PLACEMENT VIOLATED REQUIRED CUFF BUFFER DISTANCE\n")
 
-            center_x = 0
-            center_y = 0
-            step = 1  # [um] STEP SIZE
-            x_step = step * np.cos(theta_f + theta_i)  # STEP VECTOR X-COMPONENT
-            y_step = step * np.sin(theta_f + theta_i)  # STEP VECTOR X-COMPONENT
+                center_x = 0
+                center_y = 0
+                step = 1  # [um] STEP SIZE
+                x_step = step * np.cos(theta_f + theta_i)  # STEP VECTOR X-COMPONENT
+                y_step = step * np.sin(theta_f + theta_i)  # STEP VECTOR X-COMPONENT
 
-            # shift nerve within cuff until one step within the minimum separation from cuff
-            while nerve_copy.polygon().boundary.distance(id_boundary.boundary) >= cuff_r_buffer:
-                nerve_copy.shift([x_step, y_step, 0])
-                center_x -= x_step
-                center_y -= y_step
+                # shift nerve within cuff until one step within the minimum separation from cuff
+                while nerve_copy.polygon().boundary.distance(id_boundary.boundary) >= cuff_r_buffer:
+                    nerve_copy.shift([x_step, y_step, 0])
+                    center_x -= x_step
+                    center_y -= y_step
 
-            # to maintain minimum separation from cuff, reverse last step
-            center_x += x_step
-            center_y += y_step
+                # to maintain minimum separation from cuff, reverse last step
+                center_x += x_step
+                center_y += y_step
 
-            model_config['cuff']['rotate']['pos_ang'] = theta_f * 360 / (2 * np.pi)
-            model_config['cuff']['shift']['x'] = center_x
-            model_config['cuff']['shift']['y'] = center_y
+                model_config['cuff']['rotate']['pos_ang'] = theta_f * 360 / (2 * np.pi)
+                model_config['cuff']['shift']['x'] = center_x
+                model_config['cuff']['shift']['y'] = center_y
 
         return model_config
 
