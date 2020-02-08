@@ -291,7 +291,9 @@ class Runner(Exceptionable, Configurable):
             else sample.slides[0].fascicles[0].outer
         )
 
-        nerve_copy.down_sample(DownSampleMode.KEEP, 10)
+        # for speed, downsample nerves to n_points_nerve (100) points
+        n_points_nerve = 100
+        nerve_copy.down_sample(DownSampleMode.KEEP, int(np.floor(nerve_copy.points.size/n_points_nerve)))
         x, y, r_bound = nerve_copy.smallest_enclosing_circle_naive()
 
         theta_c = np.arctan2(y, x)
