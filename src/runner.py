@@ -323,7 +323,7 @@ class Runner(Exceptionable, Configurable):
             if not r_f <= r_i:
                 self.throw(51)
 
-            theta_f = theta_i
+            theta_f = 0
         else:
             # get initial cuff radius
             r_i_str: str = [item["expression"] for item in cuff_config["params"]
@@ -365,7 +365,7 @@ class Runner(Exceptionable, Configurable):
         # remove (pop) temporary model configuration
         model_config = self.remove(Config.MODEL)
         model_config['min_radius_enclosing_circle'] = r_bound
-        # TODO think about whether to center the nerve about centroid or min circle center... and why/how this impacts
+
         if cuff_shift_mode == CuffShiftMode.MIN_CIRCLE_BOUNDARY:
             model_config['cuff']['rotate']['pos_ang'] = (theta_f - theta_i + theta_c + np.pi) * 360 / (2 * np.pi)
             model_config['cuff']['shift']['x'] = x + (r_i - offset - r_f) * np.cos(theta_c)
