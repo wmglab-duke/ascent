@@ -2250,7 +2250,6 @@ class Part {
         // if the material is defined explicitly in the model.json file, then the program will use the value stored in
         // model.json (CUSTOM), otherwise it will use the conductivity value stored in the materials.json file (DEFAULT).
         // This ties material parameters used to a specific model.
-
         JSONObject model_conductivities = modelData.getJSONObject("conductivities");
         Object material_assignment = model_conductivities.get(function);
 
@@ -2279,9 +2278,9 @@ class Part {
             materialParams.set("sigma_" + function + "_z", "(" + entry_z + ")", materialDescription);
 
             model.material(materialID).propertyGroup("def").set("electricconductivity", new String[]{
-                    "sigma_endoneurium_x", "0", "0",
-                    "0", "sigma_endoneurium_y", "0",
-                    "0", "0", "sigma_endoneurium_z"
+                    "sigma_" + function + "_x", "0", "0",
+                    "0", "sigma_" + function + "_y", "0",
+                    "0", "0", "sigma_" + function + "_z"
             });
         } else {
             String unit = sigma.getString("unit");
