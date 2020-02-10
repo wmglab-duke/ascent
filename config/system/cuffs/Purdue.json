@@ -5,9 +5,9 @@
       "type": "CuffFill_Primitive",
       "label": "Purdue Cuff Fill",
       "def": {
-        "Radius": "R_out_P+Thk_fill_P",
+        "Radius": "R_in_P",
         "Thk": "Thk_fill_P",
-        "L": "L_P+2*Thk_fill_P",
+        "L": "L_P",
         "z_center": "Center_P"
       },
       "materials": [
