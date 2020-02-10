@@ -391,8 +391,11 @@ public class ModelWrapper {
                     JSONArray src_combo_list;
                     if (active_srcs.has(cuff)){
                         src_combo_list = active_srcs.getJSONArray(cuff);
+                        System.out.println("found the assigned contact weighting for" + cuff + "in model config file");
                     } else {
                         src_combo_list = active_srcs.getJSONArray("default");
+                        System.out.println("WARNING: did NOT find the assigned contact weighting for " + cuff + " in model" +
+                                " config file, moving forward with DEFAULT (use with caution)");
                     }
 
                     Object[] src_combo_buffer = src_combo_list.getJSONArray(ind_active_src_select).toList().toArray(new Object[0]);
@@ -404,6 +407,7 @@ public class ModelWrapper {
                             src_combo[j] = (Double) src_combo_buffer[j];
                         }
                     }
+
                     assert fiber_coords_list != null;
                     for (int q = 0; q < fiber_coords_list.length; q++) { // loop over fiber coords in list of fiber coords
                         String fiber_coords = fiber_coords_list[q];
@@ -441,6 +445,7 @@ public class ModelWrapper {
                         ).toArray(String[]::new);
 
                         double[][] bases = new double[bases_paths.length][];
+                        System.out.println("bases = " + bases);
                         for(int basis_ind = 0; basis_ind < bases_paths.length; basis_ind ++) {
                             // and save ve to file
 
@@ -458,18 +463,20 @@ public class ModelWrapper {
                             System.arraycopy(basis_vec, 0, bases[basis_ind], 0, basis_vec.length);
 
                             // for each point (row), then across bases (column) multiply by src_combo and add
-                            double[] ve = new double[basis_vec.length];
-                            for(int point_ind = 0; point_ind < basis_vec.length; point_ind ++) {
-                                ve[point_ind] += bases[basis_ind][point_ind] * src_combo[basis_ind];
-                            }
-
                             if (! new File(ve_dir + "/" + i).exists()) {
                                 new File(ve_dir + "/" + i).mkdirs();
                             }
 
-                            writeVe(ve, ve_path);
                             ModelUtil.remove(model.tag());
                         }
+
+                        double[] ve = new double[bases[0].length];
+                        for(int basis_ind = 0; basis_ind < bases_paths.length; basis_ind ++) {
+                            for(int point_ind = 0; point_ind < bases[0].length; point_ind ++) {
+                                ve[point_ind] += bases[basis_ind][point_ind] * src_combo[basis_ind];
+                            }
+                        }
+                        writeVe(ve, ve_path);
                     }
                 }
             }
@@ -724,7 +731,7 @@ public class ModelWrapper {
         long estimatedRunSolTime = System.nanoTime() - runSolStartTime;
         solution.put("sol_time", estimatedRunSolTime/Math.pow(10,6)); // convert nanos to millis
         solution.put("time_units", "ms"); // convert nanos to millis
-        modelData.put("solution", solution);
+        modelData.put("solution", solution); // TODO make this a list that matches with the index
     }
 
     /**
