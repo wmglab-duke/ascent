@@ -35,7 +35,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
     def init_post_config(self):
         if any([config.value not in self.configs.keys() for config in (Config.MODEL, Config.SIM)]):
-            self.throw(39)  # TODO NOT WRITTEN - INCORRECT INDEX
+            self.throw(39)  # TODO NOT WRITTEN - INCORRECT ERROR INDEX
         return self
 
     def generate(self):
@@ -248,7 +248,10 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             if offset is None:
                 offset = 0.0
                 random_offset = True
-            z_offset = clip([z + offset + additional_offset for z in z_values], dz, length - dz, myel)
+            z_offset = clip([z + offset + additional_offset for z in z_values],
+                            self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'min'),
+                            self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'max'),
+                            myel)
             for x, y in fibers_xy:
                 random_offset_value = dz * (random.random() - 0.5) if random_offset else 0
                 fiber.append([(x, y, z + random_offset_value) for z in z_offset])
@@ -265,7 +268,8 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
             # get the correct fiber lengths
             model_length = self.search(Config.MODEL, 'medium', 'bounds', 'length')
-            fiber_length = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'length')
+            fiber_length = (self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'max')
+                            - self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'min'))
             half_fiber_length = fiber_length / 2
             z_shift_to_center = (model_length - fiber_length) / 2.0
 

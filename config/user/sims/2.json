@@ -12,7 +12,8 @@
     "xy_trace_buffer": 5.0,
     "z_parameters": {
       "diameter": 0.8,
-      "length": 50000.0,
+      "min": 0,
+      "max": 12500,
       "offset": 0
     },
     "xy_parameters": {

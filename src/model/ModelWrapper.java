@@ -391,7 +391,7 @@ public class ModelWrapper {
                     JSONArray src_combo_list;
                     if (active_srcs.has(cuff)){
                         src_combo_list = active_srcs.getJSONArray(cuff);
-                        System.out.println("found the assigned contact weighting for" + cuff + "in model config file");
+                        System.out.println("found the assigned contact weighting for " + cuff + " in model config file");
                     } else {
                         src_combo_list = active_srcs.getJSONArray("default");
                         System.out.println("WARNING: did NOT find the assigned contact weighting for " + cuff + " in model" +
@@ -445,7 +445,6 @@ public class ModelWrapper {
                         ).toArray(String[]::new);
 
                         double[][] bases = new double[bases_paths.length][];
-                        System.out.println("bases = " + bases);
                         for(int basis_ind = 0; basis_ind < bases_paths.length; basis_ind ++) {
                             // and save ve to file
 

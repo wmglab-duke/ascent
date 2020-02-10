@@ -1,17 +1,18 @@
 {
   "n_dimensions": 3,
   "active_srcs": {
+    "Purdue.json": [[1, -1]],
     "Enteromedics.json": [[1]],
     "CorTec.json": [[1]],
     "default": [[1, -1]]
   },
   "fibers": {
     "plot": false,
-    "mode": "MRG_DISCRETE",
+    "mode": "TIGERHOLM",
     "units": "micrometer",
     "xy_trace_buffer": 5.0,
     "z_parameters": {
-      "diameter": [5.7, 10],
+      "diameter": 0.8,
       "min": 0,
       "max": 12500,
       "offset": 0
@@ -28,13 +29,13 @@
       "start": 0,
       "on": 1,
       "off": 49,
-      "stop": [50, 100],
+      "stop": 50,
       "initSS": -200,
       "dt_initSS": 10
     },
     "BIPHASIC_PULSE_TRAIN": {
-      "pulse_width": [0.1, 0.2, 0.5],
-      "inter_phase": 1,
+      "pulse_width": 0.1,
+      "inter_phase": 0,
       "digits": 1
     }
   },
