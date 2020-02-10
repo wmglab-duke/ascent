@@ -386,7 +386,15 @@ public class ModelWrapper {
                     // loop fiber_coords_list
                     JSONObject active_srcs = simData.getJSONObject("active_srcs"); // get array of contact combo weightings
                     String cuff = modelData.getJSONObject("cuff").getString("preset");
-                    JSONArray src_combo_list = active_srcs.getJSONArray(cuff);
+
+                    // if the active_srcs weightings have been assigned, use the ones that match the cuff, otherwise, attempt to use "default"
+                    JSONArray src_combo_list;
+                    if (active_srcs.has(cuff)){
+                        src_combo_list = active_srcs.getJSONArray(cuff);
+                    } else {
+                        src_combo_list = active_srcs.getJSONArray("default");
+                    }
+
                     Object[] src_combo_buffer = src_combo_list.getJSONArray(ind_active_src_select).toList().toArray(new Object[0]);
                     Double[] src_combo = new Double[src_combo_buffer.length];
                     for (int j = 0; j < src_combo_buffer.length; j += 1) {
@@ -1001,10 +1009,11 @@ public class ModelWrapper {
                 }
 
                 String ci_mode = sampleData.getJSONObject("modes").getString("ci_perineurium_thickness");
-                JSONObject myCICoeffs = ciCoeffsData.getJSONObject("ci_perineurium_thickness_parameters").getJSONObject(ci_mode);
-
-                nerveParams.set("ci_a", myCICoeffs.getDouble("a") + " [" + myCICoeffs.getString("unit") + "/" + myCICoeffs.getString("unit") + "]");
-                nerveParams.set("ci_b", myCICoeffs.getDouble("b") + " [" + myCICoeffs.getString("unit") + "]");
+                if (ci_mode.compareTo("MEASURED") != 0) {
+                    JSONObject myCICoeffs = ciCoeffsData.getJSONObject("ci_perineurium_thickness_parameters").getJSONObject(ci_mode);
+                    nerveParams.set("ci_a", myCICoeffs.getDouble("a") + " [" + myCICoeffs.getString("unit") + "/" + myCICoeffs.getString("unit") + "]");
+                    nerveParams.set("ci_b", myCICoeffs.getDouble("b") + " [" + myCICoeffs.getString("unit") + "]");
+                }
 
                 // Set CUFF POSITIONING parameters
                 String cuffConformationParamsLabel = "Cuff Conformation Parameters";
@@ -1093,18 +1102,27 @@ public class ModelWrapper {
 
                 // MESH
                 // define MESH for NERVE
-                String meshNerveSweLabel = "Mesh Nerve";
-                MeshFeature meshNerve = model.component("comp1").mesh("mesh1").create(mw.im.next("swe",meshNerveSweLabel), "Sweep");
+                // swept: name (Sweep) and im (swe), facemethod (tri)
+                // free triangular: name (FreeTet) and im (ftet)
+                JSONObject nerveMeshParams = modelData.getJSONObject("mesh").getJSONObject("nerve");
+                String meshNerveLabel = "Mesh Nerve";
+                String meshNerveKey = nerveMeshParams.getJSONObject("type").getString("im");
+                String meshNerveName = nerveMeshParams.getJSONObject("type").getString("name");
+                MeshFeature meshNerve = model.component("comp1").mesh("mesh1").create(mw.im.next(meshNerveKey,meshNerveLabel), meshNerveName);
                 meshNerve.selection().geom("geom1", 3);
                 meshNerve.selection().named("geom1" + "_" + mw.im.get("allNervePartsUnionCsel") + "_dom");
-                meshNerve.set("facemethod", "tri");
-                meshNerve.label(meshNerveSweLabel);
+
+                // if using a swept mesh, you need to define the face method
+                if (meshNerveKey.equals("swe")) {
+                    String meshNerveFace = nerveMeshParams.getJSONObject("type").getString("facemethod"); // (tri)
+                    meshNerve.set("facemethod", meshNerveFace);
+                }
+                meshNerve.label(meshNerveLabel);
 
                 String meshNerveSizeInfoLabel = "Mesh Nerve Size Info";
-                MeshFeature meshNerveSizeInfo = meshNerve.create(mw.im.next("size",meshNerveSizeInfoLabel), "Size");
+                MeshFeature meshNerveSizeInfo = meshNerve.create(mw.im.next("size", meshNerveSizeInfoLabel), "Size");
                 meshNerveSizeInfo.label(meshNerveSizeInfoLabel);
 
-                JSONObject nerveMeshParams = modelData.getJSONObject("mesh").getJSONObject("nerve");
                 meshNerveSizeInfo.set("custom", true);
                 meshNerveSizeInfo.set("hmaxactive", true);
                 meshNerveSizeInfo.set("hmax", nerveMeshParams.getDouble("hmax"));
@@ -1117,17 +1135,20 @@ public class ModelWrapper {
                 meshNerveSizeInfo.set("hnarrowactive", true);
                 meshNerveSizeInfo.set("hnarrow", nerveMeshParams.getDouble("hnarrow"));
 
-                String meshRestFtetLabel = "Mesh Rest";
-                MeshFeature meshRest = model.component("comp1").mesh("mesh1").create(mw.im.next("ftet",meshRestFtetLabel), "FreeTet");
+                // define MESH for REST
+                String meshRestLabel = "Mesh Rest";
+                JSONObject restMeshParams = modelData.getJSONObject("mesh").getJSONObject("rest");
+                String meshRestKey = restMeshParams.getJSONObject("type").getString("im");
+                String meshRestName = restMeshParams.getJSONObject("type").getString("name");
+                MeshFeature meshRest = model.component("comp1").mesh("mesh1").create(mw.im.next(meshRestKey, meshRestLabel), meshRestName);
                 meshRest.selection().geom("geom1", 3);
                 meshRest.selection().remaining();
-                meshRest.label(meshRestFtetLabel);
+                meshRest.label(meshRestLabel);
 
                 String meshRestSizeInfoLabel = "Mesh Rest Size Info";
-                MeshFeature meshRestSizeInfo = meshRest.create(mw.im.next("size",meshRestSizeInfoLabel), "Size");
+                MeshFeature meshRestSizeInfo = meshRest.create(mw.im.next("size", meshRestSizeInfoLabel), "Size");
                 meshRestSizeInfo.label(meshRestSizeInfoLabel);
 
-                JSONObject restMeshParams = modelData.getJSONObject("mesh").getJSONObject("rest");
                 meshRestSizeInfo.set("custom", true);
                 meshRestSizeInfo.set("hmaxactive", true);
                 meshRestSizeInfo.set("hmax", restMeshParams.getDouble("hmax"));
@@ -1151,14 +1172,14 @@ public class ModelWrapper {
                 System.out.println("Meshing nerve parts... will take a while");
 
                 long nerveMeshStartTime = System.nanoTime();
-                model.component("comp1").mesh("mesh1").run(mw.im.get(meshNerveSweLabel));
+                model.component("comp1").mesh("mesh1").run(mw.im.get(meshNerveLabel));
                 long estimatedNerveMeshTime = System.nanoTime() - nerveMeshStartTime;
                 nerveMeshParams.put("mesh_time",estimatedNerveMeshTime/Math.pow(10,6)); // convert nanos to millis
 
                 System.out.println("Meshing the rest... will also take a while");
 
                 long restMeshStartTime = System.nanoTime();
-                model.component("comp1").mesh("mesh1").run(mw.im.get(meshRestFtetLabel));
+                model.component("comp1").mesh("mesh1").run(mw.im.get(meshRestLabel));
                 long estimatedRestMeshTime = System.nanoTime() - restMeshStartTime;
                 restMeshParams.put("mesh_time",estimatedRestMeshTime/Math.pow(10,6)); // convert nanos to millis
 
