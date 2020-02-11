@@ -70,7 +70,7 @@
     "resolution": 0.01,
     "vm": {
       "unit": "mV",
-      "value": -30
+      "value": 0
     },
     "n_min_aps": 1
   },
