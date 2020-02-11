@@ -1,0 +1,11 @@
+{
+  "recycle_meshes": true,
+  "overwrite": false,
+  "sample": 2,
+  "models": [
+    0
+  ],
+  "sims": [
+    5
+  ]
+}

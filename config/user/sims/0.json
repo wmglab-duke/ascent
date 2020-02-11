@@ -1,6 +1,7 @@
 {
   "n_dimensions": 3,
   "active_srcs": {
+    "Purdue.json": [[1, -1]],
     "Enteromedics.json": [[1]],
     "CorTec.json": [[1]],
     "default": [[1, -1]]
@@ -11,37 +12,19 @@
     "units": "micrometer",
     "xy_trace_buffer": 5.0,
     "z_parameters": {
-      "diameter": 1,
+      "diameter": [1, 2, 5.7, 7.3, 8.7, 10],
       "min": 0,
       "max": 12500,
-      "offset": 0.0
+      "offset": 0
     },
-    "xy_parameters": [
-      {
-        "mode": "UNIFORM_DENSITY",
-        "top_down": true,
-        "minimum_number": 0,
-        "maximum_number": 100,
-        "target_density": 0.0005,
-        "target_number": 4
-      },
-      {
-        "mode": "UNIFORM_COUNT",
-        "count": 5
-      },
-      {
-        "mode": "CENTROID",
-        "no parameters needed!": "so true dude..."
-      },
-      {
-        "mode": "WHEEL",
-        "spoke_count": 5,
-        "point_count_per_spoke": 5,
-        "find_centroid": true,
-        "angle_offset_is_in_degrees": true,
-        "angle_offset": 0.0
-      }
-    ]
+    "xy_parameters": {
+      "mode": "UNIFORM_DENSITY",
+      "top_down": true,
+      "minimum_number": 1,
+      "maximum_number": 100,
+      "target_density": 0.0001,
+      "target_number": 50
+    }
   },
   "waveform": {
     "global": {
@@ -50,37 +33,44 @@
       "start": 0,
       "on": 1,
       "off": 49,
-      "stop": [50, 100],
+      "stop": 50,
       "initSS": -200,
       "dt_initSS": 10
     },
-    "BIPHASIC_FULL_DUTY": {
-      "digits": 10
+    "BIPHASIC_PULSE_TRAIN": {
+      "pulse_width": 0.1,
+      "inter_phase": 0,
+      "digits": 1
     }
   },
   "intracellular_stim": {
     "flag": false,
     "times": {
       "unit": "ms",
-      "pw": 1
+      "pw": 0,
+      "IntraStim_PulseTrain_delay": 0
     },
     "freq": {
       "unit": "Hz",
-      "value": 1
+      "value": 0
+    },
+    "amp": {
+      "unit": "nA",
+      "value": 0
     },
     "ind": 2
   },
   "save_flags": {
-    "vm_time": false,
-    "gating_time": false,
-    "vm_space": false,
-    "gating_space": false,
-    "ve": false,
-    "istim": false
+    "vm_time": 0,
+    "gating_time": 0,
+    "vm_space": 0,
+    "gating_space": 0,
+    "ve": 0,
+    "istim": 0
   },
   "threshold": {
-    "thresh": true,
-    "block_thresh": false,
+    "thresh_flag": 1,
+    "block_thresh": 0,
     "resolution": 0.01,
     "vm": {
       "unit": "mV",
