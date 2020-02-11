@@ -92,8 +92,6 @@ class Runner(Exceptionable, Configurable):
         :param smart:
         :return:
         """
-        stupid = False
-
         # NOTE: single sample per Runner, so no looping of samples
         #       possible addition of functionality for looping samples in start.py
 
@@ -168,7 +166,7 @@ class Runner(Exceptionable, Configurable):
                 )
 
                 # init fiber manager
-                if smart and (not stupid) and os.path.exists(sim_obj_file):
+                if smart and os.path.exists(sim_obj_file):
                     print('Found existing sim object for sim: {}'.format(sim_index))
                     pass
                 else:
