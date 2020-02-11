@@ -44,7 +44,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         file_object.write("dt        = %0.3f // [ms]\n" % dt)
         tstop = extracellular_stim.get("stop")
         file_object.write("tstop     = %0.0f // [ms]\n" % tstop)
-        file_object.write("n_tsteps  =%0.0f // [unitless]\n" % n_tsteps)
+        file_object.write("n_tsteps  = %0.0f // [unitless]\n" % n_tsteps)
         file_object.write("t_initSS  = %0.0f // [ms]\n" % extracellular_stim.get("initSS"))
         file_object.write("dt_initSS = %0.0f // [ms]\n" % extracellular_stim.get("dt_initSS"))
 
@@ -98,7 +98,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                               "4:Schild model "
                               "for c fiber built from cFiberBuilder.hoc\n".format(channels))
             deltaz = fiber_model_info.get("delta_zs")
-            file_object.write("deltaz = %0.3f \n" % deltaz)
+            file_object.write("deltaz = %0.4f \n" % deltaz)
             file_object.write("len                           = axonnodes*deltaz\n")
 
 
