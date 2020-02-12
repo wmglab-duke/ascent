@@ -129,7 +129,8 @@ class Runner(Exceptionable, Configurable):
 
         # iterate through models
         for model_index, model_config in enumerate(all_configs[Config.MODEL.value]):
-            print('    MODEL {}'.format(self.configs[Config.RUN.value]['models'][model_index]))
+            model_num = self.configs[Config.RUN.value]['models'][model_index]
+            print('    MODEL {}'.format(model_num))
 
             # use current model index to computer maximum cuff shift (radius) .. SAVES to file in method
             model_config = self.compute_cuff_shift(model_config, sample, all_configs[Config.SAMPLE.value][0])
@@ -138,7 +139,7 @@ class Runner(Exceptionable, Configurable):
                 'samples',
                 str(self.configs[Config.RUN.value]['sample']),
                 'models',
-                str(model_index),
+                str(model_num),
                 'model.json'
             )
 
@@ -155,7 +156,7 @@ class Runner(Exceptionable, Configurable):
                     'samples',
                     str(self.configs[Config.RUN.value]['sample']),
                     'models',
-                    str(model_index),
+                    str(model_num),
                     'sims',
                     str(self.configs[Config.RUN.value]['sims'][sim_index])
                 )
@@ -195,7 +196,7 @@ class Runner(Exceptionable, Configurable):
                     'samples',
                     str(self.configs[Config.RUN.value]['sample']),
                     'models',
-                    str(model_index),
+                    str(model_num),
                     'sims',
                     str(self.configs[Config.RUN.value]['sims'][sim_index]),
                     'sim.obj'
@@ -205,7 +206,7 @@ class Runner(Exceptionable, Configurable):
                     'samples',
                     str(self.configs[Config.RUN.value]['sample']),
                     'models',
-                    str(model_index),
+                    str(model_num),
                     'sims',
                     str(self.configs[Config.RUN.value]['sims'][sim_index])
                 )
@@ -416,6 +417,7 @@ class Runner(Exceptionable, Configurable):
 
         # fetch current model config using the index
         model_config = all_configs[Config.MODEL.value][model_index]
+        model_num = self.configs[Config.RUN.value]['models'][model_index]
 
         # initialize Waveform object
         waveform = Waveform(self.configs[Config.EXCEPTIONS.value])
@@ -440,7 +442,7 @@ class Runner(Exceptionable, Configurable):
         dest_path: str = os.path.join(*all_configs[Config.SAMPLE.value][0]['samples_path'],
                                       str(self.configs[Config.RUN.value]['sample']),
                                       'models',
-                                      str(self.configs[Config.RUN.value]['models'][model_index]),
+                                      str(model_num),
                                       'model.json')
 
         TemplateOutput.write(model_config, dest_path)

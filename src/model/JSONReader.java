@@ -29,7 +29,7 @@ public class JSONReader {
     public static void main(String[] args) {
         // NOTE: "/" can be used on any OS in Java! HYPE!
         try {
-            JSONObject data = new JSONReader(".templates/CorTec.json").getData();
+            JSONObject data = new JSONReader(".templates/CorTec200.json").getData();
             for (Object item: (JSONArray) data.get("data")) {
                 JSONObject itemObject = (JSONObject) item;
 //                System.out.println("expression: " + itemObject.get("expression"));

@@ -3,7 +3,7 @@
   "active_srcs": {
     "Purdue.json": [[1, -1]],
     "Enteromedics.json": [[1]],
-    "CorTec.json": [[1]],
+    "CorTec200.json": [[1, -1]],
     "default": [[1, -1]]
   },
   "fibers": {

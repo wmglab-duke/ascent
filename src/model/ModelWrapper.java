@@ -338,6 +338,13 @@ public class ModelWrapper {
                         Integer.toString(sim_num)
                 });
 
+                // if sims directory does not yet exist, make it
+                File simsPathFile = new File(sim_dir);
+                if (! simsPathFile.exists()) {
+                    boolean success = simsPathFile.mkdirs();
+                    assert success;
+                }
+
                 String coord_dir = String.join("/", new String[]{ // build path to directory of fibers coordinates
                         sim_dir,
                         "fibersets"
@@ -347,6 +354,13 @@ public class ModelWrapper {
                         sim_dir,
                         "potentials"
                 });
+
+                // if sims directory does not yet exist, make it
+                File vePathFile = new File(ve_dir);
+                if (! vePathFile.exists()) {
+                    boolean success = vePathFile.mkdirs();
+                    assert success;
+                }
 
                 String key_path = String.join("/", new String[]{ // build path to key (fiberset x srcs) file
                         sim_dir,
