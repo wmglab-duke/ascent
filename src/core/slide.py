@@ -47,7 +47,7 @@ class Slide(Exceptionable):
                 self.throw(39)
 
     def monofasc(self) -> bool:
-        return self.nerve_mode == NerveMode.NOT_PRESENT
+        return self.nerve_mode == NerveMode.NOT_PRESENT and len(self.fascicles) == 1
 
     def validation(self, specific: bool = True, die: bool = True, tolerance: float = None) -> bool:
         """
