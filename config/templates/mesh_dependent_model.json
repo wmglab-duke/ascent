@@ -1,6 +1,8 @@
 {
   "modes": {
     "rho_perineurium_method": false,
+    "cuff_rotation_mode": true,
+    "cuff_shift_mode": true,
     "fiber_z": true,
     "ci_perineurium_thickness": true
   },
@@ -13,10 +15,12 @@
       "radius": true
     }
   },
+  "trace_interp_tol": true,
   "cuff": {
     "rotate": {
       "unit": true,
-      "ang": true
+      "add_ang": true,
+      "pos_ang": true
     },
     "shift": {
       "unit": true,
@@ -27,6 +31,7 @@
     "preset": true
   },
   "conductivities": false,
+  "min_radius_enclosing_circle": true,
   "mesh": {
     "rest": {
       "mesh_time": false,
@@ -34,6 +39,10 @@
       "hcurve": true,
       "hmin": true,
       "hnarrow": true,
+      "type": {
+        "im": true,
+        "name": true
+      },
       "hmax": true,
       "hgrad": true
     },
