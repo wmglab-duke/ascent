@@ -262,13 +262,17 @@ class Sample(Exceptionable, Configurable, Saveable):
 
             if deform_mode == DeformationMode.PHYSICS:
                 print('\t\tsetting up physics')
-                deformable = Deformable.from_slide(slide, ReshapeNerveMode.CIRCLE)
                 morph_count = 36
                 # title = 'morph count: {}'.format(morph_count)
                 dist = self.search(Config.SAMPLE, "min_fascicle_separation", "dist")
+                deformable = Deformable.from_slide(slide,
+                                                   ReshapeNerveMode.CIRCLE,
+                                                   minimum_distance=dist)
+
                 movements, rotations = deformable.deform(morph_count=morph_count,
                                                          render=deform_animate,
                                                          minimum_distance=dist)
+
                 for move, angle, fascicle in zip(movements, rotations, slide.fascicles):
                     fascicle.shift(list(move) + [0])
                     fascicle.rotate(angle)

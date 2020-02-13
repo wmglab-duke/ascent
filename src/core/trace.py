@@ -334,7 +334,7 @@ class Trace(Exceptionable):
         # return the associated ellipse object, after converting angle to degrees
         return self.__ellipse_object(u, v, a, b, angle * 2 * np.pi / 360)
 
-    def to_circle(self):
+    def to_circle(self, buffer: float = 0.0):
         """
         :return: returns ellipse object methods for best-fit circle (averages axes of best fit ellipse and
         sets as circle radius)
@@ -344,7 +344,7 @@ class Trace(Exceptionable):
 
         # find average radius of circle
         # casting to float is just so PyCharm stops yelling at me (I think it should already be a float64?)
-        r = float(np.mean([a, b], axis=0))
+        r = float(np.mean([a, b], axis=0)) - buffer
 
         # return the associated ellipse object, after converting angle to degrees
         # also, PyCharm thinks that np.mean returns a ndarray, but it definitely isn't in this case
@@ -390,6 +390,7 @@ class Trace(Exceptionable):
         # append first point to plot as loop
         points = np.vstack([self.points, self.points[0]])
         plt.plot(points[:, 0], points[:, 1], plot_format)
+        plt.show()
 
     def plot_centroid(self, plot_format: str = 'k*'):
         """

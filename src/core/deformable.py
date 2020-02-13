@@ -54,9 +54,6 @@ class Deformable(Exceptionable):
         for trace in contents:
             trace.offset(distance=minimum_distance / 2.0)
 
-        # self.start.offset(distance=minimum_distance / 2.0) TODO
-        # self.end.offset(distance=minimum_distance / 2.0)
-
         # initialize drawing vars, regardless of whether or not actually rendering
         # these have been moved below (if render...)
         drawing_screen = options = display_dimensions = screen = None
@@ -236,14 +233,14 @@ class Deformable(Exceptionable):
         return traces
 
     @staticmethod
-    def from_slide(slide: Slide, mode: ReshapeNerveMode) -> 'Deformable':
+    def from_slide(slide: Slide, mode: ReshapeNerveMode, minimum_distance: float = 0.0) -> 'Deformable':
         # method in slide will pull out each trace and add to a list of contents, go through traces and build polygons
 
         # get start boundary
         boundary_start = slide.nerve.deepcopy()
 
         # get end boundary
-        boundary_end = slide.reshaped_nerve(mode).deepcopy()
+        boundary_end = slide.reshaped_nerve(mode, buffer=minimum_distance).deepcopy()
 
         # get contents
         contents = [fascicle.outer.deepcopy() for fascicle in slide.fascicles]
