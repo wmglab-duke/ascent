@@ -191,7 +191,8 @@ class Runner(Exceptionable, Configurable):
 
         #  continue by using simulation objects
         for model_index, model_config in enumerate(all_configs[Config.MODEL.value]):
-            for sim_index, sim_conifig in enumerate(all_configs['sims']):
+            model_num = self.configs[Config.RUN.value]['models'][model_index]
+            for sim_index, sim_config in enumerate(all_configs['sims']):
                 sim_obj_path = os.path.join(
                     'samples',
                     str(self.configs[Config.RUN.value]['sample']),
