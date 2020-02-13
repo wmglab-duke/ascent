@@ -23,7 +23,7 @@
       "top_down": true,
       "minimum_number": 1,
       "maximum_number": 100,
-      "target_density": 0.0005,
+      "target_density": 0.002,
       "target_number": 50
     }
   },
