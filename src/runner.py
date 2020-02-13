@@ -371,12 +371,12 @@ class Runner(Exceptionable, Configurable):
         if cuff_shift_mode == CuffShiftMode.MIN_CIRCLE_BOUNDARY:
             if r_i < r_f:
                 model_config['cuff']['rotate']['pos_ang'] = (theta_f - theta_i + theta_c + np.pi) * 360 / (2 * np.pi)
-                model_config['cuff']['shift']['x'] = x
-                model_config['cuff']['shift']['y'] = y
+                model_config['cuff']['shift']['x'] = x - cuff_r_buffer * np.cos(theta_c)
+                model_config['cuff']['shift']['y'] = y - cuff_r_buffer * np.sin(theta_c)
             else:
                 model_config['cuff']['rotate']['pos_ang'] = (theta_f - theta_i + theta_c + np.pi) * 360 / (2 * np.pi)
-                model_config['cuff']['shift']['x'] = x + (r_i - offset - r_f) * np.cos(theta_c)
-                model_config['cuff']['shift']['y'] = y + (r_i - offset - r_f) * np.sin(theta_c)
+                model_config['cuff']['shift']['x'] = x + (r_i - offset - r_f - cuff_r_buffer) * np.cos(theta_c)
+                model_config['cuff']['shift']['y'] = y + (r_i - offset - r_f - cuff_r_buffer) * np.sin(theta_c)
 
         elif cuff_shift_mode == CuffShiftMode.TRACE_BOUNDARY:
             if r_i < r_f:

@@ -54,6 +54,9 @@ class Deformable(Exceptionable):
         for trace in contents:
             trace.offset(distance=minimum_distance / 2.0)
 
+        # self.start.offset(distance=minimum_distance / 2.0) TODO
+        # self.end.offset(distance=minimum_distance / 2.0)
+
         # initialize drawing vars, regardless of whether or not actually rendering
         # these have been moved below (if render...)
         drawing_screen = options = display_dimensions = screen = None
