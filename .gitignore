@@ -1,5 +1,5 @@
-# copied from https://github.com/github/gitignore/blob/master/Python.gitignore
 
+# copied from https://github.com/github/gitignore/blob/master/Python.gitignore
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -16,6 +16,7 @@ dist/
 downloads/
 eggs/
 .eggs/
+
 #lib/
 lib64/
 parts/
@@ -86,10 +87,12 @@ ipython_config.py
 .python-version
 
 # pipenv
-#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
+#   According to pypa/pipenv
+#598, it is recommended to include Pipfile.lock in version control.
 #   However, in case of collaboration, if having platform-specific dependencies or dependencies
 #   having no cross-platform support, pipenv may install dependencies that don't work, or not
 #   install all needed dependencies.
+
 #Pipfile.lock
 
 # celery beat schedule file
@@ -113,11 +116,9 @@ venv.bak/
 
 # Rope project settings
 .ropeproject
-
-# mkdocs documentation
+ mkdocs documentation
 /site
-
-# mypy
+ mypy
 .mypy_cache/
 .dmypy.json
 dmypy.json
@@ -130,6 +131,7 @@ dmypy.json
 
 # don't include data b/c this may get pretty big at some point
 samples/
+
 #samples
 *r.tif
 *.mph*

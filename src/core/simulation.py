@@ -319,8 +319,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
             for subfolder_name in subfolder_names:
                 os.makedirs(os.path.join(sim_dir, "data", subfolder_name))
 
-    ############################
-
     def _copy_and_edit_config(self, config, key, set, copy_again=True):
 
         cp = config
@@ -334,3 +332,14 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 pointer = pointer[path_part]
             pointer[path_parts[-1]] = value
         return cp
+
+    def export_nsims(self, sample_num: int, model_num: int, sim_num: int, sim_obj_dir: str, target: str):
+
+        sim_dir = os.path.join(sim_obj_dir, 'n_sims')
+        sim_export_base = os.path.join(target, '{}_{}_{}_'.format(sample_num, model_num, sim_num))
+
+        # for
+
+
+    def import_nsims(self, source: str, target: str):
+        pass
