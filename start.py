@@ -29,6 +29,8 @@ for argument_index in range(1, len(sys.argv)):
         print('Invalid sign for argument: {}\n'
               'All arguments must be positive integers.'.format(argument))
 
+    print('\n\n########## STARTING RUN {} ##########\n\n'.format(argument))
+
     run_path = os.path.join('config', 'user', 'runs', '{}.json'.format(argument))
     if not os.path.exists(run_path):
         print('INVALID run configuration path: {}'.format(run_path))
