@@ -10,44 +10,59 @@ from src.utils.enums import SetupMode, Config
 # START timer
 start = time.time()
 
-if len(sys.argv) != 2:
-    print('INVALID number of arguments to start.py')
+if len(sys.argv) == 1:
+    print('Too few arguments to start.py (must have at least one run index)')
     exit(1)
 
-run_path = os.path.join('config', 'user', 'runs', '{}.json'.format(sys.argv[1]))
-if not os.path.exists(run_path):
-    print('INVALID run configuration path: {}'.format(run_path))
 
-env_path = os.path.join('config', 'system', 'env.json')
-if not os.path.exists(env_path):
-    print('INVALID env configuration path: {}'.format(env_path))
+for argument_index in range(1, len(sys.argv)):
 
-# get main configuration file
-# master_config_file_path = os.path.join('.config', 'master.json')
-# master_config_file_path = os.path.join('.config', 'master.json')
+    argument = sys.argv[argument_index]
 
-# initialize Runner (loads in parameters)
-runner = Runner()
-runner.add(SetupMode.NEW, Config.RUN, run_path)
-runner.add(SetupMode.NEW, Config.ENV, env_path)
-runner.run()
+    try:
+        int(argument)
+    except ValueError:
+        print('Invalid type for argument: {}\n'
+              'All arguments must be positive integers.'.format(argument))
 
-# runner = Runner(master_config_file_path)
+    if int(argument_index) < 0:
+        print('Invalid sign for argument: {}\n'
+              'All arguments must be positive integers.'.format(argument))
 
-# ready, set, GO!
+    run_path = os.path.join('config', 'user', 'runs', '{}.json'.format(argument))
+    if not os.path.exists(run_path):
+        print('INVALID run configuration path: {}'.format(run_path))
 
-# runner.run()
-# runner.trace_test()
-# runner.fascicle_test()
-# runner.reposition_test()
-# runner.reposition_test2()
-# runner.manager_test()
-# runner.smart_run()
-# runner.load_up_manager()
+    env_path = os.path.join('config', 'system', 'env.json')
+    if not os.path.exists(env_path):
+        print('INVALID env configuration path: {}'.format(env_path))
 
-# END timer
-end = time.time()
-print('\nruntime: {}'.format(end - start))
+    # get main configuration file
+    # master_config_file_path = os.path.join('.config', 'master.json')
+    # master_config_file_path = os.path.join('.config', 'master.json')
 
-# cleanup for console viewing/inspecting
-del start, end
+    # initialize Runner (loads in parameters)
+    runner = Runner()
+    runner.add(SetupMode.NEW, Config.RUN, run_path)
+    runner.add(SetupMode.NEW, Config.ENV, env_path)
+    runner.run()
+
+    # runner = Runner(master_config_file_path)
+
+    # ready, set, GO!
+
+    # runner.run()
+    # runner.trace_test()
+    # runner.fascicle_test()
+    # runner.reposition_test()
+    # runner.reposition_test2()
+    # runner.manager_test()
+    # runner.smart_run()
+    # runner.load_up_manager()
+
+    # END timer
+    end = time.time()
+    print('\nruntime: {}'.format(end - start))
+
+    # cleanup for console viewing/inspecting
+    del start, end
