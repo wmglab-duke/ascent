@@ -299,9 +299,9 @@ if (find_thresh == 1){
 	load_file("Saving_Thresh.hoc")
 }
 
-proc run_all(){local myfasc, myaxon, myfreq, myamp, mypw, myisi
-	myfasc = $1
-	myaxon = $2
+proc run_all(){local myinner, myfiber, myfreq, myamp, mypw, myisi
+	myinner = $1
+	myfiber = $2
 	myfreq = $3
 	myamp = $4
 	mypw = $5
@@ -331,7 +331,7 @@ proc run_all(){local myfasc, myaxon, myfreq, myamp, mypw, myisi
 	
 	// Read in Ve(x)
 	if (flag_extracellular_stim == 1) {
-		sprint(VeSpace_fname, "data/inputs/inner%d_fiber%d.dat",myfasc, myaxon)
+		sprint(VeSpace_fname, "data/inputs/inner%d_fiber%d.dat",myinner, myfiber)
 		VeSpace_read()
 		// Convert to mV (required for e_extracellular)
 		VeSpace_data = VeSpace_data.mul(Ve_unitconv)
@@ -353,55 +353,55 @@ proc run_all(){local myfasc, myaxon, myfreq, myamp, mypw, myisi
 		RunSim(myamp)
 		
 		// Save data
-		sprint(Ve_fname_output, "data/outputs/freq%d_Ve_fasc%d_axon%d_intrapw%fms_intraisi%fms_amp%f%s.dat", myfreq, myfasc, myaxon, mypw, myisi, myamp, stim_units)
-		sprint(Istim_fname_output, "data/outputs/freq%d_Istim_fasc%d_axon%d_intrapw%fms_intraisi%fms_amp%f%s.dat", myfreq, myfasc, myaxon, mypw, myisi, myamp, stim_units)
-		sprint(fname_output_Vm_time, "data/outputs/freq%d_Vm_time_fasc%d_axon%d_intrapw%fms_intraisi%fms_amp%f%s.dat", myfreq, myfasc, myaxon, mypw, myisi, myamp, stim_units)
-		sprint(fname_output_gating_m_time, "data/outputs/freq%d_gating_m_time_fasc%d_axon%d_intrapw%fms_intraisi%fms_amp%f%s.dat", myfreq, myfasc, myaxon, mypw, myisi, myamp, stim_units)
-		sprint(fname_output_gating_h_time, "data/outputs/freq%d_gating_h_time_fasc%d_axon%d_intrapw%fms_intraisi%fms_amp%f%s.dat", myfreq, myfasc, myaxon, mypw, myisi, myamp, stim_units)
-		sprint(fname_output_gating_mp_time, "data/outputs/freq%d_gating_mp_time_fasc%d_axon%d_intrapw%fms_intraisi%fms_amp%f%s.dat", myfreq, myfasc, myaxon, mypw, myisi, myamp, stim_units)
-		sprint(fname_output_gating_s_time, "data/outputs/freq%d_gating_s_time_fasc%d_axon%d_intrapw%fms_intraisi%fms_amp%f%s.dat", myfreq, myfasc, myaxon, mypw, myisi, myamp, stim_units)
-		sprint(fname_output_Vm_space, "data/outputs/freq%d_Vm_space_fasc%d_axon%d_intrapw%fms_intraisi%fms_amp%f%s.dat", myfreq, myfasc, myaxon, mypw, myisi, myamp, stim_units)
-		sprint(fname_output_gating_m_space, "data/outputs/freq%d_gating_m_space_fasc%d_axon%d_intrapw%fms_intraisi%fms_amp%f%s.dat", myfreq, myfasc, myaxon, mypw, myisi, myamp, stim_units)
-		sprint(fname_output_gating_h_space, "data/outputs/freq%d_gating_h_space_fasc%d_axon%d_intrapw%fms_intraisi%fms_amp%f%s.dat", myfreq, myfasc, myaxon, mypw, myisi, myamp, stim_units)
-		sprint(fname_output_gating_mp_space, "data/outputs/freq%d_gating_mp_space_fasc%d_axon%d_intrapw%fms_intraisi%fms_amp%f%s.dat", myfreq, myfasc, myaxon, mypw, myisi, myamp, stim_units)
-		sprint(fname_output_gating_s_space, "data/outputs/freq%d_gating_s_space_fasc%d_axon%d_intrapw%fms_intraisi%fms_amp%f%s.dat", myfreq, myfasc, myaxon, mypw, myisi, myamp, stim_units)
+		sprint(Ve_fname_output, "data/outputs/Ve_inner%d_fiber%d.dat", myinner, myfiber)
+		sprint(Istim_fname_output, "data/outputs/Istim_innerc%d_fiber%d.dat", minner, myfiber)
+		sprint(fname_output_Vm_time, "data/outputs/Vm_time_inner%d_fiber%d.dat", myinner, myfiber)
+		sprint(fname_output_gating_m_time, "data/outputs/gating_m_time_inner%d_fiber%d.dat", myinner, myfiber)
+		sprint(fname_output_gating_h_time, "data/outputs/gating_h_time_inner%d_fiber%d.dat", myinner, myfiber)
+		sprint(fname_output_gating_mp_time, "data/outputs/gating_mp_time_inner%d_fiber%d.dat", myinner, myfiber)
+		sprint(fname_output_gating_s_time, "data/outputs/gating_s_time_inner%d_fiber%d.dat", myinner, myfiber)
+		sprint(fname_output_Vm_space, "data/outputs/Vm_space_inner%d_fiber%d.dat", myinner, myfiber)
+		sprint(fname_output_gating_m_space, "data/outputs/gating_m_space_inner%d_fiber%d.dat", myinner, myfiber)
+		sprint(fname_output_gating_h_space, "data/outputs/gating_h_space_inner%d_fiber%d.dat", myinner, myfiber)
+		sprint(fname_output_gating_mp_space, "data/outputs/gating_mp_space_inner%d_fiber%d.dat", myinner, myfiber)
+		sprint(fname_output_gating_s_space, "data/outputs/gating_s_space_inner%d_fiber%d.dat", myinner, myfiber)
 	
 		Saving()
 		
 		// Save individual run time (for each simulation)
 		trun_individual = startsw() - trun_individual
-		sprint(runtime_fname_output, "data/outputs/freq%d_runtime_fasc%d_axon%d_amp%f%s.dat", myfreq, myfasc, myaxon, myamp, stim_units)
+		sprint(runtime_fname_output, "data/outputs/runtime_inner%d_fiber%d.dat", myinner, myfiber)
 		Saving_Runtime()
 
 	}   else if (find_thresh == 1){
-		FindThresh(myfasc)
+		FindThresh(myinner)
 
 		// Run sim once more with final thresh from FindThresh()
 		RunSim(stimamp)
 
 		// Save data			
-		sprint(Ve_fname_output, "data/outputs/freq%d_Ve_fasc%d_axon%d_intrapw%fms_intraisi%fms.dat", myfreq, myfasc, myaxon, mypw, myisi)
-		sprint(Istim_fname_output, "data/outputs/freq%d_Istim_fasc%d_axon%d_intrapw%fms_intraisi%fms.dat", myfreq, myfasc, myaxon, mypw, myisi)
-		sprint(fname_output_Vm_time, "data/outputs/freq%d_Vm_time_fasc%d_axon%d_intrapw%fms_intraisi%fms.dat", myfreq, myfasc, myaxon, mypw, myisi)
-		sprint(fname_output_gating_m_time, "data/outputs/freq%d_gating_m_time_fasc%d_axon%d_intrapw%fms_intraisi%fms.dat", myfreq, myfasc, myaxon, mypw, myisi)
-		sprint(fname_output_gating_h_time, "data/outputs/freq%d_gating_h_time_fasc%d_axon%d_intrapw%fms_intraisi%fms.dat", myfreq, myfasc, myaxon, mypw, myisi)
-		sprint(fname_output_gating_mp_time, "data/outputs/freq%d_gating_mp_time_fasc%d_axon%d_intrapw%fms_intraisi%fms.dat", myfreq, myfasc, myaxon, mypw, myisi)
-		sprint(fname_output_gating_s_time, "data/outputs/freq%d_gating_s_time_fasc%d_axon%d_intrapw%fms_intraisi%fms.dat", myfreq, myfasc, myaxon, mypw, myisi)
-		sprint(fname_output_Vm_space, "data/outputs/freq%d_Vm_space_fasc%d_axon%d_intrapw%fms_intraisi%fms.dat", myfreq, myfasc, myaxon, mypw, myisi)
-		sprint(fname_output_gating_m_space, "data/outputs/freq%d_gating_m_space_fasc%d_axon%d_intrapw%fms_intraisi%fms.dat", myfreq, myfasc, myaxon, mypw, myisi)
-		sprint(fname_output_gating_h_space, "data/outputs/freq%d_gating_h_space_fasc%d_axon%d_intrapw%fms_intraisi%fms.dat", myfreq, myfasc, myaxon, mypw, myisi)
-		sprint(fname_output_gating_mp_space, "data/outputs/freq%d_gating_mp_space_fasc%d_axon%d_intrapw%fms_intraisi%fms.dat", myfreq, myfasc, myaxon, mypw, myisi)
-		sprint(fname_output_gating_s_space, "data/outputs/freq%d_gating_s_space_fasc%d_axon%d_intrapw%fms_intraisi%fms.dat", myfreq, myfasc, myaxon, mypw, myisi)
+		sprint(Ve_fname_output, "data/outputs/Ve_inner%d_fiber%d.dat", myinner, myfiber)
+		sprint(Istim_fname_output, "data/outputs/Istim_innerc%d_fiber%d.dat", minner, myfiber)
+		sprint(fname_output_Vm_time, "data/outputs/Vm_time_inner%d_fiber%d.dat", myinner, myfiber)
+		sprint(fname_output_gating_m_time, "data/outputs/gating_m_time_inner%d_fiber%d.dat", myinner, myfiber)
+		sprint(fname_output_gating_h_time, "data/outputs/gating_h_time_inner%d_fiber%d.dat", myinner, myfiber)
+		sprint(fname_output_gating_mp_time, "data/outputs/gating_mp_time_inner%d_fiber%d.dat", myinner, myfiber)
+		sprint(fname_output_gating_s_time, "data/outputs/gating_s_time_inner%d_fiber%d.dat", myinner, myfiber)
+		sprint(fname_output_Vm_space, "data/outputs/Vm_space_inner%d_fiber%d.dat", myinner, myfiber)
+		sprint(fname_output_gating_m_space, "data/outputs/gating_m_space_inner%d_fiber%d.dat", myinner, myfiber)
+		sprint(fname_output_gating_h_space, "data/outputs/gating_h_space_inner%d_fiber%d.dat", myinner, myfiber)
+		sprint(fname_output_gating_mp_space, "data/outputs/gating_mp_space_inner%d_fiber%d.dat", myinner, myfiber)
+		sprint(fname_output_gating_s_space, "data/outputs/gating_s_space_inner%d_fiber%d.dat", myinner, myfiber)
 		
 		Saving()
 		
 		// Save individual run time (for each simulation)
 		trun_individual = startsw() - trun_individual
-		sprint(runtime_fname_output, "data/outputs/freq%d_runtime_fasc%d_axon%d_intrapw%fms_intraisi%fms.dat", myfreq, myfasc, myaxon, mypw, myisi)
+		sprint(runtime_fname_output, "data/outputs/runtime_inner%d_fiber%d.dat", myfasc, myaxon)
 		Saving_Runtime()
 		
 		// Save threshold value
-		sprint(thresh_fname_output, "data/outputs/freq%d_thresh_fasc%d_axon%d_intrapw%fms_intraisi%fms.dat", myfreq, myfasc, myaxon, mypw, myisi)
+		sprint(thresh_fname_output, "data/outputs/thresh_inner%d_fiber%d.dat", myfasc, myaxon)
 		Saving_Thresh()
 	} 
 }
@@ -414,15 +414,11 @@ proc run_all(){local myfasc, myaxon, myfreq, myamp, mypw, myisi
 //model_values = new Vector(Nmodels,0)
 //model_values.x[0] = 0
 
-Nfasc = 1
-objref fasc_values
-fasc_values = new Vector(Nfasc,0)
-fasc_values.x[0] = 0
-/*
-for fasc_ind = 0, Nfasc-1 {
-	fasc_values.x[fasc_ind] = fasc_ind+1
+objref inner_values
+inner_values = new Vector(Ninners,0)
+for inner_ind = 0, Ninners-1 {
+	inner_values.x[inner_ind] = inner_ind+1
 }
-*/
 
 objref num_fibers_file, fiber_values
 num_fibers_file = new File()
@@ -462,15 +458,15 @@ trun = startsw()
 // Code beyond this point (til pc.done()) is only executed by the master.
 // The master must now post jobs to the bulletin board.
 
-proc batchrun() {local fasc_ind, axon_ind, Vefreq_ind, stimamp_ind, pw_ind, isi_ind
+proc batchrun() {local inner_ind, fiber_ind, Vefreq_ind, stimamp_ind, pw_ind, isi_ind
 
-	for fasc_ind = 0, Nfasc-1 {
-		for axon_ind = 0, fiber_values.x[fasc_ind]-1 {
+	for inner_ind = 0, Ninners-1 {
+		for fiber_ind = 0, fiber_values.x[fasc_ind]-1 {
 			for Vefreq_ind = 0, Nfreq-1 {
 				for stimamp_ind = 0, Namp-1 {
 					for pw_ind = 0, Npw-1 {
 						for isi_ind = 0, Nisi-1 {
-							pc.submit("run_all",fasc_ind,axon_ind,Vefreq_values.x[Vefreq_ind],stimamp_values.x[stimamp_ind],pw_values.x[pw_ind],isi_values.x[isi_ind])
+							pc.submit("run_all",inner_ind,fiber_ind,Vefreq_values.x[Vefreq_ind],stimamp_values.x[stimamp_ind],pw_values.x[pw_ind],isi_values.x[isi_ind])
 						}
 					}
 				}
