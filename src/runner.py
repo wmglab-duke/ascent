@@ -101,9 +101,11 @@ class Runner(Exceptionable, Configurable):
         def load(path: str):
             return pickle.load(open(path, 'rb'))
 
+        sample_num = self.configs[Config.RUN.value]['sample']
+
         sample_file = os.path.join(
             'samples',
-            str(self.configs[Config.RUN.value]['sample']),
+            str(sample_num),
             'sample.obj'
         )
 
@@ -137,7 +139,7 @@ class Runner(Exceptionable, Configurable):
 
             model_config_file_name = os.path.join(
                 'samples',
-                str(self.configs[Config.RUN.value]['sample']),
+                str(sample_num),
                 'models',
                 str(model_num),
                 'model.json'
@@ -151,14 +153,15 @@ class Runner(Exceptionable, Configurable):
 
             # iterate through simulations
             for sim_index, sim_config in enumerate(all_configs['sims']):
+                sim_num = self.configs[Config.RUN.value]['sims'][sim_index]
                 print('        SIM {}'.format(self.configs[Config.RUN.value]['sims'][sim_index]))
                 sim_obj_dir = os.path.join(
                     'samples',
-                    str(self.configs[Config.RUN.value]['sample']),
+                    str(sample_num),
                     'models',
                     str(model_num),
                     'sims',
-                    str(self.configs[Config.RUN.value]['sims'][sim_index])
+                    str(sim_num)
                 )
 
                 sim_obj_file = os.path.join(
@@ -193,13 +196,14 @@ class Runner(Exceptionable, Configurable):
         for model_index, model_config in enumerate(all_configs[Config.MODEL.value]):
             model_num = self.configs[Config.RUN.value]['models'][model_index]
             for sim_index, sim_config in enumerate(all_configs['sims']):
+                sim_num = self.configs[Config.RUN.value]['sims'][sim_index]
                 sim_obj_path = os.path.join(
                     'samples',
                     str(self.configs[Config.RUN.value]['sample']),
                     'models',
                     str(model_num),
                     'sims',
-                    str(self.configs[Config.RUN.value]['sims'][sim_index]),
+                    str(sim_num),
                     'sim.obj'
                 )
 
@@ -209,7 +213,7 @@ class Runner(Exceptionable, Configurable):
                     'models',
                     str(model_num),
                     'sims',
-                    str(self.configs[Config.RUN.value]['sims'][sim_index])
+                    str(sim_num)
                 )
 
                 load(sim_obj_path).build_sims(sim_dir)
