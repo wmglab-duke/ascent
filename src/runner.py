@@ -15,6 +15,7 @@ Description:
 # builtins
 import pickle
 import random
+from typing import List
 
 import sys
 
@@ -103,6 +104,8 @@ class Runner(Exceptionable, Configurable):
         def load(path: str):
             return pickle.load(open(path, 'rb'))
 
+        potentials_exist: List[bool] = []  # if all of these are true, skip Java
+
         sample_num = self.configs[Config.RUN.value]['sample']
 
         sample_file = os.path.join(
@@ -174,7 +177,10 @@ class Runner(Exceptionable, Configurable):
                 # init fiber manager
                 if smart and os.path.exists(sim_obj_file):
                     print('Found existing sim object for sim: {}'.format(sim_index))
-                    pass
+
+                    simulation: Simulation = load(sim_obj_file)
+                    potentials_exist.append(simulation.potentials_exist(sim_obj_dir))
+
                 else:
                     if not os.path.exists(sim_obj_dir):
                         os.makedirs(sim_obj_dir)
@@ -190,9 +196,12 @@ class Runner(Exceptionable, Configurable):
                         .save(sim_obj_file)
 
         # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials
-        print('\nTO JAVA\n')
-        self.handoff(self.number)
-        print('\nTO PYTHON\n')
+        if not all(potentials_exist):  # only transition to java if necessary (there are potentials that do not exist)
+            print('\nTO JAVA\n')
+            self.handoff(self.number)
+            print('\nTO PYTHON\n')
+        else:
+            print('\nSKIPPING JAVA - all required extracted potentials already exist\n')
 
         #  continue by using simulation objects
         for model_index, model_config in enumerate(all_configs[Config.MODEL.value]):
@@ -218,7 +227,25 @@ class Runner(Exceptionable, Configurable):
                     str(sim_num)
                 )
 
-                load(sim_obj_path).build_sims(sim_dir)
+                # load up correct simulation and build required sims
+                simulation: Simulation = load(sim_obj_path)
+                simulation.build_n_sims(sim_dir)
+
+                # export simulations
+                Simulation.export_n_sims(
+                    sample_num,
+                    model_num,
+                    sim_num,
+                    sim_dir,
+                    self.search(Config.ENV, 'nsim_export')
+                )
+
+                # ensure run configuration is present
+                Simulation.export_run(
+                    self.number,
+                    self.search(Config.ENV, 'project_path'),
+                    self.search(Config.ENV, 'nsim_export')
+                )
 
     def handoff(self, run_number: int):
         comsol_path = self.search(Config.ENV, 'comsol_path')
@@ -299,7 +326,7 @@ class Runner(Exceptionable, Configurable):
 
         # for speed, downsample nerves to n_points_nerve (100) points
         n_points_nerve = 100
-        nerve_copy.down_sample(DownSampleMode.KEEP, int(np.floor(nerve_copy.points.size/n_points_nerve)))
+        nerve_copy.down_sample(DownSampleMode.KEEP, int(np.floor(nerve_copy.points.size / n_points_nerve)))
         x, y, r_bound = nerve_copy.smallest_enclosing_circle_naive()
 
         theta_c = np.arctan2(y, x)
@@ -319,7 +346,7 @@ class Runner(Exceptionable, Configurable):
         # check radius iff not expandable
         if not expandable:
             r_i_str: str = [item["expression"] for item in cuff_config["params"]
-                             if item["name"] == '_'.join(['R_in', cuff_code])][0]
+                            if item["name"] == '_'.join(['R_in', cuff_code])][0]
             r_i: float = Quantity(
                 Quantity(
                     r_i_str.translate(r_i_str.maketrans('', '', ' []')),
