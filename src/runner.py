@@ -36,13 +36,15 @@ from matplotlib import pyplot as plt
 
 class Runner(Exceptionable, Configurable):
 
-    def __init__(self):
+    def __init__(self, number: int):
 
         # initialize Configurable super class
         Configurable.__init__(self)
 
         # initialize Exceptionable super class
         Exceptionable.__init__(self, SetupMode.NEW)
+
+        self.number = number
 
     def load_configs(self) -> dict:
 
@@ -189,7 +191,7 @@ class Runner(Exceptionable, Configurable):
 
         # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials
         print('\nTO JAVA\n')
-        self.handoff()
+        self.handoff(self.number)
         print('\nTO PYTHON\n')
 
         #  continue by using simulation objects
@@ -218,11 +220,11 @@ class Runner(Exceptionable, Configurable):
 
                 load(sim_obj_path).build_sims(sim_dir)
 
-    def handoff(self):
+    def handoff(self, run_number: int):
         comsol_path = self.search(Config.ENV, 'comsol_path')
         jdk_path = self.search(Config.ENV, 'jdk_path')
         project_path = self.search(Config.ENV, 'project_path')
-        run_path = os.path.join(project_path, 'config', 'user', 'runs', '{}.json'.format(sys.argv[1]))
+        run_path = os.path.join(project_path, 'config', 'user', 'runs', '{}.json'.format(run_number))
 
         core_name = 'ModelWrapper'
 

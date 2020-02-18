@@ -1,6 +1,7 @@
 import copy
 import json
 import os
+import subprocess
 from typing import Tuple, List
 
 import itertools
@@ -319,8 +320,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
             for subfolder_name in subfolder_names:
                 os.makedirs(os.path.join(sim_dir, "data", subfolder_name))
 
-    ############################
-
     def _copy_and_edit_config(self, config, key, set, copy_again=True):
 
         cp = config
@@ -334,3 +333,23 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 pointer = pointer[path_part]
             pointer[path_parts[-1]] = value
         return cp
+
+    @staticmethod
+    def export_nsims(sample: int, model: int, sim: int, sim_obj_dir: str, target: str):
+
+        sim_dir = os.path.join(sim_obj_dir, 'n_sims')
+        sim_export_base = os.path.join(target, '{}_{}_{}_'.format(sample, model, sim))
+
+        for product_index in [f for f in os.listdir(sim_dir) if os.path.isdir(os.path.join(sim_dir, f))]:
+            subprocess.call(['cp -ir', os.path.join(sim_dir, product_index), sim_export_base + product_index])
+
+    @staticmethod
+    def import_nsims(sample: int, model: int, sim: int, sim_obj_dir: str, source: str):
+
+        sim_dir = os.path.join(sim_obj_dir, 'n_sims')
+
+        for dirname in [f for f in os.listdir(source) if os.path.isdir(os.path.join(source, f))]:
+            this_sample, this_model, this_sim, product_index = tuple(dirname.split('_'))
+
+            if sample == this_sample and model == this_model and sim == this_sim:
+                subprocess.call(['cp -r', os.path.join(source, dirname), os.path.join(sim_dir, product_index)])

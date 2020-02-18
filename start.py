@@ -7,8 +7,6 @@ import sys
 from src import Runner
 from src.utils.enums import SetupMode, Config
 
-# START timer
-start = time.time()
 
 if len(sys.argv) == 1:
     print('Too few arguments to start.py (must have at least one run index)')
@@ -16,6 +14,8 @@ if len(sys.argv) == 1:
 
 
 for argument_index in range(1, len(sys.argv)):
+    # START timer
+    start = time.time()
 
     argument = sys.argv[argument_index]
 
@@ -28,6 +28,8 @@ for argument_index in range(1, len(sys.argv)):
     if int(argument_index) < 0:
         print('Invalid sign for argument: {}\n'
               'All arguments must be positive integers.'.format(argument))
+
+    print('\n\n########## STARTING RUN {} ##########\n\n'.format(argument))
 
     run_path = os.path.join('config', 'user', 'runs', '{}.json'.format(argument))
     if not os.path.exists(run_path):
@@ -42,7 +44,7 @@ for argument_index in range(1, len(sys.argv)):
     # master_config_file_path = os.path.join('.config', 'master.json')
 
     # initialize Runner (loads in parameters)
-    runner = Runner()
+    runner = Runner(int(argument))
     runner.add(SetupMode.NEW, Config.RUN, run_path)
     runner.add(SetupMode.NEW, Config.ENV, env_path)
     runner.run()
@@ -64,5 +66,5 @@ for argument_index in range(1, len(sys.argv)):
     end = time.time()
     print('\nruntime: {}'.format(end - start))
 
-    # cleanup for console viewing/inspecting
-    del start, end
+# cleanup for console viewing/inspecting
+del start, end
