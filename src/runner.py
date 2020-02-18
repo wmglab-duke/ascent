@@ -431,7 +431,6 @@ class Runner(Exceptionable, Configurable):
         waveform.add(SetupMode.OLD, Config.MODEL, model_config)
 
         # compute rho and sigma from waveform instance
-
         if model_config.get('modes').get(PerineuriumResistivityMode.config.value) == \
                 PerineuriumResistivityMode.RHO_WEERASURIYA.value:
             freq_double = model_config.get('frequency').get('value')
