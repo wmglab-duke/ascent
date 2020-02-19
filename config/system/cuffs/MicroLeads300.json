@@ -2,22 +2,6 @@
   "code": "U300",
   "instances": [
     {
-      "type": "CuffFill_Primitive",
-      "label": "MicroLeads300 Cuff Fill",
-      "def": {
-        "Radius": "R_out_U300+Thk_fill_U300",
-        "Thk": "Thk_fill_U300",
-        "L": "L_U300+2*Thk_fill_U300",
-        "z_center": "z_center_U300"
-      },
-      "materials": [
-        {
-          "info": "fill",
-          "label_index": 0
-        }
-      ]
-    },
-    {
       "type": "uCuff_Primitive",
       "label": "MicroLeads300 Cuff",
       "def": {
@@ -65,6 +49,22 @@
         {
           "info": "conductor",
           "label_index": 1
+        }
+      ]
+    },
+    {
+      "type": "uCuffFill_Primitive",
+      "label": "MicroLeads300 uCuff Fill",
+      "def": {
+        "R_in": "R_in_U300",
+        "Tangent": "Tangent_U300",
+        "L": "L_U300",
+        "z_center": "z_center_U300"
+      },
+      "materials": [
+        {
+          "info": "fill",
+          "label_index": 0
         }
       ]
     }

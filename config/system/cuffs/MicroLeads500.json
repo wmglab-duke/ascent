@@ -2,22 +2,6 @@
   "code": "U500",
   "instances": [
     {
-      "type": "CuffFill_Primitive",
-      "label": "MicroLeads500 Cuff Fill",
-      "def": {
-        "Radius": "R_out_U500+Thk_fill_U500",
-        "Thk": "Thk_fill_U500",
-        "L": "L_U500+2*Thk_fill_U500",
-        "z_center": "z_center_U500"
-      },
-      "materials": [
-        {
-          "info": "fill",
-          "label_index": 0
-        }
-      ]
-    },
-    {
       "type": "uCuff_Primitive",
       "label": "MicroLeads500 Cuff",
       "def": {
@@ -65,6 +49,22 @@
         {
           "info": "conductor",
           "label_index": 1
+        }
+      ]
+    },
+    {
+      "type": "uCuffFill_Primitive",
+      "label": "MicroLeads500 uCuff Fill",
+      "def": {
+        "R_in": "R_in_U500",
+        "Tangent": "Tangent_U500",
+        "L": "L_U500",
+        "z_center": "z_center_U500"
+      },
+      "materials": [
+        {
+          "info": "fill",
+          "label_index": 0
         }
       ]
     }
