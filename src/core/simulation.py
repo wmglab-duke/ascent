@@ -183,7 +183,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
     ############################
 
-    def build_sims(self, sim_dir) -> 'Simulation':
+    def build_n_sims(self, sim_dir) -> 'Simulation':
 
         # loop cartesian product
         key_filepath = os.path.join(sim_dir, "potentials", "key.dat")  # s is line number
@@ -335,16 +335,39 @@ class Simulation(Exceptionable, Configurable, Saveable):
         return cp
 
     @staticmethod
-    def export_nsims(sample: int, model: int, sim: int, sim_obj_dir: str, target: str):
+    def export_run(num: int, project_root: str, target: str, overwrite: bool = True):
+        target_dir = os.path.join(target, 'runs')
+        target_full = os.path.join(target_dir, str(num) + '.json')
+        if overwrite and os.path.exists(target_full):
+            os.remove(target_full)
 
-        sim_dir = os.path.join(sim_obj_dir, 'n_sims')
-        sim_export_base = os.path.join(target, '{}_{}_{}_'.format(sample, model, sim))
+        if not os.path.exists(target_dir):
+            os.makedirs(target_dir)
 
-        for product_index in [f for f in os.listdir(sim_dir) if os.path.isdir(os.path.join(sim_dir, f))]:
-            subprocess.call(['cp -ir', os.path.join(sim_dir, product_index), sim_export_base + product_index])
+        source = os.path.join(project_root, 'config', 'user', 'runs', str(num) + '.json')
+
+        shutil.copy2(source, target_full)
 
     @staticmethod
-    def import_nsims(sample: int, model: int, sim: int, sim_obj_dir: str, source: str):
+    def export_n_sims(sample: int, model: int, sim: int, sim_obj_dir: str, target: str, overwrite: bool = True):
+
+        sim_dir = os.path.join(sim_obj_dir, 'n_sims')
+        sim_export_base = os.path.join(target, 'n_sims', '{}_{}_{}_'.format(sample, model, sim))
+
+        for product_index in [f for f in os.listdir(sim_dir) if os.path.isdir(os.path.join(sim_dir, f))]:
+            target = sim_export_base + product_index
+
+            if overwrite and os.path.exists(target):
+                shutil.rmtree(target)
+
+            shutil.copytree(
+                os.path.join(sim_dir, product_index),
+                sim_export_base + product_index
+            )
+
+
+    @staticmethod
+    def import_n_sims(sample: int, model: int, sim: int, sim_obj_dir: str, source: str):
 
         sim_dir = os.path.join(sim_obj_dir, 'n_sims')
 
@@ -352,4 +375,18 @@ class Simulation(Exceptionable, Configurable, Saveable):
             this_sample, this_model, this_sim, product_index = tuple(dirname.split('_'))
 
             if sample == this_sample and model == this_model and sim == this_sim:
-                subprocess.call(['cp -r', os.path.join(source, dirname), os.path.join(sim_dir, product_index)])
+                shutil.copytree(
+                    os.path.join(source, dirname),
+                    os.path.join(sim_dir, product_index)
+                )
+
+    def potentials_exist(self, sim_dir: str) -> bool:
+        """
+        Return bool deciding if potentials have already been written
+        :param sim_dir: directory of this simulation
+        :return: boolean!
+        """
+        for potentials_ind, _ in self.master_product_indices:
+            if not os.path.exists(os.path.join(sim_dir, 'potentials', str(potentials_ind))):
+                return False
+        return True
