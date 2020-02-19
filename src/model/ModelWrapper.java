@@ -469,12 +469,14 @@ public class ModelWrapper {
                                 // wait!
                             }
 
-                            long comsolAPI_loadModel_time = System.nanoTime();
-                            Model model = ModelUtil.load("Model", dir);
-                            long comsolAPI_loadModel_timeElapsed = System.nanoTime() - comsolAPI_loadModel_time;
-                            System.out.println("comsolAPI_loadModel_timeElapsed = " + comsolAPI_loadModel_timeElapsed);
+//                            long comsolAPI_loadModel_time = System.nanoTime();
+//                            Model model = ModelUtil.load("Model", dir);
+//                            long comsolAPI_loadModel_timeElapsed = System.nanoTime() - comsolAPI_loadModel_time;
+                            //System.out.println("comsolAPI_loadModel_timeElapsed = " + comsolAPI_loadModel_timeElapsed);
 
-                            double[] basis_vec = extractPotentials(model, coord_path);
+                            System.out.println("here");
+                            double[] basis_vec = extractPotentials(basesMPHs[basis_ind], coord_path);
+                            System.out.println("here");
 
                             bases[basis_ind] = new double[basis_vec.length];
                             System.arraycopy(basis_vec, 0, bases[basis_ind], 0, basis_vec.length);
@@ -537,7 +539,7 @@ public class ModelWrapper {
 
         // end timer
         long comsolAPI_extractPotentials_timeElapsed = System.nanoTime() - comsolAPI_extractPotentials_time;
-        System.out.println("comsolAPI_extractPotentials_timeElapsed = " + comsolAPI_extractPotentials_timeElapsed);
+        //System.out.println("comsolAPI_extractPotentials_timeElapsed = " + comsolAPI_extractPotentials_timeElapsed);
         return ve;
     }
 
