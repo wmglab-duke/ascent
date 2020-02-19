@@ -195,6 +195,8 @@ class Runner(Exceptionable, Configurable):
                         .validate_srcs(sim_obj_dir) \
                         .save(sim_obj_file)
 
+                    potentials_exist.append(simulation.potentials_exist(sim_obj_dir))
+
         # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials
         if not all(potentials_exist):  # only transition to java if necessary (there are potentials that do not exist)
             print('\nTO JAVA\n')
