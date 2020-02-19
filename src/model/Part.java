@@ -1254,11 +1254,11 @@ class Part {
                 break;
 
             case "uContact_Primitive":
-                model.geom(id).inputParam().set("z_center", "z_center_U");
-                model.geom(id).inputParam().set("R_in", "R_in_U");
-                model.geom(id).inputParam().set("Tangent", "Tangent_U");
-                model.geom(id).inputParam().set("thk_contact", "thk_contact_U");
-                model.geom(id).inputParam().set("z_contact", "z_contact_U");
+                model.geom(id).inputParam().set("z_center", "10 [mm]");
+                model.geom(id).inputParam().set("R_in", "100 [um]");
+                model.geom(id).inputParam().set("Tangent", "200 [um]");
+                model.geom(id).inputParam().set("thk_contact", "20 [um]");
+                model.geom(id).inputParam().set("z_contact", "100 [um]");
 
                 im.labels = new String[]{
                         "CONTACT XS", //0
@@ -1362,11 +1362,11 @@ class Part {
                 break;
 
             case "uCuff_Primitive":
-                model.geom(id).inputParam().set("z_center", "z_center_U");
-                model.geom(id).inputParam().set("R_in", "R_in_U");
-                model.geom(id).inputParam().set("Tangent", "Tangent_U");
-                model.geom(id).inputParam().set("R_out", "R_out_U");
-                model.geom(id).inputParam().set("L", "L_U");
+                model.geom(id).inputParam().set("z_center", "10 [mm]");
+                model.geom(id).inputParam().set("R_in", "100 [um]");
+                model.geom(id).inputParam().set("Tangent", "200 [um]");
+                model.geom(id).inputParam().set("R_out", "300 [um]");
+                model.geom(id).inputParam().set("L", "4 [mm]");
 
                 im.labels = new String[]{
                         "CUFF XS", //0
