@@ -7,12 +7,10 @@ import subprocess
 import sys
 import time
 
-my_n_sim_dest = '/work/wmglab/edm23/ascent'
-print(my_n_sim_dest)
 # TODO if this works, load this in from a file so user just sets it once and the code is universal
 
-if not os.path.exists(os.path.join(my_n_sim_dest, 'MOD_Files/x86_64')):
-    os.chdir(os.path.join(my_n_sim_dest, 'MOD_Files'))
+if not os.path.exists(os.path.join('MOD_Files/x86_64')):
+    os.chdir(os.path.join('MOD_Files'))
     os.system('module load Neuron/7.6.2')
     os.system('nrnivmodl')
     os.chdir('..')
@@ -38,7 +36,7 @@ for run_number in sys.argv[1:]:
 
         for model in models:
             for sim in sims:
-                sim_dir = os.path.join(my_n_sim_dest, 'n_sims')
+                sim_dir = os.path.join('n_sims')
                 sim_name_base = '{}_{}_{}_'.format(sample, model, sim)
 
                 for sim_name in [x for x in os.listdir(sim_dir) if sim_name_base in x]:
