@@ -9,10 +9,11 @@ import time
 
 # TODO if this works, load this in from a file so user just sets it once and the code is universal
 
+subprocess.call('module load Neuron/7.6.2', shell=True)
+
 if not os.path.exists(os.path.join('MOD_Files/x86_64')):
     os.chdir(os.path.join('MOD_Files'))
-    os.system('module load Neuron/7.6.2')
-    os.system('nrnivmodl')
+    subprocess.call('nrnivmodl', shell=True)
     os.chdir('..')
 
 for run_number in sys.argv[1:]:
@@ -67,7 +68,7 @@ for run_number in sys.argv[1:]:
 
                         # write start.slurm
                         start_path = os.path.join(sim_path, 'start.slurm')
-                        print(start_path)
+                        # print(start_path)
                         if os.path.exists(start_path):
                             raise Exception('start.slurm already exists (not expected) check path/implementation')
 
@@ -93,17 +94,19 @@ for run_number in sys.argv[1:]:
                             handle.writelines(lines)
 
                         # submit batch job for fiber
-                        command = [
+                        job_name = '{}_{}'.format(sim_name, master_fiber_name)
+                        print('\n{}'.format(job_name))
+                        command = ' '.join([
                             'sbatch',
-                            '--job-name={}_{}'.format(sim_name, master_fiber_name),
+                            '--job-name={}'.format(job_name),
                             '--output={}'.format(os.path.join(out_dir, '{}{}'.format(master_fiber_name, '.log'))),
                             '--error={}'.format(os.path.join(err_dir, '{}{}'.format(master_fiber_name, '.log'))),
                             '--mem=8000',
                             '-p', 'wmglab',
                             '-c', '1',
                             start_path
-                        ]
-                        subprocess.call(command)
+                        ])
+                        subprocess.call(command, shell=True)
 
                         # remove start.slurm
                         os.remove(start_path)
