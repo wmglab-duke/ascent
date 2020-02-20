@@ -316,6 +316,8 @@ public class ModelWrapper {
             });
             JSONObject modelData = JSONio.read(model_config_path); // load sim configuration data
 
+            // TODO LOOP BASES HERE
+
             for(int sim_ind = 0; sim_ind < sims_list.length(); sim_ind++) { // loop over sims
                 int sim_num = (int) sims_list.get(sim_ind); // get sim number for index in sims list
 
