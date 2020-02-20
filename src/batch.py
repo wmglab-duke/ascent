@@ -82,7 +82,7 @@ for run_number in sys.argv[1:]:
                                 'cp -p ../../MOD_Files/x86_64/special .\n',
                                 'chmod a+rwx special\n',
                                 'mpirun -np 1 ./special -nobanner -mpi blank.hoc '
-                                '-c \"inner_ind={}\" '
+                                '-c \"inner_ind={}\" ',
                                 '-c \"fiber_ind={}\" '
                                 '-c \"stimamp_top={}\" '
                                 '-c \"stimamp_bottom={}\" '
