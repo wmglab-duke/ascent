@@ -159,23 +159,24 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         num_freqs = len(freqs)
 
         file_object.write("Nmodels    = %0.0f\n" % 1)
-        file_object.write("Ninners    = %0.0f\n" % num_inners)
+        # file_object.write("Ninners    = %0.0f\n" % num_inners)
         file_object.write("Namp     = %0.0f\n" % num_amps)
         file_object.write("Nfreq    = %0.0f\n" % num_freqs)
 
-        file_object.write("\nobjref stimamp_bottom_init\n")
-        file_object.write("stimamp_bottom_init = new Vector(%0.0f,%0.0f)\n" % (num_inners, 0))
-
-        file_object.write("objref stimamp_top_init\n")
-        file_object.write("stimamp_top_init = new Vector(%0.0f,%0.0f)\n\n" % (num_inners, 0))
-
-        for fasc in range(num_inners):
-            file_object.write("stimamp_bottom_init.x[%0.0f]        "
-                              "= %0.4f // [mA] initial lower bound of binary search for thresh\n"
-                              % (fasc, 0.010000))
-            file_object.write("stimamp_top_init.x[%0.0f]           "
-                              "= %0.4f // [mA] initial upper bound of binary search for thresh for extracellular stim\n"
-                              % (fasc, 0.100000))
+        # file_object.write("\nobjref stimamp_bottom_init\n")
+        # file_object.write("stimamp_bottom_init = new Vector(%0.0f,%0.0f)\n" % (num_inners, 0))
+        #
+        # file_object.write("objref stimamp_top_init\n")
+        # file_object.write("stimamp_top_init = new Vector(%0.0f,%0.0f)\n\n" % (num_inners, 0))
+        #
+        # for fasc in range(num_inners):
+        #     file_object.write("stimamp_bottom_init.x[%0.0f]        "
+        #                       "= %0.4f // [mA] initial lower bound of binary search for thresh\n"
+        #                       % (fasc, 0.010000))
+        #     file_object.write("stimamp_top_init.x[%0.0f]           "
+        #                       "= %0.4f //
+        #                       [mA] initial upper bound of binary search for thresh for extracellular stim\n"
+        #                       % (fasc, 0.100000))
 
         file_object.write("\nap_thresh = %0.0f\n" % threshold["vm"]["value"])
         file_object.write("\nthresh_resoln = %0.2f\n" % threshold.get("resolution"))
@@ -201,11 +202,3 @@ class HocWriter(Exceptionable, Configurable, Saveable):
 
         # if C Fiber then dz and len too // TODO
         file_object.close()
-
-    def write_slurm(self):
-        """
-        Write file StartSim###.slurm
-        :return:
-        """
-        pass
-
