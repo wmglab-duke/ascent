@@ -11,8 +11,8 @@ my_n_sim_dest = '/work/wmglab/edm23/ascent'
 print(my_n_sim_dest)
 # TODO if this works, load this in from a file so user just sets it once and the code is universal
 
-if not os.path.exists('MOD_Files/x86_64'):
-    os.chdir('MOD_Files')
+if not os.path.exists(os.path.join(my_n_sim_dest, 'MOD_Files/x86_64')):
+    os.chdir(os.path.join(my_n_sim_dest, 'MOD_Files'))
     os.system('module load Neuron/7.6.2')
     os.system('nrnivmodl')
     os.chdir('..')
@@ -30,7 +30,7 @@ for run_number in sys.argv[1:]:
         raise Exception('Invalid run number: {}'.format(run_number))
 
     with open(filename, 'r') as file:
-        run: dict = json.load(file)
+        run = json.load(file)
 
         sample = run.get('sample')
         models = run.get('models')
