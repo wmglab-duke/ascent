@@ -18,8 +18,8 @@ Variables that must be defined in wrapper/params file:
 - Istim_fname_output
 */
 
-load_file("SaveTimeCourse.hoc")
-load_file("SaveSpatialDist.hoc")
+load_file("../../HOC_Files/SaveTimeCourse.hoc")
+load_file("../../HOC_Files/SaveSpatialDist.hoc")
 
 objref Istim_suffix_tmp
 objref checknode_Ve_values_tmp

@@ -190,8 +190,8 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         for amp in range(len(amps)):
             file_object.write("stimamp_values.x[%0.0f] = %0.0f\n" % (amp, 0))
 
-        file_object.write("strdef num_fibers_fname\n")
-        file_object.write("num_fibers_fname = \"%s\"\n" % "data/inputs/numfibers_per_inner.dat")
+        # file_object.write("strdef num_fibers_fname\n")
+        # file_object.write("num_fibers_fname = \"%s\"\n" % "data/inputs/numfibers_per_inner.dat")
 
         file_object.write("\nobjref Vefreq_values\n")
         file_object.write("Vefreq_values = new Vector(Nfreq,%0.0f)\n" % 0)

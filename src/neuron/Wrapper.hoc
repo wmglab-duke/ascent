@@ -116,11 +116,11 @@ if (fiber_type == 2) {
 //	fiberD = 2
 	
 	if (flag_model_b_fiber==1) {
-		load_file("bFiberBuilder.hoc")
-		load_file("CreateAxon_BFiber.hoc")
+		load_file("../../HOC_Files/bFiberBuilder.hoc")
+		load_file("../../HOC_Files/CreateAxon_BFiber.hoc")
 		CreateAxon_BFiber()
 	} else {
-		load_file("CreateAxon_Myel.hoc")
+		load_file("../../HOC_Files/CreateAxon_Myel.hoc")
 		CreateAxon_Myel()
 	}
 }
@@ -137,8 +137,8 @@ if (fiber_type == 3) {
 	//len = axonnodes*deltaz
 	//c_fiber_model_type = 2 // type 1:Sundt 2:Tigerholm 3:Rattay 4:Schild 
 	
-	load_file("cFiberBuilder.hoc")
-	load_file("CreateAxon_CFiber.hoc")
+	load_file("../../HOC_Files/cFiberBuilder.hoc")
+	load_file("../../HOC_Files/CreateAxon_CFiber.hoc")
 	CreateAxon_CFiber()
 }
 
@@ -199,14 +199,14 @@ objref Iapplied_file, Iapplied
 // ExtracellularStim_Time.hoc
 
 strdef VeTime_fname
-load_file("ExtracellularStim_Time.hoc")
+load_file("../../HOC_Files/ExtracellularStim_Time.hoc")
 
 
 // ***************************************************************************
 // ExtracellularStim_Space.hoc
 
 strdef VeSpace_fname
-load_file("ExtracellularStim_Space.hoc")
+load_file("../../HOC_Files/ExtracellularStim_Space.hoc")
 
 // ***************************************************************************
 // Recording.hoc
@@ -267,11 +267,11 @@ if (fiber_type == 2) { // myelinated
 	checknode_Ve_values.x[0]	= int((axonnodes-1)/2)
 }
 
-load_file("Recording.hoc")
+load_file("../../HOC_Files/Recording.hoc")
 
 // ***************************************************************************
 // Call sequence of procedures/functions for each sim
-load_file("RunSim.hoc")
+load_file("../../HOC_Files/RunSim.hoc")
 
 strdef fname_output_Vm_time
 strdef fname_output_Vm_space
@@ -288,15 +288,15 @@ if (flag_whichstim == 0) {
 	stim_units = "nA"
 }
 
-load_file("Saving.hoc")
-load_file("Saving_Runtime.hoc")
+load_file("../../HOC_Files/Saving.hoc")
+load_file("../../HOC_Files/Saving_Runtime.hoc")
 
 if (find_thresh == 1){
 	//thresh_resoln		= 0.01				// resolution of threshold for extracellular stim [fraction change]
 	//stimamp_bottom_init	= 0					// initial lower bound of binary search for thresh [mA for extracellular; nA for intracellular]
 	//stimamp_top_init	= 5					// initial upper bound of binary search for thresh for extracellular stim [mA for extracellular; nA for intracellular]
-	load_file("FindThresh.hoc")
-	load_file("Saving_Thresh.hoc")
+	load_file("../../HOC_Files/FindThresh.hoc")
+	load_file("../../HOC_Files/Saving_Thresh.hoc")
 }
 
 proc run_all(){local myinner, myfiber, myfreq, myamp, mypw, myisi

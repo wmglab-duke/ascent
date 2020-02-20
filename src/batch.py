@@ -5,8 +5,10 @@ import os
 import re
 import subprocess
 import sys
+import time
 
 my_n_sim_dest = '/work/wmglab/edm23/ascent'
+print(my_n_sim_dest)
 # TODO if this works, load this in from a file so user just sets it once and the code is universal
 
 if not os.path.exists('MOD_Files/x86_64'):
@@ -107,3 +109,6 @@ for run_number in sys.argv[1:]:
 
                         # remove start.slurm
                         os.remove(start_path)
+
+                        # to not crash the scheduler
+                        time.sleep(0.5)

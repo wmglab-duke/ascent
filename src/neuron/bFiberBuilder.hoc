@@ -3,7 +3,7 @@
 
 begintemplate bFiberBuilder
 
-load_file("GeometryBuilder.hoc")
+load_file("../../HOC_Files/GeometryBuilder.hoc")
 
 public fiberD, nsegments, Length, v_init
 public section, sl, section_coord, node
@@ -226,7 +226,7 @@ revVer = 1
 					//Read in conductance set
 					conduct=new Vector()
 					InFile=new File()
-					sprint(name,"b_fiber_conductances.dat")
+					sprint(name,"../../conductances/b_fiber_conductances.dat")
 					InFile.ropen(name)
 					conduct.scanf(InFile)
 					execerror("error...")
@@ -313,7 +313,7 @@ revVer = 1
 
 					conduct=new Vector()
 					InFile=new File()
-					sprint(name,"b_fiber_conductances.dat")
+					sprint(name,"../../conductances/b_fiber_conductances.dat")
 					InFile.ropen(name)
 					conduct.scanf(InFile)
 					InFile.close()
@@ -465,7 +465,7 @@ revVer = 1
 
 					conduct=new Vector()
 					InFile=new File()
-					sprint(name,"b_fiber_conductances.dat")
+					sprint(name,"../../conductances/b_fiber_conductances.dat")
 					InFile.ropen(name)
 					conduct.scanf(InFile)
 					InFile.close()

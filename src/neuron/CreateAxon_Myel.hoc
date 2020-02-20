@@ -14,7 +14,7 @@ Variables that must be defined in wrapper/params file:
 create node[1], MYSA[1], FLUT[1], STIN[1]
 objref s[1]
 objref geometry_object
-load_file("GeometryBuilder.hoc")
+load_file("../../HOC_Files/GeometryBuilder.hoc")
 
 proc CreateAxon_Myel() {
 	//  Electrical parameters
