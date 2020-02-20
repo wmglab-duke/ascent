@@ -1254,11 +1254,11 @@ class Part {
                 break;
 
             case "uContact_Primitive":
-                model.geom(id).inputParam().set("z_center", "z_center_U");
-                model.geom(id).inputParam().set("R_in", "R_in_U");
-                model.geom(id).inputParam().set("Tangent", "Tangent_U");
-                model.geom(id).inputParam().set("thk_contact", "thk_contact_U");
-                model.geom(id).inputParam().set("z_contact", "z_contact_U");
+                model.geom(id).inputParam().set("z_center", "10 [mm]");
+                model.geom(id).inputParam().set("R_in", "100 [um]");
+                model.geom(id).inputParam().set("Tangent", "200 [um]");
+                model.geom(id).inputParam().set("thk_contact", "20 [um]");
+                model.geom(id).inputParam().set("z_contact", "100 [um]");
 
                 im.labels = new String[]{
                         "CONTACT XS", //0
@@ -1362,11 +1362,11 @@ class Part {
                 break;
 
             case "uCuff_Primitive":
-                model.geom(id).inputParam().set("z_center", "z_center_U");
-                model.geom(id).inputParam().set("R_in", "R_in_U");
-                model.geom(id).inputParam().set("Tangent", "Tangent_U");
-                model.geom(id).inputParam().set("R_out", "R_out_U");
-                model.geom(id).inputParam().set("L", "L_U");
+                model.geom(id).inputParam().set("z_center", "10 [mm]");
+                model.geom(id).inputParam().set("R_in", "100 [um]");
+                model.geom(id).inputParam().set("Tangent", "200 [um]");
+                model.geom(id).inputParam().set("R_out", "300 [um]");
+                model.geom(id).inputParam().set("L", "4 [mm]");
 
                 im.labels = new String[]{
                         "CUFF XS", //0
@@ -1431,14 +1431,14 @@ class Part {
                 String ucCircleOutlineLabel = "Cuff Outline";
                 GeomFeature ucCircleOutline = ucCXS.geom().create(im.next("c",ucCircleOutlineLabel), "Circle");
                 ucCircleOutline.label(ucCircleOutlineLabel);
-                ucCircleOutline.set("contributeto", im.get("OUTLINE_CUFF"));
+                ucCircleOutline.set("contributeto", im.get(ucOutlineCuffLabel));
                 ucCircleOutline.set("r", "R_out");
 
                 String ucDiffLabel = "Diff to Cuff XS";
                 GeomFeature ucDiff = ucCXS.geom().create(im.next("dif",ucDiffLabel), "Difference");
                 ucDiff.label(ucDiffLabel);
-                ucDiff.selection("input").named(im.get("OUTLINE_CUFF"));
-                ucDiff.selection("input2").named(im.get("INLINE_UNION"));
+                ucDiff.selection("input").named(im.get(ucOutlineCuffLabel));
+                ucDiff.selection("input2").named(im.get(ucInlineUnion));
 
                 String ucExtLabel = "Make Cuff";
                 GeomFeature ucExt = model.geom(id).create(im.next("ext",ucExtLabel), "Extrude");
@@ -1447,6 +1447,68 @@ class Part {
                 ucExt.setIndex("distance", "L", 0);
                 ucExt.selection("input").named(im.get("CUFF XS"));
 
+                model.geom(id).run();
+
+                break;
+
+            case "uCuffFill_Primitive":
+                model.geom(id).inputParam().set("z_center", "10 [mm]");
+                model.geom(id).inputParam().set("R_in", "100 [um]");
+                model.geom(id).inputParam().set("Tangent", "200 [um]");
+                model.geom(id).inputParam().set("L", "4 [mm]");
+
+                im.labels = new String[]{
+                        "Fill FINAL" //0
+
+                };
+
+                for (String cselUCuffFillLabel: im.labels) {
+                    model.geom(id).selection().create(im.next("csel", cselUCuffFillLabel), "CumulativeSelection")
+                            .label(cselUCuffFillLabel);
+
+                }
+
+                String ufCXLabel = "FILL XS";
+                GeomFeature ufCX = model.geom(id).create(im.next("wp", ufCXLabel), "WorkPlane");
+                ufCX.label(ufCXLabel);
+                ufCX.set("quickz", "z_center-L/2");
+                ufCX.set("unite", true);
+
+                String ufInlineLabel = "INLINE";
+                ufCX.geom().selection().create(im.next("csel",ufInlineLabel), "CumulativeSelection");
+                ufCX.geom().selection(im.get(ufInlineLabel)).label(ufInlineLabel);
+
+                String ufInlineUnion = "INLINE_UNION";
+                ufCX.geom().selection().create(im.next("csel",ufInlineUnion), "CumulativeSelection");
+                ufCX.geom().selection(im.get(ufInlineUnion)).label(ufInlineUnion);
+
+                String ufCircleInlineLabel = "Round Inline";
+                GeomFeature ufCircleInline = ufCX.geom().create(im.next("c", ufCircleInlineLabel), "Circle");
+                ufCircleInline.label(ufCircleInlineLabel);
+                ufCircleInline.set("contributeto", im.get(ufInlineLabel));
+                ufCircleInline.set("r", "R_in");
+
+                String ufRectInlineLabel = "Rect Inline";
+                GeomFeature ufRectInline = ufCX.geom().create(im.next("r",ufRectInlineLabel), "Rectangle");
+                ufRectInline.label(ufRectInlineLabel);
+                ufRectInline.set("contributeto", im.get(ufInlineLabel));
+                ufRectInline.set("pos", new String[]{"Tangent/2", "0"});
+                ufRectInline.set("base", "center");
+                ufRectInline.set("size", new String[]{"Tangent", "2*R_in"});
+
+                String ufUnionInlineLabel = "Union Inline Parts";
+                GeomFeature ufUnionInline = ufCX.geom().create(im.next("uni", ufUnionInlineLabel), "Union");
+                ufUnionInline.set("intbnd", false);
+                ufUnionInline.label(ufUnionInlineLabel);
+                ufUnionInline.set("contributeto", im.get(ufInlineUnion));
+                ufUnionInline.selection("input").named(im.get(ufInlineLabel));
+
+                String ufExtLabel = "Make uFill";
+                GeomFeature ufExt = model.geom(id).create(im.next("ext", ufExtLabel), "Extrude");
+                ufExt.label(ufExtLabel);
+                ufExt.set("contributeto", im.get("Fill FINAL"));
+                ufExt.setIndex("distance", "L", 0);
+                ufExt.selection("input").set(im.get(ufCXLabel));
                 model.geom(id).run();
 
                 break;
@@ -1925,6 +1987,29 @@ class Part {
                 partInstance.setEntry("selkeepdom", instanceID + "_" + myIM.get(myLabels[1]) + ".dom", "on");  // CUFF FINAL
 
                 partInstance.setEntry("selkeeppnt", instanceID + "_" + myIM.get(myLabels[1]) + ".pnt", "off"); // CUFF FINAL
+
+                break;
+
+            case "uCuffFill_Primitive":
+                // set instantiation parameters
+                String[] uCuffFillParameters = {
+                        "z_center",
+                        "R_in",
+                        "Tangent",
+                        "L"
+
+                };
+
+                for (String param : uCuffFillParameters) {
+                    partInstance.setEntry("inputexpr", param, (String) itemObject.get(param));
+
+                }
+
+                // imports
+                partInstance.set("selkeepnoncontr", false);
+                partInstance.setEntry("selkeepdom", instanceID + "_" + myIM.get(myLabels[0]) + ".dom", "on");  // FILL FINAL
+
+                partInstance.setEntry("selkeeppnt", instanceID + "_" + myIM.get(myLabels[0]) + ".pnt", "off"); // FILL FINAL
 
                 break;
 

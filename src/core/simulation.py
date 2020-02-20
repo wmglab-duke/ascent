@@ -179,14 +179,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
                     f.write(str(row) + ' ')
                 f.write("\n")
 
-        return self
-
-    ############################
-
-    def build_n_sims(self, sim_dir) -> 'Simulation':
-
-        # loop cartesian product
-        key_filepath = os.path.join(sim_dir, "potentials", "key.dat")  # s is line number
+        # TODO - maybe own method here
         f = open(key_filepath, "r")
         contents = f.read()
         s_s = range(int(contents[0]))
@@ -194,6 +187,22 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
         prods = list(itertools.product(s_s, q_s))
         self.master_product_indices = prods
+
+        return self
+
+    ############################
+
+    def build_n_sims(self, sim_dir) -> 'Simulation':
+
+        # loop cartesian product
+        # key_filepath = os.path.join(sim_dir, "potentials", "key.dat")  # s is line number
+        # f = open(key_filepath, "r")
+        # contents = f.read()
+        # s_s = range(int(contents[0]))
+        # q_s = range(len(self.wave_product))
+        #
+        # prods = list(itertools.product(s_s, q_s))
+        # self.master_product_indices = prods
 
         n_inners = 0
         for fascicle in self.sample.morphology['Fascicles']:

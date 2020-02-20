@@ -195,6 +195,8 @@ class Runner(Exceptionable, Configurable):
                         .validate_srcs(sim_obj_dir) \
                         .save(sim_obj_file)
 
+                    potentials_exist.append(simulation.potentials_exist(sim_obj_dir))
+
         # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials
         if not all(potentials_exist):  # only transition to java if necessary (there are potentials that do not exist)
             print('\nTO JAVA\n')
@@ -404,8 +406,8 @@ class Runner(Exceptionable, Configurable):
         if cuff_shift_mode == CuffShiftMode.MIN_CIRCLE_BOUNDARY:
             if r_i < r_f:
                 model_config['cuff']['rotate']['pos_ang'] = (theta_f - theta_i + theta_c + np.pi) * 360 / (2 * np.pi)
-                model_config['cuff']['shift']['x'] = x - cuff_r_buffer * np.cos(theta_c)
-                model_config['cuff']['shift']['y'] = y - cuff_r_buffer * np.sin(theta_c)
+                model_config['cuff']['shift']['x'] = 0  # - cuff_r_buffer * np.cos(theta_c)
+                model_config['cuff']['shift']['y'] = 0  # - cuff_r_buffer * np.sin(theta_c)
             else:
                 model_config['cuff']['rotate']['pos_ang'] = (theta_f - theta_i + theta_c + np.pi) * 360 / (2 * np.pi)
                 model_config['cuff']['shift']['x'] = x + (r_i - offset - r_f - cuff_r_buffer) * np.cos(theta_c)

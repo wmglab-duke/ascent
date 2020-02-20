@@ -469,7 +469,11 @@ public class ModelWrapper {
                                 // wait!
                             }
 
+                            long comsolAPI_loadModel_time = System.nanoTime();
                             Model model = ModelUtil.load("Model", dir);
+                            long comsolAPI_loadModel_timeElapsed = System.nanoTime() - comsolAPI_loadModel_time;
+                            //System.out.println("comsolAPI_loadModel_timeElapsed = " + comsolAPI_loadModel_timeElapsed);
+
                             double[] basis_vec = extractPotentials(model, coord_path);
 
                             bases[basis_ind] = new double[basis_vec.length];
@@ -516,6 +520,9 @@ public class ModelWrapper {
         coordinates = transposeMatrix(coordinatesLoaded);
 
         // get Ve from COMSOL
+        // start timer
+        long comsolAPI_extractPotentials_time = System.nanoTime();
+
         String id = this.next("interp");
         model.result().numerical().create(id, "Interp");
         model.result().numerical(id).set("expr", "V");
@@ -527,6 +534,10 @@ public class ModelWrapper {
         for (int i = 0; i < len; i++) {
             ve[i] = ve_pre[0][0][i];
         }
+
+        // end timer
+        long comsolAPI_extractPotentials_timeElapsed = System.nanoTime() - comsolAPI_extractPotentials_time;
+        //System.out.println("comsolAPI_extractPotentials_timeElapsed = " + comsolAPI_extractPotentials_timeElapsed);
         return ve;
     }
 
