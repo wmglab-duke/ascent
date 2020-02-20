@@ -279,13 +279,13 @@ class Simulation(Exceptionable, Configurable, Saveable):
                         os.path.join(nsim_inputs_directory, filename)
                     )
 
-            # write fibers per inner key to file
-            _, fiber_list = zip(*sorted(zip(inner_list, fiber_list)))
-            np.savetxt(
-                os.path.join(nsim_inputs_directory,
-                             "numfibers_per_inner{}".format(WriteMode.file_endings.value[WriteMode.DATA.value])),
-                fiber_list,
-                fmt='%0.0f')
+            # # write fibers per inner key to file
+            # _, fiber_list = zip(*sorted(zip(inner_list, fiber_list)))
+            # np.savetxt(
+            #     os.path.join(nsim_inputs_directory,
+            #                  "numfibers_per_inner{}".format(WriteMode.file_endings.value[WriteMode.DATA.value])),
+            #     fiber_list,
+            #     fmt='%0.0f')
 
         return self
 
