@@ -474,9 +474,7 @@ public class ModelWrapper {
                             long comsolAPI_loadModel_timeElapsed = System.nanoTime() - comsolAPI_loadModel_time;
                             //System.out.println("comsolAPI_loadModel_timeElapsed = " + comsolAPI_loadModel_timeElapsed);
 
-                            System.out.println("here");
                             double[] basis_vec = extractPotentials(model, coord_path);
-                            System.out.println("here");
 
                             bases[basis_ind] = new double[basis_vec.length];
                             System.arraycopy(basis_vec, 0, bases[basis_ind], 0, basis_vec.length);
