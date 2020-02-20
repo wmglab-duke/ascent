@@ -197,7 +197,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         for freq in range(len(freqs)):
             file_object.write("Vefreq_values.x[%0.0f] = %0.0f\n" % (freq, 0))
 
-        file_object.write("\nload_file(\"Wrapper.hoc\")\n")
+        file_object.write("\nload_file(\"../../HOC_Files/Wrapper.hoc\")\n")
 
         # if C Fiber then dz and len too // TODO
         file_object.close()

@@ -395,7 +395,5 @@ class Simulation(Exceptionable, Configurable, Saveable):
         :param sim_dir: directory of this simulation
         :return: boolean!
         """
-        for potentials_ind, _ in self.master_product_indices:
-            if not os.path.exists(os.path.join(sim_dir, 'potentials', str(potentials_ind))):
-                return False
-        return True
+        return all(os.path.exists(os.path.join(sim_dir, 'potentials', str(p))) for p, _ in self.master_product_indices)
+
