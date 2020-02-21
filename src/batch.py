@@ -1,12 +1,10 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 import json
 import os
 import re
 import sys
 import time
-
-# TODO if this works, load this in from a file so user just sets it once and the code is universal
 
 # os.system('module load Neuron/7.6.2')
 
@@ -16,11 +14,11 @@ if not os.path.exists(os.path.join('MOD_Files/x86_64')):
     os.chdir('..')
 
 for run_number in sys.argv[1:]:
-    if not run_number.isnumeric():
-        raise Exception(
-            'Invalid argument: {}\n'
-            'All arguments must be positive integers.'.format(run_number)
-        )
+    # if not run_number.isnumeric():
+    #     raise Exception(
+    #         'Invalid argument: {}\n'
+    #         'All arguments must be positive integers.'.format(run_number)
+    #     )
 
     filename = os.path.join('runs', run_number + '.json')
 
@@ -81,11 +79,14 @@ for run_number in sys.argv[1:]:
                                 'cp -p ../../MOD_Files/x86_64/special .\n',
                                 'chmod a+rwx special\n',
                                 'mpirun -np 1 ./special -nobanner -mpi blank.hoc '
+                                '-c \"strdef sim_path\" '
+                                '-c \"sim_path=\\\"{}\\\"\" '
                                 '-c \"inner_ind={}\" '
                                 '-c \"fiber_ind={}\" '
                                 '-c \"stimamp_top={}\" '
                                 '-c \"stimamp_bottom={}\" '
-                                '-c \"load_file(\\\"launch.hoc\\\")\"\n'.format(inner_ind,
+                                '-c \"load_file(\\\"launch.hoc\\\")\"\n'.format(sim_path,
+                                                                                inner_ind,
                                                                                 fiber_ind,
                                                                                 stimamp_top,
                                                                                 stimamp_bottom)

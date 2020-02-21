@@ -23,7 +23,7 @@ objref savevec_Vm_space, savevec_m_space, savevec_h_space, savevec_mp_space, sav
 objref savevec_Ve, savevec_Istim
 
 // Load template for 1D array of objects
-load_file("../../HOC_Files/ObjectArray_1d.hoc")
+load_file("ObjectArray_1d.hoc")
 
 proc Recording() {
 

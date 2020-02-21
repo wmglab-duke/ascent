@@ -28,7 +28,7 @@ if (fiber_type == 1) {
 	fiberd = 1
 	deltaz = 5.0
 
-	load_file("CreateAxon_Unmyel.hoc")
+	load_file("../../HOC_Files/CreateAxon_Unmyel.hoc")
 	CreateAxon_Unmyel()
 	print "Done CreateAxon_Unmyel" 
 }
@@ -43,7 +43,7 @@ if (fiber_type == 2) {
 	axonnodes = 201
 	fiberD = 7.3
 
-	load_file("CreateAxon_Myel.hoc")
+	load_file("../../HOC_Files/CreateAxon_Myel.hoc")
 	CreateAxon_Myel()
 	print "Done CreateAxon_Myel"
 }
@@ -79,7 +79,7 @@ if (fiber_type == 1) {
 	VeSpace_fname = "Model119_FiberD5-7_Fascicle1_Axon1.dat"
 }
 
-load_file("ExtracellularStim_Space.hoc")
+load_file("../../HOC_Files/ExtracellularStim_Space.hoc")
 
 VeSpace_read()
 /*
@@ -180,7 +180,7 @@ for i = 0, Nchecktimes-1 {
 	checktime_values.x[i] = int(checktime_values_ms.x[i]/dt)
 }
 
-load_file("Recording.hoc")
+load_file("../../HOC_Files/Recording.hoc")
 Recording()
 print "Done Recording"
 
@@ -211,7 +211,7 @@ if (fiber_type == 1) {
 
 ap_thresh			= -20						// threshold at which AP is detected [mV]
 
-load_file("RunSim.hoc")
+load_file("../../HOC_Files/RunSim.hoc")
 current_amp = 4.2 // [mA]
 RunSim(current_amp,IntraStim_PulseTrain_amp)
 print "Done RunSim"
@@ -290,7 +290,7 @@ fname_output_gating_s_space = "gating_s_space_tmp.dat"
 Ve_fname_output = "Ve_tmp.dat"
 Istim_fname_output = "Istim_tmp.dat"
 
-load_file("Saving.hoc")
+load_file("../../HOC_Files/Saving.hoc")
 Saving()
 print "Done Saving"
 

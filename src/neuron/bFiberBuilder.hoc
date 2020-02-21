@@ -3,7 +3,7 @@
 
 begintemplate bFiberBuilder
 
-load_file("../../HOC_Files/GeometryBuilder.hoc")
+load_file("GeometryBuilder.hoc")
 
 public fiberD, nsegments, Length, v_init
 public section, sl, section_coord, node
