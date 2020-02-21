@@ -3,17 +3,16 @@
 import json
 import os
 import re
-import subprocess
 import sys
 import time
 
 # TODO if this works, load this in from a file so user just sets it once and the code is universal
 
-subprocess.call('module load Neuron/7.6.2', shell=True)
+# os.system('module load Neuron/7.6.2')
 
 if not os.path.exists(os.path.join('MOD_Files/x86_64')):
     os.chdir(os.path.join('MOD_Files'))
-    subprocess.call('nrnivmodl', shell=True)
+    os.system('nrnivmodl')
     os.chdir('..')
 
 for run_number in sys.argv[1:]:
@@ -82,7 +81,7 @@ for run_number in sys.argv[1:]:
                                 'cp -p ../../MOD_Files/x86_64/special .\n',
                                 'chmod a+rwx special\n',
                                 'mpirun -np 1 ./special -nobanner -mpi blank.hoc '
-                                '-c \"inner_ind={}\" ',
+                                '-c \"inner_ind={}\" '
                                 '-c \"fiber_ind={}\" '
                                 '-c \"stimamp_top={}\" '
                                 '-c \"stimamp_bottom={}\" '
@@ -106,7 +105,7 @@ for run_number in sys.argv[1:]:
                             '-c', '1',
                             start_path
                         ])
-                        subprocess.call(command, shell=True)
+                        os.system(command)
 
                         # remove start.slurm
                         os.remove(start_path)
