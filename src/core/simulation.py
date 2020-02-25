@@ -293,7 +293,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
         """
         :param p: fiberset index
         :param q: fiber index within fiberset
-        :return: (l, k) as in "inner<l>_axon<k>.dat" for NEURON sim
+        :return: (l, k) as in "inner<l>_fiber<k>.dat" for NEURON sim
         """
 
         def search(arr, target) -> Tuple[int, int, int]:
