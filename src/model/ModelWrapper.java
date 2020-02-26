@@ -543,6 +543,228 @@ public class ModelWrapper {
         return ve;
     }
 
+    public void extractAllPotentials2(String projectPath, String run_path) throws IOException {
+        System.out.println("Extracting/writing all potentials - skips if file already exists");
+
+        // read in run configuration data
+        JSONObject runData = JSONio.read(run_path);
+        int sample = runData.getInt("sample"); // get sample number
+        JSONArray models_list = runData.getJSONArray("models"); // get models list
+        JSONArray sims_list = runData.getJSONArray("sims"); // get sims list
+
+        for (int model_ind = 0; model_ind < models_list.length(); model_ind++) { // loop over models
+            int model_num = (int) models_list.get(model_ind); // get model number for index in models list
+
+            // load model config data
+            String model_path = String.join("/", new String[]{ // build path to sim config file
+                    projectPath, "samples", Integer.toString(sample), "models", Integer.toString(model_num)
+            });
+
+            String model_config_path = String.join("/", new String[]{ // build path to sim config file
+                    model_path, "model.json"
+            });
+            JSONObject modelData = JSONio.read(model_config_path); // load sim configuration data
+
+            // construct bases path (to MPH)
+            String bases_directory = String.join("/", new String[]{
+                    model_path, "bases"
+            });
+
+            // get bases at the bases MPH path
+            String[] bases_paths = new File(bases_directory).list();
+            assert bases_paths != null;
+            bases_paths = Arrays.stream(bases_paths).filter(s -> Pattern.matches("[0-9]+\\.mph", s)).toArray(String[]::new);
+
+            double[][][][] bases = new double[bases_paths.length][sims_list.length()][1][1];
+            for (int basis_ind = 0; basis_ind < bases_paths.length; basis_ind++) {
+
+                // load basis MPH model
+                String basis_dir = String.join("/", new String[]{
+                        bases_directory, bases_paths[basis_ind]
+                });
+                File file = new File(basis_dir);
+                while(!file.canWrite() || !file.canRead()) {
+                    System.out.println("waiting");
+                }
+                Model basis = ModelUtil.load("Model", basis_dir);
+
+                for (int sim_ind = 0; sim_ind < sims_list.length(); sim_ind++) { // loop over sims
+                    int sim_num = (int) sims_list.get(sim_ind); // get sim number for index in sims list
+
+                    String sim_dir = String.join("/", new String[]{ // build path to directory of fibers coordinates
+                            model_path, "sims", Integer.toString(sim_num)
+                    });
+
+                    String coord_dir = String.join("/", new String[]{ // build path to directory of fibers coordinates
+                            sim_dir, "fibersets"
+                    });
+
+                    String ve_dir = String.join("/", new String[]{ // build path to directory of ve for each fiber coordinate
+                            sim_dir, "potentials"
+                    });
+
+                    String key_path = String.join("/", new String[]{ // build path to key (fiberset x srcs) file
+                            ve_dir, "key.dat"
+                    });
+
+                    // if sim potentials directory does not yet exist, make it
+                    File vePathFile = new File(ve_dir);
+                    if (!vePathFile.exists()) {
+                        boolean success = vePathFile.mkdirs();
+                        assert success;
+                    }
+
+                    File f_key = new File(key_path);
+                    Scanner scan_key = new Scanner(f_key);
+
+                    // save rows (number of coords) at top line... so number of lines in file is (number of coords +1)
+                    String products = scan_key.nextLine();
+                    int n_products = Integer.parseInt(products.trim());
+
+                    // pre-allocated array of doubles for products in file (2 columns by default for (active_src_select,fiberset_select)
+                    int[][] prods = new int[n_products][2];
+                    int row_ind = 0;
+                    // while there are more lines to scan
+                    String thisLine;
+                    while (scan_key.hasNextLine()) {
+                        thisLine = scan_key.nextLine();
+                        String[] parts = thisLine.split("\\s+");
+                        for (int i = 0; i < parts.length; i++) {
+                            prods[row_ind][i] = Integer.parseInt(parts[i]);
+                        }
+                        row_ind++;
+                    }
+
+                    // find the number of fibersets (max in 2nd column) from prods (loaded from key.dat)
+                    int n_fibersets = prods[0][1];
+                    for(int i = 0 ; i < prods.length ; i++) {
+                        if (prods[i][1] > n_fibersets){
+                            n_fibersets = prods[i][1];
+                        }
+                    }
+
+                    for (int fiberset_ind = 0; fiberset_ind < n_fibersets; fiberset_ind++) {
+                        String fiberset_dir = String.join("/", new String[]{
+                                coord_dir, Integer.toString(fiberset_ind)
+                        });
+                        File f_coords = new File(fiberset_dir);
+                        String[] fiber_coords_list = f_coords.list(); // create list of fiber coords (one for each fiber)
+                        // TODO append fiberset in bases ???
+
+                        assert fiber_coords_list != null;
+                        for (int fiber_ind = 0; fiber_ind < fiber_coords_list.length; fiber_ind++) { // loop over fiber coords in list of fiber coords
+                            // TODO append fiber in bases ???
+
+                            String fiber_coords = fiber_coords_list[fiber_ind];
+                            String coord_path = String.join("/", new String[]{
+                                    fiberset_dir, fiber_coords
+                            }); // build path to coordinates
+
+                            double[] basis_vec = extractPotentials(basis, coord_path);
+                            bases[basis_ind][sim_ind][fiberset_ind][fiber_ind] = basis_vec; // TODO ???
+                        }
+                    }
+                }
+                ModelUtil.remove(basis.tag());
+            }
+
+            // combine and make potentials for n_sims from bases
+            for (int sim_ind = 0; sim_ind < sims_list.length(); sim_ind++) { // loop over sims
+                int sim_num = (int) sims_list.get(sim_ind); // get sim number for index in sims list
+                String sim_config_path = String.join("/", new String[]{ // build path to sim config file
+                        projectPath, "config", "user", "sims", sim_num + ".json"
+                });
+                JSONObject simData = JSONio.read(sim_config_path); // load sim configuration data
+
+                JSONObject active_srcs = simData.getJSONObject("active_srcs"); // get array of contact combo weightings
+                String cuff = modelData.getJSONObject("cuff").getString("preset");
+
+                // if the active_srcs weightings have been assigned, use the ones that match the cuff, otherwise, attempt to use "default"
+                JSONArray src_combo_list;
+                if (active_srcs.has(cuff)){
+                    src_combo_list = active_srcs.getJSONArray(cuff);
+                    System.out.println("found the assigned contact weighting for " + cuff + " in sim config file");
+                } else {
+                    src_combo_list = active_srcs.getJSONArray("default");
+                    System.out.println("WARNING: did NOT find the assigned contact weighting for " + cuff + " in model" +
+                            " config file, moving forward with DEFAULT (use with caution)");
+                }
+
+                String sim_dir = String.join("/", new String[]{ // build path to directory of fibers coordinates
+                        projectPath, "samples", Integer.toString(sample), "models", Integer.toString(model_num), "sims", Integer.toString(sim_num)
+                });
+
+                String coord_dir = String.join("/", new String[]{ // build path to directory of fibers coordinates
+                        sim_dir, "fibersets"
+                });
+
+                String key_path = String.join("/", new String[]{ // build path to key (fiberset x srcs) file
+                        sim_dir, "potentials", "key.dat"
+                });
+
+                File f_key = new File(key_path);
+                Scanner scan_key = new Scanner(f_key);
+
+                // save rows (number of coords) at top line... so number of lines in file is (number of coords +1)
+                String products = scan_key.nextLine();
+                int n_products = Integer.parseInt(products.trim());
+
+                // pre-allocated array of doubles for products in file (2 columns by default for (active_src_select,fiberset_select)
+                int[][] prods = new int[n_products][2];
+                int row_ind = 0;
+                // while there are more lines to scan
+                String thisLine;
+                while (scan_key.hasNextLine()) {
+                    thisLine = scan_key.nextLine();
+                    String[] parts = thisLine.split("\\s+");
+                    for (int i = 0; i < parts.length; i++) {
+                        prods[row_ind][i] = Integer.parseInt(parts[i]);
+                    }
+                    row_ind++;
+                }
+
+                for (int i = 0; i < n_products; i++) {
+                    int ind_active_src_select = prods[i][0];
+                    int ind_fiberset_select = prods[i][1];
+
+                    Object[] src_combo_buffer = src_combo_list.getJSONArray(ind_active_src_select).toList().toArray(new Object[0]);
+                    Double[] src_combo = new Double[src_combo_buffer.length];
+                    for (int j = 0; j < src_combo_buffer.length; j ++) {
+                        if (src_combo_buffer[j].getClass() == Integer.class) {
+                            src_combo[j] = ((Integer) src_combo_buffer[j]).doubleValue();
+                        } else {
+                            src_combo[j] = (Double) src_combo_buffer[j];
+                        }
+                    }
+
+                    File f_coords = new File(String.join("/", new String[]{coord_dir, Integer.toString(i)}));
+                    String[] fiber_coords_list = f_coords.list(); // create list of fiber coords (one for each fiber)
+
+                    assert fiber_coords_list != null;
+                    for (int q = 0; q < fiber_coords_list.length; q++) { // loop over fiber coords in list of fiber coords
+                        double[] ve = new double[];                                                                        // TODO
+                        for (int basis_ind = 0; basis_ind < bases_paths.length; basis_ind++) {                             // TODO
+                            for (int point_ind = 0; point_ind < bases[0].length; point_ind++) {                            // TODO
+                                ve[point_ind] += bases[basis_ind][sim_ind][ind_fiberset_select][q] * src_combo[basis_ind]; // TODO
+                            }
+                        }
+                        String ve_dir = String.join("/", new String[]{ // build path to directory of ve for each fiber coordinate
+                                sim_dir, "potentials"
+                        });
+
+                        String ve_path = String.join("/", new String[]{
+                                ve_dir, Integer.toString(i), q + ".dat"
+                        });
+
+                        if (new File(ve_path).exists()) continue;
+
+                        writeVe(ve, ve_path);
+                    }
+                }
+            }
+        }
+    }
+
     // https://stackoverflow.com/questions/15449711/transpose-double-matrix-with-a-java-function
     public static double[][] transposeMatrix(double [][] m){
         // pre-allocated array of doubles for transposed matrix
