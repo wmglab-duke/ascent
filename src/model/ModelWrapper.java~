@@ -771,7 +771,7 @@ public class ModelWrapper {
 
                         assert fiber_coords_list != null;
                         for (int q = 0; q < fiber_coords_list.length; q++) { // loop over fiber coords in list of fiber coords
-                            double[] ve = new double[bases[basis_ind][sim_ind][ind_fiberset_select][q].length];
+                            double[] ve = new double[];
                             for (int point_ind = 0; point_ind < bases[basis_ind][sim_ind][ind_fiberset_select][q].length; point_ind++) {
                                 ve[point_ind] += bases[basis_ind][sim_ind][ind_fiberset_select][q][point_ind] * src_combo[basis_ind];
                             }
