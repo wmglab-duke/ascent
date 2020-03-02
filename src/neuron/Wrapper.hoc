@@ -13,24 +13,11 @@ pc = new ParallelContext()
 
 print "number of processors: ", pc.nhost
 
-// General parameters
-//celsius		= 37						// [degC]
-
-//dt 			= 0.005						// [ms]
-//tstop 		= 50						// [ms]
-//n_tsteps 	= int(tstop/dt) + 1			// int truncates twds zero; +1 accounts for the time point at t=0 [unitless]
-//t_initSS	= -200						// [ms]
-//dt_initSS	= 10						// [ms]
-
 //node_channels = 1						// node_channels = 0 for MRG; node_channels = 1 for Schild 1994
 if (node_channels == 1) {
 	print "WARNING - node_channels = 1. This will cause Myelinated fibers to run with Schild 1994 mechanisms..."
 }
 
-//geometry_determination_method = 0 // geometry_determination_method = 0 for preset fiber diameters; geometry_determination_method = 1 for MRG-based geometry interpolation; geometry_determination_method = 2 for GeometryBuilder fits from SPARC Y2Q1
-
-//fiber_type  = 2							// fiber_type = 1 for unmyelinated; fiber_type = 2 for myelinated; fiber_type = 3 for c fiber built from cFiberBuilder.hoc
-//passive_end_nodes = 1					// passive_end_nodse = 1 to make both end nodes passive; 0 otherwise
 if (!((passive_end_nodes == 0) || (passive_end_nodes == 1))) {
 	print "passive_end_nodes must be set to 0 or 1"
 	execerror("passive_end_nodes must be set to 0 or 1")
@@ -38,17 +25,6 @@ if (!((passive_end_nodes == 0) || (passive_end_nodes == 1))) {
 if (passive_end_nodes==0) {
 	print "WARNING - Even though passive_end_nodes was set to 0, all fibers built with cFiberBuilder.hoc (fiber_type = 3, all c_fiber_model_type values) will have passive end nodes..."
 }
-
-//find_thresh 	= 1 					// find_thresh = 0 if not doing threshold search; find_thresh = 1 if looking for threshold
-//find_block_thresh = 0//1					// If find_thresh==1, can also set find_block_thresh = 1 to find block thresholds instead of activation threshold
-
-/*
-If find_thresh = 1, then need to define ap_thresh - threshold defined as rising edge of transmembrane potential,
-as well as number of action potentials that must cross ap_thresh. For example, if testing threshold recovery cycle,
-need to detect 2 APs (to find threshold of second pulse).
-*/
-//ap_thresh		= -20					// if find_thresh = 1, threshold at which AP is detected [mV]
-//N_minAPs 		= 1						// if find_thresh = 1, define number of APs that must be detected 
 
 /*
 Extracellular [flag_whichstim=0], single intracellular pulse (stim1) [1], two intracellular pulses & change amplitude of second (stim2) [2]
@@ -92,29 +68,10 @@ NOTE: In MRG-style myelinated axons, the resting membrane potential at the nodes
 whose value is given by e_pas_Vrest in CreateAxon_Myel.hoc. So as a rule of thumb, should set e_pas_Vrest and v_init to the same value.
 */
 
-// ***************************************************************************
-// CreateAxon_Unmyel.hoc
-
-/*
-strdef fiberD_str
-fiberD_str = "2000nm"
-
-if (fiber_type == 1) {
-	axonnodes = 20001
-	fiberd = 1
-	deltaz = 5.0
-
-	load_file("CreateAxon_Unmyel.hoc")
-	CreateAxon_Unmyel()
-}
-*/
 
 // ***************************************************************************
 // CreateAxon_Myel.hoc	
 if (fiber_type == 2) {
-	//flag_model_b_fiber = 1
-//	fiberD = 2
-	
 	if (flag_model_b_fiber==1) {
 		load_file("bFiberBuilder.hoc")
 		load_file("CreateAxon_BFiber.hoc")
@@ -130,13 +87,6 @@ if (fiber_type == 2) {
 // ***************************************************************************
 // cFiberBuilder.hoc
 if (fiber_type == 3) {
-
-	//axonnodes = 20001
-	//fiberd = 2
-	//deltaz = 5.0
-	//len = axonnodes*deltaz
-	//c_fiber_model_type = 2 // type 1:Sundt 2:Tigerholm 3:Rattay 4:Schild 
-	
 	load_file("cFiberBuilder.hoc")
 	load_file("CreateAxon_CFiber.hoc")
 	CreateAxon_CFiber()
@@ -154,8 +104,8 @@ if (fiber_type == 3) {
 
 objref stim1, stim2
 
-IntraStim_PulseTrain_ind1 				= 2//int(6000/deltaz)						// Index of node where intracellular stim is placed[unitless]
-IntraStim_PulseTrain_ind2 				= 2//int(6000/deltaz)						// Index of node where intracellular stim is placed[unitless]
+IntraStim_PulseTrain_ind1 				= 2						// Index of node where intracellular stim is placed[unitless]
+IntraStim_PulseTrain_ind2 				= 2						// Index of node where intracellular stim is placed[unitless]
 
 if (fiber_type == 2) {// if myelinated fiber, convert node index to compartment index
 	intrastim_ind_tmp1 = IntraStim_PulseTrain_ind1*11
@@ -210,16 +160,6 @@ load_file("ExtracellularStim_Space.hoc")
 
 // ***************************************************************************
 // Recording.hoc
-
-//saveflag_Vm_time 		= 0
-//saveflag_gating_time 	= 0
-//saveflag_Vm_space		= 0
-//saveflag_gating_space 	= 0
-//saveflag_Ve 			= 0
-//saveflag_Istim 			= 0
-
-//Nchecknodes 	= 3 //axonnodes
-
 objref checknode_values
 checknode_values = new Vector(Nchecknodes,0)
 
@@ -232,13 +172,6 @@ if (Nchecknodes == axonnodes) {
 	checknode_values.x[0] = int(axon_length*0.25/deltaz)
 	checknode_values.x[1] = int(axon_length*0.5/deltaz)
 	checknode_values.x[2] = int(axon_length*0.75/deltaz)
-	
-	/*
-	checknode_values.x[0] = int(15000/deltaz)
-	checknode_values.x[1] = int(0.5*(axonnodes-1))
-	checknode_values.x[2] = int((axon_length-15000)/deltaz)
-	checknode_values.x[3] = int((axon_length-5000)/deltaz)
-	*/
 }
 
 // Time points to record Vm and gating params vs x
@@ -292,9 +225,6 @@ load_file("Saving.hoc")
 load_file("Saving_Runtime.hoc")
 
 if (find_thresh == 1){
-	//thresh_resoln		= 0.01				// resolution of threshold for extracellular stim [fraction change]
-	//stimamp_bottom_init	= 0					// initial lower bound of binary search for thresh [mA for extracellular; nA for intracellular]
-	//stimamp_top_init	= 5					// initial upper bound of binary search for thresh for extracellular stim [mA for extracellular; nA for intracellular]
 	load_file("FindThresh.hoc")
 	load_file("Saving_Thresh.hoc")
 }
@@ -407,29 +337,7 @@ proc run_all(){local myinner, myfiber, myfreq, myamp, mypw, myisi
 }
 
 // ***************************************************************************
-// Loop through model numbers, fascicles (different Ve(x) profiles), Ve amplitudes, Ve freq's, axons (multiple within 1 fascicle)
 
-//Nmodels = 1
-//objref model_values
-//model_values = new Vector(Nmodels,0)
-//model_values.x[0] = 0
-
-//objref inner_values
-//inner_values = new Vector(Ninners,0)
-//for inner_ind = 0, Ninners-1 {
-//	inner_values.x[inner_ind] = inner_ind+1
-//}
-
-//objref num_fibers_file, fiber_values
-//num_fibers_file = new File()
-//num_fibers_file.ropen(num_fibers_fname)
-//fiber_values = new Vector(Ninners)
-//fiber_values.scanf(num_fibers_file)
-//num_fibers_file.close()
-
-// If find_thresh = 0, then define the stim amplitudes to be tested. Amplitudes are applied to
-// extracellular, intracellular 1, or intracellular 2 stim depending on setting of flag_whichstim
-// [mA] for extracellular and [nA] for intracellular
 Namp = 1
 objref stimamp_values
 if (find_thresh == 1) { Namp = 1 } // stimamp_values isn't used when finding thresh
