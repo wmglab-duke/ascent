@@ -1,0 +1,23 @@
+from core import Sample
+from src.utils import *
+
+
+class Query(Exceptionable, Configurable, Saveable):
+    """
+    """
+
+    def __init__(self, exceptions_config: list):
+        """
+        """
+
+        # set up superclasses
+        Configurable.__init__(self)
+        Exceptionable.__init__(self, SetupMode.OLD, exceptions_config)
+
+        # initialize empty lists of fiber points
+        self.sample = sample
+        self.fibers = None
+        self.out_to_fib = None
+        self.out_to_in = None
+        self.add(SetupMode.NEW, Config.FIBER_Z, os.path.join('config', 'system', 'fiber_z.json'))
+
