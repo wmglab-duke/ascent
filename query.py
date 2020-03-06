@@ -6,6 +6,7 @@ from src.utils import *
 
 class Query(Exceptionable, Configurable, Saveable):
     """
+
     """
 
     def __init__(self, exceptions_config: list):
