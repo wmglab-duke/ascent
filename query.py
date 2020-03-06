@@ -1,6 +1,6 @@
 from typing import Union
 
-from core import Sample
+from core import Sample, Simulation
 from src.utils import *
 
 
@@ -45,7 +45,7 @@ class Query(Exceptionable, Configurable, Saveable):
         :return:
         """
 
-    def fetch_object(self) -> Union[Sample, Sim]:
+    def fetch_object(self) -> Union[Sample, Simulation]:
         """
 
         :return:
