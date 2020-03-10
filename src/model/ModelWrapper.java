@@ -37,6 +37,7 @@ public class ModelWrapper {
     private Model model; // model
 
     public IdentifierManager im = new IdentifierManager(); // top level identifier manager
+    public static IdentifierManager ve_im = new IdentifierManager(); // top level identifier manager
 
     private HashMap<String, IdentifierManager> partPrimitiveIMs = new HashMap<>(); // for managing parts within COMSOL
 
@@ -293,7 +294,7 @@ public class ModelWrapper {
         /**
          * @return success indicator
          */
-    public double[] extractPotentials(Model model, String coords_path) throws IOException {
+    public static double[] extractPotentials(Model model, String coords_path) throws IOException {
 
         // Load coordinates (x,y,z) from file in form: top line is number of rows of coords (int)
         //                                             coordinates[0][i] = [x] in micron, (double)
@@ -310,7 +311,7 @@ public class ModelWrapper {
 
         // get Ve from COMSOL
 
-        String id = this.next("interp");
+        String id = ve_im.next("interp");
         model.result().numerical().create(id, "Interp");
         model.result().numerical(id).set("expr", "V");
         model.result().numerical(id).setInterpolationCoordinates(coordinates);
@@ -330,7 +331,7 @@ public class ModelWrapper {
      * @param projectPath
      * @param run_path
      */
-    public void extractAllPotentials(String projectPath, String run_path, String modelStr) throws IOException {
+    public static void extractAllPotentials(String projectPath, String run_path, String modelStr) throws IOException {
         System.out.println("Extracting/writing all potentials - skips if file already exists");
 
         // READ IN RUN CONFIGURATION DATA
@@ -680,7 +681,7 @@ public class ModelWrapper {
         return true;
     }
 
-    public double[][] readCoords(String coords_path) throws FileNotFoundException {
+    public static double[][] readCoords(String coords_path) throws FileNotFoundException {
         File f = new File(coords_path);
         Scanner scan = new Scanner(f);
 
@@ -999,9 +1000,7 @@ public class ModelWrapper {
 
             // if bases directory does not yet exist, make it
             File basesPathFile = new File(bases_directory);
-            if (basesPathFile.exists()) {
-                break;
-            } else {
+            if (! basesPathFile.exists()) {
                 // Load MODEL configuration data
                 String modelFile = String.join("/", new String[]{
                         "samples",
@@ -1584,7 +1583,7 @@ public class ModelWrapper {
                 }
             }
             // ------
-            mw.extractAllPotentials(projectPath, runPath, modelStr);
+            extractAllPotentials(projectPath, runPath, modelStr);
 
         }
 

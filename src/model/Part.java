@@ -168,7 +168,7 @@ class Part {
                 String ifgnhLabel = "If (No Gap AND No Holes)";
                 GeomFeature if_gap_no_holes = model.geom(id).create(im.next("if", ifgnhLabel), "If");
                 if_gap_no_holes.label(ifgnhLabel);
-                if_gap_no_holes.set("condition", "(Theta==360) && (N_holes==0)");
+                if_gap_no_holes.set("condition", "(Theta>=359) && (N_holes==0)");
 
                 String difrdwicsLabel = "Remove Domain Within Inner Cuff Surface";
                 GeomFeature dif_remove_ics = model.geom(id).create(im.next("dif", difrdwicsLabel), "Difference");
@@ -180,7 +180,7 @@ class Part {
                 String elseifganhLabel = "If (Gap AND No Holes)";
                 GeomFeature elseif_gap_noholes = model.geom(id).create(im.next("elseif",elseifganhLabel), "ElseIf");
                 elseif_gap_noholes.label(elseifganhLabel);
-                elseif_gap_noholes.set("condition", "(Theta<360) && (N_holes==0)");
+                elseif_gap_noholes.set("condition", "(Theta<359) && (N_holes==0)");
 
                 String difrmwics1Label = "Remove Domain Within Inner Cuff Surface 1";
                 GeomFeature dif_remove_ics1 = model.geom(id).create(im.next("dif",difrmwics1Label), "Difference");
@@ -224,7 +224,7 @@ class Part {
                 String elifngnhLabel = "If (No Gap AND Holes)";
                 GeomFeature elif_nogap_noholes = model.geom(id).create(im.next("elseif",elifngnhLabel), "ElseIf");
                 elif_nogap_noholes.label(elifngnhLabel);
-                elif_nogap_noholes.set("condition", "(Theta==360) && (N_holes>0)");
+                elif_nogap_noholes.set("condition", "(Theta>=359) && (N_holes>0)");
 
                 String difrdwics2 = "Remove Domain Within Inner Cuff Surface 2";
                 GeomFeature dif_remove_domain_inner_cuff2 = model.geom(id).create(im.next("dif",difrdwics2), "Difference");
@@ -259,7 +259,7 @@ class Part {
                 String elifgahLabel = "If (Gap AND Holes)";
                 GeomFeature elif_gap_and_holes = model.geom(id).create(im.next("elseif",elifgahLabel), "ElseIf");
                 elif_gap_and_holes.label(elifgahLabel);
-                elif_gap_and_holes.set("condition", "(Theta<360) && (N_holes>0)");
+                elif_gap_and_holes.set("condition", "(Theta<359) && (N_holes>0)");
 
                 String difrdwics3Label = "Remove Domain Within Inner Cuff Surface 3";
                 GeomFeature dif_remove_domain_inner_cuff3 = model.geom(id).create(im.next("dif",difrdwics3Label), "Difference");
