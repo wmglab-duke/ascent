@@ -330,7 +330,7 @@ public class ModelWrapper {
      * @param projectPath
      * @param run_path
      */
-    public void extractAllPotentials(String projectPath, String run_path) throws IOException {
+    public void extractAllPotentials(String projectPath, String run_path, String modelStr) throws IOException {
         System.out.println("Extracting/writing all potentials - skips if file already exists");
 
         // READ IN RUN CONFIGURATION DATA
@@ -343,13 +343,13 @@ public class ModelWrapper {
         JSONArray sims_list = runData.getJSONArray("sims");
 
         // GET BASES FOR EACH MODEL (SET UP SO THAT LOADS EACH BASE MPH FILE ONLY ONCE => SPEED)
-        for (int model_ind = 0; model_ind < models_list.length(); model_ind++) { // loop over models
+//        for (int model_ind = 0; model_ind < models_list.length(); model_ind++) { // loop over models
             // get model number for index in models list
-            int model_num = (int) models_list.get(model_ind);
+//            int model_num = (int) models_list.get(model_ind);
 
             // load model config data
             String model_path = String.join("/", new String[]{ // build path to sim config file
-                    projectPath, "samples", Integer.toString(sample), "models", Integer.toString(model_num)
+                    projectPath, "samples", Integer.toString(sample), "models", modelStr
             });
             String model_config_path = String.join("/", new String[]{ // build path to sim config file
                     model_path, "model.json"
@@ -505,7 +505,7 @@ public class ModelWrapper {
 
                     // build path to directory of sim
                     String sim_dir = String.join("/", new String[]{
-                            projectPath, "samples", Integer.toString(sample), "models", Integer.toString(model_num),
+                            projectPath, "samples", Integer.toString(sample), "models", modelStr,
                             "sims", Integer.toString(sim_num)
                     });
 
@@ -591,7 +591,7 @@ public class ModelWrapper {
                 // get sim number for index in sims list and load sim configuration data
                 int sim_num = (int) sims_list.get(sim_ind);
                 String sim_dir = String.join("/", new String[]{
-                        projectPath, "samples", Integer.toString(sample), "models", Integer.toString(model_num), "sims", Integer.toString(sim_num)
+                        projectPath, "samples", Integer.toString(sample), "models", modelStr, "sims", Integer.toString(sim_num)
                 });
 
                 // build path to directory of fibersets
@@ -657,7 +657,7 @@ public class ModelWrapper {
                     }
                 }
             }
-        }
+        //}
     }
 
     // https://stackoverflow.com/questions/15449711/transpose-double-matrix-with-a-java-function
@@ -1563,7 +1563,7 @@ public class ModelWrapper {
 
             ModelUtil.remove(model.tag());
 
-            mw.extractAllPotentials(projectPath, runPath);
+            mw.extractAllPotentials(projectPath, runPath, modelStr);
 
             try (FileWriter file = new FileWriter("../" + modelFile)) {
                 String output = modelData.toString(2);
