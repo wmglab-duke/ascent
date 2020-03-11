@@ -390,7 +390,7 @@ class Trace(Exceptionable):
         # append first point to plot as loop
         points = np.vstack([self.points, self.points[0]])
         plt.plot(points[:, 0], points[:, 1], plot_format)
-        plt.show()
+        #plt.show()
 
     def plot_centroid(self, plot_format: str = 'k*'):
         """
