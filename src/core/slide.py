@@ -161,6 +161,8 @@ class Slide(Exceptionable):
             return self.nerve.to_circle(buffer)
         elif mode == ReshapeNerveMode.ELLIPSE:
             return self.nerve.to_ellipse()
+        elif mode == ReshapeNerveMode.NONE:
+            return self.nerve
         else:
             self.throw(16)
 
