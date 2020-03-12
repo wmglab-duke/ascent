@@ -263,6 +263,49 @@ class Waveform(Exceptionable, Configurable, Saveable):
             wave = padded_positive + padded_negative
             self.wave = wave
 
+        elif self.mode == WaveformMode.BIPHASIC_PULSE_TRAIN_Q_BALANCED_UNEVEN_PW:
+
+            pw1 = self.search(Config.SIM, *path_to_specific_parameters, 'pulse_width_1')
+            pw2 = self.search(Config.SIM, *path_to_specific_parameters, 'pulse_width_2')
+
+            # ensure fits within period
+            if (pw1 + pw2) > 1.0 / frequency:
+                self.throw(35)
+
+            # loop on inter phase
+            inter_phase = self.search(Config.SIM, *path_to_specific_parameters, 'inter_phase')
+
+            # ensures fits within period
+            if (pw1 + pw2) + inter_phase > 1.0 / frequency:
+                self.throw(36)
+
+            positive_wave = np.clip(
+                sg.square(2 * np.pi * frequency * t_signal, duty=pw1 * frequency),
+                0, 1
+            )
+            negative_wave = np.clip(
+                -sg.square(2 * np.pi * frequency * t_signal[:-round((pw1 + inter_phase) / self.dt)],
+                           duty=pw2 * frequency),
+                -1, 0
+            )
+
+            padded_positive = pad(positive_wave,
+                                  self.dt,
+                                  self.on - self.start,
+                                  self.stop - self.off)
+
+            padded_negative = pad(negative_wave,
+                                  self.dt,
+                                  self.on - self.start + pw1 + inter_phase,
+                                  self.stop - self.off)
+
+            # q-balanced
+            amp1 = 1
+            amp2 = (pw1*amp1)/pw2
+
+            wave = padded_positive + amp2*padded_negative
+            self.wave = wave
+
         else:
             self.throw(34)
 

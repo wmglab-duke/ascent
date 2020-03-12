@@ -1,0 +1,169 @@
+{
+  "sample": "Cadaver58-1",
+  "sex": "F",
+  "level": "Abdominal",
+  "samples_path": [
+    "samples"
+  ],
+  "map_path": [
+    "data",
+    "input",
+    "samples",
+    "Cadaver58-1",
+    "map.json"
+  ],
+  "scale": {
+    "scale_bar_length": 500,
+    "scale_bar_unit": "micrometer",
+    "shrinkage_scale": 0.2
+  },
+  "min_fascicle_separation": {
+    "dist": 10,
+    "units": "micrometer"
+  },
+  "modes": {
+    "write": "sectionwise2d",
+    "mask_input": "INNER_AND_OUTER_COMPILED",
+    "nerve": "PRESENT",
+    "deform": "NONE",
+    "ci_perineurium_thickness": "MEASURED",
+    "reshape_nerve": "NONE"
+  },
+  "Morphology": {
+    "Nerve": {
+      "area": 2271791.9952528765
+    },
+    "Fascicles": [
+      {
+        "outer": {
+          "area": 693.4924880247014
+        },
+        "inners": [
+          {
+            "area": 77.78570875723405
+          }
+        ]
+      },
+      {
+        "outer": {
+          "area": 6251.494225195862
+        },
+        "inners": [
+          {
+            "area": 2645.8750784737017
+          }
+        ]
+      },
+      {
+        "outer": {
+          "area": 7130.743629655746
+        },
+        "inners": [
+          {
+            "area": 4716.290709574223
+          }
+        ]
+      },
+      {
+        "outer": {
+          "area": 60307.14390141129
+        },
+        "inners": [
+          {
+            "area": 44803.79425701539
+          }
+        ]
+      },
+      {
+        "outer": {
+          "area": 10898.9000782587
+        },
+        "inners": [
+          {
+            "area": 5322.3226494440205
+          }
+        ]
+      },
+      {
+        "outer": {
+          "area": 24127.50148347541
+        },
+        "inners": [
+          {
+            "area": 15982.834684944228
+          }
+        ]
+      },
+      {
+        "outer": {
+          "area": 13554.836989705978
+        },
+        "inners": [
+          {
+            "area": 7740.645505284612
+          }
+        ]
+      },
+      {
+        "outer": {
+          "area": 14554.828389848723
+        },
+        "inners": [
+          {
+            "area": 9909.357504665419
+          }
+        ]
+      },
+      {
+        "outer": {
+          "area": 20352.379150506105
+        },
+        "inners": [
+          {
+            "area": 13380.30288697208
+          }
+        ]
+      },
+      {
+        "outer": {
+          "area": 23667.3661217224
+        },
+        "inners": [
+          {
+            "area": 15235.55008986852
+          }
+        ]
+      },
+      {
+        "outer": {
+          "area": 10669.412887746064
+        },
+        "inners": [
+          {
+            "area": 5532.073167585417
+          }
+        ]
+      },
+      {
+        "outer": {
+          "area": 30869.703562920844
+        },
+        "inners": [
+          {
+            "area": 18475.460307358917
+          }
+        ]
+      },
+      {
+        "outer": {
+          "area": 41498.48212519669
+        },
+        "inners": [
+          {
+            "area": 30431.239841418635
+          }
+        ]
+      }
+    ]
+  }
+}
