@@ -953,15 +953,15 @@ class Part {
                 break;
 
             case "RectangleContact_Primitive":
-                model.geom(id).inputParam().set("z_center", "0 [mm]");
-                model.geom(id).inputParam().set("rotation_angle", "0 [deg]");
-                model.geom(id).inputParam().set("w_contact", "0.475 [mm]");
-                model.geom(id).inputParam().set("z_contact", "0.475 [mm]");
-                model.geom(id).inputParam().set("fillet_contact", "0.1 [mm]");
+                model.geom(id).inputParam().set("Center", "0 [mm]");
+                model.geom(id).inputParam().set("Rotation_angle", "0 [deg]");
+                model.geom(id).inputParam().set("W_contact", "0.475 [mm]");
+                model.geom(id).inputParam().set("Z_contact", "0.475 [mm]");
+                model.geom(id).inputParam().set("Fillet_contact", "0.1 [mm]");
                 model.geom(id).inputParam().set("L_cuff", "4.1917 [mm]");
                 model.geom(id).inputParam().set("R_in", "1.5 [mm]");
-                model.geom(id).inputParam().set("recess", "0.1 [mm]");
-                model.geom(id).inputParam().set("thk_contact", "0.018 [mm]");
+                model.geom(id).inputParam().set("Recess", "0.1 [mm]");
+                model.geom(id).inputParam().set("Thk_contact", "0.018 [mm]");
                 model.geom(id).inputParam().set("Rect_def", "1");
 
                 im.labels = new String[]{
@@ -1011,7 +1011,7 @@ class Part {
                 ccsc.set("planetype", "transformed");
                 ccsc.set("workplane", im.get(bpprsLabel));
                 ccsc.set("transaxis", new int[]{0, 1, 0});
-                ccsc.set("transrot", "rotation_angle");
+                ccsc.set("transrot", "Rotation_angle");
                 ccsc.set("unite", true);
 
                 String ifcsitLabel = "If Contact Surface is True";
@@ -1032,20 +1032,20 @@ class Part {
                 ccsc.geom().feature("r1").set("contributeto", im.get(cpfLabel));
                 ccsc.geom().feature("r1").set("pos", new int[]{0, 0});
                 ccsc.geom().feature("r1").set("base", "center");
-                ccsc.geom().feature("r1").set("size", new String[]{"w_contact", "z_contact"});
+                ccsc.geom().feature("r1").set("size", new String[]{"W_contact", "Z_contact"});
 
                 String filletLabel = "Fillet Corners 1";
                 GeomFeature fillet = ccsc.geom().create(im.next("fil",filletLabel), "Fillet");
                 fillet.label(filletLabel);
                 fillet.set("contributeto", im.get(cfLabel));
-                fillet.set("radius", "fillet_contact");
+                fillet.set("radius", "Fillet_contact");
                 fillet.selection("point").named(im.get(cpfLabel));
 
                 String scaleLabel1 = "scLabel1";
                 GeomFeature scale = ccsc.geom().create(im.next("sca",scaleLabel1), "Scale");
                 scale.label(scaleLabel1);
                 scale.set("type", "anisotropic");
-                scale.set("factor", new String[]{"(2*(R_in+recess)*sin((w_contact)/(2*(R_in+recess))))/w_contact", "1"});
+                scale.set("factor", new String[]{"(2*(R_in+Recess)*sin((W_contact)/(2*(R_in+Recess))))/W_contact", "1"});
                 scale.selection("input").named(im.get(cfLabel));
 
                 String elifcoitLabel = "Else If Contact Outline is True";
@@ -1058,18 +1058,18 @@ class Part {
                 ccsc.geom().feature("r2").set("contributeto", im.get(cpfLabel));
                 ccsc.geom().feature("r2").set("pos", new int[]{0, 0});
                 ccsc.geom().feature("r2").set("base", "center");
-                ccsc.geom().feature("r2").set("size", new String[]{"w_contact", "z_contact"});
+                ccsc.geom().feature("r2").set("size", new String[]{"W_contact", "Z_contact"});
 
                 String filletLabel2 = "Fillet Corners 2";
                 GeomFeature fillet2 = ccsc.geom().create(im.next("fil",filletLabel2), "Fillet");
                 fillet2.label(filletLabel2);
                 fillet2.set("contributeto", im.get(cfLabel));
-                fillet2.set("radius", "fillet_contact");
+                fillet2.set("radius", "Fillet_contact");
                 fillet2.selection("point").named(im.get(cpfLabel));
                 ccsc.geom().create(im.next("endif"), "EndIf");
 
                 ccsc.geom().create("mov1", "Move");
-                ccsc.geom().feature("mov1").set("disply", "z_center");
+                ccsc.geom().feature("mov1").set("disply", "Center");
                 ccsc.geom().feature("mov1").selection("input").named(im.get(cfLabel));
 
                 String mcpcLabel = "Make Contact Pre Cuts";
@@ -1083,16 +1083,16 @@ class Part {
                 GeomFeature icc = model.geom(id).create(im.next("cyl",iccLabel), "Cylinder");
                 icc.label(iccLabel);
                 icc.set("contributeto", im.get("INNER CONTACT CUTTER"));
-                icc.set("pos", new String[]{"0", "0", "-L_cuff/2+z_center"});
-                icc.set("r", "R_in+recess");
+                icc.set("pos", new String[]{"0", "0", "-L_cuff/2+Center"});
+                icc.set("r", "R_in+Recess");
                 icc.set("h", "L_cuff");
 
                 String occLabel = "Outer Contact Cutter";
                 GeomFeature occ = model.geom(id).create(im.next("cyl",occLabel), "Cylinder");
                 occ.label(occLabel);
                 occ.set("contributeto", im.get("OUTER CONTACT CUTTER"));
-                occ.set("pos", new String[]{"0", "0", "-L_cuff/2+z_center"});
-                occ.set("r", "R_in+recess+thk_contact");
+                occ.set("pos", new String[]{"0", "0", "-L_cuff/2+Center"});
+                occ.set("r", "R_in+Recess+Thk_contact");
                 occ.set("h", "L_cuff");
 
                 String coeLabel = "Cut Outer Excess";
@@ -1112,9 +1112,9 @@ class Part {
                 String sieLabel = "sel inner excess";
                 GeomFeature sie = model.geom(id).create(im.next("ballsel",sieLabel), "BallSelection");
                 sie.label(sieLabel);
-                sie.set("posx", "((R_in+recess)/2)*cos(rotation_angle)");
-                sie.set("posy", "((R_in+recess)/2)*sin(rotation_angle)");
-                sie.set("posz", "z_center");
+                sie.set("posx", "((R_in+Recess)/2)*cos(Rotation_angle)");
+                sie.set("posy", "((R_in+Recess)/2)*sin(Rotation_angle)");
+                sie.set("posz", "Center");
                 sie.set("r", 1);
                 sie.set("contributeto", im.get("SEL INNER EXCESS CONTACT"));
                 sie.set("selkeep", false);
@@ -1122,9 +1122,9 @@ class Part {
                 String soeLabel = "sel outer excess";
                 GeomFeature soe = model.geom(id).create(im.next("ballsel",soeLabel), "BallSelection");
                 soe.label(soeLabel);
-                soe.set("posx", "((2*R_in-(R_in+recess+thk_contact))/2+R_in+recess+thk_contact)*cos(rotation_angle)");
-                soe.set("posy", "((2*R_in-(R_in+recess+thk_contact))/2+R_in+recess+thk_contact)*sin(rotation_angle)");
-                soe.set("posz", "z_center");
+                soe.set("posx", "((2*R_in-(R_in+Recess+Thk_contact))/2+R_in+Recess+Thk_contact)*cos(Rotation_angle)");
+                soe.set("posy", "((2*R_in-(R_in+Recess+Thk_contact))/2+R_in+Recess+Thk_contact)*sin(Rotation_angle)");
+                soe.set("posz", "Center");
                 soe.set("r", 1);
                 soe.set("contributeto", im.get("SEL OUTER EXCESS CONTACT"));
                 soe.set("selkeep", false);
@@ -1143,7 +1143,7 @@ class Part {
 
                 String irsLabel = "If Recess";
                 GeomFeature irs = model.geom(id).create(im.next("if",irsLabel), "If");
-                irs.set("condition", "recess>0");
+                irs.set("condition", "Recess>0");
                 irs.label(irsLabel);
 
                 String rcsLabel = "Recess Cross Section";
@@ -1153,7 +1153,7 @@ class Part {
                 rcs.set("planetype", "transformed");
                 rcs.set("workplane", im.get("base plane (pre rotation)"));
                 rcs.set("transaxis", new int[]{0, 1, 0});
-                rcs.set("transrot", "rotation_angle");
+                rcs.set("transrot", "Rotation_angle");
                 rcs.set("unite", true);
 
                 String ifcsitfrLabel = "If Contact Surface is True (for recess)";
@@ -1174,20 +1174,20 @@ class Part {
                 rcs.geom().feature("r1").set("contributeto", im.get(rpfrLabel));
                 rcs.geom().feature("r1").set("pos", new int[]{0, 0});
                 rcs.geom().feature("r1").set("base", "center");
-                rcs.geom().feature("r1").set("size", new String[]{"w_contact", "z_contact"});
+                rcs.geom().feature("r1").set("size", new String[]{"W_contact", "Z_contact"});
 
                 String filletrLabel = "Fillet Corners (for recess)";
                 GeomFeature filletr = rcs.geom().create(im.next("fil", filletrLabel), "Fillet");
                 filletr.label(filletrLabel);
                 filletr.set("contributeto", im.get(rfrLabel));
-                filletr.set("radius", "fillet_contact");
+                filletr.set("radius", "Fillet_contact");
                 filletr.selection("point").named(im.get(rpfrLabel));
 
                 String scalerLabel = "scrLabel";
                 GeomFeature scaler = rcs.geom().create(im.next("sca",scalerLabel), "Scale");
                 scaler.label(scalerLabel);
                 scaler.set("type", "anisotropic");
-                scaler.set("factor", new String[]{"(2*(R_in+recess)*sin((w_contact)/(2*(R_in+recess))))/w_contact", "1"});
+                scaler.set("factor", new String[]{"(2*(R_in+Recess)*sin((W_contact)/(2*(R_in+Recess))))/W_contact", "1"});
                 scaler.selection("input").named(im.get(rfrLabel));
 
                 String elifcotLabel = "Else If Contact Outline is True (for recess)";
@@ -1200,18 +1200,18 @@ class Part {
                 rcs.geom().feature("r2").set("contributeto", im.get(rpfrLabel));
                 rcs.geom().feature("r2").set("pos", new int[]{0, 0});
                 rcs.geom().feature("r2").set("base", "center");
-                rcs.geom().feature("r2").set("size", new String[]{"w_contact", "z_contact"});
+                rcs.geom().feature("r2").set("size", new String[]{"W_contact", "Z_contact"});
 
                 String filletrLabel2 = "Fillet Corners (for recess)2";
                 GeomFeature filletr2 = rcs.geom().create(im.next("fil", filletrLabel2), "Fillet");
                 filletr2.label(filletrLabel2);
                 filletr2.set("contributeto", im.get(rfrLabel));
-                filletr2.set("radius", "fillet_contact");
+                filletr2.set("radius", "Fillet_contact");
                 filletr2.selection("point").named(im.get(rpfrLabel));
                 rcs.geom().create(im.next("endif"), "EndIf");
 
                 rcs.geom().create("mov1", "Move");
-                rcs.geom().feature("mov1").set("disply", "z_center");
+                rcs.geom().feature("mov1").set("disply", "Center");
                 rcs.geom().feature("mov1").selection("input").named(im.get(rfrLabel));
 
                 String mrpc1Label = "Make Recess Pre Cuts 1";
@@ -1225,7 +1225,7 @@ class Part {
                 GeomFeature irc = model.geom(id).create(im.next("cyl", ircLabel), "Cylinder");
                 irc.label(ircLabel);
                 irc.set("contributeto", im.get("INNER RECESS CUTTER"));
-                irc.set("pos", new String[]{"0", "0", "-L_cuff/2+z_center"});
+                irc.set("pos", new String[]{"0", "0", "-L_cuff/2+Center"});
                 irc.set("r", "R_in");
                 irc.set("h", "L_cuff");
 
@@ -1233,8 +1233,8 @@ class Part {
                 GeomFeature orc = model.geom(id).create(im.next("cyl",orcLabel), "Cylinder");
                 orc.label(orcLabel);
                 orc.set("contributeto", im.get("OUTER RECESS CUTTER"));
-                orc.set("pos", new String[]{"0", "0", "-L_cuff/2+z_center"});
-                orc.set("r", "R_in+recess");
+                orc.set("pos", new String[]{"0", "0", "-L_cuff/2+Center"});
+                orc.set("r", "R_in+Recess");
                 orc.set("h", "L_cuff");
 
                 String roreLabel = "Remove Outer Recess Excess";
@@ -1254,9 +1254,9 @@ class Part {
                 String sie1Label = "sel inner excess 1";
                 GeomFeature sie1 = model.geom(id).create(im.next("ballsel",sie1Label), "BallSelection");
                 sie1.label(sie1Label);
-                sie1.set("posx", "((R_in+recess)/2)*cos(rotation_angle)");
-                sie1.set("posy", "((R_in+recess)/2)*sin(rotation_angle)");
-                sie1.set("posz", "z_center");
+                sie1.set("posx", "((R_in+Recess)/2)*cos(Rotation_angle)");
+                sie1.set("posy", "((R_in+Recess)/2)*sin(Rotation_angle)");
+                sie1.set("posz", "Center");
                 sie1.set("r", 1);
                 sie1.set("contributeto", im.get("SEL INNER EXCESS RECESS"));
                 sie1.set("selkeep", false);
@@ -1264,9 +1264,9 @@ class Part {
                 String soe1Label = "sel outer excess 1";
                 GeomFeature soe1 = model.geom(id).create(im.next("ballsel",soe1Label), "BallSelection");
                 soe1.label(soe1Label);
-                soe1.set("posx", "((R_in+2*R_in)/2)*cos(rotation_angle)");
-                soe1.set("posy", "((R_in+2*R_in)/2)*sin(rotation_angle)");
-                soe1.set("posz", "z_center");
+                soe1.set("posx", "((R_in+2*R_in)/2)*cos(Rotation_angle)");
+                soe1.set("posy", "((R_in+2*R_in)/2)*sin(Rotation_angle)");
+                soe1.set("posz", "Center");
                 soe1.set("r", 1);
                 soe1.set("contributeto", im.get("SEL OUTER EXCESS RECESS"));
                 soe1.set("selkeep", false);
@@ -1289,18 +1289,18 @@ class Part {
                 GeomFeature srcs = model.geom(id).create(im.next("pt",srcsLabel), "Point");
                 srcs.label(srcsLabel);
                 srcs.set("contributeto", im.get("SRC"));
-                srcs.set("p", new String[]{"(R_in+recess+(thk_contact/2))*cos(rotation_angle)", "(R_in+recess+(thk_contact/2))*sin(rotation_angle)", "z_center"});
+                srcs.set("p", new String[]{"(R_in+Recess+(Thk_contact/2))*cos(Rotation_angle)", "(R_in+Recess+(Thk_contact/2))*sin(Rotation_angle)", "Center"});
 
                 model.geom(id).run();
 
                 break;
 
             case "uContact_Primitive":
-                model.geom(id).inputParam().set("z_center", "10 [mm]");
+                model.geom(id).inputParam().set("Center", "10 [mm]");
                 model.geom(id).inputParam().set("R_in", "100 [um]");
                 model.geom(id).inputParam().set("Tangent", "200 [um]");
-                model.geom(id).inputParam().set("thk_contact", "20 [um]");
-                model.geom(id).inputParam().set("z_contact", "100 [um]");
+                model.geom(id).inputParam().set("Thk_contact", "20 [um]");
+                model.geom(id).inputParam().set("Z_contact", "100 [um]");
 
                 im.labels = new String[]{
                         "CONTACT XS", //0
@@ -1319,7 +1319,7 @@ class Part {
                 GeomFeature ucontactxs = model.geom(id).create(im.next("wp",ucontactxsLabel), "WorkPlane");
                 ucontactxs.label(ucontactxsLabel);
                 ucontactxs.set("contributeto", im.get("CONTACT XS"));
-                ucontactxs.set("quickz", "z_center-z_contact/2");
+                ucontactxs.set("quickz", "Center-Z_contact/2");
                 ucontactxs.set("unite", true);
 
                 String inLineLabel = "INLINE";
@@ -1363,7 +1363,7 @@ class Part {
                 GeomFeature ro = ucontactxs.geom().create(im.next("c",roLabel), "Circle");
                 ro.label(roLabel);
                 ro.set("contributeto", im.get(outLineLabel));
-                ro.set("r", "R_in+thk_contact");
+                ro.set("r", "R_in+Thk_contact");
 
                 String rectoLabel = "Rect Outline";
                 GeomFeature urect = ucontactxs.geom().create(im.next("r",rectoLabel), "Rectangle");
@@ -1371,7 +1371,7 @@ class Part {
                 urect.set("contributeto", im.get(outLineLabel));
                 urect.set("pos", new String[]{"Tangent/2", "0"});
                 urect.set("base", "center");
-                urect.set("size", new String[]{"Tangent", "2*R_in+2*thk_contact"});
+                urect.set("size", new String[]{"Tangent", "2*R_in+2*Thk_contact"});
 
                 String uOPLabel = "Union Outline Parts";
                 GeomFeature uOP = ucontactxs.geom().create(im.next("uni",uOPLabel), "Union");
@@ -1390,21 +1390,21 @@ class Part {
                 GeomFeature umc = model.geom(id).create(im.next("ext",umcLabel), "Extrude");
                 umc.label(umcLabel);
                 umc.set("contributeto", im.get("CONTACT FINAL"));
-                umc.setIndex("distance", "z_contact", 0);
+                umc.setIndex("distance", "Z_contact", 0);
                 umc.selection("input").named(im.get("CONTACT XS"));
 
                 String usrcLabel = "Src";
                 GeomFeature usrc = model.geom(id).create(im.next("pt",usrcLabel), "Point");
                 usrc.label(usrcLabel);
                 usrc.set("contributeto", im.get("SRC"));
-                usrc.set("p", new String[]{"-R_in-(thk_contact/2)", "0", "z_center"});
+                usrc.set("p", new String[]{"-R_in-(Thk_contact/2)", "0", "Center"});
 
                 model.geom(id).run();
 
                 break;
 
             case "uCuff_Primitive":
-                model.geom(id).inputParam().set("z_center", "10 [mm]");
+                model.geom(id).inputParam().set("Center", "10 [mm]");
                 model.geom(id).inputParam().set("R_in", "100 [um]");
                 model.geom(id).inputParam().set("Tangent", "200 [um]");
                 model.geom(id).inputParam().set("R_out", "300 [um]");
@@ -1426,7 +1426,7 @@ class Part {
                 GeomFeature ucCXS = model.geom(id).create(im.next("wp",ucCXSLabel), "WorkPlane");
                 ucCXS.label(ucCXSLabel);
                 ucCXS.set("contributeto", im.get("CUFF XS"));
-                ucCXS.set("quickz", "z_center-L/2");
+                ucCXS.set("quickz", "Center-L/2");
                 ucCXS.set("unite", true);
 
                 String ucInlineLabel = "INLINE";
@@ -1494,7 +1494,7 @@ class Part {
                 break;
 
             case "uCuffFill_Primitive":
-                model.geom(id).inputParam().set("z_center", "10 [mm]");
+                model.geom(id).inputParam().set("Center", "10 [mm]");
                 model.geom(id).inputParam().set("R_in", "100 [um]");
                 model.geom(id).inputParam().set("Tangent", "200 [um]");
                 model.geom(id).inputParam().set("L", "4 [mm]");
@@ -1513,7 +1513,7 @@ class Part {
                 String ufCXLabel = "FILL XS";
                 GeomFeature ufCX = model.geom(id).create(im.next("wp", ufCXLabel), "WorkPlane");
                 ufCX.label(ufCXLabel);
-                ufCX.set("quickz", "z_center-L/2");
+                ufCX.set("quickz", "Center-L/2");
                 ufCX.set("unite", true);
 
                 String ufInlineLabel = "INLINE";
@@ -1559,7 +1559,7 @@ class Part {
                 model.geom(id).inputParam().set("Radius", "0.5 [mm]");
                 model.geom(id).inputParam().set("Thk", "100 [um]");
                 model.geom(id).inputParam().set("L", "2.5 [mm]");
-                model.geom(id).inputParam().set("z_center", "0");
+                model.geom(id).inputParam().set("Center", "0");
 
                 im.labels = new String[]{
                         "CUFF FILL FINAL" //0
@@ -1576,7 +1576,7 @@ class Part {
                 GeomFeature cf = model.geom(id).create(im.next("cyl",cuffFillLabel), "Cylinder");
                 cf.label(cuffFillLabel);
                 cf.set("contributeto", im.get("CUFF FILL FINAL"));
-                cf.set("pos", new String[]{"0", "0", "z_center-(L/2)"});
+                cf.set("pos", new String[]{"0", "0", "Center-(L/2)"});
                 cf.set("r", "Radius");
                 cf.set("h", "L");
 
@@ -1884,15 +1884,15 @@ class Part {
 
                 // set instantiation parameters
                 String[] rectangleContactParameters = {
-                        "z_center",
-                        "rotation_angle",
-                        "w_contact",
-                        "z_contact",
-                        "fillet_contact",
+                        "Center",
+                        "Rotation_angle",
+                        "W_contact",
+                        "Z_contact",
+                        "Fillet_contact",
                         "L_cuff",
                         "R_in",
-                        "recess",
-                        "thk_contact",
+                        "Recess",
+                        "Thk_contact",
                         "Rect_def"
 
                 };
@@ -1973,11 +1973,11 @@ class Part {
             case "uContact_Primitive":
                 // set instantiation parameters
                 String[] uContactParameters = {
-                        "z_center",
+                        "Center",
                         "R_in",
                         "Tangent",
-                        "thk_contact",
-                        "z_contact"
+                        "Thk_contact",
+                        "Z_contact"
 
                 };
 
@@ -2009,7 +2009,7 @@ class Part {
             case "uCuff_Primitive":
                 // set instantiation parameters
                 String[] uCuffParameters = {
-                        "z_center",
+                        "Center",
                         "R_in",
                         "Tangent",
                         "R_out",
@@ -2034,7 +2034,7 @@ class Part {
             case "uCuffFill_Primitive":
                 // set instantiation parameters
                 String[] uCuffFillParameters = {
-                        "z_center",
+                        "Center",
                         "R_in",
                         "Tangent",
                         "L"
@@ -2060,7 +2060,7 @@ class Part {
                         "Radius",
                         "Thk",
                         "L",
-                        "z_center"
+                        "Center"
 
                 };
 

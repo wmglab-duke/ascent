@@ -5,7 +5,7 @@
       "type": "uCuff_Primitive",
       "label": "MicroLeads300 Cuff",
       "def": {
-        "z_center": "z_center_U300",
+        "Center": "z_center_U300",
         "R_in": "R_in_U300",
         "Tangent": "Tangent_U300",
         "R_out": "R_out_U300",
@@ -22,11 +22,11 @@
       "type": "uContact_Primitive",
       "label": "MicroLeads300 Contact 1",
       "def": {
-        "z_center": "z_center_U300-(Pitch_U300/2)",
+        "Center": "z_center_U300-(Pitch_U300/2)",
         "R_in": "R_in_U300",
         "Tangent": "Tangent_U300",
-        "thk_contact": "thk_contact_U300",
-        "z_contact": "z_contact_U300"
+        "Thk_contact": "thk_contact_U300",
+        "Z_contact": "z_contact_U300"
       },
       "materials": [
         {
@@ -39,11 +39,11 @@
       "type": "uContact_Primitive",
       "label": "MicroLeads300 Contact 2",
       "def": {
-        "z_center": "z_center_U300+(Pitch_U300/2)",
+        "Center": "z_center_U300+(Pitch_U300/2)",
         "R_in": "R_in_U300",
         "Tangent": "Tangent_U300",
-        "thk_contact": "thk_contact_U300",
-        "z_contact": "z_contact_U300"
+        "Thk_contact": "thk_contact_U300",
+        "Z_contact": "z_contact_U300"
       },
       "materials": [
         {
@@ -59,7 +59,7 @@
         "R_in": "R_in_U300",
         "Tangent": "Tangent_U300",
         "L": "L_U300",
-        "z_center": "z_center_U300"
+        "Center": "z_center_U300"
       },
       "materials": [
         {

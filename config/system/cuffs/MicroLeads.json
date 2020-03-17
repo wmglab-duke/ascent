@@ -8,7 +8,7 @@
         "Radius": "R_out_U+Thk_fill_U",
         "Thk": "Thk_fill_U",
         "L": "L_U+2*Thk_fill_U",
-        "z_center": "z_center_U"
+        "Center": "z_center_U"
       },
       "materials": [
         {
@@ -21,7 +21,7 @@
       "type": "uCuff_Primitive",
       "label": "MicroLeads Cuff",
       "def": {
-        "z_center": "z_center_U",
+        "Center": "z_center_U",
         "R_in": "R_in_U",
         "Tangent": "Tangent_U",
         "R_out": "R_out_U",
@@ -38,11 +38,11 @@
       "type": "uContact_Primitive",
       "label": "MicroLeads Contact 1",
       "def": {
-        "z_center": "z_center_U-(Pitch_U/2)",
+        "Center": "z_center_U-(Pitch_U/2)",
         "R_in": "R_in_U",
         "Tangent": "Tangent_U",
-        "thk_contact": "thk_contact_U",
-        "z_contact": "z_contact_U"
+        "Thk_contact": "thk_contact_U",
+        "Z_contact": "z_contact_U"
       },
       "materials": [
         {
@@ -55,11 +55,11 @@
       "type": "uContact_Primitive",
       "label": "MicroLeads Contact 2",
       "def": {
-        "z_center": "z_center_U+(Pitch_U/2)",
+        "Center": "z_center_U+(Pitch_U/2)",
         "R_in": "R_in_U",
         "Tangent": "Tangent_U",
-        "thk_contact": "thk_contact_U",
-        "z_contact": "z_contact_U"
+        "Thk_contact": "thk_contact_U",
+        "Z_contact": "z_contact_U"
       },
       "materials": [
         {

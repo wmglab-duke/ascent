@@ -8,7 +8,7 @@
         "Radius": "R_out_Pitt+Thk_fill_Pitt",
         "Thk": "Thk_fill_Pitt",
         "L": "L_Pitt+2*Thk_fill_Pitt",
-        "z_center": "Center_Pitt"
+        "Center": "Center_Pitt"
       },
       "materials": [
         {
@@ -44,15 +44,15 @@
       "type": "RectangleContact_Primitive",
       "label": "Pitt Contact 1",
       "def": {
-        "z_center": "Center_Pitt+(pitch_Pitt/2)",
-        "rotation_angle": "theta_pos_contact1_Pitt [deg]",
-        "w_contact": "w_contact_Pitt",
-        "z_contact": "z_contact_Pitt",
-        "fillet_contact": "fillet_contact_Pitt",
+        "Center": "Center_Pitt+(pitch_Pitt/2)",
+        "Rotation_angle": "theta_pos_contact1_Pitt [deg]",
+        "W_contact": "w_contact_Pitt",
+        "Z_contact": "z_contact_Pitt",
+        "Fillet_contact": "fillet_contact_Pitt",
         "L_cuff": "L_cuff_Pitt",
         "R_in": "R_in_Pitt",
-        "recess": "recess_Pitt",
-        "thk_contact": "thk_contact_Pitt",
+        "Recess": "recess_Pitt",
+        "Thk_contact": "thk_contact_Pitt",
         "Rect_def": "Rect_def_Pitt"
       },
       "materials": [
@@ -70,15 +70,15 @@
       "type": "RectangleContact_Primitive",
       "label": "Pitt Contact 2",
       "def": {
-        "z_center": "Center_Pitt-(pitch_Pitt/2)",
-        "rotation_angle": "theta_pos_contact2_Pitt [deg]",
-        "w_contact": "w_contact_Pitt",
-        "z_contact": "z_contact_Pitt",
-        "fillet_contact": "fillet_contact_Pitt",
+        "Center": "Center_Pitt-(pitch_Pitt/2)",
+        "Rotation_angle": "theta_pos_contact2_Pitt [deg]",
+        "W_contact": "w_contact_Pitt",
+        "Z_contact": "z_contact_Pitt",
+        "Fillet_contact": "fillet_contact_Pitt",
         "L_cuff": "L_cuff_Pitt",
         "R_in": "R_in_Pitt",
-        "recess": "recess_Pitt",
-        "thk_contact": "thk_contact_Pitt",
+        "Recess": "recess_Pitt",
+        "Thk_contact": "thk_contact_Pitt",
         "Rect_def": "Rect_def_Pitt"
       },
       "materials": [
@@ -96,15 +96,15 @@
       "type": "RectangleContact_Primitive",
       "label": "Pitt Contact 3",
       "def": {
-        "z_center": "Center_Pitt+(pitch_Pitt/2)",
-        "rotation_angle": "theta_pos_contact3_Pitt [deg]",
-        "w_contact": "w_contact_Pitt",
-        "z_contact": "z_contact_Pitt",
-        "fillet_contact": "fillet_contact_Pitt",
+        "Center": "Center_Pitt+(pitch_Pitt/2)",
+        "Rotation_angle": "theta_pos_contact3_Pitt [deg]",
+        "W_contact": "w_contact_Pitt",
+        "Z_contact": "z_contact_Pitt",
+        "Fillet_contact": "fillet_contact_Pitt",
         "L_cuff": "L_cuff_Pitt",
         "R_in": "R_in_Pitt",
-        "recess": "recess_Pitt",
-        "thk_contact": "thk_contact_Pitt",
+        "Recess": "recess_Pitt",
+        "Thk_contact": "thk_contact_Pitt",
         "Rect_def": "Rect_def_Pitt"
       },
       "materials": [
@@ -122,15 +122,15 @@
       "type": "RectangleContact_Primitive",
       "label": "Pitt Contact 4",
       "def": {
-        "z_center": "Center_Pitt-(pitch_Pitt/2)",
-        "rotation_angle": "theta_pos_contact4_Pitt [deg]",
-        "w_contact": "w_contact_Pitt",
-        "z_contact": "z_contact_Pitt",
-        "fillet_contact": "fillet_contact_Pitt",
+        "Center": "Center_Pitt-(pitch_Pitt/2)",
+        "Rotation_angle": "theta_pos_contact4_Pitt [deg]",
+        "W_contact": "w_contact_Pitt",
+        "Z_contact": "z_contact_Pitt",
+        "Fillet_contact": "fillet_contact_Pitt",
         "L_cuff": "L_cuff_Pitt",
         "R_in": "R_in_Pitt",
-        "recess": "recess_Pitt",
-        "thk_contact": "thk_contact_Pitt",
+        "Recess": "recess_Pitt",
+        "Thk_contact": "thk_contact_Pitt",
         "Rect_def": "Rect_def_Pitt"
       },
       "materials": [

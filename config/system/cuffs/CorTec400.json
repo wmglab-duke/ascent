@@ -8,7 +8,7 @@
         "Radius": "R_in_CT400",
         "Thk": "Thk_fill_CT400",
         "L": "L_CT400",
-        "z_center": "Center_CT400"
+        "Center": "Center_CT400"
       },
       "materials": [
         {
