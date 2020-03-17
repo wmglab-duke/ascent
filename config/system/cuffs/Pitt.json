@@ -49,11 +49,11 @@
         "w_contact": "w_contact_Pitt",
         "z_contact": "z_contact_Pitt",
         "fillet_contact": "fillet_contact_Pitt",
-        "scale_morph_w_contact": "scale_morph_w_contact_Pitt",
         "L_cuff": "L_cuff_Pitt",
-        "r_cuff_in": "R_in_Pitt",
+        "R_in": "R_in_Pitt",
         "recess": "recess_Pitt",
-        "thk_contact": "thk_contact_Pitt"
+        "thk_contact": "thk_contact_Pitt",
+        "Rect_def": "Rect_def_Pitt"
       },
       "materials": [
         {
@@ -75,11 +75,11 @@
         "w_contact": "w_contact_Pitt",
         "z_contact": "z_contact_Pitt",
         "fillet_contact": "fillet_contact_Pitt",
-        "scale_morph_w_contact": "scale_morph_w_contact_Pitt",
         "L_cuff": "L_cuff_Pitt",
-        "r_cuff_in": "R_in_Pitt",
+        "R_in": "R_in_Pitt",
         "recess": "recess_Pitt",
-        "thk_contact": "thk_contact_Pitt"
+        "thk_contact": "thk_contact_Pitt",
+        "Rect_def": "Rect_def_Pitt"
       },
       "materials": [
         {
@@ -101,11 +101,11 @@
         "w_contact": "w_contact_Pitt",
         "z_contact": "z_contact_Pitt",
         "fillet_contact": "fillet_contact_Pitt",
-        "scale_morph_w_contact": "scale_morph_w_contact_Pitt",
         "L_cuff": "L_cuff_Pitt",
-        "r_cuff_in": "R_in_Pitt",
+        "R_in": "R_in_Pitt",
         "recess": "recess_Pitt",
-        "thk_contact": "thk_contact_Pitt"
+        "thk_contact": "thk_contact_Pitt",
+        "Rect_def": "Rect_def_Pitt"
       },
       "materials": [
         {
@@ -127,11 +127,11 @@
         "w_contact": "w_contact_Pitt",
         "z_contact": "z_contact_Pitt",
         "fillet_contact": "fillet_contact_Pitt",
-        "scale_morph_w_contact": "scale_morph_w_contact_Pitt",
         "L_cuff": "L_cuff_Pitt",
-        "r_cuff_in": "R_in_Pitt",
+        "R_in": "R_in_Pitt",
         "recess": "recess_Pitt",
-        "thk_contact": "thk_contact_Pitt"
+        "thk_contact": "thk_contact_Pitt",
+        "Rect_def": "Rect_def_Pitt"
       },
       "materials": [
         {
@@ -228,21 +228,6 @@
       "description": ""
     },
     {
-      "name": "theta_contact_Pitt",
-      "expression": "((w_contact_Pitt*360)/(pi*2*R_in_Pitt)) [deg]",
-      "description": ""
-    },
-    {
-      "name": "w_contact_ext_Pitt",
-      "expression": "2*R_in_Pitt*sin(theta_contact_Pitt/2)",
-      "description": ""
-    },
-    {
-      "name": "scale_morph_w_contact_Pitt",
-      "expression": "w_contact_ext_Pitt/w_contact_Pitt",
-      "description": ""
-    },
-    {
       "name": "L_cuff_Pitt",
       "expression": "4.1917 [mm]",
       "description": ""
@@ -300,6 +285,11 @@
     {
       "name": "thk_medium_gap_internal_Pitt",
       "expression": "10 [um]",
+      "description": ""
+    },
+    {
+      "name": "Rect_def_Pitt",
+      "expression": "1",
       "description": ""
     }
   ],

@@ -146,7 +146,7 @@ class Sample(Exceptionable, Configurable, Saveable):
 
             return self
 
-    def populate(self, deform_animate: bool = False) -> 'Sample':
+    def populate(self, deform_animate: bool = True) -> 'Sample':
 
         # get parameters (modes) from configuration file
         mask_input_mode = self.search_mode(MaskInputMode, Config.SAMPLE)

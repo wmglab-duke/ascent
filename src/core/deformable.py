@@ -75,8 +75,8 @@ class Deformable(Exceptionable):
             from pygame.locals import KEYDOWN, K_ESCAPE, QUIT, K_SPACE
             from pygame.color import THECOLORS
 
-            width = int(1.5 * bounds[2])
-            height = int(1.5 * bounds[3])
+            width = int(1.5 * (bounds[2] - bounds[0]))
+            height = int(1.5 * (bounds[3] - bounds[1]))
 
             aspect = float(width) / height
 

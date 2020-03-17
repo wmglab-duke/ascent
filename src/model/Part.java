@@ -246,7 +246,7 @@ class Part {
                 String rotphicLabel = "Position Hole in Cuff";
                 GeomFeature rot_pos_hole = model.geom(id).create(im.next("rot",rotphicLabel), "Rotate");
                 rot_pos_hole.label(rotphicLabel);
-                rot_pos_hole.set("rot", "(360*L_holecenter_cuffseam)/(pi*2*R_in)");
+                rot_pos_hole.set("rot", "(360*L_holecenter_cuffseam)/(pi*5*R_in)");
                 rot_pos_hole.selection("input").named(im.get("HOLES"));
 
                 String difmichLabel = "Make Inner Cuff Hole";
@@ -326,7 +326,7 @@ class Part {
                 String rotphic1Label = "Position Hole in Cuff 1";
                 GeomFeature rot_position_hole1 = model.geom(id).create(im.next("rot",rotphic1Label), "Rotate");
                 rot_position_hole1.label(rotphic1Label);
-                rot_position_hole1.set("rot", "(360*L_holecenter_cuffseam)/(pi*2*R_in)");
+                rot_position_hole1.set("rot", "(360*L_holecenter_cuffseam)/(pi*5*R_in)");
                 rot_position_hole1.selection("input").named(im.get("HOLES"));
 
                 String difmich1Label = "Make Inner Cuff Hole 1";
@@ -445,12 +445,12 @@ class Part {
                 break;
 
             case "WireContact_Primitive":
-                model.geom(id).inputParam().set("R_conductor", "r_conductor_P");
-                model.geom(id).inputParam().set("R_in", "R_in_P");
-                model.geom(id).inputParam().set("Center", "Center_P");
-                model.geom(id).inputParam().set("Pitch", "Pitch_P");
-                model.geom(id).inputParam().set("Sep_conductor", "sep_conductor_P");
-                model.geom(id).inputParam().set("Theta_conductor", "theta_conductor_P");
+                model.geom(id).inputParam().set("R_conductor", "37.5 [um]");
+                model.geom(id).inputParam().set("R_in", "150 [um]");
+                model.geom(id).inputParam().set("Center", "10 [mm]");
+                model.geom(id).inputParam().set("Pitch", "1 [mm]");
+                model.geom(id).inputParam().set("Sep_conductor", "10 [um]");
+                model.geom(id).inputParam().set("Theta_conductor", "200 [deg]");
 
                 im.labels = new String[]{
                         "CONTACT CROSS SECTION",
@@ -498,16 +498,15 @@ class Part {
                 break;
 
             case "CircleContact_Primitive":
-                model.geom(id).inputParam().set("Recess", "Recess_ITC");
+                model.geom(id).inputParam().set("Recess", "0.05 [mm]");
                 model.geom(id).inputParam().set("Rotation_angle", "0 [deg]");
-                model.geom(id).inputParam().set("Center", "Center_IT");
-                model.geom(id).inputParam().set("Round_def", "Round_def_ITC");
-                model.geom(id).inputParam().set("R_in", "R_in_ITI");
-                model.geom(id).inputParam().set("Contact_depth", "Contact_depth_ITC");
-                model.geom(id).inputParam().set("Overshoot", "Overshoot_ITC");
-                model.geom(id).inputParam().set("A_ellipse_contact", "a_ellipse_contact_ITC");
-                model.geom(id).inputParam().set("Diam_contact", "diam_contact_ITC");
-                model.geom(id).inputParam().set("L", "L_IT");
+                model.geom(id).inputParam().set("Center", "20 [mm]");
+                model.geom(id).inputParam().set("Round_def", "1");
+                model.geom(id).inputParam().set("R_in", "1.5 [mm]");
+                model.geom(id).inputParam().set("Contact_depth", "0.05 [mm]");
+                model.geom(id).inputParam().set("Overshoot", "0.05 [mm]");
+                model.geom(id).inputParam().set("Diam_contact", "2 [mm]");
+                model.geom(id).inputParam().set("L", "0.354 [inch]");
 
                 im.labels = new String[]{
                         "CONTACT CUTTER IN", //0
@@ -546,7 +545,7 @@ class Part {
                 ifrecessCC.label(ifrecessCCLabel);
                 ifrecessCC.set("condition", "Recess>0");
 
-                String rprLabel = "Rotated Plane for Recess";
+                String rprLabel = "Rotated Plane (for Recess)";
                 GeomFeature rpr = model.geom(id).create(im.next("wp",rprLabel), "WorkPlane");
                 rpr.label(rprLabel);
                 rpr.set("contributeto", im.get("PLANE FOR RECESS"));
@@ -562,22 +561,22 @@ class Part {
 
                 String ifcsicLabel = "If Contact Surface is Circle (for recess)";
                 GeomFeature ifcsic = rpr.geom().create(im.next("if",ifcsicLabel), "If");
-                ifcsic.label("If Contact Surface is Circle");
+                ifcsic.label(ifcsicLabel);
                 ifcsic.set("condition", "Round_def==1");
 
                 String coLabel = "Contact Outline";
                 GeomFeature co = rpr.geom().create(im.next("e",coLabel), "Ellipse");
-                co.label("Contact Outline");
+                co.label("Contact Outline (for recess)");
                 co.set("contributeto", im.get("CONTACT OUTLINE SHAPE"));
                 co.set("pos", new String[]{"0", "Center"});
-                co.set("semiaxes", new String[]{"A_ellipse_contact", "Diam_contact/2"});
+                co.set("semiaxes", new String[]{"(R_in+Recess)*sin((Diam_contact)/(2*(R_in+Recess)))", "Diam_contact/2"});
 
                 String elifcocLabel = "Else If Contact Outline is Circle";
                 GeomFeature elifcoc = rpr.geom().create(im.next("elseif",elifcocLabel), "ElseIf");
-                elifcoc.label("Else If Contact Outline is Circle");
+                elifcoc.label("Else If Contact Outline is Circle (for recess)");
                 elifcoc.set("condition", "Round_def==2");
 
-                String co1Label = "Contact Outline 1";
+                String co1Label = "Contact Outline 1 (for recess)";
                 GeomFeature co1 = rpr.geom().create(im.next("e",co1Label), "Ellipse");
                 co1.label(co1Label);
                 co1.set("contributeto", im.get("CONTACT OUTLINE SHAPE"));
@@ -664,19 +663,19 @@ class Part {
                 icsicc.label(ifcsiccLabel);
                 icsicc.set("condition", "Round_def==1");
 
-                String cocLabel = "Contact Outline circle";
+                String cocLabel = "Contact Outline (for contact)";
                 GeomFeature coc = rpc.geom().create(im.next("e",cocLabel), "Ellipse");
                 coc.label(cocLabel);
                 coc.set("contributeto", im.get(coscLabel));
                 coc.set("pos", new String[]{"0", "Center"});
-                coc.set("semiaxes", new String[]{"A_ellipse_contact", "Diam_contact/2"}); //
+                coc.set("semiaxes", new String[]{"(R_in+Recess)*sin((Diam_contact)/(2*(R_in+Recess)))", "Diam_contact/2"}); //
 
-                String elifcoccLabel = "wp Else If Contact Outline is Circle";
+                String elifcoccLabel = "Else If Contact Outline is Circle (for contact)";
                 GeomFeature elifcocc = rpc.geom().create(im.next("elseif",elifcoccLabel), "ElseIf");
-                elifcoc.label(elifcoccLabel);
+                elifcocc.label(elifcoccLabel);
                 elifcocc.set("condition", "Round_def==2");
 
-                String co1cLabel = "wp Contact Outline 1";
+                String co1cLabel = "Contact Outline 1 (for contact)";
                 GeomFeature co1c = rpc.geom().create(im.next("e",co1cLabel), "Ellipse");
                 co1c.label(co1cLabel);
                 co1c.set("contributeto", im.get(coscLabel));
@@ -750,7 +749,7 @@ class Part {
                 break;
 
             case "HelicalCuffnContact_Primitive":
-                model.geom(id).inputParam().set("Center", "Center_LN");
+                model.geom(id).inputParam().set("Center", "20 [mm]");
 
                 im.labels = new String[]{
                         "PC1", //0
@@ -959,11 +958,11 @@ class Part {
                 model.geom(id).inputParam().set("w_contact", "0.475 [mm]");
                 model.geom(id).inputParam().set("z_contact", "0.475 [mm]");
                 model.geom(id).inputParam().set("fillet_contact", "0.1 [mm]");
-                model.geom(id).inputParam().set("scale_morph_w_contact", "w_contact_ext_Pitt/w_contact_Pitt");
                 model.geom(id).inputParam().set("L_cuff", "4.1917 [mm]");
-                model.geom(id).inputParam().set("r_cuff_in", "d_nerve_Pitt/2");
-                model.geom(id).inputParam().set("recess", "0 [mm]");
+                model.geom(id).inputParam().set("R_in", "1.5 [mm]");
+                model.geom(id).inputParam().set("recess", "0.1 [mm]");
                 model.geom(id).inputParam().set("thk_contact", "0.018 [mm]");
+                model.geom(id).inputParam().set("Rect_def", "1");
 
                 im.labels = new String[]{
                         "OUTER CONTACT CUTTER", //0
@@ -1015,6 +1014,11 @@ class Part {
                 ccsc.set("transrot", "rotation_angle");
                 ccsc.set("unite", true);
 
+                String ifcsitLabel = "If Contact Surface is True";
+                GeomFeature ifcsit = ccsc.geom().create(im.next("if",ifcsitLabel), "If");
+                ifcsit.label("If Contact Surface is True");
+                ifcsit.set("condition", "Rect_def==1");
+
                 String cpfLabel = "CONTACT PRE FILLET";
                 ccsc.geom().selection().create(im.next("csel", cpfLabel), "CumulativeSelection");
                 ccsc.geom().selection(im.get(cpfLabel)).label(cpfLabel);
@@ -1022,25 +1026,47 @@ class Part {
                 String cfLabel = "CONTACT FILLETED";
                 ccsc.geom().selection().create(im.next("csel",cfLabel), "CumulativeSelection");
                 ccsc.geom().selection(im.get(cfLabel)).label(cfLabel);
+
                 ccsc.geom().create("r1", "Rectangle");
                 ccsc.geom().feature("r1").label("Contact Pre Fillet Corners");
                 ccsc.geom().feature("r1").set("contributeto", im.get(cpfLabel));
                 ccsc.geom().feature("r1").set("pos", new int[]{0, 0});
                 ccsc.geom().feature("r1").set("base", "center");
-                ccsc.geom().feature("r1").set("size", new String[]{"w_contact_Pitt", "z_contact_Pitt"});
+                ccsc.geom().feature("r1").set("size", new String[]{"w_contact", "z_contact"});
 
-                String filletLabel = "Fillet Corners";
+                String filletLabel = "Fillet Corners 1";
                 GeomFeature fillet = ccsc.geom().create(im.next("fil",filletLabel), "Fillet");
                 fillet.label(filletLabel);
                 fillet.set("contributeto", im.get(cfLabel));
-                fillet.set("radius", "fillet_contact_Pitt");
+                fillet.set("radius", "fillet_contact");
                 fillet.selection("point").named(im.get(cpfLabel));
-                String scaleLabel = "scLabel";
-                GeomFeature scale = ccsc.geom().create(im.next("sca",scaleLabel), "Scale");
-                scale.label(scaleLabel);
+
+                String scaleLabel1 = "scLabel1";
+                GeomFeature scale = ccsc.geom().create(im.next("sca",scaleLabel1), "Scale");
+                scale.label(scaleLabel1);
                 scale.set("type", "anisotropic");
-                scale.set("factor", new String[]{"1", "scale_morph_w_contact_Pitt"});
+                scale.set("factor", new String[]{"(2*(R_in+recess)*sin((w_contact)/(2*(R_in+recess))))/w_contact", "1"});
                 scale.selection("input").named(im.get(cfLabel));
+
+                String elifcoitLabel = "Else If Contact Outline is True";
+                GeomFeature elifcoit = ccsc.geom().create(im.next("elseif",elifcoitLabel), "ElseIf");
+                elifcoit.label("Else If Contact Outline is True");
+                elifcoit.set("condition", "Rect_def==2");
+
+                ccsc.geom().create("r2", "Rectangle");
+                ccsc.geom().feature("r2").label("Contact Pre Fillet Corners2");
+                ccsc.geom().feature("r2").set("contributeto", im.get(cpfLabel));
+                ccsc.geom().feature("r2").set("pos", new int[]{0, 0});
+                ccsc.geom().feature("r2").set("base", "center");
+                ccsc.geom().feature("r2").set("size", new String[]{"w_contact", "z_contact"});
+
+                String filletLabel2 = "Fillet Corners 2";
+                GeomFeature fillet2 = ccsc.geom().create(im.next("fil",filletLabel2), "Fillet");
+                fillet2.label(filletLabel2);
+                fillet2.set("contributeto", im.get(cfLabel));
+                fillet2.set("radius", "fillet_contact");
+                fillet2.selection("point").named(im.get(cpfLabel));
+                ccsc.geom().create(im.next("endif"), "EndIf");
 
                 ccsc.geom().create("mov1", "Move");
                 ccsc.geom().feature("mov1").set("disply", "z_center");
@@ -1050,24 +1076,24 @@ class Part {
                 GeomFeature mcpc = model.geom(id).create(im.next("ext",mcpcLabel), "Extrude");
                 mcpc.label("Make Contact Pre Cuts");
                 mcpc.set("contributeto", im.get("CONTACT PRE CUTS"));
-                mcpc.setIndex("distance", "2*R_in_Pitt", 0);
+                mcpc.setIndex("distance", "2*R_in", 0);
                 mcpc.selection("input").named(im.get("CONTACT CROSS SECTION"));
 
                 String iccLabel = "Inner Contact Cutter";
                 GeomFeature icc = model.geom(id).create(im.next("cyl",iccLabel), "Cylinder");
                 icc.label(iccLabel);
                 icc.set("contributeto", im.get("INNER CONTACT CUTTER"));
-                icc.set("pos", new String[]{"0", "0", "-L_cuff_Pitt/2+z_center"});
-                icc.set("r", "R_in_Pitt+recess_Pitt");
-                icc.set("h", "L_cuff_Pitt");
+                icc.set("pos", new String[]{"0", "0", "-L_cuff/2+z_center"});
+                icc.set("r", "R_in+recess");
+                icc.set("h", "L_cuff");
 
                 String occLabel = "Outer Contact Cutter";
                 GeomFeature occ = model.geom(id).create(im.next("cyl",occLabel), "Cylinder");
                 occ.label(occLabel);
                 occ.set("contributeto", im.get("OUTER CONTACT CUTTER"));
-                occ.set("pos", new String[]{"0", "0", "-L_cuff_Pitt/2+z_center"});
-                occ.set("r", "R_in_Pitt+recess_Pitt+thk_contact_Pitt");
-                occ.set("h", "L_cuff_Pitt");
+                occ.set("pos", new String[]{"0", "0", "-L_cuff/2+z_center"});
+                occ.set("r", "R_in+recess+thk_contact");
+                occ.set("h", "L_cuff");
 
                 String coeLabel = "Cut Outer Excess";
                 GeomFeature coe = model.geom(id).create(im.next("par",coeLabel), "Partition");
@@ -1086,8 +1112,8 @@ class Part {
                 String sieLabel = "sel inner excess";
                 GeomFeature sie = model.geom(id).create(im.next("ballsel",sieLabel), "BallSelection");
                 sie.label(sieLabel);
-                sie.set("posx", "((R_in_Pitt+recess_Pitt)/2)*cos(rotation_angle)");
-                sie.set("posy", "((R_in_Pitt+recess_Pitt)/2)*sin(rotation_angle)");
+                sie.set("posx", "((R_in+recess)/2)*cos(rotation_angle)");
+                sie.set("posy", "((R_in+recess)/2)*sin(rotation_angle)");
                 sie.set("posz", "z_center");
                 sie.set("r", 1);
                 sie.set("contributeto", im.get("SEL INNER EXCESS CONTACT"));
@@ -1096,8 +1122,8 @@ class Part {
                 String soeLabel = "sel outer excess";
                 GeomFeature soe = model.geom(id).create(im.next("ballsel",soeLabel), "BallSelection");
                 soe.label(soeLabel);
-                soe.set("posx", "((2*R_in_Pitt-(R_in_Pitt+recess_Pitt+thk_contact_Pitt))/2+R_in_Pitt+recess_Pitt+thk_contact_Pitt)*cos(rotation_angle)");
-                soe.set("posy", "((2*R_in_Pitt-(R_in_Pitt+recess_Pitt+thk_contact_Pitt))/2+R_in_Pitt+recess_Pitt+thk_contact_Pitt)*sin(rotation_angle)");
+                soe.set("posx", "((2*R_in-(R_in+recess+thk_contact))/2+R_in+recess+thk_contact)*cos(rotation_angle)");
+                soe.set("posy", "((2*R_in-(R_in+recess+thk_contact))/2+R_in+recess+thk_contact)*sin(rotation_angle)");
                 soe.set("posz", "z_center");
                 soe.set("r", 1);
                 soe.set("contributeto", im.get("SEL OUTER EXCESS CONTACT"));
@@ -1117,7 +1143,7 @@ class Part {
 
                 String irsLabel = "If Recess";
                 GeomFeature irs = model.geom(id).create(im.next("if",irsLabel), "If");
-                irs.set("condition", "recess_Pitt>0");
+                irs.set("condition", "recess>0");
                 irs.label(irsLabel);
 
                 String rcsLabel = "Recess Cross Section";
@@ -1130,13 +1156,10 @@ class Part {
                 rcs.set("transrot", "rotation_angle");
                 rcs.set("unite", true);
 
-                String cpfrLabel = "wp CONTACT PRE FILLET";
-                rcs.geom().selection().create(im.next("csel",cpfrLabel), "CumulativeSelection");
-                rcs.geom().selection(im.get(cpfrLabel)).label(cpfrLabel);
-
-                String cfrLabel = "wp CONTACT FILLETED";
-                rcs.geom().selection().create(im.next("csel",cfrLabel), "CumulativeSelection");
-                rcs.geom().selection(im.get(cfrLabel)).label(cfrLabel);
+                String ifcsitfrLabel = "If Contact Surface is True (for recess)";
+                GeomFeature ifcsitfr = rcs.geom().create(im.next("if",ifcsitfrLabel), "If");
+                ifcsitfr.label("If Contact Surface is True (for recess)");
+                ifcsitfr.set("condition", "Rect_def==1");
 
                 String rpfrLabel = "RECESS PRE FILLET";
                 rcs.geom().selection().create(im.next("csel",rpfrLabel), "CumulativeSelection");
@@ -1151,22 +1174,41 @@ class Part {
                 rcs.geom().feature("r1").set("contributeto", im.get(rpfrLabel));
                 rcs.geom().feature("r1").set("pos", new int[]{0, 0});
                 rcs.geom().feature("r1").set("base", "center");
-                rcs.geom().feature("r1").set("size", new String[]{"w_contact_Pitt", "z_contact_Pitt"});
+                rcs.geom().feature("r1").set("size", new String[]{"w_contact", "z_contact"});
 
-                String filletrLabel = "wp Fillet Corners";
+                String filletrLabel = "Fillet Corners (for recess)";
                 GeomFeature filletr = rcs.geom().create(im.next("fil", filletrLabel), "Fillet");
                 filletr.label(filletrLabel);
-
                 filletr.set("contributeto", im.get(rfrLabel));
-                filletr.set("radius", "fillet_contact_Pitt");
+                filletr.set("radius", "fillet_contact");
                 filletr.selection("point").named(im.get(rpfrLabel));
 
                 String scalerLabel = "scrLabel";
                 GeomFeature scaler = rcs.geom().create(im.next("sca",scalerLabel), "Scale");
                 scaler.label(scalerLabel);
                 scaler.set("type", "anisotropic");
-                scaler.set("factor", new String[]{"1", "scale_morph_w_contact_Pitt"});
+                scaler.set("factor", new String[]{"(2*(R_in+recess)*sin((w_contact)/(2*(R_in+recess))))/w_contact", "1"});
                 scaler.selection("input").named(im.get(rfrLabel));
+
+                String elifcotLabel = "Else If Contact Outline is True (for recess)";
+                GeomFeature elifcot = rcs.geom().create(im.next("elseif",elifcotLabel), "ElseIf");
+                elifcot.label(elifcotLabel);
+                elifcot.set("condition", "Rect_def==2");
+
+                rcs.geom().create("r2", "Rectangle");
+                rcs.geom().feature("r2").label("Recess Pre Fillet Corners2");
+                rcs.geom().feature("r2").set("contributeto", im.get(rpfrLabel));
+                rcs.geom().feature("r2").set("pos", new int[]{0, 0});
+                rcs.geom().feature("r2").set("base", "center");
+                rcs.geom().feature("r2").set("size", new String[]{"w_contact", "z_contact"});
+
+                String filletrLabel2 = "Fillet Corners (for recess)2";
+                GeomFeature filletr2 = rcs.geom().create(im.next("fil", filletrLabel2), "Fillet");
+                filletr2.label(filletrLabel2);
+                filletr2.set("contributeto", im.get(rfrLabel));
+                filletr2.set("radius", "fillet_contact");
+                filletr2.selection("point").named(im.get(rpfrLabel));
+                rcs.geom().create(im.next("endif"), "EndIf");
 
                 rcs.geom().create("mov1", "Move");
                 rcs.geom().feature("mov1").set("disply", "z_center");
@@ -1176,24 +1218,24 @@ class Part {
                 GeomFeature mrpc1 = model.geom(id).create(im.next("ext", mrpc1Label), "Extrude");
                 mrpc1.label(mrpc1Label);
                 mrpc1.set("contributeto", im.get("RECESS PRE CUTS"));
-                mrpc1.setIndex("distance", "2*R_in_Pitt", 0);
+                mrpc1.setIndex("distance", "2*R_in", 0);
                 mrpc1.selection("input").named(im.get("RECESS CROSS SECTION"));
 
                 String ircLabel = "Inner Recess Cutter";
                 GeomFeature irc = model.geom(id).create(im.next("cyl", ircLabel), "Cylinder");
                 irc.label(ircLabel);
                 irc.set("contributeto", im.get("INNER RECESS CUTTER"));
-                irc.set("pos", new String[]{"0", "0", "-L_cuff_Pitt/2+z_center"});
-                irc.set("r", "R_in_Pitt");
-                irc.set("h", "L_cuff_Pitt");
+                irc.set("pos", new String[]{"0", "0", "-L_cuff/2+z_center"});
+                irc.set("r", "R_in");
+                irc.set("h", "L_cuff");
 
                 String orcLabel = "Outer Recess Cutter";
                 GeomFeature orc = model.geom(id).create(im.next("cyl",orcLabel), "Cylinder");
                 orc.label(orcLabel);
                 orc.set("contributeto", im.get("OUTER RECESS CUTTER"));
-                orc.set("pos", new String[]{"0", "0", "-L_cuff_Pitt/2+z_center"});
-                orc.set("r", "R_in_Pitt+recess_Pitt");
-                orc.set("h", "L_cuff_Pitt");
+                orc.set("pos", new String[]{"0", "0", "-L_cuff/2+z_center"});
+                orc.set("r", "R_in+recess");
+                orc.set("h", "L_cuff");
 
                 String roreLabel = "Remove Outer Recess Excess";
                 GeomFeature rore = model.geom(id).create(im.next("par",roreLabel), "Partition");
@@ -1212,8 +1254,8 @@ class Part {
                 String sie1Label = "sel inner excess 1";
                 GeomFeature sie1 = model.geom(id).create(im.next("ballsel",sie1Label), "BallSelection");
                 sie1.label(sie1Label);
-                sie1.set("posx", "((R_in_Pitt+recess_Pitt)/2)*cos(rotation_angle)");
-                sie1.set("posy", "((R_in_Pitt+recess_Pitt)/2)*sin(rotation_angle)");
+                sie1.set("posx", "((R_in+recess)/2)*cos(rotation_angle)");
+                sie1.set("posy", "((R_in+recess)/2)*sin(rotation_angle)");
                 sie1.set("posz", "z_center");
                 sie1.set("r", 1);
                 sie1.set("contributeto", im.get("SEL INNER EXCESS RECESS"));
@@ -1222,8 +1264,8 @@ class Part {
                 String soe1Label = "sel outer excess 1";
                 GeomFeature soe1 = model.geom(id).create(im.next("ballsel",soe1Label), "BallSelection");
                 soe1.label(soe1Label);
-                soe1.set("posx", "((R_in_Pitt+2*R_in_Pitt)/2)*cos(rotation_angle)");
-                soe1.set("posy", "((R_in_Pitt+2*R_in_Pitt)/2)*sin(rotation_angle)");
+                soe1.set("posx", "((R_in+2*R_in)/2)*cos(rotation_angle)");
+                soe1.set("posy", "((R_in+2*R_in)/2)*sin(rotation_angle)");
                 soe1.set("posz", "z_center");
                 soe1.set("r", 1);
                 soe1.set("contributeto", im.get("SEL OUTER EXCESS RECESS"));
@@ -1247,7 +1289,7 @@ class Part {
                 GeomFeature srcs = model.geom(id).create(im.next("pt",srcsLabel), "Point");
                 srcs.label(srcsLabel);
                 srcs.set("contributeto", im.get("SRC"));
-                srcs.set("p", new String[]{"(R_in_Pitt+recess_Pitt+(thk_contact_Pitt/2))*cos(rotation_angle)", "(R_in_Pitt+recess_Pitt+(thk_contact_Pitt/2))*sin(rotation_angle)", "z_center"});
+                srcs.set("p", new String[]{"(R_in+recess+(thk_contact/2))*cos(rotation_angle)", "(R_in+recess+(thk_contact/2))*sin(rotation_angle)", "z_center"});
 
                 model.geom(id).run();
 
@@ -1727,7 +1769,6 @@ class Part {
                         "R_in",
                         "Contact_depth",
                         "Overshoot",
-                        "A_ellipse_contact",
                         "Diam_contact",
                         "L"
 
@@ -1848,11 +1889,11 @@ class Part {
                         "w_contact",
                         "z_contact",
                         "fillet_contact",
-                        "scale_morph_w_contact",
                         "L_cuff",
-                        "r_cuff_in",
+                        "R_in",
                         "recess",
-                        "thk_contact"
+                        "thk_contact",
+                        "Rect_def"
 
                 };
 

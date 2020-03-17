@@ -76,7 +76,6 @@
         "R_in": "R_in_ITI",
         "Contact_depth": "Contact_depth_ITC",
         "Overshoot": "Overshoot_ITC",
-        "A_ellipse_contact": "a_ellipse_contact_ITC",
         "Diam_contact": "diam_contact_ITC",
         "L": "L_IT"
       },
@@ -102,7 +101,6 @@
         "R_in": "R_in_ITI",
         "Contact_depth": "Contact_depth_ITC",
         "Overshoot": "Overshoot_ITC",
-        "A_ellipse_contact": "a_ellipse_contact_ITC",
         "Diam_contact": "diam_contact_ITC",
         "L": "L_IT"
       },
@@ -128,7 +126,6 @@
         "R_in": "R_in_ITI",
         "Contact_depth": "Contact_depth_ITC",
         "Overshoot": "Overshoot_ITC",
-        "A_ellipse_contact": "a_ellipse_contact_ITC",
         "Diam_contact": "diam_contact_ITC",
         "L": "L_IT"
       },
@@ -154,7 +151,6 @@
         "R_in": "R_in_ITI",
         "Contact_depth": "Contact_depth_ITC",
         "Overshoot": "Overshoot_ITC",
-        "A_ellipse_contact": "a_ellipse_contact_ITC",
         "Diam_contact": "diam_contact_ITC",
         "L": "L_IT"
       },
@@ -180,7 +176,6 @@
         "R_in": "R_in_ITI",
         "Contact_depth": "Contact_depth_ITC",
         "Overshoot": "Overshoot_ITC",
-        "A_ellipse_contact": "a_ellipse_contact_ITC",
         "Diam_contact": "diam_contact_ITC",
         "L": "L_IT"
       },
@@ -206,7 +201,6 @@
         "R_in": "R_in_ITI",
         "Contact_depth": "Contact_depth_ITC",
         "Overshoot": "Overshoot_ITC",
-        "A_ellipse_contact": "a_ellipse_contact_ITC",
         "Diam_contact": "diam_contact_ITC",
         "L": "L_IT"
       },
@@ -382,11 +376,6 @@
     {
       "name": "diam_contact_ITC",
       "expression": "2 [mm]",
-      "description": ""
-    },
-    {
-      "name": "a_ellipse_contact_ITC",
-      "expression": "0.5*(R_in_ITI+Recess_ITC)*sin((diam_contact_ITC)/(R_in_ITI+Recess_ITC))",
       "description": ""
     },
     {
