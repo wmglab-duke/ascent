@@ -115,7 +115,7 @@ class Part {
         // a true behemoth of a switch
         switch (pseudonym) {
             case "TubeCuff_Primitive":
-                mp.set("N_holes", "1");
+                mp.set("N_holes", "0");
                 mp.set("Theta", "340 [deg]");
                 mp.set("Center", "10 [mm]");
                 mp.set("R_in", "1 [mm]");
@@ -246,7 +246,7 @@ class Part {
                 String rotphicLabel = "Position Hole in Cuff";
                 GeomFeature rot_pos_hole = model.geom(id).create(im.next("rot",rotphicLabel), "Rotate");
                 rot_pos_hole.label(rotphicLabel);
-                rot_pos_hole.set("rot", "(360*L_holecenter_cuffseam)/(pi*5*R_in)");
+                rot_pos_hole.set("rot", "(360*L_holecenter_cuffseam)/(pi*2*R_in)");
                 rot_pos_hole.selection("input").named(im.get("HOLES"));
 
                 String difmichLabel = "Make Inner Cuff Hole";
@@ -326,7 +326,7 @@ class Part {
                 String rotphic1Label = "Position Hole in Cuff 1";
                 GeomFeature rot_position_hole1 = model.geom(id).create(im.next("rot",rotphic1Label), "Rotate");
                 rot_position_hole1.label(rotphic1Label);
-                rot_position_hole1.set("rot", "(360*L_holecenter_cuffseam)/(pi*5*R_in)");
+                rot_position_hole1.set("rot", "(360*L_holecenter_cuffseam)/(pi*2*R_in)");
                 rot_position_hole1.selection("input").named(im.get("HOLES"));
 
                 String difmich1Label = "Make Inner Cuff Hole 1";
