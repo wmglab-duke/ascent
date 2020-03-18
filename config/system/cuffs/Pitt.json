@@ -46,8 +46,8 @@
       "def": {
         "Center": "Center_Pitt+(pitch_Pitt/2)",
         "Rotation_angle": "theta_pos_contact1_Pitt [deg]",
-        "W_contact": "w_contact_Pitt",
-        "Z_contact": "z_contact_Pitt",
+        "Rect_w": "w_contact_Pitt",
+        "Rect_z": "z_contact_Pitt",
         "Fillet_contact": "fillet_contact_Pitt",
         "L_cuff": "L_cuff_Pitt",
         "R_in": "R_in_Pitt",
@@ -72,7 +72,7 @@
       "def": {
         "Center": "Center_Pitt-(pitch_Pitt/2)",
         "Rotation_angle": "theta_pos_contact2_Pitt [deg]",
-        "W_contact": "w_contact_Pitt",
+        "Rect_w": "w_contact_Pitt",
         "Z_contact": "z_contact_Pitt",
         "Fillet_contact": "fillet_contact_Pitt",
         "L_cuff": "L_cuff_Pitt",
@@ -98,7 +98,7 @@
       "def": {
         "Center": "Center_Pitt+(pitch_Pitt/2)",
         "Rotation_angle": "theta_pos_contact3_Pitt [deg]",
-        "W_contact": "w_contact_Pitt",
+        "Rect_w": "w_contact_Pitt",
         "Z_contact": "z_contact_Pitt",
         "Fillet_contact": "fillet_contact_Pitt",
         "L_cuff": "L_cuff_Pitt",
@@ -124,7 +124,7 @@
       "def": {
         "Center": "Center_Pitt-(pitch_Pitt/2)",
         "Rotation_angle": "theta_pos_contact4_Pitt [deg]",
-        "W_contact": "w_contact_Pitt",
+        "Rect_w": "w_contact_Pitt",
         "Z_contact": "z_contact_Pitt",
         "Fillet_contact": "fillet_contact_Pitt",
         "L_cuff": "L_cuff_Pitt",

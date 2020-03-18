@@ -955,7 +955,7 @@ class Part {
             case "RectangleContact_Primitive":
                 model.geom(id).inputParam().set("Center", "0 [mm]");
                 model.geom(id).inputParam().set("Rotation_angle", "0 [deg]");
-                model.geom(id).inputParam().set("W_contact", "0.475 [mm]");
+                model.geom(id).inputParam().set("Rect_w", "0.475 [mm]");
                 model.geom(id).inputParam().set("Z_contact", "0.475 [mm]");
                 model.geom(id).inputParam().set("Fillet_contact", "0.1 [mm]");
                 model.geom(id).inputParam().set("L_cuff", "4.1917 [mm]");
@@ -1032,7 +1032,7 @@ class Part {
                 ccsc.geom().feature("r1").set("contributeto", im.get(cpfLabel));
                 ccsc.geom().feature("r1").set("pos", new int[]{0, 0});
                 ccsc.geom().feature("r1").set("base", "center");
-                ccsc.geom().feature("r1").set("size", new String[]{"W_contact", "Z_contact"});
+                ccsc.geom().feature("r1").set("size", new String[]{"Rect_w", "Z_contact"});
 
                 String filletLabel = "Fillet Corners 1";
                 GeomFeature fillet = ccsc.geom().create(im.next("fil",filletLabel), "Fillet");
@@ -1045,7 +1045,7 @@ class Part {
                 GeomFeature scale = ccsc.geom().create(im.next("sca",scaleLabel1), "Scale");
                 scale.label(scaleLabel1);
                 scale.set("type", "anisotropic");
-                scale.set("factor", new String[]{"(2*(R_in+Recess)*sin((W_contact)/(2*(R_in+Recess))))/W_contact", "1"});
+                scale.set("factor", new String[]{"(2*(R_in+Recess)*sin((Rect_w)/(2*(R_in+Recess))))/Rect_w", "1"});
                 scale.selection("input").named(im.get(cfLabel));
 
                 String elifcoitLabel = "Else If Contact Outline is True";
@@ -1058,7 +1058,7 @@ class Part {
                 ccsc.geom().feature("r2").set("contributeto", im.get(cpfLabel));
                 ccsc.geom().feature("r2").set("pos", new int[]{0, 0});
                 ccsc.geom().feature("r2").set("base", "center");
-                ccsc.geom().feature("r2").set("size", new String[]{"W_contact", "Z_contact"});
+                ccsc.geom().feature("r2").set("size", new String[]{"Rect_w", "Z_contact"});
 
                 String filletLabel2 = "Fillet Corners 2";
                 GeomFeature fillet2 = ccsc.geom().create(im.next("fil",filletLabel2), "Fillet");
@@ -1174,7 +1174,7 @@ class Part {
                 rcs.geom().feature("r1").set("contributeto", im.get(rpfrLabel));
                 rcs.geom().feature("r1").set("pos", new int[]{0, 0});
                 rcs.geom().feature("r1").set("base", "center");
-                rcs.geom().feature("r1").set("size", new String[]{"W_contact", "Z_contact"});
+                rcs.geom().feature("r1").set("size", new String[]{"Rect_w", "Z_contact"});
 
                 String filletrLabel = "Fillet Corners (for recess)";
                 GeomFeature filletr = rcs.geom().create(im.next("fil", filletrLabel), "Fillet");
@@ -1187,7 +1187,7 @@ class Part {
                 GeomFeature scaler = rcs.geom().create(im.next("sca",scalerLabel), "Scale");
                 scaler.label(scalerLabel);
                 scaler.set("type", "anisotropic");
-                scaler.set("factor", new String[]{"(2*(R_in+Recess)*sin((W_contact)/(2*(R_in+Recess))))/W_contact", "1"});
+                scaler.set("factor", new String[]{"(2*(R_in+Recess)*sin((Rect_w)/(2*(R_in+Recess))))/Rect_w", "1"});
                 scaler.selection("input").named(im.get(rfrLabel));
 
                 String elifcotLabel = "Else If Contact Outline is True (for recess)";
@@ -1200,7 +1200,7 @@ class Part {
                 rcs.geom().feature("r2").set("contributeto", im.get(rpfrLabel));
                 rcs.geom().feature("r2").set("pos", new int[]{0, 0});
                 rcs.geom().feature("r2").set("base", "center");
-                rcs.geom().feature("r2").set("size", new String[]{"W_contact", "Z_contact"});
+                rcs.geom().feature("r2").set("size", new String[]{"Rect_w", "Z_contact"});
 
                 String filletrLabel2 = "Fillet Corners (for recess)2";
                 GeomFeature filletr2 = rcs.geom().create(im.next("fil", filletrLabel2), "Fillet");
@@ -1886,7 +1886,7 @@ class Part {
                 String[] rectangleContactParameters = {
                         "Center",
                         "Rotation_angle",
-                        "W_contact",
+                        "Rect_w",
                         "Z_contact",
                         "Fillet_contact",
                         "L_cuff",
