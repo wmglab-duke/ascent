@@ -52,7 +52,7 @@
         "L_cuff": "L_cuff_Pitt",
         "R_in": "R_in_Pitt",
         "Recess": "recess_Pitt",
-        "Thk_contact": "thk_contact_Pitt",
+        "Rect_thk": "thk_contact_Pitt",
         "Rect_def": "Rect_def_Pitt"
       },
       "materials": [
@@ -78,7 +78,7 @@
         "L_cuff": "L_cuff_Pitt",
         "R_in": "R_in_Pitt",
         "Recess": "recess_Pitt",
-        "Thk_contact": "thk_contact_Pitt",
+        "Rect_thk": "thk_contact_Pitt",
         "Rect_def": "Rect_def_Pitt"
       },
       "materials": [
@@ -104,7 +104,7 @@
         "L_cuff": "L_cuff_Pitt",
         "R_in": "R_in_Pitt",
         "Recess": "recess_Pitt",
-        "Thk_contact": "thk_contact_Pitt",
+        "Rect_thk": "thk_contact_Pitt",
         "Rect_def": "Rect_def_Pitt"
       },
       "materials": [
@@ -130,7 +130,7 @@
         "L_cuff": "L_cuff_Pitt",
         "R_in": "R_in_Pitt",
         "Recess": "recess_Pitt",
-        "Thk_contact": "thk_contact_Pitt",
+        "Rect_thk": "thk_contact_Pitt",
         "Rect_def": "Rect_def_Pitt"
       },
       "materials": [

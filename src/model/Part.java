@@ -961,7 +961,7 @@ class Part {
                 model.geom(id).inputParam().set("L_cuff", "4.1917 [mm]");
                 model.geom(id).inputParam().set("R_in", "1.5 [mm]");
                 model.geom(id).inputParam().set("Recess", "0.018 [mm]");
-                model.geom(id).inputParam().set("Thk_contact", "0.018 [mm]");
+                model.geom(id).inputParam().set("Rect_thk", "0.018 [mm]");
                 model.geom(id).inputParam().set("Rect_def", "1");
 
                 im.labels = new String[]{
@@ -1092,7 +1092,7 @@ class Part {
                 occ.label(occLabel);
                 occ.set("contributeto", im.get("OUTER CONTACT CUTTER"));
                 occ.set("pos", new String[]{"0", "0", "-L_cuff/2+Center"});
-                occ.set("r", "R_in+Recess+Thk_contact");
+                occ.set("r", "R_in+Recess+Rect_thk");
                 occ.set("h", "L_cuff");
 
                 String coeLabel = "Cut Outer Excess";
@@ -1122,8 +1122,8 @@ class Part {
                 String soeLabel = "sel outer excess";
                 GeomFeature soe = model.geom(id).create(im.next("ballsel",soeLabel), "BallSelection");
                 soe.label(soeLabel);
-                soe.set("posx", "((2*R_in-(R_in+Recess+Thk_contact))/2+R_in+Recess+Thk_contact)*cos(Rotation_angle)");
-                soe.set("posy", "((2*R_in-(R_in+Recess+Thk_contact))/2+R_in+Recess+Thk_contact)*sin(Rotation_angle)");
+                soe.set("posx", "((2*R_in-(R_in+Recess+Rect_thk))/2+R_in+Recess+Rect_thk)*cos(Rotation_angle)");
+                soe.set("posy", "((2*R_in-(R_in+Recess+Rect_thk))/2+R_in+Recess+Rect_thk)*sin(Rotation_angle)");
                 soe.set("posz", "Center");
                 soe.set("r", 1);
                 soe.set("contributeto", im.get("SEL OUTER EXCESS CONTACT"));
@@ -1289,7 +1289,7 @@ class Part {
                 GeomFeature srcs = model.geom(id).create(im.next("pt",srcsLabel), "Point");
                 srcs.label(srcsLabel);
                 srcs.set("contributeto", im.get("SRC"));
-                srcs.set("p", new String[]{"(R_in+Recess+(Thk_contact/2))*cos(Rotation_angle)", "(R_in+Recess+(Thk_contact/2))*sin(Rotation_angle)", "Center"});
+                srcs.set("p", new String[]{"(R_in+Recess+(Rect_thk/2))*cos(Rotation_angle)", "(R_in+Recess+(Rect_thk/2))*sin(Rotation_angle)", "Center"});
 
                 model.geom(id).run();
 
