@@ -445,12 +445,12 @@ class Part {
                 break;
 
             case "WireContact_Primitive":
-                model.geom(id).inputParam().set("R_conductor", "37.5 [um]");
-                model.geom(id).inputParam().set("R_in", "150 [um]");
+                model.geom(id).inputParam().set("R_wire", "37.5 [um]");
+                model.geom(id).inputParam().set("R_in", "250 [um]");
                 model.geom(id).inputParam().set("Center", "10 [mm]");
                 model.geom(id).inputParam().set("Pitch", "1 [mm]");
-                model.geom(id).inputParam().set("Sep_conductor", "10 [um]");
-                model.geom(id).inputParam().set("Theta_conductor", "200 [deg]");
+                model.geom(id).inputParam().set("Sep_wire", "10 [um]");
+                model.geom(id).inputParam().set("Theta_wire", "250 [deg]");
 
                 im.labels = new String[]{
                         "CONTACT CROSS SECTION",
@@ -476,14 +476,14 @@ class Part {
                 contact_xs.geom().create("c1", "Circle");
                 contact_xs.geom().feature("c1").label("Contact Cross Section");
                 contact_xs.geom().feature("c1").set("contributeto", im.get("CONTACT CROSS SECTION"));
-                contact_xs.geom().feature("c1").set("pos", new String[]{"Center", "R_in-R_conductor-Sep_conductor"});
-                contact_xs.geom().feature("c1").set("r", "R_conductor");
+                contact_xs.geom().feature("c1").set("pos", new String[]{"Center", "R_in-R_wire-Sep_wire"});
+                contact_xs.geom().feature("c1").set("r", "R_wire");
 
                 String mcLabel = "Make Contact";
                 GeomFeature contact = model.geom(id).create(im.next("rev",mcLabel), "Revolve");
                 contact.label(mcLabel);
                 contact.set("contributeto", im.get("CONTACT FINAL"));
-                contact.set("angle2", "Theta_conductor");
+                contact.set("angle2", "Theta_wire");
                 contact.set("axis", new int[]{1, 0});
                 contact.selection("input").named(im.get("CONTACT CROSS SECTION"));
 
@@ -491,7 +491,7 @@ class Part {
                 GeomFeature source = model.geom(id).create(im.next("pt",sourceLabel), "Point");
                 source.label(sourceLabel);
                 source.set("contributeto", im.get("SRC"));
-                source.set("p", new String[]{"(R_in-R_conductor-Sep_conductor)*cos(Theta_conductor/2)", "(R_in-R_conductor-Sep_conductor)*sin(Theta_conductor/2)", "Center"});
+                source.set("p", new String[]{"(R_in-R_wire-Sep_wire)*cos(Theta_wire/2)", "(R_in-R_wire-Sep_wire)*sin(Theta_wire/2)", "Center"});
 
                 model.geom(id).run();
 
@@ -960,7 +960,7 @@ class Part {
                 model.geom(id).inputParam().set("Fillet_contact", "0.1 [mm]");
                 model.geom(id).inputParam().set("L_cuff", "4.1917 [mm]");
                 model.geom(id).inputParam().set("R_in", "1.5 [mm]");
-                model.geom(id).inputParam().set("Recess", "0.1 [mm]");
+                model.geom(id).inputParam().set("Recess", "0.018 [mm]");
                 model.geom(id).inputParam().set("Thk_contact", "0.018 [mm]");
                 model.geom(id).inputParam().set("Rect_def", "1");
 
@@ -1723,12 +1723,12 @@ class Part {
 
                 // set instantiation parameters
                 String[] wireContactParameters = {
-                        "R_conductor",
+                        "R_wire",
                         "R_in",
                         "Center",
                         "Pitch",
-                        "Sep_conductor",
-                        "Theta_conductor"
+                        "Sep_wire",
+                        "Theta_wire"
 
                 };
 
