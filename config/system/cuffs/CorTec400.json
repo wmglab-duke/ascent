@@ -47,7 +47,7 @@
         "Ribbon_thk": "Thk_elec_CT400",
         "Ribbon_z": "L_elec_CT400",
         "R_in": "R_in_CT400",
-        "Recess": "Recess_CT400",
+        "Ribbon_recess": "Recess_CT400",
         "Center": "Center_CT400+(Pitch_CT400/2)",
         "Ribbon_theta": "Theta_contact_CT400",
         "Rot_def": "Rot_def_contact_CT400"
@@ -70,7 +70,7 @@
         "Ribbon_thk": "Thk_elec_CT400",
         "Ribbon_z": "L_elec_CT400",
         "R_in": "R_in_CT400",
-        "Recess": "Recess_CT400",
+        "Ribbon_recess": "Recess_CT400",
         "Center": "Center_CT400-(Pitch_CT400/2)",
         "Ribbon_theta": "Theta_contact_CT400",
         "Rot_def": "Rot_def_contact_CT400"

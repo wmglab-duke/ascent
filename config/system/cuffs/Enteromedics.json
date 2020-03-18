@@ -47,7 +47,7 @@
         "Ribbon_thk": "Thk_elec_EM",
         "Ribbon_z": "L_elec_EM",
         "R_in": "R_in_EM",
-        "Recess": "Recess_EM",
+        "Ribbon_recess": "Recess_EM",
         "Center": "Center_EM",
         "Ribbon_theta": "Theta_contact_EM",
         "Rot_def": "0 [deg]"

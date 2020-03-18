@@ -355,7 +355,7 @@ class Part {
                 mp.set("Ribbon_thk", "0.1 [mm]");
                 mp.set("Ribbon_z", "3 [mm]");
                 mp.set("R_in", "1 [mm]");
-                mp.set("Recess", "0.1 [mm]");
+                mp.set("Ribbon_recess", "0.1 [mm]");
                 mp.set("Center", "10 [mm]");
                 mp.set("Ribbon_theta", "100 [deg]");
                 mp.set("Rot_def", "0 [deg]");
@@ -384,7 +384,7 @@ class Part {
                 wp_contact_cx.geom().create("r1", "Rectangle");
                 wp_contact_cx.geom().feature("r1").label("Contact Cross Section");
                 wp_contact_cx.geom().feature("r1")
-                        .set("pos", new String[]{"R_in+Recess+Ribbon_thk/2", "Center"});
+                        .set("pos", new String[]{"R_in+Ribbon_recess+Ribbon_thk/2", "Center"});
                 wp_contact_cx.geom().feature("r1").set("base", "center");
                 wp_contact_cx.geom().feature("r1").set("size", new String[]{"Ribbon_thk", "Ribbon_z"});
 
@@ -398,7 +398,7 @@ class Part {
 
                 String ifrecessLabel = "IF RECESS";
                 GeomFeature if_recess = model.geom(id).create(im.next("if",ifrecessLabel), "If");
-                if_recess.set("condition", "Recess>0");
+                if_recess.set("condition", "Ribbon_recess>0");
                 if_recess.label(ifrecessLabel);
 
                 String wprcx1Label = "Recess Cross Section 1";
@@ -419,9 +419,9 @@ class Part {
                 wp_recess_cx1.geom().create("r1", "Rectangle");
                 wp_recess_cx1.geom().feature("r1").label("Recess Cross Section");
                 wp_recess_cx1.geom().feature("r1").set("contributeto", im.get(rcxLabel));
-                wp_recess_cx1.geom().feature("r1").set("pos", new String[]{"R_in+Recess/2", "Center"});
+                wp_recess_cx1.geom().feature("r1").set("pos", new String[]{"R_in+Ribbon_recess/2", "Center"});
                 wp_recess_cx1.geom().feature("r1").set("base", "center");
-                wp_recess_cx1.geom().feature("r1").set("size", new String[]{"Recess", "Ribbon_z"});
+                wp_recess_cx1.geom().feature("r1").set("size", new String[]{"Ribbon_recess", "Ribbon_z"});
 
                 String revmrLabel = "Make Recess";
                 GeomFeature rev_make_racess = model.geom(id).create(im.next("rev",revmrLabel), "Revolve");
@@ -438,7 +438,7 @@ class Part {
                 GeomFeature src = model.geom(id).create(im.next("pt",srcLabel), "Point");
                 src.label(srcLabel);
                 src.set("contributeto", im.get("SRC"));
-                src.set("p", new String[]{"(R_in+Recess+Ribbon_thk/2)*cos(Rot_def+Ribbon_theta/2)", "(R_in+Recess+Ribbon_thk/2)*sin(Rot_def+Ribbon_theta/2)", "Center"});
+                src.set("p", new String[]{"(R_in+Ribbon_recess+Ribbon_thk/2)*cos(Rot_def+Ribbon_theta/2)", "(R_in+Ribbon_recess+Ribbon_thk/2)*sin(Rot_def+Ribbon_theta/2)", "Center"});
 
                 model.geom(id).run();
 
@@ -1683,7 +1683,7 @@ class Part {
                         "Ribbon_thk",
                         "Ribbon_z",
                         "R_in",
-                        "Recess",
+                        "Ribbon_recess",
                         "Center",
                         "Ribbon_theta",
                         "Rot_def"

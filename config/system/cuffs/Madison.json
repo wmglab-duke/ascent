@@ -47,7 +47,7 @@
         "Ribbon_thk": "Thk_elec_M",
         "Ribbon_z": "L_elec_M",
         "R_in": "R_in_M",
-        "Recess": "Recess_M",
+        "Ribbon_recess": "Recess_M",
         "Center": "Center_M",
         "Ribbon_theta": "Theta_contact_M",
         "Rot_def": "Rot_def_contact_M"

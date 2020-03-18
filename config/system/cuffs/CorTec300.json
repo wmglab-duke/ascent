@@ -47,7 +47,7 @@
         "Ribbon_thk": "Thk_elec_CT",
         "Ribbon_z": "L_elec_CT",
         "R_in": "R_in_CT",
-        "Recess": "Recess_CT",
+        "Ribbon_recess": "Recess_CT",
         "Center": "Center_CT+(Pitch_CT/2)",
         "Ribbon_theta": "Theta_contact_CT",
         "Rot_def": "Rot_def_contact_CT"
@@ -70,7 +70,7 @@
         "Ribbon_thk": "Thk_elec_CT",
         "Ribbon_z": "L_elec_CT",
         "R_in": "R_in_CT",
-        "Recess": "Recess_CT",
+        "Ribbon_recess": "Recess_CT",
         "Center": "Center_CT-(Pitch_CT/2)",
         "Ribbon_theta": "Theta_contact_CT",
         "Rot_def": "Rot_def_contact_CT"
