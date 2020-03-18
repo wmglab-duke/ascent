@@ -74,7 +74,7 @@
         "Center": "Center_IT-length_contactcenter_contactcenter_ITC",
         "Round_def": "Round_def_ITC",
         "R_in": "R_in_ITI",
-        "Contact_depth": "Contact_depth_ITC",
+        "Circle_thk": "Contact_depth_ITC",
         "Overshoot": "Overshoot_ITC",
         "Circle_diam": "diam_contact_ITC",
         "L": "L_IT"
@@ -99,7 +99,7 @@
         "Center": "Center_IT",
         "Round_def": "Round_def_ITC",
         "R_in": "R_in_ITI",
-        "Contact_depth": "Contact_depth_ITC",
+        "Circle_thk": "Contact_depth_ITC",
         "Overshoot": "Overshoot_ITC",
         "Circle_diam": "diam_contact_ITC",
         "L": "L_IT"
@@ -124,7 +124,7 @@
         "Center": "Center_IT+length_contactcenter_contactcenter_ITC",
         "Round_def": "Round_def_ITC",
         "R_in": "R_in_ITI",
-        "Contact_depth": "Contact_depth_ITC",
+        "Circle_thk": "Contact_depth_ITC",
         "Overshoot": "Overshoot_ITC",
         "Circle_diam": "diam_contact_ITC",
         "L": "L_IT"
@@ -149,7 +149,7 @@
         "Center": "Center_IT-length_contactcenter_contactcenter_ITC",
         "Round_def": "Round_def_ITC",
         "R_in": "R_in_ITI",
-        "Contact_depth": "Contact_depth_ITC",
+        "Circle_thk": "Contact_depth_ITC",
         "Overshoot": "Overshoot_ITC",
         "Circle_diam": "diam_contact_ITC",
         "L": "L_IT"
@@ -174,7 +174,7 @@
         "Center": "Center_IT",
         "Round_def": "Round_def_ITC",
         "R_in": "R_in_ITI",
-        "Contact_depth": "Contact_depth_ITC",
+        "Circle_thk": "Contact_depth_ITC",
         "Overshoot": "Overshoot_ITC",
         "Circle_diam": "diam_contact_ITC",
         "L": "L_IT"
@@ -199,7 +199,7 @@
         "Center": "Center_IT+length_contactcenter_contactcenter_ITC",
         "Round_def": "Round_def_ITC",
         "R_in": "R_in_ITI",
-        "Contact_depth": "Contact_depth_ITC",
+        "Circle_thk": "Contact_depth_ITC",
         "Overshoot": "Overshoot_ITC",
         "Circle_diam": "diam_contact_ITC",
         "L": "L_IT"

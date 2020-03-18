@@ -503,7 +503,7 @@ class Part {
                 model.geom(id).inputParam().set("Center", "20 [mm]");
                 model.geom(id).inputParam().set("Round_def", "1");
                 model.geom(id).inputParam().set("R_in", "1.5 [mm]");
-                model.geom(id).inputParam().set("Contact_depth", "0.05 [mm]");
+                model.geom(id).inputParam().set("Circle_thk", "0.05 [mm]");
                 model.geom(id).inputParam().set("Overshoot", "0.05 [mm]");
                 model.geom(id).inputParam().set("Circle_diam", "2 [mm]");
                 model.geom(id).inputParam().set("L", "0.354 [inch]");
@@ -687,7 +687,7 @@ class Part {
                 GeomFeature mpccd = model.geom(id).create(im.next("ext",mpccdLabel), "Extrude");
                 mpccd.label(mpccdLabel);
                 mpccd.set("contributeto", im.get("PRE CUT CONTACT"));
-                mpccd.setIndex("distance", "R_in+Circle_recess+Contact_depth+Overshoot", 0);
+                mpccd.setIndex("distance", "R_in+Circle_recess+Circle_thk+Overshoot", 0);
                 mpccd.selection("input").named(im.get("PLANE FOR CONTACT"));
 
                 String cciLabel = "Contact Cut In";
@@ -703,7 +703,7 @@ class Part {
                 cco.label(ccoLabel);
                 cco.set("contributeto", im.get("CONTACT CUTTER OUT"));
                 cco.set("pos", new String[]{"0", "0", "Center-L/2"});
-                cco.set("r", "R_in+Circle_recess+Contact_depth");
+                cco.set("r", "R_in+Circle_recess+Circle_thk");
                 cco.set("h", "L");
 
                 String ecciLabel = "Execute Contact Cut In";
@@ -725,8 +725,8 @@ class Part {
                 String so1Label = "Select Overshoot 1";
                 GeomFeature so1 = model.geom(id).create(im.next("ballsel", so1Label), "BallSelection");
                 so1.label(so1Label);
-                so1.set("posx", "(R_in+Circle_recess+Contact_depth+Overshoot/2)*cos(Rotation_angle)");
-                so1.set("posy", "(R_in+Circle_recess+Contact_depth+Overshoot/2)*sin(Rotation_angle)");
+                so1.set("posx", "(R_in+Circle_recess+Circle_thk+Overshoot/2)*cos(Rotation_angle)");
+                so1.set("posy", "(R_in+Circle_recess+Circle_thk+Overshoot/2)*sin(Rotation_angle)");
                 so1.set("posz", "Center");
                 so1.set("r", 1);
                 so1.set("contributeto", im.get("RECESS OVERSHOOT"));
@@ -742,7 +742,7 @@ class Part {
                 GeomFeature srcc = model.geom(id).create(im.next("pt",srccLabel), "Point");
                 srcc.label(srccLabel);
                 srcc.set("contributeto", im.get("SRC"));
-                srcc.set("p", new String[]{"(R_in+Circle_recess+Contact_depth/2)*cos(Rotation_angle)", "(R_in+Circle_recess+Contact_depth/2)*sin(Rotation_angle)", "Center"});
+                srcc.set("p", new String[]{"(R_in+Circle_recess+Circle_thk/2)*cos(Rotation_angle)", "(R_in+Circle_recess+Circle_thk/2)*sin(Rotation_angle)", "Center"});
 
                 model.geom(id).run();
 
@@ -1767,7 +1767,7 @@ class Part {
                         "Center",
                         "Round_def",
                         "R_in",
-                        "Contact_depth",
+                        "Circle_thk",
                         "Overshoot",
                         "Circle_diam",
                         "L"
