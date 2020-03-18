@@ -51,7 +51,7 @@
         "Rect_fillet": "fillet_contact_Pitt",
         "L_cuff": "L_cuff_Pitt",
         "R_in": "R_in_Pitt",
-        "Recess": "recess_Pitt",
+        "Rect_recess": "recess_Pitt",
         "Rect_thk": "thk_contact_Pitt",
         "Rect_def": "Rect_def_Pitt"
       },
@@ -77,7 +77,7 @@
         "Rect_fillet": "fillet_contact_Pitt",
         "L_cuff": "L_cuff_Pitt",
         "R_in": "R_in_Pitt",
-        "Recess": "recess_Pitt",
+        "Rect_recess": "recess_Pitt",
         "Rect_thk": "thk_contact_Pitt",
         "Rect_def": "Rect_def_Pitt"
       },
@@ -103,7 +103,7 @@
         "Rect_fillet": "fillet_contact_Pitt",
         "L_cuff": "L_cuff_Pitt",
         "R_in": "R_in_Pitt",
-        "Recess": "recess_Pitt",
+        "Rect_recess": "recess_Pitt",
         "Rect_thk": "thk_contact_Pitt",
         "Rect_def": "Rect_def_Pitt"
       },
@@ -129,7 +129,7 @@
         "Rect_fillet": "fillet_contact_Pitt",
         "L_cuff": "L_cuff_Pitt",
         "R_in": "R_in_Pitt",
-        "Recess": "recess_Pitt",
+        "Rect_recess": "recess_Pitt",
         "Rect_thk": "thk_contact_Pitt",
         "Rect_def": "Rect_def_Pitt"
       },

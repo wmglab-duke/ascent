@@ -960,7 +960,7 @@ class Part {
                 model.geom(id).inputParam().set("Rect_fillet", "0.1 [mm]");
                 model.geom(id).inputParam().set("L_cuff", "4.1917 [mm]");
                 model.geom(id).inputParam().set("R_in", "1.5 [mm]");
-                model.geom(id).inputParam().set("Recess", "0.018 [mm]");
+                model.geom(id).inputParam().set("Rect_recess", "0.018 [mm]");
                 model.geom(id).inputParam().set("Rect_thk", "0.018 [mm]");
                 model.geom(id).inputParam().set("Rect_def", "1");
 
@@ -1045,7 +1045,7 @@ class Part {
                 GeomFeature scale = ccsc.geom().create(im.next("sca",scaleLabel1), "Scale");
                 scale.label(scaleLabel1);
                 scale.set("type", "anisotropic");
-                scale.set("factor", new String[]{"(2*(R_in+Recess)*sin((Rect_w)/(2*(R_in+Recess))))/Rect_w", "1"});
+                scale.set("factor", new String[]{"(2*(R_in+Rect_recess)*sin((Rect_w)/(2*(R_in+Rect_recess))))/Rect_w", "1"});
                 scale.selection("input").named(im.get(cfLabel));
 
                 String elifcoitLabel = "Else If Contact Outline is True";
@@ -1084,7 +1084,7 @@ class Part {
                 icc.label(iccLabel);
                 icc.set("contributeto", im.get("INNER CONTACT CUTTER"));
                 icc.set("pos", new String[]{"0", "0", "-L_cuff/2+Center"});
-                icc.set("r", "R_in+Recess");
+                icc.set("r", "R_in+Rect_recess");
                 icc.set("h", "L_cuff");
 
                 String occLabel = "Outer Contact Cutter";
@@ -1092,7 +1092,7 @@ class Part {
                 occ.label(occLabel);
                 occ.set("contributeto", im.get("OUTER CONTACT CUTTER"));
                 occ.set("pos", new String[]{"0", "0", "-L_cuff/2+Center"});
-                occ.set("r", "R_in+Recess+Rect_thk");
+                occ.set("r", "R_in+Rect_recess+Rect_thk");
                 occ.set("h", "L_cuff");
 
                 String coeLabel = "Cut Outer Excess";
@@ -1112,8 +1112,8 @@ class Part {
                 String sieLabel = "sel inner excess";
                 GeomFeature sie = model.geom(id).create(im.next("ballsel",sieLabel), "BallSelection");
                 sie.label(sieLabel);
-                sie.set("posx", "((R_in+Recess)/2)*cos(Rotation_angle)");
-                sie.set("posy", "((R_in+Recess)/2)*sin(Rotation_angle)");
+                sie.set("posx", "((R_in+Rect_recess)/2)*cos(Rotation_angle)");
+                sie.set("posy", "((R_in+Rect_recess)/2)*sin(Rotation_angle)");
                 sie.set("posz", "Center");
                 sie.set("r", 1);
                 sie.set("contributeto", im.get("SEL INNER EXCESS CONTACT"));
@@ -1122,8 +1122,8 @@ class Part {
                 String soeLabel = "sel outer excess";
                 GeomFeature soe = model.geom(id).create(im.next("ballsel",soeLabel), "BallSelection");
                 soe.label(soeLabel);
-                soe.set("posx", "((2*R_in-(R_in+Recess+Rect_thk))/2+R_in+Recess+Rect_thk)*cos(Rotation_angle)");
-                soe.set("posy", "((2*R_in-(R_in+Recess+Rect_thk))/2+R_in+Recess+Rect_thk)*sin(Rotation_angle)");
+                soe.set("posx", "((2*R_in-(R_in+Rect_recess+Rect_thk))/2+R_in+Rect_recess+Rect_thk)*cos(Rotation_angle)");
+                soe.set("posy", "((2*R_in-(R_in+Rect_recess+Rect_thk))/2+R_in+Rect_recess+Rect_thk)*sin(Rotation_angle)");
                 soe.set("posz", "Center");
                 soe.set("r", 1);
                 soe.set("contributeto", im.get("SEL OUTER EXCESS CONTACT"));
@@ -1143,7 +1143,7 @@ class Part {
 
                 String irsLabel = "If Recess";
                 GeomFeature irs = model.geom(id).create(im.next("if",irsLabel), "If");
-                irs.set("condition", "Recess>0");
+                irs.set("condition", "Rect_recess>0");
                 irs.label(irsLabel);
 
                 String rcsLabel = "Recess Cross Section";
@@ -1187,7 +1187,7 @@ class Part {
                 GeomFeature scaler = rcs.geom().create(im.next("sca",scalerLabel), "Scale");
                 scaler.label(scalerLabel);
                 scaler.set("type", "anisotropic");
-                scaler.set("factor", new String[]{"(2*(R_in+Recess)*sin((Rect_w)/(2*(R_in+Recess))))/Rect_w", "1"});
+                scaler.set("factor", new String[]{"(2*(R_in+Rect_recess)*sin((Rect_w)/(2*(R_in+Rect_recess))))/Rect_w", "1"});
                 scaler.selection("input").named(im.get(rfrLabel));
 
                 String elifcotLabel = "Else If Contact Outline is True (for recess)";
@@ -1234,7 +1234,7 @@ class Part {
                 orc.label(orcLabel);
                 orc.set("contributeto", im.get("OUTER RECESS CUTTER"));
                 orc.set("pos", new String[]{"0", "0", "-L_cuff/2+Center"});
-                orc.set("r", "R_in+Recess");
+                orc.set("r", "R_in+Rect_recess");
                 orc.set("h", "L_cuff");
 
                 String roreLabel = "Remove Outer Recess Excess";
@@ -1254,8 +1254,8 @@ class Part {
                 String sie1Label = "sel inner excess 1";
                 GeomFeature sie1 = model.geom(id).create(im.next("ballsel",sie1Label), "BallSelection");
                 sie1.label(sie1Label);
-                sie1.set("posx", "((R_in+Recess)/2)*cos(Rotation_angle)");
-                sie1.set("posy", "((R_in+Recess)/2)*sin(Rotation_angle)");
+                sie1.set("posx", "((R_in+Rect_recess)/2)*cos(Rotation_angle)");
+                sie1.set("posy", "((R_in+Rect_recess)/2)*sin(Rotation_angle)");
                 sie1.set("posz", "Center");
                 sie1.set("r", 1);
                 sie1.set("contributeto", im.get("SEL INNER EXCESS RECESS"));
@@ -1289,7 +1289,7 @@ class Part {
                 GeomFeature srcs = model.geom(id).create(im.next("pt",srcsLabel), "Point");
                 srcs.label(srcsLabel);
                 srcs.set("contributeto", im.get("SRC"));
-                srcs.set("p", new String[]{"(R_in+Recess+(Rect_thk/2))*cos(Rotation_angle)", "(R_in+Recess+(Rect_thk/2))*sin(Rotation_angle)", "Center"});
+                srcs.set("p", new String[]{"(R_in+Rect_recess+(Rect_thk/2))*cos(Rotation_angle)", "(R_in+Rect_recess+(Rect_thk/2))*sin(Rotation_angle)", "Center"});
 
                 model.geom(id).run();
 
@@ -1891,8 +1891,8 @@ class Part {
                         "Rect_fillet",
                         "L_cuff",
                         "R_in",
-                        "Recess",
-                        "Thk_contact",
+                        "Rect_recess",
+                        "Rect_thk",
                         "Rect_def"
 
                 };
