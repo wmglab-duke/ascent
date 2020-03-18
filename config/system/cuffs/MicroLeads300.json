@@ -7,7 +7,7 @@
       "def": {
         "Center": "z_center_U300",
         "R_in": "R_in_U300",
-        "Tangent": "Tangent_U300",
+        "U_tangent": "Tangent_U300",
         "R_out": "R_out_U300",
         "L": "L_U300"
       },
@@ -24,7 +24,7 @@
       "def": {
         "Center": "z_center_U300-(Pitch_U300/2)",
         "R_in": "R_in_U300",
-        "Tangent": "Tangent_U300",
+        "U_tangent": "Tangent_U300",
         "Thk_contact": "thk_contact_U300",
         "Z_contact": "z_contact_U300"
       },
@@ -41,7 +41,7 @@
       "def": {
         "Center": "z_center_U300+(Pitch_U300/2)",
         "R_in": "R_in_U300",
-        "Tangent": "Tangent_U300",
+        "U_tangent": "Tangent_U300",
         "Thk_contact": "thk_contact_U300",
         "Z_contact": "z_contact_U300"
       },
@@ -57,7 +57,7 @@
       "label": "MicroLeads300 uCuff Fill",
       "def": {
         "R_in": "R_in_U300",
-        "Tangent": "Tangent_U300",
+        "U_tangent": "Tangent_U300",
         "L": "L_U300",
         "Center": "z_center_U300"
       },

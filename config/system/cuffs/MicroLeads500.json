@@ -7,7 +7,7 @@
       "def": {
         "Center": "z_center_U500",
         "R_in": "R_in_U500",
-        "Tangent": "Tangent_U500",
+        "U_tangent": "Tangent_U500",
         "R_out": "R_out_U500",
         "L": "L_U500"
       },
@@ -24,7 +24,7 @@
       "def": {
         "Center": "z_center_U500-(Pitch_U500/2)",
         "R_in": "R_in_U500",
-        "Tangent": "Tangent_U500",
+        "U_tangent": "Tangent_U500",
         "Thk_contact": "thk_contact_U500",
         "Z_contact": "z_contact_U500"
       },
@@ -41,7 +41,7 @@
       "def": {
         "Center": "z_center_U500+(Pitch_U500/2)",
         "R_in": "R_in_U500",
-        "Tangent": "Tangent_U500",
+        "U_tangent": "Tangent_U500",
         "Thk_contact": "thk_contact_U500",
         "Z_contact": "z_contact_U500"
       },
@@ -57,7 +57,7 @@
       "label": "MicroLeads500 uCuff Fill",
       "def": {
         "R_in": "R_in_U500",
-        "Tangent": "Tangent_U500",
+        "U_tangent": "Tangent_U500",
         "L": "L_U500",
         "Center": "z_center_U500"
       },

@@ -1298,7 +1298,7 @@ class Part {
             case "uContact_Primitive":
                 model.geom(id).inputParam().set("Center", "10 [mm]");
                 model.geom(id).inputParam().set("R_in", "100 [um]");
-                model.geom(id).inputParam().set("Tangent", "200 [um]");
+                model.geom(id).inputParam().set("U_tangent", "200 [um]");
                 model.geom(id).inputParam().set("Thk_contact", "20 [um]");
                 model.geom(id).inputParam().set("Z_contact", "100 [um]");
 
@@ -1348,9 +1348,9 @@ class Part {
                 GeomFeature rectIL = ucontactxs.geom().create(im.next("r",rectInlineLabel), "Rectangle");
                 rectIL.label(rectInlineLabel);
                 rectIL.set("contributeto", im.get(inLineLabel));
-                rectIL.set("pos", new String[]{"Tangent/2", "0"});
+                rectIL.set("pos", new String[]{"U_tangent/2", "0"});
                 rectIL.set("base", "center");
-                rectIL.set("size", new String[]{"Tangent", "2*R_in"});
+                rectIL.set("size", new String[]{"U_tangent", "2*R_in"});
 
                 String uInlinePLabel = "Union Inline Parts";
                 GeomFeature uInline = ucontactxs.geom().create(im.next("uni",uInlinePLabel), "Union");
@@ -1369,9 +1369,9 @@ class Part {
                 GeomFeature urect = ucontactxs.geom().create(im.next("r",rectoLabel), "Rectangle");
                 urect.label(rectoLabel);
                 urect.set("contributeto", im.get(outLineLabel));
-                urect.set("pos", new String[]{"Tangent/2", "0"});
+                urect.set("pos", new String[]{"U_tangent/2", "0"});
                 urect.set("base", "center");
-                urect.set("size", new String[]{"Tangent", "2*R_in+2*Thk_contact"});
+                urect.set("size", new String[]{"U_tangent", "2*R_in+2*Thk_contact"});
 
                 String uOPLabel = "Union Outline Parts";
                 GeomFeature uOP = ucontactxs.geom().create(im.next("uni",uOPLabel), "Union");
@@ -1406,7 +1406,7 @@ class Part {
             case "uCuff_Primitive":
                 model.geom(id).inputParam().set("Center", "10 [mm]");
                 model.geom(id).inputParam().set("R_in", "100 [um]");
-                model.geom(id).inputParam().set("Tangent", "200 [um]");
+                model.geom(id).inputParam().set("U_tangent", "200 [um]");
                 model.geom(id).inputParam().set("R_out", "300 [um]");
                 model.geom(id).inputParam().set("L", "4 [mm]");
 
@@ -1459,9 +1459,9 @@ class Part {
                 GeomFeature ucRectInline = ucCXS.geom().create(im.next("r",ucRectInlineLabel), "Rectangle");
                 ucRectInline.label(ucRectInlineLabel);
                 ucRectInline.set("contributeto", im.get(ucInlineLabel));
-                ucRectInline.set("pos", new String[]{"Tangent/2", "0"});
+                ucRectInline.set("pos", new String[]{"U_tangent/2", "0"});
                 ucRectInline.set("base", "center");
-                ucRectInline.set("size", new String[]{"Tangent", "2*R_in"});
+                ucRectInline.set("size", new String[]{"U_tangent", "2*R_in"});
 
                 String ucUnionInlineLabel = "Union Inline Parts";
                 GeomFeature ucUnionInline = ucCXS.geom().create(im.next("uni",ucUnionInlineLabel), "Union");
@@ -1496,7 +1496,7 @@ class Part {
             case "uCuffFill_Primitive":
                 model.geom(id).inputParam().set("Center", "10 [mm]");
                 model.geom(id).inputParam().set("R_in", "100 [um]");
-                model.geom(id).inputParam().set("Tangent", "200 [um]");
+                model.geom(id).inputParam().set("U_tangent", "200 [um]");
                 model.geom(id).inputParam().set("L", "4 [mm]");
 
                 im.labels = new String[]{
@@ -1534,9 +1534,9 @@ class Part {
                 GeomFeature ufRectInline = ufCX.geom().create(im.next("r",ufRectInlineLabel), "Rectangle");
                 ufRectInline.label(ufRectInlineLabel);
                 ufRectInline.set("contributeto", im.get(ufInlineLabel));
-                ufRectInline.set("pos", new String[]{"Tangent/2", "0"});
+                ufRectInline.set("pos", new String[]{"U_tangent/2", "0"});
                 ufRectInline.set("base", "center");
-                ufRectInline.set("size", new String[]{"Tangent", "2*R_in"});
+                ufRectInline.set("size", new String[]{"U_tangent", "2*R_in"});
 
                 String ufUnionInlineLabel = "Union Inline Parts";
                 GeomFeature ufUnionInline = ufCX.geom().create(im.next("uni", ufUnionInlineLabel), "Union");
@@ -1975,7 +1975,7 @@ class Part {
                 String[] uContactParameters = {
                         "Center",
                         "R_in",
-                        "Tangent",
+                        "U_tangent",
                         "Thk_contact",
                         "Z_contact"
 
@@ -2011,7 +2011,7 @@ class Part {
                 String[] uCuffParameters = {
                         "Center",
                         "R_in",
-                        "Tangent",
+                        "U_tangent",
                         "R_out",
                         "L"
 
@@ -2036,7 +2036,7 @@ class Part {
                 String[] uCuffFillParameters = {
                         "Center",
                         "R_in",
-                        "Tangent",
+                        "U_tangent",
                         "L"
 
                 };

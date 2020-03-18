@@ -23,7 +23,7 @@
       "def": {
         "Center": "z_center_U",
         "R_in": "R_in_U",
-        "Tangent": "Tangent_U",
+        "U_tangent": "Tangent_U",
         "R_out": "R_out_U",
         "L": "L_U"
       },
@@ -40,7 +40,7 @@
       "def": {
         "Center": "z_center_U-(Pitch_U/2)",
         "R_in": "R_in_U",
-        "Tangent": "Tangent_U",
+        "U_tangent": "Tangent_U",
         "Thk_contact": "thk_contact_U",
         "Z_contact": "z_contact_U"
       },
@@ -57,7 +57,7 @@
       "def": {
         "Center": "z_center_U+(Pitch_U/2)",
         "R_in": "R_in_U",
-        "Tangent": "Tangent_U",
+        "U_tangent": "Tangent_U",
         "Thk_contact": "thk_contact_U",
         "Z_contact": "z_contact_U"
       },
