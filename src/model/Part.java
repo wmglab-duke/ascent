@@ -956,7 +956,7 @@ class Part {
                 model.geom(id).inputParam().set("Center", "0 [mm]");
                 model.geom(id).inputParam().set("Rotation_angle", "0 [deg]");
                 model.geom(id).inputParam().set("Rect_w", "0.475 [mm]");
-                model.geom(id).inputParam().set("Z_contact", "0.475 [mm]");
+                model.geom(id).inputParam().set("Rect_z", "0.475 [mm]");
                 model.geom(id).inputParam().set("Fillet_contact", "0.1 [mm]");
                 model.geom(id).inputParam().set("L_cuff", "4.1917 [mm]");
                 model.geom(id).inputParam().set("R_in", "1.5 [mm]");
@@ -1032,7 +1032,7 @@ class Part {
                 ccsc.geom().feature("r1").set("contributeto", im.get(cpfLabel));
                 ccsc.geom().feature("r1").set("pos", new int[]{0, 0});
                 ccsc.geom().feature("r1").set("base", "center");
-                ccsc.geom().feature("r1").set("size", new String[]{"Rect_w", "Z_contact"});
+                ccsc.geom().feature("r1").set("size", new String[]{"Rect_w", "Rect_z"});
 
                 String filletLabel = "Fillet Corners 1";
                 GeomFeature fillet = ccsc.geom().create(im.next("fil",filletLabel), "Fillet");
@@ -1058,7 +1058,7 @@ class Part {
                 ccsc.geom().feature("r2").set("contributeto", im.get(cpfLabel));
                 ccsc.geom().feature("r2").set("pos", new int[]{0, 0});
                 ccsc.geom().feature("r2").set("base", "center");
-                ccsc.geom().feature("r2").set("size", new String[]{"Rect_w", "Z_contact"});
+                ccsc.geom().feature("r2").set("size", new String[]{"Rect_w", "Rect_z"});
 
                 String filletLabel2 = "Fillet Corners 2";
                 GeomFeature fillet2 = ccsc.geom().create(im.next("fil",filletLabel2), "Fillet");
@@ -1174,7 +1174,7 @@ class Part {
                 rcs.geom().feature("r1").set("contributeto", im.get(rpfrLabel));
                 rcs.geom().feature("r1").set("pos", new int[]{0, 0});
                 rcs.geom().feature("r1").set("base", "center");
-                rcs.geom().feature("r1").set("size", new String[]{"Rect_w", "Z_contact"});
+                rcs.geom().feature("r1").set("size", new String[]{"Rect_w", "Rect_z"});
 
                 String filletrLabel = "Fillet Corners (for recess)";
                 GeomFeature filletr = rcs.geom().create(im.next("fil", filletrLabel), "Fillet");
@@ -1200,7 +1200,7 @@ class Part {
                 rcs.geom().feature("r2").set("contributeto", im.get(rpfrLabel));
                 rcs.geom().feature("r2").set("pos", new int[]{0, 0});
                 rcs.geom().feature("r2").set("base", "center");
-                rcs.geom().feature("r2").set("size", new String[]{"Rect_w", "Z_contact"});
+                rcs.geom().feature("r2").set("size", new String[]{"Rect_w", "Rect_z"});
 
                 String filletrLabel2 = "Fillet Corners (for recess)2";
                 GeomFeature filletr2 = rcs.geom().create(im.next("fil", filletrLabel2), "Fillet");
@@ -1887,7 +1887,7 @@ class Part {
                         "Center",
                         "Rotation_angle",
                         "Rect_w",
-                        "Z_contact",
+                        "Rect_z",
                         "Fillet_contact",
                         "L_cuff",
                         "R_in",
