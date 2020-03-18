@@ -45,7 +45,7 @@
       "label": "Madison Contact 1",
       "def": {
         "Thk_elec": "Thk_elec_M",
-        "L_elec": "L_elec_M",
+        "Ribbon_z": "L_elec_M",
         "R_in": "R_in_M",
         "Recess": "Recess_M",
         "Center": "Center_M",

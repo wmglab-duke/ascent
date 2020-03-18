@@ -352,8 +352,8 @@ class Part {
 
             case "RibbonContact_Primitive":
 
-                mp.set("Thk_elec", "0.1 [mm]");
-                mp.set("L_elec", "3 [mm]");
+                mp.set("Ribbon_thk", "0.1 [mm]");
+                mp.set("Ribbon_z", "3 [mm]");
                 mp.set("R_in", "1 [mm]");
                 mp.set("Recess", "0.1 [mm]");
                 mp.set("Center", "10 [mm]");
@@ -384,9 +384,9 @@ class Part {
                 wp_contact_cx.geom().create("r1", "Rectangle");
                 wp_contact_cx.geom().feature("r1").label("Contact Cross Section");
                 wp_contact_cx.geom().feature("r1")
-                        .set("pos", new String[]{"R_in+Recess+Thk_elec/2", "Center"});
+                        .set("pos", new String[]{"R_in+Recess+Ribbon_thk/2", "Center"});
                 wp_contact_cx.geom().feature("r1").set("base", "center");
-                wp_contact_cx.geom().feature("r1").set("size", new String[]{"Thk_elec", "L_elec"});
+                wp_contact_cx.geom().feature("r1").set("size", new String[]{"Ribbon_thk", "Ribbon_z"});
 
                 String revmcLabel = "Make Contact";
                 GeomFeature rev_make_contact = model.geom(id).create(im.next("rev",revmcLabel), "Revolve");
@@ -421,7 +421,7 @@ class Part {
                 wp_recess_cx1.geom().feature("r1").set("contributeto", im.get(rcxLabel));
                 wp_recess_cx1.geom().feature("r1").set("pos", new String[]{"R_in+Recess/2", "Center"});
                 wp_recess_cx1.geom().feature("r1").set("base", "center");
-                wp_recess_cx1.geom().feature("r1").set("size", new String[]{"Recess", "L_elec"});
+                wp_recess_cx1.geom().feature("r1").set("size", new String[]{"Recess", "Ribbon_z"});
 
                 String revmrLabel = "Make Recess";
                 GeomFeature rev_make_racess = model.geom(id).create(im.next("rev",revmrLabel), "Revolve");
@@ -1680,8 +1680,8 @@ class Part {
 
                 // set instantiation parameters
                 String[] ribbonContactParameters = {
-                        "Thk_elec",
-                        "L_elec",
+                        "Ribbon_thk",
+                        "Ribbon_z",
                         "R_in",
                         "Recess",
                         "Center",

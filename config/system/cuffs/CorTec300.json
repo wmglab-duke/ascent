@@ -45,7 +45,7 @@
       "label": "CorTec Contact 1",
       "def": {
         "Thk_elec": "Thk_elec_CT",
-        "L_elec": "L_elec_CT",
+        "Ribbon_z": "L_elec_CT",
         "R_in": "R_in_CT",
         "Recess": "Recess_CT",
         "Center": "Center_CT+(Pitch_CT/2)",
@@ -68,7 +68,7 @@
       "label": "CorTec Contact 2",
       "def": {
         "Thk_elec": "Thk_elec_CT",
-        "L_elec": "L_elec_CT",
+        "Ribbon_z": "L_elec_CT",
         "R_in": "R_in_CT",
         "Recess": "Recess_CT",
         "Center": "Center_CT-(Pitch_CT/2)",
