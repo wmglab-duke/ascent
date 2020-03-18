@@ -501,7 +501,7 @@ class Part {
                 model.geom(id).inputParam().set("Circle_recess", "0.05 [mm]");
                 model.geom(id).inputParam().set("Rotation_angle", "0 [deg]");
                 model.geom(id).inputParam().set("Center", "20 [mm]");
-                model.geom(id).inputParam().set("Round_def", "1");
+                model.geom(id).inputParam().set("Circle_def", "1");
                 model.geom(id).inputParam().set("R_in", "1.5 [mm]");
                 model.geom(id).inputParam().set("Circle_thk", "0.05 [mm]");
                 model.geom(id).inputParam().set("Overshoot", "0.05 [mm]");
@@ -562,7 +562,7 @@ class Part {
                 String ifcsicLabel = "If Contact Surface is Circle (for recess)";
                 GeomFeature ifcsic = rpr.geom().create(im.next("if",ifcsicLabel), "If");
                 ifcsic.label(ifcsicLabel);
-                ifcsic.set("condition", "Round_def==1");
+                ifcsic.set("condition", "Circle_def==1");
 
                 String coLabel = "Contact Outline";
                 GeomFeature co = rpr.geom().create(im.next("e",coLabel), "Ellipse");
@@ -574,7 +574,7 @@ class Part {
                 String elifcocLabel = "Else If Contact Outline is Circle";
                 GeomFeature elifcoc = rpr.geom().create(im.next("elseif",elifcocLabel), "ElseIf");
                 elifcoc.label("Else If Contact Outline is Circle (for recess)");
-                elifcoc.set("condition", "Round_def==2");
+                elifcoc.set("condition", "Circle_def==2");
 
                 String co1Label = "Contact Outline 1 (for recess)";
                 GeomFeature co1 = rpr.geom().create(im.next("e",co1Label), "Ellipse");
@@ -661,7 +661,7 @@ class Part {
                 String ifcsiccLabel = "If Contact Surface is Circle (for contact)";
                 GeomFeature icsicc = rpc.geom().create(im.next("if",ifcsiccLabel), "If");
                 icsicc.label(ifcsiccLabel);
-                icsicc.set("condition", "Round_def==1");
+                icsicc.set("condition", "Circle_def==1");
 
                 String cocLabel = "Contact Outline (for contact)";
                 GeomFeature coc = rpc.geom().create(im.next("e",cocLabel), "Ellipse");
@@ -673,7 +673,7 @@ class Part {
                 String elifcoccLabel = "Else If Contact Outline is Circle (for contact)";
                 GeomFeature elifcocc = rpc.geom().create(im.next("elseif",elifcoccLabel), "ElseIf");
                 elifcocc.label(elifcoccLabel);
-                elifcocc.set("condition", "Round_def==2");
+                elifcocc.set("condition", "Circle_def==2");
 
                 String co1cLabel = "Contact Outline 1 (for contact)";
                 GeomFeature co1c = rpc.geom().create(im.next("e",co1cLabel), "Ellipse");
@@ -1765,7 +1765,7 @@ class Part {
                         "Circle_recess",
                         "Rotation_angle",
                         "Center",
-                        "Round_def",
+                        "Circle_def",
                         "R_in",
                         "Circle_thk",
                         "Overshoot",
