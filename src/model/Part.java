@@ -498,7 +498,7 @@ class Part {
                 break;
 
             case "CircleContact_Primitive":
-                model.geom(id).inputParam().set("Recess", "0.05 [mm]");
+                model.geom(id).inputParam().set("Circle_recess", "0.05 [mm]");
                 model.geom(id).inputParam().set("Rotation_angle", "0 [deg]");
                 model.geom(id).inputParam().set("Center", "20 [mm]");
                 model.geom(id).inputParam().set("Round_def", "1");
@@ -543,7 +543,7 @@ class Part {
                 String ifrecessCCLabel = "If Recess";
                 GeomFeature ifrecessCC = model.geom(id).create(im.next("if",ifrecessCCLabel), "If");
                 ifrecessCC.label(ifrecessCCLabel);
-                ifrecessCC.set("condition", "Recess>0");
+                ifrecessCC.set("condition", "Circle_recess>0");
 
                 String rprLabel = "Rotated Plane (for Recess)";
                 GeomFeature rpr = model.geom(id).create(im.next("wp",rprLabel), "WorkPlane");
@@ -569,7 +569,7 @@ class Part {
                 co.label("Contact Outline (for recess)");
                 co.set("contributeto", im.get("CONTACT OUTLINE SHAPE"));
                 co.set("pos", new String[]{"0", "Center"});
-                co.set("semiaxes", new String[]{"(R_in+Recess)*sin((Diam_contact)/(2*(R_in+Recess)))", "Diam_contact/2"});
+                co.set("semiaxes", new String[]{"(R_in+Circle_recess)*sin((Diam_contact)/(2*(R_in+Circle_recess)))", "Diam_contact/2"});
 
                 String elifcocLabel = "Else If Contact Outline is Circle";
                 GeomFeature elifcoc = rpr.geom().create(im.next("elseif",elifcocLabel), "ElseIf");
@@ -588,7 +588,7 @@ class Part {
                 GeomFeature mpcrd = model.geom(id).create(im.next("ext",mpcrdLabel), "Extrude");
                 mpcrd.label(mpcrdLabel);
                 mpcrd.set("contributeto", im.get("PRE CUT RECESS"));
-                mpcrd.setIndex("distance", "R_in+Recess+Overshoot", 0);
+                mpcrd.setIndex("distance", "R_in+Circle_recess+Overshoot", 0);
                 mpcrd.selection("input").named(im.get("PLANE FOR RECESS"));
 
                 String rciLabel = "Recess Cut In";
@@ -604,7 +604,7 @@ class Part {
                 rco.label(rcoLabel);
                 rco.set("contributeto", im.get("RECESS CUTTER OUT"));
                 rco.set("pos", new String[]{"0", "0", "Center-L/2"});
-                rco.set("r", "R_in+Recess");
+                rco.set("r", "R_in+Circle_recess");
                 rco.set("h", "L");
                 rco.set("selresult", false);
                 rco.set("selresultshow", false);
@@ -628,8 +628,8 @@ class Part {
                 String soLabel = "Select Overshoot";
                 GeomFeature so = model.geom(id).create(im.next("ballsel",soLabel), "BallSelection");
                 so.label(soLabel);
-                so.set("posx", "(R_in+Recess+Overshoot/2)*cos(Rotation_angle)");
-                so.set("posy", "(R_in+Recess+Overshoot/2)*sin(Rotation_angle)");
+                so.set("posx", "(R_in+Circle_recess+Overshoot/2)*cos(Rotation_angle)");
+                so.set("posy", "(R_in+Circle_recess+Overshoot/2)*sin(Rotation_angle)");
                 so.set("posz", "Center");
                 so.set("r", 1);
                 so.set("contributeto", im.get("RECESS OVERSHOOT"));
@@ -668,7 +668,7 @@ class Part {
                 coc.label(cocLabel);
                 coc.set("contributeto", im.get(coscLabel));
                 coc.set("pos", new String[]{"0", "Center"});
-                coc.set("semiaxes", new String[]{"(R_in+Recess)*sin((Diam_contact)/(2*(R_in+Recess)))", "Diam_contact/2"}); //
+                coc.set("semiaxes", new String[]{"(R_in+Circle_recess)*sin((Diam_contact)/(2*(R_in+Circle_recess)))", "Diam_contact/2"}); //
 
                 String elifcoccLabel = "Else If Contact Outline is Circle (for contact)";
                 GeomFeature elifcocc = rpc.geom().create(im.next("elseif",elifcoccLabel), "ElseIf");
@@ -687,7 +687,7 @@ class Part {
                 GeomFeature mpccd = model.geom(id).create(im.next("ext",mpccdLabel), "Extrude");
                 mpccd.label(mpccdLabel);
                 mpccd.set("contributeto", im.get("PRE CUT CONTACT"));
-                mpccd.setIndex("distance", "R_in+Recess+Contact_depth+Overshoot", 0);
+                mpccd.setIndex("distance", "R_in+Circle_recess+Contact_depth+Overshoot", 0);
                 mpccd.selection("input").named(im.get("PLANE FOR CONTACT"));
 
                 String cciLabel = "Contact Cut In";
@@ -695,7 +695,7 @@ class Part {
                 cci.label(cciLabel);
                 cci.set("contributeto", im.get("CONTACT CUTTER IN"));
                 cci.set("pos", new String[]{"0", "0", "Center-L/2"});
-                cci.set("r", "R_in+Recess");
+                cci.set("r", "R_in+Circle_recess");
                 cci.set("h", "L");
 
                 String ccoLabel = "Contact Cut Out";
@@ -703,7 +703,7 @@ class Part {
                 cco.label(ccoLabel);
                 cco.set("contributeto", im.get("CONTACT CUTTER OUT"));
                 cco.set("pos", new String[]{"0", "0", "Center-L/2"});
-                cco.set("r", "R_in+Recess+Contact_depth");
+                cco.set("r", "R_in+Circle_recess+Contact_depth");
                 cco.set("h", "L");
 
                 String ecciLabel = "Execute Contact Cut In";
@@ -725,8 +725,8 @@ class Part {
                 String so1Label = "Select Overshoot 1";
                 GeomFeature so1 = model.geom(id).create(im.next("ballsel", so1Label), "BallSelection");
                 so1.label(so1Label);
-                so1.set("posx", "(R_in+Recess+Contact_depth+Overshoot/2)*cos(Rotation_angle)");
-                so1.set("posy", "(R_in+Recess+Contact_depth+Overshoot/2)*sin(Rotation_angle)");
+                so1.set("posx", "(R_in+Circle_recess+Contact_depth+Overshoot/2)*cos(Rotation_angle)");
+                so1.set("posy", "(R_in+Circle_recess+Contact_depth+Overshoot/2)*sin(Rotation_angle)");
                 so1.set("posz", "Center");
                 so1.set("r", 1);
                 so1.set("contributeto", im.get("RECESS OVERSHOOT"));
@@ -742,7 +742,7 @@ class Part {
                 GeomFeature srcc = model.geom(id).create(im.next("pt",srccLabel), "Point");
                 srcc.label(srccLabel);
                 srcc.set("contributeto", im.get("SRC"));
-                srcc.set("p", new String[]{"(R_in+Recess+Contact_depth/2)*cos(Rotation_angle)", "(R_in+Recess+Contact_depth/2)*sin(Rotation_angle)", "Center"});
+                srcc.set("p", new String[]{"(R_in+Circle_recess+Contact_depth/2)*cos(Rotation_angle)", "(R_in+Circle_recess+Contact_depth/2)*sin(Rotation_angle)", "Center"});
 
                 model.geom(id).run();
 
@@ -1762,7 +1762,7 @@ class Part {
 
                 // set instantiation parameters
                 String[] circleContactParameters = {
-                        "Recess",
+                        "Circle_recess",
                         "Rotation_angle",
                         "Center",
                         "Round_def",
