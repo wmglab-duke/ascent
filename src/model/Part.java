@@ -445,7 +445,7 @@ class Part {
                 break;
 
             case "WireContact_Primitive":
-                model.geom(id).inputParam().set("R_wire", "37.5 [um]");
+                model.geom(id).inputParam().set("Wire_r", "37.5 [um]");
                 model.geom(id).inputParam().set("R_in", "250 [um]");
                 model.geom(id).inputParam().set("Center", "10 [mm]");
                 model.geom(id).inputParam().set("Pitch", "1 [mm]");
@@ -476,8 +476,8 @@ class Part {
                 contact_xs.geom().create("c1", "Circle");
                 contact_xs.geom().feature("c1").label("Contact Cross Section");
                 contact_xs.geom().feature("c1").set("contributeto", im.get("CONTACT CROSS SECTION"));
-                contact_xs.geom().feature("c1").set("pos", new String[]{"Center", "R_in-R_wire-Wire_sep"});
-                contact_xs.geom().feature("c1").set("r", "R_wire");
+                contact_xs.geom().feature("c1").set("pos", new String[]{"Center", "R_in-Wire_r-Wire_sep"});
+                contact_xs.geom().feature("c1").set("r", "Wire_r");
 
                 String mcLabel = "Make Contact";
                 GeomFeature contact = model.geom(id).create(im.next("rev",mcLabel), "Revolve");
@@ -491,7 +491,7 @@ class Part {
                 GeomFeature source = model.geom(id).create(im.next("pt",sourceLabel), "Point");
                 source.label(sourceLabel);
                 source.set("contributeto", im.get("SRC"));
-                source.set("p", new String[]{"(R_in-R_wire-Wire_sep)*cos(Wire_theta/2)", "(R_in-R_wire-Wire_sep)*sin(Wire_theta/2)", "Center"});
+                source.set("p", new String[]{"(R_in-Wire_r-Wire_sep)*cos(Wire_theta/2)", "(R_in-Wire_r-Wire_sep)*sin(Wire_theta/2)", "Center"});
 
                 model.geom(id).run();
 
@@ -1723,7 +1723,7 @@ class Part {
 
                 // set instantiation parameters
                 String[] wireContactParameters = {
-                        "R_wire",
+                        "Wire_r",
                         "R_in",
                         "Center",
                         "Pitch",
