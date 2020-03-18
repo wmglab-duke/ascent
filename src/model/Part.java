@@ -957,7 +957,7 @@ class Part {
                 model.geom(id).inputParam().set("Rotation_angle", "0 [deg]");
                 model.geom(id).inputParam().set("Rect_w", "0.475 [mm]");
                 model.geom(id).inputParam().set("Rect_z", "0.475 [mm]");
-                model.geom(id).inputParam().set("Fillet_contact", "0.1 [mm]");
+                model.geom(id).inputParam().set("Rect_fillet", "0.1 [mm]");
                 model.geom(id).inputParam().set("L_cuff", "4.1917 [mm]");
                 model.geom(id).inputParam().set("R_in", "1.5 [mm]");
                 model.geom(id).inputParam().set("Recess", "0.018 [mm]");
@@ -1038,7 +1038,7 @@ class Part {
                 GeomFeature fillet = ccsc.geom().create(im.next("fil",filletLabel), "Fillet");
                 fillet.label(filletLabel);
                 fillet.set("contributeto", im.get(cfLabel));
-                fillet.set("radius", "Fillet_contact");
+                fillet.set("radius", "Rect_fillet");
                 fillet.selection("point").named(im.get(cpfLabel));
 
                 String scaleLabel1 = "scLabel1";
@@ -1064,7 +1064,7 @@ class Part {
                 GeomFeature fillet2 = ccsc.geom().create(im.next("fil",filletLabel2), "Fillet");
                 fillet2.label(filletLabel2);
                 fillet2.set("contributeto", im.get(cfLabel));
-                fillet2.set("radius", "Fillet_contact");
+                fillet2.set("radius", "Rect_fillet");
                 fillet2.selection("point").named(im.get(cpfLabel));
                 ccsc.geom().create(im.next("endif"), "EndIf");
 
@@ -1180,7 +1180,7 @@ class Part {
                 GeomFeature filletr = rcs.geom().create(im.next("fil", filletrLabel), "Fillet");
                 filletr.label(filletrLabel);
                 filletr.set("contributeto", im.get(rfrLabel));
-                filletr.set("radius", "Fillet_contact");
+                filletr.set("radius", "Rect_fillet");
                 filletr.selection("point").named(im.get(rpfrLabel));
 
                 String scalerLabel = "scrLabel";
@@ -1206,7 +1206,7 @@ class Part {
                 GeomFeature filletr2 = rcs.geom().create(im.next("fil", filletrLabel2), "Fillet");
                 filletr2.label(filletrLabel2);
                 filletr2.set("contributeto", im.get(rfrLabel));
-                filletr2.set("radius", "Fillet_contact");
+                filletr2.set("radius", "Rect_fillet");
                 filletr2.selection("point").named(im.get(rpfrLabel));
                 rcs.geom().create(im.next("endif"), "EndIf");
 
@@ -1888,7 +1888,7 @@ class Part {
                         "Rotation_angle",
                         "Rect_w",
                         "Rect_z",
-                        "Fillet_contact",
+                        "Rect_fillet",
                         "L_cuff",
                         "R_in",
                         "Recess",
