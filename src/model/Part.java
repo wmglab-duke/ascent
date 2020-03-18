@@ -1299,8 +1299,8 @@ class Part {
                 model.geom(id).inputParam().set("Center", "10 [mm]");
                 model.geom(id).inputParam().set("R_in", "100 [um]");
                 model.geom(id).inputParam().set("U_tangent", "200 [um]");
-                model.geom(id).inputParam().set("Thk_contact", "20 [um]");
-                model.geom(id).inputParam().set("Z_contact", "100 [um]");
+                model.geom(id).inputParam().set("U_thk", "20 [um]");
+                model.geom(id).inputParam().set("U_z", "100 [um]");
 
                 im.labels = new String[]{
                         "CONTACT XS", //0
@@ -1319,7 +1319,7 @@ class Part {
                 GeomFeature ucontactxs = model.geom(id).create(im.next("wp",ucontactxsLabel), "WorkPlane");
                 ucontactxs.label(ucontactxsLabel);
                 ucontactxs.set("contributeto", im.get("CONTACT XS"));
-                ucontactxs.set("quickz", "Center-Z_contact/2");
+                ucontactxs.set("quickz", "Center-U_z/2");
                 ucontactxs.set("unite", true);
 
                 String inLineLabel = "INLINE";
@@ -1363,7 +1363,7 @@ class Part {
                 GeomFeature ro = ucontactxs.geom().create(im.next("c",roLabel), "Circle");
                 ro.label(roLabel);
                 ro.set("contributeto", im.get(outLineLabel));
-                ro.set("r", "R_in+Thk_contact");
+                ro.set("r", "R_in+U_thk");
 
                 String rectoLabel = "Rect Outline";
                 GeomFeature urect = ucontactxs.geom().create(im.next("r",rectoLabel), "Rectangle");
@@ -1371,7 +1371,7 @@ class Part {
                 urect.set("contributeto", im.get(outLineLabel));
                 urect.set("pos", new String[]{"U_tangent/2", "0"});
                 urect.set("base", "center");
-                urect.set("size", new String[]{"U_tangent", "2*R_in+2*Thk_contact"});
+                urect.set("size", new String[]{"U_tangent", "2*R_in+2*U_thk"});
 
                 String uOPLabel = "Union Outline Parts";
                 GeomFeature uOP = ucontactxs.geom().create(im.next("uni",uOPLabel), "Union");
@@ -1390,14 +1390,14 @@ class Part {
                 GeomFeature umc = model.geom(id).create(im.next("ext",umcLabel), "Extrude");
                 umc.label(umcLabel);
                 umc.set("contributeto", im.get("CONTACT FINAL"));
-                umc.setIndex("distance", "Z_contact", 0);
+                umc.setIndex("distance", "U_z", 0);
                 umc.selection("input").named(im.get("CONTACT XS"));
 
                 String usrcLabel = "Src";
                 GeomFeature usrc = model.geom(id).create(im.next("pt",usrcLabel), "Point");
                 usrc.label(usrcLabel);
                 usrc.set("contributeto", im.get("SRC"));
-                usrc.set("p", new String[]{"-R_in-(Thk_contact/2)", "0", "Center"});
+                usrc.set("p", new String[]{"-R_in-(U_thk/2)", "0", "Center"});
 
                 model.geom(id).run();
 
@@ -1976,8 +1976,8 @@ class Part {
                         "Center",
                         "R_in",
                         "U_tangent",
-                        "Thk_contact",
-                        "Z_contact"
+                        "U_thk",
+                        "U_z"
 
                 };
 

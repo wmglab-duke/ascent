@@ -25,8 +25,8 @@
         "Center": "z_center_U400-(Pitch_U400/2)",
         "R_in": "R_in_U400",
         "U_tangent": "Tangent_U400",
-        "Thk_contact": "thk_contact_U400",
-        "Z_contact": "z_contact_U400"
+        "U_thk": "thk_contact_U400",
+        "U_z": "z_contact_U400"
       },
       "materials": [
         {
@@ -42,8 +42,8 @@
         "Center": "z_center_U400+(Pitch_U400/2)",
         "R_in": "R_in_U400",
         "U_tangent": "Tangent_U400",
-        "Thk_contact": "thk_contact_U400",
-        "Z_contact": "z_contact_U400"
+        "U_thk": "thk_contact_U400",
+        "U_z": "z_contact_U400"
       },
       "materials": [
         {
