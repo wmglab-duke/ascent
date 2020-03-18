@@ -48,7 +48,7 @@
         "R_in": "R_in_P",
         "Center": "Center_P-(Pitch_P/2)",
         "Pitch": "Pitch_P",
-        "Sep_wire": "sep_wire_P",
+        "Wire_sep": "sep_wire_P",
         "Wire_theta": "theta_wire_P"
       },
       "materials": [
@@ -66,7 +66,7 @@
         "R_in": "R_in_P",
         "Center": "Center_P+(Pitch_P/2)",
         "Pitch": "Pitch_P",
-        "Sep_wire": "sep_wire_P",
+        "Wire_sep": "sep_wire_P",
         "Wire_theta": "theta_wire_P"
       },
       "materials": [
