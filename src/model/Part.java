@@ -450,7 +450,7 @@ class Part {
                 model.geom(id).inputParam().set("Center", "10 [mm]");
                 model.geom(id).inputParam().set("Pitch", "1 [mm]");
                 model.geom(id).inputParam().set("Sep_wire", "10 [um]");
-                model.geom(id).inputParam().set("Theta_wire", "250 [deg]");
+                model.geom(id).inputParam().set("Wire_theta", "250 [deg]");
 
                 im.labels = new String[]{
                         "CONTACT CROSS SECTION",
@@ -483,7 +483,7 @@ class Part {
                 GeomFeature contact = model.geom(id).create(im.next("rev",mcLabel), "Revolve");
                 contact.label(mcLabel);
                 contact.set("contributeto", im.get("CONTACT FINAL"));
-                contact.set("angle2", "Theta_wire");
+                contact.set("angle2", "Wire_theta");
                 contact.set("axis", new int[]{1, 0});
                 contact.selection("input").named(im.get("CONTACT CROSS SECTION"));
 
@@ -491,7 +491,7 @@ class Part {
                 GeomFeature source = model.geom(id).create(im.next("pt",sourceLabel), "Point");
                 source.label(sourceLabel);
                 source.set("contributeto", im.get("SRC"));
-                source.set("p", new String[]{"(R_in-R_wire-Sep_wire)*cos(Theta_wire/2)", "(R_in-R_wire-Sep_wire)*sin(Theta_wire/2)", "Center"});
+                source.set("p", new String[]{"(R_in-R_wire-Sep_wire)*cos(Wire_theta/2)", "(R_in-R_wire-Sep_wire)*sin(Wire_theta/2)", "Center"});
 
                 model.geom(id).run();
 
@@ -1728,7 +1728,7 @@ class Part {
                         "Center",
                         "Pitch",
                         "Sep_wire",
-                        "Theta_wire"
+                        "Wire_theta"
 
                 };
 
