@@ -505,7 +505,7 @@ class Part {
                 model.geom(id).inputParam().set("R_in", "1.5 [mm]");
                 model.geom(id).inputParam().set("Contact_depth", "0.05 [mm]");
                 model.geom(id).inputParam().set("Overshoot", "0.05 [mm]");
-                model.geom(id).inputParam().set("Diam_contact", "2 [mm]");
+                model.geom(id).inputParam().set("Circle_diam", "2 [mm]");
                 model.geom(id).inputParam().set("L", "0.354 [inch]");
 
                 im.labels = new String[]{
@@ -569,7 +569,7 @@ class Part {
                 co.label("Contact Outline (for recess)");
                 co.set("contributeto", im.get("CONTACT OUTLINE SHAPE"));
                 co.set("pos", new String[]{"0", "Center"});
-                co.set("semiaxes", new String[]{"(R_in+Circle_recess)*sin((Diam_contact)/(2*(R_in+Circle_recess)))", "Diam_contact/2"});
+                co.set("semiaxes", new String[]{"(R_in+Circle_recess)*sin((Circle_diam)/(2*(R_in+Circle_recess)))", "Circle_diam/2"});
 
                 String elifcocLabel = "Else If Contact Outline is Circle";
                 GeomFeature elifcoc = rpr.geom().create(im.next("elseif",elifcocLabel), "ElseIf");
@@ -581,7 +581,7 @@ class Part {
                 co1.label(co1Label);
                 co1.set("contributeto", im.get("CONTACT OUTLINE SHAPE"));
                 co1.set("pos", new String[]{"0", "Center"});
-                co1.set("semiaxes", new String[]{"Diam_contact/2", "Diam_contact/2"});
+                co1.set("semiaxes", new String[]{"Circle_diam/2", "Circle_diam/2"});
                 rpr.geom().create(im.next("endif"), "EndIf");
 
                 String mpcrdLabel = "Make Pre Cut Recess Domains";
@@ -668,7 +668,7 @@ class Part {
                 coc.label(cocLabel);
                 coc.set("contributeto", im.get(coscLabel));
                 coc.set("pos", new String[]{"0", "Center"});
-                coc.set("semiaxes", new String[]{"(R_in+Circle_recess)*sin((Diam_contact)/(2*(R_in+Circle_recess)))", "Diam_contact/2"}); //
+                coc.set("semiaxes", new String[]{"(R_in+Circle_recess)*sin((Circle_diam)/(2*(R_in+Circle_recess)))", "Circle_diam/2"}); //
 
                 String elifcoccLabel = "Else If Contact Outline is Circle (for contact)";
                 GeomFeature elifcocc = rpc.geom().create(im.next("elseif",elifcoccLabel), "ElseIf");
@@ -680,7 +680,7 @@ class Part {
                 co1c.label(co1cLabel);
                 co1c.set("contributeto", im.get(coscLabel));
                 co1c.set("pos", new String[]{"0", "Center"});
-                co1c.set("semiaxes", new String[]{"Diam_contact/2", "Diam_contact/2"});
+                co1c.set("semiaxes", new String[]{"Circle_diam/2", "Circle_diam/2"});
                 rpc.geom().create(im.next("endif"), "EndIf");
 
                 String mpccdLabel = "Make Pre Cut Contact Domains";
@@ -1769,7 +1769,7 @@ class Part {
                         "R_in",
                         "Contact_depth",
                         "Overshoot",
-                        "Diam_contact",
+                        "Circle_diam",
                         "L"
 
                 };

@@ -76,7 +76,7 @@
         "R_in": "R_in_ITI",
         "Contact_depth": "Contact_depth_ITC",
         "Overshoot": "Overshoot_ITC",
-        "Diam_contact": "diam_contact_ITC",
+        "Circle_diam": "diam_contact_ITC",
         "L": "L_IT"
       },
       "materials": [
@@ -101,7 +101,7 @@
         "R_in": "R_in_ITI",
         "Contact_depth": "Contact_depth_ITC",
         "Overshoot": "Overshoot_ITC",
-        "Diam_contact": "diam_contact_ITC",
+        "Circle_diam": "diam_contact_ITC",
         "L": "L_IT"
       },
       "materials": [
@@ -126,7 +126,7 @@
         "R_in": "R_in_ITI",
         "Contact_depth": "Contact_depth_ITC",
         "Overshoot": "Overshoot_ITC",
-        "Diam_contact": "diam_contact_ITC",
+        "Circle_diam": "diam_contact_ITC",
         "L": "L_IT"
       },
       "materials": [
@@ -151,7 +151,7 @@
         "R_in": "R_in_ITI",
         "Contact_depth": "Contact_depth_ITC",
         "Overshoot": "Overshoot_ITC",
-        "Diam_contact": "diam_contact_ITC",
+        "Circle_diam": "diam_contact_ITC",
         "L": "L_IT"
       },
       "materials": [
@@ -176,7 +176,7 @@
         "R_in": "R_in_ITI",
         "Contact_depth": "Contact_depth_ITC",
         "Overshoot": "Overshoot_ITC",
-        "Diam_contact": "diam_contact_ITC",
+        "Circle_diam": "diam_contact_ITC",
         "L": "L_IT"
       },
       "materials": [
@@ -201,7 +201,7 @@
         "R_in": "R_in_ITI",
         "Contact_depth": "Contact_depth_ITC",
         "Overshoot": "Overshoot_ITC",
-        "Diam_contact": "diam_contact_ITC",
+        "Circle_diam": "diam_contact_ITC",
         "L": "L_IT"
       },
       "materials": [
