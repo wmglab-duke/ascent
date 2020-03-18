@@ -1409,6 +1409,8 @@ class Part {
                 model.geom(id).inputParam().set("U_tangent", "200 [um]");
                 model.geom(id).inputParam().set("R_out", "300 [um]");
                 model.geom(id).inputParam().set("L", "4 [mm]");
+                model.geom(id).inputParam().set("Shift_x", "0 [mm]");
+                model.geom(id).inputParam().set("Shift_y", "0 [mm]");
 
                 im.labels = new String[]{
                         "CUFF XS", //0
@@ -1475,6 +1477,7 @@ class Part {
                 ucCircleOutline.label(ucCircleOutlineLabel);
                 ucCircleOutline.set("contributeto", im.get(ucOutlineCuffLabel));
                 ucCircleOutline.set("r", "R_out");
+                ucCircleOutline.set("pos", new String[]{"Shift_x", "Shift_y"});
 
                 String ucDiffLabel = "Diff to Cuff XS";
                 GeomFeature ucDiff = ucCXS.geom().create(im.next("dif",ucDiffLabel), "Difference");
@@ -2013,7 +2016,9 @@ class Part {
                         "R_in",
                         "U_tangent",
                         "R_out",
-                        "L"
+                        "L",
+                        "Shift_x",
+                        "Shift_y"
 
                 };
 

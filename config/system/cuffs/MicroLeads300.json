@@ -9,7 +9,9 @@
         "R_in": "R_in_U300",
         "U_tangent": "Tangent_U300",
         "R_out": "R_out_U300",
-        "L": "L_U300"
+        "L": "L_U300",
+        "Shift_x": "x_shift",
+        "Shift_y": "y_shift"
       },
       "materials": [
         {
@@ -119,6 +121,16 @@
     {
       "name": "thk_medium_gap_internal_U300",
       "expression": "10 [um]",
+      "description": ""
+    },
+    {
+      "name": "x_shift",
+      "expression": "0 [um]",
+      "description": ""
+    },
+    {
+      "name": "y_shift",
+      "expression": "0 [um]",
       "description": ""
     }
   ],
