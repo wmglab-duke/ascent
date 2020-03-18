@@ -438,7 +438,7 @@ class Part {
                 GeomFeature src = model.geom(id).create(im.next("pt",srcLabel), "Point");
                 src.label(srcLabel);
                 src.set("contributeto", im.get("SRC"));
-                src.set("p", new String[]{"(R_in+Recess+Thk_elec/2)*cos(Rot_def+Ribbon_theta/2)", "(R_in+Recess+Thk_elec/2)*sin(Rot_def+Ribbon_theta/2)", "Center"});
+                src.set("p", new String[]{"(R_in+Recess+Ribbon_thk/2)*cos(Rot_def+Ribbon_theta/2)", "(R_in+Recess+Ribbon_thk/2)*sin(Rot_def+Ribbon_theta/2)", "Center"});
 
                 model.geom(id).run();
 
