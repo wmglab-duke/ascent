@@ -357,7 +357,7 @@ class Part {
                 mp.set("R_in", "1 [mm]");
                 mp.set("Recess", "0.1 [mm]");
                 mp.set("Center", "10 [mm]");
-                mp.set("Theta_contact", "100 [deg]");
+                mp.set("Ribbon_theta", "100 [deg]");
                 mp.set("Rot_def", "0 [deg]");
 
                 im.labels = new String[]{
@@ -393,7 +393,7 @@ class Part {
                 rev_make_contact.label("Make Contact");
                 rev_make_contact.set("contributeto", im.get("CONTACT FINAL"));
                 rev_make_contact.set("angle1", "Rot_def");
-                rev_make_contact.set("angle2", "Rot_def+Theta_contact");
+                rev_make_contact.set("angle2", "Rot_def+Ribbon_theta");
                 rev_make_contact.selection("input").named(im.get("CONTACT CROSS SECTION"));
 
                 String ifrecessLabel = "IF RECESS";
@@ -428,7 +428,7 @@ class Part {
                 rev_make_racess.label(revmrLabel);
                 rev_make_racess.set("contributeto", im.get("RECESS FINAL"));
                 rev_make_racess.set("angle1", "Rot_def");
-                rev_make_racess.set("angle2", "Rot_def+Theta_contact");
+                rev_make_racess.set("angle2", "Rot_def+Ribbon_theta");
                 rev_make_racess.selection("input").named(im.get("RECESS CROSS SECTION"));
 
                 endifLabel = "EndIf";
@@ -438,7 +438,7 @@ class Part {
                 GeomFeature src = model.geom(id).create(im.next("pt",srcLabel), "Point");
                 src.label(srcLabel);
                 src.set("contributeto", im.get("SRC"));
-                src.set("p", new String[]{"(R_in+Recess+Thk_elec/2)*cos(Rot_def+Theta_contact/2)", "(R_in+Recess+Thk_elec/2)*sin(Rot_def+Theta_contact/2)", "Center"});
+                src.set("p", new String[]{"(R_in+Recess+Thk_elec/2)*cos(Rot_def+Ribbon_theta/2)", "(R_in+Recess+Thk_elec/2)*sin(Rot_def+Ribbon_theta/2)", "Center"});
 
                 model.geom(id).run();
 
@@ -1685,7 +1685,7 @@ class Part {
                         "R_in",
                         "Recess",
                         "Center",
-                        "Theta_contact",
+                        "Ribbon_theta",
                         "Rot_def"
 
                 };

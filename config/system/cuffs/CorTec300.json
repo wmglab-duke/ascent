@@ -49,7 +49,7 @@
         "R_in": "R_in_CT",
         "Recess": "Recess_CT",
         "Center": "Center_CT+(Pitch_CT/2)",
-        "Theta_contact": "Theta_contact_CT",
+        "Ribbon_theta": "Theta_contact_CT",
         "Rot_def": "Rot_def_contact_CT"
       },
       "materials": [
@@ -72,7 +72,7 @@
         "R_in": "R_in_CT",
         "Recess": "Recess_CT",
         "Center": "Center_CT-(Pitch_CT/2)",
-        "Theta_contact": "Theta_contact_CT",
+        "Ribbon_theta": "Theta_contact_CT",
         "Rot_def": "Rot_def_contact_CT"
       },
       "materials": [
