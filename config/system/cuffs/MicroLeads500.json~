@@ -1,17 +1,17 @@
 {
-  "code": "U400",
+  "code": "U500",
   "instances": [
     {
       "type": "uCuff_Primitive",
-      "label": "MicroLeads400 Cuff",
+      "label": "MicroLeads500 Cuff",
       "def": {
-        "Center": "z_center_U400",
-        "R_in": "R_in_U400",
-        "U_tangent": "Tangent_U400",
-        "R_out": "R_out_U400",
-        "U_L": "L_U",
-        "U_shift_x": "x_shift",
-        "U_shift_y": "y_shift"
+        "Center": "z_center_U500",
+        "R_in": "R_in_U500",
+        "U_tangent": "Tangent_U500",
+        "R_out": "R_out_U500",
+        "L": "L_U500",
+        "Shift_x": "x_shift",
+        "Shift_y": "y_shift"
       },
       "materials": [
         {
@@ -22,13 +22,13 @@
     },
     {
       "type": "uContact_Primitive",
-      "label": "MicroLeads400 Contact 1",
+      "label": "MicroLeads500 Contact 1",
       "def": {
-        "Center": "z_center_U400-(Pitch_U400/2)",
-        "R_in": "R_in_U400",
-        "U_tangent": "Tangent_U400",
-        "U_thk": "thk_contact_U400",
-        "U_z": "z_contact_U400"
+        "Center": "z_center_U500-(Pitch_U500/2)",
+        "R_in": "R_in_U500",
+        "U_tangent": "Tangent_U500",
+        "U_thk": "thk_contact_U500",
+        "U_z": "z_contact_U500"
       },
       "materials": [
         {
@@ -39,13 +39,13 @@
     },
     {
       "type": "uContact_Primitive",
-      "label": "MicroLeads400 Contact 2",
+      "label": "MicroLeads500 Contact 2",
       "def": {
-        "Center": "z_center_U400+(Pitch_U400/2)",
-        "R_in": "R_in_U400",
-        "U_tangent": "Tangent_U400",
-        "U_thk": "thk_contact_U400",
-        "U_z": "z_contact_U400"
+        "Center": "z_center_U500+(Pitch_U500/2)",
+        "R_in": "R_in_U500",
+        "U_tangent": "Tangent_U500",
+        "U_thk": "thk_contact_U500",
+        "U_z": "z_contact_U500"
       },
       "materials": [
         {
@@ -56,12 +56,12 @@
     },
     {
       "type": "uCuffFill_Primitive",
-      "label": "MicroLeads400 uCuff Fill",
+      "label": "MicroLeads500 uCuff Fill",
       "def": {
-        "R_in": "R_in_U400",
-        "U_tangent": "Tangent_U400",
-        "L": "L_U400",
-        "Center": "z_center_U400"
+        "R_in": "R_in_U500",
+        "U_tangent": "Tangent_U500",
+        "L": "L_U500",
+        "Center": "z_center_U500"
       },
       "materials": [
         {
@@ -74,52 +74,52 @@
 
   "params": [
     {
-      "name": "z_center_U400",
+      "name": "z_center_U500",
       "expression": "z_nerve/2",
       "description": ""
     },
     {
-      "name": "R_in_U400",
-      "expression": "201.5 [um]",
+      "name": "R_in_U500",
+      "expression": "267 [um]",
       "description": ""
     },
     {
-      "name": "R_out_U400",
-      "expression": "0.8185 [mm]",
+      "name": "R_out_U500",
+      "expression": "0.659 [mm]",
       "description": ""
     },
     {
-      "name": "Tangent_U400",
-      "expression": "350 [um]",
+      "name": "Tangent_U500",
+      "expression": "416 [um]",
       "description": ""
     },
     {
-      "name": "thk_contact_U400",
+      "name": "thk_contact_U500",
       "expression": "0.02 [mm]",
       "description": ""
     },
     {
-      "name": "z_contact_U400",
+      "name": "z_contact_U500",
       "expression": "0.75 [mm]",
       "description": ""
     },
     {
-      "name": "Pitch_U400",
+      "name": "Pitch_U500",
       "expression": "1.25 [mm]",
       "description": ""
     },
     {
-      "name": "L_U400",
+      "name": "L_U500",
       "expression": "3 [mm]",
       "description": ""
     },
     {
-      "name": "Thk_fill_U400",
+      "name": "Thk_fill_U500",
       "expression": "100 [um]",
       "description": ""
     },
     {
-      "name": "thk_medium_gap_internal_U400",
+      "name": "thk_medium_gap_internal_U500",
       "expression": "10 [um]",
       "description": ""
     },

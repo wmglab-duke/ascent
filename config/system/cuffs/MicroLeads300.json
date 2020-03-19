@@ -9,9 +9,9 @@
         "R_in": "R_in_U300",
         "U_tangent": "Tangent_U300",
         "R_out": "R_out_U300",
-        "L": "L_U300",
-        "Shift_x": "x_shift",
-        "Shift_y": "y_shift"
+        "U_L": "L_U",
+        "U_shift_x": "x_shift",
+        "U_shift_y": "y_shift"
       },
       "materials": [
         {

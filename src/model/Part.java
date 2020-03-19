@@ -1408,9 +1408,9 @@ class Part {
                 model.geom(id).inputParam().set("R_in", "100 [um]");
                 model.geom(id).inputParam().set("U_tangent", "200 [um]");
                 model.geom(id).inputParam().set("R_out", "300 [um]");
-                model.geom(id).inputParam().set("L", "4 [mm]");
-                model.geom(id).inputParam().set("Shift_x", "0 [mm]");
-                model.geom(id).inputParam().set("Shift_y", "0 [mm]");
+                model.geom(id).inputParam().set("U_L", "4 [mm]");
+                model.geom(id).inputParam().set("U_shift_x", "0 [mm]");
+                model.geom(id).inputParam().set("U_shift_y", "0 [mm]");
 
                 im.labels = new String[]{
                         "CUFF XS", //0
@@ -1428,7 +1428,7 @@ class Part {
                 GeomFeature ucCXS = model.geom(id).create(im.next("wp",ucCXSLabel), "WorkPlane");
                 ucCXS.label(ucCXSLabel);
                 ucCXS.set("contributeto", im.get("CUFF XS"));
-                ucCXS.set("quickz", "Center-L/2");
+                ucCXS.set("quickz", "Center-U_L/2");
                 ucCXS.set("unite", true);
 
                 String ucInlineLabel = "INLINE";
@@ -1477,7 +1477,7 @@ class Part {
                 ucCircleOutline.label(ucCircleOutlineLabel);
                 ucCircleOutline.set("contributeto", im.get(ucOutlineCuffLabel));
                 ucCircleOutline.set("r", "R_out");
-                ucCircleOutline.set("pos", new String[]{"Shift_x", "Shift_y"});
+                ucCircleOutline.set("pos", new String[]{"U_shift_x", "U_shift_y"});
 
                 String ucDiffLabel = "Diff to Cuff XS";
                 GeomFeature ucDiff = ucCXS.geom().create(im.next("dif",ucDiffLabel), "Difference");
@@ -1489,7 +1489,7 @@ class Part {
                 GeomFeature ucExt = model.geom(id).create(im.next("ext",ucExtLabel), "Extrude");
                 ucExt.label(ucExtLabel);
                 ucExt.set("contributeto", im.get("CUFF FINAL"));
-                ucExt.setIndex("distance", "L", 0);
+                ucExt.setIndex("distance", "U_L", 0);
                 ucExt.selection("input").named(im.get("CUFF XS"));
 
                 model.geom(id).run();
@@ -2016,9 +2016,9 @@ class Part {
                         "R_in",
                         "U_tangent",
                         "R_out",
-                        "L",
-                        "Shift_x",
-                        "Shift_y"
+                        "U_L",
+                        "U_shift_x",
+                        "U_shift_y"
 
                 };
 
