@@ -1,0 +1,19 @@
+{
+  "search_by_indices": true,
+  "allow_partial_matches": false,
+  "include_downstream": true,
+  "sample": {
+
+  },
+  "model": {
+
+  },
+  "sim": {
+
+  },
+  "indices": {
+    "sample": null,
+    "model": null,
+    "sim": null
+  }
+}

@@ -6,35 +6,20 @@ from src.utils import *
 
 class Query(Exceptionable, Configurable, Saveable):
     """
-
+    IMPORTANT: MUST BE RUN FROM PROJECT LEVEL
     """
 
-    def __init__(self, exceptions_path: str, project_path: str, criteria_path: str):
+    def __init__(self, criteria_path: str):
         """
-
         :param exceptions_config:
         """
 
         # set up superclasses
         Configurable.__init__(self)
-        Exceptionable.__init__(self, SetupMode.NEW, exceptions_path)
+        Exceptionable.__init__(self, SetupMode.NEW)
 
-        # initialize
-        self.project_path = project_path  # for locating the samples directory
         self._ran: bool = False  # marker will be set to True one self.run() is called (as is successful)
-        self._load_criteria(criteria_path)  # initialize criteria
-
-    def _load_criteria(self, path: str):
-        """
-        Get JSON data for query criteria from given path
-        :param path: path to JSON file
-        :return: dict with JSON data
-        """
-
-        if (not os.path.isfile(path)) or ('.json' not in path):
-            self.throw(52)
-
-        self.add(SetupMode.NEW, Config.CRITERIA, self.load(path))
+        self.add(SetupMode.NEW, Config.CRITERIA, criteria_path)  # initialize criteria
 
     def run(self):
         """
@@ -42,9 +27,35 @@ class Query(Exceptionable, Configurable, Saveable):
         :return: result as a dict
         """
 
-        search_root: str = os.path.join(self.project_path, 'samples')
+        # preliminarily find sample, model, and sim filter indices if applicable (else None)
+        sample_indices = self.search(Config.CRITERIA, 'indices', 'sample')
+        model_indices = self.search(Config.CRITERIA, 'indices', 'model')
+        sim_indices = self.search(Config.CRITERIA, 'indices', 'sim')
 
-        for sample_dir in os.listdir(search_root):
+        sample_criteria = self.search(Config.CRITERIA, 'sample')
+        model_criteria = self.search(Config.CRITERIA, 'model')
+        sim_criteria = self.search(Config.CRITERIA, 'sim')
+
+        samples_dir = 'samples'
+        for sample in os.listdir(samples_dir):
+            # skip this sample if applicable
+            if sample_indices is not None and int(sample) not in sample_indices:
+                continue
+
+            # FILTER SAMPLE LEVEL HERE
+
+            models_dir = os.path.join(samples_dir, sample, 'models')
+            for model in os.listdir(models_dir):
+                if model_indices is not None and int(model) not in model_indices:
+                    continue
+
+                # FILTER MODEL LEVEL HERE
+
+                sims_dir = os.path.join(models_dir, model, 'sims')
+                for sim in os.listdir(sims_dir):
+                    if sim_indices is not None and int(sim) not in sim_indices:
+                        continue
+
 
 
 
