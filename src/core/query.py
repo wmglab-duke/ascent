@@ -1,6 +1,6 @@
 from typing import Union
 
-from core import Sample, Simulation
+from src.core import Sample, Simulation
 from src.utils import *
 
 
