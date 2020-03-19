@@ -27,6 +27,7 @@ class Config(Enum):
     SAMPLE = 'sample'
     MODEL = 'models'
     SIM = 'sims'
+    CRITERIA = 'criteria'
 
 
 # %% Trace functionality
