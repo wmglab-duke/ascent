@@ -116,11 +116,11 @@ class Part {
         switch (pseudonym) {
             case "TubeCuff_Primitive":
                 mp.set("N_holes", "0");
-                mp.set("Theta", "340 [deg]");
+                mp.set("Tube_theta", "340 [deg]");
                 mp.set("Center", "10 [mm]");
                 mp.set("R_in", "1 [mm]");
                 mp.set("R_out", "2 [mm]");
-                mp.set("L", "5 [mm]");
+                mp.set("Tube_L", "5 [mm]");
                 mp.set("Rot_def", "0 [deg]");
                 mp.set("D_hole", "0.3 [mm]");
                 mp.set("Buffer_hole", "0.1 [mm]");
@@ -153,22 +153,22 @@ class Part {
                 GeomFeature inner_surf = model.geom(id).create(im.next("cyl", micsLabel), "Cylinder");
                 inner_surf.label(micsLabel);
                 inner_surf.set("contributeto", im.get(im.labels[0]));
-                inner_surf.set("pos", new String[]{"0", "0", "Center-(L/2)"});
+                inner_surf.set("pos", new String[]{"0", "0", "Center-(Tube_L/2)"});
                 inner_surf.set("r", "R_in");
-                inner_surf.set("h", "L");
+                inner_surf.set("h", "Tube_L");
 
                 String mocsLabel = "Make Outer Cuff Surface";
                 GeomFeature outer_surf = model.geom(id).create(im.next("cyl",mocsLabel),"Cylinder");
                 outer_surf.label(mocsLabel);
                 outer_surf.set("contributeto", im.get("OUTER CUFF SURFACE"));
-                outer_surf.set("pos", new String[]{"0", "0", "Center-(L/2)"});
+                outer_surf.set("pos", new String[]{"0", "0", "Center-(Tube_L/2)"});
                 outer_surf.set("r", "R_out");
-                outer_surf.set("h", "L");
+                outer_surf.set("h", "Tube_L");
 
                 String ifgnhLabel = "If (No Gap AND No Holes)";
                 GeomFeature if_gap_no_holes = model.geom(id).create(im.next("if", ifgnhLabel), "If");
                 if_gap_no_holes.label(ifgnhLabel);
-                if_gap_no_holes.set("condition", "(Theta>=359) && (N_holes==0)");
+                if_gap_no_holes.set("condition", "(Tube_theta>=359) && (N_holes==0)");
 
                 String difrdwicsLabel = "Remove Domain Within Inner Cuff Surface";
                 GeomFeature dif_remove_ics = model.geom(id).create(im.next("dif", difrdwicsLabel), "Difference");
@@ -180,7 +180,7 @@ class Part {
                 String elseifganhLabel = "If (Gap AND No Holes)";
                 GeomFeature elseif_gap_noholes = model.geom(id).create(im.next("elseif",elseifganhLabel), "ElseIf");
                 elseif_gap_noholes.label(elseifganhLabel);
-                elseif_gap_noholes.set("condition", "(Theta<359) && (N_holes==0)");
+                elseif_gap_noholes.set("condition", "(Tube_theta<359) && (N_holes==0)");
 
                 String difrmwics1Label = "Remove Domain Within Inner Cuff Surface 1";
                 GeomFeature dif_remove_ics1 = model.geom(id).create(im.next("dif",difrmwics1Label), "Difference");
@@ -199,13 +199,13 @@ class Part {
                 wp_make_cuffgapcx.geom().feature("r1").label("Cuff Gap Cross Section");
                 wp_make_cuffgapcx.geom().feature("r1").set("pos", new String[]{"R_in+((R_out-R_in)/2)", "Center"});
                 wp_make_cuffgapcx.geom().feature("r1").set("base", "center");
-                wp_make_cuffgapcx.geom().feature("r1").set("size", new String[]{"R_out-R_in", "L"});
+                wp_make_cuffgapcx.geom().feature("r1").set("size", new String[]{"R_out-R_in", "Tube_L"});
 
                 String revmcgLabel = "Make Cuff Gap";
                 GeomFeature rev_make_cuffgap = model.geom(id).create(im.next("rev",revmcgLabel), "Revolve");
                 rev_make_cuffgap.label(revmcgLabel);
                 rev_make_cuffgap.set("contributeto", im.get("CUFF GAP"));
-                rev_make_cuffgap.set("angle1", "Theta");
+                rev_make_cuffgap.set("angle1", "Tube_theta");
                 rev_make_cuffgap.selection("input").set(im.get("Make Cuff Gap Cross Section"));
 
                 String difrcgLabel = "Remove Cuff Gap";
@@ -224,7 +224,7 @@ class Part {
                 String elifngnhLabel = "If (No Gap AND Holes)";
                 GeomFeature elif_nogap_noholes = model.geom(id).create(im.next("elseif",elifngnhLabel), "ElseIf");
                 elif_nogap_noholes.label(elifngnhLabel);
-                elif_nogap_noholes.set("condition", "(Theta>=359) && (N_holes>0)");
+                elif_nogap_noholes.set("condition", "(Tube_theta>=359) && (N_holes>0)");
 
                 String difrdwics2 = "Remove Domain Within Inner Cuff Surface 2";
                 GeomFeature dif_remove_domain_inner_cuff2 = model.geom(id).create(im.next("dif",difrdwics2), "Difference");
@@ -259,7 +259,7 @@ class Part {
                 String elifgahLabel = "If (Gap AND Holes)";
                 GeomFeature elif_gap_and_holes = model.geom(id).create(im.next("elseif",elifgahLabel), "ElseIf");
                 elif_gap_and_holes.label(elifgahLabel);
-                elif_gap_and_holes.set("condition", "(Theta<359) && (N_holes>0)");
+                elif_gap_and_holes.set("condition", "(Tube_theta<359) && (N_holes>0)");
 
                 String difrdwics3Label = "Remove Domain Within Inner Cuff Surface 3";
                 GeomFeature dif_remove_domain_inner_cuff3 = model.geom(id).create(im.next("dif",difrdwics3Label), "Difference");
@@ -278,13 +278,13 @@ class Part {
                 wp_make_cuffgapcx1.geom().feature("r1").label("Cuff Gap Cross Section");
                 wp_make_cuffgapcx1.geom().feature("r1").set("pos", new String[]{"R_in+((R_out-R_in)/2)", "Center"});
                 wp_make_cuffgapcx1.geom().feature("r1").set("base", "center");
-                wp_make_cuffgapcx1.geom().feature("r1").set("size", new String[]{"R_out-R_in", "L"});
+                wp_make_cuffgapcx1.geom().feature("r1").set("size", new String[]{"R_out-R_in", "Tube_L"});
 
                 String revmcg1Label = "Make Cuff Gap 1";
                 GeomFeature rev_make_cuffgap1 = model.geom(id).create(im.next("rev",revmcg1Label), "Revolve");
                 rev_make_cuffgap1.label(revmcg1Label);
                 rev_make_cuffgap1.set("contributeto", im.get("CUFF GAP"));
-                rev_make_cuffgap1.set("angle1", "Theta");
+                rev_make_cuffgap1.set("angle1", "Tube_theta");
                 rev_make_cuffgap1.selection("input").named(im.get("CUFF GAP CROSS SECTION"));
 
                 String difrcg1Label = "Remove Cuff Gap 1";
@@ -1632,11 +1632,11 @@ class Part {
                 // set instantiation parameters
                 String[] tubeCuffParameters = {
                         "N_holes",
-                        "Theta",
+                        "Tube_theta",
                         "Center",
                         "R_in",
                         "R_out",
-                        "L",
+                        "Tube_L",
                         "Rot_def",
                         "D_hole",
                         "Buffer_hole",

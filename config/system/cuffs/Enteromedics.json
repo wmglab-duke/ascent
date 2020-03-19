@@ -22,11 +22,11 @@
       "label": "Enteromedics Cuff",
       "def": {
         "N_holes": "N_holes_EM",
-        "Theta": "Theta_EM",
+        "Tube_theta": "Theta_EM",
         "Center": "Center_EM",
         "R_in": "R_in_EM",
         "R_out": "R_out_EM",
-        "L": "L_EM",
+        "Tube_L": "L_EM",
         "Rot_def": "Rot_def_EM",
         "D_hole": "D_hole_EM",
         "Buffer_hole": "Buffer_hole_EM",

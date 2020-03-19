@@ -22,11 +22,11 @@
       "label": "CorTec Cuff",
       "def": {
         "N_holes": "N_holes_CT400",
-        "Theta": "Theta_CT400",
+        "Tube_theta": "Theta_CT400",
         "Center": "Center_CT400",
         "R_in": "R_in_CT400",
         "R_out": "R_out_CT400",
-        "L": "L_CT400",
+        "Tube_L": "L_CT400",
         "Rot_def": "Rot_def_CT400",
         "D_hole": "D_hole_CT400",
         "Buffer_hole": "Buffer_hole_CT400",

@@ -22,11 +22,11 @@
       "label": "Madison Cuff",
       "def": {
         "N_holes": "N_holes_M",
-        "Theta": "Theta_M",
+        "Tube_theta": "Theta_M",
         "Center": "Center_M",
         "R_in": "R_in_M",
         "R_out": "R_out_M",
-        "L": "L_M",
+        "Tube_L": "L_M",
         "Rot_def": "Rot_def_M",
         "D_hole": "D_hole_M",
         "Buffer_hole": "Buffer_hole_M",

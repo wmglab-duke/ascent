@@ -22,11 +22,11 @@
       "label": "Pitt Cuff",
       "def": {
         "N_holes": "N_holes_Pitt",
-        "Theta": "Theta_Pitt",
+        "Tube_theta": "Theta_Pitt",
         "Center": "Center_Pitt",
         "R_in": "R_in_Pitt",
         "R_out": "R_out_Pitt",
-        "L": "L_Pitt",
+        "Tube_L": "L_Pitt",
         "Rot_def": "Rot_def_Pitt",
         "D_hole": "D_hole_Pitt",
         "Buffer_hole": "Buffer_hole_Pitt",

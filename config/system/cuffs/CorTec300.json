@@ -22,11 +22,11 @@
       "label": "CorTec Cuff",
       "def": {
         "N_holes": "N_holes_CT",
-        "Theta": "Theta_CT",
+        "Tube_theta": "Theta_CT",
         "Center": "Center_CT",
         "R_in": "R_in_CT",
         "R_out": "R_out_CT",
-        "L": "L_CT",
+        "Tube_L": "L_CT",
         "Rot_def": "Rot_def_CT",
         "D_hole": "D_hole_CT",
         "Buffer_hole": "Buffer_hole_CT",

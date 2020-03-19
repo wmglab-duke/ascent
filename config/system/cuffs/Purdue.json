@@ -22,11 +22,11 @@
       "label": "Purdue Cuff",
       "def": {
         "N_holes": "N_holes_P",
-        "Theta": "Theta_P",
+        "Tube_theta": "Theta_P",
         "Center": "Center_P",
         "R_in": "R_in_P",
         "R_out": "R_out_P",
-        "L": "L_P",
+        "Tube_L": "L_P",
         "Rot_def": "Rot_def_P",
         "D_hole": "D_hole_P",
         "Buffer_hole": "Buffer_hole_P",
