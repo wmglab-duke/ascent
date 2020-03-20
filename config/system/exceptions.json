@@ -263,5 +263,10 @@
     "code": 52,
     "text": "Invalid query config file (either does not exist or does not end in '.json')",
     "source": "src.core.Query"
+  },
+  {
+    "code": 53,
+    "text": "Must call Query.run() before fetching result via Query.summary()",
+    "source": "src.core.Query"
   }
 ]
