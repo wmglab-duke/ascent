@@ -322,6 +322,7 @@ class Waveform(Exceptionable, Configurable, Saveable):
         :param path:
         :return:
         """
+
         np.savetxt(
             path + WriteMode.file_endings.value[mode.value],
             np.concatenate(([self.dt, self.stop], self.wave)),

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3.7
 
 # builtins
-from random import random, seed
+import random
 from typing import Tuple, Union, List
 from copy import deepcopy
 

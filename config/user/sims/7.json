@@ -11,13 +11,13 @@
   },
   "fibers": {
     "plot": false,
-    "mode": "MRG_DISCRETE",
+    "mode": "TIGERHOLM",
     "units": "micrometer",
     "xy_trace_buffer": 5.0,
     "z_parameters": {
-      "diameter": [5.7, 7.3, 8.7, 10],
+      "diameter": 0.8,
       "min": 0,
-      "max": 25000,
+      "max": 12500,
       "offset": 0,
       "seed": 123
     },
@@ -26,7 +26,7 @@
       "top_down": true,
       "minimum_number": 1,
       "maximum_number": 100,
-      "target_density": 0.0005,
+      "target_density": 0.002,
       "target_number": 50,
       "seed": 123
     }
@@ -37,8 +37,8 @@
       "dt": 0.001,
       "start": 0,
       "on": 1,
-      "off": 99,
-      "stop": 100,
+      "off": 49,
+      "stop": 50,
       "initSS": -200,
       "dt_initSS": 10
     },

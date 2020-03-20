@@ -1,4 +1,4 @@
-from random import random, seed
+import random
 from typing import List, Tuple
 
 import matplotlib.pyplot as plt
