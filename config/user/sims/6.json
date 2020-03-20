@@ -2,7 +2,6 @@
   "n_dimensions": 3,
   "active_srcs": {
     "Purdue.json": [[1, -1]],
-    "LivaNova.json": [[1, -1]],
     "Enteromedics.json": [[1]],
     "CorTec300.json": [[1, -1]],
     "MicroLeads300.json": [[1, -1]],
@@ -16,14 +15,20 @@
     "units": "micrometer",
     "xy_trace_buffer": 5.0,
     "z_parameters": {
-      "diameter": [1, 2, 5.7, 7.3, 8.7, 10],
+      "diameter": [5.7, 7.3, 8.7, 10],
       "min": 0,
-      "max": 50000,
+      "max": 12500,
       "offset": 0,
       "seed": 123
     },
     "xy_parameters": {
-      "mode": "CENTROID"
+      "mode": "UNIFORM_DENSITY",
+      "top_down": true,
+      "minimum_number": 1,
+      "maximum_number": 100,
+      "target_density": 0.002,
+      "target_number": 50,
+      "seed": 123
     }
   },
   "waveform": {
@@ -37,9 +42,7 @@
       "initSS": -200,
       "dt_initSS": 10
     },
-    "BIPHASIC_PULSE_TRAIN": {
-      "pulse_width": 0.1,
-      "inter_phase": 0,
+    "BIPHASIC_FULL_DUTY": {
       "digits": 1
     }
   },
