@@ -193,8 +193,10 @@ class Trace(Exceptionable):
 
         return self.__polygon
 
-    def random_points(self, count: int, buffer: float = 0) -> List[Tuple[float]]:
+    def random_points(self, count: int, buffer: float = 0, seed: int = 123) -> List[Tuple[float]]:
         """
+        :param seed:
+        :param buffer:
         :param count: number of points to find
         :return: list of tuples (x,y) that are within the trace (polygon)
         """
@@ -204,6 +206,8 @@ class Trace(Exceptionable):
         min_x, min_y, max_x, max_y = trace_to_compare.polygon().bounds
 
         points: List[Tuple[float]] = []
+        random.seed(seed)
+
         while len(points) < count:
 
             coordinate = tuple((random.random() * (ceiling - floor)) + floor
