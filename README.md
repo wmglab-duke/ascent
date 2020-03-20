@@ -52,8 +52,7 @@
 - `pyclipper`
 - `pymunk`
 - `pygame`
-- `shutil`
-- `json`
+- `quantiphy`
 
 ## Java 1.8 Dependencies
 - Maven: `org.json:json:20190722` (saved in `lib/`)
