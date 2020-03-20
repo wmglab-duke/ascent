@@ -258,5 +258,10 @@
     "code": 51,
     "text": "cuff chosen is too small for nerve sample provided",
     "source": "src.core.Runner"
+  },
+  {
+    "code": 52,
+    "text": "Invalid query config file (either does not exist or does not end in '.json')",
+    "source": "src.core.Query"
   }
 ]
