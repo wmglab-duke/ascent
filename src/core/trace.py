@@ -1,7 +1,7 @@
 #!/usr/bin/env python3.7
 
 # builtins
-import random
+from random import random, seed
 from typing import Tuple, Union, List
 from copy import deepcopy
 
@@ -193,9 +193,9 @@ class Trace(Exceptionable):
 
         return self.__polygon
 
-    def random_points(self, count: int, buffer: float = 0, seed: int = 123) -> List[Tuple[float]]:
+    def random_points(self, count: int, buffer: float = 0, my_xy_seed: int = 123) -> List[Tuple[float]]:
         """
-        :param seed:
+        :param my_xy_seed:
         :param buffer:
         :param count: number of points to find
         :return: list of tuples (x,y) that are within the trace (polygon)
@@ -206,7 +206,7 @@ class Trace(Exceptionable):
         min_x, min_y, max_x, max_y = trace_to_compare.polygon().bounds
 
         points: List[Tuple[float]] = []
-        random.seed(seed)
+        random.seed(my_xy_seed)
 
         while len(points) < count:
 

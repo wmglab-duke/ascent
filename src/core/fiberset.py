@@ -1,4 +1,4 @@
-from random import random
+from random import random, seed
 from typing import List, Tuple
 
 import matplotlib.pyplot as plt
@@ -88,7 +88,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
         xy_parameters: dict = self.search(Config.SIM, 'fibers', 'xy_parameters')
 
-        seed: int = xy_parameters['seed']
+        my_xy_seed: int = xy_parameters['seed']
 
         # initialize result lists
         points: List[Tuple[float]] = []
@@ -125,7 +125,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                             fiber_count = target_density * inner.area()
                             if fiber_count < minimum_number:
                                 fiber_count = minimum_number
-                            for point in inner.random_points(fiber_count, buffer=buffer, seed=seed):
+                            for point in inner.random_points(fiber_count, buffer=buffer, my_xy_seed=my_xy_seed):
                                 points.append(point)
 
                 else:  # do bottom-up approach
@@ -143,7 +143,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                             fiber_count = target_density * inner.area()
                             if fiber_count > maximum_number:
                                 fiber_count = maximum_number
-                            for point in inner.random_points(fiber_count, buffer=buffer, seed=seed):
+                            for point in inner.random_points(fiber_count, buffer=buffer, my_xy_seed=my_xy_seed):
                                 points.append(point)
 
             elif xy_mode == FiberXYMode.UNIFORM_COUNT:
@@ -151,7 +151,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
                 for fascicle in self.sample.slides[0].fascicles:
                     for inner in fascicle.inners:
-                        for point in inner.random_points(count, buffer=buffer, seed=seed):
+                        for point in inner.random_points(count, buffer=buffer, my_xy_seed=my_xy_seed):
                             points.append(point)
 
             elif xy_mode == FiberXYMode.WHEEL:
@@ -238,7 +238,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             return values
 
         def build_fibers_with_offset(z_values: list, myel: bool, length: float, dz: float,
-                                     additional_offset: float = 0):
+                                     additional_offset: float = 0, my_z_seed: int = 123):
 
             # init empty fiber (points) list
             fiber = []
@@ -254,6 +254,8 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                             self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'min'),
                             self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'max'),
                             myel)
+
+            random.seed(my_z_seed)
             for x, y in fibers_xy:
                 random_offset_value = dz * (random.random() - 0.5) if random_offset else 0
                 fiber.append([(x, y, z + random_offset_value) for z in z_offset])
@@ -289,6 +291,8 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             )
 
             diameter = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'diameter')
+
+            my_z_seed = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'seed')
 
             if myelinated:  # MYELINATED
 
@@ -366,7 +370,12 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
                 fibers = [
                     clip(fiber, 0, model_length, myelinated, is_points=True)
-                    for fiber in build_fibers_with_offset(zs, myelinated, fiber_length, delta_z, z_shift_to_center)
+                    for fiber in build_fibers_with_offset(zs,
+                                                          myelinated,
+                                                          fiber_length,
+                                                          delta_z,
+                                                          z_shift_to_center,
+                                                          my_z_seed=my_z_seed)
                 ]
 
             else:  # UNMYELINATED
@@ -386,7 +395,8 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                                                   myelinated,
                                                   fiber_length,
                                                   delta_zs,
-                                                  z_shift_to_center)
+                                                  z_shift_to_center,
+                                                  my_z_seed=my_z_seed)
 
         else:
             self.throw(31)

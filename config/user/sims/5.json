@@ -19,7 +19,8 @@
       "diameter": 0.8,
       "min": 0,
       "max": 12500,
-      "offset": 0
+      "offset": 0,
+      "seed": 123
     },
     "xy_parameters": {
       "mode": "UNIFORM_DENSITY",
