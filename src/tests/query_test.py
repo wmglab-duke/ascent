@@ -10,3 +10,5 @@ os.chdir(project_root)
 q = Query(query_criteria)
 
 q.run()
+
+s = q.summary()
