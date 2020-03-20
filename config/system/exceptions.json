@@ -268,5 +268,10 @@
     "code": 53,
     "text": "Must call Query.run() before fetching result via Query.summary()",
     "source": "src.core.Query"
+  },
+  {
+    "code": 54,
+    "text": "Criterion key not found in data (see above)",
+    "source": "src.core.Query._match"
   }
 ]

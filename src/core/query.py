@@ -60,8 +60,8 @@ class Query(Exceptionable, Configurable, Saveable):
             # if applicable, check against sample criteria
             if sample_criteria is not None:
                 if not self._match(
-                    sample_criteria,
-                    self.load(os.path.join(samples_dir, sample, 'sample.json'))
+                        sample_criteria,
+                        self.load(os.path.join(samples_dir, sample, 'sample.json'))
                 ):
                     continue
 
@@ -90,8 +90,8 @@ class Query(Exceptionable, Configurable, Saveable):
                 # if applicable, check against model criteria
                 if model_criteria is not None:
                     if not self._match(
-                        model_criteria,
-                        self.load(os.path.join(models_dir, model, 'model.json'))
+                            model_criteria,
+                            self.load(os.path.join(models_dir, model, 'model.json'))
                     ):
                         continue
 
@@ -119,27 +119,35 @@ class Query(Exceptionable, Configurable, Saveable):
                     # if applicable, check against model criteria
                     if sim_criteria is not None:
                         if not self._match(
-                            sim_criteria,
-                            self.load(os.path.join('config', 'user', 'sims', sim + '.json'))
+                                sim_criteria,
+                                self.load(os.path.join('config', 'user', 'sims', sim + '.json'))
                         ):
                             continue
 
                     # post-filtering, add SIM to result
                     result[samples_key][-1][models_key][-1][sims_key].append(int(sim))
 
+                # remove extraneous model if no sims were found
+                # only reached if sim_criteria not None
+                if len(result[samples_key][-1][models_key][-1][sims_key]) == 0:
+                    result[samples_key][-1][models_key].pop(-1)
+
+            # remove extraneous sample if no sims were found
+            # only reached if model_criteria not None
+            if len(result[samples_key][-1][models_key]) == 0:
+                result[samples_key].pop(-1)
+
         self._result = result
-
-
-
-
 
     def summary(self) -> dict:
         """
-
+        Return result of self.run()... maybe add result statistics? (e.g. counts of samples, models, sims, etc.)
         :return:
         """
         if self._result is None:
             self.throw(53)
+
+        return self._result
 
     def fetch_config(self) -> dict:
         """
@@ -161,7 +169,49 @@ class Query(Exceptionable, Configurable, Saveable):
         :return:
         """
 
+        for key in criteria.keys():
+
+            # ensure key is valid in data
+            if key not in data:
+                print('ERRONEOUS KEY: '.format(key))
+                self.throw(54)
+
+            # corresponding values
+            c_val = criteria[key]
+            d_val = data[key]
+
+            # now lots of control flow - dependent on the types of the variables
+
+            # if c_val is a dict, recurse
+            if type(c_val) is dict:
+                if not self._match(c_val, d_val):
+                    print('fail 0')
+                    return False
+
+            # neither c_val nor d_val are list
+            elif not any([type(v) is list for v in (c_val, d_val)]):
+                if not c_val == d_val:
+                    print('fail 1')
+                    return False
+
+            # c_val IS list, d_val IS NOT list
+            elif type(c_val) is list and type(d_val) is not list:
+                if d_val not in c_val:
+                    print('fail 2')
+                    return False
+
+            # c_val IS NOT list, d_val IS list
+            elif type(c_val) is not list and type(d_val) is list:
+                # "partial matches" indicates that other values may be present in d_val
+                if not self.search(Config.CRITERIA, 'partial_matches') or c_val not in d_val:
+                    print('fail 3')
+                    return False
+
+            # both c_val and d_val are list
+            else:  # all([type(v) is list for v in (c_val, d_val)]):
+                # "partial matches" indicates that other values may be present in d_val
+                if not self.search(Config.CRITERIA, 'partial_matches') or not all([c_i in d_val for c_i in c_val]):
+                    print('fail 4')
+                    return False
+
         return True
-
-
-
