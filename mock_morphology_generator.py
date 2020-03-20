@@ -301,8 +301,63 @@ elif method == "explicit":
 
     # print to console any fascicle diameters that were skipped
     if len(fascicles) < len(fascs_explicit):
-        print('ATTENTION: Explicit fascicle positions do not satisfy parameter "min_fascicle_separation" due to '
-              'either fascicles being too close to each other or the nerve boundary.')
+        raise Exception('ATTENTION: Explicit fascicle positions do not satisfy parameter "min_fascicle_separation" '
+                        'due to either fascicles being too close to each other or the nerve boundary.')
+
+    # set figure background to black (contents white by default in image segmentation code)
+    plt.style.use('dark_background')
+
+    # NERVE BINARY IMAGE
+    nerveFig = plt.figure(1)
+    nerveAxis = nerveFig.add_subplot(111)
+    x, y = nerve.exterior.xy
+    nerveAxis.fill(x, y, 'w')
+    nerveAxis.set_aspect('equal')
+    plt.axis('off')
+    nerveAxis.set_xlim(fig_margin * -d_nerve / 2, fig_margin * d_nerve / 2)
+    nerveAxis.set_ylim(fig_margin * -d_nerve / 2, fig_margin * d_nerve / 2)
+    pngNerve = BytesIO()
+    nerveFig.savefig(pngNerve, dpi=fig_dpi, format='png')
+    pngNerve.seek(0)
+    imgNerve = create_opencv_image_from_stringio(pngNerve)
+    _, bw_img_nerve = cv2.threshold(imgNerve, 127, 255, cv2.THRESH_BINARY)
+    cv2.imwrite(os.path.join(project_path, sample_dir, '{}_0_0_n.tif'.format(sample_str)), bw_img_nerve)
+
+    # FASCICLES BINARY IMAGE
+    fasciclesFig = plt.figure(2)
+    fasciclesAxis = fasciclesFig.add_subplot(111)
+    for fascicle in fascicles:
+        if fascicle is not None and fascicle.exterior is not None:
+            x, y = fascicle.exterior.xy
+            fasciclesAxis.fill(x, y, 'w')
+
+    fasciclesAxis.set_aspect('equal')
+    plt.axis('off')
+    fasciclesAxis.set_xlim(fig_margin * -d_nerve / 2, fig_margin * d_nerve / 2)
+    fasciclesAxis.set_ylim(fig_margin * -d_nerve / 2, fig_margin * d_nerve / 2)
+    pngFascicles = BytesIO()
+    fasciclesFig.savefig(pngFascicles, dpi=fig_dpi, format='png')
+    pngFascicles.seek(0)
+    imgFascicles = create_opencv_image_from_stringio(pngFascicles)
+    ret, bw_img_fascicles = cv2.threshold(imgFascicles, 127, 255, cv2.THRESH_BINARY)
+    cv2.imwrite(os.path.join(project_path, sample_dir, '{}_0_0_i.tif'.format(sample_str)), bw_img_fascicles)
+
+    # SCALEBAR BINARY IMAGE
+    scalebarFig = plt.figure(3)
+    scalebarAxis = scalebarFig.add_subplot(111)
+    plt.plot([0, scalebar_length], [0, 0], '-w')
+    scalebarAxis.set_aspect('equal')
+    plt.axis('off')
+    scalebarAxis.set_xlim(fig_margin * -d_nerve / 2, fig_margin * d_nerve / 2)
+    scalebarAxis.set_ylim(fig_margin * -d_nerve / 2, fig_margin * d_nerve / 2)
+    pngScaleBar = BytesIO()
+    scalebarFig.savefig(pngScaleBar, dpi=fig_dpi, format='png')
+    pngScaleBar.seek(0)
+    imgScaleBar = create_opencv_image_from_stringio(pngScaleBar)
+    _, bw_img_scalebar = cv2.threshold(imgScaleBar, 127, 255, cv2.THRESH_BINARY)
+    cv2.imwrite(os.path.join(project_path, sample_dir, '{}_0_0_s.tif'.format(sample_str)), bw_img_scalebar)
+
+
 
 
 

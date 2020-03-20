@@ -25,15 +25,15 @@
       {
         "centroid_x": 0,
         "centroid_y": 0,
-        "a": 10,
-        "b": 5,
+        "a": 60,
+        "b": 90,
         "rot": 45
       },
       {
         "centroid_x": 900,
         "centroid_y": -90,
-        "a": 10,
-        "b": 5,
+        "a": 50,
+        "b": 90,
         "rot": 135
       }
     ]
