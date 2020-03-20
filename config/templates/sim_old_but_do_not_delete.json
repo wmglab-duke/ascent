@@ -46,10 +46,12 @@
       "minimum_number": 0,
       "maximum_number": 20,
       "target_density": 0.0005,
-      "target_number": 4
+      "target_number": 4,
+      "seed": 123
     },
     "UNIFORM_COUNT": {
-      "count": 5
+      "count": 5,
+      "seed": 123
     },
     "CENTROID": {
       "no parameters needed!": "so true dude..."

@@ -19,7 +19,8 @@
       "diameter": 0.8,
       "min": 0,
       "max": 12500,
-      "offset": 0
+      "offset": 0,
+      "seed": 123
     },
     "xy_parameters": {
       "mode": "UNIFORM_DENSITY",
@@ -27,7 +28,8 @@
       "minimum_number": 1,
       "maximum_number": 100,
       "target_density": 0.0005,
-      "target_number": 50
+      "target_number": 50,
+      "seed": 123
     }
   },
   "waveform": {
