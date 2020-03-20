@@ -1,17 +1,41 @@
 {
-  "sample_str": "Alien1-1",
-  "length_unit": "um",
-  "scalebar_length": 1000,
-  "d_nerve": 3000,
-  "mu_fasc_diam": 350,
-  "std_fasc_diam": 30,
-  "n_std_diam_limit": 2,
-  "num_fascicle_attempt": 30,
-  "mu_fasc_ecc": 0.5,
-  "std_fasc_ecc": 0.2,
-  "n_std_ecc_limit": 2,
-  "min_fascicle_separation": 5,
-  "max_attempt_iter": 1000,
-  "fig_margin": 1.2,
-  "fig_dpi": 1000
+  "global": {
+    "sample_str": "Alien1-1",
+    "length_unit": "um",
+    "scalebar_length": 1000,
+    "d_nerve": 3000,
+    "min_fascicle_separation": 5,
+    "fig_margin": 1.2,
+    "fig_dpi": 1000,
+    "method": "explicit"
+  },
+  "probabilistic": {
+    "mu_fasc_diam": 350,
+    "std_fasc_diam": 30,
+    "n_std_diam_limit": 2,
+    "num_fascicle_attempt": 30,
+    "mu_fasc_ecc": 0.5,
+    "std_fasc_ecc": 0.2,
+    "n_std_ecc_limit": 2,
+    "max_attempt_iter": 1000,
+    "seed": 123
+  },
+  "explicit": {
+    "Fascicles": [
+      {
+        "centroid_x": 0,
+        "centroid_y": 0,
+        "a": 10,
+        "b": 5,
+        "rot": 45
+      },
+      {
+        "centroid_x": 900,
+        "centroid_y": -90,
+        "a": 10,
+        "b": 5,
+        "rot": 135
+      }
+    ]
+  }
 }
