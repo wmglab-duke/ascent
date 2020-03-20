@@ -29,6 +29,10 @@ class Config(Enum):
     SIM = 'sims'
     CRITERIA = 'criteria'
 
+@unique
+class Object(Enum):
+    SAMPLE = 'sample'
+    SIMULATION = 'sim'
 
 # %% Trace functionality
 

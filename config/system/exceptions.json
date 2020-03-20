@@ -273,5 +273,10 @@
     "code": 54,
     "text": "Criterion key not found in data (see above)",
     "source": "src.core.Query._match"
+  },
+  {
+    "code": 55,
+    "text": "Building path not supported for given mode (see above)",
+    "source": "src.core.Query.build_path"
   }
 ]

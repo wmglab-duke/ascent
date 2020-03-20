@@ -1,4 +1,5 @@
-from typing import Union
+import pickle
+from typing import Union, List, Tuple
 
 from src.core import Sample, Simulation
 from src.utils import *
@@ -149,17 +150,54 @@ class Query(Exceptionable, Configurable, Saveable):
 
         return self._result
 
-    def fetch_config(self) -> dict:
+    def get_config(self, mode: Config, indices: List[int]) -> dict:
         """
 
         :return:
         """
+        return self.load(self.build_path(mode, indices))
 
-    def fetch_object(self) -> Union[Sample, Simulation]:
+    def get_object(self, mode: Object, indices: List[int]) -> Union[Sample, Simulation]:
         """
 
         :return:
         """
+        with open(self.build_path(mode, indices), 'rb') as obj:
+            return pickle.load(obj)
+
+    def build_path(self, mode: Union[Config, Object], indices: List[int] = None) -> str:
+        """
+
+        :param mode:
+        :param indices:
+        :return:
+        """
+
+        result = str()
+        just_directory = False
+
+        if indices is None:
+            indices = [0, 0, 0]  # dummy values... will be stripped from path later bc just_directory is set to True
+            just_directory = True
+
+        if mode == Config.SAMPLE:
+            result = os.path.join('samples', str(indices[0]), 'sample.json')
+        elif mode == Config.MODEL:
+            result = os.path.join('samples', str(indices[0]), 'models', str(indices[1]), 'model.json')
+        elif mode == Config.SIM:
+            result = os.path.join('config', 'user', 'sims', '.json'.format(indices[0]))
+        elif mode == Object.SAMPLE:
+            result = os.path.join('samples', str(indices[0]), 'sample.obj')
+        elif mode == Object.SAMPLE:
+            result = os.path.join('samples', str(indices[0]), 'models', str(indices[1]), 'sims', str(indices[2]), 'sim.obj')
+        else:
+            print('INVALID MODE:'.format(type(mode)))
+            self.throw(55)
+
+        if just_directory:
+            result = os.path.join(*result.split(os.sep)[:-1])
+
+        return result
 
     def _match(self, criteria: dict, data: dict) -> bool:
         """
