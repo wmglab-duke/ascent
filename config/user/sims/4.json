@@ -27,7 +27,8 @@
       "minimum_number": 1,
       "maximum_number": 100,
       "target_density": 0.0005,
-      "target_number": 50
+      "target_number": 50,
+      "seed": 123
     }
   },
   "waveform": {

@@ -125,7 +125,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                             fiber_count = target_density * inner.area()
                             if fiber_count < minimum_number:
                                 fiber_count = minimum_number
-                            for point in inner.random_points(fiber_count, buffer=buffer, seed=seed):
+                            for point in inner.random_points(fiber_count, buffer=buffer, seed):
                                 points.append(point)
 
                 else:  # do bottom-up approach
@@ -143,7 +143,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                             fiber_count = target_density * inner.area()
                             if fiber_count > maximum_number:
                                 fiber_count = maximum_number
-                            for point in inner.random_points(fiber_count, buffer=buffer, seed=seed):
+                            for point in inner.random_points(fiber_count, buffer=buffer, seed):
                                 points.append(point)
 
             elif xy_mode == FiberXYMode.UNIFORM_COUNT:
@@ -151,7 +151,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
                 for fascicle in self.sample.slides[0].fascicles:
                     for inner in fascicle.inners:
-                        for point in inner.random_points(count, buffer=buffer, seed=seed):
+                        for point in inner.random_points(count, buffer=buffer, seed):
                             points.append(point)
 
             elif xy_mode == FiberXYMode.WHEEL:
