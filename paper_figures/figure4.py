@@ -32,7 +32,7 @@ sample_file = os.path.join(
 # instantiate sample
 sample = load_obj(sample_file)
 
-exceptions_config = load(os.path.join('config', 'system', 'exceptions.json'))
+exceptions_config = load(os.path.join('../config', 'system', 'exceptions.json'))
 model_config = load(os.path.join('plotting_models', 'model0.json'))
 sim_config = load(os.path.join('plotting_sims', 'sim3.json'))
 

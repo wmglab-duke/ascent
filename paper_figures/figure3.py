@@ -17,7 +17,7 @@ def load(config_path: str):
         return json.load(handle)
 
 
-exceptions_config = load(os.path.join('config', 'system', 'exceptions.json'))
+exceptions_config = load(os.path.join('../config', 'system', 'exceptions.json'))
 model_config = load(os.path.join('plotting_models', 'model0.json'))
 sim_config = load(os.path.join('plotting_sims', 'sim1.json'))
 
