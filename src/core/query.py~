@@ -1,5 +1,5 @@
 import pickle
-from typing import Union, List
+from typing import Union, List, Tuple
 
 from src.core import Sample, Simulation
 from src.utils import *
@@ -188,7 +188,7 @@ class Query(Exceptionable, Configurable, Saveable):
             result = os.path.join('config', 'user', 'sims', '.json'.format(indices[0]))
         elif mode == Object.SAMPLE:
             result = os.path.join('samples', str(indices[0]), 'sample.obj')
-        elif mode == Object.SIMULATION:
+        elif mode == Object.SAMPLE:
             result = os.path.join('samples', str(indices[0]), 'models', str(indices[1]), 'sims', str(indices[2]), 'sim.obj')
         else:
             print('INVALID MODE:'.format(type(mode)))
