@@ -241,19 +241,26 @@ elif method == "explicit":
         fascicle_attempt = gen_ellipse(ellipse)
 
         chk = 0
+        # check to make sure the fascicle is within the nerve
+        if not fascicle_attempt.within(nerve):
+            chk = 1
+
+        # check for fascicle:nerve intersection with addition of next fascicle
         if fascicle_attempt.buffer(min_fascicle_separation).boundary.intersects(nerve.boundary):
             chk = 1
 
+        # check for fascicle:fascicle intersection with addition of next fascicle
         if any([fasc.buffer(min_fascicle_separation).intersects(fascicle_attempt) for fasc in fascicles]):
             chk = 1
 
+        # if all checks passed, add the fascicle to the list
         if chk == 0:
             fascicles.append(fascicle_attempt)
 
-    # print to console any fascicle diameters that were skipped
+    # since explicitly defined, user made an error if not all fascicles were placed.
     if len(fascicles) < len(fascs_explicit):
-        raise Exception('Explicit fascicle positions do not satisfy parameter "min_fascicle_separation" '
-                        'due to either fascicles being too close to each other or the nerve boundary.')
+        raise Exception('Explicit fascicle positions are too close to each other, the nerve boundary, '
+                        'or are outside the nerve.')
 
 # MAKE BINARY IMAGES FOR INPUT TO PIPELINE
 # set figure background to black (contents white by default in image segmentation code)
