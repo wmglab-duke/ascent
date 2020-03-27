@@ -138,7 +138,7 @@ submit/
 *.mph*
 *.class*
 out/
-*env.json
+*/system/env.json
 
 # machine-specific neuron mod files
 src/neuron/MOD_Files/*.c
