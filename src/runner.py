@@ -277,7 +277,7 @@ class Runner(Exceptionable, Configurable):
         else:  # assume to be 'win64'
             subprocess.Popen(['{}\\bin\\win64\\comsolmphserver.exe'.format(comsol_path)], close_fds=True)
             os.chdir('src')
-
+            # TODO:
             os.system('""{}\\javac" '
                       '-cp "..\\lib\\json-20190722.jar";"{}\\plugins\\*" '
                       'model\\*.java -d ..\\bin"'.format(jdk_path,
