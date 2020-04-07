@@ -129,10 +129,13 @@ class Runner(Exceptionable, Configurable):
                 .add(SetupMode.OLD, Config.RUN, self.configs[Config.RUN.value]) \
                 .init_map(SetupMode.OLD) \
                 .build_file_structure() \
-                .populate() \
+                .populate(deform_animate=False) \
                 .write(WriteMode.SECTIONWISE2D) \
                 .output_morphology_data() \
                 .save(os.path.join(sample_file))
+
+        print('TEMP EXIT')
+        exit()
 
         # iterate through models
         for model_index, model_config in enumerate(all_configs[Config.MODEL.value]):

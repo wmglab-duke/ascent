@@ -50,6 +50,10 @@ class Deformable(Exceptionable):
         # copy the "contents" so multiple deformations are possible
         contents = [trace.deepcopy() for trace in self.contents]
 
+        bounds = self.start.polygon().bounds
+        width = int(1.5 * (bounds[2] - bounds[0]))
+        height = int(1.5 * (bounds[3] - bounds[1]))
+
         # offset all the traces to provide for an effective minimum distance for original fascicles
         for trace in contents:
             trace.offset(distance=minimum_distance / 2.0)
@@ -66,25 +70,25 @@ class Deformable(Exceptionable):
                                                                                        self.end,
                                                                                        morph_count)]
 
-        bounds = self.start.polygon().bounds
+
 
         # draw the deformation
         if render:
             # packages
             import pygame
             from pygame.locals import KEYDOWN, K_ESCAPE, QUIT, K_SPACE
-            from pygame.color import THECOLORS
+            from pygame.colordict import THECOLORS
 
             width = int(1.5 * (bounds[2] - bounds[0]))
             height = int(1.5 * (bounds[3] - bounds[1]))
 
-            aspect = float(width) / height
+            aspect = 2
 
             display_dimensions = int(800 * aspect), 800
-            screen = pygame.display.set_mode(display_dimensions)
+            drawing_screen = pygame.display.set_mode(display_dimensions)
 
-            pygame.init()
-            drawing_screen = pygame.Surface((width, height))
+            # pygame.init()
+            # drawing_screen = pygame.Surface((width, height))
             options = pymunk.pygame_util.DrawOptions(drawing_screen)
             options.shape_outline_color = (0, 0, 0, 255)
             options.shape_static_color = (0, 0, 0, 255)
@@ -130,6 +134,7 @@ class Deformable(Exceptionable):
                         pass
 
             if loop_count % morph_index_step == 0:
+                # print('PRINT PRINT PRINT')
                 space.remove(morph_step)
                 morph_index += 1
                 Deformable.printProgressBar(morph_index,
@@ -154,7 +159,15 @@ class Deformable(Exceptionable):
 
                 # draw the actual screen
                 space.debug_draw(options)
-                pygame.transform.scale(drawing_screen, display_dimensions, screen)
+
+                temp_surf = drawing_screen.copy()
+                # drawing_screen.fill((0,0,0))  # here, you can fill the screen with whatever you want to take the place of what was there before
+                # drawing_screen.blit(temp_surf, (width/2,-height/2))
+
+                # pygame.display.update()
+
+
+                # drawing_screen = pygame.transform.scale(drawing_screen, display_dimensions)#, screen)
                 pygame.display.flip()
                 pygame.display.set_caption('nerve morph step {} of {}'.format(morph_index, len(morph_steps)))
 
@@ -236,6 +249,12 @@ class Deformable(Exceptionable):
     def from_slide(slide: Slide, mode: ReshapeNerveMode, minimum_distance: float = 0.0) -> 'Deformable':
         # method in slide will pull out each trace and add to a list of contents, go through traces and build polygons
 
+        bounds = slide.nerve.polygon().bounds
+        width = int(1.5 * (bounds[2] - bounds[0])) / 2
+        height = int(1.5 * (bounds[3] - bounds[1])) / 2
+
+        slide.move_center(np.array([1.5 * width, 1.5 * height]))
+
         # get start boundary
         boundary_start = slide.nerve.deepcopy()
 
@@ -247,6 +266,8 @@ class Deformable(Exceptionable):
 
         # exception configuration data
         exception_config_data = slide.configs[Config.EXCEPTIONS.value]
+
+        slide.move_center(np.array([-1.5 * width, -1.5 * height]))
 
         # return new object
         return Deformable(exception_config_data, boundary_start, boundary_end, contents)
@@ -268,7 +289,7 @@ class Deformable(Exceptionable):
         percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
         filledLength = int(length * iteration // total)
         bar = fill * filledLength + '-' * (length - filledLength)
-        print('\r%s |%s| %s%% %s' % (prefix, bar, percent, suffix), end='\r')
+        print('\r{} |{}| {}% {}'.format(prefix, bar, percent, suffix), end='')
         # Print New Line on Complete
         if iteration == total:
             print()

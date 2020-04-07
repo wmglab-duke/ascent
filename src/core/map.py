@@ -86,6 +86,10 @@ class Map(Exceptionable, Configurable):
         # init self.slides
         self.slides: List[SlideInfo] = []
 
+        # change mode to SYNTHETIC if no map path provided
+        if 'map_path'not in self.search(Config.SAMPLE).keys():
+            self.mode = SetupMode.SYNTHETIC
+
         if self.mode == SetupMode.NEW:
             raise Exception('NOT IMPLEMENTED')
             
@@ -111,6 +115,26 @@ class Map(Exceptionable, Configurable):
             self.validate_path(self.output_path)
 
             # build slides list from json file
+            self.slides = self.json_to_list()
+
+        elif self.mode == SetupMode.SYNTHETIC:
+            # must create a "synthetic" map
+
+            # assume path to synthetic map is input/<SAMPLE>/map.json
+            self.source_path = os.path.join('input', self.sample, 'map.json')
+
+            # load/edit map template
+            map = self.load(os.path.join('config', 'templates', 'map.json'))
+            map[0]['directory'] = self.source_path.split(os.sep)[:-1]
+
+            # write synthetic map
+            with open(os.path.join(self.source_path), "w") as handle:
+                handle.write(json.dumps(map, indent=2))
+
+            # historical?
+            self.output_path = self.source_path
+
+            # build the slides list from this map
             self.slides = self.json_to_list()
 
         else:
