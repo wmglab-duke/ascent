@@ -267,7 +267,7 @@ class Deformable(Exceptionable):
         # exception configuration data
         exception_config_data = slide.configs[Config.EXCEPTIONS.value]
 
-        slide.move_center(np.array([-1.5 * width, -1.5 * height]))
+        slide.move_center(np.array([0, 0]))
 
         # return new object
         return Deformable(exception_config_data, boundary_start, boundary_end, contents)
