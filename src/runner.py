@@ -134,8 +134,6 @@ class Runner(Exceptionable, Configurable):
                 .output_morphology_data() \
                 .save(os.path.join(sample_file))
 
-        print('TEMP EXIT')
-        exit()
 
         # iterate through models
         for model_index, model_config in enumerate(all_configs[Config.MODEL.value]):
