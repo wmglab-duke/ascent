@@ -10,7 +10,7 @@
     "shrinkage_scale": 0.2
   },
   "min_fascicle_separation": {
-    "dist": 10.0,
+    "dist": 15.0,
     "units": "micrometer"
   },
   "modes": {
