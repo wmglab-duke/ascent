@@ -1206,6 +1206,11 @@ public class ModelWrapper {
                     double length = ((JSONObject) ((JSONObject) modelData.get("medium")).get("bounds")).getDouble("length");
                     mediumParams.set("z_nerve", length + " " + bounds_unit);
 
+                    // Additional length to medium (for SL)
+
+                    double z_add = ((JSONObject) ((JSONObject) modelData.get("medium")).get("bounds")).getDouble("additional_length");
+                    mediumParams.set("z_medium_add", z_add + " " + bounds_unit);
+
                     // Radius of the FEM - will want to converge thresholds for this
                     double radius = ((JSONObject) ((JSONObject) modelData.get("medium")).get("bounds")).getDouble("radius");
                     mediumParams.set("r_medium", radius + " " + bounds_unit);

@@ -18,8 +18,9 @@
     "distant_ground": true,
     "bounds": {
       "unit": "[micrometer]",
-      "length": 12500,
-      "radius": 1000
+      "length": 14500,
+      "radius": 10000,
+      "additional_length": 10000
     }
   },
   "trace_interp_tol": 0.05,
