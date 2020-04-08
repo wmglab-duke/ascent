@@ -88,7 +88,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
         xy_parameters: dict = self.search(Config.SIM, 'fibers', 'xy_parameters')
 
-        my_xy_seed: int = xy_parameters['seed']
+        my_xy_seed: int = xy_parameters.get('seed', 0)
 
         # initialize result lists
         points: List[Tuple[float]] = []
