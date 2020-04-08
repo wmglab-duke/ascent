@@ -22,7 +22,7 @@
       "seed": 123
     },
     "xy_parameters": {
-      "mode": "CENTROID"
+      "mode": "SL_PSEUDO_INTERP"
     }
   },
   "waveform": {
