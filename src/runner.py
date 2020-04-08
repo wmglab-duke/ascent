@@ -283,7 +283,7 @@ class Runner(Exceptionable, Configurable):
                 '{}/javac -classpath ../lib/json-20190722.jar:{}/plugins/* model/*.java -d ../bin'.format(jdk_path,
                                                                                                           comsol_path))
             # https://stackoverflow.com/questions/219585/including-all-the-jars-in-a-directory-within-the-java-classpath
-            os.system('{}/java/java/glnxa64/jre/bin/java '
+            os.system('{}/java/glnxa64/jre/bin/java '
                       '-cp .:$(echo {}/plugins/*.jar | '
                       'tr \' \' \':\'):../lib/json-20190722.jar:../bin model.{} {} {}'.format(comsol_path,
                                                                                               comsol_path,
