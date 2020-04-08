@@ -104,7 +104,7 @@ class Sample(Exceptionable, Configurable, Saveable):
         # ADDITION: if only one slide present, check if names abide by <NAME>_0_0_<CODE>.tif format
         #           if not abiding, add rename files so that they abide
         if len(self.map.slides) == 1:
-            print('Renaming input files to conform with map input interface. (This is normal!)')
+            print('Renaming input files to conform with map input interface where necessary.')
             source_dir = os.path.join(*self.map.slides[0].data()[3])
             source_files = os.listdir(source_dir)
             for mask_fname in [f.value for f in MaskFileNames if f.value in source_files]:
