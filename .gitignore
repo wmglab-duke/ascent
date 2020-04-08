@@ -133,6 +133,7 @@ dmypy.json
 samples/
 submit/
 input/
+*/user/runs/
 
 #samples
 *r.tif

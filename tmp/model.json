@@ -1,0 +1,86 @@
+{
+  "modes": {
+    "rho_perineurium_method": "RHO_WEERASURIYA",
+    "cuff_rotation_mode": "AUTOMATIC",
+    "cuff_shift_mode": "MIN_CIRCLE_BOUNDARY",
+    "fiber_z": "EXTRUSION",
+    "ci_perineurium_thickness": "MEASURED"
+  },
+  "solution": {
+    "time_units": "ms",
+    "sol_time": 0
+  },
+  "temperature": {
+    "unit": "celsius",
+    "value": 37
+  },
+  "medium": {
+    "distant_ground": true,
+    "bounds": {
+      "unit": "[micrometer]",
+      "length": 12500,
+      "radius": 1000
+    }
+  },
+  "trace_interp_tol": 0.05,
+  "cuff": {
+    "rotate": {
+      "unit": "[degree]",
+      "add_ang": 0,
+      "pos_ang": 0
+    },
+    "shift": {
+      "unit": "[micrometer]",
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "preset": "LivaNova.json"
+  },
+  "conductivities": {
+    "perineurium": {
+      "unit": "[S/m]",
+      "label": "RHO_WEERASURIYA @ 1 Hz",
+      "value": "0.0008703220191470844"
+    },
+    "medium": "muscle",
+    "fill": "saline",
+    "insulator": "silicone",
+    "conductor": "platinum",
+    "endoneurium": "endoneurium",
+    "epineurium": "epineurium"
+  },
+  "mesh": {
+    "rest": {
+      "mesh_time": 7461.499013,
+      "time_units": "ms",
+      "hcurve": 0.2,
+      "hmin": 2,
+      "hnarrow": 1,
+      "type": {
+        "im": "ftet",
+        "name": "FreeTet"
+      },
+      "hmax": 4000,
+      "hgrad": 1.8
+    },
+    "nerve": {
+      "mesh_time": 1750.308018,
+      "time_units": "ms",
+      "hcurve": 0.2,
+      "hmin": 2,
+      "hnarrow": 1,
+      "type": {
+        "im": "ftet",
+        "name": "FreeTet"
+      },
+      "hmax": 4000,
+      "hgrad": 1.8
+    }
+  },
+  "solver": {"name": "COMSOL Multiphysics 5.4 (Build: 388)"},
+  "frequency": {
+    "unit": "Hz",
+    "value": 1
+  }
+}
