@@ -258,7 +258,7 @@ class Runner(Exceptionable, Configurable):
 
         core_name = 'ModelWrapper'
 
-        if sys.platform.startswith('darwin') or sys.platform.startswith('linux'):  # macOS and linux
+        if sys.platform.startswith('darwin'):  # macOS
 
             subprocess.Popen(['{}/bin/comsol'.format(comsol_path), 'server'], close_fds=True)
             os.chdir('src')
@@ -267,6 +267,23 @@ class Runner(Exceptionable, Configurable):
                                                                                                           comsol_path))
             # https://stackoverflow.com/questions/219585/including-all-the-jars-in-a-directory-within-the-java-classpath
             os.system('{}/java/maci64/jre/Contents/Home/bin/java '
+                      '-cp .:$(echo {}/plugins/*.jar | '
+                      'tr \' \' \':\'):../lib/json-20190722.jar:../bin model.{} {} {}'.format(comsol_path,
+                                                                                              comsol_path,
+                                                                                              core_name,
+                                                                                              project_path,
+                                                                                              run_path))
+            os.chdir('..')
+
+        elif sys.platform.startswith('linux'):  # linux
+
+            subprocess.Popen(['{}/bin/comsol'.format(comsol_path), 'server'], close_fds=True)
+            os.chdir('src')
+            os.system(
+                '{}/javac -classpath ../lib/json-20190722.jar:{}/plugins/* model/*.java -d ../bin'.format(jdk_path,
+                                                                                                          comsol_path))
+            # https://stackoverflow.com/questions/219585/including-all-the-jars-in-a-directory-within-the-java-classpath
+            os.system('{}/java/java/glnxa64/jre/bin/java '
                       '-cp .:$(echo {}/plugins/*.jar | '
                       'tr \' \' \':\'):../lib/json-20190722.jar:../bin model.{} {} {}'.format(comsol_path,
                                                                                               comsol_path,
