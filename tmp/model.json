@@ -23,7 +23,7 @@
       "additional_length": 10000
     }
   },
-  "trace_interp_tol": 0.0,
+  "trace_interp_tol": 0.01,
   "cuff": {
     "rotate": {
       "unit": "[degree]",
