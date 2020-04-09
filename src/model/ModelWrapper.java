@@ -1288,7 +1288,7 @@ public class ModelWrapper {
                     meshNerve.label(meshNerveLabel);
 
                     String meshNerveSizeInfoLabel = "Mesh Nerve Size Info";
-                    MeshFeature meshNerveSizeInfo = meshNerve.create(mw.im.next("size", meshNerveSizeInfoLabel), "Size");
+                    MeshFeature meshNerveSizeInfo = meshNerve.create(mw.im.next("sit ize", meshNerveSizeInfoLabel), "Size");
                     meshNerveSizeInfo.label(meshNerveSizeInfoLabel);
 
                     meshNerveSizeInfo.set("custom", true);
@@ -1343,6 +1343,10 @@ public class ModelWrapper {
                     model.component("comp1").mesh("mesh1").run(mw.im.get(meshNerveLabel));
                     long estimatedNerveMeshTime = System.nanoTime() - nerveMeshStartTime;
                     nerveMeshParams.put("mesh_time",estimatedNerveMeshTime/Math.pow(10,6)); // convert nanos to millis
+
+                    System.out.println("Saving MPH (nerve-mesh) file to: " + geomFile);
+                    model.save(geomFile);
+
 
                     System.out.println("Meshing the rest... will also take a while");
 
