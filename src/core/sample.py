@@ -279,6 +279,8 @@ class Sample(Exceptionable, Configurable, Saveable):
                 # title = 'morph count: {}'.format(morph_count)
                 dist = self.search(Config.SAMPLE, "min_fascicle_separation", "dist")
 
+                print('\t\tensuring minimum fascicle separation of {} um'.format(dist))
+
                 deformable = Deformable.from_slide(slide,
                                                    ReshapeNerveMode.CIRCLE,
                                                    minimum_distance=dist)
