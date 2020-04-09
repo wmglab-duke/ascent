@@ -201,6 +201,7 @@ class Runner(Exceptionable, Configurable):
         if 'kill_pre_java' in self.search(Config.RUN).keys():
             if self.search(Config.RUN, 'kill_pre_java'):
                 print('KILLING PRE JAVA')
+                exit()
 
         # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials
         if not all(potentials_exist):  # only transition to java if necessary (there are potentials that do not exist)

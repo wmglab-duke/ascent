@@ -67,17 +67,34 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             def magnitude(vec):
                 return np.sqrt(sum(item**2 for item in vec))
 
-            t_min = opt.fmin(lambda t: fit_z(t) - (z_medium - buffer), 50)
+            t_min = max(opt.fmin(lambda t: -(fit_z(t) - (z_medium - buffer)), 50), 20)
             t_max = r_medium - buffer
             t_step = 10
             t = np.arange(t_min, t_max, t_step)
 
             x, y, z = fit_3d(t, 0, fit_z)
             points = list(zip(x, y, z))
-            fiber_length = sum(magnitude(points[i]-points[i+1]) for i in range(len(points)-1))
+            fiber_length = sum(magnitude(np.asarray(points[i])-np.asarray(points[i+1])) for i in range(len(points)-1))
 
             fibers_xy = np.asarray([(0, 0)])
-            self.fibers = self._generate_z(fibers_xy, override_length=fiber_length)
+            fibers = self._generate_z(fibers_xy, override_length=fiber_length)
+
+            fiber_z_points = np.asarray(fibers[0])[:, 2]
+            fiber_z_points = fiber_z_points - np.min(fiber_z_points)
+            ratios = fiber_z_points / np.max(fiber_z_points)
+
+            self.fibers = [interparc(ratios, x, y, z)]
+
+            from mpl_toolkits.mplot3d import Axes3D
+            fig: plt.Figure = plt.figure()
+            ax: Axes3D = fig.add_subplot(111, projection='3d')
+
+            # ax.scatter(x, y, z, c='r', marker='o')
+            ax.scatter(self.fibers[0][:, 0], self.fibers[0][:, 1], self.fibers[0][:, 2], c='b', marker='o')
+            plt.show()
+
+            print('buffer line')
+
 
         return self
 

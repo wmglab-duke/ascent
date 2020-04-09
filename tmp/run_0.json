@@ -3,5 +3,5 @@
   "overwrite": false,
   "sample": 0,
   "models": [0],
-  "sims": []
+  "sims": [0, 1]
 }
