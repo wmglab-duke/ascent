@@ -1346,16 +1346,37 @@ public class ModelWrapper {
 
                     System.out.println("Meshing the rest... will also take a while");
 
+                    System.out.println("1");
+
                     long restMeshStartTime = System.nanoTime();
+
+                    System.out.println("2");
+
                     model.component("comp1").mesh("mesh1").run(mw.im.get(meshRestLabel));
+
+                    System.out.println("3");
+
                     long estimatedRestMeshTime = System.nanoTime() - restMeshStartTime;
+
+                    System.out.println("4");
+
                     restMeshParams.put("mesh_time",estimatedRestMeshTime/Math.pow(10,6)); // convert nanos to millis
 
+                    System.out.println("5");
 
                     // put nerve to mesh, rest to mesh, mesh to modelData
                     JSONObject mesh = modelData.getJSONObject("mesh");
+
+                    System.out.println("6");
+
                     mesh.put("nerve", nerveMeshParams);
+
+                    System.out.println("7");
+
                     mesh.put("rest", restMeshParams);
+
+                    System.out.println("8");
+
                     modelData.put("mesh", mesh);
 
                     System.out.println("Saving mesh statistics.");
