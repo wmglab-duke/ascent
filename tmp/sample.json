@@ -11,6 +11,7 @@
   },
   "min_fascicle_separation": {
     "dist": 20.0,
+    "nerve_addition": 20,
     "units": "micrometer"
   },
   "modes": {
