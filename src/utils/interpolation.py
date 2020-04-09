@@ -288,5 +288,5 @@ if __name__ == '__main__':
     # ax.scatter(x, y, z, c='r', marker='o')
     ax.scatter(res[:, 0], res[:, 1], res[:, 2], c='b', marker='o')
 
-    # plt.show()
+    plt.show()
 

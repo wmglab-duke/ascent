@@ -91,7 +91,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
             # ax.scatter(x, y, z, c='r', marker='o')
             ax.scatter(self.fibers[0][:, 0], self.fibers[0][:, 1], self.fibers[0][:, 2], c='b', marker='o')
-            plt.show()
+            # plt.show()
 
             print('buffer line')
 
