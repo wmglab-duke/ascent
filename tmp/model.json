@@ -53,7 +53,7 @@
   },
   "mesh": {
     "stats": {
-    }
+    },
     "rest": {
       "mesh_time": 7461.499013,
       "time_units": "ms",
