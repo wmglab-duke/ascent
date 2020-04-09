@@ -10,7 +10,7 @@ class Query(Exceptionable, Configurable, Saveable):
     IMPORTANT: MUST BE RUN FROM PROJECT LEVEL
     """
 
-    def __init__(self, criteria_path: str):
+    def __init__(self, criteria: Union[str, dict]):
         """
         :param exceptions_config:
         """
@@ -20,7 +20,14 @@ class Query(Exceptionable, Configurable, Saveable):
         Exceptionable.__init__(self, SetupMode.NEW)
 
         self._ran: bool = False  # marker will be set to True one self.run() is called (as is successful)
-        self.add(SetupMode.NEW, Config.CRITERIA, criteria_path)  # initialize criteria
+
+        if isinstance(criteria, str):
+            # this must be the path to the criteria
+            self.add(SetupMode.NEW, Config.CRITERIA, criteria)
+        elif isinstance(criteria, dict):
+            # criteria was passed in as a dictionary!
+            self.add(SetupMode.OLD, Config.CRITERIA, criteria)
+
         self._result = None  # begin with empty result
 
     def run(self):

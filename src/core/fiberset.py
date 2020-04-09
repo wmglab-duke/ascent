@@ -77,7 +77,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             fiber_length = sum(magnitude(points[i]-points[i+1]) for i in range(len(points)-1))
 
             fibers_xy = np.asarray([(0, 0)])
-            self.fibers = self._generate_z(fibers_xy)
+            self.fibers = self._generate_z(fibers_xy, override_length=fiber_length)
 
         return self
 
