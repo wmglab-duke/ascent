@@ -1358,6 +1358,8 @@ public class ModelWrapper {
                     mesh.put("rest", restMeshParams);
                     modelData.put("mesh", mesh);
 
+                    System.out.println("Saving mesh statistics.");
+
                     // MESH STATISTICS
                     String quality_measure = modelData.getJSONObject("mesh")
                             .getJSONObject("stats")

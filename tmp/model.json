@@ -53,6 +53,7 @@
   },
   "mesh": {
     "stats": {
+      "quality_measure": "vollength"
     },
     "rest": {
       "mesh_time": 7461.499013,
