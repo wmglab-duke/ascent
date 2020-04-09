@@ -1352,6 +1352,10 @@ public class ModelWrapper {
 
                     System.out.println("2");
 
+                    System.out.println("meshRestLabel = " + meshRestLabel);
+
+                    System.out.println("mw.im.get(meshRestLabel) = " + mw.im.get(meshRestLabel));
+
                     model.component("comp1").mesh("mesh1").run(mw.im.get(meshRestLabel));
 
                     System.out.println("3");

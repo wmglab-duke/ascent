@@ -65,6 +65,9 @@ public class IdentifierManager {
      */
     public String get(String psuedonym) {
         if (identifierPseudonyms.containsKey(psuedonym)) return identifierPseudonyms.get(psuedonym);
+
+        System.out.println("Attempted to fetch id for id-less pseudonym: " + psuedonym);
+
         return null;
     }
 
