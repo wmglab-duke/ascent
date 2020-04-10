@@ -1329,6 +1329,9 @@ public class ModelWrapper {
                     meshRestSizeInfo.set("hnarrowactive", true);
                     meshRestSizeInfo.set("hnarrow", restMeshParams.getDouble("hnarrow"));
 
+                    System.out.println("restMeshParams.getDouble(\"hmin\") = " + restMeshParams.getDouble("hmin"));
+                    System.exit(0)
+                    
                     // Saved model pre-mesh for debugging
                     try {
                         System.out.println("Saving MPH (pre-mesh) file to: " + geomFile);

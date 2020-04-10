@@ -59,7 +59,7 @@
       "mesh_time": 7461.499013,
       "time_units": "ms",
       "hcurve": 0.2,
-      "hmin": 2,
+      "hmin": 1,
       "hnarrow": 1,
       "type": {
         "im": "ftet",
@@ -72,7 +72,7 @@
       "mesh_time": 1750.308018,
       "time_units": "ms",
       "hcurve": 0.2,
-      "hmin": 2,
+      "hmin": 1,
       "hnarrow": 1,
       "type": {
         "im": "ftet",
