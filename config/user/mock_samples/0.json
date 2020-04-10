@@ -23,53 +23,32 @@
   "explicit": {
     "Fascicles": [
       {
-        "centroid_x": 2000,
+        "centroid_x": 0,
+        "centroid_y": 750,
+        "a": 500,
+        "b": 500,
+        "rot": 0
+      },
+      {
+        "centroid_x": 750,
         "centroid_y": 0,
-        "a": 100,
-        "b": 100,
-        "rot": 45
-      },
-      {
-        "centroid_x": 400,
-        "centroid_y": 400,
-        "a": 50,
-        "b": 100,
-        "rot": 135
-      },
-      {
-        "centroid_x": -500,
-        "centroid_y": 400,
-        "a": 150,
-        "b": 100,
-        "rot": 45
-      },
-      {
-        "centroid_x": 200,
-        "centroid_y": -200,
-        "a": 130,
-        "b": 100,
-        "rot": 135
+        "a": 500,
+        "b": 400,
+        "rot": 0
       },
       {
         "centroid_x": 0,
-        "centroid_y": 400,
-        "a": 130,
-        "b": 100,
-        "rot": 135
-      },
+        "centroid_y": -750,
+        "a": 500,
+        "b": 300,
+        "rot": 90
+      }
       {
-        "centroid_x": 400,
+        "centroid_x": -750,
         "centroid_y": 0,
-        "a": 130,
-        "b": 100,
-        "rot": 135
-      },
-      {
-        "centroid_x": -400,
-        "centroid_y": 0,
-        "a": 130,
-        "b": 100,
-        "rot": 135
+        "a": 500,
+        "b": 200,
+        "rot": 180
       }
     ]
   }
