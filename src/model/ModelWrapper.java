@@ -1330,7 +1330,7 @@ public class ModelWrapper {
                     meshRestSizeInfo.set("hnarrow", restMeshParams.getDouble("hnarrow"));
 
                     System.out.println("restMeshParams.getDouble(\"hmin\") = " + restMeshParams.getDouble("hmin"));
-                    System.exit(0)
+                    System.exit(0);
                     
                     // Saved model pre-mesh for debugging
                     try {
