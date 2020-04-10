@@ -129,10 +129,11 @@ class Runner(Exceptionable, Configurable):
                 .add(SetupMode.OLD, Config.RUN, self.configs[Config.RUN.value]) \
                 .init_map(SetupMode.OLD) \
                 .build_file_structure() \
-                .populate() \
+                .populate(deform_animate=False) \
                 .write(WriteMode.SECTIONWISE2D) \
                 .output_morphology_data() \
                 .save(os.path.join(sample_file))
+
 
         # iterate through models
         for model_index, model_config in enumerate(all_configs[Config.MODEL.value]):
@@ -197,6 +198,11 @@ class Runner(Exceptionable, Configurable):
 
                     potentials_exist.append(simulation.potentials_exist(sim_obj_dir))
 
+        if 'kill_pre_java' in self.search(Config.RUN).keys():
+            if self.search(Config.RUN, 'kill_pre_java'):
+                print('KILLING PRE JAVA')
+                exit()
+
         # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials
         if not all(potentials_exist):  # only transition to java if necessary (there are potentials that do not exist)
             print('\nTO JAVA\n')
@@ -257,7 +263,7 @@ class Runner(Exceptionable, Configurable):
 
         core_name = 'ModelWrapper'
 
-        if sys.platform.startswith('darwin') or sys.platform.startswith('linux'):  # macOS and linux
+        if sys.platform.startswith('darwin'):  # macOS
 
             subprocess.Popen(['{}/bin/comsol'.format(comsol_path), 'server'], close_fds=True)
             os.chdir('src')
@@ -274,10 +280,27 @@ class Runner(Exceptionable, Configurable):
                                                                                               run_path))
             os.chdir('..')
 
+        elif sys.platform.startswith('linux'):  # linux
+
+            subprocess.Popen(['{}/bin/comsol'.format(comsol_path), 'server'], close_fds=True)
+            os.chdir('src')
+            os.system(
+                '{}/javac -classpath ../lib/json-20190722.jar:{}/plugins/* model/*.java -d ../bin'.format(jdk_path,
+                                                                                                          comsol_path))
+            # https://stackoverflow.com/questions/219585/including-all-the-jars-in-a-directory-within-the-java-classpath
+            os.system('{}/java/glnxa64/jre/bin/java '
+                      '-cp .:$(echo {}/plugins/*.jar | '
+                      'tr \' \' \':\'):../lib/json-20190722.jar:../bin model.{} {} {}'.format(comsol_path,
+                                                                                              comsol_path,
+                                                                                              core_name,
+                                                                                              project_path,
+                                                                                              run_path))
+            os.chdir('..')
+
         else:  # assume to be 'win64'
             subprocess.Popen(['{}\\bin\\win64\\comsolmphserver.exe'.format(comsol_path)], close_fds=True)
             os.chdir('src')
-
+            # TODO:
             os.system('""{}\\javac" '
                       '-cp "..\\lib\\json-20190722.jar";"{}\\plugins\\*" '
                       'model\\*.java -d ..\\bin"'.format(jdk_path,

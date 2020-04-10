@@ -1206,6 +1206,11 @@ public class ModelWrapper {
                     double length = ((JSONObject) ((JSONObject) modelData.get("medium")).get("bounds")).getDouble("length");
                     mediumParams.set("z_nerve", length + " " + bounds_unit);
 
+                    // Additional length to medium (for SL)
+
+                    double z_add = ((JSONObject) ((JSONObject) modelData.get("medium")).get("bounds")).getDouble("additional_length");
+                    mediumParams.set("z_medium_add", z_add + " " + bounds_unit);
+
                     // Radius of the FEM - will want to converge thresholds for this
                     double radius = ((JSONObject) ((JSONObject) modelData.get("medium")).get("bounds")).getDouble("radius");
                     mediumParams.set("r_medium", radius + " " + bounds_unit);
@@ -1283,7 +1288,7 @@ public class ModelWrapper {
                     meshNerve.label(meshNerveLabel);
 
                     String meshNerveSizeInfoLabel = "Mesh Nerve Size Info";
-                    MeshFeature meshNerveSizeInfo = meshNerve.create(mw.im.next("size", meshNerveSizeInfoLabel), "Size");
+                    MeshFeature meshNerveSizeInfo = meshNerve.create(mw.im.next("sit ize", meshNerveSizeInfoLabel), "Size");
                     meshNerveSizeInfo.label(meshNerveSizeInfoLabel);
 
                     meshNerveSizeInfo.set("custom", true);
@@ -1324,6 +1329,9 @@ public class ModelWrapper {
                     meshRestSizeInfo.set("hnarrowactive", true);
                     meshRestSizeInfo.set("hnarrow", restMeshParams.getDouble("hnarrow"));
 
+                    System.out.println("restMeshParams.getDouble(\"hmin\") = " + restMeshParams.getDouble("hmin"));
+
+                    
                     // Saved model pre-mesh for debugging
                     try {
                         System.out.println("Saving MPH (pre-mesh) file to: " + geomFile);
@@ -1332,6 +1340,8 @@ public class ModelWrapper {
                         e.printStackTrace();
                     }
 
+                    System.exit(0);
+
                     System.out.println("Meshing nerve parts... will take a while");
 
                     long nerveMeshStartTime = System.nanoTime();
@@ -1339,19 +1349,50 @@ public class ModelWrapper {
                     long estimatedNerveMeshTime = System.nanoTime() - nerveMeshStartTime;
                     nerveMeshParams.put("mesh_time",estimatedNerveMeshTime/Math.pow(10,6)); // convert nanos to millis
 
+                    System.out.println("Saving MPH (nerve-mesh) file to: " + geomFile);
+                    model.save(geomFile);
+
+
                     System.out.println("Meshing the rest... will also take a while");
 
+                    System.out.println("1");
+
                     long restMeshStartTime = System.nanoTime();
+
+                    System.out.println("2");
+
+                    System.out.println("meshRestLabel = " + meshRestLabel);
+
+                    System.out.println("mw.im.get(meshRestLabel) = " + mw.im.get(meshRestLabel));
+
                     model.component("comp1").mesh("mesh1").run(mw.im.get(meshRestLabel));
+
+                    System.out.println("3");
+
                     long estimatedRestMeshTime = System.nanoTime() - restMeshStartTime;
+
+                    System.out.println("4");
+
                     restMeshParams.put("mesh_time",estimatedRestMeshTime/Math.pow(10,6)); // convert nanos to millis
 
+                    System.out.println("5");
 
                     // put nerve to mesh, rest to mesh, mesh to modelData
                     JSONObject mesh = modelData.getJSONObject("mesh");
+
+                    System.out.println("6");
+
                     mesh.put("nerve", nerveMeshParams);
+
+                    System.out.println("7");
+
                     mesh.put("rest", restMeshParams);
+
+                    System.out.println("8");
+
                     modelData.put("mesh", mesh);
+
+                    System.out.println("Saving mesh statistics.");
 
                     // MESH STATISTICS
                     String quality_measure = modelData.getJSONObject("mesh")

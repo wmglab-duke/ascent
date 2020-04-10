@@ -102,7 +102,7 @@ description is accompanied by an example of what that image may look like (at lo
     - type: Though `.tif` is indicated above filename, this is arbitrary for now.
     - <a href="https://gitlab.oit.duke.edu/edm23/sparcpy/raw/master/examples/images/masks/raw.jpg" target="_blank">example</a>
 2. Compiled fascicles binary mask
-    - form: `[SAMPLE]_[CASSETTE]_[NUMBER]_f.tif`
+    - form: `[SAMPLE]_[CASSETTE]_[NUMBER]_c.tif`
     - type: Only `.tif` allowed for now.
     - <a href="https://gitlab.oit.duke.edu/edm23/sparcpy/raw/master/examples/images/masks/fascicle_normal.jpg" target="_blank">one-to-one</a> or containing <a href="https://gitlab.oit.duke.edu/edm23/sparcpy/raw/master/examples/images/masks/fascicle_peanut.jpg" target="_blank">peanut fascicles</a>
 3. Individual fascicles binary masks

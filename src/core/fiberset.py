@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from shapely.affinity import scale
 from shapely.geometry import LineString, Point
+import scipy.optimize as opt
 
 from src.utils import *
 from .sample import Sample
@@ -42,9 +43,59 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         """
         :return:
         """
-        fibers_xy = self._generate_xy()
-        self.out_to_fib, self.out_to_in = self._generate_maps(fibers_xy)
-        self.fibers = self._generate_z(fibers_xy)
+
+        if not self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode') == 'SL_PSEUDO_INTERP':
+            fibers_xy = self._generate_xy()
+            self.out_to_fib, self.out_to_in = self._generate_maps(fibers_xy)
+            self.fibers = self._generate_z(fibers_xy)
+
+        else:
+            # SL generation algorithm
+
+            z_nerve = self.search(Config.MODEL, 'medium', 'bounds', 'length')
+            z_medium = z_nerve + self.search(Config.MODEL, 'medium', 'bounds', 'additional_length')
+            z_offset = 8000 - 2148.2 + z_nerve  # this is semi-arbitrary --> used from last model
+            r_medium = self.search(Config.MODEL, 'medium', 'bounds', 'radius')
+            buffer = 50
+
+            def fit_z(t):
+                return (10**5 / t) + z_offset
+
+            def fit_3d(t, theta, function):
+                return t * np.cos(theta), t * np.sin(theta), function(t)
+
+            def magnitude(vec):
+                return np.sqrt(sum(item**2 for item in vec))
+
+            t_min = max(opt.fmin(lambda t: -(fit_z(t) - (z_medium - buffer)), 50), 20)
+            t_max = r_medium - buffer
+            t_step = 10
+            t = np.arange(t_min, t_max, t_step)
+
+            x, y, z = fit_3d(t, 0, fit_z)
+            points = list(zip(x, y, z))
+            fiber_length = sum(magnitude(np.asarray(points[i])-np.asarray(points[i+1])) for i in range(len(points)-1))
+
+            fibers_xy = np.asarray([(0, 0)])
+            fibers = self._generate_z(fibers_xy, override_length=fiber_length)
+
+            fiber_z_points = np.asarray(fibers[0])[:, 2]
+            fiber_z_points = fiber_z_points - np.min(fiber_z_points)
+            ratios = fiber_z_points / np.max(fiber_z_points)
+
+            self.fibers = [interparc(ratios, x, y, z)]
+
+            from mpl_toolkits.mplot3d import Axes3D
+            fig: plt.Figure = plt.figure()
+            ax: Axes3D = fig.add_subplot(111, projection='3d')
+
+            # ax.scatter(x, y, z, c='r', marker='o')
+            ax.scatter(self.fibers[0][:, 0], self.fibers[0][:, 1], self.fibers[0][:, 2], c='b', marker='o')
+            # plt.show()
+
+            print('buffer line')
+
+
         return self
 
     def write(self, mode: WriteMode, path: str):
@@ -88,7 +139,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
         xy_parameters: dict = self.search(Config.SIM, 'fibers', 'xy_parameters')
 
-        my_xy_seed: int = xy_parameters['seed']
+        my_xy_seed: int = xy_parameters.get('seed', 0)
 
         # initialize result lists
         points: List[Tuple[float]] = []
@@ -219,7 +270,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
         return points
 
-    def _generate_z(self, fibers_xy: np.ndarray) -> np.ndarray:
+    def _generate_z(self, fibers_xy: np.ndarray, override_length=None) -> np.ndarray:
 
         fibers = []
 
@@ -273,7 +324,9 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             # get the correct fiber lengths
             model_length = self.search(Config.MODEL, 'medium', 'bounds', 'length')
             fiber_length = (self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'max')
-                            - self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'min'))
+                            - self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'min')) \
+                if override_length is None else override_length
+
             half_fiber_length = fiber_length / 2
             z_shift_to_center = (model_length - fiber_length) / 2.0
 

@@ -11,24 +11,18 @@
   },
   "fibers": {
     "plot": false,
-    "mode": "TIGERHOLM",
+    "mode": "MRG_DISCRETE",
     "units": "micrometer",
     "xy_trace_buffer": 5.0,
     "z_parameters": {
-      "diameter": 0.8,
+      "diameter": [1, 2, 5.7, 7.3, 8.7, 10],
       "min": 0,
       "max": 12500,
       "offset": 0,
       "seed": 123
     },
     "xy_parameters": {
-      "mode": "UNIFORM_DENSITY",
-      "top_down": true,
-      "minimum_number": 1,
-      "maximum_number": 100,
-      "target_density": 0.002,
-      "target_number": 50,
-      "seed": 123
+      "mode": "CENTROID"
     }
   },
   "waveform": {
@@ -42,7 +36,9 @@
       "initSS": -200,
       "dt_initSS": 10
     },
-    "BIPHASIC_FULL_DUTY": {
+    "BIPHASIC_PULSE_TRAIN": {
+      "pulse_width": 0.2,
+      "inter_phase": 0,
       "digits": 1
     }
   },

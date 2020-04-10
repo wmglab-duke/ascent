@@ -101,6 +101,18 @@ class Sample(Exceptionable, Configurable, Saveable):
         # get sample NAME
         sample: str = self.search(Config.SAMPLE, 'sample')
 
+        # ADDITION: if only one slide present, check if names abide by <NAME>_0_0_<CODE>.tif format
+        #           if not abiding, add rename files so that they abide
+        if len(self.map.slides) == 1:
+            print('Renaming input files to conform with map input interface where necessary.')
+            source_dir = os.path.join(*self.map.slides[0].data()[3])
+            source_files = os.listdir(source_dir)
+            for mask_fname in [f.value for f in MaskFileNames if f.value in source_files]:
+                shutil.move(
+                    os.path.join(source_dir, mask_fname),
+                    os.path.join(source_dir, '{}_0_0_{}'.format(sample, mask_fname))
+                )
+
         # loop through each slide
         for slide_info in self.map.slides:
             # unpack data and force cast to string
@@ -174,7 +186,8 @@ class Sample(Exceptionable, Configurable, Saveable):
             os.chdir(os.path.join('samples', str(sample), 'slides', cassette, number, 'masks'))
 
             if not exists(MaskFileNames.RAW):
-                self.throw(18)
+                print('No raw tif found, but continuing. (Sample.populate)')
+                # self.throw(18)
 
             # init fascicles list
             fascicles: List[Fascicle] = []
@@ -265,9 +278,16 @@ class Sample(Exceptionable, Configurable, Saveable):
                 morph_count = 36
                 # title = 'morph count: {}'.format(morph_count)
                 dist = self.search(Config.SAMPLE, "min_fascicle_separation", "dist")
+                nerve_add = None
+
+                if 'nerve_addition' in self.search(Config.SAMPLE, 'min_fascicle_separation').keys():
+                    nerve_add = self.search(Config.SAMPLE, 'min_fascicle_separation', 'nerve_addition')
+
+                print('\t\tensuring minimum fascicle separation of {} um'.format(dist))
+
                 deformable = Deformable.from_slide(slide,
                                                    ReshapeNerveMode.CIRCLE,
-                                                   minimum_distance=dist)
+                                                   minimum_distance=dist if nerve_add is None else dist + nerve_add)
 
                 movements, rotations = deformable.deform(morph_count=morph_count,
                                                          render=deform_animate,

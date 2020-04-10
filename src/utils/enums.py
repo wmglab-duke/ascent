@@ -8,7 +8,7 @@ import os
 class SetupMode(Enum):
     NEW = 0
     OLD = 1
-
+    SYNTHETIC = 2  # used for creating a "fake" map.json
 
 @unique
 class Config(Enum):

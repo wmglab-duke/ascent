@@ -132,6 +132,8 @@ dmypy.json
 # don't include data b/c this may get pretty big at some point
 samples/
 submit/
+input/
+*/user/*
 
 #samples
 *r.tif

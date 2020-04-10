@@ -77,7 +77,7 @@ class Part {
 
         if ("Medium_Primitive".equals(pseudonym)) {// set instantiation parameters
             partInstance.setEntry("inputexpr", "radius", "r_medium");
-            partInstance.setEntry("inputexpr", "length", "z_nerve");
+            partInstance.setEntry("inputexpr", "length", "z_nerve+z_medium_add");
 
             // imports
             partInstance.set("selkeepnoncontr", false);
