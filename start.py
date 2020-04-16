@@ -7,6 +7,10 @@ import sys
 from src import Runner
 from src.utils.enums import SetupMode, Config
 
+if not (sys.version_info.major == 3 and sys.version_info.minor >= 7):
+    print('You are running Python {}.{}, but 3.7 or later required'.format(sys.version_info.major,
+                                                                           sys.version_info.minor))
+    exit(1)
 
 if len(sys.argv) == 1:
     print('Too few arguments to start.py (must have at least one run index)')
