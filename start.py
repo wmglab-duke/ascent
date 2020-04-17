@@ -16,6 +16,9 @@ if len(sys.argv) == 1:
     print('Too few arguments to start.py (must have at least one run index)')
     exit(1)
 
+# create bin/ directory for storing compiled Java files if it does not yet exist
+if not (os.path.exists('bin')):
+    os.mkdir('bin')
 
 for argument_index in range(1, len(sys.argv)):
     # START timer
