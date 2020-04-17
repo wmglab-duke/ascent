@@ -18,6 +18,13 @@ import matplotlib.pyplot as plt
 
 import cv2
 
+# START timer
+start = time.time()
+
+if len(sys.argv) != 2:
+    print('INVALID number of arguments to mock_morphology_generator.py')
+    exit(1)
+
 
 # https://gis.stackexchange.com/questions/6412/generate-points-that-lie-inside-polygon
 def get_random_point_in_polygon(poly):
@@ -42,19 +49,16 @@ def gen_ellipse(ell):
     return ell_fasc
 
 
-# START timer
-start = time.time()
-
-if len(sys.argv) != 2:
-    print('INVALID number of arguments to mock_morphology_generator.py')
-    exit(1)
-
+# load mock sample configuration
 mock_file = os.path.join('config', 'user', 'mock_samples', '{}.json'.format(sys.argv[1]))
 with open(mock_file, "r") as handle:
     mockConfig: dict = json.load(handle)
 
+# load global parameters
+global_params: dict = mockConfig.get('global')
+
 # define sample ID
-sample_str = mockConfig.get('global').get('sample_str')
+sample_str = global_params.get('sample_str')
 
 project_path = os.getcwd()
 sample_dir = os.path.join(project_path, 'data', 'input', 'samples', sample_str)
@@ -62,96 +66,146 @@ if not os.path.exists(os.path.join(project_path, sample_dir)):
     os.makedirs(os.path.join(project_path, sample_dir))
 
 # define scalebar length
-scalebar_length = mockConfig.get('global').get('scalebar_length')
+scalebar_length = global_params.get('scalebar_length')
 
 # choose nerve diameter [um]
-d_nerve = mockConfig.get('global').get("d_nerve")
+d_nerve = global_params.get("d_nerve")
 
-# get method for making nerve (either "probabilistic" OR "explicit"
-method = mockConfig.get('global').get("method")
+# get method for making nerve (either "truncnorm" OR "uniform" OR "explicit")
+method = global_params.get("method")
 
 # choose minumum fascicle distance
-min_fascicle_separation = mockConfig.get('global').get('min_fascicle_separation')
+min_fascicle_separation = global_params.get('min_fascicle_separation')
 
 # figure settings
-fig_margin = mockConfig.get('global').get('fig_margin')
-fig_dpi = mockConfig.get('global').get('fig_dpi')
+fig_margin = global_params.get('fig_margin')
+fig_dpi = global_params.get('fig_dpi')
 
-if method == "probabilistic":
-    # choose fascicle area [um^2]: A = pi*(d/2)**2
-    mu_fasc_diam = mockConfig.get('probabilistic').get('mu_fasc_diam')
-    std_fasc_diam = mockConfig.get('probabilistic').get('std_fasc_diam')
-    n_std_diam_limit = mockConfig.get('probabilistic').get('n_std_diam_limit')
 
-    # choose number of fascicles
-    num_fascicle_attempt = mockConfig.get('probabilistic').get('num_fascicle_attempt')
+if method != "explicit":
+    # for each of the following methods, load parameters to define the distribution
+    # (our examples use the SciPy statistics package)
+    # and then create distributions for the fascicle diameters and eccentricities:
+    # - fasc_diam_dist
+    # - fasc_ecc_dist
 
-    # choose fascicle eccentricity (
-    mu_fasc_ecc = mockConfig.get('probabilistic').get('mu_fasc_ecc')
-    std_fasc_ecc = mockConfig.get('probabilistic').get('std_fasc_ecc')
-    n_std_ecc_limit = mockConfig.get('probabilistic').get('n_std_ecc_limit')
+    # TRUNCNORM
+    # truncated normal distribution (normal, but bounded above and below by same number of standard deviations)
+    if method == "truncnorm":
+        truncnorm_params: dict = mockConfig.get('truncnorm')
 
-    # choose maximum number of iterations for program to attempt to place fascicle
-    max_attempt_iter = mockConfig.get('probabilistic').get('max_attempt_iter')
+        # choose fascicle area [um^2]: A = pi*(d/2)**2
+        mu_fasc_diam = truncnorm_params.get('mu_fasc_diam')
+        std_fasc_diam = truncnorm_params.get('std_fasc_diam')
+        n_std_diam_limit = truncnorm_params.get('n_std_diam_limit')
 
-    # get random.seed myseed from config
-    myseed = mockConfig.get('probabilistic').get('seed')
-    random.seed(myseed)
+        # choose fascicle eccentricity (
+        mu_fasc_ecc = truncnorm_params.get('mu_fasc_ecc')
+        std_fasc_ecc = truncnorm_params.get('std_fasc_ecc')
+        n_std_ecc_limit = truncnorm_params.get('n_std_ecc_limit')
 
-    # CALCULATE FASCICLE DIAMS (as if circle, major and minor axes same length)
-    if n_std_diam_limit == 0 and std_fasc_diam != 0:
-        raise Exception('Conflicting input arguments for std_fasc_diam and n_std_diam_limit')
+        # choose number of fascicles
+        num_fascicle_attempt = truncnorm_params.get('num_fascicle_attempt')
 
-    if std_fasc_diam == 0:
-        fasc_diams = np.ones(num_fascicle_attempt) * mu_fasc_diam
-        upper_fasc_diam = mu_fasc_diam
-        lower_fasc_diam = mu_fasc_diam
-    else:
-        lower_fasc_diam, upper_fasc_diam = mu_fasc_diam - n_std_diam_limit * std_fasc_diam, \
-                                           mu_fasc_diam + n_std_diam_limit * std_fasc_diam
-        fasc_diam_dist = stats.truncnorm((lower_fasc_diam - mu_fasc_diam) / std_fasc_diam,
-                                         (upper_fasc_diam - mu_fasc_diam) / std_fasc_diam,
-                                         loc=mu_fasc_diam,
-                                         scale=std_fasc_diam)
+        # choose maximum number of iterations for program to attempt to place fascicle
+        max_attempt_iter = truncnorm_params.get('max_attempt_iter')
 
-        fasc_diams = np.sort(fasc_diam_dist.rvs(num_fascicle_attempt))[::-1].T
+        # get random.seed myseed from config
+        myseed = truncnorm_params.get('seed')
+        random.seed(myseed)
 
-    fasc_areas = np.pi * (fasc_diams / 2) ** 2
+        # CALCULATE FASCICLE DIAMS (as if circle, major and minor axes same length)
+        if n_std_diam_limit == 0 and std_fasc_diam != 0:
+            raise Exception('Conflicting input arguments for std_fasc_diam and n_std_diam_limit')
 
-    # CALCULATE FASCICLE ECCENTRICITY
-    if n_std_ecc_limit == 0 and std_fasc_ecc != 0:
-        raise Exception('Conflicting input arguments for std_fasc_ecc and n_std_ecc_limit')
+        if std_fasc_diam == 0:
+            fasc_diams = np.ones(num_fascicle_attempt) * mu_fasc_diam
+            upper_fasc_diam = mu_fasc_diam
+            lower_fasc_diam = mu_fasc_diam
+        else:
+            lower_fasc_diam, upper_fasc_diam = mu_fasc_diam - n_std_diam_limit * std_fasc_diam, \
+                                               mu_fasc_diam + n_std_diam_limit * std_fasc_diam
 
-    if mu_fasc_ecc >= 1:
-        raise Exception('Mean eccentricity value exceeds 1. Eccentricity only defined in range [0,1).')
+            if lower_fasc_diam < 0:
+                raise Exception('lower_fasc_diam must be defined as >= 0')
 
-    if std_fasc_ecc == 0:
-        fasc_eccs = np.ones(num_fascicle_attempt) * mu_fasc_ecc
-        upper_fasc_ecc = mu_fasc_ecc
-        lower_fasc_ecc = mu_fasc_ecc
-    else:
-        lower_fasc_ecc, upper_fasc_ecc = mu_fasc_ecc - n_std_ecc_limit * std_fasc_ecc, \
-                                         mu_fasc_ecc + n_std_ecc_limit * std_fasc_ecc
-        if upper_fasc_ecc >= 1:
-            upper_fasc_ecc = 0.99
-            upper_fasc_ecc_warning = "Eccentricity only defined in range (0,1], " \
-                                     "overwrote upper_fasc_ecc, now = {}".format(upper_fasc_ecc)
-            warnings.warn(upper_fasc_ecc_warning)
+            fasc_diam_dist = stats.truncnorm((lower_fasc_diam - mu_fasc_diam) / std_fasc_diam,
+                                             (upper_fasc_diam - mu_fasc_diam) / std_fasc_diam,
+                                             loc=mu_fasc_diam,
+                                             scale=std_fasc_diam)
+
+        # CALCULATE FASCICLE ECCENTRICITY
+        if n_std_ecc_limit == 0 and std_fasc_ecc != 0:
+            raise Exception('Conflicting input arguments for std_fasc_ecc and n_std_ecc_limit')
+
+        if mu_fasc_ecc >= 1:
+            raise Exception('Mean eccentricity value exceeds 1. Eccentricity only defined in range [0,1).')
+
+        if std_fasc_ecc == 0:
+            fasc_eccs = np.ones(num_fascicle_attempt) * mu_fasc_ecc
+            upper_fasc_ecc = mu_fasc_ecc
+            lower_fasc_ecc = mu_fasc_ecc
+        else:
+            lower_fasc_ecc, upper_fasc_ecc = mu_fasc_ecc - n_std_ecc_limit * std_fasc_ecc, \
+                                             mu_fasc_ecc + n_std_ecc_limit * std_fasc_ecc
+            if upper_fasc_ecc >= 1:
+                upper_fasc_ecc = 0.99
+                upper_fasc_ecc_warning = "Eccentricity only defined in range (0,1], " \
+                                         "overwrote upper_fasc_ecc, now = {}".format(upper_fasc_ecc)
+                warnings.warn(upper_fasc_ecc_warning)
+
+            if lower_fasc_ecc < 0:
+                lower_fasc_ecc = 0
+                lower_fasc_ecc_warning = "Eccentricity only defined in range (0,1], " \
+                                         "overwrote lower_fasc_ecc, now = {}".format(lower_fasc_ecc)
+                warnings.warn(lower_fasc_ecc_warning)
+
+            fasc_ecc_dist = stats.truncnorm((lower_fasc_ecc - mu_fasc_ecc) / std_fasc_ecc,
+                                            (upper_fasc_ecc - mu_fasc_ecc) / std_fasc_ecc,
+                                            loc=mu_fasc_ecc,
+                                            scale=std_fasc_ecc)
+
+    # UNIFORM
+    # random distribution (uniform probability across range) between upper and lower bound
+    elif method == "uniform":
+        uniform_params: dict = mockConfig.get('uniform')
+
+        # choose fascicle area [um^2]: A = pi*(d/2)**2
+        lower_fasc_diam = uniform_params.get('lower_fasc_diam')
+        upper_fasc_diam = uniform_params.get('upper_fasc_diam')
+
+        # check that both lower_diam and upper_diam are positive, and upper_diam > lower_diam
+        if lower_fasc_diam < 0:
+            raise Exception('lower_fasc_diam bound must be positive length')
+        if lower_fasc_diam > upper_fasc_diam:
+            raise Exception('upper_fasc_diam bound must be >= lower_fasc_diam bound')
+
+        lower_fasc_ecc = uniform_params.get('lower_fasc_ecc')
+        upper_fasc_ecc = uniform_params.get('upper_fasc_ecc')
 
         if lower_fasc_ecc < 0:
-            lower_fasc_ecc = 0
-            lower_fasc_ecc_warning = "Eccentricity only defined in range (0,1], " \
-                                     "overwrote lower_fasc_ecc, now = {}".format(lower_fasc_ecc)
-            warnings.warn(lower_fasc_ecc_warning)
+            raise Exception('Ellipse eccentricity lower_fasc_ecc must be >= 0')
+        if upper_fasc_ecc >= 1:
+            raise Exception('Ellipse eccentricity upper_fasc_ecc must be < 1')
 
-        fascEccDist = stats.truncnorm((lower_fasc_ecc - mu_fasc_ecc) / std_fasc_ecc,
-                                      (upper_fasc_ecc - mu_fasc_ecc) / std_fasc_ecc,
-                                      loc=mu_fasc_ecc,
-                                      scale=std_fasc_ecc)
-        fasc_eccs = fascEccDist.rvs(num_fascicle_attempt)
+        # choose number of fascicles
+        num_fascicle_attempt = uniform_params.get('num_fascicle_attempt')
 
-    if True in [fasc_ecc >= 1 for fasc_ecc in fasc_eccs]:
-        raise Exception('A resulting eccentricity value exceeds 1. Eccentricity only defined in range [0,1).')
+        # choose maximum number of iterations for program to attempt to place fascicle
+        max_attempt_iter = uniform_params.get('max_attempt_iter')
+
+        # get random.seed myseed from config
+        myseed = uniform_params.get('seed')
+        random.seed(myseed)
+
+        fasc_diam_dist = stats.uniform(lower_fasc_diam, upper_fasc_diam - lower_fasc_diam)
+        fasc_ecc_dist = stats.uniform(lower_fasc_ecc, upper_fasc_ecc - lower_fasc_ecc)
+
+    # BASED ON CHOSEN DISTRIBUTION, MAKE FASCICLE DIMENSIONS AND ORIENTATIONS
+    fasc_diams = np.sort(fasc_diam_dist.rvs(num_fascicle_attempt))[::-1].T
+    fasc_areas = np.pi * (fasc_diams / 2) ** 2
+
+    fasc_eccs = fasc_ecc_dist.rvs(num_fascicle_attempt)
 
     # CALCULATE FASCICLE ROTATIONS
     fasc_rots = [360 * random.random() for _ in range(num_fascicle_attempt)]
