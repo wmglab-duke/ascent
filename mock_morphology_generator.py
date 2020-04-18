@@ -2,6 +2,8 @@
 
 import json
 import os
+from typing import Tuple
+
 import numpy as np
 import sys
 import time
@@ -49,6 +51,37 @@ def gen_ellipse(ell):
     return ell_obj
 
 
+def binary_mask_canvas(margin: float, size: float):
+    plt.style.use('dark_background')
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.set_aspect('equal')
+    plt.axis('off')
+    ax.set_xlim(margin * -size / 2, margin * size / 2)
+    ax.set_ylim(margin * -size / 2, margin * size / 2)
+    return fig
+
+
+def add_ellipse_binary_mask(fig: plt.figure(), ell: Tuple[shapely.geometry.Point, Tuple[float, float], float]):
+    ell_x, ell_y = ell.exterior.xy
+    fig.axes[0].fill(ell_x, ell_y, 'w')
+    return fig
+
+
+def add_scalebar_binary_mask(fig: plt.figure(), slength: int):
+    fig.axes[0].plot([-slength/2, slength/2], [0, 0], '-w')
+    return fig
+
+
+def write_binary_mask(fig: plt.figure(), dest: str, dpi: int):
+    png = BytesIO()
+    fig.savefig(png, dpi=dpi, format='png')
+    png.seek(0)
+    img = create_opencv_image_from_stringio(png)
+    _, bw_img = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
+    cv2.imwrite(dest, bw_img)
+
+
 # load mock sample configuration
 mock_file = os.path.join('config', 'user', 'mock_samples', '{}.json'.format(sys.argv[1]))
 with open(mock_file, "r") as handle:
@@ -72,6 +105,7 @@ scalebar_length = global_params.get('scalebar_length')
 a_nerve = global_params.get("a_nerve")
 b_nerve = global_params.get("b_nerve")
 rot_nerve = global_params.get("rot_nerve")
+max_diam = 2*max(a_nerve, b_nerve)
 
 # get method for making nerve (either "truncnorm" OR "uniform" OR "explicit")
 method = global_params.get("method")
@@ -321,59 +355,25 @@ elif method == "explicit":
                         'or are outside the nerve.')
 
 # MAKE BINARY IMAGES FOR INPUT TO PIPELINE
-# set figure background to black (contents white by default in image segmentation code)
-plt.style.use('dark_background')
-
 # NERVE BINARY IMAGE
-max_diam = 2*max(a_nerve, b_nerve)
-nerveFig = plt.figure(1)
-nerveAxis = nerveFig.add_subplot(111)
-x, y = nerve.exterior.xy
-nerveAxis.fill(x, y, 'w')
-nerveAxis.set_aspect('equal')
-plt.axis('off')
-nerveAxis.set_xlim(fig_margin * -max_diam / 2, fig_margin * max_diam / 2)
-nerveAxis.set_ylim(fig_margin * -max_diam / 2, fig_margin * max_diam / 2)
-pngNerve = BytesIO()
-nerveFig.savefig(pngNerve, dpi=fig_dpi, format='png')
-pngNerve.seek(0)
-imgNerve = create_opencv_image_from_stringio(pngNerve)
-_, bw_img_nerve = cv2.threshold(imgNerve, 127, 255, cv2.THRESH_BINARY)
-cv2.imwrite(os.path.join(project_path, sample_dir, '{}_0_0_n.tif'.format(sample_str)), bw_img_nerve)
+dest_n = os.path.join(project_path, sample_dir, '{}_0_0_n.tif'.format(sample_str))
+figure_n = binary_mask_canvas(fig_margin, max_diam)
+figure_n = add_ellipse_binary_mask(figure_n, nerve)
+write_binary_mask(figure_n, dest_n, fig_dpi)
 
-# FASCICLES BINARY IMAGE
-fasciclesFig = plt.figure(2)
-fasciclesAxis = fasciclesFig.add_subplot(111)
+# FASCICLES (inners) BINARY IMAGE
+dest_i = os.path.join(project_path, sample_dir, '{}_0_0_i.tif'.format(sample_str))
+figure_i = binary_mask_canvas(fig_margin, max_diam)
 for fascicle in fascicles:
     if fascicle is not None and fascicle.exterior is not None:
-        x, y = fascicle.exterior.xy
-        fasciclesAxis.fill(x, y, 'w')
-
-fasciclesAxis.set_aspect('equal')
-plt.axis('off')
-fasciclesAxis.set_xlim(fig_margin * -max_diam / 2, fig_margin * max_diam / 2)
-fasciclesAxis.set_ylim(fig_margin * -max_diam / 2, fig_margin * max_diam / 2)
-pngFascicles = BytesIO()
-fasciclesFig.savefig(pngFascicles, dpi=fig_dpi, format='png')
-pngFascicles.seek(0)
-imgFascicles = create_opencv_image_from_stringio(pngFascicles)
-ret, bw_img_fascicles = cv2.threshold(imgFascicles, 127, 255, cv2.THRESH_BINARY)
-cv2.imwrite(os.path.join(project_path, sample_dir, '{}_0_0_i.tif'.format(sample_str)), bw_img_fascicles)
+        figure_i = add_ellipse_binary_mask(figure_i, fascicle)
+write_binary_mask(figure_i, dest_i, fig_dpi)
 
 # SCALEBAR BINARY IMAGE
-scalebarFig = plt.figure(3)
-scalebarAxis = scalebarFig.add_subplot(111)
-plt.plot([0, scalebar_length], [0, 0], '-w')
-scalebarAxis.set_aspect('equal')
-plt.axis('off')
-scalebarAxis.set_xlim(fig_margin * -max_diam / 2, fig_margin * max_diam / 2)
-scalebarAxis.set_ylim(fig_margin * -max_diam / 2, fig_margin * max_diam / 2)
-pngScaleBar = BytesIO()
-scalebarFig.savefig(pngScaleBar, dpi=fig_dpi, format='png')
-pngScaleBar.seek(0)
-imgScaleBar = create_opencv_image_from_stringio(pngScaleBar)
-_, bw_img_scalebar = cv2.threshold(imgScaleBar, 127, 255, cv2.THRESH_BINARY)
-cv2.imwrite(os.path.join(project_path, sample_dir, '{}_0_0_s.tif'.format(sample_str)), bw_img_scalebar)
+dest_s = os.path.join(project_path, sample_dir, '{}_0_0_s.tif'.format(sample_str))
+figure_s = binary_mask_canvas(fig_margin, max_diam)
+figure_s = add_scalebar_binary_mask(figure_s, scalebar_length)
+write_binary_mask(figure_s, dest_s, fig_dpi)
 
 # END timer
 end = time.time()
