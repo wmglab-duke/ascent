@@ -2,7 +2,7 @@
 
 import json
 import os
-import random
+import numpy as np
 import sys
 import time
 import warnings
@@ -30,7 +30,7 @@ if len(sys.argv) != 2:
 def get_random_point_in_polygon(poly):
     minx, miny, maxx, maxy = poly.bounds
     while True:
-        p = Point(random.uniform(minx, maxx), random.uniform(miny, maxy))
+        p = Point(np.random.uniform(minx, maxx), np.random.uniform(miny, maxy))
         if poly.contains(p):
             return p
 
@@ -124,7 +124,7 @@ if method != "explicit":
 
         # get random.seed myseed from config
         myseed = truncnorm_params.get('seed')
-        random.seed(myseed)
+        np.random.seed(myseed)
 
         # CALCULATE FASCICLE DIAMS (as if circle, major and minor axes same length)
         if n_std_diam_limit == 0 and std_fasc_diam != 0:
@@ -208,7 +208,7 @@ if method != "explicit":
 
         # get random.seed myseed from config
         myseed = uniform_params.get('seed')
-        random.seed(myseed)
+        np.random.seed(myseed)
 
         fasc_diam_dist = stats.uniform(lower_fasc_diam, upper_fasc_diam - lower_fasc_diam)
         fasc_ecc_dist = stats.uniform(lower_fasc_ecc, upper_fasc_ecc - lower_fasc_ecc)
@@ -220,18 +220,14 @@ if method != "explicit":
     fasc_eccs = fasc_ecc_dist.rvs(num_fascicle_attempt)
 
     # CALCULATE FASCICLE ROTATIONS
-    fasc_rots = [360 * random.random() for _ in range(num_fascicle_attempt)]
+    fasc_rots = [360 * np.random.random() for _ in range(num_fascicle_attempt)]
 
     # CALCULATE FASCICLE MAJOR AND MINOR AXES
     a_axes = [((area ** 2) / ((np.pi ** 2) * (1 - (ecc ** 2)))) ** (1 / 4) for area, ecc in zip(fasc_areas, fasc_eccs)]
     b_axes = [area / (np.pi * a_axis) for area, a_axis in zip(fasc_areas, a_axes)]
 
-    fascicles = []
     n_itr = []
     skipped_fascicles_index = []
-
-    # DEFINE NERVE
-    nerve = shapely.geometry.Point(0, 0).buffer(d_nerve / 2)
 
     # DEFINE/PLACE FASCICLES
     for i in range(num_fascicle_attempt):
