@@ -43,10 +43,10 @@ def create_opencv_image_from_stringio(img_stream, cv2_img_flag=0):
 
 
 def gen_ellipse(ell):
-    ell_fasc = shapely.geometry.Point(p).buffer(1)
-    ell_fasc = shapely.affinity.scale(ell_fasc, ell[1][0], ell[1][1], 0, ell[0])
-    ell_fasc = shapely.affinity.rotate(ell_fasc, ell[2], origin='center', use_radians=False)
-    return ell_fasc
+    ell_obj = shapely.geometry.Point(p).buffer(1)
+    ell_obj = shapely.affinity.scale(ell_obj, ell[1][0], ell[1][1], 0, ell[0])
+    ell_obj = shapely.affinity.rotate(ell_obj, ell[2], origin='center', use_radians=False)
+    return ell_obj
 
 
 # load mock sample configuration
@@ -69,7 +69,9 @@ if not os.path.exists(os.path.join(project_path, sample_dir)):
 scalebar_length = global_params.get('scalebar_length')
 
 # choose nerve diameter [um]
-d_nerve = global_params.get("d_nerve")
+a_nerve = global_params.get("a_nerve")
+b_nerve = global_params.get("b_nerve")
+rot_nerve = global_params.get("rot_nerve")
 
 # get method for making nerve (either "truncnorm" OR "uniform" OR "explicit")
 method = global_params.get("method")
@@ -81,7 +83,17 @@ min_fascicle_separation = global_params.get('min_fascicle_separation')
 fig_margin = global_params.get('fig_margin')
 fig_dpi = global_params.get('fig_dpi')
 
+# DEFINE NERVE
+# 1st elem = center point (x,y) coordinates
+# 2nd elem = the two semi-axis values (along x, along y)
+# 3rd elem = angle in degrees between x-axis of the Cartesian base
+#            and the corresponding semi-axis
+p = Point(0.0, 0.0)
+ellipse = (p, (a_nerve, b_nerve), rot_nerve)
+nerve = gen_ellipse(ellipse)
 
+fascicles = []
+# POPULATE NERVE
 if method != "explicit":
     # for each of the following methods, load parameters to define the distribution
     # (our examples use the SciPy statistics package)
@@ -270,10 +282,6 @@ if method != "explicit":
     # plt.show
 
 elif method == "explicit":
-    # DEFINE NERVE
-    nerve = shapely.geometry.Point(0, 0).buffer(d_nerve / 2)
-
-    fascicles = []
     fascs_explicit = mockConfig.get('explicit').get('Fascicles')
 
     fasc_centroid_xs = [0] * len(fascs_explicit)
