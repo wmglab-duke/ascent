@@ -101,6 +101,7 @@ class MockSample(Exceptionable, Configurable):
 
         ellipse = (p, (a_nerve, b_nerve), rot_nerve)
         self.nerve = self.gen_ellipse(ellipse)
+        return self
 
     def make_fascicles(self):
         """
@@ -330,7 +331,7 @@ class MockSample(Exceptionable, Configurable):
                 print('User requested {} fascicles, but program could only place {}'.format(num_fascicle_attempt,
                                                                                             len(self.fascicles)))
 
-            # mockConfig['num_fascicle_placed'] = len(self.fascicles) TODO
+                # mockConfig['num_fascicle_placed'] = len(self.fascicles) TODO
 
             # with open(os.path.join(project_path, sample_dir, 'mock.json'), "w") as handle:
             #     handle.write(json.dumps(mockConfig, indent=2))
@@ -340,6 +341,8 @@ class MockSample(Exceptionable, Configurable):
             # ax[0].hist(X.rvs(10000), density=True)
             # ax[1].hist(N.rvs(10000), density=True)
             # plt.show
+
+        return self
 
     def make_masks(self):
         a_nerve = self.search(Config.MOCK_SAMPLE, 'nerve', 'a_nerve')
@@ -374,3 +377,5 @@ class MockSample(Exceptionable, Configurable):
         scalebar_length: int = self.search(Config.MOCK_SAMPLE, 'scale_bar', 'scalebar_length')
         figure_s = self.add_scalebar_binary_mask(figure_s, scalebar_length)
         self.write_binary_mask(figure_s, dest_s, fig_dpi)
+
+        return self

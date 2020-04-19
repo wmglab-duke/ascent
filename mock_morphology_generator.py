@@ -23,10 +23,10 @@ with open(exceptions_file, "r") as handle:
 # load mock sample configuration
 mock_config = os.path.join('config', 'user', 'mock_samples', '{}.json'.format(sys.argv[1]))
 mock_sample = MockSample(exceptions_config)
-mock_sample.add(SetupMode.NEW, Config.MOCK_SAMPLE, mock_config)
-mock_sample.make_nerve()
-mock_sample.make_fascicles()
-mock_sample.make_masks()
+mock_sample.add(SetupMode.NEW, Config.MOCK_SAMPLE, mock_config)\
+    .make_nerve()\
+    .make_fascicles()\
+    .make_masks()
 
 # END timer
 end = time.time()
