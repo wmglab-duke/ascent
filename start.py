@@ -46,28 +46,14 @@ for argument_index in range(1, len(sys.argv)):
     if not os.path.exists(env_path):
         print('INVALID env configuration path: {}'.format(env_path))
 
-    # get main configuration file
-    # master_config_file_path = os.path.join('.config', 'master.json')
-    # master_config_file_path = os.path.join('.config', 'master.json')
-
     # initialize Runner (loads in parameters)
     runner = Runner(int(argument))
     runner.add(SetupMode.NEW, Config.RUN, run_path)
     runner.add(SetupMode.NEW, Config.ENV, env_path)
-    runner.run()
-
-    # runner = Runner(master_config_file_path)
 
     # ready, set, GO!
 
-    # runner.run()
-    # runner.trace_test()
-    # runner.fascicle_test()
-    # runner.reposition_test()
-    # runner.reposition_test2()
-    # runner.manager_test()
-    # runner.smart_run()
-    # runner.load_up_manager()
+    runner.run()
 
     # END timer
     end = time.time()

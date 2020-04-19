@@ -278,5 +278,50 @@
     "code": 55,
     "text": "Building path not supported for given mode (see above)",
     "source": "src.core.Query.build_path"
+  },
+  {
+    "code": 56,
+    "text": "Conflicting input arguments for std_fasc_diam and n_std_diam_limit for TRUNCNORM method",
+    "source": "src.core.mock_sample"
+  },
+  {
+    "code": 57,
+    "text": "lower_fasc_diam must be defined as >= 0 for TRUNCNORM method",
+    "source": "src.core.mock_sample"
+  },
+  {
+    "code": 58,
+    "text": "Conflicting input arguments for std_fasc_ecc and n_std_ecc_limit for TRUNCNORM method",
+    "source": "src.core.mock_sample"
+  },
+  {
+    "code": 59,
+    "text": "Mean eccentricity value exceeds 1. Eccentricity only defined in range [0,1) for TRUNCNORM method",
+    "source": "src.core.mock_sample"
+  },
+  {
+    "code": 60,
+    "text": "lower_fasc_diam bound must be positive length for UNIFORM method",
+    "source": "src.core.mock_sample"
+  },
+  {
+    "code": 61,
+    "text": "upper_fasc_diam bound must be >= lower_fasc_diam bound for UNIFORM method",
+    "source": "src.core.mock_sample"
+  },
+  {
+    "code": 62,
+    "text": "Ellipse eccentricity lower_fasc_ecc must be >= 0 for UNIFORM method",
+    "source": "src.core.mock_sample"
+  },
+  {
+    "code": 63,
+    "text": "Ellipse eccentricity upper_fasc_ecc must be < 1 for UNIFORM method",
+    "source": "src.core.mock_sample"
+  },
+  {
+    "code": 64,
+    "text": "Explicit fascicle positions are too close to each other, the nerve boundary, or are outside the boundary for EXPLICIT method",
+    "source": "src.core.mock_sample"
   }
 ]
