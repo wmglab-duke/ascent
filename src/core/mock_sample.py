@@ -11,6 +11,7 @@ from shapely.geometry.point import Point
 import shapely.affinity
 import cv2
 import matplotlib.pyplot as plt
+import json
 
 # access
 from src.utils import *
@@ -196,7 +197,7 @@ class MockSample(Exceptionable, Configurable):
 
             np.random.seed(myseed)
 
-            # CALCULATE FASCICLE DIAMS (as if circle, major and minor axes same length)
+            # CALCULATE FASCICLE DIAMS DISTRIBUTION (as if circle, major and minor axes same length)
             if n_std_diam_limit == 0 and std_fasc_diam != 0:
                 self.throw(56)
 
@@ -211,7 +212,7 @@ class MockSample(Exceptionable, Configurable):
                                              loc=mu_fasc_diam,
                                              scale=std_fasc_diam)
 
-            # CALCULATE FASCICLE ECCENTRICITY
+            # CALCULATE FASCICLE ECCENTRICITY DISTRIBUTION
             if n_std_ecc_limit == 0 and std_fasc_ecc != 0:
                 self.throw(58)
 
@@ -273,7 +274,10 @@ class MockSample(Exceptionable, Configurable):
 
             np.random.seed(myseed)
 
+            # CALCULATE FASCICLE DIAMS DISTRIBUTION (as if circle, major and minor axes same length)
             fasc_diam_dist = stats.uniform(lower_fasc_diam, upper_fasc_diam - lower_fasc_diam)
+
+            # CALCULATE FASCICLE ECCENTRICITY DISTRIBUTION
             fasc_ecc_dist = stats.uniform(lower_fasc_ecc, upper_fasc_ecc - lower_fasc_ecc)
 
         if mode != PopulateMode.EXPLICIT:
@@ -331,10 +335,14 @@ class MockSample(Exceptionable, Configurable):
                 print('User requested {} fascicles, but program could only place {}'.format(num_fascicle_attempt,
                                                                                             len(self.fascicles)))
 
-                # mockConfig['num_fascicle_placed'] = len(self.fascicles) TODO
+            self.configs['mock_sample'][mode.value]['num_fascicle_placed'] = len(self.fascicles)
 
-            # with open(os.path.join(project_path, sample_dir, 'mock.json'), "w") as handle:
-            #     handle.write(json.dumps(mockConfig, indent=2))
+            project_path = os.getcwd()
+            sample_str = self.search(Config.MOCK_SAMPLE, 'global', 'sample_str')
+            sample_dir = os.path.join(project_path, 'data', 'input', 'samples', sample_str)
+
+            with open(os.path.join(project_path, sample_dir, 'mock.json'), "w") as handle:
+                handle.write(json.dumps(self.configs['mock_sample'], indent=2))
 
             # N = stats.norm(loc=mu_fasc, scale=std_fasc)
             # fig, ax = plt.subplots(2, sharex=True)
