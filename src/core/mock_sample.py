@@ -32,7 +32,7 @@ class MockSample(Exceptionable, Configurable):
         Configurable.__init__(self)
 
         self.fascicles: List[shapely.geometry.Point] = []
-        self.nerve = None
+        self.nerve = shapely.geometry.Point
 
     # https://gis.stackexchange.com/questions/6412/generate-points-that-lie-inside-polygon
     @staticmethod
