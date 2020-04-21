@@ -2,7 +2,6 @@
   "modes": {
     "rho_perineurium_method": "RHO_WEERASURIYA",
     "fiber_z": "EXTRUSION",
-    "ci_perineurium_thickness": "PIG_INHOUSE",
     "cuff_rotation_mode": "AUTOMATIC"
   },
   "solution": {

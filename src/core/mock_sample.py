@@ -110,19 +110,20 @@ class MockSample(Exceptionable, Configurable):
         :return:
         """
 
-        mode: PopulateMode = self.search_mode(PopulateMode, Config.MOCK_SAMPLE)
-
+        populate_mode_name: str = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value, 'mode')
+        populate_mode: PopulateMode = [mode for mode in PopulateMode
+                                       if str(mode).split('.')[-1] == populate_mode_name][0]
         fasc_diam_dist = None
         fasc_ecc_dist = None
         num_fascicle_attempt: int = 0
         max_attempt_iter: int = 0
         min_fascicle_separation: float = 0
 
-        if mode == PopulateMode.EXPLICIT:
-            fascs_explicit = self.search(Config.MOCK_SAMPLE, PopulateMode.EXPLICIT.value, "Fascicles")
+        if populate_mode == PopulateMode.EXPLICIT:
+            fascs_explicit = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value, "Fascicles")
 
             min_fascicle_separation: float = self.search(Config.MOCK_SAMPLE,
-                                                         PopulateMode.EXPLICIT.value,
+                                                         PopulateMode.parameters.value,
                                                          'min_fascicle_separation')
 
             fasc_centroid_xs = [0] * len(fascs_explicit)
@@ -166,34 +167,34 @@ class MockSample(Exceptionable, Configurable):
             if len(self.fascicles) < len(fascs_explicit):
                 self.throw(64)
 
-        elif mode == PopulateMode.TRUNCNORM:
+        elif populate_mode == PopulateMode.TRUNCNORM:
 
             min_fascicle_separation: float = self.search(Config.MOCK_SAMPLE,
-                                                         PopulateMode.TRUNCNORM.value,
+                                                         PopulateMode.parameters.value,
                                                          'min_fascicle_separation')
 
             # choose fascicle area [um^2]: A = pi*(d/2)**2
-            mu_fasc_diam: float = self.search(Config.MOCK_SAMPLE, PopulateMode.TRUNCNORM.value, 'mu_fasc_diam')
-            std_fasc_diam: float = self.search(Config.MOCK_SAMPLE, PopulateMode.TRUNCNORM.value, 'std_fasc_diam')
-            n_std_diam_limit: float = self.search(Config.MOCK_SAMPLE, PopulateMode.TRUNCNORM.value, 'n_std_diam_limit')
+            mu_fasc_diam: float = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value, 'mu_fasc_diam')
+            std_fasc_diam: float = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value, 'std_fasc_diam')
+            n_std_diam_limit: float = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value, 'n_std_diam_limit')
 
             # choose fascicle eccentricity
-            mu_fasc_ecc: float = self.search(Config.MOCK_SAMPLE, PopulateMode.TRUNCNORM.value, 'mu_fasc_ecc')
-            std_fasc_ecc: float = self.search(Config.MOCK_SAMPLE, PopulateMode.TRUNCNORM.value, 'std_fasc_ecc')
-            n_std_ecc_limit: float = self.search(Config.MOCK_SAMPLE, PopulateMode.TRUNCNORM.value, 'n_std_ecc_limit')
+            mu_fasc_ecc: float = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value, 'mu_fasc_ecc')
+            std_fasc_ecc: float = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value, 'std_fasc_ecc')
+            n_std_ecc_limit: float = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value, 'n_std_ecc_limit')
 
             # choose number of fascicles
             num_fascicle_attempt: int = self.search(Config.MOCK_SAMPLE,
-                                                    PopulateMode.TRUNCNORM.value,
+                                                    PopulateMode.parameters.value,
                                                     'num_fascicle_attempt')
 
             # choose maximum number of iterations for program to attempt to place fascicle
             max_attempt_iter: int = self.search(Config.MOCK_SAMPLE,
-                                                PopulateMode.TRUNCNORM.value,
+                                                PopulateMode.parameters.value,
                                                 'max_attempt_iter')
 
             # get random.seed myseed from config
-            myseed: int = self.search(Config.MOCK_SAMPLE, PopulateMode.TRUNCNORM.value, 'seed')
+            myseed: int = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value, 'seed')
 
             np.random.seed(myseed)
 
@@ -239,17 +240,17 @@ class MockSample(Exceptionable, Configurable):
                                             loc=mu_fasc_ecc,
                                             scale=std_fasc_ecc)
 
-        elif mode == PopulateMode.UNIFORM:
+        elif populate_mode == PopulateMode.UNIFORM:
 
             min_fascicle_separation: float = self.search(Config.MOCK_SAMPLE,
-                                                         PopulateMode.UNIFORM.value,
+                                                         PopulateMode.parameters.value,
                                                          'min_fascicle_separation')
 
-            max_attempt_iter = self.search(Config.MOCK_SAMPLE, PopulateMode.UNIFORM.value, 'max_attempt_iter')
+            max_attempt_iter = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value, 'max_attempt_iter')
 
             # choose fascicle area [um^2]: A = pi*(d/2)**2
-            lower_fasc_diam: float = self.search(Config.MOCK_SAMPLE, PopulateMode.UNIFORM.value, 'lower_fasc_diam')
-            upper_fasc_diam: float = self.search(Config.MOCK_SAMPLE, PopulateMode.UNIFORM.value, 'upper_fasc_diam')
+            lower_fasc_diam: float = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value, 'lower_fasc_diam')
+            upper_fasc_diam: float = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value, 'upper_fasc_diam')
 
             # check that both lower_diam and upper_diam are positive, and upper_diam > lower_diam
             if lower_fasc_diam < 0:
@@ -257,8 +258,8 @@ class MockSample(Exceptionable, Configurable):
             if lower_fasc_diam > upper_fasc_diam:
                 self.throw(61)
 
-            lower_fasc_ecc: float = self.search(Config.MOCK_SAMPLE, PopulateMode.UNIFORM.value, 'lower_fasc_ecc')
-            upper_fasc_ecc: float = self.search(Config.MOCK_SAMPLE, PopulateMode.UNIFORM.value, 'upper_fasc_ecc')
+            lower_fasc_ecc: float = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value, 'lower_fasc_ecc')
+            upper_fasc_ecc: float = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value, 'upper_fasc_ecc')
 
             if lower_fasc_ecc < 0:
                 self.throw(62)
@@ -266,11 +267,11 @@ class MockSample(Exceptionable, Configurable):
                 self.throw(63)
 
             # choose number of fascicles
-            num_fascicle_attempt: int = self.search(Config.MOCK_SAMPLE, PopulateMode.UNIFORM.value,
+            num_fascicle_attempt: int = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value,
                                                     'num_fascicle_attempt')
 
             # get random.seed myseed from config
-            myseed: int = self.search(Config.MOCK_SAMPLE, PopulateMode.UNIFORM.value, 'seed')
+            myseed: int = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value, 'seed')
 
             np.random.seed(myseed)
 
@@ -280,7 +281,7 @@ class MockSample(Exceptionable, Configurable):
             # CALCULATE FASCICLE ECCENTRICITY DISTRIBUTION
             fasc_ecc_dist = stats.uniform(lower_fasc_ecc, upper_fasc_ecc - lower_fasc_ecc)
 
-        if mode != PopulateMode.EXPLICIT:
+        if populate_mode != PopulateMode.EXPLICIT:
             # BASED ON CHOSEN DISTRIBUTION, MAKE FASCICLE DIMENSIONS AND ORIENTATIONS
             fasc_diams = np.sort(fasc_diam_dist.rvs(num_fascicle_attempt))[::-1].T
             fasc_areas = np.pi * (fasc_diams / 2) ** 2
@@ -335,7 +336,7 @@ class MockSample(Exceptionable, Configurable):
                 print('User requested {} fascicles, but program could only place {}'.format(num_fascicle_attempt,
                                                                                             len(self.fascicles)))
 
-            self.configs['mock_sample'][mode.value]['num_fascicle_placed'] = len(self.fascicles)
+            self.configs['mock_sample'][PopulateMode.parameters.value]['num_fascicle_placed'] = len(self.fascicles)
 
             project_path = os.getcwd()
             sample_str = self.search(Config.MOCK_SAMPLE, 'global', 'sample_str')

@@ -93,10 +93,11 @@ class NerveMode(Enum):
 @unique
 class PopulateMode(Enum):
     config = 'populate_method'
+    parameters = 'populate'
 
-    EXPLICIT = 'explicit'
-    TRUNCNORM = 'truncnorm'
-    UNIFORM = 'uniform'
+    EXPLICIT = 0
+    TRUNCNORM = 1
+    UNIFORM = 2
 
 
 @unique
