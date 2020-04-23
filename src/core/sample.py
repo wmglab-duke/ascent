@@ -1,13 +1,11 @@
 #!/usr/bin/env python3.7
 
 # builtins
-import os
 from typing import List
 
 # packages
 import cv2
 import matplotlib.pyplot as plt
-import numpy as np
 import shutil
 
 # access
@@ -102,7 +100,7 @@ class Sample(Exceptionable, Configurable, Saveable):
         sample: str = self.search(Config.SAMPLE, 'sample')
 
         # ADDITION: if only one slide present, check if names abide by <NAME>_0_0_<CODE>.tif format
-        #           if not abiding, add rename files so that they abide
+        #           if not abiding, rename files so that they abide
         if len(self.map.slides) == 1:
             print('Renaming input files to conform with map input interface where necessary.')
             source_dir = os.path.join(*self.map.slides[0].data()[3])

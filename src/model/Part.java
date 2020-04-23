@@ -2440,7 +2440,7 @@ class Part {
 
             if(myIM.hasPseudonym(selection)) {
                 String linkLabel = String.join("/", new String[]{instanceLabel, selection, info});
-                Material mat = model.component("comp1").material().create(mw.im.next("matlnk", linkLabel), "Link"); // TODO
+                Material mat = model.component("comp1").material().create(mw.im.next("matlnk", linkLabel), "Link");
                 mat.label(linkLabel);
                 mat.set("link", mw.im.get(info));
                 mat.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(selection) + "_dom");

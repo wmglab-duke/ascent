@@ -59,8 +59,12 @@ class Configurable:
 
         return self
 
-    # TODO: documentation
     def remove(self, key: Config) -> dict:
+        """
+
+        :param key:
+        :return:
+        """
         return self.configs.pop(key.value, None)
 
     def search(self, key: Config, *args):

@@ -359,7 +359,7 @@ class Slide(Exceptionable):
 
             r_mean = new_nerve.mean_radius()
             r_fasc = r_fascicle_initial.length
-            a = 3  # FIXME:
+            a = 3
             exterior_scale_factor = a * (r_mean / r_fasc)
             exterior_line: LineString = scale(r_fascicle_initial,
                                               *([exterior_scale_factor] * 3),
@@ -389,10 +389,6 @@ class Slide(Exceptionable):
                 r_old_nerve = LineString([new_nerve_centroid, list(old_intersection)[0].coords[0]])
 
             fascicle_scale_factor = (r_new_nerve.length/r_old_nerve.length) * 0.8
-
-            # TODO: nonlinear scaling of fascicle_scale_factor
-            # if fascicle_scale_factor > 1:
-            #     fascicle_scale_factor **= exponent
 
             r_fascicle_final = scale(r_fascicle_initial,
                                      *([fascicle_scale_factor] * 3),
