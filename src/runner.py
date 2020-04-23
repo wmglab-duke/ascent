@@ -124,6 +124,7 @@ class Runner(Exceptionable, Configurable):
             # init slide manager
             sample = Sample(self.configs[Config.EXCEPTIONS.value])
             # run processes with slide manager (see class for details)
+
             sample \
                 .add(SetupMode.OLD, Config.SAMPLE, all_configs[Config.SAMPLE.value][0]) \
                 .add(SetupMode.OLD, Config.RUN, self.configs[Config.RUN.value]) \

@@ -15,7 +15,7 @@ criteria = {
     'partial_matches': True,
     'include_downstream': False,
     'indices': {
-        'sample': [0],
+        'sample': [2],
         'model': None,
         'sim': None
     }
@@ -28,6 +28,6 @@ q.run()
 results = q.summary()
 
 item: Sample = q.get_object(Object.SAMPLE, [results['samples'][0]['index']])
-item.slides[0].plot()
+item.slides[0].plot(fix_aspect_ratio=True)
 
 os.chdir(cwd)

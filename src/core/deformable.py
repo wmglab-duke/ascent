@@ -36,7 +36,8 @@ class Deformable(Exceptionable):
                morph_count: int = 100,
                morph_index_step: int = 10,
                render: bool = True,
-               minimum_distance: float = 0.0) -> Tuple[List[tuple],
+               minimum_distance: float = 0.0,
+               ratio: float = None) -> Tuple[List[tuple],
                                                        List[float]]:
         """
         :param morph_count: number of incremental traces including the start and end of boundary
@@ -68,7 +69,8 @@ class Deformable(Exceptionable):
         # referencing the deform_steps method below
         morph_steps = [step.pymunk_segments(space) for step in Deformable.deform_steps(self.start,
                                                                                        self.end,
-                                                                                       morph_count)]
+                                                                                       morph_count,
+                                                                                       ratio)]
 
 
 
@@ -188,7 +190,7 @@ class Deformable(Exceptionable):
         return movements, rotations
 
     @staticmethod
-    def deform_steps(start: Trace, end: Trace, count: int = 2) -> List[Trace]:
+    def deform_steps(start: Trace, end: Trace, count: int = 2, deform_ratio: float = 1.0) -> List[Trace]:
         # Find point along old_nerve that is closest to major axis of best fit ellipse
         (x, y), (a, b), angle = start.ellipse()  # returns degrees
 
@@ -243,7 +245,7 @@ class Deformable(Exceptionable):
                 point += vectors[i] * ratio
             traces.append(trace)
 
-        return traces
+        return traces[:int((deform_ratio if deform_ratio is not None else 1) * count)]
 
     @staticmethod
     def from_slide(slide: Slide, mode: ReshapeNerveMode, minimum_distance: float = 0.0) -> 'Deformable':
