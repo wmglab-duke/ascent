@@ -781,8 +781,13 @@ public class ModelWrapper {
                             if (arr.length < 1) throw new IllegalStateException("There must be at least one of each inner and outer for fascicle " + index);
                         }
 
-                        // do FascicleCI if only one inner, FascicleMesh otherwise
-                        String fascicleType = data.get("inners").length == 1 ? fascicleTypes[0] : fascicleTypes[1];
+                        String fascicleType = null;
+                        if (modelData.has("use_ci") && !modelData.getBoolean("use_ci")) {
+                            fascicleType = fascicleTypes[1]; // "FascicleMesh"
+                        } else {
+                            // do "FascicleCI" if only one inner, "FascicleMesh" otherwise
+                            fascicleType = data.get("inners").length == 1 ? fascicleTypes[0] : fascicleTypes[1];
+                        }
 
                         // hand off to Part to build instance of fascicle
                         Part.createNervePartInstance(fascicleType, index, path, this,

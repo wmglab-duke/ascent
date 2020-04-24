@@ -1,13 +1,11 @@
 #!/usr/bin/env python3.7
 
 # builtins
-import os
 from typing import List
 
 # packages
 import cv2
 import matplotlib.pyplot as plt
-import numpy as np
 import shutil
 
 # access
@@ -102,7 +100,7 @@ class Sample(Exceptionable, Configurable, Saveable):
         sample: str = self.search(Config.SAMPLE, 'sample')
 
         # ADDITION: if only one slide present, check if names abide by <NAME>_0_0_<CODE>.tif format
-        #           if not abiding, add rename files so that they abide
+        #           if not abiding, rename files so that they abide
         if len(self.map.slides) == 1:
             print('Renaming input files to conform with map input interface where necessary.')
             source_dir = os.path.join(*self.map.slides[0].data()[3])
@@ -165,6 +163,13 @@ class Sample(Exceptionable, Configurable, Saveable):
         nerve_mode = self.search_mode(NerveMode, Config.SAMPLE)
         reshape_nerve_mode = self.search_mode(ReshapeNerveMode, Config.SAMPLE)
         deform_mode = self.search_mode(DeformationMode, Config.SAMPLE)
+        deform_ratio = None
+
+        if 'deform_ratio' in self.search(Config.SAMPLE).keys():
+            print('ASSIGNING DEFORM RATIO')
+            deform_ratio = self.search(Config.SAMPLE, 'deform_ratio')
+        else:
+            print('NOT ASSIGNING DEFORM RATIO')
 
         def exists(mask_file_name: MaskFileNames):
             return os.path.exists(mask_file_name.value)
@@ -273,12 +278,15 @@ class Sample(Exceptionable, Configurable, Saveable):
             if nerve_mode == NerveMode.NOT_PRESENT and deform_mode is not DeformationMode.NONE:
                 self.throw(40)
 
+            partially_deformed_nerve = None
+
             if deform_mode == DeformationMode.PHYSICS:
                 print('\t\tsetting up physics')
                 morph_count = 36
                 # title = 'morph count: {}'.format(morph_count)
                 dist = self.search(Config.SAMPLE, "min_fascicle_separation", "dist")
                 nerve_add = None
+
 
                 if 'nerve_addition' in self.search(Config.SAMPLE, 'min_fascicle_separation').keys():
                     nerve_add = self.search(Config.SAMPLE, 'min_fascicle_separation', 'nerve_addition')
@@ -291,7 +299,13 @@ class Sample(Exceptionable, Configurable, Saveable):
 
                 movements, rotations = deformable.deform(morph_count=morph_count,
                                                          render=deform_animate,
-                                                         minimum_distance=dist)
+                                                         minimum_distance=dist,
+                                                         ratio=deform_ratio)
+
+                partially_deformed_nerve = Deformable.deform_steps(deformable.start,
+                                                                   deformable.end,
+                                                                   morph_count,
+                                                                   deform_ratio)[-1]
 
                 for move, angle, fascicle in zip(movements, rotations, slide.fascicles):
                     fascicle.shift(list(move) + [0])
@@ -303,7 +317,11 @@ class Sample(Exceptionable, Configurable, Saveable):
                 warnings.warn('NO DEFORMATION is happening!')
 
             if nerve_mode is not NerveMode.NOT_PRESENT:
-                slide.nerve = slide.reshaped_nerve(reshape_nerve_mode)
+                if deform_ratio != 1 and partially_deformed_nerve is not None:
+                    partially_deformed_nerve.shift(-np.asarray(list(partially_deformed_nerve.centroid()) + [0]))
+                    slide.nerve = partially_deformed_nerve
+                else:
+                    slide.nerve = slide.reshaped_nerve(reshape_nerve_mode)
             # slide.plot(fix_aspect_ratio=True, title=title)
 
         return self

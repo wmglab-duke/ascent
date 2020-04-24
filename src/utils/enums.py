@@ -25,6 +25,7 @@ class Config(Enum):
     # user
     RUN = 'run'
     SAMPLE = 'sample'
+    MOCK_SAMPLE = 'mock_sample'
     MODEL = 'models'
     SIM = 'sims'
     CRITERIA = 'criteria'
@@ -87,6 +88,16 @@ class NerveMode(Enum):
 
     PRESENT = 1
     NOT_PRESENT = 0
+
+
+@unique
+class PopulateMode(Enum):
+    config = 'populate_method'
+    parameters = 'populate'
+
+    EXPLICIT = 0
+    TRUNCNORM = 1
+    UNIFORM = 2
 
 
 @unique

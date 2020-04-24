@@ -1,17 +1,26 @@
 #!/usr/bin/env python3.7
 
+# builtins
 import os
 import time
 import sys
 
+# access
 from src import Runner
 from src.utils.enums import SetupMode, Config
 
+if not (sys.version_info.major == 3 and sys.version_info.minor >= 7):
+    print('You are running Python {}.{}, but 3.7 or later required'.format(sys.version_info.major,
+                                                                           sys.version_info.minor))
+    exit(1)
 
 if len(sys.argv) == 1:
     print('Too few arguments to start.py (must have at least one run index)')
     exit(1)
 
+# create bin/ directory for storing compiled Java files if it does not yet exist
+if not (os.path.exists('bin')):
+    os.mkdir('bin')
 
 for argument_index in range(1, len(sys.argv)):
     # START timer
@@ -39,28 +48,14 @@ for argument_index in range(1, len(sys.argv)):
     if not os.path.exists(env_path):
         print('INVALID env configuration path: {}'.format(env_path))
 
-    # get main configuration file
-    # master_config_file_path = os.path.join('.config', 'master.json')
-    # master_config_file_path = os.path.join('.config', 'master.json')
-
     # initialize Runner (loads in parameters)
     runner = Runner(int(argument))
     runner.add(SetupMode.NEW, Config.RUN, run_path)
     runner.add(SetupMode.NEW, Config.ENV, env_path)
-    runner.run()
-
-    # runner = Runner(master_config_file_path)
 
     # ready, set, GO!
 
-    # runner.run()
-    # runner.trace_test()
-    # runner.fascicle_test()
-    # runner.reposition_test()
-    # runner.reposition_test2()
-    # runner.manager_test()
-    # runner.smart_run()
-    # runner.load_up_manager()
+    runner.run()
 
     # END timer
     end = time.time()

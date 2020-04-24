@@ -3,8 +3,7 @@
     "rho_perineurium_method": false,
     "cuff_rotation_mode": true,
     "cuff_shift_mode": true,
-    "fiber_z": true,
-    "ci_perineurium_thickness": true
+    "fiber_z": true
   },
   "solution": false,
   "temperature": false,

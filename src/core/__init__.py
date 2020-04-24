@@ -4,6 +4,7 @@ from src.core.slide import Slide
 from src.core.fascicle import Fascicle
 from src.core.nerve import Nerve
 from src.core.sample import Sample
+from src.core.mock_sample import MockSample
 from src.core.deformable import Deformable
 from src.core.simulation import Simulation
 from src.core.waveform import Waveform
