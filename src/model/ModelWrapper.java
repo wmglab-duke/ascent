@@ -1345,7 +1345,7 @@ public class ModelWrapper {
                         e.printStackTrace();
                     }
 
-                    System.exit(0);
+//                    System.exit(0);
 
                     System.out.println("Meshing nerve parts... will take a while");
 
