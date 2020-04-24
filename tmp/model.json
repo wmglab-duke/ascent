@@ -4,7 +4,8 @@
     "cuff_rotation_mode": "AUTOMATIC",
     "cuff_shift_mode": "MIN_CIRCLE_BOUNDARY",
     "fiber_z": "EXTRUSION",
-    "ci_perineurium_thickness": "MEASURED"
+    "ci_perineurium_thickness": "MEASURED",
+    "use_ci": true
   },
   "solution": {
     "time_units": "ms",
