@@ -37,9 +37,9 @@ class Deformable(Exceptionable):
                morph_index_step: int = 10,
                render: bool = True,
                minimum_distance: float = 0.0,
-               ratio: float = None) -> Tuple[List[tuple],
-                                                       List[float]]:
+               ratio: float = None) -> Tuple[List[tuple], List[float]]:
         """
+        :param ratio:
         :param morph_count: number of incremental traces including the start and end of boundary
         :param morph_index_step: steps between loops of updating outer boundary, i.e. 1 is every loop,
         2 is every other loop...

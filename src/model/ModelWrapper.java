@@ -1293,7 +1293,7 @@ public class ModelWrapper {
                     meshNerve.label(meshNerveLabel);
 
                     String meshNerveSizeInfoLabel = "Mesh Nerve Size Info";
-                    MeshFeature meshNerveSizeInfo = meshNerve.create(mw.im.next("sit ize", meshNerveSizeInfoLabel), "Size");
+                    MeshFeature meshNerveSizeInfo = meshNerve.create(mw.im.next("size", meshNerveSizeInfoLabel), "Size");
                     meshNerveSizeInfo.label(meshNerveSizeInfoLabel);
 
                     meshNerveSizeInfo.set("custom", true);
@@ -1345,7 +1345,7 @@ public class ModelWrapper {
                         e.printStackTrace();
                     }
 
-                    //System.exit(0);
+                    System.exit(0);
 
                     System.out.println("Meshing nerve parts... will take a while");
 
