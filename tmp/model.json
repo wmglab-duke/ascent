@@ -53,13 +53,18 @@
   },
   "mesh": {
     "stats": {
-      "quality_measure": "vollength"
+      "volume": 0,
+      "min_quality": 0,
+      "min_volume": 0,
+      "quality_measure": "vollength",
+      "number_elements": 0,
+      "mean_quality": 0
     },
     "rest": {
       "mesh_time": 7461.499013,
       "time_units": "ms",
       "hcurve": 0.2,
-      "hmin": 1,
+      "hmin": 2,
       "hnarrow": 1,
       "type": {
         "im": "ftet",
