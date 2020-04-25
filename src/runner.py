@@ -312,10 +312,14 @@ class Runner(Exceptionable, Configurable):
             os.chdir('..')
 
     def compute_cuff_shift(self, model_config: dict, sample: Sample, sample_config: dict):
+        # NOTE: ASSUMES SINGLE SLIDE
 
         # add temporary model configuration
         self.add(SetupMode.OLD, Config.MODEL, model_config)
         self.add(SetupMode.OLD, Config.SAMPLE, sample_config)
+
+        # fetch slide
+        slide = sample.slides[0]
 
         # fetch nerve mode
         nerve_present: NerveMode = self.search_mode(NerveMode, Config.SAMPLE)
@@ -341,9 +345,9 @@ class Runner(Exceptionable, Configurable):
 
         # get center and radius of nerve's min_bound circle
         nerve_copy = deepcopy(
-            sample.slides[0].nerve
+            slide.nerve
             if nerve_present == NerveMode.PRESENT
-            else sample.slides[0].fascicles[0].outer
+            else slide.fascicles[0].outer
         )
 
         # for speed, downsample nerves to n_points_nerve (100) points
@@ -351,7 +355,16 @@ class Runner(Exceptionable, Configurable):
         nerve_copy.down_sample(DownSampleMode.KEEP, int(np.floor(nerve_copy.points.size / n_points_nerve)))
         x, y, r_bound = nerve_copy.smallest_enclosing_circle_naive()
 
-        theta_c = np.arctan2(y, x)
+        # TODO: centroid of fascicles
+
+        # next calculate the angle of the "centroid" to the center of min bound circle
+        # if mono fasc, just use 0, 0 as centroid (i.e., centroid of nerve same as centroid of all fasc)
+        # if poly fasc, use centroid of all fascicle as reference, not 0, 0
+        # angle of centroid of nerve to center of minimum bounding circle
+        reference_x = reference_y = 0.0
+        if not slide.monofasc():
+            reference_x, reference_y = slide.fascicle_centroid()
+        theta_c = np.arctan2(y - reference_y, x - reference_x)
 
         # calculate final necessary radius by adding buffer
         r_f = r_bound + cuff_r_buffer

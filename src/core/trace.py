@@ -232,7 +232,7 @@ class Trace(Exceptionable):
         """
         return self.polygon().boundary.intersects(other.polygon().boundary)
 
-    def centroid(self):
+    def centroid(self) -> Tuple[float, float]:
         """
         :return: ellipse centroid as tuple: center --> (x, y)
         """
