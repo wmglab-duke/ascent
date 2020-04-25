@@ -365,7 +365,7 @@ class Runner(Exceptionable, Configurable):
         if not slide.monofasc():
             reference_x, reference_y = slide.fascicle_centroid()
         theta_c = np.arctan2(y - reference_y, x - reference_x)
-        theta_c += self.search(Config.MODEL, 'cuff', 'rotate', 'add_ang') * 2 * np.pi / 360
+        # theta_c += self.search(Config.MODEL, 'cuff', 'rotate', 'add_ang') * 2 * np.pi / 360
 
         # calculate final necessary radius by adding buffer
         r_f = r_bound + cuff_r_buffer
