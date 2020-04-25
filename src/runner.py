@@ -365,6 +365,7 @@ class Runner(Exceptionable, Configurable):
         if not slide.monofasc():
             reference_x, reference_y = slide.fascicle_centroid()
         theta_c = np.arctan2(y - reference_y, x - reference_x)
+        theta_c += self.search(Config.MODEL, 'cuff', 'rotate', 'add_ang') * 2 * np.pi / 360
 
         # calculate final necessary radius by adding buffer
         r_f = r_bound + cuff_r_buffer
@@ -406,14 +407,14 @@ class Runner(Exceptionable, Configurable):
                 scale='um'
             ).real  # [um] (scaled from any arbitrary length unit)
 
-            if cuff_rotation_mode == CuffRotationMode.MANUAL:
+            # if cuff_rotation_mode == CuffRotationMode.MANUAL:
+            #     theta_f = 0
+            #
+            # else:  # cuff_rotation_mode == CuffRotationMode.AUTOMATIC
+            if r_i < r_f:
+                theta_f = (r_f / r_i - 1) * theta_i
+            else:
                 theta_f = 0
-                theta_c += self.search(Config.MODEL, 'cuff', 'rotate', 'add_ang') * 2 * np.pi / 360
-            else:  # cuff_rotation_mode == CuffRotationMode.AUTOMATIC
-                if r_i < r_f:
-                    theta_f = (r_f / r_i - 1) * theta_i
-                else:
-                    theta_f = 0
 
         #
         offset = 0
