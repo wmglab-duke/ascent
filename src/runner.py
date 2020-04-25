@@ -407,8 +407,8 @@ class Runner(Exceptionable, Configurable):
             ).real  # [um] (scaled from any arbitrary length unit)
 
             if cuff_rotation_mode == CuffRotationMode.MANUAL:
-                theta_f = theta_i
-                theta_c = self.search(Config.MODEL, 'cuff', 'rotate', 'pos_ang') * 2 * np.pi / 360
+                theta_f = 0
+                theta_c += self.search(Config.MODEL, 'cuff', 'rotate', 'add_ang') * 2 * np.pi / 360
             else:  # cuff_rotation_mode == CuffRotationMode.AUTOMATIC
                 if r_i < r_f:
                     theta_f = (r_f / r_i - 1) * theta_i
