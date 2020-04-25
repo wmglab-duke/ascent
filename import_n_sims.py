@@ -24,4 +24,4 @@ sims = run.get('sims')
 for model in models:
     for sim in sims:
         sim_dir = os.path.join('samples', str(sample), 'models', str(model), 'sims', str(sim))
-        Simulation.import_n_sims(sample, model, sim, sim_dir, nsim_source)
+        Simulation.import_n_sims(sample, model, sim, sim_dir, os.path.join(nsim_source, 'n_sims'))
