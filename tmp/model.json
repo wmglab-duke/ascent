@@ -21,7 +21,8 @@
       "unit": "[micrometer]",
       "length": 14500,
       "radius": 10000,
-      "additional_length": 0
+      "additional_length": 0,
+      "additional_radius": 0
     }
   },
   "trace_interp_tol": 0.02,

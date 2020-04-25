@@ -374,11 +374,10 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 sim_export_base + product_index
             )
 
-
     @staticmethod
-    def import_n_sims(sample: int, model: int, sim: int, sim_obj_dir: str, source: str):
+    def import_n_sims(sample: int, model: int, sim: int, sim_dir: str, source: str):
 
-        sim_dir = os.path.join(sim_obj_dir, 'n_sims')
+        sim_dir = os.path.join(sim_dir, 'n_sims')
 
         for dirname in [f for f in os.listdir(source) if os.path.isdir(os.path.join(source, f))]:
             this_sample, this_model, this_sim, product_index = tuple(dirname.split('_'))
