@@ -416,7 +416,7 @@ class Runner(Exceptionable, Configurable):
                 theta_f = 0
 
         # add arb angle
-        theta_f += self.search(Config.MODEL, 'cuff', 'rotate', 'add_ang') * 2 * np.pi / 360
+        # theta_f += self.search(Config.MODEL, 'cuff', 'rotate', 'add_ang') * 2 * np.pi / 360
 
         offset = 0
         for key, coef in cuff_config["offset"].items():
