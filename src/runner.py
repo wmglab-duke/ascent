@@ -470,8 +470,8 @@ class Runner(Exceptionable, Configurable):
                 center_x = 0
                 center_y = 0
                 step = 1  # [um] STEP SIZE
-                x_step = step * np.cos(theta_c)  # STEP VECTOR X-COMPONENT
-                y_step = step * np.sin(theta_c)  # STEP VECTOR X-COMPONENT
+                x_step = step * np.cos(theta_c + np.pi)  # STEP VECTOR X-COMPONENT
+                y_step = step * np.sin(theta_c + np.pi)  # STEP VECTOR X-COMPONENT
 
                 # shift nerve within cuff until one step within the minimum separation from cuff
                 while nerve_copy.polygon().boundary.distance(id_boundary.boundary) >= cuff_r_buffer:
