@@ -1198,7 +1198,7 @@ public class ModelWrapper {
                     cuffConformationParams.set("cuff_shift_x", cuff_shift_x + " " + cuff_shift_unit);
                     cuffConformationParams.set("cuff_shift_y", cuff_shift_y + " " + cuff_shift_unit);
                     cuffConformationParams.set("cuff_shift_z", cuff_shift_z + " " + cuff_shift_unit);
-                    cuffConformationParams.set("cuff_rot",  cuff_rot_pos + /*cuff_rot_add*/ + " " + cuff_rot_unit);
+                    cuffConformationParams.set("cuff_rot",  cuff_rot_pos + /*cuff_rot_add +*/ " " + cuff_rot_unit);
 
                     // Set MEDIUM parameters
                     String mediumParamsLabel = "Medium Parameters";
