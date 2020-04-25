@@ -439,8 +439,8 @@ class Runner(Exceptionable, Configurable):
         model_config['min_radius_enclosing_circle'] = r_bound
 
         print('theta_c: {}'.format(theta_c))
-        print('theta_f: {}'.format(theta_c))
-        print('theta_i: {}'.format(theta_c))
+        print('theta_f: {}'.format(theta_f))
+        print('theta_i: {}'.format(theta_i))
 
         if cuff_shift_mode == CuffShiftMode.MIN_CIRCLE_BOUNDARY:
             if r_i < r_f:
