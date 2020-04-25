@@ -438,6 +438,10 @@ class Runner(Exceptionable, Configurable):
         model_config = self.remove(Config.MODEL)
         model_config['min_radius_enclosing_circle'] = r_bound
 
+        print('theta_c: {}'.format(theta_c))
+        print('theta_f: {}'.format(theta_c))
+        print('theta_i: {}'.format(theta_c))
+
         if cuff_shift_mode == CuffShiftMode.MIN_CIRCLE_BOUNDARY:
             if r_i < r_f:
                 model_config['cuff']['rotate']['pos_ang'] = (-(theta_f - theta_i) + theta_c + np.pi) * 360 / (2 * np.pi)
