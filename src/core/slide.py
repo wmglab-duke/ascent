@@ -58,7 +58,7 @@ class Slide(Exceptionable):
 
             x_sum += x * area
             y_sum += y * area
-            area_sum += area_sum
+            area_sum += area
 
         return (x_sum / area_sum), (y_sum / area_sum)
 
