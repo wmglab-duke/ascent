@@ -383,10 +383,8 @@ class Simulation(Exceptionable, Configurable, Saveable):
             this_sample, this_model, this_sim, product_index = tuple(dirname.split('_'))
 
             if sample == this_sample and model == this_model and sim == this_sim:
-                shutil.copytree(
-                    os.path.join(source, dirname),
-                    os.path.join(sim_dir, product_index)
-                )
+                shutil.rmtree(os.path.join(sim_dir, product_index))
+                shutil.copytree(os.path.join(source, dirname), os.path.join(sim_dir, product_index))
 
     def potentials_exist(self, sim_dir: str) -> bool:
         """
