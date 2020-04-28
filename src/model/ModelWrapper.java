@@ -921,7 +921,6 @@ public class ModelWrapper {
 
             if (contributors.length > 0) {
                 GeomFeature uni = model.component("comp1").geom("geom1").create(im.next("uni", union), "Union"); // TODO clean
-
                 uni.set("keep", true);
                 uni.selection("input").set(contributors);
                 uni.label(union);
@@ -929,6 +928,7 @@ public class ModelWrapper {
                 String unionCselLabel = union + "Csel";
                 GeomObjectSelectionFeature csel = model.component("comp1").geom("geom1").selection().create(im.next("csel",unionCselLabel), "CumulativeSelection");
                 csel.label(unionCselLabel);
+
                 uni.set("contributeto", im.get(unionCselLabel));
 
             }
@@ -1269,6 +1269,7 @@ public class ModelWrapper {
                     model.component("comp1").geom("geom1").run("fin");
 
                     // MESH
+
                     // define MESH for PROXIMAL
                     // swept: name (Sweep) and im (swe), facemethod (tri)
                     // free triangular: name (FreeTet) and im (ftet)
@@ -1279,7 +1280,6 @@ public class ModelWrapper {
                     MeshFeature meshProximal = model.component("comp1").mesh("mesh1").create(mw.im.next(meshProximalKey,meshProximalLabel), meshProximalName);
                     meshProximal.selection().geom("geom1", 3);
                     meshProximal.selection().named("geom1" + "_" + mediumProximal_instanceID + "_" + partPrimitiveIM.get("MEDIUM") + "_dom");
-
                     // if using a swept mesh, you need to define the face method
                     if (meshProximalKey.equals("swe")) {
                         String meshProximalFace = proximalMeshParams.getJSONObject("type").getString("facemethod"); // (tri)
@@ -1290,7 +1290,6 @@ public class ModelWrapper {
                     String meshProximalSizeInfoLabel = "Mesh Proximal Size Info";
                     MeshFeature meshProximalSizeInfo = meshProximal.create(mw.im.next("size", meshProximalSizeInfoLabel), "Size");
                     meshProximalSizeInfo.label(meshProximalSizeInfoLabel);
-
                     meshProximalSizeInfo.set("custom", true);
                     meshProximalSizeInfo.set("hmaxactive", true);
                     meshProximalSizeInfo.set("hmax", proximalMeshParams.getDouble("hmax"));
@@ -1305,7 +1304,7 @@ public class ModelWrapper {
 
                     // Saved model pre-mesh for debugging
                     try {
-                        System.out.println("Saving MPH (pre-mesh) file to: " + geomFile);
+                        System.out.println("Saving MPH (pre-proximal mesh) file to: " + geomFile);
                         model.save(geomFile);
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -1318,10 +1317,12 @@ public class ModelWrapper {
                     long estimatedNerveMeshTime = System.nanoTime() - nerveMeshStartTime;
                     proximalMeshParams.put("mesh_time",estimatedNerveMeshTime/Math.pow(10,6)); // convert nanos to millis
 
-                    System.out.println("Saving MPH (proximal-mesh) file to: " + geomFile);
+                    System.out.println("Saving MPH (post proximal mesh) file to: " + geomFile);
                     model.save(geomFile);
 
-                    // define MESH for REST
+                    // define MESH for DISTAL
+                    // swept: name (Sweep) and im (swe), facemethod (tri)
+                    // free triangular: name (FreeTet) and im (ftet)
                     if (distalMedium.getBoolean("exist")){
                         String meshDistalLabel = "Mesh Distal";
                         JSONObject meshDistalParams = modelData.getJSONObject("mesh").getJSONObject("distal");
@@ -1350,32 +1351,37 @@ public class ModelWrapper {
 
                         // Saved model pre-mesh for debugging
                         try {
-                            System.out.println("Saving MPH (pre-mesh) file to: " + geomFile);
+                            System.out.println("Saving MPH (pre-distal mesh) file to: " + geomFile);
                             model.save(geomFile);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
 
-                        System.out.println("Meshing the distal... will take a while");
+                        System.out.println("Meshing the distal parts... will take a while");
                         long distalMeshStartTime = System.nanoTime();
                         model.component("comp1").mesh("mesh1").run(mw.im.get(meshDistalLabel));
                         long estimatedRestMeshTime = System.nanoTime() - distalMeshStartTime;
                         meshDistalParams.put("mesh_time", estimatedRestMeshTime / Math.pow(10, 6)); // convert nanos to millis
 
+                        // put nerve to mesh, rest to mesh, mesh to modelData
+                        JSONObject mesh = modelData.getJSONObject("mesh");
+                        mesh.put("proximal", proximalMeshParams);
+                        modelData.put("mesh", mesh);
+
+                        // Saved model post-mesh for debugging
+                        try {
+                            System.out.println("Saving MPH (post-distal mesh) file to: " + geomFile);
+                            model.save(geomFile);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
                     }
-
-                    // put nerve to mesh, rest to mesh, mesh to modelData
-                    JSONObject mesh = modelData.getJSONObject("mesh");
-
-                    mesh.put("proximal", proximalMeshParams);
-                    modelData.put("mesh", mesh);
 
                     System.out.println("Saving mesh statistics.");
 
                     // MESH STATISTICS
-                    String quality_measure = modelData.getJSONObject("mesh")
-                            .getJSONObject("stats")
-                            .getString("quality_measure");
+                    String quality_measure = modelData.getJSONObject("mesh").getJSONObject("stats").getString("quality_measure");
                     model.component("comp1").mesh("mesh1").stat().setQualityMeasure(quality_measure);
                     // could use: skewness, maxangle, volcircum, vollength, condition, growth...
 
@@ -1393,6 +1399,8 @@ public class ModelWrapper {
                     meshStats.put("volume", volume);
                     meshStats.put("quality_measure", quality_measure);
 
+                    JSONObject mesh = modelData.getJSONObject("mesh");
+                    mesh.put("proximal", proximalMeshParams);
                     mesh.put("stats", meshStats);
                     modelData.put("mesh", mesh);
 
@@ -1434,11 +1442,10 @@ public class ModelWrapper {
                     });
 
                     try {
-                        // save mesh.mph !!!!
+                        // save mesh.mph
                         System.out.println("Saving MPH (post-mesh) file to: " + meshFile);
                         model.save(meshFile);
                     } catch (IOException e) {
-                        System.out.println("Failed to save!!");
                         e.printStackTrace();
                     }
 
