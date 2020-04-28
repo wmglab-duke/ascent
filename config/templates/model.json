@@ -8,7 +8,7 @@
   },
   "solution": {
     "time_units": "ms",
-    "sol_time": 185775.015127
+    "sol_time": 155739.013891
   },
   "temperature": {
     "unit": "celsius",
@@ -19,13 +19,13 @@
     "distal": {
       "exist": true,
       "distant_ground": true,
-      "length": 25000,
-      "radius": 4000,
       "shift": {
         "x": 0,
         "y": 0,
         "z": 0
-      }
+      },
+      "length": 25000,
+      "radius": 4000
     },
     "proximal": {
       "distant_ground": false,
@@ -65,7 +65,7 @@
   "min_radius_enclosing_circle": 237.44249404941704,
   "mesh": {
     "distal": {
-      "mesh_time": 2630.08038,
+      "mesh_time": 2676.621388,
       "time_units": "ms",
       "hcurve": 0.2,
       "hmin": 2,
@@ -85,21 +85,8 @@
       "number_elements": 791720,
       "mean_quality": 0.7052
     },
-    "nerve": {
-      "mesh_time": 20539.09928,
-      "time_units": "ms",
-      "hcurve": 0.2,
-      "hmin": 2,
-      "hnarrow": 1,
-      "type": {
-        "im": "ftet",
-        "name": "FreeTet"
-      },
-      "hmax": 4000,
-      "hgrad": 1.8
-    },
     "proximal": {
-      "mesh_time": 20539.09928,
+      "mesh_time": 20886.708672,
       "time_units": "ms",
       "hcurve": 0.2,
       "hmin": 2,

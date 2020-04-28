@@ -412,7 +412,6 @@ public class ModelWrapper {
                     assert success;
                 }
 
-                // TODO do this once in top loop, save as multidimensional array and access by index later
                 // load key (fiberset x srcs) file
                 File f_key = new File(key_path);
                 Scanner scan_key = new Scanner(f_key);
@@ -877,9 +876,9 @@ public class ModelWrapper {
 
         JSONObject solution = modelData.getJSONObject("solution");
         long estimatedRunSolTime = System.nanoTime() - runSolStartTime;
-        solution.put("sol_time", estimatedRunSolTime/Math.pow(10,6)); // convert nanos to millis
+        solution.put("sol_time", estimatedRunSolTime/Math.pow(10,6)); // convert nanos to millis, this is for solving all contacts
         solution.put("time_units", "ms"); // convert nanos to millis
-        modelData.put("solution", solution); // TODO make this a list that matches with the index
+        modelData.put("solution", solution);
     }
 
     /**
@@ -921,16 +920,16 @@ public class ModelWrapper {
             String[] contributors = this.getUnionContributors(union);
 
             if (contributors.length > 0) {
-                model.component("comp1").geom("geom1").create(im.next("uni", union), "Union");
+                GeomFeature uni = model.component("comp1").geom("geom1").create(im.next("uni", union), "Union"); // TODO clean
 
-                model.component("comp1").geom("geom1").feature(im.get(union)).set("keep", true);
-                model.component("comp1").geom("geom1").feature(im.get(union)).selection("input").set(contributors);
-                model.component("comp1").geom("geom1").feature(im.get(union)).label(union);
+                uni.set("keep", true);
+                uni.selection("input").set(contributors);
+                uni.label(union);
 
                 String unionCselLabel = union + "Csel";
-                model.component("comp1").geom("geom1").selection().create(im.next("csel",unionCselLabel), "CumulativeSelection");
-                model.component("comp1").geom("geom1").selection(im.get(unionCselLabel)).label(unionCselLabel);
-                model.component("comp1").geom("geom1").feature(im.get(union)).set("contributeto", im.get(unionCselLabel));
+                GeomObjectSelectionFeature csel = model.component("comp1").geom("geom1").selection().create(im.next("csel",unionCselLabel), "CumulativeSelection");
+                csel.label(unionCselLabel);
+                uni.set("contributeto", im.get(unionCselLabel));
 
             }
         }
@@ -1368,7 +1367,7 @@ public class ModelWrapper {
                     // put nerve to mesh, rest to mesh, mesh to modelData
                     JSONObject mesh = modelData.getJSONObject("mesh");
 
-                    mesh.put("nerve", proximalMeshParams);
+                    mesh.put("proximal", proximalMeshParams);
                     modelData.put("mesh", mesh);
 
                     System.out.println("Saving mesh statistics.");
@@ -1396,7 +1395,6 @@ public class ModelWrapper {
 
                     mesh.put("stats", meshStats);
                     modelData.put("mesh", mesh);
-
 
                     System.out.println("DONE MESHING");
 
