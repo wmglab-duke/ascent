@@ -322,7 +322,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         if fiber_z_mode == FiberZMode.EXTRUSION:
 
             # get the correct fiber lengths
-            model_length = self.search(Config.MODEL, 'medium', 'bounds', 'length')
+            model_length = self.search(Config.MODEL, 'medium', 'proximal', 'length')
             fiber_length = (self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'max')
                             - self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'min')) \
                 if override_length is None else override_length

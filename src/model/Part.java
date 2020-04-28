@@ -63,7 +63,7 @@ class Part {
      * TODO
      */
     public static void createEnvironmentPartInstance(String instanceID, String instanceLabel, String pseudonym, ModelWrapper mw,
-                                                     JSONObject modelData) throws IllegalArgumentException {
+                                                     JSONObject infoMedium) throws IllegalArgumentException {
         Model model = mw.getModel();
 
         GeomFeature partInstance = model.component("comp1").geom("geom1").create(instanceID, "PartInstance");
@@ -76,8 +76,8 @@ class Part {
         String[] myLabels = myIM.labels; // may be null, but that is ok if not used
 
         if ("Medium_Primitive".equals(pseudonym)) {// set instantiation parameters
-            partInstance.setEntry("inputexpr", "radius", "r_medium");
-            partInstance.setEntry("inputexpr", "length", "z_nerve+z_medium_add");
+            partInstance.setEntry("inputexpr", "radius", infoMedium.getDouble("radius"));
+            partInstance.setEntry("inputexpr", "length", infoMedium.getDouble("length"));
 
             // imports
             partInstance.set("selkeepnoncontr", false);
@@ -85,7 +85,7 @@ class Part {
 
             partInstance.setEntry("selkeepbnd", instanceID + "_" + myIM.get(myLabels[0]) + ".bnd", "on"); // MEDIUM
 
-            if (modelData.getJSONObject("medium").getBoolean("distant_ground")) {
+            if (infoMedium.getBoolean("distant_ground")) {
                 // assign physics
                 String groundLabel = "Ground";
                 PhysicsFeature gnd = model.component("comp1").physics("ec").create(mw.im.next("gnd", groundLabel), "Ground", 2);
@@ -1608,7 +1608,7 @@ class Part {
      * @throws IllegalArgumentException if the primitive specified by pseudonym has not been created
      */
     public static void createCuffPartInstance(String instanceID, String instanceLabel, String pseudonym, ModelWrapper mw,
-                                              JSONObject instanceParams, JSONObject modelData) throws IllegalArgumentException {
+                                              JSONObject instanceParams) throws IllegalArgumentException {
 
         Model model = mw.getModel();
 
@@ -2098,6 +2098,7 @@ class Part {
     public static void createNervePartInstance(String pseudonym, int index, String path, ModelWrapper mw,
                                                HashMap<String, String[]> tracePaths, JSONObject sampleData, ModelParamGroup nerveParams, JSONObject modelData) throws IllegalArgumentException {
 
+        // TODO get rid of modelData, only used for interp tol
         Model model = mw.getModel();
         IdentifierManager im = mw.im;
 
@@ -2302,7 +2303,7 @@ class Part {
                 makePeri.setIndex("distance", "z_nerve", 0);
                 makePeri.selection("input").named(im.get(fascicleMesh_Outer_Label));
 
-                // Add fascicle domains to ALL_NERVE_PARTS_UNION and ENDO_UNION for later assigning to materials and mesh
+                // Add fascicle domains to ALL_NERVE_PARTS_UNION and ENDO_UNION for later assigning to materials
                 String[] fascicleMeshPeriUnions = {ModelWrapper.ALL_NERVE_PARTS_UNION, ModelWrapper.PERI_UNION};
                 mw.contributeToUnions(im.get(makePeriLabel), fascicleMeshPeriUnions);
 
@@ -2314,7 +2315,7 @@ class Part {
                 makeEndo.setIndex("distance", "z_nerve", 0);
                 makeEndo.selection("input").named(im.get(fascicleMesh_Inners_Label));
 
-                // Add fascicle domains to ALL_NERVE_PARTS_UNION and ENDO_UNION for later assigning to materials and mesh
+                // Add fascicle domains to ALL_NERVE_PARTS_UNION and ENDO_UNION for later assigning to materials
                 String[] fascicleMeshEndoUnions = {ModelWrapper.ALL_NERVE_PARTS_UNION, ModelWrapper.ENDO_UNION};
                 mw.contributeToUnions(im.get(makeEndoLabel), fascicleMeshEndoUnions);
 
@@ -2347,7 +2348,7 @@ class Part {
                 epi.setIndex("distance", "z_nerve", 0);
                 epi.selection("input").named(im.get("EPIXS"));
 
-                // Add epi domains to ALL_NERVE_PARTS_UNION for later assigning to materials and mesh
+                // Add epi domains to ALL_NERVE_PARTS_UNION for later assigning to materials
                 String[] epiUnions = {ModelWrapper.ALL_NERVE_PARTS_UNION};
                 mw.contributeToUnions(im.get(epiLabel), epiUnions);
 

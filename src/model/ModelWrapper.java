@@ -239,7 +239,7 @@ public class ModelWrapper {
                 String instanceLabel = (String) itemObject.get("label");
                 String instanceID = this.im.next("pi", instanceLabel);
                 String type = (String) itemObject.get("type");
-                Part.createCuffPartInstance(instanceID, instanceLabel, type , this, itemObject, modelData);
+                Part.createCuffPartInstance(instanceID, instanceLabel, type , this, itemObject);
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -972,7 +972,7 @@ public class ModelWrapper {
         // Load mesh_dependence_model configuration data
         JSONObject meshReferenceData = null;
         try {
-            meshReferenceData = JSONio.read(String.join("/", new String[]{projectPath, "config", "templates", "mesh_dependent_model.json"}));
+            meshReferenceData = JSONio.read(String.join("/", new String[]{projectPath, "config", "system", "mesh_dependent_model.json"}));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -1121,7 +1121,8 @@ public class ModelWrapper {
                 String cuff = cuffObject.getString("preset");
 
                 String mediumPrimitiveString = "Medium_Primitive";
-                String instanceLabelMedium = "Medium";
+                String instanceLabelDistalMedium = "DistalMedium";
+                String instanceLabelProximalMedium = "ProximalMedium";
 
                 // START PRE MESH
                 if (! skipMesh) {
@@ -1152,6 +1153,10 @@ public class ModelWrapper {
                     String nerveParamsLabal = "Nerve Parameters";
                     ModelParamGroup nerveParams = model.param().group().create(nerveParamsLabal);
                     nerveParams.label(nerveParamsLabal);
+
+                    double length = ((modelData.getJSONObject("medium").getJSONObject("proximal")).getDouble("length"));
+                    String bounds_unit = ((JSONObject) modelData.get("medium")).getString("unit");
+                    nerveParams.set("z_nerve", length + " " + bounds_unit);
 
                     if (morphology.isNull("Nerve")) {
                         nerveParams.set("a_nerve", "NaN");
@@ -1205,35 +1210,30 @@ public class ModelWrapper {
                     ModelParamGroup mediumParams = model.param().group().create(mediumParamsLabel);
                     mediumParams.label(mediumParamsLabel);
 
-                    String bounds_unit = ((JSONObject) ((JSONObject) modelData.get("medium")).get("bounds")).getString("unit");
-
-                    // Length of the FEM - will want to converge thresholds for this
-                    double length = ((JSONObject) ((JSONObject) modelData.get("medium")).get("bounds")).getDouble("length");
-                    mediumParams.set("z_nerve", length + " " + bounds_unit);
-
-                    // Additional length to medium (for SL)
-
-                    double z_add = ((JSONObject) ((JSONObject) modelData.get("medium")).get("bounds")).getDouble("additional_length");
-                    mediumParams.set("z_medium_add", z_add + " " + bounds_unit);
-
-                    // Radius of the FEM - will want to converge thresholds for this
-                    double radius = ((JSONObject) ((JSONObject) modelData.get("medium")).get("bounds")).getDouble("radius");
-                    mediumParams.set("r_medium", radius + " " + bounds_unit);
-
-
                     // Create PART PRIMITIVE for MEDIUM
                     String partID = mw.im.next("part", mediumPrimitiveString);
+                    IdentifierManager partPrimitiveIM = null;
                     try {
-                        IdentifierManager partPrimitiveIM = Part.createEnvironmentPartPrimitive(partID, mediumPrimitiveString, mw);
+                        partPrimitiveIM = Part.createEnvironmentPartPrimitive(partID, mediumPrimitiveString, mw);
                         mw.partPrimitiveIMs.put(mediumPrimitiveString, partPrimitiveIM);
                     } catch (IllegalArgumentException e) {
                         e.printStackTrace();
                     }
 
-                    // Create PART INSTANCE for MEDIUM
-                    String instanceID = mw.im.next("pi", instanceLabelMedium);
+                    // Create PART INSTANCES for MEDIUM (Distal and Proximal)
+                    JSONObject distalMedium = modelData.getJSONObject("medium").getJSONObject("distal");
+                    JSONObject proximalMedium = modelData.getJSONObject("medium").getJSONObject("proximal");
+
+                    String mediumDistal_instanceID = mw.im.next("pi", instanceLabelDistalMedium);
                     try {
-                        Part.createEnvironmentPartInstance(instanceID, instanceLabelMedium, mediumPrimitiveString, mw, modelData);
+                        Part.createEnvironmentPartInstance(mediumDistal_instanceID, instanceLabelDistalMedium, mediumPrimitiveString, mw, distalMedium);
+                    } catch (IllegalArgumentException e) {
+                        e.printStackTrace();
+                    }
+
+                    String mediumProximal_instanceID = mw.im.next("pi", instanceLabelProximalMedium);
+                    try {
+                        Part.createEnvironmentPartInstance(mediumProximal_instanceID, instanceLabelProximalMedium, mediumPrimitiveString, mw, proximalMedium);
                     } catch (IllegalArgumentException e) {
                         e.printStackTrace();
                     }
@@ -1274,69 +1274,68 @@ public class ModelWrapper {
                     model.component("comp1").geom("geom1").run("fin");
 
                     // MESH
-                    // define MESH for NERVE
+                    // define MESH for PROXIMAL
                     // swept: name (Sweep) and im (swe), facemethod (tri)
                     // free triangular: name (FreeTet) and im (ftet)
-                    JSONObject nerveMeshParams = modelData.getJSONObject("mesh").getJSONObject("nerve");
-                    String meshNerveLabel = "Mesh Nerve";
-                    String meshNerveKey = nerveMeshParams.getJSONObject("type").getString("im");
-                    String meshNerveName = nerveMeshParams.getJSONObject("type").getString("name");
-                    MeshFeature meshNerve = model.component("comp1").mesh("mesh1").create(mw.im.next(meshNerveKey,meshNerveLabel), meshNerveName);
-                    meshNerve.selection().geom("geom1", 3);
-                    meshNerve.selection().named("geom1" + "_" + mw.im.get("allNervePartsUnionCsel") + "_dom");
+                    JSONObject proximalMeshParams = modelData.getJSONObject("mesh").getJSONObject("proximal");
+                    String meshProximalLabel = "Mesh Proximal";
+                    String meshProximalKey = proximalMeshParams.getJSONObject("type").getString("im");
+                    String meshProximalName = proximalMeshParams.getJSONObject("type").getString("name");
+                    MeshFeature meshProximal = model.component("comp1").mesh("mesh1").create(mw.im.next(meshProximalKey,meshProximalLabel), meshProximalName);
+                    meshProximal.selection().geom("geom1", 3);
+
+                    meshProximal.selection().named("geom1" + "_" + mediumProximal_instanceID + "_" + partPrimitiveIM.get("MEDIUM") + "_dom");
 
                     // if using a swept mesh, you need to define the face method
-                    if (meshNerveKey.equals("swe")) {
-                        String meshNerveFace = nerveMeshParams.getJSONObject("type").getString("facemethod"); // (tri)
-                        meshNerve.set("facemethod", meshNerveFace);
+                    if (meshProximalKey.equals("swe")) {
+                        String meshProximalFace = proximalMeshParams.getJSONObject("type").getString("facemethod"); // (tri)
+                        meshProximal.set("facemethod", meshProximalFace);
                     }
-                    meshNerve.label(meshNerveLabel);
+                    meshProximal.label(meshProximalLabel);
 
-                    String meshNerveSizeInfoLabel = "Mesh Nerve Size Info";
-                    MeshFeature meshNerveSizeInfo = meshNerve.create(mw.im.next("size", meshNerveSizeInfoLabel), "Size");
-                    meshNerveSizeInfo.label(meshNerveSizeInfoLabel);
+                    String meshProximalSizeInfoLabel = "Mesh Proximal Size Info";
+                    MeshFeature meshProximalSizeInfo = meshProximal.create(mw.im.next("size", meshProximalSizeInfoLabel), "Size");
+                    meshProximalSizeInfo.label(meshProximalSizeInfoLabel);
 
-                    meshNerveSizeInfo.set("custom", true);
-                    meshNerveSizeInfo.set("hmaxactive", true);
-                    meshNerveSizeInfo.set("hmax", nerveMeshParams.getDouble("hmax"));
-                    meshNerveSizeInfo.set("hminactive", true);
-                    meshNerveSizeInfo.set("hmin", nerveMeshParams.getDouble("hmin"));
-                    meshNerveSizeInfo.set("hgradactive", true);
-                    meshNerveSizeInfo.set("hgrad", nerveMeshParams.getDouble("hgrad"));
-                    meshNerveSizeInfo.set("hcurveactive", true);
-                    meshNerveSizeInfo.set("hcurve", nerveMeshParams.getDouble("hcurve"));
-                    meshNerveSizeInfo.set("hnarrowactive", true);
-                    meshNerveSizeInfo.set("hnarrow", nerveMeshParams.getDouble("hnarrow"));
+                    meshProximalSizeInfo.set("custom", true);
+                    meshProximalSizeInfo.set("hmaxactive", true);
+                    meshProximalSizeInfo.set("hmax", proximalMeshParams.getDouble("hmax"));
+                    meshProximalSizeInfo.set("hminactive", true);
+                    meshProximalSizeInfo.set("hmin", proximalMeshParams.getDouble("hmin"));
+                    meshProximalSizeInfo.set("hgradactive", true);
+                    meshProximalSizeInfo.set("hgrad", proximalMeshParams.getDouble("hgrad"));
+                    meshProximalSizeInfo.set("hcurveactive", true);
+                    meshProximalSizeInfo.set("hcurve", proximalMeshParams.getDouble("hcurve"));
+                    meshProximalSizeInfo.set("hnarrowactive", true);
+                    meshProximalSizeInfo.set("hnarrow", proximalMeshParams.getDouble("hnarrow"));
 
                     // define MESH for REST
-                    String meshRestLabel = "Mesh Rest";
-                    JSONObject restMeshParams = modelData.getJSONObject("mesh").getJSONObject("rest");
-                    String meshRestKey = restMeshParams.getJSONObject("type").getString("im");
-                    String meshRestName = restMeshParams.getJSONObject("type").getString("name");
-                    MeshFeature meshRest = model.component("comp1").mesh("mesh1").create(mw.im.next(meshRestKey, meshRestLabel), meshRestName);
-                    meshRest.selection().geom("geom1", 3);
-                    meshRest.selection().remaining();
-                    meshRest.label(meshRestLabel);
+                    String meshDistalLabel = "Mesh Rest";
+                    JSONObject meshDistalParams = modelData.getJSONObject("mesh").getJSONObject("distal");
+                    String meshDistalKey = meshDistalParams.getJSONObject("type").getString("im");
+                    String meshDistalName = meshDistalParams.getJSONObject("type").getString("name");
+                    MeshFeature meshDistal = model.component("comp1").mesh("mesh1").create(mw.im.next(meshDistalKey, meshDistalLabel), meshDistalName);
+                    meshDistal.selection().geom("geom1", 3);
+                    meshDistal.selection().remaining();
+                    meshDistal.label(meshDistalLabel);
 
-                    String meshRestSizeInfoLabel = "Mesh Rest Size Info";
-                    MeshFeature meshRestSizeInfo = meshRest.create(mw.im.next("size", meshRestSizeInfoLabel), "Size");
-                    meshRestSizeInfo.label(meshRestSizeInfoLabel);
+                    String meshDistalSizeInfoLabel = "Mesh Distal Size Info";
+                    MeshFeature meshDistalSizeInfo = meshDistal.create(mw.im.next("size", meshDistalSizeInfoLabel), "Size");
+                    meshDistalSizeInfo.label(meshDistalSizeInfoLabel);
 
-                    meshRestSizeInfo.set("custom", true);
-                    meshRestSizeInfo.set("hmaxactive", true);
-                    meshRestSizeInfo.set("hmax", restMeshParams.getDouble("hmax"));
-                    meshRestSizeInfo.set("hminactive", true);
-                    meshRestSizeInfo.set("hmin", restMeshParams.getDouble("hmin"));
-                    meshRestSizeInfo.set("hgradactive", true);
-                    meshRestSizeInfo.set("hgrad", restMeshParams.getDouble("hgrad"));
-                    meshRestSizeInfo.set("hcurveactive", true);
-                    meshRestSizeInfo.set("hcurve", restMeshParams.getDouble("hcurve"));
-                    meshRestSizeInfo.set("hnarrowactive", true);
-                    meshRestSizeInfo.set("hnarrow", restMeshParams.getDouble("hnarrow"));
+                    meshDistalSizeInfo.set("custom", true);
+                    meshDistalSizeInfo.set("hmaxactive", true);
+                    meshDistalSizeInfo.set("hmax", meshDistalParams.getDouble("hmax"));
+                    meshDistalSizeInfo.set("hminactive", true);
+                    meshDistalSizeInfo.set("hmin", meshDistalParams.getDouble("hmin"));
+                    meshDistalSizeInfo.set("hgradactive", true);
+                    meshDistalSizeInfo.set("hgrad", meshDistalParams.getDouble("hgrad"));
+                    meshDistalSizeInfo.set("hcurveactive", true);
+                    meshDistalSizeInfo.set("hcurve", meshDistalParams.getDouble("hcurve"));
+                    meshDistalSizeInfo.set("hnarrowactive", true);
+                    meshDistalSizeInfo.set("hnarrow", meshDistalParams.getDouble("hnarrow"));
 
-                    System.out.println("restMeshParams.getDouble(\"hmin\") = " + restMeshParams.getDouble("hmin"));
 
-                    
                     // Saved model pre-mesh for debugging
                     try {
                         System.out.println("Saving MPH (pre-mesh) file to: " + geomFile);
@@ -1345,55 +1344,32 @@ public class ModelWrapper {
                         e.printStackTrace();
                     }
 
-//                    System.exit(0);
-
                     System.out.println("Meshing nerve parts... will take a while");
 
                     long nerveMeshStartTime = System.nanoTime();
-                    model.component("comp1").mesh("mesh1").run(mw.im.get(meshNerveLabel));
+                    model.component("comp1").mesh("mesh1").run(mw.im.get(meshProximalLabel));
                     long estimatedNerveMeshTime = System.nanoTime() - nerveMeshStartTime;
-                    nerveMeshParams.put("mesh_time",estimatedNerveMeshTime/Math.pow(10,6)); // convert nanos to millis
+                    proximalMeshParams.put("mesh_time",estimatedNerveMeshTime/Math.pow(10,6)); // convert nanos to millis
 
                     System.out.println("Saving MPH (nerve-mesh) file to: " + geomFile);
                     model.save(geomFile);
 
-
                     System.out.println("Meshing the rest... will also take a while");
 
-                    System.out.println("1");
+                    long distalMeshStartTime = System.nanoTime();
 
-                    long restMeshStartTime = System.nanoTime();
+                    model.component("comp1").mesh("mesh1").run(mw.im.get(meshDistalLabel));
 
-                    System.out.println("2");
+                    long estimatedRestMeshTime = System.nanoTime() - distalMeshStartTime;
 
-                    System.out.println("meshRestLabel = " + meshRestLabel);
-
-                    System.out.println("mw.im.get(meshRestLabel) = " + mw.im.get(meshRestLabel));
-
-                    model.component("comp1").mesh("mesh1").run(mw.im.get(meshRestLabel));
-
-                    System.out.println("3");
-
-                    long estimatedRestMeshTime = System.nanoTime() - restMeshStartTime;
-
-                    System.out.println("4");
-
-                    restMeshParams.put("mesh_time",estimatedRestMeshTime/Math.pow(10,6)); // convert nanos to millis
-
-                    System.out.println("5");
+                    meshDistalParams.put("mesh_time",estimatedRestMeshTime/Math.pow(10,6)); // convert nanos to millis
 
                     // put nerve to mesh, rest to mesh, mesh to modelData
                     JSONObject mesh = modelData.getJSONObject("mesh");
 
-                    System.out.println("6");
+                    mesh.put("nerve", proximalMeshParams);
 
-                    mesh.put("nerve", nerveMeshParams);
-
-                    System.out.println("7");
-
-                    mesh.put("rest", restMeshParams);
-
-                    System.out.println("8");
+                    mesh.put("distal", meshDistalParams);
 
                     modelData.put("mesh", mesh);
 
@@ -1535,11 +1511,11 @@ public class ModelWrapper {
                 if (myIM == null) throw new IllegalArgumentException("IdentfierManager not created for name: " + mediumPrimitiveString);
                 String[] myLabels = myIM.labels; // may be null, but that is ok if not used
                 String selection = myLabels[0];
-                String linkLabel = String.join("/", new String[]{instanceLabelMedium, selection, "medium"});
+                String linkLabel = String.join("/", new String[]{instanceLabelDistalMedium, selection, "medium"});
                 Material mat = model.component("comp1").material().create(mw.im.next("matlnk", linkLabel), "Link");
                 mat.label(linkLabel);
                 mat.set("link", mediumMaterial);
-                mat.selection().named("geom1_" + mw.im.get(instanceLabelMedium) + "_" + myIM.get(selection) + "_dom");
+                mat.selection().named("geom1_" + mw.im.get(instanceLabelDistalMedium) + "_" + myIM.get(selection) + "_dom");
 
                 // CUFF
                 mw.addCuffPartMaterialAssignments(cuffData);

@@ -8,14 +8,7 @@
   "solution": false,
   "temperature": false,
   "medium": {
-    "distal": {
-      "distant_ground": true,
-      "unit": true,
-      "length": true,
-      "radius": true
-    },
-    "proximal": {
-      "distant_ground": false,
+    "bounds": {
       "unit": true,
       "length": true,
       "radius": true
