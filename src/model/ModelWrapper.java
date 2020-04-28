@@ -1143,9 +1143,9 @@ public class ModelWrapper {
 
                         mediumParams.set("z_distal", distal_length + " " + bounds_unit);
                         mediumParams.set("r_distal", distal_radius + " " + bounds_unit);
-                        mediumParams.set("distal_x_shift", distal_x + " " + bounds_unit);
-                        mediumParams.set("distal_y_shift", distal_y + " " + bounds_unit);
-                        mediumParams.set("distal_z_shift", distal_z + " " + bounds_unit);
+                        mediumParams.set("distal_shift_x", distal_x + " " + bounds_unit);
+                        mediumParams.set("distal_shift_y", distal_y + " " + bounds_unit);
+                        mediumParams.set("distal_shift_z", distal_z + " " + bounds_unit);
 
                     }
 

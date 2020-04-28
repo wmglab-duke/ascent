@@ -81,7 +81,7 @@ class Part {
             if ("DistalMedium".equals(instanceLabel)) {
                 partInstance.setEntry("inputexpr", "radius", "r_distal");
                 partInstance.setEntry("inputexpr", "length", "z_distal");
-                partInstance.set("displ", new String[]{"distal_x_shift", "distal_y_shift", "distal_z_shift"});
+                partInstance.set("displ", new String[]{"distal_shift_x", "distal_shift_y", "distal_shift_z"});
 
             } else if ("ProximalMedium".equals(instanceLabel)) {
                 partInstance.setEntry("inputexpr", "radius", "r_proximal");
