@@ -17,6 +17,8 @@ class Part {
      * @return the local IdentifierManager for THIS PART PRIMITIVE --> save when called in ModelWrapper
      * @throws IllegalArgumentException if an invalid pseudonym is passed in --> there is no such primitive to create
      */
+
+
     public static IdentifierManager createEnvironmentPartPrimitive(String id, String pseudonym, ModelWrapper mw) throws IllegalArgumentException {
         Model model = mw.getModel();
 
@@ -76,8 +78,15 @@ class Part {
         String[] myLabels = myIM.labels; // may be null, but that is ok if not used
 
         if ("Medium_Primitive".equals(pseudonym)) {// set instantiation parameters
-            partInstance.setEntry("inputexpr", "radius", infoMedium.getDouble("radius"));
-            partInstance.setEntry("inputexpr", "length", infoMedium.getDouble("length"));
+            if ("DistalMedium".equals(instanceLabel)) {
+                partInstance.setEntry("inputexpr", "radius", "r_distal");
+                partInstance.setEntry("inputexpr", "length", "z_distal");
+                partInstance.set("displ", new String[]{"distal_x_shift", "distal_y_shift", "distal_z_shift"});
+
+            } else if ("ProximalMedium".equals(instanceLabel)) {
+                partInstance.setEntry("inputexpr", "radius", "r_proximal");
+                partInstance.setEntry("inputexpr", "length", "z_nerve");
+            }
 
             // imports
             partInstance.set("selkeepnoncontr", false);
