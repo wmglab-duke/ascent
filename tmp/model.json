@@ -51,6 +51,7 @@
     "preset": "Madison.json"
   },
   "conductivities": {
+    "recess": "saline",
     "perineurium": {
       "unit": "[S/m]",
       "label": "RHO_WEERASURIYA @ 1 Hz",
