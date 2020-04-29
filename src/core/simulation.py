@@ -13,7 +13,7 @@ from .hocwriter import HocWriter
 from .fiberset import FiberSet
 from .waveform import Waveform
 from src.core import Sample
-from src.utils import Exceptionable, Configurable, Saveable, SetupMode, Config, WriteMode, enums
+from src.utils import Exceptionable, Configurable, Saveable, SetupMode, Config, WriteMode
 
 
 class Simulation(Exceptionable, Configurable, Saveable):
@@ -184,6 +184,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
         contents = f.read()
         s_s = range(int(contents[0]))
         q_s = range(len(self.wave_product))
+        f.close()
 
         prods = list(itertools.product(s_s, q_s))
         self.master_product_indices = prods
