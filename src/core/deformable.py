@@ -72,8 +72,6 @@ class Deformable(Exceptionable):
                                                                                        morph_count,
                                                                                        ratio)]
 
-
-
         # draw the deformation
         if render:
             # packages

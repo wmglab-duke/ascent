@@ -1,7 +1,7 @@
 #!/usr/bin/env python3.7
 
 # builtins
-from typing import List
+from typing import List, Tuple, Union
 
 # packages
 import cv2
@@ -184,6 +184,9 @@ class Sample(Exceptionable, Configurable, Saveable):
         scale_path = os.path.join('samples', sample, MaskFileNames.SCALE_BAR.value)
 
         for slide_info in self.map.slides:
+
+            orientation_centroid: Union[Tuple[float, float], None] = None
+
             # unpack data and force cast to string
             cassette, number, position, _ = slide_info.data()
             cassette, number = (str(item) for item in (cassette, number))
@@ -193,6 +196,15 @@ class Sample(Exceptionable, Configurable, Saveable):
             if not exists(MaskFileNames.RAW):
                 print('No raw tif found, but continuing. (Sample.populate)')
                 # self.throw(18)
+
+            if exists(MaskFileNames.ORIENTATION):
+                contour, _ = cv2.findContours(np.flipud(cv2.imread(MaskFileNames.ORIENTATION.value, -1)),
+                                              cv2.RETR_TREE,
+                                              cv2.CHAIN_APPROX_SIMPLE)
+                trace = Trace([point + [0] for point in contour[0][:, 0, :]], self.configs[Config.EXCEPTIONS.value])
+                orientation_centroid = trace.centroid()
+            else:
+                print('No orientation tif found, but continuing. (Sample.populate)')
 
             # init fascicles list
             fascicles: List[Fascicle] = []
@@ -253,6 +265,9 @@ class Sample(Exceptionable, Configurable, Saveable):
                                  nerve_mode,
                                  self.configs[Config.EXCEPTIONS.value],
                                  will_reposition=(deform_mode != DeformationMode.NONE))
+
+            # find index of orientation point for rotating later (will be added to pos_ang)
+
 
             # shrinkage correction
             slide.scale(1 + self.search(Config.SAMPLE, "scale", "shrinkage_scale"))
