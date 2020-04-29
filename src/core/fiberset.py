@@ -55,7 +55,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             z_nerve = self.search(Config.MODEL, 'medium', 'proximal', 'length')
             z_medium = self.search(Config.MODEL, 'medium', 'distal', 'length')
             z_offset = 8000 - 2148.2 + z_nerve  # this is semi-arbitrary --> used from last model
-            r_medium = self.search(Config.MODEL, 'medium', 'bounds', 'radius')
+            r_medium = self.search(Config.MODEL, 'medium', 'distal', 'radius')
             buffer = 50
 
             def fit_z(t):
