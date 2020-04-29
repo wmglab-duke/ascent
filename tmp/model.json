@@ -20,7 +20,7 @@
     "bounds": {
       "unit": "[micrometer]",
       "length": 14500,
-      "radius": 10000,
+      "radius": 5000,
       "additional_length": 0
     }
   },
