@@ -312,10 +312,14 @@ class Runner(Exceptionable, Configurable):
             os.chdir('..')
 
     def compute_cuff_shift(self, model_config: dict, sample: Sample, sample_config: dict):
+        # NOTE: ASSUMES SINGLE SLIDE
 
         # add temporary model configuration
         self.add(SetupMode.OLD, Config.MODEL, model_config)
         self.add(SetupMode.OLD, Config.SAMPLE, sample_config)
+
+        # fetch slide
+        slide = sample.slides[0]
 
         # fetch nerve mode
         nerve_present: NerveMode = self.search_mode(NerveMode, Config.SAMPLE)
@@ -341,9 +345,9 @@ class Runner(Exceptionable, Configurable):
 
         # get center and radius of nerve's min_bound circle
         nerve_copy = deepcopy(
-            sample.slides[0].nerve
+            slide.nerve
             if nerve_present == NerveMode.PRESENT
-            else sample.slides[0].fascicles[0].outer
+            else slide.fascicles[0].outer
         )
 
         # for speed, downsample nerves to n_points_nerve (100) points
@@ -351,7 +355,16 @@ class Runner(Exceptionable, Configurable):
         nerve_copy.down_sample(DownSampleMode.KEEP, int(np.floor(nerve_copy.points.size / n_points_nerve)))
         x, y, r_bound = nerve_copy.smallest_enclosing_circle_naive()
 
-        theta_c = np.arctan2(y, x)
+        # TODO: centroid of fascicles
+
+        # next calculate the angle of the "centroid" to the center of min bound circle
+        # if mono fasc, just use 0, 0 as centroid (i.e., centroid of nerve same as centroid of all fasc)
+        # if poly fasc, use centroid of all fascicle as reference, not 0, 0
+        # angle of centroid of nerve to center of minimum bounding circle
+        reference_x = reference_y = 0.0
+        if not slide.monofasc():
+            reference_x, reference_y = slide.fascicle_centroid()
+        theta_c = np.arctan2(y - reference_y, x - reference_x)
 
         # calculate final necessary radius by adding buffer
         r_f = r_bound + cuff_r_buffer
@@ -360,7 +373,7 @@ class Runner(Exceptionable, Configurable):
         theta_i = cuff_config.get('angle_to_contacts_deg') * 2 * np.pi / 360
 
         # fetch cuff rotation mode
-        cuff_rotation_mode: CuffRotationMode = self.search_mode(CuffRotationMode, Config.MODEL)
+        # cuff_rotation_mode: CuffRotationMode = self.search_mode(CuffRotationMode, Config.MODEL)
 
         # fetch boolean for cuff expandability
         expandable: bool = cuff_config['expandable']
@@ -393,15 +406,18 @@ class Runner(Exceptionable, Configurable):
                 scale='um'
             ).real  # [um] (scaled from any arbitrary length unit)
 
-            if cuff_rotation_mode == CuffRotationMode.MANUAL:
-                theta_f = theta_i
-            else:  # cuff_rotation_mode == CuffRotationMode.AUTOMATIC
-                if r_i < r_f:
-                    theta_f = (r_f / r_i - 1) * theta_i
-                else:
-                    theta_f = 0
+            # if cuff_rotation_mode == CuffRotationMode.MANUAL:
+            #     theta_f = 0
+            #
+            # else:  # cuff_rotation_mode == CuffRotationMode.AUTOMATIC
+            if r_i < r_f:
+                theta_f = (r_f / r_i - 1) * theta_i
+            else:
+                theta_f = 0
 
-        #
+        # add arb angle
+        # theta_f += self.search(Config.MODEL, 'cuff', 'rotate', 'add_ang') * 2 * np.pi / 360
+
         offset = 0
         for key, coef in cuff_config["offset"].items():
             value_str = [item["expression"] for item in cuff_config["params"] if item['name'] == key][0]
@@ -423,6 +439,21 @@ class Runner(Exceptionable, Configurable):
         model_config = self.remove(Config.MODEL)
         model_config['min_radius_enclosing_circle'] = r_bound
 
+        # add to theta_f using the orientation point
+        orientation_point = None
+        if slide.orientation_point_index is not None:
+            if slide.nerve is not None:  # has nerve
+                orientation_point = slide.nerve.points[slide.orientation_point_index][:2]
+            else:  # monofasc, no nerve
+                orientation_point = slide.fascicles[0].outer.points[slide.orientation_point_index][:2]
+
+        if orientation_point is not None:
+            theta_f += np.arctan2(orientation_point[0], orientation_point[1])
+
+        print('theta_c: {}'.format(theta_c))
+        print('theta_f: {}'.format(theta_f))
+        print('theta_i: {}'.format(theta_i))
+
         if cuff_shift_mode == CuffShiftMode.MIN_CIRCLE_BOUNDARY:
             if r_i < r_f:
                 model_config['cuff']['rotate']['pos_ang'] = (theta_f - theta_i + theta_c + np.pi) * 360 / (2 * np.pi)
@@ -435,7 +466,7 @@ class Runner(Exceptionable, Configurable):
 
         elif cuff_shift_mode == CuffShiftMode.TRACE_BOUNDARY:
             if r_i < r_f:
-                model_config['cuff']['rotate']['pos_ang'] = theta_f * 360 / (2 * np.pi)
+                model_config['cuff']['rotate']['pos_ang'] = (theta_f - theta_i + theta_c + np.pi) * 360 / (2 * np.pi)
                 model_config['cuff']['shift']['x'] = x
                 model_config['cuff']['shift']['y'] = y
             else:
@@ -450,8 +481,8 @@ class Runner(Exceptionable, Configurable):
                 center_x = 0
                 center_y = 0
                 step = 1  # [um] STEP SIZE
-                x_step = step * np.cos(theta_f + theta_i)  # STEP VECTOR X-COMPONENT
-                y_step = step * np.sin(theta_f + theta_i)  # STEP VECTOR X-COMPONENT
+                x_step = step * np.cos(theta_c + np.pi)  # STEP VECTOR X-COMPONENT
+                y_step = step * np.sin(theta_c + np.pi)  # STEP VECTOR X-COMPONENT
 
                 # shift nerve within cuff until one step within the minimum separation from cuff
                 while nerve_copy.polygon().boundary.distance(id_boundary.boundary) >= cuff_r_buffer:
@@ -463,7 +494,7 @@ class Runner(Exceptionable, Configurable):
                 center_x += x_step
                 center_y += y_step
 
-                model_config['cuff']['rotate']['pos_ang'] = theta_f * 360 / (2 * np.pi)
+                model_config['cuff']['rotate']['pos_ang'] = (theta_f - theta_i + theta_c + np.pi) * 360 / (2 * np.pi)
                 model_config['cuff']['shift']['x'] = center_x
                 model_config['cuff']['shift']['y'] = center_y
 

@@ -86,7 +86,8 @@ class Query(Exceptionable, Configurable, Saveable):
 
             # if no downstream criteria and NOT including downstream, skip lower loops
             # note also that the post loop removal of samples will be skipped (as we desire in this case)
-            if model_criteria is None and sim_criteria is None and not include_downstream:
+            if (model_criteria is None) and (model_indices is None) \
+                    and (sim_criteria is None) and (sim_indices is None) and (not include_downstream):
                 continue
 
             # loop models
@@ -172,16 +173,17 @@ class Query(Exceptionable, Configurable, Saveable):
         with open(self.build_path(mode, indices), 'rb') as obj:
             return pickle.load(obj)
 
-    def build_path(self, mode: Union[Config, Object], indices: List[int] = None) -> str:
+    def build_path(self, mode: Union[Config, Object], indices: List[int] = None, just_directory: bool = False) -> str:
         """
 
+        :param just_directory:
         :param mode:
         :param indices:
         :return:
         """
 
         result = str()
-        just_directory = False
+        # just_directory = False
 
         if indices is None:
             indices = [0, 0, 0]  # dummy values... will be stripped from path later bc just_directory is set to True
@@ -230,33 +232,33 @@ class Query(Exceptionable, Configurable, Saveable):
             # if c_val is a dict, recurse
             if type(c_val) is dict:
                 if not self._match(c_val, d_val):
-                    print('fail 0')
+                    # print('fail 0')
                     return False
 
             # neither c_val nor d_val are list
             elif not any([type(v) is list for v in (c_val, d_val)]):
                 if not c_val == d_val:
-                    print('fail 1')
+                    # print('fail 1')
                     return False
 
             # c_val IS list, d_val IS NOT list
             elif type(c_val) is list and type(d_val) is not list:
                 if d_val not in c_val:
-                    print('fail 2')
+                    # print('fail 2')
                     return False
 
             # c_val IS NOT list, d_val IS list
             elif type(c_val) is not list and type(d_val) is list:
                 # "partial matches" indicates that other values may be present in d_val
                 if not self.search(Config.CRITERIA, 'partial_matches') or c_val not in d_val:
-                    print('fail 3')
+                    # print('fail 3')
                     return False
 
             # both c_val and d_val are list
             else:  # all([type(v) is list for v in (c_val, d_val)]):
                 # "partial matches" indicates that other values may be present in d_val
                 if not self.search(Config.CRITERIA, 'partial_matches') or not all([c_i in d_val for c_i in c_val]):
-                    print('fail 4')
+                    # print('fail 4')
                     return False
 
         return True

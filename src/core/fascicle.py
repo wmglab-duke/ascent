@@ -107,7 +107,7 @@ class Fascicle(Exceptionable):
         """
         return list(self.inners) + [self.outer]
 
-    def centroid(self):
+    def centroid(self) -> Tuple[float, float]:
         """
         :return: centroid of outer trace (ellipse method)
         """

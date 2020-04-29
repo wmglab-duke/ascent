@@ -16,15 +16,26 @@
     "value": 37
   },
   "medium": {
-    "distant_ground": true,
-    "bounds": {
-      "unit": "[micrometer]",
-      "length": 14500,
-      "radius": 5000,
-      "additional_length": 0
+    "unit": "[micrometer]",
+    "distal": {
+      "exist": true,
+      "distant_ground": true,
+      "shift": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "length": 25000,
+      "radius": 5000
+    },
+    "proximal": {
+      "distant_ground": false,
+      "length": 12500,
+      "radius": 3000
     }
   },
   "trace_interp_tol": 0.02,
+
   "cuff": {
     "rotate": {
       "unit": "[degree]",
@@ -53,6 +64,19 @@
     "epineurium": "epineurium"
   },
   "mesh": {
+    "distal": {
+      "mesh_time": 0,
+      "time_units": "ms",
+      "hcurve": 0.2,
+      "hmin": 10,
+      "hnarrow": 1,
+      "type": {
+        "im": "ftet",
+        "name": "FreeTet"
+      },
+      "hmax": 1600,
+      "hgrad": 2.5
+    },
     "stats": {
       "volume": 0,
       "min_quality": 0,
@@ -61,33 +85,21 @@
       "number_elements": 0,
       "mean_quality": 0
     },
-    "rest": {
-      "mesh_time": 7461.499013,
+    "proximal": {
+      "mesh_time": 0,
       "time_units": "ms",
       "hcurve": 0.2,
-      "hmin": 2,
+      "hmin": 10,
       "hnarrow": 1,
       "type": {
         "im": "ftet",
         "name": "FreeTet"
       },
-      "hmax": 4000,
-      "hgrad": 1.8
-    },
-    "nerve": {
-      "mesh_time": 1750.308018,
-      "time_units": "ms",
-      "hcurve": 0.2,
-      "hmin": 2,
-      "hnarrow": 1,
-      "type": {
-        "im": "ftet",
-        "name": "FreeTet"
-      },
-      "hmax": 4000,
-      "hgrad": 1.8
+      "hmax": 1600,
+      "hgrad": 2.2
     }
   },
+
   "solver": {"name": "COMSOL Multiphysics 5.4 (Build: 388)"},
   "frequency": {
     "unit": "Hz",

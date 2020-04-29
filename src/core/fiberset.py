@@ -52,8 +52,8 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         else:
             # SL generation algorithm
 
-            z_nerve = self.search(Config.MODEL, 'medium', 'bounds', 'length')
-            z_medium = z_nerve + self.search(Config.MODEL, 'medium', 'bounds', 'additional_length')
+            z_nerve = self.search(Config.MODEL, 'medium', 'proximal', 'length')
+            z_medium = self.search(Config.MODEL, 'medium', 'distal', 'length')
             z_offset = 8000 - 2148.2 + z_nerve  # this is semi-arbitrary --> used from last model
             r_medium = self.search(Config.MODEL, 'medium', 'bounds', 'radius')
             buffer = 50
@@ -322,7 +322,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         if fiber_z_mode == FiberZMode.EXTRUSION:
 
             # get the correct fiber lengths
-            model_length = self.search(Config.MODEL, 'medium', 'bounds', 'length')
+            model_length = self.search(Config.MODEL, 'medium', 'proximal', 'length')
             fiber_length = (self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'max')
                             - self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'min')) \
                 if override_length is None else override_length

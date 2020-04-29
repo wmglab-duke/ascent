@@ -13,7 +13,7 @@ from .hocwriter import HocWriter
 from .fiberset import FiberSet
 from .waveform import Waveform
 from src.core import Sample
-from src.utils import Exceptionable, Configurable, Saveable, SetupMode, Config, WriteMode, enums
+from src.utils import Exceptionable, Configurable, Saveable, SetupMode, Config, WriteMode
 
 
 class Simulation(Exceptionable, Configurable, Saveable):
@@ -184,6 +184,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
         contents = f.read()
         s_s = range(int(contents[0]))
         q_s = range(len(self.wave_product))
+        f.close()
 
         prods = list(itertools.product(s_s, q_s))
         self.master_product_indices = prods
@@ -374,20 +375,17 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 sim_export_base + product_index
             )
 
-
     @staticmethod
-    def import_n_sims(sample: int, model: int, sim: int, sim_obj_dir: str, source: str):
+    def import_n_sims(sample: int, model: int, sim: int, sim_dir: str, source: str):
 
-        sim_dir = os.path.join(sim_obj_dir, 'n_sims')
+        sim_dir = os.path.join(sim_dir, 'n_sims')
 
         for dirname in [f for f in os.listdir(source) if os.path.isdir(os.path.join(source, f))]:
             this_sample, this_model, this_sim, product_index = tuple(dirname.split('_'))
+            if sample == int(this_sample) and model == int(this_model) and sim == int(this_sim):
+                shutil.rmtree(os.path.join(sim_dir, product_index))
+                shutil.copytree(os.path.join(source, dirname), os.path.join(sim_dir, product_index))
 
-            if sample == this_sample and model == this_model and sim == this_sim:
-                shutil.copytree(
-                    os.path.join(source, dirname),
-                    os.path.join(sim_dir, product_index)
-                )
 
     def potentials_exist(self, sim_dir: str) -> bool:
         """

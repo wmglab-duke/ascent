@@ -80,6 +80,7 @@ class MaskFileNames(Enum):
     OUTERS = 'o.tif'
     SCALE_BAR = 's.tif'
     NERVE = 'n.tif'
+    ORIENTATION = 'a.tif'  # a for angle
 
 
 @unique

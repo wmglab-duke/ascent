@@ -3,7 +3,7 @@
 # builtins
 import itertools
 import os
-from typing import List, Union
+from typing import List, Union, Tuple
 import random
 
 # packages
@@ -46,8 +46,24 @@ class Slide(Exceptionable):
             if self.nerve_mode == NerveMode.NOT_PRESENT:
                 self.throw(39)
 
+        # self.orientation_point: Union[Tuple[float, float], None] = None
+        self.orientation_point_index: Union[float, None] = None
+
     def monofasc(self) -> bool:
         return self.nerve_mode == NerveMode.NOT_PRESENT and len(self.fascicles) == 1
+
+    def fascicle_centroid(self) -> Tuple[float, float]:
+        area_sum = x_sum = y_sum = 0.0
+
+        for fascicle in self.fascicles:
+            x, y = fascicle.centroid()
+            area = fascicle.area()
+
+            x_sum += x * area
+            y_sum += y * area
+            area_sum += area
+
+        return (x_sum / area_sum), (y_sum / area_sum)
 
     def validation(self, specific: bool = True, die: bool = True, tolerance: float = None) -> bool:
         """
@@ -186,11 +202,11 @@ class Slide(Exceptionable):
         for fascicle in self.fascicles:
             fascicle.plot(inner_format)
 
-        # if final plot, add title and show
-        if final:
-            if title is not None:
-                plt.title(title)
+        if title is not None:
+            plt.title(title)
 
+        # if final plot, show
+        if final:
             plt.show()
 
     def scale(self, factor: float):
