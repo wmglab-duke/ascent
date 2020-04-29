@@ -373,7 +373,7 @@ class Runner(Exceptionable, Configurable):
         theta_i = cuff_config.get('angle_to_contacts_deg') * 2 * np.pi / 360
 
         # fetch cuff rotation mode
-        cuff_rotation_mode: CuffRotationMode = self.search_mode(CuffRotationMode, Config.MODEL)
+        # cuff_rotation_mode: CuffRotationMode = self.search_mode(CuffRotationMode, Config.MODEL)
 
         # fetch boolean for cuff expandability
         expandable: bool = cuff_config['expandable']
@@ -438,6 +438,17 @@ class Runner(Exceptionable, Configurable):
         # remove (pop) temporary model configuration
         model_config = self.remove(Config.MODEL)
         model_config['min_radius_enclosing_circle'] = r_bound
+
+        # add to theta_f using the orientation point
+        orientation_point = None
+        if slide.orientation_point_index is not None:
+            if slide.nerve is not None:  # has nerve
+                orientation_point = slide.nerve.points[slide.orientation_point_index][:2]
+            else:  # monofasc, no nerve
+                orientation_point = slide.fascicles[0].outer.points[slide.orientation_point_index][:2]
+
+        if orientation_point is not None:
+            theta_f += np.arctan2(orientation_point[0], orientation_point[1])
 
         print('theta_c: {}'.format(theta_c))
         print('theta_f: {}'.format(theta_f))

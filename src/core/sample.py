@@ -9,6 +9,8 @@ import matplotlib.pyplot as plt
 import shutil
 
 # access
+from shapely.geometry import LineString, Point
+
 from src.core import Slide, Map, Fascicle, Nerve, Trace
 from .deformable import Deformable
 from src.utils import *
@@ -254,10 +256,6 @@ class Sample(Exceptionable, Configurable, Saveable):
             if nerve_mode == NerveMode.PRESENT:
                 # check and load in nerve, throw error if not present
 
-                # TODO if orietnation is present (copy past from deformable.deformsteps in Trace/Nerve), find  of point closest on Trace, store index in slide (default none)
-                # if necessary, in deformable, in deformsteps, get the index after deformsteps save to slide
-                # compute-cuff-shift, get this point from slide and use arctan2
-
                 if exists(MaskFileNames.NERVE):
                     contour, _ = cv2.findContours(np.flipud(cv2.imread(MaskFileNames.NERVE.value, -1)),
                                                   cv2.RETR_TREE,
@@ -272,7 +270,22 @@ class Sample(Exceptionable, Configurable, Saveable):
                                  will_reposition=(deform_mode != DeformationMode.NONE))
 
             # find index of orientation point for rotating later (will be added to pos_ang)
+            if orientation_centroid is not None:
 
+                # choose outer (based on if nerve is present)
+                outer = slide.nerve if (slide.nerve is not None) else slide.fascicles[0].outer
+
+                # create line between outer centroid and orientation centroid
+                ray = LineString([outer.centroid(), orientation_centroid])
+
+                # find intersection point with outer (interpolated)
+                intersection = ray.intersection(outer.polygon().boundary)
+
+                # find all distances from discrete outer points to intersection point
+                distances = [Point(point[:2]).distance(intersection) for point in outer.points]
+
+                # get index of minimized distance (i.e., index of point on outer trace)
+                slide.orientation_point_index = np.where(np.array(distances == np.min(distances)))[0][0]
 
             # shrinkage correction
             slide.scale(1 + self.search(Config.SAMPLE, "scale", "shrinkage_scale"))

@@ -188,7 +188,9 @@ class Deformable(Exceptionable):
         return movements, rotations
 
     @staticmethod
-    def deform_steps(start: Trace, end: Trace, count: int = 2, deform_ratio: float = 1.0) -> List[Trace]:
+    def deform_steps(start: Trace, end: Trace, count: int = 2, deform_ratio: float = 1.0, slide: Slide = None) -> List[Trace]:
+        # TODO: map orientation point index to new index -> need to return this?
+
         # Find point along old_nerve that is closest to major axis of best fit ellipse
         (x, y), (a, b), angle = start.ellipse()  # returns degrees
 
@@ -217,6 +219,12 @@ class Deformable(Exceptionable):
         # to match rotation of trace points.
         while True:
             associated_points[start_i] = (start.points[start_i], end.points[end_i])
+
+            # map slide.orientation_point_index
+            if (slide is not None) and\
+               (slide.orientation_point_index is not None) and\
+               (slide.orientation_point_index == start_i):
+                slide.orientation_point_index = end_i
 
             if start_i == len(start.points) - 1:
                 start_i = 0
