@@ -450,10 +450,6 @@ class Runner(Exceptionable, Configurable):
         if orientation_point is not None:
             theta_f += np.arctan2(orientation_point[0], orientation_point[1])
 
-        print('theta_c: {}'.format(theta_c))
-        print('theta_f: {}'.format(theta_f))
-        print('theta_i: {}'.format(theta_i))
-
         if cuff_shift_mode == CuffShiftMode.MIN_CIRCLE_BOUNDARY:
             if r_i < r_f:
                 model_config['cuff']['rotate']['pos_ang'] = (theta_f - theta_i + theta_c + np.pi) * 360 / (2 * np.pi)
