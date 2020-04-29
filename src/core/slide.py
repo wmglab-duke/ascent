@@ -199,11 +199,11 @@ class Slide(Exceptionable):
         for fascicle in self.fascicles:
             fascicle.plot(inner_format)
 
-        # if final plot, add title and show
-        if final:
-            if title is not None:
-                plt.title(title)
+        if title is not None:
+            plt.title(title)
 
+        # if final plot, show
+        if final:
             plt.show()
 
     def scale(self, factor: float):

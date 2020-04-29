@@ -86,7 +86,8 @@ class Query(Exceptionable, Configurable, Saveable):
 
             # if no downstream criteria and NOT including downstream, skip lower loops
             # note also that the post loop removal of samples will be skipped (as we desire in this case)
-            if model_criteria is None and sim_criteria is None and not include_downstream:
+            if (model_criteria is None) and (model_indices is None) \
+                    and (sim_criteria is None) and (sim_indices is None) and (not include_downstream):
                 continue
 
             # loop models
@@ -172,16 +173,17 @@ class Query(Exceptionable, Configurable, Saveable):
         with open(self.build_path(mode, indices), 'rb') as obj:
             return pickle.load(obj)
 
-    def build_path(self, mode: Union[Config, Object], indices: List[int] = None) -> str:
+    def build_path(self, mode: Union[Config, Object], indices: List[int] = None, just_directory: bool = False) -> str:
         """
 
+        :param just_directory:
         :param mode:
         :param indices:
         :return:
         """
 
         result = str()
-        just_directory = False
+        # just_directory = False
 
         if indices is None:
             indices = [0, 0, 0]  # dummy values... will be stripped from path later bc just_directory is set to True
