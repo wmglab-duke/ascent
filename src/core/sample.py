@@ -253,6 +253,11 @@ class Sample(Exceptionable, Configurable, Saveable):
 
             if nerve_mode == NerveMode.PRESENT:
                 # check and load in nerve, throw error if not present
+
+                # TODO if orietnation is present (copy past from deformable.deformsteps in Trace/Nerve), find  of point closest on Trace, store index in slide (default none)
+                # if necessary, in deformable, in deformsteps, get the index after deformsteps save to slide
+                # compute-cuff-shift, get this point from slide and use arctan2
+
                 if exists(MaskFileNames.NERVE):
                     contour, _ = cv2.findContours(np.flipud(cv2.imread(MaskFileNames.NERVE.value, -1)),
                                                   cv2.RETR_TREE,
