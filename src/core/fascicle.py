@@ -53,6 +53,7 @@ class Fascicle(Exceptionable):
         pairs: List[Tuple[Trace]] = list(itertools.combinations(self.all_traces(), 2))
         if any([pair[0].intersects(pair[1]) for pair in pairs]):
             self.plot()
+            plt.axes().set_aspect('equal')
             plt.show()
             self.throw(9)
 
