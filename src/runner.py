@@ -355,8 +355,6 @@ class Runner(Exceptionable, Configurable):
         nerve_copy.down_sample(DownSampleMode.KEEP, int(np.floor(nerve_copy.points.size / n_points_nerve)))
         x, y, r_bound = nerve_copy.smallest_enclosing_circle_naive()
 
-        # TODO: centroid of fascicles
-
         # next calculate the angle of the "centroid" to the center of min bound circle
         # if mono fasc, just use 0, 0 as centroid (i.e., centroid of nerve same as centroid of all fasc)
         # if poly fasc, use centroid of all fascicle as reference, not 0, 0
@@ -364,7 +362,7 @@ class Runner(Exceptionable, Configurable):
         reference_x = reference_y = 0.0
         if not slide.monofasc():
             reference_x, reference_y = slide.fascicle_centroid()
-        theta_c = np.arctan2(y - reference_y, x - reference_x)
+        theta_c = np.arctan2(y - reference_y, x - reference_x)  # TODO cool up to here
 
         # calculate final necessary radius by adding buffer
         r_f = r_bound + cuff_r_buffer
