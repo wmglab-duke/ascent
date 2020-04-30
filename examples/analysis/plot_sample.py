@@ -1,13 +1,19 @@
 #!/usr/bin/env python3.7
 
 import os
+import sys
+
+root = os.path.abspath(os.path.join(*'../../'.split('/')))
+sys.path.append(root)
 
 from src.core import Sample
 from src.core.query import Query
 from src.utils import Object
 
+
+
 cwd = os.getcwd()
-root = os.path.abspath(os.path.join(*'../../'.split('/')))
+
 
 os.chdir(root)
 
