@@ -48,7 +48,7 @@
       "y": 0,
       "z": 0
     },
-    "preset": "Madison.json"
+    "preset": "LivaNova.json"
   },
   "conductivities": {
     "recess": "saline",

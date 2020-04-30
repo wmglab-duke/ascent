@@ -52,6 +52,8 @@ class Fascicle(Exceptionable):
         # ensure no Traces intersect (and only check each pair of Traces once)
         pairs: List[Tuple[Trace]] = list(itertools.combinations(self.all_traces(), 2))
         if any([pair[0].intersects(pair[1]) for pair in pairs]):
+            self.plot()
+            plt.show()
             self.throw(9)
 
     def intersects(self, other: Union['Fascicle', Nerve]):
