@@ -254,7 +254,7 @@ class Deformable(Exceptionable):
         return traces[:int((deform_ratio if deform_ratio is not None else 1) * count)]
 
     @staticmethod
-    def from_slide(slide: Slide, mode: ReshapeNerveMode, minimum_distance: float = 0.0) -> 'Deformable':
+    def from_slide(slide: Slide, mode: ReshapeNerveMode, minimum_distance: float = 0.0, nerve_add: float = None) -> 'Deformable':
         # method in slide will pull out each trace and add to a list of contents, go through traces and build polygons
 
         bounds = slide.nerve.polygon().bounds
@@ -267,7 +267,9 @@ class Deformable(Exceptionable):
         boundary_start = slide.nerve.deepcopy()
 
         # get end boundary
-        boundary_end = slide.reshaped_nerve(mode, buffer=minimum_distance).deepcopy()
+        if nerve_add is None:
+            nerve_add = 0.0
+        boundary_end = slide.reshaped_nerve(mode, buffer=minimum_distance + nerve_add).deepcopy()
 
         # get contents
         contents = [fascicle.outer.deepcopy() for fascicle in slide.fascicles]

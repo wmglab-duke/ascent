@@ -320,15 +320,16 @@ class Sample(Exceptionable, Configurable, Saveable):
                 dist = self.search(Config.SAMPLE, "min_fascicle_separation", "dist")
                 nerve_add = None
 
-
                 if 'nerve_addition' in self.search(Config.SAMPLE, 'min_fascicle_separation').keys():
                     nerve_add = self.search(Config.SAMPLE, 'min_fascicle_separation', 'nerve_addition')
+                    print('Accounting for additional nerve boundary buffer: {}'.format(nerve_add))
 
                 print('\t\tensuring minimum fascicle separation of {} um'.format(dist))
 
                 deformable = Deformable.from_slide(slide,
                                                    ReshapeNerveMode.CIRCLE,
-                                                   minimum_distance=dist if nerve_add is None else dist + nerve_add)
+                                                   minimum_distance=dist,
+                                                   nerve_add=nerve_add)
 
                 movements, rotations = deformable.deform(morph_count=morph_count,
                                                          render=deform_animate,
