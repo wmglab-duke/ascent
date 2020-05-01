@@ -134,7 +134,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
             # otherwise, use the default weights (generally you don't want to rely on this as cuffs have different
             # numbers of contacts
             active_srcs_list = self.search(Config.SIM, "active_srcs", "default")
-            print("WARNING: Attempting to use default value for active_srcs: {}".format(active_srcs_list))
+            print("\t\tWARNING: Attempting to use default value for active_srcs: {}".format(active_srcs_list))
 
         #  loop over the contact weights, make sure the the values obey two rules:
         #      (1) current conservation

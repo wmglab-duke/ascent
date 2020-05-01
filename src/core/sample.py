@@ -322,7 +322,7 @@ class Sample(Exceptionable, Configurable, Saveable):
 
                 if 'nerve_addition' in self.search(Config.SAMPLE, 'min_fascicle_separation').keys():
                     nerve_add = self.search(Config.SAMPLE, 'min_fascicle_separation', 'nerve_addition')
-                    print('Accounting for additional nerve boundary buffer: {}'.format(nerve_add))
+                    print('\t\taccounting for additional nerve boundary buffer: {}'.format(nerve_add))
 
                 print('\t\tensuring minimum fascicle separation of {} um'.format(dist))
 
