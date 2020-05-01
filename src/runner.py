@@ -114,7 +114,7 @@ class Runner(Exceptionable, Configurable):
 
         # instantiate sample
         if smart and os.path.exists(sample_file):
-            print('Found existing sample: {}'.format(self.configs[Config.RUN.value]['sample']))
+            print('Found existing sample {} ({})'.format(self.configs[Config.RUN.value]['sample'], sample_file))
             sample = load(sample_file)
         else:
             # init slide manager
@@ -174,7 +174,7 @@ class Runner(Exceptionable, Configurable):
 
                 # init fiber manager
                 if smart and os.path.exists(sim_obj_file):
-                    print('Found existing sim object for sim: {}'.format(sim_index))
+                    print('Found existing sim object for sim {} ({})'.format(sim_index, sim_obj_file))
 
                     simulation: Simulation = load(sim_obj_file)
                     potentials_exist.append(simulation.potentials_exist(sim_obj_dir))
