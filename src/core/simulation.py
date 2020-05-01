@@ -143,7 +143,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
         for active_srcs in active_srcs_list:
             active_src_abs = [abs(src_weight) for src_weight in active_srcs]
             if len(active_srcs) == 1:
-                if sum(active_srcs) is not 1:
+                if sum(active_srcs) not in [1, -1]:
                     self.throw(50)
             else:
                 if sum(active_srcs) is not 0:
