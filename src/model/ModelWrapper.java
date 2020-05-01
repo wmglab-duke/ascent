@@ -1011,7 +1011,7 @@ public class ModelWrapper {
 
             // if bases directory does not yet exist, make it
             File basesPathFile = new File(bases_directory);
-            if (! basesPathFile.exists()) {
+            if ((! basesPathFile.exists()) || (basesPathFile.list().length < 1)) {
                 // Load MODEL configuration data
                 String modelFile = String.join("/", new String[]{
                         "samples",
