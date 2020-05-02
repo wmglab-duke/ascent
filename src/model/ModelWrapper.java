@@ -496,7 +496,7 @@ public class ModelWrapper {
                 JSONArray src_combo_list;
                 if (active_srcs.has(cuff)) {
                     src_combo_list = active_srcs.getJSONArray(cuff);
-                    System.out.println("found the assigned contact weighting for " + cuff + " in sim" + sim_num + "config file");
+                    System.out.println("Found the assigned contact weighting for " + cuff + " in sim " + sim_num + " config file");
                 } else {
                     src_combo_list = active_srcs.getJSONArray("default");
                     System.out.println("WARNING: did NOT find the assigned contact weighting for " + cuff +
@@ -1049,7 +1049,7 @@ public class ModelWrapper {
                                 );
                             }
 
-                            System.out.println("skipMesh = true;");
+//                            System.out.println("skipMesh = true;");
                             skipMesh = true;
                         }
 
@@ -1065,6 +1065,8 @@ public class ModelWrapper {
 
                             // if there was a mesh match
                             if (meshMatch != null) {
+
+                                System.out.println("meshMatch.getPath() = " + meshMatch.getPath());
 
                                 model = meshMatch.getMph();
                                 mw = new ModelWrapper(model, projectPath);
