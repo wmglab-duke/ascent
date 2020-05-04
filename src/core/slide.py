@@ -204,8 +204,12 @@ class Slide(Exceptionable):
         if not self.monofasc():
             self.nerve.plot(plot_format='g-')
 
-        if not len(self.fascicles) == len(fascicle_colors):
-            self.throw(65)
+        if fascicle_colors is not None:
+            if not len(self.fascicles) == len(fascicle_colors):
+                self.throw(65)
+        else:
+            fascicle_colors = [None] * len(self.fascicles)
+
 
         for fascicle, color in zip(self.fascicles, fascicle_colors):
             fascicle.plot(inner_format, color)

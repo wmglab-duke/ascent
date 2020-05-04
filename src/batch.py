@@ -40,6 +40,7 @@ for run_number in sys.argv[1:]:
                 for sim_name in [x for x in os.listdir(sim_dir) if sim_name_base in x]:
                     sim_path = os.path.join(sim_dir, sim_name)
                     fibers_path = os.path.join(sim_path, 'data', 'inputs')
+                    output_path = os.path.join(sim_path, 'data', 'outputs')
                     out_dir = os.path.abspath(os.path.join(sim_path, 'logs', 'out'))
                     err_dir = os.path.abspath(os.path.join(sim_path, 'logs', 'err'))
 
@@ -62,6 +63,11 @@ for run_number in sys.argv[1:]:
                         inner_ind = int(inner_name.split('inner')[-1])
                         fiber_ind = int(fiber_name.split('fiber')[-1])
                         # print('\t{}\t{}'.format(inner_ind, fiber_ind))
+
+                        thresh_path = os.path.join(output_path, 'thresh_inner{}_fiber{}.dat'.format(inner_ind, fiber_ind))
+                        if os.path.exists(thresh_path):
+                            print('Found {} -->\t\tskipping inner ({}) fiber ({})'.format(thresh_path, inner_ind, fiber_ind))
+                            continue
 
                         # write start.slurm
                         start_path = os.path.join(sim_path, 'start.slurm')
