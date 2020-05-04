@@ -16,7 +16,7 @@ import pyclipper
 import pymunk
 
 # access
-from src.utils import *
+from src.utils import Exceptionable, DownSampleMode, Config, WriteMode
 
 
 class Trace(Exceptionable):
@@ -387,14 +387,20 @@ class Trace(Exceptionable):
         return Trace(points, self.configs[Config.EXCEPTIONS.value])
 
     # %% output
-    def plot(self, plot_format: str = 'k-'):
+    def plot(self, plot_format: str = 'k-', color: Tuple[float, float, float, float] = None):
         """
+        :param color:
         :param plot_format: the plt.plot format spec (see matplotlib docs)
         """
         # append first point to plot as loop
         points = np.vstack([self.points, self.points[0]])
+
+        if color is not None:
+            plt.fill(points[:, 0], points[:, 1], color=color)
+
         plt.plot(points[:, 0], points[:, 1], plot_format)
-        #plt.show()
+
+
 
     def plot_centroid(self, plot_format: str = 'k*'):
         """

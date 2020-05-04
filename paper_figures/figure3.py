@@ -1,7 +1,7 @@
 import json
 import os
 from src.utils.enums import SetupMode, Config
-from matplotlib import pyplot as plt
+import matplotlib.pyplot as plt
 
 from src.core import Waveform
 

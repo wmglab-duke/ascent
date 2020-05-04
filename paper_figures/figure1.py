@@ -1,7 +1,7 @@
 import os
 
 import pickle
-from matplotlib import pyplot as plt
+import matplotlib.pyplot as plt
 
 from src.core import Sample
 

@@ -13,10 +13,12 @@ Description:
 
 """
 # builtins
+import os
 import pickle
 from typing import List
 
 import sys
+import numpy as np
 
 # packages
 import subprocess
@@ -27,7 +29,8 @@ from copy import deepcopy
 from quantiphy import Quantity
 
 from src.core import Sample, Simulation, Waveform
-from src.utils import *
+from src.utils import Exceptionable, Configurable, SetupMode, Config, NerveMode, DownSampleMode, WriteMode, \
+    CuffShiftMode, PerineuriumResistivityMode, TemplateOutput
 from shapely.geometry import Point
 
 

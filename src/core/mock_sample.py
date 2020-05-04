@@ -63,18 +63,18 @@ class MockSample(Exceptionable, Configurable):
         return fig
 
     @staticmethod
-    def add_ellipse_binary_mask(fig: plt.figure(), ell: shapely.geometry.polygon):
+    def add_ellipse_binary_mask(fig: plt.Figure, ell: shapely.geometry.polygon):
         ell_x, ell_y = ell.exterior.xy
         fig.axes[0].fill(ell_x, ell_y, 'w')
         return fig
 
     @staticmethod
-    def add_scalebar_binary_mask(fig: plt.figure(), slength: int):
+    def add_scalebar_binary_mask(fig: plt.Figure, slength: int):
         fig.axes[0].plot([-slength / 2, slength / 2], [0, 0], '-w')
         return fig
 
     @staticmethod
-    def write_binary_mask(fig: plt.figure(), dest: str, dpi: int):
+    def write_binary_mask(fig: plt.Figure, dest: str, dpi: int):
         # https://inneka.com/ml/opencv/how-to-read-image-from-in-memory-buffer-stringio-or-from-url-with-opencv-python-library/
         def create_opencv_image_from_stringio(img_stream, cv2_img_flag=0):
             img_stream.seek(0)

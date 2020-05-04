@@ -6,7 +6,7 @@ import time
 import sys
 
 # access
-from src import Runner
+from src.runner import Runner
 from src.utils.enums import SetupMode, Config
 
 if not (sys.version_info.major == 3 and sys.version_info.minor >= 7):

@@ -1,8 +1,9 @@
+import os
 import pickle
 from typing import Union, List
 
 from src.core import Sample, Simulation
-from src.utils import *
+from src.utils import Exceptionable, Configurable, Saveable, SetupMode, Config, Object
 
 
 class Query(Exceptionable, Configurable, Saveable):
@@ -147,6 +148,8 @@ class Query(Exceptionable, Configurable, Saveable):
                 result[samples_key].pop(-1)
 
         self._result = result
+
+        return self
 
     def summary(self) -> dict:
         """

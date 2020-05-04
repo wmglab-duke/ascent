@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 from .fascicle import Fascicle
 from .nerve import Nerve
 from .trace import Trace
-from src.utils import *
+from src.utils import Exceptionable, NerveMode, SetupMode, ReshapeNerveMode, WriteMode
 
 
 class Slide(Exceptionable):
@@ -182,7 +182,12 @@ class Slide(Exceptionable):
         else:
             self.throw(16)
 
-    def plot(self, title: str = None, final: bool = True, inner_format: str = 'b-', fix_aspect_ratio: bool = False):
+    def plot(self,
+             title: str = None,
+             final: bool = True,
+             inner_format: str = 'b-',
+             fix_aspect_ratio: bool = False,
+             fascicle_colors: List[Tuple[float, float, float, float]] = None):
         """
         Quick util for plotting the nerve and fascicles
         :param title: optional string title for plot
@@ -199,8 +204,11 @@ class Slide(Exceptionable):
         if not self.monofasc():
             self.nerve.plot(plot_format='g-')
 
-        for fascicle in self.fascicles:
-            fascicle.plot(inner_format)
+        if not len(self.fascicles) == len(fascicle_colors):
+            self.throw(65)
+
+        for fascicle, color in zip(self.fascicles, fascicle_colors):
+            fascicle.plot(inner_format, color)
 
         if title is not None:
             plt.title(title)

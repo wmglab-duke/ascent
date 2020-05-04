@@ -1,20 +1,24 @@
 #!/usr/bin/env python3.7
 
+# RUN THIS FROM REPOSITORY ROOT
+
 import os
-import matplotlib.pyplot as plt
-from matplotlib import cm
-import numpy as np
+import sys
+import random as r
 
 from src.core import Sample
+
+sys.path.append(os.getcwd())
+
+import matplotlib.pyplot as plt
+from matplotlib import cm
+
 from src.core.query import Query
 from src.utils import Object
 
-cwd = os.getcwd()
-root = os.path.abspath(os.path.join(*'../../'.split('/')))
+plt.show()
 
-os.chdir(root)
-
-criteria = {
+q = Query({
     'partial_matches': True,
     'include_downstream': True,
     'indices': {
@@ -22,18 +26,25 @@ criteria = {
         'model': [0],
         'sim': [0]
     }
-}
+}).run()
 
+# sam = q.get_object(Object.SAMPLE, [3, 0, 0])
+#
+# l = len(sam.slides[0].fascicles)
+#
+# colormap = cm.get_cmap('viridis')
+#
+# colors = [colormap(n/l) for n in range(l)]
+#
+# sam.slides[0].plot(final=True, fix_aspect_ratio=True, fascicle_colors=colors)
 
-q = Query(criteria)
-q.run()
 
 results: dict = q.summary()
 
 sample_metadata: dict
 for sample_metadata in results.get('samples', []):
     sample_index = sample_metadata['index']
-    sample_object = q.get_object(Object.SAMPLE, [sample_index])
+    sample_object: Sample = q.get_object(Object.SAMPLE, [sample_index])
 
     model_metadata: dict
     for model_metadata in sample_metadata.get('models', []):
@@ -58,33 +69,7 @@ for sample_metadata in results.get('samples', []):
                 for wave_key_name, wave_key_value in zip(sim_object.wave_key, sim_object.wave_product[waveform_index]):
                     title = '{} {}={}'.format(title, wave_key_name, wave_key_value)
 
-                sample_object.slides[0].plot(final=False, title=title)
+                n_inners = sum(len(fasc.inners) for fasc in sample_object.slides[0].fascicles)
 
-                colormap = cm.get_cmap('viridis', 1000)
-
-                n_fibers = len(sim_object.fibersets[fiberset_index].fibers)
-
-                missing_fibers = [i for i in range(n_fibers)
-                                  if not os.path.exists(os.path.join(n_sim_dir, 'data', 'outputs', 'thresh_inner0_fiber{}.dat'.format(i)))]
-
-                thresholds = [np.loadtxt(
-                    os.path.join(n_sim_dir, 'data', 'outputs', 'thresh_inner0_fiber{}.dat'.format(i))
-                )[2] for i in range(n_fibers) if i not in missing_fibers]
-
-                max_threshold = max(thresholds)
-                min_threshold = min(thresholds)
-
-                for filename in [f for f in os.listdir(fiberset_dir) if int(f.split('.dat')[0]) not in missing_fibers]:
-                    coord = np.loadtxt(os.path.join(fiberset_dir, filename), skiprows=1)[0][:2]
-
-                    threshold = np.loadtxt(
-                        os.path.join(n_sim_dir, 'data', 'outputs', 'thresh_inner0_fiber{}.dat'.format(filename.split('.dat')[0]))
-                    )[2]
-
-                    print((threshold - min_threshold)/(max_threshold - min_threshold))
-
-                    plt.plot(*coord, '*', color=colormap((threshold - min_threshold)/(max_threshold - min_threshold)))
-
-                plt.show()
-
-os.chdir(cwd)
+                # TODO: Finish building heatmap of polyfasc nerve (1 fiber/fasc)
+                # also, look into adding documentation to Simulation (might be useful for above task too)

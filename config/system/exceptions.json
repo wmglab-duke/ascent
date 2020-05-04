@@ -323,5 +323,10 @@
     "code": 64,
     "text": "Explicit fascicle positions are too close to each other, the nerve boundary, or are outside the boundary for EXPLICIT method",
     "source": "src.core.mock_sample"
+  },
+  {
+    "code": 65,
+    "text": "Length of fascicle colors list must match length of fascicles list.",
+    "source": "src.core.Trace.plot"
   }
 ]

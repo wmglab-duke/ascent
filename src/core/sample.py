@@ -1,19 +1,23 @@
 #!/usr/bin/env python3.7
 
 # builtins
+import os
 from typing import List, Tuple, Union
 
 # packages
 import cv2
-import matplotlib.pyplot as plt
 import shutil
+import numpy as np
+import matplotlib.pyplot as plt
 
 # access
 from shapely.geometry import LineString, Point
 
 from src.core import Slide, Map, Fascicle, Nerve, Trace
 from .deformable import Deformable
-from src.utils import *
+from src.utils import Exceptionable, Configurable, Saveable, SetupMode, Config, MaskFileNames, NerveMode, \
+    MaskInputMode, ReshapeNerveMode, DeformationMode, PerineuriumThicknessMode, WriteMode, CuffInnerMode, \
+    TemplateOutput, TemplateMode
 
 
 class Sample(Exceptionable, Configurable, Saveable):
