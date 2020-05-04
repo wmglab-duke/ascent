@@ -1,14 +1,13 @@
 {
   "modes": {
     "rho_perineurium_method": "RHO_WEERASURIYA",
-    "use_ci": true,
-    "cuff_rotation_mode": "AUTOMATIC",
     "cuff_shift_mode": "MIN_CIRCLE_BOUNDARY",
-    "fiber_z": "EXTRUSION"
+    "fiber_z": "EXTRUSION",
+    "use_ci": true
   },
   "solution": {
     "time_units": "ms",
-    "sol_time": 155739.013891
+    "sol_time": 69.376554
   },
   "temperature": {
     "unit": "celsius",
@@ -24,8 +23,8 @@
         "y": 0,
         "z": 0
       },
-      "length": 25000,
-      "radius": 4000
+      "length": 12500,
+      "radius": 3000
     },
     "proximal": {
       "distant_ground": false,
@@ -64,8 +63,9 @@
   },
   "min_radius_enclosing_circle": 237.44249404941704,
   "mesh": {
-    "distal": {
-      "mesh_time": 2676.621388,
+    "order": 2,
+    "rest": {
+      "mesh_time": 12976.143515,
       "time_units": "ms",
       "hcurve": 0.2,
       "hmin": 2,
@@ -78,15 +78,15 @@
       "hgrad": 1.8
     },
     "stats": {
-      "volume": 1250000000000.0,
-      "min_quality": 0.2308,
-      "min_volume": 0.3568,
+      "volume": 156300000000.0,
+      "min_quality": 0.2336,
+      "min_volume": 0.2413,
       "quality_measure": "vollength",
-      "number_elements": 791720,
-      "mean_quality": 0.7052
+      "number_elements": 873603,
+      "mean_quality": 0.7222
     },
-    "proximal": {
-      "mesh_time": 20886.708672,
+    "nerve": {
+      "mesh_time": 7927.105108,
       "time_units": "ms",
       "hcurve": 0.2,
       "hmin": 2,
@@ -100,6 +100,8 @@
     }
   },
   "solver": {
+    "sorder": "quadratic"
+    "shape_order": 2,
     "name": "COMSOL Multiphysics 5.4 (Build: 388)"
   },
   "frequency": {
