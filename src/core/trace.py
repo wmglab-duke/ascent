@@ -16,7 +16,7 @@ import pyclipper
 import pymunk
 
 # access
-from src.utils import Exceptionable, DownSampleMode, Config, WriteMode
+from src.utils import Exceptionable, DownSampleMode, Config, WriteMode, SetupMode
 
 
 class Trace(Exceptionable):
