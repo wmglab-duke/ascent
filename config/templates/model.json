@@ -1,14 +1,13 @@
 {
   "modes": {
     "rho_perineurium_method": "RHO_WEERASURIYA",
-    "use_ci": true,
-    "cuff_rotation_mode": "AUTOMATIC",
     "cuff_shift_mode": "MIN_CIRCLE_BOUNDARY",
-    "fiber_z": "EXTRUSION"
+    "fiber_z": "EXTRUSION",
+    "use_ci": true
   },
   "solution": {
     "time_units": "ms",
-    "sol_time": 155739.013891
+    "sol_time": 69.376554
   },
   "temperature": {
     "unit": "celsius",
@@ -24,8 +23,8 @@
         "y": 0,
         "z": 0
       },
-      "length": 25000,
-      "radius": 4000
+      "length": 12500,
+      "radius": 3000
     },
     "proximal": {
       "distant_ground": false,
@@ -38,12 +37,12 @@
     "rotate": {
       "unit": "[degree]",
       "add_ang": 0,
-      "pos_ang": 13.990590613341357
+      "pos_ang": 11.75116327313171
     },
     "shift": {
       "unit": "[micrometer]",
-      "x": -2.984035600398961,
-      "y": 1.20619872660847,
+      "x": -0.4306266329669235,
+      "y": 0.1939726366297183,
       "z": 0
     },
     "preset": "Purdue.json"
@@ -62,10 +61,10 @@
     "endoneurium": "endoneurium",
     "epineurium": "epineurium"
   },
-  "min_radius_enclosing_circle": 237.44249404941704,
+  "min_radius_enclosing_circle": 234.7481180238438,
   "mesh": {
     "distal": {
-      "mesh_time": 2676.621388,
+      "mesh_time": 12976.143515,
       "time_units": "ms",
       "hcurve": 0.2,
       "hmin": 2,
@@ -78,15 +77,15 @@
       "hgrad": 1.8
     },
     "stats": {
-      "volume": 1250000000000.0,
-      "min_quality": 0.2308,
-      "min_volume": 0.3568,
+      "volume": 0,
+      "min_quality": 0,
+      "min_volume": 0,
       "quality_measure": "vollength",
-      "number_elements": 791720,
-      "mean_quality": 0.7052
+      "number_elements": 0,
+      "mean_quality": 0
     },
     "proximal": {
-      "mesh_time": 20886.708672,
+      "mesh_time": 12976.143515,
       "time_units": "ms",
       "hcurve": 0.2,
       "hmin": 2,
@@ -100,6 +99,8 @@
     }
   },
   "solver": {
+    "sorder": "quadratic",
+    "shape_order": 2,
     "name": "COMSOL Multiphysics 5.4 (Build: 388)"
   },
   "frequency": {

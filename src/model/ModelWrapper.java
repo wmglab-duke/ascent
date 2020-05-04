@@ -1109,6 +1109,9 @@ public class ModelWrapper {
                     model.component().create("comp1", true);
                     // Add 3D geom to component node 1
                     model.component("comp1").geom().create("geom1", 3);
+                    // geometry shape order
+                    String sorder = modelData.getJSONObject("solver").getString("sorder");
+                    model.component("comp1").sorder(sorder);
                     // Set default length units to micron
                     model.component("comp1").geom("geom1").lengthUnit("\u00b5m");
                     // Add materials node to component node 1
@@ -1271,6 +1274,8 @@ public class ModelWrapper {
                     model.component("comp1").geom("geom1").run("fin");
 
                     // MESH
+                    int shape_order = modelData.getJSONObject("solver").getInt("shape_order");
+                    model.component("comp1").physics("ec").prop("ShapeProperty").set("order_electricpotential", shape_order);
 
                     // define MESH for PROXIMAL
                     // swept: name (Sweep) and im (swe), facemethod (tri)
