@@ -41,7 +41,7 @@ q = Query({
     'include_downstream': True,
     'indices': {
         'sample': [3],
-        'model': [0],
+        'model': [0, 1, 2, 3],
         'sim': [0]
     }
 }).run()
@@ -90,27 +90,32 @@ for sample_results in results.get('samples', []):
                 fiberset_dir = os.path.join(sim_dir, 'fibersets', str(fiberset_index))
 
                 # %% fetch thresholds, perform necessary calculations
-
                 thresholds = []
+                missing_indices = []
                 for i in range(n_inners):
                     thresh_path = os.path.join(n_sim_dir, 'data', 'outputs', 'thresh_inner{}_fiber0.dat'.format(i))
                     if os.path.exists(thresh_path):
                         thresholds.append(np.loadtxt(thresh_path)[2])
                     else:
+                        missing_indices.append(i)
                         print('MISSING: {}'.format(thresh_path))
+                max_thresh = max(thresholds)
+                min_thresh = min(thresholds)
 
-                continue
-
-                max_threshold = max(thresholds)
-                min_threshold = min(thresholds)
+                # %% generate colors from colorbar and thresholds
+                cmap = plt.cm.get_cmap('viridis').reversed()
+                colors = []
+                offset = 0
+                for i in range(n_inners):
+                    actual_i = i - offset
+                    if i not in missing_indices:
+                        colors.append(cmap((thresholds[actual_i] - min_thresh)/(max_thresh - min_thresh)))
+                    else:
+                        offset += 1
+                        colors.append((1, 0, 0, 1))
 
                 # %% init figure
                 fig: plt.Figure = plt.figure()
-                ax: plt.Axes = fig.axes()
-                cmap = plt.cm.get_cmap('viridis').reversed()
-                norm = mplcolors.Normalize(vmin=5, vmax=10)
-                cb = mplcolorbar.ColorbarBase(ax, cmap=cmap, norm=norm, orientation='vertical')
-                cb.set_label(r'Threshold, \mu A')
 
                 # %% figure title
                 title = ''
@@ -124,7 +129,15 @@ for sample_results in results.get('samples', []):
                 # %% plot orientation point and fascicles
                 plt.plot(*orientation_point, 'r.', markersize=20)
 
-                sample_object.slides[0].plot(final=True, fix_aspect_ratio=True)  # , fascicle_colors=colors)
+                sample_object.slides[0].plot(final=False, fix_aspect_ratio=True, fascicle_colors=colors)  # , fascicle_colors=colors)
+
+                # %% plot colorbar
+                ax = fig.axes[0]
+                norm = mplcolors.Normalize(vmin=min_thresh, vmax=max_thresh)
+                mappable = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+                plt.colorbar(mappable=mappable, ax=ax, orientation='vertical')
+
+                plt.show()
 
                 # TODO: Finish building heatmap of polyfasc nerve (1 fiber/fasc)
                 # also, look into adding documentation to Simulation (might be useful for above task too)
