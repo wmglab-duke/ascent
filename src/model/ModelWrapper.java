@@ -1324,9 +1324,6 @@ public class ModelWrapper {
                     long estimatedNerveMeshTime = System.nanoTime() - nerveMeshStartTime;
                     proximalMeshParams.put("mesh_time",estimatedNerveMeshTime/Math.pow(10,6)); // convert nanos to millis
 
-                    System.out.println("Saving MPH (post proximal mesh) file to: " + geomFile);
-                    model.save(geomFile);
-
                     // define MESH for DISTAL
                     // swept: name (Sweep) and im (swe), facemethod (tri)
                     // free triangular: name (FreeTet) and im (ftet)
@@ -1356,14 +1353,6 @@ public class ModelWrapper {
                         meshDistalSizeInfo.set("hnarrowactive", true);
                         meshDistalSizeInfo.set("hnarrow", meshDistalParams.getDouble("hnarrow"));
 
-                        // Saved model pre-mesh for debugging
-                        try {
-                            System.out.println("Saving MPH (pre-distal mesh) file to: " + geomFile);
-                            model.save(geomFile);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
                         System.out.println("Meshing the distal parts... will take a while");
                         long distalMeshStartTime = System.nanoTime();
                         model.component("comp1").mesh("mesh1").run(mw.im.get(meshDistalLabel));
@@ -1374,14 +1363,6 @@ public class ModelWrapper {
                         JSONObject mesh = modelData.getJSONObject("mesh");
                         mesh.put("proximal", proximalMeshParams);
                         modelData.put("mesh", mesh);
-
-                        // Saved model post-mesh for debugging
-                        try {
-                            System.out.println("Saving MPH (post-distal mesh) file to: " + geomFile);
-                            model.save(geomFile);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
 
                     }
 
@@ -1557,7 +1538,7 @@ public class ModelWrapper {
                 }
 
                 // Add perineurium material only if there are any fascicles being meshed
-                if (mw.im.get("periUnionCsel") != null) {
+                if (mw.im.get("periUnionCsel") != null) { // TODO
                     String perineuriumMatLinkLabel = "perineurium material";
                     PropFeature perineuriumMatLink = model.component("comp1").material().create(mw.im.next("matlnk",perineuriumMatLinkLabel), "Link");
                     perineuriumMatLink.selection().named("geom1" +"_" + mw.im.get("periUnionCsel") + "_dom");
