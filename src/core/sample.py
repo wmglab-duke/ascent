@@ -171,12 +171,6 @@ class Sample(Exceptionable, Configurable, Saveable):
         deform_mode = self.search_mode(DeformationMode, Config.SAMPLE)
         deform_ratio = None
 
-        if 'deform_ratio' in self.search(Config.SAMPLE).keys():
-            print('ASSIGNING DEFORM RATIO')
-            deform_ratio = self.search(Config.SAMPLE, 'deform_ratio')
-        else:
-            print('NOT ASSIGNING DEFORM RATIO')
-
         def exists(mask_file_name: MaskFileNames):
             return os.path.exists(mask_file_name.value)
 
@@ -291,6 +285,11 @@ class Sample(Exceptionable, Configurable, Saveable):
                 # get index of minimized distance (i.e., index of point on outer trace)
                 slide.orientation_point_index = np.where(np.array(distances == np.min(distances)))[0][0]
 
+                nerve.plot()
+                plt.plot(*orientation_centroid, 'r*')
+                plt.plot(*tuple(slide.nerve.points[slide.orientation_point_index][:2]), 'b*')
+                plt.show(block=False)
+
             # shrinkage correction
             slide.scale(1 + self.search(Config.SAMPLE, "scale", "shrinkage_scale"))
 
@@ -317,9 +316,16 @@ class Sample(Exceptionable, Configurable, Saveable):
 
             partially_deformed_nerve = None
 
+
+
             if deform_mode == DeformationMode.PHYSICS:
                 print('\t\tsetting up physics')
                 morph_count = 36
+
+                if 'deform_ratio' in self.search(Config.SAMPLE).keys():
+                    deform_ratio = self.search(Config.SAMPLE, 'deform_ratio')
+                    print('\t\tdeform ratio set to {}'.format(deform_ratio))
+
                 # title = 'morph count: {}'.format(morph_count)
                 dist = self.search(Config.SAMPLE, "min_fascicle_separation", "dist")
                 nerve_add = None
@@ -363,6 +369,11 @@ class Sample(Exceptionable, Configurable, Saveable):
                 else:
                     slide.nerve = slide.reshaped_nerve(reshape_nerve_mode)
             # slide.plot(fix_aspect_ratio=True, title=title)
+
+            plt.figure(2)
+            slide.nerve.plot()
+            plt.plot(*tuple(slide.nerve.points[slide.orientation_point_index][:2]), 'b*')
+            plt.show()
 
         return self
 

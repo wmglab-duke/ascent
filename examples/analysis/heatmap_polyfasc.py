@@ -10,86 +10,85 @@
 
 import os
 import sys
-import random as r
 
-import numpy as np
-import matplotlib.pyplot as plt
+sys.path.append(os.path.sep.join([os.getcwd(), '']))
+
+# import matplotlib
 import matplotlib.colors as mplcolors
-import matplotlib.colorbar as mplcolorbar
-import cv2
+import matplotlib.pyplot as plt
+import numpy as np
 
-from src.core import Sample, Trace
+from src.core import Sample
 from src.core.query import Query
-from src.utils import Object, MaskFileNames, Configurable, Config
+from src.utils import Object, Config
 
+# set default fig size
+plt.rcParams['figure.figsize'] = [16.8, 10.14]
+# plt.rcParams['figure.figsize'] = tuple(np.array(plt.rcParams['figure.figsize'])*2)
 
-def plot_orienation_mask(sam_ind: int):
-    filepath = os.path.join('samples', str(sam_ind), 'slides', '0', '0', 'masks', MaskFileNames.ORIENTATION.value)
-    if os.path.exists(filepath):
-        contour, _ = cv2.findContours(np.flipud(cv2.imread(filepath, -1)),
-                                      cv2.RETR_TREE,
-                                      cv2.CHAIN_APPROX_SIMPLE)
-        trace = Trace([point + [0] for point in contour[0][:, 0, :]],
-                      Configurable.load(os.path.join('config', 'system', 'exceptions.json')))
-        trace.plot(plot_format='r-')
-    else:
-        print('Attempted to plot nonexistent orientation mask: {}'.format(filepath))
-
-
+# initialize and run Query, then fetch results
 q = Query({
     'partial_matches': True,
     'include_downstream': True,
     'indices': {
-        'sample': [3],
-        'model': [0, 1, 2, 3],
+        'sample': [4],
+        'model': [0],
         'sim': [0]
     }
 }).run()
-
-# sam = q.get_object(Object.SAMPLE, [3, 0, 0])
-#
-# l = len(sam.slides[0].fascicles)
-#
-# colormap = cm.get_cmap('viridis')
-#
-# colors = [colormap(n/l) for n in range(l)]
-#
-# sam.slides[0].plot(final=True, fix_aspect_ratio=True, fascicle_colors=colors)
-
-
 results: dict = q.summary()
 
+# loop samples
 sample_results: dict
 for sample_results in results.get('samples', []):
     sample_index = sample_results['index']
     sample_object: Sample = q.get_object(Object.SAMPLE, [sample_index])
+    sample_config: dict = q.get_config(Config.SAMPLE, [sample_index])
     slide = sample_object.slides[0]
     n_inners = sum(len(fasc.inners) for fasc in slide.fascicles)
 
+    print('sample: {}'.format(sample_index))
+
+    # loop models
     model_results: dict
     for model_results in sample_results.get('models', []):
         model_index = model_results['index']
 
-        # %% calculate orientation point location (i.e., contact location)
-        r = slide.nerve.mean_radius() * 1.05  # scale up so orientation point is outside nerve
-        theta = np.arctan2(*tuple(slide.nerve.points[slide.orientation_point_index][:2]))
+        print('\tmodel: {}'.format(model_index))
+
+        # calculate orientation point location (i.e., contact location)
+        r = slide.nerve.mean_radius() * 1.1  # scale up so orientation point is outside nerve
+        theta = np.arctan2(*tuple(np.flip(slide.nerve.points[slide.orientation_point_index][:2])))
         theta += np.deg2rad(
             q.get_config(Config.MODEL, [sample_index, model_index]).get('cuff').get('rotate').get('add_ang')
         )
         orientation_point = r * np.cos(theta), r * np.sin(theta)
 
+        # loop sims
         for sim_index in model_results.get('sims', []):
             sim_object = q.get_object(Object.SIMULATION, [sample_index, model_index, sim_index])
 
+            print('\t\tsim: {}'.format(sim_index))
+
+            # init figure with subplots
+            master_product_count = len(sim_object.master_product_indices)
+            rows = int(np.floor(np.sqrt(master_product_count)))
+            cols = int(np.ceil(master_product_count / rows))
+            figure, axes = plt.subplots(rows, cols, constrained_layout=True)
+
+            # loop nsims
             for n, (potentials_product_index, waveform_index) in enumerate(sim_object.master_product_indices):
                 active_src_index, fiberset_index = sim_object.potentials_product[potentials_product_index]
 
-                # %% fetch sim information
+                # fetch axis
+                ax: plt.Axes = axes.reshape(-1)[n]
+
+                # fetch sim information
                 sim_dir = q.build_path(Object.SIMULATION, [sample_index, model_index, sim_index], just_directory=True)
                 n_sim_dir = os.path.join(sim_dir, 'n_sims', str(n))
                 fiberset_dir = os.path.join(sim_dir, 'fibersets', str(fiberset_index))
 
-                # %% fetch thresholds, perform necessary calculations
+                # fetch thresholds, then find min and max
                 thresholds = []
                 missing_indices = []
                 for i in range(n_inners):
@@ -102,7 +101,7 @@ for sample_results in results.get('samples', []):
                 max_thresh = max(thresholds)
                 min_thresh = min(thresholds)
 
-                # %% generate colors from colorbar and thresholds
+                # generate colors from colorbar and thresholds
                 cmap = plt.cm.get_cmap('viridis').reversed()
                 colors = []
                 offset = 0
@@ -114,30 +113,50 @@ for sample_results in results.get('samples', []):
                         offset += 1
                         colors.append((1, 0, 0, 1))
 
-                # %% init figure
-                fig: plt.Figure = plt.figure()
-
-                # %% figure title
+                # figure title -- make arbitrary, hard-coded subplot title modifications here (add elif's)
                 title = ''
                 for fib_key_name, fib_key_value in zip(sim_object.fiberset_key,
                                                        sim_object.fiberset_product[fiberset_index]):
-                    title = '{} {}={}'.format(title, fib_key_name, fib_key_value)
+
+                    if fib_key_name == 'fibers->z_parameters->diameter':
+                        title = r'{} fiber diameter: {}µm'.format(title, fib_key_value)
+                    else:
+                        # default title
+                        title = '{} {}:{}'.format(title, fib_key_name, fib_key_value)
+
                 for wave_key_name, wave_key_value in zip(sim_object.wave_key, sim_object.wave_product[waveform_index]):
-                    title = '{} {}={}'.format(title, wave_key_name, wave_key_value)
-                plt.title(title)
 
-                # %% plot orientation point and fascicles
-                plt.plot(*orientation_point, 'r.', markersize=20)
+                    # default title
+                    title = '{} {}:{}'.format(title, wave_key_name, wave_key_value)
 
-                sample_object.slides[0].plot(final=False, fix_aspect_ratio=True, fascicle_colors=colors)  # , fascicle_colors=colors)
+                ax.set_title(title)
 
-                # %% plot colorbar
-                ax = fig.axes[0]
+                # vals = np.linspace(-1500, 1500, 1000)
+                # ax.plot(vals, vals)
+
+                # plot orientation point and fascicles
+                ax.plot(*orientation_point, 'r.', markersize=20)
+                ax.plot(*tuple(slide.nerve.points[slide.orientation_point_index][:2]), 'b*')
+                sample_object.slides[0].plot(final=False, fix_aspect_ratio=True, fascicle_colors=colors,
+                                             ax=ax, outers_flag=False, inner_format='k-')
+
+                # plot colorbar
                 norm = mplcolors.Normalize(vmin=min_thresh, vmax=max_thresh)
                 mappable = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
-                plt.colorbar(mappable=mappable, ax=ax, orientation='vertical')
+                plt.colorbar(mappable=mappable, ax=ax, orientation='vertical', label=r'mA')
 
-                plt.show()
+            # PLOT!
+            plt.suptitle('Sample: {}, Model: {}, Fiber mode: {}'.format(
+                sample_config.get('sample'),
+                model_index,
+                sim_object.search(Config.SIM, 'fibers', 'mode'))
+            )
+            plt.show()
+
+            # save... remember to change this path
+            # plt.savefig('/Users/jakecariello/Box/SPARC_JakeCariello/Madison/thresholds_figures/{}_{}_{}.png'.format(
+            #     sample_index, model_index, sim_index
+            # ), dpi=400)
 
                 # TODO: Finish building heatmap of polyfasc nerve (1 fiber/fasc)
                 # also, look into adding documentation to Simulation (might be useful for above task too)

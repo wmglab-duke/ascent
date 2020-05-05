@@ -451,7 +451,7 @@ class Runner(Exceptionable, Configurable):
                 orientation_point = slide.fascicles[0].outer.points[slide.orientation_point_index][:2]
 
         if orientation_point is not None:
-            theta_c = -np.pi + np.arctan2(orientation_point[0], orientation_point[1]) # overwrite theta_c, use our own orientation
+            theta_c = -np.pi + np.arctan2(orientation_point[1], orientation_point[0]) # overwrite theta_c, use our own orientation
 
             # if r_i < r_f:
             #     model_config['cuff']['rotate']['pos_ang'] = (theta_c - theta_i + theta_f) * 360 / (2 * np.pi)
