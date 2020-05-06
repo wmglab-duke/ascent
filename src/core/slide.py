@@ -187,22 +187,30 @@ class Slide(Exceptionable):
              final: bool = True,
              inner_format: str = 'b-',
              fix_aspect_ratio: bool = False,
-             fascicle_colors: List[Tuple[float, float, float, float]] = None):
+             fascicle_colors: List[Tuple[float, float, float, float]] = None,
+             ax: plt.Axes = None,
+             outers_flag: bool = True):
         """
         Quick util for plotting the nerve and fascicles
+        :param outers_flag:
+        :param fascicle_colors:
+        :param ax:
         :param title: optional string title for plot
         :param final: optional, if False, will not show or add title (if comparisons are being overlayed)
         :param inner_format: optional format for inner traces of fascicles
         :param fix_aspect_ratio: optional, if True, will set equal aspect ratio
         """
 
+        if ax is None:
+            ax = plt.gca()
+
         # if not the last graph plotted
         if fix_aspect_ratio:
-            plt.axes().set_aspect('equal', 'datalim')
+            ax.set_aspect('equal', 'datalim')
 
         # loop through constituents and plot each
         if not self.monofasc():
-            self.nerve.plot(plot_format='g-')
+            self.nerve.plot(plot_format='g-', ax=ax)
 
         if fascicle_colors is not None:
             if not len(self.fascicles) == len(fascicle_colors):
@@ -210,9 +218,8 @@ class Slide(Exceptionable):
         else:
             fascicle_colors = [None] * len(self.fascicles)
 
-
         for fascicle, color in zip(self.fascicles, fascicle_colors):
-            fascicle.plot(inner_format, color)
+            fascicle.plot(inner_format, color, ax=ax, outer_flag=outers_flag)
 
         if title is not None:
             plt.title(title)

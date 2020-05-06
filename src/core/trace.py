@@ -387,18 +387,23 @@ class Trace(Exceptionable):
         return Trace(points, self.configs[Config.EXCEPTIONS.value])
 
     # %% output
-    def plot(self, plot_format: str = 'k-', color: Tuple[float, float, float, float] = None):
+    def plot(self, plot_format: str = 'k-', color: Tuple[float, float, float, float] = None, ax: plt.Axes = None):
         """
+        :param ax:
         :param color:
         :param plot_format: the plt.plot format spec (see matplotlib docs)
         """
+
+        if ax is None:
+            ax = plt.gca()
+
         # append first point to plot as loop
         points = np.vstack([self.points, self.points[0]])
 
         if color is not None:
-            plt.fill(points[:, 0], points[:, 1], color=color)
+            ax.fill(points[:, 0], points[:, 1], color=color)
 
-        plt.plot(points[:, 0], points[:, 1], plot_format)
+        ax.plot(points[:, 0], points[:, 1], plot_format)
 
 
 
