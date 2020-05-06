@@ -285,10 +285,10 @@ class Sample(Exceptionable, Configurable, Saveable):
                 # get index of minimized distance (i.e., index of point on outer trace)
                 slide.orientation_point_index = np.where(np.array(distances == np.min(distances)))[0][0]
 
-                nerve.plot()
-                plt.plot(*orientation_centroid, 'r*')
-                plt.plot(*tuple(slide.nerve.points[slide.orientation_point_index][:2]), 'b*')
-                plt.show(block=False)
+                # nerve.plot()
+                # plt.plot(*orientation_centroid, 'r*')
+                # plt.plot(*tuple(slide.nerve.points[slide.orientation_point_index][:2]), 'b*')
+                # plt.show(block=False)
 
             # shrinkage correction
             slide.scale(1 + self.search(Config.SAMPLE, "scale", "shrinkage_scale"))
@@ -370,10 +370,10 @@ class Sample(Exceptionable, Configurable, Saveable):
                     slide.nerve = slide.reshaped_nerve(reshape_nerve_mode)
             # slide.plot(fix_aspect_ratio=True, title=title)
 
-            plt.figure(2)
-            slide.nerve.plot()
-            plt.plot(*tuple(slide.nerve.points[slide.orientation_point_index][:2]), 'b*')
-            plt.show()
+            # plt.figure(2)
+            # slide.nerve.plot()
+            # plt.plot(*tuple(slide.nerve.points[slide.orientation_point_index][:2]), 'b*')
+            # plt.show()
 
         return self
 
