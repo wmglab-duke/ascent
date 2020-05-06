@@ -118,4 +118,4 @@ for run_number in sys.argv[1:]:
                         os.remove(start_path)
 
                         # to not crash the scheduler
-                        time.sleep(0.5)
+                        time.sleep(1.0)
