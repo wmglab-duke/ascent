@@ -475,8 +475,8 @@ class Runner(Exceptionable, Configurable):
                 # model_config['cuff']['shift']['x'] = x  # - cuff_r_buffer * np.cos(theta_c)
                 # model_config['cuff']['shift']['y'] = y  # - cuff_r_buffer * np.sin(theta_c)
 
-                model_config['cuff']['shift']['x'] = (r_i - offset - cuff_r_buffer - r_bound) * np.cos(theta_c)  # FIXED?
-                model_config['cuff']['shift']['y'] = (r_i - offset - cuff_r_buffer - r_bound) * np.sin(theta_c)
+                model_config['cuff']['shift']['x'] = x + (r_i - offset - cuff_r_buffer - r_bound) * np.cos(theta_c)  # FIXED?
+                model_config['cuff']['shift']['y'] = y + (r_i - offset - cuff_r_buffer - r_bound) * np.sin(theta_c)
 
             else:
                 model_config['cuff']['rotate']['pos_ang'] = (theta_f - theta_i + theta_c + np.pi) * 360 / (2 * np.pi)
