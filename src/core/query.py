@@ -288,6 +288,8 @@ class Query(Exceptionable, Configurable, Saveable):
         :return: generated figure
         """
 
+        print('WARNING: plot_mode and colorbar_mode not yet implemented')
+
         if self._result is None:
             self.throw(66)
 

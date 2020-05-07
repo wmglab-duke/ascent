@@ -2,7 +2,7 @@
 
 # RUN THIS FROM REPOSITORY ROOT
 
-# ASSUMPTIONS:
+# ASSUMPTIONS: (old, moved to Query.heatmaps)
 #   1) 1:1 inner:outer for all fascicles
 #   2) Single slide for each sample (0_0)
 #   3) Single fiber per inner
