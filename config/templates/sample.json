@@ -1,5 +1,7 @@
 {
-  "sample": "Cadaver50-2",
+  "sample": "Rat16-3",
+  "sex": "M",
+  "level": "Cervical",
   "samples_path": [
     "samples"
   ],
@@ -7,11 +9,11 @@
     "data",
     "input",
     "samples",
-    "Cadaver50-2",
+    "Rat16-3",
     "map.json"
   ],
   "scale": {
-    "scale_bar_length": 1000,
+    "scale_bar_length": 500,
     "scale_bar_unit": "micrometer",
     "shrinkage_scale": 0.2
   },
@@ -21,36 +23,25 @@
   },
   "modes": {
     "write": "sectionwise2d",
-    "mask_input": "INNER_AND_OUTER_SEPARATE",
-    "nerve": "PRESENT",
-    "reshape_nerve": "CIRCLE",
-    "deform": "PHYSICS",
-    "ci_perineurium_thickness": "GRINBERG_2008",
-    "cuff_inner": [
-      "CIRCLE",
-      "ELLIPSE",
-      "BOUNDING_BOX"
-    ]
-  },
-  "slide_map": {
-    "cassettes": [
-      "VN1_A",
-      "VN1_B"
-    ],
-    "allowed_differences": [
-      1,
-      2
-    ],
-    "start_position": 20000,
-    "number_regex": "([0-9]*)[.]",
-    "skips": {
-      "up": false,
-      "normal": 5,
-      "large": 120,
-      "cassette": 100
-    }
+    "mask_input": "INNER_AND_OUTER_COMPILED",
+    "nerve": "NOT_PRESENT",
+    "deform": "NONE",
+    "ci_perineurium_thickness": "MEASURED",
+    "reshape_nerve": "NONE"
   },
   "Morphology": {
-    "tbd": true
+    "Nerve": null,
+    "Fascicles": [
+      {
+        "outer": {
+          "area": 97596.02364484142
+        },
+        "inners": [
+          {
+            "area": 88251.76781527116
+          }
+        ]
+      }
+    ]
   }
 }

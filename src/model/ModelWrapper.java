@@ -467,6 +467,8 @@ public class ModelWrapper {
                                 fiberset_dir, fiber_coords
                         }); // build path to coordinates
 
+
+
                         fibers[fiber_ind] = extractPotentials(basis, coord_path);
                     }
                 }
@@ -651,7 +653,12 @@ public class ModelWrapper {
                             ve_dir, coords_ind + ".dat"
                     });
 
-                    if (new File(ve_path).exists()) continue;
+
+//                    System.out.println("Checking existence of: " + ve_path);
+                    if (new File(ve_path).exists()) {
+//                        System.out.println("\tfound!");
+                        continue;
+                    }
 
                     writeVe(final_ve[sim_ind][product_ind][coords_ind], ve_path);
                 }
@@ -997,6 +1004,8 @@ public class ModelWrapper {
             Model model = null;
             ModelWrapper mw = null;
 
+            skipMesh = false;
+
             System.out.println("Making model index: " + model_index);
             String modelStr = String.valueOf(models_list.get(model_index));
 
@@ -1011,7 +1020,19 @@ public class ModelWrapper {
 
             // if bases directory does not yet exist, make it
             File basesPathFile = new File(bases_directory);
-            if ((! basesPathFile.exists()) || (basesPathFile.list().length < 1)) {
+            boolean basesValid = true;
+            if (basesPathFile.exists()) {
+                for (String basisFilename : basesPathFile.list()) {
+                    if (!basisFilename.matches("[0-9]{1,3}\\.mph")) {
+                        basesValid = false;
+                        break;
+                    }
+                }
+            } else {
+                basesValid = false;
+            }
+
+            if ((! basesPathFile.exists()) || (basesPathFile.list().length < 1) || (! basesValid)) {
                 // Load MODEL configuration data
                 String modelFile = String.join("/", new String[]{
                         "samples",
@@ -1049,7 +1070,7 @@ public class ModelWrapper {
                                 );
                             }
 
-//                            System.out.println("skipMesh = true;");
+//                            System.out.println("1: skipMesh = true;");
                             skipMesh = true;
                         }
 
@@ -1066,7 +1087,7 @@ public class ModelWrapper {
                             // if there was a mesh match
                             if (meshMatch != null) {
 
-                                System.out.println("meshMatch.getPath() = " + meshMatch.getPath());
+//                                System.out.println("meshMatch.getPath() = " + meshMatch.getPath());
 
                                 model = meshMatch.getMph();
                                 mw = new ModelWrapper(model, projectPath);
@@ -1082,6 +1103,7 @@ public class ModelWrapper {
                                             IdentifierManager.fromJSONObject(new JSONObject(meshMatch.getPartPrimitiveIMs().get(name).toJSONObject().toString()))
                                     );
                                 }
+//                                System.out.println("2: skipMesh = true;");
                                 skipMesh = true;
                             }
                         }
