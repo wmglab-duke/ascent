@@ -1004,6 +1004,8 @@ public class ModelWrapper {
             Model model = null;
             ModelWrapper mw = null;
 
+            skipMesh = false;
+
             System.out.println("Making model index: " + model_index);
             String modelStr = String.valueOf(models_list.get(model_index));
 
@@ -1068,7 +1070,7 @@ public class ModelWrapper {
                                 );
                             }
 
-                            System.out.println("1: skipMesh = true;");
+//                            System.out.println("1: skipMesh = true;");
                             skipMesh = true;
                         }
 
@@ -1101,7 +1103,7 @@ public class ModelWrapper {
                                             IdentifierManager.fromJSONObject(new JSONObject(meshMatch.getPartPrimitiveIMs().get(name).toJSONObject().toString()))
                                     );
                                 }
-                                System.out.println("2: skipMesh = true;");
+//                                System.out.println("2: skipMesh = true;");
                                 skipMesh = true;
                             }
                         }
