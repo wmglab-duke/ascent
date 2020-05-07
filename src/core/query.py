@@ -8,7 +8,7 @@ import matplotlib.colors as mplcolors
 import matplotlib.pyplot as plt
 import matplotlib.ticker as tick
 
-from src.core import Sample, Simulation
+from src.core import Sample, Simulation, Slide
 from src.utils import Exceptionable, Configurable, Saveable, SetupMode, Config, Object
 
 
@@ -449,3 +449,112 @@ class Query(Exceptionable, Configurable, Saveable):
                         )
 
         return plt.gcf()
+
+    def barcharts_compare_nsims(self, nsim_indices: List[int] = None, plot: bool = True, save_path: str = None):
+        """
+
+        :param nsim_indices:
+        :param plot:
+        :param save_path:
+        :return:
+        """
+
+        # quick helper class for storing data values
+        class DataPoint():
+            def __init__(self, mean: float, error: float = None):
+                self.mean = mean
+                self.error = error
+
+
+        print('NOTE: assumes single fiber-dimension in sims (and no wave-dimensions)')
+
+        if self._result is None:
+            self.throw(66)
+
+        # loop samples
+        sample_results: dict
+        for sample_results in self._result.get('samples', []):
+            sample_index = sample_results['index']
+            sample_object: Sample = self.get_object(Object.SAMPLE, [sample_index])
+            sample_config: dict = self.get_config(Config.SAMPLE, [sample_index])
+            slide: Slide = sample_object.slides[0]
+            n_inners = sum(len(fasc.inners) for fasc in slide.fascicles)
+
+            print('sample: {}'.format(sample_index))
+
+            # loop models
+            model_results: dict
+            for model_results in sample_results.get('models', []):
+                model_index = model_results['index']
+
+                print('\tmodel: {}'.format(model_index))
+
+                # loop sims
+                for sim_index in model_results.get('sims', []):
+                    sim_object = self.get_object(Object.SIMULATION, [sample_index, model_index, sim_index])
+
+                    print('\t\tsim: {}'.format(sim_index))
+
+                    # init fig, ax
+                    fig: plt.Figure
+                    ax: plt.Axes
+                    fig, ax = plt.subplots()
+
+                    # x label
+                    xlabel = '->'.split(sim_object.fiberset_key[0])[-1]
+                    if xlabel == 'diameter':
+                        ax.set_xlabel('Axon Diameter (nm)')
+                    else:
+                        ax.set_xlabel(xlabel)
+
+                    # y label
+                    ax.set_ylabel('Activation Threshold (mA)')
+
+                    # init x group labels
+                    xlabels = []
+
+                    # load data - REMEMBER: ASSUMES SINGLE FIBER DIMENSION
+                    data: List[List[DataPoint]] = []
+                    for nsim_index, (potentials_product_index, waveform_index) in enumerate(sim_object.master_product_indices):
+                        # skip if not included
+                        if (nsim_indices is not None) and (nsim_index not in nsim_indices):
+                            continue
+
+                        # fetch fiberset, active source information
+                        active_src_index, fiberset_index = sim_object.potentials_product[potentials_product_index]
+
+                        # this x group label
+                        cur_xlabel = sim_object.fiberset_product[fiberset_index][nsim_index]
+                        if xlabel == 'diameter':
+                            cur_xlabel *= 1000
+                        xlabels.append(cur_xlabel)
+
+                        thresholds = []
+
+
+                        # NOT FINISHED
+
+
+                        cur_data = []
+
+                        sim_dir = self.build_path(Object.SIMULATION, [sample_index, model_index, sim_index],
+                                                  just_directory=True)
+
+
+                        # fetch thresholds, then find min and max
+                        thresholds = []
+                        missing_indices = []
+                        for i in range(n_inners):
+
+
+
+                        for n in range(len(sim_object.master_product_indices)):
+                            n_sim_dir = os.path.join(sim_dir, 'n_sims', str(n))
+                            thresh_path = os.path.join(n_sim_dir, 'data', 'outputs',
+                                                       'thresh_inner{}_fiber0.dat'.format(i))
+
+
+
+
+
+
