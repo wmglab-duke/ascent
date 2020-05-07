@@ -467,6 +467,8 @@ public class ModelWrapper {
                                 fiberset_dir, fiber_coords
                         }); // build path to coordinates
 
+
+
                         fibers[fiber_ind] = extractPotentials(basis, coord_path);
                     }
                 }
@@ -1016,7 +1018,15 @@ public class ModelWrapper {
 
             // if bases directory does not yet exist, make it
             File basesPathFile = new File(bases_directory);
-            if ((! basesPathFile.exists()) || (basesPathFile.list().length < 1)) {
+            boolean basesValid = true;
+            for (String basisFilename : basesPathFile.list()) {
+                if (!basisFilename.matches("[0-9]{1,3}\\.mph")) {
+                    basesValid = false;
+                    break;
+                }
+            }
+
+            if ((! basesPathFile.exists()) || (basesPathFile.list().length < 1) || (! basesValid)) {
                 // Load MODEL configuration data
                 String modelFile = String.join("/", new String[]{
                         "samples",
