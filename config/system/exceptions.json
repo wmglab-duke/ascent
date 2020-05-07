@@ -328,5 +328,10 @@
     "code": 65,
     "text": "Length of fascicle colors list must match length of fascicles list.",
     "source": "src.core.Trace.plot"
+  },
+  {
+    "code": 66,
+    "text": "Query.run() must be called before calling analysis methods.",
+    "source": "src.core.Query"
   }
 ]

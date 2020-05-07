@@ -651,7 +651,10 @@ public class ModelWrapper {
                             ve_dir, coords_ind + ".dat"
                     });
 
-                    if (new File(ve_path).exists()) continue;
+                    if (new File(ve_path).exists()) {
+                        System.out.println("Skip b/c found: " + ve_path);
+                        continue;
+                    }
 
                     writeVe(final_ve[sim_ind][product_ind][coords_ind], ve_path);
                 }
