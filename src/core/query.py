@@ -457,7 +457,8 @@ class Query(Exceptionable, Configurable, Saveable):
                                  model_labels: List[str] = None,
                                  title: str = 'Activation Thresholds',
                                  plot: bool = True,
-                                 save_path: str = None):
+                                 save_path: str = None,
+                                 width: float = 0.2):
         """
 
         :param nsim_indices:
@@ -594,3 +595,18 @@ class Query(Exceptionable, Configurable, Saveable):
                     model_data.append(DataPoint(np.mean(thresholds), np.std(thresholds, ddof=1)))
 
                 sample_data.append(model_data)
+
+            # make the bars
+            x_vals = np.arange(len(sample_data[0]))
+            n_models = len(sample_data)
+
+            for model_index, model_data in enumerate(sample_data):
+                ax.bar(x=x_vals - (n_models * width / 2) + (width * model_index),
+                       height=[data.value for data in model_data],
+                       width=width,
+                       label=model_labels[model_index],
+                       yerr=[data.error for data in model_data]
+                )
+
+            # plot!
+            plt.show()
