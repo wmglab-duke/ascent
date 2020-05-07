@@ -651,8 +651,10 @@ public class ModelWrapper {
                             ve_dir, coords_ind + ".dat"
                     });
 
+
+                    System.out.println("Checking existence of: " + ve_path);
                     if (new File(ve_path).exists()) {
-                        System.out.println("Skip b/c found: " + ve_path);
+                        System.out.println("\tfound!");
                         continue;
                     }
 
