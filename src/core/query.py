@@ -458,7 +458,8 @@ class Query(Exceptionable, Configurable, Saveable):
                                  title: str = 'Activation Thresholds',
                                  plot: bool = True,
                                  save_path: str = None,
-                                 width: float = 0.2):
+                                 width: float = 0.2,
+                                 capsize: float = 5):
         """
 
         :param nsim_indices:
@@ -494,7 +495,8 @@ class Query(Exceptionable, Configurable, Saveable):
 
         # more metadata
         sample_indices = [sample_result['index'] for sample_result in self._result['samples']]
-        comparison_key: str = self.get_object(Object.SIMULATION, [sample_indices[0], model_indices[0], sim_index]).factors.keys()[0]
+        comparison_key: str = \
+            list(self.get_object(Object.SIMULATION, [sample_indices[0], model_indices[0], sim_index]).factors.keys())[0]
 
         # summary of functionality
         print('For samples {}, comparing sim {} of models {} along dimension \"{}\"'.format(
@@ -521,7 +523,7 @@ class Query(Exceptionable, Configurable, Saveable):
             fig, ax = plt.subplots()
 
             # x label
-            xlabel = '->'.split(comparison_key)[-1]
+            xlabel = comparison_key.split('->')[-1]
             if xlabel == 'diameter':
                 ax.set_xlabel('Axon Diameter (µm)')
             else:
@@ -552,7 +554,7 @@ class Query(Exceptionable, Configurable, Saveable):
                 # validate sim object
                 if len(sim_object.factors) is not 1:
                     self.throw(68)
-                if not sim_object.factors.keys()[0] == comparison_key:
+                if not list(sim_object.factors.keys())[0] == comparison_key:
                     self.throw(69)
 
                 # whether the comparison key is for 'fiber' or 'wave', the nsims will always be in order!
@@ -562,6 +564,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
                     # this x group label
                     if first_iteration:
+                        # print(nsim_value)
                         xlabels.append(nsim_value)
 
                     # default fiberset index to 0
@@ -594,19 +597,33 @@ class Query(Exceptionable, Configurable, Saveable):
 
                     model_data.append(DataPoint(np.mean(thresholds), np.std(thresholds, ddof=1)))
 
+                first_iteration = False
+
                 sample_data.append(model_data)
+
+
 
             # make the bars
             x_vals = np.arange(len(sample_data[0]))
             n_models = len(sample_data)
 
             for model_index, model_data in enumerate(sample_data):
-                ax.bar(x=x_vals - (n_models * width / 2) + (width * model_index),
-                       height=[data.value for data in model_data],
-                       width=width,
-                       label=model_labels[model_index],
-                       yerr=[data.error for data in model_data]
+                ax.bar(
+                    x=x_vals - ((n_models - 1) * width / 2) + (width * model_index),
+                    height=[data.value for data in model_data],
+                    width=width,
+                    label=model_labels[model_index],
+                    yerr=[data.error for data in model_data],
+                    capsize=capsize
                 )
+
+            # add x-axis values
+            ax.set_xticks(x_vals)
+            ax.set_xticklabels(xlabels)
+
+            # legend and title
+            plt.title('Activation Thresholds for sample {}'.format(sample_config['sample']))
+            plt.legend()
 
             # plot!
             plt.show()
