@@ -1,6 +1,6 @@
 import os
 import pickle
-from typing import Union, List
+from typing import Union, List, Tuple
 
 import numpy as np
 import matplotlib.colorbar as cbar
@@ -273,10 +273,20 @@ class Query(Exceptionable, Configurable, Saveable):
 
         return True
 
-    def heatmaps(self, plot: bool = True, plot_mode: str = 'average', colorbar_mode: str = 'subplot', save_path: str = None):
+    def heatmaps(self,
+                 plot: bool = True,
+                 plot_mode: str = 'average',
+                 colorbar_mode: str = 'subplot',
+                 save_path: str = None,
+                 plot_outers: bool = False,
+                 colormap_str: str = 'viridis',
+                 reverse_colormap: bool = True):
         """
         TODO: implement plot_mode and colorbar_mode (current implementation assumes single fiber and fills fascicle)
 
+        :param reverse_colormap:
+        :param colormap_str:
+        :param plot_outers:
         :param save_path:
         :param plot: bool signalling whether or not to plot the figure
         :param plot_mode:
@@ -312,12 +322,15 @@ class Query(Exceptionable, Configurable, Saveable):
                 print('\tmodel: {}'.format(model_index))
 
                 # calculate orientation point location (i.e., contact location)
-                r = slide.nerve.mean_radius() * 1.1  # scale up so orientation point is outside nerve
-                theta = np.arctan2(*tuple(np.flip(slide.nerve.points[slide.orientation_point_index][:2])))
-                theta += np.deg2rad(
-                    self.get_config(Config.MODEL, [sample_index, model_index]).get('cuff').get('rotate').get('add_ang')
-                )
-                orientation_point = r * np.cos(theta), r * np.sin(theta)
+                orientation_point = None
+                if slide.orientation_point_index is not None:
+                    r = slide.nerve.mean_radius() * 1.1  # scale up so orientation point is outside nerve
+                    theta = np.arctan2(*tuple(np.flip(slide.nerve.points[slide.orientation_point_index][:2])))
+                    theta += np.deg2rad(
+                        self.get_config(Config.MODEL, [sample_index, model_index]).get('cuff').get('rotate').get(
+                            'add_ang')
+                    )
+                    orientation_point = r * np.cos(theta), r * np.sin(theta)
 
                 # loop sims
                 for sim_index in model_results.get('sims', []):
@@ -360,7 +373,11 @@ class Query(Exceptionable, Configurable, Saveable):
                         min_thresh = min(thresholds)
 
                         # generate colors from colorbar and thresholds
-                        cmap = plt.cm.get_cmap('viridis').reversed()
+                        cmap = plt.cm.get_cmap(colormap_str)
+
+                        if reverse_colormap:
+                            cmap = cmap.reversed()
+
                         colors = []
                         offset = 0
                         for i in range(n_inners):
@@ -390,11 +407,13 @@ class Query(Exceptionable, Configurable, Saveable):
 
                         ax.set_title(title)
 
-                        # plot orientation point and fascicles
-                        ax.plot(*orientation_point, 'r.', markersize=20)
-                        # ax.plot(*tuple(slide.nerve.points[slide.orientation_point_index][:2]), 'b*')
+                        # plot orientation point if applicable
+                        if orientation_point is not None:
+                            ax.plot(*orientation_point, 'r.', markersize=20)
+
+                        # plot slide (nerve and fascicles, defaulting to no outers)
                         sample_object.slides[0].plot(final=False, fix_aspect_ratio=True, fascicle_colors=colors,
-                                                     ax=ax, outers_flag=False, inner_format='k-')
+                                                     ax=ax, outers_flag=plot_outers, inner_format='k-')
 
                         # colorbar
                         plt.colorbar(
@@ -409,10 +428,13 @@ class Query(Exceptionable, Configurable, Saveable):
                         )
 
                     # set super title
-                    plt.suptitle('Activation thresholds: Sample: {}, Model: {}'.format(
-                        sample_config.get('sample'),
-                        model_index
-                    ))
+                    plt.suptitle(
+                        'Activation thresholds: {} (model {})'.format(
+                            sample_config.get('sample'),
+                            model_index
+                        ),
+                        size='x-large'
+                    )
 
                     # plot figure
                     if plot:
