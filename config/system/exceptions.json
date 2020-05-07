@@ -333,5 +333,10 @@
     "code": 66,
     "text": "Query.run() must be called before calling analysis methods.",
     "source": "src.core.Query"
+  },
+  {
+    "code": 67,
+    "text": "The must be the same number of model indices and model labels",
+    "source": "src.core.Query"
   }
 ]

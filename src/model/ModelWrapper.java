@@ -1019,11 +1019,15 @@ public class ModelWrapper {
             // if bases directory does not yet exist, make it
             File basesPathFile = new File(bases_directory);
             boolean basesValid = true;
-            for (String basisFilename : basesPathFile.list()) {
-                if (!basisFilename.matches("[0-9]{1,3}\\.mph")) {
-                    basesValid = false;
-                    break;
+            if (basesPathFile.exists()) {
+                for (String basisFilename : basesPathFile.list()) {
+                    if (!basisFilename.matches("[0-9]{1,3}\\.mph")) {
+                        basesValid = false;
+                        break;
+                    }
                 }
+            } else {
+                basesValid = false;
             }
 
             if ((! basesPathFile.exists()) || (basesPathFile.list().length < 1) || (! basesValid)) {
@@ -1081,7 +1085,7 @@ public class ModelWrapper {
                             // if there was a mesh match
                             if (meshMatch != null) {
 
-                                System.out.println("meshMatch.getPath() = " + meshMatch.getPath());
+//                                System.out.println("meshMatch.getPath() = " + meshMatch.getPath());
 
                                 model = meshMatch.getMph();
                                 mw = new ModelWrapper(model, projectPath);
