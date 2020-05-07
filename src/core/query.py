@@ -8,6 +8,7 @@ import matplotlib.colors as mplcolors
 import matplotlib.pyplot as plt
 import matplotlib.ticker as tick
 
+from core import FiberSet
 from src.core import Sample, Simulation, Slide
 from src.utils import Exceptionable, Configurable, Saveable, SetupMode, Config, Object
 
@@ -454,7 +455,6 @@ class Query(Exceptionable, Configurable, Saveable):
                                  sim_index: int = None,
                                  model_indices: List[int] = None,
                                  model_labels: List[str] = None,
-                                 comparison_key: str = 'fibers->z_parameters->diameter',
                                  title: str = 'Activation Thresholds',
                                  plot: bool = True,
                                  save_path: str = None):
@@ -472,11 +472,8 @@ class Query(Exceptionable, Configurable, Saveable):
                 self.value = value
                 self.error = error
 
-
-        # print('NOTE: assumes single fiber-dimension in sims (and no wave-dimensions)')
-        print('For each sample, comparing sim {} of models {} along dimension \"{}\"'.format(sim_index,
-                                                                                             model_indices,
-                                                                                             comparison_key))
+        # warning
+        print('NOTE: assumes a SINGLE dimension for the selected sim (functionality defined otherwise)')
 
         # validation
         if self._result is None:
@@ -494,6 +491,17 @@ class Query(Exceptionable, Configurable, Saveable):
         if not len(model_labels) == len(model_indices):
             self.throw(67)
 
+        # more metadata
+        sample_indices = [sample_result['index'] for sample_result in self._result['samples']]
+        comparison_key: str = self.get_object(Object.SIMULATION, [sample_indices[0], model_indices[0], sim_index]).factors.keys()[0]
+
+        # summary of functionality
+        print('For samples {}, comparing sim {} of models {} along dimension \"{}\"'.format(
+            sample_indices,
+            sim_index,
+            model_indices,
+            comparison_key)
+        )
 
         # loop samples
         sample_results: dict
@@ -505,7 +513,6 @@ class Query(Exceptionable, Configurable, Saveable):
             n_inners = sum(len(fasc.inners) for fasc in slide.fascicles)
 
             print('sample: {}'.format(sample_index))
-
 
             # init fig, ax
             fig: plt.Figure
@@ -525,6 +532,9 @@ class Query(Exceptionable, Configurable, Saveable):
             xlabels = []
             first_iteration: bool = True  # for appending to xlabels (only do this first time around)
 
+            # init master data container (indices or outer list correspond to each model)
+            sample_data: List[List[DataPoint]] = []
+
             # loop models
             model_results: dict
             for model_results in sample_results.get('models', []):
@@ -532,54 +542,55 @@ class Query(Exceptionable, Configurable, Saveable):
 
                 print('\tmodel: {}'.format(model_index))
 
+                # init data container for this model
+                model_data: List[DataPoint] = []
+
                 # sim index is already set from input, so no need to loop
                 sim_object = self.get_object(Object.SIMULATION, [sample_index, model_index, sim_index])
 
+                # validate sim object
+                if len(sim_object.factors) is not 1:
+                    self.throw(68)
+                if not sim_object.factors.keys()[0] == comparison_key:
+                    self.throw(69)
 
-
-
-
-                # load data - REMEMBER: ASSUMES SINGLE FIBER DIMENSION
-                data: List[List[DataPoint]] = []
-
-
-                for nsim_index, (potentials_product_index, waveform_index) in enumerate(sim_object.master_product_indices):
-
-
-                    # fetch fiberset, active source information
-                    active_src_index, fiberset_index = sim_object.potentials_product[potentials_product_index]
+                # whether the comparison key is for 'fiber' or 'wave', the nsims will always be in order!
+                # this realization allows us to simply loop through the factors in sim.factors[key] and treat the
+                # indices as if they were the nsim indices
+                for nsim_index, nsim_value in enumerate(sim_object.factors[comparison_key]):
 
                     # this x group label
                     if first_iteration:
-                        cur_xlabel = sim_object.fiberset_product[fiberset_index][nsim_index]
-                        xlabels.append(cur_xlabel)
+                        xlabels.append(nsim_value)
 
-                    thresholds = []
+                    # default fiberset index to 0
+                    fiberset_index: int = 0
+                    if comparison_key.split('->')[0] == 'fiber':
+                        fiberset_index = nsim_index  # if dimension is fibers, use correct fiberset
 
+                    # fetch outer->inner->fiber and out->inner maps
+                    out_in_fib, out_in = sim_object.fiberset_map_pairs[fiberset_index]
 
-                    # NOT FINISHED
-
-
-                    cur_data = []
-
-                    sim_dir = self.build_path(Object.SIMULATION, [sample_index, model_index, sim_index],
+                    # build base dirs for fetching thresholds
+                    sim_dir = self.build_path(Object.SIMULATION,
+                                              [sample_index, model_index, sim_index],
                                               just_directory=True)
+                    n_sim_dir = os.path.join(sim_dir, 'n_sims', str(nsim_index))
 
+                    # init thresholds for this model, sim, nsim
+                    thresholds: List[float] = []
 
-                    # fetch thresholds, then find min and max
-                    thresholds = []
-                    missing_indices = []
-                    # for i in range(n_inners):
+                    for inner in range(n_inners):
+                        outer = [index for index, inners in enumerate(out_in) if inner in inners][0]
+                        for local_fiber_index, _ in enumerate(out_in_fib[outer][out_in[outer].index(inner)]):
+                            thresh_path = os.path.join(n_sim_dir,
+                                                       'data',
+                                                       'outputs',
+                                                       'thresh_inner{}_fiber{}.dat'.format(inner, local_fiber_index))
+                            thresholds.append(np.loadtxt(thresh_path)[2])
 
+                    thresholds: np.ndarray = np.array(thresholds)
 
+                    model_data.append(DataPoint(np.mean(thresholds), np.std(thresholds, ddof=1)))
 
-                    # for n in range(len(sim_object.master_product_indices)):
-                    #     n_sim_dir = os.path.join(sim_dir, 'n_sims', str(n))
-                    #     thresh_path = os.path.join(n_sim_dir, 'data', 'outputs',
-                    #                                'thresh_inner{}_fiber0.dat'.format(i))
-
-
-
-
-
-
+                sample_data.append(model_data)

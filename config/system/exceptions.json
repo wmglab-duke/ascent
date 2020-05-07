@@ -336,7 +336,17 @@
   },
   {
     "code": 67,
-    "text": "The must be the same number of model indices and model labels",
+    "text": "There must be the same number of model indices and model labels",
     "source": "src.core.Query"
+  },
+  {
+    "code": 68,
+    "text": "Encountered multidimensional sim - ILLEGAL",
+    "source": "src.core.Query.barcharts_compare_models"
+  },
+  {
+    "code": 69,
+    "text": "Inconsistent factor found in sims - ILLEGAL",
+    "source": "src.core.Query.barcharts_compare_models"
   }
 ]
