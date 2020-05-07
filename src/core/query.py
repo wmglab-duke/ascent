@@ -1,6 +1,12 @@
 import os
 import pickle
-from typing import Union, List
+from typing import Union, List, Tuple
+
+import numpy as np
+import matplotlib.colorbar as cbar
+import matplotlib.colors as mplcolors
+import matplotlib.pyplot as plt
+import matplotlib.ticker as tick
 
 from src.core import Sample, Simulation
 from src.utils import Exceptionable, Configurable, Saveable, SetupMode, Config, Object
@@ -201,7 +207,8 @@ class Query(Exceptionable, Configurable, Saveable):
         elif mode == Object.SAMPLE:
             result = os.path.join('samples', str(indices[0]), 'sample.obj')
         elif mode == Object.SIMULATION:
-            result = os.path.join('samples', str(indices[0]), 'models', str(indices[1]), 'sims', str(indices[2]), 'sim.obj')
+            result = os.path.join('samples', str(indices[0]), 'models', str(indices[1]), 'sims', str(indices[2]),
+                                  'sim.obj')
         else:
             print('INVALID MODE:'.format(type(mode)))
             self.throw(55)
@@ -265,3 +272,180 @@ class Query(Exceptionable, Configurable, Saveable):
                     return False
 
         return True
+
+    def heatmaps(self,
+                 plot: bool = True,
+                 plot_mode: str = 'average',
+                 colorbar_mode: str = 'subplot',
+                 save_path: str = None,
+                 plot_outers: bool = False,
+                 colormap_str: str = 'viridis',
+                 reverse_colormap: bool = True):
+        """
+        TODO: implement plot_mode and colorbar_mode (current implementation assumes single fiber and fills fascicle)
+
+        :param reverse_colormap:
+        :param colormap_str:
+        :param plot_outers:
+        :param save_path:
+        :param plot: bool signalling whether or not to plot the figure
+        :param plot_mode:
+            'average': each inner is filled with the color corresponding to the average of its fiber thresholds
+            'individual': each fiber is plotted individually with its corresponding color
+        :param colorbar_mode:
+            'subplot': one colorbar/colormap per subplot (i.e., one colorbar for each nsim)
+            'figure': one colorbar for the entire figure (i.e., all colors are on same scale)
+        :return: generated figure
+        """
+
+        print('WARNING: plot_mode and colorbar_mode not yet implemented')
+
+        if self._result is None:
+            self.throw(66)
+
+        # loop samples
+        sample_results: dict
+        for sample_results in self._result.get('samples', []):
+            sample_index = sample_results['index']
+            sample_object: Sample = self.get_object(Object.SAMPLE, [sample_index])
+            sample_config: dict = self.get_config(Config.SAMPLE, [sample_index])
+            slide = sample_object.slides[0]
+            n_inners = sum(len(fasc.inners) for fasc in slide.fascicles)
+
+            print('sample: {}'.format(sample_index))
+
+            # loop models
+            model_results: dict
+            for model_results in sample_results.get('models', []):
+                model_index = model_results['index']
+
+                print('\tmodel: {}'.format(model_index))
+
+                # calculate orientation point location (i.e., contact location)
+                orientation_point = None
+                if slide.orientation_point_index is not None:
+                    r = slide.nerve.mean_radius() * 1.1  # scale up so orientation point is outside nerve
+                    theta = np.arctan2(*tuple(np.flip(slide.nerve.points[slide.orientation_point_index][:2])))
+                    theta += np.deg2rad(
+                        self.get_config(Config.MODEL, [sample_index, model_index]).get('cuff').get('rotate').get(
+                            'add_ang')
+                    )
+                    orientation_point = r * np.cos(theta), r * np.sin(theta)
+
+                # loop sims
+                for sim_index in model_results.get('sims', []):
+                    sim_object = self.get_object(Object.SIMULATION, [sample_index, model_index, sim_index])
+
+                    print('\t\tsim: {}'.format(sim_index))
+
+                    # init figure with subplots
+                    master_product_count = len(sim_object.master_product_indices)
+                    rows = int(np.floor(np.sqrt(master_product_count)))
+                    cols = int(np.ceil(master_product_count / rows))
+                    figure, axes = plt.subplots(rows, cols, constrained_layout=True)
+
+                    # loop nsims
+                    for n, (potentials_product_index, waveform_index) in enumerate(sim_object.master_product_indices):
+                        active_src_index, fiberset_index = sim_object.potentials_product[potentials_product_index]
+
+                        # fetch axis
+                        ax: plt.Axes = axes.reshape(-1)[n]
+                        ax.axis('off')
+
+                        # fetch sim information
+                        sim_dir = self.build_path(Object.SIMULATION, [sample_index, model_index, sim_index],
+                                                  just_directory=True)
+                        n_sim_dir = os.path.join(sim_dir, 'n_sims', str(n))
+                        fiberset_dir = os.path.join(sim_dir, 'fibersets', str(fiberset_index))
+
+                        # fetch thresholds, then find min and max
+                        thresholds = []
+                        missing_indices = []
+                        for i in range(n_inners):
+                            thresh_path = os.path.join(n_sim_dir, 'data', 'outputs',
+                                                       'thresh_inner{}_fiber0.dat'.format(i))
+                            if os.path.exists(thresh_path):
+                                thresholds.append(np.loadtxt(thresh_path)[2])
+                            else:
+                                missing_indices.append(i)
+                                print('MISSING: {}'.format(thresh_path))
+                        max_thresh = max(thresholds)
+                        min_thresh = min(thresholds)
+
+                        # generate colors from colorbar and thresholds
+                        cmap = plt.cm.get_cmap(colormap_str)
+
+                        if reverse_colormap:
+                            cmap = cmap.reversed()
+
+                        colors = []
+                        offset = 0
+                        for i in range(n_inners):
+                            actual_i = i - offset
+                            if i not in missing_indices:
+                                colors.append(cmap((thresholds[actual_i] - min_thresh) / (max_thresh - min_thresh)))
+                            else:
+                                # NOTE: PLOTS MISSING VALUES AS RED
+                                offset += 1
+                                colors.append((1, 0, 0, 1))
+
+                        # figure title -- make arbitrary, hard-coded subplot title modifications here (add elif's)
+                        title = ''
+                        for fib_key_name, fib_key_value in zip(sim_object.fiberset_key,
+                                                               sim_object.fiberset_product[fiberset_index]):
+
+                            if fib_key_name == 'fibers->z_parameters->diameter':
+                                title = r'{} {}nm'.format(title, int(fib_key_value * 1000))
+                            else:
+                                # default title
+                                title = '{} {}:{}'.format(title, fib_key_name, fib_key_value)
+
+                        for wave_key_name, wave_key_value in zip(sim_object.wave_key,
+                                                                 sim_object.wave_product[waveform_index]):
+                            # default title
+                            title = '{} {}:{}'.format(title, wave_key_name, wave_key_value)
+
+                        ax.set_title(title)
+
+                        # plot orientation point if applicable
+                        if orientation_point is not None:
+                            ax.plot(*orientation_point, 'r.', markersize=20)
+
+                        # plot slide (nerve and fascicles, defaulting to no outers)
+                        sample_object.slides[0].plot(final=False, fix_aspect_ratio=True, fascicle_colors=colors,
+                                                     ax=ax, outers_flag=plot_outers, inner_format='k-')
+
+                        # colorbar
+                        plt.colorbar(
+                            mappable=plt.cm.ScalarMappable(
+                                cmap=cmap,
+                                norm=mplcolors.Normalize(vmin=min_thresh, vmax=max_thresh)
+                            ),
+                            ticks=tick.MaxNLocator(nbins=5),
+                            ax=ax,
+                            orientation='vertical',
+                            label=r'mA',
+                        )
+
+                    # set super title
+                    plt.suptitle(
+                        'Activation thresholds: {} (model {})'.format(
+                            sample_config.get('sample'),
+                            model_index
+                        ),
+                        size='x-large'
+                    )
+
+                    # plot figure
+                    if plot:
+                        plt.show()
+
+                    # save figure as png
+                    if save_path is not None:
+                        plt.savefig(
+                            '{}{}{}_{}_{}.png'.format(
+                                save_path, os.sep, sample_index, model_index, sim_index
+                            ), dpi=400
+                        )
+
+        return plt.gcf()

@@ -1,0 +1,1 @@
+rsync -rv --exclude "*.mph" jec91@research-musselman-01.oit.duke.edu:/srv/apps/jec91/projects/access/samples/3/ samples/3
