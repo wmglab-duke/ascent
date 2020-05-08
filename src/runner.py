@@ -136,124 +136,128 @@ class Runner(Exceptionable, Configurable):
 
 
         # iterate through models
-        for model_index, model_config in enumerate(all_configs[Config.MODEL.value]):
-            model_num = self.configs[Config.RUN.value]['models'][model_index]
-            print('    MODEL {}'.format(model_num))
+        if 'model' not in all_configs.keys():
+            print('NO MODELS TO MAKE IN Config.RUN - killing process')
+            exit()
+        else:
+            for model_index, model_config in enumerate(all_configs[Config.MODEL.value]):
+                model_num = self.configs[Config.RUN.value]['models'][model_index]
+                print('    MODEL {}'.format(model_num))
 
-            # use current model index to computer maximum cuff shift (radius) .. SAVES to file in method
-            model_config = self.compute_cuff_shift(model_config, sample, all_configs[Config.SAMPLE.value][0])
+                # use current model index to computer maximum cuff shift (radius) .. SAVES to file in method
+                model_config = self.compute_cuff_shift(model_config, sample, all_configs[Config.SAMPLE.value][0])
 
-            model_config_file_name = os.path.join(
-                'samples',
-                str(sample_num),
-                'models',
-                str(model_num),
-                'model.json'
-            )
-
-            # write edited model config in place
-            TemplateOutput.write(model_config, model_config_file_name)
-
-            # use current model index to compute electrical parameters ... SAVES to file in method
-            self.compute_electrical_parameters(all_configs, model_index)
-
-            # iterate through simulations
-            for sim_index, sim_config in enumerate(all_configs['sims']):
-                sim_num = self.configs[Config.RUN.value]['sims'][sim_index]
-                print('        SIM {}'.format(self.configs[Config.RUN.value]['sims'][sim_index]))
-                sim_obj_dir = os.path.join(
+                model_config_file_name = os.path.join(
                     'samples',
                     str(sample_num),
                     'models',
                     str(model_num),
-                    'sims',
-                    str(sim_num)
+                    'model.json'
                 )
 
-                sim_obj_file = os.path.join(
-                    sim_obj_dir,
-                    'sim.obj'
-                )
+                # write edited model config in place
+                TemplateOutput.write(model_config, model_config_file_name)
 
-                # init fiber manager
-                if smart and os.path.exists(sim_obj_file):
-                    print('\t    Found existing sim object for sim {} ({})'.format(sim_index, sim_obj_file))
+                # use current model index to compute electrical parameters ... SAVES to file in method
+                self.compute_electrical_parameters(all_configs, model_index)
 
-                    simulation: Simulation = load(sim_obj_file)
-                    potentials_exist.append(simulation.potentials_exist(sim_obj_dir))
+                # iterate through simulations
+                for sim_index, sim_config in enumerate(all_configs['sims']):
+                    sim_num = self.configs[Config.RUN.value]['sims'][sim_index]
+                    print('        SIM {}'.format(self.configs[Config.RUN.value]['sims'][sim_index]))
+                    sim_obj_dir = os.path.join(
+                        'samples',
+                        str(sample_num),
+                        'models',
+                        str(model_num),
+                        'sims',
+                        str(sim_num)
+                    )
 
-                else:
-                    if not os.path.exists(sim_obj_dir):
-                        os.makedirs(sim_obj_dir)
+                    sim_obj_file = os.path.join(
+                        sim_obj_dir,
+                        'sim.obj'
+                    )
 
-                    simulation: Simulation = Simulation(sample, self.configs[Config.EXCEPTIONS.value])
-                    simulation \
-                        .add(SetupMode.OLD, Config.MODEL, model_config) \
-                        .add(SetupMode.OLD, Config.SIM, sim_config) \
-                        .resolve_factors() \
-                        .write_waveforms(sim_obj_dir) \
-                        .write_fibers(sim_obj_dir) \
-                        .validate_srcs(sim_obj_dir) \
-                        .save(sim_obj_file)
+                    # init fiber manager
+                    if smart and os.path.exists(sim_obj_file):
+                        print('\t    Found existing sim object for sim {} ({})'.format(sim_index, sim_obj_file))
 
-                    potentials_exist.append(simulation.potentials_exist(sim_obj_dir))
+                        simulation: Simulation = load(sim_obj_file)
+                        potentials_exist.append(simulation.potentials_exist(sim_obj_dir))
 
-        if 'kill_pre_java' in self.search(Config.RUN).keys():
-            if self.search(Config.RUN, 'kill_pre_java'):
-                print('KILLING PRE JAVA')
-                exit()
+                    else:
+                        if not os.path.exists(sim_obj_dir):
+                            os.makedirs(sim_obj_dir)
 
-        # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials
-        if not all(potentials_exist):  # only transition to java if necessary (there are potentials that do not exist)
-            print('\nTO JAVA\n')
-            self.handoff(self.number)
-            print('\nTO PYTHON\n')
-        else:
-            print('\nSKIPPING JAVA - all required extracted potentials already exist\n')
+                        simulation: Simulation = Simulation(sample, self.configs[Config.EXCEPTIONS.value])
+                        simulation \
+                            .add(SetupMode.OLD, Config.MODEL, model_config) \
+                            .add(SetupMode.OLD, Config.SIM, sim_config) \
+                            .resolve_factors() \
+                            .write_waveforms(sim_obj_dir) \
+                            .write_fibers(sim_obj_dir) \
+                            .validate_srcs(sim_obj_dir) \
+                            .save(sim_obj_file)
 
-        #  continue by using simulation objects
-        for model_index, model_config in enumerate(all_configs[Config.MODEL.value]):
-            model_num = self.configs[Config.RUN.value]['models'][model_index]
-            for sim_index, sim_config in enumerate(all_configs['sims']):
-                sim_num = self.configs[Config.RUN.value]['sims'][sim_index]
-                sim_obj_path = os.path.join(
-                    'samples',
-                    str(self.configs[Config.RUN.value]['sample']),
-                    'models',
-                    str(model_num),
-                    'sims',
-                    str(sim_num),
-                    'sim.obj'
-                )
+                        potentials_exist.append(simulation.potentials_exist(sim_obj_dir))
 
-                sim_dir = os.path.join(
-                    'samples',
-                    str(self.configs[Config.RUN.value]['sample']),
-                    'models',
-                    str(model_num),
-                    'sims',
-                    str(sim_num)
-                )
+            if 'kill_pre_java' in self.search(Config.RUN).keys():
+                if self.search(Config.RUN, 'kill_pre_java'):
+                    print('KILLING PRE JAVA')
+                    exit()
 
-                # load up correct simulation and build required sims
-                simulation: Simulation = load(sim_obj_path)
-                simulation.build_n_sims(sim_dir)
+            # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials
+            if not all(potentials_exist):  # only transition to java if necessary (there are potentials that do not exist)
+                print('\nTO JAVA\n')
+                self.handoff(self.number)
+                print('\nTO PYTHON\n')
+            else:
+                print('\nSKIPPING JAVA - all required extracted potentials already exist\n')
 
-                # export simulations
-                Simulation.export_n_sims(
-                    sample_num,
-                    model_num,
-                    sim_num,
-                    sim_dir,
-                    self.search(Config.ENV, 'nsim_export')
-                )
+            #  continue by using simulation objects
+            for model_index, model_config in enumerate(all_configs[Config.MODEL.value]):
+                model_num = self.configs[Config.RUN.value]['models'][model_index]
+                for sim_index, sim_config in enumerate(all_configs['sims']):
+                    sim_num = self.configs[Config.RUN.value]['sims'][sim_index]
+                    sim_obj_path = os.path.join(
+                        'samples',
+                        str(self.configs[Config.RUN.value]['sample']),
+                        'models',
+                        str(model_num),
+                        'sims',
+                        str(sim_num),
+                        'sim.obj'
+                    )
 
-                # ensure run configuration is present
-                Simulation.export_run(
-                    self.number,
-                    self.search(Config.ENV, 'project_path'),
-                    self.search(Config.ENV, 'nsim_export')
-                )
+                    sim_dir = os.path.join(
+                        'samples',
+                        str(self.configs[Config.RUN.value]['sample']),
+                        'models',
+                        str(model_num),
+                        'sims',
+                        str(sim_num)
+                    )
+
+                    # load up correct simulation and build required sims
+                    simulation: Simulation = load(sim_obj_path)
+                    simulation.build_n_sims(sim_dir)
+
+                    # export simulations
+                    Simulation.export_n_sims(
+                        sample_num,
+                        model_num,
+                        sim_num,
+                        sim_dir,
+                        self.search(Config.ENV, 'nsim_export')
+                    )
+
+                    # ensure run configuration is present
+                    Simulation.export_run(
+                        self.number,
+                        self.search(Config.ENV, 'project_path'),
+                        self.search(Config.ENV, 'nsim_export')
+                    )
 
     def handoff(self, run_number: int):
         comsol_path = self.search(Config.ENV, 'comsol_path')
