@@ -819,6 +819,9 @@ public class ModelWrapper {
 
         long runSolStartTime = System.nanoTime();
         int index = 0;
+
+        // loop before this? -- assign "order" parameter
+        // TODO: ensure an order of keyset
         for(String key_on: this.im.currentIDs.keySet()) {
 
             System.out.println("Solving with current source: " + key_on);

@@ -24,15 +24,17 @@ q = Query({
     'partial_matches': True,
     'include_downstream': True,
     'indices': {
-        'sample': [3, 4],
-        'model': [0, 1, 2, 3],
+        'sample': [5],
+        'model': [0],
         'sim': [0]
     }
 }).run()
 
 # builds heatmaps
-q.heatmaps(plot=False, save_path='/Users/jakecariello/Box/SPARC_JakeCariello/Madison/thresholds_figures')
+q.heatmaps(plot=True, save_path=None)#'/Users/jakecariello/Box/SPARC_JakeCariello/Madison/thresholds_figures')
 
 #
 #                 # TODO: Finish building heatmap of polyfasc nerve (1 fiber/fasc)
 #                 # also, look into adding documentation to Simulation (might be useful for above task too)
+
+# plt.close('all')
