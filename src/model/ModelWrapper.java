@@ -1201,13 +1201,7 @@ public class ModelWrapper {
                     } catch (IllegalArgumentException e) {
                         e.printStackTrace();
                     }
-
-                    // add PART PRIMITIVES for CUFF
-                    // Read cuff to build from model.json (cuff.preset) which links to JSON containing instantiations of parts
-                    JSONObject cuffObject = (JSONObject) modelData.get("cuff");
-                    String cuff = cuffObject.getString("preset");
-                    mw.addCuffPartPrimitives(cuff);
-
+                    
                     // add NERVE (Fascicles CI/MESH and EPINEURIUM)
                     // Set NERVE MORPHOLOGY parameters
                     JSONObject morphology = (JSONObject) sampleData.get("Morphology");
@@ -1256,7 +1250,14 @@ public class ModelWrapper {
                         nerveParams.set("ci_b", myCICoeffs.getDouble("b") + " [" + myCICoeffs.getString("unit") + "]");
 
                     }
-                    
+
+                    // add PART PRIMITIVES for CUFF
+                    // Read cuff to build from model.json (cuff.preset) which links to JSON containing instantiations of parts
+                    JSONObject cuffObject = (JSONObject) modelData.get("cuff");
+                    String cuff = cuffObject.getString("preset");
+                    mw.addCuffPartPrimitives(cuff);
+
+
                     // add PART INSTANCES for cuff
                     mw.addCuffPartInstances(cuff, modelData);
 
