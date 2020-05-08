@@ -144,17 +144,24 @@ class Fascicle(Exceptionable):
         else:  # must be Nerve
             return self.outer.angle_to(other)
 
-    def plot(self, plot_format: str = 'b-', color: Tuple[float, float, float, float] = None, ax: plt.Axes = None, outer_flag = True):
+    def plot(self, plot_format: str = 'b-', color: Tuple[float, float, float, float] = None,
+             ax: plt.Axes = None, outer_flag = True, inner_index_start: int = None):
         """
+        :param inner_index_start:
         :param ax:
         :param color:
         :param plot_format: outers automatically black, plot_format only affects inners
         """
+        if ax is None:
+            ax = plt.gca()
+
         if outer_flag:
             self.outer.plot(ax=ax)
 
-        for inner in self.inners:
+        for i, inner in enumerate(self.inners):
             inner.plot(plot_format, color, ax=ax)
+            ax.text(*inner.centroid(), s=str(i + inner_index_start), ha='center', va='center')
+
 
     def deepcopy(self):
         """

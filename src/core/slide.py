@@ -189,9 +189,11 @@ class Slide(Exceptionable):
              fix_aspect_ratio: bool = False,
              fascicle_colors: List[Tuple[float, float, float, float]] = None,
              ax: plt.Axes = None,
-             outers_flag: bool = True):
+             outers_flag: bool = True,
+             inner_index_labels: bool = False):
         """
         Quick util for plotting the nerve and fascicles
+        :param inner_index_labels:
         :param outers_flag:
         :param fascicle_colors:
         :param ax:
@@ -218,8 +220,17 @@ class Slide(Exceptionable):
         else:
             fascicle_colors = [None] * len(self.fascicles)
 
+        inner_index = 0
         for fascicle, color in zip(self.fascicles, fascicle_colors):
-            fascicle.plot(inner_format, color, ax=ax, outer_flag=outers_flag)
+            fascicle.plot(
+                inner_format,
+                color,
+                ax=ax,
+                outer_flag=outers_flag,
+                inner_index_start=inner_index if inner_index_labels else None
+            )
+            inner_index += len(fascicle.inners)
+
 
         if title is not None:
             plt.title(title)

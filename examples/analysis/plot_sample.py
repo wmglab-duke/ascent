@@ -34,6 +34,6 @@ q.run()
 results = q.summary()
 
 item: Sample = q.get_object(Object.SAMPLE, [results['samples'][0]['index']])
-item.slides[0].plot(fix_aspect_ratio=True)
+item.slides[0].plot(fix_aspect_ratio=True, inner_index_labels=True)
 
 os.chdir(cwd)

@@ -458,7 +458,10 @@ class Query(Exceptionable, Configurable, Saveable):
                                  title: str = 'Activation Thresholds',
                                  plot: bool = True,
                                  save_path: str = None,
-                                 width: float = 0.2):
+                                 width: float = 0.2,
+                                 capsize: float = 5,
+                                 fascicle_filter_indices: List[int] = None,
+                                 logscale: bool = False):
         """
 
         :param nsim_indices:
@@ -494,7 +497,8 @@ class Query(Exceptionable, Configurable, Saveable):
 
         # more metadata
         sample_indices = [sample_result['index'] for sample_result in self._result['samples']]
-        comparison_key: str = self.get_object(Object.SIMULATION, [sample_indices[0], model_indices[0], sim_index]).factors.keys()[0]
+        comparison_key: str = \
+            list(self.get_object(Object.SIMULATION, [sample_indices[0], model_indices[0], sim_index]).factors.keys())[0]
 
         # summary of functionality
         print('For samples {}, comparing sim {} of models {} along dimension \"{}\"'.format(
@@ -521,7 +525,7 @@ class Query(Exceptionable, Configurable, Saveable):
             fig, ax = plt.subplots()
 
             # x label
-            xlabel = '->'.split(comparison_key)[-1]
+            xlabel = comparison_key.split('->')[-1]
             if xlabel == 'diameter':
                 ax.set_xlabel('Axon Diameter (µm)')
             else:
@@ -552,7 +556,7 @@ class Query(Exceptionable, Configurable, Saveable):
                 # validate sim object
                 if len(sim_object.factors) is not 1:
                     self.throw(68)
-                if not sim_object.factors.keys()[0] == comparison_key:
+                if not list(sim_object.factors.keys())[0] == comparison_key:
                     self.throw(69)
 
                 # whether the comparison key is for 'fiber' or 'wave', the nsims will always be in order!
@@ -562,6 +566,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
                     # this x group label
                     if first_iteration:
+                        # print(nsim_value)
                         xlabels.append(nsim_value)
 
                     # default fiberset index to 0
@@ -578,11 +583,17 @@ class Query(Exceptionable, Configurable, Saveable):
                                               just_directory=True)
                     n_sim_dir = os.path.join(sim_dir, 'n_sims', str(nsim_index))
 
-                    # init thresholds for this model, sim, nsim
+                    # init thresholds container for this model, sim, nsim
                     thresholds: List[float] = []
 
+                    # fetch all thresholds
                     for inner in range(n_inners):
+
                         outer = [index for index, inners in enumerate(out_in) if inner in inners][0]
+
+                        if (fascicle_filter_indices is not None) and (outer not in fascicle_filter_indices):
+                            continue
+
                         for local_fiber_index, _ in enumerate(out_in_fib[outer][out_in[outer].index(inner)]):
                             thresh_path = os.path.join(n_sim_dir,
                                                        'data',
@@ -594,6 +605,8 @@ class Query(Exceptionable, Configurable, Saveable):
 
                     model_data.append(DataPoint(np.mean(thresholds), np.std(thresholds, ddof=1)))
 
+                first_iteration = False
+
                 sample_data.append(model_data)
 
             # make the bars
@@ -601,12 +614,35 @@ class Query(Exceptionable, Configurable, Saveable):
             n_models = len(sample_data)
 
             for model_index, model_data in enumerate(sample_data):
-                ax.bar(x=x_vals - (n_models * width / 2) + (width * model_index),
-                       height=[data.value for data in model_data],
-                       width=width,
-                       label=model_labels[model_index],
-                       yerr=[data.error for data in model_data]
+                ax.bar(
+                    x=x_vals - ((n_models - 1) * width / 2) + (width * model_index),
+                    height=[data.value for data in model_data],
+                    width=width,
+                    label=model_labels[model_index],
+                    yerr=[data.error for data in model_data],
+                    capsize=capsize
                 )
 
+            # add x-axis values
+            ax.set_xticks(x_vals)
+            ax.set_xticklabels(xlabels)
+
+            # set log scale
+            if logscale:
+                ax.set_yscale('log')
+
+            # title
+            title = '{} for sample {}'.format(title, sample_config['sample'])
+            if fascicle_filter_indices is not None:
+                if len(fascicle_filter_indices) == 1:
+                    title = '{} (fascicle {})'.format(title, fascicle_filter_indices[0])
+                else:
+                    title = '{} (fascicles {})'.format(title, ', '.join([str(i) for i in fascicle_filter_indices]))
+            plt.title(title)
+
+            # add legend
+            plt.legend()
+
             # plot!
-            plt.show()
+            if plot:
+                plt.show()
