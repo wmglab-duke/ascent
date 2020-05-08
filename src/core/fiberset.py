@@ -44,7 +44,10 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         :return:
         """
 
-        if not self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode') == 'SL_PSEUDO_INTERP':
+        xy_mode_name: str = self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode')
+        xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
+
+        if not xy_mode == FiberXYMode.SL_PSEUDO_INTERP:
             fibers_xy = self._generate_xy()
             self.out_to_fib, self.out_to_in = self._generate_maps(fibers_xy)
             self.fibers = self._generate_z(fibers_xy)
@@ -67,12 +70,23 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             def magnitude(vec):
                 return np.sqrt(sum(item**2 for item in vec))
 
+            # generate parameter range
             t_min = max(opt.fmin(lambda t: -(fit_z(t) - (z_medium - buffer)), 50), 20)
             t_max = r_medium - buffer
             t_step = 10
-            t = np.arange(t_min, t_max, t_step)
+            t_range = np.arange(t_min, t_max, t_step)
 
-            x, y, z = fit_3d(t, 0, fit_z)
+            # init theta
+            theta = 0
+
+            # set angle theta to orientation point if defined
+            slide = self.sample.slides[0]
+            if slide.orientation_point_index is not None:
+                outer = slide.fascicles[0] if slide.monofasc() else slide.nerve
+                orientation_x, orientation_y = tuple(outer.points[slide.orientation_point_index][:2])
+                theta = np.arctan2(orientation_y, orientation_x)
+
+            x, y, z = fit_3d(t_range, theta, fit_z)
             points = list(zip(x, y, z))
             fiber_length = sum(magnitude(np.asarray(points[i])-np.asarray(points[i+1])) for i in range(len(points)-1))
 
