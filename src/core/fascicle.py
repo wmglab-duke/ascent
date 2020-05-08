@@ -160,7 +160,8 @@ class Fascicle(Exceptionable):
 
         for i, inner in enumerate(self.inners):
             inner.plot(plot_format, color, ax=ax)
-            ax.text(*inner.centroid(), s=str(i + inner_index_start), ha='center', va='center')
+            if inner_index_start is not None:
+                ax.text(*inner.centroid(), s=str(i + inner_index_start), ha='center', va='center')
 
 
     def deepcopy(self):

@@ -262,7 +262,14 @@ class Simulation(Exceptionable, Configurable, Saveable):
             for root, dirs, files in os.walk(os.path.join(sim_dir, 'potentials', str(p))):
                 for file in files:
                     q = int(file.split('.')[0])
-                    l, k = self.indices_fib_to_n(p, q)
+
+                    # NOTE: if SL interp, writes files as inner0_fiber<q>.dat
+                    l: int
+                    k: int
+                    if not self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode') == 'SL_PSEUDO_INTERP':
+                        l, k = self.indices_fib_to_n(p, q)
+                    else:
+                        l, k = 0, q
 
                     is_member = np.in1d(l, inner_list)
                     if not is_member:
