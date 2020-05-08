@@ -148,3 +148,4 @@ src/neuron/MOD_Files/*.o
 ~$master_index_key.xlsx
 
 config/system/cuffs/ImThera.json
+*.py~
