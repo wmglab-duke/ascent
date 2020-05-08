@@ -273,12 +273,12 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                             for point in [vector.coords[1] for vector in scaled_vectors]:
                                 points.append(point)
 
-            if plot:
-                plt.figure()
-                self.sample.slides[0].plot(final=False, fix_aspect_ratio=True)
-                for point in points:
-                    plt.plot(point[0], point[1], 'r*')
-                plt.show()
+            # if plot:
+            #     plt.figure()
+            #     self.sample.slides[0].plot(final=False, fix_aspect_ratio=True)
+            #     for point in points:
+            #         plt.plot(point[0], point[1], 'r*')
+            #     plt.show()
         else:
             self.throw(30)
 
