@@ -134,9 +134,8 @@ class Runner(Exceptionable, Configurable):
                 .output_morphology_data() \
                 .save(os.path.join(sample_file))
 
-
         # iterate through models
-        if 'model' not in all_configs.keys():
+        if 'models' not in all_configs.keys():
             print('NO MODELS TO MAKE IN Config.RUN - killing process')
             exit()
         else:
