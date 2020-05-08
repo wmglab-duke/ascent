@@ -30,4 +30,6 @@ q = Query({
 q.barcharts_compare_models(model_labels=['Original orientation',
                                          '90-degree rotation',
                                          '180-degree rotation',
-                                         '270-degree rotation'])
+                                         '270-degree rotation'],
+                           fascicle_filter_indices=[8],
+                           logscale=True)

@@ -459,7 +459,9 @@ class Query(Exceptionable, Configurable, Saveable):
                                  plot: bool = True,
                                  save_path: str = None,
                                  width: float = 0.2,
-                                 capsize: float = 5):
+                                 capsize: float = 5,
+                                 fascicle_filter_indices: List[int] = None,
+                                 logscale: bool = False):
         """
 
         :param nsim_indices:
@@ -581,11 +583,17 @@ class Query(Exceptionable, Configurable, Saveable):
                                               just_directory=True)
                     n_sim_dir = os.path.join(sim_dir, 'n_sims', str(nsim_index))
 
-                    # init thresholds for this model, sim, nsim
+                    # init thresholds container for this model, sim, nsim
                     thresholds: List[float] = []
 
+                    # fetch all thresholds
                     for inner in range(n_inners):
+
                         outer = [index for index, inners in enumerate(out_in) if inner in inners][0]
+
+                        if (fascicle_filter_indices is not None) and (outer not in fascicle_filter_indices):
+                            continue
+
                         for local_fiber_index, _ in enumerate(out_in_fib[outer][out_in[outer].index(inner)]):
                             thresh_path = os.path.join(n_sim_dir,
                                                        'data',
@@ -600,8 +608,6 @@ class Query(Exceptionable, Configurable, Saveable):
                 first_iteration = False
 
                 sample_data.append(model_data)
-
-
 
             # make the bars
             x_vals = np.arange(len(sample_data[0]))
@@ -621,9 +627,22 @@ class Query(Exceptionable, Configurable, Saveable):
             ax.set_xticks(x_vals)
             ax.set_xticklabels(xlabels)
 
-            # legend and title
-            plt.title('Activation Thresholds for sample {}'.format(sample_config['sample']))
+            # set log scale
+            if logscale:
+                ax.set_yscale('log')
+
+            # title
+            title = '{} for sample {}'.format(title, sample_config['sample'])
+            if fascicle_filter_indices is not None:
+                if len(fascicle_filter_indices) == 1:
+                    title = '{} (fascicle {})'.format(title, fascicle_filter_indices[0])
+                else:
+                    title = '{} (fascicles {})'.format(title, ', '.join([str(i) for i in fascicle_filter_indices]))
+            plt.title(title)
+
+            # add legend
             plt.legend()
 
             # plot!
-            plt.show()
+            if plot:
+                plt.show()
