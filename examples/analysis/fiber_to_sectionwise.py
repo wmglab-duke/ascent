@@ -22,7 +22,7 @@ if not re.match('[xyz]*', options):
     print('Invalid output options: {}\n{}'.format(options, usage))
     exit()
 
-if not len(options) not in [1, 2, 3]:
+if len(options) not in [1, 2, 3]:
     print('Invalid output options length: {}\n{}'.format(len(options), usage))
     exit()
 
