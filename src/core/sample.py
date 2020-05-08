@@ -274,7 +274,9 @@ class Sample(Exceptionable, Configurable, Saveable):
                 outer = slide.nerve if (slide.nerve is not None) else slide.fascicles[0].outer
 
                 # create line between outer centroid and orientation centroid
-                ray = LineString([outer.centroid(), orientation_centroid])
+                outer_x, outer_y = outer.centroid()
+                ori_x, ori_y = orientation_centroid
+                ray = LineString([outer.centroid(), ((ori_x + ((ori_x - outer_x) * 1000), (ori_y + ((ori_y - outer_y) * 1000))))])
 
                 # find intersection point with outer (interpolated)
                 intersection = ray.intersection(outer.polygon().boundary)
