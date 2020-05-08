@@ -12,8 +12,8 @@ if len(sys.argv) != 3:
     print('Invalid argument count: {}\n{}'.format(len(sys.argv), usage))
     exit()
 
-source: str = sys.argv[2]
-target: str = sys.argv[3]
+source: str = sys.argv[1]
+target: str = sys.argv[2]
 target_dir, _ = os.path.split(target)
 
 for name, value in zip(['source', 'target directory'], [source, target_dir]):
