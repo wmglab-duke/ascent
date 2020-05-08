@@ -1201,7 +1201,7 @@ public class ModelWrapper {
                     } catch (IllegalArgumentException e) {
                         e.printStackTrace();
                     }
-                    
+
                     // add NERVE (Fascicles CI/MESH and EPINEURIUM)
                     // Set NERVE MORPHOLOGY parameters
                     JSONObject morphology = (JSONObject) sampleData.get("Morphology");
@@ -1211,24 +1211,14 @@ public class ModelWrapper {
                     ModelParamGroup nerveParams = model.param().group().create(nerveParamsLabal);
                     nerveParams.label(nerveParamsLabal);
 
-                    System.out.println("1");
-                    System.in.read();
-
-
                     if (morphology.isNull("Nerve")) {
-                        System.out.println("2");
                         nerveParams.set("a_nerve", "NaN");
                         nerveParams.set("r_nerve", modelData.getDouble("min_radius_enclosing_circle") + " [" + morphology_unit + "]");
                     } else {
-                        System.out.println("3");
                         JSONObject nerve = (JSONObject) morphology.get("Nerve");
                         nerveParams.set("a_nerve", nerve.get("area") + " [" + morphology_unit + "^2]");
                         nerveParams.set("r_nerve", "sqrt(a_nerve/pi)");
                     }
-
-                    System.out.println("nerveParams.get(\"r_nerve\") = " + nerveParams.get("r_nerve"));
-
-                    System.out.println("4");
 
                     String ciCoeffsFile = String.join("/", new String[]{
                             "config",
