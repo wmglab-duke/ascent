@@ -121,6 +121,7 @@ class FiberXYMode(Enum):
     UNIFORM_COUNT = 1  # all fascicles have save fiber COUNT, same randomization of positions within each fascicle
     CENTROID = 2  # a single fiber per inner trace (endoneurium bundle?), located at each inner trace centroid
     WHEEL = 3  # 1) points on lines extending radially for each inner centroid, 2) offset inwards from boundary
+    SL_PSEUDO_INTERP = 4  # special mode for interpolating along approximate superior laryngeal branch of vagus nerve
 
 
 @unique
