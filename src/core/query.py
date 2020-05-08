@@ -351,7 +351,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
                         # fetch axis
                         ax: plt.Axes = axes.reshape(-1)[n]
-                        ax.axis('off')
+                        # ax.axis('off')
 
                         # fetch sim information
                         sim_dir = self.build_path(Object.SIMULATION, [sample_index, model_index, sim_index],
@@ -410,6 +410,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
                         # plot orientation point if applicable
                         if orientation_point is not None:
+                            ax.plot(*tuple(slide.nerve.points[slide.orientation_point_index][:2]), 'b*')
                             ax.plot(*orientation_point, 'r.', markersize=20)
 
                         # plot slide (nerve and fascicles, defaulting to no outers)
@@ -458,7 +459,7 @@ class Query(Exceptionable, Configurable, Saveable):
                                  title: str = 'Activation Thresholds',
                                  plot: bool = True,
                                  save_path: str = None,
-                                 width: float = 0.2,
+                                 width: float = 0.8,
                                  capsize: float = 5,
                                  fascicle_filter_indices: List[int] = None,
                                  logscale: bool = False):
@@ -603,7 +604,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
                     thresholds: np.ndarray = np.array(thresholds)
 
-                    model_data.append(DataPoint(np.mean(thresholds), np.std(thresholds, ddof=1)))
+                    model_data.append(DataPoint(np.mean(thresholds), np.std(thresholds, ddof=1) if len(thresholds) > 1 else None))
 
                 first_iteration = False
 
@@ -612,14 +613,17 @@ class Query(Exceptionable, Configurable, Saveable):
             # make the bars
             x_vals = np.arange(len(sample_data[0]))
             n_models = len(sample_data)
+            effective_width = width / n_models
 
             for model_index, model_data in enumerate(sample_data):
+                errors = [data.error for data in model_data]
+                errors_valid = all([data.error is not None for data in model_data])
                 ax.bar(
-                    x=x_vals - ((n_models - 1) * width / 2) + (width * model_index),
+                    x=x_vals - ((n_models - 1) * effective_width / 2) + (effective_width * model_index),
                     height=[data.value for data in model_data],
-                    width=width,
+                    width=effective_width,
                     label=model_labels[model_index],
-                    yerr=[data.error for data in model_data],
+                    yerr=errors if errors_valid else None,
                     capsize=capsize
                 )
 
