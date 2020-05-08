@@ -20,7 +20,7 @@ for name, value in zip(['source', 'target directory'], [source, target_dir]):
     if not os.path.exists(value):
         print('Invalid path for {}: {}\n{}'.format(name, value, usage))
 
-data: np.ndarray = np.loadtxt(source)[1:]
+data: np.ndarray = np.loadtxt(source, skiprows=1)
 
 print(data)
 
