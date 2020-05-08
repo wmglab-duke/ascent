@@ -57,7 +57,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
             z_nerve = self.search(Config.MODEL, 'medium', 'proximal', 'length')
             z_medium = self.search(Config.MODEL, 'medium', 'distal', 'length')
-            z_offset = 8000 - 2148.2 + z_nerve  # this is semi-arbitrary --> used from last model
+            z_offset = 5000 + z_nerve / 2  # this is semi-arbitrary (leading number is distance from center of cuff)
             r_medium = self.search(Config.MODEL, 'medium', 'distal', 'radius')
             buffer = 50
 
