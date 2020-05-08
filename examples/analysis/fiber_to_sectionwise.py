@@ -22,10 +22,12 @@ for name, value in zip(['source', 'target directory'], [source, target_dir]):
 
 data: np.ndarray = np.loadtxt(source)[1:]
 
+print(data)
+
 with open(target, 'w+') as handle:
     # write coordinates
     handle.write('%% Coordinates\n')
     for i in range(len(data)):
-        handle.write('{}\t{}\n'.format(data[i, 0], data[i, 1]))
+        handle.write('{}\t{}\n'.format(data[i][0], data[i][1]))
 
 print('Sectionwise2d file written to: {}'.format(target))
