@@ -231,16 +231,16 @@ class Simulation(Exceptionable, Configurable, Saveable):
             fiberset_vals = self.fiberset_product[fiberset_ind]
 
             # pair down simulation config to no lists of parameters (corresponding to the neuron simulation index t)
-            print('active_src_ind: {}'.format(str(active_src_ind)))
-            print('src_key: {}'.format(str(self.src_key)))
-            print('active_src_vals: {}'.format(str(active_src_vals)))
-            input("Press Enter to continue...")
+            # print('active_src_ind: {}'.format(str(active_src_ind)))
+            # print('src_key: {}'.format(str(self.src_key)))
+            # print('active_src_vals: {}'.format(str(active_src_vals)))
+            # input("Press Enter to continue...")
             sim_copy = self._copy_and_edit_config(self.configs[Config.SIM.value],
                                                   self.src_key, active_src_vals, copy_again=False)
-            input("Press Enter to continue...")
+            # input("Press Enter to continue...")
             sim_copy = self._copy_and_edit_config(sim_copy,
                                                   self.wave_key, wave_vals, copy_again=False)
-            input("Press Enter to continue...")
+            # input("Press Enter to continue...")
             sim_copy = self._copy_and_edit_config(sim_copy,
                                                   self.fiberset_key, fiberset_vals, copy_again=False)
 
