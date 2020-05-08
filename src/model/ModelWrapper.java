@@ -1208,9 +1208,6 @@ public class ModelWrapper {
                     String cuff = cuffObject.getString("preset");
                     mw.addCuffPartPrimitives(cuff);
 
-                    // add PART INSTANCES for cuff
-                    mw.addCuffPartInstances(cuff, modelData);
-
                     // add NERVE (Fascicles CI/MESH and EPINEURIUM)
                     // Set NERVE MORPHOLOGY parameters
                     JSONObject morphology = (JSONObject) sampleData.get("Morphology");
@@ -1257,7 +1254,11 @@ public class ModelWrapper {
                         JSONObject myCICoeffs = ciCoeffsData.getJSONObject("ci_perineurium_thickness_parameters").getJSONObject(ci_mode);
                         nerveParams.set("ci_a", myCICoeffs.getDouble("a") + " [" + myCICoeffs.getString("unit") + "/" + myCICoeffs.getString("unit") + "]");
                         nerveParams.set("ci_b", myCICoeffs.getDouble("b") + " [" + myCICoeffs.getString("unit") + "]");
+
                     }
+                    
+                    // add PART INSTANCES for cuff
+                    mw.addCuffPartInstances(cuff, modelData);
 
                     // Set CUFF POSITIONING parameters
                     String cuffConformationParamsLabel = "Cuff Conformation Parameters";
