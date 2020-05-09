@@ -356,8 +356,14 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             half_fiber_length = fiber_length / 2
             z_shift_to_center = (model_length - fiber_length) / 2.0
 
-            # SUPER IMPORTANT THAT THIS IS TRUE!
-            assert model_length >= fiber_length, 'model length: {}\nfiber length: {}'.format(model_length, fiber_length)
+            xy_mode_name: str = self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode')
+            xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
+
+            # check that proximal model length is greater than or equal to fiber length (fibers only in nerve trunk)
+            # override this functionality if using SL (not in nerve trunk)
+            if not xy_mode == FiberXYMode.SL_PSEUDO_INTERP:
+                assert model_length >= fiber_length, 'proximal length: ({}) < fiber length: ({})'.format(model_length,
+                                                                                                      fiber_length)
 
             fiber_geometry_mode_name: str = self.search(Config.SIM, 'fibers', 'mode')
 
