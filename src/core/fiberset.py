@@ -111,12 +111,12 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
             self.fibers = [interparc(ratios, x, y, z)]
 
-            from mpl_toolkits.mplot3d import Axes3D
-            fig: plt.Figure = plt.figure()
-            ax: Axes3D = fig.add_subplot(111, projection='3d')
-
+            # from mpl_toolkits.mplot3d import Axes3D
+            # fig: plt.Figure = plt.figure()
+            # ax: Axes3D = fig.add_subplot(111, projection='3d')
+            #
             # ax.scatter(x, y, z, c='r', marker='o')
-            ax.scatter(self.fibers[0][:, 0], self.fibers[0][:, 1], self.fibers[0][:, 2], c='b', marker='o')
+            # ax.scatter(self.fibers[0][:, 0], self.fibers[0][:, 1], self.fibers[0][:, 2], c='b', marker='o')
             # plt.show()
 
             print('buffer line')
