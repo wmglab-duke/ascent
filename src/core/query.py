@@ -13,6 +13,12 @@ from src.core import Sample, Simulation, Slide
 from src.utils import Exceptionable, Configurable, Saveable, SetupMode, Config, Object
 
 
+def get_percent_response_threshold_value(percent: float, values: np.ndarray):
+    index: int = int(np.floor(percent*len(values)))
+    value = np.sort(values)[index]
+    return value
+
+
 class Query(Exceptionable, Configurable, Saveable):
     """
     IMPORTANT: MUST BE RUN FROM PROJECT LEVEL
@@ -650,3 +656,189 @@ class Query(Exceptionable, Configurable, Saveable):
             # plot!
             if plot:
                 plt.show()
+
+    def barcharts_compare_samples(self,
+                                 sim_index: int = None,
+                                 model_indices: List[int] = None,
+                                 model_labels: List[str] = None,
+                                 title: str = 'Activation Thresholds',
+                                 plot: bool = True,
+                                 save_path: str = None,
+                                 width: float = 0.8,
+                                 capsize: float = 5,
+                                 fascicle_filter_indices: List[int] = None,
+                                 logscale: bool = False):
+        """
+
+        :param nsim_indices:
+        :param plot:
+        :param save_path:
+        :return:
+        ERIC WORKING HERE
+        """
+
+        # quick helper class for storing data values
+        class DataPoint():
+            def __init__(self, value: float, error: float = None):
+                self.value = value
+                self.error = error
+
+        class ResponseDataPoint():
+            def __init__(self, vector: np.ndarray):
+                self.i20: float = get_percent_response_threshold_value(0.2, vector)
+                self.i50: float = get_percent_response_threshold_value(0.5, vector)
+                self.i80: float = get_percent_response_threshold_value(0.8, vector)
+                self.i100: float = np.max(vector)
+
+        # warning
+        print('NOTE: assumes a SINGLE dimension for the selected sim (functionality defined otherwise)')
+
+        # validation
+        if self._result is None:
+            self.throw(66)
+
+        if model_indices is None:
+            model_indices = self.search(Config.CRITERIA, 'indices', 'model')
+
+        if model_labels is None:
+            model_labels = ['Model {}'.format(i) for i in model_indices]
+
+        if sim_index is None:
+            sim_index = self.search(Config.CRITERIA, 'indices', 'sim')[0]
+
+        if not len(model_labels) == len(model_indices):
+            self.throw(67)
+
+        # more metadata
+        sample_indices = [sample_result['index'] for sample_result in self._result['samples']]
+        comparison_key: str = \
+            list(self.get_object(Object.SIMULATION, [sample_indices[0], model_indices[0], sim_index]).factors.keys())[0]
+
+        # summary of functionality
+        print('For samples {}, comparing sim {} of models {} along dimension \"{}\"'.format(
+            sample_indices,
+            sim_index,
+            model_indices,
+            comparison_key)
+        )
+
+        # loop models
+        model_index: int
+        model_results: dict
+
+        master_data: List[List[List[ResponseDataPoint]]] = []
+        # init data container for this model
+
+        for model_index in model_indices:
+            print('\tmodel: {}'.format(model_index))
+            model_data: List[List[ResponseDataPoint]] = []
+            sample_results: dict
+
+            # loop samples
+            for sample_results in self._result.get('samples', []):
+                sample_index = sample_results['index']
+                print('sample: {}'.format(sample_index))
+
+                # init master data container (indices or outer list correspond to each model)
+                sample_data: List[ResponseDataPoint] = []
+
+                sample_object: Sample = self.get_object(Object.SAMPLE, [sample_index])
+                sample_config: dict = self.get_config(Config.SAMPLE, [sample_index])
+                slide: Slide = sample_object.slides[0]
+                n_inners = sum(len(fasc.inners) for fasc in slide.fascicles)
+
+                # sim index is already set from input, so no need to loop
+                sim_object = self.get_object(Object.SIMULATION, [sample_index, model_index, sim_index])
+
+                # validate sim object
+                if len(sim_object.factors) is not 1:
+                    self.throw(68)
+                if not list(sim_object.factors.keys())[0] == comparison_key:
+                    self.throw(69)
+
+                # whether the comparison key is for 'fiber' or 'wave', the nsims will always be in order!
+                # this realization allows us to simply loop through the factors in sim.factors[key] and treat the
+                # indices as if they were the nsim indices
+                for nsim_index, nsim_value in enumerate(sim_object.factors[comparison_key]):
+
+                    # default fiberset index to 0
+                    fiberset_index: int = 0
+                    if comparison_key.split('->')[0] == 'fiber':
+                        fiberset_index = nsim_index  # if dimension is fibers, use correct fiberset
+
+                    # fetch outer->inner->fiber and out->inner maps
+                    out_in_fib, out_in = sim_object.fiberset_map_pairs[fiberset_index]
+
+                    # build base dirs for fetching thresholds
+                    sim_dir = self.build_path(Object.SIMULATION,
+                                              [sample_index, model_index, sim_index],
+                                              just_directory=True)
+                    n_sim_dir = os.path.join(sim_dir, 'n_sims', str(nsim_index))
+
+                    # init thresholds container for this model, sim, nsim
+                    thresholds: List[float] = []
+
+                    # fetch all thresholds
+                    for inner in range(n_inners):
+
+                        outer = [index for index, inners in enumerate(out_in) if inner in inners][0]
+
+                        if (fascicle_filter_indices is not None) and (outer not in fascicle_filter_indices):
+                            continue
+
+                        for local_fiber_index, _ in enumerate(out_in_fib[outer][out_in[outer].index(inner)]):
+                            thresh_path = os.path.join(n_sim_dir,
+                                                       'data',
+                                                       'outputs',
+                                                       'thresh_inner{}_fiber{}.dat'.format(inner, local_fiber_index))
+                            if os.path.exists(thresh_path):
+                                thresholds.append(np.loadtxt(thresh_path)[2])
+
+                    thresholds: np.ndarray = np.array(thresholds)
+                    sample_data.append(ResponseDataPoint(thresholds if len(thresholds) > 1 else None))  # TODO I will set std to none, calculate flag (20, 50, 80...
+                model_data.append(sample_data)
+            master_data.append(model_data)
+
+            print('here')
+
+
+            # # make the bars
+            # x_vals = np.arange(len(sample_data[0]))
+            # n_models = len(sample_data)
+            # effective_width = width / n_models
+            #
+            # for model_index, model_data in enumerate(sample_data):  # todo for every sample in model
+            #     errors = [data.error for data in model_data]
+            #     errors_valid = all([data.error is not None for data in model_data])  # TODO keep this method but take mean and variance of those bars
+            #     ax.bar(
+            #         x=x_vals - ((n_models - 1) * effective_width / 2) + (effective_width * model_index),
+            #         height=[data.value for data in model_data],
+            #         width=effective_width,
+            #         label=model_labels[model_index],
+            #         yerr=errors if errors_valid else None,
+            #         capsize=capsize
+            #     )
+            #
+            # # add x-axis values
+            # ax.set_xticks(x_vals)
+            # ax.set_xticklabels(xlabels)
+            #
+            # # set log scale
+            # if logscale:
+            #     ax.set_yscale('log')
+            #
+            # # title
+            # title = '{} for sample {}'.format(title, sample_config['sample'])
+            # if fascicle_filter_indices is not None:
+            #     if len(fascicle_filter_indices) == 1:
+            #         title = '{} (fascicle {})'.format(title, fascicle_filter_indices[0])
+            #     else:
+            #         title = '{} (fascicles {})'.format(title, ', '.join([str(i) for i in fascicle_filter_indices]))
+            # plt.title(title)
+            #
+            # # add legend
+            # plt.legend()
+            #
+            # # plot!
+            # if plot:
+            #     plt.show()
