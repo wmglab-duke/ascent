@@ -13,7 +13,7 @@ from .hocwriter import HocWriter
 from .fiberset import FiberSet
 from .waveform import Waveform
 from src.core import Sample
-from src.utils import Exceptionable, Configurable, Saveable, SetupMode, Config, WriteMode
+from src.utils import Exceptionable, Configurable, Saveable, SetupMode, Config, WriteMode, FiberXYMode
 
 
 class Simulation(Exceptionable, Configurable, Saveable):
@@ -231,10 +231,16 @@ class Simulation(Exceptionable, Configurable, Saveable):
             fiberset_vals = self.fiberset_product[fiberset_ind]
 
             # pair down simulation config to no lists of parameters (corresponding to the neuron simulation index t)
+            # print('active_src_ind: {}'.format(str(active_src_ind)))
+            # print('src_key: {}'.format(str(self.src_key)))
+            # print('active_src_vals: {}'.format(str(active_src_vals)))
+            # input("Press Enter to continue...")
             sim_copy = self._copy_and_edit_config(self.configs[Config.SIM.value],
                                                   self.src_key, active_src_vals, copy_again=False)
+            # input("Press Enter to continue...")
             sim_copy = self._copy_and_edit_config(sim_copy,
                                                   self.wave_key, wave_vals, copy_again=False)
+            # input("Press Enter to continue...")
             sim_copy = self._copy_and_edit_config(sim_copy,
                                                   self.fiberset_key, fiberset_vals, copy_again=False)
 
@@ -259,6 +265,11 @@ class Simulation(Exceptionable, Configurable, Saveable):
             p = fiberset_ind
             inner_list = []
             fiber_list = []
+
+            # fetch xy mode to check for override necessity
+            xy_mode_name: str = self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode')
+            xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
+
             for root, dirs, files in os.walk(os.path.join(sim_dir, 'potentials', str(p))):
                 for file in files:
                     q = int(file.split('.')[0])
@@ -266,7 +277,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
                     # NOTE: if SL interp, writes files as inner0_fiber<q>.dat
                     l: int
                     k: int
-                    if not self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode') == 'SL_PSEUDO_INTERP':
+                    if not xy_mode == FiberXYMode.SL_PSEUDO_INTERP:
                         l, k = self.indices_fib_to_n(p, q)
                     else:
                         l, k = 0, q

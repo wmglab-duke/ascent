@@ -258,6 +258,11 @@ class Runner(Exceptionable, Configurable):
                         self.search(Config.ENV, 'nsim_export')
                     )
 
+                    print('Exported runs/ and n_sims/ to {}\n'
+                          'Remember to copy both runs and n_sim folder to batch submission location.\n'
+                          'Also, ensure that batch.py and batch.sh versions '
+                          'in batch submission location are current.'.format(self.search(Config.ENV, 'nsim_export')))
+
     def handoff(self, run_number: int):
         comsol_path = self.search(Config.ENV, 'comsol_path')
         jdk_path = self.search(Config.ENV, 'jdk_path')

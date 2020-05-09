@@ -44,7 +44,10 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         :return:
         """
 
-        if not self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode') == 'SL_PSEUDO_INTERP':
+        xy_mode_name: str = self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode')
+        xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
+
+        if not xy_mode == FiberXYMode.SL_PSEUDO_INTERP:
             fibers_xy = self._generate_xy()
             self.out_to_fib, self.out_to_in = self._generate_maps(fibers_xy)
             self.fibers = self._generate_z(fibers_xy)
@@ -52,11 +55,23 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         else:
             # SL generation algorithm
 
+            # find sample position if available - NOTE THIS WILL NEED TO BE FIXED LATER TO USE MAP CONFIG?
+            sample_position = self.sample.configs[Config.SAMPLE.value].get('position', None)
+            if sample_position is not None:
+                print('\t\tUsing {} µm positioning for SL curve'.format(sample_position))
+            else:
+                sample_position = 5000  # default
+                print('\t\tNo positioning for SL curve found. Using {} µm.'.format(sample_position))
+
             z_nerve = self.search(Config.MODEL, 'medium', 'proximal', 'length')
             z_medium = self.search(Config.MODEL, 'medium', 'distal', 'length')
-            z_offset = 8000 - 2148.2 + z_nerve  # this is semi-arbitrary --> used from last model
+            z_offset = sample_position + z_nerve / 2  # this is semi-arbitrary (leading number is distance from center of cuff)
             r_medium = self.search(Config.MODEL, 'medium', 'distal', 'radius')
             buffer = 50
+
+            if z_offset >= z_medium - 1000:
+                print('\t\tWARNING: SL z_offset ({}) within 1000 µm of distal model length ({})'.format(z_offset,
+                                                                                                        z_medium))
 
             def fit_z(t):
                 return (10**5 / t) + z_offset
@@ -67,12 +82,23 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             def magnitude(vec):
                 return np.sqrt(sum(item**2 for item in vec))
 
-            t_min = max(opt.fmin(lambda t: -(fit_z(t) - (z_medium - buffer)), 50), 20)
+            # generate parameter range
+            t_min = max(opt.fmin(lambda t: -(fit_z(t) - (z_medium - buffer)), 50, xtol=1), 10)
             t_max = r_medium - buffer
             t_step = 10
-            t = np.arange(t_min, t_max, t_step)
+            t_range = np.arange(t_min, t_max, t_step)
 
-            x, y, z = fit_3d(t, 0, fit_z)
+            # init theta
+            theta = 0
+
+            # set angle theta to orientation point if defined
+            slide = self.sample.slides[0]
+            if slide.orientation_point_index is not None:
+                outer = slide.fascicles[0] if slide.monofasc() else slide.nerve
+                orientation_x, orientation_y = tuple(outer.points[slide.orientation_point_index][:2])
+                theta = np.arctan2(orientation_y, orientation_x)
+
+            x, y, z = fit_3d(t_range, theta, fit_z)
             points = list(zip(x, y, z))
             fiber_length = sum(magnitude(np.asarray(points[i])-np.asarray(points[i+1])) for i in range(len(points)-1))
 
@@ -85,12 +111,12 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
             self.fibers = [interparc(ratios, x, y, z)]
 
-            from mpl_toolkits.mplot3d import Axes3D
-            fig: plt.Figure = plt.figure()
-            ax: Axes3D = fig.add_subplot(111, projection='3d')
-
+            # from mpl_toolkits.mplot3d import Axes3D
+            # fig: plt.Figure = plt.figure()
+            # ax: Axes3D = fig.add_subplot(111, projection='3d')
+            #
             # ax.scatter(x, y, z, c='r', marker='o')
-            ax.scatter(self.fibers[0][:, 0], self.fibers[0][:, 1], self.fibers[0][:, 2], c='b', marker='o')
+            # ax.scatter(self.fibers[0][:, 0], self.fibers[0][:, 1], self.fibers[0][:, 2], c='b', marker='o')
             # plt.show()
 
             print('buffer line')
@@ -259,12 +285,12 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                             for point in [vector.coords[1] for vector in scaled_vectors]:
                                 points.append(point)
 
-            if plot:
-                plt.figure()
-                self.sample.slides[0].plot(final=False, fix_aspect_ratio=True)
-                for point in points:
-                    plt.plot(point[0], point[1], 'r*')
-                plt.show()
+            # if plot:
+            #     plt.figure()
+            #     self.sample.slides[0].plot(final=False, fix_aspect_ratio=True)
+            #     for point in points:
+            #         plt.plot(point[0], point[1], 'r*')
+            #     plt.show()
         else:
             self.throw(30)
 
@@ -330,8 +356,14 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             half_fiber_length = fiber_length / 2
             z_shift_to_center = (model_length - fiber_length) / 2.0
 
-            # SUPER IMPORTANT THAT THIS IS TRUE!
-            assert model_length >= fiber_length
+            xy_mode_name: str = self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode')
+            xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
+
+            # check that proximal model length is greater than or equal to fiber length (fibers only in nerve trunk)
+            # override this functionality if using SL (not in nerve trunk)
+            if not xy_mode == FiberXYMode.SL_PSEUDO_INTERP:
+                assert model_length >= fiber_length, 'proximal length: ({}) < fiber length: ({})'.format(model_length,
+                                                                                                      fiber_length)
 
             fiber_geometry_mode_name: str = self.search(Config.SIM, 'fibers', 'mode')
 
