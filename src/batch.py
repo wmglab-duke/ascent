@@ -75,7 +75,7 @@ for run_number in sys.argv[1:]:
                         if os.path.exists(start_path):
                             raise Exception('start.slurm already exists (not expected) check path/implementation')
 
-                        stimamp_top = 0.1
+                        stimamp_top = 10
                         stimamp_bottom = 0.01
 
                         with open(start_path, 'w') as handle:
