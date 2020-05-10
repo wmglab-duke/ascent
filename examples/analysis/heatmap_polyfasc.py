@@ -17,24 +17,28 @@ import matplotlib.pyplot as plt
 from src.core.query import Query
 
 # set default fig size
-plt.rcParams['figure.figsize'] = [16.8, 10.14]
+plt.rcParams['figure.figsize'] = [16.8/3, 10.14*2]
 
 # initialize and run Querys
 q = Query({
     'partial_matches': True,
     'include_downstream': True,
     'indices': {
-        'sample': [5],
-        'model': [0],
+        'sample': [3, 4, 5, 6],
+        'model': [0, 1, 2, 3],
         'sim': [0]
     }
 }).run()
 
 # builds heatmaps
-q.heatmaps(plot=True, save_path=None)#'/Users/jakecariello/Box/SPARC_JakeCariello/Madison/thresholds_figures')
+q.heatmaps(plot=False,
+           save_path='/Users/jakecariello/Box/SPARC_JakeCariello/Madison/figs/mapping_heatmaps',
+           rows_override=6,
+           colorbar_aspect=5,
+           title_toggle=False)
 
 #
 #                 # TODO: Finish building heatmap of polyfasc nerve (1 fiber/fasc)
 #                 # also, look into adding documentation to Simulation (might be useful for above task too)
 
-# plt.close('all')
+plt.close('all')

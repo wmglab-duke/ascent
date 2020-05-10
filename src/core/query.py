@@ -282,7 +282,10 @@ class Query(Exceptionable, Configurable, Saveable):
                  save_path: str = None,
                  plot_outers: bool = False,
                  colormap_str: str = 'viridis',
-                 reverse_colormap: bool = True):
+                 reverse_colormap: bool = True,
+                 rows_override: int = None,
+                 colorbar_aspect: int =None,
+                 title_toggle: bool = True):
         """
         TODO: implement plot_mode and colorbar_mode (current implementation assumes single fiber and fills fascicle)
 
@@ -326,7 +329,7 @@ class Query(Exceptionable, Configurable, Saveable):
                 # calculate orientation point location (i.e., contact location)
                 orientation_point = None
                 if slide.orientation_point_index is not None:
-                    r = slide.nerve.mean_radius() * 1.1  # scale up so orientation point is outside nerve
+                    r = slide.nerve.mean_radius() * 1.15  # scale up so orientation point is outside nerve
                     theta = np.arctan2(*tuple(np.flip(slide.nerve.points[slide.orientation_point_index][:2])))
                     theta += np.deg2rad(
                         self.get_config(Config.MODEL, [sample_index, model_index]).get('cuff').get('rotate').get(
@@ -342,7 +345,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
                     # init figure with subplots
                     master_product_count = len(sim_object.master_product_indices)
-                    rows = int(np.floor(np.sqrt(master_product_count)))
+                    rows = int(np.floor(np.sqrt(master_product_count))) if rows_override is None else rows_override
                     cols = int(np.ceil(master_product_count / rows))
                     figure, axes = plt.subplots(rows, cols, constrained_layout=True)
 
@@ -352,7 +355,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
                         # fetch axis
                         ax: plt.Axes = axes.reshape(-1)[n]
-                        # ax.axis('off')
+                        ax.axis('off')
 
                         # fetch sim information
                         sim_dir = self.build_path(Object.SIMULATION, [sample_index, model_index, sim_index],
@@ -407,11 +410,12 @@ class Query(Exceptionable, Configurable, Saveable):
                             # default title
                             title = '{} {}:{}'.format(title, wave_key_name, wave_key_value)
 
-                        ax.set_title(title)
+                        if title_toggle:
+                            ax.set_title(title)
 
                         # plot orientation point if applicable
                         if orientation_point is not None:
-                            ax.plot(*tuple(slide.nerve.points[slide.orientation_point_index][:2]), 'b*')
+                            # ax.plot(*tuple(slide.nerve.points[slide.orientation_point_index][:2]), 'b*')
                             ax.plot(*orientation_point, 'r.', markersize=20)
 
                         # plot slide (nerve and fascicles, defaulting to no outers)
@@ -428,6 +432,7 @@ class Query(Exceptionable, Configurable, Saveable):
                             ax=ax,
                             orientation='vertical',
                             label=r'mA',
+                            aspect=colorbar_aspect if colorbar_aspect is not None else 20
                         )
 
                     # set super title
@@ -1121,6 +1126,14 @@ class Query(Exceptionable, Configurable, Saveable):
             # plot!
             if plot:
                 plt.show()
+
+            # save figure as png
+            if save_path is not None:
+                plt.savefig(
+                    '{}{}{}_{}_{}.png'.format(
+                        save_path, os.sep, '-'.join([str(s) for s in sample_indices]), model_index, sim_index
+                    ), dpi=400
+                )
 
     def barcharts_compare_samples(self,
                                   sim_index: int = None,

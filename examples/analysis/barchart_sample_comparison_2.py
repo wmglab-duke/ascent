@@ -26,12 +26,22 @@ q = Query({
     }
 }).run()
 
-# builds heatmaps
-q.barcharts_compare_samples_2(model_labels=['0'],
+s
+# q.barcharts_compare_samples_2(model_labels=['0'],
+#                               sample_labels=['0.5 cm', '2 cm', '5 cm', '7.8 cm'],
+#                               title='i50 at 4 longitudinal positions (merged)',
+#                               ylabel='i50 (mA)',
+#                               calculation='i50',
+#                               merge_bars=True,
+#                               width=0.9,
+#                               logscale=True)
+
+q.barcharts_compare_samples_2(model_labels=[''],
                               sample_labels=['0.5 cm', '2 cm', '5 cm', '7.8 cm'],
                               title='i50 at 4 longitudinal positions (merged)',
                               ylabel='i50 (mA)',
                               calculation='i50',
                               merge_bars=True,
                               width=0.9,
-                              logscale=True)
+                              logscale=True,
+                              )
