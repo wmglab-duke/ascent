@@ -13,6 +13,7 @@ assert os.path.isfile(env_path), 'Invalid env path: {}'.format(env_path)
 
 for argument_index in range(1, len(sys.argv)):
     argument = sys.argv[argument_index]
+    print('run {}'.format(argument))
 
     run_path = os.path.join('config', 'user', 'runs', '{}.json'.format(argument))
     assert os.path.isfile(run_path), 'Invalid run path: {}'.format(run_path)

@@ -348,5 +348,10 @@
     "code": 69,
     "text": "Inconsistent factor found in sims - ILLEGAL",
     "source": "src.core.Query.barcharts_compare_models"
+  },
+  {
+    "code": 70,
+    "text": "There must be the same number of sample indices and labels labels",
+    "source": "src.core.Query.barcharts_compare_samples"
   }
 ]

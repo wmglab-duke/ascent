@@ -854,22 +854,22 @@ class Query(Exceptionable, Configurable, Saveable):
                 plt.show()
 
     def barcharts_compare_samples_2(self,
-                                   sim_index: int = None,
-                                   sample_indices: int = None,
-                                   model_indices: List[int] = None,
-                                   sample_labels: List[str] = None,
-                                   model_labels: List[str] = None,
-                                   title: str = 'Activation Thresholds',
-                                   ylabel: str = 'Activation Threshold (mA)',
-                                   xlabel_override: str = None,
-                                   plot: bool = True,
-                                   save_path: str = None,
-                                   width: float = 0.8,
-                                   capsize: float = 5,
-                                   fascicle_filter_indices: List[int] = None,
-                                   logscale: bool = False,
-                                   calculation: str = 'mean',
-                                   merge_bars: bool = False):
+                                    sim_index: int = None,
+                                    sample_indices: int = None,
+                                    model_indices: List[int] = None,
+                                    sample_labels: List[str] = None,
+                                    model_labels: List[str] = None,
+                                    title: str = 'Activation Thresholds',
+                                    ylabel: str = 'Activation Threshold (mA)',
+                                    xlabel_override: str = None,
+                                    plot: bool = True,
+                                    save_path: str = None,
+                                    width: float = 0.8,
+                                    capsize: float = 5,
+                                    fascicle_filter_indices: List[int] = None,
+                                    logscale: bool = False,
+                                    calculation: str = 'mean',
+                                    merge_bars: bool = False):
         """
 
         :param calculation: 'mean', 'i##'
@@ -912,8 +912,8 @@ class Query(Exceptionable, Configurable, Saveable):
         if sim_index is None:
             sim_index = self.search(Config.CRITERIA, 'indices', 'sim')[0]
 
-        if not len(sample_labels) == len(model_indices):
-            self.throw(67)
+        if not len(sample_labels) == len(sample_indices):
+            self.throw(70)
 
         comparison_key: str = \
             list(self.get_object(Object.SIMULATION, [sample_indices[0], model_indices[0], sim_index]).factors.keys())[0]
@@ -921,8 +921,8 @@ class Query(Exceptionable, Configurable, Saveable):
         # summary of functionality
         print('For models {}, comparing samples {} with sim {} along dimension \"{}\"'.format(
             model_indices,
-            sim_index,
             sample_indices,
+            sim_index,
             comparison_key)
         )
 
@@ -931,7 +931,7 @@ class Query(Exceptionable, Configurable, Saveable):
         for model_index in model_indices:
             # model_index = model_results['index']
 
-            print('\tmodel: {}'.format(model_index))
+            print('model: {}'.format(model_index))
 
             # init fig, ax
             fig: plt.Figure
@@ -965,8 +965,7 @@ class Query(Exceptionable, Configurable, Saveable):
                 slide: Slide = sample_object.slides[0]
                 n_inners = sum(len(fasc.inners) for fasc in slide.fascicles)
 
-                print('sample: {}'.format(sample_index))
-
+                print('\tsample: {}'.format(sample_index))
 
                 # init data container for this model
                 sample_data: List[DataPoint] = []
@@ -984,6 +983,8 @@ class Query(Exceptionable, Configurable, Saveable):
                 # this realization allows us to simply loop through the factors in sim.factors[key] and treat the
                 # indices as if they were the nsim indices
                 for nsim_index, nsim_value in enumerate(sim_object.factors[comparison_key]):
+
+                    print('\t\tnsim: {}'.format(nsim_index))
 
                     # this x group label
                     if first_iteration:
@@ -1023,7 +1024,8 @@ class Query(Exceptionable, Configurable, Saveable):
                                 thresh_path = os.path.join(n_sim_dir,
                                                            'data',
                                                            'outputs',
-                                                           'thresh_inner{}_fiber{}.dat'.format(inner, local_fiber_index))
+                                                           'thresh_inner{}_fiber{}.dat'.format(inner,
+                                                                                               local_fiber_index))
                                 thresholds.append(np.loadtxt(thresh_path)[2])
                     else:
                         thresholds.append(np.loadtxt(os.path.join(n_sim_dir,
@@ -1031,12 +1033,12 @@ class Query(Exceptionable, Configurable, Saveable):
                                                                   'outputs',
                                                                   'thresh_inner0_fiber0.dat'))[2])
 
-
                     thresholds: np.ndarray = np.array(thresholds)
 
                     data = None
                     if calculation == 'mean':
-                        data = DataPoint(np.mean(thresholds), np.std(thresholds, ddof=1) if len(thresholds) > 1 else None)
+                        data = DataPoint(np.mean(thresholds),
+                                         np.std(thresholds, ddof=1) if len(thresholds) > 1 else None)
                     elif re.match('i[0-9]+', calculation):
                         ratio = int(calculation.split('i')[1]) / 100.0
                         data = DataPoint(get_ratio_value(ratio, thresholds), None)
@@ -1054,17 +1056,39 @@ class Query(Exceptionable, Configurable, Saveable):
             n_samples = len(model_data)
             effective_width = width / n_samples
 
-            for sample_index, sample_data in enumerate(model_data):
-                errors = [data.error for data in sample_data]
-                errors_valid = all([data.error is not None for data in sample_data])
-                ax.bar(
-                    x=x_vals - ((n_samples - 1) * effective_width / 2) + (effective_width * sample_index),
-                    height=[data.value for data in sample_data],
-                    width=effective_width,
-                    label=sample_labels[sample_index],
-                    yerr=errors if errors_valid else None,
-                    capsize=capsize
-                )
+            if not merge_bars:
+
+                for sample_index, sample_data in enumerate(model_data):
+                    errors = [data.error for data in sample_data]
+                    errors_valid = all([data.error is not None for data in sample_data])
+                    ax.bar(
+                        x=x_vals - ((n_samples - 1) * effective_width / 2) + (effective_width * sample_index),
+                        height=[data.value for data in sample_data],
+                        width=effective_width,
+                        label=sample_labels[sample_index],
+                        yerr=errors if errors_valid else None,
+                        capsize=capsize
+                    )
+            else:
+
+                nsim_values = self.get_object(Object.SIMULATION, [sample_indices[0],
+                                                                  model_index,
+                                                                  sim_index]).factors[comparison_key]
+                for n in range(len(nsim_values)):
+                    values = np.array([sample_data[n].value for sample_data in model_data])
+                    ax.bar(
+                        x=x_vals[n],
+                        height=np.mean(values),
+                        width=width,
+                        # label=,
+                        yerr=np.std(values, ddof=1) if len(values) > 1 else None,
+                        capsize=capsize,
+                    )
+
+                # set all same color
+                facecolor = ax.patches[0].get_facecolor()
+                for patch in ax.patches[1:]:
+                    patch.set_facecolor(facecolor)
 
             # add x-axis values
             ax.set_xticks(x_vals)
@@ -1072,7 +1096,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
             for rect in ax.patches:
                 height = rect.get_height()
-                ax.text(rect.get_x() + rect.get_width() / 2, height + ax.get_ylim()[1]/100, str(height),
+                ax.text(rect.get_x() + rect.get_width() / 2, height + ax.get_ylim()[1] / 100, str(round(height, 2)),
                         ha='center', va='bottom')
 
             # set log scale
@@ -1097,7 +1121,6 @@ class Query(Exceptionable, Configurable, Saveable):
             # plot!
             if plot:
                 plt.show()
-
 
     def barcharts_compare_samples(self,
                                   sim_index: int = None,

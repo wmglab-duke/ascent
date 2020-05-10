@@ -18,15 +18,20 @@ plt.rcParams['figure.figsize'] = list(np.array([16.8, 10.14]) / 2)
 # initialize and run Querys
 q = Query({
     'partial_matches': True,
-    'include_downstream': True,
+    'include_downstream': False,
     'indices': {
-        'sample': [0],
+        'sample': [3, 4, 5, 6],
         'model': [0],
-        'sim': [1]
+        'sim': [0]
     }
 }).run()
 
 # builds heatmaps
 q.barcharts_compare_samples_2(model_labels=['0'],
-                              sample_labels=['LivaNova'],
-                              title='SL Activation Thresholds')
+                              sample_labels=['0.5 cm', '2 cm', '5 cm', '7.8 cm'],
+                              title='i50 at 4 longitudinal positions (merged)',
+                              ylabel='i50 (mA)',
+                              calculation='i50',
+                              merge_bars=True,
+                              width=0.9,
+                              logscale=True)
