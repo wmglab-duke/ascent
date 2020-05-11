@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 from src.core.query import Query
 
 # set default fig size
-plt.rcParams['figure.figsize'] = [16.8/3, 10.14*2]
+plt.rcParams['figure.figsize'] = [16.8/3, 10.14*2 * 0.9]
 
 # initialize and run Querys
 q = Query({
@@ -30,12 +30,52 @@ q = Query({
     }
 }).run()
 
+# NOTE: these values were copied from the output of heatmaps(), setting the track_colormap_bounds flag True
+colormap_bounds_override = [
+    [
+        (0.322187, 1.51728),
+        (0.110607, 0.64657),
+        (0.03439, 0.133777),
+        (0.026082, 0.091096),
+        (0.023491, 0.077376),
+        (0.020899, 0.06945),
+    ],
+    [
+        (0.568523, 1.4246),
+        (0.177679, 0.624619),
+        (0.049023, 0.161826),
+        (0.036371, 0.115485),
+        (0.031646, 0.099632),
+        (0.027606, 0.089571),
+    ],
+    [
+        (0.658765, 1.619717),
+        (0.206337, 0.727056),
+        (0.059389, 0.19963),
+        (0.044908, 0.15024),
+        (0.039725, 0.131948),
+        (0.034542, 0.118534),
+    ],
+    [
+        (0.946562, 1.4246),
+        (0.280725, 0.62218),
+        (0.068535, 0.152679),
+        (0.048566, 0.107559),
+        (0.040335, 0.092315),
+        (0.035304, 0.082864),
+    ]
+]
+
 # builds heatmaps
 q.heatmaps(plot=False,
-           save_path='/Users/jakecariello/Box/SPARC_JakeCariello/Madison/figs/mapping_heatmaps',
+           save_path='/Users/jakecariello/Box/SPARC_JakeCariello/Madison/figs/heatmaps',
            rows_override=6,
            colorbar_aspect=5,
-           title_toggle=False)
+           title_toggle=False,
+           track_colormap_bounds=False,
+           colomap_bounds_override=colormap_bounds_override,
+           subplot_title_toggle=False
+           )
 
 #
 #                 # TODO: Finish building heatmap of polyfasc nerve (1 fiber/fasc)

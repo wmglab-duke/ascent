@@ -285,7 +285,10 @@ class Query(Exceptionable, Configurable, Saveable):
                  reverse_colormap: bool = True,
                  rows_override: int = None,
                  colorbar_aspect: int =None,
-                 title_toggle: bool = True):
+                 title_toggle: bool = True,
+                 colomap_bounds_override: List[List[Tuple[float, float]]] = None,
+                 track_colormap_bounds: bool = False,
+                 subplot_title_toggle: bool = True):
         """
         TODO: implement plot_mode and colorbar_mode (current implementation assumes single fiber and fills fascicle)
 
@@ -305,17 +308,30 @@ class Query(Exceptionable, Configurable, Saveable):
 
         print('WARNING: plot_mode and colorbar_mode not yet implemented')
 
+        if track_colormap_bounds:
+            print('WARNING: track_colormap_bounds assumes \n'
+                  '\t1) single or first sim and\n'
+                  '\t2) nsims are in order, starting from 0')
+
         if self._result is None:
             self.throw(66)
 
+
         # loop samples
         sample_results: dict
-        for sample_results in self._result.get('samples', []):
+        for num_sam, sample_results in enumerate(self._result.get('samples', [])):
             sample_index = sample_results['index']
             sample_object: Sample = self.get_object(Object.SAMPLE, [sample_index])
             sample_config: dict = self.get_config(Config.SAMPLE, [sample_index])
             slide = sample_object.slides[0]
             n_inners = sum(len(fasc.inners) for fasc in slide.fascicles)
+
+            # init colormap bounds tracking
+            tracking_sim_index = None
+            colormap_bounds_tracking: List[Tuple[float, float]] = []
+
+            # offset for consecutive samples with colormap bounds override
+
 
             print('sample: {}'.format(sample_index))
 
@@ -341,6 +357,16 @@ class Query(Exceptionable, Configurable, Saveable):
                 for sim_index in model_results.get('sims', []):
                     sim_object = self.get_object(Object.SIMULATION, [sample_index, model_index, sim_index])
 
+                    # update tracking colormap bounds
+                    if track_colormap_bounds:
+
+                        if tracking_sim_index is None:
+                            tracking_sim_index = sim_index
+
+                        if sim_index == tracking_sim_index:
+                            if len(colormap_bounds_tracking) == 0:
+                                colormap_bounds_tracking = [(1e10, 0)] * len(sim_object.master_product_indices)
+
                     print('\t\tsim: {}'.format(sim_index))
 
                     # init figure with subplots
@@ -352,6 +378,7 @@ class Query(Exceptionable, Configurable, Saveable):
                     # loop nsims
                     for n, (potentials_product_index, waveform_index) in enumerate(sim_object.master_product_indices):
                         active_src_index, fiberset_index = sim_object.potentials_product[potentials_product_index]
+
 
                         # fetch axis
                         ax: plt.Axes = axes.reshape(-1)[n]
@@ -376,6 +403,18 @@ class Query(Exceptionable, Configurable, Saveable):
                                 print('MISSING: {}'.format(thresh_path))
                         max_thresh = max(thresholds)
                         min_thresh = min(thresholds)
+
+                        # update tracking colormap bounds
+                        if track_colormap_bounds and sim_index == tracking_sim_index:
+                            colormap_bounds_tracking[n] = (
+                                min(colormap_bounds_tracking[n][0], min_thresh),
+                                max(colormap_bounds_tracking[n][1], max_thresh)
+                            )
+
+                            # override colormap bounds
+                        if colomap_bounds_override is not None:
+                            assert len(colomap_bounds_override[num_sam]) - 1 >= n, 'Not enough colormap bounds tuples provided!'
+                            min_thresh, max_thresh = colomap_bounds_override[num_sam][n]
 
                         # generate colors from colorbar and thresholds
                         cmap = plt.cm.get_cmap(colormap_str)
@@ -410,7 +449,7 @@ class Query(Exceptionable, Configurable, Saveable):
                             # default title
                             title = '{} {}:{}'.format(title, wave_key_name, wave_key_value)
 
-                        if title_toggle:
+                        if subplot_title_toggle:
                             ax.set_title(title)
 
                         # plot orientation point if applicable
@@ -436,13 +475,16 @@ class Query(Exceptionable, Configurable, Saveable):
                         )
 
                     # set super title
-                    plt.suptitle(
-                        'Activation thresholds: {} (model {})'.format(
-                            sample_config.get('sample'),
-                            model_index
-                        ),
-                        size='x-large'
-                    )
+                    if title_toggle:
+                        plt.suptitle(
+                            'Activation thresholds: {} (model {})'.format(
+                                sample_config.get('sample'),
+                                model_index
+                            ),
+                            size='x-large'
+                        )
+
+                    # plt.tight_layout()
 
                     # plot figure
                     if plot:
@@ -455,6 +497,14 @@ class Query(Exceptionable, Configurable, Saveable):
                                 save_path, os.sep, sample_index, model_index, sim_index
                             ), dpi=400
                         )
+
+            if track_colormap_bounds:
+                print('BOUNDS:\n[')
+                for bounds in colormap_bounds_tracking:
+                    print('\t{},'.format(bounds))
+                print(']')
+
+
 
         return plt.gcf()
 

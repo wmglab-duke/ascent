@@ -26,7 +26,6 @@ q = Query({
     }
 }).run()
 
-s
 # q.barcharts_compare_samples_2(model_labels=['0'],
 #                               sample_labels=['0.5 cm', '2 cm', '5 cm', '7.8 cm'],
 #                               title='i50 at 4 longitudinal positions (merged)',
