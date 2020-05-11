@@ -284,7 +284,7 @@ class Query(Exceptionable, Configurable, Saveable):
                  colormap_str: str = 'viridis',
                  reverse_colormap: bool = True,
                  rows_override: int = None,
-                 colorbar_aspect: int =None,
+                 colorbar_aspect: int = None,
                  title_toggle: bool = True,
                  colomap_bounds_override: List[List[Tuple[float, float]]] = None,
                  track_colormap_bounds: bool = False,
@@ -316,7 +316,6 @@ class Query(Exceptionable, Configurable, Saveable):
         if self._result is None:
             self.throw(66)
 
-
         # loop samples
         sample_results: dict
         for num_sam, sample_results in enumerate(self._result.get('samples', [])):
@@ -331,7 +330,6 @@ class Query(Exceptionable, Configurable, Saveable):
             colormap_bounds_tracking: List[Tuple[float, float]] = []
 
             # offset for consecutive samples with colormap bounds override
-
 
             print('sample: {}'.format(sample_index))
 
@@ -379,7 +377,6 @@ class Query(Exceptionable, Configurable, Saveable):
                     for n, (potentials_product_index, waveform_index) in enumerate(sim_object.master_product_indices):
                         active_src_index, fiberset_index = sim_object.potentials_product[potentials_product_index]
 
-
                         # fetch axis
                         ax: plt.Axes = axes.reshape(-1)[n]
                         ax.axis('off')
@@ -413,7 +410,8 @@ class Query(Exceptionable, Configurable, Saveable):
 
                             # override colormap bounds
                         if colomap_bounds_override is not None:
-                            assert len(colomap_bounds_override[num_sam]) - 1 >= n, 'Not enough colormap bounds tuples provided!'
+                            assert len(colomap_bounds_override[
+                                           num_sam]) - 1 >= n, 'Not enough colormap bounds tuples provided!'
                             min_thresh, max_thresh = colomap_bounds_override[num_sam][n]
 
                         # generate colors from colorbar and thresholds
@@ -503,8 +501,6 @@ class Query(Exceptionable, Configurable, Saveable):
                 for bounds in colormap_bounds_tracking:
                     print('\t{},'.format(bounds))
                 print(']')
-
-
 
         return plt.gcf()
 
@@ -909,6 +905,283 @@ class Query(Exceptionable, Configurable, Saveable):
                 plt.show()
 
     def barcharts_compare_samples_2(self,
+                                    sim_index: int = None,
+                                    sample_indices: int = None,
+                                    model_indices: List[int] = None,
+                                    sample_labels: List[str] = None,
+                                    model_labels: List[str] = None,
+                                    title: str = 'Activation Thresholds',
+                                    ylabel: str = 'Activation Threshold (mA)',
+                                    xlabel_override: str = None,
+                                    plot: bool = True,
+                                    save_path: str = None,
+                                    width: float = 0.8,
+                                    capsize: float = 5,
+                                    fascicle_filter_indices: List[int] = None,
+                                    logscale: bool = False,
+                                    calculation: str = 'mean',
+                                    merge_bars: bool = False):
+        """
+
+        :param calculation: 'mean', 'i##'
+        :param sim_index:
+        :param nsim_indices:
+        :param plot:
+        :param save_path:
+        :return:
+        """
+
+        def get_ratio_value(percent: float, values: np.ndarray):
+            index: int = int(np.floor(percent * len(values)))
+            value = np.sort(values)[index]
+            return value
+
+        # quick helper class for storing data values
+        class DataPoint():
+            def __init__(self, value: float, error: float = None):
+                self.value = value
+                self.error = error
+
+        # warning
+        print('NOTE: assumes a SINGLE dimension for the selected sim (functionality defined otherwise)')
+
+        # validation
+        if self._result is None:
+            self.throw(66)
+
+        if model_indices is None:
+            # default to first model results
+            print('Defaulting to model indices from first sample results.')
+            model_indices = [model.get('index') for model in self._result.get('samples')[0].get('models')]
+
+        if sample_indices is None:
+            sample_indices = [sample_result['index'] for sample_result in self._result['samples']]
+
+        if sample_labels is None:
+            sample_labels = ['Model {}'.format(i) for i in sample_indices]
+
+        if sim_index is None:
+            sim_index = self.search(Config.CRITERIA, 'indices', 'sim')[0]
+
+        if not len(sample_labels) == len(sample_indices):
+            self.throw(70)
+
+        comparison_key: str = \
+            list(self.get_object(Object.SIMULATION, [sample_indices[0], model_indices[0], sim_index]).factors.keys())[0]
+
+        # summary of functionality
+        print('For models {}, comparing samples {} with sim {} along dimension \"{}\"'.format(
+            model_indices,
+            sample_indices,
+            sim_index,
+            comparison_key)
+        )
+
+        # loop models
+        model_results: dict
+        for model_index in model_indices:
+            # model_index = model_results['index']
+
+            print('model: {}'.format(model_index))
+
+            # init fig, ax
+            fig: plt.Figure
+            ax: plt.Axes
+            fig, ax = plt.subplots()
+
+            # x label (with override if applicable)
+            xlabel = comparison_key.split('->')[-1]
+            if xlabel == 'diameter':
+                ax.set_xlabel('Axon Diameter (µm)')
+            else:
+                ax.set_xlabel(xlabel)
+            ax.set_xlabel(ax.get_xlabel() if xlabel_override is None else xlabel_override)
+
+            # y label
+            ax.set_ylabel(ylabel)
+
+            # init x group labels
+            xlabels = []
+            first_iteration: bool = True  # for appending to xlabels (only do this first time around)
+
+            # init master data container (indices or outer list correspond to each model)
+            model_data: List[List[DataPoint]] = []
+
+            # loop samples
+            sample_results: dict
+            for sample_results in self._result.get('samples', []):
+                sample_index = sample_results['index']
+                sample_object: Sample = self.get_object(Object.SAMPLE, [sample_index])
+                sample_config: dict = self.get_config(Config.SAMPLE, [sample_index])
+                slide: Slide = sample_object.slides[0]
+                n_inners = sum(len(fasc.inners) for fasc in slide.fascicles)
+
+                print('\tsample: {}'.format(sample_index))
+
+                # init data container for this model
+                sample_data: List[DataPoint] = []
+
+                # sim index is already set from input, so no need to loop
+                sim_object = self.get_object(Object.SIMULATION, [sample_index, model_index, sim_index])
+
+                # validate sim object
+                if len(sim_object.factors) is not 1:
+                    self.throw(68)
+                if not list(sim_object.factors.keys())[0] == comparison_key:
+                    self.throw(69)
+
+                # whether the comparison key is for 'fiber' or 'wave', the nsims will always be in order!
+                # this realization allows us to simply loop through the factors in sim.factors[key] and treat the
+                # indices as if they were the nsim indices
+                for nsim_index, nsim_value in enumerate(sim_object.factors[comparison_key]):
+
+                    print('\t\tnsim: {}'.format(nsim_index))
+
+                    # this x group label
+                    if first_iteration:
+                        # print(nsim_value)
+                        xlabels.append(nsim_value)
+
+                    # default fiberset index to 0
+                    fiberset_index: int = 0
+                    if comparison_key.split('->')[0] == 'fiber':
+                        fiberset_index = nsim_index  # if dimension is fibers, use correct fiberset
+
+                    # fetch outer->inner->fiber and out->inner maps
+                    out_in_fib, out_in = sim_object.fiberset_map_pairs[fiberset_index]
+
+                    # build base dirs for fetching thresholds
+                    sim_dir = self.build_path(Object.SIMULATION,
+                                              [sample_index, model_index, sim_index],
+                                              just_directory=True)
+                    n_sim_dir = os.path.join(sim_dir, 'n_sims', str(nsim_index))
+
+                    # init thresholds container for this model, sim, nsim
+                    thresholds: List[float] = []
+
+                    # fetch all thresholds
+                    xy_mode_name: str = sim_object.search(Config.SIM, 'fibers', 'xy_parameters', 'mode')
+                    xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
+                    if not xy_mode == FiberXYMode.SL_PSEUDO_INTERP:
+
+                        for inner in range(n_inners):
+
+                            outer = [index for index, inners in enumerate(out_in) if inner in inners][0]
+
+                            if (fascicle_filter_indices is not None) and (outer not in fascicle_filter_indices):
+                                continue
+
+                            for local_fiber_index, _ in enumerate(out_in_fib[outer][out_in[outer].index(inner)]):
+                                thresh_path = os.path.join(n_sim_dir,
+                                                           'data',
+                                                           'outputs',
+                                                           'thresh_inner{}_fiber{}.dat'.format(inner,
+                                                                                               local_fiber_index))
+                                thresholds.append(np.loadtxt(thresh_path)[2])
+                    else:
+                        thresholds.append(np.loadtxt(os.path.join(n_sim_dir,
+                                                                  'data',
+                                                                  'outputs',
+                                                                  'thresh_inner0_fiber0.dat'))[2])
+
+                    thresholds: np.ndarray = np.array(thresholds)
+
+                    data = None
+                    if calculation == 'mean':
+                        data = DataPoint(np.mean(thresholds),
+                                         np.std(thresholds, ddof=1) if len(thresholds) > 1 else None)
+                    elif re.match('i[0-9]+', calculation):
+                        ratio = int(calculation.split('i')[1]) / 100.0
+                        data = DataPoint(get_ratio_value(ratio, thresholds), None)
+
+                    assert data is not None, 'Illegal calculation option: {}'.format(calculation)
+
+                    sample_data.append(data)
+
+                first_iteration = False
+
+                model_data.append(sample_data)
+
+            # make the bar groups
+            x_vals = np.arange(len(model_data[0]))
+            n_samples = len(model_data)
+            effective_width = width / n_samples
+
+            if not merge_bars:
+
+                for sample_index, sample_data in enumerate(model_data):
+                    errors = [data.error for data in sample_data]
+                    errors_valid = all([data.error is not None for data in sample_data])
+                    ax.bar(
+                        x=x_vals - ((n_samples - 1) * effective_width / 2) + (effective_width * sample_index),
+                        height=[data.value for data in sample_data],
+                        width=effective_width,
+                        label=sample_labels[sample_index],
+                        yerr=errors if errors_valid else None,
+                        capsize=capsize
+                    )
+            else:
+
+                nsim_values = self.get_object(Object.SIMULATION, [sample_indices[0],
+                                                                  model_index,
+                                                                  sim_index]).factors[comparison_key]
+                for n in range(len(nsim_values)):
+                    values = np.array([sample_data[n].value for sample_data in model_data])
+                    ax.bar(
+                        x=x_vals[n],
+                        height=np.mean(values),
+                        width=width,
+                        # label=,
+                        yerr=np.std(values, ddof=1) if len(values) > 1 else None,
+                        capsize=capsize,
+                    )
+
+                # set all same color
+                facecolor = ax.patches[0].get_facecolor()
+                for patch in ax.patches[1:]:
+                    patch.set_facecolor(facecolor)
+
+            # add x-axis values
+            ax.set_xticks(x_vals)
+            ax.set_xticklabels(xlabels)
+
+            for rect in ax.patches:
+                height = rect.get_height()
+                ax.text(rect.get_x() + rect.get_width() / 2, height + ax.get_ylim()[1] / 100, str(round(height, 2)),
+                        ha='center', va='bottom')
+
+            # set log scale
+            if logscale:
+                ax.set_yscale('log')
+
+            # title
+            model_name = model_labels[model_index] if model_labels is not None else str(model_index)
+            title = '{} for model {}'.format(title, model_name)
+            if fascicle_filter_indices is not None:
+                if len(fascicle_filter_indices) == 1:
+                    title = '{} (fascicle {})'.format(title, fascicle_filter_indices[0])
+                else:
+                    title = '{} (fascicles {})'.format(title, ', '.join([str(i) for i in fascicle_filter_indices]))
+            plt.title(title)
+
+            # add legend
+            plt.legend()
+
+            plt.tight_layout()
+
+            # plot!
+            if plot:
+                plt.show()
+
+            # save figure as png
+            if save_path is not None:
+                plt.savefig(
+                    '{}{}{}_{}_{}.png'.format(
+                        save_path, os.sep, '-'.join([str(s) for s in sample_indices]), model_index, sim_index
+                    ), dpi=400
+                )
+
+    def barcharts_compare_samples_3(self,
                                     sim_index: int = None,
                                     sample_indices: int = None,
                                     model_indices: List[int] = None,
