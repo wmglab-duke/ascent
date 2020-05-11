@@ -8,6 +8,7 @@ import matplotlib.colorbar as cbar
 import matplotlib.colors as mplcolors
 import matplotlib.pyplot as plt
 import matplotlib.ticker as tick
+from scipy import stats as stats
 
 from core import FiberSet
 from src.core import Sample, Simulation, Slide
@@ -284,7 +285,7 @@ class Query(Exceptionable, Configurable, Saveable):
                  colormap_str: str = 'viridis',
                  reverse_colormap: bool = True,
                  rows_override: int = None,
-                 colorbar_aspect: int =None,
+                 colorbar_aspect: int = None,
                  title_toggle: bool = True,
                  colomap_bounds_override: List[List[Tuple[float, float]]] = None,
                  track_colormap_bounds: bool = False,
@@ -317,7 +318,6 @@ class Query(Exceptionable, Configurable, Saveable):
         if self._result is None:
             self.throw(66)
 
-
         # loop samples
         sample_results: dict
         for num_sam, sample_results in enumerate(self._result.get('samples', [])):
@@ -332,7 +332,6 @@ class Query(Exceptionable, Configurable, Saveable):
             colormap_bounds_tracking: List[Tuple[float, float]] = []
 
             # offset for consecutive samples with colormap bounds override
-
 
             print('sample: {}'.format(sample_index))
 
@@ -381,7 +380,6 @@ class Query(Exceptionable, Configurable, Saveable):
                     for n, (potentials_product_index, waveform_index) in enumerate(sim_object.master_product_indices):
                         active_src_index, fiberset_index = sim_object.potentials_product[potentials_product_index]
 
-
                         # fetch axis
                         ax: plt.Axes = axes[n]
                         ax.axis('off')
@@ -415,7 +413,8 @@ class Query(Exceptionable, Configurable, Saveable):
 
                             # override colormap bounds
                         if colomap_bounds_override is not None:
-                            assert len(colomap_bounds_override[num_sam]) - 1 >= n, 'Not enough colormap bounds tuples provided!'
+                            assert len(colomap_bounds_override[
+                                           num_sam]) - 1 >= n, 'Not enough colormap bounds tuples provided!'
                             min_thresh, max_thresh = colomap_bounds_override[num_sam][n]
 
                         # generate colors from colorbar and thresholds
@@ -505,8 +504,6 @@ class Query(Exceptionable, Configurable, Saveable):
                 for bounds in colormap_bounds_tracking:
                     print('\t{},'.format(bounds))
                 print(']')
-
-
 
         return plt.gcf()
 
@@ -986,6 +983,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
         # loop models
         model_results: dict
+        my_data = [[] for _ in model_indices]
         for model_index in model_indices:
             # model_index = model_results['index']
 
@@ -1133,7 +1131,12 @@ class Query(Exceptionable, Configurable, Saveable):
                                                                   model_index,
                                                                   sim_index]).factors[comparison_key]
                 for n in range(len(nsim_values)):
+                    my_data[model_index].append([])
                     values = np.array([sample_data[n].value for sample_data in model_data])
+
+                    # index model, then index n_sim
+                    my_data[model_index][n] = stats.variation(values)
+
                     ax.bar(
                         x=x_vals[n],
                         height=np.mean(values),
@@ -1189,6 +1192,27 @@ class Query(Exceptionable, Configurable, Saveable):
                         save_path, os.sep, '-'.join([str(s) for s in sample_indices]), model_index, sim_index
                     ), dpi=400
                 )
+
+        assert my_data is not None
+        # make the bar groups
+        x_vals = np.arange(len(my_data[0]))
+        n_models = len(my_data)
+        effective_width = width / n_models
+        # init fig, ax
+        fig: plt.Figure
+        ax: plt.Axes
+        fig, ax = plt.subplots()
+
+        for model_index in range(len(my_data)):
+            ax.bar(
+                x=x_vals - ((n_models - 1) * effective_width / 2) + (effective_width * model_index),
+                height=[data for data in my_data[model_index]],
+                width=effective_width,
+                yerr=None,
+                capsize=capsize
+            )
+
+        plt.show()
 
     def barcharts_compare_samples(self,
                                   sim_index: int = None,
