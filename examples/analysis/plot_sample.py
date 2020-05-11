@@ -9,6 +9,7 @@ sys.path.append(root)
 from src.core import Sample
 from src.core.query import Query
 from src.utils import Object
+import matplotlib.pyplot as plt
 
 
 
@@ -34,6 +35,9 @@ q.run()
 results = q.summary()
 
 item: Sample = q.get_object(Object.SAMPLE, [results['samples'][0]['index']])
-item.slides[0].plot(fix_aspect_ratio=True, inner_index_labels=True)
+item.slides[0].plot(fix_aspect_ratio=True, inner_index_labels=True, final=False)
+
+plt.gca().axis('off')
+plt.show()
 
 os.chdir(cwd)

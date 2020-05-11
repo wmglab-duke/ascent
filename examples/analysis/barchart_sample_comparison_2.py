@@ -35,12 +35,22 @@ q = Query({
 #                               width=0.9,
 #                               logscale=True)
 
-q.barcharts_compare_samples_2(model_labels=[''],
+q.barcharts_compare_samples_2(model_labels=['0 at 4 longitudinal positions'],
                               sample_labels=['0.5 cm', '2 cm', '5 cm', '7.8 cm'],
-                              title='i50 at 4 longitudinal positions (merged)',
-                              ylabel='i50 (mA)',
-                              calculation='i50',
-                              merge_bars=True,
-                              width=0.9,
+                              # title='i50 at 4 longitudinal positions (merged)',
+                              # ylabel='i50 (mA)',
+                              # calculation='i50',
+                              merge_bars=False,
+                              # width=0.9,
                               logscale=True,
+                              label_bar_heights=False
                               )
+
+# q.barcharts_compare_samples_2(sample_labels=['LivaNova (0.8 cm)'],
+#                               # title='i50 at 4 longitudinal positions (merged)',
+#                               # ylabel='i50 (mA)',
+#                               # calculation='i50',
+#                               # merge_bars=True,
+#                               # width=0.9,
+#                               logscale=False,
+#                               )

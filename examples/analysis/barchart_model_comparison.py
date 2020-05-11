@@ -31,5 +31,19 @@ q.barcharts_compare_models(model_labels=['Original orientation',
                                          '90-degree rotation',
                                          '180-degree rotation',
                                          '270-degree rotation'],
-                           fascicle_filter_indices=[8],
+                           title= 'Upper lobe activation thresholds',
+                           fascicle_filter_indices=[2, 3, 9, 7, 13, 15, 4, 0, 6, 10, 15, 18, 16, 1, 11, 17, 5, 8, 14, 12, 21, 23, 20, 25, 32],
                            logscale=True)
+
+# q = Query({
+#     'partial_matches': True,
+#     'include_downstream': True,
+#     'indices': {
+#         'sample': [0],
+#         'model': [0],
+#         'sim': [1]
+#     }
+# }).run()
+#
+# # builds heatmaps
+# q.barcharts_compare_models(logscale=True)

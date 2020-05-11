@@ -288,7 +288,8 @@ class Query(Exceptionable, Configurable, Saveable):
                  title_toggle: bool = True,
                  colomap_bounds_override: List[List[Tuple[float, float]]] = None,
                  track_colormap_bounds: bool = False,
-                 subplot_title_toggle: bool = True):
+                 subplot_title_toggle: bool = True,
+                 track_colormap_bounds_offset_ratio: float = 0.0):
         """
         TODO: implement plot_mode and colorbar_mode (current implementation assumes single fiber and fills fascicle)
 
@@ -374,6 +375,7 @@ class Query(Exceptionable, Configurable, Saveable):
                     rows = int(np.floor(np.sqrt(master_product_count))) if rows_override is None else rows_override
                     cols = int(np.ceil(master_product_count / rows))
                     figure, axes = plt.subplots(rows, cols, constrained_layout=True)
+                    axes = axes.reshape(-1)
 
                     # loop nsims
                     for n, (potentials_product_index, waveform_index) in enumerate(sim_object.master_product_indices):
@@ -381,7 +383,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
 
                         # fetch axis
-                        ax: plt.Axes = axes.reshape(-1)[n]
+                        ax: plt.Axes = axes[n]
                         ax.axis('off')
 
                         # fetch sim information
@@ -407,8 +409,8 @@ class Query(Exceptionable, Configurable, Saveable):
                         # update tracking colormap bounds
                         if track_colormap_bounds and sim_index == tracking_sim_index:
                             colormap_bounds_tracking[n] = (
-                                min(colormap_bounds_tracking[n][0], min_thresh),
-                                max(colormap_bounds_tracking[n][1], max_thresh)
+                                min(colormap_bounds_tracking[n][0], min_thresh * (1 + track_colormap_bounds_offset_ratio)),
+                                max(colormap_bounds_tracking[n][1], max_thresh * (1 - track_colormap_bounds_offset_ratio))
                             )
 
                             # override colormap bounds
@@ -694,11 +696,11 @@ class Query(Exceptionable, Configurable, Saveable):
 
             # title
             title = '{} for sample {}'.format(title, sample_config['sample'])
-            if fascicle_filter_indices is not None:
-                if len(fascicle_filter_indices) == 1:
-                    title = '{} (fascicle {})'.format(title, fascicle_filter_indices[0])
-                else:
-                    title = '{} (fascicles {})'.format(title, ', '.join([str(i) for i in fascicle_filter_indices]))
+            # if fascicle_filter_indices is not None:
+            #     if len(fascicle_filter_indices) == 1:
+            #         title = '{} (fascicle {})'.format(title, fascicle_filter_indices[0])
+            #     else:
+            #         title = '{} (fascicles {})'.format(title, ', '.join([str(i) for i in fascicle_filter_indices]))
             plt.title(title)
 
             # add legend
@@ -924,7 +926,8 @@ class Query(Exceptionable, Configurable, Saveable):
                                     fascicle_filter_indices: List[int] = None,
                                     logscale: bool = False,
                                     calculation: str = 'mean',
-                                    merge_bars: bool = False):
+                                    merge_bars: bool = False,
+                                    label_bar_heights: bool = False):
         """
 
         :param calculation: 'mean', 'i##'
@@ -1149,10 +1152,12 @@ class Query(Exceptionable, Configurable, Saveable):
             ax.set_xticks(x_vals)
             ax.set_xticklabels(xlabels)
 
-            for rect in ax.patches:
-                height = rect.get_height()
-                ax.text(rect.get_x() + rect.get_width() / 2, height + ax.get_ylim()[1] / 100, str(round(height, 2)),
-                        ha='center', va='bottom')
+            # label bar heights
+            if label_bar_heights:
+                for rect in ax.patches:
+                    height = rect.get_height()
+                    ax.text(rect.get_x() + rect.get_width() / 2, height + ax.get_ylim()[1] / 100, str(round(height, 2)),
+                            ha='center', va='bottom')
 
             # set log scale
             if logscale:
