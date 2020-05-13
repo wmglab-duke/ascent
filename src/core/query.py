@@ -283,6 +283,7 @@ class Query(Exceptionable, Configurable, Saveable):
                  save_path: str = None,
                  plot_outers: bool = False,
                  colormap_str: str = 'viridis',
+                 colorbar_text_size_override: int = None,
                  reverse_colormap: bool = True,
                  rows_override: int = None,
                  colorbar_aspect: int = None,
@@ -290,7 +291,9 @@ class Query(Exceptionable, Configurable, Saveable):
                  colomap_bounds_override: List[List[Tuple[float, float]]] = None,
                  track_colormap_bounds: bool = False,
                  subplot_title_toggle: bool = True,
-                 track_colormap_bounds_offset_ratio: float = 0.0):
+                 track_colormap_bounds_offset_ratio: float = 0.0,
+                 tick_count: int = 2,
+                 tick_bounds: bool = False):
         """
         TODO: implement plot_mode and colorbar_mode (current implementation assumes single fiber and fills fascicle)
 
@@ -463,17 +466,29 @@ class Query(Exceptionable, Configurable, Saveable):
                                                      ax=ax, outers_flag=plot_outers, inner_format='k-')
 
                         # colorbar
-                        plt.colorbar(
+                        cb_label = r'mA'
+                        cb: cbar.Colorbar = plt.colorbar(
                             mappable=plt.cm.ScalarMappable(
                                 cmap=cmap,
                                 norm=mplcolors.Normalize(vmin=min_thresh, vmax=max_thresh)
                             ),
-                            ticks=tick.MaxNLocator(nbins=5),
+                            ticks=tick.MaxNLocator(nbins=tick_count),
                             ax=ax,
                             orientation='vertical',
-                            label=r'mA',
+                            label=cb_label,
                             aspect=colorbar_aspect if colorbar_aspect is not None else 20
                         )
+
+
+
+
+                        # colorbar font size
+                        if colorbar_text_size_override is not None:
+                            cb.set_label(cb_label, fontsize=colorbar_text_size_override)
+                            cb.ax.tick_params(labelsize=colorbar_text_size_override)
+
+                        if tick_bounds:
+                            cb.set_ticks([np.ceil(min_thresh * 100) / 100, np.floor(max_thresh * 100) / 100])
 
                     # set super title
                     if title_toggle:

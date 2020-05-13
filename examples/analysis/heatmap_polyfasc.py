@@ -110,7 +110,9 @@ q.heatmaps(plot=False,
            track_colormap_bounds=True,
            track_colormap_bounds_offset_ratio=0.0,
            colomap_bounds_override=colormap_bounds_override,
-           subplot_title_toggle=False
+           subplot_title_toggle=False,
+           colorbar_text_size_override=20,
+           tick_bounds=True
            )
 
 #
