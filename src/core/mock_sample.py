@@ -363,17 +363,20 @@ class MockSample(Exceptionable, Configurable):
 
         project_path = os.getcwd()
         sample_str = self.search(Config.MOCK_SAMPLE, 'global', 'sample_str')
-        sample_dir = os.path.join(project_path, 'data', 'input', 'samples', sample_str)
+        sample_dir = os.path.join(project_path, 'input', sample_str)
+
+        if not os.path.exists(sample_dir):
+            os.mkdir(sample_dir)
 
         # MAKE BINARY IMAGES FOR INPUT TO PIPELINE
         # NERVE BINARY IMAGE
-        dest_n = os.path.join(project_path, sample_dir, '{}_0_0_n.tif'.format(sample_str))
+        dest_n = os.path.join(project_path, sample_dir, 'n.tif')
         figure_n = self.binary_mask_canvas(fig_margin, max_diam)
         figure_n = self.add_ellipse_binary_mask(figure_n, self.nerve)
         self.write_binary_mask(figure_n, dest_n, fig_dpi)
 
         # FASCICLES (inners) BINARY IMAGE
-        dest_i = os.path.join(project_path, sample_dir, '{}_0_0_i.tif'.format(sample_str))
+        dest_i = os.path.join(project_path, sample_dir, 'i.tif')
         figure_i = self.binary_mask_canvas(fig_margin, max_diam)
         for fascicle in self.fascicles:
             if fascicle is not None and fascicle.exterior is not None:
@@ -381,7 +384,7 @@ class MockSample(Exceptionable, Configurable):
         self.write_binary_mask(figure_i, dest_i, fig_dpi)
 
         # SCALEBAR BINARY IMAGE
-        dest_s = os.path.join(project_path, sample_dir, '{}_0_0_s.tif'.format(sample_str))
+        dest_s = os.path.join(project_path, sample_dir, 's.tif')
         figure_s = self.binary_mask_canvas(fig_margin, max_diam)
         scalebar_length: int = self.search(Config.MOCK_SAMPLE, 'scale_bar', 'scalebar_length')
         figure_s = self.add_scalebar_binary_mask(figure_s, scalebar_length)
