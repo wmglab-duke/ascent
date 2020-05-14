@@ -20,9 +20,9 @@ q = Query({
     'partial_matches': True,
     'include_downstream': False,
     'indices': {
-        'sample': [3, 4, 5, 6],
+        'sample': [0, 3, 4, 5, 6],
         'model': [0],
-        'sim': [0]
+        'sim': [1]
     }
 }).run()
 
@@ -35,12 +35,27 @@ q = Query({
 #                               width=0.9,
 #                               logscale=True)
 
-q.barcharts_compare_samples_2(model_labels=[''],
-                              sample_labels=['0.5 cm', '2 cm', '5 cm', '7.8 cm'],
-                              title='i50 at 4 longitudinal positions (merged)',
-                              ylabel='i50 (mA)',
-                              calculation='i50',
-                              merge_bars=True,
-                              width=0.9,
+q.barcharts_compare_samples_2(model_labels=['0 for LivaNova and all mapping electrode positions'],
+                              sample_labels=['LivaNova (0.8cm)', 'Mapping (0.5 cm)', 'Mapping (2 cm)', 'Mapping (5 cm)', 'Mapping (7.8 cm)'],
+                              # title='i50 at 4 longitudinal positions (merged)',
+                              # ylabel='i50 (mA)',
+                              # calculation='i50',
+                              merge_bars=False,
+                              # width=0.9,
                               logscale=True,
+                              label_bar_heights=False,
+                              plot=False
                               )
+
+plt.tight_layout()
+plt.show()
+
+# q.barcharts_compare_samples_2(sample_labels=[''],
+#                               # title='i50 at 4 longitudinal positions (merged)',
+#                               # ylabel='i50 (mA)',
+#                               # calculation='i50',
+#                               # merge_bars=True,
+#                               # width=0.9,
+#                               logscale=False,
+#                               label_bar_heights=True
+#                               )

@@ -284,13 +284,17 @@ class Query(Exceptionable, Configurable, Saveable):
                  save_path: str = None,
                  plot_outers: bool = False,
                  colormap_str: str = 'viridis',
+                 colorbar_text_size_override: int = None,
                  reverse_colormap: bool = True,
                  rows_override: int = None,
                  colorbar_aspect: int = None,
                  title_toggle: bool = True,
                  colomap_bounds_override: List[List[Tuple[float, float]]] = None,
                  track_colormap_bounds: bool = False,
-                 subplot_title_toggle: bool = True):
+                 subplot_title_toggle: bool = True,
+                 track_colormap_bounds_offset_ratio: float = 0.0,
+                 tick_count: int = 2,
+                 tick_bounds: bool = False):
         """
         TODO: implement plot_mode and colorbar_mode (current implementation assumes single fiber and fills fascicle)
 
@@ -374,13 +378,14 @@ class Query(Exceptionable, Configurable, Saveable):
                     rows = int(np.floor(np.sqrt(master_product_count))) if rows_override is None else rows_override
                     cols = int(np.ceil(master_product_count / rows))
                     figure, axes = plt.subplots(rows, cols, constrained_layout=True)
+                    axes = axes.reshape(-1)
 
                     # loop nsims
                     for n, (potentials_product_index, waveform_index) in enumerate(sim_object.master_product_indices):
                         active_src_index, fiberset_index = sim_object.potentials_product[potentials_product_index]
 
                         # fetch axis
-                        ax: plt.Axes = axes.reshape(-1)[n]
+                        ax: plt.Axes = axes[n]
                         ax.axis('off')
 
                         # fetch sim information
@@ -406,8 +411,8 @@ class Query(Exceptionable, Configurable, Saveable):
                         # update tracking colormap bounds
                         if track_colormap_bounds and sim_index == tracking_sim_index:
                             colormap_bounds_tracking[n] = (
-                                min(colormap_bounds_tracking[n][0], min_thresh),
-                                max(colormap_bounds_tracking[n][1], max_thresh)
+                                min(colormap_bounds_tracking[n][0], min_thresh * (1 + track_colormap_bounds_offset_ratio)),
+                                max(colormap_bounds_tracking[n][1], max_thresh * (1 - track_colormap_bounds_offset_ratio))
                             )
 
                             # override colormap bounds
@@ -462,17 +467,29 @@ class Query(Exceptionable, Configurable, Saveable):
                                                      ax=ax, outers_flag=plot_outers, inner_format='k-')
 
                         # colorbar
-                        plt.colorbar(
+                        cb_label = r'mA'
+                        cb: cbar.Colorbar = plt.colorbar(
                             mappable=plt.cm.ScalarMappable(
                                 cmap=cmap,
                                 norm=mplcolors.Normalize(vmin=min_thresh, vmax=max_thresh)
                             ),
-                            ticks=tick.MaxNLocator(nbins=5),
+                            ticks=tick.MaxNLocator(nbins=tick_count),
                             ax=ax,
                             orientation='vertical',
-                            label=r'mA',
+                            label=cb_label,
                             aspect=colorbar_aspect if colorbar_aspect is not None else 20
                         )
+
+
+
+
+                        # colorbar font size
+                        if colorbar_text_size_override is not None:
+                            cb.set_label(cb_label, fontsize=colorbar_text_size_override)
+                            cb.ax.tick_params(labelsize=colorbar_text_size_override)
+
+                        if tick_bounds:
+                            cb.set_ticks([np.ceil(min_thresh * 100) / 100, np.floor(max_thresh * 100) / 100])
 
                     # set super title
                     if title_toggle:
@@ -692,11 +709,11 @@ class Query(Exceptionable, Configurable, Saveable):
 
             # title
             title = '{} for sample {}'.format(title, sample_config['sample'])
-            if fascicle_filter_indices is not None:
-                if len(fascicle_filter_indices) == 1:
-                    title = '{} (fascicle {})'.format(title, fascicle_filter_indices[0])
-                else:
-                    title = '{} (fascicles {})'.format(title, ', '.join([str(i) for i in fascicle_filter_indices]))
+            # if fascicle_filter_indices is not None:
+            #     if len(fascicle_filter_indices) == 1:
+            #         title = '{} (fascicle {})'.format(title, fascicle_filter_indices[0])
+            #     else:
+            #         title = '{} (fascicles {})'.format(title, ', '.join([str(i) for i in fascicle_filter_indices]))
             plt.title(title)
 
             # add legend
@@ -922,7 +939,8 @@ class Query(Exceptionable, Configurable, Saveable):
                                   fascicle_filter_indices: List[int] = None,
                                   logscale: bool = False,
                                   calculation: str = 'mean',
-                                  merge_bars: bool = False):
+                                  merge_bars: bool = False,
+                                  label_bar_heights=None):
         """
 
         :param calculation: 'mean', 'i##'
@@ -1183,10 +1201,12 @@ class Query(Exceptionable, Configurable, Saveable):
             ax.set_xticks(x_vals)
             ax.set_xticklabels(xlabels)
 
-            for rect in ax.patches:
-                height = rect.get_height()
-                ax.text(rect.get_x() + rect.get_width() / 2, height + ax.get_ylim()[1] / 100, str(round(height, 2)),
-                        ha='center', va='bottom')
+            # label bar heights
+            if label_bar_heights:
+                for rect in ax.patches:
+                    height = rect.get_height()
+                    ax.text(rect.get_x() + rect.get_width() / 2, height + ax.get_ylim()[1] / 100, str(round(height, 2)),
+                            ha='center', va='bottom')
 
             # set log scale
             if logscale:
