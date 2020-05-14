@@ -338,13 +338,6 @@ class MockSample(Exceptionable, Configurable):
 
             self.configs['mock_sample'][PopulateMode.parameters.value]['num_fascicle_placed'] = len(self.fascicles)
 
-            project_path = os.getcwd()
-            sample_str = self.search(Config.MOCK_SAMPLE, 'global', 'sample_str')
-            sample_dir = os.path.join(project_path, 'data', 'input', 'samples', sample_str)
-
-            with open(os.path.join(project_path, sample_dir, 'mock.json'), "w") as handle:
-                handle.write(json.dumps(self.configs['mock_sample'], indent=2))
-
             # N = stats.norm(loc=mu_fasc, scale=std_fasc)
             # fig, ax = plt.subplots(2, sharex=True)
             # ax[0].hist(X.rvs(10000), density=True)
@@ -354,19 +347,22 @@ class MockSample(Exceptionable, Configurable):
         return self
 
     def make_masks(self):
-        a_nerve = self.search(Config.MOCK_SAMPLE, 'nerve', 'a_nerve')
-        b_nerve = self.search(Config.MOCK_SAMPLE, 'nerve', 'b_nerve')
-        max_diam = 2 * max(a_nerve, b_nerve)
-
-        fig_margin: float = self.search(Config.MOCK_SAMPLE, 'figure', 'fig_margin')
-        fig_dpi: int = self.search(Config.MOCK_SAMPLE, 'figure', 'fig_dpi')
-
         project_path = os.getcwd()
         sample_str = self.search(Config.MOCK_SAMPLE, 'global', 'sample_str')
         sample_dir = os.path.join(project_path, 'input', sample_str)
 
         if not os.path.exists(sample_dir):
             os.mkdir(sample_dir)
+
+        with open(os.path.join(sample_dir, 'mock.json'), "w") as handle:
+            handle.write(json.dumps(self.configs['mock_sample'], indent=2))
+        
+        a_nerve = self.search(Config.MOCK_SAMPLE, 'nerve', 'a_nerve')
+        b_nerve = self.search(Config.MOCK_SAMPLE, 'nerve', 'b_nerve')
+        max_diam = 2 * max(a_nerve, b_nerve)
+
+        fig_margin: float = self.search(Config.MOCK_SAMPLE, 'figure', 'fig_margin')
+        fig_dpi: int = self.search(Config.MOCK_SAMPLE, 'figure', 'fig_dpi')
 
         # MAKE BINARY IMAGES FOR INPUT TO PIPELINE
         # NERVE BINARY IMAGE
