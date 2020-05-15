@@ -342,8 +342,6 @@ public class ModelWrapper {
         JSONObject runData = JSONio.read(run_path);
         // get sample number
         int sample = runData.getInt("sample");
-        // get models list
-        JSONArray models_list = runData.getJSONArray("models");
         // get sims list
         JSONArray sims_list = runData.getJSONArray("sims");
 
@@ -1639,9 +1637,14 @@ public class ModelWrapper {
                 }
             }
             // ------
-            extractAllPotentials(projectPath, runPath, modelStr);
-
+            // If no Sim configs, SKIP
+            JSONArray sims_list = run.getJSONArray("sims");
+            if (sims_list.length() >= 1){
+                extractAllPotentials(projectPath, runPath, modelStr);
+            }
         }
+
+        System.out.println();
 
         ModelUtil.disconnect();
         System.out.println("Disconnected from COMSOL Server");

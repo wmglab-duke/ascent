@@ -54,7 +54,6 @@ for argument_index in range(1, len(sys.argv)):
     runner.add(SetupMode.NEW, Config.ENV, env_path)
 
     # ready, set, GO!
-
     runner.run()
 
     # END timer
