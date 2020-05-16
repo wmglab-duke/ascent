@@ -465,8 +465,6 @@ public class ModelWrapper {
                                 fiberset_dir, fiber_coords
                         }); // build path to coordinates
 
-
-
                         fibers[fiber_ind] = extractPotentials(basis, coord_path);
                     }
                 }
@@ -474,6 +472,7 @@ public class ModelWrapper {
             // remove basis from memory
             ModelUtil.remove(basis.tag());
         }
+
         String cuff = modelData.getJSONObject("cuff").getString("preset");
 
         // COMBINE AND MAKE POTENTIALS FOR N_SIMS FROM BASES
@@ -943,6 +942,17 @@ public class ModelWrapper {
         }
     }
 
+    // https://stackoverflow.com/a/29175213/11980021
+    static void deleteDir(File file) {
+        File[] contents = file.listFiles();
+        if (contents != null) {
+            for (File f : contents) {
+                deleteDir(f);
+            }
+        }
+        file.delete();
+    }
+
     /**
      * Master procedure to run!
      * @param args
@@ -1121,6 +1131,29 @@ public class ModelWrapper {
                 String instanceLabelDistalMedium = DISTAL_MEDIUM;
                 String instanceLabelProximalMedium = PROXIMAL_MEDIUM;
 
+                String geomFile = String.join("/", new String[]{
+                        projectPath,
+                        "samples",
+                        sample,
+                        "models",
+                        modelStr,
+                        "debug_geom.mph"
+                });
+
+                String meshPath = String.join("/", new String[]{
+                        projectPath,
+                        "samples",
+                        sample,
+                        "models",
+                        modelStr,
+                        "mesh",
+                });
+
+                String meshFile = String.join("/", new String[]{
+                        meshPath,
+                        "mesh.mph"
+                });
+
                 // START PRE MESH
                 if (! skipMesh) {
 
@@ -1280,15 +1313,6 @@ public class ModelWrapper {
                     System.out.println("Building the FEM geometry.");
 
                     // Saved model pre-run geometry for debugging
-                    String geomFile = String.join("/", new String[]{
-                            projectPath,
-                            "samples",
-                            sample,
-                            "models",
-                            modelStr,
-                            "debug_geom.mph"
-                    });
-
                     try {
                         System.out.println("Saving MPH (pre-geom_run) file to: " + geomFile);
                         model.save(geomFile);
@@ -1388,7 +1412,6 @@ public class ModelWrapper {
                         JSONObject mesh = modelData.getJSONObject("mesh");
                         mesh.put("proximal", proximalMeshParams);
                         modelData.put("mesh", mesh);
-
                     }
 
                     System.out.println("Saving mesh statistics.");
@@ -1420,20 +1443,11 @@ public class ModelWrapper {
                     System.out.println("DONE MESHING");
 
                     // ensure that the path for mesh files can be created
-                    String meshPath = String.join("/", new String[]{
-                            projectPath,
-                            "samples",
-                            sample,
-                            "models",
-                            modelStr,
-                            "mesh",
-                    });
                     File meshPathFile = new File(meshPath);
                     if (! meshPathFile.exists()) {
                         boolean success = meshPathFile.mkdirs();
                         assert success;
                     }
-
 
                     // ditto for ppims
                     System.out.println("Creating PPIM dirs");
@@ -1443,16 +1457,6 @@ public class ModelWrapper {
                         boolean success = ppimPathFile.mkdirs();
                         assert success;
                     }
-
-                    String meshFile = String.join("/", new String[]{
-                            projectPath,
-                            "samples",
-                            sample,
-                            "models",
-                            modelStr,
-                            "mesh",
-                            "mesh.mph"
-                    });
 
                     try {
                         // save mesh.mph
@@ -1487,6 +1491,12 @@ public class ModelWrapper {
 
                     // save previous model config !!!!
                     previousModelData = modelData;
+
+                    if (!run.getJSONObject("keep").getBoolean("debug_geom")) {
+                        File debug_geom_file = new File(geomFile);
+                        debug_geom_file.delete();
+                        System.out.println("Successfully saved mesh.mph and ppim's, therefore deleted debug_geom.mph file.");
+                    }
                 }
 
                 //////////////// START POST MESH
@@ -1563,7 +1573,7 @@ public class ModelWrapper {
                 }
 
                 // Add perineurium material only if there are any fascicles being meshed
-                if (mw.im.get("periUnionCsel") != null) { // TODO
+                if (mw.im.get("periUnionCsel") != null) {
                     String perineuriumMatLinkLabel = "perineurium material";
                     PropFeature perineuriumMatLink = model.component("comp1").material().create(mw.im.next("matlnk",perineuriumMatLinkLabel), "Link");
                     perineuriumMatLink.selection().named("geom1" +"_" + mw.im.get("periUnionCsel") + "_dom");
@@ -1628,6 +1638,13 @@ public class ModelWrapper {
 
                 ModelUtil.remove(model.tag());
 
+                if (!run.getJSONObject("keep").getBoolean("mesh")) {
+                    File mesh_path = new File(meshPath);
+                    deleteDir(mesh_path);
+
+                    System.out.println("Successfully solved for /bases, therefore deleted /mesh directory.");
+                }
+
                 try (FileWriter file = new FileWriter("../" + modelFile)) {
                     String output = modelData.toString(2);
                     file.write(output);
@@ -1642,9 +1659,24 @@ public class ModelWrapper {
             if (sims_list.length() >= 1){
                 extractAllPotentials(projectPath, runPath, modelStr);
             }
-        }
 
-        System.out.println();
+            String model_path = String.join("/", new String[]{ // build path to sim config file
+                    projectPath, "samples", sample, "models", modelStr
+            });
+
+            // construct bases path (to MPH)
+            String basesPath = String.join("/", new String[]{
+                    model_path, "bases"
+            });
+
+            if (!run.getJSONObject("keep").getBoolean("bases")) {
+
+                File bases_path = new File(basesPath);
+                deleteDir(bases_path);
+
+                System.out.println("Successfully extracted potentials, therefore deleted /bases directory.");
+            }
+        }
 
         ModelUtil.disconnect();
         System.out.println("Disconnected from COMSOL Server");
