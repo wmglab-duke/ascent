@@ -4,5 +4,10 @@
   "kill_pre_java": false,
   "sample": 79,
   "models": [0, 1, 2, 3],
-  "sims": [1, 3]
+  "sims": [1, 3],
+  "keep": {
+    "debug_geom": true,
+    "mesh": true,
+    "bases": true
+  }
 }
