@@ -318,8 +318,6 @@ class Sample(Exceptionable, Configurable, Saveable):
 
             partially_deformed_nerve = None
 
-
-
             if deform_mode == DeformationMode.PHYSICS:
                 print('\t\tsetting up physics')
                 morph_count = 36
@@ -337,8 +335,6 @@ class Sample(Exceptionable, Configurable, Saveable):
                 if 'nerve_addition' in self.search(Config.SAMPLE, 'min_fascicle_separation').keys():
                     nerve_add = self.search(Config.SAMPLE, 'min_fascicle_separation', 'nerve_addition')
                     print('\t\taccounting for additional nerve boundary buffer: {} um'.format(nerve_add))
-
-
 
                 deformable = Deformable.from_slide(slide,
                                                    ReshapeNerveMode.CIRCLE,
