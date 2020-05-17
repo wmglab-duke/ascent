@@ -1684,6 +1684,7 @@ public class ModelWrapper {
                 models_exit_status[model_index] = true;
             } catch (Exception e) {
                 models_exit_status[model_index] = false;
+                System.out.println("Failed to mesh/solve/extract potentials for model " + models_list.get(model_index));
             }
         }
         // keep track of successful and failed model indices, continue in Python for successes only

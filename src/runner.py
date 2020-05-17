@@ -269,14 +269,15 @@ class Runner(Exceptionable, Configurable):
                                   'Also, ensure that batch.py and batch.sh versions '
                                   'in batch submission location are current.'.format(self.search(Config.ENV, 'nsim_export')))
                     elif not model_exit_status[model_index]:
-                        print('\nDid not create NEURON simulations since COMSOL failed to '
-                              'create potentials for Model Index {}\n'.format(model_num))
+                        print('\nDid not create NEURON simulations for Sims associated with: \n'
+                              '\t Model Index: {} \n'
+                              'since COMSOL failed to create required potentials. \n'.format(model_num))
 
             elif 'models' in all_configs.keys() and 'sims' not in all_configs.keys():
                 # Model Configs Provided, but not Sim Configs
                 print('\nTO JAVA\n')
                 self.handoff(self.number)
-                print('\nNEURON Simulations NOT created since no Sim indices indacated in Config.SIM\n')
+                print('\nNEURON Simulations NOT created since no Sim indices indicated in Config.SIM\n')
 
     def handoff(self, run_number: int):
         comsol_path = self.search(Config.ENV, 'comsol_path')
