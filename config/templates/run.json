@@ -9,5 +9,6 @@
     "debug_geom": true,
     "mesh": true,
     "bases": true
-  }
+  },
+  "models_exit_status": []
 }
