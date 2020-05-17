@@ -927,7 +927,7 @@ public class ModelWrapper {
             String[] contributors = this.getUnionContributors(union);
 
             if (contributors.length > 0) {
-                GeomFeature uni = model.component("comp1").geom("geom1").create(im.next("uni", union), "Union"); // TODO clean
+                GeomFeature uni = model.component("comp1").geom("geom1").create(im.next("uni", union), "Union");
                 uni.set("keep", true);
                 uni.selection("input").set(contributors);
                 uni.label(union);
@@ -1014,7 +1014,6 @@ public class ModelWrapper {
         boolean[] models_exit_status = new boolean[models_list.length()];
         for (int model_index = 0; model_index < models_list.length(); model_index++) {
 
-            // TODO try here
             try {
                 Model model = null;
                 ModelWrapper mw = null;
@@ -1321,8 +1320,13 @@ public class ModelWrapper {
                             e.printStackTrace();
                         }
 
-                        // TODO try, catch with message saying failed to run
-                        model.component("comp1").geom("geom1").run("fin");
+                        try {
+                            model.component("comp1").geom("geom1").run("fin");
+                        } catch (Exception e) {
+                            System.out.println("Failed to run geometry for Model Index " + modelStr + ", continuing " +
+                                    "to any remaining Models");
+                            continue;
+                        }
 
                         // MESH
                         int shape_order = modelData.getJSONObject("solver").getInt("shape_order");
@@ -1365,15 +1369,22 @@ public class ModelWrapper {
                             System.out.println("Saving MPH (pre-proximal mesh) file to: " + geomFile);
                             model.save(geomFile);
                         } catch (IOException e) {
-                            // TODO message saying failed to save geomFile
+                            System.out.println("Failed to save geometry for Model Index " + modelStr + ", continuing " +
+                                    "to any remaining Models");
                             e.printStackTrace();
+                            continue;
                         }
 
                         System.out.println("Meshing proximal parts... will take a while");
 
                         long nerveMeshStartTime = System.nanoTime();
-                        // TODO try, catch with message saying failed to MESH PROXIMAL
-                        model.component("comp1").mesh("mesh1").run(mw.im.get(meshProximalLabel));
+                         try {
+                             model.component("comp1").mesh("mesh1").run(mw.im.get(meshProximalLabel));
+                         } catch (Exception e) {
+                             System.out.println("Failed to mesh proximal geometry for Model Index " + modelStr +
+                                     ", continuing to any remaining Models");
+                             continue;
+                         }
                         long estimatedNerveMeshTime = System.nanoTime() - nerveMeshStartTime;
                         proximalMeshParams.put("mesh_time", estimatedNerveMeshTime / Math.pow(10, 6)); // convert nanos to millis
 
@@ -1408,8 +1419,13 @@ public class ModelWrapper {
 
                             System.out.println("Meshing the distal parts... will take a while");
                             long distalMeshStartTime = System.nanoTime();
-                            // TODO try, catch with message saying failed to MESH DISTAL
-                            model.component("comp1").mesh("mesh1").run(mw.im.get(meshDistalLabel));
+                            try {
+                                model.component("comp1").mesh("mesh1").run(mw.im.get(meshDistalLabel));
+                            } catch (Exception e) {
+                                System.out.println("Failed to mesh distal geometry for Model Index " + modelStr +
+                                        ", continuing to any remaining Models");
+                                continue;
+                            }
                             long estimatedRestMeshTime = System.nanoTime() - distalMeshStartTime;
                             meshDistalParams.put("mesh_time", estimatedRestMeshTime / Math.pow(10, 6)); // convert nanos to millis
 
@@ -1468,6 +1484,8 @@ public class ModelWrapper {
                             System.out.println("Saving MPH (post-mesh) file to: " + meshFile);
                             model.save(meshFile);
                         } catch (IOException e) {
+                            System.out.println("Failed to save mesh.mph file for Model Index " + modelStr +
+                                    ", continuing to any remaining Models");
                             e.printStackTrace();
                         }
 
@@ -1646,14 +1664,12 @@ public class ModelWrapper {
                     if (!run.getJSONObject("keep").getBoolean("mesh")) {
                         File mesh_path = new File(meshPath);
                         deleteDir(mesh_path);
-
                         System.out.println("Successfully solved for /bases, therefore deleted /mesh directory.");
                     }
 
                     try (FileWriter file = new FileWriter("../" + modelFile)) {
                         String output = modelData.toString(2);
                         file.write(output);
-
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -1662,8 +1678,13 @@ public class ModelWrapper {
                 // If no Sim configs, SKIP
                 JSONArray sims_list = run.getJSONArray("sims");
                 if (sims_list.length() >= 1) {
-                    // TODO try, catch with message saying failed to EXTRACT POTENTIALS
-                    extractAllPotentials(projectPath, runPath, modelStr);
+                    try {
+                        extractAllPotentials(projectPath, runPath, modelStr);
+                    } catch (Exception e) {
+                        System.out.println("Failed to extract potentials for Model Index " + modelStr +
+                                ", continuing to any remaining Models");
+                        continue;
+                    }
                 }
 
                 String model_path = String.join("/", new String[]{ // build path to sim config file
