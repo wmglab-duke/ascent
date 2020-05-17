@@ -399,7 +399,18 @@ class Fascicle(Exceptionable):
         os.chdir(start)
 
     def morphology_data(self):
-        inners = [{"area": inner.area()} for inner in self.inners]
-        outer = {"area": self.outer.area()}
+        inners = [{"area": inner.area(),
+                   "x": inner.ellipse()[0][0],
+                   "y": inner.ellipse()[0][1],
+                   "a": inner.ellipse()[1][0],
+                   "b": inner.ellipse()[1][1],
+                   "angle": inner.ellipse()[2]}
+                  for inner in self.inners]
+        outer = {"area": self.outer.area(),
+                 "x": self.outer.ellipse()[0][0],
+                 "y": self.outer.ellipse()[0][1],
+                 "a": self.outer.ellipse()[1][0],
+                 "b": self.outer.ellipse()[1][1],
+                 "angle": self.outer.ellipse()[2]}
 
         return {"outer": outer, "inners": inners}
