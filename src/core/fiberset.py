@@ -1,4 +1,5 @@
 import random
+import warnings
 from typing import List, Tuple
 
 import matplotlib.pyplot as plt
@@ -353,9 +354,15 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
             # get the correct fiber lengths
             model_length = self.search(Config.MODEL, 'medium', 'proximal', 'length')
-            fiber_length = (self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'max')
-                            - self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'min')) \
-                if override_length is None else override_length
+            if not ('min' in self.configs['sims']['fibers']['z_parameters'].keys() and 'max' in self.configs['sims']['fibers']['z_parameters'].keys()):
+                fiber_length = model_length if override_length is None else override_length
+                if override_length is None:
+                    warnings.warn('Program assumed fiber length same as proximal length since "min" and "max" fiber '
+                                  'length not defined in Config.Sim "fibers" -> "z_parameters"')
+            else:
+                fiber_length = (self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'max')
+                                - self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'min')) \
+                    if override_length is None else override_length
 
             half_fiber_length = fiber_length / 2
             z_shift_to_center = (model_length - fiber_length) / 2.0
