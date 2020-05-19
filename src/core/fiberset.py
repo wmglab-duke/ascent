@@ -2,11 +2,10 @@ import random
 import warnings
 from typing import List, Tuple
 
-import matplotlib.pyplot as plt
-import numpy as np
 from shapely.affinity import scale
 from shapely.geometry import LineString, Point
 import scipy.optimize as opt
+import csv
 
 from src.utils import *
 from .sample import Sample
@@ -40,7 +39,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             self.throw(39)  # TODO NOT WRITTEN - INCORRECT ERROR INDEX
         return self
 
-    def generate(self):
+    def generate(self, sim_directory: str):
         """
         :return:
         """
@@ -49,7 +48,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
 
         if not xy_mode == FiberXYMode.SL_PSEUDO_INTERP:
-            fibers_xy = self._generate_xy()
+            fibers_xy = self._generate_xy(sim_directory)
             self.out_to_fib, self.out_to_in = self._generate_maps(fibers_xy)
             self.fibers = self._generate_z(fibers_xy)
 
@@ -164,7 +163,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
         return out_to_fib, out_to_in
 
-    def _generate_xy(self) -> np.ndarray:
+    def _generate_xy(self, sim_directory: str) -> np.ndarray:
         # get required parameters from configuration JSON (using inherited Configurable methods)
         xy_mode_name: str = self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode')
         xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
@@ -289,6 +288,17 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                             # loop through the end points of the vectors
                             for point in [vector.coords[1] for vector in scaled_vectors]:
                                 points.append(point)
+
+            elif xy_mode == FiberXYMode.EXPLICIT:
+
+                with open(os.path.join(sim_directory, 'explicit.txt')) as f:
+
+                    # advance header
+                    next(f)
+
+                    reader = csv.reader(f, delimiter=" ")
+                    for row in reader:
+                        points.append(tuple([float(row[0]), float(row[1])]))
 
             # if plot:
             #     plt.figure()

@@ -87,7 +87,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
             fiberset \
                 .add(SetupMode.OLD, Config.SIM, sim_copy) \
                 .add(SetupMode.OLD, Config.MODEL, self.configs[Config.MODEL.value]) \
-                .generate() \
+                .generate(sim_directory) \
                 .write(WriteMode.DATA, fiberset_directory)
 
             self.fiberset_map_pairs.append((fiberset.out_to_fib, fiberset.out_to_in))

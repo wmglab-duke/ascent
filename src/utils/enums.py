@@ -122,6 +122,7 @@ class FiberXYMode(Enum):
     CENTROID = 2  # a single fiber per inner trace (endoneurium bundle?), located at each inner trace centroid
     WHEEL = 3  # 1) points on lines extending radially for each inner centroid, 2) offset inwards from boundary
     SL_PSEUDO_INTERP = 4  # special mode for interpolating along approximate superior laryngeal branch of vagus nerve
+    EXPLICIT = 5  # looks for explicit.txt in samples/#/models/#/sims/#/ directory for coordinates
 
 
 @unique
