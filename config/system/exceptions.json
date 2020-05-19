@@ -353,5 +353,10 @@
     "code": 70,
     "text": "There must be the same number of sample indices and labels labels",
     "source": "src.core.Query.barcharts_compare_samples"
+  },
+  {
+    "code": 71,
+    "text": "An explicitly chosen fiber (x,y)-location (in explicit.txt) is not in any inner",
+    "source": "src.core.Fiberset.generate"
   }
 ]

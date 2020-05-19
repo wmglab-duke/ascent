@@ -49,6 +49,15 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
         if not xy_mode == FiberXYMode.SL_PSEUDO_INTERP:
             fibers_xy = self._generate_xy(sim_directory)
+
+            # check that all fibers are within exactly one inner
+            if xy_mode == FiberXYMode.EXPLICIT:
+                for fiber in np.nditer(fibers_xy):
+                    if not any([Point(fiber).within(inner.polygon())
+                                for fascicle in self.sample.slides[0].fascicles for inner in fascicle.inners]):
+                        print("Explicit fiber coordinate: {} does not fall in an inner".format(fiber))
+                        self.throw(71)
+
             self.out_to_fib, self.out_to_in = self._generate_maps(fibers_xy)
             self.fibers = self._generate_z(fibers_xy)
 
@@ -292,10 +301,8 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             elif xy_mode == FiberXYMode.EXPLICIT:
 
                 with open(os.path.join(sim_directory, 'explicit.txt')) as f:
-
                     # advance header
                     next(f)
-
                     reader = csv.reader(f, delimiter=" ")
                     for row in reader:
                         points.append(tuple([float(row[0]), float(row[1])]))
