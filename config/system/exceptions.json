@@ -358,5 +358,20 @@
     "code": 71,
     "text": "An explicitly chosen fiber (x,y)-location (in explicit.txt) is not in any inner",
     "source": "src.core.Fiberset.generate"
+  },
+  {
+    "code": 72,
+    "text": "Need Sim and Model configs to init_post_config a Waveform class",
+    "source": "src.core.Waveform.init_post_config"
+  },
+  {
+    "code": 73,
+    "text": "Number of repeats for explicit wave must be an integer value",
+    "source": "src.core.Waveform.generate"
+  },
+  {
+    "code": 74,
+    "text": "Number of repeats for explicit wave does not fit in global.off - global.on in Sim config",
+    "source": "src.core.Waveform.generate"
   }
 ]

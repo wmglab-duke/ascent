@@ -202,6 +202,7 @@ class WaveformMode(Enum):
     BIPHASIC_FULL_DUTY = 2
     BIPHASIC_PULSE_TRAIN = 3
     BIPHASIC_PULSE_TRAIN_Q_BALANCED_UNEVEN_PW = 4
+    EXPLICIT = 5
 
 
 # %% Perineurium Impedance

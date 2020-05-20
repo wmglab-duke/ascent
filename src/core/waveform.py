@@ -7,6 +7,8 @@ import os
 import numpy as np
 import scipy.signal as sg
 import matplotlib.pyplot as plt
+import csv
+import warnings
 
 # access
 from src.utils import Exceptionable, Configurable, Saveable
@@ -43,7 +45,7 @@ class Waveform(Exceptionable, Configurable, Saveable):
     def init_post_config(self):
 
         if any([config.value not in self.configs.keys() for config in (Config.MODEL, Config.SIM)]):
-            self.throw(39)  # TODO NOT WRITTEN - INCORRECT INDEX
+            self.throw(72)
 
         # get mode
         self.mode_str = [key for key in self.search(Config.SIM, 'waveform').keys() if key != 'global'][0]
@@ -306,6 +308,68 @@ class Waveform(Exceptionable, Configurable, Saveable):
             wave = padded_positive + amp2*padded_negative
             self.wave = wave
 
+        elif self.mode == WaveformMode.EXPLICIT:
+            path_to_wave = os.path.join('config', 'user', 'waveforms',
+                                        '{}.dat'.format(str(self.search(Config.SIM,
+                                                                        'waveform',
+                                                                        WaveformMode.EXPLICIT.name,
+                                                                        'index'))))
+
+            # read in wave from file
+            explicit_wave = []
+            with open(os.path.join(path_to_wave)) as f:
+                reader = csv.reader(f)
+                for row in reader:
+                    explicit_wave.append(float(row[0]))
+
+            # first element in file is dt of recorded/explicit signal provided to the program
+            dt_explicit = explicit_wave.pop(0)
+            dt_atol = self.search(Config.SIM, 'waveform', WaveformMode.EXPLICIT.name, 'dt_atol')
+
+            if not np.isclose(dt_explicit, self.dt, atol=dt_atol):
+                warning_str = '\n Timestep provided: {} (first line in waveform file in config/user/waveforms/{}.dat' \
+                              ') \n does not match "dt" in "global" Sim parameters for time discretization in ' \
+                              'NEURON: {} \n based on set "dt_atol" parameter in Sim: {}. \n Altering your input ' \
+                              'waveform to fit NEURON time ' \
+                              'discretization.'.format(dt_explicit,
+                                                       str(self.search(Config.SIM,
+                                                                       'waveform',
+                                                                       WaveformMode.EXPLICIT.name,
+                                                                       'index')),
+                                                       self.dt,
+                                                       dt_atol)
+                warnings.warn(warning_str)
+
+                period_explicit = dt_explicit*len(explicit_wave)
+                n_samples_resampled = round(period_explicit/self.dt)
+
+                # need to convert input explicit waveform to 'global' time discretization as used by NEURON
+                signal = sg.resample(explicit_wave, n_samples_resampled)
+
+                # plt.plot(np.linspace(0, self.dt*len(explicit_wave), len(explicit_wave)), explicit_wave, 'go-',
+                #          np.linspace(0, dt_resampled*len(wave), len(wave)), wave, '.-', 10)
+                # plt.legend(['explicit_wave', 'wave'], loc='best')
+                # plt.show()
+
+            else:
+                signal = explicit_wave
+
+            # repeats?
+            repeats = self.search(Config.SIM, 'waveform', WaveformMode.EXPLICIT.name, 'period_repeats')
+            if type(repeats) is not int:
+                self.throw(73)
+            if repeats > 1:
+                signal = np.tile(signal, repeats)
+            # if number of repeats cannot fit in off-on interval, error
+            if self.dt*len(signal) > (self.off-self.on):
+                self.throw(74)
+
+            self.wave = signal
+
+            # pad with zeros for: time before on, time after off
+            padded = pad(signal, self.dt, self.on - self.start, self.stop - (self.on + self.dt*len(signal)))
+            self.wave = padded
+
         else:
             self.throw(34)
 
@@ -313,7 +377,7 @@ class Waveform(Exceptionable, Configurable, Saveable):
 
     def plot(self):
         plt.figure()
-        plt.plot(self.wave)
+        plt.plot(np.linspace(self.start, self.dt*len(self.wave), len(self.wave)), self.wave)
         plt.show()
 
     def write(self, mode: WriteMode, path: str):
