@@ -1081,8 +1081,6 @@ public class ModelWrapper {
                                             IdentifierManager.fromJSONObject(new JSONObject(previousPPIMs.get(name).toJSONObject().toString()))
                                     );
                                 }
-
-                                //                            System.out.println("1: skipMesh = true;");
                                 skipMesh = true;
                             } else {
                                 // search via recursive dir dive
@@ -1096,9 +1094,6 @@ public class ModelWrapper {
 
                                 // if there was a mesh match
                                 if (meshMatch != null) {
-
-                                    //                                System.out.println("meshMatch.getPath() = " + meshMatch.getPath());
-
                                     model = meshMatch.getMph();
                                     mw = new ModelWrapper(model, projectPath);
                                     mw.im = IdentifierManager.fromJSONObject(new JSONObject(meshMatch.getIdm().toJSONObject().toString()));
@@ -1113,7 +1108,6 @@ public class ModelWrapper {
                                                 IdentifierManager.fromJSONObject(new JSONObject(meshMatch.getPartPrimitiveIMs().get(name).toJSONObject().toString()))
                                         );
                                     }
-                                    //                                System.out.println("2: skipMesh = true;");
                                     skipMesh = true;
                                 }
                             }
@@ -1279,7 +1273,6 @@ public class ModelWrapper {
                         JSONObject cuffObject = (JSONObject) modelData.get("cuff");
                         String cuff = cuffObject.getString("preset");
                         mw.addCuffPartPrimitives(cuff);
-
 
                         // add PART INSTANCES for cuff
                         mw.addCuffPartInstances(cuff, modelData);
