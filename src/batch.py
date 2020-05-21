@@ -62,7 +62,6 @@ for run_number in sys.argv[1:]:
                         inner_name, fiber_name = tuple(master_fiber_name.split('_'))
                         inner_ind = int(inner_name.split('inner')[-1])
                         fiber_ind = int(fiber_name.split('fiber')[-1])
-                        # print('\t{}\t{}'.format(inner_ind, fiber_ind))
 
                         thresh_path = os.path.join(output_path, 'thresh_inner{}_fiber{}.dat'.format(inner_ind, fiber_ind))
                         if os.path.exists(thresh_path):
@@ -71,7 +70,6 @@ for run_number in sys.argv[1:]:
 
                         # write start.slurm
                         start_path = os.path.join(sim_path, 'start.slurm')
-                        # print(start_path)
                         if os.path.exists(start_path):
                             raise Exception('start.slurm already exists (not expected) check path/implementation')
 
@@ -84,7 +82,7 @@ for run_number in sys.argv[1:]:
                                 'cd {}\n'.format(sim_path),
                                 'cp -p ../../MOD_Files/x86_64/special .\n',
                                 'chmod a+rwx special\n',
-                                'mpirun -np 1 ./special -nobanner -mpi blank.hoc '
+                                './special -nobanner blank.hoc '
                                 '-c \"strdef sim_path\" '
                                 '-c \"sim_path=\\\"{}\\\"\" '
                                 '-c \"inner_ind={}\" '
@@ -102,6 +100,8 @@ for run_number in sys.argv[1:]:
                         # submit batch job for fiber
                         job_name = '{}_{}'.format(sim_name, master_fiber_name)
                         print('\n{}'.format(job_name))
+
+                        # TODO this will change for local running
                         command = ' '.join([
                             'sbatch',
                             '--job-name={}'.format(job_name),

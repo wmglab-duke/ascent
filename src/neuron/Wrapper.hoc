@@ -8,10 +8,10 @@ Instructions:
 */
 
 // Create parallel context instance
-objref pc
-pc = new ParallelContext()
+// objref pc
+// pc = new ParallelContext()
 
-print "number of processors: ", pc.nhost
+// print "number of processors: ", pc.nhost
 
 //node_channels = 1						// node_channels = 0 for MRG; node_channels = 1 for Schild 1994
 if (node_channels == 1) {
@@ -342,7 +342,7 @@ isi_values.x[0] = 0 // [ms]
 trun = startsw()
 
 // Start execute loop on the workers
-{pc.runworker()}
+// {pc.runworker()}
 // Code beyond this point (til pc.done()) is only executed by the master.
 // The master must now post jobs to the bulletin board.
 
@@ -355,7 +355,8 @@ proc batchrun() {local Vefreq_ind, stimamp_ind, pw_ind, isi_ind
 				for stimamp_ind = 0, Namp-1 {
 					for pw_ind = 0, Npw-1 {
 						for isi_ind = 0, Nisi-1 {
-							pc.submit("run_all",inner_ind,fiber_ind,Vefreq_values.x[Vefreq_ind],stimamp_values.x[stimamp_ind],pw_values.x[pw_ind],isi_values.x[isi_ind])
+							//pc.submit("run_all",inner_ind,fiber_ind,Vefreq_values.x[Vefreq_ind],stimamp_values.x[stimamp_ind],pw_values.x[pw_ind],isi_values.x[isi_ind])
+							run_all(inner_ind,fiber_ind,Vefreq_values.x[Vefreq_ind],stimamp_values.x[stimamp_ind],pw_values.x[pw_ind],isi_values.x[isi_ind])
 						}
 					}
 				}
@@ -365,8 +366,8 @@ proc batchrun() {local Vefreq_ind, stimamp_ind, pw_ind, isi_ind
 
 
 	// If a result is ready, get it. If not, pick a job to do.
-	while (pc.working()) {
-	}
+	//while (pc.working()) {
+	//}
 	
 }
 batchrun()
@@ -380,6 +381,6 @@ f_runtime.printf("Run time: %f seconds", startsw()-trun)
 f_runtime.close()
 //print "Run time: ", startsw()-trun, "seconds"
 
-{pc.done()}
+//{pc.done()}
 
 quit()
