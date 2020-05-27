@@ -1,14 +1,14 @@
 {
-  "recycle_meshes": true,
-  "overwrite": false,
+  "sample": 99,
+  "models": [0],
+  "sims": [9],
   "kill_pre_java": false,
-  "sample": 79,
-  "models": [0, 1, 2, 3],
-  "sims": [1, 3],
+  "recycle_meshes": true,
   "keep": {
+    "bases": true,
     "debug_geom": true,
-    "mesh": true,
-    "bases": true
+    "mesh": true
   },
-  "models_exit_status": []
+  "break_point": "none",
+  "models_exit_status": [true]
 }
