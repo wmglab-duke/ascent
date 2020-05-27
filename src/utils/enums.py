@@ -215,6 +215,7 @@ class PerineuriumThicknessMode(Enum):
     GRINBERG_2008 = 0
     PIG_INHOUSE = 1
     MEASURED = 3
+    PIG_INHOUSE_200523 = 4
 
 
 @unique
