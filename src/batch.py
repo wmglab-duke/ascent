@@ -114,8 +114,11 @@ for run_number in sys.argv[1:]:
                         ])
                         os.system(command)
 
+                        # allow job to start
+                        time.sleep(2.0)
+
                         # remove start.slurm
                         os.remove(start_path)
 
                         # to not crash the scheduler
-                        time.sleep(1.0)
+                        time.sleep(2.0)
