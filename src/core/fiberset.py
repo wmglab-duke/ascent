@@ -56,6 +56,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             # SL generation algorithm
 
             # find sample position if available - NOTE THIS WILL NEED TO BE FIXED LATER TO USE MAP CONFIG?
+            # SAMPLE POSITION =
             sample_position = self.sample.configs[Config.SAMPLE.value].get('position', None)
             if sample_position is not None:
                 print('\t\tUsing {} µm positioning for SL curve'.format(sample_position))
@@ -65,9 +66,9 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
             z_nerve = self.search(Config.MODEL, 'medium', 'proximal', 'length')
             z_medium = self.search(Config.MODEL, 'medium', 'distal', 'length')
-            z_offset = sample_position + z_nerve / 2  # this is semi-arbitrary (leading number is distance from center of cuff)
+            z_offset = sample_position + z_nerve / 2  # sample_position is distance from center of cuff to SL branch
             r_medium = self.search(Config.MODEL, 'medium', 'distal', 'radius')
-            buffer = 50
+            buffer = 50  # minimum distance from top of distal model
 
             if z_offset >= z_medium - 1000:
                 print('\t\tWARNING: SL z_offset ({}) within 1000 µm of distal model length ({})'.format(z_offset,
@@ -83,7 +84,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                 return np.sqrt(sum(item**2 for item in vec))
 
             # generate parameter range
-            t_min = max(opt.fmin(lambda t: -(fit_z(t) - (z_medium - buffer)), 50), 10)
+            t_min = max(opt.fmin(lambda t: -(fit_z(t) - (z_medium - buffer)), 50), buffer)
             t_max = r_medium - buffer
             t_step = 10
             t_range = np.arange(t_min, t_max, t_step)
@@ -93,7 +94,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                 t_range = t_range[1:]
 
             # init theta
-            theta = 0
+            #theta = 0
 
             # set angle theta to orientation point if defined
             slide = self.sample.slides[0]

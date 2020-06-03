@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 /**
@@ -1377,10 +1378,12 @@ public class ModelWrapper {
                          try {
                              model.component("comp1").mesh("mesh1").run(mw.im.get(meshProximalLabel));
                          } catch (Exception e) {
+                             System.out.println(e);
                              System.out.println("Failed to mesh proximal geometry for Model Index " + modelStr +
                                      ", continuing to any remaining Models");
                              continue;
                          }
+
                         long estimatedProximalMeshTime = System.nanoTime() - proximalMeshStartTime;
                         proximalMeshParams.put("mesh_time", estimatedProximalMeshTime / Math.pow(10, 6)); // convert nanos to millis
 
@@ -1389,16 +1392,11 @@ public class ModelWrapper {
                         mesh.put("proximal", proximalMeshParams);
                         modelData.put("mesh", mesh);
 
+                        TimeUnit.SECONDS.sleep(1);
+
                         // Saved model pre-mesh for debugging
-                        try {
-                            System.out.println("Saving MPH (post-proximal mesh) file to: " + meshFile);
-                            model.save(meshFile);
-                        } catch (IOException e) {
-                            System.out.println("Failed to save geometry for Model Index " + modelStr + ", continuing " +
-                                    "to any remaining Models");
-                            e.printStackTrace();
-                            continue;
-                        }
+                        model.save(meshFile);
+                        TimeUnit.SECONDS.sleep(5);
 
                         // break point "post_mesh_proximal"
                         if (break_points.getBoolean("post_mesh_proximal")) {
@@ -1551,6 +1549,7 @@ public class ModelWrapper {
                             debug_geom_file.delete();
                             System.out.println("Successfully saved mesh.mph and ppim's, therefore deleted debug_geom.mph file.");
                         }
+
                     }
 
                     //////////////// START POST MESH
@@ -1771,6 +1770,7 @@ public class ModelWrapper {
 
                 models_exit_status[model_index] = true;
             } catch (Exception e) {
+                System.out.println(e);
                 models_exit_status[model_index] = false;
                 System.out.println("Failed to mesh/solve/extract potentials for model " + models_list.get(model_index));
             }

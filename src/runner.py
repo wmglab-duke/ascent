@@ -141,7 +141,7 @@ class Runner(Exceptionable, Configurable):
         # iterate through models
         if 'models' not in all_configs.keys():
             print('NO MODELS TO MAKE IN Config.RUN - killing process')
-            exit()
+            pass
         else:
             for model_index, model_config in enumerate(all_configs[Config.MODEL.value]):
                 model_num = self.configs[Config.RUN.value]['models'][model_index]
@@ -211,7 +211,7 @@ class Runner(Exceptionable, Configurable):
             if 'kill_pre_java' in self.search(Config.RUN).keys():
                 if self.search(Config.RUN, 'kill_pre_java'):
                     print('KILLING PRE JAVA')
-                    exit()
+                    pass
 
             # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials if necessary
             if 'models' in all_configs.keys() and 'sims' in all_configs.keys():
@@ -222,6 +222,10 @@ class Runner(Exceptionable, Configurable):
                     print('\nTO PYTHON\n')
                 else:
                     print('\nSKIPPING JAVA - all required extracted potentials already exist\n')
+
+                self.remove(Config.RUN)
+                run_path = os.path.join('config', 'user', 'runs', '{}.json'.format(self.number))
+                self.add(SetupMode.NEW, Config.RUN, run_path)
 
                 #  continue by using simulation objects
                 models_exit_status = self.search(Config.RUN, "models_exit_status")

@@ -6,26 +6,22 @@ sample = 80
 model = 0
 sim = 10
 
-base = os.path.join('..', '..', 'samples', str(sample), 'models', str(model), 'sims', str(sim), 'n_sims')
+base_n_sim = os.path.join('samples', str(sample), 'models', str(model), 'sims', str(sim), 'n_sims')
 
-n_sims = [0, 4, 8, 12, 16, 20]
-inner = 0
+inner = 46
 fiber = 0
+n_sims = [0, 4, 8, 12, 16, 20]
+pve1 = os.path.join(base_n_sim, str(n_sims[0]), 'data', 'inputs', 'inner{}_fiber{}.dat'.format(inner, fiber))
+dpve1 = np.loadtxt(pve1)
+plt.plot(dpve1[1:], 'r-', label='p1')
 
-pve1 = os.path.join(base, str(n_sims[0]), 'data', 'inputs', 'inner{}_fiber{}.dat'.format(inner, fiber))
-
-os.path.exists(pve1)
-
-pve2 = os.path.join(base, str(n_sims[1]), 'data', 'inputs', 'inner{}_fiber{}.dat'.format(inner, fiber))
-pve3 = os.path.join(base, str(n_sims[2]), 'data', 'inputs', 'inner{}_fiber{}.dat'.format(inner, fiber))
-pve4 = os.path.join(base, str(n_sims[3]), 'data', 'inputs', 'inner{}_fiber{}.dat'.format(inner, fiber))
-pve5 = os.path.join(base, str(n_sims[4]), 'data', 'inputs', 'inner{}_fiber{}.dat'.format(inner, fiber))
-pve6 = os.path.join(base, str(n_sims[5]), 'data', 'inputs', 'inner{}_fiber{}.dat'.format(inner, fiber))
-
-ve1 = np.loadtxt(pve1)
-plt.plot(ve1[1:])
+fiberset = 0
+fiber = inner
+base_fiberset = os.path.join('samples', str(sample), 'models', str(model), 'sims', str(sim), 'potentials', str(fiberset))
+fve1 = os.path.join(base_fiberset, '{}.dat'.format(fiber))
+dfve1 = np.loadtxt(fve1)
+plt.plot(dfve1[1:], 'g--', label='f1')
+plt.legend()
 plt.show()
-
-
 
 print('done')
