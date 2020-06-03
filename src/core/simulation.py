@@ -146,10 +146,11 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 if sum(active_srcs) not in [1, -1]:
                     self.throw(50)
             else:
-                if sum(active_srcs) is not 0:
-                    self.throw(49)
-                if sum(active_src_abs) is not 2:
-                    self.throw(50)
+                # if sum(active_srcs) is not 0:
+                #     self.throw(49)
+                # if sum(active_src_abs) is not 2:
+                #     self.throw(50)
+                pass
 
         self.potentials_product = list(itertools.product(
             list(range(len(active_srcs_list))),
