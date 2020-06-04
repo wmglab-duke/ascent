@@ -205,6 +205,33 @@ class WaveformMode(Enum):
     EXPLICIT = 5
 
 
+# %% NEURON Protocols
+
+@unique
+class NeuronRunMode(Enum):
+    config = 'mode'
+
+    ACTIVATION_THRESHOLD = 0
+    BLOCK_THRESHOLD = 1
+    FINITE_AMPLITUDES = 2
+
+
+@unique
+class SearchAmplitudeIncrementMode(Enum):
+    config = 'mode'
+
+    ABSOLUTE_INCREMENT = 0
+    PERCENT_INCREMENT = 1
+
+
+@unique
+class TerminationCriteriaMode(Enum):
+    config = 'mode'
+
+    RELATIVE_DIFFERENCE = 0
+    ABSOLUTE_DIFFERENCE = 1
+
+
 # %% Perineurium Impedance
 
 @unique

@@ -141,16 +141,58 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         check_points: dict = self.search(Config.SIM, "check_points")
         file_object.write("Nchecknodes = %0.0f\n" % 3)
 
-        file_object.write("\n//***************** Threshold Parameters *********\n")
-        threshold: dict = self.search(Config.SIM, "threshold")
-        file_object.write("find_thresh = %0.0f "
+        file_object.write("\n//***************** Protocol Parameters *********\n")
+
+        protocol_mode_name: str = self.search(Config.SIM, 'protocol', 'mode')
+        protocol_mode: NeuronRunMode = [mode for mode in NeuronRunMode if str(mode).split('.')[-1] == protocol_mode_name][0]
+
+        if protocol_mode != NeuronRunMode.FINITE_AMPLITUDES:
+            find_thresh = 1
+            if protocol_mode == NeuronRunMode.ACTIVATION_THRESHOLD:
+                block_thresh_flag = NeuronRunMode.ACTIVATION_THRESHOLD.value
+            elif protocol_mode == NeuronRunMode.BLOCK_THRESHOLD:
+                block_thresh_flag = NeuronRunMode.BLOCK_THRESHOLD.value
+
+            threshold: dict = self.search(Config.SIM, "protocol", "threshold")
+            file_object.write("\nap_thresh = %0.0f\n" % threshold.get("value"))
+            file_object.write("N_minAPs  = %0.0f\n" % threshold.get("n_min_aps"))
+
+            bounds_search_mode_name: str = self.search(Config.SIM, "protocol", "bounds_search", "mode")
+            bounds_search_mode: SearchAmplitudeIncrementMode = [mode for mode in SearchAmplitudeIncrementMode if str(mode).split('.')[-1] == bounds_search_mode_name][0]
+            if bounds_search_mode == SearchAmplitudeIncrementMode.PERCENT_INCREMENT:
+                increment_flag = SearchAmplitudeIncrementMode.PERCENT_INCREMENT.value
+                step: float = self.search(Config.SIM, "protocol", "bounds_search", "relative_step")
+                file_object.write("\nrel_increment = %0.2f\n" % step)
+            elif bounds_search_mode == SearchAmplitudeIncrementMode.ABSOLUTE_INCREMENT:
+                increment_flag = SearchAmplitudeIncrementMode.ABSOLUTE_INCREMENT.value
+                step: float = self.search(Config.SIM, "protocol", "bounds_search", "step")
+                file_object.write("\nabs_increment = %0.2f\n" % step)
+            file_object.write("increment_flag = %0.0f // \n" % increment_flag)
+
+            termination_criteria_mode_name: str = self.search(Config.SIM, "protocol", "termination_criteria", "mode")
+            termination_criteria_mode: TerminationCriteriaMode = [mode for mode in TerminationCriteriaMode if str(mode).split('.')[-1] == termination_criteria_mode_name][0]
+            if termination_criteria_mode == TerminationCriteriaMode.ABSOLUTE_DIFFERENCE:
+                termination_flag = TerminationCriteriaMode.ABSOLUTE_DIFFERENCE.value
+                res: float = self.search(Config.SIM, "protocol", "termination_criteria", "tolerance")
+                file_object.write("\nabs_thresh_resoln = %0.2f\n" % res)
+            elif termination_criteria_mode == TerminationCriteriaMode.RELATIVE_DIFFERENCE:
+                termination_flag = TerminationCriteriaMode.RELATIVE_DIFFERENCE.value
+                res: float = self.search(Config.SIM, "protocol", "termination_criteria", "percent")
+                file_object.write("\nrel_thresh_resoln = %0.2f\n" % res)
+            file_object.write("termination_flag = %0.0f // \n" % termination_flag)
+
+        elif protocol_mode_name == NeuronRunMode.FINITE_AMPLITUDES.value:
+            find_thresh = 0
+            block_thresh_flag = 0
+
+        file_object.write("\nfind_thresh = %0.0f "
                           "// find_thresh = 0 if not doing threshold search; "
-                          "find_thresh = 1 if looking for threshold\n"
-                          % threshold.get("thresh_flag"))
+                          "find_thresh = 1 if looking for threshold\n" % find_thresh)
+
         file_object.write("find_block_thresh = %0.0f "
                           "// If find_thresh==1, can also set find_block_thresh = 1 "
                           "to find block thresholds instead of activation threshold\n"
-                          % threshold.get("block_thresh"))
+                          % block_thresh_flag)
 
         num_inners = n_inners
         amps = [0]
@@ -158,14 +200,10 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         freqs = [self.search(Config.MODEL, "frequency", "value")/1000]
         num_freqs = len(freqs)
 
-        file_object.write("Nmodels    = %0.0f\n" % 1)
+        file_object.write("\nNmodels    = %0.0f\n" % 1)
         file_object.write("Ninners    = %0.0f\n" % num_inners)
         file_object.write("Namp     = %0.0f\n" % num_amps)
         file_object.write("Nfreq    = %0.0f\n" % num_freqs)
-
-        file_object.write("\nap_thresh = %0.0f\n" % threshold["vm"]["value"])
-        file_object.write("\nthresh_resoln = %0.2f\n" % threshold.get("resolution"))
-        file_object.write("N_minAPs  = %0.0f\n" % threshold.get("n_min_aps"))
 
         # TODO - flag_whichstim = 0 (for all), flag_extracellular_stim = 1 (for all)
 
