@@ -480,9 +480,6 @@ class Query(Exceptionable, Configurable, Saveable):
                             aspect=colorbar_aspect if colorbar_aspect is not None else 20
                         )
 
-
-
-
                         # colorbar font size
                         if colorbar_text_size_override is not None:
                             cb.set_label(cb_label, fontsize=colorbar_text_size_override)

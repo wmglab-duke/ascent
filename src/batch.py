@@ -102,7 +102,7 @@ for run_number in sys.argv[1:]:
                         print('\n{}'.format(job_name))
 
                         # TODO this will change for local running
-                        command = ' '.join([
+                        command = ' '.join([ 
                             'sbatch',
                             '--job-name={}'.format(job_name),
                             '--output={}'.format(os.path.join(out_dir, '{}{}'.format(master_fiber_name, '.log'))),
