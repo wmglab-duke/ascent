@@ -91,8 +91,22 @@ proc FindThresh() {//local key
 		print "stimamp = ", stimamp, "mA for extracellular and nA for intracellular (check flag_whichstim)"
 		RunSim(stimamp)
 		print "N_APs = ", N_APs
+
+		if (termination_flag == 0) {
+			//rel_thresh_resoln 
+			thresh_resoln = abs(rel_thresh_resoln) // not sure why user would enter negative tolerance, but just in case
+			tolerance = abs((stimamp_bottom - stimamp_top) / stimamp_top)
+
+
+		} else if (termination_flag == 1) {
+			//abs_thresh_resoln
+			thresh_resoln = abs(abs_thresh_resoln) // not sure why user would enter negative tolerance, but just in case
+			tolerance = abs(stimamp_bottom - stimamp_top)
+
+		}
+
 		//if ((abs((stimamp_bottom - stimamp_top) / 2)) < thresh_resoln) {	// resolution of search
-		if ((abs((stimamp_bottom - stimamp_top) / stimamp_top)) < thresh_resoln) {	// resolution of search
+		if ((tolerance) < thresh_resoln) {	// resolution of search
 			// Use last amplitude that produced an action potential
 			if (N_APs == 0) {
 				stimamp = stimamp_prev
