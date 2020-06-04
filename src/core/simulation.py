@@ -146,10 +146,11 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 if sum(active_srcs) not in [1, -1]:
                     self.throw(50)
             else:
-                if sum(active_srcs) is not 0:
-                    self.throw(49)
-                if sum(active_src_abs) is not 2:
-                    self.throw(50)
+                # if sum(active_srcs) is not 0:
+                #     self.throw(49)
+                # if sum(active_src_abs) is not 2:
+                #     self.throw(50)
+                pass
 
         self.potentials_product = list(itertools.product(
             list(range(len(active_srcs_list))),
@@ -179,13 +180,8 @@ class Simulation(Exceptionable, Configurable, Saveable):
                     f.write(str(row) + ' ')
                 f.write("\n")
 
-        # TODO - maybe own method here
-        f = open(key_filepath, "r")
-        contents = f.read()
-        s_s = range(int(contents[0]))
+        s_s = range(int(output[0]))
         q_s = range(len(self.wave_product))
-        f.close()
-
         prods = list(itertools.product(s_s, q_s))
         self.master_product_indices = prods
 
@@ -226,7 +222,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
             # get source, waveform, and fiberset values for the corresponding neuron simulation t
             active_src_ind, fiberset_ind = self.potentials_product[potentials_ind]
-            active_src_vals = self.src_product[active_src_ind]
+            active_src_vals = [self.src_product[active_src_ind]]
             wave_vals = self.wave_product[waveform_ind]
             fiberset_vals = self.fiberset_product[fiberset_ind]
 

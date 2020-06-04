@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 /**
@@ -461,11 +462,16 @@ public class ModelWrapper {
 
                     for (int fiber_ind = 0; fiber_ind < fiber_coords_list.length; fiber_ind++) { // loop over fiber coords in list of fiber coords
                         String fiber_coords = fiber_coords_list[fiber_ind];
+
+                        String[] fiber_file_parts = fiber_coords.split("\\.");
+                        Integer fiber_file_ind = Integer.parseInt(fiber_file_parts[0]);
+
                         String coord_path = String.join("/", new String[]{
                                 fiberset_dir, fiber_coords
                         }); // build path to coordinates
 
-                        fibers[fiber_ind] = extractPotentials(basis, coord_path);
+                        fibers[fiber_file_ind] = extractPotentials(basis, coord_path);
+//                        fibers[fiber_ind] = extractPotentials(basis, coord_path); FORMER ERROR (this is the old line, new line above)
                     }
                 }
             }
@@ -552,6 +558,7 @@ public class ModelWrapper {
 
                     Object[] src_combo_buffer = src_combo_list.getJSONArray(ind_active_src_select).toList().toArray(new Object[0]);
                     Double[] src_combo = new Double[src_combo_buffer.length];
+
                     for (int j = 0; j < src_combo_buffer.length; j++) {
                         if (src_combo_buffer[j].getClass() == Integer.class) {
                             src_combo[j] = ((Integer) src_combo_buffer[j]).doubleValue();
@@ -974,14 +981,11 @@ public class ModelWrapper {
             e.printStackTrace();
         }
         JSONArray models_list = run.getJSONArray("models"); // get array of COMSOL models
+        JSONObject break_points = run.getJSONObject("break_points");
 
         // Load SAMPLE configuration data
         String sample = String.valueOf(Objects.requireNonNull(run).getInt("sample"));
-        String sampleFile = String.join("/", new String[]{
-                "samples",
-                sample,
-                "sample.json"
-        });
+        String sampleFile = String.join("/", new String[]{"samples", sample, "sample.json"});
         JSONObject sampleData = null;
         try {
             sampleData = JSONio.read(projectPath + "/" + sampleFile);
@@ -992,12 +996,7 @@ public class ModelWrapper {
         // Load mesh_dependence_model configuration data
         JSONObject meshReferenceData = null;
         try {
-            meshReferenceData = JSONio.read(String.join("/", new String[]{
-                    projectPath,
-                    "config",
-                    "system",
-                    "mesh_dependent_model.json"
-            }));
+            meshReferenceData = JSONio.read(String.join("/", new String[]{projectPath, "config", "system", "mesh_dependent_model.json"}));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -1018,17 +1017,9 @@ public class ModelWrapper {
                 ModelWrapper mw = null;
                 skipMesh = false;
 
-                System.out.println("Making model index: " + model_index);
                 String modelStr = String.valueOf(models_list.get(model_index));
 
-                String bases_directory = String.join("/", new String[]{
-                        projectPath,
-                        "samples",
-                        sample,
-                        "models",
-                        modelStr,
-                        "bases"
-                });
+                String bases_directory = String.join("/", new String[]{projectPath, "samples", sample, "models", modelStr, "bases"});
 
                 // if bases directory does not yet exist, make it
                 File basesPathFile = new File(bases_directory);
@@ -1046,18 +1037,12 @@ public class ModelWrapper {
 
                 if ((!basesPathFile.exists()) || (basesPathFile.list().length < 1) || (!basesValid)) {
                     // Load MODEL configuration data
-                    String modelFile = String.join("/", new String[]{
-                            "samples",
-                            sample,
-                            "models",
-                            modelStr,
-                            "model.json"
-                    });
+                    String modelFile = String.join("/", new String[]{"samples", sample, "models", modelStr, "model.json"});
                     JSONObject modelData = null;
                     try {
                         modelData = JSONio.read(projectPath + "/" + modelFile);
                     } catch (FileNotFoundException e) {
-                        System.out.println("Failed to read model data.");
+                        System.out.println("Failed to read MODEL config data.");
                         e.printStackTrace();
                     }
 
@@ -1084,12 +1069,7 @@ public class ModelWrapper {
                                 skipMesh = true;
                             } else {
                                 // search via recursive dir dive
-                                ModelSearcher modelSearcher = new ModelSearcher(String.join("/", new String[]{
-                                        projectPath,
-                                        "samples",
-                                        sample,
-                                        "models"
-                                }));
+                                ModelSearcher modelSearcher = new ModelSearcher(String.join("/", new String[]{projectPath, "samples", sample, "models"}));
                                 ModelSearcher.Match meshMatch = modelSearcher.searchMeshMatch(modelData, meshReferenceData, projectPath + "/" + modelFile);
 
                                 // if there was a mesh match
@@ -1112,7 +1092,7 @@ public class ModelWrapper {
                                 }
                             }
                         } catch (IOException e) {
-                            System.out.println("Issue with mesh recycling logic.");
+                            System.out.println("Issue in mesh recycling logic.");
                             e.printStackTrace();
                             System.exit(1);
                         }
@@ -1120,32 +1100,12 @@ public class ModelWrapper {
                     System.out.println("End mesh recycling logic.");
 
                     String mediumPrimitiveString = "Medium_Primitive";
-
                     String instanceLabelDistalMedium = DISTAL_MEDIUM;
                     String instanceLabelProximalMedium = PROXIMAL_MEDIUM;
 
-                    String geomFile = String.join("/", new String[]{
-                            projectPath,
-                            "samples",
-                            sample,
-                            "models",
-                            modelStr,
-                            "debug_geom.mph"
-                    });
-
-                    String meshPath = String.join("/", new String[]{
-                            projectPath,
-                            "samples",
-                            sample,
-                            "models",
-                            modelStr,
-                            "mesh",
-                    });
-
-                    String meshFile = String.join("/", new String[]{
-                            meshPath,
-                            "mesh.mph"
-                    });
+                    String geomFile = String.join("/", new String[]{projectPath, "samples", sample, "models", modelStr, "debug_geom.mph"});
+                    String meshPath = String.join("/", new String[]{projectPath, "samples", sample, "models", modelStr, "mesh",});
+                    String meshFile = String.join("/", new String[]{meshPath, "mesh.mph"});
 
                     // START PRE MESH
                     if (!skipMesh) {
@@ -1199,7 +1159,6 @@ public class ModelWrapper {
                             mediumParams.set("distal_shift_x", distal_x + " " + bounds_unit);
                             mediumParams.set("distal_shift_y", distal_y + " " + bounds_unit);
                             mediumParams.set("distal_shift_z", distal_z + " " + bounds_unit);
-
                         }
 
                         // Create PART PRIMITIVE for MEDIUM
@@ -1301,9 +1260,6 @@ public class ModelWrapper {
                         // create UNIONS
                         mw.createUnions();
 
-                        // BUILD GEOMETRY
-                        System.out.println("Building the FEM geometry.");
-
                         // Saved model pre-run geometry for debugging
                         try {
                             System.out.println("Saving MPH (pre-geom_run) file to: " + geomFile);
@@ -1311,6 +1267,16 @@ public class ModelWrapper {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
+
+                        // break point "pre_geom_run"
+                        if (break_points.getBoolean("pre_geom_run")) {
+                            models_exit_status[model_index] = false;
+                            System.out.println("pre_geom_run is the first break point encountered, moving on with next model index\n");
+                            continue;
+                        }
+
+                        // BUILD GEOMETRY
+                        System.out.println("Building the FEM geometry.");
 
                         try {
                             model.component("comp1").geom("geom1").run("fin");
@@ -1320,7 +1286,38 @@ public class ModelWrapper {
                             continue;
                         }
 
+                        // Saved model post-run geometry for debugging
+                        try {
+                            System.out.println("Saving MPH (post-geom_run) file to: " + geomFile);
+                            model.save(geomFile);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        // break point "post_geom_run"
+                        if (break_points.getBoolean("post_geom_run")) {
+                            models_exit_status[model_index] = false;
+                            System.out.println("post_geom_run is the first break point encountered, moving on with next model index\n");
+                            continue;
+                        }
+
                         // MESH
+                        // ensure that the path for mesh files can be created
+                        File meshPathFile = new File(meshPath);
+                        if (!meshPathFile.exists()) {
+                            boolean success = meshPathFile.mkdirs();
+                            assert success;
+                        }
+
+                        // ditto for ppims
+                        System.out.println("Creating PPIM dirs");
+                        String ppimPath = meshPath + "/ppim";
+                        File ppimPathFile = new File(ppimPath);
+                        if (!ppimPathFile.exists()) {
+                            boolean success = ppimPathFile.mkdirs();
+                            assert success;
+                        }
+
                         int shape_order = modelData.getJSONObject("solver").getInt("shape_order");
                         model.component("comp1").physics("ec").prop("ShapeProperty").set("order_electricpotential", shape_order);
 
@@ -1334,6 +1331,7 @@ public class ModelWrapper {
                         MeshFeature meshProximal = model.component("comp1").mesh("mesh1").create(mw.im.next(meshProximalKey, meshProximalLabel), meshProximalName);
                         meshProximal.selection().geom("geom1", 3);
                         meshProximal.selection().named("geom1" + "_" + mediumProximal_instanceID + "_" + partPrimitiveIM.get("MEDIUM") + "_dom");
+
                         // if using a swept mesh, you need to define the face method
                         if (meshProximalKey.equals("swe")) {
                             String meshProximalFace = proximalMeshParams.getJSONObject("type").getString("facemethod"); // (tri)
@@ -1358,8 +1356,8 @@ public class ModelWrapper {
 
                         // Saved model pre-mesh for debugging
                         try {
-                            System.out.println("Saving MPH (pre-proximal mesh) file to: " + geomFile);
-                            model.save(geomFile);
+                            System.out.println("Saving MPH (pre-proximal mesh) file to: " + meshFile);
+                            model.save(meshFile);
                         } catch (IOException e) {
                             System.out.println("Failed to save geometry for Model Index " + modelStr + ", continuing " +
                                     "to any remaining Models");
@@ -1367,27 +1365,54 @@ public class ModelWrapper {
                             continue;
                         }
 
+                        // break point "pre_mesh_proximal"
+                        if (break_points.getBoolean("pre_mesh_proximal")) {
+                            models_exit_status[model_index] = false;
+                            System.out.println("pre_mesh_proximal is the first break point encountered, moving on with next model index\n");
+                            continue;
+                        }
+
                         System.out.println("Meshing proximal parts... will take a while");
 
-                        long nerveMeshStartTime = System.nanoTime();
+                        long proximalMeshStartTime = System.nanoTime();
                          try {
                              model.component("comp1").mesh("mesh1").run(mw.im.get(meshProximalLabel));
                          } catch (Exception e) {
+                             System.out.println(e);
                              System.out.println("Failed to mesh proximal geometry for Model Index " + modelStr +
                                      ", continuing to any remaining Models");
                              continue;
                          }
-                        long estimatedNerveMeshTime = System.nanoTime() - nerveMeshStartTime;
-                        proximalMeshParams.put("mesh_time", estimatedNerveMeshTime / Math.pow(10, 6)); // convert nanos to millis
+
+                        long estimatedProximalMeshTime = System.nanoTime() - proximalMeshStartTime;
+                        proximalMeshParams.put("mesh_time", estimatedProximalMeshTime / Math.pow(10, 6)); // convert nanos to millis
+
+                        // put nerve to mesh, rest to mesh, mesh to modelData
+                        JSONObject mesh = modelData.getJSONObject("mesh");
+                        mesh.put("proximal", proximalMeshParams);
+                        modelData.put("mesh", mesh);
+
+                        TimeUnit.SECONDS.sleep(1);
+
+                        // Saved model pre-mesh for debugging
+                        model.save(meshFile);
+                        TimeUnit.SECONDS.sleep(5);
+
+                        // break point "post_mesh_proximal"
+                        if (break_points.getBoolean("post_mesh_proximal")) {
+                            models_exit_status[model_index] = false;
+                            System.out.println("post_mesh_proximal is the first break point encountered, moving on with next model index\n");
+                            continue;
+                        }
 
                         // define MESH for DISTAL
                         // swept: name (Sweep) and im (swe), facemethod (tri)
                         // free triangular: name (FreeTet) and im (ftet)
                         if (distalMedium.getBoolean("exist")) {
                             String meshDistalLabel = "Mesh Distal";
-                            JSONObject meshDistalParams = modelData.getJSONObject("mesh").getJSONObject("distal");
-                            String meshDistalKey = meshDistalParams.getJSONObject("type").getString("im");
-                            String meshDistalName = meshDistalParams.getJSONObject("type").getString("name");
+                            JSONObject distalMeshParams = modelData.getJSONObject("mesh").getJSONObject("distal");
+                            String meshDistalKey = distalMeshParams.getJSONObject("type").getString("im");
+                            String meshDistalName = distalMeshParams.getJSONObject("type").getString("name");
                             MeshFeature meshDistal = model.component("comp1").mesh("mesh1").create(mw.im.next(meshDistalKey, meshDistalLabel), meshDistalName);
                             meshDistal.selection().geom("geom1", 3);
                             meshDistal.selection().remaining();
@@ -1399,15 +1424,33 @@ public class ModelWrapper {
 
                             meshDistalSizeInfo.set("custom", true);
                             meshDistalSizeInfo.set("hmaxactive", true);
-                            meshDistalSizeInfo.set("hmax", meshDistalParams.getDouble("hmax"));
+                            meshDistalSizeInfo.set("hmax", distalMeshParams.getDouble("hmax"));
                             meshDistalSizeInfo.set("hminactive", true);
-                            meshDistalSizeInfo.set("hmin", meshDistalParams.getDouble("hmin"));
+                            meshDistalSizeInfo.set("hmin", distalMeshParams.getDouble("hmin"));
                             meshDistalSizeInfo.set("hgradactive", true);
-                            meshDistalSizeInfo.set("hgrad", meshDistalParams.getDouble("hgrad"));
+                            meshDistalSizeInfo.set("hgrad", distalMeshParams.getDouble("hgrad"));
                             meshDistalSizeInfo.set("hcurveactive", true);
-                            meshDistalSizeInfo.set("hcurve", meshDistalParams.getDouble("hcurve"));
+                            meshDistalSizeInfo.set("hcurve", distalMeshParams.getDouble("hcurve"));
                             meshDistalSizeInfo.set("hnarrowactive", true);
-                            meshDistalSizeInfo.set("hnarrow", meshDistalParams.getDouble("hnarrow"));
+                            meshDistalSizeInfo.set("hnarrow", distalMeshParams.getDouble("hnarrow"));
+
+                            // Saved model pre-mesh for debugging
+                            try {
+                                System.out.println("Saving MPH (pre-distal mesh) file to: " + meshFile);
+                                model.save(meshFile);
+                            } catch (IOException e) {
+                                System.out.println("Failed to save geometry for Model Index " + modelStr + ", continuing " +
+                                        "to any remaining Models");
+                                e.printStackTrace();
+                                continue;
+                            }
+
+                            // break point "pre_mesh_distal"
+                            if (break_points.getBoolean("pre_mesh_distal")) {
+                                models_exit_status[model_index] = false;
+                                System.out.println("pre_mesh_distal is the first break point encountered, moving on with next model index\n");
+                                continue;
+                            }
 
                             System.out.println("Meshing the distal parts... will take a while");
                             long distalMeshStartTime = System.nanoTime();
@@ -1419,12 +1462,29 @@ public class ModelWrapper {
                                 continue;
                             }
                             long estimatedRestMeshTime = System.nanoTime() - distalMeshStartTime;
-                            meshDistalParams.put("mesh_time", estimatedRestMeshTime / Math.pow(10, 6)); // convert nanos to millis
+                            distalMeshParams.put("mesh_time", estimatedRestMeshTime / Math.pow(10, 6)); // convert nanos to millis
 
                             // put nerve to mesh, rest to mesh, mesh to modelData
-                            JSONObject mesh = modelData.getJSONObject("mesh");
-                            mesh.put("proximal", proximalMeshParams);
+                            mesh.put("distal", distalMeshParams);
                             modelData.put("mesh", mesh);
+
+                            // Saved model post-mesh distal for debugging
+                            try {
+                                System.out.println("Saving MPH (post-distal mesh) file to: " + meshFile);
+                                model.save(meshFile);
+                            } catch (IOException e) {
+                                System.out.println("Failed to save geometry for Model Index " + modelStr + ", continuing " +
+                                        "to any remaining Models");
+                                e.printStackTrace();
+                                continue;
+                            }
+
+                            // break point "post_mesh_distal"
+                            if (break_points.getBoolean("post_mesh_distal")) {
+                                models_exit_status[model_index] = false;
+                                System.out.println("post_mesh_distal is the first break point encountered, moving on with next model index\n");
+                                continue;
+                            }
                         }
 
                         System.out.println("Saving mesh statistics.");
@@ -1448,28 +1508,13 @@ public class ModelWrapper {
                         meshStats.put("volume", volume);
                         meshStats.put("quality_measure", quality_measure);
 
-                        JSONObject mesh = modelData.getJSONObject("mesh");
                         mesh.put("proximal", proximalMeshParams);
                         mesh.put("stats", meshStats);
                         modelData.put("mesh", mesh);
 
+                        // TODO SAVE MODEL CONFIG HERE
+
                         System.out.println("DONE MESHING");
-
-                        // ensure that the path for mesh files can be created
-                        File meshPathFile = new File(meshPath);
-                        if (!meshPathFile.exists()) {
-                            boolean success = meshPathFile.mkdirs();
-                            assert success;
-                        }
-
-                        // ditto for ppims
-                        System.out.println("Creating PPIM dirs");
-                        String ppimPath = meshPath + "/ppim";
-                        File ppimPathFile = new File(ppimPath);
-                        if (!ppimPathFile.exists()) {
-                            boolean success = ppimPathFile.mkdirs();
-                            assert success;
-                        }
 
                         try {
                             // save mesh.mph
@@ -1481,15 +1526,7 @@ public class ModelWrapper {
                             e.printStackTrace();
                         }
 
-                        String imFile = String.join("/", new String[]{
-                                projectPath,
-                                "samples",
-                                sample,
-                                "models",
-                                modelStr,
-                                "mesh",
-                                "im.json"
-                        });
+                        String imFile = String.join("/", new String[]{projectPath, "samples", sample, "models", modelStr, "mesh", "im.json"});
 
                         // save IM !!!!
                         previousIM = IdentifierManager.fromJSONObject(new JSONObject(mw.im.toJSONObject().toString()));
@@ -1512,6 +1549,7 @@ public class ModelWrapper {
                             debug_geom_file.delete();
                             System.out.println("Successfully saved mesh.mph and ppim's, therefore deleted debug_geom.mph file.");
                         }
+
                     }
 
                     //////////////// START POST MESH
@@ -1603,6 +1641,24 @@ public class ModelWrapper {
                     fascicleMatLink.label(fascicleMatLinkLabel);
                     fascicleMatLink.set("link", mw.im.get("endoneurium"));
 
+                    // Saved model post_material_assign for debugging
+                    try {
+                        System.out.println("Saving MPH (post_material_assign) file to: " + meshFile);
+                        model.save(meshFile);
+                    } catch (IOException e) {
+                        System.out.println("Failed to save geometry for Model Index " + modelStr + ", continuing " +
+                                "to any remaining Models");
+                        e.printStackTrace();
+                        continue;
+                    }
+
+                    // break point "post_mesh_distal"
+                    if (break_points.getBoolean("post_material_assign")) {
+                        models_exit_status[model_index] = false;
+                        System.out.println("post_material_assign is the first break point encountered, moving on with next model index\n");
+                        continue;
+                    }
+
                     // Solve
                     JSONObject solver = modelData.getJSONObject("solver");
                     String version = ModelUtil.getComsolVersion(); //The getComsolVersion method returns the current COMSOL Multiphysics
@@ -1648,6 +1704,24 @@ public class ModelWrapper {
 
                     model.result("pg1").run();
                     model.result("pg1").set("data", "dset1");
+
+                    // Saved model pre_loop_currents for debugging
+                    try {
+                        System.out.println("Saving MPH (pre_loop_currents) file to: " + meshFile);
+                        model.save(meshFile);
+                    } catch (IOException e) {
+                        System.out.println("Failed to save geometry for Model Index " + modelStr + ", continuing " +
+                                "to any remaining Models");
+                        e.printStackTrace();
+                        continue;
+                    }
+
+                    // break point "post_mesh_distal"
+                    if (break_points.getBoolean("pre_loop_currents")) {
+                        models_exit_status[model_index] = false;
+                        System.out.println("pre_loop_currents is the first break point encountered, moving on with next model index\n");
+                        continue;
+                    }
 
                     mw.loopCurrents(modelData, projectPath, sample, modelStr);
 
@@ -1696,6 +1770,7 @@ public class ModelWrapper {
 
                 models_exit_status[model_index] = true;
             } catch (Exception e) {
+                System.out.println(e);
                 models_exit_status[model_index] = false;
                 System.out.println("Failed to mesh/solve/extract potentials for model " + models_list.get(model_index));
             }

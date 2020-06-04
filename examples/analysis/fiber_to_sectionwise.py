@@ -6,7 +6,7 @@ import re
 
 import numpy as np
 
-usage: str = 'USAGE: <[xyz]*> ./fiber_to_sectionwise <source_path.dat> <target_path.txt>\n' \
+usage: str = 'USAGE: ./fiber_to_sectionwise.py <[xyz]*> <source_path.dat> <target_path.txt>\n' \
              'notes: (1) xyz expr. is regex (2) must type ".dat" and ".txt" -- these are convention)'
 
 if len(sys.argv) != 4:
