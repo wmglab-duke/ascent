@@ -9,6 +9,20 @@
       "unit": "micrometer",
       "a": 0.03,
       "b": 0
+    },
+    "PIG_INHOUSE_200523": {
+      "unit": "micrometer",
+      "a": 0.02547,
+      "b": 3.440
+    }
+    ,"RAT_INHOUSE_200601": {
+      "unit": "micrometer",
+      "a": 0.01292,
+      "b": 1.367
+    },"HUMAN_INHOUSE_200601": {
+      "unit": "micrometer",
+      "a": 0.03702,
+      "b": 10.50
     }
   }
 }

@@ -65,13 +65,15 @@ class Runner(Exceptionable, Configurable):
         sims = self.search(Config.RUN, 'sims')
 
         sample_path = os.path.join(
+            os.getcwd(),
             'samples',
             str(sample),
             'sample.json'
         )
         validate_and_add(configs, 'sample', sample_path)
 
-        model_paths = [os.path.join('samples',
+        model_paths = [os.path.join(os.getcwd(),
+                                    'samples',
                                     str(sample),
                                     'models',
                                     str(model),
@@ -79,7 +81,8 @@ class Runner(Exceptionable, Configurable):
         for model_path in model_paths:
             validate_and_add(configs, 'models', model_path)
 
-        sim_paths = [os.path.join('config',
+        sim_paths = [os.path.join(os.getcwd(),
+                                  'config',
                                   'user',
                                   'sims',
                                   '{}.json'.format(sim)) for sim in sims]
@@ -108,6 +111,7 @@ class Runner(Exceptionable, Configurable):
         sample_num = self.configs[Config.RUN.value]['sample']
 
         sample_file = os.path.join(
+            os.getcwd(),
             'samples',
             str(sample_num),
             'sample.obj'
@@ -137,7 +141,7 @@ class Runner(Exceptionable, Configurable):
         # iterate through models
         if 'models' not in all_configs.keys():
             print('NO MODELS TO MAKE IN Config.RUN - killing process')
-            exit()
+            pass
         else:
             for model_index, model_config in enumerate(all_configs[Config.MODEL.value]):
                 model_num = self.configs[Config.RUN.value]['models'][model_index]
@@ -147,6 +151,7 @@ class Runner(Exceptionable, Configurable):
                 model_config = self.compute_cuff_shift(model_config, sample, all_configs[Config.SAMPLE.value][0])
 
                 model_config_file_name = os.path.join(
+                    os.getcwd(),
                     'samples',
                     str(sample_num),
                     'models',
@@ -166,6 +171,7 @@ class Runner(Exceptionable, Configurable):
                         sim_num = self.configs[Config.RUN.value]['sims'][sim_index]
                         print('        SIM {}'.format(self.configs[Config.RUN.value]['sims'][sim_index]))
                         sim_obj_dir = os.path.join(
+                            os.getcwd(),
                             'samples',
                             str(sample_num),
                             'models',
@@ -205,7 +211,7 @@ class Runner(Exceptionable, Configurable):
             if 'kill_pre_java' in self.search(Config.RUN).keys():
                 if self.search(Config.RUN, 'kill_pre_java'):
                     print('KILLING PRE JAVA')
-                    exit()
+                    pass
 
             # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials if necessary
             if 'models' in all_configs.keys() and 'sims' in all_configs.keys():
@@ -217,15 +223,20 @@ class Runner(Exceptionable, Configurable):
                 else:
                     print('\nSKIPPING JAVA - all required extracted potentials already exist\n')
 
+                self.remove(Config.RUN)
+                run_path = os.path.join('config', 'user', 'runs', '{}.json'.format(self.number))
+                self.add(SetupMode.NEW, Config.RUN, run_path)
+
                 #  continue by using simulation objects
-                model_exit_status = self.search(Config.RUN, "models_exit_status")
+                models_exit_status = self.search(Config.RUN, "models_exit_status")
 
                 for model_index, model_config in enumerate(all_configs[Config.MODEL.value]):
                     model_num = self.configs[Config.RUN.value]['models'][model_index]
-                    if model_exit_status[model_index]:
+                    if models_exit_status[model_index]:
                         for sim_index, sim_config in enumerate(all_configs['sims']):
                             sim_num = self.configs[Config.RUN.value]['sims'][sim_index]
                             sim_obj_path = os.path.join(
+                                os.getcwd(),
                                 'samples',
                                 str(self.configs[Config.RUN.value]['sample']),
                                 'models',
@@ -236,6 +247,7 @@ class Runner(Exceptionable, Configurable):
                             )
 
                             sim_dir = os.path.join(
+                                os.getcwd(),
                                 'samples',
                                 str(self.configs[Config.RUN.value]['sample']),
                                 'models',
@@ -268,7 +280,7 @@ class Runner(Exceptionable, Configurable):
                                   'Remember to copy both runs and n_sim folder to batch submission location.\n'
                                   'Also, ensure that batch.py and batch.sh versions '
                                   'in batch submission location are current.'.format(self.search(Config.ENV, 'nsim_export')))
-                    elif not model_exit_status[model_index]:
+                    elif not models_exit_status[model_index]:
                         print('\nDid not create NEURON simulations for Sims associated with: \n'
                               '\t Model Index: {} \n'
                               'since COMSOL failed to create required potentials. \n'.format(model_num))
@@ -352,7 +364,7 @@ class Runner(Exceptionable, Configurable):
         nerve_present: NerveMode = self.search_mode(NerveMode, Config.SAMPLE)
 
         # fetch cuff config
-        cuff_config: dict = self.load(os.path.join("config", "system", "cuffs", model_config['cuff']['preset']))
+        cuff_config: dict = self.load(os.path.join(os.getcwd(), "config", "system", "cuffs", model_config['cuff']['preset']))
 
         # fetch 1-2 letter code for cuff (ex: 'CT')
         cuff_code: str = cuff_config['code']

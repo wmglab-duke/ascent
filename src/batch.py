@@ -73,8 +73,8 @@ for run_number in sys.argv[1:]:
                         if os.path.exists(start_path):
                             raise Exception('start.slurm already exists (not expected) check path/implementation')
 
-                        stimamp_top = 10
-                        stimamp_bottom = 0.01
+                        stimamp_top = -10
+                        stimamp_bottom = -0.01
 
                         with open(start_path, 'w') as handle:
                             lines = [
@@ -102,7 +102,7 @@ for run_number in sys.argv[1:]:
                         print('\n{}'.format(job_name))
 
                         # TODO this will change for local running
-                        command = ' '.join([
+                        command = ' '.join([ 
                             'sbatch',
                             '--job-name={}'.format(job_name),
                             '--output={}'.format(os.path.join(out_dir, '{}{}'.format(master_fiber_name, '.log'))),
@@ -114,8 +114,11 @@ for run_number in sys.argv[1:]:
                         ])
                         os.system(command)
 
+                        # allow job to start
+                        time.sleep(2.0)
+
                         # remove start.slurm
                         os.remove(start_path)
 
                         # to not crash the scheduler
-                        time.sleep(1.0)
+                        time.sleep(2.0)

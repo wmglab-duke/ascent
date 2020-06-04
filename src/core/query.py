@@ -283,7 +283,7 @@ class Query(Exceptionable, Configurable, Saveable):
                  colorbar_mode: str = 'subplot',
                  save_path: str = None,
                  plot_outers: bool = False,
-                 colormap_str: str = 'viridis',
+                 colormap_str: str = 'coolwarm',
                  colorbar_text_size_override: int = None,
                  reverse_colormap: bool = True,
                  rows_override: int = None,
@@ -294,7 +294,8 @@ class Query(Exceptionable, Configurable, Saveable):
                  subplot_title_toggle: bool = True,
                  track_colormap_bounds_offset_ratio: float = 0.0,
                  tick_count: int = 2,
-                 tick_bounds: bool = False):
+                 tick_bounds: bool = False,
+                 show_orientation = True):
         """
         TODO: implement plot_mode and colorbar_mode (current implementation assumes single fiber and fills fascicle)
 
@@ -377,7 +378,7 @@ class Query(Exceptionable, Configurable, Saveable):
                     master_product_count = len(sim_object.master_product_indices)
                     rows = int(np.floor(np.sqrt(master_product_count))) if rows_override is None else rows_override
                     cols = int(np.ceil(master_product_count / rows))
-                    figure, axes = plt.subplots(rows, cols, constrained_layout=True)
+                    figure, axes = plt.subplots(rows, cols, constrained_layout=False, figsize=(25, 20))  # todo changed for ImThera (25, 20) for monopolar
                     axes = axes.reshape(-1)
 
                     # loop nsims
@@ -401,7 +402,7 @@ class Query(Exceptionable, Configurable, Saveable):
                             thresh_path = os.path.join(n_sim_dir, 'data', 'outputs',
                                                        'thresh_inner{}_fiber0.dat'.format(i))
                             if os.path.exists(thresh_path):
-                                thresholds.append(np.loadtxt(thresh_path)[2])
+                                thresholds.append(np.loadtxt(thresh_path))
                             else:
                                 missing_indices.append(i)
                                 print('MISSING: {}'.format(thresh_path))
@@ -454,13 +455,14 @@ class Query(Exceptionable, Configurable, Saveable):
                             # default title
                             title = '{} {}:{}'.format(title, wave_key_name, wave_key_value)
 
-                        if subplot_title_toggle:
-                            ax.set_title(title)
+                        if n < cols:  # todo added for ImThera
+                            if subplot_title_toggle:
+                                ax.set_title(title, fontsize=20)
 
                         # plot orientation point if applicable
-                        if orientation_point is not None:
+                        if orientation_point is not None and show_orientation is True:
                             # ax.plot(*tuple(slide.nerve.points[slide.orientation_point_index][:2]), 'b*')
-                            ax.plot(*orientation_point, 'r.', markersize=20)
+                            ax.plot(*orientation_point, '.', markersize=20, color='grey')
 
                         # plot slide (nerve and fascicles, defaulting to no outers)
                         sample_object.slides[0].plot(final=False, fix_aspect_ratio=True, fascicle_colors=colors,
@@ -480,9 +482,6 @@ class Query(Exceptionable, Configurable, Saveable):
                             aspect=colorbar_aspect if colorbar_aspect is not None else 20
                         )
 
-
-
-
                         # colorbar font size
                         if colorbar_text_size_override is not None:
                             cb.set_label(cb_label, fontsize=colorbar_text_size_override)
@@ -501,19 +500,19 @@ class Query(Exceptionable, Configurable, Saveable):
                             size='x-large'
                         )
 
-                    # plt.tight_layout()
+                    plt.tight_layout()
+
+                    # save figure as png
+                    if save_path is not None:
+                        if not os.path.exists(save_path):
+                            os.mkdir(save_path)
+                        dest = '{}{}{}_{}_{}.png'.format(save_path, os.sep, sample_index, model_index, sim_index)
+                        figure.savefig(dest, dpi=600)
+                        print('done')
 
                     # plot figure
                     if plot:
                         plt.show()
-
-                    # save figure as png
-                    if save_path is not None:
-                        plt.savefig(
-                            '{}{}{}_{}_{}.png'.format(
-                                save_path, os.sep, sample_index, model_index, sim_index
-                            ), dpi=400
-                        )
 
             if track_colormap_bounds:
                 print('BOUNDS:\n[')
@@ -671,7 +670,7 @@ class Query(Exceptionable, Configurable, Saveable):
                                                        'data',
                                                        'outputs',
                                                        'thresh_inner{}_fiber{}.dat'.format(inner, local_fiber_index))
-                            thresholds.append(np.loadtxt(thresh_path)[2])
+                            thresholds.append(np.loadtxt(thresh_path))
 
                     thresholds: np.ndarray = np.array(thresholds)
 
@@ -871,7 +870,7 @@ class Query(Exceptionable, Configurable, Saveable):
                                                        'data',
                                                        'outputs',
                                                        'thresh_inner{}_fiber{}.dat'.format(inner, local_fiber_index))
-                            thresholds.append(np.loadtxt(thresh_path)[2])
+                            thresholds.append(np.loadtxt(thresh_path))
 
                     thresholds: np.ndarray = np.array(thresholds)
 
@@ -1117,14 +1116,14 @@ class Query(Exceptionable, Configurable, Saveable):
                                                                                                local_fiber_index))
                                 # if exist, else print
                                 if os.path.exists(thresh_path):
-                                    thresholds.append(np.loadtxt(thresh_path)[2])
+                                    thresholds.append(np.loadtxt(thresh_path))
                                 else:
                                     print(thresh_path)
                     else:
                         thresholds.append(np.loadtxt(os.path.join(n_sim_dir,
                                                                   'data',
                                                                   'outputs',
-                                                                  'thresh_inner0_fiber0.dat'))[2])
+                                                                  'thresh_inner0_fiber0.dat')))
 
                     thresholds: np.ndarray = np.array(thresholds)
 
