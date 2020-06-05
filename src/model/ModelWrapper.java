@@ -1276,7 +1276,14 @@ public class ModelWrapper {
                         }
 
                         // break point "pre_geom_run"
-                        if (break_points.getBoolean("pre_geom_run")) {
+                        boolean pre_geom_run;
+                        if (break_points.has("pre_geom_run")) {
+                            pre_geom_run = break_points.getBoolean("pre_geom_run");
+                        } else {
+                            pre_geom_run = false;
+                        }
+
+                        if (pre_geom_run) {
                             models_exit_status[model_index] = false;
                             System.out.println("pre_geom_run is the first break point encountered, moving on with next model index\n");
                             continue;
@@ -1302,7 +1309,14 @@ public class ModelWrapper {
                         }
 
                         // break point "post_geom_run"
-                        if (break_points.getBoolean("post_geom_run")) {
+                        boolean post_geom_run;
+                        if (break_points.has("pre_geom_run")) {
+                            post_geom_run = break_points.getBoolean("post_geom_run");
+                        } else {
+                            post_geom_run = false;
+                        }
+
+                        if (post_geom_run) {
                             models_exit_status[model_index] = false;
                             System.out.println("post_geom_run is the first break point encountered, moving on with next model index\n");
                             continue;
@@ -1373,7 +1387,14 @@ public class ModelWrapper {
                         }
 
                         // break point "pre_mesh_proximal"
-                        if (break_points.getBoolean("pre_mesh_proximal")) {
+                        boolean pre_mesh_proximal;
+                        if (break_points.has("pre_mesh_proximal")) {
+                            pre_mesh_proximal = break_points.getBoolean("pre_mesh_proximal");
+                        } else {
+                            pre_mesh_proximal = false;
+                        }
+
+                        if (pre_mesh_proximal) {
                             models_exit_status[model_index] = false;
                             System.out.println("pre_mesh_proximal is the first break point encountered, moving on with next model index\n");
                             continue;
@@ -1406,7 +1427,14 @@ public class ModelWrapper {
                         TimeUnit.SECONDS.sleep(5);
 
                         // break point "post_mesh_proximal"
-                        if (break_points.getBoolean("post_mesh_proximal")) {
+                        boolean post_mesh_proximal;
+                        if (break_points.has("post_mesh_proximal")) {
+                            post_mesh_proximal = break_points.getBoolean("post_mesh_proximal");
+                        } else {
+                            post_mesh_proximal = false;
+                        }
+
+                        if (post_mesh_proximal) {
                             models_exit_status[model_index] = false;
                             System.out.println("post_mesh_proximal is the first break point encountered, moving on with next model index\n");
                             continue;
@@ -1453,7 +1481,14 @@ public class ModelWrapper {
                             }
 
                             // break point "pre_mesh_distal"
-                            if (break_points.getBoolean("pre_mesh_distal")) {
+                            boolean pre_mesh_distal;
+                            if (break_points.has("pre_mesh_distal")) {
+                                pre_mesh_distal = break_points.getBoolean("pre_mesh_distal");
+                            } else {
+                                pre_mesh_distal = false;
+                            }
+
+                            if (pre_mesh_distal) {
                                 models_exit_status[model_index] = false;
                                 System.out.println("pre_mesh_distal is the first break point encountered, moving on with next model index\n");
                                 continue;
@@ -1487,7 +1522,14 @@ public class ModelWrapper {
                             }
 
                             // break point "post_mesh_distal"
-                            if (break_points.getBoolean("post_mesh_distal")) {
+                            boolean post_mesh_distal;
+                            if (break_points.has("post_mesh_distal")) {
+                                post_mesh_distal = break_points.getBoolean("post_mesh_distal");
+                            } else {
+                                post_mesh_distal = false;
+                            }
+
+                            if (post_mesh_distal) {
                                 models_exit_status[model_index] = false;
                                 System.out.println("post_mesh_distal is the first break point encountered, moving on with next model index\n");
                                 continue;
@@ -1518,8 +1560,6 @@ public class ModelWrapper {
                         mesh.put("proximal", proximalMeshParams);
                         mesh.put("stats", meshStats);
                         modelData.put("mesh", mesh);
-
-                        // TODO SAVE MODEL CONFIG HERE
 
                         System.out.println("DONE MESHING");
 
@@ -1660,7 +1700,14 @@ public class ModelWrapper {
                     }
 
                     // break point "post_mesh_distal"
-                    if (break_points.getBoolean("post_material_assign")) {
+                    boolean post_material_assign;
+                    if (break_points.has("post_material_assign")) {
+                        post_material_assign = break_points.getBoolean("post_material_assign");
+                    } else {
+                        post_material_assign = false;
+                    }
+
+                    if (post_material_assign) {
                         models_exit_status[model_index] = false;
                         System.out.println("post_material_assign is the first break point encountered, moving on with next model index\n");
                         continue;
@@ -1724,7 +1771,14 @@ public class ModelWrapper {
                     }
 
                     // break point "post_mesh_distal"
-                    if (break_points.getBoolean("pre_loop_currents")) {
+                    boolean pre_loop_currents;
+                    if (break_points.has("pre_loop_currents")) {
+                        pre_loop_currents = break_points.getBoolean("pre_loop_currents");
+                    } else {
+                        pre_loop_currents = false;
+                    }
+
+                    if (pre_loop_currents) {
                         models_exit_status[model_index] = false;
                         System.out.println("pre_loop_currents is the first break point encountered, moving on with next model index\n");
                         continue;
