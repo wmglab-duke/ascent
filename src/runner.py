@@ -597,6 +597,14 @@ class Runner(Exceptionable, Configurable):
 
         TemplateOutput.write(model_config, dest_path)
 
+    def populate_env_vars(self):
+        if Config.ENV not in self.configs.keys():
+            self.throw(75)
+        
+        for key, value in self.configs[Config.ENV]:
+            assert type(value) is str
+            os.environ[key] = value
+
     # def smart_run(self):
     #
     #     print('\nStarting smart run.')
