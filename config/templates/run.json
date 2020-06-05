@@ -1,14 +1,24 @@
 {
-  "sample": 99,
+  "sample": 62,
   "models": [0],
-  "sims": [9],
-  "kill_pre_java": false,
+  "sims": [99],
   "recycle_meshes": true,
+  "break_points": {
+    "pre_java": false,
+    "pre_geom_run": false,
+    "post_geom_run": true,
+    "post_mesh_distal": false,
+    "pre_mesh_distal": false,
+    "post_material_assign": false,
+    "pre_loop_currents": false,
+    "none": true,
+    "pre_mesh_proximal": false,
+    "post_mesh_proximal": false
+  },
+  "models_exit_status": [true],
   "keep": {
     "bases": true,
     "debug_geom": true,
     "mesh": true
-  },
-  "break_point": "none",
-  "models_exit_status": [true]
+  }
 }

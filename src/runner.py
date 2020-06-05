@@ -106,6 +106,9 @@ class Runner(Exceptionable, Configurable):
         def load(path: str):
             return pickle.load(open(path, 'rb'))
 
+        if sum(self.search(Config.RUN, 'break_points').values()) > 1:
+            self.throw(75)
+
         potentials_exist: List[bool] = []  # if all of these are true, skip Java
 
         sample_num = self.configs[Config.RUN.value]['sample']
