@@ -25,3 +25,6 @@ def env_setup(env_path: str):
         file.truncate()  # remove any trailing characters from old file
     
     print('Success! Environment path variables updated.\n')
+
+if __name__ == "__main__":
+    env_setup(os.path.join('config', 'system', 'env.json'))
