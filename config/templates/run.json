@@ -11,7 +11,6 @@
     "pre_mesh_distal": false,
     "post_material_assign": false,
     "pre_loop_currents": false,
-    "none": true,
     "pre_mesh_proximal": false,
     "post_mesh_proximal": false
   },

@@ -1591,7 +1591,14 @@ public class ModelWrapper {
                         // save previous model config !!!!
                         previousModelData = modelData;
 
-                        if (!run.getJSONObject("keep").getBoolean("debug_geom")) {
+                        boolean keep_debug_geom;
+                        if (run.getJSONObject("keep").has("debug_geom")) {
+                            keep_debug_geom = run.getJSONObject("keep").getBoolean("debug_geom");
+                        } else {
+                            keep_debug_geom = false;
+                        }
+
+                        if (!keep_debug_geom) {
                             File debug_geom_file = new File(geomFile);
                             debug_geom_file.delete();
                             System.out.println("Successfully saved mesh.mph and ppim's, therefore deleted debug_geom.mph file.");
@@ -1788,7 +1795,14 @@ public class ModelWrapper {
 
                     ModelUtil.remove(model.tag());
 
-                    if (!run.getJSONObject("keep").getBoolean("mesh")) {
+                    boolean keep_mesh;
+                    if (run.getJSONObject("keep").has("mesh")) {
+                        keep_mesh = run.getJSONObject("keep").getBoolean("mesh");
+                    } else {
+                        keep_mesh = false;
+                    }
+
+                    if (!keep_mesh) {
                         File mesh_path = new File(meshPath);
                         deleteDir(mesh_path);
                         System.out.println("Successfully solved for /bases, therefore deleted /mesh directory.");
@@ -1823,7 +1837,14 @@ public class ModelWrapper {
                         model_path, "bases"
                 });
 
-                if (!run.getJSONObject("keep").getBoolean("bases")) {
+                boolean keep_bases;
+                if (run.getJSONObject("keep").has("bases")) {
+                    keep_bases = run.getJSONObject("keep").getBoolean("bases");
+                } else {
+                    keep_bases = false;
+                }
+
+                if (!keep_bases) {
                     File bases_path = new File(basesPath);
                     deleteDir(bases_path);
                     System.out.println("Successfully extracted potentials, therefore deleted /bases directory.");
