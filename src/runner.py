@@ -30,7 +30,7 @@ from quantiphy import Quantity
 
 from src.core import Sample, Simulation, Waveform
 from src.utils import Exceptionable, Configurable, SetupMode, Config, NerveMode, DownSampleMode, WriteMode, \
-    CuffShiftMode, PerineuriumResistivityMode, TemplateOutput
+    CuffShiftMode, PerineuriumResistivityMode, TemplateOutput, Env
 from shapely.geometry import Point
 
 
@@ -598,10 +598,12 @@ class Runner(Exceptionable, Configurable):
         TemplateOutput.write(model_config, dest_path)
 
     def populate_env_vars(self):
-        if Config.ENV not in self.configs.keys():
+        if Config.ENV.value not in self.configs.keys():
             self.throw(75)
-        
-        for key, value in self.configs[Config.ENV]:
+
+        for key in Env.vals.value:
+            value = self.search(Config.ENV, key)
+            print('KEY: {}\nVALUE: {}'.format(key, value))
             assert type(value) is str
             os.environ[key] = value
 
