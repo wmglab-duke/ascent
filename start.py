@@ -8,7 +8,7 @@ import sys
 # access
 from src.runner import Runner
 from src.utils.enums import SetupMode, Config
-from .env_setup import env_setup
+from env_setup import env_setup
 
 if __name__ == "__main__":
     # test

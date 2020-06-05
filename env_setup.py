@@ -15,10 +15,11 @@ def env_setup(env_path: str):
 
             if os.path.exists(value):
                 result[key] = value
+                break
             else:
                 print('Nonexistent path provided. Please try again.')
 
-    with open(env_path, 'r+') as file:
+    with open(env_path, 'w+') as file:
         file.seek(0)  # go to beginning of file to overwrite
         file.write(json.dumps(result))
         file.truncate()  # remove any trailing characters from old file
