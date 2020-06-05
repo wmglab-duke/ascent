@@ -30,7 +30,7 @@ from quantiphy import Quantity
 
 from src.core import Sample, Simulation, Waveform
 from src.utils import Exceptionable, Configurable, SetupMode, Config, NerveMode, DownSampleMode, WriteMode, \
-    CuffShiftMode, PerineuriumResistivityMode, TemplateOutput
+    CuffShiftMode, PerineuriumResistivityMode, TemplateOutput, Env
 from shapely.geometry import Point
 
 
@@ -266,20 +266,21 @@ class Runner(Exceptionable, Configurable):
                                 model_num,
                                 sim_num,
                                 sim_dir,
-                                self.search(Config.ENV, 'nsim_export')
+                                os.environ[Env.NSIM_EXPORT_PATH.value]
                             )
 
                             # ensure run configuration is present
                             Simulation.export_run(
                                 self.number,
-                                self.search(Config.ENV, 'project_path'),
-                                self.search(Config.ENV, 'nsim_export')
+                                os.environ[Env.PROJECT_PATH.value],
+                                os.environ[Env.NSIM_EXPORT_PATH.value]
                             )
 
-                            print('Exported runs/ and n_sims/ to {}\n'
-                                  'Remember to copy both runs and n_sim folder to batch submission location.\n'
-                                  'Also, ensure that batch.py and batch.sh versions '
-                                  'in batch submission location are current.'.format(self.search(Config.ENV, 'nsim_export')))
+                        print('Model {}: Exported runs/ and n_sims/ to {}\n'
+                                '\tRemember to copy both runs and n_sim folder to batch submission location.\n'
+                                '\tAlso, ensure that batch.py and batch.sh versions '
+                                '\tin batch submission location are current.'.format(model_num, os.environ[Env.NSIM_EXPORT_PATH.value]))
+
                     elif not models_exit_status[model_index]:
                         print('\nDid not create NEURON simulations for Sims associated with: \n'
                               '\t Model Index: {} \n'
@@ -292,9 +293,9 @@ class Runner(Exceptionable, Configurable):
                 print('\nNEURON Simulations NOT created since no Sim indices indicated in Config.SIM\n')
 
     def handoff(self, run_number: int):
-        comsol_path = self.search(Config.ENV, 'comsol_path')
-        jdk_path = self.search(Config.ENV, 'jdk_path')
-        project_path = self.search(Config.ENV, 'project_path')
+        comsol_path = os.environ[Env.COMSOL_PATH.value]
+        jdk_path = os.environ[Env.JDK_PATH.value]
+        project_path = os.environ[Env.PROJECT_PATH.value]
         run_path = os.path.join(project_path, 'config', 'user', 'runs', '{}.json'.format(run_number))
 
         core_name = 'ModelWrapper'
@@ -596,6 +597,15 @@ class Runner(Exceptionable, Configurable):
                                       'model.json')
 
         TemplateOutput.write(model_config, dest_path)
+
+    def populate_env_vars(self):
+        if Config.ENV.value not in self.configs.keys():
+            self.throw(75)
+
+        for key in Env.vals.value:
+            value = self.search(Config.ENV, key)
+            assert type(value) is str
+            os.environ[key] = value
 
     # def smart_run(self):
     #

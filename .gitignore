@@ -1,5 +1,6 @@
 
-# copied from https://github.com/github/gitignore/blob/master/Python.gitignore
+# built upon https://github.com/github/gitignore/blob/master/Python.gitignore
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -126,8 +127,9 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# PyCharm specific
+# IDE
 .idea/
+.vscode/
 
 # don't include data b/c this may get pretty big at some point
 samples/
@@ -135,7 +137,7 @@ submit/
 input/
 */user/*
 
-#samples
+# samples
 *r.tif
 *.mph*
 *.class*
@@ -147,9 +149,11 @@ src/neuron/MOD_Files/x86_64/
 src/neuron/MOD_Files/*.c
 src/neuron/MOD_Files/*.o
 
+# temp files
 ~$master_index_key.xlsx
-
-config/system/cuffs/ImThera.json
 *.py~
+
+# not for distribution
+config/system/cuffs/ImThera.json
 master_index_key.xlsx
 200511_figures/

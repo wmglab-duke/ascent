@@ -35,6 +35,21 @@ class Object(Enum):
     SAMPLE = 'sample'
     SIMULATION = 'sim'
 
+@unique
+class Env(Enum):
+    prefix = 'ASCENT_'
+    
+    COMSOL_PATH = prefix + 'COMSOL_PATH'
+    JDK_PATH = prefix + 'JDK_PATH'
+    PROJECT_PATH = prefix + 'PROJECT_PATH'
+    NSIM_EXPORT_PATH = prefix + 'NSIM_EXPORT_PATH'
+
+    vals = [
+        COMSOL_PATH,
+        JDK_PATH,
+        PROJECT_PATH,
+        NSIM_EXPORT_PATH
+    ]
 # %% Trace functionality
 
 @unique
