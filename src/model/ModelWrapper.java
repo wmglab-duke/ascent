@@ -1047,7 +1047,14 @@ public class ModelWrapper {
                     }
 
                     // if optimizing
-                    if ((Boolean) run.get("recycle_meshes")) {
+                    boolean recycle_meshes;
+                    if (run.has("recycle_meshes")) {
+                        recycle_meshes = run.getBoolean("recycle_meshes");
+                    } else {
+                        recycle_meshes = false;
+                    }
+
+                    if (recycle_meshes) {
                         System.out.println("Entering mesh recycling logic.");
                         try {
                             // if prev is not null AND prev is mesh match:
