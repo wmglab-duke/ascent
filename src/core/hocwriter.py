@@ -154,7 +154,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                 block_thresh_flag = NeuronRunMode.BLOCK_THRESHOLD.value
 
             threshold: dict = self.search(Config.SIM, "protocol", "threshold")
-            file_object.write("\nap_thresh = %0.0f\n" % threshold.get("value"))
+            file_object.write("\nap_thresh = %0.4f\n" % threshold.get("value"))
             file_object.write("N_minAPs  = %0.0f\n" % threshold.get("n_min_aps"))
 
             bounds_search_mode_name: str = self.search(Config.SIM, "protocol", "bounds_search", "mode")
@@ -162,11 +162,11 @@ class HocWriter(Exceptionable, Configurable, Saveable):
             if bounds_search_mode == SearchAmplitudeIncrementMode.PERCENT_INCREMENT:
                 increment_flag = SearchAmplitudeIncrementMode.PERCENT_INCREMENT.value
                 step: float = self.search(Config.SIM, "protocol", "bounds_search", "relative_step")
-                file_object.write("\nrel_increment = %0.2f\n" % step)
+                file_object.write("\nrel_increment = %0.4f\n" % step)
             elif bounds_search_mode == SearchAmplitudeIncrementMode.ABSOLUTE_INCREMENT:
                 increment_flag = SearchAmplitudeIncrementMode.ABSOLUTE_INCREMENT.value
                 step: float = self.search(Config.SIM, "protocol", "bounds_search", "step")
-                file_object.write("\nabs_increment = %0.2f\n" % step)
+                file_object.write("\nabs_increment = %0.4f\n" % step)
             file_object.write("increment_flag = %0.0f // \n" % increment_flag)
 
             termination_criteria_mode_name: str = self.search(Config.SIM, "protocol", "termination_criteria", "mode")
@@ -174,14 +174,14 @@ class HocWriter(Exceptionable, Configurable, Saveable):
             if termination_criteria_mode == TerminationCriteriaMode.ABSOLUTE_DIFFERENCE:
                 termination_flag = TerminationCriteriaMode.ABSOLUTE_DIFFERENCE.value
                 res: float = self.search(Config.SIM, "protocol", "termination_criteria", "tolerance")
-                file_object.write("\nabs_thresh_resoln = %0.2f\n" % res)
+                file_object.write("\nabs_thresh_resoln = %0.4f\n" % res)
             elif termination_criteria_mode == TerminationCriteriaMode.RELATIVE_DIFFERENCE:
                 termination_flag = TerminationCriteriaMode.RELATIVE_DIFFERENCE.value
                 res: float = self.search(Config.SIM, "protocol", "termination_criteria", "percent")
-                file_object.write("\nrel_thresh_resoln = %0.2f\n" % res)
+                file_object.write("\nrel_thresh_resoln = %0.4f\n" % res)
             file_object.write("termination_flag = %0.0f // \n" % termination_flag)
 
-        elif protocol_mode_name == NeuronRunMode.FINITE_AMPLITUDES.value:
+        elif protocol_mode == NeuronRunMode.FINITE_AMPLITUDES:
             find_thresh = 0
             block_thresh_flag = 0
 
@@ -194,29 +194,15 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                           "to find block thresholds instead of activation threshold\n"
                           % block_thresh_flag)
 
-        num_inners = n_inners
-        amps = [0]
+        amps = self.search(Config.SIM, "protocol", "amplitudes", "value")
         num_amps = len(amps)
-        freqs = [self.search(Config.MODEL, "frequency", "value")/1000]
-        num_freqs = len(freqs)
-
-        file_object.write("\nNmodels    = %0.0f\n" % 1)
-        file_object.write("Ninners    = %0.0f\n" % num_inners)
-        file_object.write("Namp     = %0.0f\n" % num_amps)
-        file_object.write("Nfreq    = %0.0f\n" % num_freqs)
-
-        # TODO - flag_whichstim = 0 (for all), flag_extracellular_stim = 1 (for all)
 
         file_object.write("\n//***************** Batching Parameters **********\n")
-        file_object.write("\nobjref stimamp_values\n")
+        file_object.write("Namp = %0.0f\n" % num_amps)
+        file_object.write("objref stimamp_values\n")
         file_object.write("stimamp_values = new Vector(Namp,%0.0f)\n" % 0)
-        for amp in range(len(amps)):
-            file_object.write("stimamp_values.x[%0.0f] = %0.0f\n" % (amp, 0))
-
-        file_object.write("\nobjref Vefreq_values\n")
-        file_object.write("Vefreq_values = new Vector(Nfreq,%0.0f)\n" % 0)
-        for freq in range(len(freqs)):
-            file_object.write("Vefreq_values.x[%0.0f] = %0.0f\n" % (freq, 0))
+        for amp_ind in range(num_amps):
+            file_object.write("stimamp_values.x[%0.0f] = %0.4f\n" % (amp_ind, amps[amp_ind]))
 
         file_object.write("\nload_file(\"../../HOC_Files/Wrapper.hoc\")\n")
 

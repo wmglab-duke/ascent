@@ -318,11 +318,8 @@ proc run_all(){local myinner, myfiber, myfreq, myamp, mypw, myisi
 
 // ***************************************************************************
 
-Namp = 1
-objref stimamp_values
-if (find_thresh == 1) { Namp = 1 } // stimamp_values isn't used when finding thresh
-stimamp_values = new Vector(Namp,0)
-stimamp_values.x[0] = 1
+Nmodels    = 1
+Ninners    = 1
 
 Nfreq = 1
 objref Vefreq_values

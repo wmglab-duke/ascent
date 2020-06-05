@@ -141,17 +141,22 @@ proc RunSim() {local myamp
 				N_APs = 1    
 			}
 		} else if (find_block_thresh == 0) {
-			for node_ind=0, axonnodes-1 {
+			node_ind = checknode_values.x[2]
+			if (apc[node_ind].n >= N_APs) {
+				N_APs = apc[node_ind].n			// Detected an action potential
+			}
+
+			//for node_ind=0, axonnodes-1 {
 				// Find the max # of APs at any give node
-				if (apc[node_ind].n >= N_APs) {
-					N_APs = apc[node_ind].n			// Detected an action potential
-				}
+				//if (apc[node_ind].n >= N_APs) {
+				//	N_APs = apc[node_ind].n			// Detected an action potential
+				//}
 				/*
 				if (apc[node_ind].n >= N_minAPs) {
 					check_AP = 1			// Detected an action potential
 				}
 				*/
-			}
+			//}
 		}
 	}
 }
