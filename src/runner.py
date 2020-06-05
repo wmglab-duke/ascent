@@ -208,8 +208,8 @@ class Runner(Exceptionable, Configurable):
 
                             potentials_exist.append(simulation.potentials_exist(sim_obj_dir))
 
-            if 'kill_pre_java' in self.search(Config.RUN).keys():
-                if self.search(Config.RUN, 'kill_pre_java'):
+            if 'pre_java' in self.search(Config.RUN, 'break_points').keys():
+                if self.search(Config.RUN, 'break_points', 'pre_java'):
                     print('KILLING PRE JAVA')
                     pass
 
