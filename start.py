@@ -8,6 +8,7 @@ import sys
 # access
 from src.runner import Runner
 from src.utils.enums import SetupMode, Config
+from .env_setup import env_setup
 
 if __name__ == "__main__":
     # test
@@ -44,11 +45,12 @@ if __name__ == "__main__":
 
         run_path = os.path.join('config', 'user', 'runs', '{}.json'.format(argument))
         if not os.path.exists(run_path):
-            print('INVALID run configuration path: {}'.format(run_path))
+            print('Invalid run configuration path: {}'.format(run_path))
 
         env_path = os.path.join('config', 'system', 'env.json')
         if not os.path.exists(env_path):
-            print('INVALID env configuration path: {}'.format(env_path))
+            print('Missing env configuration file: {}'.format(env_path))
+            env_setup(env_path)
 
         # initialize Runner (loads in parameters)
         runner = Runner(int(argument))

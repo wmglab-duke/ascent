@@ -604,7 +604,6 @@ class Runner(Exceptionable, Configurable):
 
         for key in Env.vals.value:
             value = self.search(Config.ENV, key)
-            print('KEY: {}\nVALUE: {}'.format(key, value))
             assert type(value) is str
             os.environ[key] = value
 
