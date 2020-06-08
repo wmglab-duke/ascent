@@ -413,7 +413,7 @@ class Runner(Exceptionable, Configurable):
         theta_i = cuff_config.get('angle_to_contacts_deg') * 2 * np.pi / 360
 
         # fetch cuff rotation mode
-        # cuff_rotation_mode: CuffRotationMode = self.search_mode(CuffRotationMode, Config.MODEL)
+        # cuff_rotation: CuffRotationMode = self.search_mode(CuffRotationMode, Config.MODEL)
 
         # fetch boolean for cuff expandability
         expandable: bool = cuff_config['expandable']
@@ -446,10 +446,10 @@ class Runner(Exceptionable, Configurable):
                 scale='um'
             ).real  # [um] (scaled from any arbitrary length unit)
 
-            # if cuff_rotation_mode == CuffRotationMode.MANUAL:
+            # if cuff_rotation == CuffRotationMode.MANUAL:
             #     theta_f = 0
             #
-            # else:  # cuff_rotation_mode == CuffRotationMode.AUTOMATIC
+            # else:  # cuff_rotation == CuffRotationMode.AUTOMATIC
             if r_i < r_f:
                 theta_f = 0.5 * ((r_f / r_i) * theta_i - theta_i)
                 # OLD theta_f = (r_f / r_i - 1) * theta_i

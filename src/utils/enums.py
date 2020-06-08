@@ -216,11 +216,13 @@ class PerineuriumThicknessMode(Enum):
     PIG_INHOUSE = 1
     MEASURED = 3
     PIG_INHOUSE_200523 = 4
+    RAT_INHOUSE_200601 = 5
+    HUMAN_INHOUSE_200601 = 6
 
 
 @unique
 class PerineuriumResistivityMode(Enum):
-    config = 'rho_perineurium_method'
+    config = 'rho_perineurium'
 
     RHO_WEERASURIYA = 'RHO_WEERASURIYA'
 
@@ -248,7 +250,7 @@ class CuffMode(Enum):
 
 
 class CuffRotationMode(Enum):
-    config = 'cuff_rotation_mode'
+    config = 'cuff_rotation'
     AUTOMATIC = True
     MANUAL = False
 

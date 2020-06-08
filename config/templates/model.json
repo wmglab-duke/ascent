@@ -1,21 +1,12 @@
 {
   "modes": {
-    "rho_perineurium_method": "RHO_WEERASURIYA",
+    "rho_perineurium": "RHO_WEERASURIYA",
     "cuff_rotation_mode": "AUTOMATIC",
     "cuff_shift_mode": "MIN_CIRCLE_BOUNDARY",
     "fiber_z": "EXTRUSION",
     "use_ci": true
   },
-  "solution": {
-    "time_units": "ms",
-    "sol_time": 69.376554
-  },
-  "temperature": {
-    "unit": "celsius",
-    "value": 37
-  },
   "medium": {
-    "unit": "[micrometer]",
     "distal": {
       "exist": true,
       "distant_ground": true,
@@ -41,29 +32,27 @@
       "pos_ang": 13.990590613341357
     },
     "shift": {
-      "unit": "[micrometer]",
       "x": -2.984035600398961,
       "y": 1.20619872660847,
       "z": 0
     },
     "preset": "Purdue.json"
   },
-  "conductivities": {
-    "recess": "saline",
-    "perineurium": {
-      "unit": "[S/m]",
-      "label": "RHO_WEERASURIYA @ 1 Hz",
-      "value": "0.0008703220191470844"
-    },
-    "medium": "muscle",
-    "fill": "saline",
-    "insulator": "silicone",
-    "conductor": "platinum",
-    "endoneurium": "endoneurium",
-    "epineurium": "epineurium"
-  },
   "min_radius_enclosing_circle": 237.44249404941704,
   "mesh": {
+    "proximal": {
+      "mesh_time": 0,
+      "time_units": "ms",
+      "hcurve": 0.2,
+      "hmin": 10,
+      "hnarrow": 1,
+      "type": {
+        "im": "ftet",
+        "name": "FreeTet"
+      },
+      "hmax": 1600,
+      "hgrad": 2.2
+    },
     "distal": {
       "mesh_time": 0,
       "time_units": "ms",
@@ -84,28 +73,37 @@
       "quality_measure": "vollength",
       "number_elements": 0,
       "mean_quality": 0
-    },
-    "proximal": {
-      "mesh_time": 0,
-      "time_units": "ms",
-      "hcurve": 0.2,
-      "hmin": 10,
-      "hnarrow": 1,
-      "type": {
-        "im": "ftet",
-        "name": "FreeTet"
-      },
-      "hmax": 1600,
-      "hgrad": 2.2
     }
+  },
+  "frequency": {
+    "unit": "Hz",
+    "value": 1
+  },
+  "temperature": {
+    "unit": "celsius",
+    "value": 37
+  },
+  "conductivities": {
+    "recess": "saline",
+    "perineurium": {
+      "unit": "[S/m]",
+      "label": "RHO_WEERASURIYA @ 1 Hz",
+      "value": "0.0008703220191470844"
+    },
+    "medium": "muscle",
+    "fill": "saline",
+    "insulator": "silicone",
+    "conductor": "platinum",
+    "endoneurium": "endoneurium",
+    "epineurium": "epineurium"
   },
   "solver": {
     "sorder": "quadratic",
     "shape_order": 2,
     "name": "COMSOL Multiphysics 5.4 (Build: 388)"
   },
-  "frequency": {
-    "unit": "Hz",
-    "value": 1
+  "solution": {
+    "time_units": "ms",
+    "sol_time": 69.376554
   }
 }
