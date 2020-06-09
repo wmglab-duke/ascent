@@ -93,7 +93,6 @@ class Runner(Exceptionable, Configurable):
 
     def run(self, smart: bool = True):
         """
-
         :param smart:
         :return:
         """
@@ -105,6 +104,9 @@ class Runner(Exceptionable, Configurable):
 
         def load(path: str):
             return pickle.load(open(path, 'rb'))
+
+        # ensure NEURON files exist in export location
+        Simulation.export_neuron_files(Env.NSIM_EXPORT_PATH.value)
 
         potentials_exist: List[bool] = []  # if all of these are true, skip Java
 

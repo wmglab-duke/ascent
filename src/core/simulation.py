@@ -6,6 +6,7 @@ from typing import Tuple, List
 
 import itertools
 import shutil
+import distutils.dir_util as du
 
 import numpy as np
 
@@ -392,7 +393,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
     @staticmethod
     def export_neuron_files(target: str):
         neuron_dir = os.path.join(os.environ[Env.PROJECT_PATH.value], 'src', 'neuron')
-        shutil.copytree(neuron_dir, target)
+        du.copy_tree(neuron_dir, target)
 
     @staticmethod
     def import_n_sims(sample: int, model: int, sim: int, sim_dir: str, source: str):
