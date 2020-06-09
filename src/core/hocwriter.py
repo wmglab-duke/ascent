@@ -152,7 +152,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                 },
                 "termination_criteria": {
                     "mode": "RELATIVE_DIFFERENCE",
-                    "percent": 0.1
+                    "percent": 0.01
                 },
                 "threshold": {
                     "thresh_flag": 1,
