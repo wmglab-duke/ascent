@@ -152,6 +152,7 @@ src/neuron/MOD_Files/*.o
 # temp files
 ~$master_index_key.xlsx
 *.py~
+*~
 
 # not for distribution
 config/system/cuffs/ImThera.json
