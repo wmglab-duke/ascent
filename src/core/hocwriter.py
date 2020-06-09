@@ -143,6 +143,26 @@ class HocWriter(Exceptionable, Configurable, Saveable):
 
         file_object.write("\n//***************** Protocol Parameters *********\n")
 
+        if 'protocol' not in self.configs[Config.SIM.value].keys():
+            self.configs[Config.SIM.value]['protocol'] = {
+                "mode": "ACTIVATION_THRESHOLD",
+                "bounds_search": {
+                    "mode": "PERCENT_INCREMENT",
+                    "relative_step": 0.1
+                },
+                "termination_criteria": {
+                    "mode": "RELATIVE_DIFFERENCE",
+                    "percent": 0.01
+                },
+                "threshold": {
+                    "thresh_flag": 1,
+                    "block_thresh": 0,
+                    "resolution": 0.01,
+                    "value": -30,
+                    "n_min_aps": 1
+                }
+            }
+        
         protocol_mode_name: str = self.search(Config.SIM, 'protocol', 'mode')
         protocol_mode: NeuronRunMode = [mode for mode in NeuronRunMode if str(mode).split('.')[-1] == protocol_mode_name][0]
 
@@ -181,9 +201,24 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                 file_object.write("\nrel_thresh_resoln = %0.4f\n" % res)
             file_object.write("termination_flag = %0.0f // \n" % termination_flag)
 
+            file_object.write("Namp = %0.0f\n" % 1)
+            file_object.write("objref stimamp_values\n")
+            file_object.write("stimamp_values = new Vector(Namp,%0.0f)\n" % 0)
+            for amp_ind in range(1):
+                file_object.write("stimamp_values.x[%0.0f] = %0.4f\n" % (amp_ind, 0))
+
+
         elif protocol_mode == NeuronRunMode.FINITE_AMPLITUDES:
             find_thresh = 0
             block_thresh_flag = 0
+            amps = self.search(Config.SIM, "protocol", "amplitudes", "value")
+            num_amps = len(amps)
+            file_object.write("\n//***************** Batching Parameters **********\n")
+            file_object.write("Namp = %0.0f\n" % num_amps)
+            file_object.write("objref stimamp_values\n")
+            file_object.write("stimamp_values = new Vector(Namp,%0.0f)\n" % 0)
+            for amp_ind in range(num_amps):
+                file_object.write("stimamp_values.x[%0.0f] = %0.4f\n" % (amp_ind, amps[amp_ind]))
 
         file_object.write("\nfind_thresh = %0.0f "
                           "// find_thresh = 0 if not doing threshold search; "
@@ -194,16 +229,6 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                           "to find block thresholds instead of activation threshold\n"
                           % block_thresh_flag)
 
-        amps = self.search(Config.SIM, "protocol", "amplitudes", "value")
-        num_amps = len(amps)
-
-        file_object.write("\n//***************** Batching Parameters **********\n")
-        file_object.write("Namp = %0.0f\n" % num_amps)
-        file_object.write("objref stimamp_values\n")
-        file_object.write("stimamp_values = new Vector(Namp,%0.0f)\n" % 0)
-        for amp_ind in range(num_amps):
-            file_object.write("stimamp_values.x[%0.0f] = %0.4f\n" % (amp_ind, amps[amp_ind]))
-
         file_object.write("\nload_file(\"../../HOC_Files/Wrapper.hoc\")\n")
-
+        
         file_object.close()

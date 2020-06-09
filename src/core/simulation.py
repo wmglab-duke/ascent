@@ -6,6 +6,7 @@ from typing import Tuple, List
 
 import itertools
 import shutil
+import distutils.dir_util as du
 
 import numpy as np
 
@@ -13,7 +14,7 @@ from .hocwriter import HocWriter
 from .fiberset import FiberSet
 from .waveform import Waveform
 from src.core import Sample
-from src.utils import Exceptionable, Configurable, Saveable, SetupMode, Config, WriteMode, FiberXYMode
+from src.utils import Exceptionable, Configurable, Saveable, SetupMode, Config, WriteMode, FiberXYMode, Env
 
 
 class Simulation(Exceptionable, Configurable, Saveable):
@@ -388,6 +389,11 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 os.path.join(sim_dir, product_index),
                 sim_export_base + product_index
             )
+
+    @staticmethod
+    def export_neuron_files(target: str):
+        neuron_dir = os.path.join(os.environ[Env.PROJECT_PATH.value], 'src', 'neuron')
+        du.copy_tree(neuron_dir, target)
 
     @staticmethod
     def import_n_sims(sample: int, model: int, sim: int, sim_dir: str, source: str):

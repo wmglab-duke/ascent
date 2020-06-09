@@ -93,7 +93,6 @@ class Runner(Exceptionable, Configurable):
 
     def run(self, smart: bool = True):
         """
-
         :param smart:
         :return:
         """
@@ -105,6 +104,9 @@ class Runner(Exceptionable, Configurable):
 
         def load(path: str):
             return pickle.load(open(path, 'rb'))
+
+        # ensure NEURON files exist in export location
+        Simulation.export_neuron_files(os.environ[Env.NSIM_EXPORT_PATH.value])
 
         if sum(self.search(Config.RUN, 'break_points').values()) > 1:
             self.throw(76)
@@ -211,7 +213,9 @@ class Runner(Exceptionable, Configurable):
 
                             potentials_exist.append(simulation.potentials_exist(sim_obj_dir))
 
-            if 'pre_java' in self.search(Config.RUN, 'break_points').keys():
+            # FIXME: sloppy fix to requirement of breakpoints in Runner
+            # possibly change design later on? see comment at top of src.model.ModelWrapper.main
+            if ('break_points' in self.configs.keys()) and ('pre_java' in self.search(Config.RUN, 'break_points').keys()):
                 if self.search(Config.RUN, 'break_points', 'pre_java'):
                     print('KILLING PRE JAVA')
                     pass
@@ -235,7 +239,9 @@ class Runner(Exceptionable, Configurable):
 
                 for model_index, model_config in enumerate(all_configs[Config.MODEL.value]):
                     model_num = self.configs[Config.RUN.value]['models'][model_index]
-                    if models_exit_status[model_index]:
+                    # TODO: currently bypassing model exit status if nonexistant (ran with old code)
+                    #       at some point, reevaluate if this is best choice?
+                    if (models_exit_status[model_index] if models_exit_status is not None else True):
                         for sim_index, sim_config in enumerate(all_configs['sims']):
                             sim_num = self.configs[Config.RUN.value]['sims'][sim_index]
                             sim_obj_path = os.path.join(

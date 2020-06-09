@@ -14,7 +14,7 @@ if __name__ == "__main__":
     # test
     if not (sys.version_info.major == 3 and sys.version_info.minor >= 7):
         print('You are running Python {}.{}, but 3.7 or later required'.format(sys.version_info.major,
-                                                                            sys.version_info.minor))
+                                                                               sys.version_info.minor))
         exit(1)
 
     if len(sys.argv) == 1:
