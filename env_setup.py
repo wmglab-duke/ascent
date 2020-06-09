@@ -21,7 +21,7 @@ def env_setup(env_path: str):
 
     with open(env_path, 'w+') as file:
         file.seek(0)  # go to beginning of file to overwrite
-        file.write(json.dumps(result))
+        file.write(json.dumps(result, indent=2))
         file.truncate()  # remove any trailing characters from old file
     
     print('Success! Environment path variables updated.\n')
