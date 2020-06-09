@@ -106,7 +106,7 @@ class Runner(Exceptionable, Configurable):
             return pickle.load(open(path, 'rb'))
 
         # ensure NEURON files exist in export location
-        Simulation.export_neuron_files(Env.NSIM_EXPORT_PATH.value)
+        Simulation.export_neuron_files(os.environ[Env.NSIM_EXPORT_PATH.value])
 
         potentials_exist: List[bool] = []  # if all of these are true, skip Java
 
@@ -210,7 +210,9 @@ class Runner(Exceptionable, Configurable):
 
                             potentials_exist.append(simulation.potentials_exist(sim_obj_dir))
 
-            if 'pre_java' in self.search(Config.RUN, 'break_points').keys():
+            # FIXME: sloppy fix to requirement of breakpoints in Runner
+            # possibly change design later on? see comment at top of src.model.ModelWrapper.main
+            if ('break_points' in self.configs.keys()) and ('pre_java' in self.search(Config.RUN, 'break_points').keys()):
                 if self.search(Config.RUN, 'break_points', 'pre_java'):
                     print('KILLING PRE JAVA')
                     pass

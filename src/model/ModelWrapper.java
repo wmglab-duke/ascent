@@ -4,6 +4,7 @@ import com.comsol.model.*;
 import com.comsol.model.physics.PhysicsFeature;
 import com.comsol.model.util.ModelUtil;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.*;
@@ -981,7 +982,27 @@ public class ModelWrapper {
             e.printStackTrace();
         }
         JSONArray models_list = run.getJSONArray("models"); // get array of COMSOL models
-        JSONObject break_points = run.getJSONObject("break_points");
+        JSONObject break_points;
+        try {
+            break_points = run.getJSONObject("break_points");   
+        } catch(JSONException e) {
+            // FIXME: this is a sloppy fix for now
+            // maybe change design of break points to use a JSON config so these don't need to be hard-coded
+            break_points = new JSONObject();
+            String[] keysToPopulate = {
+                "pre_geom_run",
+                "post_geom_run",
+                "pre_mesh_proximal",
+                "post_mesh_proximal",
+                "pre_mesh_distal",
+                "post_mesh_distal",
+                "post_material_assign",
+                "pre_loop_currents"
+            };
+            for (String keyToPopulate: keysToPopulate) {
+                break_points.put(keyToPopulate, false);
+            }
+        }
 
         // Load SAMPLE configuration data
         String sample = String.valueOf(Objects.requireNonNull(run).getInt("sample"));
