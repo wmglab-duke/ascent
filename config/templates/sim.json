@@ -67,12 +67,12 @@
     "ind": 2
   },
   "save_flags": {
-    "vm_time": 0,
-    "gating_time": 0,
-    "vm_space": 0,
-    "gating_space": 0,
-    "ve": 0,
-    "istim": 0
+    "vm_time": false,
+    "gating_time": false,
+    "vm_space": false,
+    "gating_space": false,
+    "ve": false,
+    "istim": false
   },
   "threshold": {
     "thresh_flag": 1,
@@ -83,9 +83,5 @@
       "value": -30
     },
     "n_min_aps": 1
-  },
-  "terminal_nodes": {
-    "node_channels": true,
-    "passive_end_nodes": true
   }
 }
