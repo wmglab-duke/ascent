@@ -2424,7 +2424,7 @@ class Part {
                     "0", "0", "sigma_" + function + "_z"
             });
         } else {
-            String unit = sigma.getString("unit");
+            String unit = "[S/m]";
             materialParams.set("sigma_" + function, "(" + entry + ")" + " " + unit, materialDescription);
             model.material(materialID).propertyGroup("def").set("electricconductivity", "sigma_" + function);
         }

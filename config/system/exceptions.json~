@@ -376,12 +376,12 @@
   },
   {
     "code": 75,
+<<<<<<< HEAD
     "text": "Missing environment variables configuration",
     "source": "src.Runner.populate_env_vars"
-  },
-  {
-    "code": 76,
+=======
     "text": "More than one break point indicated in Config.Run",
     "source": "src.core.Runner.run"
+>>>>>>> run_config_refactor
   }
 ]

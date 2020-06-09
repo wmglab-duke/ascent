@@ -37,8 +37,7 @@ class Waveform(Exceptionable, Configurable, Saveable):
             self.start = \
             self.on = \
             self.off = \
-            self.stop = \
-            self.unit = None
+            self.stop = None
 
         self.wave: np.ndarray = None
 
@@ -61,13 +60,11 @@ class Waveform(Exceptionable, Configurable, Saveable):
             self.start, \
             self.on, \
             self.off, \
-            self.stop, \
-            self.unit = [global_parameters.get(key) for key in ['dt',
+            self.stop = [global_parameters.get(key) for key in ['dt',
                                                                 'start',
                                                                 'on',
                                                                 'off',
-                                                                'stop',
-                                                                'unit']]
+                                                                'stop']]
 
         self.validate_times()
 

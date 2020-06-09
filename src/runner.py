@@ -108,6 +108,9 @@ class Runner(Exceptionable, Configurable):
         # ensure NEURON files exist in export location
         Simulation.export_neuron_files(os.environ[Env.NSIM_EXPORT_PATH.value])
 
+        if sum(self.search(Config.RUN, 'break_points').values()) > 1:
+            self.throw(76)
+
         potentials_exist: List[bool] = []  # if all of these are true, skip Java
 
         sample_num = self.configs[Config.RUN.value]['sample']
@@ -408,7 +411,7 @@ class Runner(Exceptionable, Configurable):
         reference_x = reference_y = 0.0
         if not slide.monofasc():
             reference_x, reference_y = slide.fascicle_centroid()
-        theta_c = np.arctan2(y - reference_y, x - reference_x)  # TODO cool up to here
+        theta_c = np.arctan2(y - reference_y, x - reference_x)
 
         # calculate final necessary radius by adding buffer
         r_f = r_bound + cuff_r_buffer
@@ -417,7 +420,7 @@ class Runner(Exceptionable, Configurable):
         theta_i = cuff_config.get('angle_to_contacts_deg') * 2 * np.pi / 360
 
         # fetch cuff rotation mode
-        # cuff_rotation_mode: CuffRotationMode = self.search_mode(CuffRotationMode, Config.MODEL)
+        # cuff_rotation: CuffRotationMode = self.search_mode(CuffRotationMode, Config.MODEL)
 
         # fetch boolean for cuff expandability
         expandable: bool = cuff_config['expandable']
@@ -450,10 +453,10 @@ class Runner(Exceptionable, Configurable):
                 scale='um'
             ).real  # [um] (scaled from any arbitrary length unit)
 
-            # if cuff_rotation_mode == CuffRotationMode.MANUAL:
+            # if cuff_rotation == CuffRotationMode.MANUAL:
             #     theta_f = 0
             #
-            # else:  # cuff_rotation_mode == CuffRotationMode.AUTOMATIC
+            # else:  # cuff_rotation == CuffRotationMode.AUTOMATIC
             if r_i < r_f:
                 theta_f = 0.5 * ((r_f / r_i) * theta_i - theta_i)
                 # OLD theta_f = (r_f / r_i - 1) * theta_i
@@ -485,7 +488,6 @@ class Runner(Exceptionable, Configurable):
         model_config['min_radius_enclosing_circle'] = r_bound
 
         # add to theta_f using the orientation point
-        # TODO BIG THIS FEELS WRONG
         orientation_point = None
         if slide.orientation_point_index is not None:
             if slide.nerve is not None:  # has nerve
@@ -568,6 +570,9 @@ class Runner(Exceptionable, Configurable):
                 model_config['cuff']['rotate']['pos_ang'] = (theta_f - theta_i + theta_c + np.pi) * 360 / (2 * np.pi)
                 model_config['cuff']['shift']['x'] = center_x
                 model_config['cuff']['shift']['y'] = center_y
+
+        if 'add_ang' not in model_config.keys():
+            model_config['cuff']['rotate']['add_ang'] = 0
 
         return model_config
 
