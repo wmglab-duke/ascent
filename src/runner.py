@@ -236,7 +236,9 @@ class Runner(Exceptionable, Configurable):
 
                 for model_index, model_config in enumerate(all_configs[Config.MODEL.value]):
                     model_num = self.configs[Config.RUN.value]['models'][model_index]
-                    if models_exit_status[model_index]:
+                    # TODO: currently bypassing model exit status if nonexistant (ran with old code)
+                    #       at some point, reevaluate if this is best choice?
+                    if (models_exit_status[model_index] if models_exit_status is not None else True):
                         for sim_index, sim_config in enumerate(all_configs['sims']):
                             sim_num = self.configs[Config.RUN.value]['sims'][sim_index]
                             sim_obj_path = os.path.join(
