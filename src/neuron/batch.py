@@ -14,25 +14,33 @@ if not os.path.exists(os.path.join('MOD_Files/x86_64')):
     os.chdir('..')
 
 for run_number in sys.argv[1:]:
+    # run number is numeric
     assert re.search('[0-9]+', run_number), 'Encountered non-number run number argument: {}'.format(run_number)
 
+    # build configuration filename
     filename = os.path.join('runs', run_number + '.json')
 
+    # configuration file exists
     assert os.path.exists(filename), 'Run configuration not found: {}'.format(run_number)
 
+    # load in configuration data
     run = {}
     with open(filename, 'r') as file:
         run: dict = json.load(file)
 
+    # configuration is not empty
     assert len(run.items) > 0, 'Encountered empty run configuration: {}'.format(filename)
 
+    # assign appropriate configuration data
     sample = run.get('sample', [])
     models = run.get('models', [])
     sims = run.get('sims', [])
     submission_context = run.get('submission_context', 'cluster')
 
+    # submission context is valid
     assert submission_context in ALLOWED_SUBMISSION_CONTEXTS, 'Invalid submission context: {}'.format(submission_context)
 
+    # loop models, sims
     for model in models:
         for sim in sims:
             sim_dir = os.path.join('n_sims')
@@ -71,11 +79,11 @@ for run_number in sys.argv[1:]:
 
                     # write start.slurm
                     start_path = os.path.join(sim_path, 'start.slurm')
-                    if os.path.exists(start_path):
-                        raise Exception('start.slurm already exists (not expected) check path/implementation')
+                    assert os.path.exists(start_path), 'start.slurm already exists (not expected) check path/implementation'
 
-                    stimamp_top = -10
-                    stimamp_bottom = -0.01
+                    # binary search intitial bounds (unit: mA)
+                    # TODO: abstract these in a run or sim configuration
+                    stimamp_top, stimamp_bottom = 10, 0.01
 
                     with open(start_path, 'w') as handle:
                         lines = [
