@@ -890,7 +890,6 @@ public class ModelWrapper {
         JSONObject solution = modelData.getJSONObject("solution");
         long estimatedRunSolTime = System.nanoTime() - runSolStartTime;
         solution.put("sol_time", estimatedRunSolTime/Math.pow(10,6)); // convert nanos to millis, this is for solving all contacts
-        solution.put("time_units", "ms"); // convert nanos to millis
         modelData.put("solution", solution);
     }
 

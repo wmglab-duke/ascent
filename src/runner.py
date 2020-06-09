@@ -404,7 +404,7 @@ class Runner(Exceptionable, Configurable):
         reference_x = reference_y = 0.0
         if not slide.monofasc():
             reference_x, reference_y = slide.fascicle_centroid()
-        theta_c = np.arctan2(y - reference_y, x - reference_x)  # TODO cool up to here
+        theta_c = np.arctan2(y - reference_y, x - reference_x)
 
         # calculate final necessary radius by adding buffer
         r_f = r_bound + cuff_r_buffer
@@ -481,7 +481,6 @@ class Runner(Exceptionable, Configurable):
         model_config['min_radius_enclosing_circle'] = r_bound
 
         # add to theta_f using the orientation point
-        # TODO BIG THIS FEELS WRONG
         orientation_point = None
         if slide.orientation_point_index is not None:
             if slide.nerve is not None:  # has nerve
@@ -564,6 +563,9 @@ class Runner(Exceptionable, Configurable):
                 model_config['cuff']['rotate']['pos_ang'] = (theta_f - theta_i + theta_c + np.pi) * 360 / (2 * np.pi)
                 model_config['cuff']['shift']['x'] = center_x
                 model_config['cuff']['shift']['y'] = center_y
+
+        if 'add_ang' not in model_config.keys():
+            model_config['cuff']['rotate']['add_ang'] = 0
 
         return model_config
 
