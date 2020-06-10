@@ -2408,6 +2408,7 @@ class Part {
 
         }
         String entry = sigma.getString("value");
+        String unit = sigma.getString("unit");
 
         if (entry.equals("anisotropic")) {
             String entry_x = sigma.getString("sigma_x");
@@ -2424,7 +2425,7 @@ class Part {
                     "0", "0", "sigma_" + function + "_z"
             });
         } else {
-            String unit = "[S/m]";
+
             materialParams.set("sigma_" + function, "(" + entry + ")" + " " + unit, materialDescription);
             model.material(materialID).propertyGroup("def").set("electricconductivity", "sigma_" + function);
         }

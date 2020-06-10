@@ -116,8 +116,8 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         file_object.write("IntraStim_PulseTrain_delay    = %0.0f // [ms]\n" % intracellular_stim.get("times").get("IntraStim_PulseTrain_delay"))
         file_object.write("IntraStim_PulseTrain_pw       = %0.0f // [ms]\n" % intracellular_stim.get("times").get("pw"))
         file_object.write("IntraStim_PulseTrain_traindur = tstop - IntraStim_PulseTrain_delay // [ms]\n")
-        file_object.write("IntraStim_PulseTrain_freq     = %0.0f // [ms]\n" % intracellular_stim.get("freq").get("value"))
-        file_object.write("IntraStim_PulseTrain_amp      = %0.4f // [nA]\n" % intracellular_stim.get("amp").get("value"))
+        file_object.write("IntraStim_PulseTrain_freq     = %0.0f // [ms]\n" % intracellular_stim.get("freq"))
+        file_object.write("IntraStim_PulseTrain_amp      = %0.4f // [nA]\n" % intracellular_stim.get("amp"))
         file_object.write("IntraStim_PulseTrain_ind      = %0.0f "
                           "// Index of node where intracellular stim is placed [unitless]\n" %
                           intracellular_stim.get("ind"))
@@ -130,12 +130,12 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         file_object.write("\n//***************** Recording ********************\n")
         save_flags: dict = self.search(Config.SIM, "save_flags")
 
-        file_object.write("saveflag_Vm_time      = %0.0f\n" % save_flags.get("vm_time"))
-        file_object.write("saveflag_gating_time  = %0.0f\n" % save_flags.get("gating_time"))
-        file_object.write("saveflag_Vm_space     = %0.0f\n" % save_flags.get("vm_space"))
-        file_object.write("saveflag_gating_space = %0.0f\n" % save_flags.get("gating_space"))
-        file_object.write("saveflag_Ve           = %0.0f\n" % save_flags.get("ve"))
-        file_object.write("saveflag_Istim        = %0.0f\n" % save_flags.get("istim"))
+        file_object.write("saveflag_Vm_time      = %0.0f\n" % int(save_flags.get("vm_time") == True))
+        file_object.write("saveflag_gating_time  = %0.0f\n" % int(save_flags.get("gating_time") == True))
+        file_object.write("saveflag_Vm_space     = %0.0f\n" % int(save_flags.get("vm_space") == True))
+        file_object.write("saveflag_gating_space = %0.0f\n" % int(save_flags.get("gating_space") == True))
+        file_object.write("saveflag_Ve           = %0.0f\n" % int(save_flags.get("ve") == True))
+        file_object.write("saveflag_Istim        = %0.0f\n" % int(save_flags.get("istim") == True))
 
         file_object.write("\n//***************** Classification Checkpoints ***\n")
         check_points: dict = self.search(Config.SIM, "check_points")
@@ -181,7 +181,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
             bounds_search_mode: SearchAmplitudeIncrementMode = [mode for mode in SearchAmplitudeIncrementMode if str(mode).split('.')[-1] == bounds_search_mode_name][0]
             if bounds_search_mode == SearchAmplitudeIncrementMode.PERCENT_INCREMENT:
                 increment_flag = SearchAmplitudeIncrementMode.PERCENT_INCREMENT.value
-                step: float = self.search(Config.SIM, "protocol", "bounds_search", "relative_step")
+                step: float = self.search(Config.SIM, "protocol", "bounds_search", "step")
                 file_object.write("\nrel_increment = %0.4f\n" % step)
             elif bounds_search_mode == SearchAmplitudeIncrementMode.ABSOLUTE_INCREMENT:
                 increment_flag = SearchAmplitudeIncrementMode.ABSOLUTE_INCREMENT.value
@@ -195,8 +195,8 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                 termination_flag = TerminationCriteriaMode.ABSOLUTE_DIFFERENCE.value
                 res: float = self.search(Config.SIM, "protocol", "termination_criteria", "tolerance")
                 file_object.write("\nabs_thresh_resoln = %0.4f\n" % res)
-            elif termination_criteria_mode == TerminationCriteriaMode.RELATIVE_DIFFERENCE:
-                termination_flag = TerminationCriteriaMode.RELATIVE_DIFFERENCE.value
+            elif termination_criteria_mode == TerminationCriteriaMode.PERCENT_DIFFERENCE:
+                termination_flag = TerminationCriteriaMode.PERCENT_DIFFERENCE.value
                 res: float = self.search(Config.SIM, "protocol", "termination_criteria", "percent")
                 file_object.write("\nrel_thresh_resoln = %0.4f\n" % res)
             file_object.write("termination_flag = %0.0f // \n" % termination_flag)
