@@ -50,20 +50,12 @@
     }
   },
   "intracellular_stim": {
-    "flag": false,
     "times": {
-      "unit": "ms",
       "pw": 0,
       "IntraStim_PulseTrain_delay": 0
     },
-    "freq": {
-      "unit": "Hz",
-      "value": 0
-    },
-    "amp": {
-      "unit": "nA",
-      "value": 0
-    },
+    "freq": 0,
+    "amp": 0,
     "ind": 2
   },
   "save_flags": {
@@ -74,14 +66,19 @@
     "ve": false,
     "istim": false
   },
-  "threshold": {
-    "thresh_flag": 1,
-    "block_thresh": 0,
-    "resolution": 0.01,
-    "vm": {
-      "unit": "mV",
-      "value": -30
+  "protocol": {
+    "mode": "ACTIVATION_THRESHOLD",
+    "threshold": {
+      "value": -30,
+      "n_min_aps": 1
     },
-    "n_min_aps": 1
+    "bounds_search": {
+      "mode": "RELATIVE_INCREMENT",
+      "step": 0.1
+    },
+    "termination_criteria": {
+      "mode": "RELATIVE_DIFFERENCE",
+      "percent": 0.01
+    }
   }
 }

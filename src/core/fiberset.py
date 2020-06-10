@@ -94,7 +94,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                 t_range = t_range[1:]
 
             # init theta
-            #theta = 0
+            theta = self.search(Config.SIM, 'theta')
 
             # set angle theta to orientation point if defined
             slide = self.sample.slides[0]
@@ -342,18 +342,22 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             fiber = []
 
             # get offset param - NOTE: raw value is a FRACTION of dz (explanation for multiplication by dz)
-            offset = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'offset') * dz
+            if 'offset' in self.search(Config.SIM, 'fibers', FiberZMode.parameters.value).keys():
+                offset = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'offset') * dz
+            else:
+                offset = None
 
             random_offset = False
             if offset is None:
                 offset = 0.0
                 random_offset = True
+                random.seed(my_z_seed)
+
             z_offset = clip([z + offset + additional_offset for z in z_values],
                             self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'min'),
                             self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'max'),
                             myel)
 
-            random.seed(my_z_seed)
             for x, y in fibers_xy:
                 random_offset_value = dz * (random.random() - 0.5) if random_offset else 0
                 fiber.append([(x, y, z + random_offset_value) for z in z_offset])

@@ -382,7 +382,7 @@ class MockSample(Exceptionable, Configurable):
         # SCALEBAR BINARY IMAGE
         dest_s = os.path.join(project_path, sample_dir, 's.tif')
         figure_s = self.binary_mask_canvas(fig_margin, max_diam)
-        scalebar_length: int = self.search(Config.MOCK_SAMPLE, 'scale_bar', 'scalebar_length')
+        scalebar_length: int = self.search(Config.MOCK_SAMPLE, 'scalebar_length')
         figure_s = self.add_scalebar_binary_mask(figure_s, scalebar_length)
         self.write_binary_mask(figure_s, dest_s, fig_dpi)
 

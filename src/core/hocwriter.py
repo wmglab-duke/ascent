@@ -161,7 +161,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
             bounds_search_mode: SearchAmplitudeIncrementMode = [mode for mode in SearchAmplitudeIncrementMode if str(mode).split('.')[-1] == bounds_search_mode_name][0]
             if bounds_search_mode == SearchAmplitudeIncrementMode.PERCENT_INCREMENT:
                 increment_flag = SearchAmplitudeIncrementMode.PERCENT_INCREMENT.value
-                step: float = self.search(Config.SIM, "protocol", "bounds_search", "relative_step")
+                step: float = self.search(Config.SIM, "protocol", "bounds_search", "step")
                 file_object.write("\nrel_increment = %0.4f\n" % step)
             elif bounds_search_mode == SearchAmplitudeIncrementMode.ABSOLUTE_INCREMENT:
                 increment_flag = SearchAmplitudeIncrementMode.ABSOLUTE_INCREMENT.value
@@ -175,8 +175,8 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                 termination_flag = TerminationCriteriaMode.ABSOLUTE_DIFFERENCE.value
                 res: float = self.search(Config.SIM, "protocol", "termination_criteria", "tolerance")
                 file_object.write("\nabs_thresh_resoln = %0.4f\n" % res)
-            elif termination_criteria_mode == TerminationCriteriaMode.RELATIVE_DIFFERENCE:
-                termination_flag = TerminationCriteriaMode.RELATIVE_DIFFERENCE.value
+            elif termination_criteria_mode == TerminationCriteriaMode.PERCENT_DIFFERENCE:
+                termination_flag = TerminationCriteriaMode.PERCENT_DIFFERENCE.value
                 res: float = self.search(Config.SIM, "protocol", "termination_criteria", "percent")
                 file_object.write("\nrel_thresh_resoln = %0.4f\n" % res)
             file_object.write("termination_flag = %0.0f // \n" % termination_flag)

@@ -243,7 +243,7 @@ class SearchAmplitudeIncrementMode(Enum):
 class TerminationCriteriaMode(Enum):
     config = 'mode'
 
-    RELATIVE_DIFFERENCE = 0
+    PERCENT_DIFFERENCE = 0
     ABSOLUTE_DIFFERENCE = 1
 
 
