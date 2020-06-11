@@ -108,7 +108,8 @@ class Runner(Exceptionable, Configurable):
         # ensure NEURON files exist in export location
         Simulation.export_neuron_files(os.environ[Env.NSIM_EXPORT_PATH.value])
 
-        if sum(self.search(Config.RUN, 'break_points').values()) > 1:
+        if 'break_points' in self.configs[Config.RUN.value].keys() and \
+            sum(self.search(Config.RUN, 'break_points').values()) > 1:
             self.throw(76)
 
         potentials_exist: List[bool] = []  # if all of these are true, skip Java
