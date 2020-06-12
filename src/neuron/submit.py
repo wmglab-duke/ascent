@@ -22,7 +22,7 @@ def local_submit(filename, output_log, error_log):
 if __name__ == "__main__":
     if not os.path.exists(os.path.join('MOD_Files/x86_64')) or not os.path.exists('MOD_Files/nrnmech.dll'):
         os.chdir(os.path.join('MOD_Files'))
-        subprocess.run(['nrnivmodl'])
+        subprocess.run(['nrnivmodl'], shell=True)
         os.chdir('..')
 
     for run_number in sys.argv[1:]:
