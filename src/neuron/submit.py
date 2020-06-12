@@ -120,7 +120,7 @@ if __name__ == "__main__":
                                                                                               fiber_ind,
                                                                                               stimamp_top,
                                                                                               stimamp_bottom)
-                                            ]
+                                ]
                             else:  # OS is 'WINDOWS'
                                 lines = [
                                     'nrniv -nobanner '
