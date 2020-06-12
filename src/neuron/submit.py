@@ -10,16 +10,21 @@ import subprocess
 from typing import List
 
 ALLOWED_SUBMISSION_CONTEXTS = ['cluster', 'local']
+OS = 'UNIX-LIKE' if any([s in sys.platform for s in ['darwin', 'linux']]) else 'WINDOWS'
 
 def local_submit(filename, output_log, error_log):
-    subprocess.run(['chmod', '777', os.path.join(os.path.split(filename)[0], 'blank.hoc')])
-    subprocess.run(['chmod', '777', filename])
-    subprocess.run(['bash', filename, '>', output_log, '2>{}'.format(error_log)], capture_output=True)
+    if OS is 'UNIX-LIKE':
+        subprocess.run(['chmod', '777', os.path.join(os.path.split(filename)[0], 'blank.hoc')])
+        subprocess.run(['chmod', '777', filename])
+    run_command = ['bash', filename, '>', output_log, '2>{}'.format(error_log)]
+    subprocess.run(run_command[1:] if (OS is 'WINDOWS') else run_command, capture_output=True)
 
 if __name__ == "__main__":
-    if not os.path.exists(os.path.join('MOD_Files/x86_64')):
+    if (not os.path.exists(os.path.join('MOD_Files/x86_64')) and OS is 'UNIX-LIKE') or \
+        (not os.path.exists(os.path.join('MOD_Files', 'nrnmech.dll')) and OS is 'WINDOWS'):
+        print('compile')
         os.chdir(os.path.join('MOD_Files'))
-        subprocess.run(['nrnivmodl'])
+        subprocess.run(['nrnivmodl'], shell=True)
         os.chdir('..')
 
     for run_number in sys.argv[1:]:
@@ -90,7 +95,7 @@ if __name__ == "__main__":
                             continue
 
                         # write start.slurm
-                        start_path = os.path.join(sim_path, 'start.slurm')
+                        start_path = os.path.join(sim_path, 'start{}'.format('.sh' if OS is 'UNIX_LIKE' else '.bat'))
                         # assert os.path.isfile(start_path), '{} already exists (not expected) check path/implementation'.format(start_path)
 
                         # binary search intitial bounds (unit: mA)
@@ -98,24 +103,46 @@ if __name__ == "__main__":
                         stimamp_top, stimamp_bottom = 10, 0.01
 
                         with open(start_path, 'w+') as handle:
-                            lines = [
-                                '#!/bin/bash\n',
-                                'cd {}\n'.format(sim_path),
-                                'cp -p ../../MOD_Files/x86_64/special .\n',
-                                'chmod a+rwx special\n',
-                                './special -nobanner '
-                                '-c \"strdef sim_path\" '
-                                '-c \"sim_path=\\\"{}\\\"\" '
-                                '-c \"inner_ind={}\" '
-                                '-c \"fiber_ind={}\" '
-                                '-c \"stimamp_top={}\" '
-                                '-c \"stimamp_bottom={}\" '
-                                '-c \"load_file(\\\"launch.hoc\\\")\" blank.hoc\n'.format(sim_path,
-                                                                                inner_ind,
-                                                                                fiber_ind,
-                                                                                stimamp_top,
-                                                                                stimamp_bottom)
-                            ]
+                            lines = []
+                            if OS is 'UNIX-LIKE':
+                                lines = [
+                                    '#!/bin/bash\n',
+                                    'cd {}\n'.format(sim_path),
+                                    'cp -p ../../MOD_Files/x86_64/special .\n',
+                                    'chmod a+rwx special\n',
+                                    './special -nobanner '
+                                    '-c \"strdef sim_path\" '
+                                    '-c \"sim_path=\\\"{}\\\"\" '
+                                    '-c \"inner_ind={}\" '
+                                    '-c \"fiber_ind={}\" '
+                                    '-c \"stimamp_top={}\" '
+                                    '-c \"stimamp_bottom={}\" '
+                                    '-c \"load_file(\\\"launch.hoc\\\")\" blank.hoc\n'.format(sim_path,
+                                                                                              inner_ind,
+                                                                                              fiber_ind,
+                                                                                              stimamp_top,
+                                                                                              stimamp_bottom)
+                                ]
+                            else:  # OS is 'WINDOWS'
+                                sim_path_win = os.path.join(*sim_path.split(os.pathsep)).replace('\\','\\\\')
+                                print(sim_path_win)
+                                lines = [
+                                    'cd {}\n'.format(sim_path_win),
+                                    'nrniv -nobanner '
+                                    '-dll {}/MOD_Files/nrnmech.dll '
+                                    '-c \"strdef sim_path\" '
+                                    '-c \"sim_path=\\\"{}\\\"\" '
+                                    '-c \"inner_ind={}\" '
+                                    '-c \"fiber_ind={}\" '
+                                    '-c \"stimamp_top={}\" '
+                                    '-c \"stimamp_bottom={}\" '
+                                    '-c \"load_file(\\\"launch.hoc\\\")\" blank.hoc\n'.format(os.getcwd(), sim_path_win,
+                                                                                              inner_ind,
+                                                                                              fiber_ind,
+                                                                                              stimamp_top,
+                                                                                              stimamp_bottom)
+                                ]
+
                             handle.writelines(lines)
 
                         # submit batch job for fiber
@@ -144,6 +171,7 @@ if __name__ == "__main__":
                             os.remove(start_path)
                         
                         elif submission_context == 'local':
+                            # local_submit(start_path, output_log, error_log)
                             p = multiprocessing.Process(target=local_submit, args=(start_path, output_log, error_log))
                             processes.append(p)
                             p.start()
