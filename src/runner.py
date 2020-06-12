@@ -286,10 +286,7 @@ class Runner(Exceptionable, Configurable):
                                 os.environ[Env.NSIM_EXPORT_PATH.value]
                             )
 
-                        print('Model {}: Exported runs/ and n_sims/ to {}\n'
-                                '\tRemember to copy both runs and n_sim folder to batch submission location.\n'
-                                '\tAlso, ensure that batch.py and batch.sh versions '
-                                '\tin batch submission location are current.'.format(model_num, os.environ[Env.NSIM_EXPORT_PATH.value]))
+                        print('Model {} data exported to appropriate folders in {}'.format(model_num, os.environ[Env.NSIM_EXPORT_PATH.value]))
 
                     elif not models_exit_status[model_index]:
                         print('\nDid not create NEURON simulations for Sims associated with: \n'
