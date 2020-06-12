@@ -93,7 +93,7 @@ if __name__ == "__main__":
                             continue
 
                         # write start.slurm
-                        start_path = os.path.join(sim_path, 'start')
+                        start_path = os.path.join(sim_path, 'start{}'.format('.sh' if OS is 'UNIX_LIKE' else '.bat'))
                         # assert os.path.isfile(start_path), '{} already exists (not expected) check path/implementation'.format(start_path)
 
                         # binary search intitial bounds (unit: mA)
