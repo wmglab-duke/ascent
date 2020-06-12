@@ -589,13 +589,11 @@ class Runner(Exceptionable, Configurable):
         # compute rho and sigma from waveform instance
         if model_config.get('modes').get(PerineuriumResistivityMode.config.value) == \
                 PerineuriumResistivityMode.RHO_WEERASURIYA.value:
-            freq_double = model_config.get('frequency').get('value')
-            freq_unit = model_config.get('frequency').get('unit')
+            freq_double = model_config.get('frequency')
             rho_double = waveform.rho_weerasuriya(freq_double)
             sigma_double = 1 / rho_double
             model_config['conductivities']['perineurium']['value'] = str(sigma_double)
-            model_config['conductivities']['perineurium']['label'] = "RHO_WEERASURIYA @ %d %s" % (freq_double,
-                                                                                                  freq_unit)
+            model_config['conductivities']['perineurium']['label'] = "RHO_WEERASURIYA @ %d Hz" % freq_double
         else:
             self.throw(48)
 

@@ -79,17 +79,21 @@
     },
     "MONOPHASIC_PULSE_TRAIN": {
       "pulse_width": [0.1],
+      "pulse_repetition_freq": 1,
       "digits": 1
     },
     "SINUSOID": {
-      "digits": 10
+      "digits": 10,
+      "pulse_repetition_freq": 1
     },
     "BIPHASIC_FULL_DUTY": {
-      "digits": 1
+      "digits": 1,
+      "pulse_repetition_freq": 1
     },
     "BIPHASIC_PULSE_TRAIN": {
       "pulse_width": [0.1],
       "inter_phase": [1],
+      "pulse_repetition_freq": 1,
       "digits": 1
     }
   },
