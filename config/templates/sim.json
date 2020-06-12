@@ -46,6 +46,7 @@
     "BIPHASIC_PULSE_TRAIN": {
       "pulse_width": 0.1,
       "inter_phase": 0,
+      "pulse_repetition_freq": 1,
       "digits": 1
     }
   },
@@ -54,7 +55,7 @@
       "pw": 0,
       "IntraStim_PulseTrain_delay": 0
     },
-    "freq": 0,
+    "pulse_repetition_freq": 0,
     "amp": 0,
     "ind": 2
   },
