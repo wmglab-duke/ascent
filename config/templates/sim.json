@@ -74,11 +74,11 @@
       "n_min_aps": 1
     },
     "bounds_search": {
-      "mode": "RELATIVE_INCREMENT",
+      "mode": "PERCENT_INCREMENT",
       "step": 0.1
     },
     "termination_criteria": {
-      "mode": "RELATIVE_DIFFERENCE",
+      "mode": "PERCENT_DIFFERENCE",
       "percent": 0.01
     }
   }
