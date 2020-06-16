@@ -69,9 +69,9 @@ proc FindThresh() {//local key
 			//return 0
 
 			if (increment_flag == 1) { // relative
-				stimamp_top    = stimamp_top*(1-rel_increment)
+				stimamp_bottom    = stimamp_bottom*(1-rel_increment)
 			} else if (increment_flag == 0) { // absolute
-				stimamp_top    = stimamp_top - abs_increment
+				stimamp_bottom    = stimamp_bottom - abs_increment
 			}
 
 		} else {
