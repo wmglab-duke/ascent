@@ -761,7 +761,7 @@ public class ModelWrapper {
                     "slides",
                     "0", // these 0's are temporary (for 3d models will need to change)
                     "0",
-                    (String) ((JSONObject) sampleData.get("modes")).get("write"),
+                    "sectionwise2d",
                     "fascicles"
             });
 
@@ -774,13 +774,13 @@ public class ModelWrapper {
 
             // Loop over all fascicle dirs
             String[] dirs = new File(fasciclesPath).list();
+
             if (dirs != null) {
                 for (String dir: dirs) {
                     if (! dir.contains(".")) {
                         int index = Integer.parseInt(dir);
                         // Initialize data to send to Part.createPartInstance
                         HashMap<String, String[]> data = new HashMap<>();
-
                         // Add inners and outer files to array
                         String path = String.join("/", new String[]{fasciclesPath, dir});
                         for (String type: new String[]{"inners", "outer"}) {
@@ -1170,7 +1170,7 @@ public class ModelWrapper {
                         double proximal_length = proximalMedium.getDouble("length");
                         double proximal_radius = proximalMedium.getDouble("radius");
 
-                        String bounds_unit = ((JSONObject) modelData.get("medium")).getString("unit");
+                        String bounds_unit = "[um]";
                         mediumParams.set("z_nerve", proximal_length + " " + bounds_unit);
                         mediumParams.set("r_proximal", proximal_radius + " " + bounds_unit);
 
@@ -1218,7 +1218,7 @@ public class ModelWrapper {
                         // add NERVE (Fascicles CI/MESH and EPINEURIUM)
                         // Set NERVE MORPHOLOGY parameters
                         JSONObject morphology = (JSONObject) sampleData.get("Morphology");
-                        String morphology_unit = ((JSONObject) sampleData.get("scale")).getString("scale_bar_unit");
+                        String morphology_unit = "um";
 
                         String nerveParamsLabal = "Nerve Parameters";
                         ModelParamGroup nerveParams = model.param().group().create(nerveParamsLabal);
@@ -1249,8 +1249,8 @@ public class ModelWrapper {
                         String ci_mode = sampleData.getJSONObject("modes").getString("ci_perineurium_thickness");
                         if (ci_mode.compareTo("MEASURED") != 0) {
                             JSONObject myCICoeffs = ciCoeffsData.getJSONObject("ci_perineurium_thickness_parameters").getJSONObject(ci_mode);
-                            nerveParams.set("ci_a", myCICoeffs.getDouble("a") + " [" + myCICoeffs.getString("unit") + "/" + myCICoeffs.getString("unit") + "]");
-                            nerveParams.set("ci_b", myCICoeffs.getDouble("b") + " [" + myCICoeffs.getString("unit") + "]");
+                            nerveParams.set("ci_a", myCICoeffs.getDouble("a") + " [micrometer/micrometer]");
+                            nerveParams.set("ci_b", myCICoeffs.getDouble("b") + " [micrometer]");
 
                         }
 
@@ -1268,8 +1268,8 @@ public class ModelWrapper {
                         ModelParamGroup cuffConformationParams = model.param().group().create(cuffConformationParamsLabel);
                         cuffConformationParams.label(cuffConformationParamsLabel);
 
-                        String cuff_shift_unit = modelData.getJSONObject("cuff").getJSONObject("shift").getString("unit");
-                        String cuff_rot_unit = modelData.getJSONObject("cuff").getJSONObject("rotate").getString("unit");
+                        String cuff_shift_unit = "[micrometer]";
+                        String cuff_rot_unit = "[degree]";
                         Integer cuff_shift_x = modelData.getJSONObject("cuff").getJSONObject("shift").getInt("x");
                         Integer cuff_shift_y = modelData.getJSONObject("cuff").getJSONObject("shift").getInt("y");
                         Integer cuff_shift_z = modelData.getJSONObject("cuff").getJSONObject("shift").getInt("z");
@@ -1596,7 +1596,6 @@ public class ModelWrapper {
                         String imFile = String.join("/", new String[]{projectPath, "samples", sample, "models", modelStr, "mesh", "im.json"});
 
                         // save IM !!!!
-                        previousIM = IdentifierManager.fromJSONObject(new JSONObject(mw.im.toJSONObject().toString()));
                         JSONio.write(imFile, mw.im.toJSONObject()); // write to file
 
                         // save ppIMs !!!!

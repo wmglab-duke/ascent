@@ -2137,7 +2137,7 @@ class Part {
                 }
 
                 JSONObject fascicle = sampleData.getJSONObject("Morphology").getJSONArray("Fascicles").getJSONObject(index);
-                String morphology_unit = ((JSONObject) sampleData.get("scale")).getString("scale_bar_unit");
+                String morphology_unit = "micrometer";
 
                 String fascicleCICXLabel = ci_inner_name + " Inner Geometry";
                 GeomFeature fascicleCICX = model.component("comp1").geom("geom1").create(im.next("wp",fascicleCICXLabel), "WorkPlane");

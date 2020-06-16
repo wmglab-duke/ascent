@@ -34,7 +34,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
 
         # ENVIRONMENT
         file_object.write("\n//***************** Environment *****************\n")
-        file_object.write("celsius   = %0.0f // [degC]\n" % self.search(Config.MODEL, "temperature", "value"))
+        file_object.write("celsius   = %0.0f // [degC]\n" % self.search(Config.MODEL, "temperature"))
 
         # TIME PARAMETERS
         file_object.write("\n//***************** Global Time ******************\n")
@@ -125,7 +125,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         file_object.write("\n//***************** Extracellular Stim ***********\n")
         file_object.write("strdef VeTime_fname\n")
         file_object.write("VeTime_fname            = \"%s\"\n" % "data/inputs/waveform.dat")
-        file_object.write("flag_extracellular_stim = %0.0f\n" % 1)
+        file_object.write("flag_extracellular_stim = %0.0f // Set to zero for off; one for on \n" % 1)
 
         file_object.write("\n//***************** Recording ********************\n")
         save_flags: dict = self.search(Config.SIM, "save_flags")
@@ -174,7 +174,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                 block_thresh_flag = NeuronRunMode.BLOCK_THRESHOLD.value
 
             threshold: dict = self.search(Config.SIM, "protocol", "threshold")
-            file_object.write("\nap_thresh = %0.4f\n" % threshold.get("value"))
+            file_object.write("\nap_thresh = %0.0f\n" % threshold.get("value"))
             file_object.write("N_minAPs  = %0.0f\n" % threshold.get("n_min_aps"))
 
             bounds_search_mode_name: str = self.search(Config.SIM, "protocol", "bounds_search", "mode")

@@ -594,6 +594,7 @@ class Runner(Exceptionable, Configurable):
             sigma_double = 1 / rho_double
             model_config['conductivities']['perineurium']['value'] = str(sigma_double)
             model_config['conductivities']['perineurium']['label'] = "RHO_WEERASURIYA @ %d Hz" % freq_double
+            model_config['conductivities']['perineurium']['unit'] = "[S/m]"
         else:
             self.throw(48)
 
