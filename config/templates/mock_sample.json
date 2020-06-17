@@ -1,6 +1,6 @@
 {
   "global": {
-    "sample_str": "Alien1-1"
+    "NAME": "Alien1-1"
   },
   "scalebar_length": 1000,
   "nerve": {

@@ -348,7 +348,7 @@ class MockSample(Exceptionable, Configurable):
 
     def make_masks(self):
         project_path = os.getcwd()
-        sample_str = self.search(Config.MOCK_SAMPLE, 'global', 'sample_str')
+        sample_str = self.search(Config.MOCK_SAMPLE, 'global', 'NAME')
         sample_dir = os.path.join(project_path, 'input', sample_str)
 
         if not os.path.exists(sample_dir):
