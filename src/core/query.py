@@ -11,8 +11,7 @@ import matplotlib.ticker as tick
 from scipy import stats as stats
 import matplotlib.patches as mpatches
 
-from core import FiberSet
-from src.core import Sample, Simulation, Slide
+from src.core import Sample, Simulation, Slide, FiberSet
 from src.utils import Exceptionable, Configurable, Saveable, SetupMode, Config, Object, FiberXYMode
 
 
@@ -402,12 +401,15 @@ class Query(Exceptionable, Configurable, Saveable):
                             thresh_path = os.path.join(n_sim_dir, 'data', 'outputs',
                                                        'thresh_inner{}_fiber0.dat'.format(i))
                             if os.path.exists(thresh_path):
-                                thresholds.append(np.loadtxt(thresh_path))
+                                threshold = np.loadtxt(thresh_path)
+                                if len(threshold) > 1:
+                                    threshold = threshold[-1]
+                                thresholds.append(threshold)
                             else:
                                 missing_indices.append(i)
                                 print('MISSING: {}'.format(thresh_path))
-                        max_thresh = max(thresholds)
-                        min_thresh = min(thresholds)
+                        max_thresh = np.max(thresholds)
+                        min_thresh = np.min(thresholds)
 
                         # update tracking colormap bounds
                         if track_colormap_bounds and sim_index == tracking_sim_index:
@@ -433,11 +435,11 @@ class Query(Exceptionable, Configurable, Saveable):
                         for i in range(n_inners):
                             actual_i = i - offset
                             if i not in missing_indices:
-                                colors.append(cmap((thresholds[actual_i] - min_thresh) / (max_thresh - min_thresh)))
+                                colors.append(tuple(cmap((thresholds[actual_i] - min_thresh) / (max_thresh - min_thresh))))
                             else:
                                 # NOTE: PLOTS MISSING VALUES AS RED
                                 offset += 1
-                                colors.append((1, 0, 0, 1))
+                                colors.append(colors, (1, 0, 0, 1))
 
                         # figure title -- make arbitrary, hard-coded subplot title modifications here (add elif's)
                         title = ''
@@ -670,7 +672,10 @@ class Query(Exceptionable, Configurable, Saveable):
                                                        'data',
                                                        'outputs',
                                                        'thresh_inner{}_fiber{}.dat'.format(inner, local_fiber_index))
-                            thresholds.append(np.loadtxt(thresh_path))
+                            threshold = np.loadtxt(thresh_path)
+                            if len(threshold) > 1:
+                                threshold = threshold[-1]
+                            thresholds.append(threshold)
 
                     thresholds: np.ndarray = np.array(thresholds)
 
@@ -870,7 +875,10 @@ class Query(Exceptionable, Configurable, Saveable):
                                                        'data',
                                                        'outputs',
                                                        'thresh_inner{}_fiber{}.dat'.format(inner, local_fiber_index))
-                            thresholds.append(np.loadtxt(thresh_path))
+                            threshold = np.loadtxt(thresh_path)
+                            if len(threshold) > 1:
+                                threshold = threshold[-1]
+                            thresholds.append(threshold)
 
                     thresholds: np.ndarray = np.array(thresholds)
 
@@ -1116,7 +1124,10 @@ class Query(Exceptionable, Configurable, Saveable):
                                                                                                local_fiber_index))
                                 # if exist, else print
                                 if os.path.exists(thresh_path):
-                                    thresholds.append(np.loadtxt(thresh_path))
+                                    threshold = np.loadtxt(thresh_path)
+                                    if len(threshold) > 1:
+                                        threshold = threshold[-1]
+                                    thresholds.append(threshold)
                                 else:
                                     print(thresh_path)
                     else:
