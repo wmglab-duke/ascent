@@ -27,6 +27,8 @@
     "ci_perineurium_thickness": "MEASURED",
     "reshape_nerve": "NONE"
   },
+  "morph_count": 36,
+  "deform_ratio": 1,
   "Morphology": {
     "Nerve": null,
     "Fascicles": [
