@@ -312,12 +312,12 @@ class Runner(Exceptionable, Configurable):
             subprocess.Popen(['{}/bin/comsol'.format(comsol_path), 'server'], close_fds=True)
             os.chdir('src')
             os.system(
-                '{}/javac -classpath ../lib/json-20190722.jar:{}/plugins/* model/*.java -d ../bin'.format(jdk_path,
+                '{}/javac -classpath ../bin/json-20190722.jar:{}/plugins/* model/*.java -d ../bin'.format(jdk_path,
                                                                                                           comsol_path))
             # https://stackoverflow.com/questions/219585/including-all-the-jars-in-a-directory-within-the-java-classpath
             os.system('{}/java/maci64/jre/Contents/Home/bin/java '
                       '-cp .:$(echo {}/plugins/*.jar | '
-                      'tr \' \' \':\'):../lib/json-20190722.jar:../bin model.{} {} {}'.format(comsol_path,
+                      'tr \' \' \':\'):../bin/json-20190722.jar:../bin model.{} {} {}'.format(comsol_path,
                                                                                               comsol_path,
                                                                                               core_name,
                                                                                               project_path,
@@ -329,12 +329,12 @@ class Runner(Exceptionable, Configurable):
             subprocess.Popen(['{}/bin/comsol'.format(comsol_path), 'server'], close_fds=True)
             os.chdir('src')
             os.system(
-                '{}/javac -classpath ../lib/json-20190722.jar:{}/plugins/* model/*.java -d ../bin'.format(jdk_path,
+                '{}/javac -classpath ../bin/json-20190722.jar:{}/plugins/* model/*.java -d ../bin'.format(jdk_path,
                                                                                                           comsol_path))
             # https://stackoverflow.com/questions/219585/including-all-the-jars-in-a-directory-within-the-java-classpath
             os.system('{}/java/glnxa64/jre/bin/java '
                       '-cp .:$(echo {}/plugins/*.jar | '
-                      'tr \' \' \':\'):../lib/json-20190722.jar:../bin model.{} {} {}'.format(comsol_path,
+                      'tr \' \' \':\'):../bin/json-20190722.jar:../bin model.{} {} {}'.format(comsol_path,
                                                                                               comsol_path,
                                                                                               core_name,
                                                                                               project_path,
@@ -346,11 +346,11 @@ class Runner(Exceptionable, Configurable):
             os.chdir('src')
             # TODO:
             os.system('""{}\\javac" '
-                      '-cp "..\\lib\\json-20190722.jar";"{}\\plugins\\*" '
+                      '-cp "..\\bin\\json-20190722.jar";"{}\\plugins\\*" '
                       'model\\*.java -d ..\\bin"'.format(jdk_path,
                                                          comsol_path))
             os.system('""{}\\java\\win64\\jre\\bin\\java" '
-                      '-cp "{}\\plugins\\*";"..\\lib\\json-20190722.jar";"..\\bin" '
+                      '-cp "{}\\plugins\\*";"..\\bin\\json-20190722.jar";"..\\bin" '
                       'model.{} {} {}"'.format(comsol_path,
                                                comsol_path,
                                                core_name,

@@ -130,6 +130,7 @@ dmypy.json
 # IDE
 .idea/
 .vscode/
+*.iml
 
 # don't include data b/c this may get pretty big at some point
 samples/
@@ -158,3 +159,4 @@ src/neuron/MOD_Files/*.o
 config/system/cuffs/ImThera.json
 master_index_key.xlsx
 200511_figures/
+old_data/
