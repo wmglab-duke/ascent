@@ -277,81 +277,40 @@ class Query(Exceptionable, Configurable, Saveable):
         return True
 
     def heatmaps(self,
-
-        # output/master       
-        plot: bool = True,
-        plot_mode: str = 'average',
-        save_path: str = None,
-        plot_outers: bool = False,
-        rows_override: int = None,
-
-        # color
-        colorbar_mode: str = 'subplot',
-        colormap_str: str = 'coolwarm',
-        colorbar_text_size_override: int = None,
-        reverse_colormap: bool = True,
-        colorbar_aspect: int = None,
-        colomap_bounds_override: List[List[Tuple[float, float]]] = None,
-        track_colormap_bounds: bool = False,
-        track_colormap_bounds_offset_ratio: float = 0.0,
-        missing_color: Tuple[int, int, int, int] = (1, 0, 0, 1),
-
-        # text
-        title_toggle: bool = True,
-        subplot_title_toggle: bool = True,
-        
-        # miscellaneous
-        tick_count: int = 2,
-        tick_bounds: bool = False,
-        show_orientation_point = True
-    ):
-        """Generate activation thresholds heatmaps
-        
-        Each plot represents a single 1-dimensional simulation, with each subplot representing a single value from the
-        parameter that is being iterated over. For instace, a sim with many different fiber diamaters will have each subplot
-        represent a single fiber diameter. In a future release, multidimensional sims will be accounted for; this may
-        illicit changing the underlying data structure.
-
-        Args:
-            plot (bool, optional): Show plots via matplotlib. Defaults to True.
-            plot_mode (str, optional): TODO
-                'average': each inner is filled with the color corresponding to the average of its fiber thresholds
-                'individual': each fiber is plotted individually with its corresponding color. 
-                Defaults to 'average'.
-            save_path (str, optional): Path to which plots are saved as PNG files. If None, will not save. Defaults to None.
-            plot_outers (bool, optional): Draw outer perineurium trace. Defaults to False.
-            rows_override (int, optional):
-                Force number of rows; this number <= number of items in sim dimension (i.e., fiber diameters).
-                If None, an arrangement closest to a square will be chosen. Defaults to None.
-            colorbar_mode (str, optional): TODO
-                'subplot': one colorbar/colormap per subplot (i.e., one colorbar for each nsim)
-                'figure': one colorbar for the entire figure (i.e., all colors are on same scale).
-                Defaults to 'subplot'.
-            colormap_str (str, optional): Matplotlib colormap theme. Defaults to 'coolwarm'.
-            colorbar_text_size_override (int, optional): Override system default for colorbar text size. Defaults to None.
-            reverse_colormap (bool, optional): Invert direction of colormap. Defaults to True.
-            colorbar_aspect (int, optional): Override system default for color aspect ratio. Defaults to None.
-            colomap_bounds_override (List[List[Tuple[float, float]]], optional):
-                List (an item per sim/figure), where each item is a list of tuples (bounds for each subplot).
-                These bounds may be generated as output by toggling the `track_colormap_bounds` parameter.  Defaults to None.
-            track_colormap_bounds (bool, optional): Output colormap bounds in format described above. Defaults to False.
-            track_colormap_bounds_offset_ratio (float, optional):
-                Step bound extremes towards mean by ratio. This can be helpful when a few fascicle have thresholds that
-                are drastically different than the rest of the fascicles. Assumes sims are in order, starting from 0.
-                Defaults to 0.0.
-            missing_color (Tuple[int, int, int, int], optional): 
-                RGBA Color to represent missing thresholds. Defaults to (1, 0, 0, 1) (red).
-            title_toggle (bool, optional): Plot title. Defaults to True.
-            subplot_title_toggle (bool, optional): Plot subplot title. Defaults to True.
-            tick_count (int, optional): Colorbar tick count. Defaults to 2.
-            tick_bounds (bool, optional): Ticks only at min and max of colorbar (override tick_count). Defaults to False.
-            show_orientation_point (bool, optional):
-                If an orientation mask was used, plot the direction as a dot outside of the nerve trace. Defaults to True.
-
-        Returns:
-            matplotlib.pyplot.Figure: Handle to final figure (uses .gcf())
+                 plot: bool = True,
+                 plot_mode: str = 'average',
+                 colorbar_mode: str = 'subplot',
+                 save_path: str = None,
+                 plot_outers: bool = False,
+                 colormap_str: str = 'coolwarm',
+                 colorbar_text_size_override: int = None,
+                 reverse_colormap: bool = True,
+                 rows_override: int = None,
+                 colorbar_aspect: int = None,
+                 title_toggle: bool = True,
+                 colomap_bounds_override: List[List[Tuple[float, float]]] = None,
+                 track_colormap_bounds: bool = False,
+                 subplot_title_toggle: bool = True,
+                 track_colormap_bounds_offset_ratio: float = 0.0,
+                 tick_count: int = 2,
+                 tick_bounds: bool = False,
+                 show_orientation = True):
         """
-        
+        TODO: implement plot_mode and colorbar_mode (current implementation assumes single fiber and fills fascicle)
+
+        :param reverse_colormap:
+        :param colormap_str:
+        :param plot_outers:
+        :param save_path:
+        :param plot: bool signalling whether or not to plot the figure
+        :param plot_mode:
+            'average': each inner is filled with the color corresponding to the average of its fiber thresholds
+            'individual': each fiber is plotted individually with its corresponding color
+        :param colorbar_mode:
+            'subplot': one colorbar/colormap per subplot (i.e., one colorbar for each nsim)
+            'figure': one colorbar for the entire figure (i.e., all colors are on same scale)
+        :return: generated figure
+        """
 
         print('WARNING: plot_mode and colorbar_mode not yet implemented')
 
@@ -480,7 +439,7 @@ class Query(Exceptionable, Configurable, Saveable):
                             else:
                                 # NOTE: PLOTS MISSING VALUES AS RED
                                 offset += 1
-                                colors.append(colors, missing_color)
+                                colors.append(colors, (1, 0, 0, 1))
 
                         # figure title -- make arbitrary, hard-coded subplot title modifications here (add elif's)
                         title = ''
@@ -498,12 +457,12 @@ class Query(Exceptionable, Configurable, Saveable):
                             # default title
                             title = '{} {}:{}'.format(title, wave_key_name, wave_key_value)
 
-                        # set title
-                        if subplot_title_toggle:
-                            ax.set_title(title)
+                        if n < cols:  # todo added for ImThera
+                            if subplot_title_toggle:
+                                ax.set_title(title, fontsize=20)
 
                         # plot orientation point if applicable
-                        if orientation_point is not None and show_orientation_point is True:
+                        if orientation_point is not None and show_orientation is True:
                             # ax.plot(*tuple(slide.nerve.points[slide.orientation_point_index][:2]), 'b*')
                             ax.plot(*orientation_point, '.', markersize=20, color='grey')
 
@@ -551,7 +510,7 @@ class Query(Exceptionable, Configurable, Saveable):
                             os.mkdir(save_path)
                         dest = '{}{}{}_{}_{}.png'.format(save_path, os.sep, sample_index, model_index, sim_index)
                         figure.savefig(dest, dpi=600)
-                        # print('done')
+                        print('done')
 
                     # plot figure
                     if plot:
