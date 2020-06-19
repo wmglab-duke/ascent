@@ -277,35 +277,28 @@ class Query(Exceptionable, Configurable, Saveable):
         return True
 
     def heatmaps(self,
+                 plot: bool = True,
+                 plot_mode: str = 'average',
+                 save_path: str = None,
+                 plot_outers: bool = False,
+                 rows_override: int = None,
+                 colorbar_mode: str = 'subplot',
+                 colormap_str: str = 'coolwarm',
+                 colorbar_text_size_override: int = None,
+                 reverse_colormap: bool = True,
+                 colorbar_aspect: int = None,
+                 colomap_bounds_override: List[List[Tuple[float, float]]] = None,
+                 track_colormap_bounds: bool = False,
+                 track_colormap_bounds_offset_ratio: float = 0.0,
+                 missing_color: Tuple[int, int, int, int] = (1, 0, 0, 1),
+                 title_toggle: bool = True,
+                 subplot_title_toggle: bool = True,
+                 tick_count: int = 2,
+                 tick_bounds: bool = False,
+                 show_orientation_point: bool = True):
 
-        # output/master       
-        plot: bool = True,
-        plot_mode: str = 'average',
-        save_path: str = None,
-        plot_outers: bool = False,
-        rows_override: int = None,
-
-        # color
-        colorbar_mode: str = 'subplot',
-        colormap_str: str = 'coolwarm',
-        colorbar_text_size_override: int = None,
-        reverse_colormap: bool = True,
-        colorbar_aspect: int = None,
-        colomap_bounds_override: List[List[Tuple[float, float]]] = None,
-        track_colormap_bounds: bool = False,
-        track_colormap_bounds_offset_ratio: float = 0.0,
-        missing_color: Tuple[int, int, int, int] = (1, 0, 0, 1),
-
-        # text
-        title_toggle: bool = True,
-        subplot_title_toggle: bool = True,
-        
-        # miscellaneous
-        tick_count: int = 2,
-        tick_bounds: bool = False,
-        show_orientation_point = True
-    ):
-        """Generate activation thresholds heatmaps
+        """
+        Generate activation thresholds heatmaps
         
         Each plot represents a single 1-dimensional simulation, with each subplot representing a single value from the
         parameter that is being iterated over. For instace, a sim with many different fiber diamaters will have each subplot
@@ -352,14 +345,6 @@ class Query(Exceptionable, Configurable, Saveable):
             matplotlib.pyplot.Figure: Handle to final figure (uses .gcf())
         """
         
-
-        print('WARNING: plot_mode and colorbar_mode not yet implemented')
-
-        if track_colormap_bounds:
-            print('WARNING: track_colormap_bounds assumes \n'
-                  '\t1) single or first sim and\n'
-                  '\t2) nsims are in order, starting from 0')
-
         if self._result is None:
             self.throw(66)
 
