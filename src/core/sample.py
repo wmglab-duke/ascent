@@ -320,7 +320,10 @@ class Sample(Exceptionable, Configurable, Saveable):
 
             if deform_mode == DeformationMode.PHYSICS:
                 print('\t\tsetting up physics')
-                morph_count = 36
+                if 'morph_count' in self.search(Config.SAMPLE).keys():
+                    morph_count = self.search(Config.SAMPLE, 'morph_count')
+                else:
+                    morph_count = 36
 
                 if 'deform_ratio' in self.search(Config.SAMPLE).keys():
                     deform_ratio = self.search(Config.SAMPLE, 'deform_ratio')
