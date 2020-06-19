@@ -22,6 +22,7 @@ class Deformable(Exceptionable):
         :param boundary_end: end trace
         :param contents: list of traces assumed to be within boundary start, not required to be within boundary end.
         Assumed boundary end will be able to hold all contents.
+        
         """
 
         # init superclass
