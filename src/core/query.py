@@ -10,9 +10,9 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as tick
 from scipy import stats as stats
 import matplotlib.patches as mpatches
+import pandas as pd
 
-from core import FiberSet
-from src.core import Sample, Simulation, Slide
+from src.core import Sample, Simulation, Slide, FiberSet
 from src.utils import Exceptionable, Configurable, Saveable, SetupMode, Config, Object, FiberXYMode
 
 
@@ -207,7 +207,7 @@ class Query(Exceptionable, Configurable, Saveable):
         elif mode == Config.MODEL:
             result = os.path.join('samples', str(indices[0]), 'models', str(indices[1]), 'model.json')
         elif mode == Config.SIM:
-            result = os.path.join('config', 'user', 'sims', '.json'.format(indices[0]))
+            result = os.path.join('config', 'user', 'sims', '{}.json'.format(indices[0]))
         elif mode == Object.SAMPLE:
             result = os.path.join('samples', str(indices[0]), 'sample.obj')
         elif mode == Object.SIMULATION:
@@ -1283,3 +1283,106 @@ class Query(Exceptionable, Configurable, Saveable):
         plt.show()
 
         return ax
+
+    def excel_output(self,
+                        filepath: str,
+                        sample_keys: List[list] = [],
+                        model_keys: List[list] = [],
+                        sim_keys: List[list] = []):
+        """Output summary of query.
+
+        NOTE: for all key lists, the values themselves are lists, functioning as a JSON pointer.
+
+        Args:
+            filepath (str): output filepath
+            sample_keys (list, optional): Sample keys to output. Defaults to [].
+            model_keys (list, optional): Model keys to output. Defaults to [].
+            sim_keys (list, optional): Sim keys to output. Defaults to [].
+        """
+
+        sims: dict = {}
+
+        # SAMPLE
+        sample_results: dict
+        for sample_results in self._result.get('samples', []):
+            sample_index: int = sample_results['index']
+            sample_config_path: str = self.build_path(Config.SAMPLE, [sample_index])
+            sample_config: dict = self.load(sample_config_path)
+            self.add(SetupMode.OLD, Config.SAMPLE, sample_config);
+            print('sample: {}'.format(sample_index))
+
+            # MODEL
+            model_results: dict
+            for model_results in sample_results.get('models', []):
+                model_index = model_results['index']
+                model_config_path: str = self.build_path(Config.MODEL, [sample_index, model_index])
+                model_config: dict = self.load(model_config_path)
+                self.add(SetupMode.OLD, Config.MODEL, model_config);
+                print('\tmodel: {}'.format(model_index))
+
+                # SIM
+                for sim_index in model_results.get('sims', []):
+                    sim_config_path = self.build_path(Config.SIM, indices=[sim_index])
+                    sim_config = self.load(sim_config_path)
+                    self.add(SetupMode.OLD, Config.SIM, sim_config)
+                    sim_object: Simulation = self.get_object(Object.SIMULATION, [sample_index, model_index, sim_index])
+                    sim_dir = self.build_path(Object.SIMULATION, [sample_index, model_index, sim_index], just_directory=True)
+                    print('\t\tsim: {}'.format(sim_index))
+                    
+                    # init sheet if necessary
+                    if str(sim_index) not in sims.keys():
+                        # base header
+                        header = [
+                            'Sample Index', *['->'.join(key) for key in sample_keys],
+                            'Model Index', *['->'.join(key) for key in model_keys],
+                            'Sim Index', *['->'.join(key) for key in sim_keys],
+                            'NSim Index',
+                        ]
+                        # populate with nsim factors
+                        for fib_key_name in sim_object.fiberset_key:
+                            header.append(fib_key_name)
+                        for wave_key_name in sim_object.wave_key:
+                            header.append(wave_key_name)
+                        # add paths
+                        header += ['Sample Config Path', 'Model Config Path', 'Sim Config Path', 'NSim Path']
+                        # set header as first row
+                        sims[str(sim_index)] = [header]
+
+                    # NSIM
+                    for nsim_index, (potentials_product_index, waveform_index) in enumerate(sim_object.master_product_indices):
+                        nsim_dir = os.path.join(sim_dir, 'n_sims', str(nsim_index))
+                        # TODO: address active_src_index?
+                        active_src_index, fiberset_index = sim_object.potentials_product[potentials_product_index]
+                        # fetch additional sample, model, and sim values
+                        # that's one juicy list comprehension right there
+                        values = [[self.search(config, *key) for key in category] 
+                                  for category, config in zip([sample_keys, model_keys, sim_keys], [Config.SAMPLE, Config.MODEL, Config.SIM])]
+                        # base row data
+                        row = [
+                            sample_index, *values[0],
+                            model_index, *values[1],
+                            sim_index, *values[2],
+                            nsim_index,
+                        ]
+                        # populate factors (same order as header)
+                        for fib_key_value in sim_object.fiberset_product[fiberset_index]:
+                            row.append(fib_key_value)
+                        for wave_key_value in sim_object.wave_product[waveform_index]:
+                            row.append(wave_key_value)
+                        # add paths
+                        row += [sample_config_path, model_config_path, sim_config_path, nsim_dir]
+                        # add to sim sheet
+                        sims[str(sim_index)].append(row)
+        
+                    # "prune" old configs
+                    self.remove(Config.SIM)
+                self.remove(Config.MODEL)
+            self.remove(Config.SAMPLE)
+
+        # build Excel file, with one sim per sheet
+        writer = pd.ExcelWriter(filepath)
+        for sim_index, sheet_data in sims.items():
+            sheet_name = 'Sim {}'.format(sim_index)
+            pd.DataFrame(sheet_data).to_excel(writer, sheet_name=sheet_name, header=False, index=False)
+            writer.sheets[sheet_name].set_column(0, 256, 15)
+        writer.save()
