@@ -1288,7 +1288,11 @@ class Query(Exceptionable, Configurable, Saveable):
                         filepath: str,
                         sample_keys: List[list] = [],
                         model_keys: List[list] = [],
-                        sim_keys: List[list] = []):
+                        sim_keys: List[list] = [],
+                        individual_indices: bool = True,
+                        config_paths: bool = True,
+                        column_width: int = None,
+                        console_output: bool = True):
         """Output summary of query.
 
         NOTE: for all key lists, the values themselves are lists, functioning as a JSON pointer.
@@ -1298,6 +1302,10 @@ class Query(Exceptionable, Configurable, Saveable):
             sample_keys (list, optional): Sample keys to output. Defaults to [].
             model_keys (list, optional): Model keys to output. Defaults to [].
             sim_keys (list, optional): Sim keys to output. Defaults to [].
+            individual_indices (bool, optional): Include column for each index. Defaults tp True.
+            config_paths (bool, optional): Include column for each config path. Defaults to True.
+            column_width (int, optional): Column width for Excel document. Defaults to None (system default).
+            console_output (bool, optional): Print progress to console. Defaults to False.
         """
 
         sims: dict = {}
@@ -1309,7 +1317,9 @@ class Query(Exceptionable, Configurable, Saveable):
             sample_config_path: str = self.build_path(Config.SAMPLE, [sample_index])
             sample_config: dict = self.load(sample_config_path)
             self.add(SetupMode.OLD, Config.SAMPLE, sample_config);
-            print('sample: {}'.format(sample_index))
+            
+            if console_output:
+                print('sample: {}'.format(sample_index))
 
             # MODEL
             model_results: dict
@@ -1318,7 +1328,9 @@ class Query(Exceptionable, Configurable, Saveable):
                 model_config_path: str = self.build_path(Config.MODEL, [sample_index, model_index])
                 model_config: dict = self.load(model_config_path)
                 self.add(SetupMode.OLD, Config.MODEL, model_config);
-                print('\tmodel: {}'.format(model_index))
+                
+                if console_output:
+                    print('\tmodel: {}'.format(model_index))
 
                 # SIM
                 for sim_index in model_results.get('sims', []):
@@ -1327,24 +1339,32 @@ class Query(Exceptionable, Configurable, Saveable):
                     self.add(SetupMode.OLD, Config.SIM, sim_config)
                     sim_object: Simulation = self.get_object(Object.SIMULATION, [sample_index, model_index, sim_index])
                     sim_dir = self.build_path(Object.SIMULATION, [sample_index, model_index, sim_index], just_directory=True)
-                    print('\t\tsim: {}'.format(sim_index))
+                    
+                    if console_output:
+                        print('\t\tsim: {}'.format(sim_index))
                     
                     # init sheet if necessary
                     if str(sim_index) not in sims.keys():
                         # base header
+                        sample_parts = ['Sample Index', *['->'.join(['sample'] + key) for key in sample_keys]]
+                        model_parts = ['Model Index', *['->'.join(['model'] + key) for key in model_keys]]
+                        sim_parts = ['Sim Index', *['->'.join(['sim'] + key) for key in sim_keys]]
                         header = [
-                            'Sample Index', *['->'.join(key) for key in sample_keys],
-                            'Model Index', *['->'.join(key) for key in model_keys],
-                            'Sim Index', *['->'.join(key) for key in sim_keys],
-                            'NSim Index',
+                            'Indices',
+                            *(sample_parts if individual_indices else sample_parts[1:]),
+                            *(model_parts if individual_indices else model_parts[1:]),
+                            *(sim_parts if individual_indices else sim_parts[1:])
                         ]
+                        if individual_indices:
+                            header += ['Nsim Index']
                         # populate with nsim factors
                         for fib_key_name in sim_object.fiberset_key:
                             header.append(fib_key_name)
                         for wave_key_name in sim_object.wave_key:
                             header.append(wave_key_name)
                         # add paths
-                        header += ['Sample Config Path', 'Model Config Path', 'Sim Config Path', 'NSim Path']
+                        if config_paths:
+                            header += ['Sample Config Path', 'Model Config Path', 'Sim Config Path', 'NSim Path']
                         # set header as first row
                         sims[str(sim_index)] = [header]
 
@@ -1358,19 +1378,25 @@ class Query(Exceptionable, Configurable, Saveable):
                         values = [[self.search(config, *key) for key in category] 
                                   for category, config in zip([sample_keys, model_keys, sim_keys], [Config.SAMPLE, Config.MODEL, Config.SIM])]
                         # base row data
+                        sample_parts = [sample_index, *values[0]]
+                        model_parts = [model_index, *values[1]]
+                        sim_parts = [sim_index, *values[2]]
                         row = [
-                            sample_index, *values[0],
-                            model_index, *values[1],
-                            sim_index, *values[2],
-                            nsim_index,
+                            '{}_{}_{}_{}'.format(sample_index, model_index, sim_index, nsim_index),
+                            *(sample_parts if individual_indices else sample_parts[1:]),
+                            *(model_parts if individual_indices else model_parts[1:]),
+                            *(sim_parts if individual_indices else sim_parts[1:])
                         ]
+                        if individual_indices:
+                            row += [nsim_index]
                         # populate factors (same order as header)
                         for fib_key_value in sim_object.fiberset_product[fiberset_index]:
                             row.append(fib_key_value)
                         for wave_key_value in sim_object.wave_product[waveform_index]:
                             row.append(wave_key_value)
                         # add paths
-                        row += [sample_config_path, model_config_path, sim_config_path, nsim_dir]
+                        if config_paths:
+                            row += [sample_config_path, model_config_path, sim_config_path, nsim_dir]
                         # add to sim sheet
                         sims[str(sim_index)].append(row)
         
@@ -1384,5 +1410,9 @@ class Query(Exceptionable, Configurable, Saveable):
         for sim_index, sheet_data in sims.items():
             sheet_name = 'Sim {}'.format(sim_index)
             pd.DataFrame(sheet_data).to_excel(writer, sheet_name=sheet_name, header=False, index=False)
-            writer.sheets[sheet_name].set_column(0, 256, 15)
+            if column_width is not None:
+                writer.sheets[sheet_name].set_column(0, 256, column_width)
+            else:
+                writer.sheets[sheet_name].set_column(0, 256)
+
         writer.save()

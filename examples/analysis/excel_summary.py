@@ -29,5 +29,9 @@ q.excel_output(
     ],
     model_keys=[
         ['cuff', 'rotate', 'add_ang']
-    ]
+    ],
+    individual_indices=False,
+    config_paths=False,
+    console_output=False,
+    column_width=20
 )
