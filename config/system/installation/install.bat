@@ -10,5 +10,7 @@ pip install quantiphy
 pip install opencv-python
 pip install pymunk
 pip install scipy
+pip install pandas
+pip install openpyxl
 conda install -c conda-forge shapely
 set PYTHONPATH=%PYTHONPATH%;%CD%
