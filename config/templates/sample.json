@@ -5,13 +5,6 @@
   "samples_path": [
     "samples"
   ],
-  "map_path": [
-    "data",
-    "input",
-    "samples",
-    "Rat16-3",
-    "map.json"
-  ],
   "scale": {
     "scale_bar_length": 500,
     "shrinkage": 0.2
