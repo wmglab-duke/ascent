@@ -174,7 +174,6 @@ class FiberGeometry(Enum):
     NONE = None
     MRG_DISCRETE = "MRG_DISCRETE"
     MRG_INTERPOLATION = "MRG_INTERPOLATION"
-    B_FIBER = "B_FIBER"
     C_FIBER = "C_FIBER"
 
 
@@ -183,7 +182,6 @@ class NeuronFiberFlags(Enum):
     NONE = None
     MRG_DISCRETE = "MRG_DISCRETE"
     MRG_INTERPOLATION = "MRG_INTERPOLATION"
-    B_FIBER = "B_FIBER"
     C_FIBER = "C_FIBER"
 
 

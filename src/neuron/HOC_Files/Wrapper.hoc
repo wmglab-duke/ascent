@@ -71,14 +71,8 @@ whose value is given by e_pas_Vrest in CreateAxon_Myel.hoc. So as a rule of thum
 // ***************************************************************************
 // CreateAxon_Myel.hoc
 if (fiber_type == 2) {
-	if (flag_model_b_fiber==1) {
-		load_file("bFiberBuilder.hoc")
-		load_file("CreateAxon_BFiber.hoc")
-		CreateAxon_BFiber()
-	} else {
-		load_file("CreateAxon_Myel.hoc")
-		CreateAxon_Myel()
-	}
+	load_file("CreateAxon_Myel.hoc")
+	CreateAxon_Myel()
 }
 
 
