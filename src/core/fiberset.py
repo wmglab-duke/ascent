@@ -451,7 +451,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                         inter_length = eval(inter_length_str)
                         delta_z = eval(delta_z_str)
                     elif fiber_geometry_mode_name == FiberGeometry.MRG_INTERPOLATION.value:
-                        if diameter > 16.0:
+                        if diameter > 16.0 or diameter < 2.0:
                             self.throw(77)
                         if diameter >= 5.26:
                             delta_z = eval(delta_z_str["diameter_greater_or_equal_5.26um"])

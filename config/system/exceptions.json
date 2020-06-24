@@ -386,7 +386,7 @@
   },
   {
     "code": 77,
-    "text": "Diameter entered for MRG_INTERPOLATION exceeds the allowed bounds (less than 16 um)",
+    "text": "Diameter entered for MRG_INTERPOLATION exceeds the allowed bounds (must be less than 16 um and greater than 2 um)",
     "source": "src.core.Fiberset._generate_z"
   }
 ]
