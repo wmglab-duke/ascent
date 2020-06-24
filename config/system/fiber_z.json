@@ -1,10 +1,8 @@
 {
   "fiber_type_parameters": {
-    "unit": "micrometers",
     "MRG_DISCRETE": {
       "neuron_flag": 2,
       "geom_determination_method": 0,
-      "units": "micrometer",
       "myelinated": true,
       "sampling": "discrete",
       "node_length": 1.0,
@@ -56,7 +54,6 @@
     "MRG_INTERPOLATION": {
       "neuron_flag": 2,
       "geom_determination_method": 1,
-      "units": "micrometer",
       "myelinated": true,
       "sampling": "interp",
       "diameter": true,
@@ -74,7 +71,6 @@
     },
     "SUNDT": {
       "neuron_flag": 3,
-      "units": "micrometer",
       "myelinated": false,
       "sampling": "discrete",
       "delta_zs": 8.333,
@@ -85,7 +81,6 @@
     },
     "TIGERHOLM": {
       "neuron_flag": 3,
-      "units": "micrometer",
       "myelinated": false,
       "sampling": "discrete",
       "delta_zs": 8.333,
@@ -96,7 +91,6 @@
     },
     "RATTAY": {
       "neuron_flag": 3,
-      "units": "micrometer",
       "myelinated": false,
       "sampling": "discrete",
       "delta_zs": 8.333,
@@ -107,7 +101,6 @@
     },
     "SCHILD": {
       "neuron_flag": 3,
-      "units": "micrometer",
       "myelinated": false,
       "sampling": "discrete",
       "delta_zs": 8.333,

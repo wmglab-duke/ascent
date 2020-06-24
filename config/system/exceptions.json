@@ -383,5 +383,10 @@
     "code": 76,
     "text": "More than one break point indicated in Config.Run",
     "source": "src.core.Runner.run"
+  },
+  {
+    "code": 77,
+    "text": "Diameter entered for MRG_INTERPOLATION exceeds the allowed bounds (less than 16 um)",
+    "source": "src.core.Fiberset._generate_z"
   }
 ]
