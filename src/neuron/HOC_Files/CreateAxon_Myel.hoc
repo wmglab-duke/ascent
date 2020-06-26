@@ -62,16 +62,16 @@ proc CreateAxon_Myel() {
 		g = 1.473348e-04*fiberD^2 + 1.394606e-02 * fiberD + 5.235060e-01
 		axonD = 1.876226e-02*fiberD^2 + 4.787487e-01 * fiberD + 1.203613e-01
 
-		if (fiberD > 1.5) { 			
+		if (fiberD > 1.858214188) { 			
 			nodeD = 6.303781e-03*fiberD^2 + 2.070544e-01 * fiberD + 5.339006e-01
 		} else {
-			nodeD = axonD*1.9/3.4 // extrapolate nodeD:axonD ratio from 5.7 µm where quadratic fit deviates
+			nodeD = axonD*1.4/1.6 // extrapolate nodeD:axonD ratio from 5.7 µm where quadratic fit deviates
 		}
 		
 		paraD1 = 6.303781e-03*fiberD^2 + 2.070544e-01 * fiberD + 5.339006e-01
 		paraD2 = 1.876226e-02*fiberD^2 + 4.787487e-01 * fiberD + 1.203613e-01
 		
-		if (fiberD >= 5.26) {
+		if (fiberD >= 5.638408135) {
 			deltaz = -8.215284e+00*fiberD^2 + 2.724201e+02 * fiberD + -7.802411e+02
 		} else {
 			deltaz = (500/5.7)*fiberD // revert to linear deltaz where quadratic fit deviates, extrapolate from 5.7 µm
