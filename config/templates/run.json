@@ -7,7 +7,7 @@
   "break_points": {
     "pre_java": false,
     "pre_geom_run": false,
-    "post_geom_run": true,
+    "post_geom_run": false,
     "post_mesh_distal": false,
     "pre_mesh_distal": false,
     "post_material_assign": false,
