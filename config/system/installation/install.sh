@@ -1,16 +1,16 @@
 echo PLEASE ENSURE THAT YOU ARE RUNNING THIS INSTALLATION SCRIPT FROM THE ROOT OF THE REPO
-pip install pip
-pip install Pillow
-pip install numpy
-pip install shapely
-pip install matplotlib
-pip install pyclipper
-pip install pygame
-pip install quantiphy
-pip install opencv-python
-pip install pymunk
-pip install scipy
-pip install pandas
-pip install openpyxl
-conda install -c conda-forge shapely
+pip install --user pip
+pip install --user Pillow
+pip install --user numpy
+pip install --user shapely
+pip install --user matplotlib
+pip install --user pyclipper
+pip install --user pygame
+pip install --user quantiphy
+pip install --user opencv-python
+pip install --user pymunk
+pip install --user scipy
+pip install --user pandas
+pip install --user openpyxl
+conda install -c conda-forge --use-local shapely
 export PYTHONPATH="$PYTHONPATH:$PWD"

@@ -454,6 +454,7 @@ public class ModelWrapper {
                             coord_dir, Integer.toString(fiberset_ind)
                     });
                     File f_coords = new File(fiberset_dir);
+                    // TODO: TRY ON MAC/WINDOWS/LINUX
                     String[] fiber_coords_list = f_coords.list();
 
                     assert fiber_coords_list != null;
