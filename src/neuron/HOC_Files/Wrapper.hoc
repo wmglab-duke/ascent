@@ -364,13 +364,13 @@ batchrun()
 
 
 // Save the runtime to a file
-objref f_runtime
-f_runtime = new File()
-f_runtime.wopen("..//%s//data//outputs//run_time.dat", sim_path)
-f_runtime.printf("Run time: %f seconds", startsw()-trun)
-f_runtime.close()
-//print "Run time: ", startsw()-trun, "seconds"
+// objref f_runtime
+// f_runtime = new File()
+// f_runtime.wopen("..//%s//data//outputs//run_time.dat", sim_path)
+// f_runtime.printf("Run time: %f seconds", startsw()-trun)
+// f_runtime.close()
+// print "Run time: ", startsw()-trun, "seconds"
 
-//{pc.done()}
+// {pc.done()}
 
 quit()

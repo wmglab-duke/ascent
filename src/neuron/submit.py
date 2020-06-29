@@ -100,7 +100,7 @@ if __name__ == "__main__":
 
                         # binary search intitial bounds (unit: mA)
                         # TODO: abstract these in a run or sim configuration
-                        stimamp_top, stimamp_bottom = 10, 0.01
+                        stimamp_top, stimamp_bottom = -1, -0.01
 
                         with open(start_path, 'w+') as handle:
                             lines = []

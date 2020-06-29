@@ -404,7 +404,7 @@ class Query(Exceptionable, Configurable, Saveable):
                     master_product_count = len(sim_object.master_product_indices)
                     rows = int(np.floor(np.sqrt(master_product_count))) if rows_override is None else rows_override
                     cols = int(np.ceil(master_product_count / rows))
-                    figure, axes = plt.subplots(rows, cols, constrained_layout=False, figsize=(25, 20))  # todo changed for ImThera (25, 20) for monopolar
+                    figure, axes = plt.subplots(rows, cols, constrained_layout=False, figsize=(35, 30))  # todo changed for ImThera (25, 20) for monopolar
                     axes = axes.reshape(-1)
 
                     # loop nsims
@@ -429,7 +429,7 @@ class Query(Exceptionable, Configurable, Saveable):
                                                        'thresh_inner{}_fiber0.dat'.format(i))
                             if os.path.exists(thresh_path):
                                 threshold = np.loadtxt(thresh_path)
-                                if len(threshold) > 1:
+                                if len(np.atleast_1d(threshold)) > 1:
                                     threshold = threshold[-1]
                                 thresholds.append(threshold)
                             else:
@@ -466,7 +466,7 @@ class Query(Exceptionable, Configurable, Saveable):
                             else:
                                 # NOTE: PLOTS MISSING VALUES AS RED
                                 offset += 1
-                                colors.append(colors, missing_color)
+                                colors.append(missing_color)
 
                         # figure title -- make arbitrary, hard-coded subplot title modifications here (add elif's)
                         title = ''
@@ -486,7 +486,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
                         # set title
                         if subplot_title_toggle:
-                            ax.set_title(title)
+                            ax.set_title(title, fontsize=40)
 
                         # plot orientation point if applicable
                         if orientation_point is not None and show_orientation_point is True:
@@ -536,7 +536,7 @@ class Query(Exceptionable, Configurable, Saveable):
                         if not os.path.exists(save_path):
                             os.mkdir(save_path)
                         dest = '{}{}{}_{}_{}.png'.format(save_path, os.sep, sample_index, model_index, sim_index)
-                        figure.savefig(dest, dpi=600)
+                        figure.savefig(dest, dpi=200)
                         # print('done')
 
                     # plot figure
@@ -1152,7 +1152,7 @@ class Query(Exceptionable, Configurable, Saveable):
                                 # if exist, else print
                                 if os.path.exists(thresh_path):
                                     threshold = np.loadtxt(thresh_path)
-                                    if len(threshold) > 1:
+                                    if len(np.atleast_1d(threshold)) > 1:
                                         threshold = threshold[-1]
                                     thresholds.append(threshold)
                                 else:
