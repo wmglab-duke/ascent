@@ -46,46 +46,40 @@
     "BIPHASIC_PULSE_TRAIN": {
       "pulse_width": 0.1,
       "inter_phase": 0,
+      "pulse_repetition_freq": 1,
       "digits": 1
     }
   },
   "intracellular_stim": {
-    "flag": false,
     "times": {
-      "unit": "ms",
       "pw": 0,
       "IntraStim_PulseTrain_delay": 0
     },
-    "freq": {
-      "unit": "Hz",
-      "value": 0
-    },
-    "amp": {
-      "unit": "nA",
-      "value": 0
-    },
+    "pulse_repetition_freq": 0,
+    "amp": 0,
     "ind": 2
   },
   "save_flags": {
-    "vm_time": 0,
-    "gating_time": 0,
-    "vm_space": 0,
-    "gating_space": 0,
-    "ve": 0,
-    "istim": 0
+    "vm_time": false,
+    "gating_time": false,
+    "vm_space": false,
+    "gating_space": false,
+    "ve": false,
+    "istim": false
   },
-  "threshold": {
-    "thresh_flag": 1,
-    "block_thresh": 0,
-    "resolution": 0.01,
-    "vm": {
-      "unit": "mV",
-      "value": -30
+  "protocol": {
+    "mode": "ACTIVATION_THRESHOLD",
+    "threshold": {
+      "value": -30,
+      "n_min_aps": 1
     },
-    "n_min_aps": 1
-  },
-  "terminal_nodes": {
-    "node_channels": true,
-    "passive_end_nodes": true
+    "bounds_search": {
+      "mode": "PERCENT_INCREMENT",
+      "step": 0.1
+    },
+    "termination_criteria": {
+      "mode": "PERCENT_DIFFERENCE",
+      "percent": 0.01
+    }
   }
 }

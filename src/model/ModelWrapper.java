@@ -4,6 +4,7 @@ import com.comsol.model.*;
 import com.comsol.model.physics.PhysicsFeature;
 import com.comsol.model.util.ModelUtil;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.*;
@@ -453,6 +454,7 @@ public class ModelWrapper {
                             coord_dir, Integer.toString(fiberset_ind)
                     });
                     File f_coords = new File(fiberset_dir);
+                    // TODO: TRY ON MAC/WINDOWS/LINUX
                     String[] fiber_coords_list = f_coords.list();
 
                     assert fiber_coords_list != null;
@@ -760,7 +762,7 @@ public class ModelWrapper {
                     "slides",
                     "0", // these 0's are temporary (for 3d models will need to change)
                     "0",
-                    (String) ((JSONObject) sampleData.get("modes")).get("write"),
+                    "sectionwise2d",
                     "fascicles"
             });
 
@@ -773,13 +775,13 @@ public class ModelWrapper {
 
             // Loop over all fascicle dirs
             String[] dirs = new File(fasciclesPath).list();
+
             if (dirs != null) {
                 for (String dir: dirs) {
                     if (! dir.contains(".")) {
                         int index = Integer.parseInt(dir);
                         // Initialize data to send to Part.createPartInstance
                         HashMap<String, String[]> data = new HashMap<>();
-
                         // Add inners and outer files to array
                         String path = String.join("/", new String[]{fasciclesPath, dir});
                         for (String type: new String[]{"inners", "outer"}) {
@@ -890,7 +892,6 @@ public class ModelWrapper {
         JSONObject solution = modelData.getJSONObject("solution");
         long estimatedRunSolTime = System.nanoTime() - runSolStartTime;
         solution.put("sol_time", estimatedRunSolTime/Math.pow(10,6)); // convert nanos to millis, this is for solving all contacts
-        solution.put("time_units", "ms"); // convert nanos to millis
         modelData.put("solution", solution);
     }
 
@@ -981,7 +982,27 @@ public class ModelWrapper {
             e.printStackTrace();
         }
         JSONArray models_list = run.getJSONArray("models"); // get array of COMSOL models
-        JSONObject break_points = run.getJSONObject("break_points");
+        JSONObject break_points;
+        try {
+            break_points = run.getJSONObject("break_points");   
+        } catch(JSONException e) {
+            // FIXME: this is a sloppy fix for now
+            // maybe change design of break points to use a JSON config so these don't need to be hard-coded
+            break_points = new JSONObject();
+            String[] keysToPopulate = {
+                "pre_geom_run",
+                "post_geom_run",
+                "pre_mesh_proximal",
+                "post_mesh_proximal",
+                "pre_mesh_distal",
+                "post_mesh_distal",
+                "post_material_assign",
+                "pre_loop_currents"
+            };
+            for (String keyToPopulate: keysToPopulate) {
+                break_points.put(keyToPopulate, false);
+            }
+        }
 
         // Load SAMPLE configuration data
         String sample = String.valueOf(Objects.requireNonNull(run).getInt("sample"));
@@ -1047,7 +1068,14 @@ public class ModelWrapper {
                     }
 
                     // if optimizing
-                    if ((Boolean) run.get("recycle_meshes")) {
+                    boolean recycle_meshes;
+                    if (run.has("recycle_meshes")) {
+                        recycle_meshes = run.getBoolean("recycle_meshes");
+                    } else {
+                        recycle_meshes = false;
+                    }
+
+                    if (recycle_meshes) {
                         System.out.println("Entering mesh recycling logic.");
                         try {
                             // if prev is not null AND prev is mesh match:
@@ -1143,7 +1171,7 @@ public class ModelWrapper {
                         double proximal_length = proximalMedium.getDouble("length");
                         double proximal_radius = proximalMedium.getDouble("radius");
 
-                        String bounds_unit = ((JSONObject) modelData.get("medium")).getString("unit");
+                        String bounds_unit = "[um]";
                         mediumParams.set("z_nerve", proximal_length + " " + bounds_unit);
                         mediumParams.set("r_proximal", proximal_radius + " " + bounds_unit);
 
@@ -1191,7 +1219,7 @@ public class ModelWrapper {
                         // add NERVE (Fascicles CI/MESH and EPINEURIUM)
                         // Set NERVE MORPHOLOGY parameters
                         JSONObject morphology = (JSONObject) sampleData.get("Morphology");
-                        String morphology_unit = ((JSONObject) sampleData.get("scale")).getString("scale_bar_unit");
+                        String morphology_unit = "um";
 
                         String nerveParamsLabal = "Nerve Parameters";
                         ModelParamGroup nerveParams = model.param().group().create(nerveParamsLabal);
@@ -1222,8 +1250,8 @@ public class ModelWrapper {
                         String ci_mode = sampleData.getJSONObject("modes").getString("ci_perineurium_thickness");
                         if (ci_mode.compareTo("MEASURED") != 0) {
                             JSONObject myCICoeffs = ciCoeffsData.getJSONObject("ci_perineurium_thickness_parameters").getJSONObject(ci_mode);
-                            nerveParams.set("ci_a", myCICoeffs.getDouble("a") + " [" + myCICoeffs.getString("unit") + "/" + myCICoeffs.getString("unit") + "]");
-                            nerveParams.set("ci_b", myCICoeffs.getDouble("b") + " [" + myCICoeffs.getString("unit") + "]");
+                            nerveParams.set("ci_a", myCICoeffs.getDouble("a") + " [micrometer/micrometer]");
+                            nerveParams.set("ci_b", myCICoeffs.getDouble("b") + " [micrometer]");
 
                         }
 
@@ -1241,8 +1269,8 @@ public class ModelWrapper {
                         ModelParamGroup cuffConformationParams = model.param().group().create(cuffConformationParamsLabel);
                         cuffConformationParams.label(cuffConformationParamsLabel);
 
-                        String cuff_shift_unit = modelData.getJSONObject("cuff").getJSONObject("shift").getString("unit");
-                        String cuff_rot_unit = modelData.getJSONObject("cuff").getJSONObject("rotate").getString("unit");
+                        String cuff_shift_unit = "[micrometer]";
+                        String cuff_rot_unit = "[degree]";
                         Integer cuff_shift_x = modelData.getJSONObject("cuff").getJSONObject("shift").getInt("x");
                         Integer cuff_shift_y = modelData.getJSONObject("cuff").getJSONObject("shift").getInt("y");
                         Integer cuff_shift_z = modelData.getJSONObject("cuff").getJSONObject("shift").getInt("z");
@@ -1269,7 +1297,14 @@ public class ModelWrapper {
                         }
 
                         // break point "pre_geom_run"
-                        if (break_points.getBoolean("pre_geom_run")) {
+                        boolean pre_geom_run;
+                        if (break_points.has("pre_geom_run")) {
+                            pre_geom_run = break_points.getBoolean("pre_geom_run");
+                        } else {
+                            pre_geom_run = false;
+                        }
+
+                        if (pre_geom_run) {
                             models_exit_status[model_index] = false;
                             System.out.println("pre_geom_run is the first break point encountered, moving on with next model index\n");
                             continue;
@@ -1295,7 +1330,14 @@ public class ModelWrapper {
                         }
 
                         // break point "post_geom_run"
-                        if (break_points.getBoolean("post_geom_run")) {
+                        boolean post_geom_run;
+                        if (break_points.has("pre_geom_run")) {
+                            post_geom_run = break_points.getBoolean("post_geom_run");
+                        } else {
+                            post_geom_run = false;
+                        }
+
+                        if (post_geom_run) {
                             models_exit_status[model_index] = false;
                             System.out.println("post_geom_run is the first break point encountered, moving on with next model index\n");
                             continue;
@@ -1366,7 +1408,14 @@ public class ModelWrapper {
                         }
 
                         // break point "pre_mesh_proximal"
-                        if (break_points.getBoolean("pre_mesh_proximal")) {
+                        boolean pre_mesh_proximal;
+                        if (break_points.has("pre_mesh_proximal")) {
+                            pre_mesh_proximal = break_points.getBoolean("pre_mesh_proximal");
+                        } else {
+                            pre_mesh_proximal = false;
+                        }
+
+                        if (pre_mesh_proximal) {
                             models_exit_status[model_index] = false;
                             System.out.println("pre_mesh_proximal is the first break point encountered, moving on with next model index\n");
                             continue;
@@ -1399,7 +1448,14 @@ public class ModelWrapper {
                         TimeUnit.SECONDS.sleep(5);
 
                         // break point "post_mesh_proximal"
-                        if (break_points.getBoolean("post_mesh_proximal")) {
+                        boolean post_mesh_proximal;
+                        if (break_points.has("post_mesh_proximal")) {
+                            post_mesh_proximal = break_points.getBoolean("post_mesh_proximal");
+                        } else {
+                            post_mesh_proximal = false;
+                        }
+
+                        if (post_mesh_proximal) {
                             models_exit_status[model_index] = false;
                             System.out.println("post_mesh_proximal is the first break point encountered, moving on with next model index\n");
                             continue;
@@ -1446,7 +1502,14 @@ public class ModelWrapper {
                             }
 
                             // break point "pre_mesh_distal"
-                            if (break_points.getBoolean("pre_mesh_distal")) {
+                            boolean pre_mesh_distal;
+                            if (break_points.has("pre_mesh_distal")) {
+                                pre_mesh_distal = break_points.getBoolean("pre_mesh_distal");
+                            } else {
+                                pre_mesh_distal = false;
+                            }
+
+                            if (pre_mesh_distal) {
                                 models_exit_status[model_index] = false;
                                 System.out.println("pre_mesh_distal is the first break point encountered, moving on with next model index\n");
                                 continue;
@@ -1480,7 +1543,14 @@ public class ModelWrapper {
                             }
 
                             // break point "post_mesh_distal"
-                            if (break_points.getBoolean("post_mesh_distal")) {
+                            boolean post_mesh_distal;
+                            if (break_points.has("post_mesh_distal")) {
+                                post_mesh_distal = break_points.getBoolean("post_mesh_distal");
+                            } else {
+                                post_mesh_distal = false;
+                            }
+
+                            if (post_mesh_distal) {
                                 models_exit_status[model_index] = false;
                                 System.out.println("post_mesh_distal is the first break point encountered, moving on with next model index\n");
                                 continue;
@@ -1512,8 +1582,6 @@ public class ModelWrapper {
                         mesh.put("stats", meshStats);
                         modelData.put("mesh", mesh);
 
-                        // TODO SAVE MODEL CONFIG HERE
-
                         System.out.println("DONE MESHING");
 
                         try {
@@ -1529,7 +1597,6 @@ public class ModelWrapper {
                         String imFile = String.join("/", new String[]{projectPath, "samples", sample, "models", modelStr, "mesh", "im.json"});
 
                         // save IM !!!!
-                        previousIM = IdentifierManager.fromJSONObject(new JSONObject(mw.im.toJSONObject().toString()));
                         JSONio.write(imFile, mw.im.toJSONObject()); // write to file
 
                         // save ppIMs !!!!
@@ -1544,7 +1611,14 @@ public class ModelWrapper {
                         // save previous model config !!!!
                         previousModelData = modelData;
 
-                        if (!run.getJSONObject("keep").getBoolean("debug_geom")) {
+                        boolean keep_debug_geom;
+                        if (run.getJSONObject("keep").has("debug_geom")) {
+                            keep_debug_geom = run.getJSONObject("keep").getBoolean("debug_geom");
+                        } else {
+                            keep_debug_geom = false;
+                        }
+
+                        if (!keep_debug_geom) {
                             File debug_geom_file = new File(geomFile);
                             debug_geom_file.delete();
                             System.out.println("Successfully saved mesh.mph and ppim's, therefore deleted debug_geom.mph file.");
@@ -1653,7 +1727,14 @@ public class ModelWrapper {
                     }
 
                     // break point "post_mesh_distal"
-                    if (break_points.getBoolean("post_material_assign")) {
+                    boolean post_material_assign;
+                    if (break_points.has("post_material_assign")) {
+                        post_material_assign = break_points.getBoolean("post_material_assign");
+                    } else {
+                        post_material_assign = false;
+                    }
+
+                    if (post_material_assign) {
                         models_exit_status[model_index] = false;
                         System.out.println("post_material_assign is the first break point encountered, moving on with next model index\n");
                         continue;
@@ -1717,7 +1798,14 @@ public class ModelWrapper {
                     }
 
                     // break point "post_mesh_distal"
-                    if (break_points.getBoolean("pre_loop_currents")) {
+                    boolean pre_loop_currents;
+                    if (break_points.has("pre_loop_currents")) {
+                        pre_loop_currents = break_points.getBoolean("pre_loop_currents");
+                    } else {
+                        pre_loop_currents = false;
+                    }
+
+                    if (pre_loop_currents) {
                         models_exit_status[model_index] = false;
                         System.out.println("pre_loop_currents is the first break point encountered, moving on with next model index\n");
                         continue;
@@ -1727,7 +1815,14 @@ public class ModelWrapper {
 
                     ModelUtil.remove(model.tag());
 
-                    if (!run.getJSONObject("keep").getBoolean("mesh")) {
+                    boolean keep_mesh;
+                    if (run.getJSONObject("keep").has("mesh")) {
+                        keep_mesh = run.getJSONObject("keep").getBoolean("mesh");
+                    } else {
+                        keep_mesh = false;
+                    }
+
+                    if (!keep_mesh) {
                         File mesh_path = new File(meshPath);
                         deleteDir(mesh_path);
                         System.out.println("Successfully solved for /bases, therefore deleted /mesh directory.");
@@ -1762,7 +1857,14 @@ public class ModelWrapper {
                         model_path, "bases"
                 });
 
-                if (!run.getJSONObject("keep").getBoolean("bases")) {
+                boolean keep_bases;
+                if (run.getJSONObject("keep").has("bases")) {
+                    keep_bases = run.getJSONObject("keep").getBoolean("bases");
+                } else {
+                    keep_bases = false;
+                }
+
+                if (!keep_bases) {
                     File bases_path = new File(basesPath);
                     deleteDir(bases_path);
                     System.out.println("Successfully extracted potentials, therefore deleted /bases directory.");

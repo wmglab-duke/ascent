@@ -35,6 +35,21 @@ class Object(Enum):
     SAMPLE = 'sample'
     SIMULATION = 'sim'
 
+@unique
+class Env(Enum):
+    prefix = 'ASCENT_'
+    
+    COMSOL_PATH = prefix + 'COMSOL_PATH'
+    JDK_PATH = prefix + 'JDK_PATH'
+    PROJECT_PATH = prefix + 'PROJECT_PATH'
+    NSIM_EXPORT_PATH = prefix + 'NSIM_EXPORT_PATH'
+
+    vals = [
+        COMSOL_PATH,
+        JDK_PATH,
+        PROJECT_PATH,
+        NSIM_EXPORT_PATH
+    ]
 # %% Trace functionality
 
 @unique
@@ -168,7 +183,6 @@ class NeuronFiberFlags(Enum):
     NONE = None
     MRG_DISCRETE = "MRG_DISCRETE"
     MRG_INTERPOLATION = "MRG_INTERPOLATION"
-    B_FIBER = "B_FIBER"
     C_FIBER = "C_FIBER"
 
 
@@ -205,6 +219,33 @@ class WaveformMode(Enum):
     EXPLICIT = 5
 
 
+# %% NEURON Protocols
+
+@unique
+class NeuronRunMode(Enum):
+    config = 'mode'
+
+    ACTIVATION_THRESHOLD = 0
+    BLOCK_THRESHOLD = 1
+    FINITE_AMPLITUDES = 2
+
+
+@unique
+class SearchAmplitudeIncrementMode(Enum):
+    config = 'mode'
+
+    ABSOLUTE_INCREMENT = 0
+    PERCENT_INCREMENT = 1
+
+
+@unique
+class TerminationCriteriaMode(Enum):
+    config = 'mode'
+
+    PERCENT_DIFFERENCE = 0
+    ABSOLUTE_DIFFERENCE = 1
+
+
 # %% Perineurium Impedance
 
 @unique
@@ -216,11 +257,13 @@ class PerineuriumThicknessMode(Enum):
     PIG_INHOUSE = 1
     MEASURED = 3
     PIG_INHOUSE_200523 = 4
+    RAT_INHOUSE_200601 = 5
+    HUMAN_INHOUSE_200601 = 6
 
 
 @unique
 class PerineuriumResistivityMode(Enum):
-    config = 'rho_perineurium_method'
+    config = 'rho_perineurium'
 
     RHO_WEERASURIYA = 'RHO_WEERASURIYA'
 
@@ -247,14 +290,9 @@ class CuffMode(Enum):
     IMTHERA = 4
 
 
-class CuffRotationMode(Enum):
-    config = 'cuff_rotation_mode'
-    AUTOMATIC = True
-    MANUAL = False
-
-
 class CuffShiftMode(Enum):
     config = 'cuff_shift_mode'
+
     MIN_CIRCLE_BOUNDARY = 0
     TRACE_BOUNDARY = 1
 

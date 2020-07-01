@@ -1,11 +1,8 @@
 {
   "global": {
-    "sample_str": "Alien1-1"
+    "NAME": "Alien1-1"
   },
-  "scale_bar": {
-    "scalebar_length": 1000,
-    "length_unit": "um"
-  },
+  "scalebar_length": 1000,
   "nerve": {
     "a_nerve": 1500,
     "b_nerve": 1000,

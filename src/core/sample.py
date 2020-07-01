@@ -100,7 +100,7 @@ class Sample(Exceptionable, Configurable, Saveable):
         start_directory: str = os.getcwd()
 
         # go to samples root
-        samples_path: str = os.path.join('samples')
+        samples_path = self.path(Config.SAMPLE, 'samples_path')
 
         # get sample NAME
         sample: str = self.search(Config.SAMPLE, 'sample')
@@ -293,7 +293,7 @@ class Sample(Exceptionable, Configurable, Saveable):
                 # plt.show()
 
             # shrinkage correction
-            slide.scale(1 + self.search(Config.SAMPLE, "scale", "shrinkage_scale"))
+            slide.scale(1 + self.search(Config.SAMPLE, "scale", "shrinkage"))
 
             # shift slide about (0,0)
             slide.move_center(np.array([0, 0]))
@@ -320,30 +320,32 @@ class Sample(Exceptionable, Configurable, Saveable):
 
             if deform_mode == DeformationMode.PHYSICS:
                 print('\t\tsetting up physics')
-                morph_count = 36
+                if 'morph_count' in self.search(Config.SAMPLE).keys():
+                    morph_count = self.search(Config.SAMPLE, 'morph_count')
+                else:
+                    morph_count = 36
 
                 if 'deform_ratio' in self.search(Config.SAMPLE).keys():
                     deform_ratio = self.search(Config.SAMPLE, 'deform_ratio')
                     print('\t\tdeform ratio set to {}'.format(deform_ratio))
 
                 # title = 'morph count: {}'.format(morph_count)
-                dist = self.search(Config.SAMPLE, "min_fascicle_separation", "dist")
-                nerve_add = None
+                sep_fascicles = self.search(Config.SAMPLE, "min_fascicle_separation")
+                sep_nerve = None
 
-                print('\t\tensuring minimum fascicle separation of {} um'.format(dist))
+                print('\t\tensuring minimum fascicle separation of {} um'.format(sep_fascicles))
 
-                if 'nerve_addition' in self.search(Config.SAMPLE, 'min_fascicle_separation').keys():
-                    nerve_add = self.search(Config.SAMPLE, 'min_fascicle_separation', 'nerve_addition')
-                    print('\t\taccounting for additional nerve boundary buffer: {} um'.format(nerve_add))
+                if 'nerve' in self.search(Config.SAMPLE, 'boundary_separation').keys():
+                    sep_nerve = self.search(Config.SAMPLE, 'boundary_separation', 'nerve')
+                    print('\t\tensuring minimum nerve:fascicle separation of {} um'.format(sep_nerve))
 
                 deformable = Deformable.from_slide(slide,
                                                    ReshapeNerveMode.CIRCLE,
-                                                   minimum_distance=dist,
-                                                   nerve_add=nerve_add)
+                                                   sep_nerve=sep_nerve)
 
                 movements, rotations = deformable.deform(morph_count=morph_count,
                                                          render=deform_animate,
-                                                         minimum_distance=dist,
+                                                         minimum_distance=sep_fascicles,
                                                          ratio=deform_ratio)
 
                 partially_deformed_nerve = Deformable.deform_steps(deformable.start,
@@ -389,7 +391,6 @@ class Sample(Exceptionable, Configurable, Saveable):
                                    'slides')
 
         # loop through the slide info (index i SHOULD correspond to slide in self.slides)
-        # TODO: ensure self.slides matches up with self.map.slides
         for i, slide_info in enumerate(self.map.slides):
             # unpack data and force cast to string
             cassette, number, _, source_directory = slide_info.data()

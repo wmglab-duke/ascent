@@ -5,43 +5,40 @@
     "cuff_shift_mode": true,
     "fiber_z": true
   },
-  "solution": false,
-  "temperature": false,
   "medium": {
-    "distal": {
-      "distant_ground": true,
-      "unit": true,
+    "proximal": {
+      "distant_ground": false,
       "length": true,
       "radius": true
     },
-    "proximal": {
-      "distant_ground": false,
-      "unit": true,
+    "distal": {
+      "distant_ground": true,
+      "shift": {
+        "x": true,
+        "y": true,
+        "z": true
+      },
       "length": true,
       "radius": true
     }
   },
   "trace_interp_tol": true,
   "cuff": {
+    "preset": true,
     "rotate": {
-      "unit": true,
       "add_ang": true,
       "pos_ang": true
     },
     "shift": {
-      "unit": true,
       "x": true,
       "y": true,
       "z": true
-    },
-    "preset": true
+    }
   },
-  "conductivities": false,
   "min_radius_enclosing_circle": true,
   "mesh": {
-    "rest": {
+    "proximal": {
       "mesh_time": false,
-      "time_units": true,
       "hcurve": true,
       "hmin": true,
       "hnarrow": true,
@@ -52,19 +49,25 @@
       "hmax": true,
       "hgrad": true
     },
-    "stats": false,
-    "nerve": {
+    "distal": {
       "mesh_time": false,
-      "time_units": true,
       "hcurve": true,
       "hmin": true,
       "hnarrow": true,
+      "type": {
+        "im": true,
+        "name": true
+      },
       "hmax": true,
       "hgrad": true
-    }
+    },
+    "stats": false
   },
+  "frequency": false,
+  "temperature": false,
+  "conductivities": false,
   "solver": {
     "name": true
   },
-  "frequency": false
+  "solution": false
 }

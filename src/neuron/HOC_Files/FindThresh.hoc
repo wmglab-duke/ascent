@@ -40,10 +40,16 @@ proc FindThresh() {//local key
 
 		if (N_APs_top == 0) {
 			print "ERROR: Initial stimamp_top value does not elicit an AP (find_block_thresh = 0) or does not block (find_block_thresh = 1) - need to increase its magnitude and/or increase tstop to detect evoked AP"
-			// multiply simamptop by 1.1
-			stimamp_top    = stimamp_top*1.1
+			
 			check_top_flag = 0
 			//return 0
+
+			if (increment_flag == 1) { // relative
+				stimamp_top    = stimamp_top*(1+rel_increment)
+			} else if (increment_flag == 0) { // absolute
+				stimamp_top    = stimamp_top + abs_increment
+			}
+
 		} else {
 			check_top_flag = 1
 		}
@@ -58,10 +64,16 @@ proc FindThresh() {//local key
 
 		if (N_APs_bottom != (0)) {
 			print "ERROR: Initial stimamp_bottom value elicits an AP (find_block_thresh = 0) or blocks (find_block_thresh = 1) - need to decrease its magnitude and/or increase tstop to detect block test pulses"
-			// multiply simampbottom by 0.9
-			stimamp_bottom    = stimamp_bottom*0.9
+
 			check_bottom_flag = 0
 			//return 0
+
+			if (increment_flag == 1) { // relative
+				stimamp_bottom    = stimamp_bottom*(1-rel_increment)
+			} else if (increment_flag == 0) { // absolute
+				stimamp_bottom    = stimamp_bottom - abs_increment
+			}
+
 		} else {
 			check_bottom_flag = 1
 		}
@@ -79,8 +91,22 @@ proc FindThresh() {//local key
 		print "stimamp = ", stimamp, "mA for extracellular and nA for intracellular (check flag_whichstim)"
 		RunSim(stimamp)
 		print "N_APs = ", N_APs
+
+		if (termination_flag == 0) {
+			//rel_thresh_resoln 
+			thresh_resoln = abs(rel_thresh_resoln) // not sure why user would enter negative tolerance, but just in case
+			tolerance = abs((stimamp_bottom - stimamp_top) / stimamp_top)
+
+
+		} else if (termination_flag == 1) {
+			//abs_thresh_resoln
+			thresh_resoln = abs(abs_thresh_resoln) // not sure why user would enter negative tolerance, but just in case
+			tolerance = abs(stimamp_bottom - stimamp_top)
+
+		}
+
 		//if ((abs((stimamp_bottom - stimamp_top) / 2)) < thresh_resoln) {	// resolution of search
-		if ((abs((stimamp_bottom - stimamp_top) / stimamp_top)) < thresh_resoln) {	// resolution of search
+		if ((tolerance) < thresh_resoln) {	// resolution of search
 			// Use last amplitude that produced an action potential
 			if (N_APs == 0) {
 				stimamp = stimamp_prev

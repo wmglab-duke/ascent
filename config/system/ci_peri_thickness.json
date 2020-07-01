@@ -1,26 +1,21 @@
 {
   "ci_perineurium_thickness_parameters": {
     "PIG_INHOUSE": {
-      "unit": "micrometer",
       "a": 0.015706,
       "b": 5.1028
     },
     "GRINBERG_2008": {
-      "unit": "micrometer",
       "a": 0.03,
       "b": 0
     },
     "PIG_INHOUSE_200523": {
-      "unit": "micrometer",
       "a": 0.02547,
       "b": 3.440
     }
     ,"RAT_INHOUSE_200601": {
-      "unit": "micrometer",
       "a": 0.01292,
       "b": 1.367
     },"HUMAN_INHOUSE_200601": {
-      "unit": "micrometer",
       "a": 0.03702,
       "b": 10.50
     }

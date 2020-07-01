@@ -19,7 +19,7 @@ for argument_index in range(1, len(sys.argv)):
     assert os.path.isfile(run_path), 'Invalid run path: {}'.format(run_path)
 
     run: dict = Configurable.load(run_path)
-    nsim_source: str = Configurable.load(env_path).get('nsim_export')
+    nsim_source: str = Configurable.load(env_path).get('ASCENT_NSIM_EXPORT_PATH')
 
     sample = run.get('sample')
     models = run.get('models')

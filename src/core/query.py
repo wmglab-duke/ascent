@@ -10,9 +10,9 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as tick
 from scipy import stats as stats
 import matplotlib.patches as mpatches
+import pandas as pd
 
-from core import FiberSet
-from src.core import Sample, Simulation, Slide
+from src.core import Sample, Simulation, Slide, FiberSet
 from src.utils import Exceptionable, Configurable, Saveable, SetupMode, Config, Object, FiberXYMode
 
 
@@ -207,7 +207,7 @@ class Query(Exceptionable, Configurable, Saveable):
         elif mode == Config.MODEL:
             result = os.path.join('samples', str(indices[0]), 'models', str(indices[1]), 'model.json')
         elif mode == Config.SIM:
-            result = os.path.join('config', 'user', 'sims', '.json'.format(indices[0]))
+            result = os.path.join('config', 'user', 'sims', '{}.json'.format(indices[0]))
         elif mode == Object.SAMPLE:
             result = os.path.join('samples', str(indices[0]), 'sample.obj')
         elif mode == Object.SIMULATION:
@@ -280,46 +280,72 @@ class Query(Exceptionable, Configurable, Saveable):
     def heatmaps(self,
                  plot: bool = True,
                  plot_mode: str = 'average',
-                 colorbar_mode: str = 'subplot',
                  save_path: str = None,
                  plot_outers: bool = False,
+                 rows_override: int = None,
+                 colorbar_mode: str = 'subplot',
                  colormap_str: str = 'coolwarm',
                  colorbar_text_size_override: int = None,
                  reverse_colormap: bool = True,
-                 rows_override: int = None,
                  colorbar_aspect: int = None,
-                 title_toggle: bool = True,
                  colomap_bounds_override: List[List[Tuple[float, float]]] = None,
                  track_colormap_bounds: bool = False,
-                 subplot_title_toggle: bool = True,
                  track_colormap_bounds_offset_ratio: float = 0.0,
+                 missing_color: Tuple[int, int, int, int] = (1, 0, 0, 1),
+                 title_toggle: bool = True,
+                 subplot_title_toggle: bool = True,
                  tick_count: int = 2,
                  tick_bounds: bool = False,
-                 show_orientation = True):
+                 show_orientation_point: bool = True):
+
         """
-        TODO: implement plot_mode and colorbar_mode (current implementation assumes single fiber and fills fascicle)
+        Generate activation thresholds heatmaps
+        
+        Each plot represents a single 1-dimensional simulation, with each subplot representing a single value from the
+        parameter that is being iterated over. For instace, a sim with many different fiber diamaters will have each subplot
+        represent a single fiber diameter. In a future release, multidimensional sims will be accounted for; this may
+        illicit changing the underlying data structure.
 
-        :param reverse_colormap:
-        :param colormap_str:
-        :param plot_outers:
-        :param save_path:
-        :param plot: bool signalling whether or not to plot the figure
-        :param plot_mode:
-            'average': each inner is filled with the color corresponding to the average of its fiber thresholds
-            'individual': each fiber is plotted individually with its corresponding color
-        :param colorbar_mode:
-            'subplot': one colorbar/colormap per subplot (i.e., one colorbar for each nsim)
-            'figure': one colorbar for the entire figure (i.e., all colors are on same scale)
-        :return: generated figure
+        Args:
+            plot (bool, optional): Show plots via matplotlib. Defaults to True.
+            plot_mode (str, optional): TODO
+                'average': each inner is filled with the color corresponding to the average of its fiber thresholds
+                'individual': each fiber is plotted individually with its corresponding color. 
+                Defaults to 'average'.
+            save_path (str, optional): Path to which plots are saved as PNG files. If None, will not save. Defaults to None.
+            plot_outers (bool, optional): Draw outer perineurium trace. Defaults to False.
+            rows_override (int, optional):
+                Force number of rows; this number <= number of items in sim dimension (i.e., fiber diameters).
+                If None, an arrangement closest to a square will be chosen. Defaults to None.
+            colorbar_mode (str, optional): TODO
+                'subplot': one colorbar/colormap per subplot (i.e., one colorbar for each nsim)
+                'figure': one colorbar for the entire figure (i.e., all colors are on same scale).
+                Defaults to 'subplot'.
+            colormap_str (str, optional): Matplotlib colormap theme. Defaults to 'coolwarm'.
+            colorbar_text_size_override (int, optional): Override system default for colorbar text size. Defaults to None.
+            reverse_colormap (bool, optional): Invert direction of colormap. Defaults to True.
+            colorbar_aspect (int, optional): Override system default for color aspect ratio. Defaults to None.
+            colomap_bounds_override (List[List[Tuple[float, float]]], optional):
+                List (an item per sim/figure), where each item is a list of tuples (bounds for each subplot).
+                These bounds may be generated as output by toggling the `track_colormap_bounds` parameter.  Defaults to None.
+            track_colormap_bounds (bool, optional): Output colormap bounds in format described above. Defaults to False.
+            track_colormap_bounds_offset_ratio (float, optional):
+                Step bound extremes towards mean by ratio. This can be helpful when a few fascicle have thresholds that
+                are drastically different than the rest of the fascicles. Assumes sims are in order, starting from 0.
+                Defaults to 0.0.
+            missing_color (Tuple[int, int, int, int], optional): 
+                RGBA Color to represent missing thresholds. Defaults to (1, 0, 0, 1) (red).
+            title_toggle (bool, optional): Plot title. Defaults to True.
+            subplot_title_toggle (bool, optional): Plot subplot title. Defaults to True.
+            tick_count (int, optional): Colorbar tick count. Defaults to 2.
+            tick_bounds (bool, optional): Ticks only at min and max of colorbar (override tick_count). Defaults to False.
+            show_orientation_point (bool, optional):
+                If an orientation mask was used, plot the direction as a dot outside of the nerve trace. Defaults to True.
+
+        Returns:
+            matplotlib.pyplot.Figure: Handle to final figure (uses .gcf())
         """
-
-        print('WARNING: plot_mode and colorbar_mode not yet implemented')
-
-        if track_colormap_bounds:
-            print('WARNING: track_colormap_bounds assumes \n'
-                  '\t1) single or first sim and\n'
-                  '\t2) nsims are in order, starting from 0')
-
+        
         if self._result is None:
             self.throw(66)
 
@@ -378,7 +404,7 @@ class Query(Exceptionable, Configurable, Saveable):
                     master_product_count = len(sim_object.master_product_indices)
                     rows = int(np.floor(np.sqrt(master_product_count))) if rows_override is None else rows_override
                     cols = int(np.ceil(master_product_count / rows))
-                    figure, axes = plt.subplots(rows, cols, constrained_layout=False, figsize=(25, 20))  # todo changed for ImThera (25, 20) for monopolar
+                    figure, axes = plt.subplots(rows, cols, constrained_layout=False, figsize=(35, 30))  # todo changed for ImThera (25, 20) for monopolar
                     axes = axes.reshape(-1)
 
                     # loop nsims
@@ -402,12 +428,15 @@ class Query(Exceptionable, Configurable, Saveable):
                             thresh_path = os.path.join(n_sim_dir, 'data', 'outputs',
                                                        'thresh_inner{}_fiber0.dat'.format(i))
                             if os.path.exists(thresh_path):
-                                thresholds.append(np.loadtxt(thresh_path))
+                                threshold = np.loadtxt(thresh_path)
+                                if len(np.atleast_1d(threshold)) > 1:
+                                    threshold = threshold[-1]
+                                thresholds.append(threshold)
                             else:
                                 missing_indices.append(i)
                                 print('MISSING: {}'.format(thresh_path))
-                        max_thresh = max(thresholds)
-                        min_thresh = min(thresholds)
+                        max_thresh = np.max(thresholds)
+                        min_thresh = np.min(thresholds)
 
                         # update tracking colormap bounds
                         if track_colormap_bounds and sim_index == tracking_sim_index:
@@ -433,11 +462,11 @@ class Query(Exceptionable, Configurable, Saveable):
                         for i in range(n_inners):
                             actual_i = i - offset
                             if i not in missing_indices:
-                                colors.append(cmap((thresholds[actual_i] - min_thresh) / (max_thresh - min_thresh)))
+                                colors.append(tuple(cmap((thresholds[actual_i] - min_thresh) / (max_thresh - min_thresh))))
                             else:
                                 # NOTE: PLOTS MISSING VALUES AS RED
                                 offset += 1
-                                colors.append((1, 0, 0, 1))
+                                colors.append(missing_color)
 
                         # figure title -- make arbitrary, hard-coded subplot title modifications here (add elif's)
                         title = ''
@@ -455,12 +484,12 @@ class Query(Exceptionable, Configurable, Saveable):
                             # default title
                             title = '{} {}:{}'.format(title, wave_key_name, wave_key_value)
 
-                        if n < cols:  # todo added for ImThera
-                            if subplot_title_toggle:
-                                ax.set_title(title, fontsize=20)
+                        # set title
+                        if subplot_title_toggle:
+                            ax.set_title(title, fontsize=40)
 
                         # plot orientation point if applicable
-                        if orientation_point is not None and show_orientation is True:
+                        if orientation_point is not None and show_orientation_point is True:
                             # ax.plot(*tuple(slide.nerve.points[slide.orientation_point_index][:2]), 'b*')
                             ax.plot(*orientation_point, '.', markersize=20, color='grey')
 
@@ -507,8 +536,8 @@ class Query(Exceptionable, Configurable, Saveable):
                         if not os.path.exists(save_path):
                             os.mkdir(save_path)
                         dest = '{}{}{}_{}_{}.png'.format(save_path, os.sep, sample_index, model_index, sim_index)
-                        figure.savefig(dest, dpi=600)
-                        print('done')
+                        figure.savefig(dest, dpi=200)
+                        # print('done')
 
                     # plot figure
                     if plot:
@@ -670,7 +699,10 @@ class Query(Exceptionable, Configurable, Saveable):
                                                        'data',
                                                        'outputs',
                                                        'thresh_inner{}_fiber{}.dat'.format(inner, local_fiber_index))
-                            thresholds.append(np.loadtxt(thresh_path))
+                            threshold = np.loadtxt(thresh_path)
+                            if len(threshold) > 1:
+                                threshold = threshold[-1]
+                            thresholds.append(threshold)
 
                     thresholds: np.ndarray = np.array(thresholds)
 
@@ -870,7 +902,10 @@ class Query(Exceptionable, Configurable, Saveable):
                                                        'data',
                                                        'outputs',
                                                        'thresh_inner{}_fiber{}.dat'.format(inner, local_fiber_index))
-                            thresholds.append(np.loadtxt(thresh_path))
+                            threshold = np.loadtxt(thresh_path)
+                            if len(threshold) > 1:
+                                threshold = threshold[-1]
+                            thresholds.append(threshold)
 
                     thresholds: np.ndarray = np.array(thresholds)
 
@@ -1116,7 +1151,10 @@ class Query(Exceptionable, Configurable, Saveable):
                                                                                                local_fiber_index))
                                 # if exist, else print
                                 if os.path.exists(thresh_path):
-                                    thresholds.append(np.loadtxt(thresh_path))
+                                    threshold = np.loadtxt(thresh_path)
+                                    if len(np.atleast_1d(threshold)) > 1:
+                                        threshold = threshold[-1]
+                                    thresholds.append(threshold)
                                 else:
                                     print(thresh_path)
                     else:
@@ -1283,3 +1321,136 @@ class Query(Exceptionable, Configurable, Saveable):
         plt.show()
 
         return ax
+
+    def excel_output(self,
+                        filepath: str,
+                        sample_keys: List[list] = [],
+                        model_keys: List[list] = [],
+                        sim_keys: List[list] = [],
+                        individual_indices: bool = True,
+                        config_paths: bool = True,
+                        column_width: int = None,
+                        console_output: bool = True):
+        """Output summary of query.
+
+        NOTE: for all key lists, the values themselves are lists, functioning as a JSON pointer.
+
+        Args:
+            filepath (str): output filepath
+            sample_keys (list, optional): Sample keys to output. Defaults to [].
+            model_keys (list, optional): Model keys to output. Defaults to [].
+            sim_keys (list, optional): Sim keys to output. Defaults to [].
+            individual_indices (bool, optional): Include column for each index. Defaults tp True.
+            config_paths (bool, optional): Include column for each config path. Defaults to True.
+            column_width (int, optional): Column width for Excel document. Defaults to None (system default).
+            console_output (bool, optional): Print progress to console. Defaults to False.
+        """
+
+        sims: dict = {}
+
+        # SAMPLE
+        sample_results: dict
+        for sample_results in self._result.get('samples', []):
+            sample_index: int = sample_results['index']
+            sample_config_path: str = self.build_path(Config.SAMPLE, [sample_index])
+            sample_config: dict = self.load(sample_config_path)
+            self.add(SetupMode.OLD, Config.SAMPLE, sample_config);
+            
+            if console_output:
+                print('sample: {}'.format(sample_index))
+
+            # MODEL
+            model_results: dict
+            for model_results in sample_results.get('models', []):
+                model_index = model_results['index']
+                model_config_path: str = self.build_path(Config.MODEL, [sample_index, model_index])
+                model_config: dict = self.load(model_config_path)
+                self.add(SetupMode.OLD, Config.MODEL, model_config);
+                
+                if console_output:
+                    print('\tmodel: {}'.format(model_index))
+
+                # SIM
+                for sim_index in model_results.get('sims', []):
+                    sim_config_path = self.build_path(Config.SIM, indices=[sim_index])
+                    sim_config = self.load(sim_config_path)
+                    self.add(SetupMode.OLD, Config.SIM, sim_config)
+                    sim_object: Simulation = self.get_object(Object.SIMULATION, [sample_index, model_index, sim_index])
+                    sim_dir = self.build_path(Object.SIMULATION, [sample_index, model_index, sim_index], just_directory=True)
+                    
+                    if console_output:
+                        print('\t\tsim: {}'.format(sim_index))
+                    
+                    # init sheet if necessary
+                    if str(sim_index) not in sims.keys():
+                        # base header
+                        sample_parts = ['Sample Index', *['->'.join(['sample'] + key) for key in sample_keys]]
+                        model_parts = ['Model Index', *['->'.join(['model'] + key) for key in model_keys]]
+                        sim_parts = ['Sim Index', *['->'.join(['sim'] + key) for key in sim_keys]]
+                        header = [
+                            'Indices',
+                            *(sample_parts if individual_indices else sample_parts[1:]),
+                            *(model_parts if individual_indices else model_parts[1:]),
+                            *(sim_parts if individual_indices else sim_parts[1:])
+                        ]
+                        if individual_indices:
+                            header += ['Nsim Index']
+                        # populate with nsim factors
+                        for fib_key_name in sim_object.fiberset_key:
+                            header.append(fib_key_name)
+                        for wave_key_name in sim_object.wave_key:
+                            header.append(wave_key_name)
+                        # add paths
+                        if config_paths:
+                            header += ['Sample Config Path', 'Model Config Path', 'Sim Config Path', 'NSim Path']
+                        # set header as first row
+                        sims[str(sim_index)] = [header]
+
+                    # NSIM
+                    for nsim_index, (potentials_product_index, waveform_index) in enumerate(sim_object.master_product_indices):
+                        nsim_dir = os.path.join(sim_dir, 'n_sims', str(nsim_index))
+                        # TODO: address active_src_index?
+                        active_src_index, fiberset_index = sim_object.potentials_product[potentials_product_index]
+                        # fetch additional sample, model, and sim values
+                        # that's one juicy list comprehension right there
+                        values = [[self.search(config, *key) for key in category] 
+                                  for category, config in zip([sample_keys, model_keys, sim_keys], [Config.SAMPLE, Config.MODEL, Config.SIM])]
+                        # base row data
+                        sample_parts = [sample_index, *values[0]]
+                        model_parts = [model_index, *values[1]]
+                        sim_parts = [sim_index, *values[2]]
+                        row = [
+                            '{}_{}_{}_{}'.format(sample_index, model_index, sim_index, nsim_index),
+                            *(sample_parts if individual_indices else sample_parts[1:]),
+                            *(model_parts if individual_indices else model_parts[1:]),
+                            *(sim_parts if individual_indices else sim_parts[1:])
+                        ]
+                        if individual_indices:
+                            row += [nsim_index]
+                        # populate factors (same order as header)
+                        for fib_key_value in sim_object.fiberset_product[fiberset_index]:
+                            row.append(fib_key_value)
+                        for wave_key_value in sim_object.wave_product[waveform_index]:
+                            row.append(wave_key_value)
+                        # add paths
+                        if config_paths:
+                            row += [sample_config_path, model_config_path, sim_config_path, nsim_dir]
+                        # add to sim sheet
+                        sims[str(sim_index)].append(row)
+        
+                    # "prune" old configs
+                    self.remove(Config.SIM)
+                self.remove(Config.MODEL)
+            self.remove(Config.SAMPLE)
+
+        # build Excel file, with one sim per sheet
+        writer = pd.ExcelWriter(filepath)
+        for sim_index, sheet_data in sims.items():
+            sheet_name = 'Sim {}'.format(sim_index)
+            pd.DataFrame(sheet_data).to_excel(writer, sheet_name=sheet_name, header=False, index=False)
+            if column_width is not None:
+                writer.sheets[sheet_name].set_column(0, 256, column_width)
+            else:
+                writer.sheets[sheet_name].set_column(0, 256)
+
+        writer.save()

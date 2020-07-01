@@ -373,5 +373,20 @@
     "code": 74,
     "text": "Number of repeats for explicit wave does not fit in global.off - global.on in Sim config",
     "source": "src.core.Waveform.generate"
+  },
+  {
+    "code": 75,
+    "text": "Missing environment variables configuration",
+    "source": "src.Runner.populate_env_vars"
+  },
+  {
+    "code": 76,
+    "text": "More than one break point indicated in Config.Run",
+    "source": "src.core.Runner.run"
+  },
+  {
+    "code": 77,
+    "text": "Diameter entered for MRG_INTERPOLATION exceeds the allowed bounds (must be less than 16 um and greater than 2 um)",
+    "source": "src.core.Fiberset._generate_z"
   }
 ]

@@ -29,7 +29,7 @@ if (passive_end_nodes==0) {
 /*
 Extracellular [flag_whichstim=0], single intracellular pulse (stim1) [1], two intracellular pulses & change amplitude of second (stim2) [2]
 If find_thresh = 1, define the stimulus for which you want to find thresh.
-If find_thresh = 0, define the stimulus for which you want to test the stim amplitudes in 
+If find_thresh = 0, define the stimulus for which you want to test the stim amplitudes in
 */
 flag_whichstim = 0
 if (flag_whichstim == 2) {
@@ -39,7 +39,6 @@ if (flag_whichstim == 2) {
 }
 
 // Turn on/off extracellular stim
-flag_extracellular_stim = 1 	// Set to zero for off; one for on
 if ((flag_whichstim == 0) && (flag_extracellular_stim == 0)) {
 	execerror("Want to find_thresh for extracellular stim, so need flag_extracellular_stim = 1")
 }
@@ -55,7 +54,7 @@ then you don't want to scale Iapplied.
 */
 flag_Iapplied = 0
 
-// Set default stim amp for extracellular stim (imp if flag_extracellular_stim=1 
+// Set default stim amp for extracellular stim (imp if flag_extracellular_stim=1
 // but finding thresh or running stimamp_values for an intracellular pulse...unlikely to come up)
 stimamp_extra = 0
 
@@ -63,23 +62,17 @@ stimamp_extra = 0
 Ve_unitconv = 1000
 
 // Set appropriate initialization potentials (i.e. Vrest)
-/* 
-NOTE: In MRG-style myelinated axons, the resting membrane potential at the nodes is driven by the battery in the non-nodal sections, 
+/*
+NOTE: In MRG-style myelinated axons, the resting membrane potential at the nodes is driven by the battery in the non-nodal sections,
 whose value is given by e_pas_Vrest in CreateAxon_Myel.hoc. So as a rule of thumb, should set e_pas_Vrest and v_init to the same value.
 */
 
 
 // ***************************************************************************
-// CreateAxon_Myel.hoc	
+// CreateAxon_Myel.hoc
 if (fiber_type == 2) {
-	if (flag_model_b_fiber==1) {
-		load_file("bFiberBuilder.hoc")
-		load_file("CreateAxon_BFiber.hoc")
-		CreateAxon_BFiber()
-	} else {
-		load_file("CreateAxon_Myel.hoc")
-		CreateAxon_Myel()
-	}
+	load_file("CreateAxon_Myel.hoc")
+	CreateAxon_Myel()
 }
 
 
@@ -98,7 +91,7 @@ if (fiber_type == 3) {
 } else if 	(fiber_type == 2 && flag_model_b_fiber==1) {		v_init = v_init_b_fiber			// [mV]
 }
 
-// ***************************************************************************	
+// ***************************************************************************
 // Train of intracellular pulses
 // NOTE: Define pulsewidth and interspike interval in pw_values and isi_values further down in Wrapper
 
@@ -233,19 +226,19 @@ proc run_all(){local myinner, myfiber, myfreq, myamp, mypw, myisi
 	myamp = $4
 	mypw = $5
 	myisi = $6
-	
+
 	Recording()
 
 	// Set PW of intracellular stim
 	stim1.PW = mypw
 	stim2.PW = mypw
-	
+
 	// Set ISI between intracellular stim and duration of second stim train
 	stim2.del =  stim1.del + myisi
 	stim2.train = tstop - stim2.del
-	
+
 	trun_individual = startsw()
-	
+
 	// Read in Iapplied
 	if (flag_Iapplied == 1) {
 		sprint(VeSpace_Iapplied_fname, "../%s/data/inputs/TotalAppliedCurrent.dat",sim_path)
@@ -255,14 +248,14 @@ proc run_all(){local myinner, myfiber, myfreq, myamp, mypw, myisi
 		Iapplied.scanf(Iapplied_file)
 		Iapplied_file.close()
 	}
-	
+
 	// Read in Ve(x)
 	if (flag_extracellular_stim == 1) {
 		sprint(VeSpace_fname, "../%s/data/inputs/inner%d_fiber%d.dat",sim_path,myinner, myfiber)
 		VeSpace_read()
 		// Convert to mV (required for e_extracellular)
 		VeSpace_data = VeSpace_data.mul(Ve_unitconv)
-		
+
 		if (flag_Iapplied == 1) {
 			// Scale by Iapplied so that amplitudes are millivolts per milliamp applied at the electrode
 			VeSpace_data = VeSpace_data.mul(1/Iapplied.x[0])
@@ -275,7 +268,7 @@ proc run_all(){local myinner, myfiber, myfreq, myamp, mypw, myisi
 		VeTime_read()
 	}
 
-	// Save data			
+	// Save data
 	sprint(Ve_fname_output, "../%s/data/outputs/Ve_inner%d_fiber%d.dat", sim_path,myinner, myfiber)
 	sprint(Istim_fname_output, "../%s/data/outputs/Istim_innerc%d_fiber%d.dat", sim_path,myinner, myfiber)
 	sprint(fname_output_Vm_time, "../%s/data/outputs/Vm_time_inner%d_fiber%d.dat", sim_path,myinner, myfiber)
@@ -289,22 +282,22 @@ proc run_all(){local myinner, myfiber, myfreq, myamp, mypw, myisi
 	sprint(fname_output_gating_mp_space, "../%s/data/outputs/gating_mp_space_inner%d_fiber%d.dat", sim_path,myinner, myfiber)
 	sprint(fname_output_gating_s_space, "../%s/data/outputs/gating_s_space_inner%d_fiber%d.dat", sim_path,myinner, myfiber)
 
-	
+
 	if (find_thresh == 0) {
 		// Run sim
 		RunSim(myamp)
-		
+
 
 	}   else if (find_thresh == 1){
 		// Run binary search for thresholds
 		FindThresh(myinner)
 		// Run sim once more with final thresh from FindThresh()
 		RunSim(stimamp)
-		
+
 		// Save threshold value
 		sprint(thresh_fname_output, "../%s/data/outputs/thresh_inner%d_fiber%d.dat", sim_path,myinner, myfiber)
 		Saving_Thresh()
-	} 
+	}
 
 	// Save data
 	Saving()
@@ -318,11 +311,8 @@ proc run_all(){local myinner, myfiber, myfreq, myamp, mypw, myisi
 
 // ***************************************************************************
 
-Namp = 1
-objref stimamp_values
-if (find_thresh == 1) { Namp = 1 } // stimamp_values isn't used when finding thresh
-stimamp_values = new Vector(Namp,0)
-stimamp_values.x[0] = 1
+Nmodels    = 1
+Ninners    = 1
 
 Nfreq = 1
 objref Vefreq_values
@@ -368,19 +358,19 @@ proc batchrun() {local Vefreq_ind, stimamp_ind, pw_ind, isi_ind
 	// If a result is ready, get it. If not, pick a job to do.
 	//while (pc.working()) {
 	//}
-	
+
 }
 batchrun()
 
 
 // Save the runtime to a file
-objref f_runtime
-f_runtime = new File()
-f_runtime.wopen("../%s/data/outputs/run_time.dat", sim_path)
-f_runtime.printf("Run time: %f seconds", startsw()-trun)
-f_runtime.close()
-//print "Run time: ", startsw()-trun, "seconds"
+// objref f_runtime
+// f_runtime = new File()
+// f_runtime.wopen("..//%s//data//outputs//run_time.dat", sim_path)
+// f_runtime.printf("Run time: %f seconds", startsw()-trun)
+// f_runtime.close()
+// print "Run time: ", startsw()-trun, "seconds"
 
-//{pc.done()}
+// {pc.done()}
 
 quit()

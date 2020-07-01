@@ -22,6 +22,7 @@ class Deformable(Exceptionable):
         :param boundary_end: end trace
         :param contents: list of traces assumed to be within boundary start, not required to be within boundary end.
         Assumed boundary end will be able to hold all contents.
+        
         """
 
         # init superclass
@@ -254,7 +255,7 @@ class Deformable(Exceptionable):
         return traces[:int((deform_ratio if deform_ratio is not None else 1) * count)]
 
     @staticmethod
-    def from_slide(slide: Slide, mode: ReshapeNerveMode, minimum_distance: float = 0.0, nerve_add: float = None) -> 'Deformable':
+    def from_slide(slide: Slide, mode: ReshapeNerveMode, sep_nerve: float = None) -> 'Deformable':
         # method in slide will pull out each trace and add to a list of contents, go through traces and build polygons
 
         bounds = slide.nerve.polygon().bounds
@@ -267,9 +268,9 @@ class Deformable(Exceptionable):
         boundary_start = slide.nerve.deepcopy()
 
         # get end boundary
-        if nerve_add is None:
-            nerve_add = 0.0
-        boundary_end = slide.reshaped_nerve(mode, buffer=minimum_distance + nerve_add).deepcopy()
+        if sep_nerve is None:
+            sep_nerve = 0.0
+        boundary_end = slide.reshaped_nerve(mode, buffer=sep_nerve).deepcopy()
 
         # get contents
         contents = [fascicle.outer.deepcopy() for fascicle in slide.fascicles]

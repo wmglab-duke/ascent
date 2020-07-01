@@ -30,7 +30,7 @@ from quantiphy import Quantity
 
 from src.core import Sample, Simulation, Waveform
 from src.utils import Exceptionable, Configurable, SetupMode, Config, NerveMode, DownSampleMode, WriteMode, \
-    CuffShiftMode, PerineuriumResistivityMode, TemplateOutput
+    CuffShiftMode, PerineuriumResistivityMode, TemplateOutput, Env
 from shapely.geometry import Point
 
 
@@ -93,7 +93,6 @@ class Runner(Exceptionable, Configurable):
 
     def run(self, smart: bool = True):
         """
-
         :param smart:
         :return:
         """
@@ -105,6 +104,13 @@ class Runner(Exceptionable, Configurable):
 
         def load(path: str):
             return pickle.load(open(path, 'rb'))
+
+        # ensure NEURON files exist in export location
+        Simulation.export_neuron_files(os.environ[Env.NSIM_EXPORT_PATH.value])
+
+        if 'break_points' in self.configs[Config.RUN.value].keys() and \
+            sum(self.search(Config.RUN, 'break_points').values()) > 1:
+            self.throw(76)
 
         potentials_exist: List[bool] = []  # if all of these are true, skip Java
 
@@ -208,8 +214,10 @@ class Runner(Exceptionable, Configurable):
 
                             potentials_exist.append(simulation.potentials_exist(sim_obj_dir))
 
-            if 'kill_pre_java' in self.search(Config.RUN).keys():
-                if self.search(Config.RUN, 'kill_pre_java'):
+            # FIXME: sloppy fix to requirement of breakpoints in Runner
+            # possibly change design later on? see comment at top of src.model.ModelWrapper.main
+            if ('break_points' in self.configs.keys()) and ('pre_java' in self.search(Config.RUN, 'break_points').keys()):
+                if self.search(Config.RUN, 'break_points', 'pre_java'):
                     print('KILLING PRE JAVA')
                     pass
 
@@ -232,7 +240,9 @@ class Runner(Exceptionable, Configurable):
 
                 for model_index, model_config in enumerate(all_configs[Config.MODEL.value]):
                     model_num = self.configs[Config.RUN.value]['models'][model_index]
-                    if models_exit_status[model_index]:
+                    # TODO: currently bypassing model exit status if nonexistant (ran with old code)
+                    #       at some point, reevaluate if this is best choice?
+                    if (models_exit_status[model_index] if models_exit_status is not None else True):
                         for sim_index, sim_config in enumerate(all_configs['sims']):
                             sim_num = self.configs[Config.RUN.value]['sims'][sim_index]
                             sim_obj_path = os.path.join(
@@ -266,20 +276,18 @@ class Runner(Exceptionable, Configurable):
                                 model_num,
                                 sim_num,
                                 sim_dir,
-                                self.search(Config.ENV, 'nsim_export')
+                                os.environ[Env.NSIM_EXPORT_PATH.value]
                             )
 
                             # ensure run configuration is present
                             Simulation.export_run(
                                 self.number,
-                                self.search(Config.ENV, 'project_path'),
-                                self.search(Config.ENV, 'nsim_export')
+                                os.environ[Env.PROJECT_PATH.value],
+                                os.environ[Env.NSIM_EXPORT_PATH.value]
                             )
 
-                            print('Exported runs/ and n_sims/ to {}\n'
-                                  'Remember to copy both runs and n_sim folder to batch submission location.\n'
-                                  'Also, ensure that batch.py and batch.sh versions '
-                                  'in batch submission location are current.'.format(self.search(Config.ENV, 'nsim_export')))
+                        print('Model {} data exported to appropriate folders in {}'.format(model_num, os.environ[Env.NSIM_EXPORT_PATH.value]))
+
                     elif not models_exit_status[model_index]:
                         print('\nDid not create NEURON simulations for Sims associated with: \n'
                               '\t Model Index: {} \n'
@@ -292,9 +300,9 @@ class Runner(Exceptionable, Configurable):
                 print('\nNEURON Simulations NOT created since no Sim indices indicated in Config.SIM\n')
 
     def handoff(self, run_number: int):
-        comsol_path = self.search(Config.ENV, 'comsol_path')
-        jdk_path = self.search(Config.ENV, 'jdk_path')
-        project_path = self.search(Config.ENV, 'project_path')
+        comsol_path = os.environ[Env.COMSOL_PATH.value]
+        jdk_path = os.environ[Env.JDK_PATH.value]
+        project_path = os.environ[Env.PROJECT_PATH.value]
         run_path = os.path.join(project_path, 'config', 'user', 'runs', '{}.json'.format(run_number))
 
         core_name = 'ModelWrapper'
@@ -304,12 +312,12 @@ class Runner(Exceptionable, Configurable):
             subprocess.Popen(['{}/bin/comsol'.format(comsol_path), 'server'], close_fds=True)
             os.chdir('src')
             os.system(
-                '{}/javac -classpath ../lib/json-20190722.jar:{}/plugins/* model/*.java -d ../bin'.format(jdk_path,
+                '{}/javac -classpath ../bin/json-20190722.jar:{}/plugins/* model/*.java -d ../bin'.format(jdk_path,
                                                                                                           comsol_path))
             # https://stackoverflow.com/questions/219585/including-all-the-jars-in-a-directory-within-the-java-classpath
             os.system('{}/java/maci64/jre/Contents/Home/bin/java '
                       '-cp .:$(echo {}/plugins/*.jar | '
-                      'tr \' \' \':\'):../lib/json-20190722.jar:../bin model.{} {} {}'.format(comsol_path,
+                      'tr \' \' \':\'):../bin/json-20190722.jar:../bin model.{} {} {}'.format(comsol_path,
                                                                                               comsol_path,
                                                                                               core_name,
                                                                                               project_path,
@@ -321,12 +329,12 @@ class Runner(Exceptionable, Configurable):
             subprocess.Popen(['{}/bin/comsol'.format(comsol_path), 'server'], close_fds=True)
             os.chdir('src')
             os.system(
-                '{}/javac -classpath ../lib/json-20190722.jar:{}/plugins/* model/*.java -d ../bin'.format(jdk_path,
+                '{}/javac -classpath ../bin/json-20190722.jar:{}/plugins/* model/*.java -d ../bin'.format(jdk_path,
                                                                                                           comsol_path))
             # https://stackoverflow.com/questions/219585/including-all-the-jars-in-a-directory-within-the-java-classpath
             os.system('{}/java/glnxa64/jre/bin/java '
                       '-cp .:$(echo {}/plugins/*.jar | '
-                      'tr \' \' \':\'):../lib/json-20190722.jar:../bin model.{} {} {}'.format(comsol_path,
+                      'tr \' \' \':\'):../bin/json-20190722.jar:../bin model.{} {} {}'.format(comsol_path,
                                                                                               comsol_path,
                                                                                               core_name,
                                                                                               project_path,
@@ -338,11 +346,11 @@ class Runner(Exceptionable, Configurable):
             os.chdir('src')
             # TODO:
             os.system('""{}\\javac" '
-                      '-cp "..\\lib\\json-20190722.jar";"{}\\plugins\\*" '
+                      '-cp "..\\bin\\json-20190722.jar";"{}\\plugins\\*" '
                       'model\\*.java -d ..\\bin"'.format(jdk_path,
                                                          comsol_path))
             os.system('""{}\\java\\win64\\jre\\bin\\java" '
-                      '-cp "{}\\plugins\\*";"..\\lib\\json-20190722.jar";"..\\bin" '
+                      '-cp "{}\\plugins\\*";"..\\bin\\json-20190722.jar";"..\\bin" '
                       'model.{} {} {}"'.format(comsol_path,
                                                comsol_path,
                                                core_name,
@@ -401,7 +409,7 @@ class Runner(Exceptionable, Configurable):
         reference_x = reference_y = 0.0
         if not slide.monofasc():
             reference_x, reference_y = slide.fascicle_centroid()
-        theta_c = np.arctan2(y - reference_y, x - reference_x)  # TODO cool up to here
+        theta_c = np.arctan2(y - reference_y, x - reference_x)
 
         # calculate final necessary radius by adding buffer
         r_f = r_bound + cuff_r_buffer
@@ -410,7 +418,7 @@ class Runner(Exceptionable, Configurable):
         theta_i = cuff_config.get('angle_to_contacts_deg') * 2 * np.pi / 360
 
         # fetch cuff rotation mode
-        # cuff_rotation_mode: CuffRotationMode = self.search_mode(CuffRotationMode, Config.MODEL)
+        # cuff_rotation: CuffRotationMode = self.search_mode(CuffRotationMode, Config.MODEL)
 
         # fetch boolean for cuff expandability
         expandable: bool = cuff_config['expandable']
@@ -443,10 +451,10 @@ class Runner(Exceptionable, Configurable):
                 scale='um'
             ).real  # [um] (scaled from any arbitrary length unit)
 
-            # if cuff_rotation_mode == CuffRotationMode.MANUAL:
+            # if cuff_rotation == CuffRotationMode.MANUAL:
             #     theta_f = 0
             #
-            # else:  # cuff_rotation_mode == CuffRotationMode.AUTOMATIC
+            # else:  # cuff_rotation == CuffRotationMode.AUTOMATIC
             if r_i < r_f:
                 theta_f = 0.5 * ((r_f / r_i) * theta_i - theta_i)
                 # OLD theta_f = (r_f / r_i - 1) * theta_i
@@ -478,7 +486,6 @@ class Runner(Exceptionable, Configurable):
         model_config['min_radius_enclosing_circle'] = r_bound
 
         # add to theta_f using the orientation point
-        # TODO BIG THIS FEELS WRONG
         orientation_point = None
         if slide.orientation_point_index is not None:
             if slide.nerve is not None:  # has nerve
@@ -562,6 +569,9 @@ class Runner(Exceptionable, Configurable):
                 model_config['cuff']['shift']['x'] = center_x
                 model_config['cuff']['shift']['y'] = center_y
 
+        if 'add_ang' not in model_config.keys():
+            model_config['cuff']['rotate']['add_ang'] = 0
+
         return model_config
 
     def compute_electrical_parameters(self, all_configs, model_index):
@@ -579,13 +589,12 @@ class Runner(Exceptionable, Configurable):
         # compute rho and sigma from waveform instance
         if model_config.get('modes').get(PerineuriumResistivityMode.config.value) == \
                 PerineuriumResistivityMode.RHO_WEERASURIYA.value:
-            freq_double = model_config.get('frequency').get('value')
-            freq_unit = model_config.get('frequency').get('unit')
+            freq_double = model_config.get('frequency')
             rho_double = waveform.rho_weerasuriya(freq_double)
             sigma_double = 1 / rho_double
             model_config['conductivities']['perineurium']['value'] = str(sigma_double)
-            model_config['conductivities']['perineurium']['label'] = "RHO_WEERASURIYA @ %d %s" % (freq_double,
-                                                                                                  freq_unit)
+            model_config['conductivities']['perineurium']['label'] = "RHO_WEERASURIYA @ %d Hz" % freq_double
+            model_config['conductivities']['perineurium']['unit'] = "[S/m]"
         else:
             self.throw(48)
 
@@ -596,6 +605,15 @@ class Runner(Exceptionable, Configurable):
                                       'model.json')
 
         TemplateOutput.write(model_config, dest_path)
+
+    def populate_env_vars(self):
+        if Config.ENV.value not in self.configs.keys():
+            self.throw(75)
+
+        for key in Env.vals.value:
+            value = self.search(Config.ENV, key)
+            assert type(value) is str
+            os.environ[key] = value
 
     # def smart_run(self):
     #

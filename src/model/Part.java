@@ -2137,7 +2137,7 @@ class Part {
                 }
 
                 JSONObject fascicle = sampleData.getJSONObject("Morphology").getJSONArray("Fascicles").getJSONObject(index);
-                String morphology_unit = ((JSONObject) sampleData.get("scale")).getString("scale_bar_unit");
+                String morphology_unit = "micrometer";
 
                 String fascicleCICXLabel = ci_inner_name + " Inner Geometry";
                 GeomFeature fascicleCICX = model.component("comp1").geom("geom1").create(im.next("wp",fascicleCICXLabel), "WorkPlane");
@@ -2408,6 +2408,7 @@ class Part {
 
         }
         String entry = sigma.getString("value");
+        String unit = sigma.getString("unit");
 
         if (entry.equals("anisotropic")) {
             String entry_x = sigma.getString("sigma_x");
@@ -2424,7 +2425,7 @@ class Part {
                     "0", "0", "sigma_" + function + "_z"
             });
         } else {
-            String unit = sigma.getString("unit");
+
             materialParams.set("sigma_" + function, "(" + entry + ")" + " " + unit, materialDescription);
             model.material(materialID).propertyGroup("def").set("electricconductivity", "sigma_" + function);
         }

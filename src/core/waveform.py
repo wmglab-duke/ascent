@@ -37,10 +37,10 @@ class Waveform(Exceptionable, Configurable, Saveable):
             self.start = \
             self.on = \
             self.off = \
-            self.stop = \
-            self.unit = None
+            self.stop = None
 
         self.wave: np.ndarray = None
+        self.mode_str = None
 
     def init_post_config(self):
 
@@ -61,13 +61,11 @@ class Waveform(Exceptionable, Configurable, Saveable):
             self.start, \
             self.on, \
             self.off, \
-            self.stop, \
-            self.unit = [global_parameters.get(key) for key in ['dt',
+            self.stop = [global_parameters.get(key) for key in ['dt',
                                                                 'start',
                                                                 'on',
                                                                 'off',
-                                                                'stop',
-                                                                'unit']]
+                                                                'stop']]
 
         self.validate_times()
 
@@ -89,14 +87,11 @@ class Waveform(Exceptionable, Configurable, Saveable):
         :return: rho [ohm-m]
         """
 
-        if self.search(Config.MODEL, "temperature", "unit") != "celsius":
-            self.throw(46)
-
-        temp = int(self.search(Config.MODEL, "temperature", "value"))  # [degC] 37 for mammalian
+        temp = self.search(Config.MODEL, "temperature")  # [degC] 37 for mammalian
 
         # f is in [Hz]
         if f < 10:  # stimulation for activation response, arbitrary cutoff of 10 Hz!
-            if temp != 37:
+            if not np.isclose(temp, 37, atol=0.01):
                 self.throw(47)
 
             materials_path = os.path.join('config', 'system', 'materials.json')
@@ -199,7 +194,7 @@ class Waveform(Exceptionable, Configurable, Saveable):
         # for ease of parameter src later on
         path_to_specific_parameters = ['waveform', self.mode_str]
 
-        frequency = self.search(Config.MODEL, 'frequency', 'value') / 1000  # scale for ms
+        frequency = self.search(Config.SIM, 'waveform', self.mode.name, 'pulse_repetition_freq') / 1000  # scale for ms
 
         if self.mode == WaveformMode.MONOPHASIC_PULSE_TRAIN:
 

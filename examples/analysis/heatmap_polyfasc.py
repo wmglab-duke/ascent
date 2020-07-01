@@ -103,7 +103,7 @@ colormap_bounds_override = [
 
 # builds heatmaps
 q.heatmaps(plot=False,
-           save_path='/Users/jakecariello/Box/SPARC_JakeCariello/Madison/figs/heatmaps',
+           save_path='out/analysis',
            rows_override=6,
            colorbar_aspect=5,
            title_toggle=False,
