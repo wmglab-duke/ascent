@@ -330,7 +330,7 @@ class Sample(Exceptionable, Configurable, Saveable):
                     print('\t\tdeform ratio set to {}'.format(deform_ratio))
 
                 # title = 'morph count: {}'.format(morph_count)
-                sep_fascicles = self.search(Config.SAMPLE, "min_fascicle_separation")
+                sep_fascicles = self.search(Config.SAMPLE, "boundary_separation", "fascicles")
                 sep_nerve = None
 
                 print('\t\tensuring minimum fascicle separation of {} um'.format(sep_fascicles))
