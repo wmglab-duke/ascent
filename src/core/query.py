@@ -428,7 +428,7 @@ class Query(Exceptionable, Configurable, Saveable):
                             thresh_path = os.path.join(n_sim_dir, 'data', 'outputs',
                                                        'thresh_inner{}_fiber0.dat'.format(i))
                             if os.path.exists(thresh_path):
-                                threshold = np.loadtxt(thresh_path)
+                                threshold = abs(np.loadtxt(thresh_path))
                                 if len(np.atleast_1d(threshold)) > 1:
                                     threshold = threshold[-1]
                                 thresholds.append(threshold)
@@ -447,9 +447,10 @@ class Query(Exceptionable, Configurable, Saveable):
 
                             # override colormap bounds
                         if colomap_bounds_override is not None:
-                            assert len(colomap_bounds_override[
-                                           num_sam]) - 1 >= n, 'Not enough colormap bounds tuples provided!'
-                            min_thresh, max_thresh = colomap_bounds_override[num_sam][n]
+                            # assert len(colomap_bounds_override[
+                            #                num_sam]) - 1 >= n, 'Not enough colormap bounds tuples provided!'
+                            # min_thresh, max_thresh = colomap_bounds_override[num_sam][n]
+                            min_thresh, max_thresh = colomap_bounds_override[n]
 
                         # generate colors from colorbar and thresholds
                         cmap = plt.cm.get_cmap(colormap_str)
@@ -496,6 +497,24 @@ class Query(Exceptionable, Configurable, Saveable):
                         # plot slide (nerve and fascicles, defaulting to no outers)
                         sample_object.slides[0].plot(final=False, fix_aspect_ratio=True, fascicle_colors=colors,
                                                      ax=ax, outers_flag=plot_outers, inner_format='k-')
+
+                        # TODO remove me
+                        # r_nerve = np.sqrt(sample_object.morphology['Nerve']['area']/np.pi)
+                        # rot_def = np.arctan(orientation_point[1]/orientation_point[0]) + np.pi
+                        # ang = 0.89012
+                        # contact1 = plt.Circle((r_nerve * np.cos(rot_def-2.5*ang), r_nerve * np.sin(rot_def-2.5*ang)), 200, color='k', fill=False)
+                        # contact2 = plt.Circle((r_nerve * np.cos(rot_def-1.5*ang), r_nerve * np.sin(rot_def-1.5*ang)), 200, color='k', fill=False)
+                        # contact3 = plt.Circle((r_nerve * np.cos(rot_def-0.5*ang), r_nerve * np.sin(rot_def-0.5*ang)), 200, color='k', fill=False)
+                        # contact4 = plt.Circle((r_nerve * np.cos(rot_def+0.5*ang), r_nerve * np.sin(rot_def+0.5*ang)), 200, color='k', fill=False)
+                        # contact5 = plt.Circle((r_nerve * np.cos(rot_def+1.5*ang), r_nerve * np.sin(rot_def+1.5*ang)), 200, color='k', fill=False)
+                        # contact6 = plt.Circle((r_nerve * np.cos(rot_def+2.5*ang), r_nerve * np.sin(rot_def+2.5*ang)), 200, color='k', fill=False)
+                        # ax.add_artist(contact1)
+                        # ax.add_artist(contact2)
+                        # ax.add_artist(contact3)
+                        # ax.add_artist(contact4)
+                        # ax.add_artist(contact5)
+                        # ax.add_artist(contact6)
+                        #
 
                         # colorbar
                         cb_label = r'mA'
