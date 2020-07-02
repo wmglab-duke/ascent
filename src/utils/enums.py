@@ -291,7 +291,7 @@ class CuffMode(Enum):
 
 
 class CuffShiftMode(Enum):
-    config = 'cuff_shift_mode'
+    config = 'cuff_shift'
 
     MIN_CIRCLE_BOUNDARY = 0
     TRACE_BOUNDARY = 1
