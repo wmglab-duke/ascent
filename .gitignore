@@ -157,6 +157,9 @@ src/neuron/MOD_Files/*.o
 
 # not for distribution
 config/system/cuffs/ImThera.json
+config/system/cuffs/LivaNova_6mm.json
+*.py~
 master_index_key.xlsx
 200511_figures/
 old_data/
+tmp

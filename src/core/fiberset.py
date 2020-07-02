@@ -94,7 +94,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                 t_range = t_range[1:]
 
             # init theta
-            theta = self.search(Config.SIM, 'theta')
+            theta = self.search(Config.SIM, 'theta') if 'theta' in self.configs[Config.SIM.value].keys() else 0
 
             # set angle theta to orientation point if defined
             slide = self.sample.slides[0]
