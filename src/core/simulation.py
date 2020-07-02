@@ -246,6 +246,11 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 handle.write(json.dumps(sim_copy, indent=2))
 
             n_tsteps = len(self.waveforms[waveform_ind].wave)
+            print(len(self.waveforms[waveform_ind].wave))
+            print(self.waveforms[waveform_ind].wave)
+            print(self.waveforms[waveform_ind])
+            print(self.waveforms)
+            print(waveform_ind)
 
             # add config and write launch.hoc
             n_sim_dir = os.path.join(sim_dir, "n_sims", str(t))
