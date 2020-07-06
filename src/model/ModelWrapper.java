@@ -986,22 +986,7 @@ public class ModelWrapper {
         try {
             break_points = run.getJSONObject("break_points");   
         } catch(JSONException e) {
-            // FIXME: this is a sloppy fix for now
-            // maybe change design of break points to use a JSON config so these don't need to be hard-coded
             break_points = new JSONObject();
-            String[] keysToPopulate = {
-                "pre_geom_run",
-                "post_geom_run",
-                "pre_mesh_proximal",
-                "post_mesh_proximal",
-                "pre_mesh_distal",
-                "post_mesh_distal",
-                "post_material_assign",
-                "pre_loop_currents"
-            };
-            for (String keyToPopulate: keysToPopulate) {
-                break_points.put(keyToPopulate, false);
-            }
         }
 
         // Load SAMPLE configuration data
@@ -1331,7 +1316,7 @@ public class ModelWrapper {
 
                         // break point "post_geom_run"
                         boolean post_geom_run;
-                        if (break_points.has("pre_geom_run")) {
+                        if (break_points.has("post_geom_run")) {
                             post_geom_run = break_points.getBoolean("post_geom_run");
                         } else {
                             post_geom_run = false;
