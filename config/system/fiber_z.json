@@ -59,9 +59,9 @@
       "diameter": true,
       "node_length": 1.0,
       "paranodal_length_1": 3.0,
-      "paranodal_length_2": "-0.1652*diameter^2 + 6.354*diameter - 0.2862",
+      "paranodal_length_2": "-0.1652*diameter**2 + 6.354*diameter - 0.2862",
       "delta_z": {
-        "diameter_greater_or_equal_5.643um": "-8.215*diameter^2 + 272.4*diameter - 780.2",
+        "diameter_greater_or_equal_5.643um": "-8.215*diameter**2 + 272.4*diameter - 780.2",
         "diameter_less_5.643um": "81.08*diameter + 37.84"
       },
       "inter_length": "(delta_z - node_length - (2 * paranodal_length_1) - (2 * paranodal_length_2)) / 6",
