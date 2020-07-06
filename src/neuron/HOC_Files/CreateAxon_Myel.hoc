@@ -42,6 +42,7 @@ proc CreateAxon_Myel() {
 	space_i		= 0.004						// Thickness of periaxonal space in STIN sections [um]
 
 	if (geometry_determination_method==0) {
+	    // MRG_DISCRETE
 		if (fiberD==1) 			{axonD=0.8 nodeD=0.7 paraD1=0.7 paraD2=0.8 deltaz=100 paralength2=5 nl=15}
 		if (fiberD==2) 			{axonD=1.6 nodeD=1.4 paraD1=1.4 paraD2=1.6 deltaz=200 paralength2=10 nl=30}
 		if (fiberD==5.7) {g=0.605 axonD=3.4 nodeD=1.9 paraD1=1.9 paraD2=3.4 deltaz=500 paralength2=35 nl=80}
@@ -54,31 +55,21 @@ proc CreateAxon_Myel() {
 		if (fiberD==15.0) {g=0.767 axonD=11.5 nodeD=5.0 paraD1=5.0 paraD2=11.5 deltaz=1450 paralength2=58 nl=145}
 		if (fiberD==16.0) {g=0.791 axonD=12.7 nodeD=5.5 paraD1=5.5 paraD2=12.7 deltaz=1500 paralength2=60 nl=150}
 		interlength=(deltaz-nodelength-(2*paralength1)-(2*paralength2))/6
-	} else if (geometry_determination_method==1) {
-		if (fiberD<5.7) {
-			printf("WARNING - geometry_determination_method value %d  is not recommended for fiber diameters below 5.7 um",geometry_determination_method)
-		}
-		
-		g = 1.473348e-04*fiberD^2 + 1.394606e-02 * fiberD + 5.235060e-01
-		axonD = 1.876226e-02*fiberD^2 + 4.787487e-01 * fiberD + 1.203613e-01
 
-		if (fiberD > 1.858214188) { 			
-			nodeD = 6.303781e-03*fiberD^2 + 2.070544e-01 * fiberD + 5.339006e-01
+	} else if (geometry_determination_method==1) {
+	    // MRG_INTERPOLATION
+	    nl = -0.4749*fiberD^2 + 16.85*fiberD - 0.7648
+		nodeD = 0.01093*fiberD^2 + 0.1008*fiberD + 1.099
+		paraD1 = nodeD
+		paraD2 = 0.02361*fiberD^2 + 0.3673*fiberD + 0.7122
+		axonD = paraD2
+		paralength2 = -0.1652*fiberD^2 + 6.354*fiberD - 0.2862
+
+		if (fiberD >= 5.643) {
+			deltaz = -8.215*fiberD^2 + 272.4*fiberD - 780.2
 		} else {
-			nodeD = axonD*1.4/1.6 // extrapolate nodeD:axonD ratio from 5.7 µm where quadratic fit deviates
+			deltaz = 81.08*fiberD + 37.84
 		}
-		
-		paraD1 = 6.303781e-03*fiberD^2 + 2.070544e-01 * fiberD + 5.339006e-01
-		paraD2 = 1.876226e-02*fiberD^2 + 4.787487e-01 * fiberD + 1.203613e-01
-		
-		if (fiberD >= 5.638408135) {
-			deltaz = -8.215284e+00*fiberD^2 + 2.724201e+02 * fiberD + -7.802411e+02
-		} else {
-			deltaz = (500/5.7)*fiberD // revert to linear deltaz where quadratic fit deviates, extrapolate from 5.7 µm
-		}
-		
-		paralength2 = -1.989947e-02*fiberD^2 + 3.016265e+00 * fiberD + 1.743604e+01
-		nl = -3.889695e-01*fiberD^2 + 1.487838e+01 * fiberD + 9.721088e+00
 
 	} else if (geometry_determination_method==2) {
 		if (fiberD>5.7) {

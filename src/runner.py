@@ -214,8 +214,6 @@ class Runner(Exceptionable, Configurable):
 
                             potentials_exist.append(simulation.potentials_exist(sim_obj_dir))
 
-            # FIXME: sloppy fix to requirement of breakpoints in Runner
-            # possibly change design later on? see comment at top of src.model.ModelWrapper.main
             if ('break_points' in self.configs.keys()) and ('pre_java' in self.search(Config.RUN, 'break_points').keys()):
                 if self.search(Config.RUN, 'break_points', 'pre_java'):
                     print('KILLING PRE JAVA')
