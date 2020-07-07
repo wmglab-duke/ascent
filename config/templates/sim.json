@@ -13,7 +13,6 @@
   "fibers": {
     "plot": false,
     "mode": "MRG_DISCRETE",
-    "units": "micrometer",
     "xy_trace_buffer": 5.0,
     "z_parameters": {
       "diameter": [1, 2, 5.7, 7.3, 8.7, 10],
@@ -33,6 +32,7 @@
     }
   },
   "waveform": {
+    "plot": false,
     "global": {
       "unit": "ms",
       "dt": 0.001,
