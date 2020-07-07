@@ -1600,7 +1600,7 @@ public class ModelWrapper {
                         if (run.has("keep") && run.getJSONObject("keep").has("debug_geom")) {
                             keep_debug_geom = run.getJSONObject("keep").getBoolean("debug_geom");
                         } else {
-                            keep_debug_geom = false;
+                            keep_debug_geom = true;
                         }
 
                         if (!keep_debug_geom) {
@@ -1804,7 +1804,7 @@ public class ModelWrapper {
                     if (run.has("keep") && run.getJSONObject("keep").has("mesh")) {
                         keep_mesh = run.getJSONObject("keep").getBoolean("mesh");
                     } else {
-                        keep_mesh = false;
+                        keep_mesh = true;
                     }
 
                     if (!keep_mesh) {
@@ -1846,7 +1846,7 @@ public class ModelWrapper {
                 if (run.has("keep") && run.getJSONObject("keep").has("bases")) {
                     keep_bases = run.getJSONObject("keep").getBoolean("bases");
                 } else {
-                    keep_bases = false;
+                    keep_bases = true;
                 }
 
                 if (!keep_bases) {

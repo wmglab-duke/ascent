@@ -58,6 +58,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
             # find sample position if available - NOTE THIS WILL NEED TO BE FIXED LATER TO USE MAP CONFIG?
             # SAMPLE POSITION =
+            # TODO: move sample position to SIM?
             sample_position = self.sample.configs[Config.SAMPLE.value].get('position', None)
             if sample_position is not None:
                 print('\t\tUsing {} µm positioning for SL curve'.format(sample_position))
@@ -67,7 +68,8 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
             z_nerve = self.search(Config.MODEL, 'medium', 'proximal', 'length')
             z_medium = self.search(Config.MODEL, 'medium', 'distal', 'length')
-            z_offset = sample_position + z_nerve / 2  # sample_position is distance from center of cuff to SL branch
+            # NOTE: for now, the sample position will be interpreted as the z-position of the SL branch
+            z_offset = sample_position #+ z_nerve / 2  # sample_position is distance from center of cuff to SL branch
             r_medium = self.search(Config.MODEL, 'medium', 'distal', 'radius')
             buffer = 50  # minimum distance from top of distal model
 
