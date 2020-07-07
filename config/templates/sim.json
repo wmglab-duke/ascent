@@ -69,7 +69,7 @@
       "vm": false,
       "gating": false,
       "istim": false,
-      "locs": [0.1, 0.9]
+      "locs": [0]
     }
   },
   "protocol": {

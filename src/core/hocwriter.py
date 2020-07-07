@@ -156,6 +156,21 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         file_object.write("flag_extracellular_stim = %0.0f // Set to zero for off; one for on \n" % 1)
 
         file_object.write("\n//***************** Recording ********************\n")
+        if 'saving' not in self.configs[Config.SIM.value].keys():
+            self.configs[Config.SIM.value]['saving'] = {
+                "space": {
+                    "vm": False,
+                    "gating": False,
+                    "times": [0]
+                },
+                "time": {
+                    "vm": False,
+                    "gating": False,
+                    "istim": False,
+                    "locs": [0]
+                }
+            }
+
         saving: dict = self.search(Config.SIM, "saving")
 
         file_object.write("saveflag_Vm_time      = %0.0f\n" % int(saving.get("time").get("vm") == True))
