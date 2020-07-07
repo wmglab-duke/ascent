@@ -53,6 +53,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         fiber_model = fibers.get("mode")
 
         fiber_model_info: dict = self.search(Config.FIBER_Z, MyelinationMode.parameters.value, fiber_model)
+        diameter = self.search(Config.SIM, "fibers", "z_parameters", "diameter")
 
         # if myelinated
         if fiber_model_info.get("neuron_flag") == 2 and fiber_model != FiberGeometry.B_FIBER.value:
@@ -63,6 +64,32 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                               % fiber_model_info.get("geom_determination_method"))
             file_object.write("flag_model_b_fiber = %0.0f\n" % 0)
 
+            if fiber_model_info.get("geom_determination_method") == 0:
+                fiber_geometry_mode_name: str = self.search(Config.SIM, 'fibers', 'mode')
+                diameters, delta_zs, paranodal_length_2s = (
+                    self.search(Config.FIBER_Z, MyelinationMode.parameters.value, fiber_geometry_mode_name, key)
+                    for key in ('diameters', 'delta_zs', 'paranodal_length_2s')
+                )
+                diameter_index = diameters.index(diameter)
+                delta_z = delta_zs[diameter_index]
+                file_object.write("deltaz = %0.4f \n" % delta_z)
+
+            elif fiber_model_info.get("geom_determination_method") == 1:
+                fiber_geometry_mode_name: str = self.search(Config.SIM, 'fibers', 'mode')
+                paranodal_length_2_str, delta_z_str, inter_length_str = (
+                    self.search(Config.FIBER_Z, MyelinationMode.parameters.value, fiber_geometry_mode_name, key)
+                    for key in ('paranodal_length_2', 'delta_z', 'inter_length')
+                )
+
+                if diameter > 16.0 or diameter < 2.0:
+                    self.throw(77)
+                if diameter >= 5.643:
+                    delta_z = eval(delta_z_str["diameter_greater_or_equal_5.643um"])
+                else:
+                    delta_z = eval(delta_z_str["diameter_less_5.643um"])
+
+                file_object.write("deltaz = %0.4f \n" % delta_z)
+
         if fiber_model_info.get("neuron_flag") == 2 and fiber_model == FiberGeometry.B_FIBER.value:
             file_object.write("geometry_determination_method = %0.0f "
                               "// geometry_determination_method = 0 for preset fiber diameters; "
@@ -70,6 +97,8 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                               "geometry_determination_method = 2 for GeometryBuilder fits from SPARC Y2Q1\n"
                               % fiber_model_info.get("geom_determination_method"))
             file_object.write("flag_model_b_fiber = %0.0f\n" % 1)
+
+            # TODO add delta_z for B-Fiber eventually
 
         file_object.write("fiber_type = %0.0f "
                           "// fiber_type = 1 for unmyelinated; fiber_type = 2 for myelinated; "
@@ -81,7 +110,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                           fiber_model_info.get("node_channels"))
 
         if fiber_model_info.get("neuron_flag") == 2:
-            axonnodes = 1+(n_fiber_coords-1)/11
+            axonnodes = 1 + (n_fiber_coords - 1) / 11
         elif fiber_model_info.get("neuron_flag") == 3:
             axonnodes = n_fiber_coords
 
@@ -100,23 +129,22 @@ class HocWriter(Exceptionable, Configurable, Saveable):
             file_object.write("deltaz = %0.4f \n" % deltaz)
             file_object.write("len                           = axonnodes*deltaz\n")
 
-
-
         file_object.write("passive_end_nodes = %0.0f "
                           "// passive_end_nodes = 1 to make both end nodes passive; 0 otherwise\n" %
                           fiber_model_info.get("passive_end_nodes"))
 
-        fiberD = self.search(Config.SIM, "fibers", "z_parameters", "diameter")
         file_object.write("fiberD = %0.1f "
-                          "// fiber diameter\n" % fiberD)
+                          "// fiber diameter\n" % diameter)
 
         intracellular_stim: dict = self.search(Config.SIM, "intracellular_stim")
 
         file_object.write("\n//***************** Intracellular Stim ***********\n")
-        file_object.write("IntraStim_PulseTrain_delay    = %0.0f // [ms]\n" % intracellular_stim.get("times").get("IntraStim_PulseTrain_delay"))
+        file_object.write("IntraStim_PulseTrain_delay    = %0.0f // [ms]\n" % intracellular_stim.get("times").get(
+            "IntraStim_PulseTrain_delay"))
         file_object.write("IntraStim_PulseTrain_pw       = %0.0f // [ms]\n" % intracellular_stim.get("times").get("pw"))
         file_object.write("IntraStim_PulseTrain_traindur = tstop - IntraStim_PulseTrain_delay // [ms]\n")
-        file_object.write("IntraStim_PulseTrain_freq     = %0.0f // [ms]\n" % intracellular_stim.get("pulse_repetition_freq"))
+        file_object.write(
+            "IntraStim_PulseTrain_freq     = %0.0f // [ms]\n" % intracellular_stim.get("pulse_repetition_freq"))
         file_object.write("IntraStim_PulseTrain_amp      = %0.4f // [nA]\n" % intracellular_stim.get("amp"))
         file_object.write("IntraStim_PulseTrain_ind      = %0.0f "
                           "// Index of node where intracellular stim is placed [unitless]\n" %
@@ -128,18 +156,14 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         file_object.write("flag_extracellular_stim = %0.0f // Set to zero for off; one for on \n" % 1)
 
         file_object.write("\n//***************** Recording ********************\n")
-        save_flags: dict = self.search(Config.SIM, "save_flags")
+        saving: dict = self.search(Config.SIM, "saving")
 
-        file_object.write("saveflag_Vm_time      = %0.0f\n" % int(save_flags.get("vm_time") == True))
-        file_object.write("saveflag_gating_time  = %0.0f\n" % int(save_flags.get("gating_time") == True))
-        file_object.write("saveflag_Vm_space     = %0.0f\n" % int(save_flags.get("vm_space") == True))
-        file_object.write("saveflag_gating_space = %0.0f\n" % int(save_flags.get("gating_space") == True))
-        file_object.write("saveflag_Ve           = %0.0f\n" % int(save_flags.get("ve") == True))
-        file_object.write("saveflag_Istim        = %0.0f\n" % int(save_flags.get("istim") == True))
-
-        file_object.write("\n//***************** Classification Checkpoints ***\n")
-        check_points: dict = self.search(Config.SIM, "check_points")
-        file_object.write("Nchecknodes = %0.0f\n" % 3)
+        file_object.write("saveflag_Vm_time      = %0.0f\n" % int(saving.get("time").get("vm") == True))
+        file_object.write("saveflag_gating_time  = %0.0f\n" % int(saving.get("time").get("gating") == True))
+        file_object.write("saveflag_Vm_space     = %0.0f\n" % int(saving.get("space").get("vm") == True))
+        file_object.write("saveflag_gating_space = %0.0f\n" % int(saving.get("space").get("gating") == True))
+        file_object.write("saveflag_Ve           = %0.0f\n" % int(False))
+        file_object.write("saveflag_Istim        = %0.0f\n" % int(saving.get("time").get("istim") == True))
 
         file_object.write("\n//***************** Protocol Parameters *********\n")
 
@@ -162,9 +186,10 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                     "n_min_aps": 1
                 }
             }
-        
+
         protocol_mode_name: str = self.search(Config.SIM, 'protocol', 'mode')
-        protocol_mode: NeuronRunMode = [mode for mode in NeuronRunMode if str(mode).split('.')[-1] == protocol_mode_name][0]
+        protocol_mode: NeuronRunMode = \
+            [mode for mode in NeuronRunMode if str(mode).split('.')[-1] == protocol_mode_name][0]
 
         if protocol_mode != NeuronRunMode.FINITE_AMPLITUDES:
             find_thresh = 1
@@ -178,7 +203,9 @@ class HocWriter(Exceptionable, Configurable, Saveable):
             file_object.write("N_minAPs  = %0.0f\n" % threshold.get("n_min_aps"))
 
             bounds_search_mode_name: str = self.search(Config.SIM, "protocol", "bounds_search", "mode")
-            bounds_search_mode: SearchAmplitudeIncrementMode = [mode for mode in SearchAmplitudeIncrementMode if str(mode).split('.')[-1] == bounds_search_mode_name][0]
+            bounds_search_mode: SearchAmplitudeIncrementMode = \
+                [mode for mode in SearchAmplitudeIncrementMode if str(mode).split('.')[-1] == bounds_search_mode_name][
+                    0]
             if bounds_search_mode == SearchAmplitudeIncrementMode.PERCENT_INCREMENT:
                 increment_flag = SearchAmplitudeIncrementMode.PERCENT_INCREMENT.value
                 step: float = self.search(Config.SIM, "protocol", "bounds_search", "step")
@@ -190,7 +217,9 @@ class HocWriter(Exceptionable, Configurable, Saveable):
             file_object.write("increment_flag = %0.0f // \n" % increment_flag)
 
             termination_criteria_mode_name: str = self.search(Config.SIM, "protocol", "termination_criteria", "mode")
-            termination_criteria_mode: TerminationCriteriaMode = [mode for mode in TerminationCriteriaMode if str(mode).split('.')[-1] == termination_criteria_mode_name][0]
+            termination_criteria_mode: TerminationCriteriaMode = \
+                [mode for mode in TerminationCriteriaMode if
+                 str(mode).split('.')[-1] == termination_criteria_mode_name][0]
             if termination_criteria_mode == TerminationCriteriaMode.ABSOLUTE_DIFFERENCE:
                 termination_flag = TerminationCriteriaMode.ABSOLUTE_DIFFERENCE.value
                 res: float = self.search(Config.SIM, "protocol", "termination_criteria", "tolerance")
@@ -206,7 +235,6 @@ class HocWriter(Exceptionable, Configurable, Saveable):
             file_object.write("stimamp_values = new Vector(Namp,%0.0f)\n" % 0)
             for amp_ind in range(1):
                 file_object.write("stimamp_values.x[%0.0f] = %0.4f\n" % (amp_ind, 0))
-
 
         elif protocol_mode == NeuronRunMode.FINITE_AMPLITUDES:
             find_thresh = 0
@@ -229,6 +257,35 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                           "to find block thresholds instead of activation threshold\n"
                           % block_thresh_flag)
 
+        file_object.write("\n//***************** Classification Checkpoints ***\n")
+        # Time points to record Vm and gating params vs x
+        checktimes = self.configs[Config.SIM.value]['saving']['space']['times']
+        n_checktimes = len(checktimes)
+        file_object.write("Nchecktimes = %0.0f \n" % n_checktimes)
+
+        file_object.write("objref checktime_values_ms, checktime_values\n")
+        file_object.write("checktime_values_ms = new Vector(Nchecktimes,0)\n")
+        file_object.write("checktime_values = new Vector(Nchecktimes,0)\n\n")
+
+        file_object.write("// Check times in milliseconds\n")
+        for time_ind in range(n_checktimes):
+            file_object.write("checktime_values_ms.x[{}] = {} \n".format(time_ind, checktimes[time_ind]))
+
+        checknodes = self.configs[Config.SIM.value]['saving']['time']['locs']
+        n_checknodes = len(checknodes)
+        file_object.write("\nNchecknodes = %0.0f\n" % n_checknodes)
+        file_object.write("objref checknode_values\n")
+        file_object.write("checknode_values = new Vector(Nchecknodes,0)\n")
+        file_object.write("if (Nchecknodes == axonnodes) {\n")
+        file_object.write("\tfor i = 0, axonnodes - 1 {\n")
+        file_object.write("\t\tchecknode_values.x[i] = i\n")
+        file_object.write("\t}\n")
+        file_object.write("} else {\n")
+        file_object.write("\taxon_length = (axonnodes-1)*deltaz				// length of axon [um]\n")
+        for node_ind in range(n_checknodes):
+            file_object.write("\tchecknode_values.x[{}] = int(axon_length*{}/deltaz)\n".format(node_ind, checknodes[node_ind]))
+        file_object.write("}\n")
+
         file_object.write("\nload_file(\"../../HOC_Files/Wrapper.hoc\")\n")
-        
+
         file_object.close()
