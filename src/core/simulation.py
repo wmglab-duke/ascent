@@ -117,7 +117,14 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 .init_post_config() \
                 .generate() \
                 .write(WriteMode.DATA, os.path.join(directory, str(i))) \
-                # .plot()
+
+            if 'plot' not in self.configs[Config.SIM.value]['waveform'].keys():
+                plot = False
+            else:
+                plot: bool = self.search(Config.SIM, 'waveform', 'plot')
+
+            if plot:
+                waveform.plot()
 
             self.waveforms.append(waveform)
 

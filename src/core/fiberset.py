@@ -6,6 +6,7 @@ from shapely.affinity import scale
 from shapely.geometry import LineString, Point
 import scipy.optimize as opt
 import csv
+import matplotlib.pyplot as plt
 
 from src.utils import *
 from .sample import Sample
@@ -308,12 +309,12 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                         print("Explicit fiber coordinate: {} does not fall in an inner".format(fiber))
                         self.throw(71)
 
-            # if plot:
-            #     plt.figure()
-            #     self.sample.slides[0].plot(final=False, fix_aspect_ratio=True)
-            #     for point in points:
-            #         plt.plot(point[0], point[1], 'r*')
-            #     plt.show()
+            if plot:
+                plt.figure()
+                self.sample.slides[0].plot(final=False, fix_aspect_ratio=True)
+                for point in points:
+                    plt.plot(point[0], point[1], 'r*')
+                plt.show()
         else:
             self.throw(30)
 

@@ -117,9 +117,9 @@ s[intrastim_ind_tmp1].sec {
 }
 
 if (fiber_type == 2) {// if myelinated fiber, convert node index to compartment index
-	intrastim_ind_tmp2 = IntraStim_PulseTrain_ind1*11
+	intrastim_ind_tmp2 = IntraStim_PulseTrain_ind2*11
 } else {
-	intrastim_ind_tmp2 = IntraStim_PulseTrain_ind1
+	intrastim_ind_tmp2 = IntraStim_PulseTrain_ind2
 }
 
 s[intrastim_ind_tmp2].sec {
@@ -150,32 +150,6 @@ load_file("ExtracellularStim_Space.hoc")
 
 // ***************************************************************************
 // Recording.hoc
-objref checknode_values
-checknode_values = new Vector(Nchecknodes,0)
-
-if (Nchecknodes == axonnodes) {
-	for i = 0, axonnodes - 1 {
-		checknode_values.x[i] = i
-	}
-} else {
-	axon_length = (axonnodes-1)*deltaz				// length of axon [um]
-	checknode_values.x[0] = int(axon_length*0.25/deltaz)
-	checknode_values.x[1] = int(axon_length*0.5/deltaz)
-	checknode_values.x[2] = int(axon_length*0.75/deltaz)
-}
-
-// Time points to record Vm and gating params vs x
-Nchecktimes = 4
-
-objref checktime_values_ms, checktime_values
-checktime_values_ms = new Vector(Nchecktimes,0)
-checktime_values = new Vector(Nchecktimes,0)
-
-// Check times in milliseconds
-checktime_values_ms.x[0] = 249.025
-checktime_values_ms.x[1] = 249.05
-checktime_values_ms.x[2] = 249.1
-checktime_values_ms.x[3] = 249.2
 
 // Check time indices
 for i = 0, Nchecktimes-1 {
@@ -241,7 +215,7 @@ proc run_all(){local myinner, myfiber, myfreq, myamp, mypw, myisi
 
 	// Read in Iapplied
 	if (flag_Iapplied == 1) {
-		sprint(VeSpace_Iapplied_fname, "../%s/data/inputs/TotalAppliedCurrent.dat",sim_path)
+		sprint(VeSpace_Iapplied_fname, "../%s/data/inputs/TotalAppliedCurrent.dat", sim_path)
 		Iapplied_file = new File()
 		Iapplied_file.ropen(VeSpace_Iapplied_fname)
 		Iapplied = new Vector(1)
@@ -251,7 +225,7 @@ proc run_all(){local myinner, myfiber, myfreq, myamp, mypw, myisi
 
 	// Read in Ve(x)
 	if (flag_extracellular_stim == 1) {
-		sprint(VeSpace_fname, "../%s/data/inputs/inner%d_fiber%d.dat",sim_path,myinner, myfiber)
+		sprint(VeSpace_fname, "../%s/data/inputs/inner%d_fiber%d.dat",sim_path, myinner, myfiber)
 		VeSpace_read()
 		// Convert to mV (required for e_extracellular)
 		VeSpace_data = VeSpace_data.mul(Ve_unitconv)
@@ -268,45 +242,64 @@ proc run_all(){local myinner, myfiber, myfreq, myamp, mypw, myisi
 		VeTime_read()
 	}
 
-	// Save data
-	sprint(Ve_fname_output, "../%s/data/outputs/Ve_inner%d_fiber%d.dat", sim_path,myinner, myfiber)
-	sprint(Istim_fname_output, "../%s/data/outputs/Istim_innerc%d_fiber%d.dat", sim_path,myinner, myfiber)
-	sprint(fname_output_Vm_time, "../%s/data/outputs/Vm_time_inner%d_fiber%d.dat", sim_path,myinner, myfiber)
-	sprint(fname_output_gating_m_time, "../%s/data/outputs/gating_m_time_inner%d_fiber%d.dat", sim_path,myinner, myfiber)
-	sprint(fname_output_gating_h_time, "../%s/data/outputs/gating_h_time_inner%d_fiber%d.dat", sim_path,myinner, myfiber)
-	sprint(fname_output_gating_mp_time, "../%s/data/outputs/gating_mp_time_inner%d_fiber%d.dat", sim_path,myinner, myfiber)
-	sprint(fname_output_gating_s_time, "../%s/data/outputs/gating_s_time_inner%d_fiber%d.dat", sim_path,myinner, myfiber)
-	sprint(fname_output_Vm_space, "../%s/data/outputs/Vm_space_inner%d_fiber%d.dat", sim_path,myinner, myfiber)
-	sprint(fname_output_gating_m_space, "../%s/data/outputs/gating_m_space_inner%d_fiber%d.dat", sim_path,myinner, myfiber)
-	sprint(fname_output_gating_h_space, "../%s/data/outputs/gating_h_space_inner%d_fiber%d.dat", sim_path,myinner, myfiber)
-	sprint(fname_output_gating_mp_space, "../%s/data/outputs/gating_mp_space_inner%d_fiber%d.dat", sim_path,myinner, myfiber)
-	sprint(fname_output_gating_s_space, "../%s/data/outputs/gating_s_space_inner%d_fiber%d.dat", sim_path,myinner, myfiber)
-
 
 	if (find_thresh == 0) {
 		// Run sim
+			// Save data
+		sprint(Ve_fname_output,              "../%s/data/outputs/Ve_inner%d_fiber%d_amp%fmA.dat",              sim_path, myinner, myfiber, myamp)
+		sprint(Istim_fname_output,           "../%s/data/outputs/Istim_inner%d_fiber%d_amp%fmA.dat",           sim_path, myinner, myfiber, myamp)
+		sprint(fname_output_Vm_time,         "../%s/data/outputs/Vm_time_inner%d_fiber%d_amp%fmA.dat",         sim_path, myinner, myfiber, myamp)
+		sprint(fname_output_gating_m_time,   "../%s/data/outputs/gating_m_time_inner%d_fiber%d_amp%fmA.dat",   sim_path, myinner, myfiber, myamp)
+		sprint(fname_output_gating_h_time,   "../%s/data/outputs/gating_h_time_inner%d_fiber%d_amp%fmA.dat",   sim_path, myinner, myfiber, myamp)
+		sprint(fname_output_gating_mp_time,  "../%s/data/outputs/gating_mp_time_inner%d_fiber%d_amp%fmA.dat",  sim_path, myinner, myfiber, myamp)
+		sprint(fname_output_gating_s_time,   "../%s/data/outputs/gating_s_time_inner%d_fiber%d_amp%fmA.dat",   sim_path, myinner, myfiber, myamp)
+		sprint(fname_output_Vm_space,        "../%s/data/outputs/Vm_space_inner%d_fiber%d_amp%fmA.dat",        sim_path, myinner, myfiber, myamp)
+		sprint(fname_output_gating_m_space,  "../%s/data/outputs/gating_m_space_inner%d_fiber%d_amp%fmA.dat",  sim_path, myinner, myfiber, myamp)
+		sprint(fname_output_gating_h_space,  "../%s/data/outputs/gating_h_space_inner%d_fiber%d_amp%fmA.dat",  sim_path, myinner, myfiber, myamp)
+		sprint(fname_output_gating_mp_space, "../%s/data/outputs/gating_mp_space_inner%d_fiber%d_amp%fmA.dat", sim_path, myinner, myfiber, myamp)
+		sprint(fname_output_gating_s_space,  "../%s/data/outputs/gating_s_space_inner%d_fiber%d_amp%fmA.dat",  sim_path, myinner, myfiber, myamp)
 		RunSim(myamp)
+
+		// Save data
+		Saving()
+
+		// Save individual run time (for each simulation)
+		trun_individual = startsw() - trun_individual
+		sprint(runtime_fname_output, "../%s/data/outputs/runtime_inner%d_fiber%d_amp%fmA.dat", sim_path, myinner, myfiber, myamp)
+		Saving_Runtime()
 
 
 	}   else if (find_thresh == 1){
 		// Run binary search for thresholds
 		FindThresh(myinner)
 		// Run sim once more with final thresh from FindThresh()
+		sprint(Ve_fname_output,              "../%s/data/outputs/Ve_inner%d_fiber%d_amp%fmA.dat",              sim_path, myinner, myfiber, stimamp)
+		sprint(Istim_fname_output,           "../%s/data/outputs/Istim_inner%d_fiber%d_amp%fmA.dat",           sim_path, myinner, myfiber, stimamp)
+		sprint(fname_output_Vm_time,         "../%s/data/outputs/Vm_time_inner%d_fiber%d_amp%fmA.dat",         sim_path, myinner, myfiber, stimamp)
+		sprint(fname_output_gating_m_time,   "../%s/data/outputs/gating_m_time_inner%d_fiber%d_amp%fmA.dat",   sim_path, myinner, myfiber, stimamp)
+		sprint(fname_output_gating_h_time,   "../%s/data/outputs/gating_h_time_inner%d_fiber%d_amp%fmA.dat",   sim_path, myinner, myfiber, stimamp)
+		sprint(fname_output_gating_mp_time,  "../%s/data/outputs/gating_mp_time_inner%d_fiber%d_amp%fmA.dat",  sim_path, myinner, myfiber, stimamp)
+		sprint(fname_output_gating_s_time,   "../%s/data/outputs/gating_s_time_inner%d_fiber%d_amp%fmA.dat",   sim_path, myinner, myfiber, stimamp)
+		sprint(fname_output_Vm_space,        "../%s/data/outputs/Vm_space_inner%d_fiber%d_amp%fmA.dat",        sim_path, myinner, myfiber, stimamp)
+		sprint(fname_output_gating_m_space,  "../%s/data/outputs/gating_m_space_inner%d_fiber%d_amp%fmA.dat",  sim_path, myinner, myfiber, stimamp)
+		sprint(fname_output_gating_h_space,  "../%s/data/outputs/gating_h_space_inner%d_fiber%d_amp%fmA.dat",  sim_path, myinner, myfiber, stimamp)
+		sprint(fname_output_gating_mp_space, "../%s/data/outputs/gating_mp_space_inner%d_fiber%d_amp%fmA.dat", sim_path, myinner, myfiber, stimamp)
+		sprint(fname_output_gating_s_space,  "../%s/data/outputs/gating_s_space_inner%d_fiber%d_amp%fmA.dat",  sim_path, myinner, myfiber, stimamp)
+
 		RunSim(stimamp)
 
 		// Save threshold value
-		sprint(thresh_fname_output, "../%s/data/outputs/thresh_inner%d_fiber%d.dat", sim_path,myinner, myfiber)
+		sprint(thresh_fname_output, "../%s/data/outputs/thresh_inner%d_fiber%d.dat", sim_path, myinner, myfiber)
 		Saving_Thresh()
+
+		// Save data
+		Saving()
+
+		// Save individual run time (for each simulation)
+		trun_individual = startsw() - trun_individual
+		sprint(runtime_fname_output, "../%s/data/outputs/runtime_inner%d_fiber%d_amp%fmA.dat", sim_path, myinner, myfiber, stimamp)
+		Saving_Runtime()
 	}
-
-	// Save data
-	Saving()
-
-	// Save individual run time (for each simulation)
-	trun_individual = startsw() - trun_individual
-	sprint(runtime_fname_output, "../%s/data/outputs/runtime_inner%d_fiber%d.dat", sim_path,myinner, myfiber)
-	Saving_Runtime()
-
 }
 
 // ***************************************************************************
@@ -346,7 +339,7 @@ proc batchrun() {local Vefreq_ind, stimamp_ind, pw_ind, isi_ind
 					for pw_ind = 0, Npw-1 {
 						for isi_ind = 0, Nisi-1 {
 							//pc.submit("run_all",inner_ind,fiber_ind,Vefreq_values.x[Vefreq_ind],stimamp_values.x[stimamp_ind],pw_values.x[pw_ind],isi_values.x[isi_ind])
-							run_all(inner_ind,fiber_ind,Vefreq_values.x[Vefreq_ind],stimamp_values.x[stimamp_ind],pw_values.x[pw_ind],isi_values.x[isi_ind])
+							run_all(inner_ind, fiber_ind, Vefreq_values.x[Vefreq_ind], stimamp_values.x[stimamp_ind], pw_values.x[pw_ind], isi_values.x[isi_ind])
 						}
 					}
 				}

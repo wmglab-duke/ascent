@@ -48,7 +48,8 @@ class Waveform(Exceptionable, Configurable, Saveable):
             self.throw(72)
 
         # get mode
-        self.mode_str = [key for key in self.search(Config.SIM, 'waveform').keys() if key != 'global'][0]
+        self.mode_str = [key for key in self.search(Config.SIM, 'waveform').keys()
+                         if key != 'global' and key != 'plot'][0]
         self.mode = [mode for mode in WaveformMode if str(mode).split('.')[-1] == self.mode_str][0]
 
         # get global vars data

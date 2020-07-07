@@ -150,7 +150,7 @@ src/neuron/MOD_Files/x86_64/
 src/neuron/MOD_Files/*.c
 src/neuron/MOD_Files/*.o
 
-#B Fiber
+# B-Fibers
 src/neuron/HOC_Files/CreateAxon_BFiber.hoc
 
 # temp files
