@@ -154,6 +154,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         file_object.write("strdef VeTime_fname\n")
         file_object.write("VeTime_fname            = \"%s\"\n" % "data/inputs/waveform.dat")
         file_object.write("flag_extracellular_stim = %0.0f // Set to zero for off; one for on \n" % 1)
+        file_object.write("flag_whichstim = %0.0f // Set to zero for off; one for on \n" % 0)
 
         file_object.write("\n//***************** Recording ********************\n")
         if 'saving' not in self.configs[Config.SIM.value].keys():
@@ -254,12 +255,13 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         elif protocol_mode == NeuronRunMode.FINITE_AMPLITUDES:
             find_thresh = 0
             block_thresh_flag = 0
-            amps = self.search(Config.SIM, "protocol", "amplitudes", "value")
+            amps = self.search(Config.SIM, "protocol", "amplitudes")
             num_amps = len(amps)
             file_object.write("\n//***************** Batching Parameters **********\n")
             file_object.write("Namp = %0.0f\n" % num_amps)
             file_object.write("objref stimamp_values\n")
             file_object.write("stimamp_values = new Vector(Namp,%0.0f)\n" % 0)
+            file_object.write("\nap_thresh = %0.0f\n" % 1000)  # arbitrarily high, not ever be used
             for amp_ind in range(num_amps):
                 file_object.write("stimamp_values.x[%0.0f] = %0.4f\n" % (amp_ind, amps[amp_ind]))
 
