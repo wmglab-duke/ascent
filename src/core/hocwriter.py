@@ -110,9 +110,9 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                           fiber_model_info.get("node_channels"))
 
         if fiber_model_info.get("neuron_flag") == 2:
-            axonnodes = 1 + (n_fiber_coords - 1) / 11
+            axonnodes = int(1 + (n_fiber_coords - 1) / 11)
         elif fiber_model_info.get("neuron_flag") == 3:
-            axonnodes = n_fiber_coords
+            axonnodes = int(n_fiber_coords)
 
         file_object.write("axonnodes = %0.0f "
                           "// must match up with ExtractPotentials\n" % axonnodes)
@@ -289,7 +289,11 @@ class HocWriter(Exceptionable, Configurable, Saveable):
             file_object.write("checktime_values_ms.x[{}] = {} \n".format(time_ind, checktimes[time_ind]))
 
         checknodes = self.configs[Config.SIM.value]['saving']['time']['locs']
-        n_checknodes = len(checknodes)
+        if checknodes == 'all':
+            n_checknodes = axonnodes
+        else:
+            n_checknodes = len(checknodes)
+
         file_object.write("\nNchecknodes = %0.0f\n" % n_checknodes)
         file_object.write("objref checknode_values\n")
         file_object.write("checknode_values = new Vector(Nchecknodes,0)\n")
@@ -299,8 +303,9 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         file_object.write("\t}\n")
         file_object.write("} else {\n")
         file_object.write("\taxon_length = (axonnodes-1)*deltaz				// length of axon [um]\n")
-        for node_ind in range(n_checknodes):
-            file_object.write("\tchecknode_values.x[{}] = int(axon_length*{}/deltaz)\n".format(node_ind, checknodes[node_ind]))
+        if checknodes != 'all':
+            for node_ind in range(n_checknodes):
+                file_object.write("\tchecknode_values.x[{}] = int(axon_length*{}/deltaz)\n".format(node_ind, checknodes[node_ind]))
         file_object.write("}\n")
 
         file_object.write("\nload_file(\"../../HOC_Files/Wrapper.hoc\")\n")
