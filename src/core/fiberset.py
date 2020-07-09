@@ -211,6 +211,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                             if fiber_count < minimum_number:
                                 fiber_count = minimum_number
                             for point in inner.random_points(fiber_count, buffer=buffer, my_xy_seed=my_xy_seed):
+                                my_xy_seed += 1
                                 points.append(point)
 
                 else:  # do bottom-up approach
