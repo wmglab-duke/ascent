@@ -76,7 +76,6 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             r_medium = self.search(Config.MODEL, 'medium', 'distal', 'radius')
             buffer = 50  # minimum distance from top of distal model
             
-            input()
 
             if z_offset >= z_medium - 1000:
                 print('\t\tWARNING: SL z_offset ({}) within 1000 µm of distal model length ({})'.format(z_offset,
@@ -92,7 +91,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                 return np.sqrt(sum(item**2 for item in vec))
 
             # generate parameter range
-            t_min = max(opt.fmin(lambda t: -(fit_z(t) - (z_medium - buffer)), 50), buffer)
+            t_min = 0.1 #max(opt.fmin(lambda t: -(fit_z(t) - (z_medium - buffer)), 50), buffer)
             t_max = r_medium - buffer
             t_step = 10
             t_range = np.arange(t_min, t_max, t_step)
@@ -114,6 +113,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             x, y, z = fit_3d(t_range, theta, fit_z)
             points = list(zip(x, y, z))
             print('first 3 points: {}'.format(points[:2]))
+            input()
             fiber_length = sum(magnitude(np.asarray(points[i])-np.asarray(points[i+1])) for i in range(len(points)-1))
 
             fibers_xy = np.asarray([(0, 0)])
