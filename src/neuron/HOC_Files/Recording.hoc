@@ -130,11 +130,8 @@ proc Recording() {
 	
 	// ***** Record Istim(t) (created in IntracellularStim.hoc).
 	if (saveflag_Istim == 1) {
-		savevec_Istim = new O1d(2)
+		savevec_Istim = new O1d(1)
 		savevec_Istim.o[0] = new Vector(n_tsteps,0)
-		savevec_Istim.o[0].record(&stim1.i,dt)
-		
-		savevec_Istim.o[1] = new Vector(n_tsteps,0)
-		savevec_Istim.o[1].record(&stim2.i,dt)
+		savevec_Istim.o[0].record(&stim.i,dt)
 	}	
 }

@@ -139,12 +139,12 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         intracellular_stim: dict = self.search(Config.SIM, "intracellular_stim")
 
         file_object.write("\n//***************** Intracellular Stim ***********\n")
-        file_object.write("IntraStim_PulseTrain_delay    = %0.0f // [ms]\n" % intracellular_stim.get("times").get(
+        file_object.write("IntraStim_PulseTrain_delay    = %0.2f // [ms]\n" % intracellular_stim.get("times").get(
             "IntraStim_PulseTrain_delay"))
-        file_object.write("IntraStim_PulseTrain_pw       = %0.0f // [ms]\n" % intracellular_stim.get("times").get("pw"))
+        file_object.write("IntraStim_PulseTrain_pw       = %0.2f // [ms]\n" % intracellular_stim.get("times").get("pw"))
         file_object.write("IntraStim_PulseTrain_traindur = tstop - IntraStim_PulseTrain_delay // [ms]\n")
         file_object.write(
-            "IntraStim_PulseTrain_freq     = %0.0f // [ms]\n" % intracellular_stim.get("pulse_repetition_freq"))
+            "IntraStim_PulseTrain_freq     = %0.2f // [Hz]\n" % intracellular_stim.get("pulse_repetition_freq"))
         file_object.write("IntraStim_PulseTrain_amp      = %0.4f // [nA]\n" % intracellular_stim.get("amp"))
         file_object.write("IntraStim_PulseTrain_ind      = %0.0f "
                           "// Index of node where intracellular stim is placed [unitless]\n" %

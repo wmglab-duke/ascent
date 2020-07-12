@@ -40,15 +40,9 @@ proc RunSim() {local myamp
 		stimamp_extra = myamp
 	} else if (flag_whichstim == 1) {
 		if (fiber_type == 2) {// myelinated fiber
-			s[IntraStim_PulseTrain_ind1*11].sec stim1.amp = myamp
+			s[IntraStim_PulseTrain_ind*11].sec stim.amp = myamp
 		} else {
-			s[IntraStim_PulseTrain_ind1].sec stim1.amp = myamp
-		}
-	} else if (flag_whichstim == 2) {
-		if (fiber_type == 2) {// myelinated fiber
-			s[IntraStim_PulseTrain_ind2*11].sec stim2.amp = myamp
-		} else {
-			s[IntraStim_PulseTrain_ind2].sec stim2.amp = myamp
+			s[IntraStim_PulseTrain_ind].sec stim.amp = myamp
 		}
 	}
 

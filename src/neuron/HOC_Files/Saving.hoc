@@ -71,9 +71,8 @@ proc Saving() {
 	
 	// ***** Save Istim(t) (created in IntracellularStim.hoc).
 	if (saveflag_Istim == 1) {
-		Istim_suffix_tmp = new Vector(2)
+		Istim_suffix_tmp = new Vector(1)
 		Istim_suffix_tmp.x[0] = 1
-		Istim_suffix_tmp.x[1] = 2
 		SaveTimeCourse(Istim_fname_output, "Istim", Istim_suffix_tmp, "(nA)", savevec_Istim)
 	}
 }

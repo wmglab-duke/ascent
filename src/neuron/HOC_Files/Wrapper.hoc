@@ -83,42 +83,28 @@ if (fiber_type == 3) {
 // Train of intracellular pulses
 // NOTE: Define pulsewidth and interspike interval in pw_values and isi_values further down in Wrapper
 
-objref stim1, stim2
-
-IntraStim_PulseTrain_ind1 				= 2						// Index of node where intracellular stim is placed[unitless]
-IntraStim_PulseTrain_ind2 				= 2						// Index of node where intracellular stim is placed[unitless]
+//objref stim1
 
 if (fiber_type == 2) {// if myelinated fiber, convert node index to compartment index
-	intrastim_ind_tmp1 = IntraStim_PulseTrain_ind1*11
+	intrastim_ind_tmp = IntraStim_PulseTrain_ind*11
 } else {
-	intrastim_ind_tmp1 = IntraStim_PulseTrain_ind1
+	intrastim_ind_tmp = IntraStim_PulseTrain_ind
 }
 
-s[intrastim_ind_tmp1].sec {
-	stim1 		= new trainIClamp()
-	stim1.loc(.5)
-	stim1.del 	= IntraStim_PulseTrain_delay // Delay to first pulse [ms]
-	stim1.PW	= IntraStim_PulseTrain_pw  	 // Defined in pw_values [ms]
-	stim1.train = tstop-stim1.del 			 // Duration of train of pulses [ms]
-	stim1.freq	= IntraStim_PulseTrain_freq  // Frequency of pulses [Hz]
-	stim1.amp	= IntraStim_PulseTrain_amp 	 // Stim amplitude [nA]
-}
+//s[intrastim_ind_tmp].sec {
+//	stim1 		= new trainIClamp()
+//	stim1.loc(.5)
+//	stim1.del 	= IntraStim_PulseTrain_delay // Delay to first pulse [ms]
+//	stim1.PW	= IntraStim_PulseTrain_pw  	 // Defined in pw_values [ms]
+//	stim1.train = tstop-stim1.del 			 // Duration of train of pulses [ms]
+//	stim1.freq	= IntraStim_PulseTrain_freq  // Frequency of pulses [Hz]
+//	stim1.amp	= IntraStim_PulseTrain_amp 	 // Stim amplitude [nA]
+//}
 
-if (fiber_type == 2) {// if myelinated fiber, convert node index to compartment index
-	intrastim_ind_tmp2 = IntraStim_PulseTrain_ind2*11
-} else {
-	intrastim_ind_tmp2 = IntraStim_PulseTrain_ind2
-}
-
-s[intrastim_ind_tmp2].sec {
-	stim2 		= new trainIClamp()
-	stim2.loc(.5)
-	stim2.del 	= 0 				// Defined according to stim1.del and isi_values [ms]
-	stim2.PW	= 0					// Defined in pw_values [ms]
-	stim2.train = tstop-stim1.del 	// Defined later once stim2.del is computed [ms]
-	stim2.freq	= 0 				// Frequency of pulses [Hz]
-	stim2.amp	= 0 				// Stim amplitude [nA]
-}
+// ***************************************************************************	
+// IntracellularStim.hoc
+load_file("IntracellularStim.hoc")
+IntraStim_PulseTrain()
 
 // ***************************************************************************
 // Read in Iapplied from file
@@ -181,24 +167,13 @@ if (find_thresh == 1){
 	load_file("Saving_Thresh.hoc")
 }
 
-proc run_all(){local myinner, myfiber, myfreq, myamp, mypw, myisi, amp_ind
+proc run_all(){local myinner, myfiber, myamp, amp_ind
 	myinner = $1
 	myfiber = $2
-	myfreq = $3
-	myamp = $4
-	mypw = $5
-	myisi = $6
-	amp_ind = $7
+	myamp   = $3
+	amp_ind = $4
 
 	Recording()
-
-	// Set PW of intracellular stim
-	stim1.PW = mypw
-	stim2.PW = mypw
-
-	// Set ISI between intracellular stim and duration of second stim train
-	stim2.del =  stim1.del + myisi
-	stim2.train = tstop - stim2.del
 
 	trun_individual = startsw()
 
@@ -280,24 +255,6 @@ proc run_all(){local myinner, myfiber, myfreq, myamp, mypw, myisi, amp_ind
 
 // ***************************************************************************
 
-Nmodels    = 1
-Ninners    = 1
-
-Nfreq = 1
-objref Vefreq_values
-Vefreq_values = new Vector(Nfreq,0)
-Vefreq_values.x[0] = 0
-
-Npw = 1 // Number of intracellular PWs to test; applied to both Istim1 & Istim2
-objref pw_values
-pw_values = new Vector(Npw,0)
-pw_values.x[0] = 0 // [ms]
-
-Nisi = 1 // Number of interspike intervals to test (between intracellular stim 1 & 2)
-objref isi_values
-isi_values = new Vector(Nisi,0)
-isi_values.x[0] = 0 // [ms]
-
 trun = startsw()
 
 // Start execute loop on the workers
@@ -306,29 +263,13 @@ trun = startsw()
 // The master must now post jobs to the bulletin board.
 
 //proc batchrun() {local inner_ind, fiber_ind, Vefreq_ind, stimamp_ind, pw_ind, isi_ind
-proc batchrun() {local Vefreq_ind, stimamp_ind, pw_ind, isi_ind
-
-//	for inner_ind = 0, Ninners-1 {
-//		for fiber_ind = 0, fiber_values.x[fasc_ind]-1 {
-			for Vefreq_ind = 0, Nfreq-1 {
-				for stimamp_ind = 0, Namp-1 {
-					for pw_ind = 0, Npw-1 {
-						for isi_ind = 0, Nisi-1 {
-							//pc.submit("run_all",inner_ind,fiber_ind,Vefreq_values.x[Vefreq_ind],stimamp_values.x[stimamp_ind],pw_values.x[pw_ind],isi_values.x[isi_ind])
-							run_all(inner_ind, fiber_ind, Vefreq_values.x[Vefreq_ind], stimamp_values.x[stimamp_ind], pw_values.x[pw_ind], isi_values.x[isi_ind], stimamp_ind)
-						}
-					}
-				}
-			}
-	//	}
-	//}
-
-
-	// If a result is ready, get it. If not, pick a job to do.
-	//while (pc.working()) {
-	//}
-
+proc batchrun() {local stimamp_ind
+	for stimamp_ind = 0, Namp-1 {
+		//pc.submit("run_all",inner_ind,fiber_ind,Vefreq_values.x[Vefreq_ind],stimamp_values.x[stimamp_ind],pw_values.x[pw_ind],isi_values.x[isi_ind])
+		run_all(inner_ind, fiber_ind, stimamp_values.x[stimamp_ind],  stimamp_ind)
+	}
 }
+
 batchrun()
 
 
