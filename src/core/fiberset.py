@@ -67,12 +67,9 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                 print('\t\tNo positioning for SL curve found. Using {} µm.'.format(sample_position))
 
             z_nerve = self.search(Config.MODEL, 'medium', 'proximal', 'length')
-            print('z_nerve: {}'.format(z_nerve))
             z_medium = self.search(Config.MODEL, 'medium', 'distal', 'length')
-            print('z_medium: {}'.format(z_medium))
             # NOTE: for now, the sample position will be interpreted as the z-position of the SL branch
             z_offset = sample_position #+ z_nerve / 2  # sample_position is distance from center of cuff to SL branch
-            print('z_offset: {}'.format(z_offset))
             r_medium = self.search(Config.MODEL, 'medium', 'distal', 'radius')
             buffer = 50  # minimum distance from top of distal model
             
@@ -112,8 +109,6 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
             x, y, z = fit_3d(t_range, theta, fit_z)
             points = list(zip(x, y, z))
-            print('first 3 points: {}'.format(points[:2]))
-            input()
             fiber_length = sum(magnitude(np.asarray(points[i])-np.asarray(points[i+1])) for i in range(len(points)-1))
 
             fibers_xy = np.asarray([(0, 0)])
