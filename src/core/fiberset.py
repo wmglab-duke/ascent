@@ -67,11 +67,16 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                 print('\t\tNo positioning for SL curve found. Using {} µm.'.format(sample_position))
 
             z_nerve = self.search(Config.MODEL, 'medium', 'proximal', 'length')
+            print('z_nerve: {}'.format(z_nerve))
             z_medium = self.search(Config.MODEL, 'medium', 'distal', 'length')
+            print('z_medium: {}'.format(z_medium))
             # NOTE: for now, the sample position will be interpreted as the z-position of the SL branch
             z_offset = sample_position #+ z_nerve / 2  # sample_position is distance from center of cuff to SL branch
+            print('z_offset: {}'.format(z_offset))
             r_medium = self.search(Config.MODEL, 'medium', 'distal', 'radius')
             buffer = 50  # minimum distance from top of distal model
+            
+            input()
 
             if z_offset >= z_medium - 1000:
                 print('\t\tWARNING: SL z_offset ({}) within 1000 µm of distal model length ({})'.format(z_offset,
