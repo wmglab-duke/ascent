@@ -113,6 +113,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
             x, y, z = fit_3d(t_range, theta, fit_z)
             points = list(zip(x, y, z))
+            print('first 3 points: {}'.format(points[:2]))
             fiber_length = sum(magnitude(np.asarray(points[i])-np.asarray(points[i+1])) for i in range(len(points)-1))
 
             fibers_xy = np.asarray([(0, 0)])
