@@ -90,7 +90,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             # generate parameter range
             t_min = 0.001
             t_max = r_medium - buffer
-            t_step = 0.001
+            t_step = 1
             t_range = np.arange(t_min, t_max, t_step)
 
             while fit_z(t_range[0]) > z_medium - 50:
