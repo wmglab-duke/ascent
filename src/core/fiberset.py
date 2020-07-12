@@ -72,6 +72,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             z_offset = sample_position #+ z_nerve / 2  # sample_position is distance from center of cuff to SL branch
             r_medium = self.search(Config.MODEL, 'medium', 'distal', 'radius')
             buffer = 50  # minimum distance from top of distal model
+            
 
             if z_offset >= z_medium - 1000:
                 print('\t\tWARNING: SL z_offset ({}) within 1000 µm of distal model length ({})'.format(z_offset,
@@ -87,13 +88,13 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                 return np.sqrt(sum(item**2 for item in vec))
 
             # generate parameter range
-            t_min = max(opt.fmin(lambda t: -(fit_z(t) - (z_medium - buffer)), 50), buffer)
+            t_min = 0.001
             t_max = r_medium - buffer
-            t_step = 10
+            t_step = 0.001
             t_range = np.arange(t_min, t_max, t_step)
 
             while fit_z(t_range[0]) > z_medium - 50:
-                print('\t\tclip')
+                # print('\t\tclip')
                 t_range = t_range[1:]
 
             # init theta
