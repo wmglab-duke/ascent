@@ -1,7 +1,0 @@
-fiber modes (paired with myelination mode... same hierarchical level)
-subsets
-offsets
-fascicles
-inners
-fibers
-points
