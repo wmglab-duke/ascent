@@ -565,7 +565,7 @@ class Runner(Exceptionable, Configurable):
                 model_config['cuff']['shift']['x'] = center_x
                 model_config['cuff']['shift']['y'] = center_y
 
-        if 'add_ang' not in model_config.keys():
+        if 'add_ang' not in model_config['cuff']['rotate'].keys():
             model_config['cuff']['rotate']['add_ang'] = 0
 
         return model_config
