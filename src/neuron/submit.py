@@ -3,6 +3,7 @@
 import json
 import os
 import re
+import shutil
 import sys
 import time
 import multiprocessing
@@ -12,6 +13,7 @@ from typing import List
 ALLOWED_SUBMISSION_CONTEXTS = ['cluster', 'local']
 OS = 'UNIX-LIKE' if any([s in sys.platform for s in ['darwin', 'linux']]) else 'WINDOWS'
 
+
 def local_submit(filename, output_log, error_log):
     if OS is 'UNIX-LIKE':
         subprocess.run(['chmod', '777', os.path.join(os.path.split(filename)[0], 'blank.hoc')])
@@ -19,9 +21,10 @@ def local_submit(filename, output_log, error_log):
     run_command = ['bash', filename, '>', output_log, '2>{}'.format(error_log)]
     subprocess.run(run_command[1:] if (OS is 'WINDOWS') else run_command, capture_output=True)
 
+
 if __name__ == "__main__":
     if (not os.path.exists(os.path.join('MOD_Files/x86_64')) and OS is 'UNIX-LIKE') or \
-        (not os.path.exists(os.path.join('MOD_Files', 'nrnmech.dll')) and OS is 'WINDOWS'):
+            (not os.path.exists(os.path.join('MOD_Files', 'nrnmech.dll')) and OS is 'WINDOWS'):
         print('compile')
         os.chdir(os.path.join('MOD_Files'))
         subprocess.run(['nrnivmodl'], shell=True)
@@ -52,7 +55,8 @@ if __name__ == "__main__":
         submission_context = run.get('submission_context', 'cluster')
 
         # submission context is valid
-        assert submission_context in ALLOWED_SUBMISSION_CONTEXTS, 'Invalid submission context: {}'.format(submission_context)
+        assert submission_context in ALLOWED_SUBMISSION_CONTEXTS, 'Invalid submission context: {}'.format(
+            submission_context)
 
         # list of processes if context is local
         processes: List[multiprocessing.Process] = []
@@ -83,15 +87,17 @@ if __name__ == "__main__":
                     print('\n\n################ {} ################\n\n'.format(sim_name))
 
                     for fiber_filename in [x for x in os.listdir(fibers_path)
-                                            if re.match('inner[0-9]+_fiber[0-9]+\\.dat', x)]:
+                                           if re.match('inner[0-9]+_fiber[0-9]+\\.dat', x)]:
                         master_fiber_name = str(fiber_filename.split('.')[0])
                         inner_name, fiber_name = tuple(master_fiber_name.split('_'))
                         inner_ind = int(inner_name.split('inner')[-1])
                         fiber_ind = int(fiber_name.split('fiber')[-1])
 
-                        thresh_path = os.path.join(output_path, 'thresh_inner{}_fiber{}.dat'.format(inner_ind, fiber_ind))
+                        thresh_path = os.path.join(output_path,
+                                                   'thresh_inner{}_fiber{}.dat'.format(inner_ind, fiber_ind))
                         if os.path.exists(thresh_path):
-                            print('Found {} -->\t\tskipping inner ({}) fiber ({})'.format(thresh_path, inner_ind, fiber_ind))
+                            print('Found {} -->\t\tskipping inner ({}) fiber ({})'.format(thresh_path, inner_ind,
+                                                                                          fiber_ind))
                             continue
 
                         # write start.slurm
@@ -108,7 +114,6 @@ if __name__ == "__main__":
                                 lines = [
                                     '#!/bin/bash\n',
                                     'cd {}\n'.format(sim_path),
-                                    'cp -p ../../MOD_Files/x86_64/special .\n',
                                     'chmod a+rwx special\n',
                                     './special -nobanner '
                                     '-c \"strdef sim_path\" '
@@ -123,8 +128,12 @@ if __name__ == "__main__":
                                                                                               stimamp_top,
                                                                                               stimamp_bottom)
                                 ]
+
+                                # copy special files ahead of time to avoid 'text file busy error'
+                                shutil.copy(os.path.join('MOD_Files', 'x86_64', 'special'), sim_path)
+
                             else:  # OS is 'WINDOWS'
-                                sim_path_win = os.path.join(*sim_path.split(os.pathsep)).replace('\\','\\\\')
+                                sim_path_win = os.path.join(*sim_path.split(os.pathsep)).replace('\\', '\\\\')
                                 print(sim_path_win)
                                 lines = [
                                     'cd {}\n'.format(sim_path_win),
@@ -152,7 +161,7 @@ if __name__ == "__main__":
                         print('\n{}'.format(job_name))
 
                         if submission_context == 'cluster':
-                            command = ' '.join([ 
+                            command = ' '.join([
                                 'sbatch',
                                 '--job-name={}'.format(job_name),
                                 '--output={}'.format(output_log),
@@ -169,13 +178,13 @@ if __name__ == "__main__":
 
                             # remove start.slurm
                             os.remove(start_path)
-                        
+
                         elif submission_context == 'local':
                             # local_submit(start_path, output_log, error_log)
                             p = multiprocessing.Process(target=local_submit, args=(start_path, output_log, error_log))
                             processes.append(p)
                             p.start()
-                
+
         if submission_context == 'local':
             # ensure main process won't finish/exit before any subprocess
             for process in processes:

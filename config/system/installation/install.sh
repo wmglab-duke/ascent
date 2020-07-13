@@ -12,5 +12,6 @@ pip install --user pymunk
 pip install --user scipy
 pip install --user pandas
 pip install --user openpyxl
+pip install --user shutil
 conda install -c conda-forge --use-local shapely
 export PYTHONPATH="$PYTHONPATH:$PWD"
