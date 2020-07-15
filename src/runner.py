@@ -313,7 +313,7 @@ class Runner(Exceptionable, Configurable):
             # https://stackoverflow.com/questions/219585/including-all-the-jars-in-a-directory-within-the-java-classpath
             os.system('{}/java/maci64/jre/Contents/Home/bin/java '
                       '-cp .:$(echo {}/plugins/*.jar | '
-                      'tr \' \' \':\'):../bin/json-20190722.jar:../bin model.{} {} {}'.format(comsol_path,
+                      'tr \' \' \':\'):../bin/json-20190722.jar:../bin model.{} "{}" "{}"'.format(comsol_path,
                                                                                               comsol_path,
                                                                                               core_name,
                                                                                               project_path,
@@ -330,7 +330,7 @@ class Runner(Exceptionable, Configurable):
             # https://stackoverflow.com/questions/219585/including-all-the-jars-in-a-directory-within-the-java-classpath
             os.system('{}/java/glnxa64/jre/bin/java '
                       '-cp .:$(echo {}/plugins/*.jar | '
-                      'tr \' \' \':\'):../bin/json-20190722.jar:../bin model.{} {} {}'.format(comsol_path,
+                      'tr \' \' \':\'):../bin/json-20190722.jar:../bin model.{} "{}" "{}"'.format(comsol_path,
                                                                                               comsol_path,
                                                                                               core_name,
                                                                                               project_path,
@@ -340,14 +340,13 @@ class Runner(Exceptionable, Configurable):
         else:  # assume to be 'win64'
             subprocess.Popen(['{}\\bin\\win64\\comsolmphserver.exe'.format(comsol_path)], close_fds=True)
             os.chdir('src')
-            # TODO:
             os.system('""{}\\javac" '
                       '-cp "..\\bin\\json-20190722.jar";"{}\\plugins\\*" '
                       'model\\*.java -d ..\\bin"'.format(jdk_path,
                                                          comsol_path))
             os.system('""{}\\java\\win64\\jre\\bin\\java" '
                       '-cp "{}\\plugins\\*";"..\\bin\\json-20190722.jar";"..\\bin" '
-                      'model.{} {} {}"'.format(comsol_path,
+                      'model.{} "{}" "{}""'.format(comsol_path,
                                                comsol_path,
                                                core_name,
                                                project_path,
