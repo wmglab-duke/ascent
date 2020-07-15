@@ -78,7 +78,12 @@ class Sample(Exceptionable, Configurable, Saveable):
         # get maximum of each column (each "pixel" is a 4-item vector)
         row_of_column_maxes: np.ndarray = image_raw.max(0)
         # find the indices of columns in original image where the first pixel item was maxed (i.e. white)
-        indices = np.where(row_of_column_maxes[:] == max(row_of_column_maxes[:]))[0]
+
+        if row_of_column_maxes.ndim == 2:  # masks from histology, 3 or 4 bit
+            indices = np.where(row_of_column_maxes[:, 0] == max(row_of_column_maxes[:, 0]))[0]
+        elif row_of_column_maxes.ndim == 1:  # masks from mock morphology, 1 bit
+            indices = np.where(row_of_column_maxes[:] == max(row_of_column_maxes[:]))[0]
+
         # find the length of the scale bar by finding total range of "max white" indices
         scale_bar_pixels = max(indices) - min(indices) + 1
         # calculate scale factor as unit/pixel
