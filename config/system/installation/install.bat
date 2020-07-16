@@ -1,17 +1,21 @@
-ECHO PLEASE ENSURE THAT YOU ARE RUNNING THIS INSTALLATION SCRIPT AS AN ADMINISTRATOR FROM THE ROOT OF THE REPO
-pip install pip
-pip install Pillow
-pip install numpy
-pip install shapely
-pip install matplotlib
-pip install pyclipper
-pip install pygame
-pip install quantiphy
-pip install opencv-python
-pip install pymunk
-pip install scipy
-pip install pandas
-pip install openpyxl
-pip install shutil
-conda install -c conda-forge shapely
-set PYTHONPATH=%PYTHONPATH%;%CD%
+echo PLEASE ENSURE THAT YOU ARE RUNNING THIS INSTALLATION SCRIPT FROM THE ROOT OF THE REPO
+# TODO: CREATE CONDA ENVIRONMENT, THEN INSTALL EVERYTHING VIA INSTALL
+# 
+# TODO: python script for NEURON job monitoring
+pip install --user pip
+pip install --user Pillow
+pip install --user numpy
+pip install --user shapely
+pip install --user matplotlib
+pip install --user pyclipper
+pip install --user pygame
+pip install --user quantiphy
+pip install --user opencv-python
+pip install --user pymunk
+pip install --user scipy
+pip install --user pandas
+pip install --user openpyxl
+pip install --user shutil
+conda install -c conda-forge --use-local shapely
+conda install -c conda-forge opencv libtiff=4.0 python=3.7 pillow
+export PYTHONPATH="$PYTHONPATH:$PWD"
