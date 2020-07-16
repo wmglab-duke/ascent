@@ -1,9 +1,9 @@
 {
   "modes": {
-    "rho_perineurium_method": false,
-    "cuff_rotation_mode": true,
-    "cuff_shift_mode": true,
-    "fiber_z": true
+    "rho_perineurium": false,
+    "cuff_shift": true,
+    "fiber_z": true,
+    "use_ci": true
   },
   "medium": {
     "proximal": {
@@ -12,7 +12,8 @@
       "radius": true
     },
     "distal": {
-      "distant_ground": true,
+      "exist": true,
+      "distant_ground": false,
       "shift": {
         "x": true,
         "y": true,
@@ -66,8 +67,6 @@
   "frequency": false,
   "temperature": false,
   "conductivities": false,
-  "solver": {
-    "name": true
-  },
+  "solver": false,
   "solution": false
 }
