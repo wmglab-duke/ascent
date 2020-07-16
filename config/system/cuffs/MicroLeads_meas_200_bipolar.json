@@ -1,0 +1,150 @@
+{
+  "code": "Um200b",
+  "instances": [
+    {
+      "type": "CuffFill_Primitive",
+      "label": "MicroLeads_Um200b Cuff Fill",
+      "def": {
+        "Radius": "R_out_Um200b+Thk_fill_Um200b",
+        "Thk": "Thk_fill_Um200b",
+        "L": "L_Um200b+2*Thk_fill_Um200b",
+        "Center": "z_center_Um200b",
+        "x_shift": "x_shift",
+        "y_shift": "y_shift"
+      },
+      "materials": [
+        {
+          "info": "fill",
+          "label_index": 0
+        }
+      ]
+    },
+    {
+      "type": "uCuff_Primitive",
+      "label": "MicroLeads_Um200b Cuff",
+      "def": {
+        "Center": "z_center_Um200b",
+        "R_in": "R_in_Um200b",
+        "U_tangent": "Tangent_Um200b",
+        "R_out": "R_out_Um200b",
+        "U_L": "L_Um200b",
+        "U_shift_x": "x_shift",
+        "U_shift_y": "y_shift",
+        "U_gap": "gap"
+      },
+      "materials": [
+        {
+          "info": "insulator",
+          "label_index": 1
+        }
+      ]
+    },
+    {
+      "type": "uContact_Primitive",
+      "label": "MicroLeads_Um200b Contact 1",
+      "def": {
+        "Center": "z_center_Um200b-(Pitch_Um200b/2)",
+        "R_in": "R_in_Um200b",
+        "U_tangent": "Tangent_Um200b",
+        "U_thk": "thk_contact_Um200b",
+        "U_z": "z_contact_Um200b"
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "label_index": 1
+        }
+      ]
+    },
+    {
+      "type": "uContact_Primitive",
+      "label": "MicroLeads_Um200b Contact 2",
+      "def": {
+        "Center": "z_center_Um200b+(Pitch_Um200b/2)",
+        "R_in": "R_in_Um200b",
+        "U_tangent": "Tangent_Um200b",
+        "U_thk": "thk_contact_Um200b",
+        "U_z": "z_contact_Um200b"
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "label_index": 1
+        }
+      ]
+    }
+  ],
+
+  "params": [
+    {
+      "name": "z_center_Um200b",
+      "expression": "z_nerve/2",
+      "description": ""
+    },
+    {
+      "name": "R_in_Um200b",
+      "expression": "105 [um]",
+      "description": ""
+    },
+    {
+      "name": "R_out_Um200b",
+      "expression": "(1080/2) [um]",
+      "description": ""
+    },
+    {
+      "name": "Tangent_Um200b",
+      "expression": "175 [um]",
+      "description": ""
+    },
+    {
+      "name": "thk_contact_Um200b",
+      "expression": "0.02 [mm]",
+      "description": ""
+    },
+    {
+      "name": "z_contact_Um200b",
+      "expression": "590 [um]",
+      "description": ""
+    },
+    {
+      "name": "Pitch_Um200b",
+      "expression": "895 [um]",
+      "description": ""
+    },
+    {
+      "name": "L_Um200b",
+      "expression": "2075 [um]",
+      "description": ""
+    },
+    {
+      "name": "Thk_fill_Um200b",
+      "expression": "100 [um]",
+      "description": ""
+    },
+    {
+      "name": "thk_medium_gap_internal_Um200b",
+      "expression": "10 [um]",
+      "description": ""
+    },
+    {
+      "name": "x_shift",
+      "expression": "135 [um]",
+      "description": ""
+    },
+    {
+      "name": "y_shift",
+      "expression": "0 [um]",
+      "description": ""
+    },
+    {
+      "name": "gap",
+      "expression": "30 [um]",
+      "description": ""
+    }
+  ],
+
+  "expandable": false,
+  "angle_to_contacts_deg": 180,
+  "offset": {
+  }
+}

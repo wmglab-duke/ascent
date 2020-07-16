@@ -1,0 +1,167 @@
+{
+  "code": "Um300t",
+  "instances": [
+    {
+      "type": "CuffFill_Primitive",
+      "label": "MicroLeads_Um300t Cuff Fill",
+      "def": {
+        "Radius": "R_out_Um300t+Thk_fill_Um300t",
+        "Thk": "Thk_fill_Um300t",
+        "L": "L_Um300t+2*Thk_fill_Um300t",
+        "Center": "z_center_Um300t",
+        "x_shift": "x_shift",
+        "y_shift": "y_shift"
+      },
+      "materials": [
+        {
+          "info": "fill",
+          "label_index": 0
+        }
+      ]
+    },
+    {
+      "type": "uCuff_Primitive",
+      "label": "MicroLeads_Um300t Cuff",
+      "def": {
+        "Center": "z_center_Um300t",
+        "R_in": "R_in_Um300t",
+        "U_tangent": "Tangent_Um300t",
+        "R_out": "R_out_Um300t",
+        "U_L": "L_Um300t",
+        "U_shift_x": "x_shift",
+        "U_shift_y": "y_shift",
+        "U_gap": "gap"
+      },
+      "materials": [
+        {
+          "info": "insulator",
+          "label_index": 1
+        }
+      ]
+    },
+    {
+      "type": "uContact_Primitive",
+      "label": "MicroLeads_Um300t Contact 1",
+      "def": {
+        "Center": "z_center_Um300t-(Pitch_Um300t)",
+        "R_in": "R_in_Um300t",
+        "U_tangent": "Tangent_Um300t",
+        "U_thk": "thk_contact_Um300t",
+        "U_z": "z_contact_Um300t"
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "label_index": 1
+        }
+      ]
+    },
+    {
+      "type": "uContact_Primitive",
+      "label": "MicroLeads_Um300t Contact 2",
+      "def": {
+        "Center": "z_center_Um300t",
+        "R_in": "R_in_Um300t",
+        "U_tangent": "Tangent_Um300t",
+        "U_thk": "thk_contact_Um300t",
+        "U_z": "z_contact_Um300t"
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "label_index": 1
+        }
+      ]
+    },
+    {
+      "type": "uContact_Primitive",
+      "label": "MicroLeads_Um300t Contact 3",
+      "def": {
+        "Center": "z_center_Um300t+(Pitch_Um300t)",
+        "R_in": "R_in_Um300t",
+        "U_tangent": "Tangent_Um300t",
+        "U_thk": "thk_contact_Um300t",
+        "U_z": "z_contact_Um300t"
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "label_index": 1
+        }
+      ]
+    }
+  ],
+
+  "params": [
+    {
+      "name": "z_center_Um300t",
+      "expression": "z_nerve/2",
+      "description": ""
+    },
+    {
+      "name": "R_in_Um300t",
+      "expression": "132.5 [um]",
+      "description": ""
+    },
+    {
+      "name": "R_out_Um300t",
+      "expression": "(1190/2) [um]",
+      "description": ""
+    },
+    {
+      "name": "Tangent_Um300t",
+      "expression": "255 [um]",
+      "description": ""
+    },
+    {
+      "name": "thk_contact_Um300t",
+      "expression": "0.02 [mm]",
+      "description": ""
+    },
+    {
+      "name": "z_contact_Um300t",
+      "expression": "680 [um]",
+      "description": ""
+    },
+    {
+      "name": "Pitch_Um300t",
+      "expression": "1070 [um]",
+      "description": ""
+    },
+    {
+      "name": "L_Um300t",
+      "expression": "3650 [um]",
+      "description": ""
+    },
+    {
+      "name": "Thk_fill_Um300t",
+      "expression": "100 [um]",
+      "description": ""
+    },
+    {
+      "name": "thk_medium_gap_internal_Um300t",
+      "expression": "10 [um]",
+      "description": ""
+    },
+    {
+      "name": "x_shift",
+      "expression": "130 [um]",
+      "description": ""
+    },
+    {
+      "name": "y_shift",
+      "expression": "0 [um]",
+      "description": ""
+    },
+    {
+      "name": "gap",
+      "expression": "40 [um]",
+      "description": ""
+    }
+  ],
+
+  "expandable": false,
+  "angle_to_contacts_deg": 180,
+  "offset": {
+  }
+}

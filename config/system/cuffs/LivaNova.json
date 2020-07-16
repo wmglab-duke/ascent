@@ -8,7 +8,9 @@
         "Radius": "r_cuff_in_LN+thk_cuff_LN+Thk_fill_LN",
         "Thk": "Thk_fill_LN",
         "L": "L_cuff_LN+w_cuff_LN+2*Thk_fill_LN",
-        "Center": "(z_nerve/2)-(sep_elec_LN/2)"
+        "Center": "(z_nerve/2)-(sep_elec_LN/2)",
+        "x_shift": "0",
+        "y_shift": "0"
       },
       "materials": [
         {
@@ -24,7 +26,9 @@
         "Radius": "r_cuff_in_LN+thk_cuff_LN+Thk_fill_LN",
         "Thk": "Thk_fill_LN",
         "L": "L_cuff_LN+w_cuff_LN+2*Thk_fill_LN",
-        "Center": "(z_nerve/2)+(sep_elec_LN/2)"
+        "Center": "(z_nerve/2)+(sep_elec_LN/2)",
+        "x_shift": "0",
+        "y_shift": "0"
       },
       "materials": [
         {

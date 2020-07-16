@@ -132,6 +132,11 @@
       "name": "y_shift",
       "expression": "0 [um]",
       "description": ""
+    },
+    {
+      "name": "gap",
+      "expression": "0 [um]",
+      "description": ""
     }
   ],
 
