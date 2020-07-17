@@ -85,7 +85,7 @@ class Waveform(Exceptionable, Configurable, Saveable):
         """
         Calculation of perineurium impedance using results from Weerasuriya 1984 (frog). Weerasuriya discussion
         indicates that Models A & B are better candidates than Models C & D, so we only consider the former pair.
-        :return: rho [ohm-m]
+        :return: rho [ohm-m].
         """
 
         temp = self.search(Config.MODEL, "temperature")  # [degC] 37 for mammalian
