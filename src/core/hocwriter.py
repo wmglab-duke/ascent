@@ -188,16 +188,15 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                 "mode": "ACTIVATION_THRESHOLD",
                 "bounds_search": {
                     "mode": "PERCENT_INCREMENT",
-                    "relative_step": 0.1
+                    "relative_step": 10
                 },
                 "termination_criteria": {
                     "mode": "RELATIVE_DIFFERENCE",
-                    "percent": 0.01
+                    "percent": 1
                 },
                 "threshold": {
                     "thresh_flag": 1,
                     "block_thresh": 0,
-                    "resolution": 0.01,
                     "value": -30,
                     "n_min_aps": 1
                 }
@@ -225,7 +224,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
             if bounds_search_mode == SearchAmplitudeIncrementMode.PERCENT_INCREMENT:
                 increment_flag = SearchAmplitudeIncrementMode.PERCENT_INCREMENT.value
                 step: float = self.search(Config.SIM, "protocol", "bounds_search", "step")
-                file_object.write("\nrel_increment = %0.4f\n" % step)
+                file_object.write("\nrel_increment = %0.4f\n" % (step/100))
             elif bounds_search_mode == SearchAmplitudeIncrementMode.ABSOLUTE_INCREMENT:
                 increment_flag = SearchAmplitudeIncrementMode.ABSOLUTE_INCREMENT.value
                 step: float = self.search(Config.SIM, "protocol", "bounds_search", "step")
@@ -243,7 +242,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
             elif termination_criteria_mode == TerminationCriteriaMode.PERCENT_DIFFERENCE:
                 termination_flag = TerminationCriteriaMode.PERCENT_DIFFERENCE.value
                 res: float = self.search(Config.SIM, "protocol", "termination_criteria", "percent")
-                file_object.write("\nrel_thresh_resoln = %0.4f\n" % res)
+                file_object.write("\nrel_thresh_resoln = %0.4f\n" % (res/100))
             file_object.write("termination_flag = %0.0f // \n" % termination_flag)
 
             file_object.write("Namp = %0.0f\n" % 1)
