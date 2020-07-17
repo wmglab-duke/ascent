@@ -1,7 +1,7 @@
 # SPARC ACCESS: Automated Computational Cuff Electrode Stimulation Simulation
 
 ## Development Goals
-Testing commit, testing again. And again. One more.
+Testing commit, testing again. And again. One more. One more again.
 * **Finished Tasks** (since September 1)
     * Implement each cuff as a sum of parts in a fully parameterized fashion
     * Add cuff specific parameters to JSON files (saved by parameters for each instance)
