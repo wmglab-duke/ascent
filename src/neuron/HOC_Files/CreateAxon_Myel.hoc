@@ -43,14 +43,14 @@ proc CreateAxon_Myel() {
 
 	if (geometry_determination_method==0) {
 	    // MRG_DISCRETE
-		if (fiberD==1) 			{axonD=0.8 nodeD=0.7 paraD1=0.7 paraD2=0.8 deltaz=100 paralength2=5 nl=15}
-		if (fiberD==2) 			{axonD=1.6 nodeD=1.4 paraD1=1.4 paraD2=1.6 deltaz=200 paralength2=10 nl=30}
-		if (fiberD==5.7) {g=0.605 axonD=3.4 nodeD=1.9 paraD1=1.9 paraD2=3.4 deltaz=500 paralength2=35 nl=80}
-		if (fiberD==7.3) {g=0.630 axonD=4.6 nodeD=2.4 paraD1=2.4 paraD2=4.6 deltaz=750 paralength2=38 nl=100}
-		if (fiberD==8.7) {g=0.661 axonD=5.8 nodeD=2.8 paraD1=2.8 paraD2=5.8 deltaz=1000 paralength2=40 nl=110}
-		if (fiberD==10.0) {g=0.690 axonD=6.9 nodeD=3.3 paraD1=3.3 paraD2=6.9 deltaz=1150 paralength2=46 nl=120}
-		if (fiberD==11.5) {g=0.700 axonD=8.1 nodeD=3.7 paraD1=3.7 paraD2=8.1 deltaz=1250 paralength2=50 nl=130}
-		if (fiberD==12.8) {g=0.719 axonD=9.2 nodeD=4.2 paraD1=4.2 paraD2=9.2 deltaz=1350 paralength2=54 nl=135}
+		if (fiberD==1) 			  {axonD=0.8  nodeD=0.7 paraD1=0.7 paraD2=0.8  deltaz=100  paralength2=5 nl=15}
+		if (fiberD==2) 			  {axonD=1.6  nodeD=1.4 paraD1=1.4 paraD2=1.6  deltaz=200  paralength2=10 nl=30}
+		if (fiberD==5.7)  {g=0.605 axonD=3.4  nodeD=1.9 paraD1=1.9 paraD2=3.4  deltaz=500  paralength2=35 nl=80}
+		if (fiberD==7.3)  {g=0.630 axonD=4.6  nodeD=2.4 paraD1=2.4 paraD2=4.6  deltaz=750  paralength2=38 nl=100}
+		if (fiberD==8.7)  {g=0.661 axonD=5.8  nodeD=2.8 paraD1=2.8 paraD2=5.8  deltaz=1000 paralength2=40 nl=110}
+		if (fiberD==10.0) {g=0.690 axonD=6.9  nodeD=3.3 paraD1=3.3 paraD2=6.9  deltaz=1150 paralength2=46 nl=120}
+		if (fiberD==11.5) {g=0.700 axonD=8.1  nodeD=3.7 paraD1=3.7 paraD2=8.1  deltaz=1250 paralength2=50 nl=130}
+		if (fiberD==12.8) {g=0.719 axonD=9.2  nodeD=4.2 paraD1=4.2 paraD2=9.2  deltaz=1350 paralength2=54 nl=135}
 		if (fiberD==14.0) {g=0.739 axonD=10.4 nodeD=4.7 paraD1=4.7 paraD2=10.4 deltaz=1400 paralength2=56 nl=140}
 		if (fiberD==15.0) {g=0.767 axonD=11.5 nodeD=5.0 paraD1=5.0 paraD2=11.5 deltaz=1450 paralength2=58 nl=145}
 		if (fiberD==16.0) {g=0.791 axonD=12.7 nodeD=5.5 paraD1=5.5 paraD2=12.7 deltaz=1500 paralength2=60 nl=150}
@@ -58,11 +58,11 @@ proc CreateAxon_Myel() {
 
 	} else if (geometry_determination_method==1) {
 	    // MRG_INTERPOLATION
-	    nl = -0.4749*fiberD^2 + 16.85*fiberD - 0.7648
-		nodeD = 0.01093*fiberD^2 + 0.1008*fiberD + 1.099
-		paraD1 = nodeD
-		paraD2 = 0.02361*fiberD^2 + 0.3673*fiberD + 0.7122
-		axonD = paraD2
+	    nl          = -0.4749*fiberD^2 + 16.85*fiberD - 0.7648
+		nodeD       = 0.01093*fiberD^2 + 0.1008*fiberD + 1.099
+		paraD1      = nodeD
+		paraD2      = 0.02361*fiberD^2 + 0.3673*fiberD + 0.7122
+		axonD       = paraD2
 		paralength2 = -0.1652*fiberD^2 + 6.354*fiberD - 0.2862
 
 		if (fiberD >= 5.643) {
@@ -76,21 +76,21 @@ proc CreateAxon_Myel() {
 			printf("WARNING - geometry_determination_method value %d  is not recommended for fiber diameters above 5.7 um",geometry_determination_method)
 		}
 		geometry_object = new GeometryBuilder(fiberD)
-		nodelength = geometry_object.nodelength
+		nodelength  = geometry_object.nodelength
 		paralength1 = geometry_object.MYSAlength
-		axonD=geometry_object.axonD
-		nodeD=geometry_object.nodeD
-		paraD1=geometry_object.MYSAD
-		paraD2=geometry_object.FLUTD
-		paralength2=geometry_object.FLUTlength
-		deltaz=6*geometry_object.interlength+nodelength+(2*paralength1)+(2*paralength2)
-		nl=geometry_object.nl
+		axonD       = geometry_object.axonD
+		nodeD       = geometry_object.nodeD
+		paraD1      = geometry_object.MYSAD
+		paraD2      = geometry_object.FLUTD
+		paralength2 = geometry_object.FLUTlength
+		deltaz      = 6*geometry_object.interlength+nodelength+(2*paralength1)+(2*paralength2)
+		nl          = geometry_object.nl
 	}
 
-	Rpn0=(rhoa*.01)/(PI*((((nodeD/2)+space_p1)^2)-((nodeD/2)^2)))
-	Rpn1=(rhoa*.01)/(PI*((((paraD1/2)+space_p1)^2)-((paraD1/2)^2)))
-	Rpn2=(rhoa*.01)/(PI*((((paraD2/2)+space_p2)^2)-((paraD2/2)^2)))
-	Rpx=(rhoa*.01)/(PI*((((axonD/2)+space_i)^2)-((axonD/2)^2)))
+	Rpn0 = (rhoa*.01)/(PI*((((nodeD/2)  + space_p1)^2) - ((nodeD/2)^2)))
+	Rpn1 = (rhoa*.01)/(PI*((((paraD1/2) + space_p1)^2) - ((paraD1/2)^2)))
+	Rpn2 = (rhoa*.01)/(PI*((((paraD2/2) + space_p2)^2) - ((paraD2/2)^2)))
+	Rpx  = (rhoa*.01)/(PI*((((axonD/2)  + space_i)^2)  - ((axonD/2)^2)))
 	interlength=(deltaz-nodelength-(2*paralength1)-(2*paralength2))/6
 
 	// Create axon
@@ -153,38 +153,38 @@ proc CreateAxon_Myel() {
 					nseg_caextscale = nseg
 					
 					// Ionic concentrations
-					cao0_ca_ion = 2.0							// [mM] Initial Cao Concentration
-					cai0_ca_ion = .000117						// [mM] Initial Cai Concentrations
+					cao0_ca_ion = 2.0							    // [mM] Initial Cao Concentration
+					cai0_ca_ion = .000117						    // [mM] Initial Cai Concentrations
 					
-					ko = 5.4									// [mM] External K Concentration
-					ki = 145.0									// [mM] Internal K Concentration
-					kstyle=ion_style("k_ion",1,2,0,0,0) 		// Allows ek to be calculated manually
-					ek = ((R*(celsius+273.15))/F)*log(ko/ki)	// Manual Calculation of ek in order to use Schild F and R values
+					ko      = 5.4									// [mM] External K Concentration
+					ki      = 145.0									// [mM] Internal K Concentration
+					kstyle  = ion_style("k_ion",1,2,0,0,0) 		    // Allows ek to be calculated manually
+					ek      = ((R*(celsius+273.15))/F)*log(ko/ki)	// Manual Calculation of ek in order to use Schild F and R values
 					
-					nao = 154.0									// [mM] External Na Concentration
-					nai = 8.9									// [mM] Internal Na Concentration
-					nastyle=ion_style("na_ion",1,2,0,0,0) 		// Allows ena to be calculated manually
-					ena = ((R*(celsius+273.15))/F)*log(nao/nai)	// Manual Calculation of ena in order to use Schild F and R values
+					nao     = 154.0									// [mM] External Na Concentration
+					nai     = 8.9									// [mM] Internal Na Concentration
+					nastyle = ion_style("na_ion",1,2,0,0,0) 		// Allows ena to be calculated manually
+					ena     = ((R*(celsius+273.15))/F)*log(nao/nai)	// Manual Calculation of ena in order to use Schild F and R values
 					
 					
 					// Conductances and voltage shift values for A-type (ion channel mod file defaults are for C-type) -- see Schild 1994
 					// [S/cm^2] This block sets the conductance and shift values to their A-Fiber values, per Schild 1994
-					gbar_naf=3//0.072503919 	// NOTE: Does not conduct with original Schild 1994 value of 0.072503919; does not conduct at 0.5, but does at 1; increased to MRG value of 3
-					shiftnaf_naf=0			// [mV] 
-					gbar_nas=3.53678E-07
-					shiftnas_nas=0
-					gbar_kd=0.000194523
-					shiftkd_kd=0
-					gbar_ka=0.001237872
-					shiftka_ka=0
-					gbar_kds=0.000353678
-					shiftkds_kds=0
-					gbar_kca=0.00022989
-					gbar_can=3.53678E-05
-					shiftcan_can=0
-					gbar_cat=1.23787E-05
-					shiftcan_cat=0
-					gbna_leak=1.14945E-05
+					gbar_naf     = 3//0.072503919 	// NOTE: Does not conduct with original Schild 1994 value of 0.072503919; does not conduct at 0.5, but does at 1; increased to MRG value of 3
+					shiftnaf_naf = 0			// [mV] 
+					gbar_nas     = 3.53678E-07
+					shiftnas_nas = 0
+					gbar_kd      = 0.000194523
+					shiftkd_kd   = 0
+					gbar_ka      = 0.001237872
+					shiftka_ka   = 0
+					gbar_kds     = 0.000353678
+					shiftkds_kds = 0
+					gbar_kca     = 0.00022989
+					gbar_can     = 3.53678E-05
+					shiftcan_can = 0
+					gbar_cat     = 1.23787E-05
+					shiftcan_cat = 0
+					gbna_leak    = 1.14945E-05
 				}
 				
 				insert extracellular xraxial=Rpn0 

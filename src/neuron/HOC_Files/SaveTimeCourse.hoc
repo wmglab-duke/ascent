@@ -12,37 +12,6 @@ Variables that must be defined in wrapper/params file:
 None.
 */
 
-// TESTING
-/*
-load_file("ObjectArray_1d.hoc")
-
-dt 				= 0.001
-tstop 			= 250
-n_tsteps 		= int(tstop/dt) + 1			// int truncates twds zero; +1 accounts for the time point at t=0 [unitless]
-
-strdef arg1, arg2, arg4
-objref arg3, arg5
-
-arg1 = "testfile.dat"
-
-arg2 = "Vm"
-
-arg3 = new Vector(3,0)
-arg3.x[0] = 13
-arg3.x[1] = 2
-arg3.x[2] = 76
-
-arg4 = "(mV)"
-
-N = 23
-arg5 = new O1d(N)
-for i = 0, N-1 {
-	arg5.o[i] = new Vector(n_tsteps, 0)
-}
-*/
-// END TESTING
-
-// There is no "localstr", so just define the strings here
 strdef myfname, mycolprefix, mycolunits
 objref output_file
 
@@ -74,9 +43,3 @@ proc SaveTimeCourse() {localobj mydata, mycolsuffix_vec
 
 	output_file.close()
 }
-
-// TESTING
-/*
-SaveTimeCourse(arg1, arg2, arg3, arg4, arg5)
-*/
-// END TESTING
