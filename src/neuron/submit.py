@@ -9,6 +9,7 @@ import time
 import multiprocessing
 import subprocess
 from typing import List
+from src.utils import *
 
 ALLOWED_SUBMISSION_CONTEXTS = ['cluster', 'local']
 OS = 'UNIX-LIKE' if any([s in sys.platform for s in ['darwin', 'linux']]) else 'WINDOWS'
@@ -20,6 +21,17 @@ def local_submit(filename, output_log, error_log):
         subprocess.run(['chmod', '777', filename])
     run_command = ['bash', filename, '>', output_log, '2>{}'.format(error_log)]
     subprocess.run(run_command[1:] if (OS is 'WINDOWS') else run_command, capture_output=True)
+
+
+def load(config_path: str):
+    """
+    Loads in json data and returns to user, assuming it has already been validated.
+    :param config_path: the string path to load up
+    :return: json data (usually dict or list)
+    """
+    with open(config_path, "r") as handle:
+        # print('load "{}" --> key "{}"'.format(config, key))
+        return json.load(handle)
 
 
 if __name__ == "__main__":
@@ -84,7 +96,18 @@ if __name__ == "__main__":
                     if not os.path.exists(blank_path):
                         open(blank_path, 'w').close()
 
+                    # load JSON file with binary search amplitudes
+                    n_sim = sim_name.split('_')[-1]
+                    sim_config = load(os.path.join(sim_path, '{}.json'.format(n_sim)))
+
                     print('\n\n################ {} ################\n\n'.format(sim_name))
+
+                    if sim_config['protocol']['mode'] == NeuronRunMode.ACTIVATION_THRESHOLD.name \
+                            or sim_config['protocol']['mode'] == NeuronRunMode.BLOCK_THRESHOLD.name:
+                        stimamp_top = sim_config['protocol']['bounds_search']['top']
+                        stimamp_bottom = sim_config['protocol']['bounds_search']['bottom']
+                    elif sim_config['protocol']['mode'] == NeuronRunMode.FINITE_AMPLITUDES:
+                        stimamp_top, stimamp_bottom = 0, 0
 
                     for fiber_filename in [x for x in os.listdir(fibers_path)
                                            if re.match('inner[0-9]+_fiber[0-9]+\\.dat', x)]:
@@ -105,8 +128,6 @@ if __name__ == "__main__":
                         # assert os.path.isfile(start_path), '{} already exists (not expected) check path/implementation'.format(start_path)
 
                         # binary search intitial bounds (unit: mA)
-                        # TODO: abstract these in a run or sim configuration
-                        stimamp_top, stimamp_bottom = -1, -0.01
 
                         with open(start_path, 'w+') as handle:
                             lines = []
