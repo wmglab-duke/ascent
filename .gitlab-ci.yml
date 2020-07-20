@@ -1,0 +1,12 @@
+pages:
+  script:
+  - sudo yum -y install python-setuptools
+  - sudo yum -y install mkdocs
+  - sudo mkdocs build
+  - sudo mv site public
+  artifacts:
+    paths:
+    - public
+  only:
+    - master
+    - mkdocs
