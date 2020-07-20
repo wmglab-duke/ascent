@@ -2,20 +2,22 @@ echo PLEASE ENSURE THAT YOU ARE RUNNING THIS INSTALLATION SCRIPT FROM THE ROOT O
 # TODO: CREATE CONDA ENVIRONMENT, THEN INSTALL EVERYTHING VIA INSTALL
 # 
 # TODO: python script for NEURON job monitoring
-pip install --user pip
-pip install --user Pillow
-pip install --user numpy
-pip install --user shapely
-pip install --user matplotlib
-pip install --user pyclipper
-pip install --user pygame
-pip install --user quantiphy
-pip install --user opencv-python
-pip install --user pymunk
-pip install --user scipy
-pip install --user pandas
-pip install --user openpyxl
-pip install --user shutil
-conda install -c conda-forge --use-local shapely
+conda create -y ascent
+conda activate ascent
+
+conda install Pillow
+conda install numpy
+conda install shapely
+conda install matplotlib
+conda install pyclipper
+conda install pygame
+conda install quantiphy
+conda install opencv-python
 conda install -c conda-forge opencv libtiff=4.0 python=3.7 pillow
+conda install pymunk
+conda install scipy
+conda install pandas
+conda install openpyxl
+conda install shutil
+conda install -c conda-forge --use-local shapely
 export PYTHONPATH="$PYTHONPATH:$PWD"
