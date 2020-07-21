@@ -9,7 +9,7 @@ import time
 import multiprocessing
 import subprocess
 from typing import List
-from src.utils import *
+from utils import *
 
 ALLOWED_SUBMISSION_CONTEXTS = ['cluster', 'local']
 OS = 'UNIX-LIKE' if any([s in sys.platform for s in ['darwin', 'linux']]) else 'WINDOWS'
