@@ -1,17 +1,3 @@
-/*
-Author: Nikki Pelot, modified by Eric Musselman
-Date created: February 8, 2016
-
-Instructions:
-- Open NEURON's rxvt sh
-- mpiexec -n <# processors> nrniv -mpi <.hoc filename including ".hoc" file extension>
-*/
-
-// Create parallel context instance
-// objref pc
-// pc = new ParallelContext()
-
-// print "number of processors: ", pc.nhost
 
 //node_channels = 1						// node_channels = 0 for MRG; node_channels = 1 for Schild 1994
 if (node_channels == 1) {
@@ -83,23 +69,11 @@ if (fiber_type == 3) {
 // Train of intracellular pulses
 // NOTE: Define pulsewidth and interspike interval in pw_values and isi_values further down in Wrapper
 
-//objref stim1
-
 if (fiber_type == 2) {// if myelinated fiber, convert node index to compartment index
 	intrastim_ind_tmp = IntraStim_PulseTrain_ind*11
 } else {
 	intrastim_ind_tmp = IntraStim_PulseTrain_ind
 }
-
-//s[intrastim_ind_tmp].sec {
-//	stim1 		= new trainIClamp()
-//	stim1.loc(.5)
-//	stim1.del 	= IntraStim_PulseTrain_delay // Delay to first pulse [ms]
-//	stim1.PW	= IntraStim_PulseTrain_pw  	 // Defined in pw_values [ms]
-//	stim1.train = tstop-stim1.del 			 // Duration of train of pulses [ms]
-//	stim1.freq	= IntraStim_PulseTrain_freq  // Frequency of pulses [Hz]
-//	stim1.amp	= IntraStim_PulseTrain_amp 	 // Stim amplitude [nA]
-//}
 
 // ***************************************************************************	
 // IntracellularStim.hoc
@@ -257,30 +231,12 @@ proc run_all(){local myinner, myfiber, myamp, amp_ind
 
 trun = startsw()
 
-// Start execute loop on the workers
-// {pc.runworker()}
-// Code beyond this point (til pc.done()) is only executed by the master.
-// The master must now post jobs to the bulletin board.
-
-//proc batchrun() {local inner_ind, fiber_ind, Vefreq_ind, stimamp_ind, pw_ind, isi_ind
 proc batchrun() {local stimamp_ind
 	for stimamp_ind = 0, Namp-1 {
-		//pc.submit("run_all",inner_ind,fiber_ind,Vefreq_values.x[Vefreq_ind],stimamp_values.x[stimamp_ind],pw_values.x[pw_ind],isi_values.x[isi_ind])
 		run_all(inner_ind, fiber_ind, stimamp_values.x[stimamp_ind],  stimamp_ind)
 	}
 }
 
 batchrun()
-
-
-// Save the runtime to a file
-// objref f_runtime
-// f_runtime = new File()
-// f_runtime.wopen("..//%s//data//outputs//run_time.dat", sim_path)
-// f_runtime.printf("Run time: %f seconds", startsw()-trun)
-// f_runtime.close()
-// print "Run time: ", startsw()-trun, "seconds"
-
-// {pc.done()}
 
 quit()

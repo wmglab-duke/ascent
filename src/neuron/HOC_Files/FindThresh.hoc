@@ -1,7 +1,4 @@
 /*
-Author: Nikki Pelot, modified by Eric Musselman
-Date created: February 5, 2016
-
 Description:
 - Binary search algorithm to find threshold.
 
@@ -23,9 +20,7 @@ thresh_values = new Vector(Nresults,0)
 // Find threshold with a binary search algorithm
 proc FindThresh() {//local key
 	fasc = $1
-	
-	//stimamp_top       = stimamp_top_init.x[fasc]
-	//stimamp_bottom    = stimamp_bottom_init.x[fasc]
+
 	check_top_flag    = 0
 	check_bottom_flag = 0
 
@@ -42,7 +37,6 @@ proc FindThresh() {//local key
 			print "ERROR: Initial stimamp_top value does not elicit an AP (find_block_thresh = 0) or does not block (find_block_thresh = 1) - need to increase its magnitude and/or increase tstop to detect evoked AP"
 			
 			check_top_flag = 0
-			//return 0
 
 			if (increment_flag == 1) { // relative
 				stimamp_top    = stimamp_top*(1+rel_increment)
@@ -66,7 +60,6 @@ proc FindThresh() {//local key
 			print "ERROR: Initial stimamp_bottom value elicits an AP (find_block_thresh = 0) or blocks (find_block_thresh = 1) - need to decrease its magnitude and/or increase tstop to detect block test pulses"
 
 			check_bottom_flag = 0
-			//return 0
 
 			if (increment_flag == 1) { // relative
 				stimamp_bottom    = stimamp_bottom*(1-rel_increment)
@@ -105,7 +98,6 @@ proc FindThresh() {//local key
 
 		}
 
-		//if ((abs((stimamp_bottom - stimamp_top) / 2)) < thresh_resoln) {	// resolution of search
 		if ((tolerance) < thresh_resoln) {	// resolution of search
 			// Use last amplitude that produced an action potential
 			if (N_APs == 0) {
@@ -116,7 +108,6 @@ proc FindThresh() {//local key
 			
 			RunSim(stimamp)
 			
-			//save_data(myPW,myPW_ind,myfibernum,stimamp)
 			break
 		} else if (N_APs >= 1) {				// found an AP
 			if (find_block_thresh == 1) {
@@ -142,12 +133,7 @@ proc FindThresh() {//local key
 	}
 
 	print "Threshold: ", stimamp, "mA for extracellular and nA for intracellular (check flag_whichstim)"
-	// print "Just Beneath Threshold: ", stimamp_bottom, "mA"
-	//print "CV: ",   , "mm/ms"
+
 		
 	thresh_values.x[0] = stimamp
-		
-	// pc.pack(thresh_values)
-	// pc.post(key)
-	// return key
 }
