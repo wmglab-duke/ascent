@@ -61,10 +61,11 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             # TODO: move sample position to SIM?
             sample_position = self.sample.configs[Config.SAMPLE.value].get('position', None)
             if sample_position is not None:
-                print('\t\tUsing {} µm positioning for SL curve'.format(sample_position))
+                pass
+                # print('\t\tUsing {} µm positioning for SL curve'.format(sample_position))
             else:
                 sample_position = 5000  # default
-                print('\t\tNo positioning for SL curve found. Using {} µm.'.format(sample_position))
+                # print('\t\tNo positioning for SL curve found. Using {} µm.'.format(sample_position))
 
             z_nerve = self.search(Config.MODEL, 'medium', 'proximal', 'length')
             z_medium = self.search(Config.MODEL, 'medium', 'distal', 'length')
@@ -128,7 +129,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             # ax.scatter(self.fibers[0][:, 0], self.fibers[0][:, 1], self.fibers[0][:, 2], c='b', marker='o')
             # plt.show()
 
-            print('buffer line')
+            # print('buffer line')
 
 
         return self
