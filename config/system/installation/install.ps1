@@ -23,7 +23,9 @@ if ($decision -eq 0) {
         $ShortcutFile = 'Desktop\ASCENT Powers.lnk'
         $WScriptShell = New-Object -ComObject WScript.Shell
         $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+        Write-Host $TargetFile
         $Shortcut.TargetPath = $TargetFile
+        $Shortcut.
         $Shortcut.Save()
         
         Write-Host 'Saved shortcut to Desktop'
