@@ -260,7 +260,12 @@ class Sample(Exceptionable, Configurable, Saveable):
                 # check and load in nerve, throw error if not present
 
                 if exists(MaskFileNames.NERVE):
-                    contour, _ = cv2.findContours(np.flipud(cv2.imread(MaskFileNames.NERVE.value, -1)),
+                    img_nerve = cv2.imread(MaskFileNames.NERVE.value, -1)
+
+                    if img_nerve.shape[2] > 1:
+                        img_nerve = img_nerve[:, :, 0]
+
+                    contour, _ = cv2.findContours(np.flipud(img_nerve),
                                                   cv2.RETR_TREE,
                                                   cv2.CHAIN_APPROX_SIMPLE)
                     nerve = Nerve(Trace([point + [0] for point in contour[0][:, 0, :]],
