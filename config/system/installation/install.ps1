@@ -11,7 +11,7 @@ if ($decision -eq 0) {
     conda activate ascent
     conda install -y python=3.7
     python C:\Users\jec91\Miniconda3\envs\ascent\Lib\site-packages\pip install --upgrade pip setuptools wheel
-    python C:\Users\jec91\Miniconda3\envs\ascent\Lib\site-packages\pip install pillow>=5.2.0 numpy>=1.16.4 shapely>=1.6.4 matplotlib>=3.2.1 pyclipper>=1.1.0 pygame>=1.9.6 libtiff==4.0 pymunk>=5.5.0 scipy>=1.1.0 pandas>=0.25.1 openpyxl>=3.0.3 opencv-python quantiphy
+    python C:\Users\jec91\Miniconda3\envs\ascent\Lib\site-packages\pip install pillow>=5.2.0 numpy>=1.16.4 shapely>=1.6.4 matplotlib>=3.2.1 pyclipper>=1.1.0 pygame>=1.9.6 libtiff==0.4.0 pymunk>=5.5.0 scipy>=1.1.0 pandas>=0.25.1 openpyxl>=3.0.3 opencv-python quantiphy
     
     # shortcut creation
     $title    = 'ASCENT Conda Environment'
