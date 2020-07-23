@@ -164,12 +164,13 @@ if __name__ == "__main__":  # Allows for the safe importing of the main module
                                     'nrniv -nobanner '
                                     '-dll {}/MOD_Files/nrnmech.dll '
                                     '-c \"strdef sim_path\" '
-                                    '-c \"sim_path=\\\"{}\\\"\" '
+                                    '-c \"sim_path={}\\\\\" '
                                     '-c \"inner_ind={}\" '
                                     '-c \"fiber_ind={}\" '
                                     '-c \"stimamp_top={}\" '
                                     '-c \"stimamp_bottom={}\" '
-                                    '-c \"load_file(\\\"launch.hoc\\\")\" blank.hoc\n'.format(os.getcwd(), sim_path,
+                                    '-c \"load_file(\\\"launch.hoc\\\")\" blank.hoc\n'.format(os.getcwd(),
+                                                                                              "\\\\n_sims\\\\1003_0_1005_0",
                                                                                               inner_ind,
                                                                                               fiber_ind,
                                                                                               stimamp_top,
