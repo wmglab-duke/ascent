@@ -80,13 +80,13 @@
     },
     "bounds_search": {
       "mode": "PERCENT_INCREMENT",
-      "step": 0.1,
+      "step": 10,
       "top": -1,
       "bottom": -0.01
     },
     "termination_criteria": {
       "mode": "PERCENT_DIFFERENCE",
-      "percent": 0.01
+      "percent": 1
     }
   }
 }

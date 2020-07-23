@@ -8,7 +8,9 @@
         "Radius": "R_out_U+Thk_fill_U",
         "Thk": "Thk_fill_U",
         "L": "L_U+2*Thk_fill_U",
-        "Center": "z_center_U"
+        "Center": "z_center_U",
+        "x_shift": "0",
+        "y_shift": "0"
       },
       "materials": [
         {
@@ -130,6 +132,11 @@
     },
     {
       "name": "y_shift",
+      "expression": "0 [um]",
+      "description": ""
+    },
+    {
+      "name": "gap",
       "expression": "0 [um]",
       "description": ""
     }

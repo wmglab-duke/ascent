@@ -11,7 +11,8 @@
         "R_out": "R_out_U400",
         "U_L": "L_U400",
         "U_shift_x": "x_shift",
-        "U_shift_y": "y_shift"
+        "U_shift_y": "y_shift",
+        "U_gap": "gap"
       },
       "materials": [
         {
@@ -130,6 +131,11 @@
     },
     {
       "name": "y_shift",
+      "expression": "0 [um]",
+      "description": ""
+    },
+    {
+      "name": "gap",
       "expression": "0 [um]",
       "description": ""
     }

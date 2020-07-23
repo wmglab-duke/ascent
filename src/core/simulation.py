@@ -399,8 +399,14 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
     @staticmethod
     def export_neuron_files(target: str):
-        neuron_dir = os.path.join(os.environ[Env.PROJECT_PATH.value], 'src', 'neuron')
-        du.copy_tree(neuron_dir, target)
+        # neuron files
+        du.copy_tree(os.path.join(os.environ[Env.PROJECT_PATH.value], 'src', 'neuron'), target)
+        # enums (used by submit.py in neuron files)
+
+        utils_path = os.path.join(target, 'utils')
+        if not os.path.exists(utils_path):
+            os.mkdir(os.path.join(target, 'utils'))
+            du.copy_tree(os.path.join(os.environ[Env.PROJECT_PATH.value], 'src', 'utils'), os.path.join(target, 'utils'))
 
     @staticmethod
     def import_n_sims(sample: int, model: int, sim: int, sim_dir: str, source: str):

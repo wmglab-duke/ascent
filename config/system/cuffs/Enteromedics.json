@@ -8,7 +8,9 @@
         "Radius": "R_out_EM+Thk_fill_EM",
         "Thk": "Thk_fill_EM",
         "L": "L_EM+2*Thk_fill_EM",
-        "Center": "Center_EM"
+        "Center": "Center_EM",
+        "x_shift": "0",
+        "y_shift": "0"
       },
       "materials": [
         {

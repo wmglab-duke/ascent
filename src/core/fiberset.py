@@ -61,10 +61,11 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             # TODO: move sample position to SIM?
             sample_position = self.sample.configs[Config.SAMPLE.value].get('position', None)
             if sample_position is not None:
-                print('\t\tUsing {} µm positioning for SL curve'.format(sample_position))
+                pass
+                # print('\t\tUsing {} µm positioning for SL curve'.format(sample_position))
             else:
                 sample_position = 5000  # default
-                print('\t\tNo positioning for SL curve found. Using {} µm.'.format(sample_position))
+                # print('\t\tNo positioning for SL curve found. Using {} µm.'.format(sample_position))
 
             z_nerve = self.search(Config.MODEL, 'medium', 'proximal', 'length')
             z_medium = self.search(Config.MODEL, 'medium', 'distal', 'length')
@@ -119,17 +120,6 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             ratios = fiber_z_points / np.max(fiber_z_points)
 
             self.fibers = [interparc(ratios, x, y, z)]
-
-            # from mpl_toolkits.mplot3d import Axes3D
-            # fig: plt.Figure = plt.figure()
-            # ax: Axes3D = fig.add_subplot(111, projection='3d')
-            #
-            # ax.scatter(x, y, z, c='r', marker='o')
-            # ax.scatter(self.fibers[0][:, 0], self.fibers[0][:, 1], self.fibers[0][:, 2], c='b', marker='o')
-            # plt.show()
-
-            print('buffer line')
-
 
         return self
 
@@ -358,10 +348,16 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                 random_offset = True
                 random.seed(my_z_seed)
 
-            z_offset = clip([z + offset + additional_offset for z in z_values],
-                            self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'min'),
-                            self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'max'),
-                            myel)
+            xy_mode_name: str = self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode')
+            xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
+
+            # compute offset z coordinate -- only clip if NOT an SL fiber
+            z_offset = [z + offset + additional_offset for z in z_values]
+            if xy_mode != FiberXYMode.SL_PSEUDO_INTERP:
+                z_offset = clip(z_offset,
+                                self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'min'),
+                                self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'max'),
+                                myel)
 
             for x, y in fibers_xy:
                 random_offset_value = dz * (random.random() - 0.5) if random_offset else 0
@@ -377,8 +373,8 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         # all functionality is only defined for EXTRUSION as of now
         if fiber_z_mode == FiberZMode.EXTRUSION:
 
-            # get the correct fiber lengths
-            model_length = self.search(Config.MODEL, 'medium', 'proximal', 'length')
+            model_length = self.search(Config.MODEL, 'medium', 'proximal', 'length') if (override_length is None) else override_length
+
             if not ('min' in self.configs['sims']['fibers']['z_parameters'].keys() and 'max' in self.configs['sims']['fibers']['z_parameters'].keys()):
                 fiber_length = model_length if override_length is None else override_length
                 if override_length is None:

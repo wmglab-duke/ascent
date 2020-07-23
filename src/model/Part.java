@@ -1357,9 +1357,9 @@ class Part {
                 GeomFeature rectIL = ucontactxs.geom().create(im.next("r",rectInlineLabel), "Rectangle");
                 rectIL.label(rectInlineLabel);
                 rectIL.set("contributeto", im.get(inLineLabel));
-                rectIL.set("pos", new String[]{"U_tangent/2", "0"});
-                rectIL.set("base", "center");
-                rectIL.set("size", new String[]{"U_tangent", "2*R_in"});
+                rectIL.set("pos", new String[]{"0", "-R_in"});
+                rectIL.set("base", "corner");
+                rectIL.set("size", new String[]{"U_tangent+U_thk", "2*R_in"});
 
                 String uInlinePLabel = "Union Inline Parts";
                 GeomFeature uInline = ucontactxs.geom().create(im.next("uni",uInlinePLabel), "Union");
@@ -1420,6 +1420,7 @@ class Part {
                 model.geom(id).inputParam().set("U_L", "4 [mm]");
                 model.geom(id).inputParam().set("U_shift_x", "0 [mm]");
                 model.geom(id).inputParam().set("U_shift_y", "0 [mm]");
+                model.geom(id).inputParam().set("U_gap", "20 [um]");
 
                 im.labels = new String[]{
                         "CUFF XS", //0
@@ -1433,12 +1434,16 @@ class Part {
 
                 }
 
-                String ucCXSLabel = "Contact XS";
+                String ucCXSLabel = "Cuff XS";
                 GeomFeature ucCXS = model.geom(id).create(im.next("wp",ucCXSLabel), "WorkPlane");
                 ucCXS.label(ucCXSLabel);
                 ucCXS.set("contributeto", im.get("CUFF XS"));
                 ucCXS.set("quickz", "Center-U_L/2");
                 ucCXS.set("unite", true);
+
+                String ucGapLabel = "GAP";
+                ucCXS.geom().selection().create(im.next("csel",ucGapLabel), "CumulativeSelection");
+                ucCXS.geom().selection(im.get(ucGapLabel)).label(ucGapLabel);
 
                 String ucInlineLabel = "INLINE";
                 ucCXS.geom().selection().create(im.next("csel",ucInlineLabel), "CumulativeSelection");
@@ -1452,13 +1457,13 @@ class Part {
                 ucCXS.geom().selection().create(im.next("csel",ucOutlineLabel), "CumulativeSelection");
                 ucCXS.geom().selection(im.get(ucOutlineLabel)).label(ucOutlineLabel);
 
-                String ucContactXSLabel = "CONTACT XS";
-                ucCXS.geom().selection().create(im.next("csel",ucContactXSLabel), "CumulativeSelection");
-                ucCXS.geom().selection(im.get(ucContactXSLabel)).label(ucContactXSLabel);
-
                 String ucOutlineCuffLabel = "OUTLINE_CUFF";
                 ucCXS.geom().selection().create(im.next("csel",ucOutlineCuffLabel), "CumulativeSelection");
                 ucCXS.geom().selection(im.get(ucOutlineCuffLabel)).label(ucOutlineCuffLabel);
+
+                String uCuffXSLabel = "CUFF XS WP";
+                ucCXS.geom().selection().create(im.next("csel",uCuffXSLabel), "CumulativeSelection");
+                ucCXS.geom().selection(im.get(uCuffXSLabel)).label(uCuffXSLabel);
 
                 String ucCircleInlineLabel = "Round Inline";
                 GeomFeature ucCircleInline = ucCXS.geom().create(im.next("c",ucCircleInlineLabel), "Circle");
@@ -1470,8 +1475,8 @@ class Part {
                 GeomFeature ucRectInline = ucCXS.geom().create(im.next("r",ucRectInlineLabel), "Rectangle");
                 ucRectInline.label(ucRectInlineLabel);
                 ucRectInline.set("contributeto", im.get(ucInlineLabel));
-                ucRectInline.set("pos", new String[]{"U_tangent/2", "0"});
-                ucRectInline.set("base", "center");
+                ucRectInline.set("pos", new String[]{"0", "-R_in"});
+                ucRectInline.set("base", "corner");
                 ucRectInline.set("size", new String[]{"U_tangent", "2*R_in"});
 
                 String ucUnionInlineLabel = "Union Inline Parts";
@@ -1488,11 +1493,46 @@ class Part {
                 ucCircleOutline.set("r", "R_out");
                 ucCircleOutline.set("pos", new String[]{"U_shift_x", "U_shift_y"});
 
-                String ucDiffLabel = "Diff to Cuff XS";
-                GeomFeature ucDiff = ucCXS.geom().create(im.next("dif",ucDiffLabel), "Difference");
-                ucDiff.label(ucDiffLabel);
-                ucDiff.selection("input").named(im.get(ucOutlineCuffLabel));
-                ucDiff.selection("input2").named(im.get(ucInlineUnion));
+                String ifucGapLabel = "If Gap";
+                GeomFeature ifucGap = ucCXS.geom().create(im.next("if", ifucGapLabel), "If");
+                ifucGap.label(ifucGapLabel);
+                ifucGap.set("condition", "U_gap > 0");
+
+                String ucGapRectLabel = "Gap";
+                GeomFeature ucGapRect = ucCXS.geom().create(im.next("r", ucGapRectLabel), "Rectangle");
+                ucGapRect.label(ucGapRectLabel);
+                ucGapRect.set("contributeto", im.get(ucGapLabel));
+                ucGapRect.set("pos", new String[]{"R_out+U_shift_x", "0"});
+                ucGapRect.set("base", "center");
+                ucGapRect.set("size", new String[]{"2*(R_out+U_shift_x)", "U_gap"});
+
+                String unionILwGapLabel = "Union Inline with Gap";
+                GeomFeature unionILwGap = ucCXS.geom().create(im.next("uni", unionILwGapLabel), "Union");
+                unionILwGap.label(unionILwGapLabel);
+                unionILwGap.set("intbnd", false);
+                unionILwGap.selection("input").set(im.get(ucGapRectLabel), im.get(ucUnionInlineLabel));
+
+                String diffucXSLabel = "Diff to Cuff XS";
+                GeomFeature diffucXS = ucCXS.geom().create(im.next("dif", diffucXSLabel), "Difference");
+                diffucXS.label(diffucXSLabel);
+                diffucXS.set("contributeto", im.get(uCuffXSLabel));
+                diffucXS.selection("input").named(im.get(ucOutlineCuffLabel));
+                diffucXS.selection("input2").named(im.get(ucInlineUnion));
+
+                String elseNoGapLabel = "Else No Gap";
+                GeomFeature elseNoGap = ucCXS.geom().create(im.next("else", elseNoGapLabel), "Else");
+                elseNoGap.label(elseNoGapLabel);
+
+                String diffCuffXSnoGapLabel = "Diff to Cuff XS No Gap";
+                GeomFeature diffCuffXSnoGap = ucCXS.geom().create(im.next("dif", diffCuffXSnoGapLabel), "Difference");
+                diffCuffXSnoGap.label(diffCuffXSnoGapLabel);
+                diffCuffXSnoGap.set("contributeto", im.get(uCuffXSLabel));
+                diffCuffXSnoGap.selection("input").named(im.get(ucOutlineCuffLabel));
+                diffCuffXSnoGap.selection("input2").named(im.get(ucInlineUnion));
+
+                String enduIfGapLabel = "End IF Gap";
+                GeomFeature enduIfGap = ucCXS.geom().create(im.next("endif", enduIfGapLabel), "EndIf");
+                enduIfGap.label(enduIfGapLabel);
 
                 String ucExtLabel = "Make Cuff";
                 GeomFeature ucExt = model.geom(id).create(im.next("ext",ucExtLabel), "Extrude");
@@ -1572,6 +1612,8 @@ class Part {
                 model.geom(id).inputParam().set("Thk", "100 [um]");
                 model.geom(id).inputParam().set("L", "2.5 [mm]");
                 model.geom(id).inputParam().set("Center", "0");
+                model.geom(id).inputParam().set("x_shift", "0");
+                model.geom(id).inputParam().set("y_shift", "0");
 
                 im.labels = new String[]{
                         "CUFF FILL FINAL" //0
@@ -1588,7 +1630,7 @@ class Part {
                 GeomFeature cf = model.geom(id).create(im.next("cyl",cuffFillLabel), "Cylinder");
                 cf.label(cuffFillLabel);
                 cf.set("contributeto", im.get("CUFF FILL FINAL"));
-                cf.set("pos", new String[]{"0", "0", "Center-(L/2)"});
+                cf.set("pos", new String[]{"x_shift", "y_shift", "Center-(L/2)"});
                 cf.set("r", "Radius");
                 cf.set("h", "L");
 
@@ -2027,7 +2069,8 @@ class Part {
                         "R_out",
                         "U_L",
                         "U_shift_x",
-                        "U_shift_y"
+                        "U_shift_y",
+                        "U_gap"
 
                 };
 
@@ -2074,7 +2117,9 @@ class Part {
                         "Radius",
                         "Thk",
                         "L",
-                        "Center"
+                        "Center",
+                        "x_shift",
+                        "y_shift"
 
                 };
 

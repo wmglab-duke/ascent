@@ -8,7 +8,9 @@
         "Radius": "R_in_CT",
         "Thk": "Thk_fill_CT",
         "L": "L_CT",
-        "Center": "Center_CT"
+        "Center": "Center_CT",
+        "x_shift": "0",
+        "y_shift": "0"
       },
       "materials": [
         {
