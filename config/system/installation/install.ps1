@@ -10,7 +10,7 @@ if ($decision -eq 0) {
     conda create --name ascent -y
     conda activate ascent
     conda install -y python=3.7
-    conda install -y -c conda-forge -c cogsci pip=20.1.1 pillow=5.2.0 numpy=1.16.4 shapely=1.6.4.post2 matplotlib=3.2.1 pyclipper=1.1.0.post3 pygame=1.9.6 libtiff=4.0 pymunk=5.5.0 scipy=1.1.0 pandas=0.25.1 openpyxl=3.0.3
+    conda install -y -c conda-forge -c cogsci pip=20.1.1 pillow=5.2.0 numpy=1.16.4 shapely=1.6.4 matplotlib=3.2.1 pyclipper=1.1.0.post1 pygame libtiff=4.0 pymunk=5.5.0 scipy=1.1.0 pandas=0.25.1 openpyxl=3.0.3
     pip install opencv-python
     pip install quantiphy
     
