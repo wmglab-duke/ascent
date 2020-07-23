@@ -1,35 +1,39 @@
-$title    = 'First-Time Question'
-$question = 'Is this your first time running this script?'
+# ensure current directory is root of pipeline
+$title    = 'Current Directory'
+$question = 'Have you navigated to the root of the ASCENT repository?'
 $choices  = '&Yes', '&No'
-
 $decision = $Host.UI.PromptForChoice($title, $question, $choices, 1)
 if ($decision -eq 0) {
     conda init powershell
-    Write-Host 'ran "conda init powershell" to set up conda for powershell."`n"Please restart Anaconda Powershell Prompt and answer "no" to this question upon re-running the installation script.'
-} else {
-    Write-Host 'Great, assuming "conda init powershell" has already been run'
+    Write-Host 'Great, proceeding with installation.'
 
+    # package installation
     conda create --name ascent -y
     conda activate ascent
     conda install -y -c conda-forge -c cogsci pip pillow numpy shapely matplotlib pyclipper pygame opencv libtiff=4.0 pymunk scipy pandas openpyxl
     pip install quantiphy
     
-    $title    = 'Conda Default Environment'
-    $question = 'Do you want to set "ascent" as your default Conda environment?'
+    # shortcut creation
+    $title    = 'ASCENT Conda Environment'
+    $question = 'Do you want to save a shortcut for the "ascent" Conda environment to your Desktop?'
     $choices  = '&Yes', '&No'
-    
     $decision = $Host.UI.PromptForChoice($title, $question, $choices, 1)
     if ($decision -eq 0) {
-        $filename = 'Microsoft.PowerShell_profile.ps1'
-        $filepath = "C:\Users\$($env:UserName)\Documents\WindowsPowerShell\"
-        $filecontent = "conda activate ascent"
-
-        New-Item -Path "$filepath" -Name "$filename" -ItemType "file" -Value "$filecontent"
+        $EnvCommand = '"C:\Users\jec91\Miniconda3\shell\condabin\conda-hook.ps1" ; conda activate "C:\Users\jec91\Miniconda3\ascent"'
+        $TargetFile = "%windir%\System32\WindowsPowerShell\v1.0\powershell.exe -ExecutionPolicy ByPass -NoExit -Command '& $EnvCommand'"
+        $ShortcutFile = '"$env:Public"\Desktop\ASCENT Powers.lnk'
+        $WScriptShell = New-Object -ComObject WScript.Shell
+        $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+        $Shortcut.TargetPath = $TargetFile
+        $Shortcut.Save()
         
-        Write-Host 'Set "ascent" as default Conda environment'
+        Write-Host 'Saved shortcut to Desktop'
+
     } else {
-        Write-Host 'Did not set "ascent" as default Conda environment'
+        Write-Host 'Did not save shortcut to Desktop'
     }
+} else {
+    Write-Host 'Please do so and re-run.'
 }
 
 
