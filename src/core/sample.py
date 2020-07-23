@@ -211,7 +211,7 @@ class Sample(Exceptionable, Configurable, Saveable):
             else:
                 print('No orientation tif found, but continuing. (Sample.populate)')
 
-            # init fascicles list
+            # fascicles list
             fascicles: List[Fascicle] = []
 
             # load fascicles and check that the files exist
