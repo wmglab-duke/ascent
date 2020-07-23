@@ -1,5 +1,5 @@
 conda init powershell
-conda create -y --name ascent
+conda env create -y ascent
 conda activate ascent
 conda install -y -c conda-forge pillow numpy shapely matplotlib pyclipper pygame quantiphy opencv libtiff=4.0 python=3.7 pymunk scipy pandas openpyxl shutil
 
