@@ -10,7 +10,7 @@ $choices  = '&Yes', '&No'
 
 $decision = $Host.UI.PromptForChoice($title, $question, $choices, 1)
 if ($decision -eq 0) {
-    New-item –type file –force $profile
+    New-item –type file –force "$profile"
     Add-Content -Path "C:\Users\$($env:UserName)\Documents\WindowsPowerShell\" -Value "conda activate ascent"
     Write-Host 'Set "ascent" as default Conda environment'
 } else {
