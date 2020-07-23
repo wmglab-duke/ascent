@@ -19,18 +19,19 @@ if ($decision -eq 0) {
     $decision = $Host.UI.PromptForChoice($title, $question, $choices, 1)
     if ($decision -eq 0) {
         $EnvCommand = "`"& `'C:\Users\" + $env:UserName + "\Miniconda3\shell\condabin\conda-hook.ps1`' ; conda activate `'C:\Users\jec91\Miniconda3\ascent`'" + "; cd `'" + (Get-Item .).FullName + "`'"
-        $TargetFile = "%windir%\System32\WindowsPowerShell\v1.0\powershell.exe -ExecutionPolicy ByPass -NoExit -Command " + $EnvCommand
+        $Arguments = "-ExecutionPolicy ByPass -NoExit -Command " + $EnvCommand
+        $TargetFile = "%windir%\System32\WindowsPowerShell\v1.0\powershell.exe"
         $ShortcutFile = 'Desktop\ASCENT Powershell Prompt.lnk'
-        $WScriptShell = New-Object -ComObject "Shell.Application"
+        $WScriptShell = New-Object -ComObject WScript.Shell
         $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-        Write-Host $TargetFile
         $Shortcut.TargetPath = $TargetFile
+        $Shortcut.Arguments = $Arguments
         $Shortcut.Save()
         
-        Write-Host 'Saved shortcut to Desktop'
+        Write-Host 'Saved shortcut to ' + $TargetFile
 
     } else {
-        Write-Host 'Did not save shortcut to Desktop'
+        Write-Host 'Did not save shortcut.'
     }
 } else {
     Write-Host 'Please do so and re-run.'
