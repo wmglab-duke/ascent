@@ -20,7 +20,12 @@ if ($decision -eq 0) {
     
     $decision = $Host.UI.PromptForChoice($title, $question, $choices, 1)
     if ($decision -eq 0) {
-        Add-Content -Path "C:\Users\$($env:UserName)\Documents\WindowsPowerShell\profile.ps1" -Value "conda activate ascent"
+        $filename = 'Microsoft.PowerShell_profile.ps1'
+        $filepath = "C:\Users\$($env:UserName)\Documents\WindowsPowerShell\"
+        $filecontent = "conda activate ascent"
+
+        New-Item -Path "$filepath" -Name "$filename" -ItemType "file" -Value "$filecontent"
+        
         Write-Host 'Set "ascent" as default Conda environment'
     } else {
         Write-Host 'Did not set "ascent" as default Conda environment'
