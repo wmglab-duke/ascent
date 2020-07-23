@@ -9,11 +9,11 @@ if ($decision -eq 0) {
     # package installation
     conda create --name ascent -y
     conda activate ascent
-    conda uninstall -y python
     conda install -y python=3.7
     python C:\Users\jec91\Miniconda3\envs\ascent\Lib\site-packages\pip install --upgrade pip setuptools wheel
-    python C:\Users\jec91\Miniconda3\envs\ascent\Lib\site-packages\pip install pillow>=5.2.0 numpy>=1.16.4 shapely>=1.6.4 matplotlib>=3.2.1 pyclipper>=1.1.0 pygame>=1.9.6 pymunk>=5.5.0 scipy>=1.1.0 pandas>=0.25.1 openpyxl>=3.0.3 opencv-python quantiphy
-    
+    pip install pillow>=5.2.0 numpy>=1.16.4 shapely>=1.6.4 matplotlib>=3.2.1 pyclipper>=1.1.0 pygame>=1.9.6 pymunk>=5.5.0 scipy>=1.1.0 pandas>=0.25.1 openpyxl>=3.0.3 opencv-python quantiphy
+    conda install shapely
+
     # shortcut creation
     $title    = 'ASCENT Conda Environment'
     $question = 'Do you want to save a shortcut for the "ascent" Conda environment to your Desktop?'
@@ -29,7 +29,7 @@ if ($decision -eq 0) {
         $Shortcut.Arguments = $Arguments
         $Shortcut.Save()
         
-        Write-Host 'Saved shortcut to ' + $ShortcutFile
+        Write-Host 'Saved shortcut to ' $ShortcutFile
 
     } else {
         Write-Host 'Did not save shortcut.'
