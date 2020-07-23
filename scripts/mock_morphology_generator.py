@@ -11,6 +11,7 @@ from src.utils import *
 
 start = time.time()
 
+
 def run(args):
     sys.argv = args
     if len(sys.argv) != 2:
@@ -25,9 +26,9 @@ def run(args):
     # load mock sample configuration
     mock_config = os.path.join('config', 'user', 'mock_samples', '{}.json'.format(sys.argv[1]))
     mock_sample = MockSample(exceptions_config)
-    mock_sample.add(SetupMode.NEW, Config.MOCK_SAMPLE, mock_config)\
-        .make_nerve()\
-        .make_fascicles()\
+    mock_sample.add(SetupMode.NEW, Config.MOCK_SAMPLE, mock_config) \
+        .make_nerve() \
+        .make_fascicles() \
         .make_masks()
 
     # END timer

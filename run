@@ -6,6 +6,4 @@ available_scripts = os.listdir('scripts')
 args = sys.argv
 
 if all([args[0] == 'run', args[1] + '.py' in available_scripts]):
-    sys.argv = args[1:]
-    # exec(open(os.path.join('scripts', args[1] + '.py')).read())
     importlib.import_module('scripts.' + args[1]).run(args[1:])
