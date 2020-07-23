@@ -18,7 +18,7 @@ if ($decision -eq 0) {
     $choices  = '&Yes', '&No'
     $decision = $Host.UI.PromptForChoice($title, $question, $choices, 1)
     if ($decision -eq 0) {
-        $EnvCommand = '& "C:\Users\jec91\Miniconda3\shell\condabin\conda-hook.ps1" ; conda activate "C:\Users\jec91\Miniconda3\ascent"'
+        $EnvCommand = '& "C:\Users\jec91\Miniconda3\shell\condabin\conda-hook.ps1" ; conda activate "C:\Users\jec91\Miniconda3\ascent"' + "; " + (Get-Item .).FullName
         $TargetFile = "%windir%\System32\WindowsPowerShell\v1.0\powershell.exe -ExecutionPolicy ByPass -NoExit -Command $EnvCommand"
         $ShortcutFile = 'Desktop\ASCENT Powers.lnk'
         $WScriptShell = New-Object -ComObject WScript.Shell
