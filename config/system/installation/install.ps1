@@ -4,7 +4,6 @@ $question = 'Have you navigated to the root of the ASCENT repository?'
 $choices  = '&Yes', '&No'
 $decision = $Host.UI.PromptForChoice($title, $question, $choices, 1)
 if ($decision -eq 0) {
-    conda init powershell
     Write-Host 'Great, proceeding with installation.'
 
     # package installation
