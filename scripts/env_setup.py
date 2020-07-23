@@ -4,7 +4,7 @@ import json
 import os
 from src.utils.enums import Env
 
-def env_setup(env_path: str):
+def run(env_path: str):
 
     print('Start environment path variables setup.')
 
