@@ -266,6 +266,7 @@ class PerineuriumResistivityMode(Enum):
     config = 'rho_perineurium'
 
     RHO_WEERASURIYA = 'RHO_WEERASURIYA'
+    MANUAL = 'MANUAL'
 
 
 # %% Cuffs
@@ -295,6 +296,7 @@ class CuffShiftMode(Enum):
 
     MIN_CIRCLE_BOUNDARY = 0
     TRACE_BOUNDARY = 1
+    NONE = 2
 
 
 # %% Templates

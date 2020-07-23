@@ -564,6 +564,11 @@ class Runner(Exceptionable, Configurable):
                 model_config['cuff']['shift']['x'] = center_x
                 model_config['cuff']['shift']['y'] = center_y
 
+        elif cuff_shift_mode == CuffShiftMode.NONE:
+            model_config['cuff']['rotate']['pos_ang'] = 0
+            model_config['cuff']['shift']['x'] = 0
+            model_config['cuff']['shift']['y'] = 0
+
         if 'add_ang' not in model_config['cuff']['rotate'].keys():
             model_config['cuff']['rotate']['add_ang'] = 0
 
@@ -590,6 +595,9 @@ class Runner(Exceptionable, Configurable):
             model_config['conductivities']['perineurium']['value'] = str(sigma_double)
             model_config['conductivities']['perineurium']['label'] = "RHO_WEERASURIYA @ %d Hz" % freq_double
             model_config['conductivities']['perineurium']['unit'] = "[S/m]"
+        elif model_config.get('modes').get(PerineuriumResistivityMode.config.value) == \
+                PerineuriumResistivityMode.MANUAL.value:
+            pass
         else:
             self.throw(48)
 
