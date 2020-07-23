@@ -134,7 +134,15 @@ dmypy.json
 
 # don't include data b/c this may get pretty big at some point
 samples/
-submit/
+submit/HOC_Files
+submit/MOD_Files
+submit/n_sims
+submit/runs
+submit/utils
+submit/batch.py
+submit/batchSL.slurm
+submit/nrnmech.dll
+
 input/
 */user/*
 
