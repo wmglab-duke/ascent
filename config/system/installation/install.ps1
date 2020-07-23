@@ -1,7 +1,8 @@
 conda init powershell
 conda create --name ascent -y
 conda activate ascent
-conda install -y -c conda-forge pillow numpy shapely matplotlib pyclipper pygame quantiphy opencv libtiff=4.0 python=3.7 pymunk scipy pandas openpyxl shutil
+conda install -y -c conda-forge -c cogsci pillow numpy shapely matplotlib pyclipper pygame opencv libtiff=4.0 python=3.7 pymunk scipy pandas openpyxl pip
+pip install quantiphy
 
 $title    = 'Conda Default Environment'
 $question = 'Do you want to set "ascent" as your default Conda environment?'
