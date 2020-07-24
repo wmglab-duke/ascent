@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import sys
 import os
 import importlib
@@ -5,5 +6,7 @@ import importlib
 available_scripts = os.listdir('scripts')
 args = sys.argv
 
-if all([args[0] == 'run', args[1] + '.py' in available_scripts]):
+if len(args) > 1 and all([args[0] == 'run', args[1] + '.py' in available_scripts]):
     importlib.import_module('scripts.' + args[1]).run(args[1:])
+else:
+    print('Usage: python run [script] [args]')
