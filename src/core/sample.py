@@ -262,7 +262,7 @@ class Sample(Exceptionable, Configurable, Saveable):
                 if exists(MaskFileNames.NERVE):
                     img_nerve = cv2.imread(MaskFileNames.NERVE.value, -1)
 
-                    if img_nerve.shape[2] > 1:
+                    if len(img_nerve.shape) > 2 and img_nerve.shape[2] > 1:
                         img_nerve = img_nerve[:, :, 0]
 
                     contour, _ = cv2.findContours(np.flipud(img_nerve),
