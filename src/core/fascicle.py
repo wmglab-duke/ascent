@@ -264,7 +264,7 @@ class Fascicle(Exceptionable):
         # read image and flip
         img = np.flipud(cv2.imread(img_path, -1))
 
-        if img.shape[2] > 1:
+        if len(img.shape) > 2 and img.shape[2] > 1:
             img = img[:, :, 0]
 
         # get contours and hierarchy using cv2
