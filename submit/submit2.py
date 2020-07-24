@@ -16,17 +16,17 @@ ALLOWED_SUBMISSION_CONTEXTS = ['cluster', 'local']
 OS = 'UNIX-LIKE' if any([s in sys.platform for s in ['darwin', 'linux']]) else 'WINDOWS'
 
 
-def local_submit(my_local_args):
-    my_filename = my_local_args['start_path']
-    my_output_log = my_local_args['output_log']
-    my_error_log = my_local_args['error_log']
-
-    if OS is 'UNIX-LIKE':
-        subprocess.run(['chmod', '777', os.path.join(os.path.split(my_filename)[0], 'blank.hoc')], shell=False)
-        subprocess.run(['chmod', '777', my_filename], shell=False)
-    run_command = ['bash', my_filename, 'stdout', my_output_log, 'stderr', my_error_log, 'capture_output=True']
-
-    return subprocess.run(run_command, shell=False)
+# def local_submit(my_local_args):
+#     my_filename = my_local_args['start_path']
+#     my_output_log = my_local_args['output_log']
+#     my_error_log = my_local_args['error_log']
+#
+#     if OS is 'UNIX-LIKE':
+#         subprocess.run(['chmod', '777', os.path.join(os.path.split(my_filename)[0], 'blank.hoc')], shell=False)
+#         subprocess.run(['chmod', '777', my_filename], shell=False)
+#     run_command = ['bash', my_filename, 'stdout', my_output_log, 'stderr', my_error_log, 'capture_output=True']
+#
+#     return subprocess.run(run_command, shell=False)
 
 
 def load(config_path: str):
@@ -159,8 +159,6 @@ if __name__ == "__main__":  # Allows for the safe importing of the main module
 
                             else:  # OS is 'WINDOWS'
                                 sim_path_win = os.path.join(*sim_path.split(os.pathsep)).replace('\\', '\\\\')
-                                #print(sim_path_win)
-                                #sim_path_win
                                 lines = [
                                     'nrniv -nobanner '
                                     '-dll {}/MOD_Files/nrnmech.dll '
@@ -205,13 +203,14 @@ if __name__ == "__main__":  # Allows for the safe importing of the main module
                             os.remove(start_path)
 
                         elif submission_context == 'local':
-                            local_args['start_path'] = start_path
-                            local_args['output_log'] = output_log
-                            local_args['error_log'] = error_log
+                            pass
+                            # local_args['start_path'] = start_path
+                            # local_args['output_log'] = output_log
+                            # local_args['error_log'] = error_log
+                            #
+                            # local_args_list.append(local_args.copy())
 
-                            local_args_list.append(local_args.copy())
-
-        # number_processes = 2  # TODO may change
+        # number_processes = 2
         # pool = multiprocessing.Pool(number_processes)
         # results = pool.map_async(local_submit, local_args_list)
         # results.wait()
@@ -219,24 +218,24 @@ if __name__ == "__main__":  # Allows for the safe importing of the main module
         # pool.close()
         # pool.join()
 
-        threads = []
-        num_processes = 8
-
-        while threads or local_args_list:
-            # if we aren't using all the processors AND there is still data left to
-            # compute, then spawn another thread
-            if (len(threads) < num_processes) and local_args_list:
-                t = threading.Thread(target=local_submit, args=[local_args_list.pop(0)])
-                t.setDaemon(True)
-                t.start()
-                threads.append(t)
-
-            # in the case that we have the maximum number of threads check if any of them
-            # are done. (also do this when we run out of data, until all the threads are done)
-            else:
-                for thread in threads:
-                    if not thread.is_alive():
-                        threads.remove(thread)
+        # threads = []
+        # num_processes = 8
+        #
+        # while threads or local_args_list:
+        #     # if we aren't using all the processors AND there is still data left to
+        #     # compute, then spawn another thread
+        #     if (len(threads) < num_processes) and local_args_list:
+        #         t = threading.Thread(target=local_submit, args=[local_args_list.pop(0)])
+        #         t.setDaemon(True)
+        #         t.start()
+        #         threads.append(t)
+        #
+        #     # in the case that we have the maximum number of threads check if any of them
+        #     # are done. (also do this when we run out of data, until all the threads are done)
+        #     else:
+        #         for thread in threads:
+        #             if not thread.is_alive():
+        #                 threads.remove(thread)
 
     # print("There are %d CPUs on this machine" % multiprocessing.cpu_count())
     # number_processes = 2
