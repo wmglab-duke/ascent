@@ -6,6 +6,7 @@ import subprocess
 import sys
 import re
 import json
+import threading
 import time
 from typing import List
 
@@ -23,9 +24,9 @@ def local_submit(my_local_args):
     if OS is 'UNIX-LIKE':
         subprocess.run(['chmod', '777', os.path.join(os.path.split(my_filename)[0], 'blank.hoc')], shell=False)
         subprocess.run(['chmod', '777', my_filename], shell=False)
-    run_command = ['bash', my_filename, 'stdout', my_output_log, 'stderr', my_error_log]
+    run_command = ['bash', my_filename, 'stdout', my_output_log, 'stderr', my_error_log, 'capture_output=True']
 
-    return subprocess.run(run_command[1:] if (OS is 'WINDOWS') else run_command, shell=False)
+    return subprocess.run(run_command, shell=False)
 
 
 def load(config_path: str):
@@ -43,9 +44,9 @@ if __name__ == "__main__":  # Allows for the safe importing of the main module
     if (not os.path.exists(os.path.join('MOD_Files/x86_64')) and OS is 'UNIX-LIKE') or \
             (not os.path.exists(os.path.join('MOD_Files', 'nrnmech.dll')) and OS is 'WINDOWS'):
         print('compile')
-    os.chdir(os.path.join('MOD_Files'))
-    subprocess.run(['nrnivmodl'], shell=True)
-    os.chdir('..')
+        os.chdir(os.path.join('MOD_Files'))
+        subprocess.run(['nrnivmodl'], shell=True)
+        os.chdir('..')
 
     for run_number in sys.argv[1:]:
         # run number is numeric
@@ -130,7 +131,7 @@ if __name__ == "__main__":  # Allows for the safe importing of the main module
                                                                                           fiber_ind))
                             continue
 
-                        start_path = os.path.join(sim_path, 'start{}'.format('.sh' if OS is 'UNIX_LIKE' else '.bat'))
+                        start_path = os.path.join(sim_path, '{}_{}_start{}'.format(inner_ind, fiber_ind, '.sh' if OS is 'UNIX_LIKE' else '.bat'))
 
                         with open(start_path, 'w+') as handle:
                             lines = []
@@ -157,20 +158,20 @@ if __name__ == "__main__":  # Allows for the safe importing of the main module
                                 shutil.copy(os.path.join('MOD_Files', 'x86_64', 'special'), sim_path)
 
                             else:  # OS is 'WINDOWS'
-                                #sim_path_win = os.path.join(*sim_path.split(os.pathsep)).replace('\\', '\\\\')
+                                sim_path_win = os.path.join(*sim_path.split(os.pathsep)).replace('\\', '\\\\')
                                 #print(sim_path_win)
                                 #sim_path_win
                                 lines = [
                                     'nrniv -nobanner '
                                     '-dll {}/MOD_Files/nrnmech.dll '
                                     '-c \"strdef sim_path\" '
-                                    '-c \"sim_path={}\\\\\" '
+                                    '-c \"sim_path=\\\"{}\"\" '
                                     '-c \"inner_ind={}\" '
                                     '-c \"fiber_ind={}\" '
                                     '-c \"stimamp_top={}\" '
                                     '-c \"stimamp_bottom={}\" '
                                     '-c \"load_file(\\\"launch.hoc\\\")\" blank.hoc\n'.format(os.getcwd(),
-                                                                                              "\\\\n_sims\\\\1003_0_1005_0",
+                                                                                              sim_path_win,
                                                                                               inner_ind,
                                                                                               fiber_ind,
                                                                                               stimamp_top,
@@ -183,7 +184,6 @@ if __name__ == "__main__":  # Allows for the safe importing of the main module
                         job_name = '{}_{}'.format(sim_name, master_fiber_name)
                         output_log = os.path.join(out_dir, '{}{}'.format(master_fiber_name, '.log'))
                         error_log = os.path.join(err_dir, '{}{}'.format(master_fiber_name, '.log'))
-                        #print('\n{}'.format(job_name))
 
                         if submission_context == 'cluster':
                             command = ' '.join([
@@ -211,13 +211,32 @@ if __name__ == "__main__":  # Allows for the safe importing of the main module
 
                             local_args_list.append(local_args.copy())
 
-        number_processes = 2  # TODO may change
-        pool = multiprocessing.Pool(number_processes)
-        results = pool.map_async(local_submit, local_args_list)
-        results.wait()
-        results.get()
-        pool.close()
-        pool.join()
+        # number_processes = 2  # TODO may change
+        # pool = multiprocessing.Pool(number_processes)
+        # results = pool.map_async(local_submit, local_args_list)
+        # results.wait()
+        # results.get()
+        # pool.close()
+        # pool.join()
+
+        threads = []
+        num_processes = 8
+
+        while threads or local_args_list:
+            # if we aren't using all the processors AND there is still data left to
+            # compute, then spawn another thread
+            if (len(threads) < num_processes) and local_args_list:
+                t = threading.Thread(target=local_submit, args=[local_args_list.pop(0)])
+                t.setDaemon(True)
+                t.start()
+                threads.append(t)
+
+            # in the case that we have the maximum number of threads check if any of them
+            # are done. (also do this when we run out of data, until all the threads are done)
+            else:
+                for thread in threads:
+                    if not thread.is_alive():
+                        threads.remove(thread)
 
     # print("There are %d CPUs on this machine" % multiprocessing.cpu_count())
     # number_processes = 2
