@@ -8,9 +8,10 @@ import sys
 # access
 from src.runner import Runner
 from src.utils.enums import SetupMode, Config
-from env_setup import env_setup
+from .env_setup import run as env_setup
 
-if __name__ == "__main__":
+def run(args):
+    sys.argv = args
     # test
     if not (sys.version_info.major == 3 and sys.version_info.minor >= 7):
         print('You are running Python {}.{}, but 3.7 or later required'.format(sys.version_info.major,
@@ -69,5 +70,6 @@ if __name__ == "__main__":
 
     # cleanup for console viewing/inspecting
     del start, end
+    #
     
 
