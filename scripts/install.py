@@ -7,8 +7,12 @@ import subprocess
 def run(args):
     sys.argv = args
     
+    proc: subprocess.Popen = None
+
     if sys.platform.startswith('darwin') or sys.platform.startswith('linux'):
-        subprocess.Popen(['bash ./config/system/installation/install.sh'])
+        proc = subprocess.Popen(['bash ./config/system/installation/install.sh'])
     else:
-        subprocess.Popen(['powershell.exe', '.\\config\\system\\installation\\install.ps1'])
+        proc = subprocess.Popen(['powershell.exe', '.\\config\\system\\installation\\install.ps1'])
+
+    proc.wait()
 
