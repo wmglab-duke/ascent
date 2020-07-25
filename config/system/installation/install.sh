@@ -3,10 +3,10 @@
 # set up conda for this environment, choosing between Linux/macOS
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     # Linux
-    $CONDA_SETUP_SCRIPT=~/miniconda3/etc/profile.d/conda.sh
+    CONDA_SETUP_SCRIPT='~/miniconda3/etc/profile.d/conda.sh'
 else
     # macOS
-    $CONDA_SETUP_SCRIPT=~/opt/miniconda3/etc/profile.d/conda.sh
+    CONDA_SETUP_SCRIPT='~/opt/miniconda3/etc/profile.d/conda.sh'
 fi
 source $CONDA_SETUP_SCRIPT
 
