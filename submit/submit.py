@@ -5,26 +5,14 @@ import subprocess
 import sys
 import re
 import json
+import threading
 import time
+from multiprocessing import Process
 
 from utils import NeuronRunMode
 
 ALLOWED_SUBMISSION_CONTEXTS = ['cluster', 'local']
 OS = 'UNIX-LIKE' if any([s in sys.platform for s in ['darwin', 'linux']]) else 'WINDOWS'
-
-
-def local_submit(my_local_args):
-    my_filename = my_local_args['start_path']
-    my_output_log = my_local_args['output_log']
-    my_error_log = my_local_args['error_log']
-
-    if OS is 'UNIX-LIKE':
-        subprocess.run(['chmod', '777', os.path.join(os.path.split(my_filename)[0], 'blank.hoc')], shell=False)
-        subprocess.run(['chmod', '777', my_filename], shell=False)
-    run_command = ['bash', my_filename, 'stdout', my_output_log, 'stderr', my_error_log, 'capture_output=True']
-    #run_command = ['bash', my_filename, 'stdout', my_output_log, 'stderr', my_error_log, 'capture_output=True']
-
-    return subprocess.call(run_command[1:])
 
 
 def load(config_path: str):
@@ -38,7 +26,7 @@ def load(config_path: str):
         return json.load(handle)
 
 
-if __name__ == "__main__":  # Allows for the safe importing of the main module
+def make_submission_list():
 
     if (not os.path.exists(os.path.join('MOD_Files/x86_64')) and OS is 'UNIX-LIKE') or \
             (not os.path.exists(os.path.join('MOD_Files', 'nrnmech.dll')) and OS is 'WINDOWS'):
@@ -130,8 +118,9 @@ if __name__ == "__main__":  # Allows for the safe importing of the main module
                                                                                           fiber_ind))
                             continue
 
-                        start_path = os.path.join(sim_path, '{}_{}_start{}'.format(inner_ind, fiber_ind, '.sh' if OS is 'UNIX_LIKE' else '.bat'))
-                        bat = '{}_{}_start{}'.format(inner_ind, fiber_ind, '.sh' if OS is 'UNIX_LIKE' else '.bat')
+                        start_path = os.path.join(sim_path, '{}_{}_start{}'.format(inner_ind, fiber_ind,
+                                                                                   '.sh' if OS is 'UNIX_LIKE'
+                                                                                   else '.bat'))
 
                         with open(start_path, 'w+') as handle:
                             lines = []
@@ -210,6 +199,8 @@ if __name__ == "__main__":  # Allows for the safe importing of the main module
 
                             local_args_list.append(local_args.copy())
 
+        return local_args_list
+
         # number_processes = 2
         # pool = multiprocessing.Pool(number_processes)
         # results = pool.map_async(local_submit, local_args_list)
@@ -218,50 +209,97 @@ if __name__ == "__main__":  # Allows for the safe importing of the main module
         # pool.close()
         # pool.join()
 
-        my_filename = local_args_list[0]['start_path']
-        my_output_log = local_args_list[0]['output_log']
-        my_error_log = local_args_list[0]['error_log']
+        # local_submit(local_args_list)
 
-        # p = subprocess.Popen(bat, cwd=sim_path)
-        print(os.getcwd())
-        os.chdir("D:\\Documents\\ascent\\submit\\n_sims\\1003_0_1005_0")
-        print(os.getcwd())
-        # p = subprocess.Popen(["D:\\Documents\\ascent\\submit\\n_sims\\1003_0_1005_0\\example.bat"])
-        p = subprocess.Popen(["example.bat"])
-
-    #stdout, stderr = p.communicate()
-        p.wait()
-        print('here')
-
-        #subprocess.call(my_filename)
-
-        # if OS is 'UNIX-LIKE':
-        #     subprocess.run(['chmod', '777', os.path.join(os.path.split(my_filename)[0], 'blank.hoc')], shell=False)
-        #     subprocess.run(['chmod', '777', my_filename], shell=False)
-        # run_command = ['bash', my_filename, 'stdout', my_output_log, 'stderr', my_error_log, 'capture_output=True']
-        # #run_command = ['bash', my_filename, 'stdout', my_output_log, 'stderr', my_error_log, 'capture_output=True']
-
-        print('here')
-
-
-        # threads = []
-        # num_processes = 8
+        # my_filename = local_args_list[0]['start_path']
+        # my_output_log = local_args_list[0]['output_log']
+        # my_error_log = local_args_list[0]['error_log']
         #
-        # while threads or local_args_list:
-        #     # if we aren't using all the processors AND there is still data left to
-        #     # compute, then spawn another thread
-        #     if (len(threads) < num_processes) and local_args_list:
-        #         t = threading.Thread(target=local_submit, args=[local_args_list.pop(0)])
-        #         t.setDaemon(True)
-        #         t.start()
-        #         threads.append(t)
-        #
-        #     # in the case that we have the maximum number of threads check if any of them
-        #     # are done. (also do this when we run out of data, until all the threads are done)
-        #     else:
-        #         for thread in threads:
-        #             if not thread.is_alive():
-        #                 threads.remove(thread)
+        # # p = subprocess.Popen(bat, cwd=sim_path)
+        # print(os.getcwd())
+        # os.chdir("D:\\Documents\\ascent\\submit\\n_sims\\1003_0_1005_0")
+        # print(os.getcwd())
+        # # p = subprocess.Popen(["D:\\Documents\\ascent\\submit\\n_sims\\1003_0_1005_0\\example.bat"])
+        # p = subprocess.Popen(["example.bat"])
+
+    # stdout, stderr = p.communicate()
+    # p.wait()
+
+    # THIS WORKED
+    # print('here')
+    # if __name__ == '__main__':
+    #     p = Process(target=local_submit, args=('bob',))
+    #     p.start()
+    #     p.join()
+
+    # subprocess.call(my_filename)
+
+    # if OS is 'UNIX-LIKE':
+    #     subprocess.run(['chmod', '777', os.path.join(os.path.split(my_filename)[0], 'blank.hoc')], shell=False)
+    #     subprocess.run(['chmod', '777', my_filename], shell=False)
+    # run_command = ['bash', my_filename, 'stdout', my_output_log, 'stderr', my_error_log, 'capture_output=True']
+    # #run_command = ['bash', my_filename, 'stdout', my_output_log, 'stderr', my_error_log, 'capture_output=True']
+
+
+def local_submit(my_local_args):
+    my_filename = my_local_args['start_path']
+    # my_output_log = local_args_list[0]['output_log']
+    # my_error_log = local_args_list[0]['error_log']
+    print(my_filename)
+
+    # p = subprocess.Popen(bat, cwd=sim_path)
+    os.chdir("D:\\Documents\\ascent\\submit\\n_sims\\1003_0_1005_0")
+    #p = subprocess.Popen(["example.bat"])
+    out_filename = "out_inner0_fiber0.log"
+    err_filename = "err_inner0_fiber0.log"
+
+    with open(out_filename, "w+") as fo, open(err_filename, "w+") as fe:
+        p = subprocess.call(["0_0_start.bat"],
+                        stdout=fo,
+                        stderr=fe)
+    #p.wait()
+
+# my_filename = my_local_args['start_path']
+# my_output_log = my_local_args['output_log']
+# my_error_log = my_local_args['error_log']
+#
+# if OS is 'UNIX-LIKE':
+#     subprocess.run(['chmod', '777', os.path.join(os.path.split(my_filename)[0], 'blank.hoc')], shell=False)
+#     subprocess.run(['chmod', '777', my_filename], shell=False)
+# run_command = ['bash', my_filename, 'stdout', my_output_log, 'stderr', my_error_log, 'capture_output=True']
+# #run_command = ['bash', my_filename, 'stdout', my_output_log, 'stderr', my_error_log, 'capture_output=True']
+#
+# return subprocess.call(run_command[1:])
+
+
+def main():
+    submit_list = make_submission_list()
+    pool = multiprocessing.Pool(multiprocessing.cpu_count())
+    result = pool.map(local_submit, [submit_list[0]])
+
+
+if __name__ == "__main__":  # Allows for the safe importing of the main module
+    main()
+
+    # threads = []
+    # num_processes = 2
+    # print("There are %d CPUs on this machine" % multiprocessing.cpu_count())
+    #
+    # while threads or local_args_list:
+    #     # if we aren't using all the processors AND there is still data left to
+    #     # compute, then spawn another thread
+    #     if (len(threads) < num_processes) and local_args_list:
+    #         t = threading.Thread(target=local_submit, args=[local_args_list.pop(0)])
+    #         t.setDaemon(True)
+    #         t.start()
+    #         threads.append(t)
+    #
+    #     # in the case that we have the maximum number of threads check if any of them
+    #     # are done. (also do this when we run out of data, until all the threads are done)
+    #     else:
+    #         for thread in threads:
+    #             if not thread.is_alive():
+    #                 threads.remove(thread)
 
     # print("There are %d CPUs on this machine" % multiprocessing.cpu_count())
     # number_processes = 2
