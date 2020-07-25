@@ -7,6 +7,7 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
 else
     # macOS
     source ~/opt/miniconda3/etc/profile.d/conda.sh
+fi
 
 # package installation
 conda create -n ascent -y
