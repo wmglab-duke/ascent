@@ -27,7 +27,6 @@ def load(config_path: str):
 
 
 def make_submission_list():
-
     if (not os.path.exists(os.path.join('MOD_Files/x86_64')) and OS is 'UNIX-LIKE') or \
             (not os.path.exists(os.path.join('MOD_Files', 'nrnmech.dll')) and OS is 'WINDOWS'):
         print('compile')
@@ -75,7 +74,7 @@ def make_submission_list():
                 sim_name_base = '{}_{}_{}_'.format(sample, model, sim)
 
                 for sim_name in [x for x in os.listdir(sim_dir) if sim_name_base in x]:
-                    sim_path = os.path.abspath(os.path.join(sim_dir, sim_name))
+                    sim_path = os.path.join(sim_dir, sim_name)
                     fibers_path = os.path.abspath(os.path.join(sim_path, 'data', 'inputs'))
                     output_path = os.path.abspath(os.path.join(sim_path, 'data', 'outputs'))
                     out_dir = os.path.abspath(os.path.join(sim_path, 'logs', 'out'))
@@ -249,15 +248,17 @@ def local_submit(my_local_args):
 
     # p = subprocess.Popen(bat, cwd=sim_path)
     os.chdir("D:\\Documents\\ascent\\submit\\n_sims\\1003_0_1005_0")
-    #p = subprocess.Popen(["example.bat"])
+    # p = subprocess.Popen(["example.bat"])
     out_filename = "out_inner0_fiber0.log"
     err_filename = "err_inner0_fiber0.log"
 
     with open(out_filename, "w+") as fo, open(err_filename, "w+") as fe:
         p = subprocess.call(["0_0_start.bat"],
-                        stdout=fo,
-                        stderr=fe)
-    #p.wait()
+                            stdout=fo,
+                            stderr=fe)
+        # p = subprocess.call(["0_0_start.bat"])
+        # p.wait()
+
 
 # my_filename = my_local_args['start_path']
 # my_output_log = my_local_args['output_log']
