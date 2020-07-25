@@ -1,7 +1,14 @@
 #! /bin/bash
 
+# set up conda for this environment, choosing between Linux/macOS
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    # Linux
+    source ~/miniconda3/etc/profile.d/conda.sh
+else
+    # macOS
+    source ~/opt/miniconda3/etc/profile.d/conda.sh
+
 # package installation
-source ~/opt/miniconda3/etc/profile.d/conda.sh
 conda create -n ascent -y
 conda activate ascent
 conda install -y python=3.7
