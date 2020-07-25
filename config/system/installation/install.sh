@@ -3,11 +3,12 @@
 # set up conda for this environment, choosing between Linux/macOS
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     # Linux
-    source ~/miniconda3/etc/profile.d/conda.sh
+    $CONDA_SETUP_SCRIPT=~/miniconda3/etc/profile.d/conda.sh
 else
     # macOS
-    source ~/opt/miniconda3/etc/profile.d/conda.sh
+    $CONDA_SETUP_SCRIPT=~/opt/miniconda3/etc/profile.d/conda.sh
 fi
+source $CONDA_SETUP_SCRIPT
 
 # package installation
 conda create -n ascent -y
@@ -31,6 +32,6 @@ while true; do
     esac
 done
 
-echo "alias ascent_setup='source ~/opt/miniconda3/etc/profile.d/conda.sh; conda activate ascent; cd $PWD'" >> ~/.bash_profile
+echo "alias ascent_setup='source $CONDA_SETUP_SCRIPT; conda activate ascent; cd $PWD'" >> ~/.bash_profile
 echo "Added. Remember to run 'ascent_setup' to use."
 exit 0
