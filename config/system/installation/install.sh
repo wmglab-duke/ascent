@@ -3,13 +3,14 @@
 # set up conda for this environment, choosing between Linux/macOS
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     # Linux
-    CONDA_SETUP_SCRIPT='~/miniconda3/etc/profile.d/conda.sh'
-    CONDA_BIN='~/miniconda3/envs/ascent/bin'
+    CONDA_SETUP_SCRIPT=~/miniconda3/etc/profile.d/conda.sh
+    CONDA_BIN=~/miniconda3/envs/ascent/bin
 else
     # macOS
-    CONDA_SETUP_SCRIPT='~/opt/miniconda3/etc/profile.d/conda.sh'
-    CONDA_BIN='~/opt/miniconda3/envs/ascent/bin'
+    CONDA_SETUP_SCRIPT=~/opt/miniconda3/etc/profile.d/conda.sh
+    CONDA_BIN=~/opt/miniconda3/envs/ascent/bin
 fi
+
 source $CONDA_SETUP_SCRIPT
 
 # package installation
