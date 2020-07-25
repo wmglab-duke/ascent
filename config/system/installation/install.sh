@@ -33,5 +33,5 @@ while true; do
 done
 
 echo "alias ascent_setup='source $CONDA_SETUP_SCRIPT; conda activate ascent; cd $PWD'" >> ~/.bash_profile
-echo "Added. Remember to run 'ascent_setup' to use."
+echo "Added. Remember to run 'ascent_setup' to use (requires shell restart)."
 exit 0
