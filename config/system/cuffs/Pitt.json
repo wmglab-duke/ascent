@@ -8,7 +8,9 @@
         "Radius": "R_out_Pitt+Thk_fill_Pitt",
         "Thk": "Thk_fill_Pitt",
         "L": "L_Pitt+2*Thk_fill_Pitt",
-        "Center": "Center_Pitt"
+        "Center": "Center_Pitt",
+        "x_shift": "0",
+        "y_shift": "0"
       },
       "materials": [
         {
