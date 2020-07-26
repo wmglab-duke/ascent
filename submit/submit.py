@@ -218,19 +218,14 @@ def local_submit(my_local_args):
     out_filename = my_local_args['output_log']
     err_filename = my_local_args['error_log']
 
-    if OS == 'UNIX-LIKE':
-        run_command = ['bash', start, 'stdout', out_filename, 'stderr', err_filename, 'capture_output=True']
-        p = subprocess.call(run_command)
-
-    else:
-        with open(out_filename, "w+") as fo, open(err_filename, "w+") as fe:
-            p = subprocess.call([start], stdout=fo, stderr=fe)
+    with open(out_filename, "w+") as fo, open(err_filename, "w+") as fe:
+        p = subprocess.call(['bash', start] if OS == 'UNIX-LIKE' else [start], stdout=fo, stderr=fe)
 
 
 def main():
     submit_lists = make_submission_list()
     for submit_list in submit_lists:
-        pool = multiprocessing.Pool(multiprocessing.cpu_count()-1)
+        pool = multiprocessing.Pool(multiprocessing.cpu_count() - 1)
         result = pool.map(local_submit, submit_list)
 
 
