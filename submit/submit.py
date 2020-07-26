@@ -5,9 +5,7 @@ import subprocess
 import sys
 import re
 import json
-import threading
 import time
-from multiprocessing import Process
 
 from utils import NeuronRunMode
 
@@ -34,6 +32,8 @@ def make_submission_list():
         subprocess.run(['nrnivmodl'], shell=True)
         os.chdir('..')
 
+    local_args_lists = []
+
     for run_number in sys.argv[1:]:
         # run number is numeric
         assert re.search('[0-9]+', run_number), 'Encountered non-number run number argument: {}'.format(run_number)
@@ -43,6 +43,8 @@ def make_submission_list():
 
         # configuration file exists
         assert os.path.exists(filename), 'Run configuration not found: {}'.format(run_number)
+
+        local_args_list = []
 
         # load in configuration data
         run: dict = {}
@@ -65,7 +67,6 @@ def make_submission_list():
         if submission_context == 'local':
             local_run_keys = ['start_path', 'output_log', 'error_log']
             local_args = dict.fromkeys(local_run_keys, [])
-            local_args_list = []
 
         # loop models, sims
         for model in models:
@@ -192,122 +193,41 @@ def make_submission_list():
                             os.remove(start_path)
 
                         elif submission_context == 'local':
-                            local_args['start_path'] = start_path
-                            local_args['output_log'] = output_log
-                            local_args['error_log'] = error_log
-
+                            local_args['start'] = start_path.split('\\')[-1]
+                            local_args['output_log'] = os.path.join('logs', 'out', output_log.split('\\')[-1])
+                            local_args['error_log'] = os.path.join('logs', 'err', error_log.split('\\')[-1])
+                            local_args['sim_path'] = os.path.abspath(sim_path)
                             local_args_list.append(local_args.copy())
 
-        return local_args_list
+        local_args_lists.append(local_args_list)
 
-        # number_processes = 2
-        # pool = multiprocessing.Pool(number_processes)
-        # results = pool.map_async(local_submit, local_args_list)
-        # results.wait()
-        # results.get()
-        # pool.close()
-        # pool.join()
+    return local_args_lists
 
-        # local_submit(local_args_list)
 
-        # my_filename = local_args_list[0]['start_path']
-        # my_output_log = local_args_list[0]['output_log']
-        # my_error_log = local_args_list[0]['error_log']
-        #
-        # # p = subprocess.Popen(bat, cwd=sim_path)
-        # print(os.getcwd())
-        # os.chdir("D:\\Documents\\ascent\\submit\\n_sims\\1003_0_1005_0")
-        # print(os.getcwd())
-        # # p = subprocess.Popen(["D:\\Documents\\ascent\\submit\\n_sims\\1003_0_1005_0\\example.bat"])
-        # p = subprocess.Popen(["example.bat"])
+def local_submit(my_local_args):
+    sim_path = my_local_args['sim_path']
+    os.chdir(sim_path)
 
-    # stdout, stderr = p.communicate()
-    # p.wait()
+    start = my_local_args['start']
+    out_filename =  my_local_args['output_log']
+    err_filename = my_local_args['error_log']
 
-    # THIS WORKED
-    # print('here')
-    # if __name__ == '__main__':
-    #     p = Process(target=local_submit, args=('bob',))
-    #     p.start()
-    #     p.join()
-
-    # subprocess.call(my_filename)
+    with open(out_filename, "w+") as fo, open(err_filename, "w+") as fe:
+        p = subprocess.call([start], stdout=fo, stderr=fe)
 
     # if OS is 'UNIX-LIKE':
     #     subprocess.run(['chmod', '777', os.path.join(os.path.split(my_filename)[0], 'blank.hoc')], shell=False)
     #     subprocess.run(['chmod', '777', my_filename], shell=False)
     # run_command = ['bash', my_filename, 'stdout', my_output_log, 'stderr', my_error_log, 'capture_output=True']
-    # #run_command = ['bash', my_filename, 'stdout', my_output_log, 'stderr', my_error_log, 'capture_output=True']
-
-
-def local_submit(my_local_args):
-    my_filename = my_local_args['start_path']
-    # my_output_log = local_args_list[0]['output_log']
-    # my_error_log = local_args_list[0]['error_log']
-    print(my_filename)
-
-    # p = subprocess.Popen(bat, cwd=sim_path)
-    os.chdir("D:\\Documents\\ascent\\submit\\n_sims\\1003_0_1005_0")
-    # p = subprocess.Popen(["example.bat"])
-    out_filename = "out_" + my_local_args['output_log'].split('\\')[-1]
-    print(out_filename)
-    err_filename = "error_" + my_local_args['error_log'].split('\\')[-1]
-    print(err_filename)
-    with open(out_filename, "w+") as fo, open(err_filename, "w+") as fe:
-        p = subprocess.call([my_local_args['start_path'].split('\\')[-1]],
-                            stdout=fo,
-                            stderr=fe)
-        # p = subprocess.call(["0_0_start.bat"])
-        # p.wait()
-
-
-# my_filename = my_local_args['start_path']
-# my_output_log = my_local_args['output_log']
-# my_error_log = my_local_args['error_log']
-#
-# if OS is 'UNIX-LIKE':
-#     subprocess.run(['chmod', '777', os.path.join(os.path.split(my_filename)[0], 'blank.hoc')], shell=False)
-#     subprocess.run(['chmod', '777', my_filename], shell=False)
-# run_command = ['bash', my_filename, 'stdout', my_output_log, 'stderr', my_error_log, 'capture_output=True']
-# #run_command = ['bash', my_filename, 'stdout', my_output_log, 'stderr', my_error_log, 'capture_output=True']
-#
-# return subprocess.call(run_command[1:])
+    # return subprocess.call(run_command[1:])
 
 
 def main():
-    submit_list = make_submission_list()
-    pool = multiprocessing.Pool(multiprocessing.cpu_count())
-    result = pool.map(local_submit, submit_list)
+    submit_lists = make_submission_list()
+    for submit_list in submit_lists:
+        pool = multiprocessing.Pool(multiprocessing.cpu_count())
+        result = pool.map(local_submit, submit_list)
 
 
 if __name__ == "__main__":  # Allows for the safe importing of the main module
     main()
-
-    # threads = []
-    # num_processes = 2
-    # print("There are %d CPUs on this machine" % multiprocessing.cpu_count())
-    #
-    # while threads or local_args_list:
-    #     # if we aren't using all the processors AND there is still data left to
-    #     # compute, then spawn another thread
-    #     if (len(threads) < num_processes) and local_args_list:
-    #         t = threading.Thread(target=local_submit, args=[local_args_list.pop(0)])
-    #         t.setDaemon(True)
-    #         t.start()
-    #         threads.append(t)
-    #
-    #     # in the case that we have the maximum number of threads check if any of them
-    #     # are done. (also do this when we run out of data, until all the threads are done)
-    #     else:
-    #         for thread in threads:
-    #             if not thread.is_alive():
-    #                 threads.remove(thread)
-
-    # print("There are %d CPUs on this machine" % multiprocessing.cpu_count())
-    # number_processes = 2
-    # pool = multiprocessing.Pool(number_processes)
-    # total_tasks = 16
-    # tasks = range(total_tasks)
-    # results = pool.map_async(work, tasks)
-    # pool.close()
-    # pool.join()
