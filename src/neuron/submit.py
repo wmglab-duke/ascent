@@ -1,26 +1,16 @@
-#!/usr/bin/env python3
-
-import json
-import os
-import re
-import shutil
-import sys
-import time
 import multiprocessing
+import os
+import shutil
 import subprocess
-from typing import List
-from utils import *
+import sys
+import re
+import json
+import time
+
+from src.utils import NeuronRunMode
 
 ALLOWED_SUBMISSION_CONTEXTS = ['cluster', 'local']
 OS = 'UNIX-LIKE' if any([s in sys.platform for s in ['darwin', 'linux']]) else 'WINDOWS'
-
-
-def local_submit(filename, output_log, error_log):
-    if OS is 'UNIX-LIKE':
-        subprocess.run(['chmod', '777', os.path.join(os.path.split(filename)[0], 'blank.hoc')])
-        subprocess.run(['chmod', '777', filename])
-    run_command = ['bash', filename, '>', output_log, '2>{}'.format(error_log)]
-    subprocess.run(run_command[1:] if (OS is 'WINDOWS') else run_command, capture_output=True)
 
 
 def load(config_path: str):
@@ -34,13 +24,15 @@ def load(config_path: str):
         return json.load(handle)
 
 
-if __name__ == "__main__":
-    if (not os.path.exists(os.path.join('MOD_Files/x86_64')) and OS is 'UNIX-LIKE') or \
-            (not os.path.exists(os.path.join('MOD_Files', 'nrnmech.dll')) and OS is 'WINDOWS'):
+def make_submission_list():
+    if (not os.path.exists(os.path.join('MOD_Files/x86_64')) and OS == 'UNIX-LIKE') or \
+            (not os.path.exists(os.path.join('MOD_Files', 'nrnmech.dll')) and OS == 'WINDOWS'):
         print('compile')
         os.chdir(os.path.join('MOD_Files'))
         subprocess.run(['nrnivmodl'], shell=True)
         os.chdir('..')
+
+    local_args_lists = []
 
     for run_number in sys.argv[1:]:
         # run number is numeric
@@ -51,6 +43,8 @@ if __name__ == "__main__":
 
         # configuration file exists
         assert os.path.exists(filename), 'Run configuration not found: {}'.format(run_number)
+
+        local_args_list = []
 
         # load in configuration data
         run: dict = {}
@@ -70,8 +64,9 @@ if __name__ == "__main__":
         assert submission_context in ALLOWED_SUBMISSION_CONTEXTS, 'Invalid submission context: {}'.format(
             submission_context)
 
-        # list of processes if context is local
-        processes: List[multiprocessing.Process] = []
+        if submission_context == 'local':
+            local_run_keys = ['start', 'output_log', 'error_log', 'sim_path']
+            local_args = dict.fromkeys(local_run_keys, [])
 
         # loop models, sims
         for model in models:
@@ -81,8 +76,8 @@ if __name__ == "__main__":
 
                 for sim_name in [x for x in os.listdir(sim_dir) if sim_name_base in x]:
                     sim_path = os.path.join(sim_dir, sim_name)
-                    fibers_path = os.path.join(sim_path, 'data', 'inputs')
-                    output_path = os.path.join(sim_path, 'data', 'outputs')
+                    fibers_path = os.path.abspath(os.path.join(sim_path, 'data', 'inputs'))
+                    output_path = os.path.abspath(os.path.join(sim_path, 'data', 'outputs'))
                     out_dir = os.path.abspath(os.path.join(sim_path, 'logs', 'out'))
                     err_dir = os.path.abspath(os.path.join(sim_path, 'logs', 'err'))
 
@@ -123,18 +118,22 @@ if __name__ == "__main__":
                                                                                           fiber_ind))
                             continue
 
-                        # write start.slurm
-                        start_path = os.path.join(sim_path, 'start{}'.format('.sh' if OS is 'UNIX_LIKE' else '.bat'))
-                        # assert os.path.isfile(start_path), '{} already exists (not expected) check path/implementation'.format(start_path)
-
-                        # binary search intitial bounds (unit: mA)
+                        # cluster
+                        if submission_context == 'cluster':
+                            start_path = os.path.join(sim_path, 'start{}'.format('.sh' if OS == 'UNIX_LIKE'
+                                                                                 else '.bat'))
+                        else:
+                            # local
+                            start_path = os.path.join(sim_path, '{}_{}_start{}'.format(inner_ind, fiber_ind,
+                                                                                       '.sh' if OS == 'UNIX-LIKE'
+                                                                                       else '.bat'))
 
                         with open(start_path, 'w+') as handle:
                             lines = []
-                            if OS is 'UNIX-LIKE':
+                            if OS == 'UNIX-LIKE':
                                 lines = [
                                     '#!/bin/bash\n',
-                                    'cd {}\n'.format(sim_path),
+                                    'cd {}\n'.format(sim_path if submission_context == 'cluster' else '.'),
                                     'chmod a+rwx special\n',
                                     './special -nobanner '
                                     '-c \"strdef sim_path\" '
@@ -155,18 +154,17 @@ if __name__ == "__main__":
 
                             else:  # OS is 'WINDOWS'
                                 sim_path_win = os.path.join(*sim_path.split(os.pathsep)).replace('\\', '\\\\')
-                                print(sim_path_win)
                                 lines = [
-                                    'cd {}\n'.format(sim_path_win),
                                     'nrniv -nobanner '
                                     '-dll {}/MOD_Files/nrnmech.dll '
                                     '-c \"strdef sim_path\" '
-                                    '-c \"sim_path=\\\"{}\\\"\" '
+                                    '-c \"sim_path=\\\"{}\"\" '
                                     '-c \"inner_ind={}\" '
                                     '-c \"fiber_ind={}\" '
                                     '-c \"stimamp_top={}\" '
                                     '-c \"stimamp_bottom={}\" '
-                                    '-c \"load_file(\\\"launch.hoc\\\")\" blank.hoc\n'.format(os.getcwd(), sim_path_win,
+                                    '-c \"load_file(\\\"launch.hoc\\\")\" blank.hoc\n'.format(os.getcwd(),
+                                                                                              sim_path_win,
                                                                                               inner_ind,
                                                                                               fiber_ind,
                                                                                               stimamp_top,
@@ -174,12 +172,12 @@ if __name__ == "__main__":
                                 ]
 
                             handle.writelines(lines)
+                            handle.close()
 
                         # submit batch job for fiber
                         job_name = '{}_{}'.format(sim_name, master_fiber_name)
                         output_log = os.path.join(out_dir, '{}{}'.format(master_fiber_name, '.log'))
                         error_log = os.path.join(err_dir, '{}{}'.format(master_fiber_name, '.log'))
-                        print('\n{}'.format(job_name))
 
                         if submission_context == 'cluster':
                             command = ' '.join([
@@ -201,12 +199,35 @@ if __name__ == "__main__":
                             os.remove(start_path)
 
                         elif submission_context == 'local':
-                            # local_submit(start_path, output_log, error_log)
-                            p = multiprocessing.Process(target=local_submit, args=(start_path, output_log, error_log))
-                            processes.append(p)
-                            p.start()
+                            local_args['start'] = start_path.split(os.path.sep)[-1]
+                            local_args['output_log'] = os.path.join('logs', 'out', output_log.split(os.path.sep)[-1])
+                            local_args['error_log'] = os.path.join('logs', 'err', error_log.split(os.path.sep)[-1])
+                            local_args['sim_path'] = os.path.abspath(sim_path)
+                            local_args_list.append(local_args.copy())
 
-        if submission_context == 'local':
-            # ensure main process won't finish/exit before any subprocess
-            for process in processes:
-                process.join()
+        local_args_lists.append(local_args_list)
+
+    return local_args_lists
+
+
+def local_submit(my_local_args):
+    sim_path = my_local_args['sim_path']
+    os.chdir(sim_path)
+
+    start = my_local_args['start']
+    out_filename = my_local_args['output_log']
+    err_filename = my_local_args['error_log']
+
+    with open(out_filename, "w+") as fo, open(err_filename, "w+") as fe:
+        p = subprocess.call(['bash', start] if OS == 'UNIX-LIKE' else [start], stdout=fo, stderr=fe)
+
+
+def main():
+    submit_lists = make_submission_list()
+    for submit_list in submit_lists:
+        pool = multiprocessing.Pool(multiprocessing.cpu_count() - 1)
+        result = pool.map(local_submit, submit_list)
+
+
+if __name__ == "__main__":  # Allows for the safe importing of the main module
+    main()
