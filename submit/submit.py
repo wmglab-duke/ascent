@@ -249,11 +249,12 @@ def local_submit(my_local_args):
     # p = subprocess.Popen(bat, cwd=sim_path)
     os.chdir("D:\\Documents\\ascent\\submit\\n_sims\\1003_0_1005_0")
     # p = subprocess.Popen(["example.bat"])
-    out_filename = "out_inner0_fiber0.log"
-    err_filename = "err_inner0_fiber0.log"
-
+    out_filename = "out_" + my_local_args['output_log'].split('\\')[-1]
+    print(out_filename)
+    err_filename = "error_" + my_local_args['error_log'].split('\\')[-1]
+    print(err_filename)
     with open(out_filename, "w+") as fo, open(err_filename, "w+") as fe:
-        p = subprocess.call(["0_0_start.bat"],
+        p = subprocess.call([my_local_args['start_path'].split('\\')[-1]],
                             stdout=fo,
                             stderr=fe)
         # p = subprocess.call(["0_0_start.bat"])
@@ -276,7 +277,7 @@ def local_submit(my_local_args):
 def main():
     submit_list = make_submission_list()
     pool = multiprocessing.Pool(multiprocessing.cpu_count())
-    result = pool.map(local_submit, [submit_list[0]])
+    result = pool.map(local_submit, submit_list)
 
 
 if __name__ == "__main__":  # Allows for the safe importing of the main module
