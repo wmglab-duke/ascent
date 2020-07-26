@@ -230,7 +230,7 @@ def local_submit(my_local_args):
 def main():
     submit_lists = make_submission_list()
     for submit_list in submit_lists:
-        pool = multiprocessing.Pool(multiprocessing.cpu_count())
+        pool = multiprocessing.Pool(multiprocessing.cpu_count()-1)
         result = pool.map(local_submit, submit_list)
 
 
