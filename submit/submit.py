@@ -25,8 +25,8 @@ def load(config_path: str):
 
 
 def make_submission_list():
-    if (not os.path.exists(os.path.join('MOD_Files/x86_64')) and OS is 'UNIX-LIKE') or \
-            (not os.path.exists(os.path.join('MOD_Files', 'nrnmech.dll')) and OS is 'WINDOWS'):
+    if (not os.path.exists(os.path.join('MOD_Files/x86_64')) and OS == 'UNIX-LIKE') or \
+            (not os.path.exists(os.path.join('MOD_Files', 'nrnmech.dll')) and OS == 'WINDOWS'):
         print('compile')
         os.chdir(os.path.join('MOD_Files'))
         subprocess.run(['nrnivmodl'], shell=True)
@@ -65,7 +65,7 @@ def make_submission_list():
             submission_context)
 
         if submission_context == 'local':
-            local_run_keys = ['start_path', 'output_log', 'error_log']
+            local_run_keys = ['start', 'output_log', 'error_log', 'sim_path']
             local_args = dict.fromkeys(local_run_keys, [])
 
         # loop models, sims
@@ -118,16 +118,22 @@ def make_submission_list():
                                                                                           fiber_ind))
                             continue
 
-                        start_path = os.path.join(sim_path, '{}_{}_start{}'.format(inner_ind, fiber_ind,
-                                                                                   '.sh' if OS == 'UNIX-LIKE'
-                                                                                   else '.bat'))
+                        # cluster
+                        if submission_context == 'cluster':
+                            start_path = os.path.join(sim_path, 'start{}'.format('.sh' if OS == 'UNIX_LIKE'
+                                                                                 else '.bat'))
+                        else:
+                            # local
+                            start_path = os.path.join(sim_path, '{}_{}_start{}'.format(inner_ind, fiber_ind,
+                                                                                       '.sh' if OS == 'UNIX-LIKE'
+                                                                                       else '.bat'))
 
                         with open(start_path, 'w+') as handle:
                             lines = []
-                            if OS is 'UNIX-LIKE':
+                            if OS == 'UNIX-LIKE':
                                 lines = [
                                     '#!/bin/bash\n',
-                                    'cd {}\n'.format(sim_path),
+                                    'cd {}\n'.format(sim_path if submission_context == 'cluster' else '.'),
                                     'chmod a+rwx special\n',
                                     './special -nobanner '
                                     '-c \"strdef sim_path\" '
@@ -193,16 +199,9 @@ def make_submission_list():
                             os.remove(start_path)
 
                         elif submission_context == 'local':
-                            # if OS == 'UNIX-LIKE':
                             local_args['start'] = start_path.split(os.path.sep)[-1]
                             local_args['output_log'] = os.path.join('logs', 'out', output_log.split(os.path.sep)[-1])
                             local_args['error_log'] = os.path.join('logs', 'err', error_log.split(os.path.sep)[-1])
-
-                            # else:
-                            #     local_args['start'] = start_path.split('\\')[-1]
-                            #     local_args['output_log'] = os.path.join('logs', 'out', output_log.split('\\')[-1])
-                            #     local_args['error_log'] = os.path.join('logs', 'err', error_log.split('\\')[-1])
-
                             local_args['sim_path'] = os.path.abspath(sim_path)
                             local_args_list.append(local_args.copy())
 
@@ -219,14 +218,13 @@ def local_submit(my_local_args):
     out_filename = my_local_args['output_log']
     err_filename = my_local_args['error_log']
 
-    with open(out_filename, "w+") as fo, open(err_filename, "w+") as fe:
-        p = subprocess.call([start], stdout=fo, stderr=fe)
+    if OS == 'UNIX-LIKE':
+        run_command = ['bash', start, 'stdout', out_filename, 'stderr', err_filename, 'capture_output=True']
+        p = subprocess.call(run_command)
 
-    # if OS is 'UNIX-LIKE':
-    #     subprocess.run(['chmod', '777', os.path.join(os.path.split(my_filename)[0], 'blank.hoc')], shell=False)
-    #     subprocess.run(['chmod', '777', my_filename], shell=False)
-    # run_command = ['bash', my_filename, 'stdout', my_output_log, 'stderr', my_error_log, 'capture_output=True']
-    # return subprocess.call(run_command[1:])
+    else:
+        with open(out_filename, "w+") as fo, open(err_filename, "w+") as fe:
+            p = subprocess.call([start], stdout=fo, stderr=fe)
 
 
 def main():
