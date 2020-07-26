@@ -7,7 +7,7 @@ import re
 import json
 import time
 
-from utils import NeuronRunMode
+from src.utils import NeuronRunMode
 
 ALLOWED_SUBMISSION_CONTEXTS = ['cluster', 'local']
 OS = 'UNIX-LIKE' if any([s in sys.platform for s in ['darwin', 'linux']]) else 'WINDOWS'
@@ -119,7 +119,7 @@ def make_submission_list():
                             continue
 
                         start_path = os.path.join(sim_path, '{}_{}_start{}'.format(inner_ind, fiber_ind,
-                                                                                   '.sh' if OS is 'UNIX_LIKE'
+                                                                                   '.sh' if OS == 'UNIX-LIKE'
                                                                                    else '.bat'))
 
                         with open(start_path, 'w+') as handle:
@@ -193,9 +193,16 @@ def make_submission_list():
                             os.remove(start_path)
 
                         elif submission_context == 'local':
-                            local_args['start'] = start_path.split('\\')[-1]
-                            local_args['output_log'] = os.path.join('logs', 'out', output_log.split('\\')[-1])
-                            local_args['error_log'] = os.path.join('logs', 'err', error_log.split('\\')[-1])
+                            # if OS == 'UNIX-LIKE':
+                            local_args['start'] = start_path.split(os.path.sep)[-1]
+                            local_args['output_log'] = os.path.join('logs', 'out', output_log.split(os.path.sep)[-1])
+                            local_args['error_log'] = os.path.join('logs', 'err', error_log.split(os.path.sep)[-1])
+
+                            # else:
+                            #     local_args['start'] = start_path.split('\\')[-1]
+                            #     local_args['output_log'] = os.path.join('logs', 'out', output_log.split('\\')[-1])
+                            #     local_args['error_log'] = os.path.join('logs', 'err', error_log.split('\\')[-1])
+
                             local_args['sim_path'] = os.path.abspath(sim_path)
                             local_args_list.append(local_args.copy())
 
@@ -209,7 +216,7 @@ def local_submit(my_local_args):
     os.chdir(sim_path)
 
     start = my_local_args['start']
-    out_filename =  my_local_args['output_log']
+    out_filename = my_local_args['output_log']
     err_filename = my_local_args['error_log']
 
     with open(out_filename, "w+") as fo, open(err_filename, "w+") as fe:
