@@ -41,7 +41,8 @@ def run(args):
                 subprocess.Popen(['wget', '-q', '-O', target, jar]).wait()
             else:
                 subprocess.Popen([
-                    'powershell.exe -Command \"[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest {} -OutFile {}\"'.format(jar, target),
+                    'powershell.exe -Command \"[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12\"'
+                    'powershell.exe -Command \"Invoke-WebRequest {} -OutFile {}\"'.format(jar, target),
                 ], shell=True).wait()
 
     # run system-specific installation
