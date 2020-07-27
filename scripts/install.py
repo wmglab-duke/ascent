@@ -40,7 +40,7 @@ def run(args):
             if sys.platform.startswith('darwin') or sys.platform.startswith('linux'):
                 subprocess.Popen(['wget', '-q', '-O', target, jar]).wait()
             else:
-                subprocess.Popen(['powershell.exe' '-Command', 'wget {} -OutFile {}'.format(jar, target)]).wait()
+                subprocess.Popen(['powershell.exe' '-Command', '\"Invoke-WebRequest {} -OutFile {}\"'.format(jar, target)]).wait()
 
     # run system-specific installation
     proc = None
