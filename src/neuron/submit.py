@@ -29,7 +29,7 @@ def make_submission_list():
         print('compile')
         os.chdir(os.path.join('MOD_Files'))
         subprocess.run(['nrnivmodl'], shell=True)
-        os.chdir('..')
+        os.chdir('')
 
     local_args_lists = []
 
@@ -132,7 +132,7 @@ def make_submission_list():
                             if OS == 'UNIX-LIKE':
                                 lines = [
                                     '#!/bin/bash\n',
-                                    'cd {}\n'.format(sim_path if submission_context == 'cluster' else '.'),
+                                    'cd \"{}\"\n'.format(sim_path if submission_context == 'cluster' else '.'),
                                     'chmod a+rwx special\n',
                                     './special -nobanner '
                                     '-c \"strdef sim_path\" '
@@ -155,7 +155,7 @@ def make_submission_list():
                                 sim_path_win = os.path.join(*sim_path.split(os.pathsep)).replace('\\', '\\\\')
                                 lines = [
                                     'nrniv -nobanner '
-                                    '-dll {}/MOD_Files/nrnmech.dll '
+                                    '-dll \"{}/MOD_Files/nrnmech.dll\" '
                                     '-c \"strdef sim_path\" '
                                     '-c \"sim_path=\\\"{}\"\" '
                                     '-c \"inner_ind={}\" '
