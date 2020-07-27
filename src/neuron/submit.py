@@ -7,7 +7,6 @@ import re
 import json
 import time
 
-from src.utils import NeuronRunMode
 
 ALLOWED_SUBMISSION_CONTEXTS = ['cluster', 'local']
 OS = 'UNIX-LIKE' if any([s in sys.platform for s in ['darwin', 'linux']]) else 'WINDOWS'
@@ -97,11 +96,11 @@ def make_submission_list():
 
                     print('\n\n################ {} ################\n\n'.format(sim_name))
 
-                    if sim_config['protocol']['mode'] == NeuronRunMode.ACTIVATION_THRESHOLD.name \
-                            or sim_config['protocol']['mode'] == NeuronRunMode.BLOCK_THRESHOLD.name:
+                    if sim_config['protocol']['mode'] == 'ACTIVATION_THRESHOLD' \
+                            or sim_config['protocol']['mode'] == 'BLOCK_THRESHOLD':
                         stimamp_top = sim_config['protocol']['bounds_search']['top']
                         stimamp_bottom = sim_config['protocol']['bounds_search']['bottom']
-                    elif sim_config['protocol']['mode'] == NeuronRunMode.FINITE_AMPLITUDES:
+                    elif sim_config['protocol']['mode'] == 'FINITE_AMPLITUDES':
                         stimamp_top, stimamp_bottom = 0, 0
 
                     for fiber_filename in [x for x in os.listdir(fibers_path)
