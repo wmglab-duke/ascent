@@ -142,6 +142,7 @@ submit/utils
 submit/batch.py
 submit/batchSL.slurm
 submit/nrnmech.dll
+submit/submit.py
 
 input/
 */user/*
