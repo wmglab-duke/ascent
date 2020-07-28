@@ -40,10 +40,12 @@ def run(args):
             if sys.platform.startswith('darwin') or sys.platform.startswith('linux'):
                 subprocess.Popen(['wget', '-q', '-O', target, jar]).wait()
             else:
-                subprocess.Popen([
-                    'powershell.exe -Command \"[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12\"'
-                    'powershell.exe -Command \"Invoke-WebRequest {} -OutFile {}\"'.format(jar, target),
-                ], shell=True).wait()
+                p =subprocess.Popen("powershell.exe", stdin=subprocess.PIPE)
+                p.stdin.write('[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12\n'.encode())
+                p.stdin.write('$source = \'{}\'\n'.format(jar).encode())
+                p.stdin.write('$destination = \'{}\'\n'.format(os.path.abspath(target)).encode())
+                p.stdin.write('curl $source -OutFile $destination'.encode())
+                p.stdin.close()
 
     # run system-specific installation
     proc = None
