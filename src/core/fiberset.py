@@ -37,7 +37,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
     def init_post_config(self):
         if any([config.value not in self.configs.keys() for config in (Config.MODEL, Config.SIM)]):
-            self.throw(39)  # TODO NOT WRITTEN - INCORRECT ERROR INDEX
+            self.throw(78)
         return self
 
     def generate(self, sim_directory: str):
