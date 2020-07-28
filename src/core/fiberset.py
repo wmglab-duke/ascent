@@ -377,6 +377,9 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
             if not ('min' in self.configs['sims']['fibers']['z_parameters'].keys() and 'max' in self.configs['sims']['fibers']['z_parameters'].keys()):
                 fiber_length = model_length if override_length is None else override_length
+                self.configs['sims']['fibers']['z_parameters']['min'] = 0
+                self.configs['sims']['fibers']['z_parameters']['max'] = fiber_length
+                
                 if override_length is None:
                     warnings.warn('Program assumed fiber length same as proximal length since "min" and "max" fiber '
                                   'length not defined in Config.Sim "fibers" -> "z_parameters"')
