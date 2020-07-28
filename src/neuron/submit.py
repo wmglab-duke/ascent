@@ -206,7 +206,7 @@ def make_submission_list():
 
         local_args_lists.append(local_args_list)
 
-    return local_args_lists
+    return local_args_lists, submission_context
 
 
 def local_submit(my_local_args):
@@ -222,10 +222,11 @@ def local_submit(my_local_args):
 
 
 def main():
-    submit_lists = make_submission_list()
-    for submit_list in submit_lists:
-        pool = multiprocessing.Pool(multiprocessing.cpu_count() - 1)
-        result = pool.map(local_submit, submit_list)
+    submit_lists, sub_context = make_submission_list()
+    if sub_context == 'local':
+        for submit_list in submit_lists:
+            pool = multiprocessing.Pool(multiprocessing.cpu_count() - 1)
+            result = pool.map(local_submit, submit_list)
 
 
 if __name__ == "__main__":  # Allows for the safe importing of the main module
