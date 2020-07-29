@@ -167,7 +167,6 @@ class Deformable(Exceptionable):
 
                 # pygame.display.update()
 
-
                 # drawing_screen = pygame.transform.scale(drawing_screen, display_dimensions)#, screen)
                 pygame.display.flip()
                 pygame.display.set_caption('nerve morph step {} of {}'.format(morph_index, len(morph_steps)))
@@ -189,7 +188,8 @@ class Deformable(Exceptionable):
         return movements, rotations
 
     @staticmethod
-    def deform_steps(start: Trace, end: Trace, count: int = 2, deform_ratio: float = 1.0, slide: Slide = None) -> List[Trace]:
+    def deform_steps(start: Trace, end: Trace, count: int = 2, deform_ratio: float = 1.0, slide: Slide = None) -> List[
+        Trace]:
         # TODO: map orientation point index to new index -> need to return this?
 
         # Find point along old_nerve that is closest to major axis of best fit ellipse
@@ -197,7 +197,7 @@ class Deformable(Exceptionable):
 
         angle *= 2 * np.pi / 360  # converts to radians
 
-        ray = LineString([(x, y), (x + (2 * a * np.cos(angle)),  y + (2 * a * np.sin(angle)))])
+        ray = LineString([(x, y), (x + (2 * a * np.cos(angle)), y + (2 * a * np.sin(angle)))])
 
         start_intersection = ray.intersection(start.polygon().boundary)
         end_intersection = ray.intersection(end.polygon().boundary)
@@ -222,9 +222,9 @@ class Deformable(Exceptionable):
             associated_points[start_i] = (start.points[start_i], end.points[end_i])
 
             # map slide.orientation_point_index
-            if (slide is not None) and\
-               (slide.orientation_point_index is not None) and\
-               (slide.orientation_point_index == start_i):
+            if (slide is not None) and \
+                    (slide.orientation_point_index is not None) and \
+                    (slide.orientation_point_index == start_i):
                 slide.orientation_point_index = end_i
 
             if start_i == len(start.points) - 1:
@@ -258,11 +258,25 @@ class Deformable(Exceptionable):
     def from_slide(slide: Slide, mode: ReshapeNerveMode, sep_nerve: float = None) -> 'Deformable':
         # method in slide will pull out each trace and add to a list of contents, go through traces and build polygons
 
+        # exception configuration data
+        exception_config_data = slide.configs[Config.EXCEPTIONS.value]
+
         bounds = slide.nerve.polygon().bounds
         width = int(1.5 * (bounds[2] - bounds[0])) / 2
         height = int(1.5 * (bounds[3] - bounds[1])) / 2
 
         slide.move_center(np.array([1.5 * width, 1.5 * height]))
+
+        # settle the inners
+        for fascicle in slide.fascicles:
+            inners = [inner.deepcopy() for inner in fascicle]
+            def_tmp = Deformable(exception_config_data, fascicle.outer, fascicle.outer, inners)
+            movements, rotations = def_tmp.deform(morph_count=36,
+                                                  render=False,
+                                                  minimum_distance=10)
+            for move, angle, inner in zip(movements, rotations, fascicle.inners):
+                inner.shift(list(move) + [0])
+                inner.rotate(angle)
 
         # get start boundary
         boundary_start = slide.nerve.deepcopy()
@@ -274,9 +288,6 @@ class Deformable(Exceptionable):
 
         # get contents
         contents = [fascicle.outer.deepcopy() for fascicle in slide.fascicles]
-
-        # exception configuration data
-        exception_config_data = slide.configs[Config.EXCEPTIONS.value]
 
         slide.move_center(np.array([0, 0]))
 
@@ -304,9 +315,3 @@ class Deformable(Exceptionable):
         # Print New Line on Complete
         if iteration == total:
             print()
-
-
-
-
-
-
