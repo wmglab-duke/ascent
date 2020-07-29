@@ -2201,7 +2201,7 @@ class Part {
                 ic.set("source", "file");
                 ic.set("filename", ci_inner_path);
                 //TODO
-                ic.set("rtol", 0.02); //modelData.getDouble("trace_interp_tol"));
+                ic.set("rtol", 0.04); //modelData.getDouble("trace_interp_tol"));
 
                 String conv2solidLabel = ci_inner_name + " Inner Surface " + ci_inner_index;
                 GeomFeature conv2solid = model.component("comp1").geom("geom1").feature(im.get(fascicleCICXLabel)).geom().create(im.next("csol",conv2solidLabel), "ConvertToSolid");
@@ -2311,7 +2311,7 @@ class Part {
                     icMesh.set("source", "file");
                     icMesh.set("filename", mesh_inner_path);
                     //TODO
-                    icMesh.set("rtol", 0.02);
+                    icMesh.set("rtol", 0.04);
 
                     String icSurfLabel = "outer" + index + " Inner Surface " + mesh_inner_index;
                     GeomFeature icSurf = innersPlane.geom().create(im.next("csol",icSurfLabel), "ConvertToSolid");
@@ -2343,7 +2343,7 @@ class Part {
                 outeric1.set("source", "file");
                 outeric1.set("filename", mesh_outer_path);
                 //TODO
-                outeric1.set("rtol", 0.01);
+                outeric1.set("rtol", 0.04);
 
                 String outericSurfaceLabel = "outer" + index + " Outer Surface";
                 outerPlane.geom().create(im.next("csol",outericSurfaceLabel), "ConvertToSolid");
