@@ -203,7 +203,13 @@ class Sample(Exceptionable, Configurable, Saveable):
                 # self.throw(18)
 
             if exists(MaskFileNames.ORIENTATION):
-                contour, _ = cv2.findContours(np.flipud(cv2.imread(MaskFileNames.ORIENTATION.value, -1)),
+
+                img = np.flipud(cv2.imread(MaskFileNames.ORIENTATION.value, -1))
+
+                if len(img.shape) > 2 and img.shape[2] > 1:
+                    img = img[:, :, 0]
+
+                contour, _ = cv2.findContours(img,
                                               cv2.RETR_TREE,
                                               cv2.CHAIN_APPROX_SIMPLE)
                 trace = Trace([point + [0] for point in contour[0][:, 0, :]], self.configs[Config.EXCEPTIONS.value])

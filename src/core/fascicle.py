@@ -324,7 +324,14 @@ class Fascicle(Exceptionable):
             # default findContours params
             params = [cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE]
             # default findContours params
+
+            # Dir | Rename-Item –NewName { $_.name –replace “.tiff“,”.tif” }
+
             img = np.flipud(cv2.imread(path, -1))
+
+            if len(img.shape) > 2 and img.shape[2] > 1:
+                img = img[:, :, 0]
+
             # find points of traces (hierarchy is IGNORED! ... see that "_")
             contours, _ = cv2.findContours(img, *params)
 
