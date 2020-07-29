@@ -268,15 +268,15 @@ class Deformable(Exceptionable):
         slide.move_center(np.array([1.5 * width, 1.5 * height]))
 
         # settle the inners
-        for fascicle in slide.fascicles:
-            inners = [inner.deepcopy() for inner in fascicle]
-            def_tmp = Deformable(exception_config_data, fascicle.outer, fascicle.outer, inners)
-            movements, rotations = def_tmp.deform(morph_count=36,
-                                                  render=False,
-                                                  minimum_distance=10)
-            for move, angle, inner in zip(movements, rotations, fascicle.inners):
-                inner.shift(list(move) + [0])
-                inner.rotate(angle)
+        # for fascicle in slide.fascicles:
+        #     inners = [inner.deepcopy() for inner in fascicle]
+        #     def_tmp = Deformable(exception_config_data, fascicle.outer, fascicle.outer, inners)
+        #     movements, rotations = def_tmp.deform(morph_count=36,
+        #                                           render=False,
+        #                                           minimum_distance=10)
+        #     for move, angle, inner in zip(movements, rotations, fascicle.inners):
+        #         inner.shift(list(move) + [0])
+        #         inner.rotate(angle)
 
         # get start boundary
         boundary_start = slide.nerve.deepcopy()
