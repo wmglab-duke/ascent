@@ -2200,7 +2200,15 @@ class Part {
                 ic.set("contributeto", im.get(icLabel));
                 ic.set("source", "file");
                 ic.set("filename", ci_inner_path);
-                ic.set("rtol", modelData.getDouble("inner_interp_tol"));
+
+                if (modelData.has("inner_interp_tol") && !modelData.has("trace_interp_tol")) {
+                    ic.set("rtol", modelData.getDouble("inner_interp_tol"));
+                } else if (modelData.has("trace_interp_tol") && !modelData.has("inner_interp_tol")) {
+                    ic.set("rtol", modelData.getDouble("trace_interp_tol"));
+                } else if (modelData.has("trace_interp_tol") && modelData.has("inner_interp_tol")) {
+                    throw new Exception("Both trace_interp_tol and inner_interp_tol defined in Model. " +
+                            "Use new convention for inners (inner_interp_tol) and outers (outer_interp_tol) separately!");
+                }
 
                 String conv2solidLabel = ci_inner_name + " Inner Surface " + ci_inner_index;
                 GeomFeature conv2solid = model.component("comp1").geom("geom1").feature(im.get(fascicleCICXLabel)).geom().create(im.next("csol",conv2solidLabel), "ConvertToSolid");
@@ -2309,8 +2317,15 @@ class Part {
                     icMesh.set("contributeto", im.get(icselLabel));
                     icMesh.set("source", "file");
                     icMesh.set("filename", mesh_inner_path);
-                    icMesh.set("rtol", modelData.getDouble("inner_interp_tol"));
 
+                    if (modelData.has("inner_interp_tol") && !modelData.has("trace_interp_tol")) {
+                        icMesh.set("rtol", modelData.getDouble("inner_interp_tol"));
+                    } else if (modelData.has("trace_interp_tol") && !modelData.has("inner_interp_tol")) {
+                        icMesh.set("rtol", modelData.getDouble("trace_interp_tol")); // backwards compatibility
+                    } else if (modelData.has("trace_interp_tol") && modelData.has("inner_interp_tol")) {
+                        throw new Exception("Both trace_interp_tol and inner_interp_tol defined in Model. " +
+                                "Use new convention for inners (inner_interp_tol) and outers (outer_interp_tol) separately!");
+                    }
 
                     String icSurfLabel = "outer" + index + " Inner Surface " + mesh_inner_index;
                     GeomFeature icSurf = innersPlane.geom().create(im.next("csol",icSurfLabel), "ConvertToSolid");
@@ -2341,8 +2356,15 @@ class Part {
                 outeric1.set("contributeto", im.get(oc1Label));
                 outeric1.set("source", "file");
                 outeric1.set("filename", mesh_outer_path);
-                outeric1.set("rtol", modelData.getDouble("outer_interp_tol"));
 
+                if (modelData.has("outer_interp_tol") && !modelData.has("trace_interp_tol")) {
+                    outeric1.set("rtol", modelData.getDouble("outer_interp_tol"));
+                } else if (modelData.has("trace_interp_tol") && !modelData.has("outer_interp_tol")) {
+                    outeric1.set("rtol", modelData.getDouble("trace_interp_tol")); // backwards compatibility
+                } else if (modelData.has("trace_interp_tol") && modelData.has("outer_interp_tol")) {
+                    throw new Exception("Both trace_interp_tol and inner_interp_tol defined in Model. " +
+                            "Use new convention for inners (outer_interp_tol) and outers (outer_interp_tol) separately!");
+                }
 
                 String outericSurfaceLabel = "outer" + index + " Outer Surface";
                 outerPlane.geom().create(im.next("csol",outericSurfaceLabel), "ConvertToSolid");
