@@ -402,6 +402,13 @@ class Simulation(Exceptionable, Configurable, Saveable):
         # neuron files
         du.copy_tree(os.path.join(os.environ[Env.PROJECT_PATH.value], 'src', 'neuron'), target)
 
+        submit_target = os.path.join(target, 'submit.py')
+        if os.path.isfile(submit_target):
+            os.remove(submit_target)
+
+        submit_source = os.path.join('src', 'neuron', 'submit.py')
+        shutil.copy2(submit_source, submit_target)
+
     @staticmethod
     def import_n_sims(sample: int, model: int, sim: int, sim_dir: str, source: str):
 
