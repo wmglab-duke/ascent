@@ -994,8 +994,19 @@ public class ModelWrapper {
         boolean cuff_only;
         if (run.has("partial_fem")) {
             JSONObject partial_fem_params = run.getJSONObject("partial_fem");
-            nerve_only = partial_fem_params.getBoolean("nerve_only");
-            cuff_only = partial_fem_params.getBoolean("cuff_only");
+            
+            if partial_fem_params.has("nerve_only") {
+                nerve_only = partial_fem_params.getBoolean("nerve_only");
+            } else {
+                nerve_only = false;
+            }
+
+            if partial_fem_params.has("cuff_only") {
+                cuff_only = partial_fem_params.getBoolean("cuff_only");
+            } else {
+                cuff_only = false;
+            }
+
         } else {
             nerve_only = false;
             cuff_only = false;
