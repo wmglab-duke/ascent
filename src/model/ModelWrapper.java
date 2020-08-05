@@ -990,10 +990,23 @@ public class ModelWrapper {
             break_points = new JSONObject();
         }
 
-        // Load SAMPLE configuration data
-        String sample = String.valueOf(Objects.requireNonNull(run).getInt("sample"));
-        String sampleFile = String.join("/", new String[]{"samples", sample, "sample.json"});
+        boolean nerve_only;
+        boolean cuff_only;
+        if (run.has("partial_fem")) {
+            JSONObject partial_fem_params = run.getJSONObject("partial_fem");
+            nerve_only = partial_fem_params.getBoolean("nerve_only");
+            cuff_only = partial_fem_params.getBoolean("cuff_only");
+        } else {
+            nerve_only = false;
+            cuff_only = false;
+        }
+
+        String sample = null;
         JSONObject sampleData = null;
+        String sampleFile = null;
+        // Load SAMPLE configuration data
+        sample = String.valueOf(Objects.requireNonNull(run).getInt("sample"));
+        sampleFile = String.join("/", new String[]{"samples", sample, "sample.json"});
         try {
             sampleData = JSONio.read(projectPath + "/" + sampleFile);
         } catch (FileNotFoundException e) {
@@ -1025,7 +1038,6 @@ public class ModelWrapper {
                 skipMesh = false;
 
                 String modelStr = String.valueOf(models_list.get(model_index));
-
                 String bases_directory = String.join("/", new String[]{projectPath, "samples", sample, "models", modelStr, "bases"});
 
                 // if bases directory does not yet exist, make it
@@ -1042,9 +1054,10 @@ public class ModelWrapper {
                     basesValid = false;
                 }
 
-                if ((!basesPathFile.exists()) || (basesPathFile.list().length < 1) || (!basesValid)) {
+                String modelFile = null;
+                if ((!basesPathFile.exists()) || (basesPathFile.list().length < 1) || (!basesValid) || nerve_only || cuff_only) {
                     // Load MODEL configuration data
-                    String modelFile = String.join("/", new String[]{"samples", sample, "models", modelStr, "model.json"});
+                    modelFile = String.join("/", new String[]{"samples", sample, "models", modelStr, "model.json"});
                     JSONObject modelData = null;
                     try {
                         modelData = JSONio.read(projectPath + "/" + modelFile);
@@ -1055,7 +1068,7 @@ public class ModelWrapper {
 
                     // if optimizing
                     boolean recycle_meshes;
-                    if (run.has("recycle_meshes")) {
+                    if (run.has("recycle_meshes") && !nerve_only && !cuff_only) {
                         recycle_meshes = run.getBoolean("recycle_meshes");
                     } else {
                         recycle_meshes = false;
@@ -1202,74 +1215,83 @@ public class ModelWrapper {
                             e.printStackTrace();
                         }
 
-                        // add NERVE (Fascicles CI/MESH and EPINEURIUM)
+                        ModelParamGroup nerveParams = null;
                         // Set NERVE MORPHOLOGY parameters
                         JSONObject morphology = (JSONObject) sampleData.get("Morphology");
                         String morphology_unit = "um";
-
                         String nerveParamsLabal = "Nerve Parameters";
-                        ModelParamGroup nerveParams = model.param().group().create(nerveParamsLabal);
+                        nerveParams = model.param().group().create(nerveParamsLabal);
                         nerveParams.label(nerveParamsLabal);
 
-                        if (morphology.isNull("Nerve")) {
+                        if (!cuff_only) {
+                            // add NERVE (Fascicles CI/MESH and EPINEURIUM)
+                            if (morphology.isNull("Nerve")) {
+                                nerveParams.set("a_nerve", "NaN");
+                                nerveParams.set("r_nerve", modelData.getDouble("min_radius_enclosing_circle") + " [" + morphology_unit + "]");
+                            } else {
+                                JSONObject nerve = (JSONObject) morphology.get("Nerve");
+                                nerveParams.set("a_nerve", nerve.get("area") + " [" + morphology_unit + "^2]");
+                                nerveParams.set("r_nerve", "sqrt(a_nerve/pi)");
+                            }
+
+                            String ciCoeffsFile = String.join("/", new String[]{
+                                    "config",
+                                    "system",
+                                    "ci_peri_thickness.json"
+                            });
+
+                            JSONObject ciCoeffsData = null;
+                            try {
+                                ciCoeffsData = JSONio.read(projectPath + "/" + ciCoeffsFile);
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            }
+
+                            String ci_mode = sampleData.getJSONObject("modes").getString("ci_perineurium_thickness");
+                            if (ci_mode.compareTo("MEASURED") != 0) {
+                                JSONObject myCICoeffs = ciCoeffsData.getJSONObject("ci_perineurium_thickness_parameters").getJSONObject(ci_mode);
+                                nerveParams.set("ci_a", myCICoeffs.getDouble("a") + " [micrometer/micrometer]");
+                                nerveParams.set("ci_b", myCICoeffs.getDouble("b") + " [micrometer]");
+
+                            }
+                        } else {
                             nerveParams.set("a_nerve", "NaN");
                             nerveParams.set("r_nerve", modelData.getDouble("min_radius_enclosing_circle") + " [" + morphology_unit + "]");
-                        } else {
-                            JSONObject nerve = (JSONObject) morphology.get("Nerve");
-                            nerveParams.set("a_nerve", nerve.get("area") + " [" + morphology_unit + "^2]");
-                            nerveParams.set("r_nerve", "sqrt(a_nerve/pi)");
                         }
 
-                        String ciCoeffsFile = String.join("/", new String[]{
-                                "config",
-                                "system",
-                                "ci_peri_thickness.json"
-                        });
+                        if (!nerve_only) {
+                            // add PART PRIMITIVES for CUFF
+                            // Read cuff to build from model.json (cuff.preset) which links to JSON containing instantiations of parts
+                            JSONObject cuffObject = (JSONObject) modelData.get("cuff");
+                            String cuff = cuffObject.getString("preset");
+                            mw.addCuffPartPrimitives(cuff);
 
-                        JSONObject ciCoeffsData = null;
-                        try {
-                            ciCoeffsData = JSONio.read(projectPath + "/" + ciCoeffsFile);
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
+                            // add PART INSTANCES for cuff
+                            mw.addCuffPartInstances(cuff, modelData);
+
+                            // Set CUFF POSITIONING parameters
+                            String cuffConformationParamsLabel = "Cuff Conformation Parameters";
+                            ModelParamGroup cuffConformationParams = model.param().group().create(cuffConformationParamsLabel);
+                            cuffConformationParams.label(cuffConformationParamsLabel);
+
+                            String cuff_shift_unit = "[micrometer]";
+                            String cuff_rot_unit = "[degree]";
+                            Integer cuff_shift_x = modelData.getJSONObject("cuff").getJSONObject("shift").getInt("x");
+                            Integer cuff_shift_y = modelData.getJSONObject("cuff").getJSONObject("shift").getInt("y");
+                            Integer cuff_shift_z = modelData.getJSONObject("cuff").getJSONObject("shift").getInt("z");
+                            Integer cuff_rot_pos = modelData.getJSONObject("cuff").getJSONObject("rotate").getInt("pos_ang");
+                            Integer cuff_rot_add = modelData.getJSONObject("cuff").getJSONObject("rotate").getInt("add_ang");
+
+                            cuffConformationParams.set("cuff_shift_x", cuff_shift_x + " " + cuff_shift_unit);
+                            cuffConformationParams.set("cuff_shift_y", cuff_shift_y + " " + cuff_shift_unit);
+                            cuffConformationParams.set("cuff_shift_z", cuff_shift_z + " " + cuff_shift_unit);
+                            cuffConformationParams.set("cuff_rot", cuff_rot_pos + cuff_rot_add + " " + cuff_rot_unit);
                         }
 
-                        String ci_mode = sampleData.getJSONObject("modes").getString("ci_perineurium_thickness");
-                        if (ci_mode.compareTo("MEASURED") != 0) {
-                            JSONObject myCICoeffs = ciCoeffsData.getJSONObject("ci_perineurium_thickness_parameters").getJSONObject(ci_mode);
-                            nerveParams.set("ci_a", myCICoeffs.getDouble("a") + " [micrometer/micrometer]");
-                            nerveParams.set("ci_b", myCICoeffs.getDouble("b") + " [micrometer]");
-
+                        if (!cuff_only) {
+                            // there are no primitives/instances for nerve parts, just build them
+                            mw.addNerve(sample, nerveParams, modelData);
                         }
-
-                        // add PART PRIMITIVES for CUFF
-                        // Read cuff to build from model.json (cuff.preset) which links to JSON containing instantiations of parts
-                        JSONObject cuffObject = (JSONObject) modelData.get("cuff");
-                        String cuff = cuffObject.getString("preset");
-                        mw.addCuffPartPrimitives(cuff);
-
-                        // add PART INSTANCES for cuff
-                        mw.addCuffPartInstances(cuff, modelData);
-
-                        // Set CUFF POSITIONING parameters
-                        String cuffConformationParamsLabel = "Cuff Conformation Parameters";
-                        ModelParamGroup cuffConformationParams = model.param().group().create(cuffConformationParamsLabel);
-                        cuffConformationParams.label(cuffConformationParamsLabel);
-
-                        String cuff_shift_unit = "[micrometer]";
-                        String cuff_rot_unit = "[degree]";
-                        Integer cuff_shift_x = modelData.getJSONObject("cuff").getJSONObject("shift").getInt("x");
-                        Integer cuff_shift_y = modelData.getJSONObject("cuff").getJSONObject("shift").getInt("y");
-                        Integer cuff_shift_z = modelData.getJSONObject("cuff").getJSONObject("shift").getInt("z");
-                        Integer cuff_rot_pos = modelData.getJSONObject("cuff").getJSONObject("rotate").getInt("pos_ang");
-                        Integer cuff_rot_add = modelData.getJSONObject("cuff").getJSONObject("rotate").getInt("add_ang");
-
-                        cuffConformationParams.set("cuff_shift_x", cuff_shift_x + " " + cuff_shift_unit);
-                        cuffConformationParams.set("cuff_shift_y", cuff_shift_y + " " + cuff_shift_unit);
-                        cuffConformationParams.set("cuff_shift_z", cuff_shift_z + " " + cuff_shift_unit);
-                        cuffConformationParams.set("cuff_rot", cuff_rot_pos + cuff_rot_add + " " + cuff_rot_unit);
-
-                        // there are no primitives/instances for nerve parts, just build them
-                        mw.addNerve(sample, nerveParams, modelData);
 
                         // create UNIONS
                         mw.createUnions();
@@ -1323,7 +1345,7 @@ public class ModelWrapper {
                             post_geom_run = false;
                         }
 
-                        if (post_geom_run) {
+                        if (post_geom_run || nerve_only || cuff_only) {
                             models_exit_status[model_index] = false;
                             System.out.println("post_geom_run is the first break point encountered, moving on with next model index\n");
                             continue;
