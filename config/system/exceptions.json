@@ -393,5 +393,10 @@
     "code": 78,
     "text": "Invalid Config provided",
     "source": "src.core.Fiberset.init_post_config"
+  },
+  {
+    "code": 79,
+    "text": "cuff_only and nerve_only indicated in Config.Run, which does not make sense.",
+    "source": "src.core.Runner.run"
   }
 ]
