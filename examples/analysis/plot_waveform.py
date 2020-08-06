@@ -13,6 +13,7 @@ from src.core.query import Query
 from src.utils import *
 import matplotlib.pyplot as plt
 
+
 def load(config_path: str):
     """
     Loads in json data and returns to user, assuming it has already been validated.
@@ -21,6 +22,7 @@ def load(config_path: str):
     """
     with open(config_path, "r") as handle:
         return json.load(handle)
+
 
 cwd = os.getcwd()
 os.chdir(root)
