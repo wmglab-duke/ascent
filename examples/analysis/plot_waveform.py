@@ -44,7 +44,7 @@ results = q.summary()
 
 sample_index = results['samples'][0]['index']
 model_index = results['samples'][0]['models'][0]['index']
-sim_index = 1000
+sim_index = results['samples'][0]['models'][0]['sims'][0]
 
 item: Simulation = q.get_object(Object.SIMULATION, [sample_index, model_index, sim_index])
 waveform: Waveform = item.waveforms[0]
