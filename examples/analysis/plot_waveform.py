@@ -47,20 +47,12 @@ model_index = results['samples'][0]['models'][0]['index']
 sim_index = 1000
 
 item: Simulation = q.get_object(Object.SIMULATION, [sample_index, model_index, sim_index])
+waveform: Waveform = item.waveforms[0]
 
-exceptions_config = load(os.path.join('config', 'system', 'exceptions.json'))
-model_config = load(os.path.join('samples', str(sample_index), 'models', str(model_index), 'model.json'))
-sim_config = load(os.path.join('config', 'user', 'sims', '{}.json'.format(str(sim_index))))
-
-waveform = Waveform(exceptions_config)
-waveform.add(SetupMode.OLD, Config.MODEL, model_config)
-waveform.add(SetupMode.OLD, Config.SIM, sim_config)
-waveform.init_post_config()
-waveform.generate()
-waveform.plot()
-
-figure1 = plt.figure(1)
-plt.plot(waveform.wave, 'k-')
+fig, ax = plt.subplots(1, 1)
+waveform.plot(ax=ax)
+plt.xlabel('Time (ms)')
+plt.ylabel('Amplitude (unscaled)')
 plt.show()
 
 fname = 'my_waveform'
@@ -70,4 +62,6 @@ dest = os.path.join('data', 'tmp')
 if not os.path.exists(dest):
     os.mkdir(dest)
 
-figure1.savefig(os.path.join(dest, '{}.{}'.format(fname, fmt)), format=fmt, dpi=1200)
+fig.savefig(os.path.join(dest, '{}.{}'.format(fname, fmt)), format=fmt, dpi=1200)
+
+os.chdir(cwd)

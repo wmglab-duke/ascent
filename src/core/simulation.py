@@ -124,7 +124,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 plot: bool = self.search(Config.SIM, 'waveform', 'plot')
 
             if plot:
-                waveform.plot()
+                waveform.plot(final=True)
 
             self.waveforms.append(waveform)
 
