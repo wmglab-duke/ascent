@@ -30,7 +30,6 @@ q.run()
 
 results = q.summary()
 
-# figure1 = plt.figure(1)
 fig, ax = plt.subplots(1, 1)
 item: Sample = q.get_object(Object.SAMPLE, [results['samples'][0]['index']])
 slide = item.slides[0]
