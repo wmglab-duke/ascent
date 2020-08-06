@@ -1,0 +1,61 @@
+#!/usr/bin/env python3.7
+
+import os
+import sys
+
+root = os.path.abspath(os.path.join(*'../../'.split('/')))
+sys.path.append(root)
+
+from src.core import Simulation
+from src.core import Sample
+from src.core.query import Query
+from src.utils import Object
+import matplotlib.pyplot as plt
+
+cwd = os.getcwd()
+os.chdir(root)
+
+criteria = {
+    'partial_matches': True,
+    'include_downstream': True,
+    'indices': {
+        'sample': [1000],
+        'model': [0],
+        'sim': [1000]
+    }
+}
+
+
+q = Query(criteria)
+q.run()
+
+results = q.summary()
+
+sample_index = results['samples'][0]['index']
+model_index = results['samples'][0]['models'][0]['index']
+sim_index = results['samples'][0]['models'][0]['sims'][0]
+
+sample: Sample = q.get_object(Object.SAMPLE, [results['samples'][0]['index']])
+sim: Simulation = q.get_object(Object.SIMULATION, [sample_index, model_index, sim_index])
+
+slide = sample.slides[0]
+fig, ax = plt.subplots(1, 1)
+slide.plot(fix_aspect_ratio=True, final=False, ax=ax)
+
+for fiber in sim.fibersets[0].fibers:
+    plt.plot(fiber[0][0], fiber[0][1], 'r*')
+
+plt.xlabel('\u03bcm')
+plt.ylabel('\u03bcm')
+plt.show()
+
+fname = 'my_fiberset'
+fmt = 'png'
+
+dest = os.path.join('data', 'tmp')
+if not os.path.exists(dest):
+    os.mkdir(dest)
+
+fig.savefig(os.path.join(dest, '{}.{}'.format(fname, fmt)), format=fmt, dpi=1200)
+
+os.chdir(cwd)
