@@ -30,15 +30,20 @@ q.run()
 
 results = q.summary()
 
+sample_index = results['samples'][0]['index']
+
 fig, ax = plt.subplots(1, 1)
 item: Sample = q.get_object(Object.SAMPLE, [results['samples'][0]['index']])
 slide = item.slides[0]
-slide.plot(fix_aspect_ratio=True, final=True, ax=ax)
+slide.plot(fix_aspect_ratio=True, final=False, ax=ax)
+plt.xlabel('\u03bcm')
+plt.ylabel('\u03bcm')
+plt.show()
 
-fname = 'my_sample'
+fname = str(sample_index)
 fmt = 'png'
 
-dest = os.path.join('data', 'tmp')
+dest = os.path.join('data', 'tmp', 'samples')
 if not os.path.exists(dest):
     os.mkdir(dest)
 
