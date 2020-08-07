@@ -20,5 +20,6 @@
     "bases": true,
     "debug_geom": true,
     "mesh": true
-  }
+  },
+  "local_avail_cpus": 3
 }
