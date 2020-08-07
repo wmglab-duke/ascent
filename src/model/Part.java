@@ -1575,7 +1575,7 @@ class Part {
                 ucCircleOutline.label(ucCircleOutlineLabel);
                 ucCircleOutline.set("contributeto", im.get(ucOutlineCuffLabel));
                 ucCircleOutline.set("r", "R_out");
-                ucCircleOutline.set("pos", new String[]{"U_shift_x", "U_shift_y"});
+                ucCircleOutline.set("pos", new String[]{"U_shift_x", "-1*U_shift_y"});
 
                 String ifucGapLabel = "If Gap";
                 GeomFeature ifucGap = ucCXS.geom().create(im.next("if", ifucGapLabel), "If");
