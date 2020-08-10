@@ -19,7 +19,6 @@ thresh_values = new Vector(Nresults,0)
 
 // Find threshold with a binary search algorithm
 proc FindThresh() {//local key
-	fasc = $1
 
 	check_top_flag    = 0
 	check_bottom_flag = 0
