@@ -826,7 +826,6 @@ public class ModelWrapper {
         long runSolStartTime = System.nanoTime();
         int index = 0;
 
-        // TODO: ensure an order of keyset - set convention of contact # and bases #?
         System.out.println(this.im.currentIDs.keySet());
         for(String key_on: this.im.currentIDs.keySet()) {
 
