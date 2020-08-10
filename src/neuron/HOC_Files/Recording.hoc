@@ -69,22 +69,16 @@ proc Recording() {
 			if ((!(ind_tmp == 0) && !(ind_tmp == Nchecknodes - 1)) || (passive_end_nodes == 0)) {
 				if (fiber_type == 1) {
 					savevec_m_time.o[i].record(&node[ind_tmp].m_axnode_unmyel(0.5),dt)
-					// savevec_m_time.o[i].record(&s[11*ind_tmp].sec.m_axnode_unmyel(0.5),dt)
 					savevec_h_time.o[i].record(&node[ind_tmp].h_axnode_unmyel(0.5),dt)
-					// savevec_h_time.o[i].record(&s[11*i].sec.h_axnode_unmyel(0.5),dt)
 					savevec_mp_time.o[i].record(&node[ind_tmp].mp_axnode_unmyel(0.5),dt)
-					// savevec_mp_time.o[i].record(&s[11*i].sec.mp_axnode_unmyel(0.5),dt)
 					savevec_s_time.o[i].record(&node[ind_tmp].s_axnode_unmyel(0.5),dt)
-					// savevec_s_time.o[i].record(&s[11*i].sec.s_axnode_unmyel(0.5),dt)
+					
 				} else if (fiber_type == 2) {
 					savevec_m_time.o[i].record(&node[ind_tmp].m_axnode_myel(0.5),dt)
-					// savevec_m_time.o[i].record(&s[11*ind_tmp].sec.m_axnode_myel(0.5),dt)
 					savevec_h_time.o[i].record(&node[ind_tmp].h_axnode_myel(0.5),dt)
-					// savevec_h_time.o[i].record(&s[11*i].sec.h_axnode_myel(0.5),dt)
 					savevec_mp_time.o[i].record(&node[ind_tmp].mp_axnode_myel(0.5),dt)
-					// savevec_mp_time.o[i].record(&s[11*i].sec.mp_axnode_myel(0.5),dt)
 					savevec_s_time.o[i].record(&node[ind_tmp].s_axnode_myel(0.5),dt)
-					// savevec_s_time.o[i].record(&s[11*i].sec.s_axnode_myel(0.5),dt)
+
 				} else {
 					print "WARNING - saveflag_gating_time == 1 is only currently supported for fiber_type values 1 (MRG unmyelinated) & 2 (MRG myelinated)"
 				}
