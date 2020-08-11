@@ -452,8 +452,6 @@ public class ModelWrapper {
                     row_ind++;
                 }
 
-                System.out.println("here_e");
-
                 // find the max fibersets index (max in 2nd column) from prods (loaded from key.dat)
                 int n_fibersets = prods[0][1];
                 for(int i = 0 ; i < prods.length ; i++) {
