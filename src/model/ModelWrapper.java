@@ -368,6 +368,8 @@ public class ModelWrapper {
         bases_paths = Arrays.stream(bases_paths).filter(s -> Pattern.matches("[0-9]+\\.mph", s)).toArray(String[]::new);
 
         double[][][][][] bases = new double[bases_paths.length][][][][];
+        double[][][][][] ss_bases = new double[bases_paths.length][][][][];
+
         for (int basis_ind = 0; basis_ind < bases_paths.length; basis_ind++) { // loop over bases
 
             // LOAD BASIS MPH MODEL
@@ -381,7 +383,11 @@ public class ModelWrapper {
             Model basis = ModelUtil.load("Model", basis_dir);
 
             bases[basis_ind] = new double[sims_list.length()][][][];
+            ss_bases[basis_ind] = new double[sims_list.length()][][][];
+
             double[][][][] sim = bases[basis_ind]; // pointer
+            double[][][][] ss_sim = ss_bases[basis_ind]; // pointer
+
             for (int sim_ind = 0; sim_ind < sims_list.length(); sim_ind++) { // loop over sims
                 int sim_num = (int) sims_list.get(sim_ind); // get sim number for index in sims list
 
@@ -395,9 +401,19 @@ public class ModelWrapper {
                         sim_dir, "fibersets"
                 });
 
+                // build path to directory of fibersets
+                String ss_coord_dir = String.join("/", new String[]{
+                        sim_dir, "super_sampled_fibersets"
+                });
+
                 // build path to directory of ve for each fiberset
                 String ve_dir = String.join("/", new String[]{
                         sim_dir, "potentials"
+                });
+
+                // build path to directory of ve for each ss_fiberset
+                String ss_ve_dir = String.join("/", new String[]{
+                        sim_dir, "super_sampled_potentials"
                 });
 
                 // build path to key (fiberset x srcs) file
@@ -436,6 +452,8 @@ public class ModelWrapper {
                     row_ind++;
                 }
 
+                System.out.println("here_e");
+
                 // find the max fibersets index (max in 2nd column) from prods (loaded from key.dat)
                 int n_fibersets = prods[0][1];
                 for(int i = 0 ; i < prods.length ; i++) {
@@ -445,16 +463,24 @@ public class ModelWrapper {
                 }
                 n_fibersets++;
 
+                File ss_coords_dir = new File(ss_coord_dir);
+                File[] ss_coords_dir_List = ss_coords_dir.listFiles();
+
+                int n_ss_fibersets = ss_coords_dir_List.length; // ss_coord_dir
+
                 sim[sim_ind] = new double[n_fibersets][][];
+                ss_sim[sim_ind] = new double[n_ss_fibersets][][];
+
                 double[][][] fiberset = sim[sim_ind]; // pointer
+                double[][][] ss_fiberset = ss_sim[sim_ind]; // pointer
 
                 for (int fiberset_ind = 0; fiberset_ind < n_fibersets; fiberset_ind++) { // loop over fibersets
+
                     // create list of fiber coords (one for each fiber)
                     String fiberset_dir = String.join("/", new String[]{
                             coord_dir, Integer.toString(fiberset_ind)
                     });
                     File f_coords = new File(fiberset_dir);
-                    // TODO: TRY ON MAC/WINDOWS/LINUX
                     String[] fiber_coords_list = f_coords.list();
 
                     assert fiber_coords_list != null;
@@ -463,6 +489,7 @@ public class ModelWrapper {
                     double[][] fibers = fiberset[fiberset_ind]; // pointer
 
                     for (int fiber_ind = 0; fiber_ind < fiber_coords_list.length; fiber_ind++) { // loop over fiber coords in list of fiber coords
+
                         String fiber_coords = fiber_coords_list[fiber_ind];
 
                         String[] fiber_file_parts = fiber_coords.split("\\.");
@@ -473,7 +500,69 @@ public class ModelWrapper {
                         }); // build path to coordinates
 
                         fibers[fiber_file_ind] = extractPotentials(basis, coord_path);
-//                        fibers[fiber_ind] = extractPotentials(basis, coord_path); FORMER ERROR (this is the old line, new line above)
+
+                    }
+                }
+
+                // SUPER SAMPLING
+                for (int ss_fiberset_ind = 0; ss_fiberset_ind < n_ss_fibersets; ss_fiberset_ind++) { // loop over ss_fibersets
+                    // create list of fiber coords (one for each fiber)
+                    String ss_fiberset_dir = String.join("/", new String[]{
+                            ss_coord_dir, Integer.toString(ss_fiberset_ind)
+                    });
+
+                    File ss_f_coords = new File(ss_fiberset_dir);
+                    String[] ss_fiber_coords_list = ss_f_coords.list();
+
+                    assert ss_fiber_coords_list != null;
+
+                    ss_fiberset[ss_fiberset_ind] = new double[ss_fiber_coords_list.length][];
+                    double[][] ss_fibers = ss_fiberset[ss_fiberset_ind]; // pointer
+
+                    for (int ss_fiber_ind = 0; ss_fiber_ind < ss_fiber_coords_list.length; ss_fiber_ind++) { // loop over fiber coords in list of fiber coords
+                        String ss_fiber_coords = ss_fiber_coords_list[ss_fiber_ind];
+
+                        String[] ss_fiber_file_parts = ss_fiber_coords.split("\\.");
+                        Integer ss_fiber_file_ind = Integer.parseInt(ss_fiber_file_parts[0]);
+
+                        String ss_coord_path = String.join("/", new String[]{
+                                ss_fiberset_dir, ss_fiber_coords
+                        }); // build path to coordinates
+
+                        ss_fibers[ss_fiber_file_ind] = extractPotentials(basis, ss_coord_path);
+
+                        // if ss_potentials directory does not yet exist, make it
+                        File ss_vePathFile = new File(ss_ve_dir);
+                        if (!ss_vePathFile.exists()) {
+                            boolean success = ss_vePathFile.mkdirs();
+                            assert success;
+                        }
+
+                        // build path to directory of fibersets
+                        String ss_ve_fiberset_basis_dir = String.join("/", new String[]{
+                                sim_dir,
+                                "super_sampled_potentials",
+                                Integer.toString(ss_fiberset_ind),
+                                Integer.toString(basis_ind)
+                        });
+
+                        // if ss_fiberset_basis_potentials directory does not yet exist, make it
+                        File ss_ve_fiberset_basis_dirPathFile = new File(ss_ve_fiberset_basis_dir);
+                        if (!ss_ve_fiberset_basis_dirPathFile.exists()) {
+                            boolean success = ss_ve_fiberset_basis_dirPathFile.mkdirs();
+                            assert success;
+                        }
+
+                        String ss_ve_path = String.join("/", new String[]{
+                                ss_ve_fiberset_basis_dir, ss_fiber_ind + ".dat"
+                        });
+
+                        if (new File(ss_ve_path).exists()) {
+                            continue;
+                        }
+
+                        writeVe(ss_fibers[ss_fiber_file_ind], ss_ve_path);
+
                     }
                 }
             }
@@ -659,10 +748,7 @@ public class ModelWrapper {
                             ve_dir, coords_ind + ".dat"
                     });
 
-
-//                    System.out.println("Checking existence of: " + ve_path);
                     if (new File(ve_path).exists()) {
-//                        System.out.println("\tfound!");
                         continue;
                     }
 
@@ -1829,6 +1915,7 @@ public class ModelWrapper {
                     } catch (Exception e) {
                         System.out.println("Failed to extract potentials for Model Index " + modelStr +
                                 ", continuing to any remaining Models");
+                        System.out.println(e);
                         continue;
                     }
                 }

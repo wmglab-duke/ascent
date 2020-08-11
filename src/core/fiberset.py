@@ -40,7 +40,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             self.throw(78)
         return self
 
-    def generate(self, sim_directory: str):
+    def generate(self, sim_directory: str, super_sample: bool = False):
         """
         :return:
         """
@@ -51,7 +51,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         if not xy_mode == FiberXYMode.SL_PSEUDO_INTERP:
             fibers_xy = self._generate_xy(sim_directory)
             self.out_to_fib, self.out_to_in = self._generate_maps(fibers_xy)
-            self.fibers = self._generate_z(fibers_xy)
+            self.fibers = self._generate_z(fibers_xy, super_sample=super_sample)
 
         else:
             # SL generation algorithm
@@ -113,7 +113,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             fiber_length = sum(magnitude(np.asarray(points[i])-np.asarray(points[i+1])) for i in range(len(points)-1))
 
             fibers_xy = np.asarray([(0, 0)])
-            fibers = self._generate_z(fibers_xy, override_length=fiber_length)
+            fibers = self._generate_z(fibers_xy, override_length=fiber_length, super_sample=super_sample)
 
             fiber_z_points = np.asarray(fibers[0])[:, 2]
             fiber_z_points = fiber_z_points - np.min(fiber_z_points)
@@ -312,7 +312,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
         return points
 
-    def _generate_z(self, fibers_xy: np.ndarray, override_length=None) -> np.ndarray:
+    def _generate_z(self, fibers_xy: np.ndarray, override_length=None, super_sample: bool = False) -> np.ndarray:
 
         fibers = []
 
@@ -403,16 +403,19 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             fiber_geometry_mode_name: str = self.search(Config.SIM, 'fibers', 'mode')
 
             # use key from above to get myelination mode from fiber_z
-            myelinated: bool = self.search(
-                Config.FIBER_Z,
-                MyelinationMode.parameters.value,
-                fiber_geometry_mode_name,
-                "myelinated"
-            )
+            if super_sample:
+                myelinated = False
+            else:
+                myelinated: bool = self.search(
+                    Config.FIBER_Z,
+                    MyelinationMode.parameters.value,
+                    fiber_geometry_mode_name,
+                    "myelinated"
+                )
 
-            diameter = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'diameter')
+                diameter = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'diameter')
 
-            my_z_seed = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'seed')
+                my_z_seed = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'seed')
 
             if myelinated:  # MYELINATED
 
@@ -502,10 +505,18 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
             else:  # UNMYELINATED
 
-                delta_zs = self.search(Config.FIBER_Z,
-                                       MyelinationMode.parameters.value,
-                                       fiber_geometry_mode_name,
-                                       'delta_zs')
+                if super_sample:
+                    delta_zs = self.search(Config.SIM,
+                                           'supersampled_bases',
+                                           'dz')
+                    my_z_seed = 123
+
+                else:
+                    delta_zs = self.search(Config.FIBER_Z,
+                                           MyelinationMode.parameters.value,
+                                           fiber_geometry_mode_name,
+                                           'delta_zs')
+
                 z_top_half = np.arange(fiber_length / 2, fiber_length + delta_zs, delta_zs)
                 z_bottom_half = -np.flip(z_top_half) + fiber_length
                 while z_top_half[-1] > fiber_length:

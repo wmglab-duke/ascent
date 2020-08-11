@@ -32,10 +32,12 @@ class Simulation(Exceptionable, Configurable, Saveable):
         self.fiberset_product = []
         self.fiberset_key = []
         self.fiberset_map_pairs: List[Tuple[List, List]] = []
+        self.ss_fiberset_map_pairs: List[Tuple[List, List]] = []
         self.src_product = []
         self.src_key = []
         self.potentials_product = []
         self.master_product_indices = []  # order: potentials (active_src, fiberset), waveform
+        self.ss_product = []  # order: (contact index, fiberset)
 
     def resolve_factors(self) -> 'Simulation':
 
@@ -54,7 +56,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
                     # print('recurse: {}'.format(value))
                     search(value, remaining_n_dims, path + '->' + key)
 
-        for flag in ['fibers', 'waveform']:
+        for flag in ['fibers', 'waveform', 'supersampled_bases']:
             search(
                 self.configs[Config.SIM.value][flag],
                 self.search(Config.SIM, "n_dimensions"),
@@ -66,19 +68,29 @@ class Simulation(Exceptionable, Configurable, Saveable):
     def write_fibers(self, sim_directory: str) -> 'Simulation':
         # loop PARAMS in here, but loop HISTOLOGY in FiberSet object
 
-        directory = os.path.join(sim_directory, 'fibersets')
-        if not os.path.exists(directory):
-            os.makedirs(directory)
+        fibersets_directory = os.path.join(sim_directory, 'fibersets')
+        if not os.path.exists(fibersets_directory):
+            os.makedirs(fibersets_directory)
+
+        ss_all_directory = os.path.join(sim_directory, 'super_sampled_fibersets')
+        if not os.path.exists(ss_all_directory):
+            os.makedirs(ss_all_directory)
 
         self.fibersets = []
         fiberset_factors = {key: value for key, value in self.factors.items() if key.split('->')[0] == 'fibers'}
 
+        self.ss_fibersets = []
+        ss_factors = {key: value for key, value in self.factors.items() if key.split('->')[0] == 'supersampled_bases'}
+
         self.fiberset_key = list(fiberset_factors.keys())
+        self.ss_key = list(ss_factors.keys())
+
         self.fiberset_product = list(itertools.product(*fiberset_factors.values()))
+        self.ss_product = list(itertools.product(*ss_factors.values()))
 
         for i, fiberset_set in enumerate(self.fiberset_product):
 
-            fiberset_directory = os.path.join(directory, str(i))
+            fiberset_directory = os.path.join(fibersets_directory, str(i))
             if not os.path.exists(fiberset_directory):
                 os.makedirs(fiberset_directory)
 
@@ -93,6 +105,25 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
             self.fiberset_map_pairs.append((fiberset.out_to_fib, fiberset.out_to_in))
             self.fibersets.append(fiberset)
+
+        # TODO same for super_sample_fibersets
+        for j, ss_set in enumerate(self.ss_product):
+
+            ss_directory = os.path.join(ss_all_directory, str(j))
+            if not os.path.exists(ss_directory):
+                os.makedirs(ss_directory)
+
+            sim_copy = self._copy_and_edit_config(self.configs[Config.SIM.value], self.ss_key, list(ss_set))
+
+            fiberset = FiberSet(self.sample, self.configs[Config.EXCEPTIONS.value])
+            fiberset \
+                .add(SetupMode.OLD, Config.SIM, sim_copy) \
+                .add(SetupMode.OLD, Config.MODEL, self.configs[Config.MODEL.value]) \
+                .generate(sim_directory, super_sample=True) \
+                .write(WriteMode.DATA, ss_directory)
+
+            self.ss_fiberset_map_pairs.append((fiberset.out_to_fib, fiberset.out_to_in))
+            self.ss_fibersets.append(fiberset)
 
         return self
 
@@ -162,6 +193,11 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
         self.potentials_product = list(itertools.product(
             list(range(len(active_srcs_list))),
+            list(range(len(self.fiberset_product)))
+        ))
+
+        self.ss_product = list(itertools.product(
+            list(range(len(active_srcs_list[0]))),
             list(range(len(self.fiberset_product)))
         ))
 
@@ -421,4 +457,15 @@ class Simulation(Exceptionable, Configurable, Saveable):
         :return: boolean!
         """
         return all(os.path.exists(os.path.join(sim_dir, 'potentials', str(p))) for p, _ in self.master_product_indices)
+
+
+    def super_sampled_potentials_exist(self, sim_dir: str) -> bool:
+        """
+        Return bool deciding if potentials have already been written
+        :param sim_dir: directory of this simulation
+        :return: boolean!
+        """
+        return all(
+            os.path.exists(os.path.join(sim_dir, 'super_sampled_potentials', str(ssp))) for ssp in self.ss_product
+        )
 

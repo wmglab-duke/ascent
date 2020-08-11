@@ -113,6 +113,7 @@ class Runner(Exceptionable, Configurable):
             self.throw(76)
 
         potentials_exist: List[bool] = []  # if all of these are true, skip Java
+        super_sampled_potentials_exist: List[bool] = []  # if all of these are true, skip Java
 
         sample_num = self.configs[Config.RUN.value]['sample']
 
@@ -197,6 +198,9 @@ class Runner(Exceptionable, Configurable):
 
                             simulation: Simulation = load(sim_obj_file)
                             potentials_exist.append(simulation.potentials_exist(sim_obj_dir))
+                            super_sampled_potentials_exist.append(
+                                simulation.super_sampled_potentials_exist(sim_obj_dir)
+                            )
 
                         else:
                             if not os.path.exists(sim_obj_dir):
@@ -213,6 +217,9 @@ class Runner(Exceptionable, Configurable):
                                 .save(sim_obj_file)
 
                             potentials_exist.append(simulation.potentials_exist(sim_obj_dir))
+                            super_sampled_potentials_exist.append(
+                                simulation.super_sampled_potentials_exist(sim_obj_dir)
+                            )
 
             if ('break_points' in self.configs.keys()) and ('pre_java' in self.search(Config.RUN, 'break_points').keys()):
                 if self.search(Config.RUN, 'break_points', 'pre_java'):
@@ -222,7 +229,7 @@ class Runner(Exceptionable, Configurable):
             # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials if necessary
             if 'models' in all_configs.keys() and 'sims' in all_configs.keys():
                 # only transition to java if necessary (there are potentials that do not exist)
-                if not all(potentials_exist):
+                if not all(potentials_exist) and not all(super_sampled_potentials_exist):
                     print('\nTO JAVA\n')
                     self.handoff(self.number)
                     print('\nTO PYTHON\n')
