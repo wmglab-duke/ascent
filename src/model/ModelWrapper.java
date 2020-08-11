@@ -1068,7 +1068,6 @@ public class ModelWrapper {
 
                             // if there was a mesh match
                             if (meshMatch != null) {
-                                System.out.println("meshMath is not null");
                                 model = meshMatch.getMph();
                                 mw = new ModelWrapper(model, projectPath);
                                 mw.im = IdentifierManager.fromJSONObject(new JSONObject(meshMatch.getIdm().toJSONObject().toString()));
@@ -1584,9 +1583,7 @@ public class ModelWrapper {
 
                     // add MATERIAL DEFINITIONS
                     String materialParamsLabel = "Material Parameters";
-                    System.out.println("here_a");
                     ModelParamGroup materialParams = model.param().group().create(materialParamsLabel);
-                    System.out.println("here_b");
                     materialParams.label(materialParamsLabel);
 
                     String nerveMode = (String) sampleData.getJSONObject("modes").get("nerve");
