@@ -50,11 +50,18 @@ public class ModelSearcher {
 
         for (Path file : Files.walk(this.root).toArray(Path[]::new)) {
 
-//            System.out.println("file = " + file.toString())
+            String[] fileParts = null;
+            String os = System.getProperty("os.name").toLowerCase(); // https://www.techiedelight.com/determine-operating-system-and-its-version-java/
+            if (os.contains("win")) {
+                // if windows
+                fileParts = file.toString().split("\\\\");
+            } else {
+                // if unix-like
+                fileParts = file.toString().split("/");
+            }
 
-            String[] fileParts = file.toString().split("/");
+            if (file.endsWith("model.json")) {
 
-            if (fileParts[fileParts.length - 1].equals("model.json")) {
                 JSONObject target = JSONio.read(file.toString());
                 String directory = String.join("/", Arrays.copyOfRange(fileParts, 0, fileParts.length - 1));
                 if (ModelSearcher.meshMatch(reference, query, target) && ModelSearcher.meshFilesExist(directory)) {
