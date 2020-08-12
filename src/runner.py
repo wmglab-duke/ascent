@@ -265,13 +265,12 @@ class Runner(Exceptionable, Configurable):
                                 str(self.configs[Config.RUN.value]['sample']),
                                 'models',
                                 str(model_num),
-                                'sims',
-                                str(sim_num)
+                                'sims'
                             )
 
                             # load up correct simulation and build required sims
                             simulation: Simulation = load(sim_obj_path)
-                            simulation.build_n_sims(sim_dir)
+                            simulation.build_n_sims(sim_dir, sim_num)
 
                             # export simulations
                             Simulation.export_n_sims(
