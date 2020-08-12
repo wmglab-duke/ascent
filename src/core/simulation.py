@@ -338,13 +338,13 @@ class Simulation(Exceptionable, Configurable, Saveable):
                                 fiber_list.append(0)
                             fiber_list[inner_list.index(l)] += 1
 
-                        filename = 'inner{}_fiber{}.dat'.format(l, k)
+                        filename_direct = 'inner{}_fiber{}.dat'.format(l, k)
                         if not os.path.exists(nsim_inputs_directory):
                             os.makedirs(nsim_inputs_directory)
 
                         shutil.copyfile(
                             os.path.join(sim_dir, str(sim_num), 'potentials', str(potentials_ind), str(q) + '.dat'),
-                            os.path.join(nsim_inputs_directory, filename)
+                            os.path.join(nsim_inputs_directory, filename_direct)
                         )
 
             # SUPER SAMPLING - PROBED COMSOL AT /SUPER_SAMPLED_FIBERSETS --> /SUPER_SAMPLED_POTENTIALS
@@ -356,11 +356,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
                         parent_sim = supersampled_bases.get('parent_sim')
 
                         for basis_ind in range(len(active_src_vals[0])):
-
-                            # l : inner
-                            # k : fiber_index
-                            # p = fiberset_ind
-                            # active_src_vals
 
                             bases[basis_ind].append([])
                             bases_src_path = os.path.join(sim_dir,
@@ -376,15 +371,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
                                     bases[basis_ind][q] = np.loadtxt(os.path.join(f_root, f_file))[1:]
 
                                     if basis_ind == len(active_src_vals[0]) - 1:
-                                        # NOTE: if SL interp, writes files as inner0_fiber<q>.dat
-                                        l: int
-                                        k: int
-                                        if not xy_mode == FiberXYMode.SL_PSEUDO_INTERP:
-                                            l, k = self.indices_fib_to_n(p, q)
-                                        else:
-                                            l, k = 0, q
-
-                                        filename = 'inner{}_fiber{}.dat'.format(l, k)
 
                                         # save_vec = np.insert(bases[basis_ind][q], 0, int(len(bases[basis_ind][q]))
                                         super_save_vec = np.zeros(len(bases[basis_ind][q]))
@@ -404,12 +390,26 @@ class Simulation(Exceptionable, Configurable, Saveable):
                                         for line in lines2:
                                             super_fiber_coords = np.append(super_fiber_coords, float(line.split(' ')[-2]))
 
+                                        # create interpolation from super_coords and super_bases
                                         f = sci.interp1d(super_fiber_coords, super_save_vec)
                                         save_vec = f(fiber_coords)
 
+                                        # as is convention, append length to start
                                         save_vec = np.insert(save_vec, 0, len(save_vec))
 
-                                        np.savetxt(os.path.join(nsim_inputs_directory, filename), save_vec, fmt='%0.18f')
+                                        # NOTE: if SL interp, writes files as inner0_fiber<q>.dat
+                                        l: int
+                                        k: int
+                                        if not xy_mode == FiberXYMode.SL_PSEUDO_INTERP:
+                                            l, k = self.indices_fib_to_n(p, q)
+                                        else:
+                                            l, k = 0, q
+
+                                        filename_super = 'inner{}_fiber{}.dat'.format(l, k)
+
+                                        np.savetxt(os.path.join(nsim_inputs_directory, filename_super),
+                                                   save_vec,
+                                                   fmt='%0.18f')
 
         return self
 
