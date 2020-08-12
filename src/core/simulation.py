@@ -9,6 +9,7 @@ import shutil
 import distutils.dir_util as du
 
 import numpy as np
+import scipy.interpolate as sci
 
 from .hocwriter import HocWriter
 from .fiberset import FiberSet
@@ -57,11 +58,12 @@ class Simulation(Exceptionable, Configurable, Saveable):
                     search(value, remaining_n_dims, path + '->' + key)
 
         for flag in ['fibers', 'waveform', 'supersampled_bases']:
-            search(
-                self.configs[Config.SIM.value][flag],
-                self.search(Config.SIM, "n_dimensions"),
-                flag
-            )
+            if flag in self.configs[Config.SIM.value].keys():
+                search(
+                    self.configs[Config.SIM.value][flag],
+                    self.search(Config.SIM, "n_dimensions"),
+                    flag
+                )
 
         return self
 
@@ -106,24 +108,30 @@ class Simulation(Exceptionable, Configurable, Saveable):
             self.fiberset_map_pairs.append((fiberset.out_to_fib, fiberset.out_to_in))
             self.fibersets.append(fiberset)
 
-        # TODO same for super_sample_fibersets
-        for j, ss_set in enumerate(self.ss_product):
+        if not any(self.ss_product):
+            pass
+        else:
 
-            ss_directory = os.path.join(ss_all_directory, str(j))
-            if not os.path.exists(ss_directory):
-                os.makedirs(ss_directory)
+            generate_supersampled_bases: bool = self.search(Config.SIM, 'supersampled_bases', 'generate')
 
-            sim_copy = self._copy_and_edit_config(self.configs[Config.SIM.value], self.ss_key, list(ss_set))
+            if generate_supersampled_bases:
+                for j, ss_set in enumerate(self.ss_product):
 
-            fiberset = FiberSet(self.sample, self.configs[Config.EXCEPTIONS.value])
-            fiberset \
-                .add(SetupMode.OLD, Config.SIM, sim_copy) \
-                .add(SetupMode.OLD, Config.MODEL, self.configs[Config.MODEL.value]) \
-                .generate(sim_directory, super_sample=True) \
-                .write(WriteMode.DATA, ss_directory)
+                    ss_directory = os.path.join(ss_all_directory, str(j))
+                    if not os.path.exists(ss_directory):
+                        os.makedirs(ss_directory)
 
-            self.ss_fiberset_map_pairs.append((fiberset.out_to_fib, fiberset.out_to_in))
-            self.ss_fibersets.append(fiberset)
+                    sim_copy = self._copy_and_edit_config(self.configs[Config.SIM.value], self.ss_key, list(ss_set))
+
+                    fiberset = FiberSet(self.sample, self.configs[Config.EXCEPTIONS.value])
+                    fiberset \
+                        .add(SetupMode.OLD, Config.SIM, sim_copy) \
+                        .add(SetupMode.OLD, Config.MODEL, self.configs[Config.MODEL.value]) \
+                        .generate(sim_directory, super_sample=True) \
+                        .write(WriteMode.DATA, ss_directory)
+
+                    self.ss_fiberset_map_pairs.append((fiberset.out_to_fib, fiberset.out_to_in))
+                    self.ss_fibersets.append(fiberset)
 
         return self
 
@@ -310,33 +318,53 @@ class Simulation(Exceptionable, Configurable, Saveable):
             xy_mode_name: str = self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode')
             xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
 
-            for root, dirs, files in os.walk(os.path.join(sim_dir, 'potentials', str(p))):
-                for file in files:
-                    q = int(file.split('.')[0])
+            supersampled_bases: dict = self.search(Config.SIM, 'supersampled_bases')
 
-                    # NOTE: if SL interp, writes files as inner0_fiber<q>.dat
-                    l: int
-                    k: int
-                    if not xy_mode == FiberXYMode.SL_PSEUDO_INTERP:
-                        l, k = self.indices_fib_to_n(p, q)
-                    else:
-                        l, k = 0, q
+            if supersampled_bases is None or supersampled_bases.get('use') is False:
 
-                    is_member = np.in1d(l, inner_list)
-                    if not is_member:
-                        inner_list.append(l)
-                        if len(fiber_list) < len(inner_list):
-                            fiber_list.append(0)
-                        fiber_list[inner_list.index(l)] += 1
+                for root, dirs, files in os.walk(os.path.join(sim_dir, 'potentials', str(p))):
+                    for file in files:
+                        q = int(file.split('.')[0])
+
+                        # NOTE: if SL interp, writes files as inner0_fiber<q>.dat
+                        l: int
+                        k: int
+                        if not xy_mode == FiberXYMode.SL_PSEUDO_INTERP:
+                            l, k = self.indices_fib_to_n(p, q)
+                        else:
+                            l, k = 0, q
+
+                        is_member = np.in1d(l, inner_list)
+                        if not is_member:
+                            inner_list.append(l)
+                            if len(fiber_list) < len(inner_list):
+                                fiber_list.append(0)
+                            fiber_list[inner_list.index(l)] += 1
 
 
-                    filename = 'inner{}_fiber{}.dat'.format(l, k)
-                    if not os.path.exists(nsim_inputs_directory):
-                        os.makedirs(nsim_inputs_directory)
-                    shutil.copyfile(
-                        os.path.join(sim_dir, 'potentials', str(potentials_ind), str(q) + '.dat'),
-                        os.path.join(nsim_inputs_directory, filename)
-                    )
+                        filename = 'inner{}_fiber{}.dat'.format(l, k)
+                        if not os.path.exists(nsim_inputs_directory):
+                            os.makedirs(nsim_inputs_directory)
+
+                        shutil.copyfile(
+                            os.path.join(sim_dir, 'potentials', str(potentials_ind), str(q) + '.dat'),
+                            os.path.join(nsim_inputs_directory, filename)
+                        )
+
+            else:
+                print('here')
+                parent_sim = supersampled_bases.get('parent_sim')
+
+                # need to interp super_sampled_bases, weight, and copy in!
+                pass
+
+            # "supersampled_bases": {
+            #     "generate": true,
+            #     "use": true,
+            #     "dz": [1, 2],
+            #     "parent_sim": 1009
+            # }
+
 
             # # write fibers per inner key to file
             # _, fiber_list = zip(*sorted(zip(inner_list, fiber_list)))
@@ -469,3 +497,18 @@ class Simulation(Exceptionable, Configurable, Saveable):
             os.path.exists(os.path.join(sim_dir, 'super_sampled_potentials', str(ssp))) for ssp in self.ss_product
         )
 
+    @staticmethod
+    def interpolate(super_vec, fiber_coords):
+        """
+
+        :param super_vec:
+        :param fiber_coords:
+        :return:
+        """
+        potentials = sci.interp1d(fiber_coords,
+                                  super_vec,
+                                  kind='quadratic',
+                                  assume_sorted=True,
+                                  fill_value='extrapolate')
+
+        return potentials
