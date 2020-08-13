@@ -393,5 +393,15 @@
     "code": 78,
     "text": "Invalid Config provided",
     "source": "src.core.Fiberset.init_post_config"
+  },
+  {
+    "code": 79,
+    "text": "Parent Sim's dz does not match the dz asked for in current Sim. Either do not specify dz in Current Sim and use Parent Sim's dz for interpolation, or match the dz value in current Sim.",
+    "source": "src.core.Simulation.build_n_sims"
+  },
+  {
+    "code": 80,
+    "text": "No dz provided for Sim generating super-sampled bases.",
+    "source": "src.core.Fiberset._generate_z"
   }
 ]

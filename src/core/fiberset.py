@@ -417,7 +417,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
                 my_z_seed = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'seed')
 
-            if myelinated:  # MYELINATED
+            if myelinated and not super_sample:  # MYELINATED
 
                 delta_z = \
                     paranodal_length_2 = \
@@ -506,10 +506,13 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             else:  # UNMYELINATED
 
                 if super_sample:
-                    delta_zs = self.search(Config.SIM,
-                                           'supersampled_bases',
-                                           'dz')
-                    my_z_seed = 123
+                    if 'dz' in self.configs[Config.SIM.value]['supersampled_bases'].keys():
+                        delta_zs = self.search(Config.SIM,
+                                               'supersampled_bases',
+                                               'dz')
+                        my_z_seed = 123
+                    else:
+                        self.throw(80)
 
                 else:
                     delta_zs = self.search(Config.FIBER_Z,

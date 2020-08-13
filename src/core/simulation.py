@@ -7,6 +7,8 @@ from typing import Tuple, List
 import itertools
 import shutil
 import distutils.dir_util as du
+import pickle
+import warnings
 
 import numpy as np
 import scipy.interpolate as sci
@@ -75,10 +77,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
         if not os.path.exists(fibersets_directory):
             os.makedirs(fibersets_directory)
 
-        ss_all_directory = os.path.join(sim_directory, 'super_sampled_fibersets')
-        if not os.path.exists(ss_all_directory):
-            os.makedirs(ss_all_directory)
-
         self.fibersets = []
         fiberset_factors = {key: value for key, value in self.factors.items() if key.split('->')[0] == 'fibers'}
 
@@ -116,16 +114,17 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
         else:
 
-            ss_directory = os.path.join(ss_all_directory)
-            if not os.path.exists(ss_directory):
-                os.makedirs(ss_directory)
+            ss_all_directory = os.path.join(sim_directory, 'super_sampled_fibersets')
+
+            if not os.path.exists(ss_all_directory):
+                os.makedirs(ss_all_directory)
 
             fiberset = FiberSet(self.sample, self.configs[Config.EXCEPTIONS.value])
             fiberset \
                 .add(SetupMode.OLD, Config.SIM, self.configs[Config.SIM.value]) \
                 .add(SetupMode.OLD, Config.MODEL, self.configs[Config.MODEL.value]) \
-                .generate(sim_directory, super_sample=True) \
-                .write(WriteMode.DATA, ss_directory)
+                .generate(sim_directory, super_sample=generate_supersampled_bases) \
+                .write(WriteMode.DATA, ss_all_directory)
 
             self.ss_fiberset_map_pairs.append((fiberset.out_to_fib, fiberset.out_to_in))
             self.ss_fibersets.append(fiberset)
@@ -203,8 +202,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
         self.ss_product = list(itertools.product(
             list(range(len(active_srcs_list[0]))),
-            list(range(len(self.fiberset_product)))
-        ))
+            [0]))
 
         self.src_key = ['->'.join(['active_srcs', cuff])]
         self.src_product = active_srcs_list
@@ -239,6 +237,9 @@ class Simulation(Exceptionable, Configurable, Saveable):
     ############################
 
     def build_n_sims(self, sim_dir, sim_num) -> 'Simulation':
+
+        def load(path: str):
+            return pickle.load(open(path, 'rb'))
 
         # loop cartesian product
         # key_filepath = os.path.join(sim_dir, "potentials", "key.dat")  # s is line number
@@ -355,6 +356,22 @@ class Simulation(Exceptionable, Configurable, Saveable):
                         ss_bases = [[] for _ in active_src_vals[0]]
                         parent_sim = supersampled_bases.get('parent_sim')
 
+                        # check that dz in parent_sim matches the dz (if provided) in current sim
+
+                        parent_sim_obj_dir = os.path.join(sim_dir, str(parent_sim))
+
+                        parent_sim_obj_file = os.path.join(parent_sim_obj_dir, 'sim.obj')
+
+                        parent_simulation: Simulation = load(parent_sim_obj_file)
+
+                        parent_dz = parent_simulation.configs['sims']['supersampled_bases']['dz']
+
+                        if 'dz' in supersampled_bases.keys():
+                            if supersampled_bases.get('dz') != parent_dz:
+                                self.throw(79)
+                        elif 'dz' not in supersampled_bases.keys():
+                            warnings.warn('dz not provided in Sim, so will accept dz={} specified in parent Sim'.format(parent_dz))
+
                         for basis_ind in range(len(active_src_vals[0])):
 
                             ss_bases[basis_ind].append([])
@@ -363,7 +380,9 @@ class Simulation(Exceptionable, Configurable, Saveable):
                                                           'super_sampled_potentials',
                                                           str(basis_ind))
 
-                            ss_fiberset_path = os.path.join(sim_dir, str(sim_num), 'super_sampled_fibersets')
+                            ss_fiberset_path = os.path.join(sim_dir,
+                                                            str(parent_sim),
+                                                            'super_sampled_fibersets')
 
                             for f_root, f_dirs, f_files in os.walk(ss_bases_src_path):
                                 for f_file in f_files:
@@ -537,5 +556,5 @@ class Simulation(Exceptionable, Configurable, Saveable):
         :return: boolean!
         """
         return all(
-            os.path.exists(os.path.join(sim_dir, 'super_sampled_potentials', str(ssp))) for ssp in self.ss_product
+            os.path.exists(os.path.join(sim_dir, 'super_sampled_potentials', str(basis))) for basis, _ in self.ss_product
         )

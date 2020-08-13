@@ -198,9 +198,24 @@ class Runner(Exceptionable, Configurable):
 
                             simulation: Simulation = load(sim_obj_file)
                             potentials_exist.append(simulation.potentials_exist(sim_obj_dir))
-                            super_sampled_potentials_exist.append(
-                                simulation.super_sampled_potentials_exist(sim_obj_dir)
-                            )
+
+                            if 'supersampled_bases' in simulation.configs['sims'].keys():
+                                if simulation.configs['sims']['supersampled_bases']['use']:
+                                    parent_sim = simulation.configs['sims']['supersampled_bases']['parent_sim']
+
+                                    parent_sim_obj_dir = os.path.join(
+                                        os.getcwd(),
+                                        'samples',
+                                        str(sample_num),
+                                        'models',
+                                        str(model_num),
+                                        'sims',
+                                        str(parent_sim)
+                                    )
+
+                                    super_sampled_potentials_exist.append(
+                                        simulation.super_sampled_potentials_exist(parent_sim_obj_dir)
+                                    )
 
                         else:
                             if not os.path.exists(sim_obj_dir):
@@ -217,9 +232,24 @@ class Runner(Exceptionable, Configurable):
                                 .save(sim_obj_file)
 
                             potentials_exist.append(simulation.potentials_exist(sim_obj_dir))
-                            super_sampled_potentials_exist.append(
-                                simulation.super_sampled_potentials_exist(sim_obj_dir)
-                            )
+
+                            if 'supersampled_bases' in simulation.configs['sims'].keys():
+                                if simulation.configs['sims']['supersampled_bases']['use']:
+                                    parent_sim = simulation.configs['sims']['supersampled_bases']['parent_sim']
+
+                                    parent_sim_obj_dir = os.path.join(
+                                        os.getcwd(),
+                                        'samples',
+                                        str(sample_num),
+                                        'models',
+                                        str(model_num),
+                                        'sims',
+                                        str(parent_sim)
+                                    )
+
+                                    super_sampled_potentials_exist.append(
+                                        simulation.super_sampled_potentials_exist(parent_sim_obj_dir)
+                                    )
 
             if ('break_points' in self.configs.keys()) and ('pre_java' in self.search(Config.RUN, 'break_points').keys()):
                 if self.search(Config.RUN, 'break_points', 'pre_java'):
