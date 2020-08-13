@@ -263,7 +263,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
             self._build_file_structure(os.path.join(sim_dir, str(sim_num)), t)
             nsim_inputs_directory = os.path.join(sim_dir, str(sim_num), 'n_sims', str(t), 'data', 'inputs')
 
-            # copy corresponding waveform to sim/#/n_sims/t/data/(inputs)
+            # copy corresponding waveform to sim/#/n_sims/t/data/inputs
             source_waveform_path = os.path.join(sim_dir, str(sim_num), "waveforms", "{}.dat".format(waveform_ind))
             destination_waveform_path = os.path.join(sim_dir, str(sim_num), "n_sims", str(t), "data", "inputs", "waveform.dat")
             if not os.path.isfile(destination_waveform_path):
@@ -279,13 +279,13 @@ class Simulation(Exceptionable, Configurable, Saveable):
             # print('active_src_ind: {}'.format(str(active_src_ind)))
             # print('src_key: {}'.format(str(self.src_key)))
             # print('active_src_vals: {}'.format(str(active_src_vals)))
-            # input("Press Enter to continue...")
+
             sim_copy = self._copy_and_edit_config(self.configs[Config.SIM.value],
                                                   self.src_key, active_src_vals, copy_again=False)
-            # input("Press Enter to continue...")
+
             sim_copy = self._copy_and_edit_config(sim_copy,
                                                   self.wave_key, wave_vals, copy_again=False)
-            # input("Press Enter to continue...")
+
             sim_copy = self._copy_and_edit_config(sim_copy,
                                                   self.fiberset_key, fiberset_vals, copy_again=False)
 
@@ -352,50 +352,56 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 for root, dirs, files in os.walk(os.path.join(sim_dir, str(sim_num), 'fibersets', str(p))):
                     for file in files:
 
-                        bases = [[] for _ in active_src_vals[0]]
+                        ss_bases = [[] for _ in active_src_vals[0]]
                         parent_sim = supersampled_bases.get('parent_sim')
 
                         for basis_ind in range(len(active_src_vals[0])):
 
-                            bases[basis_ind].append([])
-                            bases_src_path = os.path.join(sim_dir,
+                            ss_bases[basis_ind].append([])
+                            ss_bases_src_path = os.path.join(sim_dir,
                                                           str(parent_sim),
                                                           'super_sampled_potentials',
                                                           str(basis_ind))
 
-                            fiberset_path = os.path.join(sim_dir, str(sim_num), 'super_sampled_fibersets')
+                            ss_fiberset_path = os.path.join(sim_dir, str(sim_num), 'super_sampled_fibersets')
 
-                            for f_root, f_dirs, f_files in os.walk(bases_src_path):
+                            for f_root, f_dirs, f_files in os.walk(ss_bases_src_path):
                                 for f_file in f_files:
                                     q = int(f_file.split('.')[0])
-                                    bases[basis_ind][q] = np.loadtxt(os.path.join(f_root, f_file))[1:]
+                                    ss_bases[basis_ind][q] = np.loadtxt(os.path.join(f_root, f_file))[1:]
 
                                     if basis_ind == len(active_src_vals[0]) - 1:
 
-                                        # save_vec = np.insert(bases[basis_ind][q], 0, int(len(bases[basis_ind][q]))
-                                        super_save_vec = np.zeros(len(bases[basis_ind][q]))
+                                        ss_weighted_bases_vec = np.zeros(len(ss_bases[basis_ind][q]))
                                         for src_ind, src_weight in enumerate(active_src_vals[0]):
-                                            super_save_vec += bases[src_ind][q]*src_weight
+                                            ss_weighted_bases_vec += ss_bases[src_ind][q]*src_weight
 
                                         # down-sample super_save_vec
-                                        file1 = open(os.path.join(root, file), 'r')
-                                        lines = file1.readlines()[1:]
-                                        fiber_coords = []
-                                        for line in lines:
-                                            fiber_coords = np.append(fiber_coords, float(line.split(' ')[-2]))
+                                        neuron_fiberset_file = open(os.path.join(root, file), 'r')
+                                        neuron_fiberset_file_lines = neuron_fiberset_file.readlines()[1:]
+                                        neuron_fiber_coords = []
+                                        for neuron_fiberset_file_line in neuron_fiberset_file_lines:
+                                            neuron_fiber_coords = \
+                                                np.append(neuron_fiber_coords,
+                                                          float(neuron_fiberset_file_line.split(' ')[-2])
+                                                          )
 
-                                        file2 = open(os.path.join(fiberset_path, file), 'r')
-                                        lines2 = file2.readlines()[1:]
-                                        super_fiber_coords = []
-                                        for line in lines2:
-                                            super_fiber_coords = np.append(super_fiber_coords, float(line.split(' ')[-2]))
+                                        ss_fiberset_file = open(os.path.join(ss_fiberset_path, file), 'r')
+                                        ss_fiberset_file_lines = ss_fiberset_file.readlines()[1:]
+                                        ss_fiber_coords = []
+                                        for ss_fiberset_file_line in ss_fiberset_file_lines:
+                                            ss_fiber_coords = np.append(ss_fiber_coords,
+                                                                        float(ss_fiberset_file_line.split(' ')[-2]))
 
                                         # create interpolation from super_coords and super_bases
-                                        f = sci.interp1d(super_fiber_coords, super_save_vec)
-                                        save_vec = f(fiber_coords)
+                                        f = sci.interp1d(ss_fiber_coords, ss_weighted_bases_vec)
+                                        neuron_potentials_input = f(neuron_fiber_coords)
 
                                         # as is convention, append length to start
-                                        save_vec = np.insert(save_vec, 0, len(save_vec))
+                                        neuron_potentials_input = np.insert(neuron_potentials_input,
+                                                                            0,
+                                                                            len(neuron_potentials_input)
+                                                                            )
 
                                         # NOTE: if SL interp, writes files as inner0_fiber<q>.dat
                                         l: int
@@ -405,10 +411,10 @@ class Simulation(Exceptionable, Configurable, Saveable):
                                         else:
                                             l, k = 0, q
 
-                                        filename_super = 'inner{}_fiber{}.dat'.format(l, k)
+                                        ss_filename = 'inner{}_fiber{}.dat'.format(l, k)
 
-                                        np.savetxt(os.path.join(nsim_inputs_directory, filename_super),
-                                                   save_vec,
+                                        np.savetxt(os.path.join(nsim_inputs_directory, ss_filename),
+                                                   neuron_potentials_input,
                                                    fmt='%0.18f')
 
         return self
