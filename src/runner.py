@@ -259,7 +259,7 @@ class Runner(Exceptionable, Configurable):
             # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials if necessary
             if 'models' in all_configs.keys() and 'sims' in all_configs.keys():
                 # only transition to java if necessary (there are potentials that do not exist)
-                if not all(potentials_exist) and not all(super_sampled_potentials_exist):
+                if not all(potentials_exist) or not all(super_sampled_potentials_exist):
                     print('\nTO JAVA\n')
                     self.handoff(self.number)
                     print('\nTO PYTHON\n')
