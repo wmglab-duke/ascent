@@ -114,7 +114,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
         else:
 
-            ss_fibercoords_directory = os.path.join(sim_directory, 'ss_fibercoords')
+            ss_fibercoords_directory = os.path.join(sim_directory, 'ss_coords')
 
             if not os.path.exists(ss_fibercoords_directory):
                 os.makedirs(ss_fibercoords_directory)
@@ -348,7 +348,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
                             os.path.join(nsim_inputs_directory, filename_direct)
                         )
 
-            # SUPER SAMPLING - PROBED COMSOL AT /SS_FIBERCOORDS --> /SS_BASES
+            # SUPER SAMPLING - PROBED COMSOL AT SS_COORDS --> /SS_BASES
             elif supersampled_bases is not None and supersampled_bases.get('use') is True:
                 for root, dirs, files in os.walk(os.path.join(sim_dir, str(sim_num), 'fibersets', str(p))):
                     for file in files:
@@ -382,7 +382,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
                             ss_fiberset_path = os.path.join(sim_dir,
                                                             str(parent_sim),
-                                                            'ss_fibercoords')
+                                                            'ss_coords')
 
                             if not os.path.exists(ss_bases_src_path):
                                 self.throw(81)

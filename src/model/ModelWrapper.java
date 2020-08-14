@@ -403,7 +403,7 @@ public class ModelWrapper {
 
                 // build path to directory of fibersets
                 String ss_coord_dir = String.join("/", new String[]{
-                        sim_dir, "ss_fibercoords"
+                        sim_dir, "ss_coords"
                 });
 
                 // build path to directory of ve for each fiberset
