@@ -48,7 +48,7 @@
         "U_tangent": "Tangent_Um400b",
         "U_thk": "thk_contact_Um400b",
         "U_z": "z_contact_Um400b",
-        "U_recess": "recess_U400b"
+        "U_recess": "recess_Um400b"
       },
       "materials": [
         {
@@ -70,7 +70,7 @@
         "U_tangent": "Tangent_Um400b",
         "U_thk": "thk_contact_Um400b",
         "U_z": "z_contact_Um400b",
-        "U_recess": "recess_U400b"
+        "U_recess": "recess_Um400b"
       },
       "materials": [
         {
@@ -153,7 +153,7 @@
     },
     {
       "name": "recess_Um400b",
-      "expression": "0 [um]",
+      "expression": "50 [um]",
       "description": ""
     }
   ],

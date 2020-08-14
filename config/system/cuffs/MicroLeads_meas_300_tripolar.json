@@ -48,7 +48,7 @@
         "U_tangent": "Tangent_Um300t",
         "U_thk": "thk_contact_Um300t",
         "U_z": "z_contact_Um300t",
-        "U_recess": "recess_U300t"
+        "U_recess": "recess_Um300t"
       },
       "materials": [
         {
@@ -70,7 +70,7 @@
         "U_tangent": "Tangent_Um300t",
         "U_thk": "thk_contact_Um300t",
         "U_z": "z_contact_Um300t",
-        "U_recess": "recess_U300t"
+        "U_recess": "recess_Um300t"
       },
       "materials": [
         {
@@ -92,7 +92,7 @@
         "U_tangent": "Tangent_Um300t",
         "U_thk": "thk_contact_Um300t",
         "U_z": "z_contact_Um300t",
-        "U_recess": "recess_U300t"
+        "U_recess": "recess_Um300t"
       },
       "materials": [
         {
@@ -175,7 +175,7 @@
     },
     {
       "name": "recess_Um300t",
-      "expression": "0 [um]",
+      "expression": "50 [um]",
       "description": ""
     }
   ],
