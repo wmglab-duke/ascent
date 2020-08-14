@@ -387,7 +387,11 @@ class Simulation(Exceptionable, Configurable, Saveable):
                             for f_root, f_dirs, f_files in os.walk(ss_bases_src_path):
                                 for f_file in f_files:
                                     q = int(f_file.split('.')[0])
-                                    ss_bases[basis_ind][q] = np.loadtxt(os.path.join(f_root, f_file))[1:]
+
+                                    if not os.path.exists(os.path.join(f_root, f_file)):
+                                        self.throw(81)
+                                    else:
+                                        ss_bases[basis_ind][q] = np.loadtxt(os.path.join(f_root, f_file))[1:]
 
                                     if basis_ind == len(active_src_vals[0]) - 1:
 
