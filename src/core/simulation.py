@@ -384,6 +384,9 @@ class Simulation(Exceptionable, Configurable, Saveable):
                                                             str(parent_sim),
                                                             'super_sampled_fibersets')
 
+                            if not os.path.exists(ss_bases_src_path):
+                                self.throw(81)
+
                             for f_root, f_dirs, f_files in os.walk(ss_bases_src_path):
                                 for f_file in f_files:
                                     q = int(f_file.split('.')[0])
