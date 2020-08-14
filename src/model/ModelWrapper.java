@@ -403,7 +403,7 @@ public class ModelWrapper {
 
                 // build path to directory of fibersets
                 String ss_coord_dir = String.join("/", new String[]{
-                        sim_dir, "super_sampled_fibersets"
+                        sim_dir, "ss_fibercoords"
                 });
 
                 // build path to directory of ve for each fiberset
@@ -413,7 +413,7 @@ public class ModelWrapper {
 
                 // build path to directory of ve for each ss_fiberset
                 String ss_ve_dir = String.join("/", new String[]{
-                        sim_dir, "super_sampled_potentials"
+                        sim_dir, "ss_bases"
                 });
 
                 // build path to key (fiberset x srcs) file
@@ -503,7 +503,7 @@ public class ModelWrapper {
                         // build path to directory of fibersets
                         String ss_ve_fiberset_basis_dir = String.join("/", new String[]{
                                 sim_dir,
-                                "super_sampled_potentials",
+                                "ss_bases",
                                 Integer.toString(basis_ind)
                         });
 

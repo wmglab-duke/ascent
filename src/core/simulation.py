@@ -105,26 +105,26 @@ class Simulation(Exceptionable, Configurable, Saveable):
             self.fibersets.append(fiberset)
 
         if 'supersampled_bases' not in self.configs[Config.SIM.value].keys():
-            generate_supersampled_bases = False
+            generate_ss_bases = False
         else:
-            generate_supersampled_bases: bool = self.search(Config.SIM, 'supersampled_bases', 'generate')
+            generate_ss_bases: bool = self.search(Config.SIM, 'supersampled_bases', 'generate')
 
-        if not generate_supersampled_bases:
+        if not generate_ss_bases:
             pass
 
         else:
 
-            ss_all_directory = os.path.join(sim_directory, 'super_sampled_fibersets')
+            ss_fibercoords_directory = os.path.join(sim_directory, 'ss_fibercoords')
 
-            if not os.path.exists(ss_all_directory):
-                os.makedirs(ss_all_directory)
+            if not os.path.exists(ss_fibercoords_directory):
+                os.makedirs(ss_fibercoords_directory)
 
             fiberset = FiberSet(self.sample, self.configs[Config.EXCEPTIONS.value])
             fiberset \
                 .add(SetupMode.OLD, Config.SIM, self.configs[Config.SIM.value]) \
                 .add(SetupMode.OLD, Config.MODEL, self.configs[Config.MODEL.value]) \
-                .generate(sim_directory, super_sample=generate_supersampled_bases) \
-                .write(WriteMode.DATA, ss_all_directory)
+                .generate(sim_directory, super_sample=generate_ss_bases) \
+                .write(WriteMode.DATA, ss_fibercoords_directory)
 
             self.ss_fiberset_map_pairs.append((fiberset.out_to_fib, fiberset.out_to_in))
             self.ss_fibersets.append(fiberset)
@@ -348,7 +348,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
                             os.path.join(nsim_inputs_directory, filename_direct)
                         )
 
-            # SUPER SAMPLING - PROBED COMSOL AT /SUPER_SAMPLED_FIBERSETS --> /SUPER_SAMPLED_POTENTIALS
+            # SUPER SAMPLING - PROBED COMSOL AT /SS_FIBERCOORDS --> /SS_BASES
             elif supersampled_bases is not None and supersampled_bases.get('use') is True:
                 for root, dirs, files in os.walk(os.path.join(sim_dir, str(sim_num), 'fibersets', str(p))):
                     for file in files:
@@ -377,12 +377,12 @@ class Simulation(Exceptionable, Configurable, Saveable):
                             ss_bases[basis_ind].append([])
                             ss_bases_src_path = os.path.join(sim_dir,
                                                           str(parent_sim),
-                                                          'super_sampled_potentials',
+                                                          'ss_bases',
                                                           str(basis_ind))
 
                             ss_fiberset_path = os.path.join(sim_dir,
                                                             str(parent_sim),
-                                                            'super_sampled_fibersets')
+                                                            'ss_fibercoords')
 
                             if not os.path.exists(ss_bases_src_path):
                                 self.throw(81)
@@ -556,12 +556,12 @@ class Simulation(Exceptionable, Configurable, Saveable):
         return all(os.path.exists(os.path.join(sim_dir, 'potentials', str(p))) for p, _ in self.master_product_indices)
 
 
-    def super_sampled_potentials_exist(self, sim_dir: str) -> bool:
+    def ss_bases_exist(self, sim_dir: str) -> bool:
         """
         Return bool deciding if potentials have already been written
         :param sim_dir: directory of this simulation
         :return: boolean!
         """
         return all(
-            os.path.exists(os.path.join(sim_dir, 'super_sampled_potentials', str(basis))) for basis, _ in self.ss_product
+            os.path.exists(os.path.join(sim_dir, 'ss_bases', str(basis))) for basis, _ in self.ss_product
         )
