@@ -141,7 +141,6 @@ input/
 */user/*
 
 # samples
-*r.tif
 *.mph*
 *.class*
 out/
