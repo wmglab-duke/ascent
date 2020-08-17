@@ -1087,47 +1087,19 @@ public class ModelWrapper {
                     if (recycle_meshes) {
                         System.out.println("Entering mesh recycling logic.");
                         try {
-                            // if prev is not null AND prev is mesh match:
-                            assert meshReferenceData != null;
-                            if ((previousModelData != null) && (ModelSearcher.meshMatch(meshReferenceData, modelData, previousModelData))) {
+                            ModelSearcher modelSearcher = new ModelSearcher(String.join("/", new String[]{projectPath, "samples", sample, "models"}));
+                            ModelSearcher.Match meshMatch = modelSearcher.searchMeshMatch(modelData, meshReferenceData, projectPath + "/" + modelFile);
 
-                                // set current mph and im/im
-                                assert previousMph != null;
-                                model = ModelUtil.loadCopy(ModelUtil.uniquetag("Model"), previousMph.getFilePath());
+                            // if there was a mesh match
+                            if (meshMatch != null) {
+                                model = meshMatch.getMph();
                                 mw = new ModelWrapper(model, projectPath);
-                                mw.im = IdentifierManager.fromJSONObject(new JSONObject(previousIM.toJSONObject().toString()));
-                                mw.partPrimitiveIMs = new HashMap<>();
-                                for (String name : previousPPIMs.keySet()) {
-                                    mw.partPrimitiveIMs.put(
-                                            name,
-                                            IdentifierManager.fromJSONObject(new JSONObject(previousPPIMs.get(name).toJSONObject().toString()))
-                                    );
-                                }
+                                mw.im = IdentifierManager.fromJSONObject(new JSONObject(meshMatch.getIdm().toJSONObject().toString()));
+                                mw.partPrimitiveIMs = meshMatch.getPartPrimitiveIMs();
+
                                 skipMesh = true;
-                            } else {
-                                // search via recursive dir dive
-                                ModelSearcher modelSearcher = new ModelSearcher(String.join("/", new String[]{projectPath, "samples", sample, "models"}));
-                                ModelSearcher.Match meshMatch = modelSearcher.searchMeshMatch(modelData, meshReferenceData, projectPath + "/" + modelFile);
-
-                                // if there was a mesh match
-                                if (meshMatch != null) {
-                                    model = meshMatch.getMph();
-                                    mw = new ModelWrapper(model, projectPath);
-                                    mw.im = IdentifierManager.fromJSONObject(new JSONObject(meshMatch.getIdm().toJSONObject().toString()));
-                                    mw.partPrimitiveIMs = meshMatch.getPartPrimitiveIMs();
-
-                                    previousMph = ModelUtil.loadCopy(ModelUtil.uniquetag("Model"), meshMatch.getPath() + "/mesh/mesh.mph");
-                                    previousIM = IdentifierManager.fromJSONObject(new JSONObject(mw.im.toJSONObject().toString()));
-                                    previousPPIMs = new HashMap<>();
-                                    for (String name : meshMatch.getPartPrimitiveIMs().keySet()) {
-                                        mw.partPrimitiveIMs.put(
-                                                name,
-                                                IdentifierManager.fromJSONObject(new JSONObject(meshMatch.getPartPrimitiveIMs().get(name).toJSONObject().toString()))
-                                        );
-                                    }
-                                    skipMesh = true;
-                                }
                             }
+
                         } catch (IOException e) {
                             System.out.println("Issue in mesh recycling logic.");
                             e.printStackTrace();
@@ -1618,16 +1590,9 @@ public class ModelWrapper {
                         JSONio.write(imFile, mw.im.toJSONObject()); // write to file
 
                         // save ppIMs !!!!
-                        //File ppimPathFile = new File(ppimPath);
-                        //assert ppimPathFile.exists() || ppimPathFile.mkdir();
-                        previousPPIMs = new HashMap<>();
                         for (String name : mw.partPrimitiveIMs.keySet()) {
-                            previousPPIMs.put(name, mw.partPrimitiveIMs.get(name));
                             JSONio.write(ppimPath + "/" + name + ".json", mw.partPrimitiveIMs.get(name).toJSONObject());
                         }
-
-                        // save previous model config !!!!
-                        previousModelData = modelData;
 
                         boolean keep_debug_geom;
                         if (run.has("keep") && run.getJSONObject("keep").has("debug_geom")) {
@@ -1733,17 +1698,6 @@ public class ModelWrapper {
                     fascicleMatLink.label(fascicleMatLinkLabel);
                     fascicleMatLink.set("link", mw.im.get("endoneurium"));
 
-                    // Saved model post_material_assign for debugging
-                    try {
-                        System.out.println("Saving MPH (post_material_assign) file to: " + meshFile);
-                        model.save(meshFile);
-                    } catch (IOException e) {
-                        System.out.println("Failed to save geometry for Model Index " + modelStr + ", continuing " +
-                                "to any remaining Models");
-                        e.printStackTrace();
-                        continue;
-                    }
-
                     // break point "post_mesh_distal"
                     boolean post_material_assign;
                     if (break_points.has("post_material_assign")) {
@@ -1804,17 +1758,6 @@ public class ModelWrapper {
                     model.result("pg1").run();
                     model.result("pg1").set("data", "dset1");
 
-                    // Saved model pre_loop_currents for debugging
-                    try {
-                        System.out.println("Saving MPH (pre_loop_currents) file to: " + meshFile);
-                        model.save(meshFile);
-                    } catch (IOException e) {
-                        System.out.println("Failed to save geometry for Model Index " + modelStr + ", continuing " +
-                                "to any remaining Models");
-                        e.printStackTrace();
-                        continue;
-                    }
-
                     // break point "post_mesh_distal"
                     boolean pre_loop_currents;
                     if (break_points.has("pre_loop_currents")) {
@@ -1853,7 +1796,7 @@ public class ModelWrapper {
                         e.printStackTrace();
                     }
                 }
-                // ------
+
                 // If no Sim configs, SKIP
                 JSONArray sims_list = run.getJSONArray("sims");
                 if (sims_list.length() >= 1) {
