@@ -145,7 +145,7 @@ class Fascicle(Exceptionable):
             return self.outer.angle_to(other)
 
     def plot(self, plot_format: str = 'b-', color: Tuple[float, float, float, float] = None,
-             ax: plt.Axes = None, outer_flag = True, inner_index_start: int = None):
+             ax: plt.Axes = None, outer_flag=True, inner_index_start: int = None):
         """
         :param inner_index_start:
         :param ax:
@@ -162,7 +162,6 @@ class Fascicle(Exceptionable):
             inner.plot(plot_format, color, ax=ax)
             if inner_index_start is not None:
                 ax.text(*inner.centroid(), s=str(i + inner_index_start), ha='center', va='center')
-
 
     def deepcopy(self):
         """
@@ -198,7 +197,6 @@ class Fascicle(Exceptionable):
         """
         areas = np.array([trace.area() for trace in self.all_traces()])
         return np.array(self.all_traces())[np.where(areas == np.min(areas))][0]
-
 
     def __endoneurium_setup(self, fit: float):
         """
@@ -289,7 +287,8 @@ class Fascicle(Exceptionable):
 
                 # build Traces from contours
                 outer_trace = Trace([item + [z] for item in outer_contour[:, 0, :]], exception_config)
-                inner_traces = [Trace([item + [z] for item in cnt[:, 0, :]], exception_config) for cnt in inner_contours]
+                inner_traces = [Trace([item + [z] for item in cnt[:, 0, :]], exception_config) for cnt in
+                                inner_contours]
 
                 # add fascicle to list (with or without inner trace)
                 if len(inner_traces) > 0:
@@ -320,12 +319,11 @@ class Fascicle(Exceptionable):
         :param plot: boolean
         :return: list of Fascicles derived from the two images
         """
+
         def build_traces(path: str) -> List[Trace]:
             # default findContours params
             params = [cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE]
             # default findContours params
-
-            # Dir | Rename-Item –NewName { $_.name –replace “.tiff“,”.tif” }
 
             img = np.flipud(cv2.imread(path, -1))
 
