@@ -209,7 +209,7 @@ proc run_all(){local myinner, myfiber, myamp, amp_ind
 
 	}   else if (find_thresh == 1){
 		// Run binary search for thresholds
-		FindThresh(myinner)
+		FindThresh()
 		// Run sim once more with final thresh from FindThresh()
 		RunSim(stimamp)
 
