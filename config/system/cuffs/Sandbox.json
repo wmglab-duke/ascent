@@ -179,12 +179,57 @@
         "R_out": "R_out_U300",
         "U_L": "L_U300",
         "U_shift_x": "x_shift",
-        "U_shift_y": "y_shift"
+        "U_shift_y": "y_shift",
+        "U_gap": "gap_U300"
       },
       "materials": [
         {
           "info": "insulator",
           "label_index": 1
+        }
+      ]
+    },
+    {
+      "type": "uCuffTrap_Primitive",
+      "label": "MicroLeads100 Cuff",
+      "def": {
+        "Center": "z_center_U100",
+        "R_in": "R_in_U100",
+        "Ut_tangent": "Tangent_U100",
+        "Rt_out": "R_out_U100",
+        "Ut_L": "L_U100",
+        "Ut_shift_x": "x_shift_U100",
+        "Ut_shift_y": "y_shift_U100",
+        "Ut_gap": "gap_U100",
+        "Ut_trap_base": "trap_base_U100"
+      },
+      "materials": [
+        {
+          "info": "insulator",
+          "label_index": 1
+        }
+      ]
+    },
+    {
+      "type": "uContactTrap_Primitive",
+      "label": "MicroLeads100 Contact",
+      "def": {
+        "Center": "z_center_U100-(Pitch_U100/2)",
+        "R_in": "R_in_U100",
+        "Ut_tangent": "Tangent_U100",
+        "Ut_thk": "thk_contact_U100",
+        "Ut_z": "z_contact_U100",
+        "Ut_recess": "recess_U100",
+        "Ut_trap_base": "trap_base_U100"
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "label_index": 3
+        },
+        {
+          "info": "recess",
+          "label_index": 2
         }
       ]
     }
@@ -642,6 +687,11 @@
       "description": ""
     },
     {
+      "name": "gap_U300",
+      "expression": "30 [um]",
+      "description": ""
+    },
+    {
       "name": "x_shift",
       "expression": "0 [um]",
       "description": ""
@@ -659,6 +709,71 @@
     {
       "name": "r_cuff_in_pre_SB",
       "expression": "317.5 [um]",
+      "description": ""
+    },
+    {
+      "name": "z_center_U100",
+      "expression": "0 [mm]",
+      "description": ""
+    },
+    {
+      "name": "R_in_U100",
+      "expression": "(125/2) [um]",
+      "description": ""
+    },
+    {
+      "name": "Tangent_U100",
+      "expression": "85 [um]",
+      "description": ""
+    },
+    {
+      "name": "R_out_U100",
+      "expression": "(1060/2) [um]",
+      "description": ""
+    },
+    {
+      "name": "L_U100",
+      "expression": "1110 [um]",
+      "description": ""
+    },
+    {
+      "name": "x_shift_U100",
+      "expression": "210 [um]",
+      "description": ""
+    },
+    {
+      "name": "y_shift_U100",
+      "expression": "0 [um]",
+      "description": ""
+    },
+    {
+      "name": "gap_U100",
+      "expression": "30 [um]",
+      "description": ""
+    },
+    {
+      "name": "trap_base_U100",
+      "expression": "200 [um]",
+      "description": ""
+    },
+    {
+      "name": "Pitch_U100",
+      "expression": "470 [um]",
+      "description": ""
+    },
+    {
+      "name": "thk_contact_U100",
+      "expression": "50 [um]",
+      "description": ""
+    },
+    {
+      "name": "z_contact_U100",
+      "expression": "320 [um]",
+      "description": ""
+    },
+    {
+      "name": "recess_U100",
+      "expression": "50 [um]",
       "description": ""
     }
   ],
