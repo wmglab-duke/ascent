@@ -112,6 +112,10 @@ class Runner(Exceptionable, Configurable):
                 sum(self.search(Config.RUN, 'break_points').values()) > 1:
             self.throw(76)
 
+        if 'partial_fem' in self.configs[Config.RUN.value].keys() and \
+                sum(self.search(Config.RUN, 'partial_fem').values()) > 1:
+            self.throw(79)
+
         potentials_exist: List[bool] = []  # if all of these are true, skip Java
 
         sample_num = self.configs[Config.RUN.value]['sample']
