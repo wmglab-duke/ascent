@@ -93,6 +93,6 @@
     "generate": true,
     "use": true,
     "dz": 0.01,
-    "parent_sim": 1009
+    "source_sim": 1009
   }
 }
