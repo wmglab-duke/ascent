@@ -21,5 +21,9 @@
     "debug_geom": true,
     "mesh": true
   },
-  "local_avail_cpus": 3
+  "local_avail_cpus": 3,
+  "partial_fem": {
+    "nerve_only": false,
+    "cuff_only": false
+  }
 }
