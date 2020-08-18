@@ -1,7 +1,9 @@
 package model;
 
 import com.comsol.model.*;
+import com.comsol.model.featuredata.GeomFeatureFeatureData;
 import com.comsol.model.physics.PhysicsFeature;
+import com.comsol.nativemph.geom.Geom;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -1310,11 +1312,14 @@ class Part {
                 model.geom(id).inputParam().set("U_tangent", "200 [um]");
                 model.geom(id).inputParam().set("U_thk", "20 [um]");
                 model.geom(id).inputParam().set("U_z", "100 [um]");
+                model.geom(id).inputParam().set("U_recess", "10 [um]");
 
                 im.labels = new String[]{
                         "CONTACT XS", //0
                         "CONTACT FINAL",
-                        "SRC"
+                        "SRC",
+                        "RECESS XS",
+                        "RECESS FINAL"
 
                 };
 
@@ -1347,19 +1352,19 @@ class Part {
                 ucontactxs.geom().selection().create(im.next("csel",wpucontactxsLabel), "CumulativeSelection");
                 ucontactxs.geom().selection(im.get(wpucontactxsLabel)).label(wpucontactxsLabel);
 
-                String roundInlineLabel = "Round Inline";
+                String roundInlineLabel = "Round Inline 3";
                 GeomFeature rIL = ucontactxs.geom().create(im.next("c",roundInlineLabel), "Circle");
                 rIL.label(roundInlineLabel);
                 rIL.set("contributeto", im.get(inLineLabel));
-                rIL.set("r", "R_in");
+                rIL.set("r", "R_in+U_recess");
 
                 String rectInlineLabel = "Rect Inline";
                 GeomFeature rectIL = ucontactxs.geom().create(im.next("r",rectInlineLabel), "Rectangle");
                 rectIL.label(rectInlineLabel);
                 rectIL.set("contributeto", im.get(inLineLabel));
-                rectIL.set("pos", new String[]{"0", "-R_in"});
-                rectIL.set("base", "corner");
-                rectIL.set("size", new String[]{"U_tangent+U_thk", "2*R_in"});
+                rectIL.set("pos", new String[]{"U_tangent/2", "0"});
+                rectIL.set("base", "center");
+                rectIL.set("size", new String[]{"U_tangent", "2*(R_in+U_recess)"});
 
                 String uInlinePLabel = "Union Inline Parts";
                 GeomFeature uInline = ucontactxs.geom().create(im.next("uni",uInlinePLabel), "Union");
@@ -1372,7 +1377,7 @@ class Part {
                 GeomFeature ro = ucontactxs.geom().create(im.next("c",roLabel), "Circle");
                 ro.label(roLabel);
                 ro.set("contributeto", im.get(outLineLabel));
-                ro.set("r", "R_in+U_thk");
+                ro.set("r", "R_in+U_thk+U_recess");
 
                 String rectoLabel = "Rect Outline";
                 GeomFeature urect = ucontactxs.geom().create(im.next("r",rectoLabel), "Rectangle");
@@ -1380,7 +1385,7 @@ class Part {
                 urect.set("contributeto", im.get(outLineLabel));
                 urect.set("pos", new String[]{"U_tangent/2", "0"});
                 urect.set("base", "center");
-                urect.set("size", new String[]{"U_tangent", "2*R_in+2*U_thk"});
+                urect.set("size", new String[]{"U_tangent", "2*(R_in+U_thk+U_recess)"});
 
                 String uOPLabel = "Union Outline Parts";
                 GeomFeature uOP = ucontactxs.geom().create(im.next("uni",uOPLabel), "Union");
@@ -1406,7 +1411,92 @@ class Part {
                 GeomFeature usrc = model.geom(id).create(im.next("pt",usrcLabel), "Point");
                 usrc.label(usrcLabel);
                 usrc.set("contributeto", im.get("SRC"));
-                usrc.set("p", new String[]{"-R_in-(U_thk/2)", "0", "Center"});
+                usrc.set("p", new String[]{"-R_in-(U_thk/2)-U_recess", "0", "Center"});
+
+                String ifurecessLabel = "If uRecess";
+                GeomFeature ifurecess = model.geom(id).create(im.next("if", ifurecessLabel), "If");
+                ifurecess.label(ifurecessLabel);
+                ifurecess.set("condition", "U_recess > 0");
+
+                String urecessxsLabel = "Recess XS";
+                GeomFeature urecessxs = model.geom(id).create(im.next("wp",urecessxsLabel), "WorkPlane");
+                urecessxs.label(urecessxsLabel);
+                urecessxs.set("contributeto", im.get("RECESS XS"));
+                urecessxs.set("quickz", "Center-U_z/2");
+                urecessxs.set("unite", true);
+
+                String inLineRecessLabel = "INLINE RECESS";
+                urecessxs.geom().selection().create(im.next("csel", inLineRecessLabel), "CumulativeSelection");
+                urecessxs.geom().selection(im.get(inLineRecessLabel)).label(inLineRecessLabel);
+
+                String inLineRecessUnionLabel = "INLINE_RECESS_UNION";
+                urecessxs.geom().selection().create(im.next("csel", inLineRecessUnionLabel), "CumulativeSelection");
+                urecessxs.geom().selection(im.get(inLineRecessUnionLabel)).label(inLineRecessUnionLabel);
+
+                String outLineRecessLabel = "OUTLINE RECESS";
+                urecessxs.geom().selection().create(im.next("csel", outLineRecessLabel), "CumulativeSelection");
+                urecessxs.geom().selection(im.get(outLineRecessLabel)).label(outLineRecessLabel);
+
+                String inLineRecessPlaneLabel = "INLINE RECESS PLANE";
+                urecessxs.geom().selection().create(im.next("csel", inLineRecessPlaneLabel), "CumulativeSelection");
+                urecessxs.geom().selection(im.get(inLineRecessPlaneLabel)).label(inLineRecessPlaneLabel);
+
+                String roundInlineRecessLabel = "Round Inline Recess";
+                GeomFeature roundInlineRecess = urecessxs.geom().create(im.next("c", roundInlineRecessLabel), "Circle");
+                roundInlineRecess.label(roundInlineRecessLabel);
+                roundInlineRecess.set("contributeto", im.get(inLineRecessLabel));
+                roundInlineRecess.set("r", "R_in");
+
+                String rectInLineRecessLabel = "Rect Inline Recess";
+                GeomFeature rectInLineRecess = urecessxs.geom().create(im.next("r", rectInLineRecessLabel), "Rectangle");
+                rectInLineRecess.label(rectInLineRecessLabel);
+                rectInLineRecess.set("contributeto", im.get(inLineRecessLabel));
+                rectInLineRecess.set("pos", new String[]{"U_tangent/2", "0"});
+                rectInLineRecess.set("base", "center");
+                rectInLineRecess.set("size", new String[]{"U_tangent", "2*(R_in)"});
+
+                String unionInLinePartsRecessLabel = "Union Inline Parts Recess";
+                GeomFeature unionInLinePartsRecess = urecessxs.geom().create(im.next("uni", unionInLinePartsRecessLabel), "Union");
+                unionInLinePartsRecess.label(unionInLinePartsRecessLabel);
+                unionInLinePartsRecess.set("contributeto", im.get(inLineRecessUnionLabel));
+                unionInLinePartsRecess.set("intbnd", false);
+                unionInLinePartsRecess.selection("input").named(im.get(inLineRecessLabel));
+
+                String roundOutlineRecessLabel = "Round Outline Recess";
+                GeomFeature roundOutlineRecess = urecessxs.geom().create(im.next("c", roundOutlineRecessLabel), "Circle");
+                roundOutlineRecess.label(roundOutlineRecessLabel);
+                roundOutlineRecess.set("contributeto", im.get(outLineRecessLabel));
+                roundOutlineRecess.set("r", "R_in+U_recess");
+
+                String rectOutLineRecessLabel = "Rect Outline Recess";
+                GeomFeature rectOutLineRecess = urecessxs.geom().create(im.next("r", rectOutLineRecessLabel), "Rectangle");
+                rectOutLineRecess.label(rectOutLineRecessLabel);
+                rectOutLineRecess.set("contributeto", im.get(outLineRecessLabel));
+                rectOutLineRecess.set("pos", new String[]{"U_tangent/2", "0"});
+                rectOutLineRecess.set("base", "center");
+                rectOutLineRecess.set("size", new String[]{"U_tangent", "2*(R_in+U_recess)"});
+
+                String unionOutlinePartsRecessLabel = "Union Outline Parts Recess";
+                GeomFeature unionOutlinePartsRecess = urecessxs.geom().create(im.next("uni", unionOutlinePartsRecessLabel), "Union");
+                unionOutlinePartsRecess.label(unionOutlinePartsRecessLabel);
+                unionOutlinePartsRecess.set("contributeto", im.get(inLineRecessUnionLabel));
+                unionOutlinePartsRecess.set("intbnd", false);
+                unionOutlinePartsRecess.selection("input").named(im.get(outLineRecessLabel));
+
+                String difftoRecessXSLabel = "Diff to Recess XS";
+                GeomFeature difftoRecessXS = urecessxs.geom().create(im.next("dif", difftoRecessXSLabel), "Difference");
+                difftoRecessXS.label(difftoRecessXSLabel);
+                difftoRecessXS.selection("input").named(im.get(outLineRecessLabel));
+                difftoRecessXS.selection("input2").named(im.get(inLineRecessLabel));
+
+                String makeRecessLabel = "Make Recess";
+                GeomFeature makeRecess = model.geom(id).create(im.next("ext", makeRecessLabel), "Extrude");
+                makeRecess.label(makeRecessLabel);
+                makeRecess.set("contributeto", im.get("RECESS FINAL"));
+                makeRecess.setIndex("distance", "U_z", 0);
+                makeRecess.selection("input").named(im.get("RECESS XS"));
+
+                model.geom(id).create(im.next("endif"), "EndIf");
 
                 model.geom(id).run();
 
@@ -1491,7 +1581,7 @@ class Part {
                 ucCircleOutline.label(ucCircleOutlineLabel);
                 ucCircleOutline.set("contributeto", im.get(ucOutlineCuffLabel));
                 ucCircleOutline.set("r", "R_out");
-                ucCircleOutline.set("pos", new String[]{"U_shift_x", "U_shift_y"});
+                ucCircleOutline.set("pos", new String[]{"U_shift_x", "-1*U_shift_y"});
 
                 String ifucGapLabel = "If Gap";
                 GeomFeature ifucGap = ucCXS.geom().create(im.next("if", ifucGapLabel), "If");
@@ -1576,7 +1666,7 @@ class Part {
                 ufCX.geom().selection().create(im.next("csel",ufInlineUnion), "CumulativeSelection");
                 ufCX.geom().selection(im.get(ufInlineUnion)).label(ufInlineUnion);
 
-                String ufCircleInlineLabel = "Round Inline";
+                String ufCircleInlineLabel = "Round Inline 2";
                 GeomFeature ufCircleInline = ufCX.geom().create(im.next("c", ufCircleInlineLabel), "Circle");
                 ufCircleInline.label(ufCircleInlineLabel);
                 ufCircleInline.set("contributeto", im.get(ufInlineLabel));
@@ -1633,6 +1723,369 @@ class Part {
                 cf.set("pos", new String[]{"x_shift", "y_shift", "Center-(L/2)"});
                 cf.set("r", "Radius");
                 cf.set("h", "L");
+
+                model.geom(id).run();
+
+                break;
+
+            case "uCuffTrap_Primitive":
+
+                model.geom(id).lengthUnit("\u00b5m");
+
+                model.geom(id).inputParam().set("R_in", "70 [um]");
+                model.geom(id).inputParam().set("Ut_tangent", "100 [um]");
+                model.geom(id).inputParam().set("Rt_out", "150 [um]");
+                model.geom(id).inputParam().set("Ut_shift_x", "0 [um]");
+                model.geom(id).inputParam().set("Ut_shift_y", "0 [um]");
+                model.geom(id).inputParam().set("Ut_gap", "10 [um]");
+                model.geom(id).inputParam().set("Center", "0 [um]");
+                model.geom(id).inputParam().set("Ut_L", "4 [mm]");
+                model.geom(id).inputParam().set("Ut_trap_base", "200 [um]");
+
+                im.labels = new String[]{
+                        "CUFF XS Trap", //0
+                        "CUFF FINAL TRAP"
+
+                };
+
+                for (String cseluCuffTrapLabel: im.labels) {
+                    model.geom(id).selection().create(im.next("csel", cseluCuffTrapLabel), "CumulativeSelection")
+                            .label(cseluCuffTrapLabel);
+
+                }
+
+                String cuffxstrapLabel = "Cuff XS_trap";
+                GeomFeature cuffxstrap = model.geom(id).create(im.next("wp", cuffxstrapLabel), "WorkPlane");
+                cuffxstrap.label(cuffxstrapLabel);
+                cuffxstrap.set("contributeto", "csel1");
+                cuffxstrap.set("quickz", "Center-Ut_L/2");
+                cuffxstrap.set("unite", true);
+
+                String utOutlineCuffLabel = "OUTLINE_CUFF_TRAP";
+                model.geom(id).feature(im.get(cuffxstrapLabel)).geom().selection().create(im.next("csel", utOutlineCuffLabel), "CumulativeSelection");
+                model.geom(id).feature(im.get(cuffxstrapLabel)).geom().selection(im.get(utOutlineCuffLabel)).label(utOutlineCuffLabel);
+
+                String utInlineUnionLabel = "INLINE_TRAP_UNION";
+                model.geom(id).feature(im.get(cuffxstrapLabel)).geom().selection().create(im.next("csel", utInlineUnionLabel), "CumulativeSelection");
+                model.geom(id).feature(im.get(cuffxstrapLabel)).geom().selection(im.get(utInlineUnionLabel)).label(utInlineUnionLabel);
+
+                String utInlineLabel = "INLINE_TRAP";
+                model.geom(id).feature(im.get(cuffxstrapLabel)).geom().selection().create(im.next("csel", utInlineLabel), "CumulativeSelection");
+                model.geom(id).feature(im.get(cuffxstrapLabel)).geom().selection(im.get(utInlineLabel)).label(utInlineLabel);
+
+                String utCuffXSLabel = "CUFF XS TRAP";
+                model.geom(id).feature(im.get(cuffxstrapLabel)).geom().selection().create(im.next("csel", utCuffXSLabel), "CumulativeSelection");
+                model.geom(id).feature(im.get(cuffxstrapLabel)).geom().selection(im.get(utCuffXSLabel)).label(utCuffXSLabel);
+
+                String utGapTrapLabel = "GAP_TRAP";
+                model.geom(id).feature(im.get(cuffxstrapLabel)).geom().selection().create(im.next("csel", utGapTrapLabel), "CumulativeSelection");
+                model.geom(id).feature(im.get(cuffxstrapLabel)).geom().selection(im.get(utGapTrapLabel)).label(utGapTrapLabel);
+
+                String roundInlineTrapLabel = "Round Inline Trap";
+                GeomFeature roundInlineTrap = model.geom(id).feature(im.get(cuffxstrapLabel)).geom().create(im.next("c", roundInlineTrapLabel), "Circle");
+                roundInlineTrap.label(roundInlineTrapLabel);
+                roundInlineTrap.set("contributeto", im.get(utInlineLabel));
+                roundInlineTrap.set("r", "R_in");
+
+                String trapInlineLabel = "Trap Inline";
+                GeomFeature trapInline = model.geom(id).feature(im.get(cuffxstrapLabel)).geom().create(im.next("pol", trapInlineLabel), "Polygon");
+                trapInline.label(trapInlineLabel);
+                trapInline.set("contributeto", im.get(utInlineLabel));
+                trapInline.set("source", "table");
+                trapInline.set("table", new String[][]{{"0", "R_in"}, {"Ut_tangent", "Ut_trap_base/2"}, {"Ut_tangent", "-Ut_trap_base/2"}, {"0", "-R_in"}});
+
+                String unionInlinePartsLabel = "Union Inline Parts";
+                GeomFeature unionInlineParts = model.geom(id).feature(im.get(cuffxstrapLabel)).geom().create(im.next("uni", unionInlinePartsLabel), "Union");
+                unionInlineParts.label(unionInlinePartsLabel);
+                unionInlineParts.set("contributeto", im.get(utInlineUnionLabel));
+                unionInlineParts.set("intbnd", false);
+                unionInlineParts.selection("input").named(im.get(utInlineLabel));
+
+                String cuffOutlineTrapLabel = "Cuff Outline Trap2";
+                GeomFeature cuffOutlineTrap = model.geom(id).feature(im.get(cuffxstrapLabel)).geom().create(im.next("c", cuffOutlineTrapLabel), "Circle");
+                cuffOutlineTrap.label(cuffOutlineTrapLabel);
+                cuffOutlineTrap.set("contributeto", im.get(utOutlineCuffLabel));
+                cuffOutlineTrap.set("pos", new String[]{"Ut_shift_x", "Ut_shift_y"});
+                cuffOutlineTrap.set("r", "Rt_out");
+
+                String ifgaptrapLabel = "If Gap Trap";
+                GeomFeature ifgaptrap = model.geom(id).feature(im.get(cuffxstrapLabel)).geom().create(im.next("if", ifgaptrapLabel), "If");
+                ifgaptrap.label(ifgaptrapLabel);
+                ifgaptrap.set("condition", "Ut_gap > 0");
+
+                String gapTrapLabel = "Gap Trap";
+                GeomFeature gapTrap = model.geom(id).feature(im.get(cuffxstrapLabel)).geom().create(im.next("r", gapTrapLabel), "Rectangle");
+                gapTrap.label(gapTrapLabel);
+                gapTrap.set("contributeto", im.get(utGapTrapLabel));
+                gapTrap.set("pos", new String[]{"Rt_out+Ut_shift_x", "0"});
+                gapTrap.set("base", "center");
+                gapTrap.set("size", new String[]{"2*(Rt_out+Ut_shift_x)", "Ut_gap"});
+
+                String unionInlineTrapwGapLabel = "Union Inline Trap with Gap";
+                GeomFeature unionInlineTrapwGap = model.geom(id).feature(im.get(cuffxstrapLabel)).geom().create(im.next("uni", unionInlineTrapwGapLabel), "Union");
+                unionInlineTrapwGap.label(unionInlineTrapwGapLabel);
+                unionInlineTrapwGap.set("intbnd", false);
+                unionInlineTrapwGap.selection("input").set(im.get(gapTrapLabel), im.get(unionInlinePartsLabel));
+
+                String difftoCuffXSTrapLabel = "Diff to Cuff XS Trap";
+                GeomFeature difftoCuffXSTrap = model.geom(id).feature(im.get(cuffxstrapLabel)).geom().create(im.next("dif", difftoCuffXSTrapLabel), "Difference");
+                difftoCuffXSTrap.label(difftoCuffXSTrapLabel);
+                difftoCuffXSTrap.set("contributeto", im.get(utCuffXSLabel));
+                difftoCuffXSTrap.selection("input").named(im.get(utOutlineCuffLabel));
+                difftoCuffXSTrap.selection("input2").named(im.get(utInlineUnionLabel));
+
+                String elseNoGapTrapLabel = "Else No Gap Trap";
+                GeomFeature elseNoGapTrap = model.geom(id).feature(im.get(cuffxstrapLabel)).geom().create(im.next("else", elseNoGapTrapLabel), "Else");
+                elseNoGapTrap.label(elseNoGapTrapLabel);
+
+                String difftoCuffXSNoGapTrapLabel = "Diff to Cuff XS No Gap Trap";
+                GeomFeature difftoCuffXSNoGapTrap = model.geom(id).feature(im.get(cuffxstrapLabel)).geom().create(im.next("dif", difftoCuffXSNoGapTrapLabel), "Difference");
+                difftoCuffXSNoGapTrap.label(difftoCuffXSNoGapTrapLabel);
+                difftoCuffXSNoGapTrap.set("contributeto", im.get(utCuffXSLabel));
+                difftoCuffXSNoGapTrap.selection("input").named(im.get(utOutlineCuffLabel));
+                difftoCuffXSNoGapTrap.selection("input2").named(im.get(utInlineUnionLabel));
+
+                String endifTrapLabel = "End If Trap";
+                GeomFeature endifTrap = model.geom(id).feature(im.get(cuffxstrapLabel)).geom().create(im.next("endif", endifTrapLabel), "EndIf");
+                endifTrap.label(endifTrapLabel);
+
+                String makeCuffTrapLabel = "Make Cuff_trap";
+                GeomFeature makeCuffTrap = model.geom(id).create(im.next("ext", makeCuffTrapLabel), "Extrude");
+                makeCuffTrap.label(makeCuffTrapLabel);
+                makeCuffTrap.set("contributeto", im.get("CUFF FINAL TRAP"));
+                makeCuffTrap.setIndex("distance", "Ut_L", 0);
+                makeCuffTrap.selection("input").set(im.get(cuffxstrapLabel));
+
+                model.geom(id).run();
+
+                break;
+
+            case "uContactTrap_Primitive":
+
+                model.geom(id).label("uContactTrap_Primitive");
+
+                model.geom(id).lengthUnit("\u00b5m");
+
+                model.geom(id).inputParam().set("Center", "0 [mm]");
+                model.geom(id).inputParam().set("R_in", "100 [um]");
+                model.geom(id).inputParam().set("Ut_thk", "50 [um]");
+                model.geom(id).inputParam().set("Ut_tangent", "200 [um]");
+                model.geom(id).inputParam().set("Ut_recess", "10 [um]");
+                model.geom(id).inputParam().set("Ut_z", "100 [um]");
+                model.geom(id).inputParam().set("Ut_trap_base", "250 [um]");
+
+                im.labels = new String[]{
+                        "RECESS XS Trap", //0
+                        "CONTACT XS Trap",
+                        "RECESS FINAL TRAP",
+                        "CONTACT FINAL TRAP",
+                        "SRC FINAL"
+
+                };
+
+                for (String cseluContactTrapLabel: im.labels) {
+                    model.geom(id).selection().create(im.next("csel", cseluContactTrapLabel), "CumulativeSelection")
+                            .label(cseluContactTrapLabel);
+
+                }
+
+                String contactXSTrapLabel = "Contact XS Trap";
+                GeomFeature contactXSTrap = model.geom(id).create(im.next("wp", contactXSTrapLabel), "WorkPlane");
+                contactXSTrap.label(contactXSTrapLabel);
+                contactXSTrap.set("contributeto", im.get("CONTACT XS Trap"));
+                contactXSTrap.set("quickz", "Center-Ut_z/2");
+                contactXSTrap.set("unite", true);
+
+                String outLineUnionTrapLabel = "OUTLINE_UNION";
+                model.geom(id).feature(im.get(contactXSTrapLabel)).geom().selection().create(im.next("csel", outLineUnionTrapLabel), "CumulativeSelection");
+                model.geom(id).feature(im.get(contactXSTrapLabel)).geom().selection(im.get(outLineUnionTrapLabel)).label(outLineUnionTrapLabel);
+
+                String inlineTrapLabel = "INLINE";
+                model.geom(id).feature(im.get(contactXSTrapLabel)).geom().selection().create(im.next("csel", inlineTrapLabel), "CumulativeSelection");
+                model.geom(id).feature(im.get(contactXSTrapLabel)).geom().selection(im.get(inlineTrapLabel)).label(inlineTrapLabel);
+
+                String inlineUnionTrapLabel = "INLINE_UNION";
+                model.geom(id).feature(im.get(contactXSTrapLabel)).geom().selection().create(im.next("csel", inlineUnionTrapLabel), "CumulativeSelection");
+                model.geom(id).feature(im.get(contactXSTrapLabel)).geom().selection(im.get(inlineUnionTrapLabel)).label(inlineUnionTrapLabel);
+
+                String outlineTrapLabel = "OUTLINE TRAP";
+                model.geom(id).feature(im.get(contactXSTrapLabel)).geom().selection().create(im.next("csel", outlineTrapLabel), "CumulativeSelection");
+                model.geom(id).feature(im.get(contactXSTrapLabel)).geom().selection(im.get(outlineTrapLabel)).label(outlineTrapLabel);
+
+                String wpContactXSTrapLabel = "wpCONTACT XS";
+                model.geom(id).feature(im.get(contactXSTrapLabel)).geom().selection().create(im.next("csel", wpContactXSTrapLabel), "CumulativeSelection");
+                model.geom(id).feature(im.get(contactXSTrapLabel)).geom().selection(im.get(wpContactXSTrapLabel)).label(wpContactXSTrapLabel);
+
+                String roundOutlineContactTrapLabel = "Round Outline Contact Trap";
+                GeomFeature roundOutlineContactTrap = model.geom(id).feature(im.get(contactXSTrapLabel)).geom().create(im.next("c", roundOutlineContactTrapLabel), "Circle");
+                roundOutlineContactTrap.label(roundOutlineContactTrapLabel);
+                roundOutlineContactTrap.set("contributeto", im.get(outlineTrapLabel));
+                roundOutlineContactTrap.set("r", "R_in+Ut_thk+Ut_recess");
+
+                String trapOutlineContactLabel = "Trap Outline Contact";
+                GeomFeature trapOutlineContact = model.geom(id).feature(im.get(contactXSTrapLabel)).geom().create(im.next("pol", trapOutlineContactLabel), "Polygon");
+                trapOutlineContact.label(trapOutlineContactLabel);
+                trapOutlineContact.set("contributeto", im.get(outlineTrapLabel));
+                trapOutlineContact.set("source", "table");
+                trapOutlineContact.set("table", new String[][]{{"0", "R_in+Ut_thk+Ut_recess"}, {"Ut_tangent", "Ut_thk+Ut_recess+Ut_trap_base/2"}, {"Ut_tangent", "-Ut_thk-Ut_recess-Ut_trap_base/2"}, {"0", "-R_in-Ut_thk-Ut_recess"}});
+
+                String unionOutlineTrapContactPartsLabel = "Union Outline Trap Contact Parts";
+                GeomFeature unionOutlineTrapContactParts = model.geom(id).feature(im.get(contactXSTrapLabel)).geom().create(im.next("uni", unionOutlineTrapContactPartsLabel), "Union");
+                unionOutlineTrapContactParts.label(unionOutlineTrapContactPartsLabel);
+                unionOutlineTrapContactParts.set("contributeto", im.get(outLineUnionTrapLabel));
+                unionOutlineTrapContactParts.set("intbnd", false);
+                unionOutlineTrapContactParts.selection("input").named(im.get(outlineTrapLabel));
+
+                String roundInlineContactTrapLabel = "Round Inline Contact Trap";
+                GeomFeature roundInlineContactTrap = model.geom(id).feature(im.get(contactXSTrapLabel)).geom().create(im.next("c", roundInlineContactTrapLabel), "Circle");
+                roundInlineContactTrap.label(roundInlineContactTrapLabel);
+                roundInlineContactTrap.set("contributeto", im.get(inlineTrapLabel));
+                roundInlineContactTrap.set("r", "R_in+Ut_recess");
+
+                String trapContactInlineLabel = "Trap Contact Inline";
+                GeomFeature trapContactInline = model.geom(id).feature(im.get(contactXSTrapLabel)).geom().create(im.next("pol", trapContactInlineLabel), "Polygon");
+                trapContactInline.label(trapContactInlineLabel);
+                trapContactInline.set("contributeto", im.get(inlineTrapLabel));
+                trapContactInline.set("source", "table");
+                trapContactInline.set("table", new String[][]{{"0", "R_in+Ut_recess"}, {"Ut_tangent", "Ut_recess+Ut_trap_base/2"}, {"Ut_tangent", "-Ut_recess-Ut_trap_base/2"}, {"0", "-R_in-Ut_recess"}});
+
+                String unionInlineContactTrapLabel = "Union Inline Contact Trap";
+                GeomFeature unionInlineContactTrap = model.geom(id).feature(im.get(contactXSTrapLabel)).geom().create(im.next("uni", unionInlineContactTrapLabel), "Union");
+                unionInlineContactTrap.label(unionInlineContactTrapLabel);
+                unionInlineContactTrap.set("contributeto", im.get(inlineUnionTrapLabel));
+                unionInlineContactTrap.set("intbnd", false);
+                unionInlineContactTrap.selection("input").named(im.get(outlineTrapLabel));
+
+                String difftoContactXSTrapLabel = "Diff to Contact XS";
+                GeomFeature difftoContactXSTrap = model.geom(id).feature(im.get(contactXSTrapLabel)).geom().create(im.next("dif", difftoContactXSTrapLabel), "Difference");
+                difftoContactXSTrap.label(difftoContactXSTrapLabel);
+                difftoContactXSTrap.selection("input").named(im.get(outlineTrapLabel));
+                difftoContactXSTrap.selection("input2").named(im.get(inlineTrapLabel));
+
+                String ifNeedDelContactPieceLabel = "if need to delete contact piece";
+                GeomFeature ifNeedDelContactPiece = model.geom(id).feature(im.get(contactXSTrapLabel)).geom().create(im.next("if", ifNeedDelContactPieceLabel), "If");
+                ifNeedDelContactPiece.label(ifNeedDelContactPieceLabel);
+                ifNeedDelContactPiece.set("condition", "(R_in + Ut_recess + Ut_thk) > Ut_tangent");
+
+                String delContactPiece1Label = "delete contact piece 1";
+                GeomFeature delContactPiece1 = model.geom(id).feature(im.get(contactXSTrapLabel)).geom().create(im.next("del", delContactPiece1Label), "Delete");
+                delContactPiece1.label(delContactPiece1Label);
+                delContactPiece1.selection("input").init(2);
+                delContactPiece1.selection("input").set(im.get(difftoContactXSTrapLabel) + "(1)", 2);
+                model.geom(id).feature(im.get(contactXSTrapLabel)).geom().create(im.next("endif"), "EndIf");
+
+                String makeContactTrapLabel = "Make Contact Trap";
+                GeomFeature makeContactTrap = model.geom(id).create(im.next("ext", makeContactTrapLabel), "Extrude");
+                makeContactTrap.label(makeContactTrapLabel);
+                makeContactTrap.set("contributeto", im.get("CONTACT FINAL TRAP"));
+                makeContactTrap.setIndex("distance", "Ut_z", 0);
+                makeContactTrap.selection("input").named(im.get("CONTACT XS Trap"));
+
+                String src1TrapLabel = "Src 1";
+                GeomFeature src1Trap = model.geom(id).create(im.next("pt", src1TrapLabel), "Point");
+                src1Trap.label(src1TrapLabel);
+                src1Trap.set("p", new String[]{"-R_in-(Ut_thk/2)-Ut_recess", "0", "Center"});
+                src1Trap.set("contributeto", im.get("SRC FINAL"));
+
+                String ifRecessTrapLabel = "If Recess Trap";
+                GeomFeature ifRecessTrap = model.geom(id).create(im.next("if", ifRecessTrapLabel), "If");
+                ifRecessTrap.label(ifRecessTrapLabel);
+                ifRecessTrap.set("condition", "Ut_recess > 0");
+
+                String recessXSTrapLabel = "Recess XS Trap WP";
+                GeomFeature recessXSTrap = model.geom(id).create(im.next("wp", recessXSTrapLabel), "WorkPlane");
+                recessXSTrap.label(recessXSTrapLabel);
+
+                recessXSTrap.set("contributeto", im.get("RECESS XS Trap"));
+                recessXSTrap.set("quickz", "Center-Ut_z/2");
+                recessXSTrap.set("unite", true);
+
+                String inlineRecessTrapLabel = "INLINE RECESS";
+                model.geom(id).feature(im.get(recessXSTrapLabel)).geom().selection().create(im.next("csel", inlineRecessTrapLabel), "CumulativeSelection");
+                model.geom(id).feature(im.get(recessXSTrapLabel)).geom().selection(im.get(inlineRecessTrapLabel)).label(inlineRecessTrapLabel);
+
+                String inlinerecessUnionTrapLabel = "INLINE_RECESS_UNION";
+                model.geom(id).feature(im.get(recessXSTrapLabel)).geom().selection().create(im.next("csel", inlinerecessUnionTrapLabel), "CumulativeSelection");
+                model.geom(id).feature(im.get(recessXSTrapLabel)).geom().selection(im.get(inlinerecessUnionTrapLabel)).label(inlinerecessUnionTrapLabel);
+
+                String outlineRecessTrapLabel = "OUTLINE";
+                model.geom(id).feature(im.get(recessXSTrapLabel)).geom().selection().create(im.next("csel", outlineRecessTrapLabel), "CumulativeSelection");
+                model.geom(id).feature(im.get(recessXSTrapLabel)).geom().selection(im.get(outlineRecessTrapLabel)).label(outlineRecessTrapLabel);
+
+                String outlineRecessTrapUnionLabel = "OUTLINE RECESS UNION";
+                model.geom(id).feature(im.get(recessXSTrapLabel)).geom().selection().create(im.next("csel", outlineRecessTrapUnionLabel), "CumulativeSelection");
+                model.geom(id).feature(im.get(recessXSTrapLabel)).geom().selection(im.get(outlineRecessTrapUnionLabel)).label(outlineRecessTrapUnionLabel);
+
+                String rorTrapLabel = "Round Outline Recess Trap";
+                GeomFeature rorTrap = model.geom(id).feature(im.get(recessXSTrapLabel)).geom().create(im.next("c", rorTrapLabel), "Circle");
+                rorTrap.label(rorTrapLabel);
+                rorTrap.set("contributeto", im.get(outlineRecessTrapLabel));
+                rorTrap.set("r", "R_in+Ut_recess");
+
+                String trapOutlineRecessLabel = "Trap Outline Recess";
+                GeomFeature trapOutlineRecess = model.geom(id).feature(im.get(recessXSTrapLabel)).geom().create(im.next("pol", trapOutlineRecessLabel), "Polygon");
+                trapOutlineRecess.label(trapOutlineRecessLabel);
+                trapOutlineRecess.set("contributeto", im.get(outlineRecessTrapLabel));
+                trapOutlineRecess.set("source", "table");
+                trapOutlineRecess.set("table", new String[][]{{"0", "R_in+Ut_recess"}, {"Ut_tangent", "Ut_recess+Ut_trap_base/2"}, {"Ut_tangent", "-Ut_recess-Ut_trap_base/2"}, {"0", "-R_in-Ut_recess"}});
+
+                String unionOutlineTrapRecessLabel = "Union Outline Trap Recess Parts";
+                GeomFeature unionOutlineTrapRecess = model.geom(id).feature(im.get(recessXSTrapLabel)).geom().create(im.next("uni", unionOutlineTrapRecessLabel), "Union");
+                unionOutlineTrapRecess.label(unionOutlineTrapRecessLabel);
+                unionOutlineTrapRecess.set("contributeto", im.get(outlineRecessTrapUnionLabel));
+                unionOutlineTrapRecess.set("intbnd", false);
+                unionOutlineTrapRecess.selection("input").named(im.get(outlineRecessTrapLabel));
+
+                String roundInlineRecessTrapLabel2 = "Round Inline Recess Trap2";
+                GeomFeature roundInlineRecessTrap = model.geom(id).feature(im.get(recessXSTrapLabel)).geom().create(im.next("c", roundInlineRecessTrapLabel2), "Circle");
+                roundInlineRecessTrap.label(roundInlineRecessTrapLabel2);
+                roundInlineRecessTrap.set("contributeto", im.get(inlineRecessTrapLabel));
+                roundInlineRecessTrap.set("r", "R_in");
+
+                String trapInlineRecessLabel = "Trap Inline Recess";
+                GeomFeature trapInlineRecess = model.geom(id).feature(im.get(recessXSTrapLabel)).geom().create(im.next("pol", trapInlineRecessLabel), "Polygon");
+                trapInlineRecess.label(trapInlineRecessLabel);
+                trapInlineRecess.set("contributeto", im.get(inlineRecessTrapLabel));
+                trapInlineRecess.set("source", "table");
+                trapInlineRecess.set("table", new String[][]{{"0", "R_in"}, {"Ut_tangent", "Ut_trap_base/2"}, {"Ut_tangent", "-Ut_trap_base/2"}, {"0", "-R_in"}});
+
+                String unionInlineRecessTrapLabel = "Union Inline Recess Trap";
+                GeomFeature unionInlineRecessTrap = model.geom(id).feature(im.get(recessXSTrapLabel)).geom().create(im.next("uni", unionInlineRecessTrapLabel), "Union");
+                unionInlineRecessTrap.label(unionInlineRecessTrapLabel);
+                unionInlineRecessTrap.set("contributeto", im.get(inlinerecessUnionTrapLabel));
+                unionInlineRecessTrap.set("intbnd", false);
+                unionInlineRecessTrap.selection("input").named(im.get(inlineRecessTrapLabel));
+
+                String difftoRecessXSTrapLabel = "Diff to Recess XS";
+                GeomFeature difftoRecessXSTrap = model.geom(id).feature(im.get(recessXSTrapLabel)).geom().create(im.next("dif", difftoRecessXSTrapLabel), "Difference");
+                difftoRecessXSTrap.label(difftoRecessXSTrapLabel);
+                difftoRecessXSTrap.selection("input").named(im.get(outlineRecessTrapUnionLabel));
+                difftoRecessXSTrap.selection("input2").named(im.get(inlinerecessUnionTrapLabel));
+
+                String ifNeedToDeleteRecessPieceLabel = "if need to delete recess piece";
+
+                GeomFeature ifNeedToDeleteRecessPiece = model.geom(id).feature(im.get(recessXSTrapLabel)).geom().create(im.next("if", ifNeedToDeleteRecessPieceLabel), "If");
+                ifNeedToDeleteRecessPiece.label(ifNeedToDeleteRecessPieceLabel);
+                ifNeedToDeleteRecessPiece.set("condition", "(R_in + Ut_recess) > Ut_tangent");
+
+                String DeleteRecessPieceLabel = "delete recess piece 1";
+                GeomFeature DeleteRecessPiece = model.geom(id).feature(im.get(recessXSTrapLabel)).geom().create(im.next("del", DeleteRecessPieceLabel), "Delete");
+                DeleteRecessPiece.label(DeleteRecessPieceLabel);
+                DeleteRecessPiece.selection("input").init(2);
+                DeleteRecessPiece.selection("input").set(im.get(difftoRecessXSTrapLabel) + "(1)", 2);
+
+                model.geom(id).feature(im.get(recessXSTrapLabel)).geom().create(im.next("endif"), "EndIf");
+
+                String makeRecessTrapLabel = "Make Recess";
+                GeomFeature makeRecessTrap = model.geom(id).create(im.next("ext", makeRecessTrapLabel), "Extrude");
+                makeRecessTrap.label(makeRecessTrapLabel);
+                makeRecessTrap.set("contributeto", im.get("RECESS FINAL TRAP"));
+                makeRecessTrap.setIndex("distance", "Ut_z", 0);
+                makeRecessTrap.selection("input").named(im.get("RECESS XS Trap"));
+
+                String endifRecessTrapLabel = "end if recess Trap";
+                GeomFeature endifRecessTrap = model.geom(id).create(im.next("endif", endifRecessTrapLabel), "EndIf");
+                endifRecessTrap.label(endifRecessTrapLabel);
 
                 model.geom(id).run();
 
@@ -2031,7 +2484,8 @@ class Part {
                         "R_in",
                         "U_tangent",
                         "U_thk",
-                        "U_z"
+                        "U_z",
+                        "U_recess"
 
                 };
 
@@ -2045,6 +2499,7 @@ class Part {
                 partInstance.setEntry("selkeepdom", instanceID + "_" + myIM.get(myLabels[0]) + ".dom", "off"); // CONTACT XS
                 partInstance.setEntry("selkeepdom", instanceID + "_" + myIM.get(myLabels[1]) + ".dom", "on"); // CONTACT FINAL
                 partInstance.setEntry("selkeepdom", instanceID + "_" + myIM.get(myLabels[2]) + ".dom", "off"); // SRC
+                partInstance.setEntry("selkeepdom", instanceID + "_" + myIM.get(myLabels[4]) + ".dom", "on"); // RECESS FINAL
 
                 partInstance.setEntry("selkeeppnt", instanceID + "_" + myIM.get(myLabels[1]) + ".pnt", "off"); // CONTACT FINAL
 
@@ -2134,6 +2589,75 @@ class Part {
 
                 break;
 
+            case "uCuffTrap_Primitive":
+                // set instantiation parameters
+                String[] uCuffTrapParameters = {
+                        "R_in",
+                        "Ut_tangent",
+                        "Rt_out",
+                        "Ut_shift_x",
+                        "Ut_shift_y",
+                        "Ut_gap",
+                        "Center",
+                        "Ut_L",
+                        "Ut_trap_base"
+
+                };
+
+                for (String param : uCuffTrapParameters) {
+                    partInstance.setEntry("inputexpr", param, (String) itemObject.get(param));
+
+                }
+
+                // imports
+                partInstance.set("selkeepnoncontr", false);
+                partInstance.setEntry("selkeepdom", instanceID + "_" + myIM.get(myLabels[0]) + ".dom", "off"); // CUFF XS
+                partInstance.setEntry("selkeepdom", instanceID + "_" + myIM.get(myLabels[1]) + ".dom", "on");  // CUFF FINAL
+
+                partInstance.setEntry("selkeeppnt", instanceID + "_" + myIM.get(myLabels[1]) + ".pnt", "off"); // CUFF FINAL
+
+                break;
+
+            case "uContactTrap_Primitive":
+                // set instantiation parameters
+                String[] uContactTrapParameters = {
+                        "Center",
+                        "R_in",
+                        "Ut_thk",
+                        "Ut_tangent",
+                        "Ut_recess",
+                        "Ut_z",
+                        "Ut_trap_base"
+
+                };
+
+                for (String param : uContactTrapParameters) {
+                    partInstance.setEntry("inputexpr", param, (String) itemObject.get(param));
+
+                }
+
+                // imports
+                partInstance.set("selkeepnoncontr", false);
+                partInstance.setEntry("selkeepdom", instanceID + "_" + myIM.get(myLabels[0]) + ".dom", "off"); // RECESS XS Trap
+                partInstance.setEntry("selkeepdom", instanceID + "_" + myIM.get(myLabels[1]) + ".dom", "off"); // CONTACT XS Trap
+                partInstance.setEntry("selkeepdom", instanceID + "_" + myIM.get(myLabels[2]) + ".dom", "on"); // RECESS FINAL TRAP
+                partInstance.setEntry("selkeepdom", instanceID + "_" + myIM.get(myLabels[3]) + ".dom", "on"); // CONTACT FINAL TRAP
+
+                partInstance.setEntry("selkeeppnt", instanceID + "_" + myIM.get(myLabels[4]) + ".pnt", "on"); // SRC FINAL
+
+
+                // assign physics
+                String ut_pcsLabel = instanceLabel + " Current Source";
+                id = mw.im.next("pcs", ut_pcsLabel);
+                pf = model.component("comp1").physics("ec").create(id, "PointCurrentSource", 0);
+                mw.im.currentIDs.put(instanceLabel, id);
+
+                pf.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[4]) + "_pnt"); // SRC_FINAL
+                pf.set("Qjp", 0.000);
+                pf.label(ut_pcsLabel);
+
+                break;
+
             default:
                 throw new IllegalArgumentException("No implementation for part instance name: " + pseudonym);
 
@@ -2150,9 +2674,8 @@ class Part {
      * @throws IllegalArgumentException there is not a nerve part to build of that type (for typos probably)
      */
     public static void createNervePartInstance(String pseudonym, int index, String path, ModelWrapper mw,
-                                               HashMap<String, String[]> tracePaths, JSONObject sampleData, ModelParamGroup nerveParams, JSONObject modelData) throws IllegalArgumentException {
+                                               HashMap<String, String[]> tracePaths, JSONObject sampleData, ModelParamGroup nerveParams, JSONObject modelData) throws Exception {
 
-        // TODO get rid of modelData, only used for interp tol
         Model model = mw.getModel();
         IdentifierManager im = mw.im;
 
@@ -2200,8 +2723,15 @@ class Part {
                 ic.set("contributeto", im.get(icLabel));
                 ic.set("source", "file");
                 ic.set("filename", ci_inner_path);
-                //TODO
-                ic.set("rtol", 0.04); //modelData.getDouble("trace_interp_tol"));
+
+                if (modelData.has("inner_interp_tol") && !modelData.has("trace_interp_tol")) {
+                    ic.set("rtol", modelData.getDouble("inner_interp_tol"));
+                } else if (modelData.has("trace_interp_tol") && !modelData.has("inner_interp_tol")) {
+                    ic.set("rtol", modelData.getDouble("trace_interp_tol"));
+                } else if (modelData.has("trace_interp_tol") && modelData.has("inner_interp_tol")) {
+                    throw new Exception("Both trace_interp_tol and inner_interp_tol defined in Model. " +
+                            "Use new convention for inners (inner_interp_tol) and outers (outer_interp_tol) separately!");
+                }
 
                 String conv2solidLabel = ci_inner_name + " Inner Surface " + ci_inner_index;
                 GeomFeature conv2solid = model.component("comp1").geom("geom1").feature(im.get(fascicleCICXLabel)).geom().create(im.next("csol",conv2solidLabel), "ConvertToSolid");
@@ -2310,8 +2840,15 @@ class Part {
                     icMesh.set("contributeto", im.get(icselLabel));
                     icMesh.set("source", "file");
                     icMesh.set("filename", mesh_inner_path);
-                    //TODO
-                    icMesh.set("rtol", 0.04);
+
+                    if (modelData.has("inner_interp_tol") && !modelData.has("trace_interp_tol")) {
+                        icMesh.set("rtol", modelData.getDouble("inner_interp_tol"));
+                    } else if (modelData.has("trace_interp_tol") && !modelData.has("inner_interp_tol")) {
+                        icMesh.set("rtol", modelData.getDouble("trace_interp_tol")); // backwards compatibility
+                    } else if (modelData.has("trace_interp_tol") && modelData.has("inner_interp_tol")) {
+                        throw new Exception("Both trace_interp_tol and inner_interp_tol defined in Model. " +
+                                "Use new convention for inners (inner_interp_tol) and outers (outer_interp_tol) separately!");
+                    }
 
                     String icSurfLabel = "outer" + index + " Inner Surface " + mesh_inner_index;
                     GeomFeature icSurf = innersPlane.geom().create(im.next("csol",icSurfLabel), "ConvertToSolid");
@@ -2342,8 +2879,15 @@ class Part {
                 outeric1.set("contributeto", im.get(oc1Label));
                 outeric1.set("source", "file");
                 outeric1.set("filename", mesh_outer_path);
-                //TODO
-                outeric1.set("rtol", 0.04);
+
+                if (modelData.has("outer_interp_tol") && !modelData.has("trace_interp_tol")) {
+                    outeric1.set("rtol", modelData.getDouble("outer_interp_tol"));
+                } else if (modelData.has("trace_interp_tol") && !modelData.has("outer_interp_tol")) {
+                    outeric1.set("rtol", modelData.getDouble("trace_interp_tol")); // backwards compatibility
+                } else if (modelData.has("trace_interp_tol") && modelData.has("outer_interp_tol")) {
+                    throw new Exception("Both trace_interp_tol and inner_interp_tol defined in Model. " +
+                            "Use new convention for inners (outer_interp_tol) and outers (outer_interp_tol) separately!");
+                }
 
                 String outericSurfaceLabel = "outer" + index + " Outer Surface";
                 outerPlane.geom().create(im.next("csol",outericSurfaceLabel), "ConvertToSolid");

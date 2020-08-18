@@ -4,8 +4,8 @@ import json
 import os
 from src.utils.enums import Env
 
-def run(env_path: str):
 
+def run(env_path: str):
     print('Start environment path variables setup.')
 
     result = {}
@@ -23,8 +23,9 @@ def run(env_path: str):
         file.seek(0)  # go to beginning of file to overwrite
         file.write(json.dumps(result, indent=2))
         file.truncate()  # remove any trailing characters from old file
-    
+
     print('Success! Environment path variables updated.\n')
 
+
 if __name__ == "__main__":
-    env_setup(os.path.join('config', 'system', 'env.json'))
+    run(os.path.join('config', 'system', 'env.json'))

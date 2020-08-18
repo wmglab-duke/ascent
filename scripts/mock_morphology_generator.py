@@ -9,10 +9,10 @@ import time
 from src.core import MockSample
 from src.utils import *
 
-start = time.time()
-
 
 def run(args):
+    start = time.time()
+
     sys.argv = args
     if len(sys.argv) != 2:
         print('INVALID number of arguments to mock_morphology_generator.py')
