@@ -142,7 +142,6 @@ input/
 */user/*
 
 # samples
-*.mph*
 *.class*
 out/
 */system/env.json
