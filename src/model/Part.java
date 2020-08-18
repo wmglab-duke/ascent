@@ -2236,7 +2236,7 @@ class Part {
      * @throws IllegalArgumentException there is not a nerve part to build of that type (for typos probably)
      */
     public static void createNervePartInstance(String pseudonym, int index, String path, ModelWrapper mw,
-                                               HashMap<String, String[]> tracePaths, JSONObject sampleData, ModelParamGroup nerveParams, JSONObject modelData) throws IllegalArgumentException {
+                                               HashMap<String, String[]> tracePaths, JSONObject sampleData, ModelParamGroup nerveParams, JSONObject modelData) throws Exception {
 
         // TODO get rid of modelData, only used for interp tol
         Model model = mw.getModel();
