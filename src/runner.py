@@ -206,20 +206,20 @@ class Runner(Exceptionable, Configurable):
 
                             if 'supersampled_bases' in simulation.configs['sims'].keys():
                                 if simulation.configs['sims']['supersampled_bases']['use']:
-                                    parent_sim = simulation.configs['sims']['supersampled_bases']['parent_sim']
+                                    source_sim = simulation.configs['sims']['supersampled_bases']['source_sim']
 
-                                    parent_sim_obj_dir = os.path.join(
+                                    source_sim_obj_dir = os.path.join(
                                         os.getcwd(),
                                         'samples',
                                         str(sample_num),
                                         'models',
                                         str(model_num),
                                         'sims',
-                                        str(parent_sim)
+                                        str(source_sim)
                                     )
 
                                     ss_bases_exist.append(
-                                        simulation.ss_bases_exist(parent_sim_obj_dir)
+                                        simulation.ss_bases_exist(source_sim_obj_dir)
                                     )
 
                         else:
@@ -240,20 +240,20 @@ class Runner(Exceptionable, Configurable):
 
                             if 'supersampled_bases' in simulation.configs['sims'].keys():
                                 if simulation.configs['sims']['supersampled_bases']['use']:
-                                    parent_sim = simulation.configs['sims']['supersampled_bases']['parent_sim']
+                                    source_sim = simulation.configs['sims']['supersampled_bases']['source_sim']
 
-                                    parent_sim_obj_dir = os.path.join(
+                                    source_sim_obj_dir = os.path.join(
                                         os.getcwd(),
                                         'samples',
                                         str(sample_num),
                                         'models',
                                         str(model_num),
                                         'sims',
-                                        str(parent_sim)
+                                        str(source_sim)
                                     )
 
                                     ss_bases_exist.append(
-                                        simulation.ss_bases_exist(parent_sim_obj_dir)
+                                        simulation.ss_bases_exist(source_sim_obj_dir)
                                     )
 
             if ('break_points' in self.configs.keys()) and ('pre_java' in self.search(Config.RUN, 'break_points').keys()):

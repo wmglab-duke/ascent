@@ -354,34 +354,34 @@ class Simulation(Exceptionable, Configurable, Saveable):
                     for file in files:
 
                         ss_bases = [[] for _ in active_src_vals[0]]
-                        parent_sim = supersampled_bases.get('parent_sim')
+                        source_sim = supersampled_bases.get('source_sim')
 
-                        # check that dz in parent_sim matches the dz (if provided) in current sim
+                        # check that dz in source_sim matches the dz (if provided) in current sim
 
-                        parent_sim_obj_dir = os.path.join(sim_dir, str(parent_sim))
+                        source_sim_obj_dir = os.path.join(sim_dir, str(source_sim))
 
-                        parent_sim_obj_file = os.path.join(parent_sim_obj_dir, 'sim.obj')
+                        source_sim_obj_file = os.path.join(source_sim_obj_dir, 'sim.obj')
 
-                        parent_simulation: Simulation = load(parent_sim_obj_file)
+                        source_simulation: Simulation = load(source_sim_obj_file)
 
-                        parent_dz = parent_simulation.configs['sims']['supersampled_bases']['dz']
+                        source_dz = source_simulation.configs['sims']['supersampled_bases']['dz']
 
                         if 'dz' in supersampled_bases.keys():
-                            if supersampled_bases.get('dz') != parent_dz:
+                            if supersampled_bases.get('dz') != source_dz:
                                 self.throw(79)
                         elif 'dz' not in supersampled_bases.keys():
-                            warnings.warn('dz not provided in Sim, so will accept dz={} specified in parent Sim'.format(parent_dz))
+                            warnings.warn('dz not provided in Sim, so will accept dz={} specified in source Sim'.format(source_dz))
 
                         for basis_ind in range(len(active_src_vals[0])):
 
                             ss_bases[basis_ind].append([])
                             ss_bases_src_path = os.path.join(sim_dir,
-                                                          str(parent_sim),
+                                                          str(source_sim),
                                                           'ss_bases',
                                                           str(basis_ind))
 
                             ss_fiberset_path = os.path.join(sim_dir,
-                                                            str(parent_sim),
+                                                            str(source_sim),
                                                             'ss_coords')
 
                             if not os.path.exists(ss_bases_src_path):
