@@ -20,5 +20,9 @@
     "bases": true,
     "debug_geom": true,
     "mesh": true
+  },
+  "partial_fem": {
+    "nerve_only": false,
+    "cuff_only": false
   }
 }

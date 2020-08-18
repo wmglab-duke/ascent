@@ -136,12 +136,12 @@ dmypy.json
 # don't include data b/c this may get pretty big at some point
 samples/
 submit/
+data/tmp/
 
 input/
 */user/*
 
 # samples
-*r.tif
 *.mph*
 *.class*
 out/

@@ -322,11 +322,9 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             if myel:
                 step = 11
 
-            while start - (values[0] if not is_points else values[0][-1]) > 0.1:
-                values = values[step:]
-
-            while (values[-1] if not is_points else values[-1][-1]) - end > 0.1:
-                values = values[:-step]
+            while (start - (values[0] if not is_points else values[0][-1]) > 0.1) or \
+                    ((values[-1] if not is_points else values[-1][-1]) - end > 0.1):
+                values = values[step:-step]
 
             return values
 
@@ -352,7 +350,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
 
             # compute offset z coordinate -- only clip if NOT an SL fiber
-            z_offset = [z + offset + additional_offset for z in z_values]
+            z_offset = [z + offset - additional_offset for z in z_values]
             if xy_mode != FiberXYMode.SL_PSEUDO_INTERP:
                 z_offset = clip(z_offset,
                                 self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'min'),
@@ -477,7 +475,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                                 (paranodal_length_1 / 2) + (node_length / 2)]
 
                 # account for difference between last node z and half fiber length -> must shift extra distance
-                z_shift_to_center += abs(sum(z_steps) - half_fiber_length)
+                z_shift_to_center += sum(z_steps) - half_fiber_length
 
                 reverse_z_steps = z_steps.copy()
                 reverse_z_steps.reverse()
@@ -493,15 +491,12 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                     ),
                 )
 
-                fibers = [
-                    clip(fiber, 0, model_length, myelinated, is_points=True)
-                    for fiber in build_fibers_with_offset(zs,
-                                                          myelinated,
-                                                          fiber_length,
-                                                          delta_z,
-                                                          z_shift_to_center,
-                                                          my_z_seed=my_z_seed)
-                ]
+                fibers = [fiber for fiber in build_fibers_with_offset(zs,
+                                                                      myelinated,
+                                                                      fiber_length,
+                                                                      delta_z,
+                                                                      z_shift_to_center,
+                                                                      my_z_seed=my_z_seed)]
 
             else:  # UNMYELINATED
 

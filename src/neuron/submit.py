@@ -29,7 +29,7 @@ def make_submission_list():
         print('compile')
         os.chdir(os.path.join('MOD_Files'))
         subprocess.run(['nrnivmodl'], shell=True)
-        os.chdir('')
+        os.chdir('..')
 
     local_args_lists = []
 
