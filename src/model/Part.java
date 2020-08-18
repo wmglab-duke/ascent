@@ -2238,7 +2238,6 @@ class Part {
     public static void createNervePartInstance(String pseudonym, int index, String path, ModelWrapper mw,
                                                HashMap<String, String[]> tracePaths, JSONObject sampleData, ModelParamGroup nerveParams, JSONObject modelData) throws Exception {
 
-        // TODO get rid of modelData, only used for interp tol
         Model model = mw.getModel();
         IdentifierManager im = mw.im;
 
