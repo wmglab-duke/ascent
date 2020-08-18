@@ -117,6 +117,7 @@ class Runner(Exceptionable, Configurable):
             self.throw(80)
 
         potentials_exist: List[bool] = []  # if all of these are true, skip Java
+        ss_bases_exist: List[bool] = []  # if all of these are true, skip Java
 
         sample_num = self.configs[Config.RUN.value]['sample']
 
@@ -202,6 +203,24 @@ class Runner(Exceptionable, Configurable):
                             simulation: Simulation = load(sim_obj_file)
                             potentials_exist.append(simulation.potentials_exist(sim_obj_dir))
 
+                            if 'supersampled_bases' in simulation.configs['sims'].keys():
+                                if simulation.configs['sims']['supersampled_bases']['use']:
+                                    parent_sim = simulation.configs['sims']['supersampled_bases']['parent_sim']
+
+                                    parent_sim_obj_dir = os.path.join(
+                                        os.getcwd(),
+                                        'samples',
+                                        str(sample_num),
+                                        'models',
+                                        str(model_num),
+                                        'sims',
+                                        str(parent_sim)
+                                    )
+
+                                    ss_bases_exist.append(
+                                        simulation.ss_bases_exist(parent_sim_obj_dir)
+                                    )
+
                         else:
                             if not os.path.exists(sim_obj_dir):
                                 os.makedirs(sim_obj_dir)
@@ -218,8 +237,25 @@ class Runner(Exceptionable, Configurable):
 
                             potentials_exist.append(simulation.potentials_exist(sim_obj_dir))
 
-            if ('break_points' in self.configs.keys()) and (
-                    'pre_java' in self.search(Config.RUN, 'break_points').keys()):
+                            if 'supersampled_bases' in simulation.configs['sims'].keys():
+                                if simulation.configs['sims']['supersampled_bases']['use']:
+                                    parent_sim = simulation.configs['sims']['supersampled_bases']['parent_sim']
+
+                                    parent_sim_obj_dir = os.path.join(
+                                        os.getcwd(),
+                                        'samples',
+                                        str(sample_num),
+                                        'models',
+                                        str(model_num),
+                                        'sims',
+                                        str(parent_sim)
+                                    )
+
+                                    ss_bases_exist.append(
+                                        simulation.ss_bases_exist(parent_sim_obj_dir)
+                                    )
+
+            if ('break_points' in self.configs.keys()) and ('pre_java' in self.search(Config.RUN, 'break_points').keys()):
                 if self.search(Config.RUN, 'break_points', 'pre_java'):
                     print('KILLING PRE JAVA')
                     pass
@@ -227,7 +263,7 @@ class Runner(Exceptionable, Configurable):
             # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials if necessary
             if 'models' in all_configs.keys() and 'sims' in all_configs.keys():
                 # only transition to java if necessary (there are potentials that do not exist)
-                if not all(potentials_exist):
+                if not all(potentials_exist) or not all(ss_bases_exist):
                     print('\nTO JAVA\n')
                     self.handoff(self.number)
                     print('\nTO PYTHON\n')
@@ -263,13 +299,12 @@ class Runner(Exceptionable, Configurable):
                                 str(self.configs[Config.RUN.value]['sample']),
                                 'models',
                                 str(model_num),
-                                'sims',
-                                str(sim_num)
+                                'sims'
                             )
 
                             # load up correct simulation and build required sims
                             simulation: Simulation = load(sim_obj_path)
-                            simulation.build_n_sims(sim_dir)
+                            simulation.build_n_sims(sim_dir, sim_num)
 
                             # export simulations
                             Simulation.export_n_sims(

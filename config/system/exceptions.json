@@ -396,12 +396,17 @@
   },
   {
     "code": 79,
-    "text": "cuff_only and nerve_only indicated in Config.Run, which does not make sense.",
-    "source": "src.core.Runner.run"
+    "text": "No dz provided for Sim generating super-sampled bases.",
+    "source": "src.core.Fiberset._generate_z"
   },
   {
     "code": 80,
     "text": "cuff_only and nerve_only indicated in Config.Run, which does not make sense.",
     "source": "src.core.Runner.run"
+  },
+  {
+    "code": 81,
+    "text": "Trying to use super-sampled potentials that do not exist (hint: check that if 'use' is true, 'generate' was also true for the parent Sim).",
+    "source": "src.core.Simulation.build_n_sims"
   }
 ]
