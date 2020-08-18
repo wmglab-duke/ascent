@@ -32,6 +32,8 @@ def make_submission_list():
         os.chdir('..')
 
     local_args_lists = []
+    run_filenames = []
+    submission_contexts = []
 
     for run_number in sys.argv[1:]:
         # run number is numeric
@@ -39,6 +41,7 @@ def make_submission_list():
 
         # build configuration filename
         filename = os.path.join('runs', run_number + '.json')
+        run_filenames.append(filename)
 
         # configuration file exists
         assert os.path.exists(filename), 'Run configuration not found: {}'.format(run_number)
@@ -58,6 +61,7 @@ def make_submission_list():
         models = run.get('models', [])
         sims = run.get('sims', [])
         submission_context = run.get('submission_context', 'cluster')
+        submission_contexts.append(submission_context)
 
         # submission context is valid
         assert submission_context in ALLOWED_SUBMISSION_CONTEXTS, 'Invalid submission context: {}'.format(
@@ -206,7 +210,7 @@ def make_submission_list():
 
         local_args_lists.append(local_args_list)
 
-    return local_args_lists, submission_context
+    return local_args_lists, submission_contexts, run_filenames
 
 
 def local_submit(my_local_args):
@@ -222,10 +226,30 @@ def local_submit(my_local_args):
 
 
 def main():
-    submit_lists, sub_context = make_submission_list()
-    if sub_context == 'local':
-        for submit_list in submit_lists:
-            pool = multiprocessing.Pool(multiprocessing.cpu_count() - 1)
+    submit_lists, sub_contexts, run_filenames = make_submission_list()
+    for submit_list, sub_context, run_filename in zip(submit_lists, sub_contexts, run_filenames):
+
+        if sub_context == 'local':
+
+            with open(run_filename, 'r') as file:
+                run = json.load(file)
+
+            if 'local_avail_cpus' in run:
+                cpus = run.get('local_avail_cpus')
+
+                if cpus > multiprocessing.cpu_count() - 1:
+                    raise ValueError('local_avail_cpus in Run asking for more than cpu_count-1 CPUs')
+
+                print('Submitting Run {} locally to {} CPUs (defined by local_avail_cpus in Run)'.format(
+                    run_filename.split('.')[0],
+                    cpus)
+                )
+
+            else:
+                cpus = multiprocessing.cpu_count() - 1
+                print('local_avail_cpus not defined in Run, so proceeding with cpu_count-1={} CPUs'.format(cpus))
+
+            pool = multiprocessing.Pool(cpus)
             result = pool.map(local_submit, submit_list)
 
 
