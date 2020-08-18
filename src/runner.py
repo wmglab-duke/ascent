@@ -109,8 +109,12 @@ class Runner(Exceptionable, Configurable):
         Simulation.export_neuron_files(os.environ[Env.NSIM_EXPORT_PATH.value])
 
         if 'break_points' in self.configs[Config.RUN.value].keys() and \
-            sum(self.search(Config.RUN, 'break_points').values()) > 1:
+                sum(self.search(Config.RUN, 'break_points').values()) > 1:
             self.throw(76)
+
+        if 'partial_fem' in self.configs[Config.RUN.value].keys() and \
+                sum(self.search(Config.RUN, 'partial_fem').values()) > 1:
+            self.throw(79)
 
         potentials_exist: List[bool] = []  # if all of these are true, skip Java
 
@@ -214,7 +218,8 @@ class Runner(Exceptionable, Configurable):
 
                             potentials_exist.append(simulation.potentials_exist(sim_obj_dir))
 
-            if ('break_points' in self.configs.keys()) and ('pre_java' in self.search(Config.RUN, 'break_points').keys()):
+            if ('break_points' in self.configs.keys()) and (
+                    'pre_java' in self.search(Config.RUN, 'break_points').keys()):
                 if self.search(Config.RUN, 'break_points', 'pre_java'):
                     print('KILLING PRE JAVA')
                     pass
@@ -282,7 +287,8 @@ class Runner(Exceptionable, Configurable):
                                 os.environ[Env.NSIM_EXPORT_PATH.value]
                             )
 
-                        print('Model {} data exported to appropriate folders in {}'.format(model_num, os.environ[Env.NSIM_EXPORT_PATH.value]))
+                        print('Model {} data exported to appropriate folders in {}'.format(model_num, os.environ[
+                            Env.NSIM_EXPORT_PATH.value]))
 
                     elif not models_exit_status[model_index]:
                         print('\nDid not create NEURON simulations for Sims associated with: \n'
@@ -314,10 +320,10 @@ class Runner(Exceptionable, Configurable):
             os.system('{}/java/maci64/jre/Contents/Home/bin/java '
                       '-cp .:$(echo {}/plugins/*.jar | '
                       'tr \' \' \':\'):../bin/json-20190722.jar:../bin model.{} "{}" "{}"'.format(comsol_path,
-                                                                                              comsol_path,
-                                                                                              core_name,
-                                                                                              project_path,
-                                                                                              run_path))
+                                                                                                  comsol_path,
+                                                                                                  core_name,
+                                                                                                  project_path,
+                                                                                                  run_path))
             os.chdir('..')
 
         elif sys.platform.startswith('linux'):  # linux
@@ -331,10 +337,10 @@ class Runner(Exceptionable, Configurable):
             os.system('{}/java/glnxa64/jre/bin/java '
                       '-cp .:$(echo {}/plugins/*.jar | '
                       'tr \' \' \':\'):../bin/json-20190722.jar:../bin model.{} "{}" "{}"'.format(comsol_path,
-                                                                                              comsol_path,
-                                                                                              core_name,
-                                                                                              project_path,
-                                                                                              run_path))
+                                                                                                  comsol_path,
+                                                                                                  core_name,
+                                                                                                  project_path,
+                                                                                                  run_path))
             os.chdir('..')
 
         else:  # assume to be 'win64'
@@ -347,10 +353,10 @@ class Runner(Exceptionable, Configurable):
             os.system('""{}\\java\\win64\\jre\\bin\\java" '
                       '-cp "{}\\plugins\\*";"..\\bin\\json-20190722.jar";"..\\bin" '
                       'model.{} "{}" "{}""'.format(comsol_path,
-                                               comsol_path,
-                                               core_name,
-                                               project_path,
-                                               run_path))
+                                                   comsol_path,
+                                                   core_name,
+                                                   project_path,
+                                                   run_path))
             os.chdir('..')
 
     def compute_cuff_shift(self, model_config: dict, sample: Sample, sample_config: dict):
@@ -367,7 +373,8 @@ class Runner(Exceptionable, Configurable):
         nerve_present: NerveMode = self.search_mode(NerveMode, Config.SAMPLE)
 
         # fetch cuff config
-        cuff_config: dict = self.load(os.path.join(os.getcwd(), "config", "system", "cuffs", model_config['cuff']['preset']))
+        cuff_config: dict = self.load(
+            os.path.join(os.getcwd(), "config", "system", "cuffs", model_config['cuff']['preset']))
 
         # fetch 1-2 letter code for cuff (ex: 'CT')
         cuff_code: str = cuff_config['code']
@@ -489,7 +496,8 @@ class Runner(Exceptionable, Configurable):
                 orientation_point = slide.fascicles[0].outer.points[slide.orientation_point_index][:2]
 
         if orientation_point is not None:
-            theta_c = -np.pi + np.arctan2(orientation_point[1], orientation_point[0]) # overwrite theta_c, use our own orientation
+            theta_c = -np.pi + np.arctan2(orientation_point[1],
+                                          orientation_point[0])  # overwrite theta_c, use our own orientation
 
             # if r_i < r_f:
             #     model_config['cuff']['rotate']['pos_ang'] = (theta_c - theta_i + theta_f) * 360 / (2 * np.pi)
@@ -513,7 +521,8 @@ class Runner(Exceptionable, Configurable):
                 # model_config['cuff']['shift']['x'] = x  # - cuff_r_buffer * np.cos(theta_c)
                 # model_config['cuff']['shift']['y'] = y  # - cuff_r_buffer * np.sin(theta_c)
 
-                model_config['cuff']['shift']['x'] = x + (r_i - offset - cuff_r_buffer - r_bound) * np.cos(theta_c)  # FIXED?
+                model_config['cuff']['shift']['x'] = x + (r_i - offset - cuff_r_buffer - r_bound) * np.cos(
+                    theta_c)  # FIXED?
                 model_config['cuff']['shift']['y'] = y + (r_i - offset - cuff_r_buffer - r_bound) * np.sin(theta_c)
 
             else:

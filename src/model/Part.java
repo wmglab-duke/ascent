@@ -1312,11 +1312,14 @@ class Part {
                 model.geom(id).inputParam().set("U_tangent", "200 [um]");
                 model.geom(id).inputParam().set("U_thk", "20 [um]");
                 model.geom(id).inputParam().set("U_z", "100 [um]");
+                model.geom(id).inputParam().set("U_recess", "10 [um]");
 
                 im.labels = new String[]{
                         "CONTACT XS", //0
                         "CONTACT FINAL",
-                        "SRC"
+                        "SRC",
+                        "RECESS XS",
+                        "RECESS FINAL"
 
                 };
 
@@ -1353,15 +1356,15 @@ class Part {
                 GeomFeature rIL = ucontactxs.geom().create(im.next("c",roundInlineLabel), "Circle");
                 rIL.label(roundInlineLabel);
                 rIL.set("contributeto", im.get(inLineLabel));
-                rIL.set("r", "R_in");
+                rIL.set("r", "R_in+U_recess");
 
                 String rectInlineLabel = "Rect Inline";
                 GeomFeature rectIL = ucontactxs.geom().create(im.next("r",rectInlineLabel), "Rectangle");
                 rectIL.label(rectInlineLabel);
                 rectIL.set("contributeto", im.get(inLineLabel));
-                rectIL.set("pos", new String[]{"0", "-R_in"});
-                rectIL.set("base", "corner");
-                rectIL.set("size", new String[]{"U_tangent+U_thk", "2*R_in"});
+                rectIL.set("pos", new String[]{"U_tangent/2", "0"});
+                rectIL.set("base", "center");
+                rectIL.set("size", new String[]{"U_tangent", "2*(R_in+U_recess)"});
 
                 String uInlinePLabel = "Union Inline Parts";
                 GeomFeature uInline = ucontactxs.geom().create(im.next("uni",uInlinePLabel), "Union");
@@ -1374,7 +1377,7 @@ class Part {
                 GeomFeature ro = ucontactxs.geom().create(im.next("c",roLabel), "Circle");
                 ro.label(roLabel);
                 ro.set("contributeto", im.get(outLineLabel));
-                ro.set("r", "R_in+U_thk");
+                ro.set("r", "R_in+U_thk+U_recess");
 
                 String rectoLabel = "Rect Outline";
                 GeomFeature urect = ucontactxs.geom().create(im.next("r",rectoLabel), "Rectangle");
@@ -1382,7 +1385,7 @@ class Part {
                 urect.set("contributeto", im.get(outLineLabel));
                 urect.set("pos", new String[]{"U_tangent/2", "0"});
                 urect.set("base", "center");
-                urect.set("size", new String[]{"U_tangent", "2*R_in+2*U_thk"});
+                urect.set("size", new String[]{"U_tangent", "2*(R_in+U_thk+U_recess)"});
 
                 String uOPLabel = "Union Outline Parts";
                 GeomFeature uOP = ucontactxs.geom().create(im.next("uni",uOPLabel), "Union");
@@ -1408,7 +1411,92 @@ class Part {
                 GeomFeature usrc = model.geom(id).create(im.next("pt",usrcLabel), "Point");
                 usrc.label(usrcLabel);
                 usrc.set("contributeto", im.get("SRC"));
-                usrc.set("p", new String[]{"-R_in-(U_thk/2)", "0", "Center"});
+                usrc.set("p", new String[]{"-R_in-(U_thk/2)-U_recess", "0", "Center"});
+
+                String ifurecessLabel = "If uRecess";
+                GeomFeature ifurecess = model.geom(id).create(im.next("if", ifurecessLabel), "If");
+                ifurecess.label(ifurecessLabel);
+                ifurecess.set("condition", "U_recess > 0");
+
+                String urecessxsLabel = "Recess XS";
+                GeomFeature urecessxs = model.geom(id).create(im.next("wp",urecessxsLabel), "WorkPlane");
+                urecessxs.label(urecessxsLabel);
+                urecessxs.set("contributeto", im.get("RECESS XS"));
+                urecessxs.set("quickz", "Center-U_z/2");
+                urecessxs.set("unite", true);
+
+                String inLineRecessLabel = "INLINE RECESS";
+                urecessxs.geom().selection().create(im.next("csel", inLineRecessLabel), "CumulativeSelection");
+                urecessxs.geom().selection(im.get(inLineRecessLabel)).label(inLineRecessLabel);
+
+                String inLineRecessUnionLabel = "INLINE_RECESS_UNION";
+                urecessxs.geom().selection().create(im.next("csel", inLineRecessUnionLabel), "CumulativeSelection");
+                urecessxs.geom().selection(im.get(inLineRecessUnionLabel)).label(inLineRecessUnionLabel);
+
+                String outLineRecessLabel = "OUTLINE RECESS";
+                urecessxs.geom().selection().create(im.next("csel", outLineRecessLabel), "CumulativeSelection");
+                urecessxs.geom().selection(im.get(outLineRecessLabel)).label(outLineRecessLabel);
+
+                String inLineRecessPlaneLabel = "INLINE RECESS PLANE";
+                urecessxs.geom().selection().create(im.next("csel", inLineRecessPlaneLabel), "CumulativeSelection");
+                urecessxs.geom().selection(im.get(inLineRecessPlaneLabel)).label(inLineRecessPlaneLabel);
+
+                String roundInlineRecessLabel = "Round Inline Recess";
+                GeomFeature roundInlineRecess = urecessxs.geom().create(im.next("c", roundInlineRecessLabel), "Circle");
+                roundInlineRecess.label(roundInlineRecessLabel);
+                roundInlineRecess.set("contributeto", im.get(inLineRecessLabel));
+                roundInlineRecess.set("r", "R_in");
+
+                String rectInLineRecessLabel = "Rect Inline Recess";
+                GeomFeature rectInLineRecess = urecessxs.geom().create(im.next("r", rectInLineRecessLabel), "Rectangle");
+                rectInLineRecess.label(rectInLineRecessLabel);
+                rectInLineRecess.set("contributeto", im.get(inLineRecessLabel));
+                rectInLineRecess.set("pos", new String[]{"U_tangent/2", "0"});
+                rectInLineRecess.set("base", "center");
+                rectInLineRecess.set("size", new String[]{"U_tangent", "2*(R_in)"});
+
+                String unionInLinePartsRecessLabel = "Union Inline Parts Recess";
+                GeomFeature unionInLinePartsRecess = urecessxs.geom().create(im.next("uni", unionInLinePartsRecessLabel), "Union");
+                unionInLinePartsRecess.label(unionInLinePartsRecessLabel);
+                unionInLinePartsRecess.set("contributeto", im.get(inLineRecessUnionLabel));
+                unionInLinePartsRecess.set("intbnd", false);
+                unionInLinePartsRecess.selection("input").named(im.get(inLineRecessLabel));
+
+                String roundOutlineRecessLabel = "Round Outline Recess";
+                GeomFeature roundOutlineRecess = urecessxs.geom().create(im.next("c", roundOutlineRecessLabel), "Circle");
+                roundOutlineRecess.label(roundOutlineRecessLabel);
+                roundOutlineRecess.set("contributeto", im.get(outLineRecessLabel));
+                roundOutlineRecess.set("r", "R_in+U_recess");
+
+                String rectOutLineRecessLabel = "Rect Outline Recess";
+                GeomFeature rectOutLineRecess = urecessxs.geom().create(im.next("r", rectOutLineRecessLabel), "Rectangle");
+                rectOutLineRecess.label(rectOutLineRecessLabel);
+                rectOutLineRecess.set("contributeto", im.get(outLineRecessLabel));
+                rectOutLineRecess.set("pos", new String[]{"U_tangent/2", "0"});
+                rectOutLineRecess.set("base", "center");
+                rectOutLineRecess.set("size", new String[]{"U_tangent", "2*(R_in+U_recess)"});
+
+                String unionOutlinePartsRecessLabel = "Union Outline Parts Recess";
+                GeomFeature unionOutlinePartsRecess = urecessxs.geom().create(im.next("uni", unionOutlinePartsRecessLabel), "Union");
+                unionOutlinePartsRecess.label(unionOutlinePartsRecessLabel);
+                unionOutlinePartsRecess.set("contributeto", im.get(inLineRecessUnionLabel));
+                unionOutlinePartsRecess.set("intbnd", false);
+                unionOutlinePartsRecess.selection("input").named(im.get(outLineRecessLabel));
+
+                String difftoRecessXSLabel = "Diff to Recess XS";
+                GeomFeature difftoRecessXS = urecessxs.geom().create(im.next("dif", difftoRecessXSLabel), "Difference");
+                difftoRecessXS.label(difftoRecessXSLabel);
+                difftoRecessXS.selection("input").named(im.get(outLineRecessLabel));
+                difftoRecessXS.selection("input2").named(im.get(inLineRecessLabel));
+
+                String makeRecessLabel = "Make Recess";
+                GeomFeature makeRecess = model.geom(id).create(im.next("ext", makeRecessLabel), "Extrude");
+                makeRecess.label(makeRecessLabel);
+                makeRecess.set("contributeto", im.get("RECESS FINAL"));
+                makeRecess.setIndex("distance", "U_z", 0);
+                makeRecess.selection("input").named(im.get("RECESS XS"));
+
+                model.geom(id).create(im.next("endif"), "EndIf");
 
                 model.geom(id).run();
 
@@ -1493,7 +1581,7 @@ class Part {
                 ucCircleOutline.label(ucCircleOutlineLabel);
                 ucCircleOutline.set("contributeto", im.get(ucOutlineCuffLabel));
                 ucCircleOutline.set("r", "R_out");
-                ucCircleOutline.set("pos", new String[]{"U_shift_x", "U_shift_y"});
+                ucCircleOutline.set("pos", new String[]{"U_shift_x", "-1*U_shift_y"});
 
                 String ifucGapLabel = "If Gap";
                 GeomFeature ifucGap = ucCXS.geom().create(im.next("if", ifucGapLabel), "If");
@@ -2396,7 +2484,8 @@ class Part {
                         "R_in",
                         "U_tangent",
                         "U_thk",
-                        "U_z"
+                        "U_z",
+                        "U_recess"
 
                 };
 
@@ -2410,6 +2499,7 @@ class Part {
                 partInstance.setEntry("selkeepdom", instanceID + "_" + myIM.get(myLabels[0]) + ".dom", "off"); // CONTACT XS
                 partInstance.setEntry("selkeepdom", instanceID + "_" + myIM.get(myLabels[1]) + ".dom", "on"); // CONTACT FINAL
                 partInstance.setEntry("selkeepdom", instanceID + "_" + myIM.get(myLabels[2]) + ".dom", "off"); // SRC
+                partInstance.setEntry("selkeepdom", instanceID + "_" + myIM.get(myLabels[4]) + ".dom", "on"); // RECESS FINAL
 
                 partInstance.setEntry("selkeeppnt", instanceID + "_" + myIM.get(myLabels[1]) + ".pnt", "off"); // CONTACT FINAL
 
@@ -2584,9 +2674,8 @@ class Part {
      * @throws IllegalArgumentException there is not a nerve part to build of that type (for typos probably)
      */
     public static void createNervePartInstance(String pseudonym, int index, String path, ModelWrapper mw,
-                                               HashMap<String, String[]> tracePaths, JSONObject sampleData, ModelParamGroup nerveParams, JSONObject modelData) throws IllegalArgumentException {
+                                               HashMap<String, String[]> tracePaths, JSONObject sampleData, ModelParamGroup nerveParams, JSONObject modelData) throws Exception {
 
-        // TODO get rid of modelData, only used for interp tol
         Model model = mw.getModel();
         IdentifierManager im = mw.im;
 
@@ -2634,8 +2723,15 @@ class Part {
                 ic.set("contributeto", im.get(icLabel));
                 ic.set("source", "file");
                 ic.set("filename", ci_inner_path);
-                //TODO
-                ic.set("rtol", 0.04); //modelData.getDouble("trace_interp_tol"));
+
+                if (modelData.has("inner_interp_tol") && !modelData.has("trace_interp_tol")) {
+                    ic.set("rtol", modelData.getDouble("inner_interp_tol"));
+                } else if (modelData.has("trace_interp_tol") && !modelData.has("inner_interp_tol")) {
+                    ic.set("rtol", modelData.getDouble("trace_interp_tol"));
+                } else if (modelData.has("trace_interp_tol") && modelData.has("inner_interp_tol")) {
+                    throw new Exception("Both trace_interp_tol and inner_interp_tol defined in Model. " +
+                            "Use new convention for inners (inner_interp_tol) and outers (outer_interp_tol) separately!");
+                }
 
                 String conv2solidLabel = ci_inner_name + " Inner Surface " + ci_inner_index;
                 GeomFeature conv2solid = model.component("comp1").geom("geom1").feature(im.get(fascicleCICXLabel)).geom().create(im.next("csol",conv2solidLabel), "ConvertToSolid");
@@ -2744,8 +2840,15 @@ class Part {
                     icMesh.set("contributeto", im.get(icselLabel));
                     icMesh.set("source", "file");
                     icMesh.set("filename", mesh_inner_path);
-                    //TODO
-                    icMesh.set("rtol", 0.04);
+
+                    if (modelData.has("inner_interp_tol") && !modelData.has("trace_interp_tol")) {
+                        icMesh.set("rtol", modelData.getDouble("inner_interp_tol"));
+                    } else if (modelData.has("trace_interp_tol") && !modelData.has("inner_interp_tol")) {
+                        icMesh.set("rtol", modelData.getDouble("trace_interp_tol")); // backwards compatibility
+                    } else if (modelData.has("trace_interp_tol") && modelData.has("inner_interp_tol")) {
+                        throw new Exception("Both trace_interp_tol and inner_interp_tol defined in Model. " +
+                                "Use new convention for inners (inner_interp_tol) and outers (outer_interp_tol) separately!");
+                    }
 
                     String icSurfLabel = "outer" + index + " Inner Surface " + mesh_inner_index;
                     GeomFeature icSurf = innersPlane.geom().create(im.next("csol",icSurfLabel), "ConvertToSolid");
@@ -2776,8 +2879,15 @@ class Part {
                 outeric1.set("contributeto", im.get(oc1Label));
                 outeric1.set("source", "file");
                 outeric1.set("filename", mesh_outer_path);
-                //TODO
-                outeric1.set("rtol", 0.04);
+
+                if (modelData.has("outer_interp_tol") && !modelData.has("trace_interp_tol")) {
+                    outeric1.set("rtol", modelData.getDouble("outer_interp_tol"));
+                } else if (modelData.has("trace_interp_tol") && !modelData.has("outer_interp_tol")) {
+                    outeric1.set("rtol", modelData.getDouble("trace_interp_tol")); // backwards compatibility
+                } else if (modelData.has("trace_interp_tol") && modelData.has("outer_interp_tol")) {
+                    throw new Exception("Both trace_interp_tol and inner_interp_tol defined in Model. " +
+                            "Use new convention for inners (outer_interp_tol) and outers (outer_interp_tol) separately!");
+                }
 
                 String outericSurfaceLabel = "outer" + index + " Outer Surface";
                 outerPlane.geom().create(im.next("csol",outericSurfaceLabel), "ConvertToSolid");

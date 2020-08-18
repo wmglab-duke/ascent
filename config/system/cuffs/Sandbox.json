@@ -160,7 +160,8 @@
         "R_in": "R_in_U300",
         "U_tangent": "Tangent_U300",
         "U_thk": "thk_contact_U300",
-        "U_z": "z_contact_U300"
+        "U_z": "z_contact_U300",
+        "U_recess": "recess_U300"
       },
       "materials": [
         {
@@ -634,6 +635,16 @@
     {
       "name": "Thk_fill_CT",
       "expression": "100 [um]",
+      "description": ""
+    },
+    {
+      "name": "recess_U300",
+      "expression": "0 [um]",
+      "description": ""
+    },
+    {
+      "name": "gap",
+      "expression": "20 [um]",
       "description": ""
     },
     {

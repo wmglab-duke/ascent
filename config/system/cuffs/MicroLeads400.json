@@ -29,12 +29,17 @@
         "R_in": "R_in_U400",
         "U_tangent": "Tangent_U400",
         "U_thk": "thk_contact_U400",
-        "U_z": "z_contact_U400"
+        "U_z": "z_contact_U400",
+        "U_recess": "recess_U400"
       },
       "materials": [
         {
           "info": "conductor",
           "label_index": 1
+        },
+        {
+          "info": "recess",
+          "label_index": 4
         }
       ]
     },
@@ -46,12 +51,17 @@
         "R_in": "R_in_U400",
         "U_tangent": "Tangent_U400",
         "U_thk": "thk_contact_U400",
-        "U_z": "z_contact_U400"
+        "U_z": "z_contact_U400",
+        "U_recess": "recess_U400"
       },
       "materials": [
         {
           "info": "conductor",
           "label_index": 1
+        },
+        {
+          "info": "recess",
+          "label_index": 4
         }
       ]
     },
@@ -136,6 +146,11 @@
     },
     {
       "name": "gap",
+      "expression": "0 [um]",
+      "description": ""
+    },
+    {
+      "name": "recess_U400",
       "expression": "0 [um]",
       "description": ""
     }
