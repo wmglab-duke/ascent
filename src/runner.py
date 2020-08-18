@@ -114,7 +114,7 @@ class Runner(Exceptionable, Configurable):
 
         if 'partial_fem' in self.configs[Config.RUN.value].keys() and \
                 sum(self.search(Config.RUN, 'partial_fem').values()) > 1:
-            self.throw(79)
+            self.throw(80)
 
         potentials_exist: List[bool] = []  # if all of these are true, skip Java
 

@@ -398,5 +398,10 @@
     "code": 79,
     "text": "cuff_only and nerve_only indicated in Config.Run, which does not make sense.",
     "source": "src.core.Runner.run"
+  },
+  {
+    "code": 80,
+    "text": "cuff_only and nerve_only indicated in Config.Run, which does not make sense.",
+    "source": "src.core.Runner.run"
   }
 ]
