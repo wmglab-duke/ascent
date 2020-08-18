@@ -1874,6 +1874,18 @@ class Part {
                 difftoContactXSTrap.selection("input").named(im.get(outlineTrapLabel));
                 difftoContactXSTrap.selection("input2").named(im.get(inlineTrapLabel));
 
+                String ifNeedDelContactPieceLabel = "if need to delete contact piece";
+                GeomFeature ifNeedDelContactPiece = model.geom(id).feature(im.get(contactXSTrapLabel)).geom().create(im.next("if", ifNeedDelContactPieceLabel), "If");
+                ifNeedDelContactPiece.label(ifNeedDelContactPieceLabel);
+                ifNeedDelContactPiece.set("condition", "(R_in + Ut_recess + Ut_thk) > Ut_tangent");
+
+                String delContactPiece1Label = "delete contact piece 1";
+                GeomFeature delContactPiece1 = model.geom(id).feature(im.get(contactXSTrapLabel)).geom().create(im.next("del", delContactPiece1Label), "Delete");
+                delContactPiece1.label(delContactPiece1Label);
+                delContactPiece1.selection("input").init(2);
+                delContactPiece1.selection("input").set(im.get(difftoContactXSTrapLabel) + "(1)", 2);
+                model.geom(id).feature(im.get(contactXSTrapLabel)).geom().create(im.next("endif"), "EndIf");
+
                 String makeContactTrapLabel = "Make Contact Trap";
                 GeomFeature makeContactTrap = model.geom(id).create(im.next("ext", makeContactTrapLabel), "Extrude");
                 makeContactTrap.label(makeContactTrapLabel);
@@ -1961,6 +1973,20 @@ class Part {
                 difftoRecessXSTrap.label(difftoRecessXSTrapLabel);
                 difftoRecessXSTrap.selection("input").named(im.get(outlineRecessTrapUnionLabel));
                 difftoRecessXSTrap.selection("input2").named(im.get(inlinerecessUnionTrapLabel));
+
+                String ifNeedToDeleteRecessPieceLabel = "if need to delete recess piece";
+
+                GeomFeature ifNeedToDeleteRecessPiece = model.geom(id).feature(im.get(recessXSTrapLabel)).geom().create(im.next("if", ifNeedToDeleteRecessPieceLabel), "If");
+                ifNeedToDeleteRecessPiece.label(ifNeedToDeleteRecessPieceLabel);
+                ifNeedToDeleteRecessPiece.set("condition", "(R_in + Ut_recess) > Ut_tangent");
+
+                String DeleteRecessPieceLabel = "delete recess piece 1";
+                GeomFeature DeleteRecessPiece = model.geom(id).feature(im.get(recessXSTrapLabel)).geom().create(im.next("del", DeleteRecessPieceLabel), "Delete");
+                DeleteRecessPiece.label(DeleteRecessPieceLabel);
+                DeleteRecessPiece.selection("input").init(2);
+                DeleteRecessPiece.selection("input").set(im.get(difftoRecessXSTrapLabel) + "(1)", 2);
+
+                model.geom(id).feature(im.get(recessXSTrapLabel)).geom().create(im.next("endif"), "EndIf");
 
                 String makeRecessTrapLabel = "Make Recess";
                 GeomFeature makeRecessTrap = model.geom(id).create(im.next("ext", makeRecessTrapLabel), "Extrude");
@@ -2536,7 +2562,7 @@ class Part {
                 pf = model.component("comp1").physics("ec").create(id, "PointCurrentSource", 0);
                 mw.im.currentIDs.put(instanceLabel, id);
 
-                pf.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[2]) + "_pnt"); // SRC
+                pf.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[4]) + "_pnt"); // SRC_FINAL
                 pf.set("Qjp", 0.000);
                 pf.label(ut_pcsLabel);
 
