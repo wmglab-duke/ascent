@@ -23,7 +23,8 @@
       "radius": 5000
     }
   },
-  "trace_interp_tol": 0.01,
+  "inner_interp_tol": 0.02,
+  "outer_interp_tol": 0.02,
   "cuff": {
     "preset": "Purdue.json",
     "rotate": {

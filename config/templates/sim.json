@@ -88,5 +88,11 @@
       "mode": "PERCENT_DIFFERENCE",
       "percent": 1
     }
+  },
+  "supersampled_bases": {
+    "generate": true,
+    "use": true,
+    "dz": 0.01,
+    "parent_sim": 1009
   }
 }
