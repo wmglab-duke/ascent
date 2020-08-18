@@ -408,5 +408,10 @@
     "code": 81,
     "text": "Trying to use super-sampled potentials that do not exist (hint: check that if 'use' is true, 'generate' was also true for the source Sim).",
     "source": "src.core.Simulation.build_n_sims"
+  },
+  {
+    "code": 82,
+    "text": "Trying to use super-sampled potentials that do not match your Sim's xy_parameters perfectly",
+    "source": "src.Runner"
   }
 ]

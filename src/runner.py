@@ -218,6 +218,14 @@ class Runner(Exceptionable, Configurable):
                                         str(source_sim)
                                     )
 
+                                    # do Sim.fibers.xy_parameters match between Sim and source_sim?
+                                    source_sim: simulation = load(os.path.join(source_sim_obj_dir, 'sim.obj'))
+                                    source_xy_dict: dict = source_sim.configs['sims']['fibers']['xy_parameters']
+                                    xy_dict: dict = simulation.configs['sims']['fibers']['xy_parameters']
+
+                                    if not source_xy_dict == xy_dict:
+                                        self.throw(82)
+
                                     ss_bases_exist.append(
                                         simulation.ss_bases_exist(source_sim_obj_dir)
                                     )
@@ -252,11 +260,20 @@ class Runner(Exceptionable, Configurable):
                                         str(source_sim)
                                     )
 
+                                    # do Sim.fibers.xy_parameters match between Sim and source_sim?
+                                    source_sim: simulation = load(os.path.join(sim_obj_dir, 'sim.obj'))
+                                    source_xy_dict: dict = source_sim.configs['sims']['fibers']['xy_parameters']
+                                    xy_dict: dict = simulation.configs['sims']['fibers']['xy_parameters']
+
+                                    if not source_xy_dict == xy_dict:
+                                        self.throw(82)
+
                                     ss_bases_exist.append(
                                         simulation.ss_bases_exist(source_sim_obj_dir)
                                     )
 
-            if ('break_points' in self.configs.keys()) and ('pre_java' in self.search(Config.RUN, 'break_points').keys()):
+            if ('break_points' in self.configs.keys()) and \
+                    ('pre_java' in self.search(Config.RUN, 'break_points').keys()):
                 if self.search(Config.RUN, 'break_points', 'pre_java'):
                     print('KILLING PRE JAVA')
                     pass
