@@ -98,7 +98,7 @@
     },
     {
       "name": "Theta_ITIS300",
-      "expression": "percent_circ_cuff_ITIS300*360 [deg]",
+      "expression": "360 [deg]",
       "description": ""
     },
     {
@@ -147,18 +147,13 @@
       "description": ""
     },
     {
-      "name": "percent_circ_cuff_ITIS300",
-      "expression": "percent_circ_cuff_pre_ITIS300*(r_cuff_in_pre_ITIS300/R_in_ITIS300)",
-      "description": ""
-    },
-    {
       "name": "z_nerve_ITIS300",
       "expression": "20 [mm]",
       "description": ""
     },
     {
       "name": "thk_medium_gap_internal_ITIS300",
-      "expression": "10 [um]",
+      "expression": "0 [um]",
       "description": ""
     },
     {
@@ -177,18 +172,13 @@
       "description": ""
     },
     {
-      "name": "percent_circ_cuff_pre_ITIS300",
-      "expression": "1",
-      "description": ""
-    },
-    {
       "name": "Theta_contact_ITIS300",
-      "expression": "360 [deg]",
+      "expression": "196.44 [deg]",
       "description": ""
     },
     {
       "name": "theta_cuff_ITIS300",
-      "expression": "percent_circ_cuff_ITIS300*360 [deg]",
+      "expression": "360 [deg]",
 
       "description": ""
     },
