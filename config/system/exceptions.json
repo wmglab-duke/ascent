@@ -413,5 +413,10 @@
     "code": 82,
     "text": "Trying to use super-sampled potentials that do not match your Sim's xy_parameters perfectly",
     "source": "src.Runner"
+  },
+  {
+    "code": 83,
+    "text": "FiberXYMode.EXPLICIT indicated in Sim, but to explicit.txt file with coordinates provided in the Sim directory. See config/system/templates/explicit.txt for example of this file's required format.",
+    "source": "src.core.Fiberset"
   }
 ]

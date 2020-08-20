@@ -287,6 +287,9 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
             elif xy_mode == FiberXYMode.EXPLICIT:
 
+                if not os.path.exists(os.path.join(sim_directory, 'explicit.txt')):
+                    self.throw(83)
+
                 with open(os.path.join(sim_directory, 'explicit.txt')) as f:
                     # advance header
                     next(f)

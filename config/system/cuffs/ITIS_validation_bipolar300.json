@@ -158,7 +158,7 @@
     },
     {
       "name": "r_cuff_in_pre_ITIS300",
-      "expression": "150 [um]",
+      "expression": "175 [um]",
       "description": ""
     },
     {
@@ -179,12 +179,11 @@
     {
       "name": "theta_cuff_ITIS300",
       "expression": "360 [deg]",
-
       "description": ""
     },
     {
       "name": "thk_cuff_ITIS300",
-      "expression": "0.3 [mm]",
+      "expression": "0.65 [mm]",
       "description": ""
     },
     {
