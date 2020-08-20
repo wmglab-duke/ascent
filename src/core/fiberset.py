@@ -298,7 +298,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                         points.append(tuple([float(row[0]), float(row[1])]))
 
                 # check that all fibers are within exactly one inner
-                for fiber in np.nditer(points):
+                for fiber in points:
                     if not any([Point(fiber).within(inner.polygon())
                                 for fascicle in self.sample.slides[0].fascicles for inner in fascicle.inners]):
                         print("Explicit fiber coordinate: {} does not fall in an inner".format(fiber))
