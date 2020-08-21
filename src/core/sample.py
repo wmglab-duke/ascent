@@ -209,7 +209,7 @@ class Sample(Exceptionable, Configurable, Saveable):
                 else:
                     proc = subprocess.Popen(['powershell.exe',
                                              'Dir | Rename-Item –NewName { $_.name –replace “.tiff“,”.tif” }'])
-            proc.wait()
+                proc.wait()
 
             if not exists(MaskFileNames.RAW):
                 print('No raw tif found, but continuing. (Sample.populate)')
