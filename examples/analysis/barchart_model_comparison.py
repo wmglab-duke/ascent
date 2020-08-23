@@ -39,7 +39,7 @@ q = Query({
     'partial_matches': True,
     'include_downstream': True,
     'indices': {
-        'sample': [0],
+        'sample': [7],
         'model': [0],
         'sim': [1]
     }
