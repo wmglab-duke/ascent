@@ -460,6 +460,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
                             return a, b, c
 
         out_fib, out_in = self.fiberset_map_pairs[p]
+        #out_fib[0][0] = [n for n in range(100)]
         i, j, k = search(out_fib, q)
         return out_in[i][j], k
 
