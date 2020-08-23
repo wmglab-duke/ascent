@@ -1,0 +1,173 @@
+{
+  "code": "Um100b",
+  "instances": [
+    {
+      "type": "CuffFill_Primitive",
+      "label": "MicroLeads_Um100b Cuff Fill",
+      "def": {
+        "Radius": "R_out_Um100b+Thk_fill_Um100b",
+        "Thk": "Thk_fill_Um100b",
+        "L": "L_Um100b+2*Thk_fill_Um100b",
+        "Center": "z_center_Um100b",
+        "x_shift": "x_shift",
+        "y_shift": "y_shift"
+      },
+      "materials": [
+        {
+          "info": "fill",
+          "label_index": 0
+        }
+      ]
+    },
+    {
+      "type": "uCuffTrap_Primitive",
+      "label": "MicroLeads_Um100b Cuff",
+      "def": {
+        "Center": "z_center_Um100b",
+        "R_in": "R_in_Um100b",
+        "Ut_tangent": "Tangent_Um100b",
+        "Rt_out": "R_out_Um100b",
+        "Ut_L": "L_Um100b",
+        "Ut_shift_x": "x_shift",
+        "Ut_shift_y": "y_shift",
+        "Ut_gap": "gap_Um100b",
+        "Ut_trap_base": "trap_base_Um100b"
+      },
+      "materials": [
+        {
+          "info": "insulator",
+          "label_index": 1
+        }
+      ]
+    },
+    {
+      "type": "uContactTrap_Primitive",
+      "label": "MicroLeads_Um100b Contact 1",
+      "def": {
+        "Center": "z_center_Um100b-(Pitch_Um100b/2)",
+        "R_in": "R_in_Um100b",
+        "Ut_tangent": "Tangent_Um100b",
+        "Ut_thk": "thk_contact_Um100b",
+        "Ut_z": "z_contact_Um100b",
+        "Ut_recess": "recess_Um100b",
+        "Ut_trap_base": "trap_base_Um100b"
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "label_index": 3
+        },
+        {
+          "info": "recess",
+          "label_index": 2
+        }
+      ]
+    },
+    {
+      "type": "uContactTrap_Primitive",
+      "label": "MicroLeads_Um100b Contact 2",
+      "def": {
+        "Center": "z_center_Um100b+(Pitch_Um100b/2)",
+        "R_in": "R_in_Um100b",
+        "Ut_tangent": "Tangent_Um100b",
+        "Ut_thk": "thk_contact_Um100b",
+        "Ut_z": "z_contact_Um100b",
+        "Ut_recess": "recess_Um100b",
+        "Ut_trap_base": "trap_base_Um100b"
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "label_index": 3
+        },
+        {
+          "info": "recess",
+          "label_index": 2
+        }
+      ]
+    }
+  ],
+
+  "params": [
+    {
+      "name": "z_center_Um100b",
+      "expression": "z_nerve/2",
+      "description": ""
+    },
+    {
+      "name": "R_in_Um100b",
+      "expression": "62.5 [um]",
+      "description": ""
+    },
+    {
+      "name": "R_out_Um100b",
+      "expression": "(1060/2) [um]",
+      "description": ""
+    },
+    {
+      "name": "Tangent_Um100b",
+      "expression": "85 [um]",
+      "description": ""
+    },
+    {
+      "name": "thk_contact_Um100b",
+      "expression": "0.02 [mm]",
+      "description": ""
+    },
+    {
+      "name": "z_contact_Um100b",
+      "expression": "320 [um]",
+      "description": ""
+    },
+    {
+      "name": "Pitch_Um100b",
+      "expression": "470 [um]",
+      "description": ""
+    },
+    {
+      "name": "L_Um100b",
+      "expression": "1110 [um]",
+      "description": ""
+    },
+    {
+      "name": "Thk_fill_Um100b",
+      "expression": "100 [um]",
+      "description": ""
+    },
+    {
+      "name": "thk_medium_gap_internal_Um100b",
+      "expression": "10 [um]",
+      "description": ""
+    },
+    {
+      "name": "x_shift",
+      "expression": "210 [um]",
+      "description": ""
+    },
+    {
+      "name": "y_shift",
+      "expression": "0 [um]",
+      "description": ""
+    },
+    {
+      "name": "gap_Um100b",
+      "expression": "85 [um]",
+      "description": ""
+    },
+    {
+      "name": "recess_Um100b",
+      "expression": "50 [um]",
+      "description": ""
+    },
+    {
+      "name": "trap_base_Um100b",
+      "expression": "200 [um]",
+      "description": ""
+    }
+  ],
+
+  "expandable": false,
+  "angle_to_contacts_deg": 180,
+  "offset": {
+  }
+}

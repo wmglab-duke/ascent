@@ -7,7 +7,7 @@
   ],
   "scale": {
     "scale_bar_length": 500,
-    "shrinkage": 0.2
+    "shrinkage": 0
   },
   "boundary_separation": {
     "fascicles": 10.0,

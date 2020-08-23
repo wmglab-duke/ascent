@@ -1,0 +1,55 @@
+{
+  "sample": "Rat17-3",
+  "sex": "M",
+  "level": "Cervical",
+  "samples_path": [
+    "samples"
+  ],
+  "map_path": [
+    "data",
+    "input",
+    "samples",
+    "Rat17-3",
+    "map.json"
+  ],
+  "scale": {
+    "scale_bar_length": 100,
+    "shrinkage": 0.2
+  },
+  "boundary_separation": {
+    "fascicles": 10.0,
+    "nerve": 10.0
+  },
+  "modes": {
+    "mask_input": "INNER_AND_OUTER_COMPILED",
+    "nerve": "NOT_PRESENT",
+    "deform": "NONE",
+    "ci_perineurium_thickness": "MEASURED",
+    "reshape_nerve": "NONE"
+  },
+  "Morphology": {
+    "Nerve": null,
+    "Fascicles": [
+      {
+        "outer": {
+          "area": 76717.63538980356,
+          "x": 1.1545372009277344,
+          "y": 0.213623046875,
+          "a": 266.68804931640625,
+          "b": 370.34503173828125,
+          "angle": 84.29600524902344
+        },
+        "inners": [
+          {
+            "area": 71936.17337829796,
+            "x": 1.3737716674804688,
+            "y": 0.09322547912597656,
+            "a": 255.99700927734375,
+            "b": 361.77044677734375,
+            "angle": 84.3377456665039
+          }
+        ]
+      }
+    ]
+  }
+}

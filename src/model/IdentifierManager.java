@@ -10,7 +10,7 @@ public class IdentifierManager {
     private HashMap<String, String> identifierPseudonyms = new HashMap<>();
 
     public String[] labels = null;
-    public HashMap<String, String> currentIDs = new HashMap<>();
+    public LinkedHashMap<String, String> currentIDs = new LinkedHashMap<>();
 
     /**
      * @param identifierStates set
@@ -109,7 +109,7 @@ public class IdentifierManager {
             im.labels[i] = (String) buffer[i];
         }
         assert map.get("currentIDs") instanceof HashMap;
-        im.currentIDs = (HashMap<String, String>) map.get("currentIDs");
+        im.currentIDs = (LinkedHashMap<String, String>) map.get("currentIDs");
 
         return im;
     }

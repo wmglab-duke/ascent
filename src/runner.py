@@ -13,6 +13,7 @@ Description:
 
 """
 # builtins
+
 import os
 import pickle
 from typing import List
@@ -109,10 +110,15 @@ class Runner(Exceptionable, Configurable):
         Simulation.export_neuron_files(os.environ[Env.NSIM_EXPORT_PATH.value])
 
         if 'break_points' in self.configs[Config.RUN.value].keys() and \
-            sum(self.search(Config.RUN, 'break_points').values()) > 1:
+                sum(self.search(Config.RUN, 'break_points').values()) > 1:
             self.throw(76)
 
+        if 'partial_fem' in self.configs[Config.RUN.value].keys() and \
+                sum(self.search(Config.RUN, 'partial_fem').values()) > 1:
+            self.throw(80)
+
         potentials_exist: List[bool] = []  # if all of these are true, skip Java
+        ss_bases_exist: List[bool] = []  # if all of these are true, skip Java
 
         sample_num = self.configs[Config.RUN.value]['sample']
 
@@ -198,6 +204,32 @@ class Runner(Exceptionable, Configurable):
                             simulation: Simulation = load(sim_obj_file)
                             potentials_exist.append(simulation.potentials_exist(sim_obj_dir))
 
+                            if 'supersampled_bases' in simulation.configs['sims'].keys():
+                                if simulation.configs['sims']['supersampled_bases']['use']:
+                                    source_sim = simulation.configs['sims']['supersampled_bases']['source_sim']
+
+                                    source_sim_obj_dir = os.path.join(
+                                        os.getcwd(),
+                                        'samples',
+                                        str(sample_num),
+                                        'models',
+                                        str(model_num),
+                                        'sims',
+                                        str(source_sim)
+                                    )
+
+                                    # do Sim.fibers.xy_parameters match between Sim and source_sim?
+                                    source_sim: simulation = load(os.path.join(source_sim_obj_dir, 'sim.obj'))
+                                    source_xy_dict: dict = source_sim.configs['sims']['fibers']['xy_parameters']
+                                    xy_dict: dict = simulation.configs['sims']['fibers']['xy_parameters']
+
+                                    if not source_xy_dict == xy_dict:
+                                        self.throw(82)
+
+                                    ss_bases_exist.append(
+                                        simulation.ss_bases_exist(source_sim_obj_dir)
+                                    )
+
                         else:
                             if not os.path.exists(sim_obj_dir):
                                 os.makedirs(sim_obj_dir)
@@ -214,7 +246,34 @@ class Runner(Exceptionable, Configurable):
 
                             potentials_exist.append(simulation.potentials_exist(sim_obj_dir))
 
-            if ('break_points' in self.configs.keys()) and ('pre_java' in self.search(Config.RUN, 'break_points').keys()):
+                            if 'supersampled_bases' in simulation.configs['sims'].keys():
+                                if simulation.configs['sims']['supersampled_bases']['use']:
+                                    source_sim = simulation.configs['sims']['supersampled_bases']['source_sim']
+
+                                    source_sim_obj_dir = os.path.join(
+                                        os.getcwd(),
+                                        'samples',
+                                        str(sample_num),
+                                        'models',
+                                        str(model_num),
+                                        'sims',
+                                        str(source_sim)
+                                    )
+
+                                    # do Sim.fibers.xy_parameters match between Sim and source_sim?
+                                    source_sim: simulation = load(os.path.join(sim_obj_dir, 'sim.obj'))
+                                    source_xy_dict: dict = source_sim.configs['sims']['fibers']['xy_parameters']
+                                    xy_dict: dict = simulation.configs['sims']['fibers']['xy_parameters']
+
+                                    if not source_xy_dict == xy_dict:
+                                        self.throw(82)
+
+                                    ss_bases_exist.append(
+                                        simulation.ss_bases_exist(source_sim_obj_dir)
+                                    )
+
+            if ('break_points' in self.configs.keys()) and \
+                    ('pre_java' in self.search(Config.RUN, 'break_points').keys()):
                 if self.search(Config.RUN, 'break_points', 'pre_java'):
                     print('KILLING PRE JAVA')
                     pass
@@ -222,7 +281,7 @@ class Runner(Exceptionable, Configurable):
             # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials if necessary
             if 'models' in all_configs.keys() and 'sims' in all_configs.keys():
                 # only transition to java if necessary (there are potentials that do not exist)
-                if not all(potentials_exist):
+                if not all(potentials_exist) or not all(ss_bases_exist):
                     print('\nTO JAVA\n')
                     self.handoff(self.number)
                     print('\nTO PYTHON\n')
@@ -258,13 +317,12 @@ class Runner(Exceptionable, Configurable):
                                 str(self.configs[Config.RUN.value]['sample']),
                                 'models',
                                 str(model_num),
-                                'sims',
-                                str(sim_num)
+                                'sims'
                             )
 
                             # load up correct simulation and build required sims
                             simulation: Simulation = load(sim_obj_path)
-                            simulation.build_n_sims(sim_dir)
+                            simulation.build_n_sims(sim_dir, sim_num)
 
                             # export simulations
                             Simulation.export_n_sims(
@@ -282,7 +340,8 @@ class Runner(Exceptionable, Configurable):
                                 os.environ[Env.NSIM_EXPORT_PATH.value]
                             )
 
-                        print('Model {} data exported to appropriate folders in {}'.format(model_num, os.environ[Env.NSIM_EXPORT_PATH.value]))
+                        print('Model {} data exported to appropriate folders in {}'.format(model_num, os.environ[
+                            Env.NSIM_EXPORT_PATH.value]))
 
                     elif not models_exit_status[model_index]:
                         print('\nDid not create NEURON simulations for Sims associated with: \n'
@@ -314,10 +373,10 @@ class Runner(Exceptionable, Configurable):
             os.system('{}/java/maci64/jre/Contents/Home/bin/java '
                       '-cp .:$(echo {}/plugins/*.jar | '
                       'tr \' \' \':\'):../bin/json-20190722.jar:../bin model.{} "{}" "{}"'.format(comsol_path,
-                                                                                              comsol_path,
-                                                                                              core_name,
-                                                                                              project_path,
-                                                                                              run_path))
+                                                                                                  comsol_path,
+                                                                                                  core_name,
+                                                                                                  project_path,
+                                                                                                  run_path))
             os.chdir('..')
 
         elif sys.platform.startswith('linux'):  # linux
@@ -331,10 +390,10 @@ class Runner(Exceptionable, Configurable):
             os.system('{}/java/glnxa64/jre/bin/java '
                       '-cp .:$(echo {}/plugins/*.jar | '
                       'tr \' \' \':\'):../bin/json-20190722.jar:../bin model.{} "{}" "{}"'.format(comsol_path,
-                                                                                              comsol_path,
-                                                                                              core_name,
-                                                                                              project_path,
-                                                                                              run_path))
+                                                                                                  comsol_path,
+                                                                                                  core_name,
+                                                                                                  project_path,
+                                                                                                  run_path))
             os.chdir('..')
 
         else:  # assume to be 'win64'
@@ -347,10 +406,10 @@ class Runner(Exceptionable, Configurable):
             os.system('""{}\\java\\win64\\jre\\bin\\java" '
                       '-cp "{}\\plugins\\*";"..\\bin\\json-20190722.jar";"..\\bin" '
                       'model.{} "{}" "{}""'.format(comsol_path,
-                                               comsol_path,
-                                               core_name,
-                                               project_path,
-                                               run_path))
+                                                   comsol_path,
+                                                   core_name,
+                                                   project_path,
+                                                   run_path))
             os.chdir('..')
 
     def compute_cuff_shift(self, model_config: dict, sample: Sample, sample_config: dict):
@@ -367,7 +426,8 @@ class Runner(Exceptionable, Configurable):
         nerve_present: NerveMode = self.search_mode(NerveMode, Config.SAMPLE)
 
         # fetch cuff config
-        cuff_config: dict = self.load(os.path.join(os.getcwd(), "config", "system", "cuffs", model_config['cuff']['preset']))
+        cuff_config: dict = self.load(
+            os.path.join(os.getcwd(), "config", "system", "cuffs", model_config['cuff']['preset']))
 
         # fetch 1-2 letter code for cuff (ex: 'CT')
         cuff_code: str = cuff_config['code']
@@ -489,7 +549,8 @@ class Runner(Exceptionable, Configurable):
                 orientation_point = slide.fascicles[0].outer.points[slide.orientation_point_index][:2]
 
         if orientation_point is not None:
-            theta_c = -np.pi + np.arctan2(orientation_point[1], orientation_point[0]) # overwrite theta_c, use our own orientation
+            theta_c = -np.pi + np.arctan2(orientation_point[1],
+                                          orientation_point[0])  # overwrite theta_c, use our own orientation
 
             # if r_i < r_f:
             #     model_config['cuff']['rotate']['pos_ang'] = (theta_c - theta_i + theta_f) * 360 / (2 * np.pi)
@@ -513,7 +574,8 @@ class Runner(Exceptionable, Configurable):
                 # model_config['cuff']['shift']['x'] = x  # - cuff_r_buffer * np.cos(theta_c)
                 # model_config['cuff']['shift']['y'] = y  # - cuff_r_buffer * np.sin(theta_c)
 
-                model_config['cuff']['shift']['x'] = x + (r_i - offset - cuff_r_buffer - r_bound) * np.cos(theta_c)  # FIXED?
+                model_config['cuff']['shift']['x'] = x + (r_i - offset - cuff_r_buffer - r_bound) * np.cos(
+                    theta_c)  # FIXED?
                 model_config['cuff']['shift']['y'] = y + (r_i - offset - cuff_r_buffer - r_bound) * np.sin(theta_c)
 
             else:

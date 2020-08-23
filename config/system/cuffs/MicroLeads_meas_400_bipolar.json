@@ -47,29 +47,39 @@
         "R_in": "R_in_Um400b",
         "U_tangent": "Tangent_Um400b",
         "U_thk": "thk_contact_Um400b",
-        "U_z": "z_contact_Um400b"
+        "U_z": "z_contact_Um400b",
+        "U_recess": "recess_Um400b"
       },
       "materials": [
         {
           "info": "conductor",
           "label_index": 1
+        },
+        {
+          "info": "recess",
+          "label_index": 4
         }
       ]
     },
     {
       "type": "uContact_Primitive",
-      "label": "MicroLeads_Um400b Contact 3",
+      "label": "MicroLeads_Um400b Contact 2",
       "def": {
         "Center": "z_center_Um400b+(Pitch_Um400b/2)",
         "R_in": "R_in_Um400b",
         "U_tangent": "Tangent_Um400b",
         "U_thk": "thk_contact_Um400b",
-        "U_z": "z_contact_Um400b"
+        "U_z": "z_contact_Um400b",
+        "U_recess": "recess_Um400b"
       },
       "materials": [
         {
           "info": "conductor",
           "label_index": 1
+        },
+        {
+          "info": "recess",
+          "label_index": 4
         }
       ]
     }
@@ -139,6 +149,11 @@
     {
       "name": "gap",
       "expression": "35 [um]",
+      "description": ""
+    },
+    {
+      "name": "recess_Um400b",
+      "expression": "50 [um]",
       "description": ""
     }
   ],

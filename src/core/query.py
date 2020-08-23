@@ -52,8 +52,16 @@ class Query(Exceptionable, Configurable, Saveable):
 
         # preliminarily find sample, model, and sim filter indices if applicable (else None)
         sample_indices = self.search(Config.CRITERIA, 'indices', 'sample')
+        if isinstance(sample_indices, int):
+            sample_indices = [sample_indices]
+
         model_indices = self.search(Config.CRITERIA, 'indices', 'model')
+        if isinstance(model_indices, int):
+            model_indices = [model_indices]
+
         sim_indices = self.search(Config.CRITERIA, 'indices', 'sim')
+        if isinstance(sim_indices, int):
+            sim_indices = [sim_indices]
 
         # criteria for each layer
         sample_criteria = self.search(Config.CRITERIA, 'sample')
@@ -73,6 +81,8 @@ class Query(Exceptionable, Configurable, Saveable):
         # loop samples
         for sample in os.listdir(samples_dir):
             # skip this sample if applicable
+            if sample.startswith('.'):
+                continue
             if sample_indices is not None and int(sample) not in sample_indices:
                 continue
 
@@ -104,6 +114,8 @@ class Query(Exceptionable, Configurable, Saveable):
             # loop models
             for model in os.listdir(models_dir):
                 # if there are filter indices for models, use them
+                if model.startswith('.'):
+                    continue
                 if model_indices is not None and int(model) not in model_indices:
                     continue
 
@@ -133,6 +145,8 @@ class Query(Exceptionable, Configurable, Saveable):
 
                 # loop sims
                 for sim in os.listdir(sims_dir):
+                    if sim.startswith('.'):
+                        continue
                     if sim_indices is not None and int(sim) not in sim_indices:
                         continue
 

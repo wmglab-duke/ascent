@@ -2,6 +2,7 @@
 
 # builtins
 import os
+import sys
 from typing import List, Tuple, Union
 
 # packages
@@ -9,6 +10,7 @@ import cv2
 import shutil
 import numpy as np
 import matplotlib.pyplot as plt
+import subprocess
 
 # access
 from shapely.geometry import LineString, Point
@@ -197,6 +199,17 @@ class Sample(Exceptionable, Configurable, Saveable):
             cassette, number = (str(item) for item in (cassette, number))
 
             os.chdir(os.path.join('samples', str(sample), 'slides', cassette, number, 'masks'))
+
+            # convert any TIFF to TIF
+            proc = None
+            if any(fname.endswith('.tiff') for fname in os.listdir('.')):
+                if sys.platform.startswith('darwin') or sys.platform.startswith('linux'):
+                    proc = subprocess.Popen(['bash',
+                                             'for file in *.tiff; do mv "$file" "${file%.tiff}.tif"; done'])
+                else:
+                    proc = subprocess.Popen(['powershell.exe',
+                                             'Dir | Rename-Item –NewName { $_.name –replace “.tiff“,”.tif” }'])
+                proc.wait()
 
             if not exists(MaskFileNames.RAW):
                 print('No raw tif found, but continuing. (Sample.populate)')

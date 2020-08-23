@@ -20,7 +20,6 @@ eggs/
 
 #lib/
 lib64/
-parts/
 sdist/
 var/
 wheels/
@@ -136,13 +135,12 @@ dmypy.json
 # don't include data b/c this may get pretty big at some point
 samples/
 submit/
+data/tmp/
 
 input/
 */user/*
 
 # samples
-*r.tif
-*.mph*
 *.class*
 out/
 */system/env.json
@@ -170,3 +168,6 @@ old_data/
 tmp
 paper_figures/
 bin/
+examples/analysis/heatmap_polyfasc_imthera20200731.py
+examples/analysis/heatmap_polyfasc_eric.py
+examples/analysis/barchart_sample_comparison2.py
