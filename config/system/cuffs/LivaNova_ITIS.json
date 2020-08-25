@@ -131,17 +131,17 @@
     },
     {
       "name": "ID_30220_LN",
-      "expression": "2 [mm]",
+      "expression": "3.4 [mm]",
       "description": ""
     },
     {
       "name": "ID_30230_LN",
-      "expression": "3 [mm]",
+      "expression": "3.4 [mm]",
       "description": ""
     },
     {
       "name": "thk_medium_gap_internal_LN",
-      "expression": "10 [um]",
+      "expression": "100 [um]",
       "description": ""
     },
     {
@@ -151,7 +151,7 @@
     },
     {
       "name": "r_cuff_in_pre_LN",
-      "expression": "1 [mm]",
+      "expression": "1.7 [mm]",
       "description": "0.5*ID_cuff_LN: this needs to be automated, because in case of 3 mm ID = 1.5 mm"
     },
     {
