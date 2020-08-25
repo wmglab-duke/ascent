@@ -97,7 +97,7 @@
     {
       "name": "S_LN",
       "expression": "0.4 [mm]",
-      "description": ""
+      "description": "0.4?"
     },
     {
       "name": "rev_BD_LN",
