@@ -418,5 +418,45 @@
     "code": 83,
     "text": "FiberXYMode.EXPLICIT indicated in Sim, but to explicit.txt file with coordinates provided in the Sim directory. See config/system/templates/explicit.txt for example of this file's required format.",
     "source": "src.core.Fiberset"
+  },
+  {
+    "code": 84,
+    "text": "Timestep self.dt is longer than MONOPHASIC_PULSE_TRAIN pulse-width indicated in Sim.",
+    "source": "src.core.Waveform"
+  },
+  {
+    "code": 85,
+    "text": "Timestep self.dt is longer than SINUSOID period indicated in Sim by pulse_repetition_freq.",
+    "source": "src.core.Waveform"
+  },
+  {
+    "code": 86,
+    "text": "Timestep self.dt is longer than BIPHASIC_FULL_DUTY period indicated in Sim by pulse_repetition_freq.",
+    "source": "src.core.Waveform"
+  },
+  {
+    "code": 87,
+    "text": "Timestep self.dt is longer than BIPHASIC_PULSE_TRAIN pulse-width indicated in Sim.",
+    "source": "src.core.Waveform"
+  },
+  {
+    "code": 88,
+    "text": "Timestep self.dt is longer than BIPHASIC_PULSE_TRAIN inter_phase indicated in Sim.",
+    "source": "src.core.Waveform"
+  },
+  {
+    "code": 89,
+    "text": "Timestep self.dt is longer than BIPHASIC_PULSE_TRAIN_Q_BALANCED_UNEVEN_PW pw1 indicated in Sim.",
+    "source": "src.core.Waveform"
+  },
+  {
+    "code": 90,
+    "text": "Timestep self.dt is longer than BIPHASIC_PULSE_TRAIN_Q_BALANCED_UNEVEN_PW pw2 indicated in Sim.",
+    "source": "src.core.Waveform"
+  },
+  {
+    "code": 91,
+    "text": "Timestep self.dt is longer than BIPHASIC_PULSE_TRAIN_Q_BALANCED_UNEVEN_PW inter_phase indicated in Sim.",
+    "source": "src.core.Waveform"
   }
 ]

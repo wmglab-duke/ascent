@@ -201,6 +201,9 @@ class Waveform(Exceptionable, Configurable, Saveable):
 
             pw = self.search(Config.SIM, *path_to_specific_parameters, 'pulse_width')
 
+            if self.dt > pw:
+                self.throw(84)
+
             # ensure pulse fits in period
             if pw > 1.0 / frequency:
                 self.throw(35)
@@ -212,12 +215,19 @@ class Waveform(Exceptionable, Configurable, Saveable):
             self.wave = wave
 
         elif self.mode == WaveformMode.SINUSOID:
+            if self.dt > 1.0 / frequency:
+                self.throw(85)
+
             wave = np.sin(2 * np.pi * frequency * t_signal)
             padded = pad(wave, self.dt, self.on - self.start, self.stop - self.off)
             wave = padded
             self.wave = wave
 
         elif self.mode == WaveformMode.BIPHASIC_FULL_DUTY:
+
+            if self.dt > 1.0 / frequency:
+                self.throw(86)
+
             wave = sg.square(2 * np.pi * frequency * t_signal)
             padded = pad(wave, self.dt, self.on - self.start, self.stop - self.off)
             wave = padded
@@ -227,12 +237,18 @@ class Waveform(Exceptionable, Configurable, Saveable):
 
             pw = self.search(Config.SIM, *path_to_specific_parameters, 'pulse_width')
 
+            if self.dt > pw:
+                self.throw(87)
+
             # ensure fits within period
             if 2 * pw > 1.0 / frequency:
                 self.throw(35)
 
             # loop on inter phase
             inter_phase = self.search(Config.SIM, *path_to_specific_parameters, 'inter_phase')
+
+            if self.dt > inter_phase:
+                self.throw(88)
 
             # ensures fits within period
             if (2 * pw) + inter_phase > 1.0 / frequency:
@@ -266,12 +282,21 @@ class Waveform(Exceptionable, Configurable, Saveable):
             pw1 = self.search(Config.SIM, *path_to_specific_parameters, 'pulse_width_1')
             pw2 = self.search(Config.SIM, *path_to_specific_parameters, 'pulse_width_2')
 
+            if self.dt > pw1:
+                self.throw(89)
+
+            if self.dt > pw2:
+                self.throw(90)
+
             # ensure fits within period
             if (pw1 + pw2) > 1.0 / frequency:
                 self.throw(35)
 
             # loop on inter phase
             inter_phase = self.search(Config.SIM, *path_to_specific_parameters, 'inter_phase')
+
+            if self.dt > inter_phase:
+                self.throw(91)
 
             # ensures fits within period
             if (pw1 + pw2) + inter_phase > 1.0 / frequency:
