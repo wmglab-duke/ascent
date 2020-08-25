@@ -184,9 +184,9 @@ class Waveform(Exceptionable, Configurable, Saveable):
             :return: the padded wave (1d np.ndarray)
             """
             return np.concatenate(
-                ([0] * round(start_to_on / time_step),
+                ([0] * (round(start_to_on / time_step) - 1),
                  input_wave,
-                 [0] * round(off_to_stop / time_step))
+                 [0] * (round(off_to_stop / time_step) - 1))
             )
 
         # time values to be used for all waves
@@ -205,7 +205,7 @@ class Waveform(Exceptionable, Configurable, Saveable):
             if pw > 1.0 / frequency:
                 self.throw(35)
 
-            wave = sg.square(2 * np.pi * frequency * t_signal, duty=pw * frequency)
+            wave = sg.square(2 * np.pi * frequency * t_signal, duty=(pw - self.dt) * frequency)
             clipped = np.clip(wave, 0, 1)
             padded = pad(clipped, self.dt, self.on - self.start, self.stop - self.off)
             wave = padded
@@ -239,12 +239,12 @@ class Waveform(Exceptionable, Configurable, Saveable):
                 self.throw(36)
 
             positive_wave = np.clip(
-                sg.square(2 * np.pi * frequency * t_signal, duty=pw * frequency),
+                sg.square(2 * np.pi * frequency * t_signal, duty=(pw - self.dt) * frequency),
                 0, 1
             )
             negative_wave = np.clip(
                 -sg.square(2 * np.pi * frequency * t_signal[:-round((pw + inter_phase) / self.dt)],
-                           duty=pw * frequency),
+                           duty=(pw - self.dt) * frequency),
                 -1, 0
             )
 
@@ -278,12 +278,12 @@ class Waveform(Exceptionable, Configurable, Saveable):
                 self.throw(36)
 
             positive_wave = np.clip(
-                sg.square(2 * np.pi * frequency * t_signal, duty=pw1 * frequency),
+                sg.square(2 * np.pi * frequency * t_signal, duty=(pw1 - self.dt) * frequency),
                 0, 1
             )
             negative_wave = np.clip(
                 -sg.square(2 * np.pi * frequency * t_signal[:-round((pw1 + inter_phase) / self.dt)],
-                           duty=pw2 * frequency),
+                           duty=(pw2 - self.dt) * frequency),
                 -1, 0
             )
 
