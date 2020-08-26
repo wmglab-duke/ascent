@@ -96,7 +96,7 @@
     },
     {
       "name": "S_LN",
-      "expression": "0.4 [mm]",
+      "expression": "0.2 [mm]",
       "description": ""
     },
     {
