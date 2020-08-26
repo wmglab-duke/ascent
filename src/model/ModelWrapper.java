@@ -855,6 +855,8 @@ public class ModelWrapper {
             // Loop over all fascicle dirs
             String[] dirs = new File(fasciclesPath).list();
 
+            JSONObject modelModes = modelData.getJSONObject("modes");
+
             if (dirs != null) {
                 for (String dir: dirs) {
                     if (! dir.contains(".")) {
@@ -877,7 +879,7 @@ public class ModelWrapper {
                         }
 
                         String fascicleType = null;
-                        if (modelData.has("use_ci") && !modelData.getBoolean("use_ci")) {
+                        if (modelModes.has("use_ci") && !modelModes.getBoolean("use_ci")) {
                             fascicleType = fascicleTypes[1]; // "FascicleMesh"
                         } else {
                             // do "FascicleCI" if only one inner, "FascicleMesh" otherwise
