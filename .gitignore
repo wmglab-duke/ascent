@@ -161,6 +161,9 @@ src/neuron/HOC_Files/CreateAxon_BFiber.hoc
 # not for distribution
 config/system/cuffs/ImThera.json
 config/system/cuffs/LivaNova_6mm.json
+config/system/cuffs/LivaNova_ITIS.json
+config/system/cuffs/LivaNova_old.json
+config/system/cuffs/LivaNova_acute.json
 *.py~
 master_index_key.xlsx
 200511_figures/
