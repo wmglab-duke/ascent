@@ -247,7 +247,7 @@ class Waveform(Exceptionable, Configurable, Saveable):
             # loop on inter phase
             inter_phase = self.search(Config.SIM, *path_to_specific_parameters, 'inter_phase')
 
-            if self.dt > inter_phase:
+            if self.dt > inter_phase != 0:
                 self.throw(88)
 
             # ensures fits within period
