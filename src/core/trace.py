@@ -348,11 +348,11 @@ class Trace(Exceptionable):
 
         # find average radius of circle
         # casting to float is just so PyCharm stops yelling at me (I think it should already be a float64?)
-        r = float(np.mean([a, b], axis=0)) - buffer
+        r = float(np.sqrt(self.area()/np.pi)) - buffer
 
         # return the associated ellipse object, after converting angle to degrees
         # also, PyCharm thinks that np.mean returns a ndarray, but it definitely isn't in this case
-        return self.__ellipse_object(u, v, r, r, angle * 2 * np.pi / 360)
+        return self.__ellipse_object(u, v, 2*r, 2*r, angle * 2 * np.pi / 360)
 
     def __ellipse_object(self, u: float, v: float, a: float, b: float, angle: float) -> 'Trace':
         """
