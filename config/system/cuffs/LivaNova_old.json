@@ -146,7 +146,7 @@
     },
     {
       "name": "rev_cuff_LN",
-      "expression": "sqrt(((pi*(ID_30220_LN+w_cuff_LN)*rev_BD_LN)^2+(rev_BD_LN*p_LN)^2)/((pi^2*(2*r_nerve)^2)+(pi^2*w_cuff_LN^2)+(pi^2*4*scar_thk_LN^2)+(2*pi^2*(2*r_nerve)*w_cuff_LN)+(4*pi^2*w_cuff_LN*scar_thk_LN)+(4*pi^2*2*r_nerve*scar_thk_LN)+(p_LN^2)))",
+      "expression": "min(sqrt(((pi*(ID_30220_LN+w_cuff_LN)*rev_BD_LN)^2+(rev_BD_LN*p_LN)^2)/((pi^2*(2*r_nerve)^2)+(pi^2*w_cuff_LN^2)+(pi^2*4*scar_thk_LN^2)+(2*pi^2*(2*r_nerve)*w_cuff_LN)+(4*pi^2*w_cuff_LN*scar_thk_LN)+(4*pi^2*2*r_nerve*scar_thk_LN)+(p_LN^2))), 2.5)",
       "description": ""
     },
     {
