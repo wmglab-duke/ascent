@@ -631,6 +631,25 @@ class Runner(Exceptionable, Configurable):
             model_config['cuff']['shift']['x'] = 0
             model_config['cuff']['shift']['y'] = 0
 
+        elif cuff_shift_mode == CuffShiftMode.PURPLE:
+            if r_i > r_f:
+                model_config['cuff']['rotate']['pos_ang'] = 0
+
+                model_config['cuff']['shift']['x'] = -1 * (x + (r_i - offset - cuff_r_buffer - r_bound) * np.cos(theta_i))
+                model_config['cuff']['shift']['y'] = -1 * (y + (r_i - offset - cuff_r_buffer - r_bound) * np.sin(theta_i))
+
+            else:
+                model_config['cuff']['rotate']['pos_ang'] = 0
+
+                # if nerve is present, use 0,0
+                if slide.nerve is not None:  # has nerve
+                    model_config['cuff']['shift']['x'] = 0
+                    model_config['cuff']['shift']['y'] = 0
+                else:
+                    # else, use
+                    model_config['cuff']['shift']['x'] = x
+                    model_config['cuff']['shift']['y'] = y
+
         if 'add_ang' not in model_config['cuff']['rotate'].keys():
             model_config['cuff']['rotate']['add_ang'] = 0
 
@@ -679,225 +698,3 @@ class Runner(Exceptionable, Configurable):
             value = self.search(Config.ENV, key)
             assert type(value) is str
             os.environ[key] = value
-
-    # def smart_run(self):
-    #
-    #     print('\nStarting smart run.')
-    #
-    #     def load(path: str):
-    #         return pickle.load(open(path, 'rb'))
-    #
-    #     path_parts = [self.path(Config.MASTER, 'samples_path'), self.search(Config.MASTER, 'sample')]
-    #
-    #     if not os.path.isfile(os.path.join(*path_parts, 'sample.obj')):
-    #         print('Existing slide manager not found. Performing full run.')
-    #         self.full_run()
-    #
-    #     else:
-    #         print('Loading existing slide manager.')
-    #         self.sample = load(os.path.join(*path_parts, 'sample.obj'))
-    #
-    #         if os.path.isfile(os.path.join(*path_parts, 'fiber_manager.obj')):
-    #             print('Loading existing fiber manager.')
-    #             self.fiber_manager = load(os.path.join(*path_parts, 'fiber_manager.obj'))
-    #
-    #         else:
-    #             print('Existing fiber manager not found. Performing fiber run.')
-    #             self.fiber_run()
-    #
-    #     self.save_all()
-    #
-    #     if self.fiber_manager is not None:
-    #         self.fiber_manager.save_full_coordinates('TEST_JSON_OUTPUT.json')
-    #     else:
-    #         raise Exception('my dude, something went horribly wrong here')
-    #
-    #     self.handoff()
-    #
-    # def full_run(self):
-    #     self.slide_run()
-    #     self.fiber_run()
-    #
-    # def slide_run(self):
-    #     print('\nSTART SLIDE MANAGER')
-    #     self.sample = Sample(self.configs[Config.MASTER.value],
-    #                                       self.configs[Config.EXCEPTIONS.value],
-    #                                       map_mode=SetupMode.NEW)
-    #
-    #     print('BUILD FILE STRUCTURE')
-    #     self.sample.build_file_structure()
-    #
-    #     print('POPULATE')
-    #     self.sample.populate()
-    #
-    #     print('WRITE')
-    #     self.sample.write(WriteMode.SECTIONWISE2D)
-    #
-    # def fiber_run(self):
-    #     print('\nSTART FIBER MANAGER')
-    #     self.fiber_manager = FiberManager(self.sample,
-    #                                       self.configs[Config.MASTER.value],
-    #                                       self.configs[Config.EXCEPTIONS.value])
-    #
-    #     print('FIBER XY COORDINATES')
-    #     self.fiber_manager.fiber_xy_coordinates(plot=True, save=True)
-    #
-    #     print('FIBER Z COORDINATES')
-    #     self.fiber_manager.fiber_z_coordinates(self.fiber_manager.xy_coordinates, save=True)
-    #
-    # def save_all(self):
-    #
-    #     print('SAVE ALL')
-    #     path_parts = [self.path(Config.MASTER, 'samples_path'), self.search(Config.MASTER, 'sample')]
-    #     self.sample.save(os.path.join(*path_parts, 'sample.obj'))
-    #     self.sample.output_morphology_data()
-    #     self.fiber_manager.save(os.path.join(*path_parts, 'fiber_manager.obj'))
-
-    # def run(self):
-    #     self.map = Map(self.configs[Config.MASTER.value],
-    #                         self.configs[Config.EXCEPTIONS.value],
-    #                         mode=SetupMode.NEW)
-    #
-    #     # TEST: Trace functionality
-    #     # self.trace = Trace([[0,  0, 0],
-    #     #                     [2,  0, 0],
-    #     #                     [4,  0, 0],
-    #     #                     [4,  1, 0],
-    #     #                     [4,  2, 0],
-    #     #                     [2,  2, 0],
-    #     #                     [0,  2, 0],
-    #     #                     [0,  1, 0]], self.configs[Config.EXCEPTIONS.value])
-    #     # print('output path: {}'.format(self.trace.write(Trace.WriteMode.SECTIONWISE,
-    #     #                                                 '/Users/jakecariello/Box/SPARCpy/data/output/test_trace')))
-    #
-    #     # TEST: exceptions configuration path
-    #     # print('exceptions_config_path:\t{}'.format(self.exceptions_config_path))
-    #
-    #     # TEST: retrieve data from config file
-    #     # print(self.search(Config.MASTER, 'test_array', 0, 'test'))
-    #
-    #     # TEST: throw error
-    #     # self.throw(2)
-    #
-    #     # self.slide = Slide([Fascicle(self.configs[Config.EXCEPTIONS.value],
-    #     #                              [self.trace],
-    #     #                              self.trace)],
-    #     #                    self.trace,
-    #     #                    self.configs[Config.MASTER.value],
-    #     #                    self.configs[Config.EXCEPTIONS.value])
-    #     pass
-    #
-    # def trace_test(self):
-    #
-    #     # build path and read image
-    #     path = os.path.join('data', 'input', 'misc_traces', 'tracefile2.tif');
-    #     img = cv2.imread(path, -1)
-    #
-    #     # get contours and build corresponding traces
-    #     # these are intentionally instance attributes so they can be inspected in the Python Console
-    #     self.cnts, self.hierarchy = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    #     self.traces = [Trace(cnt[:, 0, :], self.configs[Config.EXCEPTIONS.value]) for cnt in self.cnts]
-    #
-    #     # plot formats
-    #     formats = ['r', 'g', 'b']
-    #
-    #     # original points and centroids
-    #     title = 'Figure 0: original traces with calculated centroids'
-    #     print(title)
-    #     plt.figure(0)
-    #     plt.axes().set_aspect('equal', 'datalim')
-    #     for i, trace in enumerate(self.traces):
-    #         trace.plot(formats[i] + '-')
-    #         trace.plot_centroid(formats[i] + '*')
-    #     plt.legend([str(i) for i in range(len(self.traces)) for _ in (0, 1)]) # end of this line is to duplicate items
-    #     plt.title(title)
-    #     plt.show()
-    #
-    #     # ellipse/circle/original comparison (trace 0)
-    #     title = 'Figure 1: fit comparisons (trace 0)'
-    #     print(title)
-    #     plt.figure(1)
-    #     plt.axes().set_aspect('equal', 'datalim')
-    #     self.traces[0].plot(formats[0])
-    #     self.traces[0].to_circle().plot(formats[1])
-    #     self.traces[0].to_ellipse().plot(formats[2])
-    #     plt.legend(['original', 'circle', 'ellipse'])
-    #     plt.title(title)
-    #     plt.show()
-    #
-    #     # example stats
-    #     pairs = [(0, 1), (1, 2), (2, 0)]
-    #     print('\nEXAMPLE STATS')
-    #     for pair in pairs:
-    #         print('PAIR: ({}, {})'.format(*pair))
-    #         print('\tcent dist:\t{}'.format(self.traces[pair[0]].centroid_distance(self.traces[pair[1]])))
-    #         print('\tmin dist:\t{}'.format(self.traces[pair[0]].min_distance(self.traces[pair[1]])))
-    #         print('\tmax dist:\t{}'.format(self.traces[pair[0]].max_distance(self.traces[pair[1]])))
-    #         print('\twithin:\t\t{}'.format(self.traces[pair[0]].within(self.traces[pair[1]])))
-    #
-    #     title = 'Figure 2: Scaled trace'
-    #     print(title)
-    #     plt.figure(2)
-    #     plt.axes().set_aspect('equal', 'datalim')
-    #     self.traces[0].plot(formats[0])
-    #     self.traces[0].scale(1.2)
-    #     self.traces[0].plot(formats[1])
-    #     plt.legend(['original', 'scaled'])
-    #     plt.title(title)
-    #     plt.show()
-    #
-    # def fascicle_test(self):
-    #     # build path and read image
-    #     path = os.path.join('data', 'input', 'misc_traces', 'tracefile5.tif')
-    #
-    #     self.fascicles = Fascicle.inner_to_list(path,
-    #                                             self.configs[Config.EXCEPTIONS.value],
-    #                                             plot=True,
-    #                                             scale=1.06)
-    #
-    # def reposition_test(self):
-    #     # build path and read image
-    #     path = os.path.join('data', 'input', 'samples', 'Cadaver54-3', 'NerveMask.tif')
-    #
-    #     self.img = np.flipud(cv2.imread(path, -1))
-    #
-    #     # get contours and build corresponding traces
-    #     # these are intentionally instance attributes so they can be inspected in the Python Console
-    #     self.nerve_cnts, _ = cv2.findContours(self.img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    #     self.nerve = Nerve(Trace(self.nerve_cnts[0][:, 0, :], self.configs[Config.EXCEPTIONS.value]))
-    #
-    #     self.fascicles = Fascicle.separate_to_list(os.path.join('data', 'input', 'samples',
-    #                                                             'Cadaver54-3', 'EndoneuriumMask.tif'),
-    #                                                os.path.join('data', 'input', 'samples',
-    #                                                             'Cadaver54-3','PerineuriumMask.tif'),
-    #                                                self.configs[Config.EXCEPTIONS.value],
-    #
-    #
-    #                                                plot=False)
-    #     self.slide = Slide(self.fascicles, self.nerve,
-    #                        self.configs[Config.MASTER.value],
-    #                        self.configs[Config.EXCEPTIONS.value])
-    #
-    #     self.slide.reposition_fascicles(self.slide.reshaped_nerve(ReshapeNerveMode.CIRCLE))
-    #
-    # def reposition_test2(self):
-    #     # build path and read image
-    #     path = os.path.join('data', 'input', 'samples', 'Pig11-3', 'NerveMask.tif')
-    #     self.img = np.flipud(cv2.imread(path, -1))
-    #
-    #     # get contours and build corresponding traces
-    #     # these are intentionally instance attributes so they can be inspected in the Python Console
-    #     self.nerve_cnts, _ = cv2.findContours(self.img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    #     self.nerve = Nerve(Trace(self.nerve_cnts[0][:, 0, :], self.configs[Config.EXCEPTIONS.value]))
-    #
-    #     self.fascicles = Fascicle.inner_to_list(os.path.join('data', 'input', 'samples',
-    #                                                          'Pig11-3', 'FascMask.tif'),
-    #                                             self.configs[Config.EXCEPTIONS.value],
-    #                                             plot=False,
-    #                                             scale=1.05)
-    #     self.slide = Slide(self.fascicles, self.nerve,
-    #                        self.configs[Config.EXCEPTIONS.value],
-    #                        will_reposition=True)
-    #
-    #     # self.slide.reposition_fascicles(self.slide.reshaped_nerve(ReshapeNerveMode.ELLIPSE))
-    #     self.slide.reposition_fascicles(self.slide.reshaped_nerve(ReshapeNerveMode.CIRCLE))

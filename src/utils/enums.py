@@ -38,7 +38,7 @@ class Object(Enum):
 @unique
 class Env(Enum):
     prefix = 'ASCENT_'
-    
+
     COMSOL_PATH = prefix + 'COMSOL_PATH'
     JDK_PATH = prefix + 'JDK_PATH'
     PROJECT_PATH = prefix + 'PROJECT_PATH'
@@ -297,6 +297,7 @@ class CuffShiftMode(Enum):
     MIN_CIRCLE_BOUNDARY = 0
     TRACE_BOUNDARY = 1
     NONE = 2
+    PURPLE = 3
 
 
 # %% Templates
