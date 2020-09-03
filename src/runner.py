@@ -455,7 +455,12 @@ class Runner(Exceptionable, Configurable):
         # for speed, downsample nerves to n_points_nerve (100) points
         n_points_nerve = 100
         nerve_copy.down_sample(DownSampleMode.KEEP, int(np.floor(nerve_copy.points.size / n_points_nerve)))
-        x, y, r_bound = nerve_copy.smallest_enclosing_circle_naive()
+
+        if self.search_mode(ReshapeNerveMode, Config.SAMPLE) and not slide.monofasc():
+            x, y = 0, 0
+            r_bound = np.sqrt(sample_config['Morphology']['Nerve']['area']/np.pi)
+        else:
+            x, y, r_bound = nerve_copy.smallest_enclosing_circle_naive()
 
         # next calculate the angle of the "centroid" to the center of min bound circle
         # if mono fasc, just use 0, 0 as centroid (i.e., centroid of nerve same as centroid of all fasc)
