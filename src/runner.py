@@ -31,7 +31,7 @@ from quantiphy import Quantity
 
 from src.core import Sample, Simulation, Waveform
 from src.utils import Exceptionable, Configurable, SetupMode, Config, NerveMode, DownSampleMode, WriteMode, \
-    CuffShiftMode, PerineuriumResistivityMode, TemplateOutput, Env
+    CuffShiftMode, PerineuriumResistivityMode, TemplateOutput, Env, ReshapeNerveMode
 from shapely.geometry import Point
 
 
