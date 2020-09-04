@@ -761,6 +761,7 @@ class Part {
 
             case "HelicalCuffnContact_Primitive":
                 model.geom(id).inputParam().set("Center", "20 [mm]");
+                model.geom(id).inputParam().set("Corr", "0 [deg]");
 
                 im.labels = new String[]{
                         "PC1", //0
@@ -2344,7 +2345,8 @@ class Part {
 
                 // set instantiation parameters
                 String[] helicalCuffnContactParameters = {
-                        "Center"
+                        "Center",
+                        "Corr"
 
                 };
 
@@ -2352,6 +2354,8 @@ class Part {
                     partInstance.setEntry("inputexpr", param, (String) itemObject.get(param));
 
                 }
+
+                partInstance.set("rot", "cuff_rot + corr_LN");
 
                 model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Center", (String) itemObject.get("Center"));
 

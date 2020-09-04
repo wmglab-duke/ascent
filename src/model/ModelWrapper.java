@@ -169,7 +169,7 @@ public class ModelWrapper {
 
     /**
      * Create the required primitives for a given cuff json
-     * @param name json filename WITH extension (i.e. "LivaNova.json")
+     * @param name json filename WITH extension (i.e. "LivaNova2000.json")
      * @return success indicator
      */
     public boolean addCuffPartPrimitives(String name) {

@@ -469,7 +469,7 @@ class Runner(Exceptionable, Configurable):
         reference_x = reference_y = 0.0
         if not slide.monofasc():
             reference_x, reference_y = slide.fascicle_centroid()
-        theta_c = np.arctan2(y - reference_y, x - reference_x) % 360
+        theta_c = (np.arctan2(reference_y - y, reference_x - x) * (360/(2*np.pi))) % 360
 
         # calculate final necessary radius by adding buffer
         r_f = r_bound + cuff_r_buffer
@@ -552,7 +552,7 @@ class Runner(Exceptionable, Configurable):
                 model_config['cuff']['shift']['y'] = y - (r_i - offset - cuff_r_buffer - r_bound) * np.sin(theta_c * ((2*np.pi)/360))
 
             else:
-                model_config['cuff']['rotate']['pos_ang'] = (theta_f + theta_c - theta_i) * (360 / (2 * np.pi))
+                model_config['cuff']['rotate']['pos_ang'] = (theta_f + theta_c - theta_i)
 
                 # if nerve is present, use 0,0
                 if slide.nerve is not None:  # has nerve
@@ -565,7 +565,7 @@ class Runner(Exceptionable, Configurable):
 
         elif cuff_shift_mode == CuffShiftMode.TRACE_BOUNDARY:
             if r_i < r_f:
-                model_config['cuff']['rotate']['pos_ang'] = (theta_f + theta_c - theta_i) * (360 / (2 * np.pi))
+                model_config['cuff']['rotate']['pos_ang'] = (theta_f + theta_c - theta_i)
                 model_config['cuff']['shift']['x'] = x
                 model_config['cuff']['shift']['y'] = y
             else:
@@ -593,7 +593,7 @@ class Runner(Exceptionable, Configurable):
                 center_x += x_step
                 center_y += y_step
 
-                model_config['cuff']['rotate']['pos_ang'] = (theta_f + theta_c - theta_i) * 360 / (2 * np.pi)
+                model_config['cuff']['rotate']['pos_ang'] = (theta_f + theta_c - theta_i)
                 model_config['cuff']['shift']['x'] = center_x
                 model_config['cuff']['shift']['y'] = center_y
 

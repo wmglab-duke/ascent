@@ -41,7 +41,8 @@
       "type": "HelicalCuffnContact_Primitive",
       "label": "LivaNova CuffnContact 1",
       "def": {
-        "Center": "(z_nerve/2)-(sep_elec_LN/2)"
+        "Center": "(z_nerve/2)-(sep_elec_LN/2)",
+        "Corr": "corr_LN"
       },
       "materials": [
         {
@@ -58,7 +59,8 @@
       "type": "HelicalCuffnContact_Primitive",
       "label": "LivaNova CuffnContact 2",
       "def": {
-        "Center": "(z_nerve/2)+(sep_elec_LN/2)"
+        "Center": "(z_nerve/2)+(sep_elec_LN/2)",
+        "Corr": "corr_LN"
       },
       "materials": [
         {
@@ -182,6 +184,11 @@
     {
       "name": "Thk_fill_LN",
       "expression": "100 [um]",
+      "description": ""
+    },
+    {
+      "name": "corr_LN",
+      "expression": "0",
       "description": ""
     }
   ],
