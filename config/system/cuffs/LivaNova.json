@@ -151,8 +151,8 @@
     },
     {
       "name": "r_cuff_in_pre_LN",
-      "expression": "1 [mm]",
-      "description": "0.5*ID_cuff_LN: this needs to be automated, because in case of 3 mm ID = 1.5 mm"
+      "expression": "0.5*ID_cuff_LN",
+      "description": ""
     },
     {
       "name": "r_cuff_in_LN",
