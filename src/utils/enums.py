@@ -254,11 +254,10 @@ class PerineuriumThicknessMode(Enum):
     parameters = 'ci_perineurium_thickness_parameters'
 
     GRINBERG_2008 = 0
-    PIG_INHOUSE = 1
     MEASURED = 3
-    PIG_INHOUSE_200523 = 4
-    RAT_INHOUSE_200601 = 5
-    HUMAN_INHOUSE_200601 = 6
+    PIG_VN_INHOUSE_200523 = 4
+    RAT_VN_INHOUSE_200601 = 5
+    HUMAN_VN_INHOUSE_200601 = 6
 
 
 @unique
