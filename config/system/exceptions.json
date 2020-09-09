@@ -462,6 +462,11 @@
   {
     "code": 92,
     "text": "fig_margin < 1, so the ellipse for the nerve will not fit on the canvas",
-    "source": "src.core.mock_sample"
+    "source": "src.core.MockSample"
+  },
+  {
+    "code": 93,
+    "text": "Contact weight in Sim (active_srcs) is greater than +1 or less than -1 which is not allowed",
+    "source": "src.core.Simulation"
   }
 ]
