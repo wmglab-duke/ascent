@@ -362,6 +362,10 @@ class MockSample(Exceptionable, Configurable):
         max_diam = 2 * max(a_nerve, b_nerve)
 
         fig_margin: float = self.search(Config.MOCK_SAMPLE, 'figure', 'fig_margin')
+
+        if fig_margin < 1:
+            self.throw(92)
+
         fig_dpi: int = self.search(Config.MOCK_SAMPLE, 'figure', 'fig_dpi')
 
         # MAKE BINARY IMAGES FOR INPUT TO PIPELINE

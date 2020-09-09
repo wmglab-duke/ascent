@@ -458,5 +458,10 @@
     "code": 91,
     "text": "Timestep self.dt is longer than BIPHASIC_PULSE_TRAIN_Q_BALANCED_UNEVEN_PW inter_phase indicated in Sim.",
     "source": "src.core.Waveform"
+  },
+  {
+    "code": 92,
+    "text": "fig_margin < 1, so the ellipse for the nerve will not fit on the canvas",
+    "source": "src.core.mock_sample"
   }
 ]

@@ -1266,6 +1266,12 @@ public class ModelWrapper {
                         // Create PART INSTANCES for MEDIUM (Distal and Proximal)
                         if (distalMedium.getBoolean("exist")) {
                             String mediumDistal_instanceID = mw.im.next("pi", instanceLabelDistalMedium);
+
+                            if (proximalMedium.getBoolean("distant_ground")) {
+                                System.out.println("WARNING: you have a distal domain, as well as a proximal domain " +
+                                        "that is grounded... make sure this is something you actually want to do...");
+                            }
+
                             try {
                                 Part.createEnvironmentPartInstance(mediumDistal_instanceID, instanceLabelDistalMedium, mediumPrimitiveString, mw, distalMedium);
                             } catch (IllegalArgumentException e) {
