@@ -2,6 +2,42 @@
   "code": "LN",
   "instances": [
     {
+      "type": "CuffFill_Primitive",
+      "label": "LivaNova Cuff Fill 1",
+      "def": {
+        "Radius": "r_cuff_in_LN+thk_cuff_LN+Thk_fill_LN",
+        "Thk": "Thk_fill_LN",
+        "L": "L_cuff_LN+w_cuff_LN+2*Thk_fill_LN",
+        "Center": "(z_nerve/2)-(sep_elec_LN/2)",
+        "x_shift": "0",
+        "y_shift": "0"
+      },
+      "materials": [
+        {
+          "info": "fill",
+          "label_index": 0
+        }
+      ]
+    },
+    {
+      "type": "CuffFill_Primitive",
+      "label": "LivaNova Cuff Fill 2",
+      "def": {
+        "Radius": "r_cuff_in_LN+thk_cuff_LN+Thk_fill_LN",
+        "Thk": "Thk_fill_LN",
+        "L": "L_cuff_LN+w_cuff_LN+2*Thk_fill_LN",
+        "Center": "(z_nerve/2)+(sep_elec_LN/2)",
+        "x_shift": "0",
+        "y_shift": "0"
+      },
+      "materials": [
+        {
+          "info": "fill",
+          "label_index": 0
+        }
+      ]
+    },
+    {
       "type": "HelicalCuffnContact_Primitive",
       "label": "LivaNova CuffnContact 1",
       "def": {
@@ -77,7 +113,7 @@
     },
     {
       "name": "sep_elec_LN",
-      "expression": "6 [mm]",
+      "expression": "8 [mm]",
       "description": ""
     },
     {
@@ -92,7 +128,7 @@
     },
     {
       "name": "scar_thk_LN",
-      "expression": "10 [micrometer]",
+      "expression": "100 [micrometer]",
       "description": ""
     },
     {
@@ -117,8 +153,8 @@
     },
     {
       "name": "r_cuff_in_pre_LN",
-      "expression": "1 [mm]",
-      "description": "0.5*ID_cuff_LN: this needs to be automated, because in case of 3 mm ID = 1.5 mm"
+      "expression": "1.5 [mm]",
+      "description": ""
     },
     {
       "name": "r_cuff_in_LN",

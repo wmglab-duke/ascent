@@ -395,10 +395,13 @@ class Sample(Exceptionable, Configurable, Saveable):
                 if deform_ratio != 1 and partially_deformed_nerve is not None:
                     partially_deformed_nerve.shift(-np.asarray(list(partially_deformed_nerve.centroid()) + [0]))
                     slide.nerve = partially_deformed_nerve
+                    slide.orientation_point = slide.nerve.points[slide.orientation_point_index][:2]
                     slide.nerve.offset(distance=sep_nerve)
                 else:
                     slide.nerve = slide.reshaped_nerve(reshape_nerve_mode)
+                    slide.orientation_point = slide.nerve.points[slide.orientation_point_index][:2]
                     slide.nerve.offset(distance=sep_nerve)
+
             # slide.plot(fix_aspect_ratio=True, title=title)
 
             # plt.figure(2)

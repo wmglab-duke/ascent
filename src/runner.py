@@ -31,7 +31,7 @@ from quantiphy import Quantity
 
 from src.core import Sample, Simulation, Waveform
 from src.utils import Exceptionable, Configurable, SetupMode, Config, NerveMode, DownSampleMode, WriteMode, \
-    CuffShiftMode, PerineuriumResistivityMode, TemplateOutput, Env
+    CuffShiftMode, PerineuriumResistivityMode, TemplateOutput, Env, ReshapeNerveMode
 from shapely.geometry import Point
 
 
@@ -455,7 +455,12 @@ class Runner(Exceptionable, Configurable):
         # for speed, downsample nerves to n_points_nerve (100) points
         n_points_nerve = 100
         nerve_copy.down_sample(DownSampleMode.KEEP, int(np.floor(nerve_copy.points.size / n_points_nerve)))
-        x, y, r_bound = nerve_copy.smallest_enclosing_circle_naive()
+
+        if self.search_mode(ReshapeNerveMode, Config.SAMPLE) and not slide.monofasc():
+            x, y = 0, 0
+            r_bound = np.sqrt(sample_config['Morphology']['Nerve']['area']/np.pi)
+        else:
+            x, y, r_bound = nerve_copy.smallest_enclosing_circle_naive()
 
         # next calculate the angle of the "centroid" to the center of min bound circle
         # if mono fasc, just use 0, 0 as centroid (i.e., centroid of nerve same as centroid of all fasc)
@@ -464,16 +469,13 @@ class Runner(Exceptionable, Configurable):
         reference_x = reference_y = 0.0
         if not slide.monofasc():
             reference_x, reference_y = slide.fascicle_centroid()
-        theta_c = np.arctan2(y - reference_y, x - reference_x)
+        theta_c = (np.arctan2(reference_y - y, reference_x - x) * (360/(2*np.pi))) % 360
 
         # calculate final necessary radius by adding buffer
         r_f = r_bound + cuff_r_buffer
 
         # fetch initial cuff rotation (convert to rads)
-        theta_i = cuff_config.get('angle_to_contacts_deg') * 2 * np.pi / 360
-
-        # fetch cuff rotation mode
-        # cuff_rotation: CuffRotationMode = self.search_mode(CuffRotationMode, Config.MODEL)
+        theta_i = cuff_config.get('angle_to_contacts_deg') % 360
 
         # fetch boolean for cuff expandability
         expandable: bool = cuff_config['expandable']
@@ -506,18 +508,10 @@ class Runner(Exceptionable, Configurable):
                 scale='um'
             ).real  # [um] (scaled from any arbitrary length unit)
 
-            # if cuff_rotation == CuffRotationMode.MANUAL:
-            #     theta_f = 0
-            #
-            # else:  # cuff_rotation == CuffRotationMode.AUTOMATIC
             if r_i < r_f:
-                theta_f = 0.5 * ((r_f / r_i) * theta_i - theta_i)
-                # OLD theta_f = (r_f / r_i - 1) * theta_i
+                theta_f = (0.5 * ((r_f / r_i) * theta_i - theta_i)) % 360
             else:
                 theta_f = 0
-
-        # add arb angle
-        # theta_f += self.search(Config.MODEL, 'cuff', 'rotate', 'add_ang') * 2 * np.pi / 360
 
         offset = 0
         for key, coef in cuff_config["offset"].items():
@@ -544,44 +538,21 @@ class Runner(Exceptionable, Configurable):
         orientation_point = None
         if slide.orientation_point_index is not None:
             if slide.nerve is not None:  # has nerve
-                orientation_point = slide.nerve.points[slide.orientation_point_index][:2]
+                orientation_point = slide.orientation_point
             else:  # monofasc, no nerve
                 orientation_point = slide.fascicles[0].outer.points[slide.orientation_point_index][:2]
 
         if orientation_point is not None:
-            theta_c = -np.pi + np.arctan2(orientation_point[1],
-                                          orientation_point[0])  # overwrite theta_c, use our own orientation
-
-            # if r_i < r_f:
-            #     model_config['cuff']['rotate']['pos_ang'] = (theta_c - theta_i + theta_f) * 360 / (2 * np.pi)
-            #     model_config['cuff']['shift']['x'] = 0  # - cuff_r_buffer * np.cos(theta_c)
-            #     model_config['cuff']['shift']['y'] = 0  # - cuff_r_buffer * np.sin(theta_c)
-            # else:
-            #     print("THIS HAS NOT BEEN TESTED")
-            #     model_config['cuff']['rotate']['pos_ang'] = (theta_c - theta_i) * 360 / (2 * np.pi)
-            #     model_config['cuff']['shift']['x'] = x + (r_i - offset - r_f - cuff_r_buffer) * np.cos(theta_input)
-            #     model_config['cuff']['shift']['y'] = y + (r_i - offset - r_f - cuff_r_buffer) * np.sin(theta_input)
-
-        # else:
+            theta_c = (np.arctan2(orientation_point[1], orientation_point[0])) * (360 / (2*np.pi)) % 360 # overwrite theta_c, use our own orientation
 
         if cuff_shift_mode == CuffShiftMode.MIN_CIRCLE_BOUNDARY:
             if r_i > r_f:
-                model_config['cuff']['rotate']['pos_ang'] = (theta_f - theta_i + theta_c + np.pi) * 360 / (2 * np.pi)
-                # model_config['cuff']['shift']['x'] = 0  # - cuff_r_buffer * np.cos(theta_c)
-                # model_config['cuff']['shift']['y'] = 0  # - cuff_r_buffer * np.sin(theta_c)
-
-                # previous
-                # model_config['cuff']['shift']['x'] = x  # - cuff_r_buffer * np.cos(theta_c)
-                # model_config['cuff']['shift']['y'] = y  # - cuff_r_buffer * np.sin(theta_c)
-
-                model_config['cuff']['shift']['x'] = x + (r_i - offset - cuff_r_buffer - r_bound) * np.cos(
-                    theta_c)  # FIXED?
-                model_config['cuff']['shift']['y'] = y + (r_i - offset - cuff_r_buffer - r_bound) * np.sin(theta_c)
+                model_config['cuff']['rotate']['pos_ang'] = theta_f + theta_c - theta_i
+                model_config['cuff']['shift']['x'] = x - (r_i - offset - cuff_r_buffer - r_bound) * np.cos(theta_c * ((2*np.pi)/360))
+                model_config['cuff']['shift']['y'] = y - (r_i - offset - cuff_r_buffer - r_bound) * np.sin(theta_c * ((2*np.pi)/360))
 
             else:
-                model_config['cuff']['rotate']['pos_ang'] = (theta_f - theta_i + theta_c + np.pi) * 360 / (2 * np.pi)
-                # model_config['cuff']['shift']['x'] = x + (r_i - offset - r_f - cuff_r_buffer) * np.cos(theta_c)
-                # model_config['cuff']['shift']['y'] = y + (r_i - offset - r_f - cuff_r_buffer) * np.sin(theta_c)
+                model_config['cuff']['rotate']['pos_ang'] = (theta_f + theta_c - theta_i)
 
                 # if nerve is present, use 0,0
                 if slide.nerve is not None:  # has nerve
@@ -594,7 +565,7 @@ class Runner(Exceptionable, Configurable):
 
         elif cuff_shift_mode == CuffShiftMode.TRACE_BOUNDARY:
             if r_i < r_f:
-                model_config['cuff']['rotate']['pos_ang'] = (theta_f - theta_i + theta_c + np.pi) * 360 / (2 * np.pi)
+                model_config['cuff']['rotate']['pos_ang'] = (theta_f + theta_c - theta_i)
                 model_config['cuff']['shift']['x'] = x
                 model_config['cuff']['shift']['y'] = y
             else:
@@ -609,8 +580,8 @@ class Runner(Exceptionable, Configurable):
                 center_x = 0
                 center_y = 0
                 step = 1  # [um] STEP SIZE
-                x_step = step * np.cos(theta_c + np.pi)  # STEP VECTOR X-COMPONENT
-                y_step = step * np.sin(theta_c + np.pi)  # STEP VECTOR X-COMPONENT
+                x_step = step * np.cos(-theta_c + np.pi)  # STEP VECTOR X-COMPONENT
+                y_step = step * np.sin(-theta_c + np.pi)  # STEP VECTOR X-COMPONENT
 
                 # shift nerve within cuff until one step within the minimum separation from cuff
                 while nerve_copy.polygon().boundary.distance(id_boundary.boundary) >= cuff_r_buffer:
@@ -622,7 +593,7 @@ class Runner(Exceptionable, Configurable):
                 center_x += x_step
                 center_y += y_step
 
-                model_config['cuff']['rotate']['pos_ang'] = (theta_f - theta_i + theta_c + np.pi) * 360 / (2 * np.pi)
+                model_config['cuff']['rotate']['pos_ang'] = (theta_f + theta_c - theta_i)
                 model_config['cuff']['shift']['x'] = center_x
                 model_config['cuff']['shift']['y'] = center_y
 
@@ -630,6 +601,25 @@ class Runner(Exceptionable, Configurable):
             model_config['cuff']['rotate']['pos_ang'] = 0
             model_config['cuff']['shift']['x'] = 0
             model_config['cuff']['shift']['y'] = 0
+
+        elif cuff_shift_mode == CuffShiftMode.PURPLE:
+            if r_i > r_f:
+                model_config['cuff']['rotate']['pos_ang'] = 0
+
+                model_config['cuff']['shift']['x'] = x - (r_i - offset - cuff_r_buffer - r_bound) * np.cos(theta_i * ((2*np.pi)/360))
+                model_config['cuff']['shift']['y'] = y - (r_i - offset - cuff_r_buffer - r_bound) * np.sin(theta_i * ((2*np.pi)/360))
+
+            else:
+                model_config['cuff']['rotate']['pos_ang'] = 0
+
+                # if nerve is present, use 0,0
+                if slide.nerve is not None:  # has nerve
+                    model_config['cuff']['shift']['x'] = 0
+                    model_config['cuff']['shift']['y'] = 0
+                else:
+                    # else, use
+                    model_config['cuff']['shift']['x'] = x
+                    model_config['cuff']['shift']['y'] = y
 
         if 'add_ang' not in model_config['cuff']['rotate'].keys():
             model_config['cuff']['rotate']['add_ang'] = 0
@@ -679,225 +669,3 @@ class Runner(Exceptionable, Configurable):
             value = self.search(Config.ENV, key)
             assert type(value) is str
             os.environ[key] = value
-
-    # def smart_run(self):
-    #
-    #     print('\nStarting smart run.')
-    #
-    #     def load(path: str):
-    #         return pickle.load(open(path, 'rb'))
-    #
-    #     path_parts = [self.path(Config.MASTER, 'samples_path'), self.search(Config.MASTER, 'sample')]
-    #
-    #     if not os.path.isfile(os.path.join(*path_parts, 'sample.obj')):
-    #         print('Existing slide manager not found. Performing full run.')
-    #         self.full_run()
-    #
-    #     else:
-    #         print('Loading existing slide manager.')
-    #         self.sample = load(os.path.join(*path_parts, 'sample.obj'))
-    #
-    #         if os.path.isfile(os.path.join(*path_parts, 'fiber_manager.obj')):
-    #             print('Loading existing fiber manager.')
-    #             self.fiber_manager = load(os.path.join(*path_parts, 'fiber_manager.obj'))
-    #
-    #         else:
-    #             print('Existing fiber manager not found. Performing fiber run.')
-    #             self.fiber_run()
-    #
-    #     self.save_all()
-    #
-    #     if self.fiber_manager is not None:
-    #         self.fiber_manager.save_full_coordinates('TEST_JSON_OUTPUT.json')
-    #     else:
-    #         raise Exception('my dude, something went horribly wrong here')
-    #
-    #     self.handoff()
-    #
-    # def full_run(self):
-    #     self.slide_run()
-    #     self.fiber_run()
-    #
-    # def slide_run(self):
-    #     print('\nSTART SLIDE MANAGER')
-    #     self.sample = Sample(self.configs[Config.MASTER.value],
-    #                                       self.configs[Config.EXCEPTIONS.value],
-    #                                       map_mode=SetupMode.NEW)
-    #
-    #     print('BUILD FILE STRUCTURE')
-    #     self.sample.build_file_structure()
-    #
-    #     print('POPULATE')
-    #     self.sample.populate()
-    #
-    #     print('WRITE')
-    #     self.sample.write(WriteMode.SECTIONWISE2D)
-    #
-    # def fiber_run(self):
-    #     print('\nSTART FIBER MANAGER')
-    #     self.fiber_manager = FiberManager(self.sample,
-    #                                       self.configs[Config.MASTER.value],
-    #                                       self.configs[Config.EXCEPTIONS.value])
-    #
-    #     print('FIBER XY COORDINATES')
-    #     self.fiber_manager.fiber_xy_coordinates(plot=True, save=True)
-    #
-    #     print('FIBER Z COORDINATES')
-    #     self.fiber_manager.fiber_z_coordinates(self.fiber_manager.xy_coordinates, save=True)
-    #
-    # def save_all(self):
-    #
-    #     print('SAVE ALL')
-    #     path_parts = [self.path(Config.MASTER, 'samples_path'), self.search(Config.MASTER, 'sample')]
-    #     self.sample.save(os.path.join(*path_parts, 'sample.obj'))
-    #     self.sample.output_morphology_data()
-    #     self.fiber_manager.save(os.path.join(*path_parts, 'fiber_manager.obj'))
-
-    # def run(self):
-    #     self.map = Map(self.configs[Config.MASTER.value],
-    #                         self.configs[Config.EXCEPTIONS.value],
-    #                         mode=SetupMode.NEW)
-    #
-    #     # TEST: Trace functionality
-    #     # self.trace = Trace([[0,  0, 0],
-    #     #                     [2,  0, 0],
-    #     #                     [4,  0, 0],
-    #     #                     [4,  1, 0],
-    #     #                     [4,  2, 0],
-    #     #                     [2,  2, 0],
-    #     #                     [0,  2, 0],
-    #     #                     [0,  1, 0]], self.configs[Config.EXCEPTIONS.value])
-    #     # print('output path: {}'.format(self.trace.write(Trace.WriteMode.SECTIONWISE,
-    #     #                                                 '/Users/jakecariello/Box/SPARCpy/data/output/test_trace')))
-    #
-    #     # TEST: exceptions configuration path
-    #     # print('exceptions_config_path:\t{}'.format(self.exceptions_config_path))
-    #
-    #     # TEST: retrieve data from config file
-    #     # print(self.search(Config.MASTER, 'test_array', 0, 'test'))
-    #
-    #     # TEST: throw error
-    #     # self.throw(2)
-    #
-    #     # self.slide = Slide([Fascicle(self.configs[Config.EXCEPTIONS.value],
-    #     #                              [self.trace],
-    #     #                              self.trace)],
-    #     #                    self.trace,
-    #     #                    self.configs[Config.MASTER.value],
-    #     #                    self.configs[Config.EXCEPTIONS.value])
-    #     pass
-    #
-    # def trace_test(self):
-    #
-    #     # build path and read image
-    #     path = os.path.join('data', 'input', 'misc_traces', 'tracefile2.tif');
-    #     img = cv2.imread(path, -1)
-    #
-    #     # get contours and build corresponding traces
-    #     # these are intentionally instance attributes so they can be inspected in the Python Console
-    #     self.cnts, self.hierarchy = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    #     self.traces = [Trace(cnt[:, 0, :], self.configs[Config.EXCEPTIONS.value]) for cnt in self.cnts]
-    #
-    #     # plot formats
-    #     formats = ['r', 'g', 'b']
-    #
-    #     # original points and centroids
-    #     title = 'Figure 0: original traces with calculated centroids'
-    #     print(title)
-    #     plt.figure(0)
-    #     plt.axes().set_aspect('equal', 'datalim')
-    #     for i, trace in enumerate(self.traces):
-    #         trace.plot(formats[i] + '-')
-    #         trace.plot_centroid(formats[i] + '*')
-    #     plt.legend([str(i) for i in range(len(self.traces)) for _ in (0, 1)]) # end of this line is to duplicate items
-    #     plt.title(title)
-    #     plt.show()
-    #
-    #     # ellipse/circle/original comparison (trace 0)
-    #     title = 'Figure 1: fit comparisons (trace 0)'
-    #     print(title)
-    #     plt.figure(1)
-    #     plt.axes().set_aspect('equal', 'datalim')
-    #     self.traces[0].plot(formats[0])
-    #     self.traces[0].to_circle().plot(formats[1])
-    #     self.traces[0].to_ellipse().plot(formats[2])
-    #     plt.legend(['original', 'circle', 'ellipse'])
-    #     plt.title(title)
-    #     plt.show()
-    #
-    #     # example stats
-    #     pairs = [(0, 1), (1, 2), (2, 0)]
-    #     print('\nEXAMPLE STATS')
-    #     for pair in pairs:
-    #         print('PAIR: ({}, {})'.format(*pair))
-    #         print('\tcent dist:\t{}'.format(self.traces[pair[0]].centroid_distance(self.traces[pair[1]])))
-    #         print('\tmin dist:\t{}'.format(self.traces[pair[0]].min_distance(self.traces[pair[1]])))
-    #         print('\tmax dist:\t{}'.format(self.traces[pair[0]].max_distance(self.traces[pair[1]])))
-    #         print('\twithin:\t\t{}'.format(self.traces[pair[0]].within(self.traces[pair[1]])))
-    #
-    #     title = 'Figure 2: Scaled trace'
-    #     print(title)
-    #     plt.figure(2)
-    #     plt.axes().set_aspect('equal', 'datalim')
-    #     self.traces[0].plot(formats[0])
-    #     self.traces[0].scale(1.2)
-    #     self.traces[0].plot(formats[1])
-    #     plt.legend(['original', 'scaled'])
-    #     plt.title(title)
-    #     plt.show()
-    #
-    # def fascicle_test(self):
-    #     # build path and read image
-    #     path = os.path.join('data', 'input', 'misc_traces', 'tracefile5.tif')
-    #
-    #     self.fascicles = Fascicle.inner_to_list(path,
-    #                                             self.configs[Config.EXCEPTIONS.value],
-    #                                             plot=True,
-    #                                             scale=1.06)
-    #
-    # def reposition_test(self):
-    #     # build path and read image
-    #     path = os.path.join('data', 'input', 'samples', 'Cadaver54-3', 'NerveMask.tif')
-    #
-    #     self.img = np.flipud(cv2.imread(path, -1))
-    #
-    #     # get contours and build corresponding traces
-    #     # these are intentionally instance attributes so they can be inspected in the Python Console
-    #     self.nerve_cnts, _ = cv2.findContours(self.img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    #     self.nerve = Nerve(Trace(self.nerve_cnts[0][:, 0, :], self.configs[Config.EXCEPTIONS.value]))
-    #
-    #     self.fascicles = Fascicle.separate_to_list(os.path.join('data', 'input', 'samples',
-    #                                                             'Cadaver54-3', 'EndoneuriumMask.tif'),
-    #                                                os.path.join('data', 'input', 'samples',
-    #                                                             'Cadaver54-3','PerineuriumMask.tif'),
-    #                                                self.configs[Config.EXCEPTIONS.value],
-    #
-    #
-    #                                                plot=False)
-    #     self.slide = Slide(self.fascicles, self.nerve,
-    #                        self.configs[Config.MASTER.value],
-    #                        self.configs[Config.EXCEPTIONS.value])
-    #
-    #     self.slide.reposition_fascicles(self.slide.reshaped_nerve(ReshapeNerveMode.CIRCLE))
-    #
-    # def reposition_test2(self):
-    #     # build path and read image
-    #     path = os.path.join('data', 'input', 'samples', 'Pig11-3', 'NerveMask.tif')
-    #     self.img = np.flipud(cv2.imread(path, -1))
-    #
-    #     # get contours and build corresponding traces
-    #     # these are intentionally instance attributes so they can be inspected in the Python Console
-    #     self.nerve_cnts, _ = cv2.findContours(self.img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    #     self.nerve = Nerve(Trace(self.nerve_cnts[0][:, 0, :], self.configs[Config.EXCEPTIONS.value]))
-    #
-    #     self.fascicles = Fascicle.inner_to_list(os.path.join('data', 'input', 'samples',
-    #                                                          'Pig11-3', 'FascMask.tif'),
-    #                                             self.configs[Config.EXCEPTIONS.value],
-    #                                             plot=False,
-    #                                             scale=1.05)
-    #     self.slide = Slide(self.fascicles, self.nerve,
-    #                        self.configs[Config.EXCEPTIONS.value],
-    #                        will_reposition=True)
-    #
-    #     # self.slide.reposition_fascicles(self.slide.reshaped_nerve(ReshapeNerveMode.ELLIPSE))
-    #     self.slide.reposition_fascicles(self.slide.reshaped_nerve(ReshapeNerveMode.CIRCLE))

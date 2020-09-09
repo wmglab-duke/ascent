@@ -46,8 +46,9 @@ class Slide(Exceptionable):
             if self.nerve_mode == NerveMode.NOT_PRESENT:
                 self.throw(39)
 
-        # self.orientation_point: Union[Tuple[float, float], None] = None
+        self.orientation_point: Union[Tuple[float, float], None] = None
         self.orientation_point_index: Union[float, None] = None
+
 
     def monofasc(self) -> bool:
         return self.nerve_mode == NerveMode.NOT_PRESENT and len(self.fascicles) == 1
