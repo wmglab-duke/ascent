@@ -39,6 +39,8 @@
   },
   "min_radius_enclosing_circle": 237.44249404941704,
   "mesh": {
+    "name": "COMSOL Multiphysics 5.4 (Build: 388)",
+    "shape_order": 2,
     "proximal": {
       "mesh_time": 0,
       "hcurve": 0.2,
@@ -89,7 +91,6 @@
   },
   "solver": {
     "sorder": "quadratic",
-    "shape_order": 2,
     "name": "COMSOL Multiphysics 5.4 (Build: 388)"
   },
   "solution": {

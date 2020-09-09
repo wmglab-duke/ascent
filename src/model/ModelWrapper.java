@@ -1439,7 +1439,13 @@ public class ModelWrapper {
                             assert success;
                         }
 
-                        int shape_order = modelData.getJSONObject("solver").getInt("shape_order");
+                        int shape_order;
+                        if (modelData.getJSONObject("mesh").has("shape_order")) {
+                            shape_order = modelData.getJSONObject("mesh").getInt("shape_order");
+                        } else {
+                            shape_order = modelData.getJSONObject("solver").getInt("shape_order"); // bkwds compatible
+                        }
+
                         model.component("comp1").physics("ec").prop("ShapeProperty").set("order_electricpotential", shape_order);
 
                         // define MESH for PROXIMAL
