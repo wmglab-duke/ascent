@@ -86,7 +86,7 @@
       "delta_zs": 8.333,
       "node_channels": 0,
       "fiber_type": 3,
-      "passive_end_nodes": 1,
+      "passive_end_nodes": 0,
       "channels_type": 2
     },
     "RATTAY": {

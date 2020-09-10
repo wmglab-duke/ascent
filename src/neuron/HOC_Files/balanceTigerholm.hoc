@@ -1,0 +1,53 @@
+/*
+#-*-#
+### balannce.hoc
+----------------
+This scipt contains a function that balances the currents for the membrane to comply with the resting potential. It reads all the membrane currents and writes to the leak and pump conductance.
+
+This function is called after the first initialization.
+#-*-#
+*/
+
+proc balance(){
+    forall {
+	if ((-(ina_nattxs + \
+	ina_nav1p9 + \
+	ina_nav1p8 + \
+	ina_h + \
+	ina_nakpump) / (Vrest - ena)) < 0) {
+	    pumpina_extrapump = \
+	    -(ina_nattxs + \
+            ina_nav1p9 + \
+	    ina_nav1p8 + \
+	    ina_h + \
+	    ina_nakpump)
+	} else {
+	    gnaleak_leak = -(ina_nattxs + \
+	    ina_nav1p9 + \
+	    ina_nav1p8 + \
+	    ina_h + \
+	    ina_nakpump) / (Vrest - ena)
+	}
+	
+	if ((-(ik_ks + \
+	ik_kf + \
+	ik_h + \
+	ik_kdrTiger + \
+	ik_nakpump + \
+	ik_kna) / (Vrest - ek)) < 0) {
+	    pumpik_extrapump = -(ik_ks + \
+	    ik_kf + \
+	    ik_h + \
+	    ik_kdrTiger + \
+	    ik_nakpump + \
+	    ik_kna)
+	} else {
+	    gkleak_leak = -(ik_ks + \
+	    ik_kf + \
+	    ik_h + \
+	    ik_kdrTiger + \
+	    ik_nakpump + \
+	    ik_kna) / (Vrest - ek)
+	}
+    }
+}
