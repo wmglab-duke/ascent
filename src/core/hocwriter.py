@@ -139,8 +139,8 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         intracellular_stim: dict = self.search(Config.SIM, "intracellular_stim")
 
         file_object.write("\n//***************** Intracellular Stim ***********\n")
-        file_object.write("IntraStim_PulseTrain_delay    = %0.2f // [ms]\n" % intracellular_stim.get("times").get(
-            "IntraStim_PulseTrain_delay"))
+        file_object.write("IntraStim_PulseTrain_delay    = "
+                          "%0.2f // [ms]\n" % intracellular_stim.get("times").get("IntraStim_PulseTrain_delay"))
         file_object.write("IntraStim_PulseTrain_pw       = %0.2f // [ms]\n" % intracellular_stim.get("times").get("pw"))
 
         if "IntraStim_PulseTrain_dur" in intracellular_stim.get("times").values():
