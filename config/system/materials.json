@@ -39,8 +39,8 @@
       "unit": "[S/m]"
     },
     "weerasuriya_perineurium_DC": {
-      "value": "1149",
-      "unit": "[ohm*m]"
+      "value": "1/1149",
+      "unit": "[S/m]"
     }
   }
 }

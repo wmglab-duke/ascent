@@ -97,7 +97,7 @@ class Waveform(Exceptionable, Configurable, Saveable):
 
             materials_path = os.path.join('config', 'system', 'materials.json')
             materials_config = self.load(materials_path)
-            rho = eval(materials_config['conductivities']['weerasuriya_perineurium_DC']['value'])  # [ohm-m]
+            rho = 1/eval(materials_config['conductivities']['weerasuriya_perineurium_DC']['value'])  # [S/m] -> [ohm-m]
 
         else:  # stimulation at higher frequency for block
             w = 2 * np.pi * f
