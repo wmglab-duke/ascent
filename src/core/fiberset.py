@@ -103,10 +103,10 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
             # set angle theta to orientation point if defined
             slide = self.sample.slides[0]
-            if slide.orientation_point_index is not None:
-                outer = slide.fascicles[0] if slide.monofasc() else slide.nerve
-                orientation_x, orientation_y = tuple(outer.points[slide.orientation_point_index][:2])
-                theta = np.arctan2(orientation_y, orientation_x)
+            # if slide.orientation_point_index is not None:
+            #     outer = slide.fascicles[0] if slide.monofasc() else slide.nerve
+            #     orientation_x, orientation_y = tuple(outer.points[slide.orientation_point_index][:2])
+            #     theta = np.arctan2(orientation_y, orientation_x)
 
             x, y, z = fit_3d(t_range, theta, fit_z)
             points = list(zip(x, y, z))

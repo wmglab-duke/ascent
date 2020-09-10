@@ -391,7 +391,8 @@ class Query(Exceptionable, Configurable, Saveable):
                 orientation_point = None
                 if slide.orientation_point_index is not None:
                     r = slide.nerve.mean_radius() * 1.15  # scale up so orientation point is outside nerve
-                    theta = np.arctan2(*tuple(np.flip(slide.nerve.points[slide.orientation_point_index][:2])))
+                    #theta = np.arctan2(*tuple(np.flip(slide.nerve.points[slide.orientation_point_index][:2])))
+                    theta = np.arctan2(*tuple(np.flip(slide.orientation_point)))
                     theta += np.deg2rad(
                         self.get_config(Config.MODEL, [sample_index, model_index]).get('cuff').get('rotate').get(
                             'add_ang')
@@ -418,7 +419,7 @@ class Query(Exceptionable, Configurable, Saveable):
                     master_product_count = len(sim_object.master_product_indices)
                     rows = int(np.floor(np.sqrt(master_product_count))) if rows_override is None else rows_override
                     cols = int(np.ceil(master_product_count / rows))
-                    figure, axes = plt.subplots(rows, cols, constrained_layout=False, figsize=(35, 30))  # todo changed for ImThera (25, 20) for monopolar
+                    figure, axes = plt.subplots(rows, cols, constrained_layout=False, figsize=(25, 20))  # todo changed for ImThera (25, 20) for monopolar
                     axes = axes.reshape(-1)
 
                     # loop nsims
