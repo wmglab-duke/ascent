@@ -109,7 +109,7 @@ proc build(){
 				v=-55
 			}else if(type == 3){ // Rattay and Aberham Fiber
 				insert RattayAberham// Model adjusted for a resting potential of -70mV instead of 0
-				Ra=50// need to be 100 for propagation less than this does not propagate correctly
+				Ra=100// need to be 100 for propagation less than this does not propagate correctly
 				cm=1
 				v=-70
 				ena=45
