@@ -77,7 +77,8 @@
     "mode": "ACTIVATION_THRESHOLD",
     "threshold": {
       "value": -30,
-      "n_min_aps": 1
+      "n_min_aps": 1,
+      "ap_detect_location": 0.9
     },
     "bounds_search": {
       "mode": "PERCENT_INCREMENT",

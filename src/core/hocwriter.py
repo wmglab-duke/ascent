@@ -204,7 +204,8 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                     "thresh_flag": 1,
                     "block_thresh": 0,
                     "value": -30,
-                    "n_min_aps": 1
+                    "n_min_aps": 1,
+                    "ap_detect_location": 0.9
                 }
             }
 
@@ -222,6 +223,11 @@ class HocWriter(Exceptionable, Configurable, Saveable):
             threshold: dict = self.search(Config.SIM, "protocol", "threshold")
             file_object.write("\nap_thresh = %0.0f\n" % threshold.get("value"))
             file_object.write("N_minAPs  = %0.0f\n" % threshold.get("n_min_aps"))
+
+            if 'ap_detect_location' not in threshold.keys():
+                file_object.write("ap_detect_location  = 0.9\n")
+            else:
+                file_object.write("ap_detect_location  = %0.2f\n" % threshold.get("ap_detect_location"))
 
             bounds_search_mode_name: str = self.search(Config.SIM, "protocol", "bounds_search", "mode")
             bounds_search_mode: SearchAmplitudeIncrementMode = \
