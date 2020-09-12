@@ -7,7 +7,6 @@
   "fibers": {
     "plot": false,
     "mode": "MRG_DISCRETE",
-    "units": "micrometer",
     "xy_trace_buffer": 5.0,
     "z_parameters": {
       "diameter": 8.7,
@@ -47,25 +46,32 @@
   "intracellular_stim": {
     "times": {
       "pw": 0,
-      "IntraStim_PulseTrain_delay": 0
+      "IntraStim_PulseTrain_delay": 0,
+      "IntraStim_PulseTrain_dur": 0
     },
     "pulse_repetition_freq": 0,
     "amp": 0,
     "ind": 2
   },
   "save_flags": {
-    "vm_time": false,
-    "gating_time": false,
-    "vm_space": false,
-    "gating_space": false,
-    "ve": false,
-    "istim": false
+    "space": {
+      "vm": false,
+      "gating": false,
+      "times": [0]
+    },
+    "time": {
+      "vm": false,
+      "gating": false,
+      "istim": false,
+      "locs": [0]
+    }
   },
   "protocol": {
     "mode": "ACTIVATION_THRESHOLD",
     "threshold": {
       "value": -30,
-      "n_min_aps": 1
+      "n_min_aps": 1,
+      "ap_detect_location": 0.9
     },
     "bounds_search": {
       "mode": "PERCENT_INCREMENT",
@@ -77,5 +83,11 @@
       "mode": "PERCENT_DIFFERENCE",
       "percent": 1
     }
+  },
+  "supersampled_bases": {
+    "generate": false,
+    "use": false,
+    "dz": 0,
+    "source_sim": 0
   }
 }
