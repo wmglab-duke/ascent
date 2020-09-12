@@ -8,22 +8,22 @@
     "pre_java": false,
     "pre_geom_run": false,
     "post_geom_run": false,
-    "post_mesh_distal": false,
-    "pre_mesh_distal": false,
-    "post_material_assign": false,
-    "pre_loop_currents": false,
     "pre_mesh_proximal": false,
-    "post_mesh_proximal": false
+    "post_mesh_proximal": false,
+    "pre_mesh_distal": false,
+    "post_mesh_distal": false,
+    "post_material_assign": false,
+    "pre_loop_currents": false
   },
   "models_exit_status": [true],
   "keep": {
-    "bases": true,
     "debug_geom": true,
-    "mesh": true
+    "mesh": true,
+    "bases": true
   },
-  "local_avail_cpus": 3,
   "partial_fem": {
-    "nerve_only": false,
-    "cuff_only": false
-  }
+    "cuff_only": false,
+    "nerve_only": false
+  },
+  "local_avail_cpus": 3
 }
