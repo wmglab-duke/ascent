@@ -24,6 +24,8 @@
     }
   },
   "trace_interp_tol": true,
+  "inner_interp_tol": true,
+  "outer_interp_tol": true,
   "cuff": {
     "preset": true,
     "rotate": {
@@ -38,6 +40,8 @@
   },
   "min_radius_enclosing_circle": true,
   "mesh": {
+    "name": true,
+    "shape_order": true,
     "proximal": {
       "mesh_time": false,
       "hcurve": true,
