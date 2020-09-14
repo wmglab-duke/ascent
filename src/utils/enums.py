@@ -293,10 +293,12 @@ class CuffMode(Enum):
 class CuffShiftMode(Enum):
     config = 'cuff_shift'
 
-    MIN_CIRCLE_BOUNDARY = 0
-    TRACE_BOUNDARY = 1
+    AUTO_ROTATION_MIN_CIRCLE_BOUNDARY = 0
+    AUTO_ROTATION_TRACE_BOUNDARY = 1
     NONE = 2
     PURPLE = 3
+    NAIVE_ROTATION_MIN_CIRCLE_BOUNDARY = 4  # purple
+    NAIVE_ROTATION_TRACE_BOUNDARY = 5
 
 
 # %% Templates

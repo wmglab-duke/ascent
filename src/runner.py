@@ -427,7 +427,8 @@ class Runner(Exceptionable, Configurable):
 
         # fetch cuff config
         cuff_config: dict = self.load(
-            os.path.join(os.getcwd(), "config", "system", "cuffs", model_config['cuff']['preset']))
+            os.path.join(os.getcwd(), "config", "system", "cuffs", model_config['cuff']['preset'])
+        )
 
         # fetch 1-2 letter code for cuff (ex: 'CT')
         cuff_code: str = cuff_config['code']
@@ -545,14 +546,14 @@ class Runner(Exceptionable, Configurable):
         if orientation_point is not None:
             theta_c = (np.arctan2(orientation_point[1], orientation_point[0])) * (360 / (2*np.pi)) % 360 # overwrite theta_c, use our own orientation
 
-        if cuff_shift_mode == CuffShiftMode.MIN_CIRCLE_BOUNDARY:
+        if cuff_shift_mode == CuffShiftMode.AUTO_ROTATION_MIN_CIRCLE_BOUNDARY:
             if r_i > r_f:
                 model_config['cuff']['rotate']['pos_ang'] = theta_f + theta_c - theta_i
                 model_config['cuff']['shift']['x'] = x - (r_i - offset - cuff_r_buffer - r_bound) * np.cos(theta_c * ((2*np.pi)/360))
                 model_config['cuff']['shift']['y'] = y - (r_i - offset - cuff_r_buffer - r_bound) * np.sin(theta_c * ((2*np.pi)/360))
 
             else:
-                model_config['cuff']['rotate']['pos_ang'] = (theta_f + theta_c - theta_i)
+                model_config['cuff']['rotate']['pos_ang'] = theta_f + theta_c - theta_i
 
                 # if nerve is present, use 0,0
                 if slide.nerve is not None:  # has nerve
@@ -563,9 +564,9 @@ class Runner(Exceptionable, Configurable):
                     model_config['cuff']['shift']['x'] = x
                     model_config['cuff']['shift']['y'] = y
 
-        elif cuff_shift_mode == CuffShiftMode.TRACE_BOUNDARY:
+        elif cuff_shift_mode == CuffShiftMode.AUTO_ROTATION_TRACE_BOUNDARY:
             if r_i < r_f:
-                model_config['cuff']['rotate']['pos_ang'] = (theta_f + theta_c - theta_i)
+                model_config['cuff']['rotate']['pos_ang'] = theta_f + theta_c - theta_i
                 model_config['cuff']['shift']['x'] = x
                 model_config['cuff']['shift']['y'] = y
             else:
@@ -597,12 +598,46 @@ class Runner(Exceptionable, Configurable):
                 model_config['cuff']['shift']['x'] = center_x
                 model_config['cuff']['shift']['y'] = center_y
 
+        elif cuff_shift_mode == CuffShiftMode.NAIVE_ROTATION_TRACE_BOUNDARY:
+            if r_i < r_f:
+                model_config['cuff']['rotate']['pos_ang'] = 0
+                model_config['cuff']['shift']['x'] = x
+                model_config['cuff']['shift']['y'] = y
+            else:
+                id_boundary = Point(0, 0).buffer(r_i - offset)
+                n_boundary = Point(x, y).buffer(r_f)
+
+                if id_boundary.boundary.distance(n_boundary.boundary) < cuff_r_buffer:
+                    nerve_copy.shift([x, y, 0])
+                    print("WARNING: NERVE CENTERED ABOUT MIN CIRCLE CENTER (BEFORE PLACEMENT) BECAUSE "
+                          "CENTROID PLACEMENT VIOLATED REQUIRED CUFF BUFFER DISTANCE\n")
+
+                center_x = 0
+                center_y = 0
+                step = 1  # [um] STEP SIZE
+                x_step = step * np.cos(-theta_c + np.pi)  # STEP VECTOR X-COMPONENT
+                y_step = step * np.sin(-theta_c + np.pi)  # STEP VECTOR X-COMPONENT
+
+                # shift nerve within cuff until one step within the minimum separation from cuff
+                while nerve_copy.polygon().boundary.distance(id_boundary.boundary) >= cuff_r_buffer:
+                    nerve_copy.shift([x_step, y_step, 0])
+                    center_x -= x_step
+                    center_y -= y_step
+
+                # to maintain minimum separation from cuff, reverse last step
+                center_x += x_step
+                center_y += y_step
+
+                model_config['cuff']['rotate']['pos_ang'] = 0
+                model_config['cuff']['shift']['x'] = center_x
+                model_config['cuff']['shift']['y'] = center_y
+
         elif cuff_shift_mode == CuffShiftMode.NONE:
             model_config['cuff']['rotate']['pos_ang'] = 0
             model_config['cuff']['shift']['x'] = 0
             model_config['cuff']['shift']['y'] = 0
 
-        elif cuff_shift_mode == CuffShiftMode.PURPLE:
+        elif cuff_shift_mode == CuffShiftMode.NAIVE_ROTATION_MIN_CIRCLE_BOUNDARY or cuff_shift_mode == CuffShiftMode.PURPLE:
             if r_i > r_f:
                 model_config['cuff']['rotate']['pos_ang'] = 0
 
