@@ -14,13 +14,13 @@
     "distal": {
       "exist": true,
       "distant_ground": true,
+      "length": 12500,
+      "radius": 5000,
       "shift": {
         "x": 0,
         "y": 0,
         "z": 0
-      },
-      "length": 12500,
-      "radius": 5000
+      }
     }
   },
   "inner_interp_tol": 0.02,
@@ -42,36 +42,36 @@
     "name": "COMSOL Multiphysics 5.4 (Build: 388)",
     "shape_order": 2,
     "proximal": {
-      "mesh_time": 0,
-      "hcurve": 0.2,
-      "hmin": 10,
-      "hnarrow": 1,
       "type": {
         "im": "ftet",
         "name": "FreeTet"
       },
       "hmax": 1600,
-      "hgrad": 2.2
+      "hmin": 10,
+      "hgrad": 2.2,
+      "hcurve": 0.2,
+      "hnarrow": 1,
+      "mesh_time": 0
     },
     "distal": {
-      "mesh_time": 0,
-      "hcurve": 0.2,
-      "hmin": 10,
-      "hnarrow": 1,
       "type": {
         "im": "ftet",
         "name": "FreeTet"
       },
       "hmax": 1600,
-      "hgrad": 2.5
+      "hmin": 10,
+      "hgrad": 2.5,
+      "hcurve": 0.2,
+      "hnarrow": 1,
+      "mesh_time": 0
     },
     "stats": {
-      "volume": 0,
-      "min_quality": 0,
-      "min_volume": 0,
       "quality_measure": "vollength",
       "number_elements": 0,
-      "mean_quality": 0
+      "min_quality": 0,
+      "mean_quality": 0,
+      "min_volume": 0,
+      "volume": 0
     }
   },
   "frequency": 1,

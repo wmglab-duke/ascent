@@ -59,14 +59,14 @@ class Waveform(Exceptionable, Configurable, Saveable):
 
         # unpack global variables
         self.dt, \
-            self.start, \
             self.on, \
             self.off, \
             self.stop = [global_parameters.get(key) for key in ['dt',
-                                                                'start',
                                                                 'on',
                                                                 'off',
                                                                 'stop']]
+
+        self.start = 0
 
         self.validate_times()
 

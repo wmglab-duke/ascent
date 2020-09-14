@@ -1,13 +1,7 @@
 {
   "n_dimensions": 3,
   "active_srcs": {
-    "Purdue.json": [[1, -1]],
-    "Enteromedics.json": [[1]],
     "CorTec300.json": [[1, -1]],
-    "CorTec400.json": [[1, -1]],
-    "MicroLeads300.json": [[1, -1]],
-    "MicroLeads400.json": [[1, -1]],
-    "MicroLeads500.json": [[1, -1]],
     "default": [[1, -1]]
   },
   "fibers": {
@@ -25,8 +19,8 @@
       "mode": "UNIFORM_DENSITY",
       "top_down": true,
       "minimum_number": 1,
-      "maximum_number": 100,
       "target_density": 0.0005,
+      "maximum_number": 100,
       "target_number": 50,
       "seed": 123
     }
@@ -34,14 +28,10 @@
   "waveform": {
     "plot": false,
     "global": {
-      "unit": "ms",
       "dt": 0.001,
-      "start": 0,
       "on": 1,
       "off": 49,
-      "stop": 50,
-      "initSS": -200,
-      "dt_initSS": 10
+      "stop": 50
     },
     "BIPHASIC_PULSE_TRAIN": {
       "pulse_width": 0.1,
@@ -75,6 +65,8 @@
   },
   "protocol": {
     "mode": "ACTIVATION_THRESHOLD",
+    "initSS": -200,
+    "dt_initSS": 10,
     "threshold": {
       "value": -30,
       "n_min_aps": 1,

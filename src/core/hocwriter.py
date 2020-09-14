@@ -28,6 +28,28 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         :return:
         """
 
+        if 'protocol' not in self.configs[Config.SIM.value].keys():
+            self.configs[Config.SIM.value]['protocol'] = {
+                "mode": "ACTIVATION_THRESHOLD",
+                "initSS": -200,
+                "dt_initSS": 10,
+                "bounds_search": {
+                    "mode": "PERCENT_INCREMENT",
+                    "step": 10,
+                    "top": -1,
+                    "bottom": -0.01
+                },
+                "termination_criteria": {
+                    "mode": "PERCENT_DIFFERENCE",
+                    "percent": 1
+                },
+                "threshold": {
+                    "value": -30,
+                    "n_min_aps": 1,
+                    "ap_detect_location": 0.9
+                }
+            }
+
         write_mode = WriteMode.HOC
         file_path = os.path.join(self.dest_dir, "launch{}".format(WriteMode.file_endings.value[write_mode.value]))
         file_object = open(file_path, "w")
@@ -44,8 +66,8 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         tstop = extracellular_stim.get("stop")
         file_object.write("tstop     = %0.0f // [ms]\n" % tstop)
         file_object.write("n_tsteps  = %0.0f // [unitless]\n" % n_tsteps)
-        file_object.write("t_initSS  = %0.0f // [ms]\n" % extracellular_stim.get("initSS"))
-        file_object.write("dt_initSS = %0.0f // [ms]\n" % extracellular_stim.get("dt_initSS"))
+        file_object.write("t_initSS  = %0.0f // [ms]\n" % self.search(Config.SIM, "protocol", "initSS"))
+        file_object.write("dt_initSS = %0.0f // [ms]\n" % self.search(Config.SIM, "protocol", "dt_initSS"))
 
         # FIBER PARAMETERS
         file_object.write("\n//***************** Fiber Parameters *************\n")
@@ -188,26 +210,6 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         file_object.write("saveflag_Istim        = %0.0f\n" % int(saving.get("time").get("istim") == True))
 
         file_object.write("\n//***************** Protocol Parameters *********\n")
-
-        if 'protocol' not in self.configs[Config.SIM.value].keys():
-            self.configs[Config.SIM.value]['protocol'] = {
-                "mode": "ACTIVATION_THRESHOLD",
-                "bounds_search": {
-                    "mode": "PERCENT_INCREMENT",
-                    "relative_step": 10
-                },
-                "termination_criteria": {
-                    "mode": "RELATIVE_DIFFERENCE",
-                    "percent": 1
-                },
-                "threshold": {
-                    "thresh_flag": 1,
-                    "block_thresh": 0,
-                    "value": -30,
-                    "n_min_aps": 1,
-                    "ap_detect_location": 0.9
-                }
-            }
 
         protocol_mode_name: str = self.search(Config.SIM, 'protocol', 'mode')
         protocol_mode: NeuronRunMode = \
