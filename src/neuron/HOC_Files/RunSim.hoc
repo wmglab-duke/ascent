@@ -85,7 +85,7 @@ proc RunSim() {local myamp
 				s[seg_ind].sec.e_extracellular(0.5) = stimamp_extra * VeTime_data.x[t_ind] * VeSpace_data.x[seg_ind]
 			}
 			// Record Vm and/or gating vs x at single time points
-			if ((saveflag_Vm_space == 1) || (saveflag_gating_space == 1)) {
+			if (saveflag_gating_space == 1) {
 				if (!(fiber_type == 2)) {
 					execerror("Vm(x) and gating(x) recording only set up for myelinated fibers")
 				}
