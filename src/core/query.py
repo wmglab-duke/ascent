@@ -513,24 +513,6 @@ class Query(Exceptionable, Configurable, Saveable):
                         sample_object.slides[0].plot(final=False, fix_aspect_ratio=True, fascicle_colors=colors,
                                                      ax=ax, outers_flag=plot_outers, inner_format='k-')
 
-                        # TODO remove me
-                        # r_nerve = np.sqrt(sample_object.morphology['Nerve']['area']/np.pi)
-                        # rot_def = np.arctan(orientation_point[1]/orientation_point[0]) + np.pi
-                        # ang = 0.89012
-                        # contact1 = plt.Circle((r_nerve * np.cos(rot_def-2.5*ang), r_nerve * np.sin(rot_def-2.5*ang)), 200, color='k', fill=False)
-                        # contact2 = plt.Circle((r_nerve * np.cos(rot_def-1.5*ang), r_nerve * np.sin(rot_def-1.5*ang)), 200, color='k', fill=False)
-                        # contact3 = plt.Circle((r_nerve * np.cos(rot_def-0.5*ang), r_nerve * np.sin(rot_def-0.5*ang)), 200, color='k', fill=False)
-                        # contact4 = plt.Circle((r_nerve * np.cos(rot_def+0.5*ang), r_nerve * np.sin(rot_def+0.5*ang)), 200, color='k', fill=False)
-                        # contact5 = plt.Circle((r_nerve * np.cos(rot_def+1.5*ang), r_nerve * np.sin(rot_def+1.5*ang)), 200, color='k', fill=False)
-                        # contact6 = plt.Circle((r_nerve * np.cos(rot_def+2.5*ang), r_nerve * np.sin(rot_def+2.5*ang)), 200, color='k', fill=False)
-                        # ax.add_artist(contact1)
-                        # ax.add_artist(contact2)
-                        # ax.add_artist(contact3)
-                        # ax.add_artist(contact4)
-                        # ax.add_artist(contact5)
-                        # ax.add_artist(contact6)
-                        #
-
                         # colorbar
                         cb_label = r'mA'
                         cb: cbar.Colorbar = plt.colorbar(
