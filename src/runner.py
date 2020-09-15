@@ -546,7 +546,8 @@ class Runner(Exceptionable, Configurable):
         if orientation_point is not None:
             theta_c = (np.arctan2(orientation_point[1], orientation_point[0])) * (360 / (2*np.pi)) % 360 # overwrite theta_c, use our own orientation
 
-        if cuff_shift_mode == CuffShiftMode.AUTO_ROTATION_MIN_CIRCLE_BOUNDARY:
+        if cuff_shift_mode == CuffShiftMode.AUTO_ROTATION_MIN_CIRCLE_BOUNDARY \
+                or cuff_shift_mode == CuffShiftMode.MIN_CIRCLE_BOUNDARY:  # for backwards compatibility
             if r_i > r_f:
                 model_config['cuff']['rotate']['pos_ang'] = theta_f + theta_c - theta_i
                 model_config['cuff']['shift']['x'] = x - (r_i - offset - cuff_r_buffer - r_bound) * np.cos(theta_c * ((2*np.pi)/360))
@@ -564,7 +565,8 @@ class Runner(Exceptionable, Configurable):
                     model_config['cuff']['shift']['x'] = x
                     model_config['cuff']['shift']['y'] = y
 
-        elif cuff_shift_mode == CuffShiftMode.AUTO_ROTATION_TRACE_BOUNDARY:
+        elif cuff_shift_mode == CuffShiftMode.AUTO_ROTATION_TRACE_BOUNDARY \
+                or cuff_shift_mode == CuffShiftMode.TRACE_BOUNDARY:  # for backwards compatibility
             if r_i < r_f:
                 model_config['cuff']['rotate']['pos_ang'] = theta_f + theta_c - theta_i
                 model_config['cuff']['shift']['x'] = x
@@ -637,7 +639,8 @@ class Runner(Exceptionable, Configurable):
             model_config['cuff']['shift']['x'] = 0
             model_config['cuff']['shift']['y'] = 0
 
-        elif cuff_shift_mode == CuffShiftMode.NAIVE_ROTATION_MIN_CIRCLE_BOUNDARY or cuff_shift_mode == CuffShiftMode.PURPLE:
+        elif cuff_shift_mode == CuffShiftMode.NAIVE_ROTATION_MIN_CIRCLE_BOUNDARY \
+                or cuff_shift_mode == CuffShiftMode.PURPLE:
             if r_i > r_f:
                 model_config['cuff']['rotate']['pos_ang'] = 0
 
