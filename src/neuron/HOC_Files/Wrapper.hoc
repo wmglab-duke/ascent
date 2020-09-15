@@ -41,7 +41,6 @@ NOTE: In MRG-style myelinated axons, the resting membrane potential at the nodes
 whose value is given by e_pas_Vrest in CreateAxon_Myel.hoc. So as a rule of thumb, should set e_pas_Vrest and v_init to the same value.
 */
 
-
 // ***************************************************************************
 // CreateAxon_Myel.hoc
 if (fiber_type == 2) {
@@ -49,13 +48,12 @@ if (fiber_type == 2) {
 	CreateAxon_Myel()
 }
 
-
-
 // ***************************************************************************
 // cFiberBuilder.hoc
 if (fiber_type == 3) {
 	load_file("cFiberBuilder.hoc")
 	load_file("CreateAxon_CFiber.hoc")
+
 	CreateAxon_CFiber()
 }
 
@@ -65,9 +63,9 @@ if (fiber_type == 3) {
 } else if 	(fiber_type == 2 && flag_model_b_fiber==1) {		v_init = v_init_b_fiber			// [mV]
 }
 
-// ***************************************************************************
-// Train of intracellular pulses
-// NOTE: Define pulsewidth and interspike interval in pw_values and isi_values further down in Wrapper
+// ***************************************************************************	
+// IntracellularStim.hoc
+objref stim
 
 if (fiber_type == 2) {// if myelinated fiber, convert node index to compartment index
 	intrastim_ind_tmp = IntraStim_PulseTrain_ind*11
@@ -75,10 +73,15 @@ if (fiber_type == 2) {// if myelinated fiber, convert node index to compartment 
 	intrastim_ind_tmp = IntraStim_PulseTrain_ind
 }
 
-// ***************************************************************************	
-// IntracellularStim.hoc
-load_file("IntracellularStim.hoc")
-IntraStim_PulseTrain()
+s[intrastim_ind_tmp].sec {
+	stim 		= new trainIClamp()
+	stim.loc(.5)
+	stim.del 	= IntraStim_PulseTrain_delay
+	stim.PW		= IntraStim_PulseTrain_pw
+	stim.train 	= IntraStim_PulseTrain_traindur
+	stim.freq	= IntraStim_PulseTrain_freq
+	stim.amp	= IntraStim_PulseTrain_amp
+}
 
 // ***************************************************************************
 // Read in Iapplied from file

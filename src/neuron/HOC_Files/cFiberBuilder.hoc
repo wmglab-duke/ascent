@@ -20,7 +20,7 @@ proc build(){
   objref section[nsegments]
   section_coord = new Vector(nsegments,0)
   create node[nsegments]
-  
+ 
   sl = new SectionList()
   for i=0,nsegments-1{
 		node[i]{ 		

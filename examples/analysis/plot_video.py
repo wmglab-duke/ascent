@@ -3,9 +3,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
-sample = 0
+
+sample = 62
 model = 0
-sim = 0
+sim = 999
 inner = 0
 fiber = 0
 n_sim = 0
@@ -16,10 +17,12 @@ data_path = os.path.join(
     'models', str(model),
     'sims', str(sim),
     'n_sims', str(n_sim),
-    'data', 'outputs',
-    'gating_h_time_inner{}_fiber{}.dat'.format(inner, fiber)
+    'data', 'outputs'
     )
-data = np.loadtxt(data_path, skiprows=1)[:, 1:]
+data = np.loadtxt(os.path.join(data_path,
+                               'gating_h_time_inner{}_fiber{}_amp0.dat'.format(inner, fiber)
+                               ),
+                  skiprows=1)[:, 1:]
 
 # initialize plot
 fig, ax = plt.subplots()
@@ -41,5 +44,7 @@ def update(frame):
 print('WARNING: DO NOT ATTEMPT TO OPEN FILE UNTIL FRAME INDICES HAVE FINISHED PRINTING')
 ani = FuncAnimation(fig, update, frames=np.arange(0, 5000, 1),
                     init_func=init, blit=False, interval=1, save_count=5000, repeat=False)
-ani.save('/Users/jakecariello/Desktop/sample_movie.mp4')
+ani.save(os.path.join(data_path,
+                      'video_gating_h_time_inner{}_fiber{}_amp0.gif'.format(inner, fiber)  # or .mp4
+                      ))
 plt.plot()
