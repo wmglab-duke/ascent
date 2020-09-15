@@ -176,4 +176,4 @@ bin/
 examples/analysis/heatmap_polyfasc_imthera20200731.py
 examples/analysis/heatmap_polyfasc_imthera20200910.py
 examples/analysis/heatmap_polyfasc_eric.py
-examples/analysis/barchart_sample_comparison2.py
+examples/analysis/barchart_sample_comparison_2.py
