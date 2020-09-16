@@ -9,7 +9,7 @@ This function is called after the first initialization.
 */
 
 proc balance(){
-    forall {
+    forsec fiber.sl{
 	if ((-(ina_nattxs + \
 	ina_nav1p9 + \
 	ina_nav1p8 + \

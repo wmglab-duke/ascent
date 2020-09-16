@@ -88,7 +88,7 @@ proc build(){
 				gbar_nav1p9 	= 9.4779e-05
 				insert nakpump
 				smalla_nakpump 	= -0.0047891
-				insert kdr_Tiger
+				insert kdrTiger
 				gbar_kdr 	= 0.018002
 				insert kna
 				gbar_kna 	= 0.00042

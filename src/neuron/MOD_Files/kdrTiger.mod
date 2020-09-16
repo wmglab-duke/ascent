@@ -2,7 +2,7 @@
 
 
 NEURON {
-	SUFFIX kdr_Tiger
+	SUFFIX kdrTiger
 	USEION k READ ek WRITE ik
 	RANGE gbar, ena, ik,ek, celsiusT
 }
@@ -17,7 +17,7 @@ PARAMETER {
 	gbar 	(S/cm2)
         celsiusT
         kvot_qt
-        k=15.4	(mV)
+        k1=15.4	(mV)
         Vh=35	(mV)
 
 }
@@ -42,7 +42,7 @@ BREAKPOINT {
 
 INITIAL {
 	: assume that equilibrium has been reached
-	n=1/(1+exp((v+Vh-10)/-k))
+	n=1/(1+exp((v+Vh-10)/-k1))
 
 }
 
@@ -54,7 +54,7 @@ DERIVATIVE states {
 
 
 FUNCTION rates(Vm (mV)) (/ms) {        
-        ninf=1/(1+exp((v+Vh-10)/-k))
+        ninf=1/(1+exp((v+Vh-10)/-k1))
         tau=0.16+0.8*exp(-0.0267*(v+11)) 
         
         if (v<-31){
