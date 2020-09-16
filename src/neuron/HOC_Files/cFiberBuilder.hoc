@@ -36,8 +36,6 @@ proc build(){
 
 					
 					insert pas
-					print "inserted pas node: ", i
-
 					g_pas = 0.0001
 					if(type==1){
 						e_pas=-60//Sundt equilibrium potential
@@ -83,7 +81,6 @@ proc build(){
 				insert h
 				gbar_h 		= 0.0025377
 				insert nattxs
-				print "inserted nattxs node: ", i
 				gbar_nattxs 	= 0.10664
 				insert nav1p8
 				gbar_nav1p8 	= 0.24271
