@@ -904,46 +904,31 @@ public class ModelWrapper {
      * Pre-built for-loop to iterate through all current sources in model (added in Part)
      * Can be super useful for quickly setting different currents and possibly sweeping currents
      */
-    public void loopCurrents(JSONObject modelData, String projectPath, String sample, String modelStr) throws IOException {
+    public void loopCurrents(JSONObject modelData, String projectPath, String sample, String modelStr, Boolean skipMesh) throws IOException {
 
         long runSolStartTime = System.nanoTime();
         int index = 0;
 
         Set<Integer> s;
         s = this.im.currentIDs.keySet();
-        System.out.println("s = " + s);
-        System.out.println("here9");
 
         for(int key_on_int = 0; key_on_int < s.size(); key_on_int++) {
 
-            System.out.println("key_on_int = " + key_on_int);
-            String key_on_int_str = Integer.toString(key_on_int + 1);
-            System.out.println("key_on_int_str = " + key_on_int_str);
-
-            Map key_on_obj = (Map) this.im.currentIDs.get("1");
-            System.out.println(key_on_obj);
-
-            System.out.println("pre");
-            System.out.println(this.im.currentIDs);
-            System.out.println(this.im.currentIDs.getClass());
-
-            String key_on = (String) key_on_obj.keySet().toArray()[0];
-
-            System.out.println("post");
-
-            System.out.println(key_on_obj.toString());
-
-            System.out.println("wtf4");
-
-            System.out.println("Solving with current source: " + key_on);
-            String src = (String) key_on_obj.get(key_on);
-
-            System.out.println("wtf5");
+            String key_on;
+            String src;
+            if (skipMesh){
+                String key_on_int_str = Integer.toString(key_on_int + 1);
+                Map key_on_obj = (Map) this.im.currentIDs.get(key_on_int_str);
+                key_on = (String) key_on_obj.keySet().toArray()[0];
+                src = (String) key_on_obj.get(key_on);
+            } else {
+                JSONObject key_on_obj = this.im.currentIDs.get(key_on_int + 1);
+                key_on = (String) key_on_obj.keySet().toArray()[0];
+                src = (String) key_on_obj.get(key_on);
+            }
 
             PhysicsFeature current_on = model.physics("ec").feature(src);
             current_on.set("Qjp", 0.001); // turn on current
-
-            System.out.println("wtf6");
 
             String bases_directory = String.join("/", new String[]{
                     projectPath,
@@ -1905,7 +1890,7 @@ public class ModelWrapper {
 
                     System.out.println("here8");
 
-                    mw.loopCurrents(modelData, projectPath, sample, modelStr);
+                    mw.loopCurrents(modelData, projectPath, sample, modelStr, skipMesh);
 
                     System.out.println("here10");
 

@@ -2263,9 +2263,6 @@ class Part {
 
                 JSONObject src_wire = new JSONObject();
                 src_wire.put(instanceLabel, id);
-                System.out.println("grail");
-                System.out.println(mw.im.present("pcs"));
-                System.out.println("post grail");
                 mw.im.currentIDs.put(mw.im.present("pcs"), src_wire);
 
                 pf.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[2]) + "_pnt"); // SRC
