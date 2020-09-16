@@ -904,16 +904,29 @@ public class ModelWrapper {
      * Pre-built for-loop to iterate through all current sources in model (added in Part)
      * Can be super useful for quickly setting different currents and possibly sweeping currents
      */
-    public void loopCurrents(JSONObject modelData, String projectPath, String sample, String modelStr) throws IOException {
+    public void loopCurrents(JSONObject modelData, String projectPath, String sample, String modelStr, Boolean skipMesh) throws IOException {
 
         long runSolStartTime = System.nanoTime();
         int index = 0;
 
-        System.out.println(this.im.currentIDs.keySet());
-        for(String key_on: this.im.currentIDs.keySet()) {
+        Set<Integer> s;
+        s = this.im.currentIDs.keySet();
 
-            System.out.println("Solving with current source: " + key_on);
-            String src = this.im.currentIDs.get(key_on);
+        for(int key_on_int = 0; key_on_int < s.size(); key_on_int++) {
+
+            String key_on;
+            String src;
+            if (skipMesh){
+                String key_on_int_str = Integer.toString(key_on_int + 1);
+                Map key_on_obj = (Map) this.im.currentIDs.get(key_on_int_str);
+                key_on = (String) key_on_obj.keySet().toArray()[0];
+                src = (String) key_on_obj.get(key_on);
+            } else {
+                JSONObject key_on_obj = this.im.currentIDs.get(key_on_int + 1);
+                key_on = (String) key_on_obj.keySet().toArray()[0];
+                src = (String) key_on_obj.get(key_on);
+            }
+
             PhysicsFeature current_on = model.physics("ec").feature(src);
             current_on.set("Qjp", 0.001); // turn on current
 
@@ -1682,7 +1695,9 @@ public class ModelWrapper {
                         String imFile = String.join("/", new String[]{projectPath, "samples", sample, "models", modelStr, "mesh", "im.json"});
 
                         // save IM !!!!
+                        System.out.println("pre");
                         JSONio.write(imFile, mw.im.toJSONObject()); // write to file
+                        System.out.println("post");
 
                         // save ppIMs !!!!
                         for (String name : mw.partPrimitiveIMs.keySet()) {
@@ -1786,6 +1801,8 @@ public class ModelWrapper {
                         perineuriumMatLink.set("link", mw.im.get("perineurium"));
                     }
 
+                    System.out.println("here5");
+
                     // Will always need to add endoneurium material
                     String fascicleMatLinkLabel = "endoneurium material";
                     PropFeature fascicleMatLink = model.component("comp1").material().create(mw.im.next("matlnk", fascicleMatLinkLabel), "Link");
@@ -1812,6 +1829,8 @@ public class ModelWrapper {
                     String version = ModelUtil.getComsolVersion(); //The getComsolVersion method returns the current COMSOL Multiphysics
                     solver.put("name", version);
                     modelData.put("solver", solver);
+
+                    System.out.println("here6");
 
                     model.study().create("std1");
                     model.study("std1").setGenConv(true);
@@ -1842,6 +1861,8 @@ public class ModelWrapper {
                     model.sol("sol1").feature("s1").feature().remove("fcDef");
                     model.sol("sol1").attach("std1");
 
+                    System.out.println("here7");
+
                     model.result().create("pg1", "PlotGroup3D");
                     model.result("pg1").label("Electric Potential (ec)");
                     model.result("pg1").set("frametype", "spatial");
@@ -1867,7 +1888,11 @@ public class ModelWrapper {
                         continue;
                     }
 
-                    mw.loopCurrents(modelData, projectPath, sample, modelStr);
+                    System.out.println("here8");
+
+                    mw.loopCurrents(modelData, projectPath, sample, modelStr, skipMesh);
+
+                    System.out.println("here10");
 
                     ModelUtil.remove(model.tag());
 

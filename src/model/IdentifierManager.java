@@ -1,5 +1,6 @@
 package model;
 
+import org.eclipse.equinox.internal.util.hash.HashIntObjS;
 import org.json.JSONObject;
 
 import java.util.*;
@@ -10,7 +11,7 @@ public class IdentifierManager {
     private HashMap<String, String> identifierPseudonyms = new HashMap<>();
 
     public String[] labels = null;
-    public LinkedHashMap<String, String> currentIDs = new LinkedHashMap<>();
+    public HashMap<Integer, JSONObject> currentIDs = new HashMap<>();
 
     /**
      * @param identifierStates set
@@ -39,6 +40,19 @@ public class IdentifierManager {
         // update identifiers index
         identifierStates.put(key, nextIndex);
         return key + nextIndex;
+    }
+
+    /**
+     *
+     * @param key type of id to get the next index for
+     * @return a Integer for the current index
+     */
+    public Integer present(String key) {
+        // default next index to 1 (assume first call of key)
+        int presentIndex = 1;
+        // if the key already exists, set
+        if (identifierStates.containsKey(key)) presentIndex = identifierStates.get(key);
+        return presentIndex;
     }
 
     /**
@@ -108,8 +122,9 @@ public class IdentifierManager {
         for (int i = 0; i < buffer.length; i += 1) {
             im.labels[i] = (String) buffer[i];
         }
-        assert map.get("currentIDs") instanceof HashMap;
-        im.currentIDs = (LinkedHashMap<String, String>) map.get("currentIDs");
+
+        assert map.get("currentIDs") instanceof ArrayList;
+        im.currentIDs = (HashMap<Integer, JSONObject>) map.get("currentIDs");
 
         return im;
     }
