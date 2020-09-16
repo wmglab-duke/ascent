@@ -2219,7 +2219,10 @@ class Part {
                 String ribbon_pcsLabel = instanceLabel + " Current Source";
                 String id = mw.im.next("pcs", ribbon_pcsLabel);
                 PhysicsFeature pf = model.component("comp1").physics("ec").create(id, "PointCurrentSource", 0);
-                mw.im.currentIDs.put(instanceLabel, id);
+
+                JSONObject src_ribbon = new JSONObject();
+                src_ribbon.put(instanceLabel, id);
+                mw.im.currentIDs.put(mw.im.present("pcs"), src_ribbon);
 
                 pf.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[2]) + "_pnt"); // SRC
                 pf.set("Qjp", 0.000);
@@ -2257,8 +2260,13 @@ class Part {
                 String wire_pcsLabel = instanceLabel + " Current Source";
                 id = mw.im.next("pcs", wire_pcsLabel);
                 pf = model.component("comp1").physics("ec").create(id, "PointCurrentSource", 0);
-                mw.im.currentIDs.put(instanceLabel, id);
 
+                JSONObject src_wire = new JSONObject();
+                src_wire.put(instanceLabel, id);
+                System.out.println("grail");
+                System.out.println(mw.im.present("pcs"));
+                System.out.println("post grail");
+                mw.im.currentIDs.put(mw.im.present("pcs"), src_wire);
 
                 pf.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[2]) + "_pnt"); // SRC
                 pf.set("Qjp", 0.000);
@@ -2334,7 +2342,10 @@ class Part {
                 String circle_pcsLabel = instanceLabel + " Current Source";
                 id = mw.im.next("pcs", circle_pcsLabel);
                 pf = model.component("comp1").physics("ec").create(id, "PointCurrentSource", 0);
-                mw.im.currentIDs.put(instanceLabel, id);
+
+                JSONObject src_circ = new JSONObject();
+                src_circ.put(instanceLabel, id);
+                mw.im.currentIDs.put(mw.im.present("pcs"), src_circ);
 
                 pf.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[4]) + "_pnt"); // SRC
                 pf.set("Qjp", 0.000);
@@ -2383,7 +2394,10 @@ class Part {
                 String helix_pcsLabel = instanceLabel + " Current Source";
                 id = mw.im.next("pcs", helix_pcsLabel);
                 pf = model.component("comp1").physics("ec").create(id, "PointCurrentSource", 0);
-                mw.im.currentIDs.put(instanceLabel, id);
+
+                JSONObject src_heli = new JSONObject();
+                src_heli.put(instanceLabel, id);
+                mw.im.currentIDs.put(mw.im.present("pcs"), src_heli);
 
                 pf.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[4]) + "_pnt"); // SRC
                 pf.set("Qjp", 0.000);
@@ -2473,7 +2487,10 @@ class Part {
                 String square_pcsLabel = instanceLabel + " Current Source";
                 id = mw.im.next("pcs", square_pcsLabel);
                 pf = model.component("comp1").physics("ec").create(id, "PointCurrentSource", 0);
-                mw.im.currentIDs.put(instanceLabel, id);
+
+                JSONObject src_rect = new JSONObject();
+                src_rect.put(instanceLabel, id);
+                mw.im.currentIDs.put(mw.im.present("pcs"), src_rect);
 
                 pf.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[16]) + "_pnt"); // SRC
                 pf.set("Qjp", 0.000);
@@ -2511,7 +2528,10 @@ class Part {
                 String u_pcsLabel = instanceLabel + " Current Source";
                 id = mw.im.next("pcs", u_pcsLabel);
                 pf = model.component("comp1").physics("ec").create(id, "PointCurrentSource", 0);
-                mw.im.currentIDs.put(instanceLabel, id);
+
+                JSONObject src_u = new JSONObject();
+                src_u.put(instanceLabel, id);
+                mw.im.currentIDs.put(mw.im.present("pcs"), src_u);
 
                 pf.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[2]) + "_pnt"); // SRC
                 pf.set("Qjp", 0.000);
@@ -2654,7 +2674,10 @@ class Part {
                 String ut_pcsLabel = instanceLabel + " Current Source";
                 id = mw.im.next("pcs", ut_pcsLabel);
                 pf = model.component("comp1").physics("ec").create(id, "PointCurrentSource", 0);
-                mw.im.currentIDs.put(instanceLabel, id);
+
+                JSONObject src_ut = new JSONObject();
+                src_ut.put(instanceLabel, id);
+                mw.im.currentIDs.put(mw.im.present("pcs"), src_ut);
 
                 pf.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[4]) + "_pnt"); // SRC_FINAL
                 pf.set("Qjp", 0.000);
