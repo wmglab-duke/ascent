@@ -8,9 +8,6 @@ if (!((passive_end_nodes == 0) || (passive_end_nodes == 1))) {
 	print "passive_end_nodes must be set to 0 or 1"
 	execerror("passive_end_nodes must be set to 0 or 1")
 }
-if (passive_end_nodes==0) {
-	print "WARNING - Even though passive_end_nodes was set to 0, all fibers built with cFiberBuilder.hoc (fiber_type = 3, all c_fiber_model_type values) will have passive end nodes..."
-}
 
 // Turn on/off extracellular stim
 if ((flag_whichstim == 0) && (flag_extracellular_stim == 0)) {

@@ -5,7 +5,7 @@ objref fiber
 proc CreateAxon_CFiber() {
     objref s[axonnodes]
 
-    fiber = new cFiberBuilder(fiberD,len,c_fiber_model_type,celsius,deltaz)
+    fiber = new cFiberBuilder(fiberD,len,c_fiber_model_type,celsius,deltaz,passive_end_nodes)
 
     
 	for i = 0, axonnodes-1 {

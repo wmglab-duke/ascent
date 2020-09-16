@@ -34,7 +34,9 @@ for node_ind=0, axonnodes-1 {
 }
 
 if(fiber_type==3){ //  c fiber built from cFiberBuilder.hoc
-	if(c_fiber_model_type==2){ // Tigerholm OR _<Brandon>_
+	if(c_fiber_model_type==2 && passive_end_nodes==1){ // Tigerholm OR _<Brandon>_
+		execerror("Program cannot balance Tigerholm for passive_end_nodes=1, must be 0.")		
+	} else if (c_fiber_model_type==2 && passive_end_nodes==0) {
 		load_file("balanceTigerholm.hoc")
 	}
 }
@@ -56,8 +58,8 @@ proc RunSim() {local myamp
 
 	// if Tigerholm, need to balance
 	if(fiber_type==3){ 			   //  c fiber built from cFiberBuilder.hoc
-		if(c_fiber_model_type==2){ // Tigerholm OR _<Brandon>_
-			balance()
+		if(c_fiber_model_type==2 && passive_end_nodes==0){ // Tigerholm OR _<Brandon>_
+			//balance()
 		}
 	}
 
