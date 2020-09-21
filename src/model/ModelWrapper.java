@@ -1801,8 +1801,6 @@ public class ModelWrapper {
                         perineuriumMatLink.set("link", mw.im.get("perineurium"));
                     }
 
-                    System.out.println("here5");
-
                     // Will always need to add endoneurium material
                     String fascicleMatLinkLabel = "endoneurium material";
                     PropFeature fascicleMatLink = model.component("comp1").material().create(mw.im.next("matlnk", fascicleMatLinkLabel), "Link");
@@ -1829,8 +1827,6 @@ public class ModelWrapper {
                     String version = ModelUtil.getComsolVersion(); //The getComsolVersion method returns the current COMSOL Multiphysics
                     solver.put("name", version);
                     modelData.put("solver", solver);
-
-                    System.out.println("here6");
 
                     model.study().create("std1");
                     model.study("std1").setGenConv(true);
@@ -1861,8 +1857,6 @@ public class ModelWrapper {
                     model.sol("sol1").feature("s1").feature().remove("fcDef");
                     model.sol("sol1").attach("std1");
 
-                    System.out.println("here7");
-
                     model.result().create("pg1", "PlotGroup3D");
                     model.result("pg1").label("Electric Potential (ec)");
                     model.result("pg1").set("frametype", "spatial");
@@ -1888,11 +1882,7 @@ public class ModelWrapper {
                         continue;
                     }
 
-                    System.out.println("here8");
-
                     mw.loopCurrents(modelData, projectPath, sample, modelStr, skipMesh);
-
-                    System.out.println("here10");
 
                     ModelUtil.remove(model.tag());
 
