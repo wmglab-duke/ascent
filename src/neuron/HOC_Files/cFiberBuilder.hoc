@@ -184,13 +184,14 @@ proc build(){
 }
 
 proc init(){
-  fiberD     = 6  //default if no arg
-  len        = 21 //default if no arg
-  type       = 1
-  temp       = 37  //uF/cm2
-  segdensity = 50/6
-  insert97na = 0
-  passive    = 0 // not passive by default
+  fiberD         = 6  //default if no arg
+  len            = 21 //default if no arg
+  type           = 1
+  temp           = 37  //uF/cm2
+  segdensity     = 50/6
+  insert97na     = 0
+  conductances97 = 0
+  passive        = 0 // not passive by default
   if (numarg()>0) {fiberD         = $1}
   if (numarg()>1) {len            = $2}
   if (numarg()>2) {type           = $3}

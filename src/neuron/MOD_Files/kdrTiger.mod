@@ -2,7 +2,7 @@
 
 
 NEURON {
-	SUFFIX kdr_Tiger
+	SUFFIX kdrTiger
 	USEION k READ ek WRITE ik
 	RANGE gbar, ena, ik,ek, celsiusT
 }
