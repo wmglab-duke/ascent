@@ -1695,9 +1695,7 @@ public class ModelWrapper {
                         String imFile = String.join("/", new String[]{projectPath, "samples", sample, "models", modelStr, "mesh", "im.json"});
 
                         // save IM !!!!
-                        System.out.println("pre");
                         JSONio.write(imFile, mw.im.toJSONObject()); // write to file
-                        System.out.println("post");
 
                         // save ppIMs !!!!
                         for (String name : mw.partPrimitiveIMs.keySet()) {
