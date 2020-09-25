@@ -59,7 +59,6 @@ proc RunSim() {local myamp
 	// if Tigerholm, need to balance
 	if(fiber_type==3){ 			   //  c fiber built from cFiberBuilder.hoc
 		if(c_fiber_model_type==2 && passive_end_nodes==0){ // Tigerholm OR _<Brandon>_
-			Vrest = fiber.v
 			balance()
 		}
 	}

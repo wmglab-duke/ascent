@@ -160,6 +160,7 @@ src/neuron/HOC_Files/CreateAxon_BFiber.hoc
 
 # not for distribution
 config/system/cuffs/ImThera.json
+config/system/cuffs/ImThera_flip.json
 config/system/cuffs/LivaNova_6mm.json
 config/system/cuffs/LivaNova_ITIS.json
 config/system/cuffs/LivaNova_old.json

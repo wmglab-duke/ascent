@@ -9,6 +9,8 @@ This function is called after the first initialization.
 */
 
 proc balance(){
+	Vrest = fiber.v
+	
     forsec fiber.sl{
 	if ((-(ina_nattxs + \
 	ina_nav1p9 + \
