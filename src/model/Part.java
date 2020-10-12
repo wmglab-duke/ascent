@@ -455,6 +455,52 @@ class Part {
 
                 break;
 
+            case "TubeCuffSweep_Primitive":
+
+                mp.set("Cuff_thk", "0.1 [mm]");
+                mp.set("Cuff_z", "3 [mm]");
+                mp.set("R_in", "1 [mm]");
+                mp.set("Center", "10 [mm]");
+                mp.set("Cuff_theta", "300 [deg]");
+                mp.set("Rot_def", "0 [deg]");
+
+                im.labels = new String[]{
+                        "CUFF CROSS SECTION", //0
+                        "CUFF FINAL"
+
+                };
+
+                for (String cselCuSLabel: im.labels) {
+                    model.geom(id).selection().create(im.next("csel", cselCuSLabel), "CumulativeSelection")
+                            .label(cselCuSLabel);
+
+                }
+
+                String wpccxLabel_CuS = "Cuff Cross Section";
+                GeomFeature wp_cuff_cx = model.geom(id).create(im.next("wp",wpccxLabel_CuS), "WorkPlane");
+                wp_cuff_cx.label(wpccxLabel_CuS);
+                wp_cuff_cx.set("contributeto",im.get("CUFF CROSS SECTION"));
+                wp_cuff_cx.set("quickplane", "xz");
+                wp_cuff_cx.set("unite", true);
+                wp_cuff_cx.geom().create("r1", "Rectangle");
+                wp_cuff_cx.geom().feature("r1").label("Cuff Cross Section");
+                wp_cuff_cx.geom().feature("r1")
+                        .set("pos", new String[]{"R_in+Cuff_thk/2", "Center"});
+                wp_cuff_cx.geom().feature("r1").set("base", "center");
+                wp_cuff_cx.geom().feature("r1").set("size", new String[]{"Cuff_thk", "Cuff_z"});
+
+                String revmcLabel_CuS = "Make Cuff";
+                GeomFeature rev_make_cuff = model.geom(id).create(im.next("rev",revmcLabel_CuS), "Revolve");
+                rev_make_cuff.label("Make Cuff");
+                rev_make_cuff.set("contributeto", im.get("CUFF FINAL"));
+                rev_make_cuff.set("angle1", "Rot_def");
+                rev_make_cuff.set("angle2", "Rot_def+Cuff_theta");
+                rev_make_cuff.selection("input").named(im.get("CUFF CROSS SECTION"));
+
+                model.geom(id).run();
+
+                break;
+
             case "WireContact_Primitive":
                 model.geom(id).inputParam().set("Wire_r", "37.5 [um]");
                 model.geom(id).inputParam().set("R_in", "250 [um]");
@@ -754,6 +800,136 @@ class Part {
                 srcc.label(srccLabel);
                 srcc.set("contributeto", im.get("SRC"));
                 srcc.set("p", new String[]{"(R_in+Circle_recess+Circle_thk/2)*cos(Rotation_angle)", "(R_in+Circle_recess+Circle_thk/2)*sin(Rotation_angle)", "Center"});
+
+                model.geom(id).run();
+
+                break;
+
+            case "HelicalContact_Primitive": // hack
+                model.geom(id).inputParam().set("Center", "20 [mm]");
+                model.geom(id).inputParam().set("Corr", "0 [deg]");
+
+                im.labels = new String[]{
+                        "PC1", //0
+                        "Cuffp1",
+                        "SEL END P1",
+                        "PC2",
+                        "SRC",
+                        "Cuffp2", //5
+                        "Conductorp2",
+                        "SEL END P2",
+                        "Cuffp3",
+                        "PC3",
+                        "CUFF FINAL" //10
+
+                };
+
+                for (String cselHCCLabel: im.labels) {
+                    model.geom(id).selection().create(im.next("csel", cselHCCLabel), "CumulativeSelection")
+                            .label(cselHCCLabel);
+
+                }
+
+                String hc_hicsp1Label = "Helical Insulator Cross Section Part 1";
+                GeomFeature hc_hicsp1 = model.geom(id).create(im.next("wp",hc_hicsp1Label), "WorkPlane");
+                hc_hicsp1.label(hc_hicsp1Label);
+                hc_hicsp1.set("quickplane", "xz");
+                hc_hicsp1.set("unite", true);
+
+                String hc_hicsLabel = "HELICAL INSULATOR CROSS SECTION";
+                hc_hicsp1.geom().selection().create(im.next("csel",hc_hicsLabel), "CumulativeSelection");
+                hc_hicsp1.geom().selection(im.get(hc_hicsLabel)).label(hc_hicsLabel);
+
+                String hc_hicxp1Label = "HELICAL INSULATOR CROSS SECTION P1";
+                hc_hicsp1.geom().selection().create(im.next("csel",hc_hicxp1Label), "CumulativeSelection");
+                hc_hicsp1.geom().selection(im.get(hc_hicxp1Label)).label(hc_hicxp1Label);
+                hc_hicsp1.geom().create("r1", "Rectangle");
+                hc_hicsp1.geom().feature("r1").label("Helical Insulator Cross Section Part 1");
+                hc_hicsp1.geom().feature("r1").set("contributeto", im.get(hc_hicxp1Label));
+                hc_hicsp1.geom().feature("r1").set("pos", new String[]{"r_cuff_in_LN+(thk_cuff_LN/2)", "Center-(L_cuff_LN/2)"});
+                hc_hicsp1.geom().feature("r1").set("base", "center");
+                hc_hicsp1.geom().feature("r1").set("size", new String[]{"thk_cuff_LN", "w_cuff_LN"});
+
+                String hc_pcp1Label = "Parametric Curve Part 1";
+                GeomFeature hc_pcp1 = model.geom(id).create(im.next("pc",hc_pcp1Label), "ParametricCurve");
+                hc_pcp1.label(hc_pcp1Label);
+                hc_pcp1.set("contributeto", im.get("PC1"));
+                hc_pcp1.set("parmax", "rev_cuff_LN*(0.75/2.5)");
+                hc_pcp1.set("coord", new String[]{"cos(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "sin(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "Center+(L_cuff_LN)*(s/rev_cuff_LN)-(L_cuff_LN/2)"});
+
+                String hc_mcp1Label = "Make Cuff Part 1";
+                GeomFeature hc_mcp1 = model.geom(id).create(im.next("swe",hc_mcp1Label), "Sweep");
+                hc_mcp1.label("Make Cuff Part 1");
+                hc_mcp1.set("contributeto", im.get("Cuffp1"));
+                hc_mcp1.set("crossfaces", true);
+                hc_mcp1.set("keep", false);
+                hc_mcp1.set("includefinal", false);
+                hc_mcp1.set("twistcomp", false);
+                hc_mcp1.selection("face").named(im.get(hc_hicsp1Label) + "_" + im.get(hc_hicxp1Label));
+                hc_mcp1.selection("edge").named(im.get("PC1"));
+                hc_mcp1.selection("diredge").set(im.get(hc_pcp1Label) + "(1)", 1);
+
+                String hc_sefp1Label = "Select End Face Part 1";
+                GeomFeature hc_sefp1 = model.geom(id).create(im.next("ballsel", hc_sefp1Label), "BallSelection");
+                hc_sefp1.set("entitydim", 2);
+                hc_sefp1.label(hc_sefp1Label);
+                hc_sefp1.set("posx", "cos(2*pi*rev_cuff_LN*((0.75)/2.5))*((thk_cuff_LN/2)+r_cuff_in_LN)");
+                hc_sefp1.set("posy", "sin(2*pi*rev_cuff_LN*((0.75)/2.5))*((thk_cuff_LN/2)+r_cuff_in_LN)");
+                hc_sefp1.set("posz", "Center+(L_cuff_LN)*(rev_cuff_LN*((0.75)/2.5)/rev_cuff_LN)-(L_cuff_LN/2)");
+                hc_sefp1.set("r", 1);
+                hc_sefp1.set("contributeto", im.get("SEL END P1"));
+
+//                String hicsp2Label = "Helical Insulator Cross Section Part 2";
+                GeomFeature hc_hicsp2 = model.geom(id).create(im.next("wp","Helical Insulator Cross Section Part 2"), "WorkPlane");
+                String hc_hccsp2wpLabel = "HELICAL CONDUCTOR CROSS SECTION P2";
+                hc_hicsp2.geom().selection().create(im.next("csel",hc_hccsp2wpLabel), "CumulativeSelection");
+                hc_hicsp2.geom().selection(im.get(hc_hccsp2wpLabel)).label(hc_hccsp2wpLabel);
+
+                String hc_hccsp2Label = "Helical Conductor Cross Section Part 2";
+                GeomFeature hc_hccsp2 = model.geom(id).create(im.next("wp",hc_hccsp2Label), "WorkPlane");
+                hc_hccsp2.label(hc_hccsp2Label);
+                hc_hccsp2.set("planetype", "faceparallel");
+                hc_hccsp2.set("unite", true);
+                hc_hccsp2.selection("face").named(im.get("SEL END P1"));
+
+                String hc_hccxp2Label = "wp HELICAL CONDUCTOR CROSS SECTION P2";
+                hc_hccsp2.geom().selection().create(im.next("csel",hc_hccxp2Label), "CumulativeSelection");
+                hc_hccsp2.geom().selection(im.get(hc_hccxp2Label)).label(hc_hccxp2Label);
+                hc_hccsp2.geom().create("r2", "Rectangle");
+                hc_hccsp2.geom().feature("r2").label("Helical Conductor Cross Section Part 2");
+                hc_hccsp2.geom().feature("r2").set("contributeto", im.get(hc_hccxp2Label));
+                hc_hccsp2.geom().feature("r2").set("pos", new String[]{"(thk_elec_LN-thk_cuff_LN)/2", "0"});
+                hc_hccsp2.geom().feature("r2").set("base", "center");
+                hc_hccsp2.geom().feature("r2").set("size", new String[]{"thk_elec_LN", "w_elec_LN"});
+
+                String hc_pcp2Label = "Parametric Curve Part 2";
+                GeomFeature hc_pcp2 = model.geom(id).create(im.next("pc",hc_pcp2Label), "ParametricCurve");
+                hc_pcp2.label(hc_pcp2Label);
+                hc_pcp2.set("contributeto", im.get("PC2"));
+                hc_pcp2.set("parmin", "rev_cuff_LN*(0.75/2.5)");
+                hc_pcp2.set("parmax", "rev_cuff_LN*((0.75+1)/2.5)");
+                hc_pcp2.set("coord", new String[]{"cos(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "sin(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "Center+(L_cuff_LN)*(s/rev_cuff_LN)-(L_cuff_LN/2)"});
+
+                String hc_mcp2cLabel = "Make Conductor Part 2";
+                GeomFeature hc_mcp2c = model.geom(id).create(im.next("swe",hc_mcp2cLabel), "Sweep");
+                hc_mcp2c.label(hc_mcp2cLabel);
+                hc_mcp2c.set("contributeto", im.get("Conductorp2"));
+                hc_mcp2c.set("crossfaces", true);
+                hc_mcp2c.set("includefinal", false);
+                hc_mcp2c.set("twistcomp", false);
+                hc_mcp2c.selection("face").named(im.get(hc_hccsp2Label) + "_" + im.get(hc_hccxp2Label));
+                hc_mcp2c.selection("edge").named(im.get("PC2"));
+                hc_mcp2c.selection("diredge").set(im.get(hc_pcp2Label) + "(1)", 1);
+
+                String hc_srchLabel = "ptSRC";
+                GeomFeature hc_srch = model.geom(id).create(im.next("pt",hc_srchLabel), "Point");
+                hc_srch.label(hc_srchLabel);
+                hc_srch.set("contributeto", im.get("SRC"));
+                hc_srch.set("p", new String[]{"cos(2*pi*rev_cuff_LN*(1.25/2.5))*((thk_elec_LN/2)+r_cuff_in_LN)", "sin(2*pi*rev_cuff_LN*(1.25/2.5))*((thk_elec_LN/2)+r_cuff_in_LN)", "Center"});
+
+                GeomFeature delInsulatorp1= model.geom(id).create(im.next("del"), "Delete");
+                delInsulatorp1.selection("input").init(3);
+                delInsulatorp1.selection("input").named(im.get("Cuffp1"));
 
                 model.geom(id).run();
 
@@ -2230,6 +2406,34 @@ class Part {
 
                 break;
 
+            case "TubeCuffSweep_Primitive":
+
+                // set instantiation parameters
+                String[] TubeCuffSweepParameters = {
+                        "Cuff_thk",
+                        "Cuff_z",
+                        "R_in",
+                        "Center",
+                        "Cuff_theta",
+                        "Rot_def"
+
+                };
+
+                for (String param : TubeCuffSweepParameters) {
+                    partInstance.setEntry("inputexpr", param, (String) itemObject.get(param));
+
+                }
+
+                // imports
+                partInstance.set("selkeepnoncontr", false);
+                partInstance.setEntry("selkeepdom", instanceID + "_" + myIM.get(myLabels[1]) + ".dom", "on"); // CUFF FINAL
+
+                partInstance.setEntry("selkeeppnt", instanceID + "_" + myIM.get(myLabels[1]) + ".pnt", "off"); // CUFF FINAL
+
+                // assign physics
+
+                break;
+
             case "WireContact_Primitive":
 
                 // set instantiation parameters
@@ -2349,6 +2553,50 @@ class Part {
                 pf.label(circle_pcsLabel);
 
                 break;
+
+            case "HelicalContact_Primitive":
+
+                // set instantiation parameters
+                String[] pc_helicalCuffnContactParameters = {
+                        "Center",
+                        "Corr"
+
+                };
+
+                for (String param : pc_helicalCuffnContactParameters) {
+                    partInstance.setEntry("inputexpr", param, (String) itemObject.get(param));
+
+                }
+
+                partInstance.set("rot", "cuff_rot + corr_LN");
+
+                model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Center", (String) itemObject.get("Center"));
+
+                // imports
+                partInstance.set("selkeepnoncontr", false);
+                partInstance.setEntry("selkeepdom", instanceID + "_" + myIM.get(myLabels[3]) + ".dom", "off"); // PC2
+                partInstance.setEntry("selkeepdom", instanceID + "_" + myIM.get(myLabels[4]) + ".dom", "off"); // SRC
+                partInstance.setEntry("selkeepdom", instanceID + "_" + myIM.get(myLabels[6]) + ".dom", "on"); // Conductorp2
+
+                partInstance.setEntry("selkeeppnt", instanceID + "_" + myIM.get(myLabels[3]) + ".pnt", "off"); // PC2
+                partInstance.setEntry("selkeeppnt", instanceID + "_" + myIM.get(myLabels[4]) + ".pnt", "on"); // SRC
+                partInstance.setEntry("selkeeppnt", instanceID + "_" + myIM.get(myLabels[6]) + ".pnt", "off"); // Conductorp2
+
+                // assign physics
+                String pc_helix_pcsLabel = instanceLabel + " Current Source";
+                id = mw.im.next("pcs", pc_helix_pcsLabel);
+                pf = model.component("comp1").physics("ec").create(id, "PointCurrentSource", 0);
+
+                JSONObject pc_src_heli = new JSONObject();
+                pc_src_heli.put(instanceLabel, id);
+                mw.im.currentIDs.put(mw.im.present("pcs"), pc_src_heli);
+
+                pf.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[4]) + "_pnt"); // SRC
+                pf.set("Qjp", 0.000);
+                pf.label(pc_helix_pcsLabel);
+
+                break;
+
             case "HelicalCuffnContact_Primitive":
 
                 // set instantiation parameters
