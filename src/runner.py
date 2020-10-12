@@ -682,9 +682,9 @@ class Runner(Exceptionable, Configurable):
             freq_double = model_config.get('frequency')
             rho_double = waveform.rho_weerasuriya(freq_double)
             sigma_double = 1 / rho_double
-            model_config['conductivities']['perineurium']['value'] = str(sigma_double)
-            model_config['conductivities']['perineurium']['label'] = "RHO_WEERASURIYA @ %d Hz" % freq_double
-            model_config['conductivities']['perineurium']['unit'] = "[S/m]"
+            tmp = {'value': str(sigma_double), 'label': 'RHO_WEERASURIYA @ %d Hz' % freq_double, 'unit': '[S/m]'}
+            model_config['conductivities']['perineurium'] = tmp
+
         elif model_config.get('modes').get(PerineuriumResistivityMode.config.value) == \
                 PerineuriumResistivityMode.MANUAL.value:
             pass
