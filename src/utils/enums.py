@@ -1,17 +1,23 @@
-from enum import Enum, unique
+from enum import unique, Enum
 import os
+
+
+class ASCENTEnum(Enum):
+    def __eq__(self, other):
+        return self.value == other.value
 
 
 # %% Core (backend) functionality
 
 @unique
-class SetupMode(Enum):
+class SetupMode(ASCENTEnum):
     NEW = 0
     OLD = 1
     SYNTHETIC = 2  # used for creating a "fake" map.json
 
+
 @unique
-class Config(Enum):
+class Config(ASCENTEnum):
     # system
     MESH = 'mesh'
     MATERIALS = 'materials'
@@ -30,13 +36,15 @@ class Config(Enum):
     SIM = 'sims'
     CRITERIA = 'criteria'
 
-@unique
-class Object(Enum):
-    SAMPLE = 'sample'
-    SIMULATION = 'sim'
 
 @unique
-class Env(Enum):
+class Object(ASCENTEnum):
+    SAMPLE = 'sample_obj'
+    SIMULATION = 'sim_obj'
+
+
+@unique
+class Env(ASCENTEnum):
     prefix = 'ASCENT_'
 
     COMSOL_PATH = prefix + 'COMSOL_PATH'
@@ -50,15 +58,17 @@ class Env(Enum):
         PROJECT_PATH,
         NSIM_EXPORT_PATH
     ]
+
+
 # %% Trace functionality
 
 @unique
-class DownSampleMode(Enum):
+class DownSampleMode(ASCENTEnum):
     KEEP = 0
     REMOVE = 1
 
 
-class WriteMode(Enum):
+class WriteMode(ASCENTEnum):
     SECTIONWISE = 0
     SECTIONWISE2D = 1
     DATA = 2
@@ -69,7 +79,7 @@ class WriteMode(Enum):
 # %% Higher-level Manager functionality
 
 @unique
-class ReshapeNerveMode(Enum):
+class ReshapeNerveMode(ASCENTEnum):
     config = 'reshape_nerve'
 
     CIRCLE = 0
@@ -78,7 +88,7 @@ class ReshapeNerveMode(Enum):
 
 
 @unique
-class MaskInputMode(Enum):
+class MaskInputMode(ASCENTEnum):
     config = 'mask_input'
 
     INNERS = 0
@@ -88,7 +98,7 @@ class MaskInputMode(Enum):
 
 
 @unique
-class MaskFileNames(Enum):
+class MaskFileNames(ASCENTEnum):
     RAW = 'r.tif'
     COMPILED = 'c.tif'
     INNERS = 'i.tif'
@@ -99,7 +109,7 @@ class MaskFileNames(Enum):
 
 
 @unique
-class NerveMode(Enum):
+class NerveMode(ASCENTEnum):
     config = 'nerve'
 
     PRESENT = 1
@@ -107,7 +117,7 @@ class NerveMode(Enum):
 
 
 @unique
-class PopulateMode(Enum):
+class PopulateMode(ASCENTEnum):
     config = 'populate_method'
     parameters = 'populate'
 
@@ -117,7 +127,7 @@ class PopulateMode(Enum):
 
 
 @unique
-class DeformationMode(Enum):
+class DeformationMode(ASCENTEnum):
     config = 'deform'
 
     NONE = None
@@ -128,7 +138,7 @@ class DeformationMode(Enum):
 # %% Fiber Position and Type
 
 @unique
-class FiberXYMode(Enum):
+class FiberXYMode(ASCENTEnum):
     config = 'fiber_xy'
     parameters = 'xy_parameters'
 
@@ -141,7 +151,7 @@ class FiberXYMode(Enum):
 
 
 @unique
-class FiberZMode(Enum):
+class FiberZMode(ASCENTEnum):
     config = 'fiber_z'
     parameters = 'z_parameters'
 
@@ -150,7 +160,7 @@ class FiberZMode(Enum):
 
 
 @unique
-class ZOffsetMode(Enum):
+class ZOffsetMode(ASCENTEnum):
     config = 'z_offset'
     parameters = 'z_offset_parameters'
 
@@ -159,7 +169,7 @@ class ZOffsetMode(Enum):
 
 
 @unique
-class MyelinationMode(Enum):
+class MyelinationMode(ASCENTEnum):
     config = 'myel'
     parameters = 'fiber_type_parameters'
 
@@ -168,7 +178,7 @@ class MyelinationMode(Enum):
 
 
 @unique
-class FiberGeometry(Enum):
+class FiberGeometry(ASCENTEnum):
     config = 'myel_fiber'
 
     NONE = None
@@ -179,7 +189,7 @@ class FiberGeometry(Enum):
 
 
 @unique
-class NeuronFiberFlags(Enum):
+class NeuronFiberFlags(ASCENTEnum):
     NONE = None
     MRG_DISCRETE = "MRG_DISCRETE"
     MRG_INTERPOLATION = "MRG_INTERPOLATION"
@@ -187,14 +197,13 @@ class NeuronFiberFlags(Enum):
 
 
 @unique
-class MyelinatedSamplingType(Enum):
-
+class MyelinatedSamplingType(ASCENTEnum):
     DISCRETE = "discrete"
     INTERPOLATION = "interp"
 
 
 @unique
-class UnmyelinatedFiberType(Enum):
+class UnmyelinatedFiberType(ASCENTEnum):
     config = 'unmyel_fiber'
 
     NONE = None
@@ -207,7 +216,7 @@ class UnmyelinatedFiberType(Enum):
 # %% Waveforms
 
 @unique
-class WaveformMode(Enum):
+class WaveformMode(ASCENTEnum):
     config = 'waveform'
     global_parameters = 'global'
 
@@ -222,7 +231,7 @@ class WaveformMode(Enum):
 # %% NEURON Protocols
 
 @unique
-class NeuronRunMode(Enum):
+class NeuronRunMode(ASCENTEnum):
     config = 'mode'
 
     ACTIVATION_THRESHOLD = 0
@@ -231,7 +240,7 @@ class NeuronRunMode(Enum):
 
 
 @unique
-class SearchAmplitudeIncrementMode(Enum):
+class SearchAmplitudeIncrementMode(ASCENTEnum):
     config = 'mode'
 
     ABSOLUTE_INCREMENT = 0
@@ -239,7 +248,7 @@ class SearchAmplitudeIncrementMode(Enum):
 
 
 @unique
-class TerminationCriteriaMode(Enum):
+class TerminationCriteriaMode(ASCENTEnum):
     config = 'mode'
 
     PERCENT_DIFFERENCE = 0
@@ -249,7 +258,7 @@ class TerminationCriteriaMode(Enum):
 # %% Perineurium Impedance
 
 @unique
-class PerineuriumThicknessMode(Enum):
+class PerineuriumThicknessMode(ASCENTEnum):
     config = 'ci_perineurium_thickness'
     parameters = 'ci_perineurium_thickness_parameters'
 
@@ -261,7 +270,7 @@ class PerineuriumThicknessMode(Enum):
 
 
 @unique
-class PerineuriumResistivityMode(Enum):
+class PerineuriumResistivityMode(ASCENTEnum):
     config = 'rho_perineurium'
 
     RHO_WEERASURIYA = 'RHO_WEERASURIYA'
@@ -271,7 +280,7 @@ class PerineuriumResistivityMode(Enum):
 # %% Cuffs
 
 @unique
-class CuffInnerMode(Enum):
+class CuffInnerMode(ASCENTEnum):
     config = 'cuff_inner'
     parameters = 'cuff_inner_parameters'
 
@@ -279,7 +288,7 @@ class CuffInnerMode(Enum):
     BOUNDING_BOX = 1
 
 
-class CuffMode(Enum):
+class CuffMode(ASCENTEnum):
     config = 'cuff_mode'
     parameters = 'cuff_parameters'
 
@@ -290,7 +299,7 @@ class CuffMode(Enum):
     IMTHERA = 4
 
 
-class CuffShiftMode(Enum):
+class CuffShiftMode(ASCENTEnum):
     config = 'cuff_shift'
 
     AUTO_ROTATION_MIN_CIRCLE_BOUNDARY = 0
@@ -306,7 +315,7 @@ class CuffShiftMode(Enum):
 # %% Templates
 
 @unique
-class TemplateMode(Enum):
+class TemplateMode(ASCENTEnum):
     path = os.path.join('config', 'templates')
     ELECTRODE_INPUT = 'electrode_input.json'
     MORPHOLOGY = 'morphology.json'
