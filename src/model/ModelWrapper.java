@@ -3,6 +3,7 @@ package model;
 import com.comsol.model.*;
 import com.comsol.model.physics.PhysicsFeature;
 import com.comsol.model.util.ModelUtil;
+import com.comsol.util.exceptions.FlException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -1060,9 +1061,15 @@ public class ModelWrapper {
      * Master procedure to run!
      * @param args
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws InterruptedException {
         // Start COMSOL Instance
-        ModelUtil.connect("localhost", 2036);
+        try {
+            ModelUtil.connect("localhost", 2036);
+        } catch(FlException e) {
+            ModelUtil.connect("localhost", 2037);
+        }
+
+        TimeUnit.SECONDS.sleep(5);
         ModelUtil.initStandalone(false);
 //        ModelUtil.showProgress(null); // if you want to see COMSOL progress (as it makes all geometry, runs, etc.)
 
