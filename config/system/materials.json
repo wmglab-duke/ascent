@@ -41,6 +41,48 @@
     "weerasuriya_perineurium_DC": {
       "value": "1/1149",
       "unit": "[S/m]"
+    },
+    "bucksot_2019_endo": {
+      "value": "anisotropic",
+      "sigma_x": ".08",
+      "sigma_y": ".08",
+      "sigma_z": ".5",
+      "unit": "[S/m]"
+    },
+    "bucksot_2019_perineurium_DC": {
+      "value": "0.0036",
+      "unit": "[S/m]"
+    },
+    "bucksot_2019_epineurium": {
+      "value": "0.008",
+      "unit": "[S/m]"
+    },
+    "bucksot_2019_saline": {
+      "value": "2",
+      "unit": "[S/m]"
+    },
+    "bucksot_2019_fat": {
+      "value": "0.04",
+      "unit": "[S/m]"
+    },
+    "arle_2016_scar": {
+      "value": "0.03",
+      "unit": "[S/m]"
+    },
+    "arle_2016_endoneurium": {
+      "value": "anisotropic",
+      "sigma_x": "0.08",
+      "sigma_y": "0.08",
+      "sigma_z": "0.5",
+      "unit": "[S/m]"
+    },
+    "arle_2016_platinum": {
+      "value": "107",
+      "unit": "[S/m]"
+    },
+    "arle_2016_epineurium": {
+      "value": "0.054",
+      "unit": "[S/m]"
     }
   }
 }

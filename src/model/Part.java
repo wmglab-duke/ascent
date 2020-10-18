@@ -938,6 +938,8 @@ class Part {
             case "HelicalCuffnContact_Primitive":
                 model.geom(id).inputParam().set("Center", "20 [mm]");
                 model.geom(id).inputParam().set("Corr", "0 [deg]");
+                model.geom(id).inputParam().set("rev_BD_insul", "0.75");
+                model.geom(id).inputParam().set("rev_BD_cond", "1");
 
                 im.labels = new String[]{
                         "PC1", //0
@@ -984,7 +986,7 @@ class Part {
                 GeomFeature pcp1 = model.geom(id).create(im.next("pc",pcp1Label), "ParametricCurve");
                 pcp1.label(pcp1Label);
                 pcp1.set("contributeto", im.get("PC1"));
-                pcp1.set("parmax", "rev_cuff_LN*(0.75/2.5)");
+                pcp1.set("parmax", "rev_cuff_LN*(rev_BD_insul/2.5)");
                 pcp1.set("coord", new String[]{"cos(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "sin(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "Center+(L_cuff_LN)*(s/rev_cuff_LN)-(L_cuff_LN/2)"});
 
                 String mcp1Label = "Make Cuff Part 1";
@@ -1003,9 +1005,9 @@ class Part {
                 GeomFeature sefp1 = model.geom(id).create(im.next("ballsel", sefp1Label), "BallSelection");
                 sefp1.set("entitydim", 2);
                 sefp1.label(sefp1Label);
-                sefp1.set("posx", "cos(2*pi*rev_cuff_LN*((0.75)/2.5))*((thk_cuff_LN/2)+r_cuff_in_LN)");
-                sefp1.set("posy", "sin(2*pi*rev_cuff_LN*((0.75)/2.5))*((thk_cuff_LN/2)+r_cuff_in_LN)");
-                sefp1.set("posz", "Center+(L_cuff_LN)*(rev_cuff_LN*((0.75)/2.5)/rev_cuff_LN)-(L_cuff_LN/2)");
+                sefp1.set("posx", "cos(2*pi*rev_cuff_LN*((rev_BD_insul)/2.5))*((thk_cuff_LN/2)+r_cuff_in_LN)");
+                sefp1.set("posy", "sin(2*pi*rev_cuff_LN*((rev_BD_insul)/2.5))*((thk_cuff_LN/2)+r_cuff_in_LN)");
+                sefp1.set("posz", "Center+(L_cuff_LN)*(rev_cuff_LN*((rev_BD_insul)/2.5)/rev_cuff_LN)-(L_cuff_LN/2)");
                 sefp1.set("r", 1);
                 sefp1.set("contributeto", im.get("SEL END P1"));
 
@@ -1055,9 +1057,13 @@ class Part {
                 GeomFeature pcp2 = model.geom(id).create(im.next("pc",pcp2Label), "ParametricCurve");
                 pcp2.label(pcp2Label);
                 pcp2.set("contributeto", im.get("PC2"));
-                pcp2.set("parmin", "rev_cuff_LN*(0.75/2.5)");
-                pcp2.set("parmax", "rev_cuff_LN*((0.75+1)/2.5)");
-                pcp2.set("coord", new String[]{"cos(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "sin(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "Center+(L_cuff_LN)*(s/rev_cuff_LN)-(L_cuff_LN/2)"});
+                pcp2.set("parmin", "rev_cuff_LN*(rev_BD_insul/2.5)");
+                pcp2.set("parmax", "rev_cuff_LN*((rev_BD_insul+rev_BD_cond)/2.5)");
+                pcp2.set("coord", new String[]{
+                        "cos(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)",
+                        "sin(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)",
+                        "Center+(L_cuff_LN)*(s/rev_cuff_LN)-(L_cuff_LN/2)"
+                });
 
                 String mcp2Label = "Make Cuff Part 2";
                 GeomFeature mcp2 = model.geom(id).create(im.next("swe",mcp2Label), "Sweep");
@@ -1085,9 +1091,9 @@ class Part {
                 GeomFeature sefp2 = model.geom(id).create(im.next("ballsel",sefp2Label), "BallSelection");
                 sefp2.set("entitydim", 2);
                 sefp2.label(sefp2Label);
-                sefp2.set("posx", "cos(2*pi*rev_cuff_LN*((0.75+1)/2.5))*((thk_cuff_LN/2)+r_cuff_in_LN)");
-                sefp2.set("posy", "sin(2*pi*rev_cuff_LN*((0.75+1)/2.5))*((thk_cuff_LN/2)+r_cuff_in_LN)");
-                sefp2.set("posz", "Center+(L_cuff_LN)*(rev_cuff_LN*((0.75+1)/2.5)/rev_cuff_LN)-(L_cuff_LN/2)");
+                sefp2.set("posx", "cos(2*pi*rev_cuff_LN*((rev_BD_insul+rev_BD_cond)/2.5))*((thk_cuff_LN/2)+r_cuff_in_LN)");
+                sefp2.set("posy", "sin(2*pi*rev_cuff_LN*((rev_BD_insul+rev_BD_cond)/2.5))*((thk_cuff_LN/2)+r_cuff_in_LN)");
+                sefp2.set("posz", "Center+(L_cuff_LN)*(rev_cuff_LN*((rev_BD_insul+rev_BD_cond)/2.5)/rev_cuff_LN)-(L_cuff_LN/2)");
                 sefp2.set("r", 1);
                 sefp2.set("contributeto", im.get("SEL END P2"));
 
@@ -1111,9 +1117,13 @@ class Part {
                 GeomFeature pcp3 = model.geom(id).create(im.next("pc",pcp3Label), "ParametricCurve");
                 pcp3.label(pcp3Label);
                 pcp3.set("contributeto", im.get("PC3"));
-                pcp3.set("parmin", "rev_cuff_LN*((0.75+1)/2.5)");
+                pcp3.set("parmin", "rev_cuff_LN*((rev_BD_insul+rev_BD_cond)/2.5)");
                 pcp3.set("parmax", "rev_cuff_LN");
-                pcp3.set("coord", new String[]{"cos(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "sin(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)", "Center+(L_cuff_LN)*(s/rev_cuff_LN)-(L_cuff_LN/2)"});
+                pcp3.set("coord", new String[]{
+                        "cos(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)",
+                        "sin(2*pi*s)*((thk_cuff_LN/2)+r_cuff_in_LN)",
+                        "Center+(L_cuff_LN)*(s/rev_cuff_LN)-(L_cuff_LN/2)"
+                });
 
                 String mcp3Label = "Make Cuff Part 3";
                 GeomFeature mcp3 = model.geom(id).create(im.next("swe",mcp3Label), "Sweep");
@@ -1128,7 +1138,11 @@ class Part {
                 GeomFeature srch = model.geom(id).create(im.next("pt",srchLabel), "Point");
                 srch.label(srchLabel);
                 srch.set("contributeto", im.get("SRC"));
-                srch.set("p", new String[]{"cos(2*pi*rev_cuff_LN*(1.25/2.5))*((thk_elec_LN/2)+r_cuff_in_LN)", "sin(2*pi*rev_cuff_LN*(1.25/2.5))*((thk_elec_LN/2)+r_cuff_in_LN)", "Center"});
+                srch.set("p", new String[]{
+                        "cos(2*pi*rev_cuff_LN*(1.25/2.5))*((thk_elec_LN/2)+r_cuff_in_LN)",
+                        "sin(2*pi*rev_cuff_LN*(1.25/2.5))*((thk_elec_LN/2)+r_cuff_in_LN)",
+                        "Center"
+                });
 
                 String uspLabel = "Union Silicone Parts";
                 model.geom(id).create(im.next("uni", uspLabel), "Union");
@@ -2268,6 +2282,99 @@ class Part {
 
                 break;
 
+            case "ArleContact_Primitive":
+
+                model.geom(id).label("ArleContact_Primitive");
+
+                model.geom(id).inputParam().set("Gauge_AC", "600 [um]");
+                model.geom(id).inputParam().set("Wrap_AC", "270 [deg]");
+                model.geom(id).inputParam().set("R_in", "1.5 [mm]");
+                model.geom(id).inputParam().set("L_AC", "2 [mm]");
+                model.geom(id).inputParam().set("Center", "0 [mm]");
+
+                im.labels = new String[]{
+                        "SEMI CIRC CONTACT", // 0
+                        "Semi Sweep",
+                        "ARLE CONTACT FINAL",
+                        "SRC FINAL"
+
+                };
+
+                for (String cselCarleContactLabel: im.labels) {
+                    model.geom(id).selection().create(im.next("csel", cselCarleContactLabel), "CumulativeSelection")
+                            .label(cselCarleContactLabel);
+
+                }
+
+                String contactXS_AC_label = "Contact XS AC";
+                GeomFeature contactXS_AC =  model.geom(id).create(im.next("wp", contactXS_AC_label), "WorkPlane");
+                contactXS_AC.set("quickplane", "xz");
+                contactXS_AC.set("unite", true);
+
+                String circContactACLabel = "CIRC_CONTACT";
+                contactXS_AC.geom().selection().create(im.next("csel", circContactACLabel), "CumulativeSelection");
+                contactXS_AC.geom().selection(im.get(circContactACLabel)).label(circContactACLabel);
+
+                String circContactCutterLabel = "CIRC CONTACT CUTTER";
+                contactXS_AC.geom().selection().create(im.next("csel", circContactCutterLabel), "CumulativeSelection");
+                contactXS_AC.geom().selection(im.get(circContactCutterLabel)).label(circContactCutterLabel);
+
+                String circContactXSAC_label = "CIRC CONTACT XS";
+                contactXS_AC.geom().selection().create(im.next("csel", circContactXSAC_label), "CumulativeSelection");
+                contactXS_AC.geom().selection(im.get(circContactXSAC_label)).label(circContactXSAC_label);
+
+                String preSemiCircAC_label = "Pre Semi Circ Contact";
+                GeomFeature preSemiCircAC = contactXS_AC.geom().create(im.next("c", preSemiCircAC_label), "Circle");
+                preSemiCircAC.label(preSemiCircAC_label);
+                preSemiCircAC.set("contributeto", im.get(circContactACLabel));
+                preSemiCircAC.set("pos", new String[]{"R_in", "Center-L_AC/2"});
+                preSemiCircAC.set("r", "Gauge_AC/2");
+
+                String preSemiCircACCutter_label = "Semi Circ Contact Cutter";
+                GeomFeature preSemiCircACCutter = contactXS_AC.geom().create(im.next("sq", preSemiCircACCutter_label), "Square");
+                preSemiCircACCutter.label(preSemiCircACCutter_label);
+                preSemiCircACCutter.set("contributeto", im.get(circContactCutterLabel));
+                preSemiCircACCutter.set("pos", new String[]{"R_in-Gauge_AC/2", "Center-L_AC/2"});
+                preSemiCircACCutter.set("base", "center");
+                preSemiCircACCutter.set("size", "Gauge_AC");
+
+                String makeSemiCircAC_label = "Make Semi Circ";
+                GeomFeature makeSemiCircAC = contactXS_AC.geom().create(im.next("dif", makeSemiCircAC_label), "Difference");
+                makeSemiCircAC.label(makeSemiCircAC_label);
+                makeSemiCircAC.set("contributeto", im.get(circContactXSAC_label));
+                makeSemiCircAC.selection("input").named(im.get(circContactACLabel));
+                makeSemiCircAC.selection("input2").named(im.get(circContactCutterLabel));
+
+                String pcSemiCirc_ACLabel = "Sweep PC AC";
+                GeomFeature pcSemiCirc_AC = model.geom(id).create(im.next("pc", pcSemiCirc_ACLabel), "ParametricCurve");
+                pcSemiCirc_AC.set("contributeto", im.get("Semi Sweep"));
+                pcSemiCirc_AC.set("parmax", "Wrap_AC/360");
+                pcSemiCirc_AC.set("coord", new String[]{"cos(2*pi*s)*((Gauge_AC/4)+R_in)", "sin(2*pi*s)*((Gauge_AC/4)+R_in)", "Center-(L_AC/2)+((360*L_AC)/Wrap_AC)*s"});
+
+                String make_contactACLabel = "Make Contact AC";
+                GeomFeature make_contactAC = model.geom(id).create(im.next("swe", make_contactACLabel), "Sweep");
+
+                make_contactAC.set("contributeto", im.get("ARLE CONTACT FINAL"));
+                make_contactAC.set("crossfaces", true);
+                make_contactAC.set("includefinal", false);
+                make_contactAC.set("twistcomp", false);
+                make_contactAC.selection("face").named(im.get(contactXS_AC_label) + "_" + im.get(circContactXSAC_label));
+                make_contactAC.selection("edge").named(im.get("Semi Sweep"));
+                make_contactAC.selection("diredge").set(im.get(pcSemiCirc_ACLabel) +"(1)", 1);
+
+                String src_pt_ACLabel = "AC_src_pt";
+                GeomFeature src_pt_AC = model.geom(id).create(im.next("pt", src_pt_ACLabel), "Point");
+                src_pt_AC.set("contributeto", im.get("SRC FINAL"));
+                src_pt_AC.set("p", new String[]{
+                                "((Gauge_AC/4)+R_in)*cos((Wrap_AC/(2))*2*pi)",
+                                "((Gauge_AC/4)+R_in)*sin((Wrap_AC/(2))*2*pi)",
+                                "Center-(L_AC/2)+((360*L_AC)/Wrap_AC)*(Wrap_AC/(360*2))"
+                        });
+
+                model.geom(id).run();
+
+                break;
+
             default:
                 throw new  IllegalArgumentException("No implementation for part primitive name: " + pseudonym);
 
@@ -2602,7 +2709,9 @@ class Part {
                 // set instantiation parameters
                 String[] helicalCuffnContactParameters = {
                         "Center",
-                        "Corr"
+                        "Corr",
+                        "rev_BD_insul",
+                        "rev_BD_cond"
 
                 };
 
@@ -2927,6 +3036,48 @@ class Part {
                 pf.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[4]) + "_pnt"); // SRC_FINAL
                 pf.set("Qjp", 0.000);
                 pf.label(ut_pcsLabel);
+
+                break;
+
+            case "ArleContact_Primitive":
+
+                // set instantiation parameters
+                String[] ArleCopntactParameters = {
+                        "Gauge_AC",
+                        "Wrap_AC",
+                        "R_in",
+                        "L_AC",
+                        "Center"
+
+                };
+
+                for (String param : ArleCopntactParameters) {
+                    partInstance.setEntry("inputexpr", param, (String) itemObject.get(param));
+
+                }
+
+                // imports
+                partInstance.set("selkeepnoncontr", false);
+                partInstance.setEntry("selkeepdom", instanceID + "_" + myIM.get(myLabels[0]) + ".dom", "off"); // "SEMI CIRC CONTACT"
+                partInstance.setEntry("selkeepdom", instanceID + "_" + myIM.get(myLabels[1]) + ".dom", "off"); // "Semi Sweep"
+                partInstance.setEntry("selkeepdom", instanceID + "_" + myIM.get(myLabels[2]) + ".dom", "on"); // "ARLE CONTACT FINAL"
+
+                partInstance.setEntry("selkeeppnt", instanceID + "_" + myIM.get(myLabels[3]) + ".pnt", "on"); // SRC FINAL
+
+
+                // assign physics
+                String ac_pcsLabel = instanceLabel + " Current Source";
+                id = mw.im.next("pcs", ac_pcsLabel);
+                pf = model.component("comp1").physics("ec").create(id, "PointCurrentSource", 0);
+
+                JSONObject src_ac = new JSONObject();
+                src_ac.put(instanceLabel, id);
+                mw.im.currentIDs.put(mw.im.present("pcs"), src_ac);
+
+                pf.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[3]) + "_pnt"); // SRC_FINAL
+                pf.set("Qjp", 0.000);
+                pf.label(ac_pcsLabel);
+
 
                 break;
 

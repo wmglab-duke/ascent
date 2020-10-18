@@ -87,6 +87,7 @@ class MockSample(Exceptionable, Configurable):
         img = create_opencv_image_from_stringio(png)
         _, bw_img = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
         cv2.imwrite(dest, bw_img)
+        plt.show()
 
     def make_nerve(self):
         # DEFINE NERVE

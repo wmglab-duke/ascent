@@ -267,6 +267,7 @@ class PerineuriumThicknessMode(ASCENTEnum):
     PIG_VN_INHOUSE_200523 = 4
     RAT_VN_INHOUSE_200601 = 5
     HUMAN_VN_INHOUSE_200601 = 6
+    ARLE_2016 = 7
 
 
 @unique

@@ -82,12 +82,12 @@
   "params": [
     {
       "name": "rev_BD_insul_LN",
-      "expression": "0.75",
+      "expression": "0.875",
       "description": ""
     },
     {
       "name": "rev_BD_cond_LN",
-      "expression": "1",
+      "expression": "0.75",
       "description": ""
     },
     {
@@ -162,13 +162,13 @@
     },
     {
       "name": "rev_cuff_LN",
-      "expression": "min(sqrt(((pi*(ID_30220_LN+w_cuff_LN)*rev_BD_LN)^2+(rev_BD_LN*p_LN)^2)/((pi^2*(2*r_nerve)^2)+(pi^2*w_cuff_LN^2)+(pi^2*4*scar_thk_LN^2)+(2*pi^2*(2*r_nerve)*w_cuff_LN)+(4*pi^2*w_cuff_LN*scar_thk_LN)+(4*pi^2*2*r_nerve*scar_thk_LN)+(p_LN^2))), 2.5)",
+      "expression": "2.5*((r_nerve+thk_medium_gap_internal_LN)<(ID_30220_LN/2))+((rev_BD_LN)*(sqrt((p_LN^2+pi^2*(ID_cuff_LN+thk_cuff_LN)^2)/(p_LN^2+pi^2*(r_nerve*2+2*thk_medium_gap_internal_LN+thk_cuff_LN)^2))))*((r_nerve+thk_medium_gap_internal_LN)>=(ID_30220_LN/2))",
       "description": ""
     },
     {
       "name": "r_cuff_in_pre_LN",
       "expression": "1 [mm]",
-      "description": "0.5*ID_cuff_LN: this needs to be automated, because in case of 3 mm ID = 1.5 mm"
+      "description": ""
     },
     {
       "name": "r_cuff_in_LN",
@@ -202,7 +202,7 @@
     },
     {
       "name": "corr_LN",
-      "expression": "0",
+      "expression": "360*(0.75 - rev_cuff_LN*(0.75/2.5) + (0.5/2.5)*(rev_BD_LN - rev_cuff_LN)) [deg]",
       "description": ""
     }
   ],

@@ -42,7 +42,9 @@
       "label": "LivaNova CuffnContact 1",
       "def": {
         "Center": "(z_nerve/2)-(sep_elec_LN/2)",
-        "Corr": "corr_LN"
+        "Corr": "corr_LN",
+        "rev_BD_insul": "rev_BD_insul_LN",
+        "rev_BD_cond": "rev_BD_cond_LN"
       },
       "materials": [
         {
@@ -60,7 +62,9 @@
       "label": "LivaNova CuffnContact 2",
       "def": {
         "Center": "(z_nerve/2)+(sep_elec_LN/2)",
-        "Corr": "corr_LN"
+        "Corr": "corr_LN",
+        "rev_BD_insul": "rev_BD_insul_LN",
+        "rev_BD_cond": "rev_BD_cond_LN"
       },
       "materials": [
         {
@@ -76,6 +80,16 @@
   ],
 
   "params": [
+    {
+      "name": "rev_BD_insul_LN",
+      "expression": "0.75",
+      "description": ""
+    },
+    {
+      "name": "rev_BD_cond_LN",
+      "expression": "1",
+      "description": ""
+    },
     {
       "name": "w_cuff_LN",
       "expression": "1.4 [mm]",
