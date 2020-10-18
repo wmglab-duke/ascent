@@ -398,8 +398,8 @@ class Sample(Exceptionable, Configurable, Saveable):
                     slide.orientation_point = slide.nerve.points[slide.orientation_point_index][:2]
                     slide.nerve.offset(distance=sep_nerve)
                 else:
-                    slide.nerve = slide.reshaped_nerve(reshape_nerve_mode)
                     slide.orientation_point = slide.nerve.points[slide.orientation_point_index][:2]
+                    slide.nerve = slide.reshaped_nerve(reshape_nerve_mode)
                     slide.nerve.offset(distance=sep_nerve)
 
             # slide.plot(fix_aspect_ratio=True, title=title)
