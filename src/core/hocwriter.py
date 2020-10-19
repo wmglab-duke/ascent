@@ -66,8 +66,8 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         tstop = extracellular_stim.get("stop")
         file_object.write("tstop     = %0.0f // [ms]\n" % tstop)
         file_object.write("n_tsteps  = %0.0f // [unitless]\n" % n_tsteps)
-        file_object.write("t_initSS  = %0.0f // [ms]\n" % self.search(Config.SIM, "global", "initSS"))
-        file_object.write("dt_initSS = %0.0f // [ms]\n" % self.search(Config.SIM, "global", "dt_initSS"))
+        file_object.write("t_initSS  = %0.0f // [ms]\n" % extracellular_stim.get("initSS"))
+        file_object.write("dt_initSS = %0.0f // [ms]\n" % extracellular_stim.get("dt_initSS"))
 
         # FIBER PARAMETERS
         file_object.write("\n//***************** Fiber Parameters *************\n")
