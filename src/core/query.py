@@ -439,17 +439,36 @@ class Query(Exceptionable, Configurable, Saveable):
                         # fetch thresholds, then find min and max
                         thresholds = []
                         missing_indices = []
-                        for i in range(n_inners):
-                            thresh_path = os.path.join(n_sim_dir, 'data', 'outputs',
-                                                       'thresh_inner{}_fiber0.dat'.format(i))
-                            if os.path.exists(thresh_path):
-                                threshold = abs(np.loadtxt(thresh_path))
-                                if len(np.atleast_1d(threshold)) > 1:
-                                    threshold = threshold[-1]
-                                thresholds.append(threshold)
-                            else:
-                                missing_indices.append(i)
-                                print('MISSING: {}'.format(thresh_path))
+
+                        if plot_mode is 'fiber0':
+                            for i in range(n_inners):
+                                thresh_path = os.path.join(n_sim_dir, 'data', 'outputs',
+                                                           'thresh_inner{}_fiber0.dat'.format(i))
+                                if os.path.exists(thresh_path):
+                                    threshold = abs(np.loadtxt(thresh_path))
+                                    if len(np.atleast_1d(threshold)) > 1:
+                                        threshold = threshold[-1]
+                                    thresholds.append(threshold)
+                                else:
+                                    missing_indices.append(i)
+                                    print('MISSING: {}'.format(thresh_path))
+                        elif plot_mode is 'fibers':
+                            for inner_ind in range(n_inners):
+                                for fiber_ind in range(len(sim_object.fibersets[0].out_to_fib[inner_ind][0])):
+                                    thresh_path = os.path.join(n_sim_dir, 'data', 'outputs',
+                                                               'thresh_inner{}_fiber{}.dat'.format(
+                                                                   inner_ind,
+                                                                   fiber_ind
+                                                               ))
+                                    if os.path.exists(thresh_path):
+                                        threshold = abs(np.loadtxt(thresh_path))
+                                        if len(np.atleast_1d(threshold)) > 1:
+                                            threshold = threshold[-1]
+                                        thresholds.append(threshold)
+                                    else:
+                                        missing_indices.append((inner_ind, fiber_ind))
+                                        print('MISSING: {}'.format(thresh_path))
+
                         max_thresh = np.max(thresholds)
                         min_thresh = np.min(thresholds)
 
@@ -475,14 +494,27 @@ class Query(Exceptionable, Configurable, Saveable):
 
                         colors = []
                         offset = 0
-                        for i in range(n_inners):
-                            actual_i = i - offset
-                            if i not in missing_indices:
-                                colors.append(tuple(cmap((thresholds[actual_i] - min_thresh) / (max_thresh - min_thresh))))
-                            else:
-                                # NOTE: PLOTS MISSING VALUES AS RED
-                                offset += 1
-                                colors.append(missing_color)
+                        if plot_mode is 'fiber0':
+                            for i in range(n_inners):
+                                actual_i = i - offset
+                                if i not in missing_indices:
+                                    colors.append(tuple(cmap((thresholds[actual_i] - min_thresh) / (max_thresh - min_thresh))))
+                                else:
+                                    # NOTE: PLOTS MISSING VALUES AS RED
+                                    offset += 1
+                                    colors.append(missing_color)
+                        elif plot_mode is 'fibers':
+                            loop_fiber = 0
+                            for inner_ind in range(n_inners):
+                                actual_i = inner_ind - offset
+                                for fiber_ind in range(len(sim_object.fibersets[0].out_to_fib[inner_ind][0])):
+                                    if (inner_ind, fiber_ind) not in missing_indices:
+                                        colors.append(tuple(cmap((thresholds[loop_fiber] - min_thresh) / (max_thresh - min_thresh))))
+                                        loop_fiber += 1
+                                    else:
+                                        # NOTE: PLOTS MISSING VALUES AS RED
+                                        offset += 1
+                                        colors.append(missing_color)
 
                         # figure title -- make arbitrary, hard-coded subplot title modifications here (add elif's)
                         title = ''
@@ -509,9 +541,15 @@ class Query(Exceptionable, Configurable, Saveable):
                             # ax.plot(*tuple(slide.nerve.points[slide.orientation_point_index][:2]), 'b*')
                             ax.plot(*orientation_point, '.', markersize=20, color='grey')
 
-                        # plot slide (nerve and fascicles, defaulting to no outers)
-                        sample_object.slides[0].plot(final=False, fix_aspect_ratio=True, fascicle_colors=colors,
-                                                     ax=ax, outers_flag=plot_outers, inner_format='k-')
+                        if plot_mode is 'fiber0':
+                            # plot slide (nerve and fascicles, defaulting to no outers)
+                            sample_object.slides[0].plot(final=False, fix_aspect_ratio=True, fascicle_colors=colors,
+                                                         ax=ax, outers_flag=plot_outers, inner_format='k-')
+                        elif plot_mode is 'fibers':
+                            sample_object.slides[0].plot(final=False, fix_aspect_ratio=True, ax=ax,
+                                                         outers_flag=plot_outers, inner_format='k-')
+                            sim_object.fibersets[0].plot(ax=ax, fiber_colors=colors, size=3)
+                            print('here')
 
                         # colorbar
                         cb_label = r'mA'

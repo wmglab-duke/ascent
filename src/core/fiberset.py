@@ -317,6 +317,13 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
         return points
 
+    def plot(self, ax: plt.Axes = None,
+             fiber_colors: List[Tuple[float, float, float, float]] = None,
+             size=10):
+
+        for fiber_ind, fiber in enumerate(self.fibers):
+            ax.plot(fiber[0][0], fiber[0][1], color=fiber_colors[fiber_ind], marker='o', markersize=size)
+
     def _generate_z(self, fibers_xy: np.ndarray, override_length=None, super_sample: bool = False) -> np.ndarray:
 
         fibers = []
