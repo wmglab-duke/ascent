@@ -222,6 +222,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                                 fiber_count = maximum_number
                             for point in inner.random_points(fiber_count, buffer=buffer, my_xy_seed=my_xy_seed):
                                 points.append(point)
+                            my_xy_seed += 1
 
             elif xy_mode == FiberXYMode.UNIFORM_COUNT:
                 count: int = xy_parameters['count']
@@ -230,6 +231,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                     for inner in fascicle.inners:
                         for point in inner.random_points(count, buffer=buffer, my_xy_seed=my_xy_seed):
                             points.append(point)
+                        my_xy_seed += 1
 
             elif xy_mode == FiberXYMode.WHEEL:
                 # get required parameters
