@@ -22,15 +22,26 @@ plt.rcParams['figure.figsize'] = [16.8 / 3, 10.14 * 2 * 0.9]
 # NOTE: these values were copied from the output of heatmaps(), setting the track_colormap_bounds flag True
 
 # initialize and run Querys
+# q = Query({
+#     'partial_matches': True,
+#     'include_downstream': True,
+#     'indices': {
+#         'sample': [1001],
+#         'model': [0, 1, 2, 3],
+#         'sim': [1005, 1006]
+#     }
+# }).run()
+
 q = Query({
     'partial_matches': True,
     'include_downstream': True,
     'indices': {
-        'sample': [1001],
-        'model': [0, 1, 2, 3],
-        'sim': [1005, 1006]
+        'sample': [1018],
+        'model': [0],
+        'sim': [1034]
     }
 }).run()
+
 #
 
 
@@ -41,7 +52,7 @@ q.heatmaps(plot=True,
            track_colormap_bounds=True,
            track_colormap_bounds_offset_ratio=0.0,
            subplot_title_toggle=False,
-           colorbar_text_size_override=100,
+           colorbar_text_size_override=10,
            tick_bounds=True,
            show_orientation_point=True,
            plot_mode='fibers',
