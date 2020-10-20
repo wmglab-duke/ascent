@@ -310,7 +310,8 @@ class Query(Exceptionable, Configurable, Saveable):
                  subplot_title_toggle: bool = True,
                  tick_count: int = 2,
                  tick_bounds: bool = False,
-                 show_orientation_point: bool = True):
+                 show_orientation_point: bool = True,
+                 subplot_assign: str = 'standard'):
 
         """
         Generate activation thresholds heatmaps
@@ -358,10 +359,41 @@ class Query(Exceptionable, Configurable, Saveable):
 
         Returns:
             matplotlib.pyplot.Figure: Handle to final figure (uses .gcf())
+            :param subplot_assign:
         """
         
         if self._result is None:
             self.throw(66)
+
+        def _renumber_subplot(my_n: int, my_rows: int, my_cols: int):
+
+            classic_indices = [[0 for x in range(my_cols)] for y in range(my_rows)]
+            renumber_indices = [[0 for x in range(my_cols)] for y in range(my_rows)]
+
+            if my_n == 0:
+                new_n = 0
+            else:
+                ind = 0
+                for row_ind in range(my_rows):
+                    for col_ind in range(my_cols):
+                        classic_indices[row_ind][col_ind] = ind
+                        ind += 1
+
+                ind = 0
+                for col_ind in range(my_cols):
+                    for row_ind in range(my_rows):
+                        renumber_indices[row_ind][col_ind] = ind
+                        ind += 1
+
+                # find row
+                for row_ind in range(my_rows):
+                    if renumber_indices[row_ind].__contains__(my_n):
+                        rw = row_ind
+                        cl = renumber_indices[row_ind].index(my_n)
+                        new_n = classic_indices[rw][cl]
+
+            return new_n
+
 
         # loop samples
         sample_results: dict
@@ -427,7 +459,7 @@ class Query(Exceptionable, Configurable, Saveable):
                         active_src_index, fiberset_index = sim_object.potentials_product[potentials_product_index]
 
                         # fetch axis
-                        ax: plt.Axes = axes[n]
+                        ax: plt.Axes = axes[n if subplot_assign is "standard" else _renumber_subplot(n, rows, cols)]
                         ax.axis('off')
 
                         # fetch sim information
@@ -534,7 +566,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
                         # set title
                         if subplot_title_toggle:
-                            ax.set_title(title, fontsize=40)
+                            ax.set_title(title, fontsize=10)
 
                         # plot orientation point if applicable
                         if orientation_point is not None and show_orientation_point is True:
