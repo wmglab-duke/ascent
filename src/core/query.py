@@ -311,7 +311,8 @@ class Query(Exceptionable, Configurable, Saveable):
                  tick_count: int = 2,
                  tick_bounds: bool = False,
                  show_orientation_point: bool = True,
-                 subplot_assign: str = 'standard'):
+                 subplot_assign: str = 'standard',
+                 min_max_ticks: bool = False):
 
         """
         Generate activation thresholds heatmaps
@@ -359,6 +360,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
         Returns:
             matplotlib.pyplot.Figure: Handle to final figure (uses .gcf())
+            :param min_max_ticks:
             :param subplot_assign:
         """
         
@@ -451,7 +453,7 @@ class Query(Exceptionable, Configurable, Saveable):
                     master_product_count = len(sim_object.master_product_indices)
                     rows = int(np.floor(np.sqrt(master_product_count))) if rows_override is None else rows_override
                     cols = int(np.ceil(master_product_count / rows))
-                    figure, axes = plt.subplots(rows, cols, constrained_layout=False, figsize=(25, 20))  # todo changed for ImThera (25, 20) for monopolar
+                    figure, axes = plt.subplots(rows, cols, constrained_layout=False, figsize=(25, 20))
                     axes = axes.reshape(-1)
 
                     # loop nsims
@@ -581,7 +583,6 @@ class Query(Exceptionable, Configurable, Saveable):
                             sample_object.slides[0].plot(final=False, fix_aspect_ratio=True, ax=ax,
                                                          outers_flag=plot_outers, inner_format='k-')
                             sim_object.fibersets[0].plot(ax=ax, fiber_colors=colors, size=3)
-                            print('here')
 
                         # colorbar
                         cb_label = r'mA'
@@ -590,20 +591,22 @@ class Query(Exceptionable, Configurable, Saveable):
                                 cmap=cmap,
                                 norm=mplcolors.Normalize(vmin=min_thresh, vmax=max_thresh)
                             ),
-                            ticks=tick.MaxNLocator(nbins=tick_count),
+                            ticks=tick.MaxNLocator(nbins=tick_count) if not min_max_ticks else [min_thresh, max_thresh],
                             ax=ax,
                             orientation='vertical',
-                            label=cb_label,
+                            #label=cb_label,
                             aspect=colorbar_aspect if colorbar_aspect is not None else 20
                         )
 
+                        cb.ax.set_yticklabels(['{:.2f}'.format(min_thresh), '{:.2f}'.format(max_thresh)])
+
                         # colorbar font size
                         if colorbar_text_size_override is not None:
-                            cb.set_label(cb_label, fontsize=colorbar_text_size_override)
+                            # cb.set_label(cb_label, fontsize=colorbar_text_size_override)
                             cb.ax.tick_params(labelsize=colorbar_text_size_override)
 
-                        if tick_bounds:
-                            cb.set_ticks([np.ceil(min_thresh * 100) / 100, np.floor(max_thresh * 100) / 100])
+                        # if tick_bounds:
+                        #     cb.set_ticks([np.ceil(min_thresh * 100) / 100, np.floor(max_thresh * 100) / 100])
 
                     # set super title
                     if title_toggle:
@@ -615,7 +618,7 @@ class Query(Exceptionable, Configurable, Saveable):
                             size='x-large'
                         )
 
-                    plt.tight_layout()
+                    plt.tight_layout(pad=5.0)
 
                     # save figure as png
                     if save_path is not None:

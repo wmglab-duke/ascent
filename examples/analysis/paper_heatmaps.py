@@ -32,20 +32,31 @@ plt.rcParams['figure.figsize'] = [16.8 / 3, 10.14 * 2 * 0.9]
 #         'sim': [1005, 1006]
 #     }
 # }).run()
+#
+# q.heatmaps(plot=True,
+#            save_path='D:\\Documents\\ascent_logs\\heatmaps_figures',
+#            colorbar_aspect=6,
+#            title_toggle=False,
+#            track_colormap_bounds=True,
+#            track_colormap_bounds_offset_ratio=0.0,
+#            subplot_title_toggle=False,
+#            colorbar_text_size_override=10,
+#            tick_bounds=True,
+#            show_orientation_point=True,
+#            plot_mode='fibers',
+#            colormap_str='viridis'
+#            )
 
 # this was used for Arle
 q = Query({
     'partial_matches': True,
     'include_downstream': True,
     'indices': {
-        'sample': [1018],
-        'model': [0],
-        'sim': [1034]
+        'sample': [1016],
+        'model': [7],
+        'sim': [1040, 1035]
     }
 }).run()
-
-#
-
 
 q.heatmaps(plot=True,
            save_path='D:\\Documents\\ascent_logs\\heatmaps_figures',
@@ -54,12 +65,44 @@ q.heatmaps(plot=True,
            track_colormap_bounds=True,
            track_colormap_bounds_offset_ratio=0.0,
            subplot_title_toggle=False,
-           colorbar_text_size_override=10,
+           colorbar_text_size_override=20,
            tick_bounds=True,
-           show_orientation_point=True,
            plot_mode='fibers',
-           colormap_str='viridis'
+           colormap_str='viridis',
+           rows_override=2,
+           subplot_assign='flipped',
+           min_max_ticks=True,
+           show_orientation_point=False
            )
+
+# this was used for Helmers
+# q = Query({
+#     'partial_matches': True,
+#     'include_downstream': True,
+#     'indices': {
+#         'sample': [1016],  # 1017
+#         'model': [0],
+#         'sim': [1035]
+#     }
+# }).run()
+#
+# q.heatmaps(plot=True,
+#            save_path='D:\\Documents\\ascent_logs\\heatmaps_figures',
+#            colorbar_aspect=6,
+#            title_toggle=False,
+#            track_colormap_bounds=True,
+#            track_colormap_bounds_offset_ratio=0.0,
+#            subplot_title_toggle=True,
+#            colorbar_text_size_override=10,
+#            tick_bounds=True,
+#            show_orientation_point=True,
+#            plot_mode='fibers',
+#            colormap_str='viridis',
+#            rows_override=2,
+#            subplot_assign='flipped'
+#            )
+
+#
 
 #                 # TODO: Finish building heatmap of polyfasc nerve (1 fiber/fasc)
 #                 # also, look into adding documentation to Simulation (might be useful for above task too)

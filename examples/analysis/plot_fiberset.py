@@ -19,9 +19,9 @@ criteria = {
     'partial_matches': True,
     'include_downstream': True,
     'indices': {
-        'sample': [1000],
-        'model': [0],
-        'sim': [1000]
+        'sample': [1016],
+        'model': [7],
+        'sim': [1042]
     }
 }
 
@@ -44,7 +44,7 @@ for fiberset_ind, fiberset in enumerate(sim.fibersets):
     slide.plot(fix_aspect_ratio=True, final=False, ax=ax)
 
     for fiber in fiberset.fibers:
-        plt.plot(fiber[0][0], fiber[0][1], 'r*')
+        plt.plot(fiber[0][0], fiber[0][1], 'r*', markersize=0.1)
 
     plt.xlabel('\u03bcm')
     plt.ylabel('\u03bcm')
