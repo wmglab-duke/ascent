@@ -39,11 +39,16 @@ q = Query({
     'partial_matches': True,
     'include_downstream': True,
     'indices': {
-        'sample': [7],
-        'model': [0],
-        'sim': [1]
+        'samples': [1017],
+        'model': [4, 5, 6, 7],
+        'sim': [1040]
     }
 }).run()
 
 # builds heatmaps
-q.barcharts_compare_models(logscale=True)
+q.barcharts_compare_models(logscale=False,
+                           model_labels=['Model 0: Veltink Epineurium, \n              Veltink Perineurium',
+                                         'Model 1: Veltink Epineurium, \n              Goodall Perineurium',
+                                         'Model 2: Goodall Epineurium, \n              Veltink Perineurium',
+                                         'Model 3: Goodall Epineurium, \n              Goodall Perineurium']
+                           )

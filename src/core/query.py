@@ -453,15 +453,19 @@ class Query(Exceptionable, Configurable, Saveable):
                     master_product_count = len(sim_object.master_product_indices)
                     rows = int(np.floor(np.sqrt(master_product_count))) if rows_override is None else rows_override
                     cols = int(np.ceil(master_product_count / rows))
-                    figure, axes = plt.subplots(rows, cols, constrained_layout=False, figsize=(25, 20))
+                    figure, axes = plt.subplots(2, 5, constrained_layout=False, figsize=(25, 20))
+                    # figure, axes = plt.subplots(rows, cols, constrained_layout=False, figsize=(25, 20))
                     axes = axes.reshape(-1)
+
+                    for ax in axes:
+                        ax.axis('off')
 
                     # loop nsims
                     for n, (potentials_product_index, waveform_index) in enumerate(sim_object.master_product_indices):
                         active_src_index, fiberset_index = sim_object.potentials_product[potentials_product_index]
 
                         # fetch axis
-                        ax: plt.Axes = axes[n if subplot_assign is "standard" else _renumber_subplot(n, rows, cols)]
+                        ax: plt.Axes = axes[n if subplot_assign is "standard" else _renumber_subplot(n, 2, 5)]
                         ax.axis('off')
 
                         # fetch sim information
@@ -718,7 +722,8 @@ class Query(Exceptionable, Configurable, Saveable):
             if xlabel == 'diameter':
                 ax.set_xlabel('Axon Diameter (µm)')
             else:
-                ax.set_xlabel(xlabel)
+                # ax.set_xlabel(xlabel)
+                ax.set_xlabel('Pulse Width (\u03bcs)')
             # y label
             ax.set_ylabel('Activation Threshold (mA)')
 
@@ -756,7 +761,7 @@ class Query(Exceptionable, Configurable, Saveable):
                     # this x group label
                     if first_iteration:
                         # print(nsim_value)
-                        xlabels.append(nsim_value)
+                        xlabels.append(int(nsim_value*1000))
 
                     # default fiberset index to 0
                     fiberset_index: int = 0
@@ -789,9 +794,9 @@ class Query(Exceptionable, Configurable, Saveable):
                                                        'outputs',
                                                        'thresh_inner{}_fiber{}.dat'.format(inner, local_fiber_index))
                             threshold = np.loadtxt(thresh_path)
-                            if len(threshold) > 1:
+                            if threshold.size > 1:
                                 threshold = threshold[-1]
-                            thresholds.append(threshold)
+                            thresholds.append(abs(threshold))
 
                     thresholds: np.ndarray = np.array(thresholds)
 
@@ -834,10 +839,16 @@ class Query(Exceptionable, Configurable, Saveable):
             #         title = '{} (fascicle {})'.format(title, fascicle_filter_indices[0])
             #     else:
             #         title = '{} (fascicles {})'.format(title, ', '.join([str(i) for i in fascicle_filter_indices]))
+
+            title = 'Sensitivity of Thresholds to Unspecified Material Conductivities: 1 \u03bcm MRG Fiber'.format(title, sample_config['sample'])
             plt.title(title)
 
+            for item in ([ax.title, ax.xaxis.label, ax.yaxis.label] +
+                         ax.get_xticklabels() + ax.get_yticklabels()):
+                item.set_fontsize(20)
+
             # add legend
-            plt.legend()
+            plt.legend(fontsize=16)
 
             # plot!
             if plot:

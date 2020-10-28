@@ -52,9 +52,9 @@ q = Query({
     'partial_matches': True,
     'include_downstream': True,
     'indices': {
-        'sample': [1016],
+        'sample': [1017],
         'model': [7],
-        'sim': [1040, 1035]
+        'sim': [1049]
     }
 }).run()
 
