@@ -310,7 +310,9 @@ class Query(Exceptionable, Configurable, Saveable):
                  subplot_title_toggle: bool = True,
                  tick_count: int = 2,
                  tick_bounds: bool = False,
-                 show_orientation_point: bool = True):
+                 show_orientation_point: bool = True,
+                 subplot_assign: str = 'standard',
+                 min_max_ticks: bool = False):
 
         """
         Generate activation thresholds heatmaps
@@ -358,10 +360,42 @@ class Query(Exceptionable, Configurable, Saveable):
 
         Returns:
             matplotlib.pyplot.Figure: Handle to final figure (uses .gcf())
+            :param min_max_ticks:
+            :param subplot_assign:
         """
         
         if self._result is None:
             self.throw(66)
+
+        def _renumber_subplot(my_n: int, my_rows: int, my_cols: int):
+
+            classic_indices = [[0 for x in range(my_cols)] for y in range(my_rows)]
+            renumber_indices = [[0 for x in range(my_cols)] for y in range(my_rows)]
+
+            if my_n == 0:
+                new_n = 0
+            else:
+                ind = 0
+                for row_ind in range(my_rows):
+                    for col_ind in range(my_cols):
+                        classic_indices[row_ind][col_ind] = ind
+                        ind += 1
+
+                ind = 0
+                for col_ind in range(my_cols):
+                    for row_ind in range(my_rows):
+                        renumber_indices[row_ind][col_ind] = ind
+                        ind += 1
+
+                # find row
+                for row_ind in range(my_rows):
+                    if renumber_indices[row_ind].__contains__(my_n):
+                        rw = row_ind
+                        cl = renumber_indices[row_ind].index(my_n)
+                        new_n = classic_indices[rw][cl]
+
+            return new_n
+
 
         # loop samples
         sample_results: dict
@@ -419,15 +453,19 @@ class Query(Exceptionable, Configurable, Saveable):
                     master_product_count = len(sim_object.master_product_indices)
                     rows = int(np.floor(np.sqrt(master_product_count))) if rows_override is None else rows_override
                     cols = int(np.ceil(master_product_count / rows))
-                    figure, axes = plt.subplots(rows, cols, constrained_layout=False, figsize=(25, 20))  # todo changed for ImThera (25, 20) for monopolar
+                    figure, axes = plt.subplots(2, 5, constrained_layout=False, figsize=(25, 20))
+                    # figure, axes = plt.subplots(rows, cols, constrained_layout=False, figsize=(25, 20))
                     axes = axes.reshape(-1)
+
+                    for ax in axes:
+                        ax.axis('off')
 
                     # loop nsims
                     for n, (potentials_product_index, waveform_index) in enumerate(sim_object.master_product_indices):
                         active_src_index, fiberset_index = sim_object.potentials_product[potentials_product_index]
 
                         # fetch axis
-                        ax: plt.Axes = axes[n]
+                        ax: plt.Axes = axes[n if subplot_assign is "standard" else _renumber_subplot(n, 2, 5)]
                         ax.axis('off')
 
                         # fetch sim information
@@ -439,17 +477,36 @@ class Query(Exceptionable, Configurable, Saveable):
                         # fetch thresholds, then find min and max
                         thresholds = []
                         missing_indices = []
-                        for i in range(n_inners):
-                            thresh_path = os.path.join(n_sim_dir, 'data', 'outputs',
-                                                       'thresh_inner{}_fiber0.dat'.format(i))
-                            if os.path.exists(thresh_path):
-                                threshold = abs(np.loadtxt(thresh_path))
-                                if len(np.atleast_1d(threshold)) > 1:
-                                    threshold = threshold[-1]
-                                thresholds.append(threshold)
-                            else:
-                                missing_indices.append(i)
-                                print('MISSING: {}'.format(thresh_path))
+
+                        if plot_mode is 'fiber0':
+                            for i in range(n_inners):
+                                thresh_path = os.path.join(n_sim_dir, 'data', 'outputs',
+                                                           'thresh_inner{}_fiber0.dat'.format(i))
+                                if os.path.exists(thresh_path):
+                                    threshold = abs(np.loadtxt(thresh_path))
+                                    if len(np.atleast_1d(threshold)) > 1:
+                                        threshold = threshold[-1]
+                                    thresholds.append(threshold)
+                                else:
+                                    missing_indices.append(i)
+                                    print('MISSING: {}'.format(thresh_path))
+                        elif plot_mode is 'fibers':
+                            for inner_ind in range(n_inners):
+                                for fiber_ind in range(len(sim_object.fibersets[0].out_to_fib[inner_ind][0])):
+                                    thresh_path = os.path.join(n_sim_dir, 'data', 'outputs',
+                                                               'thresh_inner{}_fiber{}.dat'.format(
+                                                                   inner_ind,
+                                                                   fiber_ind
+                                                               ))
+                                    if os.path.exists(thresh_path):
+                                        threshold = abs(np.loadtxt(thresh_path))
+                                        if len(np.atleast_1d(threshold)) > 1:
+                                            threshold = threshold[-1]
+                                        thresholds.append(threshold)
+                                    else:
+                                        missing_indices.append((inner_ind, fiber_ind))
+                                        print('MISSING: {}'.format(thresh_path))
+
                         max_thresh = np.max(thresholds)
                         min_thresh = np.min(thresholds)
 
@@ -475,14 +532,27 @@ class Query(Exceptionable, Configurable, Saveable):
 
                         colors = []
                         offset = 0
-                        for i in range(n_inners):
-                            actual_i = i - offset
-                            if i not in missing_indices:
-                                colors.append(tuple(cmap((thresholds[actual_i] - min_thresh) / (max_thresh - min_thresh))))
-                            else:
-                                # NOTE: PLOTS MISSING VALUES AS RED
-                                offset += 1
-                                colors.append(missing_color)
+                        if plot_mode is 'fiber0':
+                            for i in range(n_inners):
+                                actual_i = i - offset
+                                if i not in missing_indices:
+                                    colors.append(tuple(cmap((thresholds[actual_i] - min_thresh) / (max_thresh - min_thresh))))
+                                else:
+                                    # NOTE: PLOTS MISSING VALUES AS RED
+                                    offset += 1
+                                    colors.append(missing_color)
+                        elif plot_mode is 'fibers':
+                            loop_fiber = 0
+                            for inner_ind in range(n_inners):
+                                actual_i = inner_ind - offset
+                                for fiber_ind in range(len(sim_object.fibersets[0].out_to_fib[inner_ind][0])):
+                                    if (inner_ind, fiber_ind) not in missing_indices:
+                                        colors.append(tuple(cmap((thresholds[loop_fiber] - min_thresh) / (max_thresh - min_thresh))))
+                                        loop_fiber += 1
+                                    else:
+                                        # NOTE: PLOTS MISSING VALUES AS RED
+                                        offset += 1
+                                        colors.append(missing_color)
 
                         # figure title -- make arbitrary, hard-coded subplot title modifications here (add elif's)
                         title = ''
@@ -502,16 +572,21 @@ class Query(Exceptionable, Configurable, Saveable):
 
                         # set title
                         if subplot_title_toggle:
-                            ax.set_title(title, fontsize=40)
+                            ax.set_title(title, fontsize=10)
 
                         # plot orientation point if applicable
                         if orientation_point is not None and show_orientation_point is True:
                             # ax.plot(*tuple(slide.nerve.points[slide.orientation_point_index][:2]), 'b*')
                             ax.plot(*orientation_point, '.', markersize=20, color='grey')
 
-                        # plot slide (nerve and fascicles, defaulting to no outers)
-                        sample_object.slides[0].plot(final=False, fix_aspect_ratio=True, fascicle_colors=colors,
-                                                     ax=ax, outers_flag=plot_outers, inner_format='k-')
+                        if plot_mode is 'fiber0':
+                            # plot slide (nerve and fascicles, defaulting to no outers)
+                            sample_object.slides[0].plot(final=False, fix_aspect_ratio=True, fascicle_colors=colors,
+                                                         ax=ax, outers_flag=plot_outers, inner_format='k-')
+                        elif plot_mode is 'fibers':
+                            sample_object.slides[0].plot(final=False, fix_aspect_ratio=True, ax=ax,
+                                                         outers_flag=plot_outers, inner_format='k-')
+                            sim_object.fibersets[0].plot(ax=ax, fiber_colors=colors, size=3)
 
                         # colorbar
                         cb_label = r'mA'
@@ -520,20 +595,22 @@ class Query(Exceptionable, Configurable, Saveable):
                                 cmap=cmap,
                                 norm=mplcolors.Normalize(vmin=min_thresh, vmax=max_thresh)
                             ),
-                            ticks=tick.MaxNLocator(nbins=tick_count),
+                            ticks=tick.MaxNLocator(nbins=tick_count) if not min_max_ticks else [min_thresh, max_thresh],
                             ax=ax,
                             orientation='vertical',
-                            label=cb_label,
+                            #label=cb_label,
                             aspect=colorbar_aspect if colorbar_aspect is not None else 20
                         )
 
+                        cb.ax.set_yticklabels(['{:.2f}'.format(min_thresh), '{:.2f}'.format(max_thresh)])
+
                         # colorbar font size
                         if colorbar_text_size_override is not None:
-                            cb.set_label(cb_label, fontsize=colorbar_text_size_override)
+                            # cb.set_label(cb_label, fontsize=colorbar_text_size_override)
                             cb.ax.tick_params(labelsize=colorbar_text_size_override)
 
-                        if tick_bounds:
-                            cb.set_ticks([np.ceil(min_thresh * 100) / 100, np.floor(max_thresh * 100) / 100])
+                        # if tick_bounds:
+                        #     cb.set_ticks([np.ceil(min_thresh * 100) / 100, np.floor(max_thresh * 100) / 100])
 
                     # set super title
                     if title_toggle:
@@ -545,7 +622,7 @@ class Query(Exceptionable, Configurable, Saveable):
                             size='x-large'
                         )
 
-                    plt.tight_layout()
+                    plt.tight_layout(pad=5.0)
 
                     # save figure as png
                     if save_path is not None:
@@ -645,7 +722,8 @@ class Query(Exceptionable, Configurable, Saveable):
             if xlabel == 'diameter':
                 ax.set_xlabel('Axon Diameter (µm)')
             else:
-                ax.set_xlabel(xlabel)
+                # ax.set_xlabel(xlabel)
+                ax.set_xlabel('Pulse Width (\u03bcs)')
             # y label
             ax.set_ylabel('Activation Threshold (mA)')
 
@@ -683,7 +761,7 @@ class Query(Exceptionable, Configurable, Saveable):
                     # this x group label
                     if first_iteration:
                         # print(nsim_value)
-                        xlabels.append(nsim_value)
+                        xlabels.append(int(nsim_value*1000))
 
                     # default fiberset index to 0
                     fiberset_index: int = 0
@@ -716,9 +794,9 @@ class Query(Exceptionable, Configurable, Saveable):
                                                        'outputs',
                                                        'thresh_inner{}_fiber{}.dat'.format(inner, local_fiber_index))
                             threshold = np.loadtxt(thresh_path)
-                            if len(threshold) > 1:
+                            if threshold.size > 1:
                                 threshold = threshold[-1]
-                            thresholds.append(threshold)
+                            thresholds.append(abs(threshold))
 
                     thresholds: np.ndarray = np.array(thresholds)
 
@@ -761,10 +839,16 @@ class Query(Exceptionable, Configurable, Saveable):
             #         title = '{} (fascicle {})'.format(title, fascicle_filter_indices[0])
             #     else:
             #         title = '{} (fascicles {})'.format(title, ', '.join([str(i) for i in fascicle_filter_indices]))
+
+            title = 'Sensitivity of Thresholds to Unspecified Material Conductivities: 1 \u03bcm MRG Fiber'.format(title, sample_config['sample'])
             plt.title(title)
 
+            for item in ([ax.title, ax.xaxis.label, ax.yaxis.label] +
+                         ax.get_xticklabels() + ax.get_yticklabels()):
+                item.set_fontsize(20)
+
             # add legend
-            plt.legend()
+            plt.legend(fontsize=16)
 
             # plot!
             if plot:

@@ -222,6 +222,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                                 fiber_count = maximum_number
                             for point in inner.random_points(fiber_count, buffer=buffer, my_xy_seed=my_xy_seed):
                                 points.append(point)
+                            my_xy_seed += 1
 
             elif xy_mode == FiberXYMode.UNIFORM_COUNT:
                 count: int = xy_parameters['count']
@@ -230,6 +231,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                     for inner in fascicle.inners:
                         for point in inner.random_points(count, buffer=buffer, my_xy_seed=my_xy_seed):
                             points.append(point)
+                        my_xy_seed += 1
 
             elif xy_mode == FiberXYMode.WHEEL:
                 # get required parameters
@@ -314,6 +316,13 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             self.throw(30)
 
         return points
+
+    def plot(self, ax: plt.Axes = None,
+             fiber_colors: List[Tuple[float, float, float, float]] = None,
+             size=10):
+
+        for fiber_ind, fiber in enumerate(self.fibers):
+            ax.plot(fiber[0][0], fiber[0][1], color=fiber_colors[fiber_ind], marker='o', markersize=size)
 
     def _generate_z(self, fibers_xy: np.ndarray, override_length=None, super_sample: bool = False) -> np.ndarray:
 
