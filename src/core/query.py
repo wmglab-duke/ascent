@@ -489,7 +489,7 @@ class Query(Exceptionable, Configurable, Saveable):
                                             missing_indices.append(i)
                                         else:
                                             threshold = threshold[-1]
-                                    thresholds.append(threshold)
+                                            thresholds.append(threshold)
                                 else:
                                     missing_indices.append(i)
                                     print('MISSING: {}'.format(thresh_path))
