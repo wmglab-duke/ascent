@@ -308,7 +308,7 @@ class Query(Exceptionable, Configurable, Saveable):
                  missing_color: Tuple[int, int, int, int] = (1, 0, 0, 1),
                  title_toggle: bool = True,
                  subplot_title_toggle: bool = True,
-                 tick_count: int = 2,
+                 tick_count: int = 5,
                  tick_bounds: bool = False,
                  show_orientation_point: bool = True,
                  subplot_assign: str = 'standard',
@@ -453,8 +453,8 @@ class Query(Exceptionable, Configurable, Saveable):
                     master_product_count = len(sim_object.master_product_indices)
                     rows = int(np.floor(np.sqrt(master_product_count))) if rows_override is None else rows_override
                     cols = int(np.ceil(master_product_count / rows))
-                    figure, axes = plt.subplots(2, 5, constrained_layout=False, figsize=(25, 20))
-                    # figure, axes = plt.subplots(rows, cols, constrained_layout=False, figsize=(25, 20))
+                    # figure, axes = plt.subplots(2, 5, constrained_layout=False, figsize=(25, 20))
+                    figure, axes = plt.subplots(rows, cols, constrained_layout=False, figsize=(25, 20))
                     axes = axes.reshape(-1)
 
                     for ax in axes:
