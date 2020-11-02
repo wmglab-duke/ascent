@@ -485,11 +485,11 @@ class Query(Exceptionable, Configurable, Saveable):
                                 if os.path.exists(thresh_path):
                                     threshold = abs(np.loadtxt(thresh_path))
                                     if len(np.atleast_1d(threshold)) > 1:
-                                        if threshold[-1] > 30:
-                                            missing_indices.append(i)
-                                            continue
-                                        else:
-                                            threshold = threshold[-1]
+                                        threshold = threshold[-1]
+                                    if threshold > 30:
+                                        missing_indices.append(i)
+                                        print('TOO BIG: {}'.format(thresh_path))
+                                    else:
                                         thresholds.append(threshold)
                                 else:
                                     missing_indices.append(i)
