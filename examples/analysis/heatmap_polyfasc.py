@@ -103,7 +103,7 @@ colormap_bounds_override = None #[
 
 # builds heatmaps
 q.heatmaps(plot=False,
-           save_path='out/analysis',
+        #    save_path='out/analysis',
            rows_override=6,
            colorbar_aspect=5,
            title_toggle=False,
