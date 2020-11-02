@@ -102,8 +102,9 @@ colormap_bounds_override = None #[
 # ]
 
 # builds heatmaps
-q.heatmaps(plot=False,
+q.heatmaps(plot=True,
         #    save_path='out/analysis',
+            plot_mode='fiber0',
            rows_override=6,
            colorbar_aspect=5,
            title_toggle=False,
