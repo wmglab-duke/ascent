@@ -486,7 +486,7 @@ class Query(Exceptionable, Configurable, Saveable):
                                     threshold = abs(np.loadtxt(thresh_path))
                                     if len(np.atleast_1d(threshold)) > 1:
                                         threshold = threshold[-1]
-                                    if threshold > 30:
+                                    if threshold > 20:
                                         missing_indices.append(i)
                                         print('TOO BIG: {}'.format(thresh_path))
                                     else:
