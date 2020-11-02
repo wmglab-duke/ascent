@@ -487,9 +487,10 @@ class Query(Exceptionable, Configurable, Saveable):
                                     if len(np.atleast_1d(threshold)) > 1:
                                         if threshold[-1] > 30:
                                             missing_indices.append(i)
+                                            continue
                                         else:
                                             threshold = threshold[-1]
-                                            thresholds.append(threshold)
+                                        thresholds.append(threshold)
                                 else:
                                     missing_indices.append(i)
                                     print('MISSING: {}'.format(thresh_path))
