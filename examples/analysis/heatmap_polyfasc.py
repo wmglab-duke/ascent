@@ -107,12 +107,13 @@ q.heatmaps(plot=True,
             plot_mode='fiber0',
            rows_override=6,
            colorbar_aspect=5,
+           colormap_str='viridis',
            title_toggle=False,
            track_colormap_bounds=True,
            track_colormap_bounds_offset_ratio=0.0,
-           colomap_bounds_override=colormap_bounds_override,
+        #    colomap_bounds_override=colormap_bounds_override,
            subplot_title_toggle=False,
-           colorbar_text_size_override=20,
+        #    colorbar_text_size_override=20,
            tick_bounds=True
            )
 
