@@ -606,7 +606,7 @@ class Query(Exceptionable, Configurable, Saveable):
                             aspect=colorbar_aspect if colorbar_aspect is not None else 20
                         )
 
-                        cb.ax.set_yticklabels(['{:.2f}'.format(min_thresh), '{:.2f}'.format(max_thresh)])
+                        # cb.ax.set_yticklabels(['{:.2f}'.format(min_thresh), '{:.2f}'.format(max_thresh)])
 
                         # colorbar font size
                         if colorbar_text_size_override is not None:
