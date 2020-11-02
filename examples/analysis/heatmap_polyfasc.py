@@ -25,7 +25,7 @@ q = Query({
     'include_downstream': True,
     'indices': {
         'sample': [0],
-        'model': [1, 2, 3, 4],
+        'model': [0, 1, 2, 3],
         'sim': [0]
     }
 }).run()
@@ -103,7 +103,7 @@ colormap_bounds_override = None #[
 
 # builds heatmaps
 q.heatmaps(plot=True,
-        #    save_path='out/analysis',
+            save_path='out/analysis',
             plot_mode='fiber0',
            rows_override=6,
            colorbar_aspect=5,
