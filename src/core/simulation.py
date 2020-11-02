@@ -548,7 +548,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
     @staticmethod
     def import_n_sims(sample: int, model: int, sim: int, sim_dir: str, source: str):
-        print(f'sample: {sample}, model: {model}, sim: {sim}, sim_dir: {sim_dir}')
+        print(f'sample: {sample}, model: {model}, sim: {sim}, sim_dir: {sim_dir}, source: {source}')
 
         sim_dir = os.path.join(sim_dir, 'n_sims')
 
