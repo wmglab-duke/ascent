@@ -11,6 +11,7 @@ import matplotlib.ticker as tick
 from scipy import stats as stats
 import matplotlib.patches as mpatches
 import pandas as pd
+import math
 
 from src.core import Sample, Simulation, Slide, FiberSet
 from src.utils import Exceptionable, Configurable, Saveable, SetupMode, Config, Object, FiberXYMode
@@ -453,8 +454,8 @@ class Query(Exceptionable, Configurable, Saveable):
                     master_product_count = len(sim_object.master_product_indices)
                     rows = int(np.floor(np.sqrt(master_product_count))) if rows_override is None else rows_override
                     cols = int(np.ceil(master_product_count / rows))
-                    figure, axes = plt.subplots(2, 5, constrained_layout=False, figsize=(25, 20))
-                    # figure, axes = plt.subplots(rows, cols, constrained_layout=False, figsize=(25, 20))
+                    # figure, axes = plt.subplots(2, 5, constrained_layout=False, figsize=(25, 20))
+                    figure, axes = plt.subplots(rows, cols, constrained_layout=False, figsize=(25, 20))
                     axes = axes.reshape(-1)
 
                     for ax in axes:
@@ -513,8 +514,10 @@ class Query(Exceptionable, Configurable, Saveable):
                         # update tracking colormap bounds
                         if track_colormap_bounds and sim_index == tracking_sim_index:
                             colormap_bounds_tracking[n] = (
-                                min(colormap_bounds_tracking[n][0], min_thresh * (1 + track_colormap_bounds_offset_ratio)),
-                                max(colormap_bounds_tracking[n][1], max_thresh * (1 - track_colormap_bounds_offset_ratio))
+                                min(colormap_bounds_tracking[n][0],
+                                    min_thresh * (1 + track_colormap_bounds_offset_ratio)),
+                                max(colormap_bounds_tracking[n][1],
+                                    max_thresh * (1 - track_colormap_bounds_offset_ratio))
                             )
 
                             # override colormap bounds
@@ -536,7 +539,8 @@ class Query(Exceptionable, Configurable, Saveable):
                             for i in range(n_inners):
                                 actual_i = i - offset
                                 if i not in missing_indices:
-                                    colors.append(tuple(cmap((thresholds[actual_i] - min_thresh) / (max_thresh - min_thresh))))
+                                    colors.append(
+                                        tuple(cmap((thresholds[actual_i] - min_thresh) / (max_thresh - min_thresh))))
                                 else:
                                     # NOTE: PLOTS MISSING VALUES AS RED
                                     offset += 1
@@ -547,7 +551,8 @@ class Query(Exceptionable, Configurable, Saveable):
                                 actual_i = inner_ind - offset
                                 for fiber_ind in range(len(sim_object.fibersets[0].out_to_fib[inner_ind][0])):
                                     if (inner_ind, fiber_ind) not in missing_indices:
-                                        colors.append(tuple(cmap((thresholds[loop_fiber] - min_thresh) / (max_thresh - min_thresh))))
+                                        colors.append(tuple(
+                                            cmap((thresholds[loop_fiber] - min_thresh) / (max_thresh - min_thresh))))
                                         loop_fiber += 1
                                     else:
                                         # NOTE: PLOTS MISSING VALUES AS RED
@@ -622,14 +627,15 @@ class Query(Exceptionable, Configurable, Saveable):
                             size='x-large'
                         )
 
-                    plt.tight_layout(pad=5.0)
+                    plt.tight_layout(pad=2)
+                    # plt.tight_layout(pad=5.0)
 
                     # save figure as png
                     if save_path is not None:
                         if not os.path.exists(save_path):
                             os.mkdir(save_path)
                         dest = '{}{}{}_{}_{}.png'.format(save_path, os.sep, sample_index, model_index, sim_index)
-                        figure.savefig(dest, dpi=200)
+                        figure.savefig(dest, dpi=300)
                         # print('done')
 
                     # plot figure
@@ -761,7 +767,7 @@ class Query(Exceptionable, Configurable, Saveable):
                     # this x group label
                     if first_iteration:
                         # print(nsim_value)
-                        xlabels.append(int(nsim_value*1000))
+                        xlabels.append(int(nsim_value * 1000))
 
                     # default fiberset index to 0
                     fiberset_index: int = 0
@@ -834,13 +840,12 @@ class Query(Exceptionable, Configurable, Saveable):
 
             # title
             title = '{} for sample {}'.format(title, sample_config['sample'])
-            # if fascicle_filter_indices is not None:
-            #     if len(fascicle_filter_indices) == 1:
-            #         title = '{} (fascicle {})'.format(title, fascicle_filter_indices[0])
-            #     else:
-            #         title = '{} (fascicles {})'.format(title, ', '.join([str(i) for i in fascicle_filter_indices]))
+            if fascicle_filter_indices is not None:
+                if len(fascicle_filter_indices) == 1:
+                    title = '{} (fascicle {})'.format(title, fascicle_filter_indices[0])
+                else:
+                    title = '{} (fascicles {})'.format(title, ', '.join([str(i) for i in fascicle_filter_indices]))
 
-            title = 'Sensitivity of Thresholds to Unspecified Material Conductivities: 1 \u03bcm MRG Fiber'.format(title, sample_config['sample'])
             plt.title(title)
 
             for item in ([ax.title, ax.xaxis.label, ax.yaxis.label] +
@@ -1172,13 +1177,6 @@ class Query(Exceptionable, Configurable, Saveable):
             for sample_results in self._result.get('samples', []):
                 sample_index = sample_results['index']
 
-                #patch - remove TODO
-                if sample_index == 71 and model_index == 1:
-                    model = model+1
-                #patch - remove TODO
-                if sample_index == 79 and model_index == 1:
-                    model = model+1
-
                 sample_object: Sample = self.get_object(Object.SAMPLE, [sample_index])
                 sample_config: dict = self.get_config(Config.SAMPLE, [sample_index])
                 slide: Slide = sample_object.slides[0]
@@ -1423,14 +1421,14 @@ class Query(Exceptionable, Configurable, Saveable):
         return ax
 
     def excel_output(self,
-                        filepath: str,
-                        sample_keys: List[list] = [],
-                        model_keys: List[list] = [],
-                        sim_keys: List[list] = [],
-                        individual_indices: bool = True,
-                        config_paths: bool = True,
-                        column_width: int = None,
-                        console_output: bool = True):
+                     filepath: str,
+                     sample_keys: List[list] = [],
+                     model_keys: List[list] = [],
+                     sim_keys: List[list] = [],
+                     individual_indices: bool = True,
+                     config_paths: bool = True,
+                     column_width: int = None,
+                     console_output: bool = True):
         """Output summary of query.
 
         NOTE: for all key lists, the values themselves are lists, functioning as a JSON pointer.
@@ -1507,14 +1505,16 @@ class Query(Exceptionable, Configurable, Saveable):
                         sims[str(sim_index)] = [header]
 
                     # NSIM
-                    for nsim_index, (potentials_product_index, waveform_index) in enumerate(sim_object.master_product_indices):
+                    for nsim_index, (potentials_product_index, waveform_index) in enumerate(
+                            sim_object.master_product_indices):
                         nsim_dir = os.path.join(sim_dir, 'n_sims', str(nsim_index))
                         # TODO: address active_src_index?
                         active_src_index, fiberset_index = sim_object.potentials_product[potentials_product_index]
                         # fetch additional sample, model, and sim values
                         # that's one juicy list comprehension right there
-                        values = [[self.search(config, *key) for key in category] 
-                                  for category, config in zip([sample_keys, model_keys, sim_keys], [Config.SAMPLE, Config.MODEL, Config.SIM])]
+                        values = [[self.search(config, *key) for key in category]
+                                  for category, config in
+                                  zip([sample_keys, model_keys, sim_keys], [Config.SAMPLE, Config.MODEL, Config.SIM])]
                         # base row data
                         sample_parts = [sample_index, *values[0]]
                         model_parts = [model_index, *values[1]]

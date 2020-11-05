@@ -1,0 +1,272 @@
+{
+  "code": "dLN",
+  "instances": [
+    {
+      "type": "CuffFill_Primitive",
+      "label": "dLivaNova Cuff Fill 1",
+      "def": {
+        "Radius": "r_cuff_in_dLN+thk_cuff_dLN+Thk_fill_dLN",
+        "Thk": "Thk_fill_dLN",
+        "L": "L_cuff_dLN+2*Thk_fill_dLN",
+        "Center": "Center_dLN",
+        "x_shift": "0",
+        "y_shift": "0"
+      },
+      "materials": [
+        {
+          "info": "fill",
+          "label_index": 0
+        }
+      ]
+    },
+    {
+      "type": "TubeCuff_Primitive",
+      "label": "dLivaNova Cuff",
+      "def": {
+        "N_holes": "N_holes_dLN",
+        "Tube_theta": "Theta_dLN",
+        "Center": "Center_dLN",
+        "R_in": "r_cuff_in_dLN",
+        "R_out": "R_out_dLN",
+        "Tube_L": "L_cuff_dLN",
+        "Rot_def": "Rot_def_dLN",
+        "D_hole": "D_hole_dLN",
+        "Buffer_hole": "Buffer_hole_dLN",
+        "L_holecenter_cuffseam": "L_holecenter_cuffseam_dLN",
+        "Pitch_holecenter_holecenter": "Pitch_holecenter_holecenter_dLN"
+      },
+      "materials": [
+        {
+          "info": "insulator",
+          "label_index": 2
+        }
+      ]
+    },
+    {
+      "type": "RibbonContact_Primitive",
+      "label": "dLivaNova Contact 1",
+      "def": {
+        "Ribbon_thk": "thk_elec_dLN",
+        "Ribbon_z": "w_elec_dLN",
+        "R_in": "r_cuff_in_dLN",
+        "Ribbon_recess": "Recess_dLN",
+        "Center": "Center_dLN",
+        "Ribbon_theta": "Theta_contact_dLN",
+        "Rot_def": "Rot_def_contact_dLN"
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "label_index": 3
+        },
+        {
+          "info": "recess",
+          "label_index": 4
+        }
+      ]
+    }
+  ],
+
+  "params": [
+    {
+      "name": "corr_LN",
+      "expression": "360*(0.75 - rev_cuff_dLN*(0.75/2.5) + (0.5/2.5)*(rev_BD_dLN - rev_cuff_dLN)) [deg]",
+      "description": ""
+    },
+    {
+      "name": "Theta_contact_dLN",
+      "expression": "360*rev_cuff_dLN*(1/2.5) [deg]",
+      "description": ""
+    },
+    {
+      "name": "Rot_def_contact_dLN",
+      "expression": "(Theta_dLN/2)-(Theta_contact_dLN/2) + corr_LN",
+      "description": ""
+    },
+    {
+      "name": "R_out_dLN",
+      "expression": "r_cuff_in_dLN+thk_cuff_dLN",
+      "description": ""
+    },
+    {
+      "name": "N_holes_dLN",
+      "expression": "0",
+      "description": ""
+    },
+    {
+      "name": "Recess_dLN",
+      "expression": "0",
+      "description": ""
+    },
+    {
+      "name": "L_elec_M",
+      "expression": "w_elec_dLN",
+      "description": ""
+    },
+    {
+      "name": "Rot_def_dLN",
+      "expression": "0",
+      "description": ""
+    },
+    {
+      "name": "D_hole_dLN",
+      "expression": "NaN",
+      "description": ""
+    },
+    {
+      "name": "Buffer_hole_dLN",
+      "expression": "NaN",
+      "description": ""
+    },
+    {
+      "name": "L_holecenter_cuffseam_dLN",
+      "expression": "NaN",
+      "description": ""
+    },
+    {
+      "name": "Pitch_holecenter_holecenter_dLN",
+      "expression": "NaN",
+      "description": ""
+    },
+    {
+      "name": "Rot_def_dLN",
+      "expression": "0",
+      "description": ""
+    },
+    {
+      "name": "Theta_dLN",
+      "expression": "360 [deg]",
+      "description": ""
+    },
+    {
+      "name": "rev_BD_insul_dLN",
+      "expression": "0.75",
+      "description": ""
+    },
+    {
+      "name": "rev_BD_cond_dLN",
+      "expression": "1",
+      "description": ""
+    },
+    {
+      "name": "w_cuff_dLN",
+      "expression": "1.4 [mm]",
+      "description": ""
+    },
+    {
+      "name": "thk_cuff_dLN",
+      "expression": "0.9 [mm]",
+      "description": ""
+    },
+    {
+      "name": "w_elec_dLN",
+      "expression": "0.75 [mm]",
+      "description": ""
+    },
+    {
+      "name": "thk_elec_dLN",
+      "expression": "0.05 [mm]",
+      "description": ""
+    },
+    {
+      "name": "S_dLN",
+      "expression": "0.2 [mm]",
+      "description": ""
+    },
+    {
+      "name": "rev_BD_dLN",
+      "expression": "2.5",
+      "description": ""
+    },
+    {
+      "name": "p_dLN",
+      "expression": "w_cuff_dLN+S_dLN",
+      "description": ""
+    },
+    {
+      "name": "sep_elec_dLN",
+      "expression": "8 [mm]",
+      "description": ""
+    },
+    {
+      "name": "L_cuff_dLN",
+      "expression": "rev_cuff_dLN*p_dLN",
+      "description": ""
+    },
+    {
+      "name": "R_HigherMesh_dLN",
+      "expression": "4 [mm]",
+      "description": ""
+    },
+    {
+      "name": "scar_thk_dLN",
+      "expression": "100 [micrometer]",
+      "description": ""
+    },
+    {
+      "name": "ID_30220_dLN",
+      "expression": "2 [mm]",
+      "description": ""
+    },
+    {
+      "name": "ID_30230_dLN",
+      "expression": "3 [mm]",
+      "description": ""
+    },
+    {
+      "name": "thk_medium_gap_internal_dLN",
+      "expression": "10 [um]",
+      "description": ""
+    },
+    {
+      "name": "rev_cuff_dLN",
+      "expression": "2.5*((r_nerve+thk_medium_gap_internal_dLN)<(ID_30220_dLN/2))+((rev_BD_dLN)*(sqrt((p_dLN^2+pi^2*(ID_cuff_dLN+thk_cuff_dLN)^2)/(p_dLN^2+pi^2*(r_nerve*2+2*thk_medium_gap_internal_dLN+thk_cuff_dLN)^2))))*((r_nerve+thk_medium_gap_internal_dLN)>=(ID_30220_dLN/2))",
+      "description": ""
+    },
+    {
+      "name": "r_cuff_in_pre_dLN",
+      "expression": "1 [mm]",
+      "description": ""
+    },
+    {
+      "name": "r_cuff_in_dLN",
+      "expression": "max(r_nerve+thk_medium_gap_internal_dLN,r_cuff_in_pre_dLN)",
+      "description": ""
+    },
+    {
+      "name": "ID_cuff_dLN",
+      "expression": "ID_30220_dLN*((r_nerve+thk_medium_gap_internal_dLN)<(ID_30230_dLN/2))+ID_30230_dLN*((r_nerve+thk_medium_gap_internal_dLN)>=(ID_30230_dLN/2))",
+      "description": ""
+    },
+    {
+      "name": "zw_rot1_dLN",
+      "expression": "0",
+      "description": ""
+    },
+    {
+      "name": "zw_rot2_dLN",
+      "expression": "0",
+      "description": ""
+    },
+    {
+      "name": "Center_dLN",
+      "expression": "z_nerve/2",
+      "description": ""
+    },
+    {
+      "name": "Thk_fill_dLN",
+      "expression": "100 [um]",
+      "description": ""
+    },
+    {
+      "name": "corr_dLN",
+      "expression": "360*(0.75 - rev_cuff_dLN*(0.75/2.5) + (0.5/2.5)*(rev_BD_dLN - rev_cuff_dLN)) [deg]",
+      "description": ""
+    }
+  ],
+
+  "expandable": true,
+  "angle_to_contacts_deg": 180,
+  "offset": {
+  }
+}

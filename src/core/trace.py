@@ -403,7 +403,7 @@ class Trace(Exceptionable):
         if color is not None:
             ax.fill(points[:, 0], points[:, 1], color=color)
 
-        ax.plot(points[:, 0], points[:, 1], plot_format)
+        ax.plot(points[:, 0], points[:, 1], plot_format, linewidth=1)
 
 
 

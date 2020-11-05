@@ -49,7 +49,6 @@ class Slide(Exceptionable):
         self.orientation_point: Union[Tuple[float, float], None] = None
         self.orientation_point_index: Union[float, None] = None
 
-
     def monofasc(self) -> bool:
         return self.nerve_mode == NerveMode.NOT_PRESENT and len(self.fascicles) == 1
 
@@ -112,7 +111,7 @@ class Slide(Exceptionable):
         else:
             pairs = itertools.combinations(self.fascicles, 2)
             return any([first.min_distance(second) < tolerance for first, second in pairs]) or \
-                any([fascicle.min_distance(self.nerve) < tolerance for fascicle in self.fascicles])
+                   any([fascicle.min_distance(self.nerve) < tolerance for fascicle in self.fascicles])
 
     def fascicle_fascicle_intersection(self) -> bool:
         """
@@ -191,9 +190,11 @@ class Slide(Exceptionable):
              fascicle_colors: List[Tuple[float, float, float, float]] = None,
              ax: plt.Axes = None,
              outers_flag: bool = True,
-             inner_index_labels: bool = False):
+             inner_index_labels: bool = False,
+             show_axis: bool = True):
         """
         Quick util for plotting the nerve and fascicles
+        :param show_axis:
         :param inner_index_labels:
         :param outers_flag:
         :param fascicle_colors:
@@ -207,13 +208,16 @@ class Slide(Exceptionable):
         if ax is None:
             ax = plt.gca()
 
+        if not show_axis:
+            ax.axis('off')
+
         # if not the last graph plotted
         if fix_aspect_ratio:
             ax.set_aspect('equal', 'datalim')
 
         # loop through constituents and plot each
         if not self.monofasc():
-            self.nerve.plot(plot_format='g-', ax=ax)
+            self.nerve.plot(plot_format='k-', ax=ax)
 
         if fascicle_colors is not None:
             if not len(self.fascicles) == len(fascicle_colors):
@@ -232,9 +236,8 @@ class Slide(Exceptionable):
             )
             inner_index += len(fascicle.inners)
 
-
         if title is not None:
-            plt.title(title)
+            ax.title.set_text(title)
 
         # if final plot, show
         if final:
@@ -322,7 +325,7 @@ class Slide(Exceptionable):
 
         os.chdir(start)
 
-    #%% DISCLAIMER: this is depreciated and not well documented
+    # %% DISCLAIMER: this is depreciated and not well documented
     def reposition_fascicles(self, new_nerve: Nerve, minimum_distance: float = 10, seed: int = None):
         """
         :param new_nerve: Nerve conte
@@ -435,7 +438,7 @@ class Slide(Exceptionable):
             else:  # more complex geometry (MULTIPOINT)
                 r_old_nerve = LineString([new_nerve_centroid, list(old_intersection)[0].coords[0]])
 
-            fascicle_scale_factor = (r_new_nerve.length/r_old_nerve.length) * 0.8
+            fascicle_scale_factor = (r_new_nerve.length / r_old_nerve.length) * 0.8
 
             r_fascicle_final = scale(r_fascicle_initial,
                                      *([fascicle_scale_factor] * 3),
