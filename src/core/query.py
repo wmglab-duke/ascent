@@ -309,7 +309,7 @@ class Query(Exceptionable, Configurable, Saveable):
                  missing_color: Tuple[int, int, int, int] = (1, 0, 0, 1),
                  title_toggle: bool = True,
                  subplot_title_toggle: bool = True,
-                 tick_count: int = 2,
+                 tick_count: int = 5,
                  tick_bounds: bool = False,
                  show_orientation_point: bool = True,
                  subplot_assign: str = 'standard',
@@ -487,7 +487,11 @@ class Query(Exceptionable, Configurable, Saveable):
                                     threshold = abs(np.loadtxt(thresh_path))
                                     if len(np.atleast_1d(threshold)) > 1:
                                         threshold = threshold[-1]
-                                    thresholds.append(threshold)
+                                    if threshold > 20:
+                                        missing_indices.append(i)
+                                        print('TOO BIG: {}'.format(thresh_path))
+                                    else:
+                                        thresholds.append(threshold)
                                 else:
                                     missing_indices.append(i)
                                     print('MISSING: {}'.format(thresh_path))
@@ -607,7 +611,7 @@ class Query(Exceptionable, Configurable, Saveable):
                             aspect=colorbar_aspect if colorbar_aspect is not None else 20
                         )
 
-                        cb.ax.set_yticklabels(['{:.2f}'.format(min_thresh), '{:.2f}'.format(max_thresh)])
+                        # cb.ax.set_yticklabels(['{:.2f}'.format(min_thresh), '{:.2f}'.format(max_thresh)])
 
                         # colorbar font size
                         if colorbar_text_size_override is not None:

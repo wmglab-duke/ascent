@@ -24,47 +24,47 @@ q = Query({
     'partial_matches': True,
     'include_downstream': True,
     'indices': {
-        'sample': [3,4,5,6],
+        'sample': [0],
         'model': [0, 1, 2, 3],
         'sim': [0]
     }
 }).run()
 
 # NOTE: these values were copied from the output of heatmaps(), setting the track_colormap_bounds flag True
-colormap_bounds_override = [
-    [
-        (0.322187, 1.51728),
-        (0.110607, 0.64657),
-        (0.03439, 0.133777),
-        (0.026082, 0.091096),
-        (0.023491, 0.077376),
-        (0.020899, 0.06945),
-    ],
-    [
-        (0.568523, 1.4246),
-        (0.177679, 0.624619),
-        (0.049023, 0.161826),
-        (0.036371, 0.115485),
-        (0.031646, 0.099632),
-        (0.027606, 0.089571),
-    ],
-    [
-        (0.658765, 1.619717),
-        (0.206337, 0.727056),
-        (0.059389, 0.19963),
-        (0.044908, 0.15024),
-        (0.039725, 0.131948),
-        (0.034542, 0.118534),
-    ],
-    [
-        (0.946562, 1.4246),
-        (0.280725, 0.62218),
-        (0.068535, 0.152679),
-        (0.048566, 0.107559),
-        (0.040335, 0.092315),
-        (0.035304, 0.082864),
-    ]
-]
+colormap_bounds_override = None #[
+#     [
+#         (0.322187, 1.51728),
+#         (0.110607, 0.64657),
+#         (0.03439, 0.133777),
+#         (0.026082, 0.091096),
+#         (0.023491, 0.077376),
+#         (0.020899, 0.06945),
+#     ],
+#     [
+#         (0.568523, 1.4246),
+#         (0.177679, 0.624619),
+#         (0.049023, 0.161826),
+#         (0.036371, 0.115485),
+#         (0.031646, 0.099632),
+#         (0.027606, 0.089571),
+#     ],
+#     [
+#         (0.658765, 1.619717),
+#         (0.206337, 0.727056),
+#         (0.059389, 0.19963),
+#         (0.044908, 0.15024),
+#         (0.039725, 0.131948),
+#         (0.034542, 0.118534),
+#     ],
+#     [
+#         (0.946562, 1.4246),
+#         (0.280725, 0.62218),
+#         (0.068535, 0.152679),
+#         (0.048566, 0.107559),
+#         (0.040335, 0.092315),
+#         (0.035304, 0.082864),
+#     ]
+# ]
 
 # colormap_bounds_override = [
 #     [
@@ -102,17 +102,21 @@ colormap_bounds_override = [
 # ]
 
 # builds heatmaps
-q.heatmaps(plot=False,
-           save_path='out/analysis',
-           rows_override=6,
+q.heatmaps(plot=True,
+            save_path='out/analysis',
+            plot_mode='fiber0',
+        #    rows_override=6,
            colorbar_aspect=5,
-           title_toggle=False,
-           track_colormap_bounds=True,
-           track_colormap_bounds_offset_ratio=0.0,
-           colomap_bounds_override=colormap_bounds_override,
-           subplot_title_toggle=False,
-           colorbar_text_size_override=20,
-           tick_bounds=True
+           colormap_str='viridis',
+           tick_count=4,
+           reverse_colormap=False
+        #    title_toggle=False,
+        #    track_colormap_bounds=True,
+        #    track_colormap_bounds_offset_ratio=0.0,
+        #    colomap_bounds_override=colormap_bounds_override,
+        #    subplot_title_toggle=False,
+        #    colorbar_text_size_override=20,
+        #    tick_bounds=True
            )
 
 #

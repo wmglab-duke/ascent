@@ -548,12 +548,14 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
     @staticmethod
     def import_n_sims(sample: int, model: int, sim: int, sim_dir: str, source: str):
+        print(f'sample: {sample}, model: {model}, sim: {sim}, sim_dir: {sim_dir}, source: {source}')
 
         sim_dir = os.path.join(sim_dir, 'n_sims')
 
         for dirname in [f for f in os.listdir(source) if os.path.isdir(os.path.join(source, f))]:
             this_sample, this_model, this_sim, product_index = tuple(dirname.split('_'))
             if sample == int(this_sample) and model == int(this_model) and sim == int(this_sim):
+                print('copying!')
                 shutil.rmtree(os.path.join(sim_dir, product_index))
                 shutil.copytree(os.path.join(source, dirname), os.path.join(sim_dir, product_index))
 
