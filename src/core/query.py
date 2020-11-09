@@ -1558,3 +1558,26 @@ class Query(Exceptionable, Configurable, Saveable):
                 writer.sheets[sheet_name].set_column(0, 256)
 
         writer.save()
+
+    def ap_time_and_location(self):
+
+        sample_results: dict
+        for num_sam, sample_results in enumerate(self._result.get('samples', [])):
+            sample_index = sample_results['index']
+            sample_object: Sample = self.get_object(Object.SAMPLE, [sample_index])
+
+            print('sample: {}'.format(sample_index))
+
+            # loop models
+            model_results: dict
+            for model_results in sample_results.get('models', []):
+                model_index = model_results['index']
+
+                print('\tmodel: {}'.format(model_index))
+
+                # loop sims
+                for sim_index in model_results.get('sims', []):
+                    sim_object = self.get_object(Object.SIMULATION, [sample_index, model_index, sim_index])
+                    
+                    print('\tsim: {}'.format(sim_index))
+
