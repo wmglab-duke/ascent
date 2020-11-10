@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from src.core.query import Query
 
 # set default fig size
-# plt.rcParams['figure.figsize'] = list(np.array([16.8, 10.14]) / 2)
+plt.rcParams['figure.figsize'] = list(np.array([16.8, 10.14*2]) / 2)
 
 q = Query({
     'partial_matches': False,
