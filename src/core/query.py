@@ -1706,7 +1706,7 @@ class Query(Exceptionable, Configurable, Saveable):
                             plt.tight_layout()
 
                             # plot voltages
-                            axes[1].plot(voltages)
+                            axes[1].plot(voltages, 'bo')
 
                             # voltages display settings
                             axes[1].set_xlabel('node')
@@ -1717,7 +1717,7 @@ class Query(Exceptionable, Configurable, Saveable):
                             plt.tight_layout()
 
                             if save:
-                                plt.savefig(f'out/analysis/ap_time_loc_{sample_index}_{model_index}_{sim_index}_{n_sim_index}.png', dpi=400)
+                                plt.savefig(f'out/analysis/ap_time_loc_{sample_index}_{model_index}_{sim_index}_{n_sim_index}.png', dpi=300)
 
                             if plot:
                                 plt.show()
