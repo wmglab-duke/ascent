@@ -37,7 +37,7 @@ def get_sim_thresholds(sim_obj: Simulation):
         n_inners = max(flatten(out_in))
 
         nsim_thresholds: List[float] = []
-        for inner in range(n_inners):
+        for inner in range(1 if n_inners is 0 else 1):
 
             inner_thresholds: List[float] = []
 
@@ -47,9 +47,14 @@ def get_sim_thresholds(sim_obj: Simulation):
                     nsim_outputs_directory,
                     'thresh_inner{}_fiber{}.dat'.format(inner, local_fiber_index)
                 )
-                threshold = np.loadtxt(thresh_path)
-                if threshold.size == 3:
-                    threshold = threshold[-1]
+                if os.path.exists(thresh_path):
+                    threshold = np.loadtxt(thresh_path)
+                    if threshold.size == 3:
+                        threshold = threshold[-1]
+                else:
+                    print("MISSING: ".format(thresh_path))
+                    threshold = 0
+
                 inner_thresholds.append(abs(threshold))
             nsim_thresholds.append(inner_thresholds)
         master_thresholds.append(nsim_thresholds)
@@ -82,7 +87,7 @@ def var_within_calculator(sim_obj: Object.SIMULATION, thresholds, a_s_i: int, f_
     return vw
 
 
-query_inds = [2, 4, 5, 6, 7, 8, 9, 10]  # removed 3 (1 fasc??)
+query_inds = [2, 3, 4, 5, 6, 7, 8, 9, 10]  # removed 3 (1 fasc??)
 
 query_dim = len(query_inds)
 
