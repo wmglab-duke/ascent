@@ -1605,7 +1605,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
                         # skip if not in existing n_sim filter
                         if n_sim_filter is not None and n_sim_index not in n_sim_filter:
-                            print(f'\t\t\t(skip)')
+                            print(f'\t\t\t\t(skip)')
                             continue
 
                         # directory of data for this (sample, model, sim)
@@ -1650,7 +1650,7 @@ class Query(Exceptionable, Configurable, Saveable):
                         
                         # print results of timestep search
                         if time is not None and node is not None:
-                            print(f'∆Vm: {delta_V} mV, t: {time} ms, node: {node + 1} (of {len(vm_t_data[0, 1:])})')
+                            print(f'\t\t\t\t∆Vm: {delta_V} mV, t: {time} ms, node: {node + 1} (of {len(vm_t_data[0, 1:])})')
                         else:
                             print('\t\t\t\t(no AP found)')
                         
