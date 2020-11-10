@@ -1638,7 +1638,7 @@ class Query(Exceptionable, Configurable, Saveable):
                         vm_t_data = np.loadtxt(vm_t_path, skiprows=1)
 
                         # find V-nought be averaging voltage of all nodes at first timestep (assuming no stimulation at time=0)
-                        V_o = np.mean(vm_t_data[0, 2:-1])
+                        V_o = np.mean(vm_t_data[0, 1:])
                         # if using absolute voltage, set an absolute delta V (i.e., -30mV)
                         if absolute_voltage:
                             V_o = 0
@@ -1650,7 +1650,7 @@ class Query(Exceptionable, Configurable, Saveable):
                         time, node = None, None
                         
                         # loop through and enumerate each timestep
-                        rows = vm_t_data[:, 2:-1]
+                        rows = vm_t_data[:, 1:]
                         index = int(len(rows) / 2)
                         for i, row in enumerate(rows):
                             # get list of node indices that satisfy deflection condition
