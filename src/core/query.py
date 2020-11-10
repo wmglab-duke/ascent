@@ -1577,7 +1577,8 @@ class Query(Exceptionable, Configurable, Saveable):
         delta_V: float = 60,
         rounding_precision: int = 5,
         n_sim_filter: List[int] = None,
-        plot: bool = False):
+        plot: bool = False,
+        plot_nodes_on_find: bool = False):
 
         print(f'Finding time and location of action potentials, which are defined as any voltage deflection of {delta_V} mV.')
         
@@ -1651,6 +1652,10 @@ class Query(Exceptionable, Configurable, Saveable):
                             if len(found_nodes) > 0:
                                 time = round(i * dt, rounding_precision)
                                 node = found_nodes[0]
+                                if plot_nodes_on_find:
+                                    plt.figure()
+                                    plt.plot(row)
+                                    plt.show()
                                 break
                         
                         # if no AP found, skip
