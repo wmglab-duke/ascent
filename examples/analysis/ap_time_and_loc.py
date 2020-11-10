@@ -15,7 +15,7 @@ q = Query({
     'partial_matches': False,
     'include_downstream': True,
     'indices': {
-        'samples': [0],
+        'sample': [0],
         'model': [0],
         'sim': [0]
     }
