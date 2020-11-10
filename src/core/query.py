@@ -1580,7 +1580,9 @@ class Query(Exceptionable, Configurable, Saveable):
         plot: bool = False,
         plot_nodes_on_find: bool = False,
         plot_compiled: bool = False,
-        absolute_voltage: bool = True):
+        absolute_voltage: bool = True,
+        n_sim_label_override: str = None,
+        model_labels: List[str] = None):
 
         print(f'Finding time and location of action potentials, which are defined as any voltage deflection of {delta_V} mV.')
         
@@ -1694,10 +1696,12 @@ class Query(Exceptionable, Configurable, Saveable):
                                 axes[0].plot(fiber[11 * node, 0], fiber[11 * node, 2], 'r*')
 
                                 # location display settings
+                                n_sim_label = f'n_sim: {n_sim_index}' if (n_sim_label_override is None) else n_sim_label_override
+                                model_label = '' if (model_labels is None) else f', {model_labels[model_index]}'
                                 axes[0].set_xlabel('x location, µm')
                                 axes[0].set_ylabel('z location, µm')
-                                axes[0].set_title(f'n_sim: {n_sim_index}, {message}')
-                                axes[0].legend(['fiber', 'AP location'])
+                                axes[0].set_title(f'{n_sim_label}{model_label}')
+                                axes[0].legend(['fiber', f'AP ({message})'])
                                 axes[0].set_aspect(1)
                                 plt.tight_layout()
 
