@@ -3,7 +3,8 @@ from pathlib import Path
 
 EXCLUDED_FILENAMES = [
     'sample.json',
-    'model.json'
+    'model.json',
+    '.mph'
 ]
 
 
@@ -42,7 +43,8 @@ def run(args):
         sample_path = Path(os.path.join('samples', f'{sample}'))
 
         # remove files
-        print('\n\t- - - - - - FILES - - - - - -\n')
+        if VERBOSE:
+            print('\n\t- - - - - - FILES - - - - - -\n')
         for filepath in [str(path.absolute()) for path in sample_path.glob('**/*')]:
 
             # skip over directories for now
@@ -59,7 +61,8 @@ def run(args):
                     print(f'\tKEEP FILE: {filepath}')
 
         # remove empty directories
-        print('\n\t- - - - - DIRECTORIES - - - -\n')
+        if VERBOSE:
+            print('\n\t- - - - - DIRECTORIES - - - -\n')
         def remove_empty_directories(directory: str):
 
             for path in os.listdir(directory):
@@ -78,5 +81,6 @@ def run(args):
 
         remove_empty_directories(str(sample_path.absolute()))
     
-        print('\n\n')
+        if VERBOSE:
+            print('\n\n')
 
