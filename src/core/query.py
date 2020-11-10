@@ -1582,7 +1582,7 @@ class Query(Exceptionable, Configurable, Saveable):
         print(f'Finding time and location of action potentials, which are defined as any voltage deflection of {delta_V} mV.')
         
         if plot:
-            print('Note: Plotting is currently only defined for MRG axons; plotting for other axon models may yield unexpected results.')
+            print('Note: Plotting is currently only defined for MRG axons in the SL branch; plotting for other axon models/locations may yield unexpected results.')
 
         # loop samples
         for sample_index, sample_results in [(s['index'], s) for s in self._result.get('samples')]:
@@ -1667,7 +1667,7 @@ class Query(Exceptionable, Configurable, Saveable):
                             # plot the AP location
                             if plot:
                                 # load fiber coordinates
-                                fiber = np.loadtxt(os.path.join(fiberset_dir, f'{fiberset_index}.dat'), skiprows=1)
+                                fiber = np.loadtxt(os.path.join(fiberset_dir, '0.dat'), skiprows=1)
                                 plt.figure(n_sim_index)
                                 
                                 # plot fiber coordinates in 2D
