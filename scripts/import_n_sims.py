@@ -8,7 +8,7 @@ from src.utils import Configurable
 
 def run(args):
     sys.argv = args
-    assert len(sys.argv) > 1, 'Too few arguments to start.py (must have at least one run index)'
+    assert len(sys.argv) > 1, 'Too few arguments to import_n_sims.py (must have at least one run index)'
 
     env_path = os.path.join('config', 'system', 'env.json')
     assert os.path.isfile(env_path), 'Invalid env path: {}'.format(env_path)

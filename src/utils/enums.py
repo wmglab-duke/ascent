@@ -268,6 +268,7 @@ class PerineuriumThicknessMode(ASCENTEnum):
     RAT_VN_INHOUSE_200601 = 5
     HUMAN_VN_INHOUSE_200601 = 6
     ARLE_2016 = 7
+    BUCKSOT_2019 = 8
 
 
 @unique

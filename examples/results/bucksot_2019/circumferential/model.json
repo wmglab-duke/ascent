@@ -5,9 +5,7 @@
     "fiber_z": "EXTRUSION",
     "rho_perineurium": "MANUAL"
   },
-  "solution": {
-    "sol_time": 712841.829534
-  },
+  "solution": {"sol_time": 1704946.871075},
   "temperature": 37,
   "medium": {
     "distal": {
@@ -38,7 +36,7 @@
       "y": 0,
       "z": 0
     },
-    "preset": "Bucksot2019_bipolar.json"
+    "preset": "Bucksot2019_bipolar_v2.json"
   },
   "min_radius_enclosing_circle": 1468.6261252691872,
   "conductivities": {
@@ -53,7 +51,7 @@
   },
   "mesh": {
     "distal": {
-      "mesh_time": 8222.968334,
+      "mesh_time": 14077.763411,
       "hcurve": 0.2,
       "hmin": 10,
       "hnarrow": 1,
@@ -65,15 +63,15 @@
       "hgrad": 2
     },
     "stats": {
-      "volume": 14110000000000.0,
-      "min_quality": 0.2258,
-      "min_volume": 356.7,
+      "volume": 1.411E13,
+      "min_quality": 0.2083,
+      "min_volume": 376.7,
       "quality_measure": "vollength",
-      "number_elements": 2985528,
-      "mean_quality": 0.7257
+      "number_elements": 5627794,
+      "mean_quality": 0.7319
     },
     "proximal": {
-      "mesh_time": 46991.831002,
+      "mesh_time": 86197.615872,
       "hcurve": 0.2,
       "hmin": 1,
       "hnarrow": 1,

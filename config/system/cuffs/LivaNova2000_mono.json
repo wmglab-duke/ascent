@@ -8,7 +8,7 @@
         "Radius": "r_cuff_in_LN+thk_cuff_LN+Thk_fill_LN",
         "Thk": "Thk_fill_LN",
         "L": "L_cuff_LN+w_cuff_LN+2*Thk_fill_LN",
-        "Center": "(z_nerve/2)-(sep_elec_LN/2)",
+        "Center": "(z_nerve/2)",
         "x_shift": "0",
         "y_shift": "0"
       },
@@ -16,60 +16,6 @@
         {
           "info": "fill",
           "label_index": 0
-        }
-      ]
-    },
-    {
-      "type": "TubeCuffSweep_Primitive",
-      "label": "Cylinder Modification 1",
-      "def": {
-        "Cuff_thk": "thk_cuff_LN",
-        "Cuff_z": "L_cuff_LN+w_cuff_LN",
-        "R_in": "r_cuff_in_LN",
-        "Center": "(z_nerve/2)-(sep_elec_LN/2)",
-        "Cuff_theta": "Theta_LN",
-        "Rot_def": "0"
-      },
-      "materials": [
-        {
-          "info": "insulator",
-          "label_index": 1
-        }
-      ]
-    },
-    {
-      "type": "CuffFill_Primitive",
-      "label": "LivaNova Cuff Fill 2",
-      "def": {
-        "Radius": "r_cuff_in_LN+thk_cuff_LN+Thk_fill_LN",
-        "Thk": "Thk_fill_LN",
-        "L": "L_cuff_LN+w_cuff_LN+2*Thk_fill_LN",
-        "Center": "(z_nerve/2)+(sep_elec_LN/2)",
-        "x_shift": "0",
-        "y_shift": "0"
-      },
-      "materials": [
-        {
-          "info": "fill",
-          "label_index": 0
-        }
-      ]
-    },
-    {
-      "type": "TubeCuffSweep_Primitive",
-      "label": "Cylinder Modification 2",
-      "def": {
-        "Cuff_thk": "thk_cuff_LN",
-        "Cuff_z": "L_cuff_LN+w_cuff_LN",
-        "R_in": "r_cuff_in_LN",
-        "Center": "(z_nerve/2)+(sep_elec_LN/2)",
-        "Cuff_theta": "Theta_LN",
-        "Rot_def": "0"
-      },
-      "materials": [
-        {
-          "info": "insulator",
-          "label_index": 1
         }
       ]
     },
@@ -77,27 +23,7 @@
       "type": "HelicalCuffnContact_Primitive",
       "label": "LivaNova CuffnContact 1",
       "def": {
-        "Center": "(z_nerve/2)-(sep_elec_LN/2)",
-        "Corr": "corr_LN",
-        "rev_BD_insul": "rev_BD_insul_LN",
-        "rev_BD_cond": "rev_BD_cond_LN"
-      },
-      "materials": [
-        {
-          "info": "insulator",
-          "label_index": 10
-        },
-        {
-          "info": "conductor",
-          "label_index": 6
-        }
-      ]
-    },
-    {
-      "type": "HelicalCuffnContact_Primitive",
-      "label": "LivaNova CuffnContact 2",
-      "def": {
-        "Center": "(z_nerve/2)+(sep_elec_LN/2)",
+        "Center": "(z_nerve/2)",
         "Corr": "corr_LN",
         "rev_BD_insul": "rev_BD_insul_LN",
         "rev_BD_cond": "rev_BD_cond_LN"
@@ -239,16 +165,6 @@
     {
       "name": "corr_LN",
       "expression": "360*(0.75 - rev_cuff_LN*(0.75/2.5) + (0.5/2.5)*(rev_BD_LN - rev_cuff_LN)) [deg]",
-      "description": ""
-    },
-    {
-      "name": "N_holes_LN",
-      "expression": "0",
-      "description": ""
-    },
-    {
-      "name": "Theta_LN",
-      "expression": "360 [deg]",
       "description": ""
     }
   ],
