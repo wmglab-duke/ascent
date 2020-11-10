@@ -1577,7 +1577,7 @@ class Query(Exceptionable, Configurable, Saveable):
         rounding_precision: int = 5,
         n_sim_filter: List[int] = None):
 
-        print(f'Finding time and location of action potentials, which are defined as ny voltage deflection of {delta_V} mV.')
+        print(f'Finding time and location of action potentials, which are defined as any voltage deflection of {delta_V} mV.')
 
         # loop samples
         for sample_index, sample_results in [(s['index'], s) for s in self._result.get('samples')]:
@@ -1650,7 +1650,7 @@ class Query(Exceptionable, Configurable, Saveable):
                         
                         # print results of timestep search
                         if time is not None and node is not None:
-                            print(f'\t\t\t\t∆Vm: {delta_V} mV, t: {time} ms, node: {node + 1} (of {len(vm_t_data[0, 1:])})')
+                            print(f'\t\t\t\tt: {time} ms, node: {node + 1} (of {len(vm_t_data[0, 1:])})')
                         else:
                             print('\t\t\t\t(no AP found)')
                         
