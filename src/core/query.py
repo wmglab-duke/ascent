@@ -22,6 +22,7 @@ class Query(Exceptionable, Configurable, Saveable):
     IMPORTANT: MUST BE RUN FROM PROJECT LEVEL
     """
 
+
     def __init__(self, criteria: Union[str, dict]):
         """
         :param exceptions_config:
@@ -41,6 +42,7 @@ class Query(Exceptionable, Configurable, Saveable):
             self.add(SetupMode.OLD, Config.CRITERIA, criteria)
 
         self._result = None  # begin with empty result
+
 
     def run(self):
         """
@@ -176,6 +178,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
         return self
 
+
     def summary(self) -> dict:
         """
         Return result of self.run()... maybe add result statistics? (e.g. counts of samples, models, sims, etc.)
@@ -186,12 +189,14 @@ class Query(Exceptionable, Configurable, Saveable):
 
         return self._result
 
+
     def get_config(self, mode: Config, indices: List[int]) -> dict:
         """
 
         :return:
         """
         return self.load(self.build_path(mode, indices))
+
 
     def get_object(self, mode: Object, indices: List[int]) -> Union[Sample, Simulation]:
         """
@@ -200,6 +205,7 @@ class Query(Exceptionable, Configurable, Saveable):
         """
         with open(self.build_path(mode, indices), 'rb') as obj:
             return pickle.load(obj)
+
 
     def build_path(self, mode: Union[Config, Object], indices: List[int] = None, just_directory: bool = False) -> str:
         """
@@ -236,6 +242,7 @@ class Query(Exceptionable, Configurable, Saveable):
             result = os.path.join(*result.split(os.sep)[:-1])
 
         return result
+
 
     def _match(self, criteria: dict, data: dict) -> bool:
         """
@@ -291,6 +298,7 @@ class Query(Exceptionable, Configurable, Saveable):
                     return False
 
         return True
+
 
     def heatmaps(self,
                  plot: bool = True,
@@ -653,6 +661,7 @@ class Query(Exceptionable, Configurable, Saveable):
                 print(']')
 
         return plt.gcf()
+
 
     def barcharts_compare_models(self,
                                  sim_index: int = None,
@@ -1066,6 +1075,7 @@ class Query(Exceptionable, Configurable, Saveable):
         #     if plot:
         #         plt.show()
 
+
     def barcharts_compare_samples(self,
                                   sim_index: int = None,
                                   sample_indices: int = None,
@@ -1424,6 +1434,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
         return ax
 
+
     def excel_output(self,
                      filepath: str,
                      sample_keys: List[list] = [],
@@ -1559,25 +1570,83 @@ class Query(Exceptionable, Configurable, Saveable):
 
         writer.save()
 
-    def ap_time_and_location(self):
 
-        sample_results: dict
-        for num_sam, sample_results in enumerate(self._result.get('samples', [])):
-            sample_index = sample_results['index']
-            sample_object: Sample = self.get_object(Object.SAMPLE, [sample_index])
+    def ap_time_and_location(
+        self,
+        delta_V: float = 60,
+        rounding_precision: int = 5):
 
+        print(f'Finding time and location of action potentials, which are defined as ny voltage deflection of {delta_V} mV.')
+
+        # loop samples
+        for sample_index, sample_results in [(s['index'], s) for s in enumerate(self._result.get('samples'))]:
             print('sample: {}'.format(sample_index))
+            
+            # sample_object: Sample = self.get_object(Object.SAMPLE, [sample_index])
+
 
             # loop models
-            model_results: dict
-            for model_results in sample_results.get('models', []):
-                model_index = model_results['index']
-
+            for model_index, model_results in [(m['index'], m) for m in sample_results.get('models')]:
                 print('\tmodel: {}'.format(model_index))
+
 
                 # loop sims
                 for sim_index in model_results.get('sims', []):
+                    print('\t\tsim: {}'.format(sim_index))
+                    
                     sim_object = self.get_object(Object.SIMULATION, [sample_index, model_index, sim_index])
                     
-                    print('\tsim: {}'.format(sim_index))
+                    # loop nsims
+                    for n_sim_index, (potentials_product_index, waveform_index) in enumerate(sim_object.master_product_indices):
+                        print('\t\t\tnsim: {}'.format(n_sim_index))
+                        
+                        active_src_index, fiberset_index = sim_object.potentials_product[potentials_product_index]
+                        
+
+                        # directory of data for this (sample, model, sim)
+                        sim_dir = self.build_path(Object.SIMULATION, [sample_index, model_index, sim_index], just_directory=True)
+                        
+                        # directory for specific n_sim
+                        n_sim_dir = os.path.join(sim_dir, 'n_sims', str(n_sim_index))
+
+                        # directory of fiberset (i.e., points and potentials) associated with this n_sim
+                        fiberset_dir = os.path.join(sim_dir, 'fibersets', str(fiberset_index))
+
+                        # the simulation outputs for this n_sim
+                        outputs_path = os.path.join(n_sim_dir, 'data', 'outputs')
+
+                        # path of the first inner, first fiber vm(t) data
+                        vm_t_path = os.path.join(outputs_path, 'Vm_time_inner0_fiber0_amp0.dat')
+
+                        # load vm(t) data (see path above)
+                        # each row is a snapshot of the voltages at each node [mV]
+                        # the first column is the time [ms]
+                        # first row is holds column labels, so this is skipped (time, node0, node1, ...)
+                        vm_t_data = np.loadtxt(vm_t_path, skiprows=1)
+
+                        # find V-nought be averaging voltage of all nodes at first timestep (assuming no stimulation at time=0)
+                        V_o = np.mean(vm_t_data[0, 1:])
+
+                        # find dt by rounding first timestep
+                        dt = round(vm_t_data[1, 0] - vm_t_data[0, 0], rounding_precision)
+
+                        # initialize value AP time, node (locations)
+                        time, node = None, None
+                        
+                        # loop through and enumerate each timestep
+                        for i, row in enumerate(vm_t_data[:, 1:]):
+                            # get list of node indices that satisfy deflection condition
+                            found_nodes = np.where(row >= V_o + delta_V)[0]
+                            # that list contains any elements, set time and node (location), then break out of loop
+                            if len(found_nodes) > 0:
+                                time = round(i * dt, rounding_precision)
+                                node = found_nodes[0]
+                                break
+                        
+                        # print results of timestep search
+                        if time is not None and node is not None:
+                            print(f'∆Vm: {delta_V} mV, t: {time} ms, node: {node + 1} (of {len(vm_t_data[0, 1:])})')
+                        else:
+                            print('\t\t\t\t(no AP found)')
+                        
 
