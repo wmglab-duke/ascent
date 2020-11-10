@@ -1578,7 +1578,8 @@ class Query(Exceptionable, Configurable, Saveable):
         rounding_precision: int = 5,
         n_sim_filter: List[int] = None,
         plot: bool = False,
-        plot_nodes_on_find: bool = False):
+        plot_nodes_on_find: bool = False,
+        plot_compiled: bool = False):
 
         print(f'Finding time and location of action potentials, which are defined as any voltage deflection of {delta_V} mV.')
         
@@ -1645,7 +1646,8 @@ class Query(Exceptionable, Configurable, Saveable):
                         time, node = None, None
                         
                         # loop through and enumerate each timestep
-                        for i, row in enumerate(vm_t_data[:, 1:]):
+                        rows = vm_t_data[:, 1:]
+                        for i, row in enumerate(rows):
                             # get list of node indices that satisfy deflection condition
                             found_nodes = np.where(row >= V_o + delta_V)[0]
                             # that list contains any elements, set time and node (location), then break out of loop
@@ -1657,6 +1659,12 @@ class Query(Exceptionable, Configurable, Saveable):
                                     plt.plot(row)
                                     plt.show()
                                 break
+
+                        if plot_compiled:
+                            plt.figure()
+                            for row in rows:
+                                plt.plot(row)
+                            plt.show()
                         
                         # if no AP found, skip
                         if time is None or node is None:
