@@ -1667,7 +1667,7 @@ class Query(Exceptionable, Configurable, Saveable):
                             # plot the AP location
                             if plot:
                                 # load fiber coordinates
-                                fiber = np.loadtxt(os.path.join(fiberset_dir, f'{n_sim_index}.dat', skiprows=1))
+                                fiber = np.loadtxt(os.path.join(fiberset_dir, f'{n_sim_index}', f'{fiberset_index}.dat'), skiprows=1)
                                 plt.figure(n_sim_index)
                                 
                                 # plot fiber coordinates in 2D
