@@ -2,6 +2,7 @@ import os
 import pickle
 import re
 from typing import Union, List, Tuple
+from matplotlib.pyplot import figure
 
 import numpy as np
 import matplotlib.colorbar as cbar
@@ -1575,9 +1576,13 @@ class Query(Exceptionable, Configurable, Saveable):
         self,
         delta_V: float = 60,
         rounding_precision: int = 5,
-        n_sim_filter: List[int] = None):
+        n_sim_filter: List[int] = None,
+        plot: bool = False):
 
         print(f'Finding time and location of action potentials, which are defined as any voltage deflection of {delta_V} mV.')
+        
+        if plot:
+            print('Note: Plotting is currently only defined for MRG axons; plotting for other axon models may yield unexpected results.')
 
         # loop samples
         for sample_index, sample_results in [(s['index'], s) for s in self._result.get('samples')]:
@@ -1648,10 +1653,35 @@ class Query(Exceptionable, Configurable, Saveable):
                                 node = found_nodes[0]
                                 break
                         
+                        # if no AP found, skip
+                        if time is None or node is None:
+                            print('\t\t\t\t(no AP found)')
+                            break
+
                         # print results of timestep search
                         if time is not None and node is not None:
-                            print(f'\t\t\t\tt: {time} ms, node: {node + 1} (of {len(vm_t_data[0, 1:])})')
-                        else:
-                            print('\t\t\t\t(no AP found)')
-                        
+                            # create message about AP time and location findings
+                            message = f't: {time} ms, node: {node + 1} (of {len(vm_t_data[0, 1:])})'
+                            print(f'\t\t\t\t{message}')
+
+                            # plot the AP location
+                            if plot:
+                                # load fiber coordinates
+                                fiber = np.loadtxt(os.path.join(fiberset_dir, f'{n_sim_index}.dat', skiprows=1))
+                                plt.figure(n_sim_index)
+                                
+                                # plot fiber coordinates in 2D
+                                plt.plot(fiber[:, 0], fiber[:, 2], 'b.')
+
+                                # plot AP location
+                                plt.plot(fiber[11 * node, 0], fiber[11 * node, 2], 'r*')
+
+                                # plot display settings
+                                plt.xlabel('µm')
+                                plt.ylabel('µm (curve lies in xz-plane)')
+                                plt.title(f'n_sim: {n_sim_index}, {message}')
+                                plt.legend(['fiber', 'AP location'])
+                                plt.tight_layout()
+                                plt.show()
+                            
 
