@@ -1699,6 +1699,7 @@ class Query(Exceptionable, Configurable, Saveable):
                                 axes[0].set_title(f'n_sim: {n_sim_index}, {message}')
                                 axes[0].legend(['fiber', 'AP location'])
                                 axes[0].set_aspect(1)
+                                plt.tight_layout()
 
                                 # plot voltages
                                 axes[1].plot(voltages)
@@ -1709,7 +1710,7 @@ class Query(Exceptionable, Configurable, Saveable):
                                 axes[1].set_aspect(0.5)
 
                                 # display
-                                # plt.tight_layout()
+                                plt.tight_layout()
                                 plt.show()
                             
 
