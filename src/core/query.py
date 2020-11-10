@@ -1579,7 +1579,8 @@ class Query(Exceptionable, Configurable, Saveable):
         n_sim_filter: List[int] = None,
         plot: bool = False,
         plot_nodes_on_find: bool = False,
-        plot_compiled: bool = False):
+        plot_compiled: bool = False,
+        absolute_voltage: bool = True):
 
         print(f'Finding time and location of action potentials, which are defined as any voltage deflection of {delta_V} mV.')
         
@@ -1638,6 +1639,9 @@ class Query(Exceptionable, Configurable, Saveable):
 
                         # find V-nought be averaging voltage of all nodes at first timestep (assuming no stimulation at time=0)
                         V_o = np.mean(vm_t_data[0, 1:])
+                        # if using absolute voltage, set an absolute delta V (i.e., -30mV)
+                        if absolute_voltage:
+                            V_o = 0
 
                         # find dt by rounding first timestep
                         dt = round(vm_t_data[1, 0] - vm_t_data[0, 0], rounding_precision)
