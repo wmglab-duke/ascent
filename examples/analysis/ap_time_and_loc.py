@@ -21,4 +21,4 @@ q = Query({
     }
 }).run()
 
-q.ap_time_and_location(delta_V=20)
+q.ap_time_and_location(delta_V=80, absolute_voltage=False)
