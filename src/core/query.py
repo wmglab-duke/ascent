@@ -1579,7 +1579,7 @@ class Query(Exceptionable, Configurable, Saveable):
         print(f'Finding time and location of action potentials, which are defined as ny voltage deflection of {delta_V} mV.')
 
         # loop samples
-        for sample_index, sample_results in [(s['index'], s) for s in enumerate(self._result.get('samples'))]:
+        for sample_index, sample_results in [(s['index'], s) for s in self._result.get('samples')]:
             print('sample: {}'.format(sample_index))
             
             # sample_object: Sample = self.get_object(Object.SAMPLE, [sample_index])
