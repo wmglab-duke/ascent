@@ -1574,7 +1574,8 @@ class Query(Exceptionable, Configurable, Saveable):
     def ap_time_and_location(
         self,
         delta_V: float = 60,
-        rounding_precision: int = 5):
+        rounding_precision: int = 5,
+        n_sim_filter: List[int] = None):
 
         print(f'Finding time and location of action potentials, which are defined as ny voltage deflection of {delta_V} mV.')
 
@@ -1601,7 +1602,11 @@ class Query(Exceptionable, Configurable, Saveable):
                         print('\t\t\tnsim: {}'.format(n_sim_index))
                         
                         active_src_index, fiberset_index = sim_object.potentials_product[potentials_product_index]
-                        
+
+                        # skip if not in existing n_sim filter
+                        if n_sim_filter is not None and n_sim_index not in n_sim_filter:
+                            print(f'\t\t\t(skip)')
+                            continue
 
                         # directory of data for this (sample, model, sim)
                         sim_dir = self.build_path(Object.SIMULATION, [sample_index, model_index, sim_index], just_directory=True)
