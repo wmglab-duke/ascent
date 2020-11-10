@@ -1582,7 +1582,8 @@ class Query(Exceptionable, Configurable, Saveable):
         plot_compiled: bool = False,
         absolute_voltage: bool = True,
         n_sim_label_override: str = None,
-        model_labels: List[str] = None):
+        model_labels: List[str] = None,
+        save: bool = False):
 
         print(f'Finding time and location of action potentials, which are defined as any voltage deflection of {delta_V} mV.')
         
@@ -1682,39 +1683,43 @@ class Query(Exceptionable, Configurable, Saveable):
                             print(f'\t\t\t\t{message}')
 
                             # plot the AP location with voltage trace
+                            # create subplots
+                            fig, axes = plt.subplots(2, 1)
+
+                            # load fiber coordinates
+                            fiber = np.loadtxt(os.path.join(fiberset_dir, '0.dat'), skiprows=1)
+                            
+                            # plot fiber coordinates in 2D
+                            axes[0].plot(fiber[:, 0], fiber[:, 2], 'b.')
+
+                            # plot AP location
+                            axes[0].plot(fiber[11 * node, 0], fiber[11 * node, 2], 'r*')
+
+                            # location display settings
+                            n_sim_label = f'n_sim: {n_sim_index}' if (n_sim_label_override is None) else n_sim_label_override
+                            model_label = '' if (model_labels is None) else f', {model_labels[model_index]}'
+                            axes[0].set_xlabel('x location, µm')
+                            axes[0].set_ylabel('z location, µm')
+                            axes[0].set_title(f'{n_sim_label}{model_label}')
+                            axes[0].legend(['fiber', f'AP ({message})'])
+                            axes[0].set_aspect(1)
+                            plt.tight_layout()
+
+                            # plot voltages
+                            axes[1].plot(voltages)
+
+                            # voltages display settings
+                            axes[1].set_xlabel('node')
+                            axes[1].set_ylabel('voltage (mV)')
+                            axes[1].set_aspect(0.5)
+
+                            # display
+                            plt.tight_layout()
+
+                            if save:
+                                plt.savefig(f'out/analysis/ap_time_loc_{sample_index}_{model_index}_{sim_index}_{n_sim_index}.png', dpi=400)
+
                             if plot:
-                                # create subplots
-                                fig, axes = plt.subplots(2, 1)
-
-                                # load fiber coordinates
-                                fiber = np.loadtxt(os.path.join(fiberset_dir, '0.dat'), skiprows=1)
-                                
-                                # plot fiber coordinates in 2D
-                                axes[0].plot(fiber[:, 0], fiber[:, 2], 'b.')
-
-                                # plot AP location
-                                axes[0].plot(fiber[11 * node, 0], fiber[11 * node, 2], 'r*')
-
-                                # location display settings
-                                n_sim_label = f'n_sim: {n_sim_index}' if (n_sim_label_override is None) else n_sim_label_override
-                                model_label = '' if (model_labels is None) else f', {model_labels[model_index]}'
-                                axes[0].set_xlabel('x location, µm')
-                                axes[0].set_ylabel('z location, µm')
-                                axes[0].set_title(f'{n_sim_label}{model_label}')
-                                axes[0].legend(['fiber', f'AP ({message})'])
-                                axes[0].set_aspect(1)
-                                plt.tight_layout()
-
-                                # plot voltages
-                                axes[1].plot(voltages)
-
-                                # voltages display settings
-                                axes[1].set_xlabel('node')
-                                axes[1].set_ylabel('voltage (mV)')
-                                axes[1].set_aspect(0.5)
-
-                                # display
-                                plt.tight_layout()
                                 plt.show()
                             
 
