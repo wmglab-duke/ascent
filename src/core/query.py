@@ -1709,7 +1709,7 @@ class Query(Exceptionable, Configurable, Saveable):
                                 axes[1].set_aspect(0.5)
 
                                 # display
-                                plt.tight_layout()
+                                # plt.tight_layout()
                                 plt.show()
                             
 
