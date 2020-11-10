@@ -1682,6 +1682,7 @@ class Query(Exceptionable, Configurable, Saveable):
                                 plt.title(f'n_sim: {n_sim_index}, {message}')
                                 plt.legend(['fiber', 'AP location'])
                                 plt.tight_layout()
+                                plt.gca().set_aspect(1)
                                 plt.show()
                             
 
