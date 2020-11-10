@@ -1647,6 +1647,7 @@ class Query(Exceptionable, Configurable, Saveable):
                         
                         # loop through and enumerate each timestep
                         rows = vm_t_data[:, 1:]
+                        index = int(len(rows) / 2)
                         for i, row in enumerate(rows):
                             # get list of node indices that satisfy deflection condition
                             found_nodes = np.where(row >= V_o + delta_V)[0]
@@ -1654,6 +1655,7 @@ class Query(Exceptionable, Configurable, Saveable):
                             if len(found_nodes) > 0:
                                 time = round(i * dt, rounding_precision)
                                 node = found_nodes[0]
+                                index = i
                                 if plot_nodes_on_find:
                                     plt.figure()
                                     plt.plot(row)
@@ -1662,7 +1664,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
                         if plot_compiled:
                             plt.figure()
-                            for row in rows:
+                            for row in rows[index - 5 : index + 5]:
                                 plt.plot(row)
                             plt.show()
                         
