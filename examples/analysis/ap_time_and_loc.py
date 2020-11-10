@@ -23,7 +23,7 @@ q = Query({
 
 q.ap_time_and_location(
     delta_V=60,
-    plot=True,
+    plot=False,
     absolute_voltage=False,
     n_sim_label_override='5.7 µm MRG Fiber',
     model_labels=[
@@ -31,4 +31,5 @@ q.ap_time_and_location(
         '7500 µm model radius',
         '10000 µm model radius',
     ],
-    n_sim_filter=[2])
+    n_sim_filter=[1],
+    save=True)
