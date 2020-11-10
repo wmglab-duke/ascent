@@ -1646,8 +1646,8 @@ class Query(Exceptionable, Configurable, Saveable):
                         # find dt by rounding first timestep
                         dt = round(vm_t_data[1, 0] - vm_t_data[0, 0], rounding_precision)
 
-                        # initialize value AP time, node (locations)
-                        time, node = None, None
+                        # initialize value AP time, node (locations), voltages at time
+                        time, node, voltages = None, None, None
                         
                         # loop through and enumerate each timestep
                         rows = vm_t_data[:, 1:]
@@ -1659,12 +1659,8 @@ class Query(Exceptionable, Configurable, Saveable):
                             if len(found_nodes) > 0:
                                 time = round(i * dt, rounding_precision)
                                 node = found_nodes[0]
+                                voltages = row
                                 index = i
-                                if plot_nodes_on_find:
-                                    plt.figure()
-                                    plt.plot(row)
-                                    plt.show()
-                                break
 
                         if plot_compiled:
                             plt.figure()
@@ -1683,25 +1679,36 @@ class Query(Exceptionable, Configurable, Saveable):
                             message = f't: {time} ms, node: {node + 1} (of {len(vm_t_data[0, 1:])})'
                             print(f'\t\t\t\t{message}')
 
-                            # plot the AP location
+                            # plot the AP location with voltage trace
                             if plot:
+                                # create subplots
+                                fig, axes = plt.subplots(2, 1)
+
                                 # load fiber coordinates
                                 fiber = np.loadtxt(os.path.join(fiberset_dir, '0.dat'), skiprows=1)
-                                plt.figure(n_sim_index)
                                 
                                 # plot fiber coordinates in 2D
-                                plt.plot(fiber[:, 0], fiber[:, 2], 'b.')
+                                axes[0].plot(fiber[:, 0], fiber[:, 2], 'b.')
 
                                 # plot AP location
-                                plt.plot(fiber[11 * node, 0], fiber[11 * node, 2], 'r*')
+                                axes[0].plot(fiber[11 * node, 0], fiber[11 * node, 2], 'r*')
 
-                                # plot display settings
-                                plt.xlabel('µm')
-                                plt.ylabel('µm (curve lies in xz-plane)')
-                                plt.title(f'n_sim: {n_sim_index}, {message}')
-                                plt.legend(['fiber', 'AP location'])
+                                # location display settings
+                                axes[0].set_xlabel('x location, µm')
+                                axes[0].set_ylabel('z location, µm')
+                                axes[0].set_title(f'n_sim: {n_sim_index}, {message}')
+                                axes[0].legend(['fiber', 'AP location'])
+                                axes[0].set_aspect(1)
+
+                                # plot voltages
+                                axes[1].plot(voltages)
+
+                                # voltages display settings
+                                axes[1].set_xlabel('node')
+                                axes[1].set_ylabel('voltage (mV)')
+
+                                # display
                                 plt.tight_layout()
-                                plt.gca().set_aspect(1)
                                 plt.show()
                             
 
