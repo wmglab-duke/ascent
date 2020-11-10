@@ -17,7 +17,7 @@ q = Query({
     'indices': {
         'sample': [0],
         'model': [0],
-        'sim': [0]
+        'sim': [1]
     }
 }).run()
 
