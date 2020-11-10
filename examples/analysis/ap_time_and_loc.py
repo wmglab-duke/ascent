@@ -21,4 +21,4 @@ q = Query({
     }
 }).run()
 
-q.ap_time_and_location(n_sim_filter=[2], delta_V=100)
+q.ap_time_and_location(n_sim_filter=[2], delta_V=100, plot_nodes_on_find=True)
