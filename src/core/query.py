@@ -1650,7 +1650,7 @@ class Query(Exceptionable, Configurable, Saveable):
                         time, node = None, None
                         
                         # loop through and enumerate each timestep
-                        rows = vm_t_data[:, 1:]
+                        rows = vm_t_data[:, 2:-1]
                         index = int(len(rows) / 2)
                         for i, row in enumerate(rows):
                             # get list of node indices that satisfy deflection condition
