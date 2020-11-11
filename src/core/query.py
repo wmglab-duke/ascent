@@ -1717,7 +1717,7 @@ class Query(Exceptionable, Configurable, Saveable):
                             # voltages display settings
                             axes[1].set_xlabel('node')
                             axes[1].set_ylabel('voltage (mV)')
-                            axes[1].set_aspect(2)
+                            axes[1].set_aspect(0.25)
                             plt.tight_layout()
 
                             # display
