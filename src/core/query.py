@@ -1664,6 +1664,10 @@ class Query(Exceptionable, Configurable, Saveable):
                                 node = found_nodes[0]
                                 voltages = row
                                 index = i
+                                print(time)
+                                print(node)
+                                print(voltages)
+                                print(index)
                                 break
 
                         if plot_compiled:
