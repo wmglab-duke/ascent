@@ -1713,11 +1713,12 @@ class Query(Exceptionable, Configurable, Saveable):
                             # voltages display settings
                             axes[1].set_xlabel('node')
                             axes[1].set_ylabel('voltage (mV)')
-                            axes[1].set_aspect(0.5)
 
                             # display
                             plt.tight_layout()
 
+                            axes[1].set_aspect(0.5)
+                            
                             if save:
                                 plt.savefig(f'out/analysis/ap_time_loc_{sample_index}_{model_index}_{sim_index}_{n_sim_index}.png', dpi=300)
 
