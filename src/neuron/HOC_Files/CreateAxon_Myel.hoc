@@ -110,7 +110,7 @@ proc CreateAxon_Myel() {
 			Ra		= rhoa/10000
 			
 			// Passive end nodes
-			if ((i == 0 || i == 1 || i == axonnodes-2 || i == axonnodes-1) && (passive_end_nodes == 1)) {
+			if ((i == 0 || i == axonnodes-1) && (passive_end_nodes == 1)) {
 				//print "i for passive: ", i
 				cm		= 2
 				insert pas
