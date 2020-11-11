@@ -1664,6 +1664,7 @@ class Query(Exceptionable, Configurable, Saveable):
                                 node = found_nodes[0]
                                 voltages = row
                                 index = i
+                                break
 
                         if plot_compiled:
                             plt.figure()
@@ -1674,10 +1675,11 @@ class Query(Exceptionable, Configurable, Saveable):
                         # if no AP found, skip
                         if time is None or node is None:
                             print('\t\t\t\t(no AP found)')
-                            break
+                            
 
                         # print results of timestep search
-                        if time is not None and node is not None:
+                        # if time is not None and node is not None:
+                        else:
                             # create message about AP time and location findings
                             message = f't: {time} ms, node: {node + 1} (of {len(vm_t_data[0, 1:])})'
                             print(f'\t\t\t\t{message}')
