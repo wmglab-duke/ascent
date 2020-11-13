@@ -26,10 +26,10 @@ q.ap_time_and_location(
     plot=True,
     absolute_voltage=False,
     # n_sim_label_override='7.3 µm MRG Fiber',
-    model_labels=[
-        '5000 µm model radius',
-        '7500 µm model radius',
-        '10000 µm model radius',
-    ],
+    # model_labels=[
+    #     '5000 µm model radius',
+    #     '7500 µm model radius',
+    #     '10000 µm model radius',
+    # ],
     n_sim_filter=[5],
     save=False)
