@@ -1664,10 +1664,6 @@ class Query(Exceptionable, Configurable, Saveable):
                                 node = found_nodes[0]
                                 voltages = row
                                 index = i
-                                print(time)
-                                print(node)
-                                print(voltages)
-                                print(index)
                                 break
 
                         if plot_compiled:
@@ -1690,35 +1686,36 @@ class Query(Exceptionable, Configurable, Saveable):
 
                             # plot the AP location with voltage trace
                             # create subplots
-                            fig, axes = plt.subplots(2, 1)
+                            if plot or save:
+                                fig, axes = plt.subplots(2, 1)
 
-                            # load fiber coordinates
-                            fiber = np.loadtxt(os.path.join(fiberset_dir, '0.dat'), skiprows=1)
-                            
-                            # plot fiber coordinates in 2D
-                            axes[0].plot(fiber[:, 0], fiber[:, 2], 'b.')
+                                # load fiber coordinates
+                                fiber = np.loadtxt(os.path.join(fiberset_dir, '0.dat'), skiprows=1)
+                                
+                                # plot fiber coordinates in 2D
+                                axes[0].plot(fiber[:, 0], fiber[:, 2], 'b.')
 
-                            # plot AP location
-                            axes[0].plot(fiber[11 * node, 0], fiber[11 * node, 2], 'r*')
+                                # plot AP location
+                                axes[0].plot(fiber[11 * node, 0], fiber[11 * node, 2], 'r*')
 
-                            # location display settings
-                            n_sim_label = f'n_sim: {n_sim_index}' if (n_sim_label_override is None) else n_sim_label_override
-                            model_label = '' if (model_labels is None) else f', {model_labels[model_index]}'
-                            axes[0].set_xlabel('x location, µm')
-                            axes[0].set_ylabel('z location, µm')
-                            axes[0].set_title(f'{n_sim_label}{model_label}')
-                            axes[0].legend(['fiber', f'AP ({message})'])
-                            axes[0].set_aspect(1)
-                            plt.tight_layout()
+                                # location display settings
+                                n_sim_label = f'n_sim: {n_sim_index}' if (n_sim_label_override is None) else n_sim_label_override
+                                model_label = '' if (model_labels is None) else f', {model_labels[model_index]}'
+                                axes[0].set_xlabel('x location, µm')
+                                axes[0].set_ylabel('z location, µm')
+                                axes[0].set_title(f'{n_sim_label}{model_label}')
+                                axes[0].legend(['fiber', f'AP ({message})'])
+                                axes[0].set_aspect(1)
+                                plt.tight_layout()
 
-                            # plot voltages
-                            axes[1].plot(voltages, 'bo')
+                                # plot voltages
+                                axes[1].plot(voltages, 'bo')
 
-                            # voltages display settings
-                            axes[1].set_xlabel('node')
-                            axes[1].set_ylabel('voltage (mV)')
-                            axes[1].set_aspect(0.25)
-                            plt.tight_layout()
+                                # voltages display settings
+                                axes[1].set_xlabel('node')
+                                axes[1].set_ylabel('voltage (mV)')
+                                axes[1].set_aspect(0.25)
+                                plt.tight_layout()
 
                             # display
                             if save:
