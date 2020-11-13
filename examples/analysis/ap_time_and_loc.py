@@ -16,20 +16,20 @@ q = Query({
     'include_downstream': True,
     'indices': {
         'sample': [0],
-        'model': [0, 1, 2, 3],
+        'model': [3],
         'sim': [1]
     }
 }).run()
 
 q.ap_time_and_location(
     delta_V=60,
-    plot=False,
+    plot=True,
     absolute_voltage=False,
-    n_sim_label_override='7.3 µm MRG Fiber',
+    # n_sim_label_override='7.3 µm MRG Fiber',
     model_labels=[
         '5000 µm model radius',
         '7500 µm model radius',
         '10000 µm model radius',
     ],
-    n_sim_filter=None,
+    n_sim_filter=[5],
     save=False)
