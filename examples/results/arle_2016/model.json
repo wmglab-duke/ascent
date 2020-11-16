@@ -3,11 +3,9 @@
     "use_ci": true,
     "cuff_shift": "NONE",
     "fiber_z": "EXTRUSION",
-    "rho_perineurium": "MANUAL"
+    "rho_perineurium": "RHO_WEERASURIYA"
   },
-  "solution": {
-    "sol_time": 1473495.373438
-  },
+  "solution": {"sol_time": 2145752.0915},
   "temperature": 37,
   "medium": {
     "distal": {
@@ -40,18 +38,19 @@
     },
     "preset": "Arle2016.json"
   },
-  "min_radius_enclosing_circle": 1492.27718239391,
+  "min_radius_enclosing_circle": 1492.9312615646995,
   "conductivities": {
     "perineurium": {
       "unit": "[S/m]",
-      "label": "RHO_ARLE_2016 @ 1 Hz",
-      "value": "0.005668"
+      "label": "RHO_WEERASURIYA @ 1 Hz",
+      "value": "0.0008703220191470844"
     },
-    "medium": "bucksot_2019_fat",
-    "fill": "arle_2016_scar",
-    "conductor": "arle_2016_platinum",
-    "endoneurium": "arle_2016_endoneurium",
-    "epineurium": "arle_2016_epineurium"
+    "medium": "muscle",
+    "fill": "encapsulation",
+    "insulator": "silicone",
+    "conductor": "platinum",
+    "endoneurium": "endoneurium",
+    "epineurium": "epineurium"
   },
   "mesh": {
     "distal": {
@@ -67,15 +66,15 @@
       "hgrad": 2.2
     },
     "stats": {
-      "volume": 2501000000000.0,
-      "min_quality": 0.1327,
-      "min_volume": 5.431,
+      "volume": 2.501E12,
+      "min_quality": 0.07299,
+      "min_volume": 6.646,
       "quality_measure": "vollength",
-      "number_elements": 8469494,
-      "mean_quality": 0.6846
+      "number_elements": 8466827,
+      "mean_quality": 0.6841
     },
     "proximal": {
-      "mesh_time": 518756.110751,
+      "mesh_time": 527752.568037,
       "hcurve": 0.2,
       "hmin": 10,
       "hnarrow": 1,
