@@ -66,7 +66,7 @@ plt.rcParams['figure.figsize'] = list(np.array([16.8, 10.14]) / 2)
 # }).run()
 #axC = qC.barcharts_compare_samples(merge_bars=True, calculation='i50')
 
-# ImThera-Madison Pig
+# _-Madison Pig
 qMonoPolar = Query({
     'partial_matches': True,
     'include_downstream': True,

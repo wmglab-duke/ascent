@@ -80,7 +80,7 @@
     },
     {
       "type": "CircleContact_Primitive",
-      "label": "ImThera Contact 1",
+      "label": "Circle Contact 1",
       "def": {
         "Circle_recess": "Recess_ITC",
         "Rotation_angle": "ang_cuffseam_contactcenter_ITC",
