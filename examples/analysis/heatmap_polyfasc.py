@@ -31,7 +31,8 @@ q = Query({
 }).run()
 
 # NOTE: these values were copied from the output of heatmaps(), setting the track_colormap_bounds flag True
-colormap_bounds_override = None #[
+colormap_bounds_override = None
+# colormap_bounds_override = [
 #     [
 #         (0.322187, 1.51728),
 #         (0.110607, 0.64657),
