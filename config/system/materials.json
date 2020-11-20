@@ -83,26 +83,6 @@
     "arle_2016_epineurium": {
       "value": "0.054",
       "unit": "[S/m]"
-    },
-    "helmers_2012_perineurium": {
-      "value": "0.01",
-      "unit": "[S/m]",
-      "note": "other source has 0.00336"
-    },
-    "helmers_2012_perineurium_2": {
-      "value": "0.00336",
-      "unit": "[S/m]",
-      "note": "other source has 0.01"
-    },
-    "helmers_2012_epineurium": {
-      "value": "0.1",
-      "unit": "[S/m]",
-      "note": "other source has 0.008"
-    },
-    "helmers_2012_epineurium_2": {
-      "value": "0.008",
-      "unit": "[S/m]",
-      "note": "other source has 0.1"
     }
   }
 }
