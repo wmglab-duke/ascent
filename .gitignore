@@ -159,7 +159,7 @@ src/neuron/HOC_Files/CreateAxon_BFiber.hoc
 *~
 
 # not for distribution
-config/system/private/
+config/user/private/
 
 *.py~
 master_index_key.xlsx
