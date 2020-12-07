@@ -31,9 +31,7 @@
       "start": 0,
       "on": 1,
       "off": 49,
-      "stop": 50,
-      "initSS": -200,
-      "dt_initSS": 10
+      "stop": 50
     },
     "BIPHASIC_PULSE_TRAIN_Q_BALANCED_UNEVEN_PW": {
       "pulse_width_1": 0.1,
@@ -68,6 +66,8 @@
   },
   "protocol": {
     "mode": "ACTIVATION_THRESHOLD",
+    "initSS": -200,
+    "dt_initSS": 10,
     "threshold": {
       "value": -30,
       "n_min_aps": 1,
