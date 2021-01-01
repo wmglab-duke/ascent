@@ -8,7 +8,7 @@ model = 0
 sim = 1
 inner = 0
 fiber = 0
-n_sim = 3
+n_sim = 4
 
 # build file and extract data
 data_path = os.path.join(
