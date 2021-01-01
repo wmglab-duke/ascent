@@ -114,6 +114,7 @@ proc CreateAxon_Myel() {
 				//print "i for passive: ", i
 				cm		= 2
 				insert pas
+				diam	= 1000					// set end node diameter to 1000 um to mitigate end effects
 				g_pas = 0.0001
 				e_pas = -70
 				insert extracellular
