@@ -54,9 +54,9 @@ ani = FuncAnimation(fig, update, frames=np.arange(0, 1000, 5),  # frames=np.aran
 # ani.save(os.path.join(data_path,
 #                       'video_gating_h_time_inner{}_fiber{}_amp0.gif'.format(inner, fiber)  # or .mp4
 #                       ))
-
-ani.save(os.path.join(data_path,
+savepath = os.path.join(data_path,
                       'video_Vm_time_inner{}_fiber{}_amp0.gif'.format(inner, fiber)  # or .mp4
-                      ))
+                      )
 
-plt.plot()
+ani.save(savepath)
+print(savepath)
