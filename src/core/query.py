@@ -381,6 +381,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
             classic_indices = [[0 for x in range(my_cols)] for y in range(my_rows)]
             renumber_indices = [[0 for x in range(my_cols)] for y in range(my_rows)]
+            new_n = 0
 
             if my_n == 0:
                 new_n = 0
@@ -1159,6 +1160,7 @@ class Query(Exceptionable, Configurable, Saveable):
         # loop models
         model_results: dict
         my_data = [[] for _ in model_indices]
+        xlabels = []
         for model_index, model in enumerate(model_indices):
             # model_index = model_results['index']
 
@@ -1189,6 +1191,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
             # loop samples
             sample_results: dict
+            sim_object = None
             for sample_results in self._result.get('samples', []):
                 sample_index = sample_results['index']
 
@@ -1206,7 +1209,7 @@ class Query(Exceptionable, Configurable, Saveable):
                 sim_object = self.get_object(Object.SIMULATION, [sample_index, model, sim_index])
 
                 if not sim_object.factors:
-                    sim_object.factors: dict = {comparison_key: [
+                    sim_object.factors = {comparison_key: [
                         sim_object.configs['sims']['fibers']['z_parameters']['diameter']]}  # comparison_key, [0.8]
 
                 # validate sim object
@@ -1317,7 +1320,8 @@ class Query(Exceptionable, Configurable, Saveable):
                 if not self.get_object(Object.SIMULATION, [sample_indices[0],
                                                            model,
                                                            sim_index]).factors:
-                    sim_object.factors: dict = {
+                    assert sim_object is not None, 'Sim object should not be None at this point'
+                    sim_object.factors = {
                         comparison_key: [sim_object.configs['sims']['fibers']['z_parameters']['diameter']]}
                     nsim_values = [sim_object.configs['sims']['fibers']['z_parameters']['diameter']]
 
