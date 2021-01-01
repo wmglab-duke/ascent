@@ -4,11 +4,11 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
 sample = 0
-model = 0
+model = 2
 sim = 1
 inner = 0
 fiber = 0
-n_sim = 4
+n_sim = 0
 
 # build file and extract data
 data_path = os.path.join(
