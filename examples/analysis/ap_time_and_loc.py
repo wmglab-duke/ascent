@@ -16,7 +16,7 @@ q = Query({
     'include_downstream': True,
     'indices': {
         'sample': [0],
-        'model': [0,1,2,3],
+        'model': [0],
         'sim': [1]
     }
 }).run()
