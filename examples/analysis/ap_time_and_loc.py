@@ -31,5 +31,5 @@ q.ap_time_and_location(
     #     '7500 µm model radius',
     #     '10000 µm model radius',
     # ],
-    n_sim_filter=[0, 1, 2],
+    # n_sim_filter=[0, 1, 2],
     save=False)
