@@ -110,8 +110,8 @@ proc CreateAxon_Myel() {
 			Ra		= rhoa/10000
 			
 			// set unnatural node diameter for nodes inside passive node to mitigate end effects
-			if (i == 1 || i == axonnodes-2) {
-				diam = 1275
+			if (i == 1 || i == axonnodes-2 || i == 0 || i == axonnodes-1) {
+				diam = 1250
 			}
 
 			// Passive end nodes
