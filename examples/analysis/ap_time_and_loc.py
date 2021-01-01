@@ -16,14 +16,14 @@ q = Query({
     'include_downstream': True,
     'indices': {
         'sample': [0],
-        'model': [3],
+        'model': [0,1,2,3],
         'sim': [1]
     }
 }).run()
 
 q.ap_time_and_location(
     delta_V=60,
-    plot=True,
+    plot=False,
     absolute_voltage=False,
     # n_sim_label_override='7.3 µm MRG Fiber',
     # model_labels=[
