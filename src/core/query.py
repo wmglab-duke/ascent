@@ -2,7 +2,6 @@ import os
 import pickle
 import re
 from typing import Union, List, Tuple
-from matplotlib.pyplot import figure
 
 import numpy as np
 import matplotlib.colorbar as cbar
@@ -23,7 +22,6 @@ class Query(Exceptionable, Configurable, Saveable):
     IMPORTANT: MUST BE RUN FROM PROJECT LEVEL
     """
 
-
     def __init__(self, criteria: Union[str, dict]):
         """
         :param exceptions_config:
@@ -43,7 +41,6 @@ class Query(Exceptionable, Configurable, Saveable):
             self.add(SetupMode.OLD, Config.CRITERIA, criteria)
 
         self._result = None  # begin with empty result
-
 
     def run(self):
         """
@@ -179,7 +176,6 @@ class Query(Exceptionable, Configurable, Saveable):
 
         return self
 
-
     def summary(self) -> dict:
         """
         Return result of self.run()... maybe add result statistics? (e.g. counts of samples, models, sims, etc.)
@@ -190,14 +186,12 @@ class Query(Exceptionable, Configurable, Saveable):
 
         return self._result
 
-
     def get_config(self, mode: Config, indices: List[int]) -> dict:
         """
 
         :return:
         """
         return self.load(self.build_path(mode, indices))
-
 
     def get_object(self, mode: Object, indices: List[int]) -> Union[Sample, Simulation]:
         """
@@ -206,7 +200,6 @@ class Query(Exceptionable, Configurable, Saveable):
         """
         with open(self.build_path(mode, indices), 'rb') as obj:
             return pickle.load(obj)
-
 
     def build_path(self, mode: Union[Config, Object], indices: List[int] = None, just_directory: bool = False) -> str:
         """
@@ -243,7 +236,6 @@ class Query(Exceptionable, Configurable, Saveable):
             result = os.path.join(*result.split(os.sep)[:-1])
 
         return result
-
 
     def _match(self, criteria: dict, data: dict) -> bool:
         """
@@ -299,7 +291,6 @@ class Query(Exceptionable, Configurable, Saveable):
                     return False
 
         return True
-
 
     def heatmaps(self,
                  plot: bool = True,
@@ -381,7 +372,6 @@ class Query(Exceptionable, Configurable, Saveable):
 
             classic_indices = [[0 for x in range(my_cols)] for y in range(my_rows)]
             renumber_indices = [[0 for x in range(my_cols)] for y in range(my_rows)]
-            new_n = 0
 
             if my_n == 0:
                 new_n = 0
@@ -663,7 +653,6 @@ class Query(Exceptionable, Configurable, Saveable):
                 print(']')
 
         return plt.gcf()
-
 
     def barcharts_compare_models(self,
                                  sim_index: int = None,
@@ -1077,7 +1066,6 @@ class Query(Exceptionable, Configurable, Saveable):
         #     if plot:
         #         plt.show()
 
-
     def barcharts_compare_samples(self,
                                   sim_index: int = None,
                                   sample_indices: int = None,
@@ -1160,7 +1148,6 @@ class Query(Exceptionable, Configurable, Saveable):
         # loop models
         model_results: dict
         my_data = [[] for _ in model_indices]
-        xlabels = []
         for model_index, model in enumerate(model_indices):
             # model_index = model_results['index']
 
@@ -1191,7 +1178,6 @@ class Query(Exceptionable, Configurable, Saveable):
 
             # loop samples
             sample_results: dict
-            sim_object = None
             for sample_results in self._result.get('samples', []):
                 sample_index = sample_results['index']
 
@@ -1209,7 +1195,7 @@ class Query(Exceptionable, Configurable, Saveable):
                 sim_object = self.get_object(Object.SIMULATION, [sample_index, model, sim_index])
 
                 if not sim_object.factors:
-                    sim_object.factors = {comparison_key: [
+                    sim_object.factors: dict = {comparison_key: [
                         sim_object.configs['sims']['fibers']['z_parameters']['diameter']]}  # comparison_key, [0.8]
 
                 # validate sim object
@@ -1320,8 +1306,7 @@ class Query(Exceptionable, Configurable, Saveable):
                 if not self.get_object(Object.SIMULATION, [sample_indices[0],
                                                            model,
                                                            sim_index]).factors:
-                    assert sim_object is not None, 'Sim object should not be None at this point'
-                    sim_object.factors = {
+                    sim_object.factors: dict = {
                         comparison_key: [sim_object.configs['sims']['fibers']['z_parameters']['diameter']]}
                     nsim_values = [sim_object.configs['sims']['fibers']['z_parameters']['diameter']]
 
@@ -1438,7 +1423,6 @@ class Query(Exceptionable, Configurable, Saveable):
         plt.show()
 
         return ax
-
 
     def excel_output(self,
                      filepath: str,
@@ -1574,158 +1558,3 @@ class Query(Exceptionable, Configurable, Saveable):
                 writer.sheets[sheet_name].set_column(0, 256)
 
         writer.save()
-
-
-    def ap_time_and_location(
-        self,
-        delta_V: float = 60,
-        rounding_precision: int = 5,
-        n_sim_filter: List[int] = None,
-        plot: bool = False,
-        plot_nodes_on_find: bool = False,
-        plot_compiled: bool = False,
-        absolute_voltage: bool = True,
-        n_sim_label_override: str = None,
-        model_labels: List[str] = None,
-        save: bool = False):
-
-        print(f'Finding time and location of action potentials, which are defined as any voltage deflection of {delta_V} mV.')
-        
-        if plot:
-            print('Note: Plotting is currently only defined for MRG axons in the SL branch; plotting for other axon models/locations may yield unexpected results.')
-
-        # loop samples
-        for sample_index, sample_results in [(s['index'], s) for s in self._result.get('samples')]:
-            print('sample: {}'.format(sample_index))
-            
-            # sample_object: Sample = self.get_object(Object.SAMPLE, [sample_index])
-
-
-            # loop models
-            for model_index, model_results in [(m['index'], m) for m in sample_results.get('models')]:
-                print('\tmodel: {}'.format(model_index))
-
-
-                # loop sims
-                for sim_index in model_results.get('sims', []):
-                    print('\t\tsim: {}'.format(sim_index))
-                    
-                    sim_object = self.get_object(Object.SIMULATION, [sample_index, model_index, sim_index])
-                    
-                    # loop nsims
-                    for n_sim_index, (potentials_product_index, waveform_index) in enumerate(sim_object.master_product_indices):
-                        print('\t\t\tnsim: {}'.format(n_sim_index))
-                        
-                        active_src_index, fiberset_index = sim_object.potentials_product[potentials_product_index]
-
-                        # skip if not in existing n_sim filter
-                        if n_sim_filter is not None and n_sim_index not in n_sim_filter:
-                            print(f'\t\t\t\t(skip)')
-                            continue
-
-                        # directory of data for this (sample, model, sim)
-                        sim_dir = self.build_path(Object.SIMULATION, [sample_index, model_index, sim_index], just_directory=True)
-                        
-                        # directory for specific n_sim
-                        n_sim_dir = os.path.join(sim_dir, 'n_sims', str(n_sim_index))
-
-                        # directory of fiberset (i.e., points and potentials) associated with this n_sim
-                        fiberset_dir = os.path.join(sim_dir, 'fibersets', str(fiberset_index))
-
-                        # the simulation outputs for this n_sim
-                        outputs_path = os.path.join(n_sim_dir, 'data', 'outputs')
-
-                        # path of the first inner, first fiber vm(t) data
-                        vm_t_path = os.path.join(outputs_path, 'Vm_time_inner0_fiber0_amp0.dat')
-
-                        # load vm(t) data (see path above)
-                        # each row is a snapshot of the voltages at each node [mV]
-                        # the first column is the time [ms]
-                        # first row is holds column labels, so this is skipped (time, node0, node1, ...)
-                        vm_t_data = np.loadtxt(vm_t_path, skiprows=1)
-
-                        # find V-nought be averaging voltage of all nodes at first timestep (assuming no stimulation at time=0)
-                        V_o = np.mean(vm_t_data[0, 1:])
-                        # if using absolute voltage, set an absolute delta V (i.e., -30mV)
-                        if absolute_voltage:
-                            V_o = 0
-
-                        # find dt by rounding first timestep
-                        dt = round(vm_t_data[1, 0] - vm_t_data[0, 0], rounding_precision)
-
-                        # initialize value AP time, node (locations), voltages at time
-                        time, node, voltages = None, None, None
-                        
-                        # loop through and enumerate each timestep
-                        rows = vm_t_data[:, 1:]
-                        index = int(len(rows) / 2)
-                        for i, row in enumerate(rows):
-                            # get list of node indices that satisfy deflection condition
-                            found_nodes = np.where(row >= V_o + delta_V)[0]
-                            # that list contains any elements, set time and node (location), then break out of loop
-                            if len(found_nodes) > 0:
-                                time = round(i * dt, rounding_precision)
-                                node = found_nodes[0]
-                                voltages = row
-                                index = i
-                                break
-
-                        if plot_compiled:
-                            plt.figure()
-                            for row in rows[index - 5 : index + 5]:
-                                plt.plot(row)
-                            plt.show()
-                        
-                        # if no AP found, skip
-                        if time is None or node is None:
-                            print('\t\t\t\t(no AP found)')
-                            
-
-                        # print results of timestep search
-                        # if time is not None and node is not None:
-                        else:
-                            # create message about AP time and location findings
-                            message = f't: {time} ms, node: {node + 1} (of {len(vm_t_data[0, 1:])})'
-                            print(f'\t\t\t\t{message}')
-
-                            # plot the AP location with voltage trace
-                            # create subplots
-                            if plot or save:
-                                fig, axes = plt.subplots(2, 1)
-
-                                # load fiber coordinates
-                                fiber = np.loadtxt(os.path.join(fiberset_dir, '0.dat'), skiprows=1)
-                                
-                                # plot fiber coordinates in 2D
-                                axes[0].plot(fiber[:, 0], fiber[:, 2], 'b.')
-
-                                # plot AP location
-                                axes[0].plot(fiber[11 * node, 0], fiber[11 * node, 2], 'r*')
-
-                                # location display settings
-                                n_sim_label = f'n_sim: {n_sim_index}' if (n_sim_label_override is None) else n_sim_label_override
-                                model_label = '' if (model_labels is None) else f', {model_labels[model_index]}'
-                                axes[0].set_xlabel('x location, µm')
-                                axes[0].set_ylabel('z location, µm')
-                                axes[0].set_title(f'{n_sim_label}{model_label}')
-                                axes[0].legend(['fiber', f'AP ({message})'])
-                                axes[0].set_aspect(1)
-                                plt.tight_layout()
-
-                                # plot voltages
-                                axes[1].plot(voltages, 'bo')
-
-                                # voltages display settings
-                                axes[1].set_xlabel('node')
-                                axes[1].set_ylabel('voltage (mV)')
-                                axes[1].set_aspect(0.25)
-                                plt.tight_layout()
-
-                            # display
-                            if save:
-                                plt.savefig(f'out/analysis/ap_time_loc_{sample_index}_{model_index}_{sim_index}_{n_sim_index}.png', dpi=300)
-
-                            if plot:
-                                plt.show()
-                            
-
