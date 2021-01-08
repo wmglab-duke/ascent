@@ -87,10 +87,10 @@
     "helmers_2012_perineurium": {
       "value": "0.01",
       "unit": "[S/m]",
-      "note": "other source has 0.000336"
+      "note": "other source has 0.00336"
     },
     "helmers_2012_perineurium_2": {
-      "value": "0.000336",
+      "value": "0.00336",
       "unit": "[S/m]",
       "note": "other source has 0.01"
     },
