@@ -99,7 +99,7 @@
       "unit": "[S/m]",
       "note": "other source has 0.008"
     },
-    "helmers_2012_epineurium_2":
+    "helmers_2012_epineurium_2": {
       "value": "0.008",
       "unit": "[S/m]",
       "note": "other source has 0.1"
