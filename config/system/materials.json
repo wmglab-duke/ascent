@@ -83,6 +83,37 @@
     "arle_2016_epineurium": {
       "value": "0.054",
       "unit": "[S/m]"
+    },
+    "helmers_2012_perineurium": {
+      "value": "0.01",
+      "unit": "[S/m]",
+      "note": "other source has 0.000336"
+    },
+    "helmers_2012_perineurium_2": {
+      "value": "0.000336",
+      "unit": "[S/m]",
+      "note": "other source has 0.01"
+    },
+    "helmers_2012_epineurium": {
+      "value": "0.1",
+      "unit": "[S/m]",
+      "note": "other source has 0.008"
+    },
+    "helmers_2012_epineurium_2":
+      "value": "0.008",
+      "unit": "[S/m]",
+      "note": "other source has 0.1"
+    },
+    "saline_test_high_conductivity": {
+      "value": "10",
+      "unit": "[S/m]"
+    },
+    "endoneurium_test_high_conductivity": {
+      "value": "anisotropic",
+      "sigma_x": "1/6",
+      "sigma_y": "1/6",
+      "sigma_z": "2",
+      "unit": "[S/m]"
     }
   }
 }
