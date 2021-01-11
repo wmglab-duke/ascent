@@ -6,6 +6,8 @@ import sys
 import re
 import json
 import time
+import numpy as np
+import warnings
 
 
 ALLOWED_SUBMISSION_CONTEXTS = ['cluster', 'local']
@@ -100,13 +102,6 @@ def make_submission_list():
 
                     print('\n\n################ {} ################\n\n'.format(sim_name))
 
-                    if sim_config['protocol']['mode'] == 'ACTIVATION_THRESHOLD' \
-                            or sim_config['protocol']['mode'] == 'BLOCK_THRESHOLD':
-                        stimamp_top = sim_config['protocol']['bounds_search']['top']
-                        stimamp_bottom = sim_config['protocol']['bounds_search']['bottom']
-                    elif sim_config['protocol']['mode'] == 'FINITE_AMPLITUDES':
-                        stimamp_top, stimamp_bottom = 0, 0
-
                     for fiber_filename in [x for x in os.listdir(fibers_path)
                                            if re.match('inner[0-9]+_fiber[0-9]+\\.dat', x)]:
                         master_fiber_name = str(fiber_filename.split('.')[0])
@@ -130,6 +125,42 @@ def make_submission_list():
                             start_path = os.path.join(sim_path, '{}_{}_start{}'.format(inner_ind, fiber_ind,
                                                                                        '.sh' if OS == 'UNIX-LIKE'
                                                                                        else '.bat'))
+
+                        if sim_config['protocol']['mode'] == 'ACTIVATION_THRESHOLD' \
+                                or sim_config['protocol']['mode'] == 'BLOCK_THRESHOLD':
+                            if 'scout_sim' in sim_config['protocol']['bounds_search'].keys():
+                                # load in threshold from scout_sim
+                                # (example use would be to run centroid first,
+                                # then any other xy-mmode after to save computation)
+
+                                scout_sim = sim_config['protocol']['bounds_search']['scout_sim']
+                                scout_sim_dir = os.path.join('n_sims')
+                                scout_sim_name = '{}_{}_{}_{}'.format(sample, model, scout_sim, n_sim)
+                                scout_sim_path = os.path.join(scout_sim_dir, scout_sim_name)
+                                scout_output_path = os.path.abspath(os.path.join(scout_sim_path, 'data', 'outputs'))
+                                scout_thresh_path = os.path.join(scout_output_path,
+                                                                 'thresh_inner{}_fiber{}.dat'.format(inner_ind,
+                                                                                                     fiber_ind))
+                                if os.path.exists(scout_thresh_path):
+                                    stimamp = abs(np.loadtxt(thresh_path))
+                                if len(np.atleast_1d(stimamp)) > 1:
+                                    stimamp = stimamp[-1]
+
+                                step = sim_config['protocol']['bounds_search']['step']/100
+                                stimamp_top = (1+step)*stimamp
+                                stimamp_bottom = (1-step)*stimamp
+
+                                unused_protocol_keys = ['top', 'bottom']
+                                if any(unused_protocol_key in sim_config['protocol']['bounds_search'].keys()
+                                       for unused_protocol_key in unused_protocol_keys):
+                                    warnings.warn('WARNING: scout_sim is defined in Sim, so no using "top" or "bottom" '
+                                                  'which you also defined \n')
+                            else:
+                                stimamp_top = sim_config['protocol']['bounds_search']['top']
+                                stimamp_bottom = sim_config['protocol']['bounds_search']['bottom']
+
+                        elif sim_config['protocol']['mode'] == 'FINITE_AMPLITUDES':
+                            stimamp_top, stimamp_bottom = 0, 0
 
                         with open(start_path, 'w+') as handle:
                             lines = []

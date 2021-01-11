@@ -76,7 +76,8 @@
       "mode": "PERCENT_INCREMENT",
       "step": 10,
       "top": -1,
-      "bottom": -0.01
+      "bottom": -0.01,
+      "scout_sim": false
     },
     "termination_criteria": {
       "mode": "PERCENT_DIFFERENCE",
