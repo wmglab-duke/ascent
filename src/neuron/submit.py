@@ -140,9 +140,13 @@ def make_submission_list():
                                 scout_output_path = os.path.abspath(os.path.join(scout_sim_path, 'data', 'outputs'))
                                 scout_thresh_path = os.path.join(scout_output_path,
                                                                  'thresh_inner{}_fiber{}.dat'.format(inner_ind,
-                                                                                                     fiber_ind))
+                                                                                                     0))
                                 if os.path.exists(scout_thresh_path):
                                     stimamp = abs(np.loadtxt(thresh_path))
+                                else:
+                                    raise Exception('Sorry, no fiber threshold exists for '
+                                                    'scout sim: inner{} fiber0'.format(inner_ind))
+
                                 if len(np.atleast_1d(stimamp)) > 1:
                                     stimamp = stimamp[-1]
 
@@ -151,6 +155,7 @@ def make_submission_list():
                                 stimamp_bottom = (1-step)*stimamp
 
                                 unused_protocol_keys = ['top', 'bottom']
+                                
                                 if any(unused_protocol_key in sim_config['protocol']['bounds_search'].keys()
                                        for unused_protocol_key in unused_protocol_keys):
                                     warnings.warn('WARNING: scout_sim is defined in Sim, so no using "top" or "bottom" '
