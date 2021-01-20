@@ -449,7 +449,7 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
                             # print('end range: {}'.format(job_count))
 
                             os.system(f"sbatch --job-name={job_name} --output={output_log} --error={error_log} "
-                                      f"--array={1 + job_count - len(start_paths_list)}-{job_count} test.slurm {start_path_base}")  # TODO better name for test.slurm
+                                      f"--array={1 + job_count - len(start_paths_list)}-{job_count} array_launch.slurm {start_path_base}")  # TODO better name for test.slurm
 
                             # allow job to start before removing slurm file
                             time.sleep(1.0)
