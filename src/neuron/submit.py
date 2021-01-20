@@ -24,9 +24,9 @@ def load(config_path: str):
         return json.load(handle)
 
 
-def auto_compile():
+def auto_compile(override: bool = False):
     if (not os.path.exists(os.path.join('MOD_Files/x86_64')) and OS == 'UNIX-LIKE') or \
-            (not os.path.exists(os.path.join('MOD_Files', 'nrnmech.dll')) and OS == 'WINDOWS'):
+            (not os.path.exists(os.path.join('MOD_Files', 'nrnmech.dll')) and OS == 'WINDOWS') or override:
         print('compile')
         os.chdir(os.path.join('MOD_Files'))
         subprocess.run(['nrnivmodl'], shell=True)
@@ -36,6 +36,105 @@ def auto_compile():
         print('skipped compile')
         compiled = False
     return compiled
+
+
+def get_thresh_bounds(sim_dir: str, sim_name: str, inner_ind: int):
+
+    top, bottom = None, None
+
+    sample = sim_name.split('_')[0]
+    model = sim_name.split('_')[1]
+    sim = sim_name.split('_')[2]
+    n_sim = sim_name.split('_')[3]
+
+    sim_config = load(os.path.join(sim_dir, sim_name, '{}.json'.format(n_sim)))
+
+    if sim_config['protocol']['mode'] == 'ACTIVATION_THRESHOLD' or sim_config['protocol']['mode'] == 'BLOCK_THRESHOLD':
+        if 'scout_sim' in sim_config['protocol']['bounds_search'].keys():
+            # load in threshold from scout_sim (example use: run centroid first, then any other xy-mode after)
+
+            scout_sim = sim_config['protocol']['bounds_search']['scout_sim']
+            scout_sim_dir = os.path.join('n_sims')
+            scout_sim_name = '{}_{}_{}_{}'.format(sample, model, scout_sim, n_sim)
+            scout_sim_path = os.path.join(scout_sim_dir, scout_sim_name)
+            scout_output_path = os.path.abspath(os.path.join(scout_sim_path, 'data', 'outputs'))
+            scout_thresh_path = os.path.join(scout_output_path, 'thresh_inner{}_fiber{}.dat'.format(inner_ind, 0))
+
+            if os.path.exists(scout_thresh_path):
+                stimamp = abs(np.loadtxt(scout_thresh_path))
+            else:
+                raise Exception(f"Sorry, no fiber threshold exists for scout sim: inner{inner_ind} fiber0")
+
+            if len(np.atleast_1d(stimamp)) > 1:
+                stimamp = stimamp[-1]
+
+            step = sim_config['protocol']['bounds_search']['step'] / 100
+            top = (1 + step) * stimamp
+            bottom = (1 - step) * stimamp
+
+            unused_protocol_keys = ['top', 'bottom']
+
+            if any(unused_protocol_key in sim_config['protocol']['bounds_search'].keys()
+                   for unused_protocol_key in unused_protocol_keys):
+                warnings.warn('WARNING: scout_sim is defined in Sim, so not using "top" or "bottom" '
+                              'which you also defined \n')
+        else:
+            top = sim_config['protocol']['bounds_search']['top']
+            bottom = sim_config['protocol']['bounds_search']['bottom']
+
+    elif sim_config['protocol']['mode'] == 'FINITE_AMPLITUDES':
+        top, bottom = 0, 0
+
+    return top, bottom
+
+
+def make_task(os: str, start_p: str, sim_p: str, inner: int, fiber: int, top: float, bottom: float):
+
+    with open(start_p, 'w+') as handle:
+        if OS == 'UNIX-LIKE':
+            lines = [
+                '#!/bin/bash\n',
+                'cd \"{}\"\n'.format(sim_p),
+                'chmod a+rwx special\n',
+                './special -nobanner '
+                '-c \"strdef sim_path\" '
+                '-c \"sim_path=\\\"{}\\\"\" '
+                '-c \"inner_ind={}\" '
+                '-c \"fiber_ind={}\" '
+                '-c \"stimamp_top={}\" '
+                '-c \"stimamp_bottom={}\" '
+                '-c \"load_file(\\\"launch.hoc\\\")\" blank.hoc\n'.format(sim_p,
+                                                                          inner,
+                                                                          fiber,
+                                                                          top,
+                                                                          bottom)
+            ]
+
+            # copy special files ahead of time to avoid 'text file busy error'
+            if not os.path.exists('special'):
+                shutil.copy(os.path.join('MOD_Files', 'x86_64', 'special'), sim_p)
+
+        else:  # OS is 'WINDOWS'
+            sim_path_win = os.path.join(*sim_p.split(os.pathsep)).replace('\\', '\\\\')
+            lines = [
+                'nrniv -nobanner '
+                '-dll \"{}/MOD_Files/nrnmech.dll\" '
+                '-c \"strdef sim_path\" '
+                '-c \"sim_path=\\\"{}\"\" '
+                '-c \"inner_ind={}\" '
+                '-c \"fiber_ind={}\" '
+                '-c \"stimamp_top={}\" '
+                '-c \"stimamp_bottom={}\" '
+                '-c \"load_file(\\\"launch.hoc\\\")\" blank.hoc\n'.format(os.getcwd(),
+                                                                          sim_path_win,
+                                                                          inner,
+                                                                          fiber,
+                                                                          top,
+                                                                          bottom)
+            ]
+
+        handle.writelines(lines)
+        handle.close()
 
 
 def local_submit(my_local_args):
@@ -48,142 +147,6 @@ def local_submit(my_local_args):
 
     with open(out_filename, "w+") as fo, open(err_filename, "w+") as fe:
         p = subprocess.call(['bash', start] if OS == 'UNIX-LIKE' else [start], stdout=fo, stderr=fe)
-
-
-def make_local_submission_lists():
-    local_args_lists = []
-    submission_contexts = []
-    run_filenames = []
-
-    for run_number in sys.argv[1:]:
-
-        # build configuration filename
-        filename = os.path.join('runs', run_number + '.json')
-        run_filenames.append(filename)
-
-        local_args_list = []
-
-        # load in configuration data
-        run = load(filename)
-        submission_context = run.get('submission_context', 'cluster')
-        submission_contexts.append(submission_context)
-
-        local_run_keys = ['start', 'output_log', 'error_log', 'sim_path']
-        local_args = dict.fromkeys(local_run_keys, [])
-
-        # assign appropriate configuration data
-        sample = run.get('sample', [])
-        models = run.get('models', [])
-        sims = run.get('sims', [])
-
-        # loop models, sims
-        for model in models:
-            for sim in sims:
-                sim_dir = os.path.join('n_sims')
-                sim_name_base = '{}_{}_{}_'.format(sample, model, sim)
-
-                for sim_name in [x for x in os.listdir(sim_dir) if sim_name_base in x]:
-                    sim_path = os.path.join(sim_dir, sim_name)
-                    fibers_path = os.path.abspath(os.path.join(sim_path, 'data', 'inputs'))
-                    output_path = os.path.abspath(os.path.join(sim_path, 'data', 'outputs'))
-                    out_dir = os.path.abspath(os.path.join(sim_path, 'logs', 'out'))
-                    err_dir = os.path.abspath(os.path.join(sim_path, 'logs', 'err'))
-
-                    # ensure log directories exist
-                    for cur_dir in [out_dir, err_dir]:
-                        if not os.path.exists(cur_dir):
-                            os.makedirs(cur_dir)
-
-                    # ensure blank.hoc exists
-                    blank_path = os.path.join(sim_path, 'blank.hoc')
-                    if not os.path.exists(blank_path):
-                        open(blank_path, 'w').close()
-
-                    # load JSON file with binary search amplitudes
-                    n_sim = sim_name.split('_')[-1]
-                    sim_config = load(os.path.join(sim_path, '{}.json'.format(n_sim)))
-
-                    print('\n\n################ {} ################\n\n'.format(sim_name))
-
-                    for fiber_filename in [x for x in os.listdir(fibers_path)
-                                           if re.match('inner[0-9]+_fiber[0-9]+\\.dat', x)]:
-                        master_fiber_name = str(fiber_filename.split('.')[0])
-                        inner_name, fiber_name = tuple(master_fiber_name.split('_'))
-                        inner_ind = int(inner_name.split('inner')[-1])
-                        fiber_ind = int(fiber_name.split('fiber')[-1])
-
-                        thresh_path = os.path.join(output_path,
-                                                   'thresh_inner{}_fiber{}.dat'.format(inner_ind, fiber_ind))
-                        if os.path.exists(thresh_path):
-                            print('Found {} -->\t\tskipping inner ({}) fiber ({})'.format(thresh_path, inner_ind,
-                                                                                          fiber_ind))
-                            continue
-
-                        # local
-                        start_path = os.path.join(sim_path, '{}_{}_start{}'.format(inner_ind, fiber_ind,
-                                                                                   '.sh' if OS == 'UNIX-LIKE'
-                                                                                   else '.bat'))
-
-                        with open(start_path, 'w+') as handle:
-                            lines = []
-                            if OS == 'UNIX-LIKE':
-                                lines = [
-                                    '#!/bin/bash\n',
-                                    'cd \"{}\"\n'.format(sim_path if submission_context == 'cluster' else '.'),
-                                    'chmod a+rwx special\n',
-                                    './special -nobanner '
-                                    '-c \"strdef sim_path\" '
-                                    '-c \"sim_path=\\\"{}\\\"\" '
-                                    '-c \"inner_ind={}\" '
-                                    '-c \"fiber_ind={}\" '
-                                    '-c \"stimamp_top={}\" '
-                                    '-c \"stimamp_bottom={}\" '
-                                    '-c \"load_file(\\\"launch.hoc\\\")\" blank.hoc\n'.format(sim_path,
-                                                                                              inner_ind,
-                                                                                              fiber_ind,
-                                                                                              stimamp_top,
-                                                                                              stimamp_bottom)
-                                ]
-
-                                # copy special files ahead of time to avoid 'text file busy error'
-                                shutil.copy(os.path.join('MOD_Files', 'x86_64', 'special'), sim_path)
-
-                            else:  # OS is 'WINDOWS'
-                                sim_path_win = os.path.join(*sim_path.split(os.pathsep)).replace('\\', '\\\\')
-                                lines = [
-                                    'nrniv -nobanner '
-                                    '-dll \"{}/MOD_Files/nrnmech.dll\" '
-                                    '-c \"strdef sim_path\" '
-                                    '-c \"sim_path=\\\"{}\"\" '
-                                    '-c \"inner_ind={}\" '
-                                    '-c \"fiber_ind={}\" '
-                                    '-c \"stimamp_top={}\" '
-                                    '-c \"stimamp_bottom={}\" '
-                                    '-c \"load_file(\\\"launch.hoc\\\")\" blank.hoc\n'.format(os.getcwd(),
-                                                                                              sim_path_win,
-                                                                                              inner_ind,
-                                                                                              fiber_ind,
-                                                                                              stimamp_top,
-                                                                                              stimamp_bottom)
-                                ]
-
-                            handle.writelines(lines)
-                            handle.close()
-
-                        # submit batch job for fiber
-                        job_name = '{}_{}'.format(sim_name, master_fiber_name)
-                        output_log = os.path.join(out_dir, '{}{}'.format(master_fiber_name, '.log'))
-                        error_log = os.path.join(err_dir, '{}{}'.format(master_fiber_name, '.log'))
-
-                        local_args['start'] = start_path.split(os.path.sep)[-1]
-                        local_args['output_log'] = os.path.join('logs', 'out', output_log.split(os.path.sep)[-1])
-                        local_args['error_log'] = os.path.join('logs', 'err', error_log.split(os.path.sep)[-1])
-                        local_args['sim_path'] = os.path.abspath(sim_path)
-                        local_args_list.append(local_args.copy())
-
-        local_args_lists.append(local_args_list)
-
-    return local_args_lists, submission_contexts, run_filenames
 
 
 def cluster_submit(run_number: int, array_length_max: int = 10):
@@ -211,17 +174,20 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
             sim_name_base = '{}_{}_{}_'.format(sample, model, sim)
 
             for sim_name in [x for x in os.listdir(sim_dir) if sim_name_base in x]:
+                print('\n\n################ {} ################\n\n'.format(sim_name))
+
                 array_index = 1
                 start_paths_list = []
+                sim_config = []
 
                 sim_path = os.path.join(sim_dir, sim_name)
                 fibers_path = os.path.abspath(os.path.join(sim_path, 'data', 'inputs'))
                 output_path = os.path.abspath(os.path.join(sim_path, 'data', 'outputs'))
-                out_dir = os.path.abspath(os.path.join(sim_path, 'logs', 'out'))
-                err_dir = os.path.abspath(os.path.join(sim_path, 'logs', 'err'))
                 start_path_base = os.path.join(sim_path, 'start_')
 
                 # ensure log directories exist
+                out_dir = os.path.abspath(os.path.join(sim_path, 'logs', 'out'))
+                err_dir = os.path.abspath(os.path.join(sim_path, 'logs', 'err'))
                 for cur_dir in [out_dir, err_dir]:
                     if not os.path.exists(cur_dir):
                         os.makedirs(cur_dir)
@@ -248,55 +214,9 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
                         start_path = '{}{}{}'.format(start_path_base, job_count, '.sh' if OS == 'UNIX-LIKE' else '.bat')
                         start_paths_list.append(start_path)
 
-                        stimamp_top = -1  # TODO
-                        stimamp_bottom = -0.1  # TODO
+                        stimamp_top, stimamp_bottom = get_thresh_bounds(sim_dir, sim_name, inner_ind)
 
-                        with open(start_path, 'w+') as handle:
-                            lines = []
-                            if OS == 'UNIX-LIKE':
-                                lines = [
-                                    '#!/bin/bash\n',
-                                    'cd \"{}\"\n'.format(sim_path),
-                                    'chmod a+rwx special\n',
-                                    './special -nobanner '
-                                    '-c \"strdef sim_path\" '
-                                    '-c \"sim_path=\\\"{}\\\"\" '
-                                    '-c \"inner_ind={}\" '
-                                    '-c \"fiber_ind={}\" '
-                                    '-c \"stimamp_top={}\" '
-                                    '-c \"stimamp_bottom={}\" '
-                                    '-c \"load_file(\\\"launch.hoc\\\")\" blank.hoc\n'.format(sim_path,
-                                                                                              inner_ind,
-                                                                                              fiber_ind,
-                                                                                              stimamp_top,
-                                                                                              stimamp_bottom)
-                                ]
-
-                                # TODO only if doesnt exist
-                                # copy special files ahead of time to avoid 'text file busy error'
-                                shutil.copy(os.path.join('MOD_Files', 'x86_64', 'special'), sim_path)
-
-                            else:  # OS is 'WINDOWS'
-                                sim_path_win = os.path.join(*sim_path.split(os.pathsep)).replace('\\', '\\\\')
-                                lines = [
-                                    'nrniv -nobanner '
-                                    '-dll \"{}/MOD_Files/nrnmech.dll\" '
-                                    '-c \"strdef sim_path\" '
-                                    '-c \"sim_path=\\\"{}\"\" '
-                                    '-c \"inner_ind={}\" '
-                                    '-c \"fiber_ind={}\" '
-                                    '-c \"stimamp_top={}\" '
-                                    '-c \"stimamp_bottom={}\" '
-                                    '-c \"load_file(\\\"launch.hoc\\\")\" blank.hoc\n'.format(os.getcwd(),
-                                                                                              sim_path_win,
-                                                                                              inner_ind,
-                                                                                              fiber_ind,
-                                                                                              stimamp_top,
-                                                                                              stimamp_bottom)
-                                ]
-
-                            handle.writelines(lines)
-                            handle.close()
+                        make_task(OS, start_path, sim_path, inner_ind, fiber_ind, stimamp_top, stimamp_bottom)
 
                         if array_index == array_length_max or fiber_file_ind == max_fibers_files_ind:
                             # submit batch job for fiber
@@ -307,7 +227,7 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
                             # print('end range: {}'.format(job_count))
 
                             os.system(f"sbatch --job-name={job_name} --output={output_log} --error={error_log} "
-                                      f"--array={1 + job_count - len(start_paths_list)}-{job_count} array_launch.slurm {start_path_base}")  # TODO better name for test.slurm
+                                      f"--array={1 + job_count - len(start_paths_list)}-{job_count} array_launch.slurm {start_path_base}")
 
                             # allow job to start before removing slurm file
                             time.sleep(1.0)
@@ -319,11 +239,105 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
                         job_count += 1
 
 
+def make_local_submission_lists():
+    local_args_lists = []
+    submission_contexts = []
+    run_filenames = []
+
+    for run_number in sys.argv[1:]:
+
+        # build configuration filename
+        filename = os.path.join('runs', run_number + '.json')
+        run_filenames.append(filename)
+
+        # create empty list of args (for local submission with parallelization) for each Run
+        local_args_list = []
+
+        # load in configuration data
+        run = load(filename)
+        submission_context = run.get('submission_context', 'cluster')
+        submission_contexts.append(submission_context)
+
+        # keys required for each local submission
+        local_run_keys = ['start', 'output_log', 'error_log', 'sim_path']
+
+        # assign appropriate configuration data
+        sample = run.get('sample', [])
+        models = run.get('models', [])
+        sims = run.get('sims', [])
+
+        # loop models, sims
+        for model in models:
+            for sim in sims:
+                sim_dir = os.path.join('n_sims')
+                sim_name_base = '{}_{}_{}_'.format(sample, model, sim)
+
+                for sim_name in [x for x in os.listdir(sim_dir) if sim_name_base in x]:
+                    print('\n\n################ {} ################\n\n'.format(sim_name))
+
+                    sim_path = os.path.join(sim_dir, sim_name)
+                    fibers_path = os.path.abspath(os.path.join(sim_path, 'data', 'inputs'))
+                    output_path = os.path.abspath(os.path.join(sim_path, 'data', 'outputs'))
+
+                    # ensure log directories exist
+                    out_dir = os.path.abspath(os.path.join(sim_path, 'logs', 'out'))
+                    err_dir = os.path.abspath(os.path.join(sim_path, 'logs', 'err'))
+                    for cur_dir in [out_dir, err_dir]:
+                        if not os.path.exists(cur_dir):
+                            os.makedirs(cur_dir)
+
+                    # ensure blank.hoc exists
+                    blank_path = os.path.join(sim_path, 'blank.hoc')
+                    if not os.path.exists(blank_path):
+                        open(blank_path, 'w').close()
+
+                    # load JSON file with binary search amplitudes
+                    n_sim = sim_name.split('_')[-1]
+                    sim_config = load(os.path.join(sim_path, '{}.json'.format(n_sim)))
+
+                    for fiber_filename in [x for x in os.listdir(fibers_path) if re.match('inner[0-9]+_fiber['
+                                                                                          '0-9]+\\.dat', x)]:
+                        master_fiber_name = str(fiber_filename.split('.')[0])
+                        inner_name, fiber_name = tuple(master_fiber_name.split('_'))
+                        inner_ind = int(inner_name.split('inner')[-1])
+                        fiber_ind = int(fiber_name.split('fiber')[-1])
+
+                        thresh_path = os.path.join(output_path,
+                                                   'thresh_inner{}_fiber{}.dat'.format(inner_ind, fiber_ind))
+                        if os.path.exists(thresh_path):
+                            print('Found {} -->\t\tskipping inner ({}) fiber ({})'.format(thresh_path, inner_ind,
+                                                                                          fiber_ind))
+                            continue
+
+                        # local
+                        start_path = os.path.join(sim_path, '{}_{}_start{}'.format(inner_ind, fiber_ind,
+                                                                                   '.sh' if OS == 'UNIX-LIKE'
+                                                                                   else '.bat'))
+                        stimamp_top, stimamp_bottom = get_thresh_bounds(sim_dir, sim_name, inner_ind)
+                        make_task(OS, start_path, sim_path, inner_ind, fiber_ind, stimamp_top, stimamp_bottom)
+
+                        # submit batch job for fiber
+                        output_log = os.path.join(out_dir, '{}{}'.format(master_fiber_name, '.log'))
+                        error_log = os.path.join(err_dir, '{}{}'.format(master_fiber_name, '.log'))
+
+                        local_args = dict.fromkeys(local_run_keys, [])
+                        local_args['start'] = start_path.split(os.path.sep)[-1]
+                        local_args['output_log'] = os.path.join('logs', 'out', output_log.split(os.path.sep)[-1])
+                        local_args['error_log'] = os.path.join('logs', 'err', error_log.split(os.path.sep)[-1])
+                        local_args['sim_path'] = os.path.abspath(sim_path)
+                        local_args_list.append(local_args.copy())
+
+        local_args_lists.append(local_args_list)
+
+    return local_args_lists, submission_contexts, run_filenames
+
+
 def main():
     # validate inputs
     runs = []
     submission_contexts = []
 
+    # compile MOD files if they have not yet been compiled, can provide override=True to compile no matter what
     auto_compile()
 
     for run_number in sys.argv[1:]:
@@ -368,7 +382,7 @@ def main():
                 cpus = multiprocessing.cpu_count() - 1
                 print(f"local_avail_cpus not defined in Run, so proceeding with cpu_count-1={cpus} CPUs")
 
-            submit_list = make_local_submission_lists()  # TODO
+            submit_list = make_local_submission_lists()
             pool = multiprocessing.Pool(cpus)
             result = pool.map(local_submit, submit_list)
 
