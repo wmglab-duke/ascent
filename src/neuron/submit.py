@@ -329,11 +329,10 @@ def make_local_submission_lists():
             array_job_number = 1
             start_paths_list = []
 
-    return local_args_lists, submission_contexts, run_filenames#  TODO
+    return local_args_lists, submission_contexts, run_filenames  # TODO
 
 
 def cluster_submit(run_number: int, array_length_max: int = 10):
-
     # build configuration filename
     filename: str = os.path.join('runs', run_number + '.json')
 
@@ -352,6 +351,7 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
         for sim in sims:
             sim_dir = os.path.join('n_sims')
             sim_name_base = '{}_{}_{}_'.format(sample, model, sim)
+
             for sim_name in [x for x in os.listdir(sim_dir) if sim_name_base in x]:
                 array_index = 1
                 start_paths_list = []
@@ -374,7 +374,7 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
                     open(blank_path, 'w').close()
 
                 fibers_files = [x for x in os.listdir(fibers_path) if re.match('inner[0-9]+_fiber[0-9]+\\.dat', x)]
-                max_fibers_files_ind = len(fibers_files)-1
+                max_fibers_files_ind = len(fibers_files) - 1
 
                 for fiber_file_ind, fiber_filename in enumerate(fibers_files):
                     master_fiber_name = str(fiber_filename.split('.')[0])
@@ -445,9 +445,11 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
                             job_name = '{}_{}'.format(sim_name, master_fiber_name)  # TODO (sim_array_batch?)
                             output_log = os.path.join(out_dir, '{}{}'.format(master_fiber_name, '.log'))  # TODO
                             error_log = os.path.join(err_dir, '{}{}'.format(master_fiber_name, '.log'))  # TODO
+                            # print('begin range: {}'.format(1 + job_count - len(start_paths_list)))
+                            # print('end range: {}'.format(job_count))
 
                             os.system(f"sbatch --job-name={job_name} --output={output_log} --error={error_log} "
-                                      f"--array={job_count - len(start_paths_list)}-{job_count} test.slurm {start_path_base}")  # TODO better name for test.slurm
+                                      f"--array={1 + job_count - len(start_paths_list)}-{job_count} test.slurm {start_path_base}")  # TODO better name for test.slurm
 
                             # allow job to start before removing slurm file
                             time.sleep(1.0)
@@ -461,7 +463,7 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
 
 def main():
     # validate inputs
-    run_filenames = []
+    runs = []
     submission_contexts = []
 
     auto_compile()
@@ -472,15 +474,13 @@ def main():
 
         # build configuration filename
         filename = os.path.join('runs', run_number + '.json')
-        run_filenames.append(filename)
+        runs.append(run_number)
 
         # configuration file exists
         assert os.path.exists(filename), 'Run configuration not found: {}'.format(run_number)
 
         # load in configuration data
-        run: dict = {}
-        with open(filename, 'r') as file:
-            run = json.load(file)
+        run = load(filename)
 
         # configuration is not empty
         assert len(run.items()) > 0, 'Encountered empty run configuration: {}'.format(filename)
@@ -492,12 +492,11 @@ def main():
         submission_contexts.append(submission_context)
 
     # submit_lists, sub_contexts, run_filenames = make_submission_list()
-    for sub_context, run_filename in zip(submission_contexts, run_filenames):
-        run_number = run_filename.split('.')[0]
-        if sub_context == 'local':
+    for sub_context, run_index in zip(submission_contexts, runs):
 
-            with open(run_filename, 'r') as file:
-                run = json.load(file)
+        if sub_context == 'local':
+            filename = os.path.join('runs', run_index + '.json')
+            run = load(filename)
 
             if 'local_avail_cpus' in run:
                 cpus = run.get('local_avail_cpus')
@@ -505,7 +504,7 @@ def main():
                 if cpus > multiprocessing.cpu_count() - 1:
                     raise ValueError('local_avail_cpus in Run asking for more than cpu_count-1 CPUs')
 
-                print(f"Submitting Run {run_number} locally to {cpus} CPUs (defined by local_avail_cpus in Run)")
+                print(f"Submitting Run {run_index} locally to {cpus} CPUs (defined by local_avail_cpus in Run)")
 
             else:
                 cpus = multiprocessing.cpu_count() - 1
@@ -516,7 +515,7 @@ def main():
             result = pool.map(local_submit, submit_list)
 
         elif sub_context == 'cluster':
-            cluster_submit(run_number)
+            cluster_submit(run_index)
 
 
 if __name__ == "__main__":  # Allows for the safe importing of the main module
