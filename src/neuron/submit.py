@@ -187,6 +187,10 @@ def make_local_submission_lists():
 
 
 def cluster_submit(run_number: int, array_length_max: int = 10):
+
+    # configuration is not empty
+    assert array_length_max > 0, 'SLURM Job Array length is not > 0: array_length_max={}'.format(array_length_max)
+
     # build configuration filename
     filename: str = os.path.join('runs', run_number + '.json')
 
