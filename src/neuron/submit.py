@@ -50,43 +50,26 @@ def local_submit(my_local_args):
         p = subprocess.call(['bash', start] if OS == 'UNIX-LIKE' else [start], stdout=fo, stderr=fe)
 
 
-#  TODO update (this is only used to make lists for local submissions)
 def make_local_submission_lists():
     local_args_lists = []
     submission_contexts = []
     run_filenames = []
 
     for run_number in sys.argv[1:]:
-        # run number is numeric
-        assert re.search('[0-9]+', run_number), 'Encountered non-number run number argument: {}'.format(run_number)
 
         # build configuration filename
         filename = os.path.join('runs', run_number + '.json')
         run_filenames.append(filename)
 
-        # configuration file exists
-        assert os.path.exists(filename), 'Run configuration not found: {}'.format(run_number)
-
         local_args_list = []
 
         # load in configuration data
-        run: dict = {}
-        with open(filename, 'r') as file:
-            run = json.load(file)
-
-        # configuration is not empty
-        assert len(run.items()) > 0, 'Encountered empty run configuration: {}'.format(filename)
-
+        run = load(filename)
         submission_context = run.get('submission_context', 'cluster')
         submission_contexts.append(submission_context)
 
-        # submission context is valid
-        assert submission_context in ALLOWED_SUBMISSION_CONTEXTS, 'Invalid submission context: {}'.format(
-            submission_context)
-
-        if submission_context == 'local':
-            local_run_keys = ['start', 'output_log', 'error_log', 'sim_path']
-            local_args = dict.fromkeys(local_run_keys, [])
+        local_run_keys = ['start', 'output_log', 'error_log', 'sim_path']
+        local_args = dict.fromkeys(local_run_keys, [])
 
         # assign appropriate configuration data
         sample = run.get('sample', [])
@@ -100,9 +83,6 @@ def make_local_submission_lists():
                 sim_name_base = '{}_{}_{}_'.format(sample, model, sim)
 
                 for sim_name in [x for x in os.listdir(sim_dir) if sim_name_base in x]:
-                    array_job_number = 1
-                    start_paths_list = []
-
                     sim_path = os.path.join(sim_dir, sim_name)
                     fibers_path = os.path.abspath(os.path.join(sim_path, 'data', 'inputs'))
                     output_path = os.path.abspath(os.path.join(sim_path, 'data', 'outputs'))
@@ -139,62 +119,10 @@ def make_local_submission_lists():
                                                                                           fiber_ind))
                             continue
 
-                        # cluster
-                        if submission_context == 'cluster':
-                            start_path_base = os.path.join(sim_path, 'start_')
-                            start_path = '{}{}{}'.format(start_path_base,
-                                                         array_job_number,
-                                                         '.sh' if OS == 'UNIX-LIKE' else '.bat')
-
-                        else:
-                            # local
-                            start_path = os.path.join(sim_path, '{}_{}_start{}'.format(inner_ind, fiber_ind,
-                                                                                       '.sh' if OS == 'UNIX-LIKE'
-                                                                                       else '.bat'))
-
-                        if sim_config['protocol']['mode'] == 'ACTIVATION_THRESHOLD' \
-                                or sim_config['protocol']['mode'] == 'BLOCK_THRESHOLD':
-                            if 'scout_sim' in sim_config['protocol']['bounds_search'].keys():
-                                # load in threshold from scout_sim
-                                # (example use would be to run centroid first,
-                                # then any other xy-mmode after to save computation)
-
-                                scout_sim = sim_config['protocol']['bounds_search']['scout_sim']
-                                scout_sim_dir = os.path.join('n_sims')
-                                scout_sim_name = '{}_{}_{}_{}'.format(sample, model, scout_sim, n_sim)
-                                scout_sim_path = os.path.join(scout_sim_dir, scout_sim_name)
-                                scout_output_path = os.path.abspath(os.path.join(scout_sim_path, 'data', 'outputs'))
-                                scout_thresh_path = os.path.join(scout_output_path,
-                                                                 'thresh_inner{}_fiber{}.dat'.format(inner_ind,
-                                                                                                     0))
-                                if os.path.exists(scout_thresh_path):
-                                    stimamp = abs(np.loadtxt(thresh_path))
-                                else:
-                                    raise Exception('Sorry, no fiber threshold exists for '
-                                                    'scout sim: inner{} fiber0'.format(inner_ind))
-
-                                if len(np.atleast_1d(stimamp)) > 1:
-                                    stimamp = stimamp[-1]
-
-                                step = sim_config['protocol']['bounds_search']['step'] / 100
-                                stimamp_top = (1 + step) * stimamp
-                                stimamp_bottom = (1 - step) * stimamp
-
-                                unused_protocol_keys = ['top', 'bottom']
-
-                                if any(unused_protocol_key in sim_config['protocol']['bounds_search'].keys()
-                                       for unused_protocol_key in unused_protocol_keys):
-                                    warnings.warn('WARNING: scout_sim is defined in Sim, so no using "top" or "bottom" '
-                                                  'which you also defined \n')
-                            else:
-                                stimamp_top = sim_config['protocol']['bounds_search']['top']
-                                stimamp_bottom = sim_config['protocol']['bounds_search']['bottom']
-
-                        elif sim_config['protocol']['mode'] == 'FINITE_AMPLITUDES':
-                            stimamp_top, stimamp_bottom = 0, 0
-
-                        start_paths_list.append(start_path)
-                        array_job_number += 1
+                        # local
+                        start_path = os.path.join(sim_path, '{}_{}_start{}'.format(inner_ind, fiber_ind,
+                                                                                   '.sh' if OS == 'UNIX-LIKE'
+                                                                                   else '.bat'))
 
                         with open(start_path, 'w+') as handle:
                             lines = []
@@ -247,89 +175,15 @@ def make_local_submission_lists():
                         output_log = os.path.join(out_dir, '{}{}'.format(master_fiber_name, '.log'))
                         error_log = os.path.join(err_dir, '{}{}'.format(master_fiber_name, '.log'))
 
-                        if submission_context == 'cluster':
-                            if len(start_paths_list) == job_number_max:
-
-                                # command = ' '.join([
-                                #     'sbatch',
-                                #     '--job-name={}'.format(job_name),
-                                #     '--output={}'.format(output_log),
-                                #     '--error={}'.format(error_log),  # --array=1-10
-                                #     '--array=1-{}'.format(job_number_max),
-                                #     '--mem=8000',
-                                #     '-p', 'wmglab',
-                                #     '-c', '1',
-                                #     '{}${{SLURM_ARRAY_TASK_ID}}{}'.format(start_path_base, '.sh')  #
-                                # ])
-                                #
-                                # print(command)
-                                #
-                                # os.system(command)
-
-                                os.system('sbatch --job-name={} --output={} --error={} '
-                                          '--array=1-{} test.slurm {}'.format(job_name,
-                                                                              output_log,
-                                                                              error_log,
-                                                                              len(start_paths_list),
-                                                                              start_path_base))
-
-                                # allow job to start before removing slurm file
-                                time.sleep(1.0)
-
-                                # remove start.slurm
-                                # for my_start_path in start_paths_list:
-                                #     os.remove(my_start_path)
-
-                                # reset
-                                array_job_number = 1
-                                start_paths_list = []
-
-                            else:
-                                pass
-
-                        elif submission_context == 'local':
-                            local_args['start'] = start_path.split(os.path.sep)[-1]
-                            local_args['output_log'] = os.path.join('logs', 'out', output_log.split(os.path.sep)[-1])
-                            local_args['error_log'] = os.path.join('logs', 'err', error_log.split(os.path.sep)[-1])
-                            local_args['sim_path'] = os.path.abspath(sim_path)
-                            local_args_list.append(local_args.copy())
+                        local_args['start'] = start_path.split(os.path.sep)[-1]
+                        local_args['output_log'] = os.path.join('logs', 'out', output_log.split(os.path.sep)[-1])
+                        local_args['error_log'] = os.path.join('logs', 'err', error_log.split(os.path.sep)[-1])
+                        local_args['sim_path'] = os.path.abspath(sim_path)
+                        local_args_list.append(local_args.copy())
 
         local_args_lists.append(local_args_list)
 
-        # catch the remaining tasks at the end
-        if len(start_paths_list) > 0:
-            # command = ' '.join([
-            #     'sbatch',
-            #     '--job-name={}'.format(job_name),
-            #     '--output={}'.format(output_log),
-            #     '--error={}'.format(error_log),  # --array=1-10
-            #     '--mem=8000',
-            #     '--array=1-{}'.format(len(start_paths_list)),
-            #     '-p', 'wmglab',
-            #     '-c', '1',
-            #     '{}$SLURM_ARRAY_TASK_ID{}'.format(start_path_base, '.sh')
-            # ])
-            #
-            # os.system(command)
-            os.system('sbatch --job-name={} --output={} --error={} '
-                      '--array=1-{} test.slurm {}'.format(job_name,
-                                                          output_log,
-                                                          error_log,
-                                                          len(start_paths_list),
-                                                          start_path_base))
-
-            # allow job to start before removing slurm file
-            time.sleep(1.0)
-
-            # remove start.slurm
-            # for my_start_path in start_paths_list:
-            #     os.remove(my_start_path)
-
-            # reset
-            array_job_number = 1
-            start_paths_list = []
-
-    return local_args_lists, submission_contexts, run_filenames  # TODO
+    return local_args_lists, submission_contexts, run_filenames
 
 
 def cluster_submit(run_number: int, array_length_max: int = 10):
