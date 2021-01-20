@@ -25,6 +25,8 @@ def load(config_path: str):
 
 
 def make_submission_list():
+    job_number_max = 5  # TODO make this a parameter to the function
+
     if (not os.path.exists(os.path.join('MOD_Files/x86_64')) and OS == 'UNIX-LIKE') or \
             (not os.path.exists(os.path.join('MOD_Files', 'nrnmech.dll')) and OS == 'WINDOWS'):
         print('compile')
@@ -33,10 +35,8 @@ def make_submission_list():
         os.chdir('..')
 
     local_args_lists = []
-    run_filenames = []
     submission_contexts = []
-
-    job_number_max = 5
+    run_filenames = []
 
     for run_number in sys.argv[1:]:
         # run number is numeric
@@ -59,10 +59,6 @@ def make_submission_list():
         # configuration is not empty
         assert len(run.items()) > 0, 'Encountered empty run configuration: {}'.format(filename)
 
-        # assign appropriate configuration data
-        sample = run.get('sample', [])
-        models = run.get('models', [])
-        sims = run.get('sims', [])
         submission_context = run.get('submission_context', 'cluster')
         submission_contexts.append(submission_context)
 
@@ -73,6 +69,11 @@ def make_submission_list():
         if submission_context == 'local':
             local_run_keys = ['start', 'output_log', 'error_log', 'sim_path']
             local_args = dict.fromkeys(local_run_keys, [])
+
+        # assign appropriate configuration data
+        sample = run.get('sample', [])
+        models = run.get('models', [])
+        sims = run.get('sims', [])
 
         # loop models, sims
         for model in models:
