@@ -9,7 +9,6 @@ import time
 import numpy as np
 import warnings
 
-
 ALLOWED_SUBMISSION_CONTEXTS = ['cluster', 'local']
 OS = 'UNIX-LIKE' if any([s in sys.platform for s in ['darwin', 'linux']]) else 'WINDOWS'
 
@@ -36,6 +35,8 @@ def make_submission_list():
     local_args_lists = []
     run_filenames = []
     submission_contexts = []
+
+    job_number_max = 5
 
     for run_number in sys.argv[1:]:
         # run number is numeric
@@ -80,6 +81,9 @@ def make_submission_list():
                 sim_name_base = '{}_{}_{}_'.format(sample, model, sim)
 
                 for sim_name in [x for x in os.listdir(sim_dir) if sim_name_base in x]:
+                    job_number = 1
+                    start_paths_list = []
+
                     sim_path = os.path.join(sim_dir, sim_name)
                     fibers_path = os.path.abspath(os.path.join(sim_path, 'data', 'inputs'))
                     output_path = os.path.abspath(os.path.join(sim_path, 'data', 'outputs'))
@@ -118,8 +122,11 @@ def make_submission_list():
 
                         # cluster
                         if submission_context == 'cluster':
-                            start_path = os.path.join(sim_path, 'start{}'.format('.sh' if OS == 'UNIX_LIKE'
-                                                                                 else '.bat'))
+                            start_path_base = os.path.join(sim_path, 'start_')
+                            start_path = '{}{}{}'.format(start_path_base,
+                                                         job_number,
+                                                         '.sh' if OS == 'UNIX-LIKE' else '.bat')
+
                         else:
                             # local
                             start_path = os.path.join(sim_path, '{}_{}_start{}'.format(inner_ind, fiber_ind,
@@ -150,12 +157,12 @@ def make_submission_list():
                                 if len(np.atleast_1d(stimamp)) > 1:
                                     stimamp = stimamp[-1]
 
-                                step = sim_config['protocol']['bounds_search']['step']/100
-                                stimamp_top = (1+step)*stimamp
-                                stimamp_bottom = (1-step)*stimamp
+                                step = sim_config['protocol']['bounds_search']['step'] / 100
+                                stimamp_top = (1 + step) * stimamp
+                                stimamp_bottom = (1 - step) * stimamp
 
                                 unused_protocol_keys = ['top', 'bottom']
-                                
+
                                 if any(unused_protocol_key in sim_config['protocol']['bounds_search'].keys()
                                        for unused_protocol_key in unused_protocol_keys):
                                     warnings.warn('WARNING: scout_sim is defined in Sim, so no using "top" or "bottom" '
@@ -166,6 +173,9 @@ def make_submission_list():
 
                         elif sim_config['protocol']['mode'] == 'FINITE_AMPLITUDES':
                             stimamp_top, stimamp_bottom = 0, 0
+
+                        start_paths_list.append(start_path)
+                        job_number += 1
 
                         with open(start_path, 'w+') as handle:
                             lines = []
@@ -219,23 +229,44 @@ def make_submission_list():
                         error_log = os.path.join(err_dir, '{}{}'.format(master_fiber_name, '.log'))
 
                         if submission_context == 'cluster':
-                            command = ' '.join([
-                                'sbatch',
-                                '--job-name={}'.format(job_name),
-                                '--output={}'.format(output_log),
-                                '--error={}'.format(error_log),
-                                '--mem=8000',
-                                '-p', 'wmglab',
-                                '-c', '1',
-                                start_path
-                            ])
-                            os.system(command)
+                            if len(start_paths_list) == job_number_max:
 
-                            # allow job to start before removing slurm file
-                            time.sleep(1.0)
+                                # command = ' '.join([
+                                #     'sbatch',
+                                #     '--job-name={}'.format(job_name),
+                                #     '--output={}'.format(output_log),
+                                #     '--error={}'.format(error_log),  # --array=1-10
+                                #     '--array=1-{}'.format(job_number_max),
+                                #     '--mem=8000',
+                                #     '-p', 'wmglab',
+                                #     '-c', '1',
+                                #     '{}${{SLURM_ARRAY_TASK_ID}}{}'.format(start_path_base, '.sh')  #
+                                # ])
+                                #
+                                # print(command)
+                                #
+                                # os.system(command)
 
-                            # remove start.slurm
-                            os.remove(start_path)
+                                os.system('sbatch --job-name={} --output={} --error={} '
+                                          '--array=1-{} test.slurm {}'.format(job_name,
+                                                                              output_log,
+                                                                              error_log,
+                                                                              len(start_paths_list),
+                                                                              start_path_base))
+
+                                # allow job to start before removing slurm file
+                                time.sleep(1.0)
+
+                                # remove start.slurm
+                                # for my_start_path in start_paths_list:
+                                #     os.remove(my_start_path)
+
+                                # reset
+                                job_number = 1
+                                start_paths_list = []
+
+                            else:
+                                pass
 
                         elif submission_context == 'local':
                             local_args['start'] = start_path.split(os.path.sep)[-1]
@@ -245,6 +276,39 @@ def make_submission_list():
                             local_args_list.append(local_args.copy())
 
         local_args_lists.append(local_args_list)
+
+        # catch the remaining tasks at the end
+        if len(start_paths_list) > 0:
+            # command = ' '.join([
+            #     'sbatch',
+            #     '--job-name={}'.format(job_name),
+            #     '--output={}'.format(output_log),
+            #     '--error={}'.format(error_log),  # --array=1-10
+            #     '--mem=8000',
+            #     '--array=1-{}'.format(len(start_paths_list)),
+            #     '-p', 'wmglab',
+            #     '-c', '1',
+            #     '{}$SLURM_ARRAY_TASK_ID{}'.format(start_path_base, '.sh')
+            # ])
+            #
+            # os.system(command)
+            os.system('sbatch --job-name={} --output={} --error={} '
+                      '--array=1-{} test.slurm {}'.format(job_name,
+                                                          output_log,
+                                                          error_log,
+                                                          len(start_paths_list),
+                                                          start_path_base))
+
+            # allow job to start before removing slurm file
+            time.sleep(1.0)
+
+            # remove start.slurm
+            # for my_start_path in start_paths_list:
+            #     os.remove(my_start_path)
+
+            # reset
+            job_number = 1
+            start_paths_list = []
 
     return local_args_lists, submission_contexts, run_filenames
 
