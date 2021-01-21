@@ -39,7 +39,6 @@ def auto_compile(override: bool = False):
 
 
 def get_thresh_bounds(sim_dir: str, sim_name: str, inner_ind: int):
-
     top, bottom = None, None
 
     sample = sim_name.split('_')[0]
@@ -88,10 +87,9 @@ def get_thresh_bounds(sim_dir: str, sim_name: str, inner_ind: int):
     return top, bottom
 
 
-def make_task(os: str, start_p: str, sim_p: str, inner: int, fiber: int, top: float, bottom: float):
-
+def make_task(my_os: str, start_p: str, sim_p: str, inner: int, fiber: int, top: float, bottom: float):
     with open(start_p, 'w+') as handle:
-        if OS == 'UNIX-LIKE':
+        if my_os == 'UNIX-LIKE':
             lines = [
                 '#!/bin/bash\n',
                 'cd \"{}\"\n'.format(sim_p),
@@ -150,7 +148,6 @@ def local_submit(my_local_args):
 
 
 def cluster_submit(run_number: int, array_length_max: int = 10):
-
     # configuration is not empty
     assert array_length_max > 0, 'SLURM Job Array length is not > 0: array_length_max={}'.format(array_length_max)
 
@@ -166,6 +163,7 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
     sims = run.get('sims', [])
 
     job_count = 1
+    data = [[], [], []]
 
     # loop models, sims
     for model in models:
@@ -187,8 +185,8 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
                 start_path_base = os.path.join(sim_path, 'start_')
 
                 # ensure log directories exist
-                out_dir = os.path.abspath(os.path.join(sim_path, 'logs', 'out'))
-                err_dir = os.path.abspath(os.path.join(sim_path, 'logs', 'err'))
+                out_dir = os.path.join(sim_path, 'logs', 'out', '')
+                err_dir = os.path.join(sim_path, 'logs', 'err', '')
                 for cur_dir in [out_dir, err_dir]:
                     if not os.path.exists(cur_dir):
                         os.makedirs(cur_dir)
@@ -222,25 +220,31 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
                         fiber_index_tally.append(fiber_ind)
 
                         stimamp_top, stimamp_bottom = get_thresh_bounds(sim_dir, sim_name, inner_ind)
-
                         make_task(OS, start_path, sim_path, inner_ind, fiber_ind, stimamp_top, stimamp_bottom)
 
                         if array_index == array_length_max or fiber_file_ind == max_fibers_files_ind:
                             # output key, since we lose this in array method
                             start = 1 + job_count - len(start_paths_list)
-                            np.savetxt('key.txt', ([x for x in range(start, job_count+1)],
-                                                   inner_index_tally,
-                                                   fiber_index_tally))   # x,y,z equal sized 1D arrays
+                            key_file = os.path.join(sim_path, 'out_err_key.txt')
+
+                            data[0].append([x for x in range(start, job_count + 1)])
+                            data[1].append(inner_index_tally)
+                            data[2].append(fiber_index_tally)
+
+                            if fiber_file_ind == max_fibers_files_ind:
+                                with open(key_file, "ab") as f:
+                                    np.savetxt(f,
+                                               ([x for xs in data[0] for x in xs],
+                                                [y for ys in data[1] for y in ys],
+                                                [z for zs in data[2] for z in zs]),
+                                               fmt='%d')
+
+                                data = [[], [], []]
 
                             # submit batch job for fiber
-                            job_name = '{}_{}'.format(sim_name, sim_array_batch)
-                            # output_log = os.path.join(out_dir, '{}{}'.format(master_fiber_name, '.log'))
-                            # error_log = os.path.join(err_dir, '{}{}'.format(master_fiber_name, '.log'))
-                            # print('begin range: {}'.format(1 + job_count - len(start_paths_list)))
-                            # print('end range: {}'.format(job_count))
-
-                            os.system(f"sbatch --job-name={job_name} --output={out_dir}_%a.log "
-                                      f"--error={err_dir}_%a.log --array={start}-{job_count} "
+                            job_name = f"{sim_name}_{sim_array_batch}"
+                            os.system(f"sbatch --job-name={job_name} --output={out_dir}%a.log "
+                                      f"--error={err_dir}%a.log --array={start}-{job_count} "
                                       f"array_launch.slurm {start_path_base}")
 
                             # allow job to start before removing slurm file
@@ -254,7 +258,6 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
 
                         else:
                             array_index += 1
-
                         job_count += 1
 
 
