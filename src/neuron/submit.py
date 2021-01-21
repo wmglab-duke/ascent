@@ -87,6 +87,7 @@ def get_thresh_bounds(sim_dir: str, sim_name: str, inner_ind: int):
     return top, bottom
 
 
+@staticmethod
 def make_task(my_os: str, start_p: str, sim_p: str, inner: int, fiber: int, top: float, bottom: float):
     with open(start_p, 'w+') as handle:
         if my_os == 'UNIX-LIKE':
@@ -135,7 +136,8 @@ def make_task(my_os: str, start_p: str, sim_p: str, inner: int, fiber: int, top:
         handle.close()
 
 
-def local_submit(my_local_args):
+@staticmethod
+def local_submit(my_local_args: dict):
     sim_path = my_local_args['sim_path']
     os.chdir(sim_path)
 
@@ -147,6 +149,7 @@ def local_submit(my_local_args):
         p = subprocess.call(['bash', start] if OS == 'UNIX-LIKE' else [start], stdout=fo, stderr=fe)
 
 
+@staticmethod
 def cluster_submit(run_number: int, array_length_max: int = 10):
     # configuration is not empty
     assert array_length_max > 0, 'SLURM Job Array length is not > 0: array_length_max={}'.format(array_length_max)
