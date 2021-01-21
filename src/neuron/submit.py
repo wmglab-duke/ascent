@@ -261,97 +261,87 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
                         job_count += 1
 
 
-def make_local_submission_lists():
-    local_args_lists = []
-    submission_contexts = []
-    run_filenames = []
+def make_local_submission_list(run_number: int):
 
-    for run_number in sys.argv[1:]:
+    # build configuration filename
+    filename = os.path.join('runs', run_number + '.json')
 
-        # build configuration filename
-        filename = os.path.join('runs', run_number + '.json')
-        run_filenames.append(filename)
+    # create empty list of args (for local submission with parallelization) for each Run
+    local_args_list = []
 
-        # create empty list of args (for local submission with parallelization) for each Run
-        local_args_list = []
+    # load in configuration data
+    run = load(filename)
 
-        # load in configuration data
-        run = load(filename)
-        submission_context = run.get('submission_context', 'cluster')
-        submission_contexts.append(submission_context)
+    # keys required for each local submission
+    local_run_keys = ['start', 'output_log', 'error_log', 'sim_path']
 
-        # keys required for each local submission
-        local_run_keys = ['start', 'output_log', 'error_log', 'sim_path']
+    # assign appropriate configuration data
+    sample = run.get('sample', [])
+    models = run.get('models', [])
+    sims = run.get('sims', [])
 
-        # assign appropriate configuration data
-        sample = run.get('sample', [])
-        models = run.get('models', [])
-        sims = run.get('sims', [])
+    # loop models, sims
+    for model in models:
+        for sim in sims:
+            sim_dir = os.path.join('n_sims')
+            sim_name_base = '{}_{}_{}_'.format(sample, model, sim)
 
-        # loop models, sims
-        for model in models:
-            for sim in sims:
-                sim_dir = os.path.join('n_sims')
-                sim_name_base = '{}_{}_{}_'.format(sample, model, sim)
+            for sim_name in [x for x in os.listdir(sim_dir) if sim_name_base in x]:
+                print('\n\n################ {} ################\n\n'.format(sim_name))
 
-                for sim_name in [x for x in os.listdir(sim_dir) if sim_name_base in x]:
-                    print('\n\n################ {} ################\n\n'.format(sim_name))
+                sim_path = os.path.join(sim_dir, sim_name)
+                fibers_path = os.path.abspath(os.path.join(sim_path, 'data', 'inputs'))
+                output_path = os.path.abspath(os.path.join(sim_path, 'data', 'outputs'))
 
-                    sim_path = os.path.join(sim_dir, sim_name)
-                    fibers_path = os.path.abspath(os.path.join(sim_path, 'data', 'inputs'))
-                    output_path = os.path.abspath(os.path.join(sim_path, 'data', 'outputs'))
+                # ensure log directories exist
+                out_dir = os.path.abspath(os.path.join(sim_path, 'logs', 'out'))
+                err_dir = os.path.abspath(os.path.join(sim_path, 'logs', 'err'))
+                for cur_dir in [out_dir, err_dir]:
+                    if not os.path.exists(cur_dir):
+                        os.makedirs(cur_dir)
 
-                    # ensure log directories exist
-                    out_dir = os.path.abspath(os.path.join(sim_path, 'logs', 'out'))
-                    err_dir = os.path.abspath(os.path.join(sim_path, 'logs', 'err'))
-                    for cur_dir in [out_dir, err_dir]:
-                        if not os.path.exists(cur_dir):
-                            os.makedirs(cur_dir)
+                # ensure blank.hoc exists
+                blank_path = os.path.join(sim_path, 'blank.hoc')
+                if not os.path.exists(blank_path):
+                    open(blank_path, 'w').close()
 
-                    # ensure blank.hoc exists
-                    blank_path = os.path.join(sim_path, 'blank.hoc')
-                    if not os.path.exists(blank_path):
-                        open(blank_path, 'w').close()
+                # load JSON file with binary search amplitudes
+                n_sim = sim_name.split('_')[-1]
+                sim_config = load(os.path.join(sim_path, '{}.json'.format(n_sim)))
 
-                    # load JSON file with binary search amplitudes
-                    n_sim = sim_name.split('_')[-1]
-                    sim_config = load(os.path.join(sim_path, '{}.json'.format(n_sim)))
+                for fiber_filename in [x for x in os.listdir(fibers_path) if re.match('inner[0-9]+_fiber['
+                                                                                      '0-9]+\\.dat', x)]:
+                    master_fiber_name = str(fiber_filename.split('.')[0])
+                    inner_name, fiber_name = tuple(master_fiber_name.split('_'))
+                    inner_ind = int(inner_name.split('inner')[-1])
+                    fiber_ind = int(fiber_name.split('fiber')[-1])
 
-                    for fiber_filename in [x for x in os.listdir(fibers_path) if re.match('inner[0-9]+_fiber['
-                                                                                          '0-9]+\\.dat', x)]:
-                        master_fiber_name = str(fiber_filename.split('.')[0])
-                        inner_name, fiber_name = tuple(master_fiber_name.split('_'))
-                        inner_ind = int(inner_name.split('inner')[-1])
-                        fiber_ind = int(fiber_name.split('fiber')[-1])
+                    thresh_path = os.path.join(output_path,
+                                               'thresh_inner{}_fiber{}.dat'.format(inner_ind, fiber_ind))
+                    if os.path.exists(thresh_path):
+                        print('Found {} -->\t\tskipping inner ({}) fiber ({})'.format(thresh_path, inner_ind,
+                                                                                      fiber_ind))
+                        continue
 
-                        thresh_path = os.path.join(output_path,
-                                                   'thresh_inner{}_fiber{}.dat'.format(inner_ind, fiber_ind))
-                        if os.path.exists(thresh_path):
-                            print('Found {} -->\t\tskipping inner ({}) fiber ({})'.format(thresh_path, inner_ind,
-                                                                                          fiber_ind))
-                            continue
+                    # local
+                    start_path = os.path.join(sim_path, '{}_{}_start{}'.format(inner_ind, fiber_ind,
+                                                                               '.sh' if OS == 'UNIX-LIKE'
+                                                                               else '.bat'))
+                    stimamp_top, stimamp_bottom = get_thresh_bounds(sim_dir, sim_name, inner_ind)
+                    make_task(OS, start_path, sim_path, inner_ind, fiber_ind, stimamp_top, stimamp_bottom)
 
-                        # local
-                        start_path = os.path.join(sim_path, '{}_{}_start{}'.format(inner_ind, fiber_ind,
-                                                                                   '.sh' if OS == 'UNIX-LIKE'
-                                                                                   else '.bat'))
-                        stimamp_top, stimamp_bottom = get_thresh_bounds(sim_dir, sim_name, inner_ind)
-                        make_task(OS, start_path, sim_path, inner_ind, fiber_ind, stimamp_top, stimamp_bottom)
+                    # submit batch job for fiber
+                    output_log = os.path.join(out_dir, '{}{}'.format(master_fiber_name, '.log'))
+                    error_log = os.path.join(err_dir, '{}{}'.format(master_fiber_name, '.log'))
 
-                        # submit batch job for fiber
-                        output_log = os.path.join(out_dir, '{}{}'.format(master_fiber_name, '.log'))
-                        error_log = os.path.join(err_dir, '{}{}'.format(master_fiber_name, '.log'))
+                    local_args = dict.fromkeys(local_run_keys, [])
+                    local_args['start'] = start_path.split(os.path.sep)[-1]
+                    local_args['output_log'] = os.path.join('logs', 'out', output_log.split(os.path.sep)[-1])
+                    local_args['error_log'] = os.path.join('logs', 'err', error_log.split(os.path.sep)[-1])
+                    local_args['sim_path'] = os.path.abspath(sim_path)
+                    local_args_list.append(local_args.copy())
 
-                        local_args = dict.fromkeys(local_run_keys, [])
-                        local_args['start'] = start_path.split(os.path.sep)[-1]
-                        local_args['output_log'] = os.path.join('logs', 'out', output_log.split(os.path.sep)[-1])
-                        local_args['error_log'] = os.path.join('logs', 'err', error_log.split(os.path.sep)[-1])
-                        local_args['sim_path'] = os.path.abspath(sim_path)
-                        local_args_list.append(local_args.copy())
-
-        local_args_lists.append(local_args_list)
-
-    return local_args_lists, submission_contexts, run_filenames
+    return local_args_list
 
 
 def main():
@@ -404,12 +394,17 @@ def main():
                 cpus = multiprocessing.cpu_count() - 1
                 print(f"local_avail_cpus not defined in Run, so proceeding with cpu_count-1={cpus} CPUs")
 
-            submit_list = make_local_submission_lists()
+            submit_list = make_local_submission_list(run_index)
             pool = multiprocessing.Pool(cpus)
             result = pool.map(local_submit, submit_list)
 
         elif sub_context == 'cluster':
             cluster_submit(run_index)
+
+        else:
+            # something went horribly wrong
+            pass
+
 
 
 if __name__ == "__main__":  # Allows for the safe importing of the main module
