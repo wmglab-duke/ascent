@@ -178,6 +178,7 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
 
                 array_index = 1
                 start_paths_list = []
+                sim_array_batch = 1
                 sim_config = []
 
                 sim_path = os.path.join(sim_dir, sim_name)
@@ -200,6 +201,9 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
                 fibers_files = [x for x in os.listdir(fibers_path) if re.match('inner[0-9]+_fiber[0-9]+\\.dat', x)]
                 max_fibers_files_ind = len(fibers_files) - 1
 
+                inner_index_tally = []
+                fiber_index_tally = []
+
                 for fiber_file_ind, fiber_filename in enumerate(fibers_files):
                     master_fiber_name = str(fiber_filename.split('.')[0])
                     inner_name, fiber_name = tuple(master_fiber_name.split('_'))
@@ -214,25 +218,40 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
                         start_path = '{}{}{}'.format(start_path_base, job_count, '.sh' if OS == 'UNIX-LIKE' else '.bat')
                         start_paths_list.append(start_path)
 
+                        inner_index_tally.append(inner_ind)
+                        fiber_index_tally.append(fiber_ind)
+
                         stimamp_top, stimamp_bottom = get_thresh_bounds(sim_dir, sim_name, inner_ind)
 
                         make_task(OS, start_path, sim_path, inner_ind, fiber_ind, stimamp_top, stimamp_bottom)
 
                         if array_index == array_length_max or fiber_file_ind == max_fibers_files_ind:
+                            # output key, since we lose this in array method
+                            start = 1 + job_count - len(start_paths_list)
+                            np.savetxt('key.txt', ([x for x in range(start, job_count+1)],
+                                                   inner_index_tally,
+                                                   fiber_index_tally))   # x,y,z equal sized 1D arrays
+
                             # submit batch job for fiber
-                            job_name = '{}_{}'.format(sim_name, master_fiber_name)  # TODO (sim_array_batch?)
-                            output_log = os.path.join(out_dir, '{}{}'.format(master_fiber_name, '.log'))  # TODO
-                            error_log = os.path.join(err_dir, '{}{}'.format(master_fiber_name, '.log'))  # TODO
+                            job_name = '{}_{}'.format(sim_name, sim_array_batch)
+                            # output_log = os.path.join(out_dir, '{}{}'.format(master_fiber_name, '.log'))
+                            # error_log = os.path.join(err_dir, '{}{}'.format(master_fiber_name, '.log'))
                             # print('begin range: {}'.format(1 + job_count - len(start_paths_list)))
                             # print('end range: {}'.format(job_count))
 
-                            os.system(f"sbatch --job-name={job_name} --output={output_log} --error={error_log} "
-                                      f"--array={1 + job_count - len(start_paths_list)}-{job_count} array_launch.slurm {start_path_base}")
+                            os.system(f"sbatch --job-name={job_name} --output={out_dir}_%a.log "
+                                      f"--error={err_dir}_%a.log --array={start}-{job_count} "
+                                      f"array_launch.slurm {start_path_base}")
 
                             # allow job to start before removing slurm file
                             time.sleep(1.0)
-                            start_paths_list = []
+
                             array_index = 1
+                            sim_array_batch += 1
+                            start_paths_list = []
+                            inner_index_tally = []
+                            fiber_index_tally = []
+
                         else:
                             array_index += 1
 
