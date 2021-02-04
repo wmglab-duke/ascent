@@ -85,8 +85,8 @@
     }
   },
   "supersampled_bases": {
-    "generate": true,
-    "use": true,
+    "generate": false,
+    "use": false,
     "dz": 0.01,
     "source_sim": 1009
   }
