@@ -468,5 +468,10 @@
     "code": 93,
     "text": "Contact weight in Sim (active_srcs) is greater than +1 or less than -1 which is not allowed",
     "source": "src.core.Simulation"
+  },
+  {
+    "code": 94,
+    "text": "Source Sim (i.e., source_sim in Sim->supersampled_bases) does not exist. Either set proper source_sim that has your previously supersampled potentials, or set use to false.",
+    "source": "src.core.Simulation"
   }
 ]

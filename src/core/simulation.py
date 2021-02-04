@@ -363,6 +363,9 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
                         source_sim_obj_dir = os.path.join(sim_dir, str(source_sim))
 
+                        if not os.path.exists(source_sim_obj_dir):
+                            self.throw(94)
+
                         source_sim_obj_file = os.path.join(source_sim_obj_dir, 'sim.obj')
 
                         source_simulation: Simulation = load(source_sim_obj_file)
