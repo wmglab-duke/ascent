@@ -307,6 +307,7 @@ class Query(Exceptionable, Configurable, Saveable):
                  save_path: str = None,
                  plot_outers: bool = False,
                  rows_override: int = None,
+                 add_colorbar: bool = True,
                  colorbar_mode: str = 'subplot',
                  colormap_str: str = 'coolwarm',
                  colorbar_text_size_override: int = None,
@@ -322,7 +323,11 @@ class Query(Exceptionable, Configurable, Saveable):
                  tick_bounds: bool = False,
                  show_orientation_point: bool = True,
                  subplot_assign: str = 'standard',
-                 min_max_ticks: bool = False):
+                 min_max_ticks: bool = False,
+                 cutoff_thresh: bool = 0,
+                 suprathresh_color: Tuple[int, int, int, int] = (0, 1, 0, 1),
+                 subthresh_color: Tuple[int, int, int, int] = (0, 0, 1, 1)
+                 ):
 
         """
         Generate activation thresholds heatmaps
@@ -370,6 +375,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
         Returns:
             matplotlib.pyplot.Figure: Handle to final figure (uses .gcf())
+            :param colomap_bounds_override:
             :param min_max_ticks:
             :param subplot_assign:
         """
@@ -489,7 +495,7 @@ class Query(Exceptionable, Configurable, Saveable):
                         thresholds = []
                         missing_indices = []
 
-                        if plot_mode is 'fiber0':
+                        if plot_mode is 'fiber0' or 'on_off':
                             for i in range(n_inners):
                                 thresh_path = os.path.join(n_sim_dir, 'data', 'outputs',
                                                            'thresh_inner{}_fiber0.dat'.format(i))
@@ -572,6 +578,18 @@ class Query(Exceptionable, Configurable, Saveable):
                                         # NOTE: PLOTS MISSING VALUES AS RED
                                         offset += 1
                                         colors.append(missing_color)
+                        elif plot_mode is 'on_off':
+                            for i in range(n_inners):
+                                actual_i = i - offset
+                                if i not in missing_indices:
+                                    if thresholds[actual_i] > cutoff_thresh:
+                                        colors.append(suprathresh_color)
+                                    else:
+                                        colors.append(subthresh_color)
+                                else:
+                                    # NOTE: PLOTS MISSING VALUES AS RED
+                                    offset += 1
+                                    colors.append(missing_color)
 
                         # figure title -- make arbitrary, hard-coded subplot title modifications here (add elif's)
                         title = ''
@@ -598,7 +616,7 @@ class Query(Exceptionable, Configurable, Saveable):
                             # ax.plot(*tuple(slide.nerve.points[slide.orientation_point_index][:2]), 'b*')
                             ax.plot(*orientation_point, '.', markersize=20, color='grey')
 
-                        if plot_mode is 'fiber0':
+                        if plot_mode is 'fiber0' or 'on_off':
                             # plot slide (nerve and fascicles, defaulting to no outers)
                             sample_object.slides[0].plot(final=False, fix_aspect_ratio=True, fascicle_colors=colors,
                                                          ax=ax, outers_flag=plot_outers, inner_format='k-')
@@ -608,28 +626,29 @@ class Query(Exceptionable, Configurable, Saveable):
                             sim_object.fibersets[0].plot(ax=ax, fiber_colors=colors, size=3)
 
                         # colorbar
-                        cb_label = r'mA'
-                        cb: cbar.Colorbar = plt.colorbar(
-                            mappable=plt.cm.ScalarMappable(
-                                cmap=cmap,
-                                norm=mplcolors.Normalize(vmin=min_thresh, vmax=max_thresh)
-                            ),
-                            ticks=tick.MaxNLocator(nbins=tick_count) if not min_max_ticks else [min_thresh, max_thresh],
-                            ax=ax,
-                            orientation='vertical',
-                            #label=cb_label,
-                            aspect=colorbar_aspect if colorbar_aspect is not None else 20
-                        )
+                        if add_colorbar:
+                            cb_label = r'mA'
+                            cb: cbar.Colorbar = plt.colorbar(
+                                mappable=plt.cm.ScalarMappable(
+                                    cmap=cmap,
+                                    norm=mplcolors.Normalize(vmin=min_thresh, vmax=max_thresh)
+                                ),
+                                ticks=tick.MaxNLocator(nbins=tick_count) if not min_max_ticks else [min_thresh, max_thresh],
+                                ax=ax,
+                                orientation='vertical',
+                                #label=cb_label,
+                                aspect=colorbar_aspect if colorbar_aspect is not None else 20
+                            )
 
-                        # cb.ax.set_yticklabels(['{:.2f}'.format(min_thresh), '{:.2f}'.format(max_thresh)])
+                            # cb.ax.set_yticklabels(['{:.2f}'.format(min_thresh), '{:.2f}'.format(max_thresh)])
 
-                        # colorbar font size
-                        if colorbar_text_size_override is not None:
-                            # cb.set_label(cb_label, fontsize=colorbar_text_size_override)
-                            cb.ax.tick_params(labelsize=colorbar_text_size_override)
+                            # colorbar font size
+                            if colorbar_text_size_override is not None:
+                                # cb.set_label(cb_label, fontsize=colorbar_text_size_override)
+                                cb.ax.tick_params(labelsize=colorbar_text_size_override)
 
-                        # if tick_bounds:
-                        #     cb.set_ticks([np.ceil(min_thresh * 100) / 100, np.floor(max_thresh * 100) / 100])
+                            # if tick_bounds:
+                            #     cb.set_ticks([np.ceil(min_thresh * 100) / 100, np.floor(max_thresh * 100) / 100])
 
                     # set super title
                     if title_toggle:
@@ -662,7 +681,7 @@ class Query(Exceptionable, Configurable, Saveable):
                     print('\t{},'.format(bounds))
                 print(']')
 
-        return plt.gcf()
+        return plt.gcf(), axes
 
 
     def barcharts_compare_models(self,
