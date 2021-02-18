@@ -159,7 +159,7 @@ class Fascicle(Exceptionable):
             self.outer.plot(ax=ax)
 
         for i, inner in enumerate(self.inners):
-            inner.plot(plot_format, color, ax=ax)
+            inner.plot(plot_format, color=color, ax=ax)
             if inner_index_start is not None:
                 ax.text(*inner.centroid(), s=str(i + inner_index_start), ha='center', va='center')
 
