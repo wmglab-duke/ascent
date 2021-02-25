@@ -637,7 +637,8 @@ class Query(Exceptionable, Configurable, Saveable):
                                 ax=ax,
                                 orientation='vertical',
                                 #label=cb_label,
-                                aspect=colorbar_aspect if colorbar_aspect is not None else 20
+                                aspect=colorbar_aspect if colorbar_aspect is not None else 20,
+                                format='%0.2f'
                             )
 
                             # cb.ax.set_yticklabels(['{:.2f}'.format(min_thresh), '{:.2f}'.format(max_thresh)])
