@@ -1,0 +1,439 @@
+{
+  "code": "ITI",
+  "instances": [
+    {
+      "type": "CuffFill_Primitive",
+      "label": "ImThera Cuff Fill",
+      "def": {
+        "Radius": "R_out_ITF+Thk_fill_IT",
+        "Thk": "Thk_fill_IT",
+        "L": "L_IT+2*Thk_fill_IT",
+        "Center": "Center_IT",
+        "x_shift": "0",
+        "y_shift": "0"
+      },
+      "materials": [
+        {
+          "info": "fill",
+          "label_index": 0
+        }
+      ]
+    },
+    {
+      "type": "TubeCuff_Primitive",
+      "label": "ImThera Cuff",
+      "def": {
+        "type": "TubeCuff_Primitive",
+        "label": "ImThera Cuff",
+        "N_holes": "N_holes_ITI",
+        "Tube_theta": "Theta_ITI",
+        "Center": "Center_IT",
+        "R_in": "R_in_ITI",
+        "R_out": "R_out_ITI",
+        "Tube_L": "L_IT",
+        "Rot_def": "Rot_def_ITI",
+        "D_hole": "D_hole_ITI",
+        "Buffer_hole": "Buffer_hole_ITI",
+        "L_holecenter_cuffseam": "L_holecenter_cuffseam_ITI",
+        "Pitch_holecenter_holecenter": "Pitch_holecenter_holecenter_ITI"
+      },
+      "materials": [
+        {
+          "info": "insulator",
+          "label_index": 2
+        }
+      ]
+    },
+    {
+      "type": "TubeCuff_Primitive",
+      "label": "ImThera Furl",
+      "def": {
+        "N_holes": "N_holes_ITF",
+        "Tube_theta": "Theta_ITF",
+        "Center": "Center_IT",
+        "R_in": "R_in_ITF",
+        "R_out": "R_out_ITF",
+        "Tube_L": "L_IT",
+        "Rot_def": "Rot_def_ITF",
+        "D_hole": "D_hole_ITF",
+        "Buffer_hole": "Buffer_hole_ITF",
+        "L_holecenter_cuffseam": "L_holecenter_cuffseam_ITF",
+        "Pitch_holecenter_holecenter": "Pitch_holecenter_holecenter_ITF"
+      },
+      "materials": [
+        {
+          "info": "insulator",
+          "label_index": 2
+        }
+      ]
+    },
+    {
+      "type": "CircleContact_Primitive",
+      "label": "ImThera Contact 1",
+      "def": {
+        "Circle_recess": "Recess_ITC",
+        "Rotation_angle": "ang_cuffseam_contactcenter_ITC",
+        "Center": "Center_IT+length_contactcenter_contactcenter_ITC",
+        "Circle_def": "Round_def_ITC",
+        "R_in": "R_in_ITI",
+        "Circle_thk": "Contact_depth_ITC",
+        "Overshoot": "Overshoot_ITC",
+        "Circle_diam": "diam_contact_ITC",
+        "L": "L_IT"
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "label_index": 6
+        },
+        {
+          "info": "recess",
+          "label_index": 2
+        }
+      ]
+    },
+    {
+      "type": "CircleContact_Primitive",
+      "label": "ImThera Contact 2",
+      "def": {
+        "Circle_recess": "Recess_ITC",
+        "Rotation_angle": "ang_cuffseam_contactcenter_ITC+ang_contactcenter_contactcenter_ITC [deg]",
+        "Center": "Center_IT",
+        "Circle_def": "Round_def_ITC",
+        "R_in": "R_in_ITI",
+        "Circle_thk": "Contact_depth_ITC",
+        "Overshoot": "Overshoot_ITC",
+        "Circle_diam": "diam_contact_ITC",
+        "L": "L_IT"
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "label_index": 6
+        },
+        {
+          "info": "recess",
+          "label_index": 2
+        }
+      ]
+    },
+    {
+      "type": "CircleContact_Primitive",
+      "label": "ImThera Contact 3",
+      "def": {
+        "Circle_recess": "Recess_ITC",
+        "Rotation_angle": "ang_cuffseam_contactcenter_ITC+2*ang_contactcenter_contactcenter_ITC [deg]",
+        "Center": "Center_IT-length_contactcenter_contactcenter_ITC",
+        "Circle_def": "Round_def_ITC",
+        "R_in": "R_in_ITI",
+        "Circle_thk": "Contact_depth_ITC",
+        "Overshoot": "Overshoot_ITC",
+        "Circle_diam": "diam_contact_ITC",
+        "L": "L_IT"
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "label_index": 6
+        },
+        {
+          "info": "recess",
+          "label_index": 2
+        }
+      ]
+    },
+    {
+      "type": "CircleContact_Primitive",
+      "label": "ImThera Contact 4",
+      "def": {
+        "Circle_recess": "Recess_ITC",
+        "Rotation_angle": "ang_cuffseam_contactcenter_ITC+3*ang_contactcenter_contactcenter_ITC [deg]",
+        "Center": "Center_IT+length_contactcenter_contactcenter_ITC",
+        "Circle_def": "Round_def_ITC",
+        "R_in": "R_in_ITI",
+        "Circle_thk": "Contact_depth_ITC",
+        "Overshoot": "Overshoot_ITC",
+        "Circle_diam": "diam_contact_ITC",
+        "L": "L_IT"
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "label_index": 6
+        },
+        {
+          "info": "recess",
+          "label_index": 2
+        }
+      ]
+    },
+    {
+      "type": "CircleContact_Primitive",
+      "label": "ImThera Contact 5",
+      "def": {
+        "Circle_recess": "Recess_ITC",
+        "Rotation_angle": "ang_cuffseam_contactcenter_ITC+4*ang_contactcenter_contactcenter_ITC [deg]",
+        "Center": "Center_IT",
+        "Circle_def": "Round_def_ITC",
+        "R_in": "R_in_ITI",
+        "Circle_thk": "Contact_depth_ITC",
+        "Overshoot": "Overshoot_ITC",
+        "Circle_diam": "diam_contact_ITC",
+        "L": "L_IT"
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "label_index": 6
+        },
+        {
+          "info": "recess",
+          "label_index": 2
+        }
+      ]
+    },
+    {
+      "type": "CircleContact_Primitive",
+      "label": "ImThera Contact 6",
+      "def": {
+        "Circle_recess": "Recess_ITC",
+        "Rotation_angle": "ang_cuffseam_contactcenter_ITC+5*ang_contactcenter_contactcenter_ITC [deg]",
+        "Center": "Center_IT-length_contactcenter_contactcenter_ITC",
+        "Circle_def": "Round_def_ITC",
+        "R_in": "R_in_ITI",
+        "Circle_thk": "Contact_depth_ITC",
+        "Overshoot": "Overshoot_ITC",
+        "Circle_diam": "diam_contact_ITC",
+        "L": "L_IT"
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "label_index": 6
+        },
+        {
+          "info": "recess",
+          "label_index": 2
+        }
+      ]
+    }
+  ],
+
+  "params": [
+    {
+      "name": "N_holes_ITI",
+      "expression": "1",
+      "description": ""
+    },
+    {
+      "name": "Theta_ITI",
+      "expression": "theta_cuff_pre_ITI*(r_cuff_in_pre_ITI/R_in_ITI)",
+      "description": ""
+    },
+    {
+      "name": "Center_IT",
+      "expression": "z_nerve/2",
+      "description": ""
+    },
+    {
+      "name": "R_in_ITI",
+      "expression": "max(r_nerve+thk_medium_gap_internal_ITI,r_cuff_in_pre_ITI)",
+      "description": ""
+    },
+    {
+      "name": "R_out_ITI",
+      "expression": "R_in_ITI+thk_cuff_ITI",
+      "description": ""
+    },
+    {
+      "name": "L_IT",
+      "expression": "0.354 [inch]",
+      "description": ""
+    },
+    {
+      "name": "Rot_def_ITI",
+      "expression": "0",
+      "description": ""
+    },
+    {
+      "name": "D_hole_ITI",
+      "expression": "0.02 [inch]",
+      "description": ""
+    },
+    {
+      "name": "Buffer_hole_ITI",
+      "expression": "150 [um]",
+      "description": ""
+    },
+    {
+      "name": "L_holecenter_cuffseam_ITI",
+      "expression": "(pi*2*R_in_ITI)*(Theta_ITI/(2*pi))-0.03 [inch]",
+      "description": ""
+    },
+    {
+      "name": "N_holes_ITF",
+      "expression": "2",
+      "description": ""
+    },
+    {
+      "name": "Theta_ITF",
+      "expression": "theta_cuff_pre_ITF*((r_cuff_in_pre_ITF+thk_cuff_ITI+thk_gap_cuff_furl_IT)/(R_in_ITI+thk_cuff_ITI+thk_gap_cuff_furl_IT))",
+      "description": ""
+    },
+    {
+      "name": "R_in_ITF",
+      "expression": "R_in_ITI+thk_cuff_ITI+thk_gap_cuff_furl_IT",
+      "description": ""
+    },
+    {
+      "name": "R_out_ITF",
+      "expression": "R_in_ITI+thk_cuff_ITI+thk_gap_cuff_furl_IT+thk_furl_ITF",
+      "description": ""
+    },
+    {
+      "name": "Rot_def_ITF",
+      "expression": "-((2*pi-Theta_ITI)/2)-(Theta_ITF/2)",
+      "description": ""
+    },
+    {
+      "name": "D_hole_ITF",
+      "expression": "0.02 [inch]",
+      "description": ""
+    },
+    {
+      "name": "Buffer_hole_ITF",
+      "expression": "Buffer_hole_ITI",
+      "description": ""
+    },
+    {
+      "name": "L_holecenter_cuffseam_ITF",
+      "expression": "0.03 [inch]",
+      "description": ""
+    },
+    {
+      "name": "theta_cuff_pre_ITI",
+      "expression": "360 [deg]",
+      "description": ""
+    },
+    {
+      "name": "r_cuff_in_pre_ITI",
+      "expression": "0.059 [inch]",
+      "description": ""
+    },
+    {
+      "name": "thk_medium_gap_internal_ITI",
+      "expression": "10 [um]",
+      "description": ""
+    },
+    {
+      "name": "thk_cuff_ITI",
+      "expression": "r_cuff_out_pre_ITI-r_cuff_in_pre_ITI",
+      "description": ""
+    },
+    {
+      "name": "r_cuff_out_pre_ITI",
+      "expression": "(0.178/2) [inch]",
+      "description": ""
+    },
+    {
+      "name": "Pitch_holecenter_holecenter_ITI",
+      "expression": "0",
+      "description": ""
+    },
+    {
+      "name": "theta_cuff_pre_ITF",
+      "expression": "250 [deg]",
+      "description": ""
+    },
+    {
+      "name": "r_cuff_in_pre_ITF",
+      "expression": "(0.178/2) [inch]",
+      "description": ""
+    },
+    {
+      "name": "thk_gap_cuff_furl_IT",
+      "expression": "0",
+      "description": ""
+    },
+    {
+      "name": "thk_furl_ITF",
+      "expression": "r_furl_out_pre_ITF-r_furl_in_pre_ITF",
+      "description": ""
+    },
+    {
+      "name": "r_furl_out_pre_ITF",
+      "expression": "(0.218/2) [inch]",
+      "description": ""
+    },
+    {
+      "name": "r_furl_in_pre_ITF",
+      "expression": "(0.178/2) [inch]",
+      "description": ""
+    },
+    {
+      "name": "Pitch_holecenter_holecenter_ITF",
+      "expression": "L_IT-2*0.077 [inch]",
+      "description": ""
+    },
+    {
+      "name": "diam_contact_ITC",
+      "expression": "2 [mm]",
+      "description": ""
+    },
+    {
+      "name": "Recess_ITC",
+      "expression": "0.05 [mm]",
+      "description": ""
+    },
+    {
+      "name": "Round_def_ITC",
+      "expression": "1",
+      "description": ""
+    },
+    {
+      "name": "Contact_depth_ITC",
+      "expression": "0.05 [mm]",
+      "description": ""
+    },
+    {
+      "name": "Overshoot_ITC",
+      "expression": "0.05 [mm]",
+      "description": ""
+    },
+    {
+      "name": "length_contactcenter_contactcenter_ITC",
+      "expression": "0.108 [inch]",
+      "description": ""
+    },
+    {
+      "name": "ang_cuffseam_contactcenter_ITC",
+      "expression": "ang_cuffseam_contactcenter_pre_ITC*(r_cuff_in_pre_ITI/R_in_ITI)",
+      "description": ""
+    },
+    {
+      "name": "ang_cuffseam_contactcenter_pre_ITC",
+      "expression": "53 [deg]",
+      "description": ""
+    },
+    {
+      "name": "ang_contactcenter_contactcenter_ITC",
+      "expression": "ang_contactcenter_contactcenter_pre_ITC*(r_cuff_in_pre_ITI/R_in_ITI)",
+      "description": ""
+    },
+    {
+      "name": "ang_contactcenter_contactcenter_pre_ITC",
+      "expression": "51 [deg]",
+      "description": ""
+    },
+    {
+      "name": "Thk_fill_IT",
+      "expression": "100 [um]",
+      "description": ""
+    }
+  ],
+
+  "expandable": true,
+  "angle_to_contacts_deg": 180,
+  "offset": {
+  }
+}
