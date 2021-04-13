@@ -35,20 +35,31 @@ plt.rcParams['figure.figsize'] = list(np.array([16.8, 10.14]) / 2)
 #                            fascicle_filter_indices=[2, 3, 9, 7, 13, 15, 4, 0, 6, 10, 15, 18, 16, 1, 11, 17, 5, 8, 14, 12, 21, 23, 20, 25, 32],
 #                            logscale=True)
 
+# q = Query({
+#     'partial_matches': True,
+#     'include_downstream': True,
+#     'indices': {
+#         'samples': [1017],
+#         'model': [4, 5, 6, 7],
+#         'sim': [1040]
+#     }
+# }).run()
+
 q = Query({
-    'partial_matches': True,
+    'partial_matches': False,
     'include_downstream': True,
     'indices': {
-        'samples': [1017],
-        'model': [4, 5, 6, 7],
-        'sim': [1040]
+        'sample': [3008],
+        'model': [0, 1, 2],
+        'sim': [3001]
     }
 }).run()
 
 # builds heatmaps
-q.barcharts_compare_models(logscale=False,
-                           model_labels=['Model 0: Veltink Epineurium, \n              Veltink Perineurium',
-                                         'Model 1: Veltink Epineurium, \n              Goodall Perineurium',
-                                         'Model 2: Goodall Epineurium, \n              Veltink Perineurium',
-                                         'Model 3: Goodall Epineurium, \n              Goodall Perineurium']
-                           )
+# q.barcharts_compare_models(logscale=False,
+#                            model_labels=['Model 0: Veltink Epineurium, \n              Veltink Perineurium',
+#                                          'Model 1: Veltink Epineurium, \n              Goodall Perineurium',
+#                                          'Model 2: Goodall Epineurium, \n              Veltink Perineurium',
+#                                          'Model 3: Goodall Epineurium, \n              Goodall Perineurium']
+#                            )
+q.barcharts_compare_models(sl=True)

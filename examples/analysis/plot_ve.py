@@ -2,15 +2,15 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 
-sample = 80
-model = 0
-sim = 10
+sample = 3008
+model = 6
+sim = 3001
 
 base_n_sim = os.path.join('samples', str(sample), 'models', str(model), 'sims', str(sim), 'n_sims')
 
-inner = 46
+inner = 0
 fiber = 0
-n_sims = [0, 4, 8, 12, 16, 20]
+n_sims = list(range(6)) #[0, 4, 8, 12, 16, 20]
 pve1 = os.path.join(base_n_sim, str(n_sims[0]), 'data', 'inputs', 'inner{}_fiber{}.dat'.format(inner, fiber))
 dpve1 = np.loadtxt(pve1)
 plt.plot(dpve1[1:], 'r-', label='p1')

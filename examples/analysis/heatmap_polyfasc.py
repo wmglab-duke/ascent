@@ -24,9 +24,9 @@ q = Query({
     'partial_matches': True,
     'include_downstream': True,
     'indices': {
-        'sample': [0],
+        'sample': [3006, 3007],
         'model': [0, 1, 2, 3],
-        'sim': [0]
+        'sim': [3000]
     }
 }).run()
 
@@ -103,20 +103,20 @@ colormap_bounds_override = None
 # ]
 
 # builds heatmaps
-q.heatmaps(plot=True,
+q.heatmaps(plot=False,
             save_path='out/analysis',
             plot_mode='fiber0',
         #    rows_override=6,
            colorbar_aspect=5,
            colormap_str='viridis',
            tick_count=4,
-           reverse_colormap=False
+           reverse_colormap=True,
         #    title_toggle=False,
         #    track_colormap_bounds=True,
         #    track_colormap_bounds_offset_ratio=0.0,
         #    colomap_bounds_override=colormap_bounds_override,
         #    subplot_title_toggle=False,
-        #    colorbar_text_size_override=20,
+            colorbar_text_size_override=30
         #    tick_bounds=True
            )
 
@@ -124,4 +124,4 @@ q.heatmaps(plot=True,
 #                 # TODO: Finish building heatmap of polyfasc nerve (1 fiber/fasc)
 #                 # also, look into adding documentation to Simulation (might be useful for above task too)
 
-plt.close('all')
+#plt.close('all')
