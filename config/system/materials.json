@@ -114,6 +114,10 @@
       "sigma_y": "1/6",
       "sigma_z": "2",
       "unit": "[S/m]"
+    },
+    "platinum_low_test": {
+      "value": "4.715*10^6",
+      "unit": "[S/m]"
     }
   }
 }
