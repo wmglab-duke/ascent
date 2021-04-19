@@ -66,7 +66,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         tstop = extracellular_stim.get("stop")
         file_object.write("tstop     = %0.0f // [ms]\n" % tstop)
         file_object.write("n_tsteps  = %0.0f // [unitless]\n" % n_tsteps)
-        file_object.write("t_initSS  = %0.0f // [ms]\n" % self.search(Config.SIM, "protocol", "initSS"))
+        file_object.write("t_initSS  = %0.0f // [ms]\n" % self.search(Config.SIM, "protocol", "initSS")) # TODO load protocol as own dict, then populate from it
         file_object.write("dt_initSS = %0.0f // [ms]\n" % self.search(Config.SIM, "protocol", "dt_initSS"))
 
         # FIBER PARAMETERS
@@ -199,8 +199,8 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                     "locs": [0]
                 }
             }
-
-        saving: dict = self.search(Config.SIM, "saving")
+        else:
+            saving: dict = self.search(Config.SIM, "saving")
 
         file_object.write("saveflag_Vm_time      = %0.0f\n" % int(saving.get("time").get("vm") == True))
         file_object.write("saveflag_gating_time  = %0.0f\n" % int(saving.get("time").get("gating") == True))
@@ -210,6 +210,8 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         file_object.write("saveflag_Istim        = %0.0f\n" % int(saving.get("time").get("istim") == True))
 
         file_object.write("\n//***************** Protocol Parameters *********\n")
+
+        protocol: dict = self.search(Config.SIM, "protocol")
 
         protocol_mode_name: str = self.search(Config.SIM, 'protocol', 'mode')
         protocol_mode: NeuronRunMode = \
@@ -258,6 +260,12 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                 res: float = self.search(Config.SIM, "protocol", "termination_criteria", "percent")
                 file_object.write("\nrel_thresh_resoln = %0.4f\n" % (res/100))
             file_object.write("termination_flag = %0.0f // \n" % termination_flag)
+
+            if 'max_iter' not in protocol.keys():
+                max_iter: int = 100
+            else:
+                max_iter = protocol.get("max_steps")
+            file_object.write("max_iter = %0.0f // \n" % max_iter)
 
             file_object.write("Namp = %0.0f\n" % 1)
             file_object.write("objref stimamp_values\n")

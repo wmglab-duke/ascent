@@ -61,22 +61,24 @@ def get_thresh_bounds(sim_dir: str, sim_name: str, inner_ind: int):
 
             if os.path.exists(scout_thresh_path):
                 stimamp = abs(np.loadtxt(scout_thresh_path))
+
+                if len(np.atleast_1d(stimamp)) > 1:
+                    stimamp = stimamp[-1]
+
+                step = sim_config['protocol']['bounds_search']['step'] / 100
+                top = (1 + step) * stimamp
+                bottom = (1 - step) * stimamp
+
+                unused_protocol_keys = ['top', 'bottom']
+
+                if any(unused_protocol_key in sim_config['protocol']['bounds_search'].keys()
+                       for unused_protocol_key in unused_protocol_keys):
+                    warnings.warn('WARNING: scout_sim is defined in Sim, so not using "top" or "bottom" '
+                                  'which you also defined \n')
+
             else:
-                raise Exception(f"Sorry, no fiber threshold exists for scout sim: inner{inner_ind} fiber0")
+                warnings.warn(f"Sorry, no fiber threshold exists for scout sim: inner{inner_ind} fiber0")
 
-            if len(np.atleast_1d(stimamp)) > 1:
-                stimamp = stimamp[-1]
-
-            step = sim_config['protocol']['bounds_search']['step'] / 100
-            top = (1 + step) * stimamp
-            bottom = (1 - step) * stimamp
-
-            unused_protocol_keys = ['top', 'bottom']
-
-            if any(unused_protocol_key in sim_config['protocol']['bounds_search'].keys()
-                   for unused_protocol_key in unused_protocol_keys):
-                warnings.warn('WARNING: scout_sim is defined in Sim, so not using "top" or "bottom" '
-                              'which you also defined \n')
         else:
             top = sim_config['protocol']['bounds_search']['top']
             bottom = sim_config['protocol']['bounds_search']['bottom']
@@ -220,7 +222,10 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
                         fiber_index_tally.append(fiber_ind)
 
                         stimamp_top, stimamp_bottom = get_thresh_bounds(sim_dir, sim_name, inner_ind)
-                        make_task(OS, start_path, sim_path, inner_ind, fiber_ind, stimamp_top, stimamp_bottom)
+                        if stimamp_top is not None and stimamp_bottom is not None:
+                            make_task(OS, start_path, sim_path, inner_ind, fiber_ind, stimamp_top, stimamp_bottom)
+                            array_index += 1
+                            job_count += 1
 
                         if array_index == array_length_max or fiber_file_ind == max_fibers_files_ind:
                             # output key, since we lose this in array method
@@ -255,10 +260,6 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
                             start_paths_list = []
                             inner_index_tally = []
                             fiber_index_tally = []
-
-                        else:
-                            array_index += 1
-                        job_count += 1
 
 
 def make_local_submission_list(run_number: int):

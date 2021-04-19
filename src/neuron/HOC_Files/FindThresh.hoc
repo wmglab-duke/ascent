@@ -24,6 +24,8 @@ proc FindThresh() {//local key
 	check_bottom_flag = 0 // 0 for lower-bound not yet found, value changes to 1 when the lower-bound is found
 	// when both found, enter binary search
 
+	iter = 1
+
 	while(1) {
 
 		if (check_top_flag == 0) {
@@ -71,6 +73,13 @@ proc FindThresh() {//local key
 			print "Bounds set - entering binary search"
 			break
 		}
+
+		iter = iter+1
+
+		if (iter > max_iter) {
+			print "maximum number of bounds searching steps reached. breaking."
+			quit()
+		} 
 	}
 
 	while(1) {

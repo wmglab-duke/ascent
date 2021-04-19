@@ -201,6 +201,8 @@ class Trace(Exceptionable):
         :return: list of tuples (x,y) that are within the trace (polygon)
         """
         trace_to_compare = self.deepcopy()
+        trace_to_compare.offset(None, 1)  # seems to improve reliability to expand 1 um, and then shrink back first
+        trace_to_compare.offset(None, -1)
         trace_to_compare.offset(None, -buffer)
 
         min_x, min_y, max_x, max_y = trace_to_compare.polygon().bounds
