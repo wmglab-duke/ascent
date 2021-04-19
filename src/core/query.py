@@ -503,7 +503,7 @@ class Query(Exceptionable, Configurable, Saveable):
                                     threshold = abs(np.loadtxt(thresh_path))
                                     if len(np.atleast_1d(threshold)) > 1:
                                         threshold = threshold[-1]
-                                    if threshold > 20:
+                                    if threshold > 500:
                                         missing_indices.append(i)
                                         print('TOO BIG: {}'.format(thresh_path))
                                     else:
@@ -609,7 +609,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
                         # set title
                         if subplot_title_toggle:
-                            ax.set_title(title, fontsize=10)
+                            ax.set_title(title, fontsize=35)
 
                         # plot orientation point if applicable
                         if orientation_point is not None and show_orientation_point is True:
@@ -646,7 +646,7 @@ class Query(Exceptionable, Configurable, Saveable):
                             # colorbar font size
                             if colorbar_text_size_override is not None:
                                 # cb.set_label(cb_label, fontsize=colorbar_text_size_override)
-                                cb.ax.tick_params(labelsize=colorbar_text_size_override)
+                                cb.ax.tick_params(labelsize=colorbar_text_size_override if (colorbar_text_size_override is not None) else 25)
 
                             # if tick_bounds:
                             #     cb.set_ticks([np.ceil(min_thresh * 100) / 100, np.floor(max_thresh * 100) / 100])
@@ -658,10 +658,11 @@ class Query(Exceptionable, Configurable, Saveable):
                                 sample_config.get('sample'),
                                 model_index
                             ),
-                            size='x-large'
+                            size=40
                         )
 
                     plt.tight_layout(pad=2)
+                    plt.subplots_adjust(top=0.90)
                     # plt.tight_layout(pad=5.0)
 
                     # save figure as png
@@ -695,7 +696,8 @@ class Query(Exceptionable, Configurable, Saveable):
                                  width: float = 0.8,
                                  capsize: float = 5,
                                  fascicle_filter_indices: List[int] = None,
-                                 logscale: bool = False):
+                                 logscale: bool = False,
+                                 sl: bool = False):
         """
 
         :param nsim_indices:
@@ -812,6 +814,7 @@ class Query(Exceptionable, Configurable, Saveable):
                     # fetch outer->inner->fiber and out->inner maps
                     out_in_fib, out_in = sim_object.fiberset_map_pairs[fiberset_index]
 
+
                     # build base dirs for fetching thresholds
                     sim_dir = self.build_path(Object.SIMULATION,
                                               [sample_index, model_index, sim_index],
@@ -822,22 +825,39 @@ class Query(Exceptionable, Configurable, Saveable):
                     thresholds: List[float] = []
 
                     # fetch all thresholds
-                    for inner in range(n_inners):
-
-                        outer = [index for index, inners in enumerate(out_in) if inner in inners][0]
+                    for inner in (range(n_inners) if not sl else [0]):
+                        print(n_inners)
+                        print(inner)
+                        outer = 0
+                        try:
+                            outer = [index for index, inners in enumerate(out_in) if inner in inners][0]
+                        except:
+                            outer = 0
 
                         if (fascicle_filter_indices is not None) and (outer not in fascicle_filter_indices):
                             continue
 
-                        for local_fiber_index, _ in enumerate(out_in_fib[outer][out_in[outer].index(inner)]):
-                            thresh_path = os.path.join(n_sim_dir,
-                                                       'data',
-                                                       'outputs',
-                                                       'thresh_inner{}_fiber{}.dat'.format(inner, local_fiber_index))
-                            threshold = np.loadtxt(thresh_path)
-                            if threshold.size > 1:
-                                threshold = threshold[-1]
-                            thresholds.append(abs(threshold))
+                        try:
+                            for local_fiber_index, _ in enumerate(out_in_fib[outer][out_in[outer].index(inner)]):
+                                thresh_path = os.path.join(n_sim_dir,
+                                                        'data',
+                                                        'outputs',
+                                                        'thresh_inner{}_fiber{}.dat'.format(inner, local_fiber_index))
+                                threshold = np.loadtxt(thresh_path)
+                                if threshold.size > 1:
+                                    threshold = threshold[-1]
+                                thresholds.append(abs(threshold))
+
+                        except:
+                            for local_fiber_index, _ in enumerate([0]):
+                                thresh_path = os.path.join(n_sim_dir,
+                                                        'data',
+                                                        'outputs',
+                                                        'thresh_inner{}_fiber{}.dat'.format(inner, local_fiber_index))
+                                threshold = np.loadtxt(thresh_path)
+                                if threshold.size > 1:
+                                    threshold = threshold[-1]
+                                thresholds.append(abs(threshold))
 
                     thresholds: np.ndarray = np.array(thresholds)
 
@@ -866,8 +886,8 @@ class Query(Exceptionable, Configurable, Saveable):
                 )
 
             # add x-axis values
-            ax.set_xticks(x_vals)
-            ax.set_xticklabels(xlabels)
+            # ax.set_xticks(x_vals)
+            # ax.set_xticklabels(xlabels)
 
             # set log scale
             if logscale:
@@ -883,15 +903,16 @@ class Query(Exceptionable, Configurable, Saveable):
 
             plt.title(title)
 
-            for item in ([ax.title, ax.xaxis.label, ax.yaxis.label] +
-                         ax.get_xticklabels() + ax.get_yticklabels()):
-                item.set_fontsize(20)
+            # for item in ([ax.title, ax.xaxis.label, ax.yaxis.label] +
+            #              ax.get_xticklabels() + ax.get_yticklabels()):
+            #     item.set_fontsize(12)
 
             # add legend
-            plt.legend(fontsize=16)
+            # plt.legend(fontsize=12)
 
             # plot!
             if plot:
+                print('PLOTTING!')
                 plt.show()
 
         # def barcharts_compare_models(self,

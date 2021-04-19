@@ -3,9 +3,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
-sample = 0
-model = 2
-sim = 1
+sample = 3008
+model = 9
+sim = 3001
 inner = 0
 fiber = 0
 n_sim = 0
@@ -54,7 +54,7 @@ ani = FuncAnimation(fig, update, frames=np.arange(0, 1000, 5),  # frames=np.aran
 # ani.save(os.path.join(data_path,
 #                       'video_gating_h_time_inner{}_fiber{}_amp0.gif'.format(inner, fiber)  # or .mp4
 #                       ))
-savepath = os.path.join(data_path,
+savepath = os.path.join('out', 'analysis',
                       'video_Vm_time_inner{}_fiber{}_amp0.gif'.format(inner, fiber)  # or .mp4
                       )
 

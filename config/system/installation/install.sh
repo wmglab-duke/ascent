@@ -3,8 +3,8 @@
 # set up conda for this environment, choosing between Linux/macOS
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     # Linux
-    CONDA_SETUP_SCRIPT=~/miniconda3/etc/profile.d/conda.sh
-    CONDA_BIN=~/miniconda3/envs/ascent/bin
+    CONDA_SETUP_SCRIPT=/hpc/group/wmglab/jec91/miniconda3/etc/profile.d/conda.bash
+    CONDA_BIN=/hpc/group/wmglab/jec91/miniconda3/envs/ascent/bin
 else
     # macOS
     CONDA_SETUP_SCRIPT=~/opt/miniconda3/etc/profile.d/conda.sh
