@@ -77,7 +77,7 @@ def get_thresh_bounds(sim_dir: str, sim_name: str, inner_ind: int):
                                   'which you also defined \n')
 
             else:
-                warnings.warn(f"Sorry, no fiber threshold exists for scout sim: inner{inner_ind} fiber0")
+                warnings.warn(f"No fiber threshold exists for scout sim: inner{inner_ind} fiber0")
 
         else:
             top = sim_config['protocol']['bounds_search']['top']
@@ -204,6 +204,7 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
                 inner_index_tally = []
                 fiber_index_tally = []
 
+                missing_total = 0
                 for fiber_file_ind, fiber_filename in enumerate(fibers_files):
                     master_fiber_name = str(fiber_filename.split('.')[0])
                     inner_name, fiber_name = tuple(master_fiber_name.split('_'))
@@ -212,54 +213,110 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
 
                     thresh_path = os.path.join(output_path, f"thresh_inner{inner_ind}_fiber{fiber_ind}.dat")
                     if os.path.exists(thresh_path):
-                        print(f"Found {thresh_path} -->\t\tskipping inner ({inner_ind}) fiber ({fiber_ind})")
                         continue
                     else:
-                        start_path = '{}{}{}'.format(start_path_base, job_count, '.sh' if OS == 'UNIX-LIKE' else '.bat')
-                        start_paths_list.append(start_path)
+                        missing_total += 1
+                        inner_ind_solo = inner_ind
+                        fiber_ind_solo = fiber_ind
+                        master_fiber_name_solo = master_fiber_name
 
-                        inner_index_tally.append(inner_ind)
-                        fiber_index_tally.append(fiber_ind)
+                if missing_total == 0:
+                    continue
 
-                        stimamp_top, stimamp_bottom = get_thresh_bounds(sim_dir, sim_name, inner_ind)
-                        if stimamp_top is not None and stimamp_bottom is not None:
-                            make_task(OS, start_path, sim_path, inner_ind, fiber_ind, stimamp_top, stimamp_bottom)
-                            array_index += 1
-                            job_count += 1
+                elif missing_total == 1:
+                    stimamp_top, stimamp_bottom = get_thresh_bounds(sim_dir, sim_name, inner_ind_solo)
+                    start_path_solo = os.path.join(sim_path, 'start{}'.format('.sh' if OS == 'UNIX_LIKE' else '.bat'))
 
-                        if array_index == array_length_max or fiber_file_ind == max_fibers_files_ind:
-                            # output key, since we lose this in array method
-                            start = 1 + job_count - len(start_paths_list)
-                            key_file = os.path.join(sim_path, 'out_err_key.txt')
+                    if stimamp_top is not None and stimamp_bottom is not None:
+                        make_task(OS, start_path_solo, sim_path, inner_ind_solo, fiber_ind_solo, stimamp_top, stimamp_bottom)
 
-                            data[0].append([x for x in range(start, job_count + 1)])
-                            data[1].append(inner_index_tally)
-                            data[2].append(fiber_index_tally)
+                        # submit batch job for fiber
+                        job_name = '{}_{}'.format(sim_name, master_fiber_name_solo)
+                        output_log = os.path.join(out_dir, '{}{}'.format(master_fiber_name_solo, '.log'))
+                        error_log = os.path.join(err_dir, '{}{}'.format(master_fiber_name_solo, '.log'))
 
-                            if fiber_file_ind == max_fibers_files_ind:
-                                with open(key_file, "ab") as f:
-                                    np.savetxt(f,
-                                               ([x for xs in data[0] for x in xs],
-                                                [y for ys in data[1] for y in ys],
-                                                [z for zs in data[2] for z in zs]),
-                                               fmt='%d')
+                        print('========= SUBMITTING SOLO: {} ==========='.format(job_name))
 
-                                data = [[], [], []]
+                        command = ' '.join([
+                            'sbatch',
+                            '--job-name={}'.format(job_name),
+                            '--output={}'.format(output_log),
+                            '--error={}'.format(error_log),
+                            '--mem=8000',
+                            '-p', 'wmglab',
+                            '-c', '1',
+                            start_path_solo
+                        ])
+                        os.system(command)
 
-                            # submit batch job for fiber
-                            job_name = f"{sim_name}_{sim_array_batch}"
-                            os.system(f"sbatch --job-name={job_name} --output={out_dir}%a.log "
-                                      f"--error={err_dir}%a.log --array={start}-{job_count} "
-                                      f"array_launch.slurm {start_path_base}")
+                        # allow job to start before removing slurm file
+                        time.sleep(1.0)
+                    else:
+                        print('MISSING DEFINITION OF TOP AND BOTTOM ==========================')
+                        continue
 
-                            # allow job to start before removing slurm file
-                            time.sleep(1.0)
+                else:
 
-                            array_index = 1
-                            sim_array_batch += 1
-                            start_paths_list = []
-                            inner_index_tally = []
-                            fiber_index_tally = []
+                    print('================= ARRAY SUBMITTING ====================')
+                    for fiber_file_ind, fiber_filename in enumerate(fibers_files):
+                        master_fiber_name = str(fiber_filename.split('.')[0])
+                        inner_name, fiber_name = tuple(master_fiber_name.split('_'))
+                        inner_ind = int(inner_name.split('inner')[-1])
+                        fiber_ind = int(fiber_name.split('fiber')[-1])
+
+                        thresh_path = os.path.join(output_path, f"thresh_inner{inner_ind}_fiber{fiber_ind}.dat")
+                        if os.path.exists(thresh_path):
+                            # print(f"Found {thresh_path} -->\t\tskipping inner ({inner_ind}) fiber ({fiber_ind})")
+                            continue
+                        else:
+                            # print(f"MISSING {thresh_path} -->\t\trunning inner ({inner_ind}) fiber ({fiber_ind})")
+                            time.sleep(1)
+                            start_path = '{}{}{}'.format(start_path_base, job_count, '.sh' if OS == 'UNIX-LIKE' else '.bat')
+                            start_paths_list.append(start_path)
+
+                            inner_index_tally.append(inner_ind)
+                            fiber_index_tally.append(fiber_ind)
+
+                            stimamp_top, stimamp_bottom = get_thresh_bounds(sim_dir, sim_name, inner_ind)
+                            if stimamp_top is not None and stimamp_bottom is not None:
+                                make_task(OS, start_path, sim_path, inner_ind, fiber_ind, stimamp_top, stimamp_bottom)
+                                array_index += 1
+                                job_count += 1
+
+                            if array_index == array_length_max or fiber_file_ind == max_fibers_files_ind:
+                                # output key, since we lose this in array method
+                                start = 1 + job_count - len(start_paths_list)
+                                key_file = os.path.join(sim_path, 'out_err_key.txt')
+
+                                data[0].append([x for x in range(start, job_count + 1)])
+                                data[1].append(inner_index_tally)
+                                data[2].append(fiber_index_tally)
+
+                                if fiber_file_ind == max_fibers_files_ind:
+                                    with open(key_file, "ab") as f:
+                                        np.savetxt(f,
+                                                   ([x for xs in data[0] for x in xs],
+                                                    [y for ys in data[1] for y in ys],
+                                                    [z for zs in data[2] for z in zs]),
+                                                   fmt='%d')
+
+                                    data = [[], [], []]
+
+                                # submit batch job for fiber
+                                job_name = f"{sim_name}_{sim_array_batch}"
+                                print('================== SUBMITTING ARRAY: {}'.format(job_name))
+                                os.system(f"sbatch --job-name={job_name} --output={out_dir}%a.log "
+                                          f"--error={err_dir}%a.log --array={start}-{job_count} "
+                                          f"array_launch.slurm {start_path_base}")
+
+                                # allow job to start before removing slurm file
+                                time.sleep(1.0)
+
+                                array_index = 1
+                                sim_array_batch += 1
+                                start_paths_list = []
+                                inner_index_tally = []
+                                fiber_index_tally = []
 
 
 def make_local_submission_list(run_number: int):
