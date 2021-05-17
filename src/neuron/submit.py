@@ -251,7 +251,7 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
                         # allow job to start before removing slurm file
                         time.sleep(1.0)
                     else:
-                        print('MISSING DEFINITION OF TOP AND BOTTOM ==========================')
+                        print('========================== MISSING DEFINITION OF TOP AND BOTTOM ==========================')
                         continue
 
                 else:
@@ -283,18 +283,9 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
                                 array_index += 1
                                 job_count += 1
 
-                            print('array_index: {}'.format(array_index))
-                            print('array_length_max: {}'.format(array_length_max))
-                            print('fiber_file_ind: {}'.format(fiber_file_ind))
-                            print('max_fibers_files_ind: {}'.format(max_fibers_files_ind))
-
                         if array_index == array_length_max or fiber_file_ind == max_fibers_files_ind:
                             # output key, since we lose this in array method
                             start = 1 + job_count - len(start_paths_list)
-
-                            print('start: {}'.format(start))
-                            print('array_index: {}'.format(array_index))
-                            print('job_count: {}'.format(job_count))
 
                             key_file = os.path.join(sim_path, 'out_err_key.txt')
 
@@ -314,7 +305,7 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
 
                             # submit batch job for fiber
                             job_name = f"{sim_name}_{sim_array_batch}"
-                            print('================== SUBMITTING ARRAY: {}'.format(job_name))
+
                             os.system(f"sbatch --job-name={job_name} --output={out_dir}%a.log "
                                       f"--error={err_dir}%a.log --array={start}-{job_count} "
                                       f"array_launch.slurm {start_path_base}")
