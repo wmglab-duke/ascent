@@ -176,7 +176,6 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
             for sim_name in [x for x in os.listdir(sim_dir) if sim_name_base in x]:
                 print('\n\n################ {} ################\n\n'.format(sim_name))
 
-                array_index = 1
                 start_paths_list = []
                 sim_array_batch = 1
                 sim_config = []
@@ -258,6 +257,7 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
                 else:
 
                     print('================= ARRAY SUBMITTING ====================')
+                    array_index = 0
                     for fiber_file_ind, fiber_filename in enumerate(fibers_files):
                         master_fiber_name = str(fiber_filename.split('.')[0])
                         inner_name, fiber_name = tuple(master_fiber_name.split('_'))
@@ -266,10 +266,10 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
 
                         thresh_path = os.path.join(output_path, f"thresh_inner{inner_ind}_fiber{fiber_ind}.dat")
                         if os.path.exists(thresh_path):
-                            # print(f"Found {thresh_path} -->\t\tskipping inner ({inner_ind}) fiber ({fiber_ind})")
-                            continue
+                            print(f"Found {thresh_path} -->\t\tskipping inner ({inner_ind}) fiber ({fiber_ind})")
+
                         else:
-                            # print(f"MISSING {thresh_path} -->\t\trunning inner ({inner_ind}) fiber ({fiber_ind})")
+                            print(f"MISSING {thresh_path} -->\t\trunning inner ({inner_ind}) fiber ({fiber_ind})")
                             time.sleep(1)
                             start_path = '{}{}{}'.format(start_path_base, job_count, '.sh' if OS == 'UNIX-LIKE' else '.bat')
                             start_paths_list.append(start_path)
@@ -283,40 +283,50 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
                                 array_index += 1
                                 job_count += 1
 
-                            if array_index == array_length_max or fiber_file_ind == max_fibers_files_ind:
-                                # output key, since we lose this in array method
-                                start = 1 + job_count - len(start_paths_list)
-                                key_file = os.path.join(sim_path, 'out_err_key.txt')
+                            print('array_index: {}'.format(array_index))
+                            print('array_length_max: {}'.format(array_length_max))
+                            print('fiber_file_ind: {}'.format(fiber_file_ind))
+                            print('max_fibers_files_ind: {}'.format(max_fibers_files_ind))
 
-                                data[0].append([x for x in range(start, job_count + 1)])
-                                data[1].append(inner_index_tally)
-                                data[2].append(fiber_index_tally)
+                        if array_index == array_length_max or fiber_file_ind == max_fibers_files_ind:
+                            # output key, since we lose this in array method
+                            start = 1 + job_count - len(start_paths_list)
 
-                                if fiber_file_ind == max_fibers_files_ind:
-                                    with open(key_file, "ab") as f:
-                                        np.savetxt(f,
-                                                   ([x for xs in data[0] for x in xs],
-                                                    [y for ys in data[1] for y in ys],
-                                                    [z for zs in data[2] for z in zs]),
-                                                   fmt='%d')
+                            print('start: {}'.format(start))
+                            print('array_index: {}'.format(array_index))
+                            print('job_count: {}'.format(job_count))
 
-                                    data = [[], [], []]
+                            key_file = os.path.join(sim_path, 'out_err_key.txt')
 
-                                # submit batch job for fiber
-                                job_name = f"{sim_name}_{sim_array_batch}"
-                                print('================== SUBMITTING ARRAY: {}'.format(job_name))
-                                os.system(f"sbatch --job-name={job_name} --output={out_dir}%a.log "
-                                          f"--error={err_dir}%a.log --array={start}-{job_count} "
-                                          f"array_launch.slurm {start_path_base}")
+                            data[0].append([x for x in range(start, job_count + 1)])
+                            data[1].append(inner_index_tally)
+                            data[2].append(fiber_index_tally)
 
-                                # allow job to start before removing slurm file
-                                time.sleep(1.0)
+                            if fiber_file_ind == max_fibers_files_ind:
+                                with open(key_file, "ab") as f:
+                                    np.savetxt(f,
+                                               ([x for xs in data[0] for x in xs],
+                                                [y for ys in data[1] for y in ys],
+                                                [z for zs in data[2] for z in zs]),
+                                               fmt='%d')
 
-                                array_index = 1
-                                sim_array_batch += 1
-                                start_paths_list = []
-                                inner_index_tally = []
-                                fiber_index_tally = []
+                                data = [[], [], []]
+
+                            # submit batch job for fiber
+                            job_name = f"{sim_name}_{sim_array_batch}"
+                            print('================== SUBMITTING ARRAY: {}'.format(job_name))
+                            os.system(f"sbatch --job-name={job_name} --output={out_dir}%a.log "
+                                      f"--error={err_dir}%a.log --array={start}-{job_count} "
+                                      f"array_launch.slurm {start_path_base}")
+
+                            # allow job to start before removing slurm file
+                            time.sleep(1.0)
+
+                            array_index = 1
+                            sim_array_batch += 1
+                            start_paths_list = []
+                            inner_index_tally = []
+                            fiber_index_tally = []
 
 
 def make_local_submission_list(run_number: int):
