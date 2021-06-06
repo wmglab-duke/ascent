@@ -2,7 +2,7 @@
 conda create -n ascent python=3.7 anaconda
 conda activate ascent
 python "C:\Users\$($env:UserName)\Miniconda3\envs\ascent\Lib\site-packages\pip" install --upgrade pip setuptools wheel
-pip install pillow==5.2 numpy==1.16.4 shapely>=1.6.4 matplotlib==3.2.1 pyclipper>=1.1.0 pygame==1.9.6 pymunk==5.6.0 scipy==1.1.0 pandas==0.25.1 openpyxl==3.0.3 opencv-python quantiphy
+pip install pillow==5.2 numpy==1.16.* shapely==1.6.* matplotlib==3.2.* pyclipper==1.1.* pygame==1.9.* pymunk==5.6.* scipy==1.1.* pandas==0.25.* openpyxl==3.0.* opencv-python quantiphy
 conda install -y shapely
 
 # shortcut creation
