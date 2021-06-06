@@ -18,7 +18,7 @@ criteria = {
     'partial_matches': True,
     'include_downstream': False,
     'indices': {
-        'sample': [1000],
+        'sample': [88],
         'model': None,
         'sim': None
     }
@@ -35,13 +35,13 @@ sample_index = results['samples'][0]['index']
 fig, ax = plt.subplots(1, 1)
 item: Sample = q.get_object(Object.SAMPLE, [results['samples'][0]['index']])
 slide = item.slides[0]
-slide.plot(fix_aspect_ratio=True, final=False, ax=ax)
+slide.plot(fix_aspect_ratio=True, final=False, ax=ax, inner_index_labels=True)
 plt.xlabel('\u03bcm')
 plt.ylabel('\u03bcm')
 plt.show()
 
 fname = str(sample_index)
-fmt = 'png'
+fmt = 'svg'
 
 dest = os.path.join('data', 'tmp', 'samples')
 if not os.path.exists(dest):

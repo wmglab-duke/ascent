@@ -3,12 +3,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
-sample = 27
-model = 1
-sim = 1027999
-inner = 0
+sample = 20
+model = 19
+sim = 1087
+inner = 3
 fiber = 0
-n_sim = 0
+n_sim = 1
+amp = 0
 
 # build file and extract data
 data_path = os.path.join(
@@ -24,7 +25,7 @@ data_path = os.path.join(
 #                   skiprows=1)[:, 1:]
 
 data = np.loadtxt(os.path.join(data_path,
-                               'Vm_time_inner{}_fiber{}_amp0.dat'.format(inner, fiber)
+                               'Vm_time_inner{}_fiber{}_amp{}.dat'.format(inner, fiber, amp)
                                ),
                   skiprows=1)[:, 0:]
 
@@ -49,14 +50,14 @@ def update(frame):
 
 # build and save animation
 print('WARNING: DO NOT ATTEMPT TO OPEN FILE UNTIL FRAME INDICES HAVE FINISHED PRINTING')
-ani = FuncAnimation(fig, update, frames=np.arange(20000, 50000, 5),  # frames=np.arange(0, 5000, 1),
+ani = FuncAnimation(fig, update, frames=np.arange(1, 5000, 5),  # frames=np.arange(0, 5000, 1),
                     init_func=init, blit=False, interval=1, save_count=5000, repeat=False)
 # ani.save(os.path.join(data_path,
 #                       'video_gating_h_time_inner{}_fiber{}_amp0.gif'.format(inner, fiber)  # or .mp4
 #                       ))
 
 ani.save(os.path.join(data_path,
-                      'video_Vm_time_inner{}_fiber{}_amp0.gif'.format(inner, fiber)  # or .mp4
+                      'video_Vm_time_inner{}_fiber{}_amp{}.gif'.format(inner, fiber, amp)  # or .mp4
                       ))
 
 plt.plot()

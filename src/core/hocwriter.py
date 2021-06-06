@@ -199,6 +199,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                     "locs": [0]
                 }
             }
+            saving: dict = self.search(Config.SIM, "saving")
         else:
             saving: dict = self.search(Config.SIM, "saving")
 
