@@ -389,7 +389,13 @@ class Sample(Exceptionable, Configurable, Saveable):
                 slide.reposition_fascicles(slide.reshaped_nerve(reshape_nerve_mode), 10)
             else:  # must be DeformationMode.NONE
                 import warnings
-                warnings.warn('NO DEFORMATION is happening!')
+
+                if 'nerve' in self.search(Config.SAMPLE, 'boundary_separation').keys():
+                    sep_nerve = self.search(Config.SAMPLE, 'boundary_separation', 'nerve')
+                if sep_nerve != 0:
+                    warnings.warn('NO DEFORMATION is happening! AND sep_nerve != 0, sep_nerve = {}'.format(sep_nerve))
+                else:
+                    warnings.warn('NO DEFORMATION is happening!')
 
             if nerve_mode is not NerveMode.NOT_PRESENT:
                 if deform_ratio != 1 and partially_deformed_nerve is not None:
