@@ -84,6 +84,12 @@ class Configurable:
                 raise Exception('\n\tcode:\t-2\n'
                                 '\ttext:\tInvalid search parameter:\tTYPE: {}\tVALUE: {}\n'
                                 '\tsource:\tconfigurable.py'.format(type(arg), arg))
+
+        if result is None:
+            raise Exception('\n\tcode:\t-5\n'
+                            '\ttext:\tValue {} not defined in {}\n'
+                            '\tsource:\tsrc.utils.Configurable.search'.format(''.join([arg + '->' for arg in args[:-1]]) + args[-1], key))
+
         return result
 
     def path(self, key: Config, *args, is_dir: bool = False, is_absolute: bool = False):
