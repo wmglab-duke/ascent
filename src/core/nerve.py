@@ -1,6 +1,6 @@
 #!/usr/bin/env python3.7
 
-# access
+# ascent
 from src.core import Trace
 from src.utils import Config
 

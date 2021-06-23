@@ -11,7 +11,6 @@ GitHub URL: https://github.com/rsyi/python-lib/blob/master/interparc.py
 """
 
 import numpy as np
-# import scipy.interpolate as sp
 import math
 
 

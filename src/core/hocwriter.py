@@ -1,8 +1,13 @@
+#!/usr/bin/env python3.7
+
+# builtins
 import itertools
 from typing import List
 
+# packages
 import numpy as np
 
+# ascent
 from src.utils import *
 
 
@@ -20,7 +25,6 @@ class HocWriter(Exceptionable, Configurable, Saveable):
 
     def define_sim_indices(self, args: List[List[np.array]]):
         return itertools.product(args)
-        pass
 
     def build_hoc(self, n_inners, n_fiber_coords, n_tsteps):
         """
@@ -60,20 +64,18 @@ class HocWriter(Exceptionable, Configurable, Saveable):
 
         # TIME PARAMETERS
         file_object.write("\n//***************** Global Time ******************\n")
-        extracellular_stim: dict = self.search(Config.SIM, "waveform", "global")
-        dt = extracellular_stim.get("dt")
-        file_object.write("dt        = %0.3f // [ms]\n" % dt)
-        tstop = extracellular_stim.get("stop")
-        file_object.write("tstop     = %0.0f // [ms]\n" % tstop)
+
+        file_object.write("dt        = %0.3f // [ms]\n" % self.search(Config.SIM, "waveform", "global", "dt"))
+        file_object.write("tstop     = %0.0f // [ms]\n" % self.search(Config.SIM, "waveform", "global", "stop"))
         file_object.write("n_tsteps  = %0.0f // [unitless]\n" % n_tsteps)
-        file_object.write("t_initSS  = %0.0f // [ms]\n" % self.search(Config.SIM, "protocol", "initSS")) # TODO load protocol as own dict, then populate from it
+        file_object.write("t_initSS  = %0.0f // [ms]\n" % self.search(Config.SIM, "protocol", "initSS"))
         file_object.write("dt_initSS = %0.0f // [ms]\n" % self.search(Config.SIM, "protocol", "dt_initSS"))
 
         # FIBER PARAMETERS
         file_object.write("\n//***************** Fiber Parameters *************\n")
-        fibers: dict = self.search(Config.SIM, "fibers")
-        fiber_model = fibers.get("mode")
+        fiber_model = self.search(Config.SIM, "fibers", "mode")
 
+        # can load this to dict (looks cleaner) because user is not setting these parameters, they are built-in
         fiber_model_info: dict = self.search(Config.FIBER_Z, MyelinationMode.parameters.value, fiber_model)
         diameter = self.search(Config.SIM, "fibers", "z_parameters", "diameter")
 
@@ -158,25 +160,30 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         file_object.write("fiberD = %0.1f "
                           "// fiber diameter\n" % diameter)
 
-        intracellular_stim: dict = self.search(Config.SIM, "intracellular_stim")
-
         file_object.write("\n//***************** Intracellular Stim ***********\n")
+        # use for keys only, get params with self.search() for error throwing if missing them
+        intracellular_stim: dict = self.search(Config.SIM, "intracellular_stim")
         file_object.write("IntraStim_PulseTrain_delay    = "
-                          "%0.2f // [ms]\n" % intracellular_stim.get("times").get("IntraStim_PulseTrain_delay"))
-        file_object.write("IntraStim_PulseTrain_pw       = %0.2f // [ms]\n" % intracellular_stim.get("times").get("pw"))
+                          "%0.2f // [ms]\n" %
+                          self.search(Config.SIM, "intracellular_stim", "times", "IntraStim_PulseTrain_delay"))
+        file_object.write("IntraStim_PulseTrain_pw       = %0.2f // [ms]\n" %
+                          self.search(Config.SIM, "intracellular_stim", "times", "pw"))
 
         if "IntraStim_PulseTrain_dur" in intracellular_stim.get("times").values():
             file_object.write("IntraStim_PulseTrain_traindur = "
-                              "%0.2f // [ms]\n" % intracellular_stim.get("times").get("IntraStim_PulseTrain_dur"))
+                              "%0.2f // [ms]\n" %
+                              self.search(Config.SIM, "intracellular_stim", "times", "IntraStim_PulseTrain_dur"))
         else:
             file_object.write("IntraStim_PulseTrain_traindur = tstop - IntraStim_PulseTrain_delay // [ms]\n")
 
         file_object.write(
-            "IntraStim_PulseTrain_freq     = %0.2f // [Hz]\n" % intracellular_stim.get("pulse_repetition_freq"))
-        file_object.write("IntraStim_PulseTrain_amp      = %0.4f // [nA]\n" % intracellular_stim.get("amp"))
+            "IntraStim_PulseTrain_freq     = %0.2f // [Hz]\n" %
+            self.search(Config.SIM, "intracellular_stim", "pulse_repetition_freq"))
+        file_object.write("IntraStim_PulseTrain_amp      = %0.4f // [nA]\n" %
+                          self.search(Config.SIM, "intracellular_stim", "amp"))
         file_object.write("IntraStim_PulseTrain_ind      = %0.0f "
                           "// Index of node where intracellular stim is placed [unitless]\n" %
-                          intracellular_stim.get("ind"))
+                          self.search(Config.SIM, "intracellular_stim", "ind"))
 
         file_object.write("\n//***************** Extracellular Stim ***********\n")
         file_object.write("strdef VeTime_fname\n")
@@ -203,12 +210,12 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         else:
             saving: dict = self.search(Config.SIM, "saving")
 
-        file_object.write("saveflag_Vm_time      = %0.0f\n" % int(saving.get("time").get("vm") == True))
-        file_object.write("saveflag_gating_time  = %0.0f\n" % int(saving.get("time").get("gating") == True))
-        file_object.write("saveflag_Vm_space     = %0.0f\n" % int(saving.get("space").get("vm") == True))
-        file_object.write("saveflag_gating_space = %0.0f\n" % int(saving.get("space").get("gating") == True))
+        file_object.write("saveflag_Vm_time      = %0.0f\n" % int(self.search(Config.SIM, "saving", "time", "vm") == True))
+        file_object.write("saveflag_gating_time  = %0.0f\n" % int(self.search(Config.SIM, "saving", "time", "gating") == True))
+        file_object.write("saveflag_Vm_space     = %0.0f\n" % int(self.search(Config.SIM, "saving", "space", "vm") == True))
+        file_object.write("saveflag_gating_space = %0.0f\n" % int(self.search(Config.SIM, "saving", "space", "gating") == True))
         file_object.write("saveflag_Ve           = %0.0f\n" % int(False))
-        file_object.write("saveflag_Istim        = %0.0f\n" % int(saving.get("time").get("istim") == True))
+        file_object.write("saveflag_Istim        = %0.0f\n" % int(self.search(Config.SIM, "saving", "time", "istim") == True))
 
         file_object.write("\n//***************** Protocol Parameters *********\n")
 
@@ -226,13 +233,13 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                 block_thresh_flag = NeuronRunMode.BLOCK_THRESHOLD.value
 
             threshold: dict = self.search(Config.SIM, "protocol", "threshold")
-            file_object.write("\nap_thresh = %0.0f\n" % threshold.get("value"))
-            file_object.write("N_minAPs  = %0.0f\n" % threshold.get("n_min_aps"))
+            file_object.write("\nap_thresh = %0.0f\n" % self.search(Config.SIM, "protocol", "threshold", "value"))
+            file_object.write("N_minAPs  = %0.0f\n" % self.search(Config.SIM, "protocol", "threshold", "n_min_aps"))
 
             if 'ap_detect_location' not in threshold.keys():
                 file_object.write("ap_detect_location  = 0.9\n")
             else:
-                file_object.write("ap_detect_location  = %0.2f\n" % threshold.get("ap_detect_location"))
+                file_object.write("ap_detect_location  = %0.2f\n" % self.search(Config.SIM, "protocol", "threshold", "ap_detect_location"))
 
             bounds_search_mode_name: str = self.search(Config.SIM, "protocol", "bounds_search", "mode")
             bounds_search_mode: SearchAmplitudeIncrementMode = \
@@ -265,7 +272,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
             if 'max_iter' not in protocol.keys():
                 max_iter: int = 100
             else:
-                max_iter = protocol.get("max_steps")
+                max_iter = self.search(Config.SIM, "protocol", "max_steps")
             file_object.write("max_iter = %0.0f // \n" % max_iter)
 
             file_object.write("Namp = %0.0f\n" % 1)
@@ -298,7 +305,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
 
         file_object.write("\n//***************** Classification Checkpoints ***\n")
         # Time points to record Vm and gating params vs x
-        checktimes = self.configs[Config.SIM.value]['saving']['space']['times']
+        checktimes = self.search(Config.SIM, "saving", "space", "times")
         n_checktimes = len(checktimes)
         file_object.write("Nchecktimes = %0.0f \n" % n_checktimes)
 
@@ -310,7 +317,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         for time_ind in range(n_checktimes):
             file_object.write("checktime_values_ms.x[{}] = {} \n".format(time_ind, checktimes[time_ind]))
 
-        checknodes = self.configs[Config.SIM.value]['saving']['time']['locs']
+        checknodes = self.search(Config.SIM, "saving", "time", "locs")
         if checknodes == 'all':
             n_checknodes = axonnodes
         else:

@@ -1,38 +1,22 @@
 #!/usr/bin/env python3.7
 
-"""
-Description:
-
-    OVERVIEW
-
-    INITIALIZER
-
-    PROPERTIES
-
-    METHODS
-
-"""
 # builtins
-
 import os
 import pickle
 from typing import List
 
+# packages
 import sys
 import numpy as np
-
-# packages
 import subprocess
-
-# access
 from copy import deepcopy
-
 from quantiphy import Quantity
+from shapely.geometry import Point
 
+# ascent
 from src.core import Sample, Simulation, Waveform
 from src.utils import Exceptionable, Configurable, SetupMode, Config, NerveMode, DownSampleMode, WriteMode, \
     CuffShiftMode, PerineuriumResistivityMode, TemplateOutput, Env, ReshapeNerveMode
-from shapely.geometry import Point
 
 
 class Runner(Exceptionable, Configurable):
@@ -45,11 +29,21 @@ class Runner(Exceptionable, Configurable):
         # initialize Exceptionable super class
         Exceptionable.__init__(self, SetupMode.NEW)
 
+        # this corresponds to the run index (as file name in config/user/runs/<run_index>.json
         self.number = number
 
     def load_configs(self) -> dict:
+        """
+        :return: dictionary of all configs (Sample, Model(s), Sims(s))
+        """
 
         def validate_and_add(config_source: dict, key: str, path: str):
+            """
+            :param config_source: all configs, to which we add new ones
+            :param key: the key of the dict in Configs
+            :param path: path to the JSON file of the config
+            :return: updated dict of all configs
+            """
             self.validate_path(path)
             if os.path.exists(path):
                 if key not in config_source.keys():
@@ -62,8 +56,12 @@ class Runner(Exceptionable, Configurable):
         configs = dict()
 
         sample = self.search(Config.RUN, 'sample')
-        models = self.search(Config.RUN, 'models')
-        sims = self.search(Config.RUN, 'sims')
+
+        if not isinstance(sample, int):
+            self.throw(95)
+
+        models = self.search(Config.RUN, 'models', optional=True)
+        sims = self.search(Config.RUN, 'sims', optional=True)
 
         sample_path = os.path.join(
             os.getcwd(),
@@ -79,6 +77,7 @@ class Runner(Exceptionable, Configurable):
                                     'models',
                                     str(model),
                                     'model.json') for model in models]
+
         for model_path in model_paths:
             validate_and_add(configs, 'models', model_path)
 
@@ -94,8 +93,8 @@ class Runner(Exceptionable, Configurable):
 
     def run(self, smart: bool = True):
         """
-        :param smart:
-        :return:
+        :param smart: bool telling the program whether to reprocess the sample or not if it already exists as sample.obj
+        :return: nothing to memory, spits out all pipeline related data to file
         """
         # NOTE: single sample per Runner, so no looping of samples
         #       possible addition of functionality for looping samples in start.py
@@ -104,6 +103,10 @@ class Runner(Exceptionable, Configurable):
         all_configs = self.load_configs()
 
         def load(path: str):
+            """
+            :param path: path to python obj file
+            :return: obj file
+            """
             return pickle.load(open(path, 'rb'))
 
         # ensure NEURON files exist in export location
@@ -460,7 +463,7 @@ class Runner(Exceptionable, Configurable):
 
         if self.search_mode(ReshapeNerveMode, Config.SAMPLE) and not slide.monofasc():
             x, y = 0, 0
-            r_bound = np.sqrt(sample_config['Morphology']['Nerve']['area']/np.pi)
+            r_bound = np.sqrt(sample_config['Morphology']['Nerve']['area'] / np.pi)
         else:
             x, y, r_bound = nerve_copy.smallest_enclosing_circle_naive()
 
@@ -471,7 +474,7 @@ class Runner(Exceptionable, Configurable):
         reference_x = reference_y = 0.0
         if not slide.monofasc():
             reference_x, reference_y = slide.fascicle_centroid()
-        theta_c = (np.arctan2(reference_y - y, reference_x - x) * (360/(2*np.pi))) % 360
+        theta_c = (np.arctan2(reference_y - y, reference_x - x) * (360 / (2 * np.pi))) % 360
 
         # calculate final necessary radius by adding buffer
         r_f = r_bound + cuff_r_buffer
@@ -545,14 +548,17 @@ class Runner(Exceptionable, Configurable):
                 orientation_point = slide.fascicles[0].outer.points[slide.orientation_point_index][:2]
 
         if orientation_point is not None:
-            theta_c = (np.arctan2(orientation_point[1], orientation_point[0])) * (360 / (2*np.pi)) % 360 # overwrite theta_c, use our own orientation
+            theta_c = (np.arctan2(orientation_point[1], orientation_point[0])) * (
+                        360 / (2 * np.pi)) % 360  # overwrite theta_c, use our own orientation
 
         if cuff_shift_mode == CuffShiftMode.AUTO_ROTATION_MIN_CIRCLE_BOUNDARY \
                 or cuff_shift_mode == CuffShiftMode.MIN_CIRCLE_BOUNDARY:  # for backwards compatibility
             if r_i > r_f:
                 model_config['cuff']['rotate']['pos_ang'] = theta_f + theta_c - theta_i
-                model_config['cuff']['shift']['x'] = x - (r_i - offset - cuff_r_buffer - r_bound) * np.cos(theta_c * ((2*np.pi)/360))
-                model_config['cuff']['shift']['y'] = y - (r_i - offset - cuff_r_buffer - r_bound) * np.sin(theta_c * ((2*np.pi)/360))
+                model_config['cuff']['shift']['x'] = x - (r_i - offset - cuff_r_buffer - r_bound) * np.cos(
+                    theta_c * ((2 * np.pi) / 360))
+                model_config['cuff']['shift']['y'] = y - (r_i - offset - cuff_r_buffer - r_bound) * np.sin(
+                    theta_c * ((2 * np.pi) / 360))
 
             else:
                 model_config['cuff']['rotate']['pos_ang'] = theta_f + theta_c - theta_i
@@ -645,8 +651,10 @@ class Runner(Exceptionable, Configurable):
             if r_i > r_f:
                 model_config['cuff']['rotate']['pos_ang'] = 0
 
-                model_config['cuff']['shift']['x'] = x - (r_i - offset - cuff_r_buffer - r_bound) * np.cos(theta_i * ((2*np.pi)/360))
-                model_config['cuff']['shift']['y'] = y - (r_i - offset - cuff_r_buffer - r_bound) * np.sin(theta_i * ((2*np.pi)/360))
+                model_config['cuff']['shift']['x'] = x - (r_i - offset - cuff_r_buffer - r_bound) * np.cos(
+                    theta_i * ((2 * np.pi) / 360))
+                model_config['cuff']['shift']['y'] = y - (r_i - offset - cuff_r_buffer - r_bound) * np.sin(
+                    theta_i * ((2 * np.pi) / 360))
 
             else:
                 model_config['cuff']['rotate']['pos_ang'] = 0

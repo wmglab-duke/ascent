@@ -1,7 +1,6 @@
 import copy
 import json
 import os
-import subprocess
 from typing import Tuple, List
 
 import itertools
@@ -12,7 +11,6 @@ import warnings
 
 import numpy as np
 import scipy.interpolate as sci
-import matplotlib.pyplot as plt
 
 from .hocwriter import HocWriter
 from .fiberset import FiberSet
@@ -539,6 +537,11 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
     @staticmethod
     def export_neuron_files(target: str):
+
+        # make NSIM_EXPORT_PATH (defined in Env.json) directory if it does not yet exist
+        if not os.path.exists(target):
+            os.mkdir(target)
+
         # neuron files
         du.copy_tree(os.path.join(os.environ[Env.PROJECT_PATH.value], 'src', 'neuron'), target)
 

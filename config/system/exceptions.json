@@ -473,5 +473,25 @@
     "code": 94,
     "text": "Source Sim (i.e., source_sim in Sim->supersampled_bases) does not exist. Either set proper source_sim that has your previously supersampled potentials, or set use to false.",
     "source": "src.core.Simulation"
+  },
+  {
+    "code": 95,
+    "text": "In Run, Sample should be int. Note: to pass a list of Run configs to run multiple Sample configs in a single system call.",
+    "source": "src.Runner"
+  },
+  {
+    "code": 96,
+    "text": "More than one slide provided",
+    "source": "src.core.Sample"
+  },
+  {
+    "code": 97,
+    "text": "Invalid TIF file format passed into the program",
+    "source": "src.core.Sample"
+  },
+  {
+    "code": 98,
+    "text": "scale_source_file (see above print statement) not found",
+    "source": "src.core.Sample"
   }
 ]

@@ -12,7 +12,7 @@ from shapely.affinity import scale
 import numpy as np
 import matplotlib.pyplot as plt
 
-# access
+# ascent
 from .fascicle import Fascicle
 from .nerve import Nerve
 from .trace import Trace
@@ -26,6 +26,7 @@ class Slide(Exceptionable):
         """
         :param fascicles: List of fascicles
         :param nerve: Nerve (effectively is a Trace)
+        :param nerve_mode: from Enums, indicates if the nerve exists or not (PRESENT, NOT_PRESENT)
         :param exception_config: pre-loaded configuration data
         :param will_reposition: boolean flag that tells the initializer whether or not it should be validating the
         geometries - if it will be reposition then this is not a concern
@@ -40,7 +41,6 @@ class Slide(Exceptionable):
         self.fascicles: List[Fascicle] = fascicles
 
         if not will_reposition:
-            # do validation (default is specific!)
             self.validation()
         else:
             if self.nerve_mode == NerveMode.NOT_PRESENT:

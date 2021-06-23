@@ -13,11 +13,6 @@ Description:
         22 milliseconds (@ ~0.099s) when compared to building and saving a new JSON (@ ~ 0.121s).
     Note that the functionality of this class is EXTREMELY dependent on the structure of the JSON files it deals with.
 
-    I considered adding path-building functionality to this class, but ultimately decided to defer that functionality
-    to a "Sample" class. This was done so the configuration can be read and the appropriate data store in the
-    SAMPLE configuration (or similar). That way, a COMSOL-interfacing program will be able to easily src the data from
-    one place.
-
     PROPERTIES
     data_root
     mode
@@ -42,7 +37,6 @@ Description:
 """
 
 # builtins
-import datetime as dt
 import numpy as np
 import os
 import re
@@ -50,7 +44,7 @@ import json
 import warnings
 from typing import List
 
-# access
+# ascent
 from src.utils import *
 
 
@@ -77,7 +71,7 @@ class Map(Exceptionable, Configurable):
         # stored as list because will be "splatted" later when using self.search and self.path
         self.data_root = 'slide_map'
 
-        # store mode if later requested by user (idk why they would want it though?)
+        # store mode
         self.mode: SetupMode = mode
 
         # get sample string to pass to Map.Slide
@@ -87,27 +81,15 @@ class Map(Exceptionable, Configurable):
         self.slides: List[SlideInfo] = []
 
         # change mode to SYNTHETIC if no map path provided
-        if 'map_path'not in self.search(Config.SAMPLE).keys():
+        if 'map_path' not in self.search(Config.SAMPLE).keys():
             self.mode = SetupMode.SYNTHETIC
 
         if self.mode == SetupMode.NEW:
             raise Exception('NOT IMPLEMENTED')
-            
-            # self.output_path = os.path.join(self.path(Config.SAMPLE, self.data_root, 'paths', 'output'))
-            # 
-            # # source DIRECTORY
-            # self.source_path = self.path(Config.SAMPLE, self.data_root, 'paths', 'source',
-            #                              is_dir=True, is_absolute=False)
-            # 
-            # # build, resize, and write to file
-            # self.__build()
-            # # self.__resize()
-            # self.write()
 
         elif self.mode == SetupMode.OLD:
             # source FILE
             self.source_path = self.path(Config.SAMPLE, "map_path")
-            # self.source_path = self.path(Config.SAMPLE, self.data_root, 'paths', 'old')
 
             self.output_path = self.source_path
 
@@ -151,114 +133,12 @@ class Map(Exceptionable, Configurable):
         result = list(filter(lambda s: (s.cassette == cassette) and (s.number == number), self.slides))
         return result[0] if len(result) != 0 else None
 
-    def __build(self):
-        """
-        This method is adapted from generate_slide_map.py, which was the original non-OOP version of the algorithm.
-        In addition, there aren't checks for throwing exceptions, which may be useful to add later before distribution.
-
-        Note: private method because this should only be called from the constructor
-        """
-        raise Exception('NOT IMPLEMENTED')
-
-        #
-        # # load in and compute parameters
-        # cassettes = self.search(Config.SAMPLE, self.data_root, 'cassettes')
-        # allowed_diffs = self.search(Config.SAMPLE, self.data_root, 'allowed_differences')
-        # number_regex = re.compile(self.search(Config.SAMPLE, self.data_root, 'number_regex'))  # compile regex
-        # cassette_start_pos = self.search(Config.SAMPLE, self.data_root, 'start_position')
-        # position = cassette_start_pos
-        # large_skip = self.search(Config.SAMPLE, self.data_root, 'skips', 'large')
-        # cassette_skip = self.search(Config.SAMPLE, self.data_root, 'skips', 'cassette')
-        # normal_skip = self.search(Config.SAMPLE, self.data_root, 'skips', 'normal')
-        # is_up = self.search(Config.SAMPLE, self.data_root, 'skips', 'up')
-        #
-        # # if the slides are not being placed in the upwards direction,
-        # # invert all the steps (they are expected to be negative)
-        # if not is_up:
-        #     large_skip *= -1
-        #     cassette_skip *= -1
-        #     normal_skip *= -1
-        #
-        # # get files (assumes first iteration of os.walk)
-        # # files are always the 3rd item in a tuple returned by each iteration of os.walk
-        # files = [result for result in os.walk(self.source_path)][0][2]
-        #
-        # # %% SAMPLE loop for finding positions
-        # for k, cassette_code in enumerate(cassettes):
-        #     cassette = []
-        #     # find all files from this cassette
-        #     filtered_files = list(filter(lambda f: re.search(cassette_code, f), files))
-        #     for i, file in enumerate(filtered_files):
-        #         # we know that there MUST be a match now because it matched to the cassette name
-        #         match = number_regex.search(file).group(0)
-        #         # get the number from that match
-        #         number = int(match[:match.index('_')])
-        #
-        #         # NOTE: THIS FINDS POSITION ALONG Z-AXIS; COMMENTING OUT FOR NOW
-        #         # if first slide in cassette
-        #         # if i == 0:
-        #         #     position = cassette_start_pos
-        #         #
-        #         # else:
-        #         #     # if only a difference of 1 between this slide's number and the last's
-        #         #     diff = abs(number - int(cassette[i - 1].number))
-        #         #     if diff in allowed_diffs:
-        #         #         # rule: move 5um for consecutive slice (multiplied by number of skips)
-        #         #         position += diff * normal_skip
-        #         #     else:
-        #         #         # rule: move 100um for skip in slides
-        #         #         position += large_skip
-        #         #
-        #         #     # if last slide in cassette, set next cassette start position and offset indices
-        #         #     if (i + 1) == len(filtered_files):
-        #         #         cassette_start_pos = position + cassette_skip  # account for trimming
-        #         # add this to the current 'row' of slides
-        #
-        #         position = 0
-        #         if len(list(filter(lambda c: c.number == number, cassette))) == 0:
-        #             cassette.append(SlideInfo(cassette_code,
-        #                                       number,
-        #                                       position,
-        #                                       self.source_path))
-        #     # add this cassette to the total list of slides
-        #     self.slides += cassette
-
-    def __resize(self):
-        """
-        Note: private method because user should not need to resize once built?
-        """
-        
-        raise Exception('NOT IMPLEMENTED')
-
-
-        # # get the data about the reference slides
-        # start_slide_data = self.search(Config.SAMPLE, self.data_root, 'resize_reference', 'start_slides')
-        # end_slide_data = self.search(Config.SAMPLE, self.data_root, 'resize_reference', 'end_slides')
-        # 
-        # # get those slides from the data
-        # start_slides = [self.find(item.get('cassette'), item.get('number')) for item in start_slide_data]
-        # end_slides = [self.find(item.get('cassette'), item.get('number')) for item in end_slide_data]
-        # 
-        # # find reference distance and scale factor
-        # self.reference = Reference(start_slides, end_slides)
-        # self.reference_distance = self.search(Config.SAMPLE, self.data_root, 'resize_reference', 'distance')
-        # self.scale = self.reference.scale_for_distance(self.reference_distance)
-        # 
-        # # shift slides to 0 as origin and scale from there
-        # lowest_position = min([slide.position for slide in self.slides])
-        # for slide in self.slides:
-        #     slide.position = round((slide.position - lowest_position) * self.scale)
-
     def write(self):
         """
         Note: not private to allow user to make changes if required, then write those changes to file.
         """
         with open(self.output_path, 'w+') as file:
             file.write(self.list_to_json())
-
-    #%% conversion methods... might make these static in the future?
-    # definitely won't put these in some json utility class because they aren't involved in writing/reading
-    # instead, they are for interpreting Map-specific data, so nothing outside this class should need to use them
 
     def list_to_json(self) -> str:
         result = []
@@ -279,7 +159,7 @@ class Map(Exceptionable, Configurable):
                           item.get('position'),
                           item.get('directory')) for item in data]
 
-    #%% utility
+    # %% utility
     @staticmethod
     def clean_file_names():
         """
@@ -311,7 +191,7 @@ class Map(Exceptionable, Configurable):
                         os.remove('{}/{}'.format(root, file))
 
 
-#%% helper classes... self.map will be stored as a list of Slide objects
+# %% helper classes... self.map will be stored as a list of Slide objects
 # quick class to keep track of slides
 class SlideInfo:
     def __init__(self, cassette: str, number: int, position: int, directory: str):
@@ -319,17 +199,6 @@ class SlideInfo:
         self.number = number
         self.position = position
         self.directory = directory
-
-        # (directory, file) = os.path.split(raw_source)  # returns tuple
-        # (name, extension) = tuple(file.split('.'))
-        #
-        # # build source paths
-        # self.fascicle_source = os.path.join(directory,
-        #                                     'fascicles',
-        #                                     '.'.join(['_'.join([name, 'fascicle']), extension]))
-        # self.nerve_source = os.path.join(directory,
-        #                                  'nerves',
-        #                                  '.'.join(['_'.join([name, 'nerve']), extension]))
 
     def data(self) -> tuple:
         return self.cassette, self.number, self.position, self.directory

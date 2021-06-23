@@ -11,10 +11,9 @@ import shutil
 import numpy as np
 import matplotlib.pyplot as plt
 import subprocess
-
-# access
 from shapely.geometry import LineString, Point
 
+# ascent
 from src.core import Slide, Map, Fascicle, Nerve, Trace
 from .deformable import Deformable
 from src.utils import Exceptionable, Configurable, Saveable, SetupMode, Config, MaskFileNames, NerveMode, \
@@ -50,6 +49,7 @@ class Sample(Exceptionable, Configurable, Saveable):
         # Set instance variable morphology
         self.morphology = dict()
 
+        # Add JSON for perineurium thickness relationship with nerve morphology metrics -- used to calculate contact impedances if "use_ci" is True
         self.add(SetupMode.NEW, Config.CI_PERINEURIUM_THICKNESS, os.path.join('config',
                                                                               'system',
                                                                               'ci_peri_thickness.json'))
@@ -72,7 +72,7 @@ class Sample(Exceptionable, Configurable, Saveable):
     def scale(self, scale_bar_mask_path: str, scale_bar_length: float) -> 'Sample':
         """
         Scale all slides to the correct unit.
-        :param scale_bar_mask_path: path to binary mask with white straight scale bar
+        :param scale_bar_mask_path: path to binary mask with white straight (horizontal) scale bar
         :param scale_bar_length: length (in global units as determined by config/user) of the scale bar
         """
         # load in image
@@ -85,11 +85,16 @@ class Sample(Exceptionable, Configurable, Saveable):
             indices = np.where(row_of_column_maxes[:, 0] == max(row_of_column_maxes[:, 0]))[0]
         elif row_of_column_maxes.ndim == 1:  # masks from mock morphology, 1 bit
             indices = np.where(row_of_column_maxes[:] == max(row_of_column_maxes[:]))[0]
+        else:
+            # may need to expand here in future?
+            self.throw(97)
 
         # find the length of the scale bar by finding total range of "max white" indices
         scale_bar_pixels = max(indices) - min(indices) + 1
+
         # calculate scale factor as unit/pixel
         factor = scale_bar_length / scale_bar_pixels
+
         # for each slide, scale to units
         for slide in self.slides:
             slide.scale(factor)
@@ -123,6 +128,8 @@ class Sample(Exceptionable, Configurable, Saveable):
                     os.path.join(source_dir, mask_fname),
                     os.path.join(source_dir, '{}_0_0_{}'.format(sample, mask_fname))
                 )
+        else:
+            self.throw(96)
 
         # loop through each slide
         for slide_info in self.map.slides:
@@ -147,7 +154,8 @@ class Sample(Exceptionable, Configurable, Saveable):
                     if os.path.exists(scale_source_file):
                         shutil.copy2(scale_source_file, MaskFileNames.SCALE_BAR.value)
                     else:
-                        raise Exception('{} not found'.format(scale_source_file))
+                        print('ERROR: scale_source_file: {} not found'.format(scale_source_file))
+                        self.throw(98)
 
                     scale_was_copied = True
 
@@ -170,6 +178,10 @@ class Sample(Exceptionable, Configurable, Saveable):
             return self
 
     def populate(self, deform_animate: bool = True) -> 'Sample':
+        """
+        :param deform_animate: boolean indicating whether to show nerve deformation
+        :return:
+        """
 
         # get parameters (modes) from configuration file
         mask_input_mode = self.search_mode(MaskInputMode, Config.SAMPLE)

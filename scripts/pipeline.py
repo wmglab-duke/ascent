@@ -5,10 +5,11 @@ import os
 import time
 import sys
 
-# access
+# ascent
 from src.runner import Runner
 from src.utils.enums import SetupMode, Config
 from .env_setup import run as env_setup
+
 
 def run(args):
     sys.argv = args
@@ -36,17 +37,20 @@ def run(args):
             int(argument)
         except ValueError:
             print('Invalid type for argument: {}\n'
-                'All arguments must be positive integers.'.format(argument))
+                  'All arguments must be positive integers.'.format(argument))
+            exit(1)
 
         if int(argument_index) < 0:
             print('Invalid sign for argument: {}\n'
-                'All arguments must be positive integers.'.format(argument))
+                  'All arguments must be positive integers.'.format(argument))
+            exit(1)
 
         print('\n\n########## STARTING RUN {} ##########\n\n'.format(argument))
 
         run_path = os.path.join('config', 'user', 'runs', '{}.json'.format(argument))
         if not os.path.exists(run_path):
             print('Invalid run configuration path: {}'.format(run_path))
+            exit(1)
 
         env_path = os.path.join('config', 'system', 'env.json')
         if not os.path.exists(env_path):
@@ -70,6 +74,3 @@ def run(args):
 
     # cleanup for console viewing/inspecting
     del start, end
-    #
-    
-

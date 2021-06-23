@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import csv
 import warnings
 
-# access
+# ascent
 from src.utils import Exceptionable, Configurable, Saveable
 from src.utils.enums import SetupMode, Config, WaveformMode, WriteMode
 
@@ -81,7 +81,7 @@ class Waveform(Exceptionable, Configurable, Saveable):
         if sorted(time_params) != time_params:
             self.throw(32)
 
-    def rho_weerasuriya(self, f=None, all_configs=None):
+    def rho_weerasuriya(self, f=None):
         """
         Calculation of perineurium impedance using results from Weerasuriya 1984 (frog). Weerasuriya discussion
         indicates that Models A & B are better candidates than Models C & D, so we only consider the former pair.
@@ -91,13 +91,16 @@ class Waveform(Exceptionable, Configurable, Saveable):
         temp = self.search(Config.MODEL, "temperature")  # [degC] 37 for mammalian
 
         # f is in [Hz]
+        materials_path = os.path.join('config', 'system', 'materials.json')
+        self.add(SetupMode.NEW, Config.MATERIALS, materials_path)
+
         if f < 10:  # stimulation for activation response, arbitrary cutoff of 10 Hz!
             if not np.isclose(temp, 37, atol=0.01):
                 self.throw(47)
 
-            materials_path = os.path.join('config', 'system', 'materials.json')
-            materials_config = self.load(materials_path)
-            rho = 1/eval(materials_config['conductivities']['weerasuriya_perineurium_DC']['value'])  # [S/m] -> [ohm-m]
+            self.load(materials_path)
+            peri_conductivity = self.search(Config.MATERIALS, 'conductivities', 'weerasuriya_perineurium_DC', 'value')
+            rho = 1/eval(peri_conductivity)  # [S/m] -> [ohm-m]
 
         else:  # stimulation at higher frequency for block
             w = 2 * np.pi * f
