@@ -13,14 +13,11 @@ import cv2
 import matplotlib.pyplot as plt
 import json
 
-# access
+# ascent
 from src.utils import *
 
 
 class MockSample(Exceptionable, Configurable):
-    """
-
-    """
 
     def __init__(self, exception_config: dict):
         """
@@ -175,14 +172,26 @@ class MockSample(Exceptionable, Configurable):
                                                          'min_fascicle_separation')
 
             # choose fascicle area [um^2]: A = pi*(d/2)**2
-            mu_fasc_diam: float = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value, 'mu_fasc_diam')
-            std_fasc_diam: float = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value, 'std_fasc_diam')
-            n_std_diam_limit: float = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value, 'n_std_diam_limit')
+            mu_fasc_diam: float = self.search(Config.MOCK_SAMPLE,
+                                              PopulateMode.parameters.value,
+                                              'mu_fasc_diam')
+            std_fasc_diam: float = self.search(Config.MOCK_SAMPLE,
+                                               PopulateMode.parameters.value,
+                                               'std_fasc_diam')
+            n_std_diam_limit: float = self.search(Config.MOCK_SAMPLE,
+                                                  PopulateMode.parameters.value,
+                                                  'n_std_diam_limit')
 
             # choose fascicle eccentricity
-            mu_fasc_ecc: float = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value, 'mu_fasc_ecc')
-            std_fasc_ecc: float = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value, 'std_fasc_ecc')
-            n_std_ecc_limit: float = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value, 'n_std_ecc_limit')
+            mu_fasc_ecc: float = self.search(Config.MOCK_SAMPLE,
+                                             PopulateMode.parameters.value,
+                                             'mu_fasc_ecc')
+            std_fasc_ecc: float = self.search(Config.MOCK_SAMPLE,
+                                              PopulateMode.parameters.value,
+                                              'std_fasc_ecc')
+            n_std_ecc_limit: float = self.search(Config.MOCK_SAMPLE,
+                                                 PopulateMode.parameters.value,
+                                                 'n_std_ecc_limit')
 
             # choose number of fascicles
             num_fascicle_attempt: int = self.search(Config.MOCK_SAMPLE,
@@ -195,7 +204,9 @@ class MockSample(Exceptionable, Configurable):
                                                 'max_attempt_iter')
 
             # get random.seed myseed from config
-            myseed: int = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value, 'seed')
+            myseed: int = self.search(Config.MOCK_SAMPLE,
+                                      PopulateMode.parameters.value,
+                                      'seed')
 
             np.random.seed(myseed)
 
@@ -247,11 +258,17 @@ class MockSample(Exceptionable, Configurable):
                                                          PopulateMode.parameters.value,
                                                          'min_fascicle_separation')
 
-            max_attempt_iter = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value, 'max_attempt_iter')
+            max_attempt_iter = self.search(Config.MOCK_SAMPLE,
+                                           PopulateMode.parameters.value,
+                                           'max_attempt_iter')
 
             # choose fascicle area [um^2]: A = pi*(d/2)**2
-            lower_fasc_diam: float = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value, 'lower_fasc_diam')
-            upper_fasc_diam: float = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value, 'upper_fasc_diam')
+            lower_fasc_diam: float = self.search(Config.MOCK_SAMPLE,
+                                                 PopulateMode.parameters.value,
+                                                 'lower_fasc_diam')
+            upper_fasc_diam: float = self.search(Config.MOCK_SAMPLE,
+                                                 PopulateMode.parameters.value,
+                                                 'upper_fasc_diam')
 
             # check that both lower_diam and upper_diam are positive, and upper_diam > lower_diam
             if lower_fasc_diam < 0:
@@ -259,8 +276,12 @@ class MockSample(Exceptionable, Configurable):
             if lower_fasc_diam > upper_fasc_diam:
                 self.throw(61)
 
-            lower_fasc_ecc: float = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value, 'lower_fasc_ecc')
-            upper_fasc_ecc: float = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value, 'upper_fasc_ecc')
+            lower_fasc_ecc: float = self.search(Config.MOCK_SAMPLE,
+                                                PopulateMode.parameters.value,
+                                                'lower_fasc_ecc')
+            upper_fasc_ecc: float = self.search(Config.MOCK_SAMPLE,
+                                                PopulateMode.parameters.value,
+                                                'upper_fasc_ecc')
 
             if lower_fasc_ecc < 0:
                 self.throw(62)
@@ -268,11 +289,14 @@ class MockSample(Exceptionable, Configurable):
                 self.throw(63)
 
             # choose number of fascicles
-            num_fascicle_attempt: int = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value,
+            num_fascicle_attempt: int = self.search(Config.MOCK_SAMPLE,
+                                                    PopulateMode.parameters.value,
                                                     'num_fascicle_attempt')
 
             # get random.seed myseed from config
-            myseed: int = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value, 'seed')
+            myseed: int = self.search(Config.MOCK_SAMPLE,
+                                      PopulateMode.parameters.value,
+                                      'seed')
 
             np.random.seed(myseed)
 

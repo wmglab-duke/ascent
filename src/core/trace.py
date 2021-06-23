@@ -15,7 +15,7 @@ from shapely.ops import nearest_points
 import pyclipper
 import pymunk
 
-# access
+# ascent
 from src.utils import Exceptionable, DownSampleMode, Config, WriteMode, SetupMode
 
 

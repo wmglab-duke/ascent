@@ -16,10 +16,12 @@ Description:
     throw
 
 """
+# builtins
+import os
 
+# ascent
 from .configurable import Configurable
 from .enums import SetupMode, Config
-import os
 
 
 class Exceptionable(Configurable):

@@ -8,7 +8,7 @@ import pymunk.pygame_util
 import numpy as np
 from shapely.geometry import LineString, Point
 
-# access
+# ascent
 from src.core import Trace, Slide
 from src.utils import Exceptionable, SetupMode, ReshapeNerveMode, Config
 
@@ -188,9 +188,8 @@ class Deformable(Exceptionable):
         return movements, rotations
 
     @staticmethod
-    def deform_steps(start: Trace, end: Trace, count: int = 2, deform_ratio: float = 1.0, slide: Slide = None) -> List[
-        Trace]:
-        # TODO: map orientation point index to new index -> need to return this?
+    def deform_steps(start: Trace, end: Trace, count: int = 2, deform_ratio: float = 1.0, slide: Slide = None) \
+            -> List[Trace]:
 
         # Find point along old_nerve that is closest to major axis of best fit ellipse
         (x, y), (a, b), angle = start.ellipse()  # returns degrees

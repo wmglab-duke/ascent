@@ -4,10 +4,10 @@ from typing import List, Tuple
 
 from shapely.affinity import scale
 from shapely.geometry import LineString, Point
-import scipy.optimize as opt
 import csv
 import matplotlib.pyplot as plt
 
+# ascent
 from src.utils import *
 from .sample import Sample
 
@@ -55,10 +55,6 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
         else:
             # SL generation algorithm
-
-            # find sample position if available - NOTE THIS WILL NEED TO BE FIXED LATER TO USE MAP CONFIG?
-            # SAMPLE POSITION =
-            # TODO: move sample position to SIM?
             sample_position = self.sample.configs[Config.SAMPLE.value].get('position', None)
             if sample_position is not None:
                 pass
@@ -70,23 +66,22 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             z_nerve = self.search(Config.MODEL, 'medium', 'proximal', 'length')
             z_medium = self.search(Config.MODEL, 'medium', 'distal', 'length')
             # NOTE: for now, the sample position will be interpreted as the z-position of the SL branch
-            z_offset = sample_position #+ z_nerve / 2  # sample_position is distance from center of cuff to SL branch
+            z_offset = sample_position  # + z_nerve / 2  # sample_position is distance from center of cuff to SL branch
             r_medium = self.search(Config.MODEL, 'medium', 'distal', 'radius')
             buffer = 50  # minimum distance from top of distal model
-            
 
             if z_offset >= z_medium - 1000:
                 print('\t\tWARNING: SL z_offset ({}) within 1000 µm of distal model length ({})'.format(z_offset,
                                                                                                         z_medium))
 
             def fit_z(t):
-                return (10**5 / t) + z_offset
+                return (10 ** 5 / t) + z_offset
 
             def fit_3d(t, theta, function):
                 return t * np.cos(theta), t * np.sin(theta), function(t)
 
             def magnitude(vec):
-                return np.sqrt(sum(item**2 for item in vec))
+                return np.sqrt(sum(item ** 2 for item in vec))
 
             # generate parameter range
             t_min = 0.001
@@ -110,7 +105,8 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
             x, y, z = fit_3d(t_range, theta, fit_z)
             points = list(zip(x, y, z))
-            fiber_length = sum(magnitude(np.asarray(points[i])-np.asarray(points[i+1])) for i in range(len(points)-1))
+            fiber_length = sum(
+                magnitude(np.asarray(points[i]) - np.asarray(points[i + 1])) for i in range(len(points) - 1))
 
             fibers_xy = np.asarray([(0, 0)])
             fibers = self._generate_z(fibers_xy, override_length=fiber_length, super_sample=super_sample)
@@ -163,7 +159,6 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         xy_mode_name: str = self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode')
         xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
         xy_parameters: dict = self.search(Config.SIM, 'fibers', 'xy_parameters')
-
         my_xy_seed: int = xy_parameters.get('seed', 0)
 
         # initialize result lists
@@ -189,12 +184,12 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                 # case top_down == true: fetch target density and cap minimum axons if too low
                 # case top_down == false: (i.e. bottom-up) find density from target number and smallest inner by area
                 #   also cap the number at a maximum!
-                top_down: bool = xy_parameters['top_down']
+                top_down: bool = self.search(Config.SIM, 'fibers', 'xy_parameters', 'top_down')
 
                 if top_down:  # do top-down approach
                     # get required parameters
-                    target_density = xy_parameters['target_density']
-                    minimum_number = xy_parameters['minimum_number']
+                    target_density = self.search(Config.SIM, 'fibers', 'xy_parameters', 'target_density')
+                    minimum_number = self.search(Config.SIM, 'fibers', 'xy_parameters', 'minimum_number')
 
                     for fascicle in self.sample.slides[0].fascicles:
                         for inner in fascicle.inners:
@@ -207,8 +202,8 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
                 else:  # do bottom-up approach
                     # get required parameters
-                    target_number = xy_parameters.get('target_number')
-                    maximum_number = xy_parameters.get('maximum_number')
+                    target_number = self.search(Config.SIM, 'fibers', 'xy_parameters', 'target_number')
+                    maximum_number = self.search(Config.SIM, 'fibers', 'xy_parameters', 'maximum_number')
 
                     # calculate target density
                     min_area = np.amin([[fascicle.smallest_trace().area()
@@ -225,7 +220,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                             my_xy_seed += 1
 
             elif xy_mode == FiberXYMode.UNIFORM_COUNT:
-                count: int = xy_parameters['count']
+                count: int = self.search(Config.SIM, 'fibers', 'xy_parameters', 'count')
 
                 for fascicle in self.sample.slides[0].fascicles:
                     for inner in fascicle.inners:
@@ -235,11 +230,13 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
             elif xy_mode == FiberXYMode.WHEEL:
                 # get required parameters
-                spoke_count: int = xy_parameters["spoke_count"]
-                point_count: int = xy_parameters["point_count_per_spoke"]  # this number is PER SPOKE
-                find_centroid: bool = xy_parameters["find_centroid"]
-                angle_offset_is_in_degrees: bool = xy_parameters["angle_offset_is_in_degrees"]
-                angle_offset: float = xy_parameters["angle_offset"]
+                spoke_count: int = self.search(Config.SIM, 'fibers', 'xy_parameters', 'spoke_count')
+                point_count: int = self.search(Config.SIM, 'fibers', 'xy_parameters', 'point_count_per_spoke')  # this number is PER SPOKE
+                find_centroid: bool = self.search(Config.SIM, 'fibers', 'xy_parameters', 'find_centroid')
+                angle_offset_is_in_degrees: bool = self.search(Config.SIM, 'fibers',
+                                                               'xy_parameters',
+                                                               'angle_offset_is_in_degrees')
+                angle_offset: float = self.search(Config.SIM, 'fibers', 'xy_parameters', 'angle_offset')
 
                 # convert angle offset to radians if necessary
                 if angle_offset_is_in_degrees:
@@ -383,13 +380,15 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         # all functionality is only defined for EXTRUSION as of now
         if fiber_z_mode == FiberZMode.EXTRUSION:
 
-            model_length = self.search(Config.MODEL, 'medium', 'proximal', 'length') if (override_length is None) else override_length
+            model_length = self.search(Config.MODEL, 'medium', 'proximal', 'length') if (
+                        override_length is None) else override_length
 
-            if not ('min' in self.configs['sims']['fibers']['z_parameters'].keys() and 'max' in self.configs['sims']['fibers']['z_parameters'].keys()):
+            if not ('min' in self.configs['sims']['fibers']['z_parameters'].keys() and 'max' in
+                    self.configs['sims']['fibers']['z_parameters'].keys()):
                 fiber_length = model_length if override_length is None else override_length
                 self.configs['sims']['fibers']['z_parameters']['min'] = 0
                 self.configs['sims']['fibers']['z_parameters']['max'] = fiber_length
-                
+
                 if override_length is None:
                     warnings.warn('Program assumed fiber length same as proximal length since "min" and "max" fiber '
                                   'length not defined in Config.Sim "fibers" -> "z_parameters"')
@@ -408,7 +407,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             # override this functionality if using SL (not in nerve trunk)
             if not xy_mode == FiberXYMode.SL_PSEUDO_INTERP:
                 assert model_length >= fiber_length, 'proximal length: ({}) < fiber length: ({})'.format(model_length,
-                                                                                                      fiber_length)
+                                                                                                         fiber_length)
 
             fiber_geometry_mode_name: str = self.search(Config.SIM, 'fibers', 'mode')
 
@@ -514,9 +513,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
                 if super_sample:
                     if 'dz' in self.configs[Config.SIM.value]['supersampled_bases'].keys():
-                        delta_zs = self.search(Config.SIM,
-                                               'supersampled_bases',
-                                               'dz')
+                        delta_zs = self.search(Config.SIM, 'supersampled_bases', 'dz')
                         my_z_seed = 123
                     else:
                         self.throw(79)
