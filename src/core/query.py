@@ -50,25 +50,25 @@ class Query(Exceptionable, Configurable, Saveable):
         result = {}
 
         # preliminarily find sample, model, and sim filter indices if applicable (else None)
-        sample_indices = self.search(Config.CRITERIA, 'indices', 'sample')
+        sample_indices = self.search(Config.CRITERIA, 'indices', 'sample', optional=True)
         if isinstance(sample_indices, int):
             sample_indices = [sample_indices]
 
-        model_indices = self.search(Config.CRITERIA, 'indices', 'model')
+        model_indices = self.search(Config.CRITERIA, 'indices', 'model', optional=True)
         if isinstance(model_indices, int):
             model_indices = [model_indices]
 
-        sim_indices = self.search(Config.CRITERIA, 'indices', 'sim')
+        sim_indices = self.search(Config.CRITERIA, 'indices', 'sim', optional=True)
         if isinstance(sim_indices, int):
             sim_indices = [sim_indices]
 
         # criteria for each layer
-        sample_criteria = self.search(Config.CRITERIA, 'sample')
-        model_criteria = self.search(Config.CRITERIA, 'model')
-        sim_criteria = self.search(Config.CRITERIA, 'sim')
+        sample_criteria = self.search(Config.CRITERIA, 'sample', optional=True)
+        model_criteria = self.search(Config.CRITERIA, 'model', optional=True)
+        sim_criteria = self.search(Config.CRITERIA, 'sim', optional=True)
 
         # control if missing sim criteria or both sim and model criteria
-        include_downstream = self.search(Config.CRITERIA, 'include_downstream')
+        include_downstream = self.search(Config.CRITERIA, 'include_downstream', optional=True)
 
         # labeling for samples level
         samples_key = 'samples'
@@ -314,12 +314,13 @@ class Query(Exceptionable, Configurable, Saveable):
                  min_max_ticks: bool = False,
                  cutoff_thresh: bool = 0,
                  suprathresh_color: Tuple[int, int, int, int] = (0, 1, 0, 1),
-                 subthresh_color: Tuple[int, int, int, int] = (0, 0, 1, 1)
+                 subthresh_color: Tuple[int, int, int, int] = (0, 0, 1, 1),
+                 select_fascicles: List = None,
                  ):
 
         """
         Generate activation thresholds heatmaps
-        
+
         Each plot represents a single 1-dimensional simulation, with each subplot representing a single value from the
         parameter that is being iterated over. For instace, a sim with many different fiber diamaters will have each subplot
         represent a single fiber diameter. In a future release, multidimensional sims will be accounted for; this may
@@ -329,7 +330,7 @@ class Query(Exceptionable, Configurable, Saveable):
             plot (bool, optional): Show plots via matplotlib. Defaults to True.
             plot_mode (str, optional):
                 'average': each inner is filled with the color corresponding to the average of its fiber thresholds
-                'individual': each fiber is plotted individually with its corresponding color. 
+                'individual': each fiber is plotted individually with its corresponding color.
                 Defaults to 'average'.
             save_path (str, optional): Path to which plots are saved as PNG files. If None, will not save. Defaults to None.
             plot_outers (bool, optional): Draw outer perineurium trace. Defaults to False.
@@ -352,7 +353,7 @@ class Query(Exceptionable, Configurable, Saveable):
                 Step bound extremes towards mean by ratio. This can be helpful when a few fascicle have thresholds that
                 are drastically different than the rest of the fascicles. Assumes sims are in order, starting from 0.
                 Defaults to 0.0.
-            missing_color (Tuple[int, int, int, int], optional): 
+            missing_color (Tuple[int, int, int, int], optional):
                 RGBA Color to represent missing thresholds. Defaults to (1, 0, 0, 1) (red).
             title_toggle (bool, optional): Plot title. Defaults to True.
             subplot_title_toggle (bool, optional): Plot subplot title. Defaults to True.
@@ -506,20 +507,24 @@ class Query(Exceptionable, Configurable, Saveable):
 
                         if plot_mode is 'fiber0' or 'on_off':
                             for i in range(n_inners):
-                                thresh_path = os.path.join(n_sim_dir, 'data', 'outputs',
-                                                           'thresh_inner{}_fiber0.dat'.format(i))
-                                if os.path.exists(thresh_path):
-                                    threshold = abs(np.loadtxt(thresh_path))
-                                    if len(np.atleast_1d(threshold)) > 1:
-                                        threshold = threshold[-1]
-                                    if threshold > 500:
-                                        missing_indices.append(i)
-                                        print('TOO BIG: {}'.format(thresh_path))
+                                if select_fascicles[i]: # TODO this needs to work when select_fascicles is not being used
+                                    thresh_path = os.path.join(n_sim_dir, 'data', 'outputs',
+                                                               'thresh_inner{}_fiber0.dat'.format(i))
+                                    if os.path.exists(thresh_path):
+                                        threshold = abs(np.loadtxt(thresh_path))
+                                        if len(np.atleast_1d(threshold)) > 1:
+                                            threshold = threshold[-1]
+                                        if threshold > 500:
+                                            missing_indices.append(i)
+                                            print('TOO BIG: {}'.format(thresh_path))
+                                        else:
+                                            thresholds.append(threshold)
                                     else:
-                                        thresholds.append(threshold)
+                                        missing_indices.append(i)
+                                        print('MISSING: {}'.format(thresh_path))
                                 else:
-                                    missing_indices.append(i)
-                                    print('MISSING: {}'.format(thresh_path))
+                                    thresholds.append(np.nan)
+
                         elif plot_mode is 'fibers':
                             for inner_ind in range(n_inners):
                                 for fiber_ind in range(len(sim_object.fibersets[0].out_to_fib[inner_ind][0])):
@@ -537,8 +542,8 @@ class Query(Exceptionable, Configurable, Saveable):
                                         missing_indices.append((inner_ind, fiber_ind))
                                         print('MISSING: {}'.format(thresh_path))
 
-                        max_thresh = np.max(thresholds)
-                        min_thresh = np.min(thresholds)
+                        max_thresh = np.nanmax(thresholds)
+                        min_thresh = np.nanmin(thresholds)
 
                         # update tracking colormap bounds
                         if track_colormap_bounds and sim_index == tracking_sim_index:
@@ -557,6 +562,7 @@ class Query(Exceptionable, Configurable, Saveable):
                             min_thresh, max_thresh = colomap_bounds_override[n]
 
                         # generate colors from colorbar and thresholds
+                        print('min: {} \t max:{}'.format(min_thresh, max_thresh))
                         cmap = plt.cm.get_cmap(colormap_str)
 
                         if reverse_colormap:
@@ -567,13 +573,19 @@ class Query(Exceptionable, Configurable, Saveable):
                         if plot_mode is 'fiber0':
                             for i in range(n_inners):
                                 actual_i = i - offset
-                                if i not in missing_indices:
-                                    colors.append(
-                                        tuple(cmap((thresholds[actual_i] - min_thresh) / (max_thresh - min_thresh))))
-                                else:
+                                if actual_i not in missing_indices:
+                                    if select_fascicles[actual_i]:
+                                        mapped = (thresholds[actual_i] - min_thresh) / (max_thresh - min_thresh)
+                                        colors.append(tuple(cmap(mapped)))
+
+                                    elif not select_fascicles[actual_i]:
+                                        colors.append(tuple(cmap(0)))  # missing_color
+
+                                elif actual_i in missing_indices:
                                     # NOTE: PLOTS MISSING VALUES AS RED
                                     offset += 1
-                                    colors.append(missing_color)
+                                    colors.append(missing_color)  # missing_color
+
                         elif plot_mode is 'fibers':
                             loop_fiber = 0
                             for inner_ind in range(n_inners):
@@ -636,6 +648,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
                         # colorbar
                         if add_colorbar:
+
                             cb_label = r'mA'
                             cb: cbar.Colorbar = plt.colorbar(
                                 mappable=plt.cm.ScalarMappable(
@@ -657,7 +670,7 @@ class Query(Exceptionable, Configurable, Saveable):
                             if colorbar_text_size_override is not None:
                                 # cb.set_label(cb_label, fontsize=colorbar_text_size_override)
                                 cb.ax.tick_params(labelsize=colorbar_text_size_override if (
-                                            colorbar_text_size_override is not None) else 25)
+                                        colorbar_text_size_override is not None) else 25)
 
                             # if tick_bounds:
                             #     cb.set_ticks([np.ceil(min_thresh * 100) / 100, np.floor(max_thresh * 100) / 100])
@@ -1778,7 +1791,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
                                 # location display settings
                                 n_sim_label = f'n_sim: {n_sim_index}' if (
-                                            n_sim_label_override is None) else n_sim_label_override
+                                        n_sim_label_override is None) else n_sim_label_override
                                 model_label = '' if (model_labels is None) else f', {model_labels[model_index]}'
                                 axes[0].set_xlabel('x location, µm')
                                 axes[0].set_ylabel('z location, µm')
