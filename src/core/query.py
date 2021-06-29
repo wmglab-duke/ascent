@@ -554,16 +554,14 @@ class Query(Exceptionable, Configurable, Saveable):
                                     max_thresh * (1 - track_colormap_bounds_offset_ratio))
                             )
 
-                            # override colormap bounds
+                        # override colormap bounds
                         if colomap_bounds_override is not None:
-                            # assert len(colomap_bounds_override[
-                            #                num_sam]) - 1 >= n, 'Not enough colormap bounds tuples provided!'
-                            # min_thresh, max_thresh = colomap_bounds_override[num_sam][n]
                             min_thresh, max_thresh = colomap_bounds_override[n]
 
                         # generate colors from colorbar and thresholds
-                        print('min: {} \t max:{}'.format(min_thresh, max_thresh))
-                        cmap = plt.cm.get_cmap(colormap_str)
+                        # print('min: {} \t max:{}'.format(min_thresh, max_thresh))
+                        cmap = plt.cm.get_cmap(colormap_str).copy()
+                        cmap.set_bad(color='w')
 
                         if reverse_colormap:
                             cmap = cmap.reversed()
@@ -579,7 +577,8 @@ class Query(Exceptionable, Configurable, Saveable):
                                         colors.append(tuple(cmap(mapped)))
 
                                     elif not select_fascicles[actual_i]:
-                                        colors.append(tuple(cmap(0)))  # missing_color
+                                        # colors.append(tuple((0, 0, 0, 0)))  # missing_color
+                                        colors.append(cmap(np.nan))  # missing_color
 
                                 elif actual_i in missing_indices:
                                     # NOTE: PLOTS MISSING VALUES AS RED
@@ -637,18 +636,7 @@ class Query(Exceptionable, Configurable, Saveable):
                             # ax.plot(*tuple(slide.nerve.points[slide.orientation_point_index][:2]), 'b*')
                             ax.plot(*orientation_point, '.', markersize=20, color='grey')
 
-                        if plot_mode is 'fiber0' or 'on_off':
-                            # plot slide (nerve and fascicles, defaulting to no outers)
-                            sample_object.slides[0].plot(final=False, fix_aspect_ratio=True, fascicle_colors=colors,
-                                                         ax=ax, outers_flag=plot_outers, inner_format='k-')
-                        elif plot_mode is 'fibers':
-                            sample_object.slides[0].plot(final=False, fix_aspect_ratio=True, ax=ax,
-                                                         outers_flag=plot_outers, inner_format='k-')
-                            sim_object.fibersets[0].plot(ax=ax, fiber_colors=colors, size=3)
-
-                        # colorbar
                         if add_colorbar:
-
                             cb_label = r'mA'
                             cb: cbar.Colorbar = plt.colorbar(
                                 mappable=plt.cm.ScalarMappable(
@@ -664,16 +652,19 @@ class Query(Exceptionable, Configurable, Saveable):
                                 format='%0.2f'
                             )
 
-                            # cb.ax.set_yticklabels(['{:.2f}'.format(min_thresh), '{:.2f}'.format(max_thresh)])
-
                             # colorbar font size
                             if colorbar_text_size_override is not None:
-                                # cb.set_label(cb_label, fontsize=colorbar_text_size_override)
                                 cb.ax.tick_params(labelsize=colorbar_text_size_override if (
                                         colorbar_text_size_override is not None) else 25)
 
-                            # if tick_bounds:
-                            #     cb.set_ticks([np.ceil(min_thresh * 100) / 100, np.floor(max_thresh * 100) / 100])
+                        if plot_mode is 'fiber0' or 'on_off':
+                            # plot slide (nerve and fascicles, defaulting to no outers)
+                            sample_object.slides[0].plot(final=False, fix_aspect_ratio=True, fascicle_colors=colors,
+                                                         ax=ax, outers_flag=plot_outers, inner_format='k-')
+                        elif plot_mode is 'fibers':
+                            sample_object.slides[0].plot(final=False, fix_aspect_ratio=True, ax=ax,
+                                                         outers_flag=plot_outers, inner_format='k-')
+                            sim_object.fibersets[0].plot(ax=ax, fiber_colors=colors, size=3)
 
                     # set super title
                     if title_toggle:
@@ -685,8 +676,7 @@ class Query(Exceptionable, Configurable, Saveable):
                             size=40
                         )
 
-                    plt.tight_layout(pad=2)
-                    plt.subplots_adjust(top=0.90)
+                    plt.tight_layout(pad=0)
                     # plt.tight_layout(pad=5.0)
 
                     # save figure as png
