@@ -507,7 +507,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
                         if plot_mode is 'fiber0' or 'on_off':
                             for i in range(n_inners):
-                                if select_fascicles[i]: # TODO this needs to work when select_fascicles is not being used
+                                if select_fascicles is None or select_fascicles[i]:
                                     thresh_path = os.path.join(n_sim_dir, 'data', 'outputs',
                                                                'thresh_inner{}_fiber0.dat'.format(i))
                                     if os.path.exists(thresh_path):
@@ -527,20 +527,24 @@ class Query(Exceptionable, Configurable, Saveable):
 
                         elif plot_mode is 'fibers':
                             for inner_ind in range(n_inners):
-                                for fiber_ind in range(len(sim_object.fibersets[0].out_to_fib[inner_ind][0])):
-                                    thresh_path = os.path.join(n_sim_dir, 'data', 'outputs',
-                                                               'thresh_inner{}_fiber{}.dat'.format(
-                                                                   inner_ind,
-                                                                   fiber_ind
-                                                               ))
-                                    if os.path.exists(thresh_path):
-                                        threshold = abs(np.loadtxt(thresh_path))
-                                        if len(np.atleast_1d(threshold)) > 1:
-                                            threshold = threshold[-1]
-                                        thresholds.append(threshold)
-                                    else:
-                                        missing_indices.append((inner_ind, fiber_ind))
-                                        print('MISSING: {}'.format(thresh_path))
+                                if select_fascicles is None or select_fascicles[inner_ind]:
+                                    for fiber_ind in range(len(sim_object.fibersets[0].out_to_fib[inner_ind][0])):
+                                        thresh_path = os.path.join(n_sim_dir, 'data', 'outputs',
+                                                                   'thresh_inner{}_fiber{}.dat'.format(
+                                                                       inner_ind,
+                                                                       fiber_ind
+                                                                   ))
+                                        if os.path.exists(thresh_path):
+                                            threshold = abs(np.loadtxt(thresh_path))
+                                            if len(np.atleast_1d(threshold)) > 1:
+                                                threshold = threshold[-1]
+                                            thresholds.append(threshold)
+                                        else:
+                                            missing_indices.append((inner_ind, fiber_ind))
+                                            print('MISSING: {}'.format(thresh_path))
+                                else:
+                                    for fiber_ind in range(len(sim_object.fibersets[0].out_to_fib[inner_ind][0])):
+                                        thresholds.append(np.nan)
 
                         max_thresh = np.nanmax(thresholds)
                         min_thresh = np.nanmin(thresholds)
