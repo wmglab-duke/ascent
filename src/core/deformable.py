@@ -110,7 +110,7 @@ class Deformable(Exceptionable):
             for seg in morph_step:
                 seg.elasticity = 0.0
                 seg.group = 1
-            space.add(morph_step)
+            space.add(*morph_step)
 
         def step_physics(space: pymunk.Space, count: int):
             dt = 1.0 / 60.0
@@ -136,7 +136,7 @@ class Deformable(Exceptionable):
 
             if loop_count % morph_index_step == 0:
                 # print('PRINT PRINT PRINT')
-                space.remove(morph_step)
+                space.remove(*morph_step)
                 morph_index += 1
                 Deformable.printProgressBar(morph_index,
                                             len(morph_steps),
