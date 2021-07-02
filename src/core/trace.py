@@ -509,8 +509,8 @@ class Trace(Exceptionable):
             if np.array_equiv(first[:2], second[:2]):
                 pass
             segments.append(pymunk.Segment(space.static_body,
-                                           first[:2],
-                                           second[:2],
+                                           first[:2].tolist(),
+                                           second[:2].tolist(),
                                            radius=1.0))
         return segments
 
