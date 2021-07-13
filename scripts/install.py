@@ -12,7 +12,7 @@ def run(args):
         raise Exception('Installation must be run using Python 3.\nTry \'./run install\' or \'python3 run install\'.\n')
 
     reply = input('Have you navigated to the root of the ASCENT repository? [y/N] ').lower().strip()
-    if reply[0] is not 'y':
+    if reply[0] != 'y':
         print('Please do so and re-run.\n')
         sys.exit()
     else:
@@ -29,7 +29,7 @@ def run(args):
         target = os.path.join(bin, jar.split('/')[-1])
         if os.path.exists(target):
             reply = input('{} already found! download again and overwrite? [y/N] '.format(target)).lower().strip()
-            if reply[0] is not 'y':
+            if reply[0] != 'y':
                 print('Not overwriting.\n')
                 retrieve = False
             else:
