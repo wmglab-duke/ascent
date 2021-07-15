@@ -1,8 +1,13 @@
 /*
+The copyrights of this software are owned by Duke University.
+Please refer to the LICENSE.txt and README.txt files for licensing instructions.
+The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
+
 #-*-#
-### balannce.hoc
+# balannce.hoc
 ----------------
-This scipt contains a function that balances the currents for the membrane to comply with the resting potential. It reads all the membrane currents and writes to the leak and pump conductance.
+This scipt contains a function that balances the currents for the membrane to comply with the resting potential.
+It reads all the membrane currents and writes to the leak and pump conductance.
 
 This function is called after the first initialization.
 #-*-#

@@ -1,6 +1,19 @@
 #!/usr/bin/env python3.7
 
 """
+The copyrights of this software are owned by Duke University.
+Please refer to the LICENSE.txt and README.txt files for licensing instructions.
+The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
+"""
+
+# builtins
+import json
+from typing import Type, List, Union
+
+# ascent
+from .enums import *
+
+"""
 Description:
 
     OVERVIEW
@@ -23,14 +36,7 @@ Description:
     search_mode
     search_multi_mode
     validate_path (ensures that it ends with .json)
-
 """
-# builtins
-import json
-from typing import Type, List, Union
-
-# ascent
-from .enums import *
 
 
 class Configurable:
