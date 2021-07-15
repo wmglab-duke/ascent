@@ -443,7 +443,7 @@ def main():
             submission_context)
         submission_contexts.append(submission_context)
 
-        auto_compile_flag = run.get('auto_compile_mods', False)
+        auto_compile_flag = run.get('override_compiled_mods', False)
         auto_compile_flags.append(auto_compile_flag)
 
     # submit_lists, sub_contexts, run_filenames = make_submission_list()
