@@ -186,7 +186,7 @@
   },
   {
     "code": 37,
-    "text": "Missing config required by run configuration!",
+    "text": "Missing config required by run configuration! See path the program looked for before Traceback.",
     "source": "src.Runner"
   },
   {
