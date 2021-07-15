@@ -493,5 +493,10 @@
     "code": 98,
     "text": "scale_source_file (see above print statement) not found",
     "source": "src.core.Sample"
+  },
+  {
+    "code": 99,
+    "text": "Sim->fibers->z_parameters->offset is a fraction of 1 node length, so needs to be a value between 0 and 1 (inclusive)",
+    "source": "src.core.Fiberset"
   }
 ]
