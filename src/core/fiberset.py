@@ -14,6 +14,8 @@ from shapely.affinity import scale
 from shapely.geometry import LineString, Point
 import csv
 import matplotlib.pyplot as plt
+import numpy as np
+import os
 
 # ascent
 from src.utils import *
