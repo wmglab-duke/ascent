@@ -414,9 +414,11 @@ def main():
     # validate inputs
     runs = []
     submission_contexts = []
+    auto_compile_flags = []
 
-    # compile MOD files if they have not yet been compiled, can provide override=True to compile no matter what
-    auto_compile()
+    # compile MOD files if they have not yet been compiled
+    compiled: bool = False
+    compiled = auto_compile()
 
     for run_number in sys.argv[1:]:
         # run number is numeric
@@ -441,8 +443,14 @@ def main():
             submission_context)
         submission_contexts.append(submission_context)
 
+        auto_compile_flag = run.get('auto_compile_mods', False)
+        auto_compile_flags.append(auto_compile_flag)
+
     # submit_lists, sub_contexts, run_filenames = make_submission_list()
-    for sub_context, run_index in zip(submission_contexts, runs):
+    for sub_context, run_index, auto_compile_flag in zip(submission_contexts, runs, auto_compile_flags):
+
+        if auto_compile_flag and not compiled:
+            auto_compile(override=True)
 
         if sub_context == 'local':
             filename = os.path.join('runs', run_index + '.json')
@@ -470,7 +478,6 @@ def main():
         else:
             # something went horribly wrong
             pass
-
 
 
 if __name__ == "__main__":  # Allows for the safe importing of the main module
