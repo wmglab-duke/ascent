@@ -1,3 +1,14 @@
+#!/usr/bin/env python3.7
+
+"""
+The copyrights of this software are owned by Duke University.
+Please refer to the LICENSE.txt and README.txt files for licensing instructions.
+The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
+"""
+
+import numpy as np
+import math
+
 """
 The following code is adapted from a public GitHub repository (information below). The original code was written in
 Python 2.x and has been adapted to Python 3.x syntax for the purposes of this project. The function interparc and others
@@ -10,11 +21,6 @@ Date of Download: April 7, 2020
 GitHub URL: https://github.com/rsyi/python-lib/blob/master/interparc.py
 """
 
-import numpy as np
-import math
-
-
-# import csv
 
 def diffCOL(matrix):
     newMAT = []

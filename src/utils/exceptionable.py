@@ -1,6 +1,19 @@
 #!/usr/bin/env python3.7
 
 """
+The copyrights of this software are owned by Duke University.
+Please refer to the LICENSE.txt and README.txt files for licensing instructions.
+The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
+"""
+
+# builtins
+import os
+
+# ascent
+from .configurable import Configurable
+from .enums import SetupMode, Config
+
+"""
 Description:
 
     OVERVIEW
@@ -14,14 +27,7 @@ Description:
 
     METHODS
     throw
-
 """
-# builtins
-import os
-
-# ascent
-from .configurable import Configurable
-from .enums import SetupMode, Config
 
 
 class Exceptionable(Configurable):

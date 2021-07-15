@@ -1,5 +1,9 @@
+#!/usr/bin/env python3.7
+
 """
-Proof-of-concept for a physics-based fascicle repositioning method, adapted from flipper.py in the Pymunk examples.
+The copyrights of this software are owned by Duke University.
+Please refer to the LICENSE.txt and README.txt files for licensing instructions.
+The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
 import random
@@ -10,6 +14,10 @@ from pygame.color import *
 
 import pymunk.pygame_util
 
+"""
+Proof-of-concept for a physics-based fascicle repositioning method, adapted from flipper.py in the Pymunk examples.
+"""
+
 width = 600
 height = 600
 
@@ -18,16 +26,16 @@ screen = pygame.display.set_mode((width, height))
 clock = pygame.time.Clock()
 running = True
 
-### Physics stuff
+# Physics stuff
 space = pymunk.Space()
 space.gravity = (0.0, 0.0)
 draw_options = pymunk.pygame_util.DrawOptions(screen)
 
-## Balls
+# Balls
 balls = []
 
 
-### walls
+# walls
 def line_points(w: float = width, h: float = height, center: bool = False):
     x, y = 0, 0
     if center:
@@ -93,19 +101,19 @@ while running:
             space.add(body, shape)
             balls.append(shape)
 
-    ### Clear screen
+    # Clear screen
     screen.fill(THECOLORS["white"])
 
-    ### Draw stuff
+    # Draw stuff
     draw_options.shape_outline_color = (0, 0, 0, 255)
     space.debug_draw(draw_options)
 
-    ### Update physics
+    # Update physics
     dt = 1.0 / 60.0 / 2
     for x in range(2):
         space.step(dt)
 
-    ### Flip screen
+    # Flip screen
     pygame.display.flip()
     clock.tick(50)
     pygame.display.set_caption("fps: " + str(clock.get_fps()))
