@@ -12,6 +12,7 @@ from typing import List
 
 # packages
 import numpy as np
+import os
 
 # ascent
 from src.utils import *
@@ -128,8 +129,6 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                               % fiber_model_info.get("geom_determination_method"))
             file_object.write("flag_model_b_fiber = %0.0f\n" % 1)
 
-            # TODO add delta_z for B-Fiber eventually
-
         file_object.write("fiber_type = %0.0f "
                           "// fiber_type = 1 for unmyelinated; fiber_type = 2 for myelinated; "
                           "fiber_type = 3 for c fiber built from cFiberBuilder.hoc\n"
@@ -138,6 +137,12 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         file_object.write("node_channels = %0.0f "
                           "// node_channels = 0 for MRG; node_channels = 1 for Schild 1994\n" %
                           fiber_model_info.get("node_channels"))
+
+        # Flag to change the end 2 nodes (either end) to 5 mm for SL only in NEURON
+        xy_mode_name: str = self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode')
+        xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
+        large_end_nodes = False if not xy_mode == FiberXYMode.SL_PSEUDO_INTERP else True
+        file_object.write("large_end_nodes      = %0.0f\n" % int(large_end_nodes == True))
 
         if fiber_model_info.get("neuron_flag") == 2:
             axonnodes = int(1 + (n_fiber_coords - 1) / 11)
