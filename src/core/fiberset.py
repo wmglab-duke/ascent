@@ -356,6 +356,12 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             # get offset param - NOTE: raw value is a FRACTION of dz (explanation for multiplication by dz)
             if 'offset' in self.search(Config.SIM, 'fibers', FiberZMode.parameters.value).keys():
                 offset = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'offset') * dz
+
+                if 0 <= offset <= 1:
+                    pass
+                else:
+                    self.throw(99)
+
             else:
                 offset = None
 
