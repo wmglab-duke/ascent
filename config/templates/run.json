@@ -25,5 +25,6 @@
     "cuff_only": false,
     "nerve_only": false
   },
-  "local_avail_cpus": 3
+  "local_avail_cpus": 3,
+  "auto_compile_mods": false
 }
