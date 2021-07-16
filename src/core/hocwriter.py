@@ -168,9 +168,6 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                           "// passive_end_nodes = 1 to make both end nodes passive; 0 otherwise\n" %
                           fiber_model_info.get("passive_end_nodes"))
 
-        file_object.write("fiberD = %0.1f "
-                          "// fiber diameter\n" % diameter)
-
         file_object.write("\n//***************** Intracellular Stim ***********\n")
         # use for keys only, get params with self.search() for error throwing if missing them
         intracellular_stim: dict = self.search(Config.SIM, "intracellular_stim")

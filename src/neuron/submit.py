@@ -97,7 +97,7 @@ def get_thresh_bounds(sim_dir: str, sim_name: str, inner_ind: int):
     return top, bottom
 
 
-def make_task(my_os: str, start_p: str, sim_p: str, inner: int, fiber: int, top: float, bottom: float):
+def make_task(my_os: str, start_p: str, sim_p: str, inner: int, fiber: int, top: float, bottom: float, diam: float):
     with open(start_p, 'w+') as handle:
         if my_os == 'UNIX-LIKE':
             lines = [
@@ -111,11 +111,13 @@ def make_task(my_os: str, start_p: str, sim_p: str, inner: int, fiber: int, top:
                 '-c \"fiber_ind={}\" '
                 '-c \"stimamp_top={}\" '
                 '-c \"stimamp_bottom={}\" '
+                '-c \"fiberD={}\" '
                 '-c \"load_file(\\\"launch.hoc\\\")\" blank.hoc\n'.format(sim_p,
                                                                           inner,
                                                                           fiber,
                                                                           top,
-                                                                          bottom)
+                                                                          bottom,
+                                                                          diam)
             ]
 
             # copy special files ahead of time to avoid 'text file busy error'
@@ -133,12 +135,14 @@ def make_task(my_os: str, start_p: str, sim_p: str, inner: int, fiber: int, top:
                 '-c \"fiber_ind={}\" '
                 '-c \"stimamp_top={}\" '
                 '-c \"stimamp_bottom={}\" '
+                '-c \"fiberD={}\" '
                 '-c \"load_file(\\\"launch.hoc\\\")\" blank.hoc\n'.format(os.getcwd(),
                                                                           sim_path_win,
                                                                           inner,
                                                                           fiber,
                                                                           top,
-                                                                          bottom)
+                                                                          bottom,
+                                                                          diam)
             ]
 
         handle.writelines(lines)
@@ -233,7 +237,7 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
                     start_path_solo = os.path.join(sim_path, 'start{}'.format('.sh' if OS == 'UNIX_LIKE' else '.bat'))
 
                     if stimamp_top is not None and stimamp_bottom is not None:
-                        make_task(OS, start_path_solo, sim_path, inner_ind_solo, fiber_ind_solo, stimamp_top, stimamp_bottom)
+                        make_task(OS, start_path_solo, sim_path, inner_ind_solo, fiber_ind_solo, stimamp_top, stimamp_bottom, diameter)
 
                         # submit batch job for fiber
                         job_name = '{}_{}'.format(sim_name, master_fiber_name_solo)
@@ -286,7 +290,7 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
 
                             stimamp_top, stimamp_bottom = get_thresh_bounds(sim_dir, sim_name, inner_ind)
                             if stimamp_top is not None and stimamp_bottom is not None:
-                                make_task(OS, start_path, sim_path, inner_ind, fiber_ind, stimamp_top, stimamp_bottom)
+                                make_task(OS, start_path, sim_path, inner_ind, fiber_ind, stimamp_top, stimamp_bottom, diameter)
                                 array_index += 1
                                 job_count += 1
 
@@ -394,7 +398,7 @@ def make_local_submission_list(run_number: int):
                                                                                '.sh' if OS == 'UNIX-LIKE'
                                                                                else '.bat'))
                     stimamp_top, stimamp_bottom = get_thresh_bounds(sim_dir, sim_name, inner_ind)
-                    make_task(OS, start_path, sim_path, inner_ind, fiber_ind, stimamp_top, stimamp_bottom)
+                    make_task(OS, start_path, sim_path, inner_ind, fiber_ind, stimamp_top, stimamp_bottom, diameter)
 
                     # submit batch job for fiber
                     output_log = os.path.join(out_dir, '{}{}'.format(master_fiber_name, '.log'))
