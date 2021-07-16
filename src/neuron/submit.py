@@ -46,6 +46,12 @@ def auto_compile(override: bool = False):
     return compiled
 
 
+def get_diameter(sim_dir: str, sim_name: str, inner_ind: int, fiber_ind: int):
+
+
+    return 0
+
+
 def get_thresh_bounds(sim_dir: str, sim_name: str, inner_ind: int):
     top, bottom = None, None
 
@@ -379,6 +385,11 @@ def make_local_submission_list(run_number: int):
                 n_sim = sim_name.split('_')[-1]
                 sim_config = load(os.path.join(sim_path, '{}.json'.format(n_sim)))
 
+                # load the inner x fiber -> diam key saved in the n_sim folder
+                diam_key_path = os.path.join(sim_dir, sim_name, 'key_inner_fiber_diam.txt')
+                diam_key = np.loadtxt(diam_key_path)
+                # TODO load previously saved file in the n_sim directory linking inner, fiber to diam
+
                 for fiber_filename in [x for x in os.listdir(fibers_path) if re.match('inner[0-9]+_fiber['
                                                                                       '0-9]+\\.dat', x)]:
                     master_fiber_name = str(fiber_filename.split('.')[0])
@@ -398,6 +409,7 @@ def make_local_submission_list(run_number: int):
                                                                                '.sh' if OS == 'UNIX-LIKE'
                                                                                else '.bat'))
                     stimamp_top, stimamp_bottom = get_thresh_bounds(sim_dir, sim_name, inner_ind)
+                    diameter = get_diameter(diam_key, inner_ind, fiber_ind)
                     make_task(OS, start_path, sim_path, inner_ind, fiber_ind, stimamp_top, stimamp_bottom, diameter)
 
                     # submit batch job for fiber

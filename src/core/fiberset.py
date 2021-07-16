@@ -135,7 +135,17 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         :param path:
         :return:
         """
+
+        diams = []
         for i, fiber in enumerate(self.fibers if self.fibers is not None else []):
+
+            if not isinstance(fiber, dict):
+                pass
+            else:
+                fiber = fiber['fiber']
+                diam = fiber['diam']
+                diams.append(diam)
+
             with open(os.path.join(path, str(i) + WriteMode.file_endings.value[mode.value]), 'w') as f:
                 for row in [len(fiber)] + list(fiber):
                     if not isinstance(row, int):
@@ -144,6 +154,12 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                     else:
                         f.write(str(row) + ' ')
                     f.write("\n")
+
+        if len(diams) > 0:
+            diams_key_path = os.path.join(path, 'diams.txt')
+            with open(diams_key_path, "w") as f2:
+                np.savetxt(f2, diams, fmt='%0.1f')
+
         return self
 
     def _generate_maps(self, fibers_xy) -> Tuple[List, List]:
@@ -241,7 +257,8 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             elif xy_mode == FiberXYMode.WHEEL:
                 # get required parameters
                 spoke_count: int = self.search(Config.SIM, 'fibers', 'xy_parameters', 'spoke_count')
-                point_count: int = self.search(Config.SIM, 'fibers', 'xy_parameters', 'point_count_per_spoke')  # this number is PER SPOKE
+                point_count: int = self.search(Config.SIM, 'fibers', 'xy_parameters',
+                                               'point_count_per_spoke')  # this number is PER SPOKE
                 find_centroid: bool = self.search(Config.SIM, 'fibers', 'xy_parameters', 'find_centroid')
                 angle_offset_is_in_degrees: bool = self.search(Config.SIM, 'fibers',
                                                                'xy_parameters',
@@ -347,8 +364,85 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
             return values
 
-        def build_fibers_with_offset(z_values: list, myel: bool, length: float, dz: float,
-                                     additional_offset: float = 0, my_z_seed: int = 123):
+        def generate_myel_fiber_zs(my_z_shift_to_center, my_diam):
+            my_delta_z = \
+                paranodal_length_2 = \
+                inter_length = None
+
+            sampling_mode = self.search(Config.FIBER_Z,
+                                        MyelinationMode.parameters.value,
+                                        fiber_geometry_mode_name,
+                                        "sampling")
+
+            node_length, paranodal_length_1, inter_length_str = (
+                self.search(Config.FIBER_Z, MyelinationMode.parameters.value, fiber_geometry_mode_name, key)
+                for key in ('node_length', 'paranodal_length_1', 'inter_length')
+            )
+
+            # load in all the required specifications for finding myelinated z coordinates
+            if sampling_mode == MyelinatedSamplingType.DISCRETE.value:
+
+                diameters, my_delta_zs, paranodal_length_2s = (
+                    self.search(Config.FIBER_Z, MyelinationMode.parameters.value, fiber_geometry_mode_name, key)
+                    for key in ('diameters', 'delta_zs', 'paranodal_length_2s')
+                )
+
+                diameter_index = diameters.index(my_diam)
+                my_delta_z = delta_zs[diameter_index]
+                paranodal_length_2 = paranodal_length_2s[diameter_index]
+                inter_length = eval(inter_length_str)
+
+            elif sampling_mode == MyelinatedSamplingType.INTERPOLATION.value:
+
+                paranodal_length_2_str, delta_z_str, inter_length_str = (
+                    self.search(Config.FIBER_Z, MyelinationMode.parameters.value, fiber_geometry_mode_name, key)
+                    for key in ('paranodal_length_2', 'delta_z', 'inter_length')
+                )
+                paranodal_length_2 = eval(paranodal_length_2_str)
+
+                if fiber_geometry_mode_name == FiberGeometry.B_FIBER.value:
+                    inter_length = eval(inter_length_str)
+                    my_delta_z = eval(delta_z_str)
+                elif fiber_geometry_mode_name == FiberGeometry.MRG_INTERPOLATION.value:
+                    if my_diam > 16.0 or my_diam < 2.0:
+                        self.throw(77)
+                    if my_diam >= 5.643:
+                        my_delta_z = eval(delta_z_str["diameter_greater_or_equal_5.643um"])
+                    else:
+                        my_delta_z = eval(delta_z_str["diameter_less_5.643um"])
+                    inter_length = eval(inter_length_str)
+
+            z_steps: List = []
+            while (sum(z_steps) - half_fiber_length) < 0.001:
+                z_steps += [(node_length / 2) + (paranodal_length_1 / 2),
+                            (paranodal_length_1 / 2) + (paranodal_length_2 / 2),
+                            (paranodal_length_2 / 2) + (inter_length / 2),
+                            *([inter_length] * 5),
+                            (inter_length / 2) + (paranodal_length_2 / 2),
+                            (paranodal_length_2 / 2) + (paranodal_length_1 / 2),
+                            (paranodal_length_1 / 2) + (node_length / 2)]
+
+            # account for difference between last node z and half fiber length -> must shift extra distance
+            my_z_shift_to_center += sum(z_steps) - half_fiber_length
+
+            reverse_z_steps = z_steps.copy()
+            reverse_z_steps.reverse()
+
+            # concat, cumsum, and other stuff to get final list of z points
+            my_zs = np.array(
+                list(
+                    np.cumsum(
+                        np.concatenate(
+                            ([0], reverse_z_steps, z_steps)
+                        )
+                    )
+                ),
+            )
+
+            return my_zs, my_delta_z
+
+        def build_fiber_with_offset(z_values: list, myel: bool, length: float, dz: float,
+                                    additional_offset: float = 0, my_z_seed: int = 123):
 
             # init empty fiber (points) list
             fiber = []
@@ -382,9 +476,8 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                                 self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'max'),
                                 myel)
 
-            for x, y in fibers_xy:
-                random_offset_value = dz * (random.random() - 0.5) if random_offset else 0
-                fiber.append([(x, y, z + random_offset_value) for z in z_offset])
+            random_offset_value = dz * (random.random() - 0.5) if random_offset else 0
+            fiber.append([(x, y, z + random_offset_value) for z in z_offset])
 
             return fiber
 
@@ -397,7 +490,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         if fiber_z_mode == FiberZMode.EXTRUSION:
 
             model_length = self.search(Config.MODEL, 'medium', 'proximal', 'length') if (
-                        override_length is None) else override_length
+                    override_length is None) else override_length
 
             if not ('min' in self.configs['sims']['fibers']['z_parameters'].keys() and 'max' in
                     self.configs['sims']['fibers']['z_parameters'].keys()):
@@ -438,95 +531,23 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                     "myelinated"
                 )
 
-                diameter = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'diameter')
-
+                # TODO - do stuff to make distribution of diams here
+                diams = []
                 my_z_seed = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'seed')
 
+                for x, y in fibers_xy:
+                    diameter = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'diameter')  # TODO temp
+                    diams.append(diameter)
+
+            fibers = []
             if myelinated and not super_sample:  # MYELINATED
-
-                delta_z = \
-                    paranodal_length_2 = \
-                    inter_length = None
-
-                sampling_mode = self.search(Config.FIBER_Z,
-                                            MyelinationMode.parameters.value,
-                                            fiber_geometry_mode_name,
-                                            "sampling")
-
-                node_length, paranodal_length_1, inter_length_str = (
-                    self.search(Config.FIBER_Z, MyelinationMode.parameters.value, fiber_geometry_mode_name, key)
-                    for key in ('node_length', 'paranodal_length_1', 'inter_length')
-                )
-
-                # load in all the required specifications for finding myelinated z coordinates
-                if sampling_mode == MyelinatedSamplingType.DISCRETE.value:
-
-                    diameters, delta_zs, paranodal_length_2s = (
-                        self.search(Config.FIBER_Z, MyelinationMode.parameters.value, fiber_geometry_mode_name, key)
-                        for key in ('diameters', 'delta_zs', 'paranodal_length_2s')
-                    )
-
-                    diameter_index = diameters.index(diameter)
-                    delta_z = delta_zs[diameter_index]
-                    paranodal_length_2 = paranodal_length_2s[diameter_index]
-                    inter_length = eval(inter_length_str)
-
-                elif sampling_mode == MyelinatedSamplingType.INTERPOLATION.value:
-
-                    paranodal_length_2_str, delta_z_str, inter_length_str = (
-                        self.search(Config.FIBER_Z, MyelinationMode.parameters.value, fiber_geometry_mode_name, key)
-                        for key in ('paranodal_length_2', 'delta_z', 'inter_length')
-                    )
-                    paranodal_length_2 = eval(paranodal_length_2_str)
-
-                    if fiber_geometry_mode_name == FiberGeometry.B_FIBER.value:
-                        inter_length = eval(inter_length_str)
-                        delta_z = eval(delta_z_str)
-                    elif fiber_geometry_mode_name == FiberGeometry.MRG_INTERPOLATION.value:
-                        if diameter > 16.0 or diameter < 2.0:
-                            self.throw(77)
-                        if diameter >= 5.643:
-                            delta_z = eval(delta_z_str["diameter_greater_or_equal_5.643um"])
-                        else:
-                            delta_z = eval(delta_z_str["diameter_less_5.643um"])
-                        inter_length = eval(inter_length_str)
-
-                z_steps: List = []
-                while (sum(z_steps) - half_fiber_length) < 0.001:
-                    z_steps += [(node_length / 2) + (paranodal_length_1 / 2),
-                                (paranodal_length_1 / 2) + (paranodal_length_2 / 2),
-                                (paranodal_length_2 / 2) + (inter_length / 2),
-                                *([inter_length] * 5),
-                                (inter_length / 2) + (paranodal_length_2 / 2),
-                                (paranodal_length_2 / 2) + (paranodal_length_1 / 2),
-                                (paranodal_length_1 / 2) + (node_length / 2)]
-
-                # account for difference between last node z and half fiber length -> must shift extra distance
-                z_shift_to_center += sum(z_steps) - half_fiber_length
-
-                reverse_z_steps = z_steps.copy()
-                reverse_z_steps.reverse()
-
-                # concat, cumsum, and other stuff to get final list of z points
-                zs = np.array(
-                    list(
-                        np.cumsum(
-                            np.concatenate(
-                                ([0], reverse_z_steps, z_steps)
-                            )
-                        )
-                    ),
-                )
-
-                fibers = [fiber for fiber in build_fibers_with_offset(zs,
-                                                                      myelinated,
-                                                                      fiber_length,
-                                                                      delta_z,
-                                                                      z_shift_to_center,
-                                                                      my_z_seed=my_z_seed)]
+                for _, diam in zip(fibers_xy, diams):
+                    zs, delta_z = generate_myel_fiber_zs(z_shift_to_center, diam)
+                    fiber_pre = build_fiber_with_offset(zs, myelinated, fiber_length, delta_z, z_shift_to_center, my_z_seed=my_z_seed)
+                    fiber = {'diam': diam, 'fiber': fiber_pre}
+                    fibers.append(fiber)
 
             else:  # UNMYELINATED
-
                 if super_sample:
                     if 'dz' in self.configs[Config.SIM.value]['supersampled_bases'].keys():
                         delta_zs = self.search(Config.SIM, 'supersampled_bases', 'dz')
@@ -547,12 +568,14 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                     z_top_half = z_top_half[:-1]
                     z_bottom_half = z_bottom_half[1:]
 
-                fibers = build_fibers_with_offset(list(np.concatenate((z_bottom_half[:-1], z_top_half))),
-                                                  myelinated,
-                                                  fiber_length,
-                                                  delta_zs,
-                                                  z_shift_to_center,
-                                                  my_z_seed=my_z_seed)
+                for x, y in fibers_xy:
+                    fiber = build_fiber_with_offset(list(np.concatenate((z_bottom_half[:-1], z_top_half))),
+                                                    myelinated,
+                                                    fiber_length,
+                                                    delta_zs,
+                                                    z_shift_to_center,
+                                                    my_z_seed=my_z_seed)
+                    fibers.append(fiber)
 
         else:
             self.throw(31)
