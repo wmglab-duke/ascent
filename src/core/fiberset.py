@@ -443,7 +443,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             return my_zs, delta_z
 
         def build_fiber_with_offset(z_values: list, myel: bool, length: float, dz: float,
-                                    additional_offset: float = 0, my_z_seed: int = 123):
+                                    additional_offset: float = 0):
 
             # get offset param - NOTE: raw value is a FRACTION of dz (explanation for multiplication by dz)
             if 'offset' in self.search(Config.SIM, 'fibers', FiberZMode.parameters.value).keys():
@@ -461,7 +461,6 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             if offset is None:
                 offset = 0.0
                 random_offset = True
-                random.seed(my_z_seed)
 
             xy_mode_name: str = self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode')
             xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
@@ -605,9 +604,10 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                     diams = fiber_diam_dist.rvs(len(fibers_xy))
 
             if myelinated and not super_sample:  # MYELINATED
+                random.seed(my_z_seed)
                 for _, diam in zip(fibers_xy, diams):
                     zs, delta_z = generate_myel_fiber_zs(z_shift_to_center, diam)
-                    fiber_pre = build_fiber_with_offset(zs, myelinated, fiber_length, delta_z, z_shift_to_center, my_z_seed=my_z_seed) # TODO will this shift same each time now????
+                    fiber_pre = build_fiber_with_offset(zs, myelinated, fiber_length, delta_z, z_shift_to_center) # TODO will this shift same each time now????
                     if diam_distribution:
                         fiber = {'diam': diam, 'fiber': fiber_pre}
                     else:
