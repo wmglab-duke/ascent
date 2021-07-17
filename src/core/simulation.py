@@ -16,6 +16,7 @@ import shutil
 import distutils.dir_util as du
 import pickle
 import warnings
+import re
 
 import numpy as np
 import scipy.interpolate as sci
@@ -250,6 +251,24 @@ class Simulation(Exceptionable, Configurable, Saveable):
         def load(path: str):
             return pickle.load(open(path, 'rb'))
 
+        def make_inner_fiber_diam_key(my_xy_mode, my_p, my_nsim_inputs_directory, my_potentials_directory, my_file):
+            inner_fiber_diam_key = []
+            diams = np.loadtxt(os.path.join(my_potentials_directory, my_file))
+            for fiber_ind in range(len(diams)):
+                diam = diams[fiber_ind]
+
+                # NOTE: if SL interp, writes files as inner0_fiber<q>.dat
+                if not my_xy_mode == FiberXYMode.SL_PSEUDO_INTERP:
+                    inner, fiber = self.indices_fib_to_n(my_p, fiber_ind)
+                else:
+                    inner, fiber = 0, fiber_ind
+                inner_fiber_diam_key.append((inner, fiber, diam))
+
+            inner_fiber_diam_key_filename = os.path.join(nsim_inputs_directory, 'inner_fiber_diam_key.obj')
+            with open(inner_fiber_diam_key_filename, 'wb') as f:
+                pickle.dump(inner_fiber_diam_key, f)
+                f.close()
+
         # loop cartesian product
         # key_filepath = os.path.join(sim_dir, "potentials", "key.dat")  # s is line number
         # f = open(key_filepath, "r")
@@ -325,135 +344,145 @@ class Simulation(Exceptionable, Configurable, Saveable):
             xy_mode_name: str = self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode')
             xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
 
-            supersampled_bases: dict = self.search(Config.SIM, 'supersampled_bases')
+            if 'supersampled_bases' not in self.configs[Config.SIM.value].keys():
+                supersampled_bases = None
+            else:
+                supersampled_bases: dict = self.search(Config.SIM, 'supersampled_bases')
+
+            potentials_directory = os.path.join(sim_dir, str(sim_num), 'potentials', str(p))
 
             # NOT SUPER SAMPLING - PROBED COMSOL AT /FIBERSETS --> /POTENTIALS
             if supersampled_bases is None or supersampled_bases.get('use') is False:
-                for root, dirs, files in os.walk(os.path.join(sim_dir, str(sim_num), 'potentials', str(p))):
+                for root, dirs, files in os.walk(potentials_directory):
                     for file in files:
-                        q = int(file.split('.')[0])
+                        if re.match('[0-9]+\\.dat', file):
+                            q = int(file.split('.')[0])
 
-                        # NOTE: if SL interp, writes files as inner0_fiber<q>.dat
-                        l: int
-                        k: int
-                        if not xy_mode == FiberXYMode.SL_PSEUDO_INTERP:
-                            l, k = self.indices_fib_to_n(p, q)
-                        else:
-                            l, k = 0, q
+                            # NOTE: if SL interp, writes files as inner0_fiber<q>.dat
+                            l: int
+                            k: int
+                            if not xy_mode == FiberXYMode.SL_PSEUDO_INTERP:
+                                l, k = self.indices_fib_to_n(p, q)
+                            else:
+                                l, k = 0, q
 
-                        is_member = np.in1d(l, inner_list)
-                        if not is_member:
-                            inner_list.append(l)
-                            if len(fiber_list) < len(inner_list):
-                                fiber_list.append(0)
-                            fiber_list[inner_list.index(l)] += 1
+                            is_member = np.in1d(l, inner_list)
+                            if not is_member:
+                                inner_list.append(l)
+                                if len(fiber_list) < len(inner_list):
+                                    fiber_list.append(0)
+                                fiber_list[inner_list.index(l)] += 1
 
-                        filename_direct = 'inner{}_fiber{}.dat'.format(l, k)
-                        if not os.path.exists(nsim_inputs_directory):
-                            os.makedirs(nsim_inputs_directory)
+                            filename_direct = 'inner{}_fiber{}.dat'.format(l, k)
+                            if not os.path.exists(nsim_inputs_directory):
+                                os.makedirs(nsim_inputs_directory)
 
-                        shutil.copyfile(
-                            os.path.join(sim_dir, str(sim_num), 'potentials', str(potentials_ind), str(q) + '.dat'),
-                            os.path.join(nsim_inputs_directory, filename_direct)
-                        )
+                            shutil.copyfile(
+                                os.path.join(sim_dir, str(sim_num), 'potentials', str(potentials_ind), str(q) + '.dat'),
+                                os.path.join(nsim_inputs_directory, filename_direct)
+                            )
+                        elif file == 'diams.txt':
+                            make_inner_fiber_diam_key(xy_mode, p, nsim_inputs_directory, potentials_directory, file)
 
             # SUPER SAMPLING - PROBED COMSOL AT SS_COORDS --> /SS_BASES
             elif supersampled_bases is not None and supersampled_bases.get('use') is True:
-                for root, dirs, files in os.walk(os.path.join(sim_dir, str(sim_num), 'fibersets', str(p))):
+                fiberset_directory = os.path.join(sim_dir, str(sim_num), 'fibersets', str(p))
+                for root, dirs, files in os.walk(fiberset_directory):
                     for file in files:
+                        if re.match('[0-9]+\\.dat', file):
 
-                        ss_bases = [[] for _ in active_src_vals[0]]
-                        source_sim = supersampled_bases.get('source_sim')
+                            ss_bases = [[] for _ in active_src_vals[0]]
+                            source_sim = supersampled_bases.get('source_sim')
 
-                        # check that dz in source_sim matches the dz (if provided) in current sim
+                            # check that dz in source_sim matches the dz (if provided) in current sim
+                            source_sim_obj_dir = os.path.join(sim_dir, str(source_sim))
 
-                        source_sim_obj_dir = os.path.join(sim_dir, str(source_sim))
+                            if not os.path.exists(source_sim_obj_dir):
+                                self.throw(94)
 
-                        if not os.path.exists(source_sim_obj_dir):
-                            self.throw(94)
+                            source_sim_obj_file = os.path.join(source_sim_obj_dir, 'sim.obj')
 
-                        source_sim_obj_file = os.path.join(source_sim_obj_dir, 'sim.obj')
+                            source_simulation: Simulation = load(source_sim_obj_file)
 
-                        source_simulation: Simulation = load(source_sim_obj_file)
+                            source_dz = source_simulation.configs['sims']['supersampled_bases']['dz']
 
-                        source_dz = source_simulation.configs['sims']['supersampled_bases']['dz']
+                            if 'dz' in supersampled_bases.keys():
+                                if supersampled_bases.get('dz') != source_dz:
+                                    self.throw(79)
+                            elif 'dz' not in supersampled_bases.keys():
+                                warnings.warn('dz not provided in Sim, so will accept dz={} specified in source Sim'.format(source_dz))
 
-                        if 'dz' in supersampled_bases.keys():
-                            if supersampled_bases.get('dz') != source_dz:
-                                self.throw(79)
-                        elif 'dz' not in supersampled_bases.keys():
-                            warnings.warn('dz not provided in Sim, so will accept dz={} specified in source Sim'.format(source_dz))
+                            for basis_ind in range(len(active_src_vals[0])):
 
-                        for basis_ind in range(len(active_src_vals[0])):
+                                ss_bases[basis_ind].append([])
+                                ss_bases_src_path = os.path.join(sim_dir,
+                                                              str(source_sim),
+                                                              'ss_bases',
+                                                              str(basis_ind))
 
-                            ss_bases[basis_ind].append([])
-                            ss_bases_src_path = os.path.join(sim_dir,
-                                                          str(source_sim),
-                                                          'ss_bases',
-                                                          str(basis_ind))
+                                ss_fiberset_path = os.path.join(sim_dir,
+                                                                str(source_sim),
+                                                                'ss_coords')
 
-                            ss_fiberset_path = os.path.join(sim_dir,
-                                                            str(source_sim),
-                                                            'ss_coords')
+                                if not os.path.exists(ss_bases_src_path):
+                                    self.throw(81)
 
-                            if not os.path.exists(ss_bases_src_path):
-                                self.throw(81)
+                                for f_root, f_dirs, f_files in os.walk(ss_bases_src_path):
+                                    for f_file in f_files:
+                                        q = int(f_file.split('.')[0])
 
-                            for f_root, f_dirs, f_files in os.walk(ss_bases_src_path):
-                                for f_file in f_files:
-                                    q = int(f_file.split('.')[0])
-
-                                    if not os.path.exists(os.path.join(f_root, f_file)):
-                                        self.throw(81)
-                                    else:
-                                        ss_bases[basis_ind][q] = np.loadtxt(os.path.join(f_root, f_file))[1:]
-
-                                    if basis_ind == len(active_src_vals[0]) - 1:
-
-                                        ss_weighted_bases_vec = np.zeros(len(ss_bases[basis_ind][q]))
-                                        for src_ind, src_weight in enumerate(active_src_vals[0]):
-                                            ss_weighted_bases_vec += ss_bases[src_ind][q]*src_weight
-
-                                        # down-sample super_save_vec
-                                        neuron_fiberset_file = open(os.path.join(root, file), 'r')
-                                        neuron_fiberset_file_lines = neuron_fiberset_file.readlines()[1:]
-                                        neuron_fiber_coords = []
-                                        for neuron_fiberset_file_line in neuron_fiberset_file_lines:
-                                            neuron_fiber_coords = \
-                                                np.append(neuron_fiber_coords,
-                                                          float(neuron_fiberset_file_line.split(' ')[-2])
-                                                          )
-
-                                        ss_fiberset_file = open(os.path.join(ss_fiberset_path, file), 'r')
-                                        ss_fiberset_file_lines = ss_fiberset_file.readlines()[1:]
-                                        ss_fiber_coords = []
-                                        for ss_fiberset_file_line in ss_fiberset_file_lines:
-                                            ss_fiber_coords = np.append(ss_fiber_coords,
-                                                                        float(ss_fiberset_file_line.split(' ')[-2]))
-
-                                        # create interpolation from super_coords and super_bases
-                                        f = sci.interp1d(ss_fiber_coords, ss_weighted_bases_vec)
-                                        neuron_potentials_input = f(neuron_fiber_coords)
-
-                                        # as is convention, append length to start
-                                        neuron_potentials_input = np.insert(neuron_potentials_input,
-                                                                            0,
-                                                                            len(neuron_potentials_input)
-                                                                            )
-
-                                        # NOTE: if SL interp, writes files as inner0_fiber<q>.dat
-                                        l: int
-                                        k: int
-                                        if not xy_mode == FiberXYMode.SL_PSEUDO_INTERP:
-                                            l, k = self.indices_fib_to_n(p, q)
+                                        if not os.path.exists(os.path.join(f_root, f_file)):
+                                            self.throw(81)
                                         else:
-                                            l, k = 0, q
+                                            ss_bases[basis_ind][q] = np.loadtxt(os.path.join(f_root, f_file))[1:]
 
-                                        ss_filename = 'inner{}_fiber{}.dat'.format(l, k)
+                                        if basis_ind == len(active_src_vals[0]) - 1:
 
-                                        np.savetxt(os.path.join(nsim_inputs_directory, ss_filename),
-                                                   neuron_potentials_input,
-                                                   fmt='%0.18f')
+                                            ss_weighted_bases_vec = np.zeros(len(ss_bases[basis_ind][q]))
+                                            for src_ind, src_weight in enumerate(active_src_vals[0]):
+                                                ss_weighted_bases_vec += ss_bases[src_ind][q]*src_weight
+
+                                            # down-sample super_save_vec
+                                            neuron_fiberset_file = open(os.path.join(root, file), 'r')
+                                            neuron_fiberset_file_lines = neuron_fiberset_file.readlines()[1:]
+                                            neuron_fiber_coords = []
+                                            for neuron_fiberset_file_line in neuron_fiberset_file_lines:
+                                                neuron_fiber_coords = \
+                                                    np.append(neuron_fiber_coords,
+                                                              float(neuron_fiberset_file_line.split(' ')[-2])
+                                                              )
+
+                                            ss_fiberset_file = open(os.path.join(ss_fiberset_path, file), 'r')
+                                            ss_fiberset_file_lines = ss_fiberset_file.readlines()[1:]
+                                            ss_fiber_coords = []
+                                            for ss_fiberset_file_line in ss_fiberset_file_lines:
+                                                ss_fiber_coords = np.append(ss_fiber_coords,
+                                                                            float(ss_fiberset_file_line.split(' ')[-2]))
+
+                                            # create interpolation from super_coords and super_bases
+                                            f = sci.interp1d(ss_fiber_coords, ss_weighted_bases_vec)
+                                            neuron_potentials_input = f(neuron_fiber_coords)
+
+                                            # as is convention, append length to start
+                                            neuron_potentials_input = np.insert(neuron_potentials_input,
+                                                                                0,
+                                                                                len(neuron_potentials_input))
+
+                                            # NOTE: if SL interp, writes files as inner0_fiber<q>.dat
+                                            l: int
+                                            k: int
+                                            if not xy_mode == FiberXYMode.SL_PSEUDO_INTERP:
+                                                l, k = self.indices_fib_to_n(p, q)
+                                            else:
+                                                l, k = 0, q
+
+                                            ss_filename = 'inner{}_fiber{}.dat'.format(l, k)
+
+                                            np.savetxt(os.path.join(nsim_inputs_directory, ss_filename),
+                                                       neuron_potentials_input,
+                                                       fmt='%0.18f')
+                        elif file == 'diams.txt':
+                            make_inner_fiber_diam_key(xy_mode, p, nsim_inputs_directory, potentials_directory, file)
 
         return self
 

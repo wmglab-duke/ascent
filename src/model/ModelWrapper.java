@@ -15,6 +15,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
@@ -546,6 +549,9 @@ public class ModelWrapper {
                     String[] fiber_coords_list = f_coords.list();
 
                     assert fiber_coords_list != null;
+                    fiber_coords_list = Arrays.stream(fiber_coords_list).filter(s -> Pattern.matches("[0-9]+\\.dat", s)).toArray(String[]::new);
+
+                    assert fiber_coords_list != null;
 
                     fiberset[fiberset_ind] = new double[fiber_coords_list.length][];
                     double[][] fibers = fiberset[fiberset_ind]; // pointer
@@ -660,8 +666,9 @@ public class ModelWrapper {
 
                     File f_coords = new File(String.join("/", new String[]{coord_dir, Integer.toString(ind_fiberset_select)}));
                     String[] fiber_coords_list = f_coords.list(); // create list of fiber coords (one for each fiber)
-
                     assert fiber_coords_list != null;
+                    fiber_coords_list = Arrays.stream(fiber_coords_list).filter(s -> Pattern.matches("[0-9]+\\.dat", s)).toArray(String[]::new);
+
                     if (sim_final_ve[product_ind] == null) {
                         sim_final_ve[product_ind] = new double[fiber_coords_list.length][];
                     }
@@ -727,22 +734,29 @@ public class ModelWrapper {
                 int ind_fiberset_select = prods[product_ind][1];
                 File f_coords = new File(String.join("/", new String[]{coord_dir, Integer.toString(ind_fiberset_select)}));
                 String[] fiber_coords_list = f_coords.list(); // create list of fiber coords (one for each fiber)
-
                 assert fiber_coords_list != null;
+                fiber_coords_list = Arrays.stream(fiber_coords_list).filter(s -> Pattern.matches("[0-9]+\\.dat", s)).toArray(String[]::new);
+
+                // write Ve to file
+                String ve_dir = String.join("/", new String[]{ // build path to directory of ve for each fiber coordinate
+                        sim_dir, "potentials", Integer.toString(product_ind)
+                });
+
+                // if sim potentials directory does not yet exist, make it
+                File vePathFile = new File(ve_dir);
+                if (!vePathFile.exists()) {
+                    boolean success = vePathFile.mkdirs();
+                    assert success;
+                }
+
+                String src_diams_key_path = String.join("/", new String[]{coord_dir, Integer.toString(ind_fiberset_select), "diams.txt"});
+                String dest_diams_key_path = String.join("/", new String[]{ve_dir, "diams.txt"});
+
+                Path src_diams_key = Paths.get(src_diams_key_path);
+                Path dest_diams_key = Paths.get(dest_diams_key_path);
+                Files.copy(src_diams_key, dest_diams_key);
 
                 for (int coords_ind = 0; coords_ind < fiber_coords_list.length; coords_ind++) { // loop over fiber coords in list of fiber coords
-
-                    // write Ve to file
-                    String ve_dir = String.join("/", new String[]{ // build path to directory of ve for each fiber coordinate
-                            sim_dir, "potentials", Integer.toString(product_ind)
-                    });
-
-                    // if sim potentials directory does not yet exist, make it
-                    File vePathFile = new File(ve_dir);
-                    if (!vePathFile.exists()) {
-                        boolean success = vePathFile.mkdirs();
-                        assert success;
-                    }
 
                     String ve_path = String.join("/", new String[]{
                             ve_dir, coords_ind + ".dat"

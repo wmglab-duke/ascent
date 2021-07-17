@@ -135,6 +135,13 @@ class PopulateMode(ASCENTEnum):
 
 
 @unique
+class DiamDistMode(ASCENTEnum):
+
+    TRUNCNORM = 0
+    UNIFORM = 1
+
+
+@unique
 class DeformationMode(ASCENTEnum):
     config = 'deform'
 

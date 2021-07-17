@@ -16,6 +16,7 @@ import json
 import time
 import numpy as np
 import warnings
+import pickle
 
 ALLOWED_SUBMISSION_CONTEXTS = ['cluster', 'local']
 OS = 'UNIX-LIKE' if any([s in sys.platform for s in ['darwin', 'linux']]) else 'WINDOWS'
@@ -46,10 +47,14 @@ def auto_compile(override: bool = False):
     return compiled
 
 
-def get_diameter(sim_dir: str, sim_name: str, inner_ind: int, fiber_ind: int):
-
-
-    return 0
+def get_diameter(my_inner_fiber_diam_key, my_inner_ind, my_fiber_ind):
+    for item in my_inner_fiber_diam_key:
+        if item[0] == my_inner_ind and item[1] == my_fiber_ind:
+            my_diameter = item[2]
+            break
+        else:
+            continue
+    return my_diameter
 
 
 def get_thresh_bounds(sim_dir: str, sim_name: str, inner_ind: int):
@@ -199,6 +204,9 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
                 output_path = os.path.abspath(os.path.join(sim_path, 'data', 'outputs'))
                 start_path_base = os.path.join(sim_path, 'start_')
 
+                n_sim = sim_name.split('_')[3]
+                sim_config = load(os.path.join(sim_dir, sim_name, '{}.json'.format(n_sim)))
+
                 # ensure log directories exist
                 out_dir = os.path.join(sim_path, 'logs', 'out', '')
                 err_dir = os.path.join(sim_path, 'logs', 'err', '')
@@ -219,6 +227,15 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
                 inner_index_tally = []
                 fiber_index_tally = []
                 missing_total = 0
+
+                inner_fiber_diam_key_file = os.path.join(fibers_path, 'inner_fiber_diam_key.obj')
+                inner_fiber_diam_key = None
+                if os.path.exists(inner_fiber_diam_key_file):
+                    with open(inner_fiber_diam_key_file, 'rb') as f:
+                        inner_fiber_diam_key = pickle.load(f)
+                    f.close()
+                else:
+                    diameter = sim_config['fibers']['z_parameters']['diameter']
 
                 for fiber_file_ind, fiber_filename in enumerate(fibers_files):
                     master_fiber_name = str(fiber_filename.split('.')[0])
@@ -241,6 +258,9 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
                 elif missing_total == 1:
                     stimamp_top, stimamp_bottom = get_thresh_bounds(sim_dir, sim_name, inner_ind_solo)
                     start_path_solo = os.path.join(sim_path, 'start{}'.format('.sh' if OS == 'UNIX_LIKE' else '.bat'))
+
+                    if inner_fiber_diam_key is not None:
+                        diameter = get_diameter(inner_fiber_diam_key, inner_ind, fiber_ind)
 
                     if stimamp_top is not None and stimamp_bottom is not None:
                         make_task(OS, start_path_solo, sim_path, inner_ind_solo, fiber_ind_solo, stimamp_top, stimamp_bottom, diameter)
@@ -288,6 +308,10 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
                         else:
                             print(f"MISSING {thresh_path} -->\t\trunning inner ({inner_ind}) fiber ({fiber_ind})")
                             time.sleep(1)
+
+                            if inner_fiber_diam_key is not None:
+                                diameter = get_diameter(inner_fiber_diam_key, inner_ind, fiber_ind)
+
                             start_path = '{}{}{}'.format(start_path_base, job_count, '.sh' if OS == 'UNIX-LIKE' else '.bat')
                             start_paths_list.append(start_path)
 
@@ -386,9 +410,14 @@ def make_local_submission_list(run_number: int):
                 sim_config = load(os.path.join(sim_path, '{}.json'.format(n_sim)))
 
                 # load the inner x fiber -> diam key saved in the n_sim folder
-                diam_key_path = os.path.join(sim_dir, sim_name, 'key_inner_fiber_diam.txt')
-                diam_key = np.loadtxt(diam_key_path)
-                # TODO load previously saved file in the n_sim directory linking inner, fiber to diam
+                inner_fiber_diam_key_file = os.path.join(fibers_path, 'inner_fiber_diam_key.obj')
+                inner_fiber_diam_key = None
+                if os.path.exists(inner_fiber_diam_key_file):
+                    with open(inner_fiber_diam_key_file, 'rb') as f:
+                        inner_fiber_diam_key = pickle.load(f)
+                    f.close()
+                else:
+                    diameter = sim_config['fibers']['z_parameters']['diameter']
 
                 for fiber_filename in [x for x in os.listdir(fibers_path) if re.match('inner[0-9]+_fiber['
                                                                                       '0-9]+\\.dat', x)]:
@@ -409,7 +438,8 @@ def make_local_submission_list(run_number: int):
                                                                                '.sh' if OS == 'UNIX-LIKE'
                                                                                else '.bat'))
                     stimamp_top, stimamp_bottom = get_thresh_bounds(sim_dir, sim_name, inner_ind)
-                    diameter = get_diameter(diam_key, inner_ind, fiber_ind)
+                    if inner_fiber_diam_key is not None:
+                        diameter = get_diameter(inner_fiber_diam_key, inner_ind, fiber_ind)
                     make_task(OS, start_path, sim_path, inner_ind, fiber_ind, stimamp_top, stimamp_bottom, diameter)
 
                     # submit batch job for fiber

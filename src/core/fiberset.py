@@ -16,6 +16,7 @@ import csv
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import scipy.stats as stats
 
 # ascent
 from src.utils import *
@@ -137,13 +138,13 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         """
 
         diams = []
-        for i, fiber in enumerate(self.fibers if self.fibers is not None else []):
+        for i, fiber_pre in enumerate(self.fibers if self.fibers is not None else []):
 
-            if not isinstance(fiber, dict):
+            if not isinstance(fiber_pre, dict):
                 pass
             else:
-                fiber = fiber['fiber']
-                diam = fiber['diam']
+                fiber = fiber_pre['fiber']
+                diam = fiber_pre['diam']
                 diams.append(diam)
 
             with open(os.path.join(path, str(i) + WriteMode.file_endings.value[mode.value]), 'w') as f:
@@ -365,7 +366,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             return values
 
         def generate_myel_fiber_zs(my_z_shift_to_center, my_diam):
-            my_delta_z = \
+            delta_z = \
                 paranodal_length_2 = \
                 inter_length = None
 
@@ -388,7 +389,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                 )
 
                 diameter_index = diameters.index(my_diam)
-                my_delta_z = delta_zs[diameter_index]
+                delta_z = my_delta_zs[diameter_index]
                 paranodal_length_2 = paranodal_length_2s[diameter_index]
                 inter_length = eval(inter_length_str)
 
@@ -402,14 +403,14 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
                 if fiber_geometry_mode_name == FiberGeometry.B_FIBER.value:
                     inter_length = eval(inter_length_str)
-                    my_delta_z = eval(delta_z_str)
+                    delta_z = eval(delta_z_str)
                 elif fiber_geometry_mode_name == FiberGeometry.MRG_INTERPOLATION.value:
                     if my_diam > 16.0 or my_diam < 2.0:
                         self.throw(77)
                     if my_diam >= 5.643:
-                        my_delta_z = eval(delta_z_str["diameter_greater_or_equal_5.643um"])
+                        delta_z = eval(delta_z_str["diameter_greater_or_equal_5.643um"])
                     else:
-                        my_delta_z = eval(delta_z_str["diameter_less_5.643um"])
+                        delta_z = eval(delta_z_str["diameter_less_5.643um"])
                     inter_length = eval(inter_length_str)
 
             z_steps: List = []
@@ -439,13 +440,10 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                 ),
             )
 
-            return my_zs, my_delta_z
+            return my_zs, delta_z
 
         def build_fiber_with_offset(z_values: list, myel: bool, length: float, dz: float,
                                     additional_offset: float = 0, my_z_seed: int = 123):
-
-            # init empty fiber (points) list
-            fiber = []
 
             # get offset param - NOTE: raw value is a FRACTION of dz (explanation for multiplication by dz)
             if 'offset' in self.search(Config.SIM, 'fibers', FiberZMode.parameters.value).keys():
@@ -477,7 +475,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                                 myel)
 
             random_offset_value = dz * (random.random() - 0.5) if random_offset else 0
-            fiber.append([(x, y, z + random_offset_value) for z in z_offset])
+            fiber = [(x, y, z + random_offset_value) for z in z_offset]
 
             return fiber
 
@@ -531,20 +529,89 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                     "myelinated"
                 )
 
-                # TODO - do stuff to make distribution of diams here
                 diams = []
                 my_z_seed = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'seed')
+                diameter = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'diameter')
+                diam_distribution: bool = True if type(diameter) is dict else False
+                if diam_distribution:
+                    distribution_mode_name = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'diameter', 'mode')
+                    distribution_mode: DiamDistMode = [mode for mode in PopulateMode if
+                                                       str(mode).split('.')[-1] == distribution_mode_name][0]
+                    # seed rng
+                    my_diam_seed: int = self.search(Config.SIM,
+                                            fibers,
+                                            FiberZMode.parameters.value,
+                                            'diameter',
+                                            'seed')
+                    np.random.seed(my_diam_seed)
 
-                for x, y in fibers_xy:
-                    diameter = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'diameter')  # TODO temp
-                    diams.append(diameter)
+                    fiber_diam_dist = None
+                    if distribution_mode == DiamDistMode.UNIFORM:
 
-            fibers = []
+                        # load parameters
+                        lower_fiber_diam: float = self.search(Config.SIM,
+                                                              fibers,
+                                                              FiberZMode.parameters.value,
+                                                              'diameter',
+                                                              'lower')
+                        upper_fiber_diam: float = self.search(Config.SIM,
+                                                              fibers,
+                                                              FiberZMode.parameters.value,
+                                                              'diameter',
+                                                              'upper')
+
+                        # parameter checking
+                        # positive values, order makes sense, etc
+                        if lower_fiber_diam < 0:
+                            self.throw(100)
+                        if lower_fiber_diam > upper_fiber_diam:
+                            self.throw(101)
+
+                        fiber_diam_dist = stats.uniform(lower_fiber_diam, upper_fiber_diam - lower_fiber_diam)
+
+                    elif distribution_mode == DiamDistMode.TRUNCNORM:
+
+                        # load parameters
+                        n_std_fiber_diam_limit: float = self.search(Config.SIM,
+                                                                    fibers,
+                                                                    FiberZMode.parameters.value,
+                                                                    'diameter',
+                                                                    'n_std_limit')
+                        mu_fiber_diam: float = self.search(Config.SIM,
+                                                           fibers,
+                                                           FiberZMode.parameters.value,
+                                                           'diameter',
+                                                           'mu')
+                        std_fiber_diam: float = self.search(Config.SIM,
+                                                            fibers,
+                                                            FiberZMode.parameters.value,
+                                                            'diameter',
+                                                            'std')
+                        lower_fiber_diam = mu_fiber_diam - n_std_fiber_diam_limit * std_fiber_diam
+                        upper_fiber_diam = mu_fiber_diam + n_std_fiber_diam_limit * std_fiber_diam
+
+                        # parameter checking
+                        # positive values, order makes sense, etc
+                        if n_std_fiber_diam_limit == 0 and std_fiber_diam != 0:
+                            self.throw(102)
+                        if lower_fiber_diam < 0:
+                            self.throw(103)
+
+                        fiber_diam_dist = stats.truncnorm((lower_fiber_diam - mu_fiber_diam) / std_fiber_diam,
+                                                          (upper_fiber_diam - mu_fiber_diam) / std_fiber_diam,
+                                                          loc=mu_fiber_diam,
+                                                          scale=std_fiber_diam)
+
+                    diams = fiber_diam_dist.rvs(len(fibers_xy))
+
             if myelinated and not super_sample:  # MYELINATED
                 for _, diam in zip(fibers_xy, diams):
                     zs, delta_z = generate_myel_fiber_zs(z_shift_to_center, diam)
-                    fiber_pre = build_fiber_with_offset(zs, myelinated, fiber_length, delta_z, z_shift_to_center, my_z_seed=my_z_seed)
-                    fiber = {'diam': diam, 'fiber': fiber_pre}
+                    fiber_pre = build_fiber_with_offset(zs, myelinated, fiber_length, delta_z, z_shift_to_center, my_z_seed=my_z_seed) # TODO will this shift same each time now????
+                    if diam_distribution:
+                        fiber = {'diam': diam, 'fiber': fiber_pre}
+                    else:
+                        fiber = fiber_pre
                     fibers.append(fiber)
 
             else:  # UNMYELINATED

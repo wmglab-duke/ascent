@@ -1,0 +1,271 @@
+{
+  "code": "KGP",
+  "instances": [
+    {
+      "type": "CuffFill_Primitive",
+      "label": "KGP Cuff Fill",
+      "def": {
+        "Radius": "R_in_KGP",
+        "Thk": "Thk_fill_KGP",
+        "L": "L_KGP",
+        "Center": "Center_KGP",
+        "x_shift": "0",
+        "y_shift": "0"
+      },
+      "materials": [
+        {
+          "info": "fill",
+          "label_index": 0
+        }
+      ]
+    },
+    {
+      "type": "TubeCuff_Primitive",
+      "label": "KGP Cuff",
+      "def": {
+        "N_holes": "N_holes_KGP",
+        "Tube_theta": "Theta_KGP",
+        "Center": "Center_KGP",
+        "R_in": "R_in_KGP",
+        "R_out": "R_out_KGP",
+        "Tube_L": "L_KGP",
+        "Rot_def": "Rot_def_KGP",
+        "D_hole": "D_hole_KGP",
+        "Buffer_hole": "Buffer_hole_KGP",
+        "L_holecenter_cuffseam": "L_holecenter_cuffseam_KGP",
+        "Pitch_holecenter_holecenter": "Pitch_holecenter_holecenter_KGP"
+      },
+      "materials": [
+        {
+          "info": "insulator",
+          "label_index": 2
+        }
+      ]
+    },
+    {
+      "type": "RibbonContact_Primitive",
+      "label": "KGP Contact 1",
+      "def": {
+        "Ribbon_thk": "Thk_elec_KGP",
+        "Ribbon_z": "L_elec_KGP",
+        "R_in": "R_in_KGP",
+        "Ribbon_recess": "Recess_KGP",
+        "Center": "Center_KGP+(Pitch_KGP/2)",
+        "Ribbon_theta": "Theta_contact_KGP",
+        "Rot_def": "Rot_def_contact_KGP+(Theta_gap_contact_KGP+Theta_contact_KGP)/2"
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "label_index": 3
+        }
+      ]
+    },
+    {
+      "type": "RibbonContact_Primitive",
+      "label": "KGP Contact 2",
+      "def": {
+        "Ribbon_thk": "Thk_elec_KGP",
+        "Ribbon_z": "L_elec_KGP",
+        "R_in": "R_in_KGP",
+        "Ribbon_recess": "Recess_KGP",
+        "Center": "Center_KGP-(Pitch_KGP/2)",
+        "Ribbon_theta": "Theta_contact_KGP",
+        "Rot_def": "Rot_def_contact_KGP+(Theta_gap_contact_KGP+Theta_contact_KGP)/2"
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "label_index": 3
+        }
+      ]
+    },
+    {
+      "type": "RibbonContact_Primitive",
+      "label": "KGP Contact 3",
+      "def": {
+        "Ribbon_thk": "Thk_elec_KGP",
+        "Ribbon_z": "L_elec_KGP",
+        "R_in": "R_in_KGP",
+        "Ribbon_recess": "Recess_KGP",
+        "Center": "Center_KGP+(Pitch_KGP/2)",
+        "Ribbon_theta": "Theta_contact_KGP",
+        "Rot_def": "Rot_def_contact_KGP-(Theta_gap_contact_KGP+Theta_contact_KGP)/2"
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "label_index": 3
+        }
+      ]
+    },
+    {
+      "type": "RibbonContact_Primitive",
+      "label": "KGP Contact 4",
+      "def": {
+        "Ribbon_thk": "Thk_elec_KGP",
+        "Ribbon_z": "L_elec_KGP",
+        "R_in": "R_in_KGP",
+        "Ribbon_recess": "Recess_KGP",
+        "Center": "Center_KGP-(Pitch_KGP/2)",
+        "Ribbon_theta": "Theta_contact_KGP",
+        "Rot_def": "Rot_def_contact_KGP-(Theta_gap_contact_KGP+Theta_contact_KGP)/2"
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "label_index": 3
+        }
+      ]
+    }
+  ],
+
+  "params": [
+    {
+      "name": "Theta_KGP",
+      "expression": "percent_circ_cuff_KGP*360 [deg]",
+      "description": ""
+    },
+    {
+      "name": "R_in_KGP",
+      "expression": "max(r_nerve+thk_medium_gap_internal_KGP,r_cuff_in_pre_KGP)",
+      "description": ""
+    },
+    {
+      "name": "R_out_KGP",
+      "expression": "R_in_KGP+thk_cuff_KGP",
+      "description": ""
+    },
+    {
+      "name": "Rot_def_KGP",
+      "expression": "-(theta_cuff_KGP-theta_contact_KGP)/2",
+      "description": ""
+    },
+    {
+      "name": "percent_circ_cuff_KGP",
+      "expression": "percent_circ_cuff_pre_KGP*(r_cuff_in_pre_KGP/R_in_KGP)",
+      "description": ""
+    },
+    {
+      "name": "theta_contact_KGP",
+      "expression": "360*(B_KGP/(2*pi*(R_in_KGP+Recess_KGP))) [deg]",
+      "description": ""
+    },
+    {
+      "name": "theta_cuff_KGP",
+      "expression": "percent_circ_cuff_KGP*360 [deg]",
+      "description": ""
+    },
+    {
+      "name": "Theta_contact_KGP",
+      "expression": "360*(B_KGP/(2*pi*(R_in_KGP+Recess_KGP))) [deg]",
+      "description": ""
+    },
+    {
+      "name": "Theta_gap_contact_KGP",
+      "expression": "Theta_gap_contact_pre_KGP*(r_cuff_in_pre_KGP/R_in_KGP)",
+      "description": ""
+    },
+    {
+      "name": "Theta_gap_contact_pre_KGP",
+      "expression": "44.0737 [deg]",
+      "description": ""
+    },
+    {
+      "name": "thk_medium_gap_internal_KGP",
+      "expression": "10 [um]",
+      "description": ""
+    },
+    {
+      "name": "r_cuff_in_pre_KGP",
+      "expression": "325 [um]",
+      "description": ""
+    },
+    {
+      "name": "Recess_KGP",
+      "expression": "0 [um]",
+      "description": ""
+    },
+    {
+      "name": "Thk_elec_KGP",
+      "expression": "0.025 [mm]",
+      "description": ""
+    },
+    {
+      "name": "B_KGP",
+      "expression": "0.450 [mm]",
+      "description": ""
+    },
+    {
+      "name": "percent_circ_cuff_pre_KGP",
+      "expression": "0.8833",
+      "description": ""
+    },
+    {
+      "name": "thk_cuff_KGP",
+      "expression": "0.5 [mm]",
+      "description": ""
+    },
+    {
+      "name": "L_elec_KGP",
+      "expression": "1.6 [mm]",
+      "description": ""
+    },
+    {
+      "name": "Pitch_KGP",
+      "expression": "2.2 [mm]",
+      "description": ""
+    },
+    {
+      "name": "Thk_fill_KGP",
+      "expression": "100 [um]",
+      "description": ""
+    },
+    {
+      "name": "L_KGP",
+      "expression": "6 [mm]",
+      "description": ""
+    },
+    {
+      "name": "Rot_def_contact_KGP",
+      "expression": "0",
+      "description": ""
+    },
+    {
+      "name": "D_hole_KGP",
+      "expression": "NaN",
+      "description": ""
+    },
+    {
+      "name": "Buffer_hole_KGP",
+      "expression": "NaN",
+      "description": ""
+    },
+    {
+      "name": "L_holecenter_cuffseam_KGP",
+      "expression": "NaN",
+      "description": ""
+    },
+    {
+      "name": "Pitch_holecenter_holecenter_KGP",
+      "expression": "NaN",
+      "description": ""
+    },
+    {
+      "name": "N_holes_KGP",
+      "expression": "0",
+      "description": ""
+    },
+    {
+      "name": "Center_KGP",
+      "expression": "z_nerve/2",
+      "description": ""
+    }
+  ],
+
+  "expandable": true,
+  "angle_to_contacts_deg": 39.654409,
+  "angle_to_contacts_deg_comment": "Rot_def_KGP+Theta_KGP/2 (units radians)",
+  "offset": {
+  }
+}
