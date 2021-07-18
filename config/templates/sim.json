@@ -10,19 +10,6 @@
     "xy_trace_buffer": 5.0,
     "z_parameters": {
       "diameter": [1, 2, 5.7, 7.3, 8.7, 10],
-      "diameter1": {
-        "mode": "UNIFORM",
-        "lower": 5,
-        "upper": 1,
-        "seed": 1
-      },
-      "diameter2": {
-        "mode": "TRUNCNORM",
-        "mu": 5,
-        "std": 1,
-        "n_std_limit": 2,
-        "seed": 1
-      },
       "min": 0,
       "max": 12500,
       "offset": 0,
