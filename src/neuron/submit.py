@@ -18,8 +18,6 @@ import numpy as np
 import warnings
 import pickle
 
-from utils import FiberGeometry, MyelinationMode
-
 ALLOWED_SUBMISSION_CONTEXTS = ['cluster', 'local']
 OS = 'UNIX-LIKE' if any([s in sys.platform for s in ['darwin', 'linux']]) else 'WINDOWS'
 
@@ -62,7 +60,7 @@ def get_diameter(my_inner_fiber_diam_key, my_inner_ind, my_fiber_ind, fiber_mode
 
 def get_deltaz(fiber_model, my_diameter):
     fiber_z_config = load(os.path.join('config', 'system', 'fiber_z.json'))
-    fiber_model_info: dict = fiber_z_config[MyelinationMode.parameters.value][fiber_model]
+    fiber_model_info: dict = fiber_z_config['fiber_type_parameters'][fiber_model]
 
     if fiber_model_info.get("geom_determination_method") == 0:
         diameters, delta_zs, paranodal_length_2s = (
