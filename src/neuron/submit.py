@@ -47,7 +47,7 @@ def auto_compile(override: bool = False):
     return compiled
 
 
-def get_diameter(my_inner_fiber_diam_key, my_inner_ind, my_fiber_ind, fiber_model):
+def get_diameter(my_inner_fiber_diam_key, my_inner_ind, my_fiber_ind):
     for item in my_inner_fiber_diam_key:
         if item[0] == my_inner_ind and item[1] == my_fiber_ind:
             my_diameter = item[2]
@@ -58,7 +58,7 @@ def get_diameter(my_inner_fiber_diam_key, my_inner_ind, my_fiber_ind, fiber_mode
     return my_diameter
 
 
-def get_deltaz(fiber_model, my_diameter):
+def get_deltaz(fiber_model, diameter):
     fiber_z_config = load(os.path.join('config', 'system', 'fiber_z.json'))
     fiber_model_info: dict = fiber_z_config['fiber_type_parameters'][fiber_model]
 
@@ -67,7 +67,7 @@ def get_deltaz(fiber_model, my_diameter):
             fiber_model_info[key]
             for key in ('diameters', 'delta_zs', 'paranodal_length_2s')
         )
-        diameter_index = diameters.index(my_diameter)
+        diameter_index = diameters.index(diameter)
         delta_z = delta_zs[diameter_index]
 
     elif fiber_model_info.get("geom_determination_method") == 1:
@@ -76,7 +76,7 @@ def get_deltaz(fiber_model, my_diameter):
             for key in ('paranodal_length_2', 'delta_z', 'inter_length')
         )
 
-        if my_diameter >= 5.643:
+        if diameter >= 5.643:
             delta_z = eval(delta_z_str["diameter_greater_or_equal_5.643um"])
         else:
             delta_z = eval(delta_z_str["diameter_less_5.643um"])
@@ -300,7 +300,7 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
                     start_path_solo = os.path.join(sim_path, 'start{}'.format('.sh' if OS == 'UNIX_LIKE' else '.bat'))
 
                     if inner_fiber_diam_key is not None:
-                        diameter = get_diameter(inner_fiber_diam_key, inner_ind, fiber_ind, fiber_model)
+                        diameter = get_diameter(inner_fiber_diam_key, inner_ind, fiber_ind)
 
                     deltaz, neuron_flag = get_deltaz(fiber_model, diameter)
 
@@ -511,8 +511,15 @@ def make_local_submission_list(run_number: int):
                     stimamp_top, stimamp_bottom = get_thresh_bounds(sim_dir, sim_name, inner_ind)
                     if inner_fiber_diam_key is not None:
                         diameter = get_diameter(inner_fiber_diam_key, inner_ind, fiber_ind)
-                    deltaz = get_deltaz(fiber_model, diameter)
+                    deltaz, neuron_flag = get_deltaz(fiber_model, diameter)
                     fiber_ve_path = os.path.join(fibers_path, 'inner{}_fiber{}.dat'.format(inner_ind, fiber_ind))
+                    fiber_ve = np.loadtxt(fiber_ve_path)
+                    n_fiber_coords = int(fiber_ve[0])
+
+                    if neuron_flag == 2:
+                        axonnodes = int(1 + (n_fiber_coords - 1) / 11)
+                    elif neuron_flag == 3:
+                        axonnodes = int(n_fiber_coords)
 
                     make_task(OS, start_path, sim_path, inner_ind, fiber_ind, stimamp_top, stimamp_bottom,
                               diameter, deltaz, axonnodes)
