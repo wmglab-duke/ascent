@@ -1,8 +1,0 @@
-a = 1
-b = 1.00000001
-
-if (a==b) {
-	print "same"
-} else {
-	print "not same"
-}
