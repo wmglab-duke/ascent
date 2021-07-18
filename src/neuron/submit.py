@@ -16,6 +16,7 @@ import json
 import time
 import numpy as np
 import warnings
+import pickle
 
 ALLOWED_SUBMISSION_CONTEXTS = ['cluster', 'local']
 OS = 'UNIX-LIKE' if any([s in sys.platform for s in ['darwin', 'linux']]) else 'WINDOWS'
@@ -44,6 +45,48 @@ def auto_compile(override: bool = False):
         print('skipped compile')
         compiled = False
     return compiled
+
+
+def get_diameter(my_inner_fiber_diam_key, my_inner_ind, my_fiber_ind):
+    for item in my_inner_fiber_diam_key:
+        if item[0] == my_inner_ind and item[1] == my_fiber_ind:
+            my_diameter = item[2]
+            break
+        else:
+            continue
+
+    return my_diameter
+
+
+def get_deltaz(fiber_model, diameter):
+    fiber_z_config = load(os.path.join('config', 'system', 'fiber_z.json'))
+    fiber_model_info: dict = fiber_z_config['fiber_type_parameters'][fiber_model]
+
+    if fiber_model_info.get("geom_determination_method") == 0:
+        diameters, delta_zs, paranodal_length_2s = (
+            fiber_model_info[key]
+            for key in ('diameters', 'delta_zs', 'paranodal_length_2s')
+        )
+        diameter_index = diameters.index(diameter)
+        delta_z = delta_zs[diameter_index]
+
+    elif fiber_model_info.get("geom_determination_method") == 1:
+        paranodal_length_2_str, delta_z_str, inter_length_str = (
+            fiber_model_info[key]
+            for key in ('paranodal_length_2', 'delta_z', 'inter_length')
+        )
+
+        if diameter >= 5.643:
+            delta_z = eval(delta_z_str["diameter_greater_or_equal_5.643um"])
+        else:
+            delta_z = eval(delta_z_str["diameter_less_5.643um"])
+
+    elif fiber_model_info.get("neuron_flag") == 3:  # C Fiber
+        delta_z = fiber_model_info["delta_zs"]
+
+    neuron_flag = fiber_model_info.get("neuron_flag")
+
+    return delta_z, neuron_flag
 
 
 def get_thresh_bounds(sim_dir: str, sim_name: str, inner_ind: int):
@@ -97,7 +140,8 @@ def get_thresh_bounds(sim_dir: str, sim_name: str, inner_ind: int):
     return top, bottom
 
 
-def make_task(my_os: str, start_p: str, sim_p: str, inner: int, fiber: int, top: float, bottom: float):
+def make_task(my_os: str, start_p: str, sim_p: str, inner: int, fiber: int, top: float, bottom: float,
+              diam: float, deltaz: float, axonnodes: int):
     with open(start_p, 'w+') as handle:
         if my_os == 'UNIX-LIKE':
             lines = [
@@ -111,11 +155,17 @@ def make_task(my_os: str, start_p: str, sim_p: str, inner: int, fiber: int, top:
                 '-c \"fiber_ind={}\" '
                 '-c \"stimamp_top={}\" '
                 '-c \"stimamp_bottom={}\" '
+                '-c \"fiberD={:.1f}\" '
+                '-c \"deltaz={:.4f}\" '
+                '-c \"axonnodes={}\" '
                 '-c \"load_file(\\\"launch.hoc\\\")\" blank.hoc\n'.format(sim_p,
                                                                           inner,
                                                                           fiber,
                                                                           top,
-                                                                          bottom)
+                                                                          bottom,
+                                                                          diam,
+                                                                          deltaz,
+                                                                          axonnodes)
             ]
 
             # copy special files ahead of time to avoid 'text file busy error'
@@ -133,12 +183,18 @@ def make_task(my_os: str, start_p: str, sim_p: str, inner: int, fiber: int, top:
                 '-c \"fiber_ind={}\" '
                 '-c \"stimamp_top={}\" '
                 '-c \"stimamp_bottom={}\" '
+                '-c \"fiberD={}\" '
+                '-c \"deltaz={:.4f}\" '
+                '-c \"axonnodes={}\" '
                 '-c \"load_file(\\\"launch.hoc\\\")\" blank.hoc\n'.format(os.getcwd(),
                                                                           sim_path_win,
                                                                           inner,
                                                                           fiber,
                                                                           top,
-                                                                          bottom)
+                                                                          bottom,
+                                                                          diam,
+                                                                          deltaz,
+                                                                          axonnodes)
             ]
 
         handle.writelines(lines)
@@ -189,6 +245,11 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
                 output_path = os.path.abspath(os.path.join(sim_path, 'data', 'outputs'))
                 start_path_base = os.path.join(sim_path, 'start_')
 
+                n_sim = sim_name.split('_')[3]
+                sim_config = load(os.path.join(sim_dir, sim_name, '{}.json'.format(n_sim)))
+
+                fiber_model = sim_config['fibers']['mode']
+
                 # ensure log directories exist
                 out_dir = os.path.join(sim_path, 'logs', 'out', '')
                 err_dir = os.path.join(sim_path, 'logs', 'err', '')
@@ -209,6 +270,15 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
                 inner_index_tally = []
                 fiber_index_tally = []
                 missing_total = 0
+
+                inner_fiber_diam_key_file = os.path.join(fibers_path, 'inner_fiber_diam_key.obj')
+                inner_fiber_diam_key = None
+                if os.path.exists(inner_fiber_diam_key_file):
+                    with open(inner_fiber_diam_key_file, 'rb') as f:
+                        inner_fiber_diam_key = pickle.load(f)
+                    f.close()
+                else:
+                    diameter = sim_config['fibers']['z_parameters']['diameter']
 
                 for fiber_file_ind, fiber_filename in enumerate(fibers_files):
                     master_fiber_name = str(fiber_filename.split('.')[0])
@@ -232,8 +302,26 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
                     stimamp_top, stimamp_bottom = get_thresh_bounds(sim_dir, sim_name, inner_ind_solo)
                     start_path_solo = os.path.join(sim_path, 'start{}'.format('.sh' if OS == 'UNIX_LIKE' else '.bat'))
 
+                    if inner_fiber_diam_key is not None:
+                        diameter = get_diameter(inner_fiber_diam_key, inner_ind, fiber_ind)
+
+                    deltaz, neuron_flag = get_deltaz(fiber_model, diameter)
+
                     if stimamp_top is not None and stimamp_bottom is not None:
-                        make_task(OS, start_path_solo, sim_path, inner_ind_solo, fiber_ind_solo, stimamp_top, stimamp_bottom)
+
+                        # get the axonnodes from data/inputs/inner{}_fiber{}.dat top line
+                        fiber_ve_path = os.path.join(fibers_path,
+                                                     'inner{}_fiber{}.dat'.format(inner_ind_solo, fiber_ind_solo))
+                        fiber_ve = np.loadtxt(fiber_ve_path)
+                        n_fiber_coords = int(fiber_ve[0])
+
+                        if neuron_flag == 2:
+                            axonnodes = int(1 + (n_fiber_coords - 1) / 11)
+                        elif neuron_flag == 3:
+                            axonnodes = int(n_fiber_coords)
+
+                        make_task(OS, start_path_solo, sim_path, inner_ind_solo, fiber_ind_solo, stimamp_top, stimamp_bottom,
+                                  diameter, deltaz, axonnodes)
 
                         # submit batch job for fiber
                         job_name = '{}_{}'.format(sim_name, master_fiber_name_solo)
@@ -257,7 +345,8 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
                         # allow job to start before removing slurm file
                         time.sleep(1.0)
                     else:
-                        print('========================== MISSING DEFINITION OF TOP AND BOTTOM ==========================')
+                        print(
+                            '========================== MISSING DEFINITION OF TOP AND BOTTOM ==========================')
                         continue
 
                 else:
@@ -278,7 +367,24 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
                         else:
                             print(f"MISSING {thresh_path} -->\t\trunning inner ({inner_ind}) fiber ({fiber_ind})")
                             time.sleep(1)
-                            start_path = '{}{}{}'.format(start_path_base, job_count, '.sh' if OS == 'UNIX-LIKE' else '.bat')
+
+                            if inner_fiber_diam_key is not None:
+                                diameter = get_diameter(inner_fiber_diam_key, inner_ind, fiber_ind)
+                            deltaz, neuron_flag = get_deltaz(fiber_model, diameter)
+
+                            # get the axonnodes from data/inputs/inner{}_fiber{}.dat top line
+                            fiber_ve_path = os.path.join(fibers_path,
+                                                         'inner{}_fiber{}.dat'.format(inner_ind, fiber_ind))
+                            fiber_ve = np.loadtxt(fiber_ve_path)
+                            n_fiber_coords = int(fiber_ve[0])
+
+                            if neuron_flag == 2:
+                                axonnodes = int(1 + (n_fiber_coords - 1) / 11)
+                            elif neuron_flag == 3:
+                                axonnodes = int(n_fiber_coords)
+
+                            start_path = '{}{}{}'.format(start_path_base, job_count,
+                                                         '.sh' if OS == 'UNIX-LIKE' else '.bat')
                             start_paths_list.append(start_path)
 
                             inner_index_tally.append(inner_ind)
@@ -286,7 +392,8 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
 
                             stimamp_top, stimamp_bottom = get_thresh_bounds(sim_dir, sim_name, inner_ind)
                             if stimamp_top is not None and stimamp_bottom is not None:
-                                make_task(OS, start_path, sim_path, inner_ind, fiber_ind, stimamp_top, stimamp_bottom)
+                                make_task(OS, start_path, sim_path, inner_ind, fiber_ind, stimamp_top, stimamp_bottom,
+                                          diameter, deltaz, axonnodes)
                                 array_index += 1
                                 job_count += 1
 
@@ -314,7 +421,7 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
                             job_name = f"{sim_name}_{sim_array_batch}"
 
                             os.system(f"sbatch --job-name={job_name} --output={out_dir}%a.log "
-                                      f"--error={err_dir}%a.log --array={start}-{job_count-1} "
+                                      f"--error={err_dir}%a.log --array={start}-{job_count - 1} "
                                       f"array_launch.slurm {start_path_base}")
 
                             # allow job to start before removing slurm file
@@ -328,7 +435,6 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
 
 
 def make_local_submission_list(run_number: int):
-
     # build configuration filename
     filename = os.path.join('runs', run_number + '.json')
 
@@ -374,6 +480,17 @@ def make_local_submission_list(run_number: int):
                 # load JSON file with binary search amplitudes
                 n_sim = sim_name.split('_')[-1]
                 sim_config = load(os.path.join(sim_path, '{}.json'.format(n_sim)))
+                fiber_model = sim_config['fibers']['mode']
+
+                # load the inner x fiber -> diam key saved in the n_sim folder
+                inner_fiber_diam_key_file = os.path.join(fibers_path, 'inner_fiber_diam_key.obj')
+                inner_fiber_diam_key = None
+                if os.path.exists(inner_fiber_diam_key_file):
+                    with open(inner_fiber_diam_key_file, 'rb') as f:
+                        inner_fiber_diam_key = pickle.load(f)
+                    f.close()
+                else:
+                    diameter = sim_config['fibers']['z_parameters']['diameter']
 
                 for fiber_filename in [x for x in os.listdir(fibers_path) if re.match('inner[0-9]+_fiber['
                                                                                       '0-9]+\\.dat', x)]:
@@ -394,7 +511,20 @@ def make_local_submission_list(run_number: int):
                                                                                '.sh' if OS == 'UNIX-LIKE'
                                                                                else '.bat'))
                     stimamp_top, stimamp_bottom = get_thresh_bounds(sim_dir, sim_name, inner_ind)
-                    make_task(OS, start_path, sim_path, inner_ind, fiber_ind, stimamp_top, stimamp_bottom)
+                    if inner_fiber_diam_key is not None:
+                        diameter = get_diameter(inner_fiber_diam_key, inner_ind, fiber_ind)
+                    deltaz, neuron_flag = get_deltaz(fiber_model, diameter)
+                    fiber_ve_path = os.path.join(fibers_path, 'inner{}_fiber{}.dat'.format(inner_ind, fiber_ind))
+                    fiber_ve = np.loadtxt(fiber_ve_path)
+                    n_fiber_coords = int(fiber_ve[0])
+
+                    if neuron_flag == 2:
+                        axonnodes = int(1 + (n_fiber_coords - 1) / 11)
+                    elif neuron_flag == 3:
+                        axonnodes = int(n_fiber_coords)
+
+                    make_task(OS, start_path, sim_path, inner_ind, fiber_ind, stimamp_top, stimamp_bottom,
+                              diameter, deltaz, axonnodes)
 
                     # submit batch job for fiber
                     output_log = os.path.join(out_dir, '{}{}'.format(master_fiber_name, '.log'))

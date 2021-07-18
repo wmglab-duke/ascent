@@ -135,6 +135,13 @@ class PopulateMode(ASCENTEnum):
 
 
 @unique
+class DiamDistMode(ASCENTEnum):
+
+    TRUNCNORM = 0
+    UNIFORM = 1
+
+
+@unique
 class DeformationMode(ASCENTEnum):
     config = 'deform'
 
@@ -193,14 +200,6 @@ class FiberGeometry(ASCENTEnum):
     MRG_DISCRETE = "MRG_DISCRETE"
     MRG_INTERPOLATION = "MRG_INTERPOLATION"
     B_FIBER = "B_FIBER"
-    C_FIBER = "C_FIBER"
-
-
-@unique
-class NeuronFiberFlags(ASCENTEnum):
-    NONE = None
-    MRG_DISCRETE = "MRG_DISCRETE"
-    MRG_INTERPOLATION = "MRG_INTERPOLATION"
     C_FIBER = "C_FIBER"
 
 
