@@ -518,5 +518,10 @@
     "code": 103,
     "text": "lower_fiber_diam must be defined as >= 0 for TRUNCNORM method",
     "source": "src.core.Fiberset"
+  },
+  {
+    "code": 104,
+    "text": "To simulate myelinated fiber diameters from a distribution of diameters, must use MRG_INTERPOLATION",
+    "source": "src.core.Fiberset"
   }
 ]

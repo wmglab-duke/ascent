@@ -81,10 +81,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         # FIBER PARAMETERS
         file_object.write("\n//***************** Fiber Parameters *************\n")
         fiber_model = self.search(Config.SIM, "fibers", "mode")
-
-        # can load this to dict (looks cleaner) because user is not setting these parameters, they are built-in
         fiber_model_info: dict = self.search(Config.FIBER_Z, MyelinationMode.parameters.value, fiber_model)
-        diameter = self.search(Config.SIM, "fibers", "z_parameters", "diameter")
 
         # if myelinated
         if fiber_model_info.get("neuron_flag") == 2 and fiber_model != FiberGeometry.B_FIBER.value:
@@ -94,32 +91,6 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                               "geometry_determination_method = 2 for GeometryBuilder fits from SPARC Y2Q1\n"
                               % fiber_model_info.get("geom_determination_method"))
             file_object.write("flag_model_b_fiber = %0.0f\n" % 0)
-
-            if fiber_model_info.get("geom_determination_method") == 0:
-                fiber_geometry_mode_name: str = self.search(Config.SIM, 'fibers', 'mode')
-                diameters, delta_zs, paranodal_length_2s = (
-                    self.search(Config.FIBER_Z, MyelinationMode.parameters.value, fiber_geometry_mode_name, key)
-                    for key in ('diameters', 'delta_zs', 'paranodal_length_2s')
-                )
-                diameter_index = diameters.index(diameter)
-                delta_z = delta_zs[diameter_index]
-                file_object.write("deltaz = %0.4f \n" % delta_z)
-
-            elif fiber_model_info.get("geom_determination_method") == 1:
-                fiber_geometry_mode_name: str = self.search(Config.SIM, 'fibers', 'mode')
-                paranodal_length_2_str, delta_z_str, inter_length_str = (
-                    self.search(Config.FIBER_Z, MyelinationMode.parameters.value, fiber_geometry_mode_name, key)
-                    for key in ('paranodal_length_2', 'delta_z', 'inter_length')
-                )
-
-                if diameter > 16.0 or diameter < 2.0:
-                    self.throw(77)
-                if diameter >= 5.643:
-                    delta_z = eval(delta_z_str["diameter_greater_or_equal_5.643um"])
-                else:
-                    delta_z = eval(delta_z_str["diameter_less_5.643um"])
-
-                file_object.write("deltaz = %0.4f \n" % delta_z)
 
         if fiber_model_info.get("neuron_flag") == 2 and fiber_model == FiberGeometry.B_FIBER.value:
             file_object.write("geometry_determination_method = %0.0f "
@@ -144,14 +115,6 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         large_end_nodes = False if not xy_mode == FiberXYMode.SL_PSEUDO_INTERP else True
         file_object.write("large_end_nodes      = %0.0f\n" % int(large_end_nodes == True))
 
-        if fiber_model_info.get("neuron_flag") == 2:
-            axonnodes = int(1 + (n_fiber_coords - 1) / 11)
-        elif fiber_model_info.get("neuron_flag") == 3:
-            axonnodes = int(n_fiber_coords)
-
-        file_object.write("axonnodes = %0.0f "
-                          "// must match up with ExtractPotentials\n" % axonnodes)
-
         if fiber_model_info.get("neuron_flag") == 3:
             channels = fiber_model_info.get("channels_type")
             file_object.write("c_fiber_model_type            = {} // type: "
@@ -160,8 +123,6 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                               "3:Rattay model "
                               "4:Schild model "
                               "for c fiber built from cFiberBuilder.hoc\n".format(channels))
-            deltaz = fiber_model_info.get("delta_zs")
-            file_object.write("deltaz = %0.4f \n" % deltaz)
             file_object.write("len                           = axonnodes*deltaz\n")
 
         file_object.write("passive_end_nodes = %0.0f "
@@ -327,11 +288,11 @@ class HocWriter(Exceptionable, Configurable, Saveable):
 
         checknodes = self.search(Config.SIM, "saving", "time", "locs")
         if checknodes == 'all':
-            n_checknodes = axonnodes
+            file_object.write("\nNchecknodes = axonnodes\n")
         else:
             n_checknodes = len(checknodes)
+            file_object.write("\nNchecknodes = %0.0f\n" % n_checknodes)
 
-        file_object.write("\nNchecknodes = %0.0f\n" % n_checknodes)
         file_object.write("objref checknode_values\n")
         file_object.write("checknode_values = new Vector(Nchecknodes,0)\n")
         file_object.write("if (Nchecknodes == axonnodes) {\n")

@@ -750,11 +750,14 @@ public class ModelWrapper {
                 }
 
                 String src_diams_key_path = String.join("/", new String[]{coord_dir, Integer.toString(ind_fiberset_select), "diams.txt"});
-                String dest_diams_key_path = String.join("/", new String[]{ve_dir, "diams.txt"});
 
-                Path src_diams_key = Paths.get(src_diams_key_path);
-                Path dest_diams_key = Paths.get(dest_diams_key_path);
-                Files.copy(src_diams_key, dest_diams_key);
+                if (new File(src_diams_key_path).exists()) {
+                    String dest_diams_key_path = String.join("/", new String[]{ve_dir, "diams.txt"});
+
+                    Path src_diams_key = Paths.get(src_diams_key_path);
+                    Path dest_diams_key = Paths.get(dest_diams_key_path);
+                    Files.copy(src_diams_key, dest_diams_key);
+                }
 
                 for (int coords_ind = 0; coords_ind < fiber_coords_list.length; coords_ind++) { // loop over fiber coords in list of fiber coords
 
