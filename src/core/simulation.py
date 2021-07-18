@@ -294,7 +294,8 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
             # copy corresponding waveform to sim/#/n_sims/t/data/inputs
             source_waveform_path = os.path.join(sim_dir, str(sim_num), "waveforms", "{}.dat".format(waveform_ind))
-            destination_waveform_path = os.path.join(sim_dir, str(sim_num), "n_sims", str(t), "data", "inputs", "waveform.dat")
+            destination_waveform_path = os.path.join(sim_dir, str(sim_num), "n_sims", str(t), "data", "inputs",
+                                                     "waveform.dat")
             if not os.path.isfile(destination_waveform_path):
                 shutil.copyfile(source_waveform_path, destination_waveform_path)
 
@@ -410,15 +411,17 @@ class Simulation(Exceptionable, Configurable, Saveable):
                                 if supersampled_bases.get('dz') != source_dz:
                                     self.throw(79)
                             elif 'dz' not in supersampled_bases.keys():
-                                warnings.warn('dz not provided in Sim, so will accept dz={} specified in source Sim'.format(source_dz))
+                                warnings.warn(
+                                    'dz not provided in Sim, so will accept dz={} specified in source Sim'.format(
+                                        source_dz))
 
                             for basis_ind in range(len(active_src_vals[0])):
 
                                 ss_bases[basis_ind].append([])
                                 ss_bases_src_path = os.path.join(sim_dir,
-                                                              str(source_sim),
-                                                              'ss_bases',
-                                                              str(basis_ind))
+                                                                 str(source_sim),
+                                                                 'ss_bases',
+                                                                 str(basis_ind))
 
                                 ss_fiberset_path = os.path.join(sim_dir,
                                                                 str(source_sim),
@@ -440,7 +443,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
                                             ss_weighted_bases_vec = np.zeros(len(ss_bases[basis_ind][q]))
                                             for src_ind, src_weight in enumerate(active_src_vals[0]):
-                                                ss_weighted_bases_vec += ss_bases[src_ind][q]*src_weight
+                                                ss_weighted_bases_vec += ss_bases[src_ind][q] * src_weight
 
                                             # down-sample super_save_vec
                                             neuron_fiberset_file = open(os.path.join(root, file), 'r')
@@ -501,7 +504,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
                             return a, b, c
 
         out_fib, out_in = self.fiberset_map_pairs[p]
-        #out_fib[0][0] = [n for n in range(100)]
+        # out_fib[0][0] = [n for n in range(100)]
         i, j, k = search(out_fib, q)
         return out_in[i][j], k
 
@@ -516,7 +519,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
         out_fib, out_in = self.fiberset_map_pairs[p]
         i, j = search(out_in, l)
         return out_fib[i][j][k]
-
 
     @staticmethod
     def _build_file_structure(sim_obj_dir, t):
@@ -590,6 +592,16 @@ class Simulation(Exceptionable, Configurable, Saveable):
         shutil.copy2(submit_source, submit_target)
 
     @staticmethod
+    def export_system_config_files(target: str):
+
+        # make NSIM_EXPORT_PATH (defined in Env.json) directory if it does not yet exist
+        if not os.path.exists(target):
+            os.makedirs(target)
+
+        # fiber_z.json files
+        shutil.copy2(os.path.join(os.environ[Env.PROJECT_PATH.value], 'config', 'system', 'fiber_z.json'), target)
+
+    @staticmethod
     def import_n_sims(sample: int, model: int, sim: int, sim_dir: str, source: str):
         print(f'sample: {sample}, model: {model}, sim: {sim}, sim_dir: {sim_dir}, source: {source}')
 
@@ -598,9 +610,8 @@ class Simulation(Exceptionable, Configurable, Saveable):
         for dirname in [f for f in os.listdir(source) if os.path.isdir(os.path.join(source, f))]:
             this_sample, this_model, this_sim, product_index = tuple(dirname.split('_'))
             if sample == int(this_sample) and model == int(this_model) and sim == int(this_sim):
-                shutil.rmtree(os.   path.join(sim_dir, product_index))
+                shutil.rmtree(os.path.join(sim_dir, product_index))
                 shutil.copytree(os.path.join(source, dirname), os.path.join(sim_dir, product_index))
-
 
     def potentials_exist(self, sim_dir: str) -> bool:
         """
@@ -609,7 +620,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
         :return: boolean!
         """
         return all(os.path.exists(os.path.join(sim_dir, 'potentials', str(p))) for p, _ in self.master_product_indices)
-
 
     def ss_bases_exist(self, sim_dir: str) -> bool:
         """

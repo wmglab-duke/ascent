@@ -117,6 +117,7 @@ class Runner(Exceptionable, Configurable):
 
         # ensure NEURON files exist in export location
         Simulation.export_neuron_files(os.environ[Env.NSIM_EXPORT_PATH.value])
+        Simulation.export_system_config_files(os.path.join(os.environ[Env.NSIM_EXPORT_PATH.value], 'config', 'system'))
 
         if 'break_points' in self.configs[Config.RUN.value].keys() and \
                 sum(self.search(Config.RUN, 'break_points').values()) > 1:
