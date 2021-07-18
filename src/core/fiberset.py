@@ -545,7 +545,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                                                 MyelinationMode.parameters.value,
                                                 fiber_geometry_mode_name,
                                                 "sampling")
-                    if sampling_mode != MyelinatedSamplingType.INTERPOLATION.value:
+                    if myelinated and not (sampling_mode == MyelinatedSamplingType.INTERPOLATION.value):
                         self.throw(104)
 
                     distribution_mode_name = self.search(Config.SIM,
@@ -661,13 +661,20 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                     z_top_half = z_top_half[:-1]
                     z_bottom_half = z_bottom_half[1:]
 
-                for x, y in fibers_xy:
-                    fiber = build_fiber_with_offset(list(np.concatenate((z_bottom_half[:-1], z_top_half))),
-                                                    myelinated,
-                                                    fiber_length,
-                                                    delta_z,
-                                                    x, y,
-                                                    z_shift_to_center)
+                if len(diams) == 0:
+                    diams = [diameter] * len(fibers_xy)
+
+                for (x, y), diam in zip(fibers_xy, diams):
+                    fiber_pre = build_fiber_with_offset(list(np.concatenate((z_bottom_half[:-1], z_top_half))),
+                                                        myelinated,
+                                                        fiber_length,
+                                                        delta_z,
+                                                        x, y,
+                                                        z_shift_to_center)
+                    if diam_distribution:
+                        fiber = {'diam': diam, 'fiber': fiber_pre}
+                    else:
+                        fiber = fiber_pre
                     fibers.append(fiber)
 
         else:

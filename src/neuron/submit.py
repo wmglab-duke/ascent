@@ -81,6 +81,9 @@ def get_deltaz(fiber_model, diameter):
         else:
             delta_z = eval(delta_z_str["diameter_less_5.643um"])
 
+    elif fiber_model_info.get("neuron_flag") == 3:  # C Fiber
+        delta_z = fiber_model_info["delta_zs"]
+
     neuron_flag = fiber_model_info.get("neuron_flag")
 
     return delta_z, neuron_flag
@@ -317,8 +320,7 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
                         elif neuron_flag == 3:
                             axonnodes = int(n_fiber_coords)
 
-                        make_task(OS, start_path_solo, sim_path, inner_ind_solo, fiber_ind_solo, stimamp_top,
-                                  stimamp_bottom,
+                        make_task(OS, start_path_solo, sim_path, inner_ind_solo, fiber_ind_solo, stimamp_top, stimamp_bottom,
                                   diameter, deltaz, axonnodes)
 
                         # submit batch job for fiber

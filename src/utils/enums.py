@@ -204,14 +204,6 @@ class FiberGeometry(ASCENTEnum):
 
 
 @unique
-class NeuronFiberFlags(ASCENTEnum):
-    NONE = None
-    MRG_DISCRETE = "MRG_DISCRETE"
-    MRG_INTERPOLATION = "MRG_INTERPOLATION"
-    C_FIBER = "C_FIBER"
-
-
-@unique
 class MyelinatedSamplingType(ASCENTEnum):
     DISCRETE = "discrete"
     INTERPOLATION = "interp"
