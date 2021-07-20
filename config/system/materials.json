@@ -21,7 +21,8 @@
       "sigma_z": "1/1.75",
       "unit": "[S/m]",
       "references": {
-        "1": "Ranck JB, BeMent SL. The specific impedance of the dorsal columns of cat: An anisotropic medium. Exp Neurol. 1965; Pelot NA, Behrend CE, Grill WM. On the parameters used in finite element modeling of compound peripheral nerves. J Neural Eng. 2019"
+        "1": "Ranck JB, BeMent SL. The specific impedance of the dorsal columns of cat: An anisotropic medium. Exp Neurol. 1965",
+        "2": "Pelot NA, Behrend CE, Grill WM. On the parameters used in finite element modeling of compound peripheral nerves. J Neural Eng. 2019"
       }
     },
     "epineurium": {
