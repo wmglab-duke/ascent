@@ -1,6 +1,8 @@
 Cite the code: [![DOI](https://zenodo.org/badge/379064819.svg)](https://zenodo.org/badge/latestdoi/379064819)  
 Cite the manuscript: https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1009285
 
+Cite the manuscript published in PLOS Computational Biology.
+
 The copyrights of this software are owned by Duke University. As such, two licenses to this software are offered:
 
 1. An open-source license under the MIT license for non-commercial use.
