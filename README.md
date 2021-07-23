@@ -9,7 +9,7 @@ The copyrights of this software are owned by Duke University. As such, two licen
 
 As a recipient of this software, you may choose which license to receive the code under. Outside contributions to the Duke owned code base cannot be accepted unless the contributor transfers the copyright to those changes over to Duke University.
 
-To enter a custom license agreement without the MIT license restrictions, please contact the Digital Innovations department at Duke Office for Technology & Commercialization (https://olv.duke.edu/software/) at olvquestions@duke.edu with reference to “OTC File No. 7483” in your email. 
+To enter a custom license agreement without the MIT license restrictions, please contact the Digital Innovations department at Duke Office for Translation & Commercialization (https://olv.duke.edu/software/) at olvquestions@duke.edu with reference to “OTC File No. 7483” in your email. 
 
  
 
@@ -19,7 +19,7 @@ Please note that this software is distributed AS IS, WITHOUT ANY WARRANTY; and w
 
 1. MIT License (for non-commercial use only)
 
-Copyright (c) 2021 wmglab
+Copyright (c) 2021 Duke University
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
