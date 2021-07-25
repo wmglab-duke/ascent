@@ -879,7 +879,7 @@ public class ModelWrapper {
             // Loop over all fascicle dirs
             String[] dirs = new File(fasciclesPath).list();
 
-            JSONObject modelModes = modelData.getJSONObject("modes");
+            JSONObject modelModes = modelData.getJSONObject("modes");  //
 
             if (dirs != null) {
                 for (String dir: dirs) {
