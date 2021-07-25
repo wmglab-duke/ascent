@@ -421,9 +421,15 @@ class Waveform(Exceptionable, Configurable, Saveable):
         :param path:
         :return:
         """
-        np.savetxt(
-            path + WriteMode.file_endings.value[mode.value],
-            np.concatenate(([self.dt, self.stop], self.wave)),
-            fmt='%.10f'
-        )
+        path_to_specific_parameters = ['waveform', self.mode_str]
+        digits = self.search(Config.SIM, *path_to_specific_parameters, 'digits')
+
+        with open(path + WriteMode.file_endings.value[mode.value], "ab") as f:
+            np.savetxt(f, ([self.dt, self.stop]), fmt='%.0f')
+
+        with open(path + WriteMode.file_endings.value[mode.value], "ab") as f:
+            np.savetxt(f, self.wave, fmt=f'%.{digits}f')
+
+        f.close()
+
         return self

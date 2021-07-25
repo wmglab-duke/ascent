@@ -3186,13 +3186,16 @@ class Part {
                 ci.set("spec_type", "surfimp");
                 // if inners only
                 String mask_input_mode = sampleData.getJSONObject("modes").getString("mask_input");
+                String ci_perineurium_thickness_mode = sampleData.getJSONObject("modes").getString("ci_perineurium_thickness");
 
                 String separate = "INNER_AND_OUTER_SEPARATE";
                 String compiled = "INNER_AND_OUTER_COMPILED";
                 String inners = "INNERS";
                 String outers = "OUTERS";
+                String measured = "MEASURED";
 
-                if ((mask_input_mode.compareTo(separate)) == 0 || (mask_input_mode.compareTo(compiled)) == 0) {
+                final boolean both_inners_and_outers = (mask_input_mode.compareTo(separate)) == 0 || (mask_input_mode.compareTo(compiled)) == 0;
+                if (both_inners_and_outers && (ci_perineurium_thickness_mode.compareTo(measured) == 0)) {
                     String name_area_inner = ci_inner_name + "_area";
                     String name_area_outer = ci_outer_name + "_area";
 
@@ -3205,7 +3208,7 @@ class Part {
                     String rhos = "(1/sigma_perineurium)*(sqrt(" + name_area_outer  + "/pi) - sqrt(" + name_area_inner  + "/pi))"; // A = pi*r^2; r = sqrt(A/pi); thk = sqrt(A_out/pi)-sqrt(A_in/pi); Rm = rho*thk
                     ci.set("rhos", rhos);
 
-                } else if (mask_input_mode.compareTo(inners) == 0) {
+                } else if ((both_inners_and_outers && !(ci_perineurium_thickness_mode.compareTo(measured) == 0)) || (mask_input_mode.compareTo(inners) == 0)) {
                     String name_area_inner = ci_inner_name + "_area";
 
                     Double inner_area = ((JSONObject) fascicle.getJSONArray("inners").get(0)).getDouble("area");
