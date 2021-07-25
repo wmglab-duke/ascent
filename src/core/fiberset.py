@@ -359,13 +359,17 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             if myel:
                 step = 11
 
-            while (start - (values[0] if not is_points else values[0][-1]) > -0.1) or \
-                    ((values[-1] if not is_points else values[-1][-1]) - end > -0.1):
-                values = values[step:-step]
+            while 1:
+                if (start + 0.1) > (values[0] if not is_points else values[0][-1]):
+                    values = values[step:]
+                elif (end - 0.1) < (values[-1] if not is_points else values[-1][-1]):
+                    values = values[:-step]
+                else:
+                    break
 
             return values
 
-        def generate_myel_fiber_zs(my_z_shift_to_center, diameter):
+        def generate_myel_fiber_zs(diameter):
             delta_z = \
                 paranodal_length_2 = \
                 inter_length = None
@@ -373,7 +377,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             sampling_mode = self.search(Config.FIBER_Z,
                                         MyelinationMode.parameters.value,
                                         fiber_geometry_mode_name,
-                                        "sampling")
+                                        'sampling')
 
             node_length, paranodal_length_1, inter_length_str = (
                 self.search(Config.FIBER_Z, MyelinationMode.parameters.value, fiber_geometry_mode_name, key)
@@ -424,7 +428,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                             (paranodal_length_1 / 2) + (node_length / 2)]
 
             # account for difference between last node z and half fiber length -> must shift extra distance
-            my_z_shift_to_center += sum(z_steps) - half_fiber_length
+            my_z_shift_to_center_in_fiber_range = half_fiber_length - sum(z_steps)
 
             reverse_z_steps = z_steps.copy()
             reverse_z_steps.reverse()
@@ -440,16 +444,12 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                 ),
             )
 
-            return my_zs, delta_z, my_z_shift_to_center
+            return my_zs, delta_z, my_z_shift_to_center_in_fiber_range
 
-        def build_fiber_with_offset(z_values: list, myel: bool, length: float, dz: float, my_x: float, my_y: float,
+        def build_fiber_with_offset(z_values: list, myel: bool, dz: float, my_x: float, my_y: float,
                                     additional_offset: float = 0):
 
-            z_values = clip(z_values,
-                            self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'min'),
-                            self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'max'),
-                            myel)
-
+            random_offset_value = 0
             # get offset param - NOTE: raw value is a FRACTION of dz (explanation for multiplication by dz)
             if 'offset' in self.search(Config.SIM, 'fibers', FiberZMode.parameters.value).keys():
                 offset = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'offset') * dz
@@ -460,17 +460,11 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                     self.throw(99)
 
             else:
-                offset = None
-
-            random_offset = False
-            if offset is None:
                 offset = 0
-                random_offset = True
-
-            random_offset_value = dz * (random.random() - 0.5) if random_offset else 0
+                random_offset_value = dz * (random.random() - 0.5)
 
             # compute offset z coordinate
-            z_offset = [z + offset - additional_offset + random_offset_value for z in z_values]
+            z_offset = [my_z + offset + random_offset_value + additional_offset for my_z in z_values]
 
             xy_mode_name: str = self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode')
             xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
@@ -482,9 +476,9 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                                 self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'max'),
                                 myel)
 
-            fiber = [(x, y, z) for z in z_offset]
+            my_fiber = [(my_x, my_y, z) for z in z_offset]
 
-            return fiber
+            return my_fiber
 
         # %% START ALGORITHM
 
@@ -500,19 +494,35 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             if not ('min' in self.configs['sims']['fibers']['z_parameters'].keys() and 'max' in
                     self.configs['sims']['fibers']['z_parameters'].keys()):
                 fiber_length = model_length if override_length is None else override_length
-                self.configs['sims']['fibers']['z_parameters']['min'] = 0
-                self.configs['sims']['fibers']['z_parameters']['max'] = fiber_length
+                self.configs['sims']['fibers'][FiberZMode.parameters.value]['min'] = 0
+                self.configs['sims']['fibers'][FiberZMode.parameters.value]['max'] = fiber_length
 
                 if override_length is None:
                     warnings.warn('Program assumed fiber length same as proximal length since "min" and "max" fiber '
                                   'length not defined in Config.Sim "fibers" -> "z_parameters"')
             else:
-                fiber_length = (self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'max')
-                                - self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'min')) \
-                    if override_length is None else override_length
+                min_fiber_z_limit = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'min')
+                max_fiber_z_limit = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'max')
+
+                if not max_fiber_z_limit > min_fiber_z_limit:
+                    self.throw(105)
+
+                fiber_length = (max_fiber_z_limit - min_fiber_z_limit) if override_length is None else override_length
 
             half_fiber_length = fiber_length / 2
-            z_shift_to_center = (model_length - fiber_length) / 2.0
+
+            if not ('longitudinally_centered' in self.configs['sims']['fibers']['z_parameters'].keys()):
+                longitudinally_centered = True
+            else:
+                longitudinally_centered = self.search(Config.SIM,
+                                                      'fibers',
+                                                      FiberZMode.parameters.value,
+                                                      'longitudinally_centered')
+
+            if longitudinally_centered:
+                z_shift_to_center_in_model_range = (model_length - fiber_length) / 2
+            else:
+                z_shift_to_center_in_model_range = 0
 
             xy_mode_name: str = self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode')
             xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
@@ -626,14 +636,12 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                 if len(diams) == 0:
                     diams = [diameter] * len(fibers_xy)
                 for (x, y), diam in zip(fibers_xy, diams):
-                    zs, delta_z, z_shift = generate_myel_fiber_zs(z_shift_to_center, diam)
+                    zs, delta_z, z_shift_to_center_in_fiber_range = generate_myel_fiber_zs(diam)
 
                     fiber_pre = build_fiber_with_offset(zs,
                                                         myelinated,
-                                                        fiber_length,
-                                                        delta_z,
                                                         x, y,
-                                                        z_shift_to_center + z_shift)
+                                                        z_shift_to_center_in_model_range + z_shift_to_center_in_fiber_range)
                     if diam_distribution:
                         fiber = {'diam': diam, 'fiber': fiber_pre}
                     else:
@@ -667,10 +675,9 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                 for (x, y), diam in zip(fibers_xy, diams):
                     fiber_pre = build_fiber_with_offset(list(np.concatenate((z_bottom_half[:-1], z_top_half))),
                                                         myelinated,
-                                                        fiber_length,
                                                         delta_z,
                                                         x, y,
-                                                        z_shift_to_center)
+                                                        z_shift_to_center_in_model_range)
                     if diam_distribution:
                         fiber = {'diam': diam, 'fiber': fiber_pre}
                     else:
