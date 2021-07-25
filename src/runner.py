@@ -288,9 +288,9 @@ class Runner(Exceptionable, Configurable):
                     print('KILLING PRE JAVA')
                     sys.exit()
 
-
             # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials if necessary
             if 'models' in all_configs.keys() and 'sims' in all_configs.keys():
+                self.model_parameter_checking(all_configs)
                 # only transition to java if necessary (there are potentials that do not exist)
                 if not all(potentials_exist) or not all(ss_bases_exist):
                     print('\nTO JAVA\n')
@@ -557,7 +557,7 @@ class Runner(Exceptionable, Configurable):
 
         if orientation_point is not None:
             theta_c = (np.arctan2(orientation_point[1], orientation_point[0])) * (
-                        360 / (2 * np.pi)) % 360  # overwrite theta_c, use our own orientation
+                    360 / (2 * np.pi)) % 360  # overwrite theta_c, use our own orientation
 
         if cuff_shift_mode == CuffShiftMode.AUTO_ROTATION_MIN_CIRCLE_BOUNDARY \
                 or cuff_shift_mode == CuffShiftMode.MIN_CIRCLE_BOUNDARY:  # for backwards compatibility
@@ -724,3 +724,9 @@ class Runner(Exceptionable, Configurable):
             value = self.search(Config.ENV, key)
             assert type(value) is str
             os.environ[key] = value
+
+    def model_parameter_checking(self, all_configs):
+        for _, model_config in enumerate(all_configs[Config.MODEL.value]):
+            distal_exists = model_config['medium']['distal']['exist']
+            if distal_exists and model_config['medium']['proximal']['distant_ground'] == True:
+                self.throw(107)

@@ -533,5 +533,10 @@
     "code": 106,
     "text": "sims->n_dimensions does not equal the number of parameter dimensions given in Sim",
     "source": "src.core.Simulation"
+  },
+  {
+    "code": 107,
+    "text": "Distal medium exists, and proximal medium has a distant ground, which does not make sense. (Fix in Model)",
+    "source": "src.Runner"
   }
 ]
