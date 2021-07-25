@@ -523,5 +523,10 @@
     "code": 104,
     "text": "To simulate myelinated fiber diameters from a distribution of diameters, must use MRG_INTERPOLATION",
     "source": "src.core.Fiberset"
+  },
+  {
+    "code": 105,
+    "text": "sims->fibers->z_parameters->min is greater than sims->fibers->z_parameters->max",
+    "source": "src.core.Fiberset"
   }
 ]
