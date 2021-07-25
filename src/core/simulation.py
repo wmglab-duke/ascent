@@ -75,6 +75,9 @@ class Simulation(Exceptionable, Configurable, Saveable):
                     flag
                 )
 
+        if len(self.factors.items()) != self.search(Config.SIM, "n_dimensions"):
+            self.throw(106)
+
         return self
 
     def write_fibers(self, sim_directory: str) -> 'Simulation':

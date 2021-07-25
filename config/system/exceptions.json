@@ -528,5 +528,10 @@
     "code": 105,
     "text": "sims->fibers->z_parameters->min is greater than sims->fibers->z_parameters->max",
     "source": "src.core.Fiberset"
+  },
+  {
+    "code": 106,
+    "text": "sims->n_dimensions does not equal the number of parameter dimensions given in Sim",
+    "source": "src.core.Simulation"
   }
 ]
