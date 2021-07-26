@@ -871,13 +871,13 @@ public class ModelWrapper {
 
             // Add epineurium
             String nerveMode = (String) sampleData.getJSONObject("modes").get("nerve");
-            String deformMode = (String) sampleData.getJSONObject("modes").get("deform");
+            String reshapenerveMode = (String) sampleData.getJSONObject("modes").get("reshape_nerve");
 
-            if ((nerveMode.equals("PRESENT")) && (!deformMode.equals("CIRCLE"))) {  // TODO Implement non-circular nerves (trace and ellipses)
+            if ((nerveMode.equals("PRESENT")) && (!reshapenerveMode.equals("CIRCLE"))) {  // TODO Implement non-circular nerves (trace and ellipses)
                 System.out.println("Modeling a Sample with a Nerve (i.e., epineurium) that is " +
                         "not deformed to CIRCLE is not yet implemented");
                 System.exit(0);
-            } else if (nerveMode.equals("PRESENT") && deformMode.equals("CIRCLE")) {
+            } else if (nerveMode.equals("PRESENT") && reshapenerveMode.equals("CIRCLE")) {
                 Part.createNervePartInstance("Epineurium", 0,
                         null, this, null, sampleData, nerveParams, modelData);
             }
