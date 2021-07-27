@@ -1396,11 +1396,11 @@ public class ModelWrapper {
 
                             String cuff_shift_unit = "[micrometer]";
                             String cuff_rot_unit = "[degree]";
-                            Integer cuff_shift_x = modelData.getJSONObject("cuff").getJSONObject("shift").getInt("x");
-                            Integer cuff_shift_y = modelData.getJSONObject("cuff").getJSONObject("shift").getInt("y");
-                            Integer cuff_shift_z = modelData.getJSONObject("cuff").getJSONObject("shift").getInt("z");
-                            Integer cuff_rot_pos = modelData.getJSONObject("cuff").getJSONObject("rotate").getInt("pos_ang");
-                            Integer cuff_rot_add = modelData.getJSONObject("cuff").getJSONObject("rotate").getInt("add_ang");
+                            Double cuff_shift_x = modelData.getJSONObject("cuff").getJSONObject("shift").getDouble("x");
+                            Double cuff_shift_y = modelData.getJSONObject("cuff").getJSONObject("shift").getDouble("y");
+                            Double cuff_shift_z = modelData.getJSONObject("cuff").getJSONObject("shift").getDouble("z");
+                            Double cuff_rot_pos = modelData.getJSONObject("cuff").getJSONObject("rotate").getDouble("pos_ang");
+                            Double cuff_rot_add = modelData.getJSONObject("cuff").getJSONObject("rotate").getDouble("add_ang");
 
                             cuffConformationParams.set("cuff_shift_x", cuff_shift_x + " " + cuff_shift_unit);
                             cuffConformationParams.set("cuff_shift_y", cuff_shift_y + " " + cuff_shift_unit);
