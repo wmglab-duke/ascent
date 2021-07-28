@@ -15,10 +15,28 @@ import scipy.signal as sg
 import matplotlib.pyplot as plt
 import csv
 import warnings
+import sys
+import math
 
 # ascent
 from src.utils import Exceptionable, Configurable, Saveable
 from src.utils.enums import SetupMode, Config, WaveformMode, WriteMode
+
+
+def precision_and_scale(x):
+    # https://stackoverflow.com/questions/3018758/determine-precision-and-scale-of-particular-number-in-python
+    max_digits = sys.float_info.dig
+    int_part = int(abs(x))
+    magnitude = 1 if int_part == 0 else int(math.log10(int_part)) + 1
+    if magnitude >= max_digits:
+        return (magnitude, 0)
+    frac_part = abs(x) - int_part
+    multiplier = 10 ** (max_digits - magnitude)
+    frac_digits = multiplier + int(multiplier * frac_part + 0.5)
+    while frac_digits % 10 == 0:
+        frac_digits /= 10
+    scale = int(math.log10(frac_digits))
+    return (magnitude + scale, scale)
 
 
 class Waveform(Exceptionable, Configurable, Saveable):
@@ -65,12 +83,12 @@ class Waveform(Exceptionable, Configurable, Saveable):
 
         # unpack global variables
         self.dt, \
-            self.on, \
-            self.off, \
-            self.stop = [global_parameters.get(key) for key in ['dt',
-                                                                'on',
-                                                                'off',
-                                                                'stop']]
+        self.on, \
+        self.off, \
+        self.stop = [global_parameters.get(key) for key in ['dt',
+                                                            'on',
+                                                            'off',
+                                                            'stop']]
 
         self.start = 0
 
@@ -106,7 +124,7 @@ class Waveform(Exceptionable, Configurable, Saveable):
 
             self.load(materials_path)
             peri_conductivity = self.search(Config.MATERIALS, 'conductivities', 'weerasuriya_perineurium_DC', 'value')
-            rho = 1/eval(peri_conductivity)  # [S/m] -> [ohm-m]
+            rho = 1 / eval(peri_conductivity)  # [S/m] -> [ohm-m]
 
         else:  # stimulation at higher frequency for block
             w = 2 * np.pi * f
@@ -333,9 +351,9 @@ class Waveform(Exceptionable, Configurable, Saveable):
 
             # q-balanced
             amp1 = 1
-            amp2 = (pw1*amp1)/pw2
+            amp2 = (pw1 * amp1) / pw2
 
-            wave = padded_positive + amp2*padded_negative
+            wave = padded_positive + amp2 * padded_negative
             self.wave = wave
 
         elif self.mode == WaveformMode.EXPLICIT:
@@ -370,8 +388,8 @@ class Waveform(Exceptionable, Configurable, Saveable):
                                                        dt_atol)
                 warnings.warn(warning_str)
 
-                period_explicit = dt_explicit*len(explicit_wave)
-                n_samples_resampled = round(period_explicit/self.dt)
+                period_explicit = dt_explicit * len(explicit_wave)
+                n_samples_resampled = round(period_explicit / self.dt)
 
                 # need to convert input explicit waveform to 'global' time discretization as used by NEURON
                 signal = sg.resample(explicit_wave, n_samples_resampled)
@@ -391,13 +409,13 @@ class Waveform(Exceptionable, Configurable, Saveable):
             if repeats > 1:
                 signal = np.tile(signal, repeats)
             # if number of repeats cannot fit in off-on interval, error
-            if self.dt*len(signal) > (self.off-self.on):
+            if self.dt * len(signal) > (self.off - self.on):
                 self.throw(74)
 
             self.wave = signal
 
             # pad with zeros for: time before on, time after off
-            padded = pad(signal, self.dt, self.on - self.start, self.stop - (self.on + self.dt*len(signal)))
+            padded = pad(signal, self.dt, self.on - self.start, self.stop - (self.on + self.dt * len(signal)))
             self.wave = padded
 
         else:
@@ -410,7 +428,7 @@ class Waveform(Exceptionable, Configurable, Saveable):
         if ax is None:
             ax = plt.gca()
 
-        ax.plot(np.linspace(self.start, self.dt*len(self.wave), len(self.wave)), self.wave)
+        ax.plot(np.linspace(self.start, self.dt * len(self.wave), len(self.wave)), self.wave)
 
         if final:
             plt.show()
@@ -424,8 +442,14 @@ class Waveform(Exceptionable, Configurable, Saveable):
         path_to_specific_parameters = ['waveform', self.mode_str]
         digits = self.search(Config.SIM, *path_to_specific_parameters, 'digits')
 
+        dt_all, dt_post = precision_and_scale(self.dt)
+        stop_all, stop_post = precision_and_scale(self.stop)
+
         with open(path + WriteMode.file_endings.value[mode.value], "ab") as f:
-            np.savetxt(f, ([self.dt, self.stop]), fmt='%.0f')
+            np.savetxt(f, [self.dt], fmt=f'%{dt_all-dt_post}.{dt_post}f')
+
+        with open(path + WriteMode.file_endings.value[mode.value], "ab") as f:
+            np.savetxt(f, [self.stop], fmt=f'%{stop_all-stop_post}.{stop_post}f')
 
         with open(path + WriteMode.file_endings.value[mode.value], "ab") as f:
             np.savetxt(f, self.wave, fmt=f'%.{digits}f')
