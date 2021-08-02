@@ -335,7 +335,7 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
                             '--job-name={}'.format(job_name),
                             '--output={}'.format(output_log),
                             '--error={}'.format(error_log),
-                            '--mem=8000',
+                            '--mem=2000',
                             '-p', 'wmglab',
                             '-c', '1',
                             start_path_solo
