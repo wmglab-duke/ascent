@@ -640,6 +640,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
                     fiber_pre = build_fiber_with_offset(zs,
                                                         myelinated,
+                                                        delta_z,
                                                         x, y,
                                                         z_shift_to_center_in_model_range + z_shift_to_center_in_fiber_range)
                     if diam_distribution:

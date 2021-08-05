@@ -513,7 +513,7 @@ class Query(Exceptionable, Configurable, Saveable):
                         thresholds = []
                         missing_indices = []
 
-                        if plot_mode is 'fiber0' or 'on_off':
+                        if plot_mode is 'fiber0' or plot_mode is 'on_off':
                             for i in range(n_inners):
                                 if select_fascicles is None or select_fascicles[i]:
                                     thresh_path = os.path.join(n_sim_dir, 'data', 'outputs',
@@ -669,7 +669,7 @@ class Query(Exceptionable, Configurable, Saveable):
                                 cb.ax.tick_params(labelsize=colorbar_text_size_override if (
                                         colorbar_text_size_override is not None) else 25)
 
-                        if plot_mode is 'fiber0' or 'on_off':
+                        if plot_mode is 'fiber0' or plot_mode is 'on_off':
                             # plot slide (nerve and fascicles, defaulting to no outers)
                             sample_object.slides[0].plot(final=False, fix_aspect_ratio=True, fascicle_colors=colors,
                                                          ax=ax, outers_flag=plot_outers, inner_format='k-')

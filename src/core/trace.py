@@ -222,6 +222,7 @@ class Trace(Exceptionable):
                                for floor, ceiling in ((min_x, max_x), (min_y, max_y)))
 
             if Point(coordinate).within(trace_to_compare.polygon()):
+                # print('coord:{}, {}'.format(coordinate[0], coordinate[1]))
                 points.append(coordinate)
 
         return points
