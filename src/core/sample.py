@@ -24,7 +24,7 @@ from src.core import Slide, Map, Fascicle, Nerve, Trace
 from .deformable import Deformable
 from src.utils import Exceptionable, Configurable, Saveable, SetupMode, Config, MaskFileNames, NerveMode, \
     MaskInputMode, ReshapeNerveMode, DeformationMode, PerineuriumThicknessMode, WriteMode, CuffInnerMode, \
-    TemplateOutput, TemplateMode
+    TemplateOutput, TemplateMode, ScaleInputMode
 
 
 class Sample(Exceptionable, Configurable, Saveable):
@@ -75,32 +75,36 @@ class Sample(Exceptionable, Configurable, Saveable):
 
         return self
 
-    def scale(self, scale_bar_mask_path: str, scale_bar_length: float) -> 'Sample':
+    def scale(self, scale_bar_mask_path: str, scale_bar_length: float, scale_bar_is_literal: bool) -> 'Sample':
         """
         Scale all slides to the correct unit.
         :param scale_bar_mask_path: path to binary mask with white straight (horizontal) scale bar
         :param scale_bar_length: length (in global units as determined by config/user) of the scale bar
         """
-        # load in image
-        image_raw: np.ndarray = plt.imread(scale_bar_mask_path)
-        # get maximum of each column (each "pixel" is a 4-item vector)
-        row_of_column_maxes: np.ndarray = image_raw.max(0)
-        # find the indices of columns in original image where the first pixel item was maxed (i.e. white)
 
-        if row_of_column_maxes.ndim == 2:  # masks from histology, 3 or 4 bit
-            indices = np.where(row_of_column_maxes[:, 0] == max(row_of_column_maxes[:, 0]))[0]
-        elif row_of_column_maxes.ndim == 1:  # masks from mock morphology, 1 bit
-            indices = np.where(row_of_column_maxes[:] == max(row_of_column_maxes[:]))[0]
+        if scale_bar_is_literal:
+            #use explicitly specified um/px scale instead of drawing from a scale bar image
+            factor = scale_bar_length
         else:
-            # may need to expand here in future?
-            self.throw(97)
+            # load in image
+            image_raw: np.ndarray = plt.imread(scale_bar_mask_path)
+            # get maximum of each column (each "pixel" is a 4-item vector)
+            row_of_column_maxes: np.ndarray = image_raw.max(0)
+            # find the indices of columns in original image where the first pixel item was maxed (i.e. white)
+    
+            if row_of_column_maxes.ndim == 2:  # masks from histology, 3 or 4 bit
+                indices = np.where(row_of_column_maxes[:, 0] == max(row_of_column_maxes[:, 0]))[0]
+            elif row_of_column_maxes.ndim == 1:  # masks from mock morphology, 1 bit
+                indices = np.where(row_of_column_maxes[:] == max(row_of_column_maxes[:]))[0]
+            else:
+                # may need to expand here in future?
+                self.throw(97)
+    
+            # find the length of the scale bar by finding total range of "max white" indices
+            scale_bar_pixels = max(indices) - min(indices) + 1
 
-        # find the length of the scale bar by finding total range of "max white" indices
-        scale_bar_pixels = max(indices) - min(indices) + 1
-
-        # calculate scale factor as unit/pixel
-        factor = scale_bar_length / scale_bar_pixels
-
+            # calculate scale factor as unit/pixel
+            factor = scale_bar_length / scale_bar_pixels
         # for each slide, scale to units
         for slide in self.slides:
             slide.scale(factor)
@@ -111,6 +115,12 @@ class Sample(Exceptionable, Configurable, Saveable):
         """
         :param printing: bool, gives user console output
         """
+        try:
+            scale_input_mode =  self.search_mode(ScaleInputMode, Config.SAMPLE)
+        except:
+            #For backwards compatibility, if scale mode is not specified assume a mask image is provided
+            scale_input_mode = ScaleInputMode.MASK
+            
 
         sample_index = self.search(Config.RUN, 'sample')
 
@@ -142,29 +152,30 @@ class Sample(Exceptionable, Configurable, Saveable):
             # unpack data and force cast to string
             cassette, number, _, source_directory = slide_info.data()
             cassette, number = (str(item) for item in (cassette, number))
-
+            
             scale_was_copied = False
             for directory_part in samples_path, str(sample_index), 'slides', cassette, number, 'masks':
 
                 if not os.path.exists(directory_part):
                     os.makedirs(directory_part)
                 os.chdir(directory_part)
-
-                if (directory_part == str(sample_index)) and not scale_was_copied:
-                    scale_source_file = os.path.join(start_directory,
-                                                     *source_directory,
-                                                     '_'.join([sample,
-                                                               cassette,
-                                                               number,
-                                                               MaskFileNames.SCALE_BAR.value]))
-                    if os.path.exists(scale_source_file):
-                        shutil.copy2(scale_source_file, MaskFileNames.SCALE_BAR.value)
-                    else:
-                        print('ERROR: scale_source_file: {} not found'.format(scale_source_file))
-                        self.throw(98)
+                if scale_input_mode == ScaleInputMode.MASK:
+                    #only try to copy scale image if it is being used
+                    if (directory_part == str(sample_index)) and not scale_was_copied:
+                        scale_source_file = os.path.join(start_directory,
+                                                         *source_directory,
+                                                         '_'.join([sample,
+                                                                   cassette,
+                                                                   number,
+                                                                   MaskFileNames.SCALE_BAR.value]))
+                        if os.path.exists(scale_source_file):
+                            shutil.copy2(scale_source_file, MaskFileNames.SCALE_BAR.value)
+                        else:
+                            print('ERROR: scale_source_file: {} not found'.format(scale_source_file))
+                            self.throw(98)
 
                     scale_was_copied = True
-
+            
             for target_file in [item.value for item in MaskFileNames if item != MaskFileNames.SCALE_BAR]:
                 source_file = os.path.join(start_directory,
                                            *source_directory,
@@ -195,6 +206,10 @@ class Sample(Exceptionable, Configurable, Saveable):
         reshape_nerve_mode = self.search_mode(ReshapeNerveMode, Config.SAMPLE)
         deform_mode = self.search_mode(DeformationMode, Config.SAMPLE)
         deform_ratio = None
+        try:
+            scale_input_mode =  self.search_mode(ScaleInputMode, Config.SAMPLE)
+        except:
+            scale_input_mode = ScaleInputMode.MASK
 
         def exists(mask_file_name: MaskFileNames):
             return os.path.exists(mask_file_name.value)
@@ -206,7 +221,11 @@ class Sample(Exceptionable, Configurable, Saveable):
         sample: str = str(self.search(Config.RUN, 'sample'))
 
         # create scale bar path
-        scale_path = os.path.join('samples', sample, MaskFileNames.SCALE_BAR.value)
+        if scale_input_mode == ScaleInputMode.MASK:
+            scale_path = os.path.join('samples', sample, MaskFileNames.SCALE_BAR.value)
+        elif scale_input_mode == ScaleInputMode.RATIO:
+            scale_path = ''
+        else: self.throw(108)
 
         for slide_info in self.map.slides:
 
@@ -348,9 +367,12 @@ class Sample(Exceptionable, Configurable, Saveable):
             self.slides.append(slide)
 
             os.chdir(start_directory)
+            
 
-        if os.path.exists(scale_path):
-            self.scale(scale_path, self.search(Config.SAMPLE, 'scale', 'scale_bar_length'))
+        if os.path.exists(scale_path) and scale_input_mode == ScaleInputMode.MASK:
+            self.scale(scale_path, self.search(Config.SAMPLE, 'scale', 'scale_bar_length'),False)
+        elif scale_input_mode == ScaleInputMode.RATIO:
+            self.scale(scale_path, self.search(Config.SAMPLE, 'scale', 'scale_ratio'),True)
         else:
             print(scale_path)
             self.throw(19)

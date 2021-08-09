@@ -103,6 +103,13 @@ class MaskInputMode(ASCENTEnum):
     OUTERS = 1
     INNER_AND_OUTER_SEPARATE = 2
     INNER_AND_OUTER_COMPILED = 3
+    
+@unique
+class ScaleInputMode(ASCENTEnum):
+    config = 'scale_input'
+    
+    MASK = 0
+    RATIO = 1
 
 
 @unique
