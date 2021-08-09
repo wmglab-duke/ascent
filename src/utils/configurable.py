@@ -186,12 +186,13 @@ class Configurable:
                              if str(option).split('.')[1] in modes_in_config]
 
         if count is not None:
-            if len(list_results) != count and not optional:
+            if len(list_results)==0 and optional:
+                list_results = [None]
+            elif len(list_results) != count:
                 raise Exception('\n\tcode:\t-3\n'
                                 '\ttext:\t{} matches found when {} were expected.\n'
                                 '\tsource:\tsrc.utils.Configurable.search_multi_mode'.format(len(list_results), count))
-            if len(list_results)==0 and optional:
-                list_results = [None]
+
     
         return list_results
 
