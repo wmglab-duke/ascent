@@ -99,7 +99,8 @@ class Trace(Exceptionable):
 
         # set new points of offset
         self.points = None
-        self.append([point + [0] for point in pco.Execute(distance)[0]])
+        newpoints = pco.Execute(distance)
+        self.append([point + [0] for point in newpoints[np.argmax([len(l) for l in newpoints])]])
 
         # cleanup
         self.__update()
