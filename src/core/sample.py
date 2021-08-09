@@ -115,10 +115,9 @@ class Sample(Exceptionable, Configurable, Saveable):
         """
         :param printing: bool, gives user console output
         """
-        try:
-            scale_input_mode =  self.search_mode(ScaleInputMode, Config.SAMPLE)
-        except:
-            #For backwards compatibility, if scale mode is not specified assume a mask image is provided
+        scale_input_mode = self.search_mode(ScaleInputMode, Config.SAMPLE,optional = True)
+        #For backwards compatibility, if scale mode is not specified assume a mask image is provided
+        if scale_input_mode is None:
             scale_input_mode = ScaleInputMode.MASK
             
 
@@ -206,11 +205,11 @@ class Sample(Exceptionable, Configurable, Saveable):
         reshape_nerve_mode = self.search_mode(ReshapeNerveMode, Config.SAMPLE)
         deform_mode = self.search_mode(DeformationMode, Config.SAMPLE)
         deform_ratio = None
-        try:
-            scale_input_mode =  self.search_mode(ScaleInputMode, Config.SAMPLE)
-        except:
+        scale_input_mode = self.search_mode(ScaleInputMode, Config.SAMPLE,optional = True)
+        #For backwards compatibility, if scale mode is not specified assume a mask image is provided
+        if scale_input_mode is None:
             scale_input_mode = ScaleInputMode.MASK
-
+            
         def exists(mask_file_name: MaskFileNames):
             return os.path.exists(mask_file_name.value)
 

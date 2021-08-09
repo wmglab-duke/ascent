@@ -146,17 +146,17 @@ class Configurable:
             # print('load "{}" --> key "{}"'.format(config, key))
             return json.load(handle)
 
-    def search_mode(self, mode: Type[Enum], key: Config):
+    def search_mode(self, mode: Type[Enum], key: Config, optional: bool = False):
         """
         :param mode: an Enum mode that is being searched. it MUST have variable config, which is the name
                      to search for in the X.json file
         :return: the Enum version of the mode that is specified by the config
         """
 
-        return self.search_multi_mode(key=key, mode=mode, count=1)[0]
+        return self.search_multi_mode(key=key, mode=mode, count=1,optional=optional)[0]
 
     def search_multi_mode(self, key: Config, mode: Type[Enum] = None, modes: List[Type[Enum]] = None,
-                          count: int = None) -> list:
+                          count: int = None, optional: bool = False) -> list:
         """
         :param key: Config (choice of configurations from discrete enumeration)
         :param mode: Option for pipeline functionality (see Enums)
@@ -177,7 +177,7 @@ class Configurable:
 
         for mode in modes:
 
-            modes_in_config = self.search(key, 'modes', mode.config.value)
+            modes_in_config = self.search(key, 'modes', mode.config.value,optional=optional)
 
             if not isinstance(modes_in_config, list):
                 modes_in_config = [modes_in_config]
@@ -186,11 +186,13 @@ class Configurable:
                              if str(option).split('.')[1] in modes_in_config]
 
         if count is not None:
-            if len(list_results) != count:
+            if len(list_results) != count and not optional:
                 raise Exception('\n\tcode:\t-3\n'
                                 '\ttext:\t{} matches found when {} were expected.\n'
                                 '\tsource:\tsrc.utils.Configurable.search_multi_mode'.format(len(list_results), count))
-
+            if len(list_results)==0 and optional:
+                list_results = [None]
+    
         return list_results
 
     @staticmethod
