@@ -174,7 +174,7 @@ class Sample(Exceptionable, Configurable, Saveable):
                             print('ERROR: scale_source_file: {} not found'.format(scale_source_file))
                             self.throw(98)
 
-                    scale_was_copied = True
+                scale_was_copied = True
             
             for target_file in [item.value for item in MaskFileNames if item != MaskFileNames.SCALE_BAR]:
                 source_file = os.path.join(start_directory,
