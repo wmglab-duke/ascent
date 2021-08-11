@@ -334,6 +334,7 @@ class Slide(Exceptionable):
         
     def saveimg(self, path,separate:bool = False,colors = {'n':'red','i':'green','p':'blue'},dim = None, buffer = 10,Nerve = True,Fascicle = True, Peri = True,ids = []):
         def prep_points(points):
+            #adjusts plot points to dimensions and formats for PIL
             points = (points-dim_min+buffer)[:,0:2].astype(int)
             points = tuple(zip(points[:,0],points[:,1]))
             return points
@@ -341,6 +342,7 @@ class Slide(Exceptionable):
             values = [1,1,1]
         npoints = self.nerve.points
         if dim == None:
+            #without provided dimensions, generate them based on nerve size
             dim_min = np.min(npoints,axis = 0)
             dim = tuple((np.max(npoints,axis = 0)-np.min(npoints,axis = 0)+2*buffer).astype(int))[0:2]
         if not separate:
@@ -353,7 +355,7 @@ class Slide(Exceptionable):
                 for inner in fascicle.inners:
                     draw.polygon(prep_points(inner.points),fill = colors['i'])
             img.transpose(Image.FLIP_TOP_BOTTOM)
-            if len(ids)>0:
+            if len(ids)>0: #prints the fascicle ids
                 for i,row in ids.iterrows():
                     location = (row['x']-dim_min[0]+buffer,row['y']-dim_min[1]+buffer)
                     draw.text(location,str(int(row['id'])),fill='white')
