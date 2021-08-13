@@ -332,7 +332,7 @@ class Slide(Exceptionable):
 
         os.chdir(start)
         
-    def saveimg(self, path,separate:bool = False,colors = {'n':'red','i':'green','p':'blue'},dim = None, buffer = 10,Nerve = True,Fascicle = True, Peri = True,ids = []):
+    def saveimg(self, path,separate:bool = False,colors = {'n':'red','i':'green','p':'blue'},dims = None, buffer = 10,Nerve = True,Fascicle = True, Peri = True,ids = []):
         def prep_points(points):
             #adjusts plot points to dimensions and formats for PIL
             points = (points-dim_min+buffer)[:,0:2].astype(int)
@@ -340,26 +340,28 @@ class Slide(Exceptionable):
             return points
         if separate:
             values = [1,1,1]
-        npoints = self.nerve.points
-        if dim == None:
+        npoints = self.nerve.points[:,0:2]
+        if dims == None:
             #without provided dimensions, generate them based on nerve size
             dim_min = np.min(npoints,axis = 0)
             dim = tuple((np.max(npoints,axis = 0)-np.min(npoints,axis = 0)+2*buffer).astype(int))[0:2]
+        else:
+            dim_min = [min(x) for x in dims]
+            dim = [max(x) for x in dims]
         if not separate:
             img = Image.new('RGB',dim)
             draw = ImageDraw.Draw(img)
             draw.polygon(prep_points(npoints), fill = colors['n'])
             for fascicle in self.fascicles:
-                draw.polygon(prep_points(fascicle.outer.points),fill = colors['p'])
+                draw.polygon(prep_points(fascicle.outer.points[:,0:2]),fill = colors['p'])
             for fascicle in self.fascicles:
                 for inner in fascicle.inners:
-                    draw.polygon(prep_points(inner.points),fill = colors['i'])
-            img.transpose(Image.FLIP_TOP_BOTTOM)
+                    draw.polygon(prep_points(inner.points[:,0:2]),fill = colors['i'])
+            # img.transpose(Image.FLIP_TOP_BOTTOM)
             if len(ids)>0: #prints the fascicle ids
                 for i,row in ids.iterrows():
                     location = (row['x']-dim_min[0]+buffer,row['y']-dim_min[1]+buffer)
                     draw.text(location,str(int(row['id'])),fill='white')
-                    print(row)
             img.save(path)
     def deisland():
         pass #Flag: want this to check for certain countour size and remove if too small
