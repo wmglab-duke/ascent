@@ -332,7 +332,7 @@ class Slide(Exceptionable):
 
         os.chdir(start)
         
-    def saveimg(self, path,dims,separate:bool = False,colors = {'n':'red','i':'green','p':'blue'}, buffer = 10,nerve = True, outers = True,inners = True,ids = []):
+    def saveimg(self, path: str,dims,separate:bool = False,colors = {'n':'red','i':'green','p':'blue'}, buffer = 10,nerve = True, outers = True,inners = True,inner_minus_outer = False,ids = []):
         def prep_points(points):
             #adjusts plot points to dimensions and formats for PIL
             points = (points-dim_min+buffer)[:,0:2].astype(int)
@@ -357,22 +357,22 @@ class Slide(Exceptionable):
             img.save(path)
         elif separate: #generate each image and save seperately
             if nerve:
-                img = Image.new(1,dim)
+                img = Image.new('1',dim)
                 draw = ImageDraw.Draw(img)
                 draw.polygon(prep_points(self.nerve.points[:,0:2]), fill = 1)
                 img.save(path['n'])
             if outers:
-                imgp = Image.new(1,dim)
+                imgp = Image.new('1',dim)
                 draw = ImageDraw.Draw(imgp)
+                for fascicle in self.fascicles:
+                    draw.polygon(prep_points(fascicle.outer.points[:,0:2]),fill = 1)
+                imgp.save(path['p'])
+            if inners:
+                imgi = Image.new('1',dim)
+                draw = ImageDraw.Draw(imgi)
                 for fascicle in self.fascicles:
                     for inner in fascicle.inners:
                         draw.polygon(prep_points(inner.points[:,0:2]),fill = 1)
-                imgp.save(path['p'])
-            if inners:
-                imgi = Image.new(1,dim)
-                draw = ImageDraw.Draw(imgi)
-                for fascicle in self.fascicles:
-                    draw.polygon(prep_points(fascicle.outer.points[:,0:2]),fill = 1)
                 if len(ids)>0: #prints the fascicle ids
                     for i,row in ids.iterrows():
                         location = (row['x']-dim_min[0]+buffer,row['y']-dim_min[1]+buffer)
