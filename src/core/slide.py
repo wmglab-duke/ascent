@@ -332,7 +332,7 @@ class Slide(Exceptionable):
 
         os.chdir(start)
         
-    def saveimg(self, path: str,dims,separate:bool = False,colors = {'n':'red','i':'green','p':'blue'}, buffer = 10,nerve = True, outers = True,inners = True,inner_minus_outer = False,ids = []):
+    def saveimg(self, path: str,dims,separate:bool = False,colors = {'n':'red','i':'green','p':'blue'}, buffer = 10,nerve = True, outers = True,inners = True,outer_minus_inner = False,ids = []):
         def prep_points(points):
             #adjusts plot points to dimensions and formats for PIL
             points = (points-dim_min+buffer)[:,0:2].astype(int)
@@ -366,6 +366,10 @@ class Slide(Exceptionable):
                 draw = ImageDraw.Draw(imgp)
                 for fascicle in self.fascicles:
                     draw.polygon(prep_points(fascicle.outer.points[:,0:2]),fill = 1)
+                    if outer_minus_inner:
+                        for fascicle in self.fascicles:
+                            for inner in fascicle.inners:
+                                draw.polygon(prep_points(inner.points[:,0:2]),fill = 0)    
                 imgp.save(path['p'])
             if inners:
                 imgi = Image.new('1',dim)
