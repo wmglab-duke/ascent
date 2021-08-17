@@ -538,5 +538,10 @@
     "code": 107,
     "text": "Distal medium exists, and proximal medium has a distant ground, which does not make sense. (Fix in Model)",
     "source": "src.Runner"
+  },
+  {
+    "code": 108,
+    "text": "Invalid scale input mode",
+    "source": "src.core.Sample"
   }
 ]
