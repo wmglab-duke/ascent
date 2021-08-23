@@ -15,6 +15,7 @@
   },
   "modes": {
     "mask_input": "INNER_AND_OUTER_COMPILED",
+    "scale_input": "MASK",
     "nerve": "NOT_PRESENT",
     "deform": "NONE",
     "ci_perineurium_thickness": "MEASURED",
