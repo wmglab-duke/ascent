@@ -17,7 +17,7 @@ from shapely.geometry import LineString, Point
 from shapely.affinity import scale
 import numpy as np
 import matplotlib.pyplot as plt
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 
 # ascent
 from .fascicle import Fascicle
@@ -331,38 +331,45 @@ class Slide(Exceptionable):
                 os.chdir(sub_start)
 
         os.chdir(start)
-        
-    def saveimg(self, path: str,dims,separate:bool = False,colors = {'n':'red','i':'green','p':'blue'}, buffer = 10,nerve = True, outers = True,inners = True,outer_minus_inner = False,ids = []):
+           
+    def saveimg(self, path: str,dims,separate:bool = False,colors = {'n':'red','i':'green','p':'blue'}, buffer = 0,nerve = True, outers = True,inners = True,outer_minus_inner = False,ids = []):
         def prep_points(points):
             #adjusts plot points to dimensions and formats for PIL
             points = (points-dim_min+buffer)[:,0:2].astype(int)
             points = tuple(zip(points[:,0],points[:,1]))
             return points
+        fnt = ImageFont.truetype("arial.ttf", 60)       
         dim_min = [min(x) for x in dims]
         dim = [max(x) for x in dims]
+        imdim = [dim[0]+abs(dim_min[0])+buffer*2,dim[1]+abs(dim_min[1])+buffer*2]
+        self.move_center
         if not separate: #draw contours and ids if provided
-            img = Image.new('RGB',dim)
+            img = Image.new('RGB',imdim)
             draw = ImageDraw.Draw(img)
             if nerve: 
                 draw.polygon(prep_points(self.nerve.points[:,0:2]), fill = colors['n'])
             for fascicle in self.fascicles:
                 if outers: 
                     draw.polygon(prep_points(fascicle.outer.points[:,0:2]),fill = colors['p'])
+            for fascicle in self.fascicles:
                 for inner in fascicle.inners:
                     draw.polygon(prep_points(inner.points[:,0:2]),fill = colors['i'])
+            img = img.transpose(Image.FLIP_TOP_BOTTOM)
+            iddraw = ImageDraw.Draw(img)
             if len(ids)>0: #prints the fascicle ids
                 for i,row in ids.iterrows():
-                    location = (row['x']-dim_min[0]+buffer,row['y']-dim_min[1]+buffer)
-                    draw.text(location,str(int(row['id'])),fill='white')
+                    location = (row['x']-dim_min[0]+buffer,img.height-row['y']+dim_min[1]-buffer)
+                    iddraw.text(location,str(int(row['id'])),font = fnt,fill='white')
             img.save(path)
         elif separate: #generate each image and save seperately
             if nerve:
-                img = Image.new('1',dim)
+                img = Image.new('1',imdim)
                 draw = ImageDraw.Draw(img)
                 draw.polygon(prep_points(self.nerve.points[:,0:2]), fill = 1)
+                img = img.transpose(Image.FLIP_TOP_BOTTOM)
                 img.save(path['n'])
             if outers:
-                imgp = Image.new('1',dim)
+                imgp = Image.new('1',imdim)
                 draw = ImageDraw.Draw(imgp)
                 for fascicle in self.fascicles:
                     draw.polygon(prep_points(fascicle.outer.points[:,0:2]),fill = 1)
@@ -370,17 +377,20 @@ class Slide(Exceptionable):
                         for fascicle in self.fascicles:
                             for inner in fascicle.inners:
                                 draw.polygon(prep_points(inner.points[:,0:2]),fill = 0)    
+                imgp = imgp.transpose(Image.FLIP_TOP_BOTTOM)
                 imgp.save(path['p'])
             if inners:
-                imgi = Image.new('1',dim)
+                imgi = Image.new('1',imdim)
                 draw = ImageDraw.Draw(imgi)
                 for fascicle in self.fascicles:
                     for inner in fascicle.inners:
                         draw.polygon(prep_points(inner.points[:,0:2]),fill = 1)
+                imgi = imgi.transpose(Image.FLIP_TOP_BOTTOM)  
+                iddraw = ImageDraw.Draw(imgi)
                 if len(ids)>0: #prints the fascicle ids
                     for i,row in ids.iterrows():
-                        location = (row['x']-dim_min[0]+buffer,row['y']-dim_min[1]+buffer)
-                        draw.text(location,str(int(row['id'])),fill=0)
+                        location = (row['x']-dim_min[0]+buffer,img.height-row['y']+dim_min[1]-buffer)
+                        iddraw.text(location,str(int(row['id'])),font = fnt,fill=0)
                 imgi.save(path['i'])
 
     def deisland():
