@@ -430,6 +430,9 @@ class Runner(Exceptionable, Configurable):
         # add temporary model configuration
         self.add(SetupMode.OLD, Config.MODEL, model_config)
         self.add(SetupMode.OLD, Config.SAMPLE, sample_config)
+        
+        deform_ratio = self.search(Config.SAMPLE, 'deform_ratio')
+        if deform_ratio>1: self.throw(109)
 
         # fetch slide
         slide = sample.slides[0]
@@ -468,8 +471,9 @@ class Runner(Exceptionable, Configurable):
         # for speed, downsample nerves to n_points_nerve (100) points
         n_points_nerve = 100
         nerve_copy.down_sample(DownSampleMode.KEEP, int(np.floor(nerve_copy.points.size / n_points_nerve)))
-
-        if self.search_mode(ReshapeNerveMode, Config.SAMPLE) and not slide.monofasc():
+        
+        # Get the boundary and center information for computing cuff shift
+        if self.search_mode(ReshapeNerveMode, Config.SAMPLE) and not slide.monofasc() and deform_ratio==1:
             x, y = 0, 0
             r_bound = np.sqrt(sample_config['Morphology']['Nerve']['area'] / np.pi)
         else:
