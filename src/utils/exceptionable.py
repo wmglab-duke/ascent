@@ -8,6 +8,7 @@ The source code can be found on the following GitHub repository: https://github.
 
 # builtins
 import os
+import inspect
 
 # ascent
 from .configurable import Configurable
@@ -66,4 +67,4 @@ class Exceptionable(Configurable):
                         '\ttext:\t{}\n'
                         '\tsource:\t{}'.format(exception.get('code'),
                                                exception.get('text'),
-                                               exception.get('source')))
+                                               inspect.stack()[1].filename))
