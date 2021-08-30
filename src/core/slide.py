@@ -17,6 +17,7 @@ from shapely.geometry import LineString, Point
 from shapely.affinity import scale
 import numpy as np
 import matplotlib.pyplot as plt
+from PIL import Image, ImageDraw
 
 # ascent
 from .fascicle import Fascicle
@@ -330,7 +331,40 @@ class Slide(Exceptionable):
                 os.chdir(sub_start)
 
         os.chdir(start)
-
+        
+    def saveimg(self, path,separate:bool = False,colors = {'n':'red','i':'green','p':'blue'},dim = None, buffer = 10,Nerve = True,Fascicle = True, Peri = True,ids = []):
+        def prep_points(points):
+            #adjusts plot points to dimensions and formats for PIL
+            points = (points-dim_min+buffer)[:,0:2].astype(int)
+            points = tuple(zip(points[:,0],points[:,1]))
+            return points
+        if separate:
+            values = [1,1,1]
+        npoints = self.nerve.points
+        if dim == None:
+            #without provided dimensions, generate them based on nerve size
+            dim_min = np.min(npoints,axis = 0)
+            dim = tuple((np.max(npoints,axis = 0)-np.min(npoints,axis = 0)+2*buffer).astype(int))[0:2]
+        if not separate:
+            img = Image.new('RGB',dim)
+            draw = ImageDraw.Draw(img)
+            draw.polygon(prep_points(npoints), fill = colors['n'])
+            for fascicle in self.fascicles:
+                draw.polygon(prep_points(fascicle.outer.points),fill = colors['p'])
+            for fascicle in self.fascicles:
+                for inner in fascicle.inners:
+                    draw.polygon(prep_points(inner.points),fill = colors['i'])
+            img.transpose(Image.FLIP_TOP_BOTTOM)
+            if len(ids)>0: #prints the fascicle ids
+                for i,row in ids.iterrows():
+                    location = (row['x']-dim_min[0]+buffer,row['y']-dim_min[1]+buffer)
+                    draw.text(location,str(int(row['id'])),fill='white')
+                    print(row)
+            img.save(path)
+    def deisland():
+        pass #Flag: want this to check for certain countour size and remove if too small
+    def expand_nerve():
+        pass #flag: check for fascicle intersecting/outside of nerve boundary and do a clip offset+boolean
     # %% DISCLAIMER: this is depreciated and not well documented
     def reposition_fascicles(self, new_nerve: Nerve, minimum_distance: float = 10, seed: int = None):
         """
