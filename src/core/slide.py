@@ -17,7 +17,7 @@ from shapely.geometry import LineString, Point
 from shapely.affinity import scale
 import numpy as np
 import matplotlib.pyplot as plt
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 
 # ascent
 from .fascicle import Fascicle
@@ -277,7 +277,17 @@ class Slide(Exceptionable):
 
         for fascicle in self.fascicles:
             fascicle.rotate(angle, center)
-
+    def bounds(self):
+        """
+        :return: check bounds of all traces and return outermost bounds
+        """
+        if self.monofasc():
+            trace_list = [f.outer for f in self.fascicles]
+        else:
+            trace_list = [self.nerve] + [f.outer for f in self.fascicles]
+        allbound = np.array([trace.bounds() for trace in trace_list if trace is not None])
+        return (min(allbound[:,0]),min(allbound[:,1]),max(allbound[:,2]),max(allbound[:,3]))
+    
     def write(self, mode: WriteMode, path: str):
         """
         :param mode: Sectionwise for now... could be other types in the future (STL, DXF)
