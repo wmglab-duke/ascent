@@ -1,547 +1,438 @@
 [
   {
     "code": 0,
-    "text": "Invalid code (out of bounds, starting at index 1).",
-    "source": "src.utils.Exceptionable"
+    "text": "Invalid code (out of bounds starting at index 1)."
   },
   {
     "code": 1,
-    "text": "Path must be full file name if not generating new map.",
-    "source": "src.core.Map"
+    "text": "Path must be full file name if not generating new map."
   },
   {
     "code": 2,
-    "text": "This is a test error!",
-    "source": "src.Runner"
+    "text": "This is a test error!"
   },
   {
     "code": 3,
-    "text": "Vector provided must be of shape (3,) (i.e. 1-dim)",
-    "source": "src.core.Trace.shift"
+    "text": "Vector provided must be of shape (3) (i.e. 1-dim)"
   },
   {
     "code": 4,
-    "text": "Write mode not supported or invalid",
-    "source": "src.core.Trace.write"
+    "text": "Write mode not supported or invalid"
   },
   {
     "code": 5,
-    "text": "Points to append must have 3 columns (x, y, z)",
-    "source": "src.core.Trace.append"
+    "text": "Points to append must have 3 columns (x y z)"
   },
   {
     "code": 6,
-    "text": "Current implementation requires that all points in Trace have same z-value to create contour",
-    "source": "src.core.Trace.contour or src.core.Trace.points_path or src.core.Trace.polygon"
+    "text": "Current implementation requires that all points in Trace have same z-value to create contour"
   },
   {
     "code": 7,
-    "text": "Exception while writing",
-    "source": "src.core.Trace.write"
+    "text": "Exception while writing"
   },
   {
     "code": 8,
-    "text": "Not all inner Traces fall within outer Trace",
-    "source": "src.core.Fascicle.__init__"
+    "text": "Not all inner Traces fall within outer Trace"
   },
   {
     "code": 9,
-    "text": "Intersecting traces found",
-    "source": "src.core.Fascicle.__init__"
+    "text": "Intersecting traces found"
   },
   {
     "code": 10,
-    "text": "Fascicle-fascicle intersection found",
-    "source": "src.core.Slide.validation"
+    "text": "Fascicle-fascicle intersection found"
   },
   {
     "code": 11,
-    "text": "Fascicle-nerve intersection found",
-    "source": "src.core.Slide.validation"
+    "text": "Fascicle-nerve intersection found"
   },
   {
     "code": 12,
-    "text": "Not all fascicles fall within nerve",
-    "source": "src.core.Slide.validation"
+    "text": "Not all fascicles fall within nerve"
   },
   {
     "code": 13,
-    "text": "Nonspecific validation failed",
-    "source": "src.core.Slide.validation"
+    "text": "Nonspecific validation failed"
   },
   {
     "code": 14,
-    "text": "Outer scale must be set if only one trace provided",
-    "source": "src.core.Fascicle.__endoneurium_setup"
+    "text": "Outer scale must be set if only one trace provided"
   },
   {
     "code": 15,
-    "text": "Scale factor must be greater than 1",
-    "source": "src.core.Fascicle.__endoneurium_setup"
+    "text": "Scale factor must be greater than 1"
   },
   {
     "code": 16,
-    "text": "Invalid reshape mode.",
-    "source": "src.core.Slide.reshaped_nerve"
+    "text": "Invalid reshape mode."
   },
   {
     "code": 17,
-    "text": "Invalid scale center string.",
-    "source": "src.core.Trace.scale"
+    "text": "Invalid scale center string."
   },
   {
     "code": 18,
-    "text": "Raw nerve micrograph does not exist.",
-    "source": "src.core.Manager.populate"
+    "text": "Raw nerve micrograph does not exist."
   },
   {
     "code": 19,
-    "text": "Scale bar for nerve micrograph does not exist.",
-    "source": "src.core.Manager.populate"
+    "text": "Scale bar for nerve micrograph does not exist."
   },
   {
     "code": 20,
-    "text": "Outers only has not yet been developed.",
-    "source": "src.core.Manager.populate"
+    "text": "Outers only has not yet been developed."
   },
   {
     "code": 21,
-    "text": "Inner mask required for input mode INNERS.",
-    "source": "src.core.Manager.populate"
+    "text": "Inner mask required for input mode INNERS."
   },
   {
     "code": 22,
-    "text": "Inner AND outer masks required for input mode INNER_AND_OUTER_SEPARATE.",
-    "source": "src.core.Manager.populate"
+    "text": "Inner AND outer masks required for input mode INNER_AND_OUTER_SEPARATE."
   },
   {
     "code": 23,
-    "text": "Compiled masks required for input mode INNER_AND_OUTER_COMPILED.",
-    "source": "src.core.Manager.populate"
+    "text": "Compiled masks required for input mode INNER_AND_OUTER_COMPILED."
   },
   {
     "code": 24,
-    "text": "NerveMode.NOT_PRESENT is not implemented.",
-    "source": "src.core.Manager.populate"
+    "text": "NerveMode.NOT_PRESENT is not implemented."
   },
   {
     "code": 25,
-    "text": "Invalid path to write Fascicle to.",
-    "source": "src.core.Fascicle.write"
+    "text": "Invalid path to write Fascicle to."
   },
   {
     "code": 26,
-    "text": "Invalid path to write Slide to.",
-    "source": "src.core.Slide.write"
+    "text": "Invalid path to write Slide to."
   },
   {
     "code": 27,
-    "text": "Path to slide must have already been created.",
-    "source": "src.core.Manager.write"
+    "text": "Path to slide must have already been created."
   },
   {
     "code": 28,
-    "text": "Unimplemented write mode.",
-    "source": "src.core.Manager.write"
+    "text": "Unimplemented write mode."
   },
   {
     "code": 29,
-    "text": "Either factor or distance MUST be provided.",
-    "source": "src.core.Trace.offset"
+    "text": "Either factor or distance MUST be provided."
   },
   {
     "code": 30,
-    "text": "That FiberZMode is not yet implemented.",
-    "source": "src.core.Manager.fiber_xy_coordinates"
+    "text": "That FiberZMode is not yet implemented."
   },
   {
     "code": 31,
-    "text": "That FiberZMode is not yet implemented.",
-    "source": "src.core.Manager.fiber_z_coordinates"
+    "text": "That FiberZMode is not yet implemented."
   },
   {
     "code": 32,
-    "text": "t_start, t_on, t_off, t_stop must be in order.",
-    "source": "src.core.Waveform.validate_times"
+    "text": "t_start t_on t_off t_stop must be in order."
   },
   {
     "code": 33,
-    "text": "dt is too large to create waveforms.",
-    "source": "src.core.Waveform.validate_times"
+    "text": "dt is too large to create waveforms."
   },
   {
     "code": 34,
-    "text": "WaveformMode chosen not yet implemented.",
-    "source": "src.core.Waveform.generate"
+    "text": "WaveformMode chosen not yet implemented."
   },
   {
     "code": 35,
-    "text": "Pulse is longer than period (2x for biphasic).",
-    "source": "src.core.Waveform.generate"
+    "text": "Pulse is longer than period (2x for biphasic)."
   },
   {
     "code": 36,
-    "text": "2*Pulse + Interphase is longer than period.",
-    "source": "src.core.Waveform.generate"
+    "text": "2*Pulse + Interphase is longer than period."
   },
   {
     "code": 37,
-    "text": "Missing config required by run configuration! See path the program looked for before Traceback.",
-    "source": "src.Runner"
+    "text": "Missing config required by run configuration! See path the program looked for before Traceback."
   },
   {
     "code": 38,
-    "text": "Missing Config.SAMPLE configuration!",
-    "source": "src.Sample.init_map"
+    "text": "Missing Config.SAMPLE configuration!"
   },
   {
     "code": 39,
-    "text": "Cannot deform monofascicle",
-    "source": "src.Slide.__init__"
+    "text": "Cannot deform monofascicle"
   },
   {
     "code": 40,
-    "text": "Cannot reposition without NerveMode.PRESENT",
-    "source": "src.Slide.__init__"
+    "text": "Cannot reposition without NerveMode.PRESENT"
   },
   {
     "code": 41,
-    "text": "Method fascicles_too_close does not apply for monofascicle nerves",
-    "source": "src.Slide"
+    "text": "Method fascicles_too_close does not apply for monofascicle nerves"
   },
   {
     "code": 42,
-    "text": "TBD",
-    "source": "TBD"
+    "text": "TBD"
   },
   {
     "code": 43,
-    "text": "Method fascicle_nerve_intersection does not apply for monofascicle nerves",
-    "source": "src.Slide"
+    "text": "Method fascicle_nerve_intersection does not apply for monofascicle nerves"
   },
   {
     "code": 44,
-    "text": "Method fascicles_outside_nerve does not apply for monofascicle nerves",
-    "source": "src.Slide"
+    "text": "Method fascicles_outside_nerve does not apply for monofascicle nerves"
   },
   {
     "code": 45,
-    "text": "Method reshaped_nerve does not apply for monofascicle nerves",
-    "source": "src.Slide"
+    "text": "Method reshaped_nerve does not apply for monofascicle nerves"
   },
   {
     "code": 46,
-    "text": "Temperature required in degrees celsius",
-    "source": "src.core.Waveform"
+    "text": "Temperature required in degrees celsius"
   },
   {
     "code": 47,
-    "text": "Temperature dependent perineurium not yet implemented for high frequencies",
-    "source": "src.core.Waveform"
+    "text": "Temperature dependent perineurium not yet implemented for high frequencies"
   },
   {
     "code": 48,
-    "text": "Rho perineurium method not implemented",
-    "source": "src.core.Runner"
+    "text": "Rho perineurium method not implemented"
   },
   {
     "code": 49,
-    "text": "active_srcs_list provided does not abide by current conservation",
-    "source": "src.core.Simulation"
+    "text": "active_srcs_list provided does not abide by current conservation"
   },
   {
     "code": 50,
-    "text": "active_srcs_list provided does not abide by unitary current input response",
-    "source": "src.core.Simulation"
+    "text": "active_srcs_list provided does not abide by unitary current input response"
   },
   {
     "code": 51,
-    "text": "cuff chosen is too small for nerve sample provided",
-    "source": "src.core.Runner"
+    "text": "cuff chosen is too small for nerve sample provided"
   },
   {
     "code": 52,
-    "text": "Invalid query config file (either does not exist or does not end in '.json')",
-    "source": "src.core.Query"
+    "text": "Invalid query config file (either does not exist or does not end in '.json')"
   },
   {
     "code": 53,
-    "text": "Must call Query.run() before fetching result via Query.summary()",
-    "source": "src.core.Query"
+    "text": "Must call Query.run() before fetching result via Query.summary()"
   },
   {
     "code": 54,
-    "text": "Criterion key not found in data (see above)",
-    "source": "src.core.Query._match"
+    "text": "Criterion key not found in data (see above)"
   },
   {
     "code": 55,
-    "text": "Building path not supported for given mode (see above)",
-    "source": "src.core.Query.build_path"
+    "text": "Building path not supported for given mode (see above)"
   },
   {
     "code": 56,
-    "text": "Conflicting input arguments for std_fasc_diam and n_std_diam_limit for TRUNCNORM method",
-    "source": "src.core.mock_sample"
+    "text": "Conflicting input arguments for std_fasc_diam and n_std_diam_limit for TRUNCNORM method"
   },
   {
     "code": 57,
-    "text": "lower_fasc_diam must be defined as >= 0 for TRUNCNORM method",
-    "source": "src.core.mock_sample"
+    "text": "lower_fasc_diam must be defined as >= 0 for TRUNCNORM method"
   },
   {
     "code": 58,
-    "text": "Conflicting input arguments for std_fasc_ecc and n_std_ecc_limit for TRUNCNORM method",
-    "source": "src.core.mock_sample"
+    "text": "Conflicting input arguments for std_fasc_ecc and n_std_ecc_limit for TRUNCNORM method"
   },
   {
     "code": 59,
-    "text": "Mean eccentricity value exceeds 1. Eccentricity only defined in range [0,1) for TRUNCNORM method",
-    "source": "src.core.mock_sample"
+    "text": "Mean eccentricity value exceeds 1. Eccentricity only defined in range [01) for TRUNCNORM method"
   },
   {
     "code": 60,
-    "text": "lower_fasc_diam bound must be positive length for UNIFORM method",
-    "source": "src.core.mock_sample"
+    "text": "lower_fasc_diam bound must be positive length for UNIFORM method"
   },
   {
     "code": 61,
-    "text": "upper_fasc_diam bound must be >= lower_fasc_diam bound for UNIFORM method",
-    "source": "src.core.mock_sample"
+    "text": "upper_fasc_diam bound must be >= lower_fasc_diam bound for UNIFORM method"
   },
   {
     "code": 62,
-    "text": "Ellipse eccentricity lower_fasc_ecc must be >= 0 for UNIFORM method",
-    "source": "src.core.mock_sample"
+    "text": "Ellipse eccentricity lower_fasc_ecc must be >= 0 for UNIFORM method"
   },
   {
     "code": 63,
-    "text": "Ellipse eccentricity upper_fasc_ecc must be < 1 for UNIFORM method",
-    "source": "src.core.mock_sample"
+    "text": "Ellipse eccentricity upper_fasc_ecc must be < 1 for UNIFORM method"
   },
   {
     "code": 64,
-    "text": "Explicit fascicle positions are too close to each other, the nerve boundary, or are outside the boundary for EXPLICIT method",
-    "source": "src.core.mock_sample"
+    "text": "Explicit fascicle positions are too close to each other the nerve boundary or are outside the boundary for EXPLICIT method"
   },
   {
     "code": 65,
-    "text": "Length of fascicle colors list must match length of fascicles list.",
-    "source": "src.core.Trace.plot"
+    "text": "Length of fascicle colors list must match length of fascicles list."
   },
   {
     "code": 66,
-    "text": "Query.run() must be called before calling analysis methods.",
-    "source": "src.core.Query"
+    "text": "Query.run() must be called before calling analysis methods."
   },
   {
     "code": 67,
-    "text": "There must be the same number of model indices and model labels",
-    "source": "src.core.Query"
+    "text": "There must be the same number of model indices and model labels"
   },
   {
     "code": 68,
-    "text": "Encountered multidimensional sim - ILLEGAL",
-    "source": "src.core.Query.barcharts_compare_models"
+    "text": "Encountered multidimensional sim - ILLEGAL"
   },
   {
     "code": 69,
-    "text": "Inconsistent factor found in sims - ILLEGAL",
-    "source": "src.core.Query.barcharts_compare_models"
+    "text": "Inconsistent factor found in sims - ILLEGAL"
   },
   {
     "code": 70,
-    "text": "There must be the same number of sample indices and labels labels",
-    "source": "src.core.Query.barcharts_compare_samples"
+    "text": "There must be the same number of sample indices and labels labels"
   },
   {
     "code": 71,
-    "text": "An explicitly chosen fiber (x,y)-location (in explicit.txt) is not in any inner",
-    "source": "src.core.Fiberset.generate"
+    "text": "An explicitly chosen fiber (xy)-location (in explicit.txt) is not in any inner"
   },
   {
     "code": 72,
-    "text": "Need Sim and Model configs to init_post_config a Waveform class",
-    "source": "src.core.Waveform.init_post_config"
+    "text": "Need Sim and Model configs to init_post_config a Waveform class"
   },
   {
     "code": 73,
-    "text": "Number of repeats for explicit wave must be an integer value",
-    "source": "src.core.Waveform.generate"
+    "text": "Number of repeats for explicit wave must be an integer value"
   },
   {
     "code": 74,
-    "text": "Number of repeats for explicit wave does not fit in global.off - global.on in Sim config",
-    "source": "src.core.Waveform.generate"
+    "text": "Number of repeats for explicit wave does not fit in global.off - global.on in Sim config"
   },
   {
     "code": 75,
-    "text": "Missing environment variables configuration",
-    "source": "src.Runner.populate_env_vars"
+    "text": "Missing environment variables configuration"
   },
   {
     "code": 76,
-    "text": "More than one break point indicated in Config.Run",
-    "source": "src.core.Runner.run"
+    "text": "More than one break point indicated in Config.Run"
   },
   {
     "code": 77,
-    "text": "Diameter entered for MRG_INTERPOLATION exceeds the allowed bounds (must be less than 16 um and greater than 2 um)",
-    "source": "src.core.Fiberset._generate_z"
+    "text": "Diameter entered for MRG_INTERPOLATION exceeds the allowed bounds (must be less than 16 um and greater than 2 um)"
   },
   {
     "code": 78,
-    "text": "Invalid Config provided",
-    "source": "src.core.Fiberset.init_post_config"
+    "text": "Invalid Config provided"
   },
   {
     "code": 79,
-    "text": "No dz provided for Sim generating super-sampled bases.",
-    "source": "src.core.Fiberset._generate_z"
+    "text": "No dz provided for Sim generating super-sampled bases."
   },
   {
     "code": 80,
-    "text": "cuff_only and nerve_only indicated in Config.Run, which does not make sense.",
-    "source": "src.core.Runner.run"
+    "text": "cuff_only and nerve_only indicated in Config.Run which does not make sense."
   },
   {
     "code": 81,
-    "text": "Trying to use super-sampled potentials that do not exist (hint: check that if 'use' is true, 'generate' was also true for the source Sim).",
-    "source": "src.core.Simulation.build_n_sims"
+    "text": "Trying to use super-sampled potentials that do not exist (hint: check that if 'use' is true 'generate' was also true for the source Sim)."
   },
   {
     "code": 82,
-    "text": "Trying to use super-sampled potentials that do not match your Sim's xy_parameters perfectly",
-    "source": "src.Runner"
+    "text": "Trying to use super-sampled potentials that do not match your Sim's xy_parameters perfectly"
   },
   {
     "code": 83,
-    "text": "FiberXYMode.EXPLICIT indicated in Sim, but to explicit.txt file with coordinates provided in the Sim directory. See config/system/templates/explicit.txt for example of this file's required format.",
-    "source": "src.core.Fiberset"
+    "text": "FiberXYMode.EXPLICIT indicated in Sim but to explicit.txt file with coordinates provided in the Sim directory. See config/system/templates/explicit.txt for example of this file's required format."
   },
   {
     "code": 84,
-    "text": "Timestep self.dt is longer than MONOPHASIC_PULSE_TRAIN pulse-width indicated in Sim.",
-    "source": "src.core.Waveform"
+    "text": "Timestep self.dt is longer than MONOPHASIC_PULSE_TRAIN pulse-width indicated in Sim."
   },
   {
     "code": 85,
-    "text": "Timestep self.dt is longer than SINUSOID period indicated in Sim by pulse_repetition_freq.",
-    "source": "src.core.Waveform"
+    "text": "Timestep self.dt is longer than SINUSOID period indicated in Sim by pulse_repetition_freq."
   },
   {
     "code": 86,
-    "text": "Timestep self.dt is longer than BIPHASIC_FULL_DUTY period indicated in Sim by pulse_repetition_freq.",
-    "source": "src.core.Waveform"
+    "text": "Timestep self.dt is longer than BIPHASIC_FULL_DUTY period indicated in Sim by pulse_repetition_freq."
   },
   {
     "code": 87,
-    "text": "Timestep self.dt is longer than BIPHASIC_PULSE_TRAIN pulse-width indicated in Sim.",
-    "source": "src.core.Waveform"
+    "text": "Timestep self.dt is longer than BIPHASIC_PULSE_TRAIN pulse-width indicated in Sim."
   },
   {
     "code": 88,
-    "text": "Timestep self.dt is longer than BIPHASIC_PULSE_TRAIN inter_phase indicated in Sim.",
-    "source": "src.core.Waveform"
+    "text": "Timestep self.dt is longer than BIPHASIC_PULSE_TRAIN inter_phase indicated in Sim."
   },
   {
     "code": 89,
-    "text": "Timestep self.dt is longer than BIPHASIC_PULSE_TRAIN_Q_BALANCED_UNEVEN_PW pw1 indicated in Sim.",
-    "source": "src.core.Waveform"
+    "text": "Timestep self.dt is longer than BIPHASIC_PULSE_TRAIN_Q_BALANCED_UNEVEN_PW pw1 indicated in Sim."
   },
   {
     "code": 90,
-    "text": "Timestep self.dt is longer than BIPHASIC_PULSE_TRAIN_Q_BALANCED_UNEVEN_PW pw2 indicated in Sim.",
-    "source": "src.core.Waveform"
+    "text": "Timestep self.dt is longer than BIPHASIC_PULSE_TRAIN_Q_BALANCED_UNEVEN_PW pw2 indicated in Sim."
   },
   {
     "code": 91,
-    "text": "Timestep self.dt is longer than BIPHASIC_PULSE_TRAIN_Q_BALANCED_UNEVEN_PW inter_phase indicated in Sim.",
-    "source": "src.core.Waveform"
+    "text": "Timestep self.dt is longer than BIPHASIC_PULSE_TRAIN_Q_BALANCED_UNEVEN_PW inter_phase indicated in Sim."
   },
   {
     "code": 92,
-    "text": "fig_margin < 1, so the ellipse for the nerve will not fit on the canvas",
-    "source": "src.core.MockSample"
+    "text": "fig_margin < 1 so the ellipse for the nerve will not fit on the canvas"
   },
   {
     "code": 93,
-    "text": "Contact weight in Sim (active_srcs) is greater than +1 or less than -1 which is not allowed",
-    "source": "src.core.Simulation"
+    "text": "Contact weight in Sim (active_srcs) is greater than +1 or less than -1 which is not allowed"
   },
   {
     "code": 94,
-    "text": "Source Sim (i.e., source_sim in Sim->supersampled_bases) does not exist. Either set proper source_sim that has your previously supersampled potentials, or set use to false.",
-    "source": "src.core.Simulation"
+    "text": "Source Sim (i.e. source_sim in Sim->supersampled_bases) does not exist. Either set proper source_sim that has your previously supersampled potentials or set use to false."
   },
   {
     "code": 95,
-    "text": "In Run, Sample should be int. Note: to pass a list of Run configs to run multiple Sample configs in a single system call.",
-    "source": "src.Runner"
+    "text": "In Run Sample should be int. Note: to pass a list of Run configs to run multiple Sample configs in a single system call."
   },
   {
     "code": 96,
-    "text": "More than one slide provided",
-    "source": "src.core.Sample"
+    "text": "More than one slide provided"
   },
   {
     "code": 97,
-    "text": "Invalid TIF file format passed into the program",
-    "source": "src.core.Sample"
+    "text": "Invalid TIF file format passed into the program"
   },
   {
     "code": 98,
-    "text": "scale_source_file (see above print statement) not found",
-    "source": "src.core.Sample"
+    "text": "scale_source_file (see above print statement) not found"
   },
   {
     "code": 99,
-    "text": "Sim->fibers->z_parameters->offset is a fraction of 1 node length, so needs to be a value between 0 and 1 (inclusive)",
-    "source": "src.core.Fiberset"
+    "text": "Sim->fibers->z_parameters->offset is a fraction of 1 node length so needs to be a value between 0 and 1 (inclusive)"
   },
   {
     "code": 100,
-    "text": "lower_fiber_diam bound must be positive length for UNIFORM method",
-    "source": "src.core.Fiberset"
+    "text": "lower_fiber_diam bound must be positive length for UNIFORM method"
   },
   {
     "code": 101,
-    "text": "upper_fiber_diam bound must be >= lower_fiber_diam bound for UNIFORM method",
-    "source": "src.core.Fiberset"
+    "text": "upper_fiber_diam bound must be >= lower_fiber_diam bound for UNIFORM method"
   },
   {
     "code": 102,
-    "text": "Conflicting input arguments for std_fiber_diam and n_std_fiber_diam_limit for TRUNCNORM method",
-    "source": "src.core.Fiberset"
+    "text": "Conflicting input arguments for std_fiber_diam and n_std_fiber_diam_limit for TRUNCNORM method"
   },
   {
     "code": 103,
-    "text": "lower_fiber_diam must be defined as >= 0 for TRUNCNORM method",
-    "source": "src.core.Fiberset"
+    "text": "lower_fiber_diam must be defined as >= 0 for TRUNCNORM method"
   },
   {
     "code": 104,
-    "text": "To simulate myelinated fiber diameters from a distribution of diameters, must use MRG_INTERPOLATION",
-    "source": "src.core.Fiberset"
+    "text": "To simulate myelinated fiber diameters from a distribution of diameters must use MRG_INTERPOLATION"
   },
   {
     "code": 105,
-    "text": "sims->fibers->z_parameters->min is greater than sims->fibers->z_parameters->max",
-    "source": "src.core.Fiberset"
+    "text": "sims->fibers->z_parameters->min is greater than sims->fibers->z_parameters->max"
   },
   {
     "code": 106,
-    "text": "sims->n_dimensions does not equal the number of parameter dimensions given in Sim",
-    "source": "src.core.Simulation"
+    "text": "sims->n_dimensions does not equal the number of parameter dimensions given in Sim"
   },
   {
     "code": 107,
-    "text": "Distal medium exists, and proximal medium has a distant ground, which does not make sense. (Fix in Model)",
-    "source": "src.Runner"
+    "text": "Distal medium exists and proximal medium has a distant ground which does not make sense. (Fix in Model)"
   },
   {
     "code": 108,
-    "text": "Invalid scale input mode",
-    "source": "src.core.Sample"
+    "text": "Invalid scale input mode"
   }
 ]
