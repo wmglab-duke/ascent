@@ -335,7 +335,10 @@ class Sample(Exceptionable, Configurable, Saveable):
                                                   cv2.CHAIN_APPROX_SIMPLE)
                     nerve = Nerve(Trace([point + [0] for point in contour[0][:, 0, :]],
                                         self.configs[Config.EXCEPTIONS.value]))
-
+            
+            if len(fascicles)>1 and nerve_mode != NerveMode.PRESENT:
+                self.throw(110)
+                
             slide: Slide = Slide(fascicles,
                                  nerve,
                                  nerve_mode,
@@ -470,7 +473,9 @@ class Sample(Exceptionable, Configurable, Saveable):
                     slide.orientation_point = slide.nerve.points[slide.orientation_point_index][:2]
                     slide.nerve = slide.reshaped_nerve(reshape_nerve_mode)
                     slide.nerve.offset(distance=sep_nerve)
-
+        #scale with ratio = 1 (no scaling happens, but connects the ends of each trace to itself)
+        self.scale(1)
+        
             # slide.plot(fix_aspect_ratio=True, title=title)
 
             # plt.figure(2)

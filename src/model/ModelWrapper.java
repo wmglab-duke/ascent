@@ -868,17 +868,38 @@ public class ModelWrapper {
                     "sectionwise2d",
                     "fascicles"
             });
+            // Build path to nerve trace
+            String nervePath = String.join("/", new String[]{
+                    this.root,
+                    "samples",
+                    sample,
+                    "slides",
+                    "0", // these 0's are temporary (for 3d models will need to change)
+                    "0",
+                    "sectionwise2d",
+                    "nerve",
+                    "0"
+            });
+
+            // nerve trace filename
+            HashMap<String, String[]> ndata = new HashMap<>();
+            ndata.put("nerve",new String[] {"0.txt"});
 
             // Add epineurium
             String nerveMode = (String) sampleData.getJSONObject("modes").get("nerve");
             String reshapenerveMode = (String) sampleData.getJSONObject("modes").get("reshape_nerve");
+            double deform_ratio = sampleData.getDouble("deform_ratio");
 
-            if ((nerveMode.equals("PRESENT")) && (!reshapenerveMode.equals("CIRCLE"))) {  // TODO Implement non-circular nerves (trace and ellipses)
+            if ((nerveMode.equals("PRESENT")) && (!reshapenerveMode.equals("CIRCLE"))) {  // TODO Implement best-fit ellipse for nerve
                 System.out.println("Modeling a Sample with a Nerve (i.e., epineurium) that is " +
-                        "not deformed to CIRCLE is not yet implemented");
+                        "not deformed to CIRCLE is not yet implemented. ReshapeNerveMode must be CIRCLE even if not deforming (i.e. deform_ratio = 0)");
                 System.exit(0);
-            } else if (nerveMode.equals("PRESENT") && reshapenerveMode.equals("CIRCLE")) {
-                Part.createNervePartInstance("Epineurium", 0,
+            } else if (nerveMode.equals("PRESENT") && deform_ratio<1) { //Use trace if deform ratio is not 1
+                Part.createNervePartInstance("Epi_trace", 0,
+                        nervePath, this, ndata, sampleData, nerveParams, modelData);
+            }
+            else if (nerveMode.equals("PRESENT") && reshapenerveMode.equals("CIRCLE")) { //Use a circle otherwise
+                Part.createNervePartInstance("Epi_circle", 0,
                         null, this, null, sampleData, nerveParams, modelData);
             }
 
@@ -1345,13 +1366,17 @@ public class ModelWrapper {
 
                         if (!cuff_only) {
                             // add NERVE (Fascicles CI/MESH and EPINEURIUM)
-                            if (morphology.isNull("Nerve")) {
+                            if (morphology.isNull("Nerve")) { //Monofascicle, no-epineurium case
                                 nerveParams.set("a_nerve", "NaN");
                                 nerveParams.set("r_nerve", modelData.getDouble("min_radius_enclosing_circle") + " [" + morphology_unit + "]");
                             } else {
                                 JSONObject nerve = (JSONObject) morphology.get("Nerve");
                                 nerveParams.set("a_nerve", nerve.get("area") + " [" + morphology_unit + "^2]");
-                                nerveParams.set("r_nerve", "sqrt(a_nerve/pi)");
+                                if (sampleData.getDouble("deform_ratio") < 1) { //Use trace
+                                    nerveParams.set("r_nerve", modelData.getDouble("min_radius_enclosing_circle") + " [" + morphology_unit + "]");
+                                } else { //Use area of nerve
+                                    nerveParams.set("r_nerve", "sqrt(a_nerve/pi)");
+                                }
                             }
 
                             String ciCoeffsFile = String.join("/", new String[]{

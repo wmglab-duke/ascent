@@ -3318,7 +3318,7 @@ class Part {
                     outeric1.set("rtol", modelData.getDouble("trace_interp_tol")); // backwards compatibility
                 } else if (modelData.has("trace_interp_tol") && modelData.has("outer_interp_tol")) {
                     throw new Exception("Both trace_interp_tol and inner_interp_tol defined in Model. " +
-                            "Use new convention for inners (outer_interp_tol) and outers (outer_interp_tol) separately!");
+                            "Use new convention for inners (outer_interp_tol), outers (outer_interp_tol), and nerve (nerve_interp_tol) separately!");
                 }
 
                 String outericSurfaceLabel = "outer" + index + " Outer Surface";
@@ -3354,7 +3354,7 @@ class Part {
 
                 break;
 
-            case "Epineurium":
+            case "Epi_circle":
                 im.labels = new String[]{
                         "EPINEURIUM", //0
                         "EPIXS"
@@ -3368,7 +3368,7 @@ class Part {
 
                 String epineuriumXsLabel = "Epineurium Cross Section";
                 GeomFeature epineuriumXs = model.component("comp1").geom("geom1").create(im.next("wp",epineuriumXsLabel), "WorkPlane");
-                epineuriumXs.label("Epineurium Cross Section");
+                epineuriumXs.label(epineuriumXsLabel);
                 epineuriumXs.set("contributeto", im.get("EPIXS"));
                 epineuriumXs.set("unite", true);
                 epineuriumXs.geom().create("e1", "Ellipse");
@@ -3387,6 +3387,75 @@ class Part {
 
                 break;
 
+            case "Epi_trace":
+                im.labels = new String[]{
+                        "EPINEURIUM", //0
+                        "EPIXS"
+
+                };
+
+                for (String cselEpineuriumLabel: im.labels) {
+                    model.component("comp1").geom("geom1").selection().create(im.next("csel", cselEpineuriumLabel), "CumulativeSelection")
+                            .label(cselEpineuriumLabel);
+                }
+                //Generate plane for nerve trace
+                String nervePlaneLabel = "Epineurium Geometry";
+                GeomFeature nervePlane = model.component("comp1").geom("geom1").create(im.next("wp",nervePlaneLabel), "WorkPlane");
+                nervePlane.label(nervePlaneLabel);
+                nervePlane.set("contributeto", im.get("EPIXS"));
+                nervePlane.set("unite", true);
+
+                //Add selections for the nerve object and nerve trace
+                String nerveLabel = "nerve curve";
+                nervePlane.geom().selection().create(im.next("csel",nerveLabel), "CumulativeSelection");
+                nervePlane.geom().selection(im.get(nerveLabel)).label(nerveLabel);
+                String nerveselLabel = "nerve sel";
+                nervePlane.geom().selection().create(im.next("csel",nerveselLabel), "CumulativeSelection");
+                nervePlane.geom().selection(im.get(nerveselLabel)).label(nerveselLabel);
+
+                //Create nerve trace curve
+                String nerve_trace_path = path+"/"+tracePaths.get("nerve")[0];
+                String nerveic_label = "Epineurium Trace";
+                GeomFeature nerveic = nervePlane.geom().create(im.next("ic",nerveic_label), "InterpolationCurve");
+                nerveic.label(nerveic_label);
+                nerveic.set("contributeto",im.get(nerveLabel));
+                nerveic.set("source","file");
+                nerveic.set("filename",nerve_trace_path);
+
+                //set interpolation tolerance for nerve curve
+                if (modelData.has("nerve_interp_tol") && !modelData.has("trace_interp_tol")) {
+                    nerveic.set("rtol", modelData.getDouble("nerve_interp_tol"));
+                } else if (modelData.has("trace_interp_tol") && !modelData.has("nerve_interp_tol")) {
+                    nerveic.set("rtol", modelData.getDouble("trace_interp_tol")); // backwards compatibility
+                } else if (modelData.has("trace_interp_tol") && modelData.has("nerve_interp_tol")) {
+                    throw new Exception("Both trace_interp_tol and nerve_interp_tol defined in Model. " +
+                            "Use new convention for inners (outer_interp_tol), outers (outer_interp_tol), and nerve (nerve_interp_tol) separately!");
+                } else  {
+                    throw new Exception("You must specify an interpolation tolerance");
+                }
+
+                //Generate surface from curve
+                String nerveicSurfaceLabel = "Epineurium Outer Surface";
+                nervePlane.geom().create(im.next("csol",nerveicSurfaceLabel), "ConvertToSolid");
+                nervePlane.geom().feature(im.get(nerveicSurfaceLabel)).set("keep", false);
+                nervePlane.geom().feature(im.get(nerveicSurfaceLabel)).selection("input").named(im.get(nerveLabel));
+                nervePlane.geom().feature(im.get(nerveicSurfaceLabel)).set("contributeto", im.get(nerveselLabel));
+                nervePlane.geom().feature(im.get(nerveicSurfaceLabel)).label(nerveicSurfaceLabel);
+
+                //Extrude surface into 3D object
+                String epi_tr_Label = "Make Epineurium";
+                GeomFeature makeEpi = model.component("comp1").geom("geom1").create(im.next("ext", epi_tr_Label), "Extrude");
+                makeEpi.label(epi_tr_Label);
+                makeEpi.set("contributeto", im.get("EPINEURIUM"));
+                makeEpi.set("workplane", im.get(nervePlaneLabel));
+                makeEpi.setIndex("distance", "z_nerve", 0);
+                makeEpi.selection("input").named(im.get("EPIXS"));
+
+                // Add epi domains to ALL_NERVE_PARTS_UNION for later assigning to materials
+                String[] epi_trace_Unions = {ModelWrapper.ALL_NERVE_PARTS_UNION};
+                mw.contributeToUnions(im.get(epi_tr_Label), epi_trace_Unions);
+
+                break;
             default:
                 throw new IllegalArgumentException("No implementation for part instance name: " + pseudonym);
 

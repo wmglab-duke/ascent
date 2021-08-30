@@ -434,5 +434,13 @@
   {
     "code": 108,
     "text": "Invalid scale input mode"
+  },
+  {
+    "code": 109,
+    "text": "Deform ratio (from Sample.json) cannot be greater than 1"
+  },
+  {
+    "code": 110,
+    "text": "NerveMode is not set to present (Sample.json). Multifascicular simulations without a nerve mask are not supported"
   }
 ]
