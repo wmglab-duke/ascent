@@ -888,17 +888,29 @@ public class ModelWrapper {
             // Add epineurium
             String nerveMode = (String) sampleData.getJSONObject("modes").get("nerve");
             String reshapenerveMode = (String) sampleData.getJSONObject("modes").get("reshape_nerve");
-            double deform_ratio = sampleData.getDouble("deform_ratio");
 
-            if ((nerveMode.equals("PRESENT")) && (!reshapenerveMode.equals("CIRCLE"))) {  // TODO Implement best-fit ellipse for nerve
-                System.out.println("Modeling a Sample with a Nerve (i.e., epineurium) that is " +
-                        "not deformed to CIRCLE is not yet implemented. ReshapeNerveMode must be CIRCLE even if not deforming (i.e. deform_ratio = 0)");
+            // backwards compatibility
+            double deform_ratio = 0;
+            if (sampleData.has("deform_ratio")) {
+                deform_ratio = sampleData.getDouble("deform_ratio");
+            } else {
+                if (reshapenerveMode.equals("CIRCLE")) {
+                    deform_ratio = 1;
+                } else if (reshapenerveMode.equals("NONE")) {
+                    deform_ratio = 0;
+                }
+            }
+
+            if (nerveMode.equals("PRESENT") && !(reshapenerveMode == "CIRCLE" || reshapenerveMode == "NONE")) {
+                System.out.println("Modeling Sample with epineurium (i.e., Nerve Trace) that is not deformed toward a" +
+                        "CIRCLE (or NONE) is not yet implemented");
                 System.exit(0);
-            } else if (nerveMode.equals("PRESENT") && deform_ratio<1) { //Use trace if deform ratio is not 1
+            }
+
+            if (nerveMode.equals("PRESENT") && deform_ratio<1) { //Use trace if deform ratio is not 1
                 Part.createNervePartInstance("Epi_trace", 0,
                         nervePath, this, ndata, sampleData, nerveParams, modelData);
-            }
-            else if (nerveMode.equals("PRESENT") && reshapenerveMode.equals("CIRCLE")) { //Use a circle otherwise
+            } else if (nerveMode.equals("PRESENT") && deform_ratio==1 && reshapenerveMode.equals("CIRCLE")) { //Use a circle otherwise
                 Part.createNervePartInstance("Epi_circle", 0,
                         null, this, null, sampleData, nerveParams, modelData);
             }

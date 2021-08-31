@@ -430,15 +430,19 @@ class Runner(Exceptionable, Configurable):
         # add temporary model configuration
         self.add(SetupMode.OLD, Config.MODEL, model_config)
         self.add(SetupMode.OLD, Config.SAMPLE, sample_config)
-        
-        deform_ratio = self.search(Config.SAMPLE, 'deform_ratio')
-        if deform_ratio>1: self.throw(109)
 
         # fetch slide
         slide = sample.slides[0]
 
         # fetch nerve mode
-        nerve_present: NerveMode = self.search_mode(NerveMode, Config.SAMPLE)
+        nerve_mode: NerveMode = self.search_mode(NerveMode, Config.SAMPLE)
+
+        if nerve_mode == NerveMode.PRESENT:
+            deform_ratio = self.search(Config.SAMPLE, 'deform_ratio')
+            if deform_ratio > 1:
+                self.throw(109)
+        else:
+            deform_ratio = None
 
         # fetch cuff config
         cuff_config: dict = self.load(
@@ -462,18 +466,14 @@ class Runner(Exceptionable, Configurable):
         ).real  # [um] (scaled from any arbitrary length unit)
 
         # get center and radius of nerve's min_bound circle
-        nerve_copy = deepcopy(
-            slide.nerve
-            if nerve_present == NerveMode.PRESENT
-            else slide.fascicles[0].outer
-        )
+        nerve_copy = deepcopy(slide.nerve if nerve_mode == NerveMode.PRESENT else slide.fascicles[0].outer)
 
         # for speed, downsample nerves to n_points_nerve (100) points
         n_points_nerve = 100
         nerve_copy.down_sample(DownSampleMode.KEEP, int(np.floor(nerve_copy.points.size / n_points_nerve)))
-        
+
         # Get the boundary and center information for computing cuff shift
-        if self.search_mode(ReshapeNerveMode, Config.SAMPLE) and not slide.monofasc() and deform_ratio==1:
+        if self.search_mode(ReshapeNerveMode, Config.SAMPLE) and not slide.monofasc() and deform_ratio == 1:
             x, y = 0, 0
             r_bound = np.sqrt(sample_config['Morphology']['Nerve']['area'] / np.pi)
         else:
