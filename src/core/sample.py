@@ -75,9 +75,27 @@ class Sample(Exceptionable, Configurable, Saveable):
 
         return self
 
-    def scale(self, scale_bar_mask_path: str, scale_bar_length: float, scale_bar_is_literal: bool) -> 'Sample':
+    def scale(self,factor) -> 'Sample':
         """
         Scale all slides to the correct unit.
+        :param factor: factor by which to scale the image (1=no change)
+        """
+        for slide in self.slides:
+            slide.scale(factor)
+
+        return self
+    def generate_perineurium(self,fit: dict) -> 'Sample':
+        """
+        Adds perineurium to inners
+        """
+        for slide in self.slides:
+            slide.generate_perineurium(fit)
+        
+        return self
+    
+    def get_factor(self, scale_bar_mask_path: str, scale_bar_length: float, scale_bar_is_literal: bool) -> 'Sample':
+        """
+        Returns scaling factor (micrometers per pixel)
         :param scale_bar_mask_path: path to binary mask with white straight (horizontal) scale bar
         :param scale_bar_length: length (in global units as determined by config/user) of the scale bar
         """
@@ -105,12 +123,9 @@ class Sample(Exceptionable, Configurable, Saveable):
 
             # calculate scale factor as unit/pixel
             factor = scale_bar_length / scale_bar_pixels
-        # for each slide, scale to units
-        for slide in self.slides:
-            slide.scale(factor)
-
-        return self
-
+        
+        return factor
+        
     def build_file_structure(self, printing: bool = False) -> 'Sample':
         """
         :param printing: bool, gives user console output
@@ -173,7 +188,7 @@ class Sample(Exceptionable, Configurable, Saveable):
                             print('ERROR: scale_source_file: {} not found'.format(scale_source_file))
                             self.throw(98)
 
-                scale_was_copied = True
+                        scale_was_copied = True
             
             for target_file in [item.value for item in MaskFileNames if item != MaskFileNames.SCALE_BAR]:
                 source_file = os.path.join(start_directory,
@@ -269,20 +284,12 @@ class Sample(Exceptionable, Configurable, Saveable):
             # fascicles list
             fascicles: List[Fascicle] = []
 
-            # load fascicles and check that the files exist
+            # load fascicles and check that the files exist, then generate fascicles
             if mask_input_mode == MaskInputMode.INNERS:
 
                 if exists(MaskFileNames.INNERS):
-                    peri_thick_mode: PerineuriumThicknessMode = self.search_mode(PerineuriumThicknessMode,
-                                                                                 Config.SAMPLE)
-
-                    perineurium_thk_info: dict = self.search(Config.CI_PERINEURIUM_THICKNESS,
-                                                             PerineuriumThicknessMode.parameters.value,
-                                                             str(peri_thick_mode).split('.')[-1])
-
-                    fascicles = Fascicle.inner_to_list(MaskFileNames.INNERS.value,
-                                                       self.configs[Config.EXCEPTIONS.value],
-                                                       fit=perineurium_thk_info)
+                    fascicles = Fascicle.to_list(MaskFileNames.INNERS.value,None,
+                                                       self.configs[Config.EXCEPTIONS.value])
                 else:
                     self.throw(21)
 
@@ -293,7 +300,7 @@ class Sample(Exceptionable, Configurable, Saveable):
 
             elif mask_input_mode == MaskInputMode.INNER_AND_OUTER_SEPARATE:
                 if exists(MaskFileNames.INNERS) and exists(MaskFileNames.OUTERS):
-                    fascicles = Fascicle.separate_to_list(MaskFileNames.INNERS.value,
+                    fascicles = Fascicle.to_list(MaskFileNames.INNERS.value,
                                                           MaskFileNames.OUTERS.value,
                                                           self.configs[Config.EXCEPTIONS.value])
                 else:
@@ -301,8 +308,12 @@ class Sample(Exceptionable, Configurable, Saveable):
 
             elif mask_input_mode == MaskInputMode.INNER_AND_OUTER_COMPILED:
                 if exists(MaskFileNames.COMPILED):
-                    fascicles = Fascicle.compiled_to_list(MaskFileNames.COMPILED.value,
-                                                          self.configs[Config.EXCEPTIONS.value])
+                    #first generate outer and inner images
+                    i_image = os.path.split(MaskFileNames.COMPILED.value)[0]+'i_from_c.tif'
+                    o_image = os.path.split(MaskFileNames.COMPILED.value)[0]+'o_from_c.tif'
+                    self.io_from_compiled(MaskFileNames.COMPILED.value,i_image,o_image)
+                    #then get fascicles
+                    fascicles = Fascicle.to_list(i_image,o_image,self.configs[Config.EXCEPTIONS.value])
                 else:
                     self.throw(23)
 
@@ -310,7 +321,6 @@ class Sample(Exceptionable, Configurable, Saveable):
                 pass
 
             nerve = None
-
             if nerve_mode == NerveMode.PRESENT:
                 # check and load in nerve, throw error if not present
 
@@ -325,7 +335,10 @@ class Sample(Exceptionable, Configurable, Saveable):
                                                   cv2.CHAIN_APPROX_SIMPLE)
                     nerve = Nerve(Trace([point + [0] for point in contour[0][:, 0, :]],
                                         self.configs[Config.EXCEPTIONS.value]))
-
+            
+            if len(fascicles)>1 and nerve_mode != NerveMode.PRESENT:
+                self.throw(110)
+                
             slide: Slide = Slide(fascicles,
                                  nerve,
                                  nerve_mode,
@@ -367,15 +380,29 @@ class Sample(Exceptionable, Configurable, Saveable):
 
             os.chdir(start_directory)
             
-
+        #get scaling factor (to convert from pixels to microns)
         if os.path.exists(scale_path) and scale_input_mode == ScaleInputMode.MASK:
-            self.scale(scale_path, self.search(Config.SAMPLE, 'scale', 'scale_bar_length'),False)
+            factor = self.get_factor(scale_path, self.search(Config.SAMPLE, 'scale', 'scale_bar_length'),False)
         elif scale_input_mode == ScaleInputMode.RATIO:
-            self.scale(scale_path, self.search(Config.SAMPLE, 'scale', 'scale_ratio'),True)
+            factor = self.get_factor(scale_path, self.search(Config.SAMPLE, 'scale', 'scale_ratio'),True)
         else:
             print(scale_path)
             self.throw(19)
+            
+        #scale to microns
+        self.scale(factor)
+        
+        #after scaling, if only inners were provided, generate outers
+        if mask_input_mode == MaskInputMode.INNERS:
+            peri_thick_mode: PerineuriumThicknessMode = self.search_mode(PerineuriumThicknessMode,
+                                                             Config.SAMPLE)
 
+            perineurium_thk_info: dict = self.search(Config.CI_PERINEURIUM_THICKNESS,
+                                         PerineuriumThicknessMode.parameters.value,
+                                         str(peri_thick_mode).split('.')[-1])
+
+            self.generate_perineurium(perineurium_thk_info)
+            
         # repositioning!
         for i, slide in enumerate(self.slides):
             print('\tslide {} of {}'.format(1 + i, len(self.slides)))
@@ -446,7 +473,9 @@ class Sample(Exceptionable, Configurable, Saveable):
                     slide.orientation_point = slide.nerve.points[slide.orientation_point_index][:2]
                     slide.nerve = slide.reshaped_nerve(reshape_nerve_mode)
                     slide.nerve.offset(distance=sep_nerve)
-
+        #scale with ratio = 1 (no scaling happens, but connects the ends of each trace to itself)
+        self.scale(1)
+        
             # slide.plot(fix_aspect_ratio=True, title=title)
 
             # plt.figure(2)
@@ -455,7 +484,27 @@ class Sample(Exceptionable, Configurable, Saveable):
             # plt.show()
 
         return self
-
+    def io_from_compiled(self,imgin,i_out,o_out):
+        """
+        Generate inner and outer mask from compiled mask
+        :param imgin: path to input image (hint: c.tif)
+        :param i_out: full path to desired output inner mask
+        :param o_out: full path to desired output outer mask
+        """
+        compiled = cv2.imread(imgin, -1)
+        
+        imgnew = cv2.bitwise_not(compiled)
+        
+        h, w = imgnew.shape[:2]
+        
+        mask = np.zeros((h+2, w+2), np.uint8)
+        
+        cv2.floodFill(imgnew, mask, (0,0), 0);
+        
+        cv2.imwrite(i_out,imgnew)
+        
+        cv2.imwrite(o_out,compiled+imgnew)
+        
     def write(self, mode: WriteMode) -> 'Sample':
         """
         Write entire list of slides.

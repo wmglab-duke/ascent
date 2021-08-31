@@ -199,7 +199,13 @@ class Trace(Exceptionable):
             self.__polygon = Polygon([tuple(point) for point in self.points[:, :2]])
 
         return self.__polygon
-
+    
+    def bounds(self):
+        """
+        :return: bounds of the trace object
+        """      
+        return self.polygon().bounds
+    
     def random_points(self, count: int, buffer: float = 0, my_xy_seed: int = 123) -> List[Tuple[float]]:
         """
         :param my_xy_seed:

@@ -136,6 +136,7 @@ dmypy.json
 samples/
 submit/
 data/tmp/
+data/*.pickle
 
 input/
 */user/*

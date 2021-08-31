@@ -5,7 +5,7 @@ The copyrights of this software are owned by Duke University.
 Please refer to the LICENSE.txt and README.txt files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
-
+from PIL import Image, ImageDraw, ImageFont
 # builtins
 import itertools
 import os
@@ -264,6 +264,10 @@ class Slide(Exceptionable):
         for fascicle in self.fascicles:
             fascicle.scale(factor, center)
 
+    def generate_perineurium(self,fit: dict):
+        for fascicle in self.fascicles:
+            fascicle.perineurium_setup(fit=fit)
+        
     def rotate(self, angle: float):
         """
         :param angle: angle in radians, only knows how to rotate around its own centroid
@@ -277,6 +281,19 @@ class Slide(Exceptionable):
 
         for fascicle in self.fascicles:
             fascicle.rotate(angle, center)
+
+        self.validation()
+
+    def bounds(self):
+        """
+        :return: check bounds of all traces and return outermost bounds
+        """
+        if self.monofasc():
+            trace_list = [f.outer for f in self.fascicles]
+        else:
+            trace_list = [self.nerve] + [f.outer for f in self.fascicles]
+        allbound = np.array([trace.bounds() for trace in trace_list if trace is not None])
+        return (min(allbound[:,0]),min(allbound[:,1]),max(allbound[:,2]),max(allbound[:,3]))
 
     def write(self, mode: WriteMode, path: str):
         """
@@ -331,8 +348,10 @@ class Slide(Exceptionable):
                 os.chdir(sub_start)
 
         os.chdir(start)
-           
+
     def saveimg(self, path: str,dims,separate:bool = False,colors = {'n':'red','i':'green','p':'blue'}, buffer = 0,nerve = True, outers = True,inners = True,outer_minus_inner = False,ids = []):
+        #comments coming soon to a method near you
+
         def prep_points(points):
             #adjusts plot points to dimensions and formats for PIL
             points = (points-dim_min+buffer)[:,0:2].astype(int)
@@ -392,11 +411,11 @@ class Slide(Exceptionable):
                         location = (row['x']-dim_min[0]+buffer,img.height-row['y']+dim_min[1]-buffer)
                         iddraw.text(location,str(int(row['id'])),font = fnt,fill=0)
                 imgi.save(path['i'])
-
     def deisland():
         pass #Flag: want this to check for certain countour size and remove if too small
     def expand_nerve():
         pass #flag: check for fascicle intersecting/outside of nerve boundary and do a clip offset+boolean
+
     # %% DISCLAIMER: this is depreciated and not well documented
     def reposition_fascicles(self, new_nerve: Nerve, minimum_distance: float = 10, seed: int = None):
         """
