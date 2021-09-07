@@ -8,6 +8,7 @@ The source code can be found on the following GitHub repository: https://github.
 
 # builtins
 import os
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "1"
 import pickle
 from typing import List
 

@@ -13,6 +13,5 @@ import pickle
 class Saveable:
 
     def save(self, path: str):
-        file = open(path, 'wb')
-        pickle.dump(self, file)
-        file.close()
+        with open(path, 'wb') as file:
+            pickle.dump(self, file)
