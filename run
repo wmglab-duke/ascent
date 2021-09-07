@@ -9,6 +9,9 @@ The source code can be found on the following GitHub repository: https://github.
 import sys
 import os
 import importlib
+from src.utils.welcome import welcome
+
+welcome()
 
 available_scripts = os.listdir('scripts')
 args = sys.argv
