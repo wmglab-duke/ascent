@@ -1,6 +1,6 @@
 **Funding: NIH SPARC OT2 OD025340**  
 
-[<img src="./config/system/images/sparc-logo-primary.tif" alt="drawing" width="100"/>](https://reporter.nih.gov/project-details/9525478#description)
+[<img src="./config/system/images/sparc-logo-white_bwoutline.svg" alt="drawing" width="100"/>](https://reporter.nih.gov/project-details/9525478#description)
 
 **Cite the code (use the DOI for the version of code used):**  [![DOI](https://zenodo.org/badge/379064819.svg)](https://zenodo.org/badge/latestdoi/379064819)  
 **Musselman ED**, **Cariello JE**, Grill WM, Pelot NA. ASCENT (Automated Simulations to Characterize Electrical Nerve Thresholds): A Pipeline for Sample-Specific Computational Modeling of Electrical Stimulation of Peripheral Nerves. PLoS Comput Biol [Internet]. 2021, DOI: 10.5281/zenodo.5365774
