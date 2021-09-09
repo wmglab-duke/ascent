@@ -47,6 +47,34 @@ if(fiber_type==3){ //  c fiber built from cFiberBuilder.hoc
 	}
 }
 
+if(record_ap_times_fiber_ends==1){
+	objref apc_end_min
+	objref apc_end_max
+	
+	node_ind_min = int((axonnodes-1)*deltaz*0.1/deltaz)
+	node_ind_max = int((axonnodes-1)*deltaz*0.9/deltaz)
+
+	if (fiber_type == 2) {
+			s[node_ind_min*11].sec apc_end_min = new APCount(0.5)
+			s[node_ind_max*11].sec apc_end_max = new APCount(0.5)
+		} else {
+			s[node_ind_min].sec apc_end_min = new APCount(0.5)
+			s[node_ind_max].sec apc_end_max = new APCount(0.5)
+	}
+
+	apc_end_min.thresh = ap_thresh
+	apc_end_max.thresh = ap_thresh
+
+	objref apc_end_min_timevector
+	apc_end_min_timevector = new Vector()
+	apc_end_min.record(apc_end_min_timevector)
+
+	objref apc_end_max_timevector
+	apc_end_max_timevector = new Vector()
+	apc_end_max.record(apc_end_max_timevector)
+}
+
+
 proc RunSim() {local myamp
 	myamp = $1
 	
