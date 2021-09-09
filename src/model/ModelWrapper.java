@@ -901,7 +901,7 @@ public class ModelWrapper {
                 }
             }
 
-            if (nerveMode.equals("PRESENT") && !(reshapenerveMode == "CIRCLE" || reshapenerveMode == "NONE")) {
+            if (nerveMode.equals("PRESENT") && !(reshapenerveMode.equals("CIRCLE") || reshapenerveMode.equals("NONE"))) {
                 System.out.println("Modeling Sample with epineurium (i.e., Nerve Trace) that is not deformed toward a" +
                         "CIRCLE (or NONE) is not yet implemented");
                 System.exit(0);
