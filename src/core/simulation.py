@@ -334,7 +334,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
             hocwriter \
                 .add(SetupMode.OLD, Config.MODEL, self.configs[Config.MODEL.value]) \
                 .add(SetupMode.OLD, Config.SIM, sim_copy) \
-                .build_hoc(n_inners, n_fiber_coords[fiberset_ind], n_tsteps)
+                .build_hoc(n_tsteps)
 
             # copy in potentials data into neuron simulation data/inputs folder
             # the potentials files are matched to their inner and fiber index, and saved in destination folder with

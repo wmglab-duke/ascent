@@ -16,7 +16,7 @@ welcome()
 available_scripts = os.listdir('scripts')
 args = sys.argv
 
-if len(args) > 0 and all([args[0] in ['run', './run'], args[1] + '.py' in available_scripts]):
+if len(args) > 0 and all([os.path.split(args[0])[-1] in ['run', './run'], args[1] + '.py' in available_scripts]):
     importlib.import_module('scripts.' + args[1]).run(args[1:])
 else:
     print('Usage: python run [script] [args]')
