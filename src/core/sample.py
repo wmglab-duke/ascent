@@ -84,6 +84,18 @@ class Sample(Exceptionable, Configurable, Saveable):
             slide.scale(factor)
 
         return self
+    
+    def smooth(self,n_distance,i_distance) -> 'Sample':
+        """
+        Smooth traces for all slides
+        :param n_distance: distance to inflate and deflate the nerve trace
+        :param i_distance: distance to inflate and deflate the fascicle traces
+        """
+        for slide in self.slides:
+            slide.smooth_traces(n_distance,i_distance)
+
+        return self
+    
     def generate_perineurium(self,fit: dict) -> 'Sample':
         """
         Adds perineurium to inners
@@ -335,7 +347,7 @@ class Sample(Exceptionable, Configurable, Saveable):
                                                   cv2.CHAIN_APPROX_SIMPLE)
                     nerve = Nerve(Trace([point + [0] for point in contour[0][:, 0, :]],
                                         self.configs[Config.EXCEPTIONS.value]))
-            
+                    
             if len(fascicles)>1 and nerve_mode != NerveMode.PRESENT:
                 self.throw(110)
                 
@@ -391,7 +403,18 @@ class Sample(Exceptionable, Configurable, Saveable):
             
         #scale to microns
         self.scale(factor)
-        
+    
+        #get smoothing params
+        n_distance = self.search(Config.SAMPLE, 'smoothing', 'nerve_distance',optional = True)
+        i_distance = self.search(Config.SAMPLE, 'smoothing', 'fascicle_distance',optional = True)
+        #smooth traces
+        if not (n_distance==i_distance==None):
+            if nerve_mode == NerveMode.PRESENT and n_distance is None:
+                self.throw(112)
+            else: 
+                self.smooth(n_distance,i_distance)
+                self.scale(1) #does not scale but reconnects ends of traces after offset
+                
         #after scaling, if only inners were provided, generate outers
         if mask_input_mode == MaskInputMode.INNERS:
             peri_thick_mode: PerineuriumThicknessMode = self.search_mode(PerineuriumThicknessMode,
@@ -402,7 +425,7 @@ class Sample(Exceptionable, Configurable, Saveable):
                                          str(peri_thick_mode).split('.')[-1])
 
             self.generate_perineurium(perineurium_thk_info)
-            
+        
         # repositioning!
         for i, slide in enumerate(self.slides):
             print('\tslide {} of {}'.format(1 + i, len(self.slides)))
