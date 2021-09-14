@@ -300,7 +300,7 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
 
                 elif missing_total == 1:
                     stimamp_top, stimamp_bottom = get_thresh_bounds(sim_dir, sim_name, inner_ind_solo)
-                    start_path_solo = os.path.join(sim_path, 'start{}'.format('.sh' if OS == 'UNIX_LIKE' else '.bat'))
+                    start_path_solo = os.path.join(sim_path, 'start{}'.format('.sh' if OS == 'UNIX-LIKE' else '.bat'))
 
                     if inner_fiber_diam_key is not None:
                         diameter = get_diameter(inner_fiber_diam_key, inner_ind, fiber_ind)
