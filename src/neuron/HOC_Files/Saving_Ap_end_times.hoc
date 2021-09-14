@@ -20,15 +20,37 @@ Variables that must be defined in wrapper/params file:
 
 objref output_file_aptimes
 
-proc Saving_Aptimes() {
+// https://www.neuron.yale.edu/neuron/static/new_doc/programming/ockeywor.html
+func max() {
+    if ($1 > $2){
+            return $1
+    } else {
+            return $2
+    }
+}
+
+proc Saving_Ap_end_times() {
 
 	// Open file for writing
 	output_file_aptimes = new File()
 	output_file_aptimes.wopen(Ap_times_fname_output)
 
-    for i=0, apc_timevector.size()-1 {
+	// apc_end_min_timevector, apc_end_max_timevector
+
+	min_size = apc_end_min_timevector.size()
+	max_size = apc_end_max_timevector.size()
+
+	rows = max(min_size, max_size)
+	print "HERE rows: ", rows
+    for i=0, rows-1 {
         // Print output to file
-        output_file_aptimes.printf("%f\n", apc_timevector.x[i])
+        if (i < min_size && i < max_size) {
+        	output_file_aptimes.printf("%f %f\n", apc_end_min_timevector.x[i], apc_end_max_timevector.x[i])
+        } else if (i < min_size && i >= max_size) {
+        	output_file_aptimes.printf("%f\t\n", apc_end_min_timevector.x[i])
+        } else if (i >= min_size && i < max_size) {
+        	output_file_aptimes.printf("\t%f\n", apc_end_max_timevector.x[i])
+        }
     }
 
 	// Close file
