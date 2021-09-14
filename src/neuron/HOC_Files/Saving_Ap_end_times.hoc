@@ -31,28 +31,25 @@ func max() {
 
 proc Saving_Ap_end_times() {
 
-	// Open file for writing
-	output_file_aptimes = new File()
-	output_file_aptimes.wopen(Ap_times_fname_output)
+    // Open file for writing
+    output_file_aptimes = new File()
+    output_file_aptimes.wopen(Ap_times_fname_output)
 
-	// apc_end_min_timevector, apc_end_max_timevector
+    min_size = apc_end_min_timevector.size()
+    max_size = apc_end_max_timevector.size()
+    rows = max(min_size, max_size)
 
-	min_size = apc_end_min_timevector.size()
-	max_size = apc_end_max_timevector.size()
-
-	rows = max(min_size, max_size)
-	print "HERE rows: ", rows
     for i=0, rows-1 {
         // Print output to file
         if (i < min_size && i < max_size) {
-        	output_file_aptimes.printf("%f %f\n", apc_end_min_timevector.x[i], apc_end_max_timevector.x[i])
+            output_file_aptimes.printf("%f %f\n", apc_end_min_timevector.x[i], apc_end_max_timevector.x[i])
         } else if (i < min_size && i >= max_size) {
-        	output_file_aptimes.printf("%f\t\n", apc_end_min_timevector.x[i])
+            output_file_aptimes.printf("%f %s\n", apc_end_min_timevector.x[i], "nan")
         } else if (i >= min_size && i < max_size) {
-        	output_file_aptimes.printf("\t%f\n", apc_end_max_timevector.x[i])
+            output_file_aptimes.printf("%s %f\n", "nan", apc_end_max_timevector.x[i])
         }
     }
 
-	// Close file
-	output_file_aptimes.close()
+    // Close file
+    output_file_aptimes.close()
 }
