@@ -446,5 +446,13 @@
   {
     "code": 111,
     "text": "ap_end_times is defined in Sim, so the system is saving AP times at the ends of the fiber. \nThe values defined in Sim violated loc_min > loc_max."
+  },
+  {
+    "code": 112,
+    "text": "ap_end_times is defined in Sim. \nThe values for loc_min and loc_max defined in Sim are not in [0,1]."
+  },
+  {
+    "code": 113,
+    "text": "ap_end_times is defined in Sim, so the system is saving AP times at the ends of the fiber. \nThe values for loc_min and/or loc_max are the terminal nodes  (i.e., 0 or 1), which are also set to passive_end_nodes=1 (i.e., grounded therefore no APs)."
   }
 ]

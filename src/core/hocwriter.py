@@ -192,6 +192,10 @@ class HocWriter(Exceptionable, Configurable, Saveable):
 
             if loc_min > loc_max:
                 self.throw(111)
+            if not ((1 >= loc_min >= 0) and (1 >= loc_max >= 0)):
+                self.throw(112)
+            if any([loc_min == 0, loc_min == 1, loc_max == 0, loc_max == 1]) and fiber_model_info.get("passive_end_nodes"):
+                self.throw(113)
 
             file_object.write("saveflag_end_ap_times = %0.0f\n\n" % 1)  # if Sim has "ap_end_times" defined, then we are recording them
             file_object.write("loc_min_end_ap        = %0.2f\n" % loc_min)
