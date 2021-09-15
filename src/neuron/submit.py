@@ -158,6 +158,7 @@ def make_task(my_os: str, start_p: str, sim_p: str, inner: int, fiber: int, top:
                 '-c \"fiberD={:.1f}\" '
                 '-c \"deltaz={:.4f}\" '
                 '-c \"axonnodes={}\" '
+                '-c \"saveflag_end_ap_times=0\" '  # for backwards compatible, overwritten in launch.hoc if 1
                 '-c \"load_file(\\\"launch.hoc\\\")\" blank.hoc\n'.format(sim_p,
                                                                           inner,
                                                                           fiber,
@@ -186,6 +187,7 @@ def make_task(my_os: str, start_p: str, sim_p: str, inner: int, fiber: int, top:
                 '-c \"fiberD={}\" '
                 '-c \"deltaz={:.4f}\" '
                 '-c \"axonnodes={}\" '
+                '-c \"saveflag_end_ap_times=0\" '  # for backwards compatible, overwritten in launch.hoc if 1
                 '-c \"load_file(\\\"launch.hoc\\\")\" blank.hoc\n'.format(os.getcwd(),
                                                                           sim_path_win,
                                                                           inner,
