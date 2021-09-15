@@ -29,6 +29,7 @@ load_file("SaveSpatialDist.hoc")
 
 objref Istim_suffix_tmp
 objref checknode_Ve_values_tmp
+objref Ap_rec_suffix_tmp
 
 proc Saving() {
 
