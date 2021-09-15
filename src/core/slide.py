@@ -71,7 +71,7 @@ class Slide(Exceptionable):
             area_sum += area
 
         return (x_sum / area_sum), (y_sum / area_sum)
-
+    
     def validation(self, specific: bool = True, die: bool = True, tolerance: float = None) -> bool:
         """
         Checks to make sure nerve geometry is not overlapping itself
@@ -263,6 +263,19 @@ class Slide(Exceptionable):
 
         for fascicle in self.fascicles:
             fascicle.scale(factor, center)
+            
+    def smooth_traces(self, n_distance, i_distance):
+        """
+        Smooth traces for the slide
+        :param n_distance: distance to inflate and deflate the nerve trace
+        :param i_distance: distance to inflate and deflate the fascicle traces        """
+        
+        if i_distance is None: self.throw(113)
+        for trace in self.trace_list():
+            if isinstance(trace,Nerve):
+                trace.smooth(n_distance)
+            else:
+                trace.smooth(i_distance)
 
     def generate_perineurium(self,fit: dict):
         for fascicle in self.fascicles:
@@ -288,13 +301,19 @@ class Slide(Exceptionable):
         """
         :return: check bounds of all traces and return outermost bounds
         """
+        allbound = np.array([trace.bounds() for trace in self.trace_list() if trace is not None])
+        return (min(allbound[:,0]),min(allbound[:,1]),max(allbound[:,2]),max(allbound[:,3]))
+    
+    def trace_list(self):
+        """
+        :return: list of all traces in the slide
+        """
         if self.monofasc():
             trace_list = [f.outer for f in self.fascicles]
         else:
             trace_list = [self.nerve] + [f.outer for f in self.fascicles]
-        allbound = np.array([trace.bounds() for trace in trace_list if trace is not None])
-        return (min(allbound[:,0]),min(allbound[:,1]),max(allbound[:,2]),max(allbound[:,3]))
-
+        return trace_list
+    
     def write(self, mode: WriteMode, path: str):
         """
         :param mode: Sectionwise for now... could be other types in the future (STL, DXF)

@@ -33,7 +33,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
     def define_sim_indices(self, args: List[List[np.array]]):
         return itertools.product(args)
 
-    def build_hoc(self, n_inners, n_fiber_coords, n_tsteps):
+    def build_hoc(self, n_tsteps):
         """
         Write file LaunchSim###.hoc
         :return:

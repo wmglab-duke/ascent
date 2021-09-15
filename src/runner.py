@@ -8,6 +8,7 @@ The source code can be found on the following GitHub repository: https://github.
 
 # builtins
 import os
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "1"
 import pickle
 from typing import List
 
@@ -18,6 +19,8 @@ import subprocess
 from copy import deepcopy
 from quantiphy import Quantity
 from shapely.geometry import Point
+import pymunkoptions
+pymunkoptions.options["debug"] = False
 
 # ascent
 from src.core import Sample, Simulation, Waveform
