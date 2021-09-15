@@ -58,76 +58,11 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
         xy_mode_name: str = self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode')
         xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
-
-        if not xy_mode == FiberXYMode.SL_PSEUDO_INTERP:
-            fibers_xy = self._generate_xy(sim_directory)
-            self.out_to_fib, self.out_to_in = self._generate_maps(fibers_xy)
-            self.fibers = self._generate_z(fibers_xy, super_sample=super_sample)
-
-        else:
-            # SL generation algorithm
-            sample_position = self.sample.configs[Config.SAMPLE.value].get('position', None)
-            if sample_position is not None:
-                pass
-                # print('\t\tUsing {} µm positioning for SL curve'.format(sample_position))
-            else:
-                sample_position = 5000  # default
-                # print('\t\tNo positioning for SL curve found. Using {} µm.'.format(sample_position))
-
-            z_nerve = self.search(Config.MODEL, 'medium', 'proximal', 'length')
-            z_medium = self.search(Config.MODEL, 'medium', 'distal', 'length')
-            # NOTE: for now, the sample position will be interpreted as the z-position of the SL branch
-            z_offset = sample_position  # + z_nerve / 2  # sample_position is distance from center of cuff to SL branch
-            r_medium = self.search(Config.MODEL, 'medium', 'distal', 'radius')
-            buffer = 50  # minimum distance from top of distal model
-
-            if z_offset >= z_medium - 1000:
-                print('\t\tWARNING: SL z_offset ({}) within 1000 µm of distal model length ({})'.format(z_offset,
-                                                                                                        z_medium))
-
-            def fit_z(t):
-                return (10 ** 5 / t) + z_offset
-
-            def fit_3d(t, theta, function):
-                return t * np.cos(theta), t * np.sin(theta), function(t)
-
-            def magnitude(vec):
-                return np.sqrt(sum(item ** 2 for item in vec))
-
-            # generate parameter range
-            t_min = 0.001
-            t_max = r_medium - buffer
-            t_step = 1
-            t_range = np.arange(t_min, t_max, t_step)
-
-            while fit_z(t_range[0]) > z_medium - 50:
-                # print('\t\tclip')
-                t_range = t_range[1:]
-
-            # init theta
-            theta = self.search(Config.SIM, 'theta') if 'theta' in self.configs[Config.SIM.value].keys() else 0
-
-            # set angle theta to orientation point if defined
-            slide = self.sample.slides[0]
-            # if slide.orientation_point_index is not None:
-            #     outer = slide.fascicles[0] if slide.monofasc() else slide.nerve
-            #     orientation_x, orientation_y = tuple(outer.points[slide.orientation_point_index][:2])
-            #     theta = np.arctan2(orientation_y, orientation_x)
-
-            x, y, z = fit_3d(t_range, theta, fit_z)
-            points = list(zip(x, y, z))
-            fiber_length = sum(
-                magnitude(np.asarray(points[i]) - np.asarray(points[i + 1])) for i in range(len(points) - 1))
-
-            fibers_xy = np.asarray([(0, 0)])
-            fibers = self._generate_z(fibers_xy, override_length=fiber_length, super_sample=super_sample)
-
-            fiber_z_points = np.asarray(fibers[0])[:, 2]
-            fiber_z_points = fiber_z_points - np.min(fiber_z_points)
-            ratios = fiber_z_points / np.max(fiber_z_points)
-
-            self.fibers = [interparc(ratios, x, y, z)]
-
+        
+        fibers_xy = self._generate_xy(sim_directory)
+        self.out_to_fib, self.out_to_in = self._generate_maps(fibers_xy)
+        self.fibers = self._generate_z(fibers_xy, super_sample=super_sample)
+        
         return self
 
     def write(self, mode: WriteMode, path: str):
