@@ -457,6 +457,10 @@
   },
   {
     "code": 114,
-    "text": "If deformation_mode is set to physics, deform_ratio cannot be zero"
+    "text": "If deformation mode is set to physics, deform_ratio cannot be zero (sample.json)"
+  },
+  {
+    "code": 115,
+    "text": "Deformation mode is set to physics, but no deform ratio is defined in sample.json"
   }
 ]
