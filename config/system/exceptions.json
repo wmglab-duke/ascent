@@ -456,11 +456,11 @@
     "text": "If smoothing is defined in Sample.json, fascicle_distance must be defined"
   },
   {
-    "code": 114,
+    "code": 117,
     "text": "If deformation mode is set to physics, deform_ratio cannot be zero (sample.json)"
   },
   {
-    "code": 115,
+    "code": 118,
     "text": "Deformation mode is set to physics, but no deform ratio is defined in sample.json"
   }
 ]
