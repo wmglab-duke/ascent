@@ -186,6 +186,18 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         file_object.write("saveflag_Ve           = %0.0f\n" % int(False))
         file_object.write("saveflag_Istim        = %0.0f\n" % int(self.search(Config.SIM, "saving", "time", "istim") == True))
 
+        if 'end_ap_times' in self.configs[Config.SIM.value]['saving'].keys():
+            loc_min = self.search(Config.SIM, "saving", "end_ap_times", "loc_min")
+            loc_max = self.search(Config.SIM, "saving", "end_ap_times", "loc_max")
+
+            if loc_min > loc_max:
+                self.throw(111)
+
+            file_object.write("saveflag_end_ap_times = %0.0f\n\n" % 1)  # if Sim has "ap_end_times" defined, then we are recording them
+            file_object.write("loc_min_end_ap        = %0.2f\n" % loc_min)
+            file_object.write("loc_max_end_ap        = %0.2f\n" % loc_max)
+            file_object.write("ap_end_thresh         = %0.0f\n" % self.search(Config.SIM, "saving", "end_ap_times", "threshold"))
+
         file_object.write("\n//***************** Protocol Parameters *********\n")
 
         protocol: dict = self.search(Config.SIM, "protocol")
@@ -259,7 +271,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
             file_object.write("Namp = %0.0f\n" % num_amps)
             file_object.write("objref stimamp_values\n")
             file_object.write("stimamp_values = new Vector(Namp,%0.0f)\n" % 0)
-            file_object.write("\nap_thresh = %0.0f\n" % 1000)  # arbitrarily high, not ever be used
+            file_object.write("\nap_thresh = %0.0f\n" % 1000)  # arbitrarily high, not ever used
             for amp_ind in range(num_amps):
                 file_object.write("stimamp_values.x[%0.0f] = %0.4f\n" % (amp_ind, amps[amp_ind]))
 

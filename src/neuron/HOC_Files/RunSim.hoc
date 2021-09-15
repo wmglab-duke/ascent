@@ -30,6 +30,11 @@ Input arg's:
 
 // Set up the APCount; check all nodes in case tstop is too short for AP to reach checknode1
 objref apc[axonnodes]
+objref apc_end_min
+objref apc_end_max
+objref apc_end_min_timevector
+objref apc_end_max_timevector
+
 for node_ind=0, axonnodes-1 {
 	if (fiber_type == 2) {// myelinated fiber
 		s[node_ind*11].sec apc[node_ind] = new APCount(0.5)
@@ -39,7 +44,7 @@ for node_ind=0, axonnodes-1 {
 	apc[node_ind].thresh = ap_thresh	
 }
 
-if(fiber_type==3){ //  c fiber built from cFiberBuilder.hoc
+if(fiber_type==3) { //  c fiber built from cFiberBuilder.hoc
 	if(c_fiber_model_type==2 && passive_end_nodes==1){ // Tigerholm OR _<Brandon>_
 		execerror("Program cannot balance Tigerholm for passive_end_nodes=1, must be 0.")		
 	} else if (c_fiber_model_type==2 && passive_end_nodes==0) {
@@ -47,39 +52,28 @@ if(fiber_type==3){ //  c fiber built from cFiberBuilder.hoc
 	}
 }
 
-print "PREEEEEE WTF IS GOING ON"
-print "record_ap_times_fiber_ends: ", record_ap_times_fiber_ends
+if (saveflag_end_ap_times==1) {
 
-///if (record_ap_times_fiber_ends == 1) {
-print "PRE WTF IS GOING ON"
-objref apc_end_min
-objref apc_end_max
+	node_ind_min = int((axonnodes-1)*deltaz*loc_min_end_ap/deltaz)
+	node_ind_max = int((axonnodes-1)*deltaz*loc_max_end_ap/deltaz)
 
-node_ind_min = int((axonnodes-1)*deltaz*0.1/deltaz)
-node_ind_max = int((axonnodes-1)*deltaz*0.9/deltaz)
+	if (fiber_type == 2) {
+		s[node_ind_min*11].sec apc_end_min = new APCount(0.5)
+		s[node_ind_max*11].sec apc_end_max = new APCount(0.5)
+	} else {
+		s[node_ind_min].sec apc_end_min = new APCount(0.5)
+		s[node_ind_max].sec apc_end_max = new APCount(0.5)
+	}
 
-if (fiber_type == 2) {
-	s[node_ind_min*11].sec apc_end_min = new APCount(0.5)
-	s[node_ind_max*11].sec apc_end_max = new APCount(0.5)
-} else {
-	s[node_ind_min].sec apc_end_min = new APCount(0.5)
-	s[node_ind_max].sec apc_end_max = new APCount(0.5)
+	apc_end_min.thresh = ap_end_thresh
+	apc_end_max.thresh = ap_end_thresh
+
+	apc_end_min_timevector = new Vector()
+	apc_end_min.record(apc_end_min_timevector)
+
+	apc_end_max_timevector = new Vector()
+	apc_end_max.record(apc_end_max_timevector)
 }
-
-print "WTF IS GOING ON"
-apc_end_min.thresh = ap_thresh
-apc_end_max.thresh = ap_thresh
-
-objref apc_end_min_timevector
-apc_end_min_timevector = new Vector()
-apc_end_min.record(apc_end_min_timevector)
-
-objref apc_end_max_timevector
-apc_end_max_timevector = new Vector()
-apc_end_max.record(apc_end_max_timevector)
-//} else {
-//	print "HERE HELLO HI"
-//}
 
 
 proc RunSim() {local myamp

@@ -442,5 +442,9 @@
   {
     "code": 110,
     "text": "NerveMode is not set to present (Sample.json). Multifascicular simulations without a nerve mask are not supported"
+  },
+  {
+    "code": 111,
+    "text": "ap_end_times is defined in Sim, so the system is saving AP times at the ends of the fiber. \nThe values defined in Sim violated loc_min > loc_max."
   }
 ]
