@@ -439,6 +439,9 @@ class Sample(Exceptionable, Configurable, Saveable):
             if 'deform_ratio' in self.search(Config.SAMPLE).keys():
                 deform_ratio = self.search(Config.SAMPLE, 'deform_ratio')
                 print('\t\tdeform ratio set to {}'.format(deform_ratio))
+            else: 
+                if deform_mode == DeformationMode.PHYSICS: self.throw(118)
+                else: deform_ratio = 0
 
             if deform_mode == DeformationMode.PHYSICS:
                 print('\t\tsetting up physics')
@@ -446,8 +449,9 @@ class Sample(Exceptionable, Configurable, Saveable):
                     morph_count = self.search(Config.SAMPLE, 'morph_count')
                 else:
                     morph_count = 100
+                    
+                if deform_ratio == 0: self.throw(117)
 
-              
                 # title = 'morph count: {}'.format(morph_count)
                 sep_fascicles = self.search(Config.SAMPLE, "boundary_separation", "fascicles")
                 sep_nerve = None
