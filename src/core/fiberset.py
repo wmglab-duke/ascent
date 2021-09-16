@@ -19,7 +19,9 @@ import os
 import scipy.stats as stats
 
 # ascent
-from src.utils import *
+from src.utils import (Config, Configurable, DiamDistMode, Exceptionable, FiberGeometry,
+                       FiberXYMode, FiberZMode, MyelinatedSamplingType, MyelinationMode, Saveable,
+                       SetupMode, WriteMode, interparc)
 from .sample import Sample
 
 

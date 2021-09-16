@@ -15,7 +15,9 @@ import numpy as np
 import os
 
 # ascent
-from src.utils import *
+from src.utils import (Config, Configurable, Exceptionable, FiberGeometry, FiberXYMode,
+                       MyelinationMode, NeuronRunMode, Saveable, SearchAmplitudeIncrementMode,
+                       SetupMode, TerminationCriteriaMode, WriteMode)
 
 
 class HocWriter(Exceptionable, Configurable, Saveable):
