@@ -435,6 +435,10 @@ class Sample(Exceptionable, Configurable, Saveable):
                 self.throw(40)
 
             partially_deformed_nerve = None
+            
+            if 'deform_ratio' in self.search(Config.SAMPLE).keys():
+                deform_ratio = self.search(Config.SAMPLE, 'deform_ratio')
+                print('\t\tdeform ratio set to {}'.format(deform_ratio))
 
             if deform_mode == DeformationMode.PHYSICS:
                 print('\t\tsetting up physics')
@@ -443,10 +447,7 @@ class Sample(Exceptionable, Configurable, Saveable):
                 else:
                     morph_count = 100
 
-                if 'deform_ratio' in self.search(Config.SAMPLE).keys():
-                    deform_ratio = self.search(Config.SAMPLE, 'deform_ratio')
-                    print('\t\tdeform ratio set to {}'.format(deform_ratio))
-
+              
                 # title = 'morph count: {}'.format(morph_count)
                 sep_fascicles = self.search(Config.SAMPLE, "boundary_separation", "fascicles")
                 sep_nerve = None
@@ -485,9 +486,11 @@ class Sample(Exceptionable, Configurable, Saveable):
                     warnings.warn('NO DEFORMATION is happening! AND sep_nerve != 0, sep_nerve = {}'.format(sep_nerve))
                 else:
                     warnings.warn('NO DEFORMATION is happening!')
+                if deform_ratio>0: print('Since deform ratio>0, nerve boundary will be reshaped according to reshape nerve mode')
 
-            if nerve_mode is not NerveMode.NOT_PRESENT:
-                if deform_ratio != 1 and partially_deformed_nerve is not None:
+            if nerve_mode is NerveMode.PRESENT:
+                if deform_ratio == 0: pass
+                elif deform_ratio != 1 and partially_deformed_nerve is not None:
                     partially_deformed_nerve.shift(-np.asarray(list(partially_deformed_nerve.centroid()) + [0]))
                     slide.nerve = partially_deformed_nerve
                     slide.orientation_point = slide.nerve.points[slide.orientation_point_index][:2]
