@@ -158,6 +158,7 @@ def make_task(my_os: str, start_p: str, sim_p: str, inner: int, fiber: int, top:
                 '-c \"fiberD={:.1f}\" '
                 '-c \"deltaz={:.4f}\" '
                 '-c \"axonnodes={}\" '
+                '-c \"saveflag_end_ap_times=0\" '  # for backwards compatible, overwritten in launch.hoc if 1
                 '-c \"load_file(\\\"launch.hoc\\\")\" blank.hoc\n'.format(sim_p,
                                                                           inner,
                                                                           fiber,
@@ -186,6 +187,7 @@ def make_task(my_os: str, start_p: str, sim_p: str, inner: int, fiber: int, top:
                 '-c \"fiberD={}\" '
                 '-c \"deltaz={:.4f}\" '
                 '-c \"axonnodes={}\" '
+                '-c \"saveflag_end_ap_times=0\" '  # for backwards compatible, overwritten in launch.hoc if 1
                 '-c \"load_file(\\\"launch.hoc\\\")\" blank.hoc\n'.format(os.getcwd(),
                                                                           sim_path_win,
                                                                           inner,
@@ -300,7 +302,7 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
 
                 elif missing_total == 1:
                     stimamp_top, stimamp_bottom = get_thresh_bounds(sim_dir, sim_name, inner_ind_solo)
-                    start_path_solo = os.path.join(sim_path, 'start{}'.format('.sh' if OS == 'UNIX_LIKE' else '.bat'))
+                    start_path_solo = os.path.join(sim_path, 'start{}'.format('.sh' if OS == 'UNIX-LIKE' else '.bat'))
 
                     if inner_fiber_diam_key is not None:
                         diameter = get_diameter(inner_fiber_diam_key, inner_ind, fiber_ind)
