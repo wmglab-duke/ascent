@@ -22,7 +22,7 @@ import numpy as np
 import os
 
 # ascent
-from src.utils import Config, Configurable, Exceptionable, PopulateMode, SetupMode
+from src.utils import *
 
 
 class MockSample(Exceptionable, Configurable):
