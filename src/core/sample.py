@@ -114,9 +114,9 @@ class Sample(Exceptionable, Configurable, Saveable):
         """
         img = cv2.imread(path,-1)
 
-        if self.search(Config.SAMPLE, 'image_preprocessing',optional = True)['fill_holes']:
+        if self.search(Config.SAMPLE, 'image_preprocessing','fill_holes',optional = True)==True:
             img = binary_fill_holes(img)
-        removal_size = self.search(Config.SAMPLE, 'image_preprocessing',optional = True)['object_removal_area']
+        removal_size = self.search(Config.SAMPLE, 'image_preprocessing','object_removal_area',optional = True)
         if removal_size:
             img = morphology.remove_small_objects(img,removal_size)
         cv2.imwrite(path,img.astype(int)*255)
@@ -308,7 +308,13 @@ class Sample(Exceptionable, Configurable, Saveable):
                 orientation_centroid = trace.centroid()
             else:
                 print('No orientation tif found, but continuing. (Sample.populate)')
-
+                
+            #preprocess binary masks
+            for mask in ["COMPILED","INNERS","OUTERS","NERVE"]:
+                maskfile = getattr(MaskFileNames,mask)
+                if exists(maskfile):
+                    self.im_preprocess(getattr(maskfile,'value'))
+            
             # fascicles list
             fascicles: List[Fascicle] = []
 
