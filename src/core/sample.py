@@ -118,6 +118,7 @@ class Sample(Exceptionable, Configurable, Saveable):
             img = binary_fill_holes(img)
         removal_size = self.search(Config.SAMPLE, 'image_preprocessing','object_removal_area',optional = True)
         if removal_size:
+            if removal_size<0: self.throw(119)
             img = morphology.remove_small_objects(img,removal_size)
         cv2.imwrite(path,img.astype(int)*255)
         
