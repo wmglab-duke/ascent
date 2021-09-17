@@ -18,7 +18,7 @@ conda create -n ascent -y
 conda activate ascent
 conda install -y python=3.7
 "$CONDA_BIN/pip" install --upgrade pip setuptools wheel
-"$CONDA_BIN/pip" install pillow==5.2 numpy==1.16.* shapely==1.6.* matplotlib==3.2.* pyclipper==1.1.* pygame==1.9.* pymunk==5.6.* scipy==1.1.* pandas==0.25.* openpyxl==3.0.* opencv-python quantiphy
+"$CONDA_BIN/pip" install pillow==5.2 numpy==1.16.* shapely==1.6.* matplotlib==3.2.* pyclipper==1.1.* pygame==1.9.* pymunk==5.6.* scipy==1.1.* pandas==0.25.* openpyxl==3.0.* opencv-python quantiphy scikit-image
 conda install -y shapely
 rm =*  # weird bug where pip creates empty files named "=<version>"
 

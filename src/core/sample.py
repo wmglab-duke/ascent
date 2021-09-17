@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 import subprocess
 from shapely.geometry import LineString, Point
 from scipy.ndimage.morphology import binary_fill_holes
-from skimage import morphology 
+from skimage import morphology
 
 # ascent
 from src.core import Slide, Map, Fascicle, Nerve, Trace
@@ -61,20 +61,7 @@ class Sample(Exceptionable, Configurable, Saveable):
         self.add(SetupMode.NEW, Config.CI_PERINEURIUM_THICKNESS, os.path.join('config',
                                                                               'system',
                                                                               'ci_peri_thickness.json'))
-    def im_preprocess(self,path):
-        """
-        Performs cleaning operations on the input image
-        :param path: path to image which will be processed
-        """
-        img = cv2.imread(path,-1)
 
-        if self.search(Config.SAMPLE, 'image_preprocessing',optional = True)['fill_holes']:
-            img = binary_fill_holes(img)
-        removal_size = self.search(Config.SAMPLE, 'image_preprocessing',optional = True)['object_removal_area']
-        removal_size = self.search(Config.SAMPLE, 'image_preprocessing')['object_removal_area']
-        img = morphology.remove_small_objects(img,self.search(Config.SAMPLE, 'image_preprocessing')['object_removal_area'])
-        cv2.imwrite(path,img.astype(int)*255)
-        
     def init_map(self, map_mode: SetupMode) -> 'Sample':
         """
         Initialize the map. NOTE: the Config.SAMPLE json must have been externally added.
@@ -119,7 +106,21 @@ class Sample(Exceptionable, Configurable, Saveable):
             slide.generate_perineurium(fit)
         
         return self
-    
+
+    def im_preprocess(self,path):
+        """
+        Performs cleaning operations on the input image
+        :param path: path to image which will be processed
+        """
+        img = cv2.imread(path,-1)
+
+        if self.search(Config.SAMPLE, 'image_preprocessing',optional = True)['fill_holes']:
+            img = binary_fill_holes(img)
+        removal_size = self.search(Config.SAMPLE, 'image_preprocessing',optional = True)['object_removal_area']
+        if removal_size:
+            img = morphology.remove_small_objects(img,removal_size)
+        cv2.imwrite(path,img.astype(int)*255)
+        
     def get_factor(self, scale_bar_mask_path: str, scale_bar_length: float, scale_bar_is_literal: bool) -> 'Sample':
         """
         Returns scaling factor (micrometers per pixel)
@@ -267,17 +268,7 @@ class Sample(Exceptionable, Configurable, Saveable):
         elif scale_input_mode == ScaleInputMode.RATIO:
             scale_path = ''
         else: self.throw(108)
-        
-        #get scaling factor (to convert from pixels to microns)
-        if os.path.exists(scale_path) and scale_input_mode == ScaleInputMode.MASK:
-            factor = self.get_factor(scale_path, self.search(Config.SAMPLE, 'scale', 'scale_bar_length'),False)
-        elif scale_input_mode == ScaleInputMode.RATIO:
-            factor = self.get_factor(scale_path, self.search(Config.SAMPLE, 'scale', 'scale_ratio'),True)
-        else:
-            print(scale_path)
-            self.throw(19)
-        self.factor = factor
-        
+
         for slide_info in self.map.slides:
 
             orientation_centroid: Union[Tuple[float, float], None] = None
@@ -317,13 +308,7 @@ class Sample(Exceptionable, Configurable, Saveable):
                 orientation_centroid = trace.centroid()
             else:
                 print('No orientation tif found, but continuing. (Sample.populate)')
-            
-            #preprocess images
-            for mask in ["COMPILED","INNERS","OUTERS","NERVE"]:
-                maskfile = getattr(MaskFileNames,mask)
-                if exists(maskfile):
-                    self.im_preprocess(getattr(maskfile,'value'))
-            
+
             # fascicles list
             fascicles: List[Fascicle] = []
 
@@ -422,6 +407,15 @@ class Sample(Exceptionable, Configurable, Saveable):
             self.slides.append(slide)
 
             os.chdir(start_directory)
+            
+        #get scaling factor (to convert from pixels to microns)
+        if os.path.exists(scale_path) and scale_input_mode == ScaleInputMode.MASK:
+            factor = self.get_factor(scale_path, self.search(Config.SAMPLE, 'scale', 'scale_bar_length'),False)
+        elif scale_input_mode == ScaleInputMode.RATIO:
+            factor = self.get_factor(scale_path, self.search(Config.SAMPLE, 'scale', 'scale_ratio'),True)
+        else:
+            print(scale_path)
+            self.throw(19)
             
         #scale to microns
         self.scale(factor)

@@ -1,5 +1,5 @@
 # package installation
-conda create -n ascent python=3.7 pip setuptools wheel anaconda shapely numpy==1.16.* matplotlib==3.2.* scipy==1.1.* pandas==0.25.* openpyxl==3.0.* pillow==5.2
+conda create -n ascent python=3.7 pip setuptools wheel anaconda shapely scikit-image numpy==1.16.* matplotlib==3.2.* scipy==1.1.* pandas==0.25.* openpyxl==3.0.* pillow==5.2
 conda activate ascent
 pip install pyclipper==1.1.* pygame==1.9.* pymunk==5.6.* opencv-python quantiphy
 
