@@ -471,6 +471,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             fiber_geometry_mode_name: str = self.search(Config.SIM, 'fibers', 'mode')
 
             # use key from above to get myelination mode from fiber_z
+            diams = []
             if super_sample:
                 myelinated = False
             else:
@@ -481,7 +482,6 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                     "myelinated"
                 )
 
-                diams = []
                 my_z_seed = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'seed')
                 diameter = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'diameter')
                 diam_distribution: bool = True if type(diameter) is dict else False
