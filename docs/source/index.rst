@@ -27,6 +27,9 @@ Cite both the paper and the DOI for the release of the repository used for your 
    :caption: Contents:
 
    S1-Metadata-required-to-model-an-in-vivo-experiment-using-the-ASCENT-pipeline
+   S2-Installation
+   S3-ASCENT-data-hierarchy
+   S4-Your-first-run
 
 Indices and tables
 ==================
