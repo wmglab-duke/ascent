@@ -477,6 +477,6 @@
   },
   {
     "code": 120,
-    "text": "Object removal area (sample.json) cannot be negative"
+    "text": "Object removal area (image_preprocessing->object_removal_area->sample.json) cannot be negative"
   }
 ]
