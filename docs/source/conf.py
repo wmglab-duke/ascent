@@ -31,7 +31,11 @@ release = 'v1.0.3'
 
 extensions = ['myst_parser']
 
-source_suffix = ['.md','.rst']
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.txt': 'restructuredtext',
+    '.md': 'markdown',
+}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
