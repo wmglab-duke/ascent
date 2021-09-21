@@ -29,7 +29,7 @@ release = 'v1.0.3'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 
-extensions = []
+extensions = ['myst_parser']
 
 source_suffix = ['.md','.rst']
 
