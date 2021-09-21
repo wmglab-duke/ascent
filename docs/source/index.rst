@@ -30,5 +30,9 @@ Cite both the paper and the DOI for the release of the repository used for your 
    S2-Installation
    S3-ASCENT-data-hierarchy
    S4-Your-first-run
-
-
+   S5-Template-for-methods-reporting
+   S6-Enums
+   S7-JSON-configuration-files
+   S8-JSON-file-parameter-guide
+   S9-Python-utility-classes
+   S10-Submitting-NEURON-jobs
