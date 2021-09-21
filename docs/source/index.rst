@@ -31,9 +31,4 @@ Cite both the paper and the DOI for the release of the repository used for your 
    S3-ASCENT-data-hierarchy
    S4-Your-first-run
 
-Indices and tables
-==================
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
