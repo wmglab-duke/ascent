@@ -36,3 +36,8 @@ Cite both the paper and the DOI for the release of the repository used for your 
    S8-JSON-file-parameter-guide
    S9-Python-utility-classes
    S10-Submitting-NEURON-jobs
+   S11-Morphology-files
+   S12-Python-MockSample-class-for-creating-binary-masks-of-nerve-morphology
+   S13-Python-classes-for-representing-nerve-morphology-(Sample)
+   S14-Creating-sample-specific-nerve-morphologies-in-COMSOL
+   S15-Micro-Leads-cuff-measurements
