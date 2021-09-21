@@ -426,8 +426,9 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             model_length = self.search(Config.MODEL, 'medium', 'proximal', 'length') if (
                     override_length is None) else override_length
 
-            if not ('min' in self.configs['sims']['fibers']['z_parameters'].keys() and 'max' in
-                    self.configs['sims']['fibers']['z_parameters'].keys()):
+            if not 'min' in self.configs['sims']['fibers']['z_parameters'].keys() or \
+                    not 'max' in self.configs['sims']['fibers']['z_parameters'].keys() or \
+                    override_length is not None:
                 fiber_length = model_length if override_length is None else override_length
                 self.configs['sims']['fibers'][FiberZMode.parameters.value]['min'] = 0
                 self.configs['sims']['fibers'][FiberZMode.parameters.value]['max'] = fiber_length
