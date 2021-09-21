@@ -58,11 +58,11 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
         xy_mode_name: str = self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode')
         xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
-        
+
         fibers_xy = self._generate_xy(sim_directory)
         self.out_to_fib, self.out_to_in = self._generate_maps(fibers_xy)
         self.fibers = self._generate_z(fibers_xy, super_sample=super_sample)
-        
+
         return self
 
     def write(self, mode: WriteMode, path: str):
@@ -578,7 +578,8 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                                                         delta_z,
                                                         x, y,
                                                         z_shift_to_center_in_model_range + z_shift_to_center_in_fiber_range)
-                    if np.amax(np.array(fiber_pre)[:,2])-np.amin(np.array(fiber_pre)[:,2])>fiber_length: self.throw(119)
+                    if np.amax(np.array(fiber_pre)[:, 2]) - np.amin(np.array(fiber_pre)[:, 2]) > fiber_length:
+                        self.throw(119)
                     if diam_distribution:
                         fiber = {'diam': diam, 'fiber': fiber_pre}
                     else:
@@ -615,7 +616,8 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                                                         delta_z,
                                                         x, y,
                                                         z_shift_to_center_in_model_range)
-                    if np.amax(np.array(fiber_pre)[:,2])-np.amin(np.array(fiber_pre)[:,2])>fiber_length: self.throw(119)
+                    if np.amax(np.array(fiber_pre)[:, 2]) - np.amin(
+                            np.array(fiber_pre)[:, 2]) > fiber_length: self.throw(119)
                     if diam_distribution:
                         fiber = {'diam': diam, 'fiber': fiber_pre}
                     else:
