@@ -442,12 +442,13 @@ class Sample(Exceptionable, Configurable, Saveable):
                     morph_count = self.search(Config.SAMPLE, 'morph_count')
                 else:
                     morph_count = 100
-
+                    
                 if 'deform_ratio' in self.search(Config.SAMPLE).keys():
                     deform_ratio = self.search(Config.SAMPLE, 'deform_ratio')
                     if deform_ratio == 0: self.throw(117)
                     print('\t\tdeform ratio set to {}'.format(deform_ratio))
                 else: self.throw(118)
+
                 # title = 'morph count: {}'.format(morph_count)
                 sep_fascicles = self.search(Config.SAMPLE, "boundary_separation", "fascicles")
                 sep_nerve = None
@@ -475,6 +476,7 @@ class Sample(Exceptionable, Configurable, Saveable):
                 for move, angle, fascicle in zip(movements, rotations, slide.fascicles):
                     fascicle.shift(list(move) + [0])
                     fascicle.rotate(angle)
+                    
             elif deform_mode == DeformationMode.JITTER:
                 slide.reposition_fascicles(slide.reshaped_nerve(reshape_nerve_mode), 10)
             else:  # must be DeformationMode.NONE
@@ -487,7 +489,7 @@ class Sample(Exceptionable, Configurable, Saveable):
                 else:
                     warnings.warn('NO DEFORMATION is happening!')
 
-            if nerve_mode is not NerveMode.NOT_PRESENT:
+            if nerve_mode is NerveMode.PRESENT and deform_mode != DeformationMode.NONE:
                 if deform_ratio != 1 and partially_deformed_nerve is not None:
                     partially_deformed_nerve.shift(-np.asarray(list(partially_deformed_nerve.centroid()) + [0]))
                     slide.nerve = partially_deformed_nerve
@@ -497,6 +499,7 @@ class Sample(Exceptionable, Configurable, Saveable):
                     slide.orientation_point = slide.nerve.points[slide.orientation_point_index][:2]
                     slide.nerve = slide.reshaped_nerve(reshape_nerve_mode)
                     slide.nerve.offset(distance=sep_nerve)
+                    
         #scale with ratio = 1 (no scaling happens, but connects the ends of each trace to itself)
         self.scale(1)
         
