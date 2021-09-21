@@ -31,6 +31,8 @@ release = 'v1.0.3'
 
 extensions = []
 
+source_suffix = ['.md','.rst']
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
