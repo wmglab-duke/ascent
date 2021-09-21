@@ -19,7 +19,7 @@
 
 project = 'ASCENT'
 copyright = '2021, authors_plceholder'
-author = 'authors_plceholder'
+author = 'authors_placeholder'
 
 # The full version, including alpha/beta/rc tags
 release = 'v1.0.3'
@@ -30,7 +30,7 @@ release = 'v1.0.3'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['myst_parser','sphinx_rtd_theme']
+extensions = []
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -40,11 +40,7 @@ templates_path = ['_templates']
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
 
-source_suffix = {
-    '.rst': 'restructuredtext',
-    '.txt': 'markdown',
-    '.md': 'markdown',
-}
+source_suffix = ['.md','.rst']
 
 # -- Options for HTML output -------------------------------------------------
 
