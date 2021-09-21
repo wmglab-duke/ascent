@@ -18,6 +18,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import subprocess
 from shapely.geometry import LineString, Point
+from scipy.ndimage.morphology import binary_fill_holes
+from skimage import morphology
 
 # ascent
 from src.core import Slide, Map, Fascicle, Nerve, Trace
@@ -104,7 +106,22 @@ class Sample(Exceptionable, Configurable, Saveable):
             slide.generate_perineurium(fit)
         
         return self
-    
+
+    def im_preprocess(self,path):
+        """
+        Performs cleaning operations on the input image
+        :param path: path to image which will be processed
+        """
+        img = cv2.imread(path,-1)
+
+        if self.search(Config.SAMPLE, 'image_preprocessing','fill_holes',optional = True)==True:
+            img = binary_fill_holes(img)
+        removal_size = self.search(Config.SAMPLE, 'image_preprocessing','object_removal_area',optional = True)
+        if removal_size:
+            if removal_size<0: self.throw(119)
+            img = morphology.remove_small_objects(img,removal_size)
+        cv2.imwrite(path,img.astype(int)*255)
+        
     def get_factor(self, scale_bar_mask_path: str, scale_bar_length: float, scale_bar_is_literal: bool) -> 'Sample':
         """
         Returns scaling factor (micrometers per pixel)
@@ -292,7 +309,13 @@ class Sample(Exceptionable, Configurable, Saveable):
                 orientation_centroid = trace.centroid()
             else:
                 print('No orientation tif found, but continuing. (Sample.populate)')
-
+                
+            #preprocess binary masks
+            for mask in ["COMPILED","INNERS","OUTERS","NERVE"]:
+                maskfile = getattr(MaskFileNames,mask)
+                if exists(maskfile):
+                    self.im_preprocess(getattr(maskfile,'value'))
+            
             # fascicles list
             fascicles: List[Fascicle] = []
 

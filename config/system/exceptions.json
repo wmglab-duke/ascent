@@ -476,7 +476,7 @@
     "text": "Deformation mode is set to physics, but no deform ratio is defined in sample.json"
   },
   {
-    "code": 119,
-    "text": "Fiber coordinates generated exceed fiber length"
+    "code": 120,
+    "text": "Object removal area (sample.json) cannot be negative"
   }
 ]
