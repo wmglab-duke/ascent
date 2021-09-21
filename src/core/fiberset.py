@@ -616,6 +616,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                                                         delta_z,
                                                         x, y,
                                                         z_shift_to_center_in_model_range)
+                    if np.any(np.array(fiber_pre)[:,2]>fiber_length): self.throw(119)
                     if diam_distribution:
                         fiber = {'diam': diam, 'fiber': fiber_pre}
                     else:
