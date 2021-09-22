@@ -1,4 +1,5 @@
-###  1.1 (Pre-Java)
+# S30: Python simulation class
+##  1.1 (Pre-Java)
 
 The user is unlikely to interface directly with Simulation’s
 `resolve_factors()` method as it operates behind the scenes. The method
@@ -8,7 +9,7 @@ and “waveform” JSON Objects until the indicated number of dimensions
 prevent erroneous generation of NEURON simulations) has been reached.
 The parameters over which the user has indicated to sweep in ***Sim***
 are saved to the Simulation class as a dictionary named “factors” with
-the path to each parameter in ***Sim***. 
+the path to each parameter in ***Sim***.
 
 The required parameters to define each type of waveform are in [S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide). The Python Waveform class is configured with ***Sim***, which contains
 all parameters that define the Waveform. Since FEMs may have
@@ -19,7 +20,7 @@ defined in ***Sim*** as `“pulse_repetition_freq”`. The
 `write_waveforms()` method instantiates a Python Waveform class for each
 `“wave_set”` (i.e., one combination of stimulation parameters).
 
-###  1.2 (Post-Java)
+##  1.2 (Post-Java)
 
 The unique combinations of ***Sim*** parameters are found with a
 Cartesian product from the listed values for individual parameters in
@@ -57,4 +58,4 @@ and is therefore unique. Analogously, `export_run()` creates a copy of
 ***Run*** within the target directory in a directory named `runs/`. Lastly,
 `export_neuron_files()` is used to create a copy of the NEURON `*.hoc`
 and `*.mod` files in the target directory in directories named
-`“HOC_Files”` and `“MOD_Files”`, respectively. 
+`“HOC_Files”` and `“MOD_Files”`, respectively.

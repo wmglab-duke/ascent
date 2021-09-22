@@ -1,7 +1,8 @@
-### 1.1 Convergence analysis example
+# S34: Convergence analysis example
+## 1.1 Convergence analysis example
 
 \*Note: The following convergence analysis was performed for a rat
-cervical vagus nerve and is provided as an illustrative example. 
+cervical vagus nerve and is provided as an illustrative example.
 
 The outer boundaries of the model (assigned to electrical ground) were
 initially set to dimensions that are known to be excessively large in
@@ -51,5 +52,5 @@ unit length (based on INL=100\*D). We found that the FEM length needed
 to be longer for 10 µm diameter myelinated fibers (12.5 mm) than 2 µm
 diameter myelinated fibers (6.25 mm).
 
-### 1.2 References
-1. Licursi de Alcântara AC, Salgado HC, Sassoli Fazan VP. Morphology and morphometry of the vagus nerve in male and female spontaneously  hypertensive rats. Brain Res. 2008 Mar;1197:170–80. 
+## 1.2 References
+1. Licursi de Alcântara AC, Salgado HC, Sassoli Fazan VP. Morphology and morphometry of the vagus nerve in male and female spontaneously  hypertensive rats. Brain Res. 2008 Mar;1197:170–80.

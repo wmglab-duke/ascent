@@ -1,3 +1,4 @@
+# S19: Cuff placement on nerve
 This section provides an overview of how the cuff is placed on the
 nerve. The `compute_cuff_shift()` method within Runner (`src/runner.py`)
 determines the cuff’s rotation around the nerve and translation in the
@@ -11,7 +12,7 @@ nerves without nerve trace). Importantly, the nerve sample cross section
 is never moved from or rotated around the origin in COMSOL. By
 maintaining consistent nerve location across all ***Model’s*** for a
 ***Sample,*** the coordinates in `fibersets/` are correct for any
-orientation of a cuff on the nerve. 
+orientation of a cuff on the nerve.
 
 ASCENT has different `CuffShiftModes` (i.e., `“cuff_shift”` parameter in
 ***Model***) that control the translation of the cuff (i.e., “shift”
@@ -106,10 +107,10 @@ multiplicative coefficient for the parameter key to include in a sum of
 all key-value products. For example, in `Purdue.json`:
 
 ```
-"offset": {  
+"offset": {
   "sep_wire_P": 1, // separation between outer boundary of wire contact and internal
-                 // surface of insulator  
-  "r_wire_P": 2 // radius of the wire contact’s gauge  
+                 // surface of insulator
+  "r_wire_P": 2 // radius of the wire contact’s gauge
 }
 ```
 
@@ -123,5 +124,3 @@ The div element has its own alignment attribute, align.
 <div align="center">
 (1) * <i>sep_wire_P</i> + (2) * <i>r_wire_P</i>
 </div>
-
-

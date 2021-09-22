@@ -1,17 +1,18 @@
+# S21: Implementation of NEURON fiber models
 - [1.1 Myelinated fiber models](https://github.com/wmglab-duke/ascent/wiki/S21:-Implementation-of-NEURON-fiber-models#11-myelinated-fiber-models)
   - [1.1.1 MRG discrete diameter](https://github.com/wmglab-duke/ascent/wiki/S21:-Implementation-of-NEURON-fiber-models#111-mrg-discrete-diameter-as-previously-published)
   - [1.1.2 MRG interpolated diameters](https://github.com/wmglab-duke/ascent/wiki/S21:-Implementation-of-NEURON-fiber-models#112-mrg-interpolated-diameters)
 - [1.2 Unmyelinated Fiber Models](https://github.com/wmglab-duke/ascent/wiki/S21:-Implementation-of-NEURON-fiber-models#12-unmyelinated-fiber-models)
 - [1.3 References](https://github.com/wmglab-duke/ascent/wiki/S21:-Implementation-of-NEURON-fiber-models#13-references)
 
-### 1.1 Myelinated fiber models
+## 1.1 Myelinated fiber models
 
 The `CreateAxon_Myel.hoc` file is loaded in `Wrapper.hoc` if the user
 chooses either `“MRG_DISCRETE”` or `“MRG_INTERPOLATION”`. The length of
 each section in NEURON varies depending on both the diameter and the
-“FiberGeometry” mode chosen in ***Sim***. 
+“FiberGeometry” mode chosen in ***Sim***.
 
-#### 1.1.1 MRG discrete diameter (as previously published)
+### 1.1.1 MRG discrete diameter (as previously published)
 
 The “FiberGeometry” mode `“MRG_DISCRETE”` in ***Sim*** instructs the
 program to simulate a double cable structure for mammalian myelinated
@@ -26,7 +27,7 @@ the index of the discrete diameter in “diameters”. The parameters are
 used by the Fiberset class to create `fibersets/` (i.e., coordinates to
 probe `potentials/` from COMSOL) for MRG fibers.
 
-#### 1.1.2 MRG interpolated diameters
+### 1.1.2 MRG interpolated diameters
 
 The “FiberGeometry” mode `“MRG_INTERPOLATION”` in ***Sim*** instructs the
 program to simulate a double cable structure for mammalian myelinated
@@ -66,16 +67,16 @@ upper and lower bound stimulation amplitudes were within 1%.
 
 Figure B. Comparison of thresholds between the originally published models and the interpolation of the MRG fiber diameters (evaluated at the original diameters). Thresholds are expected to vary between the originally published models and the interpolated fiber geometries given their slightly different ultrastructure parameters (Figure A). Used original MRG thresholds as reference.
 
-### 1.2 Unmyelinated Fiber Models
+## 1.2 Unmyelinated Fiber Models
 
 The pipeline includes several unmyelinated (i.e., C-fiber) models
 \[3-5\]. Users should be aware of the `“delta_zs”` parameter that
 they are using in `config/system/fiber_z.json`, which controls the
 spatial discretization of the fiber (i.e., the length of each section).
 
-### 1.3 References
-1. McIntyre CC, Grill WM, Sherman DL, Thakor N V. Cellular effects of deep brain stimulation: model-based analysis of activation and  inhibition. J Neurophysiol. 2004 Apr;91(4):1457–69. 
-2. 	McIntyre CC, Richardson AG, Grill WM. Modeling the excitability of mammalian nerve fibers: influence of afterpotentials on the recovery cycle. J Neurophysiol. 2002 Feb;87(2):995–1006. 
-3. 	Sundt D, Gamper N, Jaffe DB. Spike propagation through the dorsal root ganglia in an unmyelinated sensory neuron: a modeling study. J Neurophysiol. 2015 Dec;114(6):3140–53. 
-4. 	Tigerholm J, Petersson ME, Obreja O, Lampert A, Carr R, Schmelz M, et al. Modeling activity-dependent changes of axonal spike conduction in primary afferent C-nociceptors. J Neurophysiol. 2014 May;111(9):1721–35. 
-5. 	Rattay F, Aberham M. Modeling axon membranes for functional electrical stimulation. IEEE Trans Biomed Eng. 1993 Dec;40(12):1201–9. 
+## 1.3 References
+1. McIntyre CC, Grill WM, Sherman DL, Thakor N V. Cellular effects of deep brain stimulation: model-based analysis of activation and  inhibition. J Neurophysiol. 2004 Apr;91(4):1457–69.
+2. 	McIntyre CC, Richardson AG, Grill WM. Modeling the excitability of mammalian nerve fibers: influence of afterpotentials on the recovery cycle. J Neurophysiol. 2002 Feb;87(2):995–1006.
+3. 	Sundt D, Gamper N, Jaffe DB. Spike propagation through the dorsal root ganglia in an unmyelinated sensory neuron: a modeling study. J Neurophysiol. 2015 Dec;114(6):3140–53.
+4. 	Tigerholm J, Petersson ME, Obreja O, Lampert A, Carr R, Schmelz M, et al. Modeling activity-dependent changes of axonal spike conduction in primary afferent C-nociceptors. J Neurophysiol. 2014 May;111(9):1721–35.
+5. 	Rattay F, Aberham M. Modeling axon membranes for functional electrical stimulation. IEEE Trans Biomed Eng. 1993 Dec;40(12):1201–9.

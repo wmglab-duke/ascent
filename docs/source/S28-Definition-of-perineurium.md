@@ -1,4 +1,5 @@
-### 1.1 Definition of perineurium
+# S28: Definition of perineurium
+## 1.1 Definition of perineurium
 
 The perineurium is a thin highly resistive layer of connective tissue
 and has a profound impact on thresholds of activation and block. Our
@@ -20,7 +21,7 @@ The sheet resistance ![f4] is defined as the sheet thickness
 
 ![f2]
 
-Our previously published work quantified the relationship between fascicle diameter and perineurium thickness \[2\] (Table A). 
+Our previously published work quantified the relationship between fascicle diameter and perineurium thickness \[2\] (Table A).
 
 Table A. Previously published relationships between fascicle diameter and
 perineurium thickness.
@@ -46,10 +47,10 @@ modes:
     explicitly defined in either `materials.json` or ***Model*** without
     any corrections for temperature or frequency.
 
-### 1.2 References
+## 1.2 References
 1. Pelot NA, Behrend CE, Grill WM. On the parameters used in finite element modeling of compound peripheral nerves. J Neural Eng [Internet]. 2019;16(1):16007. Available from: http://dx.doi.org/10.1088/1741-2552/aaeb0c
 2. 	Pelot NA, Goldhagen GB, Cariello JE, Musselman ED, Clissold KA, Ezzell JA, et al. Quantified Morphology of the Cervical and Subdiaphragmatic Vagus Nerves of Human, Pig, and Rat. Front Neurosci [Internet]. 2020;14:1148. Available from: https://www.frontiersin.org/article/10.3389/fnins.2020.601479
-3. 	Weerasuriya A, Spangler RA, Rapoport SI, Taylor RE. AC impedance of the perineurium of the frog sciatic nerve. Biophys J. 1984 Aug;46(2):167–74. 
+3. 	Weerasuriya A, Spangler RA, Rapoport SI, Taylor RE. AC impedance of the perineurium of the frog sciatic nerve. Biophys J. 1984 Aug;46(2):167–74.
 
 [f1]: https://chart.apis.google.com/chart?cht=tx&chl=\vec{n}\cdot\vec{J_{1}}=\frac{1}{\rho_{s}}(V_{1}-V_{2})
 [f2]: https://chart.apis.google.com/chart?cht=tx&chl=\rho_{s}=\frac{d_{s}}{\sigma_{s}}

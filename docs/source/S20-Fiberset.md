@@ -1,3 +1,4 @@
+# S20: Fiberset
 Runner’s `run()` method first loads JSON configuration files for
 ***Sample***, ***Model***, and ***Sim*** into memory and instantiates a
 Python Sample class. The Sample instance produces two-dimensional CAD
@@ -16,7 +17,7 @@ containing NEURON code and input data for simulating fiber responses for
 a single ***Sample***, ***Model***, fiberset, waveform, and contact
 weighting. Each instance of the Simulation class is saved as a Python
 object using `Saveable` ([S9 Text](https://github.com/wmglab-duke/ascent/wiki/S9:-Python-utility-classes)), which is used for resuming operations after the
-`handoff()` method to Java is completed. 
+`handoff()` method to Java is completed.
 
 Within the `write_fibers()` method of the Python Simulation class, the
 Python Fiberset class is instantiated with an instance of the Python

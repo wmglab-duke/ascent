@@ -1,3 +1,4 @@
+# S29: Data interchange between COMSOL and NEURON
 The user is unlikely to interface directly with ModelWrapper’s
 `extractAllPotentials()` method in Java as it operates behind the scenes.
 The method takes input arguments for the project path and a run path.
@@ -5,7 +6,7 @@ Using the run path, the method loads ***Run***, and constructs lists of
 ***Model*** and ***Sim*** for which it will call `extractPotentials()` for
 each fiberset. COMSOL is expecting a (3 ⨉ *n*)
 matrix of coordinates (Double[3][n]), defining the
-(x,y,z)-coordinates for each of *n* points. 
+(x,y,z)-coordinates for each of *n* points.
 
 The Java COMSOL API methods `setInterpolationCoordinates()` and `getData()`
 for a model object are fast compared to the time for a machine to load a

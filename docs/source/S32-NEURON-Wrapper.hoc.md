@@ -1,3 +1,4 @@
+# S32: NEURON Wrapper.hoc
 - [1.1 Create fiber model](https://github.com/wmglab-duke/ascent/wiki/S32:-NEURON-Wrapper.hoc#11-create-fiber-model)
 - [1.2 Intracellular stimulus](https://github.com/wmglab-duke/ascent/wiki/S32:-NEURON-Wrapper.hoc#12-intracellular-stimulus)
 - [1.3 Extracellular stimulus](https://github.com/wmglab-duke/ascent/wiki/S32:-NEURON-Wrapper.hoc#13-extracellular-stimulus)
@@ -16,7 +17,7 @@ current amplitudes. For simulation of fiber response to set amplitudes,
 the user may save state variables at each compartment in NEURON to file
 at discrete times and/or locations.
 
-###  1.1 Create fiber model 
+##  1.1 Create fiber model
 
 Based on the flag for “fiber\_type” set in ```launch.hoc``` (associated by a
 fiber type parameter in ```fiber_z.json``` and ```FiberGeometryMode``` ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide))),
@@ -26,7 +27,7 @@ discretization, i.e., ```“GeometryBuilder.hoc”``` for myelinated fibers and
 segments created and connected in NEURON have lengths that correspond to
 the coordinates of the input potentials.
 
-###  1.2 Intracellular stimulus
+##  1.2 Intracellular stimulus
 
 For simulations of block threshold, an intracellular test pulse is
 delivered at one end of the fiber to test if the cuff electrode (i.e.,
@@ -39,7 +40,7 @@ frequency, pulse amplitude, and node/section index of the intracellular
 stimulus ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)). For simulating activation thresholds, the intracellular
 stimulation amplitude should be set to zero.
 
-###  1.3 Extracellular stimulus
+##  1.3 Extracellular stimulus
 
 To simulate response of individual fibers to electrical stimulation, we
 use NEURON’s extracellular mechanisms to apply the electric potential
@@ -52,7 +53,7 @@ Analogously, we read in the potentials for the fiber being simulated
 from ```data/inputs/``` using the ```VeSpace_read()``` procedure within
 ```ExtracellularStim_Space.hoc```.
 
-###  1.4 Recording
+##  1.4 Recording
 
 The NEURON simulation code contains functionality ready to record and
 save to file the values of state variables at discrete spatial locations
@@ -63,7 +64,7 @@ amplitude, transmembrane potential, and gating parameters using
 ```Recording.hoc```. The recording tools are particularly useful for
 generating data to troubleshoot and visualize simulations.
 
-### 1.5 RunSim
+## 1.5 RunSim
 
 Our procedure ```RunSim``` is responsible for simulating the response of the
 model fiber to intracellular and extracellular stimulation. Before the
@@ -83,13 +84,13 @@ extracellular stimulation amplitude was above or below threshold, as
 indicated by the presence or absence of an action potential for
 activation and block thresholds, respectively.
 
-### 1.6 FindThresh
+## 1.6 FindThresh
 
 The procedure ```FindThresh``` performs a binary search for activation and
 block thresholds ([S22 Text](https://github.com/wmglab-duke/ascent/wiki/S22:-Simulation-protocols)).
 
-### 1.7 Save outputs to file
+## 1.7 Save outputs to file
 
 At the end of the NEURON simulation, the program saves state variables
 as indicated with saveflags, CPU time, and threshold values. Output
-files are saved to the ```data/outputs/``` directory within its ```n_sim``` folder. 
+files are saved to the ```data/outputs/``` directory within its ```n_sim``` folder.

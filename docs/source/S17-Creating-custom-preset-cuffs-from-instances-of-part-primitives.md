@@ -1,3 +1,4 @@
+# S17: Creating custom preset cuffs from instances of part primitives
 The operations by which cuffs are added to the COMSOL “model” object are
 contained in the Java Part class (`src/model/Part.java`). A complete cuff
 design is defined by a JSON file (e.g., `Purdue.json`) stored in
@@ -16,7 +17,7 @@ use our “preset” cuffs as a guide in constructing their own custom
 cuffs, which require a unique file name. Once a cuff is defined as a
 “preset” in `config/system/cuffs/` as its own JSON file, the user may
 choose to place the cuff on a nerve in COMSOL using the “preset”
-parameter in ***Model*** ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)). 
+parameter in ***Model*** ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)).
 
 We provide a COMSOL file in `examples/parts/sandbox.mph` that contains our
 library of “Geometry Parts” (i.e., part primitives) for users to
@@ -126,7 +127,7 @@ Object, the user must define:
     match the values entered in the COMSOL GUI for a part (i.e.,
     “Settings” -\> “Input Parameters” panel) in
     `examples/parts/sandbox.mph`.
-    
+
       - Key-value pairs in this JSON Object will vary depending on the
         part primitive as defined in “type”. For each parameter key, the
         value is a String containing a mathematical expression (of
@@ -137,13 +138,13 @@ Object, the user must define:
     recessed domains will have one material for the conductor and one
     material for the recessed domain as the part instance will create
     two separate domains with independent selections)
-    
+
       - `“info”`: The value (String) is the function of the domain in the
         FEM (i.e., “medium”, cuff “fill”, cuff “insulator”, contact
         “conductor”, and contact “recess”) that is used to assign
         material properties to a selected domain. The value will match a
         key in the “conductivities” JSON Object in ***Model***.
-    
+
       - `“label_index”`: The value (Integer) corresponds to the index of
         the selection for the domain (in `im.labels`, defined
         independently for each primitive case in

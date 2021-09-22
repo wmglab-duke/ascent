@@ -1,4 +1,5 @@
-### 1.1 ModelWrapper
+# S23: ModelWrapper Class
+## 1.1 ModelWrapper
 The `ModelWrapper` class in Java takes inputs of the ASCENT_PROJECT_PATH
 (`env.json`, [S7](https://github.com/wmglab-duke/ascent/wiki/S7:-JSON-configuration-files) and [S8](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide) Text) and a list of ***Run*** paths. `ModelWrapper` contains a COMSOL
 “model” object, model source directory (String), model destination
@@ -8,7 +9,7 @@ accessor methods `getModel()` for retrieving the model object, `getRoot()`
 for retrieving the project path’s root String, and `getDest()` for
 retrieving the default saving destination String. `ModelWrapper` also has
 mutator methods for changing an instance’s root String (`setRoot()`) and
-default saving destination String (`setDest()`). 
+default saving destination String (`setDest()`).
 
 `ModelWrapper’s` `main()` method starts an instance of COMSOL and loads
 ***Run***, ***Sample***, ***Model***, and ***Sim*** configurations as
@@ -40,5 +41,5 @@ fails. For each ***Model***, the program appends a Boolean to
 `“models_exit_status”` in ***Run*** (true if successful, false if not
 successful).
 
-### 1.2 References
+## 1.2 References
 1. Pelot NA, Thio BJ, Grill WM. Modeling Current Sources for Neural Stimulation in COMSOL. Front Comput Neurosci [Internet]. 2018;12:40. Available from: https://www.frontiersin.org/article/10.3389/fncom.2018.00040

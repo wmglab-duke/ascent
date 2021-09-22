@@ -1,7 +1,8 @@
+# S33: Data analysis tools
 - [1.1 Python Query class](https://github.com/wmglab-duke/ascent/wiki/S33:-Data-analysis-tools#11-python-query-class)
 - [1.2 Video generation for NEURON state variables](https://github.com/wmglab-duke/ascent/wiki/S33:-Data-analysis-tools#12-video-generation-for-neuron-state-variables)
 
-### 1.1 Python Query class
+## 1.1 Python Query class
 
 The general usage of Query is as follows:
 
@@ -15,7 +16,7 @@ The general usage of Query is as follows:
 
 3.  The search results are in the form of a hierarchy of ***Sample***,
     ***Model***, and ***Sim*** indices, which can be accessed using the
-    `summary()` method. 
+    `summary()` method.
 
 Using this “summary” of results, the user is then able to use various
 convenience methods provided by the Query class to build paths to
@@ -66,7 +67,7 @@ convenience methods are included in `examples/analysis/`.
 
   - `plot_waveform.py`
 
-### 1.2 Video generation for NEURON state variables
+## 1.2 Video generation for NEURON state variables
 
 In `examples/analysis/` we provide a script, `plot_video.py`, that creates
 an animation of saved state variables as a function of space and time

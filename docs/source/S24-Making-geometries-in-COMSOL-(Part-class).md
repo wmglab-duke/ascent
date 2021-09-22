@@ -1,4 +1,5 @@
-###  1.1 Part.createEnvironmentPartPrimitive()
+# S24: Making geometries in COMSOL (Part class)
+##  1.1 Part.createEnvironmentPartPrimitive()
 
 The `createEnvironmentPartPrimitive()` method in Java
 (`src/model/Part.java`) creates a “part” within the “Geometry Parts” node
@@ -14,9 +15,9 @@ accessed instead with the key “MEDIUM” in the `IdentifierManager`, thereby
 improving readability and accessibility when materials and boundary
 conditions are assigned in the `createEnvironmentPartInstance()` method.
 Furthermore, if the operations of a part primitive are modified, the
-indexing of the `csel<#>` labels are automatically handled. 
+indexing of the `csel<#>` labels are automatically handled.
 
-###  1.2 Part.createCuffPartPrimitive()
+##  1.2 Part.createCuffPartPrimitive()
 
 The `createCuffPartPrimitive()` method in Java (`src/model/Part.java`) is
 analogous to `createEnvironmentPartPrimitive()`, except that it contains
@@ -29,7 +30,7 @@ fill (e.g., saline, mineral oil), and specific interactions of a cuff
 insulator and electrode contact (e.g., LivaNova-inspired helical coil)
 ([S16 Text](https://github.com/wmglab-duke/ascent/wiki/S16:-Library-of-part-primitives-for-electrode-contacts-and-cuffs)).
 
-###  1.3 Part Instances
+##  1.3 Part Instances
 
 Part instances are a COMSOL Geometry Feature (`“pi<#>”`) in the
 “Geometry” node based on user-defined input parameters stored in
@@ -38,7 +39,7 @@ is an instantiation of a part primitive previously defined in the COMSOL
 “model” object and will take specific form based on its input
 parameters.
 
-#### 1.3.1 Part.createEnvironmentPartInstance()
+### 1.3.1 Part.createEnvironmentPartInstance()
 
 The `createEnvironmentPartInstance()` method in Java creates a “part
 instance” in COMSOL’s “Geometry” node based on a primitive previously
@@ -51,7 +52,7 @@ the medium part stored in the `identifierManager`), an instance of
 Object in ***Model***, the parameters required to instantiate the
 environment part primitive are defined.
 
-#### 1.3.2 Part.createCuffPartInstance()
+### 1.3.2 Part.createCuffPartInstance()
 
 The `createCuffPartInstance()` method in Java is analogous to
 `createEnvironmentPartInstance()`, but it is used to instantiate cuff part

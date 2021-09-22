@@ -1,8 +1,9 @@
+# S26: Java utility classes
 - [1.1 IdentifierManager](https://github.com/wmglab-duke/ascent/wiki/S26:-Java-utility-classes#11-identifiermanager)
 - [1.2 JSONio](https://github.com/wmglab-duke/ascent/wiki/S26:-Java-utility-classes#12-jsonio)
 - [1.3 ModelSearcher](https://github.com/wmglab-duke/ascent/wiki/S26:-Java-utility-classes#13-modelsearcher)
 
-###  1.1 IdentifierManager
+##  1.1 IdentifierManager
 
 In working with highly customized COMSOL FEMs, we found it convenient to
 abstract away from the underlying COMSOL indexing to improve code
@@ -10,7 +11,7 @@ readability and enable scalability as models increase in geometric
 complexity. We developed a class named `IdentifierManager` that allows the
 user to assign their own String to identify a COMSOL geometry feature
 tag (e.g., `wp<#>`, `cyl<#>`, `rev<#>`, `dif<#>`) or selection
-(i.e., `csel<#>`). 
+(i.e., `csel<#>`).
 
 We use `IdentifierManagers` to name and keep track of identifier labels
 within a `PartPrimitive`. `IdentifierManagers` assigning tags for products
@@ -46,7 +47,7 @@ updating model materials and physics. Therefore, we developed
 saves an `IdentifierManager` to a JSON file and loads an `IdentifierManager`
 into Java from a JSON Object, respectively.
 
-###  1.2 JSONio
+##  1.2 JSONio
 
 `JSONio` is a convenient Java class used for reading and writing JSON
 Objects to file. The `read()` method takes an input String containing the
@@ -54,7 +55,7 @@ file path to read and returns a JSON Object to memory. The `write()`
 method takes an input String containing the file path for the saving
 destination and a JSON Object containing the data to write to file.
 
-###  1.3 ModelSearcher
+##  1.3 ModelSearcher
 
 The `ModelSearcher` class in Java is used to look for previously created
 FEM meshed geometries that can be repurposed. For example, if

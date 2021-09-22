@@ -1,3 +1,4 @@
+# S31: NEURON launch.hoc
 The ```launch.hoc``` file defines the parameters and simulation protocol for
 modeling fiber response to electrical stimulation in NEURON and is
 automatically populated based on parameters in ***Model*** and
@@ -23,4 +24,4 @@ class, which takes inputs of the ***Sim*** directory, ```n_sim/``` directory,
 and an exception configuration. When the ```HocWriter``` class is
 instantiated, it automatically loads the ```fiber_z.json``` configuration
 file which contains all associated flags, parameters, and rules for
-defining a fiber’s geometry and channel mechanisms in NEURON. 
+defining a fiber’s geometry and channel mechanisms in NEURON.

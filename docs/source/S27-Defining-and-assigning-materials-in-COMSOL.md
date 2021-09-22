@@ -1,3 +1,4 @@
+# S27: Defining and assigning materials in COMSOL 
 - [1.1 ModelWrapper.addMaterialDefinitions()](https://github.com/wmglab-duke/ascent/wiki/S27:-Defining-and-assigning-materials-in-COMSOL#11-modelwrapperaddmaterialdefinitions)
 - [1.2 Part.defineMaterial()](https://github.com/wmglab-duke/ascent/wiki/S27:-Defining-and-assigning-materials-in-COMSOL#12-partdefinematerial)
 - [1.3 ModelWrapper.addCuffPartMaterialAssignment()](https://github.com/wmglab-duke/ascent/wiki/S27:-Defining-and-assigning-materials-in-COMSOL#13-modelwrapperaddcuffpartmaterialassignment)
@@ -13,9 +14,9 @@ epineurium). Material properties for each function are assigned in
 ***Model*’s** “conductivities” JSON Object by either referencing
 materials in the default materials library
 (`config/system/materials.json`) by name, or with explicit definitions
-of a materials name and conductivity as a JSON Object ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)). 
+of a materials name and conductivity as a JSON Object ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)).
 
-### 1.1 ModelWrapper.addMaterialDefinitions()
+## 1.1 ModelWrapper.addMaterialDefinitions()
 
 The user is unlikely to interface directly with the
 `addMaterialDefinitions()` method in Java as it operates behind the
@@ -29,7 +30,7 @@ a new material if it does not yet exist as `“mat<#>”` using Part’s
 `defineMaterial()` method, and adds the identifier (e.g., “mat1”) to the
 `IdentifierManager`.
 
-### 1.2 Part.defineMaterial()
+## 1.2 Part.defineMaterial()
 
 The user is unlikely to interface directly with the `defineMaterial()`
 method in Java as it operates behind the scenes to add a new material to
@@ -52,7 +53,7 @@ anisotropic, the material value is assigned a string “anisotropic” which
 tells the program to look for independent `“sigma_x”`, `“sigma_y”`, and
 `“sigma_z”` values in the material JSON Object.
 
-### 1.3 ModelWrapper.addCuffPartMaterialAssignment()
+## 1.3 ModelWrapper.addCuffPartMaterialAssignment()
 
 The user is unlikely to interface directly with the
 `addCuffPartMaterialAssignment()` method in Java as it operates behind the
@@ -63,7 +64,7 @@ function in the “preset” cuff configuration file, the method creates a
 COMSOL Material Link to assign a previously defined selection in a cuff
 part instance to a defined material.
 
-### 1.4 ModelWrapper.addCuffPartMaterialAssignments()
+## 1.4 ModelWrapper.addCuffPartMaterialAssignments()
 
 The user is unlikely to interface directly with the
 `addCuffMaterialAssignments()` method in Java as it operates behind the
@@ -81,7 +82,7 @@ part instances in “preset” cuff files in a nested order (i.e., the
 outermost domains first, knowing that domains nested in space within
 them will overwrite earlier domain assignments).
 
-### 1.5 Adding and assigning default material properties
+## 1.5 Adding and assigning default material properties
 
 Default material properties defined in `config/system/materials.json`
 are listed in Table A. To accommodate automation of
@@ -110,15 +111,15 @@ Table A. Default material conductivities.
 | saline        | 1.76 \[S/m\]                 | \[11\]                |
 | perineurium   | 1/1149 \[S/m\]               | \[1,5\]           |
 
-### 1.6 References
-1. Weerasuriya A, Spangler RA, Rapoport SI, Taylor RE. AC impedance of the perineurium of the frog sciatic nerve. Biophys J. 1984 Aug;46(2):167–74. 
-1. Callister WD, Rethwisch DG. Fundamentals of Material Science and Engineering An Integrated Approach. In: Fundamentals Of Material Science and Engineering An Intergrated Approach. 2012. 
-1. de Podesta M, Laboratory NP, UK. Understanding the Properties of Matter. Understanding the Properties of Matter. 1996. 
+## 1.6 References
+1. Weerasuriya A, Spangler RA, Rapoport SI, Taylor RE. AC impedance of the perineurium of the frog sciatic nerve. Biophys J. 1984 Aug;46(2):167–74.
+1. Callister WD, Rethwisch DG. Fundamentals of Material Science and Engineering An Integrated Approach. In: Fundamentals Of Material Science and Engineering An Intergrated Approach. 2012.
+1. de Podesta M, Laboratory NP, UK. Understanding the Properties of Matter. Understanding the Properties of Matter. 1996.
 1. Ranck JB, BeMent SL. The specific impedance of the dorsal columns of cat: An anisotropic medium. Exp Neurol [Internet]. 1965 Apr 1 [cited 2020 Apr 20];11(4):451–63. Available from: https://www.sciencedirect.com/science/article/abs/pii/0014488665900592
 1. Pelot NA, Behrend CE, Grill WM. On the parameters used in finite element modeling of compound peripheral nerves. J Neural Eng [Internet]. 2019;16(1):16007. Available from: http://dx.doi.org/10.1088/1741-2552/aaeb0c
 1. Stolinski C. Structure and composition of the outer connective tissue sheaths of peripheral nerve. J Anat [Internet]. 1995 Feb;186 ( Pt 1(Pt 1):123–30. Available from: https://pubmed.ncbi.nlm.nih.gov/7649808
 1. Grill WM, Mortimer TJ. Electrical properties of implant encapsulation tissue. Ann Biomed Eng [Internet]. 1994;22(1):23–33. Available from: https://doi.org/10.1007/BF02368219
-1. Pelot NA, Behrend CE, Grill WM. Modeling the response of small myelinated axons in a compound nerve to kilohertz  frequency signals. J Neural Eng. 2017 Aug;14(4):46022. 
+1. Pelot NA, Behrend CE, Grill WM. Modeling the response of small myelinated axons in a compound nerve to kilohertz  frequency signals. J Neural Eng. 2017 Aug;14(4):46022.
 1. Gielen FLH, Wallinga-de Jonge W, Boon KL. Electrical conductivity of skeletal muscle tissue: Experimental results from different musclesin vivo. Med Biol Eng Comput [Internet]. 1984;22(6):569–77. Available from: https://doi.org/10.1007/BF02443872
 1. Geddes LA, Baker LE. The specific resistance of biological material—A compendium of data for the biomedical engineer and physiologist. Med Biol Eng [Internet]. 1967;5(3):271–93. Available from: https://doi.org/10.1007/BF02474537
-1. Horch K. Neuroprosthetics: Theory and practice: Second edition. Neuroprosthetics: Theory and Practice: Second Edition. 2017. 1–925 p. 
+1. Horch K. Neuroprosthetics: Theory and practice: Second edition. Neuroprosthetics: Theory and Practice: Second Edition. 2017. 1–925 p.

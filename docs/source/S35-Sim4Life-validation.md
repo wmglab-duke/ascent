@@ -1,3 +1,4 @@
+# S35: Sim4Life validation
 - [1.1 Monofascicular rat nerve model](https://github.com/wmglab-duke/ascent/wiki/S35:-Sim4Life-validation#11-monofascicular-rat-nerve-model)
 - [1.2 Multifascicular dummy nerve model](https://github.com/wmglab-duke/ascent/wiki/S35:-Sim4Life-validation#12-multifascicular-dummy-nerve-model)
 - [1.3 Multifascicular human nerve model](https://github.com/wmglab-duke/ascent/wiki/S35:-Sim4Life-validation#13-multifascicular-human-nerve-model)
@@ -10,9 +11,9 @@ Technologies in Society (IT’IS) with the
 simulations required modification of the Sim4Life solver to implement
 the required electrical anisotropy of tissue conductivities and the
 boundary condition to represent the thin layer approximation used to
-model the perineurium. 
+model the perineurium.
 
-### 1.1 Monofascicular rat nerve model
+## 1.1 Monofascicular rat nerve model
 
 We validated activation thresholds for fibers seeded in a model of a rat
 cervical vagus nerve instrumented with a bipolar cuff electrode (Figure A and B).
@@ -131,7 +132,7 @@ fibers, demonstrating strong agreement (Figure C).
 
 Figure C. Comparison of activation thresholds for the rat cervical vagus nerve implementation in ASCENT and Sim4Life.
 
-### 1.2 Multifascicular dummy nerve model
+## 1.2 Multifascicular dummy nerve model
 
 We validated activation thresholds for fibers seeded in a
 multifascicular dummy nerve instrumented with a bipolar cuff electrode
@@ -155,7 +156,7 @@ Between the ASCENT and IT’IS implementations, there was less than a 3%
 difference in threshold to a single 100 µs duration monophasic
 rectangular pulse.
 
-### 1.3 Multifascicular human nerve model
+## 1.3 Multifascicular human nerve model
 
 We validated activation thresholds for fibers seeded in a
 multifascicular human cervical vagus nerve instrumented with a LivaNova

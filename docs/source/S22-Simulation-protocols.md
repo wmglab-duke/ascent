@@ -1,3 +1,4 @@
+# S22: Simulation Protocols
 - [1.1 Binary search](https://github.com/wmglab-duke/ascent/wiki/S22:-Simulation-protocols#11-binary-search)
 - [1.2 Activation threshold protocol](https://github.com/wmglab-duke/ascent/wiki/S22:-Simulation-protocols#12-activation-threshold-protocol)
 - [1.3 Block threshold protocol](https://github.com/wmglab-duke/ascent/wiki/S22:-Simulation-protocols#13-block-threshold-protocol)
@@ -13,13 +14,13 @@ by the current amplitude in `RunSim.hoc` to either simulate fiber thresholds of
 activation or block with a binary search algorithm, or response to set
 amplitudes.
 
-###  1.1 Binary search
+##  1.1 Binary search
 
 In searching for activation thresholds (i.e., the minimum stimulation
 amplitude required to generate a propagating action potential) or block
 thresholds (i.e., the minimum stimulation amplitude required to block
 the propagation of an action potential) in the pipeline, the NEURON code
-uses a binary search algorithm. 
+uses a binary search algorithm.
 
 The basics of a binary search algorithm are as follows. By starting with
 one value that is above threshold (i.e., upper bound) and one value that
@@ -41,7 +42,7 @@ or block criteria, threshold criteria, method for searching for starting
 upper- and lower bounds, or termination criteria) are contained in the
 “protocol” JSON Object within ***Sim*** ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)).
 
-###  1.2 Activation threshold protocol
+##  1.2 Activation threshold protocol
 
 The pipeline has a NEURON simulation protocol for determining thresholds
 of activation of nerve fibers in response to extracellular stimulation.
@@ -55,7 +56,7 @@ can be specified by user with `“ap_detect_location”` parameter in
 ***Sim***) ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)). The parameters for control over the activation threshold
 protocol are found in ***Sim*** within the “protocol” JSON Object ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)).
 
-###  1.3 Block threshold protocol
+##  1.3 Block threshold protocol
 
 The pipeline has a NEURON simulation protocol for determining block
 thresholds for nerve fibers in response to extracellular stimulation.
@@ -82,12 +83,12 @@ of the binary search for block thresholds. Especially for small diameter
 myelinated fibers, users must be aware of and check for re-excitation
 using a stimulation amplitude sweep \[1\].
 
-###  1.4 Response to set amplitudes
+##  1.4 Response to set amplitudes
 
 Alternatively, users may simulate the response of nerve fibers in
 response to extracellular stimulation for a user-specified set of
 amplitudes. The “protocol” JSON Object within ***Sim*** contains the set
 of amplitudes that the user would like to simulate ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)).
 
-### 1.5 References
-1. Pelot NA, Behrend CE, Grill WM. Modeling the response of small myelinated axons in a compound nerve to kilohertz  frequency signals. J Neural Eng. 2017 Aug;14(4):46022. 
+## 1.5 References
+1. Pelot NA, Behrend CE, Grill WM. Modeling the response of small myelinated axons in a compound nerve to kilohertz  frequency signals. J Neural Eng. 2017 Aug;14(4):46022.
