@@ -17,7 +17,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'ASCENT'
-copyright = '2021, authors_plceholder'
+copyright = '2021, authors_placeholder'
 author = 'authors_placeholder'
 
 # The full version, including alpha/beta/rc tags
@@ -52,6 +52,10 @@ exclude_patterns = []
 # a list of builtin themes.
 #
 html_theme = 'sphinx_rtd_theme'
+
+html_show_copyright = True
+
+html_show_sphinx = False
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
