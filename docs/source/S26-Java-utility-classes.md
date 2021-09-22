@@ -1,7 +1,4 @@
 # S26: Java utility classes
-- [1.1 IdentifierManager](https://github.com/wmglab-duke/ascent/wiki/S26:-Java-utility-classes#11-identifiermanager)
-- [1.2 JSONio](https://github.com/wmglab-duke/ascent/wiki/S26:-Java-utility-classes#12-jsonio)
-- [1.3 ModelSearcher](https://github.com/wmglab-duke/ascent/wiki/S26:-Java-utility-classes#13-modelsearcher)
 
 ##  1.1 IdentifierManager
 

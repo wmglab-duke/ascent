@@ -1,9 +1,4 @@
 # S21: Implementation of NEURON fiber models
-- [1.1 Myelinated fiber models](https://github.com/wmglab-duke/ascent/wiki/S21:-Implementation-of-NEURON-fiber-models#11-myelinated-fiber-models)
-  - [1.1.1 MRG discrete diameter](https://github.com/wmglab-duke/ascent/wiki/S21:-Implementation-of-NEURON-fiber-models#111-mrg-discrete-diameter-as-previously-published)
-  - [1.1.2 MRG interpolated diameters](https://github.com/wmglab-duke/ascent/wiki/S21:-Implementation-of-NEURON-fiber-models#112-mrg-interpolated-diameters)
-- [1.2 Unmyelinated Fiber Models](https://github.com/wmglab-duke/ascent/wiki/S21:-Implementation-of-NEURON-fiber-models#12-unmyelinated-fiber-models)
-- [1.3 References](https://github.com/wmglab-duke/ascent/wiki/S21:-Implementation-of-NEURON-fiber-models#13-references)
 
 ## 1.1 Myelinated fiber models
 

@@ -1,10 +1,4 @@
-# S27: Defining and assigning materials in COMSOL 
-- [1.1 ModelWrapper.addMaterialDefinitions()](https://github.com/wmglab-duke/ascent/wiki/S27:-Defining-and-assigning-materials-in-COMSOL#11-modelwrapperaddmaterialdefinitions)
-- [1.2 Part.defineMaterial()](https://github.com/wmglab-duke/ascent/wiki/S27:-Defining-and-assigning-materials-in-COMSOL#12-partdefinematerial)
-- [1.3 ModelWrapper.addCuffPartMaterialAssignment()](https://github.com/wmglab-duke/ascent/wiki/S27:-Defining-and-assigning-materials-in-COMSOL#13-modelwrapperaddcuffpartmaterialassignment)
-- [1.4 ModelWrapper.addCuffPartMaterialAssignments()](https://github.com/wmglab-duke/ascent/wiki/S27:-Defining-and-assigning-materials-in-COMSOL#14-modelwrapperaddcuffpartmaterialassignments)
-- [1.5 Adding and assigning default material properties](https://github.com/wmglab-duke/ascent/wiki/S27:-Defining-and-assigning-materials-in-COMSOL#15-adding-and-assigning-default-material-properties)
-- [1.6 References](https://github.com/wmglab-duke/ascent/wiki/S27:-Defining-and-assigning-materials-in-COMSOL#16-references)
+# S27: Defining and assigning materials in COMSOL
 
 Materials are defined in the COMSOL “Materials” node for each material
 “function” indicated in the “preset” cuff configuration file (i.e.,

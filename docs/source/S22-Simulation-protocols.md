@@ -1,9 +1,4 @@
 # S22: Simulation Protocols
-- [1.1 Binary search](https://github.com/wmglab-duke/ascent/wiki/S22:-Simulation-protocols#11-binary-search)
-- [1.2 Activation threshold protocol](https://github.com/wmglab-duke/ascent/wiki/S22:-Simulation-protocols#12-activation-threshold-protocol)
-- [1.3 Block threshold protocol](https://github.com/wmglab-duke/ascent/wiki/S22:-Simulation-protocols#13-block-threshold-protocol)
-- [1.4 Response to set amplitudes](https://github.com/wmglab-duke/ascent/wiki/S22:-Simulation-protocols#14-response-to-set-amplitudes)
-- [1.5 References](https://github.com/wmglab-duke/ascent/wiki/S22:-Simulation-protocols#15-references)
 
 Fiber response to electrical stimulation is computed by applying
 electric potentials along the length of a fiber from COMSOL as a

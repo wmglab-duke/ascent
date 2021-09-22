@@ -1,7 +1,4 @@
 # S35: Sim4Life validation
-- [1.1 Monofascicular rat nerve model](https://github.com/wmglab-duke/ascent/wiki/S35:-Sim4Life-validation#11-monofascicular-rat-nerve-model)
-- [1.2 Multifascicular dummy nerve model](https://github.com/wmglab-duke/ascent/wiki/S35:-Sim4Life-validation#12-multifascicular-dummy-nerve-model)
-- [1.3 Multifascicular human nerve model](https://github.com/wmglab-duke/ascent/wiki/S35:-Sim4Life-validation#13-multifascicular-human-nerve-model)
 
 We designed test simulations to verify ASCENT’s activation thresholds.
 The verifications were performed by The Foundation for Research

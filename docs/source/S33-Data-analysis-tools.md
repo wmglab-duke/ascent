@@ -1,6 +1,4 @@
 # S33: Data analysis tools
-- [1.1 Python Query class](https://github.com/wmglab-duke/ascent/wiki/S33:-Data-analysis-tools#11-python-query-class)
-- [1.2 Video generation for NEURON state variables](https://github.com/wmglab-duke/ascent/wiki/S33:-Data-analysis-tools#12-video-generation-for-neuron-state-variables)
 
 ## 1.1 Python Query class
 

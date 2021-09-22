@@ -1,17 +1,4 @@
 # S5: Template for methods reporting
-  - [1.1 Configuration files](https://github.com/wmglab-duke/ascent/wiki/S5:-Template-for-methods-reporting#11-configuration-files)
-- [1.2 Nerve segmentation files](https://github.com/wmglab-duke/ascent/wiki/S5:-Template-for-methods-reporting#12-nerve-segmentation-files)
-- [1.3 Cuff](https://github.com/wmglab-duke/ascent/wiki/S5:-Template-for-methods-reporting#13-cuff)
-- [1.4 Materials](https://github.com/wmglab-duke/ascent/wiki/S5:-Template-for-methods-reporting#14-materials)
-- [1.5 Domains](https://github.com/wmglab-duke/ascent/wiki/S5:-Template-for-methods-reporting#15-domains)
-- [1.6 Perineurium](https://github.com/wmglab-duke/ascent/wiki/S5:-Template-for-methods-reporting#16-perineurium)
-- [1.7 Mesh](https://github.com/wmglab-duke/ascent/wiki/S5:-Template-for-methods-reporting#17-mesh)
-- [1.8 Solution](https://github.com/wmglab-duke/ascent/wiki/S5:-Template-for-methods-reporting#18-solution)
-- [1.9 HOC/MOD files](https://github.com/wmglab-duke/ascent/wiki/S5:-Template-for-methods-reporting#19-hocmod-files)
-- [1.10 Waveform](https://github.com/wmglab-duke/ascent/wiki/S5:-Template-for-methods-reporting#110-waveform)
-- [1.11 NEURON Simulations](https://github.com/wmglab-duke/ascent/wiki/S5:-Template-for-methods-reporting#111-neuron-simulations)
-- [1.12 Analysis](https://github.com/wmglab-duke/ascent/wiki/S5:-Template-for-methods-reporting#112-analysis)
-- [1.13 References](https://github.com/wmglab-duke/ascent/wiki/S5:-Template-for-methods-reporting#113-references)
 
 For uses of ASCENT, either stand-alone in its publicly available form, as a starting point upon which further work is developed, or as a component of a system (e.g., connected with other organ models or engineering optimization techniques), we ask that the author(s) cite the ASCENT publication and indicate the release of ASCENT used (e.g., ASCENT v1.0.0).
 

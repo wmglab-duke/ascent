@@ -1,19 +1,4 @@
 # S7: JSON configuration files
-- [1.1 User configuration files](https://github.com/wmglab-duke/ascent/wiki/S7:-JSON-configuration-files#11-user-configuration)
-  - [1.1.1 run.json](https://github.com/wmglab-duke/ascent/wiki/S7:-JSON-configuration-files#111-runjson)
-  - [1.1.2 sample.json](https://github.com/wmglab-duke/ascent/wiki/S7:-JSON-configuration-files#112-samplejson)
-  - [1.1.3 mock_sample.json](https://github.com/wmglab-duke/ascent/wiki/S7:-JSON-configuration-files#113-mock_samplejson)
-  - [1.1.4 model.json](https://github.com/wmglab-duke/ascent/wiki/S7:-JSON-configuration-files#114-modeljson)
-  - [1.1.5 sim.json](https://github.com/wmglab-duke/ascent/wiki/S7:-JSON-configuration-files#115-simjson)
-  - [1.1.6 query_criteria.json](https://github.com/wmglab-duke/ascent/wiki/S7:-JSON-configuration-files#116-query_criteriajson)
-- [1.2 config/system/](https://github.com/wmglab-duke/ascent/wiki/S7:-JSON-configuration-files#12-configsystem)
-  - [1.2.1 env.json](https://github.com/wmglab-duke/ascent/wiki/S7:-JSON-configuration-files#121-envjson)
-  - [1.2.2 exceptions.json](https://github.com/wmglab-duke/ascent/wiki/S7:-JSON-configuration-files#122-exceptionsjson)
-  - [1.2.3 materials.json](https://github.com/wmglab-duke/ascent/wiki/S7:-JSON-configuration-files#123-materialsjson)
-  - [1.2.4 fiber_z.json](https://github.com/wmglab-duke/ascent/wiki/S7:-JSON-configuration-files#124-fiber_zjson)
-  - [1.2.5 ci\_perineurium\_thickness.json](https://github.com/wmglab-duke/ascent/wiki/S7:-JSON-configuration-files#125-ci_perineurium_thicknessjson)
-  - [1.2.6 mesh\_dependent\_model.json](https://github.com/wmglab-duke/ascent/wiki/S7:-JSON-configuration-files#126-mesh_dependent_modeljson)
-- [1.3 References](https://github.com/wmglab-duke/ascent/wiki/S7:-JSON-configuration-files#13-references)
 
 We store parameters in JSON configuration files because the JSON format
 is accessible, readable, and well-documented for metadata interchange.

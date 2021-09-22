@@ -1,11 +1,4 @@
 # S32: NEURON Wrapper.hoc
-- [1.1 Create fiber model](https://github.com/wmglab-duke/ascent/wiki/S32:-NEURON-Wrapper.hoc#11-create-fiber-model)
-- [1.2 Intracellular stimulus](https://github.com/wmglab-duke/ascent/wiki/S32:-NEURON-Wrapper.hoc#12-intracellular-stimulus)
-- [1.3 Extracellular stimulus](https://github.com/wmglab-duke/ascent/wiki/S32:-NEURON-Wrapper.hoc#13-extracellular-stimulus)
-- [1.4 Recording](https://github.com/wmglab-duke/ascent/wiki/S32:-NEURON-Wrapper.hoc#14-recording)
-- [1.5 RunSim](https://github.com/wmglab-duke/ascent/wiki/S32:-NEURON-Wrapper.hoc#15-runsim)
-- [1.6 FindThresh](https://github.com/wmglab-duke/ascent/wiki/S32:-NEURON-Wrapper.hoc#16-findthresh)
-- [1.7 Save outputs to file](https://github.com/wmglab-duke/ascent/wiki/S32:-NEURON-Wrapper.hoc#17-save-outputs-to-file)
 
 The ```Wrapper.hoc``` file coordinates all program operations to create a
 biophysically realistic discrete cable fiber model, simulate the fiber’s

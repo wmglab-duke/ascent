@@ -1,16 +1,4 @@
 # S8: JSON file parameter guide
-- [1.1 run.json](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide#11-runjson)
-- [1.2 sample.json](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide#12-samplejson)
-- [1.3 mock_sample.json](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide#13-mock_samplejson)
-- [1.4 model.json](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide#14-modeljson)
-- [1.5 sim.json](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide#15-simjson)
-- [1.6 query_criteria.json](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide#16-query_criteriajson)
-- [1.7 env.json](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide#17-envjson)
-- [1.8 exceptions.json](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide#18-exceptionsjson)
-- [1.9 materials.json](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide#19-materialsjson)
-- [1.10 ci_peri_thickness.json](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide#110-ci_peri_thicknessjson)
-- [1.11 mesh_dependent_model.json](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide#111-mesh_dependent_modeljson)
-- [1.12 References](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide#112-references)
 
 Notes:
 

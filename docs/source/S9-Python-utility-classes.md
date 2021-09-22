@@ -1,11 +1,4 @@
 # S9: Python utility classes
-- [1.1 Configurable](https://github.com/wmglab-duke/ascent/wiki/S9:-Python-utility-classes#11-configurable)
-  - [1.1.1 SetupMode](https://github.com/wmglab-duke/ascent/wiki/S9:-Python-utility-classes#111-setupmode-from-enums-s6-text)
-  - [1.1.2 ConfigKey](https://github.com/wmglab-duke/ascent/wiki/S9:-Python-utility-classes#112-configkey-from-enums-s6-text)
-  - [1.1.3 Config](https://github.com/wmglab-duke/ascent/wiki/S9:-Python-utility-classes#113-config)
-  - [1.1.4 Example use of Configurable](https://github.com/wmglab-duke/ascent/wiki/S9:-Python-utility-classes#114-example-use-of-configurable)
-- [1.2 Exceptionable](https://github.com/wmglab-duke/ascent/wiki/S9:-Python-utility-classes#12-exceptionable)
-- [1.3 Saveable](https://github.com/wmglab-duke/ascent/wiki/S9:-Python-utility-classes#13-saveable)
 
 ##  1.1 Configurable
 
