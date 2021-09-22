@@ -17,8 +17,8 @@
 # -- Project information -----------------------------------------------------
 
 project = 'ASCENT'
-copyright = '2021, authors_placeholder'
-author = 'authors_placeholder'
+copyright = '2021, Duke University'
+author = 'Musselman ED, Cariello JE, Grill WM, Pelot NA.'
 
 # The full version, including alpha/beta/rc tags
 release = 'v1.0.3'
