@@ -8,7 +8,7 @@
 
 Welcome to ASCENT's documentation!
 ==================================
-**Please check out the associated** `publication <https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1009285>`_ **in PLOS Computational Biology!**
+**Please check out the associated** `publication <https://doi.org/10.1371/journal.pcbi.1009285>`_ **in PLOS Computational Biology!**
 
 Cite both the paper and the DOI for the release of the repository used for your work. We encourage you to clone the most recent commit of the repository.
 

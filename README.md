@@ -6,7 +6,7 @@
 **Musselman ED**, **Cariello JE**, Grill WM, Pelot NA. ASCENT (Automated Simulations to Characterize Electrical Nerve Thresholds): A Pipeline for Sample-Specific Computational Modeling of Electrical Stimulation of Peripheral Nerves. PLoS Comput Biol [Internet]. 2021, DOI: 10.5281/zenodo.5500260
 
 **Cite the paper:**
-**Musselman ED**, **Cariello JE**, Grill WM, Pelot NA. ASCENT (Automated Simulations to Characterize Electrical Nerve Thresholds): A Pipeline for Sample-Specific Computational Modeling of Electrical Stimulation of Peripheral Nerves. PLoS Comput Biol [Internet]. 2021; Available from: https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1009285
+**Musselman ED**, **Cariello JE**, Grill WM, Pelot NA. ASCENT (Automated Simulations to Characterize Electrical Nerve Thresholds): A Pipeline for Sample-Specific Computational Modeling of Electrical Stimulation of Peripheral Nerves. PLoS Comput Biol [Internet]. 2021; Available from: https://doi.org/10.1371/journal.pcbi.1009285
 
 **ASCENT** is an open source platform for simulating peripheral nerve stimulation. For more information, see the ASCENT documentation: *link*
 
@@ -20,7 +20,7 @@ The copyrights of this software are owned by Duke University. As such, two licen
 
 As a recipient of this software, you may choose which license to receive the code under. Outside contributions to the Duke owned code base cannot be accepted unless the contributor transfers the copyright to those changes over to Duke University.
 
-To enter a custom license agreement without the MIT license restrictions, please contact the Digital Innovations department at Duke Office for Translation & Commercialization (https://olv.duke.edu/software/) at olvquestions@duke.edu with reference to “OTC File No. 7483” in your email. 
+To enter a custom license agreement without the MIT license restrictions, please contact the Digital Innovations department at Duke Office for Translation & Commercialization (https://olv.duke.edu/software/) at olvquestions@duke.edu with reference to “OTC File No. 7483” in your email.
 
 
 
