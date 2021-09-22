@@ -31,7 +31,7 @@ Table A. Conductivity values for FEM of rat cervical vagus nerve. These values
 were also used in multifascicular nerve model and human model
 verifications.
 
-<table>
+<table border="1" style="padding:5px">
 <thead>
 <tr class="header">
 <th><strong>Parameter</strong></th>
@@ -41,42 +41,42 @@ verifications.
 </thead>
 <tbody>
 <tr class="odd">
-<td>Endoneurium</td>
-<td>Within each fascicle</td>
-<td><p>1.75 longitudinal</p>
+<td align="center"style="vertical-align:middle" >Endoneurium</td>
+<td align="center"style="vertical-align:middle" >Within each fascicle</td>
+<td align="center"style="vertical-align:middle" ><p>1.75 longitudinal</p>
 <p>6 radial (rat and human)</p>
 <p>12 radial (multifascicular dummy model)</p></td>
 </tr>
 <tr class="even">
-<td>Saline</td>
-<td>Cylindrical shell between the nerve and cuff</td>
-<td>1/1.76</td>
+<td align="center"style="vertical-align:middle" >Saline</td>
+<td align="center"style="vertical-align:middle" >Cylindrical shell between the nerve and cuff</td>
+<td align="center"style="vertical-align:middle" >1/1.76</td>
 </tr>
 <tr class="odd">
-<td>Platinum</td>
-<td>For both contacts</td>
-<td>1/(9.43*10<sup>6</sup>)</td>
+<td align="center"style="vertical-align:middle" >Platinum</td>
+<td align="center"style="vertical-align:middle" >For both contacts</td>
+<td align="center"style="vertical-align:middle" >1/(9.43*10<sup>6</sup>)</td>
 </tr>
 <tr class="even">
-<td>Silicone</td>
-<td>For electrode body</td>
-<td>10<sup>12</sup></td>
+<td align="center"style="vertical-align:middle" >Silicone</td>
+<td align="center"style="vertical-align:middle" >For electrode body</td>
+<td align="center"style="vertical-align:middle" >10<sup>12</sup></td>
 </tr>
 <tr class="odd">
-<td>Muscle</td>
-<td>Used for the surrounding “medium”: Everything outside of the nerve and cuff, other than the saline layer between the nerve and cuff</td>
-<td><p>1/0.35 longitudinal</p>
+<td align="center"style="vertical-align:middle" >Muscle</td>
+<td align="center"style="vertical-align:middle" >Used for the surrounding “medium”: Everything outside of the nerve and cuff, other than the saline layer between the nerve and cuff</td>
+<td align="center"style="vertical-align:middle" ><p>1/0.35 longitudinal</p>
 <p>1/0.086 radial</p></td>
 </tr>
 <tr class="even">
-<td>Epineurium</td>
-<td>Within the nerve around each fascicle</td>
-<td>6.3</td>
+<td align="center"style="vertical-align:middle" >Epineurium</td>
+<td align="center"style="vertical-align:middle" >Within the nerve around each fascicle</td>
+<td align="center"style="vertical-align:middle" >6.3</td>
 </tr>
 <tr class="odd">
-<td>Encapsulation</td>
-<td>Between cuff and nerve, and immediately surrounding cuff</td>
-<td>6.3</td>
+<td align="center"style="vertical-align:middle" >Encapsulation</td>
+<td align="center"style="vertical-align:middle" >Between cuff and nerve, and immediately surrounding cuff</td>
+<td align="center"style="vertical-align:middle" >6.3</td>
 </tr>
 </tbody>
 </table>
@@ -84,7 +84,7 @@ verifications.
 Table B. Boundary conditions used in FEM of rat cervical vagus nerve,
 multifascicular dummy nerve, and human cervical vagus nerve.
 
-<table>
+<table border="1" style="padding:5px">
 <thead>
 <tr class="header">
 <th><strong>Parameter</strong></th>
@@ -93,25 +93,25 @@ multifascicular dummy nerve, and human cervical vagus nerve.
 </thead>
 <tbody>
 <tr class="odd">
-<td>Current conservation</td>
-<td>All domains</td>
+<td align="center"style="vertical-align:middle" >Current conservation</td>
+<td align="center"style="vertical-align:middle" >All domains</td>
 </tr>
 <tr class="even">
-<td>Initial condition</td>
-<td>V=0 (all domains)</td>
+<td align="center"style="vertical-align:middle" >Initial condition</td>
+<td align="center"style="vertical-align:middle" >V=0 (all domains)</td>
 </tr>
 <tr class="odd">
-<td>Perineurium (sides of each fascicle)</td>
-<td><p>Modeled as contact impedance</p>
+<td align="center"style="vertical-align:middle" >Perineurium (sides of each fascicle)</td>
+<td align="center"style="vertical-align:middle" ><p>Modeled as contact impedance</p>
 <p>1149 Ω-m * 0.03 * d<sub>fasc</sub>[m]</p></td>
 </tr>
 <tr class="even">
-<td>Ground (all outer boundaries of the model)</td>
-<td>V = 0</td>
+<td align="center"style="vertical-align:middle" >Ground (all outer boundaries of the model)</td>
+<td align="center"style="vertical-align:middle" >V = 0</td>
 </tr>
 <tr class="odd">
-<td>Point current source (one in each contact)</td>
-<td><p>-1 mA</p>
+<td align="center"style="vertical-align:middle" >Point current source (one in each contact)</td>
+<td align="center"style="vertical-align:middle" ><p>-1 mA</p>
 <ul>
 <p>1 mA</p></td>
 </ul></td>

@@ -8,7 +8,7 @@ Figure A. Micro-Leads cuff measurements taken for 200, 300, and 400 µm inner di
 
 Table A. Cuff measurements (units: micrometer) for 200, 300, and 400 µm inner diameter Micro-Leads cuffs.
 
-<table class="tg">
+<table class="tg" border="1" style="padding:5px">
 <thead>
   <tr>
     <th colspan="8" class="tg-0lax">Cross-Sectional Measurements</th>
@@ -17,56 +17,56 @@ Table A. Cuff measurements (units: micrometer) for 200, 300, and 400 µm inner d
 </thead>
 <tbody>
   <tr>
-    <td class="tg-0lax">Cuff</td>
-    <td class="tg-0lax"># cuff measured</td>
-    <td class="tg-0lax">OD</td>
-    <td class="tg-0lax">ID</td>
-    <td class="tg-0lax">ID Displacement (x)</td>
-    <td class="tg-0lax">Peak (x)</td>
-    <td class="tg-0lax">Tangent (x)</td>
-    <td class="tg-0lax">Gap (y)</td>
-    <td class="tg-0lax">End Insulation</td>
-    <td class="tg-0lax">Contact Width</td>
-    <td class="tg-0lax">Contact Spacing</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">Cuff</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax"># cuff measured</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">OD</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">ID</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">ID Displacement (x)</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">Peak (x)</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">Tangent (x)</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">Gap (y)</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">End Insulation</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">Contact Width</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">Contact Spacing</td>
   </tr>
   <tr>
-    <td class="tg-0lax">200 &mu;m</td>
-    <td class="tg-0lax">6 bipolar</td>
-    <td class="tg-0lax">1080</td>
-    <td class="tg-0lax">210</td>
-    <td class="tg-0lax">135</td>
-    <td class="tg-0lax">15</td>
-    <td class="tg-0lax">175</td>
-    <td class="tg-0lax">30</td>
-    <td class="tg-0lax">295</td>
-    <td class="tg-0lax">590</td>
-    <td class="tg-0lax">305</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">200 &mu;m</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">6 bipolar</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">1080</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">210</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">135</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">15</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">175</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">30</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">295</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">590</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">305</td>
   </tr>
   <tr>
-    <td class="tg-0lax">300 &mu;m</td>
-    <td class="tg-0lax">12 bipolar, 2 tripolar</td>
-    <td class="tg-0lax">1190</td>
-    <td class="tg-0lax">265</td>
-    <td class="tg-0lax">130</td>
-    <td class="tg-0lax">30</td>
-    <td class="tg-0lax">255</td>
-    <td class="tg-0lax">40</td>
-    <td class="tg-0lax">415</td>
-    <td class="tg-0lax">680</td>
-    <td class="tg-0lax">390</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">300 &mu;m</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">12 bipolar, 2 tripolar</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">1190</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">265</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">130</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">30</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">255</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">40</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">415</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">680</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">390</td>
   </tr>
   <tr>
-    <td class="tg-0lax">400 &mu;m</td>
-    <td class="tg-0lax">4 bipolar</td>
-    <td class="tg-0lax">1605</td>
-    <td class="tg-0lax">465</td>
-    <td class="tg-0lax">325</td>
-    <td class="tg-0lax">0</td>
-    <td class="tg-0lax">200</td>
-    <td class="tg-0lax">35</td>
-    <td class="tg-0lax">535</td>
-    <td class="tg-0lax">745</td>
-    <td class="tg-0lax">475</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">400 &mu;m</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">4 bipolar</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">1605</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">465</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">325</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">0</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">200</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">35</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">535</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">745</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">475</td>
   </tr>
 </tbody>
 </table>
@@ -81,7 +81,7 @@ Figure B. Micro-Leads cuff measurements taken for 100 µm inner diameter cuffs. 
 
 Table B. Cuff measurements (units: micrometer) for 100 µm inner diameter Micro-Leads cuffs.
 
-<table class="tg">
+<table class="tg" border="1" style="padding:5px">
 <thead>
   <tr>
     <th colspan="8" class="tg-0lax">Cross-Sectional Measurements</th>
@@ -90,30 +90,30 @@ Table B. Cuff measurements (units: micrometer) for 100 µm inner diameter Micro-
 </thead>
 <tbody>
   <tr>
-    <td class="tg-0lax">Cuff</td>
-    <td class="tg-0lax"># cuff measured</td>
-    <td class="tg-0lax">OD</td>
-    <td class="tg-0lax">ID</td>
-    <td class="tg-0lax">Trapezoid Base</td>
-    <td class="tg-0lax">Tangent (x)</td>
-    <td class="tg-0lax">Gap (y)</td>
-    <td class="tg-0lax">ID Displacement (x)</td>
-    <td class="tg-0lax">End Insulation</td>
-    <td class="tg-0lax">Contact Width</td>
-    <td class="tg-0lax">Contact Spacing</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">Cuff</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax"># cuff measured</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">OD</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">ID</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">Trapezoid Base</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">Tangent (x)</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">Gap (y)</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">ID Displacement (x)</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">End Insulation</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">Contact Width</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">Contact Spacing</td>
   </tr>
   <tr>
-    <td class="tg-0lax">200 &mu;m</td>
-    <td class="tg-0lax">6</td>
-    <td class="tg-0lax">1060</td>
-    <td class="tg-0lax">125</td>
-    <td class="tg-0lax">200</td>
-    <td class="tg-0lax">85</td>
-    <td class="tg-0lax">30</td>
-    <td class="tg-0lax">210</td>
-    <td class="tg-0lax">180</td>
-    <td class="tg-0lax">320</td>
-    <td class="tg-0lax">150</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">200 &mu;m</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">6</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">1060</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">125</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">200</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">85</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">30</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">210</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">180</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">320</td>
+    <td align="center"style="vertical-align:middle" class="tg-0lax">150</td>
   </tr>
 </tbody>
 </table>
