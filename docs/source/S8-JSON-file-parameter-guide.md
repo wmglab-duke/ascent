@@ -2,7 +2,7 @@
 
 Notes:
 
-See [S7 Text](https://github.com/wmglab-duke/ascent/wiki/S7:-JSON-configuration-files) for a general overview of the contents and usage of each of the following JSON files used in ASCENT.
+See [S7 Text](S7-JSON-configuration-files) for a general overview of the contents and usage of each of the following JSON files used in ASCENT.
 
 `“//"` is not valid JSON syntax; comments are not possible in JSON.
 However, we sparingly used this notation in the JSON examples below to
@@ -92,8 +92,8 @@ simulation configuration indices (“***Sim***”). Required.
 pipeline to search for mesh matches for recycling a previously generated
 FEM mesh if set to true. If this property is not specified, the default
 behavior of the pipeline is false, meaning that it will not search for
-and recycle a mesh match (see `ModelSearcher` ([S26 Text](https://github.com/wmglab-duke/ascent/wiki/S26:-Java-utility-classes)) and
-`mesh_dependent_model.json` ([S7 Text](https://github.com/wmglab-duke/ascent/wiki/S7:-JSON-configuration-files))). Optional.
+and recycle a mesh match (see `ModelSearcher` ([S26 Text](S26-Java-utility-classes)) and
+`mesh_dependent_model.json` ([S7 Text](S7-JSON-configuration-files))). Optional.
 
 `“break_points”`: The value (Boolean) of each breakpoint results in the
 program terminating or continuing with the next ***Model*** index. In
@@ -120,7 +120,7 @@ keeping or deleting large COMSOL `*.mph` files for the `“debug_geom.mph”`,
 defined, the default behavior is true and the associated `*.mph` file is
 saved. If `“mesh.mph”` is saved, the file can later be used if another
 ***Model*** is a suitable “mesh match” and `“recycle_meshes”` is true
-(see `ModelSearcher` ([S26 Text](https://github.com/wmglab-duke/ascent/wiki/S26:-Java-utility-classes)) and `mesh_dependent_model.json` ([S7 Text](https://github.com/wmglab-duke/ascent/wiki/S7:-JSON-configuration-files))). If bases/ are saved, a
+(see `ModelSearcher` ([S26 Text](S26-Java-utility-classes)) and `mesh_dependent_model.json` ([S7 Text](S7-JSON-configuration-files))). If bases/ are saved, a
 new ***Sim*** for a previously computed ***Sample*** and ***Model*** can
 be probed along new fibersets/ to create potentials/*.* Optional.
 
@@ -186,7 +186,7 @@ defined.
 2.  Purpose: Instructs the pipeline on which sample-specific input data
     and user-defined parameters to use for processing nerve sample
     morphology inputs in preparation for 3D representation of the sample
-    in the FEM (***Sample***) ([S7](https://github.com/wmglab-duke/ascent/wiki/S7:-JSON-configuration-files) and [S14](https://github.com/wmglab-duke/ascent/wiki/S14:-Creating-sample-specific-nerve-morphologies-in-COMSOL) Text).
+    in the FEM (***Sample***) ([S7](S7-JSON-configuration-files) and [S14](S14-Creating-sample-specific-nerve-morphologies-in-COMSOL) Text).
 
 3.  Syntax: To declare this entity in
     `samples/<sample_index>/sample.json`, use the following syntax:
@@ -252,7 +252,7 @@ defined.
 
 `“sample”`: The value (String) of this property sets the sample
 name/identifier (e.g., “Rat1-1”) to relate to bookkeeping for input
-morphology files ([S3 Text Figure A](https://github.com/wmglab-duke/ascent/wiki/S3:-ASCENT-data-hierarchy)). The value must match the directory name in
+morphology files ([S3 Text Figure A](S3-ASCENT-data-hierarchy)). The value must match the directory name in
 `input/<NAME>/` that contains the input morphology files. Required.
 
 `“sex”`: The value (String) of this property assigns the sex of the
@@ -290,18 +290,18 @@ project. Required.
 
   - `“fascicles”`: The value (Double, units: micrometer) is the minimum
     distance required between boundaries of adjacent fascicles
-    (post-deformation, see Deformable in [S13 Text](https://github.com/wmglab-duke/ascent/wiki/S13:-Python-classes-for-representing-nerve-morphology-(Sample))). Required for samples with
+    (post-deformation, see Deformable in [S13 Text](S13-Python-classes-for-representing-nerve-morphology-(Sample))). Required for samples with
     multiple fascicles.
 
       - Note that this is a distinct parameter from
         `“min_fascicle_separation”` in `mock_sample.json`, which
         controls the minimum distance between fascicles in the binary
         image mask inputs to the pipeline, which is later deformed to
-        fit in the cuff electrode using Deformable ([S13 Text](https://github.com/wmglab-duke/ascent/wiki/S13:-Python-classes-for-representing-nerve-morphology-(Sample))).
+        fit in the cuff electrode using Deformable ([S13 Text](S13-Python-classes-for-representing-nerve-morphology-(Sample))).
 
   - `“nerve”`: The value (Double, units: micrometer) is the minimum
     distance required between the boundaries of a fascicle and the nerve
-    (post-deformation, see Deformable in [S13 Text](https://github.com/wmglab-duke/ascent/wiki/S13:-Python-classes-for-representing-nerve-morphology-(Sample))). Required if “nerve” in
+    (post-deformation, see Deformable in [S13 Text](S13-Python-classes-for-representing-nerve-morphology-(Sample))). Required if “nerve” in
     ***Sample*** is “PRESENT”.
 
 `“modes”`: 
@@ -310,7 +310,7 @@ project. Required.
     the program which segmented histology images to expect as inputs for
     fascicles. Required.
 
-      - As listed in Enums ([S6 Text](https://github.com/wmglab-duke/ascent/wiki/S6:-Enums)), modes include: 
+      - As listed in Enums ([S6 Text](S6-Enums)), modes include 
 
         1.  `“INNERS”`: Program expects segmented images of only inner
             fascicle boundaries.
@@ -327,7 +327,7 @@ project. Required.
     program if there is an outer nerve boundary (epineurium) segmented
     image to incorporate into the model. Required.
 
-      - As listed in Enums ([S6 Text](https://github.com/wmglab-duke/ascent/wiki/S6:-Enums)), known modes include:
+      - As listed in Enums ([S6 Text](S6-Enums)), known modes include
 
         1.  `“PRESENT”`: Program expects a segmented image for a nerve
             (`n.tif`) to incorporate into the model. The value must be
@@ -345,7 +345,7 @@ project. Required.
     `“NOT_PRESENT”` then the `“DeformationMode”` (i.e., “deform”
     parameter) must be `“NONE”`. Required.
 
-      - As listed in Enums ([S6 Text](https://github.com/wmglab-duke/ascent/wiki/S6:-Enums)), known modes include:
+      - As listed in Enums ([S6 Text](S6-Enums)), known modes include
 
         1.  `“NONE”`: The program does not deform the nerve when it is
             placed in the cuff electrode. In the pipeline’s current
@@ -366,7 +366,7 @@ project. Required.
     `“PerineuriumThicknessMode”` that tells the program which method to
     use to define perineurium thickness. Required.
 
-      - As listed in Enums ([S6 Text](https://github.com/wmglab-duke/ascent/wiki/S6:-Enums)), known `“PerineuriumThicknessModes”` include:
+      - As listed in Enums ([S6 Text](S6-Enums)), known `“PerineuriumThicknessModes”` include
 
         1. `“MEASURED”`: The program determines the average thickness of the
           perineurium using the provided inner and outer boundaries (i.e.,
@@ -388,7 +388,7 @@ project. Required.
     (post-deformation) to use when “deform” is set to `“PHYSICS”`.
     Required.
 
-      - As listed in Enums ([S6 Text](https://github.com/wmglab-duke/ascent/wiki/S6:-Enums)), known `“ReshapeNerveModes”` include:
+      - As listed in Enums ([S6 Text](S6-Enums)), known `“ReshapeNerveModes”` include
 
           - `“CIRCLE”`: The program creates a circular nerve boundary
             with a preserved cross-sectional area (i.e., for multifascicular nerves/nerves that have epineurium).
@@ -397,7 +397,7 @@ project. Required.
   - `“scale_input”`: The value (String) is the `“ScaleInputMode”`
     that tells the program which type of scale input to look for.
 
-      - As listed in Enums ([S6 Text](https://github.com/wmglab-duke/ascent/wiki/S6:-Enums)), known `“ScaleInputModes”` include:
+      - As listed in Enums ([S6 Text](S6-Enums)), known `“ScaleInputModes”` include
 
           - `“MASK”`: The program will determine image scale from the user's scale bar mask image and the `scale_bar_length` parameter.
           - `“RATIO”`: The program will use the scale directly specified in `scale_ratio`. If using this option, a scale bar image need not be
@@ -407,7 +407,7 @@ project. Required.
 
 `“morph_count”`: The value (Integer) can be used to set the number of
 intermediately deformed nerve traces between the `boundary_start` and
-`boundary_end` in Deformable ([S13 Text](https://github.com/wmglab-duke/ascent/wiki/S13:-Python-classes-for-representing-nerve-morphology-(Sample))) if the `“DeformationMode”` is “PHYSCIS”. An
+`boundary_end` in Deformable ([S13 Text](S13-Python-classes-for-representing-nerve-morphology-(Sample))) if the `“DeformationMode”` is “PHYSCIS”. An
 excessively large number for `morph_count` will slow down the deformation
 process, though a number that is too small could result in fascicles
 “escaping” from the nerve. Optional; if not specified default value is
@@ -611,7 +611,7 @@ are populated. Required.
   - `“mode”`: The value (String) is the `“PopulateMode”` that tells the
     program which method to use to populate the nerve. Required.
 
-      - As listed in Enums ([S6 Text](https://github.com/wmglab-duke/ascent/wiki/S6:-Enums)), known `“PopulateModes”` include: 
+      - As listed in Enums ([S6 Text](S6-Enums)), known `“PopulateModes”` include 
 
           - `“EXPLICIT”`: Populates the nerve with elliptical inners that
             are defined explicitly by the user.
@@ -930,10 +930,10 @@ are populated. Required.
     calculate the perineurium conductivity in a frequency and/or
     temperature dependent way. Required.
 
-      - As listed in Enums ([S6 Text](https://github.com/wmglab-duke/ascent/wiki/S6:-Enums)), known `“PerineuriumResistivityModes”` include:
+      - As listed in Enums ([S6 Text](S6-Enums)), known `“PerineuriumResistivityModes”` include
 
           - `“RHO_WEERASURIYA”`: Program uses mean of circuits C and D
-            from Weerasuriya 1984 \[1\] (frog sciatic nerve) ([S28 Text](https://github.com/wmglab-duke/ascent/wiki/S28:-Definition-of-perineurium)) to adjust
+            from Weerasuriya 1984 \[1\] (frog sciatic nerve) ([S28 Text](S28-Definition-of-perineurium)) to adjust
             perineurium conductivity to account for temperature and
             frequency (which are both stored in `model.json`).
 
@@ -942,34 +942,34 @@ are populated. Required.
             no automated correction for frequency.
 
   - `“cuff_shift”`: The value (String) is the “CuffShiftMode” that tells
-    the program how to shift the cuff on the nerve ([S17](https://github.com/wmglab-duke/ascent/wiki/S17:-Creating-custom-preset-cuffs-from-instances-of-part-primitives) and [S19](https://github.com/wmglab-duke/ascent/wiki/S19:-Cuff-placement-on-nerve) Text). Required.
+    the program how to shift the cuff on the nerve ([S17](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives) and [S19](S19-Cuff-placement-on-nerve) Text). Required.
 
-      - As listed in Enums ([S6 Text](https://github.com/wmglab-duke/ascent/wiki/S6:-Enums)), known modes include:
+      - As listed in Enums ([S6 Text](S6-Enums)), known modes include
 
           - `“NAIVE_ROTATION_MIN_CIRCLE_BOUNDARY”`: Program shifts the
             cuff to within a user-defined distance of the minimum
             bounding circle of the nerve sample. The direction of the
-            shift is defined in the preset cuff JSON file ([S17](https://github.com/wmglab-duke/ascent/wiki/S17:-Creating-custom-preset-cuffs-from-instances-of-part-primitives) and [S19](https://github.com/wmglab-duke/ascent/wiki/S19:-Cuff-placement-on-nerve) Text).
+            shift is defined in the preset cuff JSON file ([S17](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives) and [S19](S19-Cuff-placement-on-nerve) Text).
 
           - `“NAIVE_ROTATION_TRACE_BOUNDARY”`: Program shifts the cuff
             to within a user-defined distance of the nerve trace
             boundary. The direction of the shift is defined in the
-            preset cuff JSON file ([S17](https://github.com/wmglab-duke/ascent/wiki/S17:-Creating-custom-preset-cuffs-from-instances-of-part-primitives) and [S19](https://github.com/wmglab-duke/ascent/wiki/S19:-Cuff-placement-on-nerve) Text).
+            preset cuff JSON file ([S17](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives) and [S19](S19-Cuff-placement-on-nerve) Text).
 
           - `“AUTO_ROTATION_MIN_CIRCLE_BOUNDARY”`: Program
             shifts/rotates the cuff to within a user-defined distance of
             the minimum bounding circle of the nerve sample to align
             with the Slide’s `“fascicle_centroid”`. The direction of the
-            shift is defined in the preset cuff JSON file ([S17](https://github.com/wmglab-duke/ascent/wiki/S17:-Creating-custom-preset-cuffs-from-instances-of-part-primitives) and [S19](https://github.com/wmglab-duke/ascent/wiki/S19:-Cuff-placement-on-nerve) Text).
+            shift is defined in the preset cuff JSON file ([S17](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives) and [S19](S19-Cuff-placement-on-nerve) Text).
 
           - `“AUTO_ROTATION_MIN_TRACE_BOUNDARY”`: Program
             shifts/rotates the cuff to within a user-defined distance of
             the nerve trace boundary to align with the Slide’s
             `“fascicle_centroid”`. The direction of the shift is
-            defined in the preset cuff JSON file ([S17](https://github.com/wmglab-duke/ascent/wiki/S17:-Creating-custom-preset-cuffs-from-instances-of-part-primitives) and [S19](https://github.com/wmglab-duke/ascent/wiki/S19:-Cuff-placement-on-nerve) Text).
+            defined in the preset cuff JSON file ([S17](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives) and [S19](S19-Cuff-placement-on-nerve) Text).
 
           - `“NONE”`: Program keeps both the nerve centroid and cuff
-            centered at (x,y) =(0,0) and no cuff rotation is performed ([S17](https://github.com/wmglab-duke/ascent/wiki/S17:-Creating-custom-preset-cuffs-from-instances-of-part-primitives) and [S19](https://github.com/wmglab-duke/ascent/wiki/S19:-Cuff-placement-on-nerve) Text).
+            centered at (x,y) =(0,0) and no cuff rotation is performed ([S17](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives) and [S19](S19-Cuff-placement-on-nerve) Text).
 
   - `“fiber_z”`: The value (String) is the “FiberZMode” that tells the
     program how to seed the NEURON fibers along the length of the FEM.
@@ -1038,15 +1038,15 @@ for each cuff preset. Required.
 
   - `“preset”`: The value (String) indicates which cuff to model, selected
     from the list of filenames of the “preset” cuffs in
-    `config/system/cuffs/<filename>.json` (Fig 3A and [S17 Text](https://github.com/wmglab-duke/ascent/wiki/S17:-Creating-custom-preset-cuffs-from-instances-of-part-primitives)). Required.
+    `config/system/cuffs/<filename>.json` (Fig 3A and [S17 Text](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives)). Required.
 
   - `“rotate”`: Contains two keys: `“pos_ang”` (automatically populated
     based on “CuffShiftMode”, i.e., “cuff\_shift” parameter in
     ***Model***) and `“add_ang”` (optionally set by user to rotate cuff
-    by an additional angle) ([S19 Text](https://github.com/wmglab-duke/ascent/wiki/S19:-Cuff-placement-on-nerve)).
+    by an additional angle) ([S19 Text](S19-Cuff-placement-on-nerve)).
 
       - `“pos_ang”` (Double, units: degrees) is calculated by the
-        pipeline for the “AUTO” CuffShiftModes ([S19 Text](https://github.com/wmglab-duke/ascent/wiki/S19:-Cuff-placement-on-nerve)).
+        pipeline for the “AUTO” CuffShiftModes ([S19 Text](S19-Cuff-placement-on-nerve)).
 
       - `“add_ang”` (Double, units: degrees) is user-defined and adds
         additional rotation in the counterclockwise direction. If the
@@ -1084,11 +1084,11 @@ meshing statistics (automatically calculated).
 <!-- end list -->
 
   - `“proximal”`: Meshing parameters for the proximal cylindrical domain
-    (as defined in “medium”). Required ([S25 Text](https://github.com/wmglab-duke/ascent/wiki/S25:-Control-of-medium-surrounding-nerve-and-cuff-electrode)).
+    (as defined in “medium”). Required ([S25 Text](S25-Control-of-medium-surrounding-nerve-and-cuff-electrode)).
 
       - `“type”`: JSON Object containing parameters/definitions specific
         to meshing discretization method (e.g., free tetrahedral
-        “ftet”). We recommend free tetrahedral meshes. Required ([S25 Text](https://github.com/wmglab-duke/ascent/wiki/S25:-Control-of-medium-surrounding-nerve-and-cuff-electrode)).
+        “ftet”). We recommend free tetrahedral meshes. Required ([S25 Text](S25-Control-of-medium-surrounding-nerve-and-cuff-electrode)).
 
           - `“im”`: COMSOL indexing prefix (String) (e.g., free
             tetrahedral “ftet”). Required.
@@ -1119,7 +1119,7 @@ meshing statistics (automatically calculated).
 
       - `“type”`: JSON Object containing parameters/definitions specific
         to meshing discretization method (e.g., free tetrahedral
-        “ftet”). We recommend free tetrahedral meshes. Required ([S25 Text](https://github.com/wmglab-duke/ascent/wiki/S25:-Control-of-medium-surrounding-nerve-and-cuff-electrode)).
+        “ftet”). We recommend free tetrahedral meshes. Required ([S25 Text](S25-Control-of-medium-surrounding-nerve-and-cuff-electrode)).
 
           - `“im”`: COMSOL indexing prefix (String) (e.g., free
             tetrahedral “ftet”). Required.
@@ -1161,7 +1161,7 @@ meshing statistics (automatically calculated).
       - `“volume”`: (Double)
 
 `“frequency”`: Defines the frequency value used for frequency-dependent
-material conductivities (Double, unit: Hz) ([S28 Text](https://github.com/wmglab-duke/ascent/wiki/S28:-Definition-of-perineurium)). Required only if
+material conductivities (Double, unit Hz) ([S28 Text](S28-Definition-of-perineurium)). Required only if
 `“PerineuriumResistivityMode”` is `“RHO_WEERASURIYA”`.
 
 `“temperature”`: Defines the temperature of the nerve environment, which
@@ -1184,7 +1184,7 @@ no recessed domain in the preset’s parameterized implementation.
     following structure:
 
       - `“label”`: Communicates type of material assigned to domains
-        (String). The label is used to assign materials to domains ([S27 Text](https://github.com/wmglab-duke/ascent/wiki/S27:-Defining-and-assigning-materials-in-COMSOL)).
+        (String). The label is used to assign materials to domains ([S27 Text](S27-Defining-and-assigning-materials-in-COMSOL)).
         Required.
 
       - `“value”`: Required. Material conductivity for isotropic materials
@@ -1324,7 +1324,7 @@ milliseconds). Optional.
     waveform, intracellular stimulation, flags to indicate which
     outputs to save (e.g., state variables of channel gating mechanisms,
     transmembrane potential, intracellular stimulation), and stimulation
-    threshold-finding protocol ([S22](https://github.com/wmglab-duke/ascent/wiki/S22:-Simulation-protocols), [S32](https://github.com/wmglab-duke/ascent/wiki/S32:-NEURON-Wrapper.hoc), and [S33](https://github.com/wmglab-duke/ascent/wiki/S33:-Data-analysis-tools) Text).
+    threshold-finding protocol ([S22](S22-Simulation-protocols), [S32](S32-NEURON-Wrapper.hoc), and [S33](S33-Data-analysis-tools) Text).
 
 3.  Syntax: To declare this entity in `config/user/sims/`, use the
     following syntax:
@@ -1578,7 +1578,7 @@ weight<sub>2</sub> (for src 2 on)]]
 
 The value of potentials/ is applied to a model fiber in NEURON
 multiplied by the stimulation amplitude, which is either from a list of
-finite amplitudes or a binary search for thresholds ([S22 Text](https://github.com/wmglab-duke/ascent/wiki/S22:-Simulation-protocols)):
+finite amplitudes or a binary search for thresholds ([S22 Text](S22-Simulation-protocols))
 
 ![f4]
 
@@ -1593,9 +1593,9 @@ length of the fiber). Required.
     on the user’s screen during the pipeline run. Required.
 
   - `“mode”`: The value (String) is the “FiberGeometry” mode that tells
-    the program which fiber geometries to simulate in NEURON ([S21](https://github.com/wmglab-duke/ascent/wiki/S21:-Implementation-of-NEURON-fiber-models) and [S32](https://github.com/wmglab-duke/ascent/wiki/S32:-NEURON-Wrapper.hoc) Text). Required.
+    the program which fiber geometries to simulate in NEURON ([S21](S21-Implementation-of-NEURON-fiber-models) and [S32](S32-NEURON-Wrapper.hoc) Text). Required.
 
-      - As listed in Enums ([S6 Enums](https://github.com/wmglab-duke/ascent/wiki/S6:-Enums)), known modes include:
+      - As listed in Enums ([S6 Enums](S6-Enums)), known modes include
 
           - `“MRG_DISCRETE”` (published MRG fiber model)
 
@@ -1632,7 +1632,7 @@ length of the fiber). Required.
     pairs to instruct the system in seeding fibers along the length of
     the nerve. Required.
 
-      - `“diameter”`: The value can take multiple forms to define the fiber diameter that the user is simulating in NEURON ([S21](https://github.com/wmglab-duke/ascent/wiki/S21:-Implementation-of-NEURON-fiber-models) and [S32](https://github.com/wmglab-duke/ascent/wiki/S32:-NEURON-Wrapper.hoc) Text). The value can control simulation of either fixed diameter fibers or fibers chosen from a distribution of diameters (note: simulating a distribution of fiber diameters is only compatible with `“MRG_INTERPOLATION”`myelinated or unmyelinated fiber types, not `“MRG_DISCRETE”`). In ***Sim***, only one mode of defining fiber diameters can be used. Required.
+      - `“diameter”` The value can take multiple forms to define the fiber diameter that the user is simulating in NEURON ([S21](S21-Implementation-of-NEURON-fiber-models) and [S32](S32-NEURON-Wrapper.hoc) Text). The value can control simulation of either fixed diameter fibers or fibers chosen from a distribution of diameters (note simulating a distribution of fiber diameters is only compatible with `“MRG_INTERPOLATION”`myelinated or unmyelinated fiber types, not `“MRG_DISCRETE”`). In ***Sim***, only one mode of defining fiber diameters can be used. Required.
          - Fixed diameter: the value (Double or List[Double], units: micrometer) is the diameter of the fiber models. If using with `“MRG_DISCRETE”`, the diameters must be members of the set of published diameters.
          - Distribution of diameters: the value is a dictionary of key-value pairs to define the distribution of diameters based on the `“mode”` parameter, which can be either `“TRUNCNORM”` or `“UNIFORM”`.
              - `“TRUNCNORM”`
@@ -1683,7 +1683,7 @@ length of the fiber). Required.
      program how to seed fiber locations inside each inner in the nerve
      cross section. Required.
 
-  - As listed in Enums ([S6 Enums](https://github.com/wmglab-duke/ascent/wiki/S6:-Enums)), known modes include:
+  - As listed in Enums ([S6 Enums](S6-Enums)), known modes include
 
       - `“CENTROID”`: Place one fiber at the centroid (i.e., from the
         best-fit ellipse of the inner) of each inner.
@@ -1941,7 +1941,7 @@ waveform parameters among the lists (i.e., the Cartesian product).
 
 `“intracellular_stim”`: The value (JSON Object) contains key-value pairs
 to define the settings of the monophasic pulse train of the
-intracellular stimulus ([S31](https://github.com/wmglab-duke/ascent/wiki/S31:-NEURON-launch.hoc) and [S32](https://github.com/wmglab-duke/ascent/wiki/S32:-NEURON-Wrapper.hoc) Text). Required.
+intracellular stimulus ([S31](S31-NEURON-launch.hoc) and [S32](S32-NEURON-Wrapper.hoc) Text). Required.
 
   - `“times”`: The key-value pairs define the time durations
     characteristic of the intracellular stimulation. Required.
@@ -1972,7 +1972,7 @@ intracellular stimulus ([S31](https://github.com/wmglab-duke/ascent/wiki/S31:-NE
 
 `“saving”`: The value (JSON Object) contains key-value pairs to define
 which state variables NEURON will save during its simulations and at
-which times/locations ([S31](https://github.com/wmglab-duke/ascent/wiki/S31:-NEURON-launch.hoc) and [S32](https://github.com/wmglab-duke/ascent/wiki/S32:-NEURON-Wrapper.hoc) Text). Required.
+which times/locations ([S31](S31-NEURON-launch.hoc) and [S32](S32-NEURON-Wrapper.hoc) Text). Required.
 
   - `“space”`:
 
@@ -2019,9 +2019,9 @@ which times/locations ([S31](https://github.com/wmglab-duke/ascent/wiki/S31:-NEU
 
   - `“mode”`: The value (String) is the `“NeuronRunMode”` that tells the
     program to run activation thresholds, block thresholds, or a list of
-    extracellular stimulation amplitudes ([S31](https://github.com/wmglab-duke/ascent/wiki/S31:-NEURON-launch.hoc) and [S32](https://github.com/wmglab-duke/ascent/wiki/S32:-NEURON-Wrapper.hoc) Text). Required.
+    extracellular stimulation amplitudes ([S31](S31-NEURON-launch.hoc) and [S32](S32-NEURON-Wrapper.hoc) Text). Required.
 
-      - As listed in Enums ([S6 Text](https://github.com/wmglab-duke/ascent/wiki/S6:-Enums)), known `“NeuronRunModes”` include:
+      - As listed in Enums ([S6 Text](S6-Enums)), known `“NeuronRunModes”` include
 
           - `“ACTIVATION_THRESHOLDS”`
           - `“BLOCK_THRESHOLDS”`
@@ -2069,7 +2069,7 @@ which times/locations ([S31](https://github.com/wmglab-duke/ascent/wiki/S31:-NEU
 
   - `“bounds_search”`: the value (JSON Object) contains key-value pairs
     to define how to search for upper and lower bounds in binary search
-    algorithms ([S22 Text](https://github.com/wmglab-duke/ascent/wiki/S22:-Simulation-protocols)). Required for threshold finding protocols (i.e.,
+    algorithms ([S22 Text](S22-Simulation-protocols)). Required for threshold finding protocols (i.e.,
     `“ACTIVATION_THRESHOLDS”` and `“BLOCK_THRESHOLDS”`).
 
       - `“mode”`: the value (String) is the `“SearchAmplitudeIncrementMode”`
@@ -2077,9 +2077,9 @@ which times/locations ([S31](https://github.com/wmglab-duke/ascent/wiki/S31:-NEU
         bounds for the binary search; the bounds are adjusted
         iteratively until the initial upper bound (i.e., “top”)
         activates/blocks and until the initial lower bound does not
-        activate/block, before starting the binary search ([S22 Text](https://github.com/wmglab-duke/ascent/wiki/S22:-Simulation-protocols)). Required.
+        activate/block, before starting the binary search ([S22 Text](S22-Simulation-protocols)). Required.
 
-          - As listed in Enums ([S6 Text](https://github.com/wmglab-duke/ascent/wiki/S6:-Enums)), known `“SearchAmplitudeIncrementModes”`
+          - As listed in Enums ([S6 Text](S6-Enums)), known `“SearchAmplitudeIncrementModes”`
             include:
 
               - `“ABSOLUTE_INCREMENT”`: If the current upper bound does
@@ -2114,13 +2114,13 @@ which times/locations ([S31](https://github.com/wmglab-duke/ascent/wiki/S31:-NEU
 <!-- end list -->
 
   - `“termination_criteria”`: Required for threshold finding protocols
-    (i.e., `“ACTIVATION_THRESHOLDS”` and `“BLOCK_THRESHOLDS”`) ([S22 Text](https://github.com/wmglab-duke/ascent/wiki/S22:-Simulation-protocols)).
+    (i.e., `“ACTIVATION_THRESHOLDS”` and `“BLOCK_THRESHOLDS”`) ([S22 Text](S22-Simulation-protocols)).
 
       - `“mode”`: The value (String) is the `“TerminationCriteriaMode”` that
         tells the program when the upper and lower bound have converged
         on a solution of appropriate precision. Required.
 
-          - As listed in Enums ([S6 Text](https://github.com/wmglab-duke/ascent/wiki/S6:-Enums)), known `“TerminationCriteriaModes”`
+          - As listed in Enums ([S6 Text](S6-Enums)), known `“TerminationCriteriaModes”`
             include:
 
               - `“ABSOLUTE_DIFFERENCE”`: If the upper bound and lower
@@ -2281,7 +2281,7 @@ section without loading COMSOL files into memory.
     `run()` and `_match()` methods. This is used for pulling ***Sample***,
     ***Model***, or ***Sim*** indices for data analysis. The
     `query_criteria.json` dictates if a given ***Sample***, ***Model***,
-    or ***Sim*** fit the user’s restricted parameter values ([S33 Text](https://github.com/wmglab-duke/ascent/wiki/S33:-Data-analysis-tools)).
+    or ***Sim*** fit the user’s restricted parameter values ([S33 Text](S33-Data-analysis-tools)).
 
 3.  Syntax:
 ```
@@ -2365,7 +2365,7 @@ Note: you can have BOTH lists of desired ***Sample***, ***Model***, and
 1.  Named file: `config/system/env.json`
 
 2.  Purpose: The file contains key-value pairs for paths. The file can
-    be automatically populated by running `env_setup.py` ([S2 Text](https://github.com/wmglab-duke/ascent/wiki/S2:-Installation)). Note that we
+    be automatically populated by running `env_setup.py` ([S2 Text](S2-Installation)). Note that we
     have prepended all of the keys in this file with “ASCENT” because
     these key-value pairs are directly stored as environment variables,
     so the “ASCENT” key distinguishes these pairs from other paths that
@@ -2553,7 +2553,7 @@ Note: Perineurium can be represented in the pipeline as either a meshed
 domain with a finite thickness or as a thin layer approximation, but the
 conductivity value used for either method is defined in `materials.json`
 unless the `“PerineuriumResistivityMode”` is `“MANUAL”` and the conductivity
-is defined explicitly in ***Model*** ([](https://github.com/wmglab-duke/ascent/wiki/S28:-Definition-of-perineurium)).
+is defined explicitly in ***Model*** ([](S28-Definition-of-perineurium)).
 
 ## 1.10 ci\_peri\_thickness.json
 
@@ -2566,7 +2566,7 @@ is defined explicitly in ***Model*** ([](https://github.com/wmglab-duke/ascent/w
     The calculated thickness may be explicitly built in the FEM geometry
     and meshed (i.e., if `“use_ci”` in ***Model*** is false) or may only
     be used for calculating the contact impedance if modeling the
-    perineurium with a thin layer approximation ([S14](https://github.com/wmglab-duke/ascent/wiki/S14:-Creating-sample-specific-nerve-morphologies-in-COMSOL) and [S28](https://github.com/wmglab-duke/ascent/wiki/S28:-Definition-of-perineurium) Text).
+    perineurium with a thin layer approximation ([S14](S14-Creating-sample-specific-nerve-morphologies-in-COMSOL) and [S28](S28-Definition-of-perineurium) Text).
 
 3.  Syntax:
 ```
@@ -2605,7 +2605,7 @@ and perineurium thickness. Required.
 
 2.  Purpose: This file is not to be changed unless a user adds new
     parameters to ***Model***. The use of this file happens behind the
-    scenes. The file informs the `ModelSearcher` class ([S26 Text](https://github.com/wmglab-duke/ascent/wiki/S26:-Java-utility-classes)) if two model
+    scenes. The file informs the `ModelSearcher` class ([S26 Text](S26-Java-utility-classes)) if two model
     configurations constitute a "mesh match" (i.e., that the mesh from a
     previously solved and identical model can be recycled). Note that if
     you modify the structure of `model.json`, the pipeline expects this

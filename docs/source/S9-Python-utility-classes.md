@@ -16,13 +16,13 @@ their properties from JSON configuration files (e.g., `sample.json`,
 `model.json`, `sim.json`, `fiber_z.json`). The Configurable class takes three
 input parameters:
 
-### 1.1.1 SetupMode (from Enums, [S6 Text](https://github.com/wmglab-duke/ascent/wiki/S6:-Enums)):
+### 1.1.1 SetupMode (from Enums, [S6 Text](S6-Enums))
 
 Either NEW or OLD which determines if Configurable loads a new JSON
 (from file) or uses data that has already been created in Python memory
 as a dictionary or list, respectively.
 
-### 1.1.2 ConfigKey (from Enums, [S6 Text](https://github.com/wmglab-duke/ascent/wiki/S6:-Enums)):
+### 1.1.2 ConfigKey (from Enums, [S6 Text](S6-Enums))
 
 The ConfigKey indicates the choice of configuration data type and is
 also the name of the configuration JSON file (e.g., `sample.json`,
@@ -69,7 +69,7 @@ exceptionable, are listed in the event of a raised exception.
 ##  1.3 Saveable
 
 Saveable is a simple Python class that, when inherited by a Python class
-(e.g., Sample and Simulation, described in [S13](https://github.com/wmglab-duke/ascent/wiki/S13:-Python-classes-for-representing-nerve-morphology-(Sample)) and [S30](https://github.com/wmglab-duke/ascent/wiki/S30:-Python-simulation-class) Text, respectively) enables the class to save itself using
+(e.g., Sample and Simulation, described in [S13](S13-Python-classes-for-representing-nerve-morphology-(Sample)) and [S30](S30-Python-simulation-class) Text, respectively) enables the class to save itself using
 Saveable’s `save()` method. Using `pickle.dump()`, the object is saved as a
 Python object to file at the location of the destination path, which is
 an input parameter to `save()`.

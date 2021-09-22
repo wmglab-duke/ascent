@@ -9,7 +9,7 @@ thinly meshed domain, reduces mesh complexity and is a reasonable
 approximation \[1\]. Therefore, perineurium can be modeled with a thin
 layer approximation (except with “peanut” fascicles; see an example in
 Fig 2), termed “contact impedance” in COMSOL (if ***Model’s***
-`“use_ci”` parameter is true ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide))), which relates the normal component of
+`“use_ci”` parameter is true ([S8 Text](S8-JSON-file-parameter-guide))), which relates the normal component of
 the current density through the surface
 ![f5] to the drop in electric
 potentials ![f3] and the sheet resistance ![f4]:

@@ -3,7 +3,7 @@
 
 The `addNerve()` method adds the nerve components to the COMSOL “model”
 object using Java. If the “NerveMode” in ***Sample*** (“nerve”) is
-“PRESENT” ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)) the program creates a part instance of epineurium using the
+“PRESENT” ([S8 Text](S8-JSON-file-parameter-guide)) the program creates a part instance of epineurium using the
 `createNervePartInstance()` method in Part (`src/model/Part.java`). The
 `addNerve()` method then searches through all directories
 in `fascicles/` for the sample being modeled, and, for each fascicle,
@@ -28,10 +28,10 @@ ASCENT uses CAD [sectionwise](https://www.comsol.com/fileformats)
 extension containing column vectors for x- and y-coordinates) created by
 the Python Sample class to define fascicle tissue boundaries in COMSOL.
 
-We provide the `“use_ci”` mode in ***Model*** ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)) to model the perineurium
+We provide the `“use_ci”` mode in ***Model*** ([S8 Text](S8-JSON-file-parameter-guide)) to model the perineurium
 using COMSOL’s contact impedance boundary condition for fascicles with
 only one inner (i.e., endoneurium) domain for each outer (i.e.,
-perineurium) domain ([S28 Text](https://github.com/wmglab-duke/ascent/wiki/S28:-Definition-of-perineurium)). If `“use_ci”` mode is true, the perineurium for all
+perineurium) domain ([S28 Text](S28-Definition-of-perineurium)). If `“use_ci”` mode is true, the perineurium for all
 fascicles with exactly one inner and one outer is represented with a
 contact impedance. The pipeline does not support control of using the
 contact impedance boundary condition on a fascicle-by-fascicle basis.
@@ -55,4 +55,4 @@ contains the operations required to represent epineurium in COMSOL. The
 epineurium cross section is represented as a circle/ellipse from the input
 epineurium boundary and is then extruded into the third dimension. This
 is only performed if the “NerveMode” (i.e., “nerve”) in ***Sample*** is
-“PRESENT” and `n.tif` is provided ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)).
+“PRESENT” and `n.tif` is provided ([S8 Text](S8-JSON-file-parameter-guide)).

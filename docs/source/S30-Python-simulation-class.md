@@ -11,7 +11,7 @@ The parameters over which the user has indicated to sweep in ***Sim***
 are saved to the Simulation class as a dictionary named “factors” with
 the path to each parameter in ***Sim***.
 
-The required parameters to define each type of waveform are in [S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide). The Python Waveform class is configured with ***Sim***, which contains
+The required parameters to define each type of waveform are in [S8 Text](S8-JSON-file-parameter-guide). The Python Waveform class is configured with ***Sim***, which contains
 all parameters that define the Waveform. Since FEMs may have
 frequency-dependent conductivities, the parameter for frequency of
 stimulation is optionally defined in ***Model*** (for frequency-dependent

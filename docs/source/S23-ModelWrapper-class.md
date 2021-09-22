@@ -1,9 +1,9 @@
 # S23: ModelWrapper Class
 ## 1.1 ModelWrapper
 The `ModelWrapper` class in Java takes inputs of the ASCENT_PROJECT_PATH
-(`env.json`, [S7](https://github.com/wmglab-duke/ascent/wiki/S7:-JSON-configuration-files) and [S8](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide) Text) and a list of ***Run*** paths. `ModelWrapper` contains a COMSOL
+(`env.json`, [S7](S7-JSON-configuration-files) and [S8](S8-JSON-file-parameter-guide) Text) and a list of ***Run*** paths. `ModelWrapper` contains a COMSOL
 “model” object, model source directory (String), model destination
-directory (String), an `“IdentifierManager”` ([S26 Text](https://github.com/wmglab-duke/ascent/wiki/S26:-Java-utility-classes)), and `HashMaps` with key-value
+directory (String), an `“IdentifierManager”` ([S26 Text](S26-Java-utility-classes)), and `HashMaps` with key-value
 pairs linking COMSOL domains to unions of domains. `ModelWrapper` has
 accessor methods `getModel()` for retrieving the model object, `getRoot()`
 for retrieving the project path’s root String, and `getDest()` for
@@ -13,7 +13,7 @@ default saving destination String (`setDest()`).
 
 `ModelWrapper’s` `main()` method starts an instance of COMSOL and loads
 ***Run***, ***Sample***, ***Model***, and ***Sim*** configurations as
-JSON Objects into memory. We developed Java class `JSONio` ([S26 Text](https://github.com/wmglab-duke/ascent/wiki/S26:-Java-utility-classes)) for reading and
+JSON Objects into memory. We developed Java class `JSONio` ([S26 Text](S26-Java-utility-classes)) for reading and
 writing JSON Objects to file.
 
 Since each ***Run*** contains a list of ***Model*** and ***Sim***

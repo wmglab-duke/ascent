@@ -37,7 +37,7 @@ Provide the image files used as inputs to ASCENT.
 ## 1.3 Cuff
 If the “preset” cuff configuration file used to define the cuff electrode is not publicly available in the ASCENT repository, please provide it with your materials.
 
-If new part primitives were created to represent the cuff electrode ([S18 Text](https://github.com/wmglab-duke/ascent/wiki/S18:-Creating-new-part-primitives)), please include copies of Java code that perform the FEM operations for the new parts. These sections of code should be from src/model/Part.java as “cases” (i.e., in switch-case statement) for new parts in the createCuffPartPrimitive() and createCuffPartInstance() methods.
+If new part primitives were created to represent the cuff electrode ([S18 Text](S18-Creating-new-part-primitives)), please include copies of Java code that perform the FEM operations for the new parts. These sections of code should be from src/model/Part.java as “cases” (i.e., in switch-case statement) for new parts in the createCuffPartPrimitive() and createCuffPartInstance() methods.
 
 Indicate how the cuff was placed on the nerve. Specifically, state the longitudinal placement of the cuff and how the cuff rotation was determined (e.g., the cuff rotation modes, or used a.tif to rotate the cuff to replicate in vivo cuff rotation).
 
@@ -51,7 +51,7 @@ Report the model length and radius, along with a statement to justify your model
 Report if a thin-layer approximation or a finite thickness material was used to define the perineurium. If a thin-layer approximation was used, indicate how the thickness of the perineurium was determined (e.g., measured from histology, or previously published relationship between inner diameter and perineurium thickness).
 
 ## 1.7 Mesh
-Indicate the method used to mesh the FEM in addition to the number of domain elements. Include a statement to justify your model’s meshing parameters (i.e., convergence studies) ([S34 Text](https://github.com/wmglab-duke/ascent/wiki/S34:-Convergence-analysis-example)).
+Indicate the method used to mesh the FEM in addition to the number of domain elements. Include a statement to justify your model’s meshing parameters (i.e., convergence studies) ([S34 Text](S34-Convergence-analysis-example)).
 
 ## 1.8 Solution
 Indicate that the FEM was solved using Laplace’s equation once for each contact delivering 1 mA of current. Indicate if the outer surfaces of the model were grounded or set to insulation.

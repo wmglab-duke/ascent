@@ -13,7 +13,7 @@ at discrete times and/or locations.
 ##  1.1 Create fiber model
 
 Based on the flag for “fiber\_type” set in ```launch.hoc``` (associated by a
-fiber type parameter in ```fiber_z.json``` and ```FiberGeometryMode``` ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide))),
+fiber type parameter in ```fiber_z.json``` and ```FiberGeometryMode``` ([S8 Text](S8-JSON-file-parameter-guide))),
 ```Wrapper.hoc``` loads the corresponding template for defining fiber geometry
 discretization, i.e., ```“GeometryBuilder.hoc”``` for myelinated fibers and
 ```“cFiberBuilder.hoc”``` for unmyelinated fibers. For all fiber types, the
@@ -25,12 +25,12 @@ the coordinates of the input potentials.
 For simulations of block threshold, an intracellular test pulse is
 delivered at one end of the fiber to test if the cuff electrode (i.e.,
 placed between the intracellular stimulus and the site of detecting
-action potentials) is blocking action potentials ([S22 Text](https://github.com/wmglab-duke/ascent/wiki/S22:-Simulation-protocols)). The intracellular
+action potentials) is blocking action potentials ([S22 Text](S22-Simulation-protocols)). The intracellular
 stimulation parameters are defined in ***Sim*** and are defined as
 parameters in NEURON within the ```launch.hoc``` file. The parameters in
 ***Sim*** control the pulse delay, pulse width, pulse repetition
 frequency, pulse amplitude, and node/section index of the intracellular
-stimulus ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)). For simulating activation thresholds, the intracellular
+stimulus ([S8 Text](S8-JSON-file-parameter-guide)). For simulating activation thresholds, the intracellular
 stimulation amplitude should be set to zero.
 
 ##  1.3 Extracellular stimulus
@@ -80,7 +80,7 @@ activation and block thresholds, respectively.
 ## 1.6 FindThresh
 
 The procedure ```FindThresh``` performs a binary search for activation and
-block thresholds ([S22 Text](https://github.com/wmglab-duke/ascent/wiki/S22:-Simulation-protocols)).
+block thresholds ([S22 Text](S22-Simulation-protocols)).
 
 ## 1.7 Save outputs to file
 

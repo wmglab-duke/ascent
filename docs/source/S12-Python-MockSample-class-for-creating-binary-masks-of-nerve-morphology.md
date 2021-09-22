@@ -13,7 +13,7 @@ root. The mock morphology generator uses the MockSample Python class to
 create binary images of the nerve, inner perineurium traces (fascicles),
 and the scale bar in `input/<NAME>/` (NAME is analogous to the
 “sample” parameter in ***Sample***, following the standard naming
-convention ([S7](https://github.com/wmglab-duke/ascent/wiki/S7:-JSON-configuration-files) and [S8](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide) Text)), which allow the pipeline to function as if binary
+convention ([S7](S7-JSON-configuration-files) and [S8](S8-JSON-file-parameter-guide) Text)), which allow the pipeline to function as if binary
 images of segmented histology were provided. The
 `<mock_sample_index>.json` file and the resulting segmented nerve
 morphology files are automatically saved in `input/<NAME>/`.
@@ -30,6 +30,6 @@ and `make_fascicles()` are called to create ellipses for the nerve and
 fascicles in memory based on the parameters in the `mock_sample.json`
 file. MockSample’s methods ensure that the fascicles have a minimum
 distance between each fascicle boundary and the nerve and between
-fascicle boundaries. For details on the parameters that define sample morphology using our mock nerve morphology generator, see [S7 Text](https://github.com/wmglab-duke/ascent/wiki/S7:-JSON-configuration-files) for a description of mock_sample.json and [S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide) for details of the syntax/data type of the key-value parameter pairs required to define a mock sample. Lastly, MockSample’s `make_masks()` method is called
+fascicle boundaries. For details on the parameters that define sample morphology using our mock nerve morphology generator, see [S7 Text](S7-JSON-configuration-files) for a description of mock_sample.json and [S8 Text](S8-JSON-file-parameter-guide) for details of the syntax/data type of the key-value parameter pairs required to define a mock sample. Lastly, MockSample’s `make_masks()` method is called
 on the class instance to create binary masks and save them as TIFs in
 the `input/<NAME>/` directory.

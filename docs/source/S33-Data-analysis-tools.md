@@ -6,7 +6,7 @@ The general usage of Query is as follows:
 
 1.  In the context of a Python script, the user specifies the search
     criteria (think of these as “keywords” that filter your data) in the
-    form of a JSON configuration file (see `query_criteria.json` in [S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)).
+    form of a JSON configuration file (see `query_criteria.json` in [S8 Text](S8-JSON-file-parameter-guide)).
 
 2.  These search criteria are used to construct a Query object, and the
     search for matching ***Sample***, ***Model***, and ***Sim***
@@ -22,7 +22,7 @@ arbitrary points in the data file structure as well as load saved Python
 objects (e.g., Sample and Simulation class instances).
 
 The Query class’s initializer takes one argument: a dictionary in the
-appropriate structure for query criteria ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)) *or* a string value containing
+appropriate structure for query criteria ([S8 Text](S8-JSON-file-parameter-guide)) *or* a string value containing
 the path (relative to the pipeline repository root) to the desired JSON
 configuration with the criteria. Put concisely, a user may filter
 results either manually by using known indices or automatically by using
@@ -87,4 +87,4 @@ Users need to determine an appropriate number of points along the fiber
 to record state variables. Users have the option to either record state
 variables at all Nodes of Ranvier (myelinated fibers) or sections
 (unmyelinated fibers), or at discrete locations along the length of the
-fiber ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)).
+fiber ([S8 Text](S8-JSON-file-parameter-guide)).

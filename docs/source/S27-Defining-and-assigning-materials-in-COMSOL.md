@@ -8,7 +8,7 @@ epineurium). Material properties for each function are assigned in
 ***Model*’s** “conductivities” JSON Object by either referencing
 materials in the default materials library
 (`config/system/materials.json`) by name, or with explicit definitions
-of a materials name and conductivity as a JSON Object ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)).
+of a materials name and conductivity as a JSON Object ([S8 Text](S8-JSON-file-parameter-guide)).
 
 ## 1.1 ModelWrapper.addMaterialDefinitions()
 

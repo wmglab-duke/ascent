@@ -9,7 +9,7 @@ and surfaces in COMSOL requires that geometry operations be contributed
 to “selections” (`csel<#>`). In this simple example of a part
 primitive, the `im.labels String[]` contains the string “MEDIUM” which
 is used to label the COMSOL selection (`csel<#>`) for the medium domain
-by association with an `IdentifierManager` ([S26 Text](https://github.com/wmglab-duke/ascent/wiki/S26:-Java-utility-classes)). When the geometry of the
+by association with an `IdentifierManager` ([S26 Text](S26-Java-utility-classes)). When the geometry of the
 primitive is built, the resulting medium domain’s `csel<#>` can be
 accessed instead with the key “MEDIUM” in the `IdentifierManager`, thereby
 improving readability and accessibility when materials and boundary
@@ -28,7 +28,7 @@ Primitive, Wire Contact Primitive, Circle Contact Primitive, and
 Rectangular Contact Primitive), cuff insulation (e.g., Tube Cuff), cuff
 fill (e.g., saline, mineral oil), and specific interactions of a cuff
 insulator and electrode contact (e.g., LivaNova-inspired helical coil)
-([S16 Text](https://github.com/wmglab-duke/ascent/wiki/S16:-Library-of-part-primitives-for-electrode-contacts-and-cuffs)).
+([S16 Text](S16-Library-of-part-primitives-for-electrode-contacts-and-cuffs)).
 
 ##  1.3 Part Instances
 

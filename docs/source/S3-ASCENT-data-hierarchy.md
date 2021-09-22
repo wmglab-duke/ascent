@@ -20,7 +20,7 @@ not require changes in ***Model*** or ***Sample***, and changes in
 
 ![Inline image](uploads/e675a31c0bf2bda687c6d696fa145c0c/Picture15.jpg)
 
-Figure A. ASCENT pipeline file structure in the context of Sample (blue), Model (green), and Sim (purple) configurations. [S7 Text](https://github.com/wmglab-duke/ascent/wiki/S7:-JSON-configuration-files) describes the JSON configuration files an their contents, and [S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide) details the syntax and data types of the key-value parameter pairs.
+Figure A. ASCENT pipeline file structure in the context of Sample (blue), Model (green), and Sim (purple) configurations. [S7 Text](S7-JSON-configuration-files) describes the JSON configuration files an their contents, and [S8 Text](S8-JSON-file-parameter-guide) details the syntax and data types of the key-value parameter pairs.
 
 ##  1.1 Batching and sweeping of parameters
 

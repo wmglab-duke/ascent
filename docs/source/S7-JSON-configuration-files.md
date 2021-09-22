@@ -7,7 +7,7 @@ provide a traceable history of the parameters used to generate data.
 
 For each JSON file, we provide a brief overview, a statement of where
 the file must be placed in the directory structure, and a description of
-its contents. For a detailed description of each JSON file (i.e., which parameters are required or optional, known value data types, and known values), see [S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide). Though JSON does not allow comments, users may want to add
+its contents. For a detailed description of each JSON file (i.e., which parameters are required or optional, known value data types, and known values), see [S8 Text](S8-JSON-file-parameter-guide). Though JSON does not allow comments, users may want to add
 notes to a JSON file (e.g., to remember what a ***Sample***,
 ***Model***, or ***Sim*** file was used to accomplish). The user can
 simply add a key to the JSON file that is not in use (e.g., “notes”) and
@@ -36,7 +36,7 @@ SLURM cluster or locally.
 An example ***Sample*** configuration file is stored in
 `config/templates/` for users to reference when defining their own
 input nerve morphology from histology or from the mock nerve morphology
-generator ([S8](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide) and [S12](https://github.com/wmglab-duke/ascent/wiki/S12:-Python-MockSample-class-for-creating-binary-masks-of-nerve-morphology) Text). A user’s `sample.json` file is saved in the
+generator ([S8](S8-JSON-file-parameter-guide) and [S12](S12-Python-MockSample-class-for-creating-binary-masks-of-nerve-morphology) Text). A user’s `sample.json` file is saved in the
 `samples/<sample_index>/` directory. The file contains information
 about the sample’s properties and how to process the nerve morphology
 before placing the nerve in a cuff electrode. The pipeline’s processes
@@ -133,7 +133,7 @@ resolution). Since users may want to sweep parameters at the ***Sim***
 configuration level (e.g., fiber types, fiber locations, waveforms), a
 pared down copy of ***Sim*** that contains a single value for each
 parameter (rather than a list) is saved within the corresponding
-`n_sims/` directory ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)). These pared down files are provided for convenience,
+`n_sims/` directory ([S8 Text](S8-JSON-file-parameter-guide)). These pared down files are provided for convenience,
 so that the user can inspect which parameters were used in a single
 NEURON simulation, and they do not hold any other function within the
 pipeline.
@@ -252,7 +252,7 @@ flags) that corresponds to fiber-type specific operations in NEURON.
 In the case of fascicles with exactly one inner perineurium trace for
 each outer perineurium trace, to reduce the required computational
 resources, the pipeline can represent the perineurium using a thin layer
-approximation in COMSOL ([S28 Text](https://github.com/wmglab-duke/ascent/wiki/S28:-Definition-of-perineurium)). Specifically, if ***Model’s*** `“use_ci”`
+approximation in COMSOL ([S28 Text](S28-Definition-of-perineurium)). Specifically, if ***Model’s*** `“use_ci”`
 parameter is true, the perineurium is modeled as a surface with a sheet
 resistance (termed “contact impedance” in COMSOL) defined by the product
 of the resistivity and thickness. The thickness is calculated as half of
@@ -274,7 +274,7 @@ Boolean indicating true if the parameter value must match between two
 ***Model*** configurations to recycle a mesh, or false if a different
 parameter value would not prohibit a mesh be reused. The
 `mesh_dependent_model.json` file is used by our `ModelSearcher` Java
-utility class  ([S26 Text](https://github.com/wmglab-duke/ascent/wiki/S26:-Java-utility-classes)).
+utility class  ([S26 Text](S26-Java-utility-classes)).
 
 ## 1.3 References
 1. Grinberg Y, Schiefer MA, Tyler DJ, Gustafson KJ. Fascicular perineurium thickness, size, and position affect model predictions of  neural excitation. IEEE Trans Neural Syst Rehabil Eng. 2008 Dec;16(6):572–81.

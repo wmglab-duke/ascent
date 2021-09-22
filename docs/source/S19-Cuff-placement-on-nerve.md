@@ -29,9 +29,9 @@ For “naïve” `CuffShiftModes` (i.e.,
 `“NAIVE_ROTATION_MIN_CIRCLE_BOUNDARY”,
 “NAIVE_ROTATION_TRACE_BOUNDARY”`) the cuff is placed on the nerve
 with rotation according to the parameters used to instantiate the cuff
-from part primitives ([S16](https://github.com/wmglab-duke/ascent/wiki/S16:-Library-of-part-primitives-for-electrode-contacts-and-cuffs), [S17](https://github.com/wmglab-duke/ascent/wiki/S17:-Creating-custom-preset-cuffs-from-instances-of-part-primitives), and [S18](https://github.com/wmglab-duke/ascent/wiki/S18:-Creating-new-part-primitives) Text). If the user would like to rotate the cuff from
+from part primitives ([S16](S16-Library-of-part-primitives-for-electrode-contacts-and-cuffs), [S17](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives), and [S18](S18-Creating-new-part-primitives) Text). If the user would like to rotate the cuff from
 beyond this position, they may set the `“add_ang”` parameter in
-***Model*** ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)). For naïve `CuffShiftModes`, the cuff is shifted along the
+***Model*** ([S8 Text](S8-JSON-file-parameter-guide)). For naïve `CuffShiftModes`, the cuff is shifted along the
 vector from (0,0) in the direction of the `“angle_to_contacts_deg”`
 parameter in the “preset” JSON file.
 `“NAIVE_ROTATION_MIN_CIRCLE_BOUNDARY”` `CuffShiftMode` moves the cuff
@@ -58,10 +58,10 @@ nerve to make (0,0), the center of the cuff, and ***Sample’s***
 method, which calculates the area and centroid of each inner and then
 averages the inners’ centroids weighted by each inner’s area) colinear.
 If the user would like to rotate the cuff from beyond this position, they may set the
-`“add_ang”` parameter in ***Model*** ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)). The user may override the
+`“add_ang”` parameter in ***Model*** ([S8 Text](S8-JSON-file-parameter-guide)). The user may override the
 default “AUTO” rotation of the cuff on the nerve by adding an
 orientation mask (`a.tif`) to align a certain surface of the nerve sample
-with the cuff’s center ([S11 Text](https://github.com/wmglab-duke/ascent/wiki/S11:-Morphology-files)). `“AUTO_ROTATION_MIN_CIRCLE_BOUNDARY”`
+with the cuff’s center ([S11 Text](S11-Morphology-files)). `“AUTO_ROTATION_MIN_CIRCLE_BOUNDARY”`
 `CuffShiftMode` moves the cuff toward the nerve until the nerve’s minimum
 radius enclosing circle is within the distance of the
 `“thk_medium_gap_internal”` parameter for the cuff.

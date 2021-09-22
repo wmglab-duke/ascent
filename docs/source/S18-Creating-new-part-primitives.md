@@ -8,8 +8,8 @@ creating a new part primitive.
 
 The COMSOL GUI has a “Geometry Parts” node under the “Global
 Definitions”. The pipeline adds part primitives—i.e., the geometry of
-different pieces of cuff electrodes (e.g., contacts ([S16 Text Figure A](https://github.com/wmglab-duke/ascent/wiki/S16:-Library-of-part-primitives-for-electrode-contacts-and-cuffs)),
-insulators ([S16 Text Figure B](https://github.com/wmglab-duke/ascent/wiki/S16:-Library-of-part-primitives-for-electrode-contacts-and-cuffs))), cuff fill (e.g., encapsulation tissue,
+different pieces of cuff electrodes (e.g., contacts ([S16 Text Figure A](S16-Library-of-part-primitives-for-electrode-contacts-and-cuffs)),
+insulators ([S16 Text Figure B](S16-Library-of-part-primitives-for-electrode-contacts-and-cuffs))), cuff fill (e.g., encapsulation tissue,
 mineral oil, saline), or medium (e.g., surrounding muscle, fat)—as
 “parts” under “Geometry Parts”. Their resulting volumes (domains),
 surfaces, and points (used for point current sources) are added to the
@@ -117,7 +117,7 @@ model.geom(id).selection().create(im.next(“csel”, cselLabel),
 
   - The lines that follow the Cumulative Selection labeling add the
     geometry features of the COMSOL part which COMSOL has also
-    conveniently exported for you in the `*.java` file. See [S26 Text](https://github.com/wmglab-duke/ascent/wiki/S26:-Java-utility-classes) for an explanation of our Java
+    conveniently exported for you in the `*.java` file. See [S26 Text](S26-Java-utility-classes) for an explanation of our Java
     `IdentifierManager` utility class that we created to abstract away from COMSOL’s
     indexing system to improve code readability. Our `“IdentifierManager”`
     class enables the user to access previously defined selection tags

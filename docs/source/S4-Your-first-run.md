@@ -12,9 +12,9 @@ use indices that are consistent with the indices of ***Sample***,
     must match “sample” parameter in ***Sample***) with binary masks of
     neural tissue boundaries using either:
 
-    a.  Segmented histology ([S11 Text](https://github.com/wmglab-duke/ascent/wiki/S11:-Morphology-files) and Fig 2), or
+    a.  Segmented histology ([S11 Text](S11-Morphology-files) and Fig 2), or
 
-    b.  Running the `mock_morphology_generator.py` script ([S12 Text](https://github.com/wmglab-duke/ascent/wiki/S12:-Python-MockSample-class-for-creating-binary-masks-of-nerve-morphology)).
+    b.  Running the `mock_morphology_generator.py` script ([S12 Text](S12-Python-MockSample-class-for-creating-binary-masks-of-nerve-morphology)).
 
        i.  Copy `mock_sample.json` from `config/templates/` to
             `config/user/mock_samples/` as `<mock_sample_index>.json`
@@ -35,7 +35,7 @@ use indices that are consistent with the indices of ***Sample***,
     particular, change “sample” to match `<NAME>`, the
     `“scale_bar_length”` parameter for `s.tif` (i.e., length in microns
     of your scale bar, which is oriented horizontally), and
-    `“mask_input”` in ***Sample*** accordingly ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)). You have now created
+    `“mask_input”` in ***Sample*** accordingly ([S8 Text](S8-JSON-file-parameter-guide)). You have now created
     the directory for your first sample: `sample #<sample_index>`. Note: in lieu of a scale bar image, the user may optionally specify the microns/pixel ratio for the sample mask(s).
 
 
@@ -48,16 +48,16 @@ use indices that are consistent with the indices of ***Sample***,
         saves it as `config/system/cuffs/<preset_str>.json`.
 
     b.  The `<preset_str>.json` file name must be assigned to the
-        “preset” parameter in ***Model*** ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)).
+        “preset” parameter in ***Model*** ([S8 Text](S8-JSON-file-parameter-guide)).
 
 4.  ***For each Sim:*** User copies `sim.json` from `config/templates/` to
     `config/user/sims/` as `<sim_index>.json` and edits its contents to
-    inform the NEURON simulations ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)).
+    inform the NEURON simulations ([S8 Text](S8-JSON-file-parameter-guide)).
 
 5.  ***Run:*** User copies `run.json` from `config/templates/` to
     `config/user/runs/` as `<run_index>.json` and edits the indices for
     the created ***Sample***, ***Model(s)***, and ***Sim(s)***
-    configurations ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)).
+    configurations ([S8 Text](S8-JSON-file-parameter-guide)).
 
 6.  The pipeline is run from the project path (i.e., the path to the
     root of the ASCENT pipeline, which is defined in
@@ -66,7 +66,7 @@ use indices that are consistent with the indices of ***Sample***,
     ***Run*** indices (if multiple ***Sample*** indices, one ***Run***
     for each). The pipeline outputs ready-to-submit NEURON simulations
     and associated ***Run file(s)*** to the `“ASCENT_NSIM_EXPORT_PATH”`
-    directory as defined in `config/system/env.json` ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)). NEURON simulations
+    directory as defined in `config/system/env.json` ([S8 Text](S8-JSON-file-parameter-guide)). NEURON simulations
     are run locally or submitted to a computer cluster with the command
     `“python submit.py <run indices>”` from the export directory.
 

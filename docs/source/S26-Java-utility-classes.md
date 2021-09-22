@@ -75,7 +75,7 @@ Specifically, this class compares ***Model*** configurations to
 determine if their parameters are compatible to repurpose the geometry
 and mesh from a previously generated COMSOL model using the `meshMatch()`
 method. The `meshMatch()` method takes the inputs of a reference JSON
-(i.e., `config/templates/mesh_dependent_model.json`, see [S7](https://github.com/wmglab-duke/ascent/wiki/S7:-JSON-configuration-files) and [S8](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide) Text) containing
+(i.e., `config/templates/mesh_dependent_model.json`, see [S7](S7-JSON-configuration-files) and [S8](S8-JSON-file-parameter-guide) Text) containing
 conditions for compatibility and a JSON Object for each of two
 ***Model*** configurations to compare. The parameter keys correspond
 one-to-one in ***Model*** and `mesh_dependent_model.json`. However, in

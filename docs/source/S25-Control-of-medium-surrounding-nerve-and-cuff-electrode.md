@@ -5,7 +5,7 @@ the nerve, and may optionally include a “distal” domain. The
 parameterization for the geometry of the “proximal” and “distal” domains
 is shown below in Figure A. For details on how to define the
 “proximal” and “distal” domain geometries and meshing parameters, see
-`model.json` in [S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide).
+`model.json` in [S8 Text](S8-JSON-file-parameter-guide).
 
 ![Inline image](uploads/2019a527f15dc364c132f95ade650b12/Picture23.jpg)
 

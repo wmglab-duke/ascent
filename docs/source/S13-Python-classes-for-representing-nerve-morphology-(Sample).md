@@ -3,10 +3,10 @@ The nerve cross section includes the outer nerve trace (if present; not
 required for monofascicular nerves) and, for each fascicle, either a
 single “inner” perineurium trace or both “inner” and “outer” perineurium
 traces. We provide automated control to correct for tissue shrinkage
-during histological processes \[1\] ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)). Morphology metrics (e.g., nerve
+during histological processes \[1\] ([S8 Text](S8-JSON-file-parameter-guide)). Morphology metrics (e.g., nerve
 and fascicle(s) cross-sectional areas and centroids, major and minor
 axis lengths, and rotations of the best-fit ellipses) are automatically
-reported in ***Sample*** ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)).
+reported in ***Sample*** ([S8 Text](S8-JSON-file-parameter-guide)).
 
 ##  1.1 Trace
 
@@ -84,7 +84,7 @@ Lastly, Trace has a few utility methods:
 Nerve is the name of a special instance of Trace reserved for
 representing the outer nerve (epineurium) boundary. It functions as an
 alias for Trace. An instance of the Nerve class is created if the
-“NerveMode” in ***Sample*** (“nerve”) is “PRESENT” ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide))"
+“NerveMode” in ***Sample*** (“nerve”) is “PRESENT” ([S8 Text](S8-JSON-file-parameter-guide))"
 
 ##  1.3 Fascicle
 
@@ -95,7 +95,7 @@ and one or more instances of Trace representing inner perineurium
 traces, or (2) an inner perineurium trace that is subsequently scaled to
 make a virtual outer using Trace’s methods `deepcopy()` and `offset()` and
 the perineurium thickness defined by the `“PerineuriumThicknessMode”` in
-***Sample*** (`“ci_perineurium_thickness”`) ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)). Upon instantiation,
+***Sample*** (`“ci_perineurium_thickness”`) ([S8 Text](S8-JSON-file-parameter-guide)). Upon instantiation,
 Fascicle automatically validates that each inner instance of Trace is
 fully within its outer instance of Trace and that no inner instance of
 Trace intersects another inner instance of Trace.
@@ -114,16 +114,16 @@ one level for outers.
 
   - If separate binary images were provided containing contours for
     inners (`i.tif`) and outers (`o.tif`), then the “MaskInputMode” in
-    ***Sample*** (`“mask_input”`, [S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)) is `INNER_AND_OUTER_SEPARATE`; in this
+    ***Sample*** (`“mask_input”`, [S8 Text](S8-JSON-file-parameter-guide)) is `INNER_AND_OUTER_SEPARATE`; in this
     case, the Fascicle class uses its `separate_to_list()` method.
 
   - If a single binary image was provided containing combined contours
     of inners and outers (`c.tif`), then the “MaskInputMode” in
-    ***Sample*** (`“mask_input”`, [S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)) is `INNER_AND_OUTER_COMPILED`; in this
+    ***Sample*** (`“mask_input”`, [S8 Text](S8-JSON-file-parameter-guide)) is `INNER_AND_OUTER_COMPILED`; in this
     case, the Fascicle class uses its `compiled_to_list()` method.
 
   - If only a binary image was provided for contours of inners (`i.tif`),
-    the “MaskInputMode” (`“mask_input”`, [S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)) in ***Sample*** is INNERS; in
+    the “MaskInputMode” (`“mask_input”`, [S8 Text](S8-JSON-file-parameter-guide)) in ***Sample*** is INNERS; in
     this case, Fascicle class uses its `inner_to_list()` method.
 
 Additionally, Fascicle has a `write()` method which saves a Fascicle’s
@@ -134,7 +134,7 @@ for COMSOL to define material boundaries in a nerve cross section
 containing column vectors for x- and y-coordinates). Lastly, Fascicle
 has a `morphology_data()` method which uses Trace’s `area()` and `ellipse()`
 methods to return the area and the best-fit ellipse centroid, axes, and
-rotation of each outer and inner as a JSON Object to ***Sample*** ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)).
+rotation of each outer and inner as a JSON Object to ***Sample*** ([S8 Text](S8-JSON-file-parameter-guide)).
 
 ##  1.4 Slide
 
@@ -153,12 +153,12 @@ defined:
   - A list of instance(s) of the Fascicle class.
 
   - “NerveMode” from ***Sample*** (“nerve”) (i.e., `PRESENT` as in the
-    case of nerves with epineurium (`n.tif`) or `NOT_PRESENT` otherwise, ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide))).
+    case of nerves with epineurium (`n.tif`) or `NOT_PRESENT` otherwise, ([S8 Text](S8-JSON-file-parameter-guide))).
 
   - An instance of the Nerve class if "NerveMode" is `PRESENT`.
 
   - A Boolean for whether to reposition fascicles within the
-    nerve from “ReshapeNerveMode” in ***Sample*** ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)).
+    nerve from “ReshapeNerveMode” in ***Sample*** ([S8 Text](S8-JSON-file-parameter-guide)).
 
   - A list of exceptions.
 
@@ -178,7 +178,7 @@ The Slide class validates, manipulates, and writes its contents.
 
   - In Slide’s `reshaped_nerve()` method, Slide returns the deformed
     boundary of Nerve based on the “ReshapeNerveMode” in ***Sample***
-    (`“reshape_nerve”`, ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide))) (e.g., CIRCLE).
+    (`“reshape_nerve”`, ([S8 Text](S8-JSON-file-parameter-guide))) (e.g., CIRCLE).
 
   - Using the methods of Nerve and Fascicle, which are both
     manifestations of Trace, Slide has its own methods `plot()`, `scale()`,
@@ -190,7 +190,7 @@ The Slide class validates, manipulates, and writes its contents.
 
 *Note that the sample data hierarchy can contain more than
 a single Slide instance (the default being 0 as the cassette index and 0
-as the section index, hence the 0/0 seen in [S3 Text](https://github.com/wmglab-duke/ascent/wiki/S3:-ASCENT-data-hierarchy) Figure A) even though
+as the section index, hence the 0/0 seen in [S3 Text](S3-ASCENT-data-hierarchy) Figure A) even though
 the pipeline data processing assumes that only a single Slide exists.
 This will allow the current data hierarchy to be backwards compatible if
 multi-Slide samples are processed in the future.*
@@ -210,7 +210,7 @@ interact with this class.
 ##  1.6 Sample
 
 The Sample class is initialized within Runner’s `run()` method by loading
-***Sample*** and ***Run*** configurations ([S7](https://github.com/wmglab-duke/ascent/wiki/S7:-JSON-configuration-files) and [S8](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide) Text). First, Sample’s
+***Sample*** and ***Run*** configurations ([S7](S7-JSON-configuration-files) and [S8](S8-JSON-file-parameter-guide) Text). First, Sample’s
 `build_file_structure()` method creates directories in `samples/` and
 populates them with the user’s file inputs from `input/<NAME>/;` the
 images are copied over for subsequent processing, as well as for
@@ -223,19 +223,19 @@ Fascicle(s) into an instance of Slide.
 Sample’s `scale()` method is used to convert Trace points from pixel
 coordinates to coordinates with units of distance based either on the length of
 the horizontal scale bar as defined in ***Sample*** (micrometers) and
-the width of the scale bar (pixels) in the input binary image (`s.tif`), or on the explicitly specified scale ratio defined in ***Sample*** ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)).
+the width of the scale bar (pixels) in the input binary image (`s.tif`), or on the explicitly specified scale ratio defined in ***Sample*** ([S8 Text](S8-JSON-file-parameter-guide)).
 If using a scale bar for scale input, it must be a perfectly horizontal line. Sample’s scale()
 method is also used within `populate()` to correct for shrinkage that may
 have occurred during the histological tissue processing. The percentage
 increase for shrinkage correction in the slide's 2D geometry is stored
-as a parameter “shrinkage” in ***Sample*** ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)). Additionally, Slide has a
+as a parameter “shrinkage” in ***Sample*** ([S8 Text](S8-JSON-file-parameter-guide)). Additionally, Slide has a
 `move_center()` method which is used to center Slide about a point within
 `populate()`. Note that Sample is centered with the centroid of the
 best-fit ellipse of the outermost Trace (Nerve if “NerveMode” in
 ***Sample*** (“nerve”) is `“PRESENT”`, outer Trace if “NerveMode” is
-`“NOT_PRESENT”`, ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide))) at the origin (0,0,0). Change in rotational or
+`“NOT_PRESENT”`, ([S8 Text](S8-JSON-file-parameter-guide))) at the origin (0,0,0). Change in rotational or
 translational placement of the cuff around the nerve is accomplished by
-moving the cuff and keeping the nerve position fixed ([S19 Text](https://github.com/wmglab-duke/ascent/wiki/S19:-Cuff-placement-on-nerve)).
+moving the cuff and keeping the nerve position fixed ([S19 Text](S19-Cuff-placement-on-nerve)).
 
 Sample’s `populate()` method also manages operations for saving tissue
 boundaries of the Sample (Nerve and Fascicles) to CAD files
@@ -254,7 +254,7 @@ method which saves the Python object to file.
 ##  1.7 Deformable
 
 If “DeformationMode” in ***Sample*** (“deform”) is set to NONE, then the
-Deformable class takes no action ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)). However, if “DeformationMode” in
+Deformable class takes no action ([S8 Text](S8-JSON-file-parameter-guide)). However, if “DeformationMode” in
 ***Sample*** is set to PHYSICS, then Deformable’s `deform()` method
 simulates the change in nerve cross section that occurs when a nerve is
 placed in a cuff electrode. Specifically, the outer boundary of a
@@ -276,7 +276,7 @@ intermediately-deformed nerve traces between the nerve’s
 `“boundary_start”` (i.e., the Trace’s profile in segmented image) and
 `“boundary_end”` (i.e., the Trace’s profile after accommodation to the
 cuff’s inner diameter, which is determined by the “ReshapeNerveMode”
-(`“reshape_nerve”`, [S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)) while the fascicle contents are allowed to
+(`“reshape_nerve”`, [S8 Text](S8-JSON-file-parameter-guide)) while the fascicle contents are allowed to
 rearrange in a physics-space. By default, all fascicles have the same
 “mass”, but their moment of inertia is calculated for each fascicle
 based on its geometry (see Trace’s `pymunk_poly()` method). Each fascicle
@@ -294,12 +294,12 @@ Deformable’s convenience constructor, `from_slide()`, is automatically
 called in Sample’s `populate()` method, where a Slide is deformed to user
 specification. The `from_slide()` method takes three input arguments: The
 Slide object from which to construct the current Deformable object, the
-“ReshapeNerveMode” (e.g., CIRCLE, [S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)), and the minimum distance between
+“ReshapeNerveMode” (e.g., CIRCLE, [S8 Text](S8-JSON-file-parameter-guide)), and the minimum distance between
 fascicles. If only inners are provided, virtual outers interact during
 nerve deformation to account for the thickness of the perineurium. Each
 inner’s perineurium thickness is defined by the
 “PerineuriumThicknessMode” in ***Sample***
-(`“ci_perineurium_thickness”`, [S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)), which specifies the linear
+(`“ci_perineurium_thickness”`, [S8 Text](S8-JSON-file-parameter-guide)), which specifies the linear
 relationship between inner diameter and perineurium thickness defined in
 `config/system/ci_peri_thickness.json` ([S8 Text]()). Deformable’s
 `from_slide()` method uses Deformable’s `deform_steps()` method to
@@ -316,7 +316,7 @@ intermediately-deformed nerve traces between the `boundary_start` and
 `boundary_end` by adding linearly-spaced portions of each point pair’s
 vector to `boundary_start`. Also note that by defining `“deform_ratio”`
 (value between 0 and 1) in ***Sample***, the user can optionally
-indicate a partial deformation of the Nerve ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)).
+indicate a partial deformation of the Nerve ([S8 Text](S8-JSON-file-parameter-guide)).
 
 Enforcing a minimum fascicle separation that is extremely large (e.g.,
 20 µm) can cause inaccurate deformation, as fascicles may be unable to
@@ -331,7 +331,7 @@ space. At regular intervals in physics simulation time, the nerve
 boundary is updated to the next Trace in the list of
 intermediately-deformed nerve traces created by `deform_steps()`. This
 number of Trace steps defaults to 36 but can be optionally set in
-***Sample*** with the `“morph_count”` parameter by the user ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)). It is
+***Sample*** with the `“morph_count”` parameter by the user ([S8 Text](S8-JSON-file-parameter-guide)). It is
 important to note that too few Trace steps can result in fascicles lying
 outside of the nerve during deformation, while too many Trace steps can
 be unnecessarily time intensive. We’ve set the default to 36 because it
@@ -340,7 +340,7 @@ and types that we have tested.
 
 The user may also visualize nerve deformation by setting the
 `“deform_animate”` argument to true in `sample.populate()` (called in
-Runner’s `run()` method) ([S8 Text](https://github.com/wmglab-duke/ascent/wiki/S8:-JSON-file-parameter-guide)). Visualizing sample deformation can be helpful
+Runner’s `run()` method) ([S8 Text](S8-JSON-file-parameter-guide)). Visualizing sample deformation can be helpful
 for debugging but increases computational load and slows down the
 deformation process significantly. When performing deformation on many
 slides, we advise setting this flag to false.
