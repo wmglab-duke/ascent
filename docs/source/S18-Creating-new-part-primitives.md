@@ -1,9 +1,10 @@
+# S18: Creating new part primitives
 Though we provide a library of part primitives to assemble
 representations of many cuff electrodes as shown in
 `examples/parts/sandbox.mph`, users may find it necessary to add their own
 part primitives for representing their custom cuff electrode designs.
 Use the following instructions as a guide and link to resources for
-creating a new part primitive. 
+creating a new part primitive.
 
 The COMSOL GUI has a “Geometry Parts” node under the “Global
 Definitions”. The pipeline adds part primitives—i.e., the geometry of
@@ -90,7 +91,7 @@ lines to `Part.createCuffPartPrimitive()`.
     “<default_value>”)`, at the top of your new case-block, add the
     following line to set the “Input Parameters” you established in the
     COMSOL GUI:
-    
+
       - `mp.set(“<my_parameter>”, “<default_value>”)`
 
   - Still looking at `Part.createEnvironmentPartPrimitive()` as an
