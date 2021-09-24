@@ -407,11 +407,11 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
 
             # only clip if NOT an SL fiber
-            if xy_mode != FiberXYMode.SL_PSEUDO_INTERP:
-                z_offset = clip(z_offset,
-                                self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'min'),
-                                self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'max'),
-                                myel)
+            
+            z_offset = clip(z_offset,
+                            self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'min'),
+                            self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'max'),
+                            myel)
 
             my_fiber = [(my_x, my_y, z) for z in z_offset]
 
@@ -467,8 +467,8 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
             # check that proximal model length is greater than or equal to fiber length (fibers only in nerve trunk)
             # override this functionality if using SL (not in nerve trunk)
-            if not xy_mode == FiberXYMode.SL_PSEUDO_INTERP:
-                assert model_length >= fiber_length, 'proximal length: ({}) < fiber length: ({})'.format(model_length,
+        
+            assert model_length >= fiber_length, 'proximal length: ({}) < fiber length: ({})'.format(model_length,
                                                                                                          fiber_length)
 
             fiber_geometry_mode_name: str = self.search(Config.SIM, 'fibers', 'mode')

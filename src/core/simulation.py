@@ -259,12 +259,9 @@ class Simulation(Exceptionable, Configurable, Saveable):
             diams = np.loadtxt(os.path.join(my_potentials_directory, my_file))
             for fiber_ind in range(len(diams)):
                 diam = diams[fiber_ind]
-
-                # NOTE: if SL interp, writes files as inner0_fiber<q>.dat
-                if not my_xy_mode == FiberXYMode.SL_PSEUDO_INTERP:
-                    inner, fiber = self.indices_fib_to_n(my_p, fiber_ind)
-                else:
-                    inner, fiber = 0, fiber_ind
+                
+                inner, fiber = self.indices_fib_to_n(my_p, fiber_ind)
+                
                 inner_fiber_diam_key.append((inner, fiber, diam))
 
             inner_fiber_diam_key_filename = os.path.join(nsim_inputs_directory, 'inner_fiber_diam_key.obj')
@@ -365,10 +362,8 @@ class Simulation(Exceptionable, Configurable, Saveable):
                             # NOTE: if SL interp, writes files as inner0_fiber<q>.dat
                             l: int
                             k: int
-                            if not xy_mode == FiberXYMode.SL_PSEUDO_INTERP:
-                                l, k = self.indices_fib_to_n(p, q)
-                            else:
-                                l, k = 0, q
+                            
+                            l, k = self.indices_fib_to_n(p, q)
 
                             is_member = np.in1d(l, inner_list)
                             if not is_member:
@@ -477,10 +472,8 @@ class Simulation(Exceptionable, Configurable, Saveable):
                                             # NOTE: if SL interp, writes files as inner0_fiber<q>.dat
                                             l: int
                                             k: int
-                                            if not xy_mode == FiberXYMode.SL_PSEUDO_INTERP:
-                                                l, k = self.indices_fib_to_n(p, q)
-                                            else:
-                                                l, k = 0, q
+                                            
+                                            l, k = self.indices_fib_to_n(p, q)
 
                                             ss_filename = 'inner{}_fiber{}.dat'.format(l, k)
 
