@@ -610,8 +610,10 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                     z_top_half = z_top_half[:-1]
                     z_bottom_half = z_bottom_half[1:]
 
-                if len(diams) == 0:
+                if len(diams) == 0 and diam_distribution:
                     diams = [diameter] * len(fibers_xy)
+                elif not diam_distribution:
+                    diams = [np.nan] * len(fibers_xy)
 
                 for (x, y), diam in zip(fibers_xy, diams):
                     fiber_pre = build_fiber_with_offset(list(np.concatenate((z_bottom_half[:-1], z_top_half))),
