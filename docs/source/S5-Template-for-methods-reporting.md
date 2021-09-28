@@ -1,6 +1,6 @@
 # S5: Template for methods reporting
 
-For uses of ASCENT, either stand-alone in its publicly available form, as a starting point upon which further work is developed, or as a component of a system (e.g., connected with other organ models or engineering optimization techniques), we ask that the author(s) cite the ASCENT publication and indicate the release of ASCENT used (e.g., ASCENT v1.0.0).
+For uses of ASCENT, either stand-alone in its publicly available form, as a starting point upon which further work is developed, or as a component of a system (e.g., connected with other organ models or engineering optimization techniques), we ask that the author(s) cite the ASCENT [publication](https://doi.org/10.1371/journal.pcbi.100928) and indicate the release of ASCENT used (e.g., ASCENT v1.0.0).
 
 The following guidelines are to help users adhere to FAIR principles when using ASCENT and thereby enable model reproducibility and reduce duplication of efforts \[1\]. With published modeling studies using ASCENT, we ask that users provide all code and input files required to reproduce their work.
 
@@ -69,4 +69,4 @@ If computing thresholds of activation and/or block, state the search algorithm u
 State the methods and software tools used to analyze and present data.
 
 ## 1.13 References
-1. Wilkinson MD, Dumontier M, Aalbersberg IJJ, Appleton G, Axton M, Baak A, et al. The FAIR Guiding Principles for scientific data management and stewardship. Sci data. 2016 Mar;3:160018.
+1. Wilkinson MD, Dumontier M, Aalbersberg IJJ, Appleton G, Axton M, Baak A, et al. The FAIR Guiding Principles for scientific data management and stewardship. Sci data. 2016 Mar;3:160018. Available from: [https://doi.org/10.1038/sdata.2016.18](https://doi.org/10.1038/sdata.2016.18)

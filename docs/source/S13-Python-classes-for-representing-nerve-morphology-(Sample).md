@@ -346,9 +346,9 @@ deformation process significantly. When performing deformation on many
 slides, we advise setting this flag to false.
 
 ## 1.8 References
-1. Boyd IA, Kalu KU. Scaling factor relating conduction velocity and diameter for myelinated afferent  nerve fibres in the cat hind limb. J Physiol. 1979 Apr;289:277–97.
+1. Boyd IA, Kalu KU. Scaling factor relating conduction velocity and diameter for myelinated afferent  nerve fibres in the cat hind limb. J Physiol. 1979 Apr;289:277–97. Available from: [https://doi.org/10.1113/jphysiol.1979.sp012737](https://doi.org/10.1113/jphysiol.1979.sp012737)
 2. 	Bradski G, Daebler A. Learning OpenCV. Computer vision with OpenCV library. 2008 Jan 1;222–64.
-3. 	Johnson A, Chalton M, Treyer L, Ratajc G. pyclipper · PyPI [Internet]. 2019 [cited 2020 Apr 20]. Available from: https://pypi.org/project/pyclipper/
-4. 	Gillies S. Shapely · PyPI [Internet]. 2019 [cited 2020 Apr 20]. Available from: https://pypi.org/project/Shapely/
-5. 	Blomqvist V. pymunk · PyPI [Internet]. 2019 [cited 2020 Apr 20]. Available from: https://pypi.org/project/pymunk/
-6. 	Shinners P. Pygame Intro — pygame v2.0.0.dev5 documentation [Internet]. [cited 2020 Apr 20]. Available from: https://www.pygame.org/docs/tut/PygameIntro.html
+3. 	Johnson A, Chalton M, Treyer L, Ratajc G. pyclipper · PyPI [Internet]. 2019 [cited 2020 Apr 20]. Available from: [https://pypi.org/project/pyclipper/](https://pypi.org/project/pyclipper/)
+4. 	Gillies S. Shapely · PyPI [Internet]. 2019 [cited 2020 Apr 20]. Available from: [https://pypi.org/project/Shapely/](https://pypi.org/project/Shapely/)
+5. 	Blomqvist V. pymunk · PyPI [Internet]. 2019 [cited 2020 Apr 20]. Available from: [https://pypi.org/project/pymunk/](https://pypi.org/project/pymunk/)
+6. 	Shinners P. Pygame Intro — pygame v2.0.0.dev5 documentation [Internet]. [cited 2020 Apr 20]. Available from: [https://www.pygame.org/docs/tut/PygameIntro.html](https://www.pygame.org/docs/tut/PygameIntro.html)

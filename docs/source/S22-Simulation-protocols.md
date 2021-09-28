@@ -86,4 +86,4 @@ amplitudes. The “protocol” JSON Object within ***Sim*** contains the set
 of amplitudes that the user would like to simulate ([S8 Text](S8-JSON-file-parameter-guide)).
 
 ## 1.5 References
-1. Pelot NA, Behrend CE, Grill WM. Modeling the response of small myelinated axons in a compound nerve to kilohertz  frequency signals. J Neural Eng. 2017 Aug;14(4):46022.
+1. Pelot NA, Behrend CE, Grill WM. Modeling the response of small myelinated axons in a compound nerve to kilohertz  frequency signals. J Neural Eng. 2017 Aug;14(4):46022. Available from: [https://doi.org/10.1088/1741-2552/aa6a5f](https://doi.org/10.1088/1741-2552/aa6a5f)

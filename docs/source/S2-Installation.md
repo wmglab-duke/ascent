@@ -5,14 +5,14 @@ First, these software packages must be manually installed:
 * [Python 3.7](https://www.python.org/downloads/) (or later; choose 32/64 bit depending on operating system; if not using Miniconda, check "add Python to PATH")
     - If you already have Python added to your PATH and that installation is version 3.7 or later, there is no need to reinstall
 Python, and you may use your own preferred Python environment rather than Miniconda. Otherwise, we recommend that you install Miniconda and select the "add to path" option.
-    - https://www.python.org/downloads/
+    - [https://www.python.org/downloads/](https://www.python.org/downloads/)
 * [Java SE Development Kit 8 (1.8)](https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html) (need to register for a free account)
-    - https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html
+    - [https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html](https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html)
 * [COMSOL 5.5](https://www.comsol.com/product-download/5.5) (requires purchase of license; only based package needed, which includes the COMSOL Java API)
     - Once COMSOL 5.5 is installed, alter 'File System Access' permissions via  File → Preferences → Security → Methods and Java Libraries → File System Access → All Files.
-    - https://www.comsol.com/product-download/5.5
+    - [https://www.comsol.com/product-download/5.5](https://www.comsol.com/product-download/5.5)
 * [NEURON 7.6](https://neuron.yale.edu/ftp/neuron/versions/v7.6/) (version 7.7 has since been released, but compatibility has yet to be confirmed; choose appropriate installer depending on operating system; install auxiliary software as prompted by NEURON installer)
-    - https://neuron.yale.edu/ftp/neuron/versions/v7.6/
+    - [https://neuron.yale.edu/ftp/neuron/versions/v7.6/](https://neuron.yale.edu/ftp/neuron/versions/v7.6/)
     - If having issues with the NEURON installation, try running the compatibility troubleshooter.
 
 In this stage of development, all programs/commands are run from a command line environment on both MacOS/Linux and Windows operating systems (Bash terminal for MacOS/Linux, Powershell for Windows). For users less familiar with this environment and for the quickest setup, it is suggested that the user install the package management system [Miniconda](https://docs.conda.io/en/latest/miniconda.html) (if using MacOS, choose .pkg for ease of use).
@@ -29,7 +29,7 @@ Users must also download a text editor or integrated development environment (ID
         1. You must first have an account with GitHub, and if you have been granted special permissions to the code repository, you must use the email address to which those permissions were granted.
         2. If you have not already done so, add an SSH key to your account (see instructions for [GitHub](https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh)). This is a required standard authentication method.
         3. In a Miniconda command line environment, navigate to the location to where you would like to clone the code repository (see instructions for navigating the file system from the command line for [Mac or Linux](https://www.redhat.com/sysadmin/navigating-linux-filesystem) and [Windows](https://blogs.umass.edu/Techbytes/2014/11/14/file-navigation-with-windows-command-prompt/)).
-        4. Clone the repository (see instructions for [GitHub](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository-from-github)).
+        4. Clone the repository (see instructions for [GitHub](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository)).
         5. For more information on using Git, check out the [official documentation](https://git-scm.com/doc).
 
 2. Next, install the Python dependencies:
@@ -44,19 +44,19 @@ After confirming that you are in the correct directory, the script will install 
         - ASCENT_JDK_PATH: Path to the JDK 1.8 installation, ending in ```bin```, as seen in the template and S7. Hint: This is the correct path if the directory contains many executables (for Windows: java.exe, etc.; MacOS/Linux: java, etc.).
         - ASCENT_PROJECT_PATH: Path to the root directory of the pipeline, as chosen for step 1.
         - ASCENT_NSIM_EXPORT_PATH: Path to the export location for NEURON “simulation” directories. This path only depends on on the user's desired file system organization.
-    * Automatic setup: Upon the initiation of your first run, you will be prompted to enter the above four paths if you did not choose to complete the manual setup. Enter them as prompted, following the guidelines detailed above and exemplified in S7. Note that you may at any time update paths with ```python run env_setup``` to rewrite this file if the information should change.
+    * Automatic setup: Upon the initiation of your first run, you will be prompted to enter the above four paths if you did not choose to complete the manual setup. Enter them as prompted, following the guidelines detailed above and exemplified in [S7](S7-JSON-configuration-files). Note that you may at any time update paths with ```python run env_setup``` to rewrite this file if the information should change.
 4. The first time you run the pipeline, you must open the COMSOL Server and log in with a username and password of your choosing (arbitrary and not needed thereafter). This can be done by navigating to the bin/ directory in the COMSOL installation and running ```comsolmphserver``` (Windows) or ```./comsol server``` (MacOS/Linux).
 
 ## 1.3 References
-1. Clark A. Pillow: a modern fork of PIL — Pillow v2.3.0 (PIL fork) [Internet]. 2020 [cited 2020 Apr 20]. Available from: https://pillow.readthedocs.io/en/2.3.0/#
-1. Oliphant TE. A Guide to NumPy [Internet]. Trelgol Publishing; 2006. Available from: https://books.google.com/books?id=fKulSgAACAAJ
-1. Gillies S. Shapely · PyPI [Internet]. 2019 [cited 2020 Apr 20]. Available from: https://pypi.org/project/Shapely/
+1. Clark A. Pillow: a modern fork of PIL — Pillow v2.3.0 (PIL fork) [Internet]. 2020 [cited 2020 Apr 20]. Available from: [https://pillow.readthedocs.io/en/2.3.0/](https://pillow.readthedocs.io/en/2.3.0/)
+1. Oliphant TE. A Guide to NumPy [Internet]. Trelgol Publishing; 2006. Available from: [https://books.google.com/books?id=fKulSgAACAAJ](https://books.google.com/books?id=fKulSgAACAAJ)
+1. Gillies S. Shapely · PyPI [Internet]. 2019 [cited 2020 Apr 20]. Available from: [https://pypi.org/project/Shapely/](https://pypi.org/project/Shapely/)
 1. Hunter JD. Matplotlib: A 2D Graphics Environment. Comput Sci Eng. 2007 May;9(3):90–5.
-1. Johnson A, Chalton M, Treyer L, Ratajc G. pyclipper · PyPI [Internet]. 2019 [cited 2020 Apr 20]. Available from: https://pypi.org/project/pyclipper/
-1. Shinners P. Pygame Intro — pygame v2.0.0.dev5 documentation [Internet]. [cited 2020 Apr 20]. Available from: https://www.pygame.org/docs/tut/PygameIntro.html
-1. Kundert K. QuantiPhy: Physical Quantities — quantiphy 2.10.0 documentation [Internet]. 2020 [cited 2020 Apr 20]. Available from: https://quantiphy.readthedocs.io/en/stable/
+1. Johnson A, Chalton M, Treyer L, Ratajc G. pyclipper · PyPI [Internet]. 2019 [cited 2020 Apr 20]. Available from: [https://pypi.org/project/pyclipper/](https://pypi.org/project/pyclipper/)
+1. Shinners P. Pygame Intro — pygame v2.0.0.dev5 documentation [Internet]. [cited 2020 Apr 20]. Available from: [https://www.pygame.org/docs/tut/PygameIntro.html](https://www.pygame.org/docs/tut/PygameIntro.html)
+1. Kundert K. QuantiPhy: Physical Quantities — quantiphy 2.10.0 documentation [Internet]. 2020 [cited 2020 Apr 20]. Available from: [https://quantiphy.readthedocs.io/en/stable/](https://quantiphy.readthedocs.io/en/stable/)
 1. Bradski G, Daebler A. Learning OpenCV. Computer vision with OpenCV library. 2008 Jan 1;222–64.
-1. Blomqvist V. pymunk · PyPI [Internet]. 2019 [cited 2020 Apr 20]. Available from: https://pypi.org/project/pymunk/
-1. Virtanen P, Gommers R, Oliphant TE, Haberland M, Reddy T, Cournapeau D, et al. SciPy 1.0: fundamental algorithms for scientific computing in Python. Nat Methods [Internet]. 2020;17(3):261–72. Available from: https://doi.org/10.1038/s41592-019-0686-2
-1. The pandas development team. pandas-dev/pandas: Pandas [Internet]. Zenodo; 2020. Available from: https://doi.org/10.5281/zenodo.3509134
-1. Gazoni E, Clark C. openpyxl - A Python library to read/write Excel 2010 xlsx/xlsm files [Internet]. 2020. Available from: https://openpyxl.readthedocs.io/en/stable/
+1. Blomqvist V. pymunk · PyPI [Internet]. 2019 [cited 2020 Apr 20]. Available from: [https://pypi.org/project/pymunk/](https://pypi.org/project/pymunk/)
+1. Virtanen P, Gommers R, Oliphant TE, Haberland M, Reddy T, Cournapeau D, et al. SciPy 1.0: fundamental algorithms for scientific computing in Python. Nat Methods [Internet]. 2020;17(3):261–72. Available from: [https://doi.org/10.1038/s41592-019-0686-2](https://doi.org/10.1038/s41592-019-0686-2)
+1. The pandas development team. pandas-dev/pandas: Pandas [Internet]. Zenodo; 2020. Available from: [https://doi.org/10.5281/zenodo.3509134](https://doi.org/10.5281/zenodo.3509134)
+1. Gazoni E, Clark C. openpyxl - A Python library to read/write Excel 2010 xlsx/xlsm files [Internet]. 2020. Available from: [https://openpyxl.readthedocs.io/en/stable/](https://openpyxl.readthedocs.io/en/stable/)

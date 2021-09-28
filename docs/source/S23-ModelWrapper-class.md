@@ -42,4 +42,4 @@ fails. For each ***Model***, the program appends a Boolean to
 successful).
 
 ## 1.2 References
-1. Pelot NA, Thio BJ, Grill WM. Modeling Current Sources for Neural Stimulation in COMSOL. Front Comput Neurosci [Internet]. 2018;12:40. Available from: https://www.frontiersin.org/article/10.3389/fncom.2018.00040
+1. Pelot NA, Thio BJ, Grill WM. Modeling Current Sources for Neural Stimulation in COMSOL. Front Comput Neurosci [Internet]. 2018;12:40. Available from: [https://www.frontiersin.org/article/10.3389/fncom.2018.00040](https://www.frontiersin.org/article/10.3389/fncom.2018.00040)

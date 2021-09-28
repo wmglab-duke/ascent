@@ -70,8 +70,8 @@ they are using in `config/system/fiber_z.json`, which controls the
 spatial discretization of the fiber (i.e., the length of each section).
 
 ## 1.3 References
-1. McIntyre CC, Grill WM, Sherman DL, Thakor N V. Cellular effects of deep brain stimulation: model-based analysis of activation and  inhibition. J Neurophysiol. 2004 Apr;91(4):1457–69.
-2. 	McIntyre CC, Richardson AG, Grill WM. Modeling the excitability of mammalian nerve fibers: influence of afterpotentials on the recovery cycle. J Neurophysiol. 2002 Feb;87(2):995–1006.
-3. 	Sundt D, Gamper N, Jaffe DB. Spike propagation through the dorsal root ganglia in an unmyelinated sensory neuron: a modeling study. J Neurophysiol. 2015 Dec;114(6):3140–53.
-4. 	Tigerholm J, Petersson ME, Obreja O, Lampert A, Carr R, Schmelz M, et al. Modeling activity-dependent changes of axonal spike conduction in primary afferent C-nociceptors. J Neurophysiol. 2014 May;111(9):1721–35.
-5. 	Rattay F, Aberham M. Modeling axon membranes for functional electrical stimulation. IEEE Trans Biomed Eng. 1993 Dec;40(12):1201–9.
+1. McIntyre CC, Grill WM, Sherman DL, Thakor N V. Cellular effects of deep brain stimulation: model-based analysis of activation and  inhibition. J Neurophysiol. 2004 Apr;91(4):1457–69. Available from: [https://doi.org/10.1152/jn.00989.2003](https://doi.org/10.1152/jn.00989.2003)
+2. 	McIntyre CC, Richardson AG, Grill WM. Modeling the excitability of mammalian nerve fibers: influence of afterpotentials on the recovery cycle. J Neurophysiol. 2002 Feb;87(2):995–1006. Available from: [https://doi.org/10.1152/jn.00353.2001](https://doi.org/10.1152/jn.00353.2001)
+3. 	Sundt D, Gamper N, Jaffe DB. Spike propagation through the dorsal root ganglia in an unmyelinated sensory neuron: a modeling study. J Neurophysiol. 2015 Dec;114(6):3140–53. Available from: [https://doi.org/10.1152/jn.00226.2015](https://doi.org/10.1152/jn.00226.2015)
+4. 	Tigerholm J, Petersson ME, Obreja O, Lampert A, Carr R, Schmelz M, et al. Modeling activity-dependent changes of axonal spike conduction in primary afferent C-nociceptors. J Neurophysiol. 2014 May;111(9):1721–35. Available from: [https://doi.org/10.1152/jn.00777.2012](https://doi.org/10.1152/jn.00777.2012)
+5. 	Rattay F, Aberham M. Modeling axon membranes for functional electrical stimulation. IEEE Trans Biomed Eng. 1993 Dec;40(12):1201–9. Available from: [https://doi.org/10.1109/10.250575](https://doi.org/10.1109/10.250575)
