@@ -5,7 +5,7 @@
 
 2.  Transverse cross section of the nerve where the cuff is placed,
     stained to visualize the different tissue types (e.g., using
-    Masson’s trichrome), with a scale bar (Fig 2 and [S11 Text](S11-Morphology-files)) or known scale (micrometers/pixel). Different possible sources
+    Masson’s trichrome), with a scale bar ([Fig 2](https://doi.org/10.1371/journal.pcbi.1009285.g002) and [S11 Text](S11-Morphology-files)) or known scale (micrometers/pixel). Different possible sources
     for defining the nerve sample morphology include:
 
     a.  For best specificity, the nerve would be sampled from the

@@ -1038,7 +1038,7 @@ of the file.
 
       - `“preset”`: The value (String) indicates which cuff to model, selected
         from the list of filenames of the “preset” cuffs in
-        `config/system/cuffs/<filename>.json` (Fig 3A and [S17 Text](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives)). Required.
+        `config/system/cuffs/<filename>.json` ([Fig 3A](https://doi.org/10.1371/journal.pcbi.1009285.g003) and [S17 Text](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives)). Required.
 
       - `“rotate”`: Contains two keys: `“pos_ang”` (automatically populated
         based on “CuffShiftMode”, i.e., “cuff\_shift” parameter in
@@ -1676,7 +1676,7 @@ of the file.
 
       - `“xy_parameters”`: The value is a JSON Object containing key-value
         pairs to instruct the system in seeding fiber locations at which to
-        sample potentials inside inners in the nerve cross section (Fig 3B). Include only *one* version of this block in your `sim.json`
+        sample potentials inside inners in the nerve cross section ([Fig 3B](https://doi.org/10.1371/journal.pcbi.1009285.g003)). Include only *one* version of this block in your `sim.json`
         file. Required.
 
          `“mode”`: The value (String) is the “FiberXYMode” that tells the
@@ -1779,7 +1779,7 @@ of the file.
 
     `“waveform”`: The waveform JSON Object contains key-value pairs to
     instruct the system in setting global time discretization settings and
-    stimulation waveform parameters (Fig 3C). Required.
+    stimulation waveform parameters ([Fig 3C](https://doi.org/10.1371/journal.pcbi.1009285.g003)). Required.
 
       - `“plot”`: The value (Boolean) turns plotting of the waveform to a
         figure on/off as each waveform is written to file. A figure is

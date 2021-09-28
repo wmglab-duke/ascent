@@ -8,7 +8,7 @@ with a thin layer approximation (Rm = rho\*peri\_thk), rather than as a
 thinly meshed domain, reduces mesh complexity and is a reasonable
 approximation \[1\]. Therefore, perineurium can be modeled with a thin
 layer approximation (except with “peanut” fascicles; see an example in
-Fig 2), termed “contact impedance” in COMSOL (if ***Model’s***
+[Fig 2](https://doi.org/10.1371/journal.pcbi.1009285.g002)), termed “contact impedance” in COMSOL (if ***Model’s***
 `“use_ci”` parameter is true ([S8 Text](S8-JSON-file-parameter-guide))), which relates the normal component of
 the current density through the surface
 ![f5] to the drop in electric

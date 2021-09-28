@@ -87,7 +87,7 @@ the stimulation frequency are calculated in Runner’s
 the handoff() method is called. Our pipeline supports calculation of the
 frequency-dependent conductivity of the perineurium based on
 measurements from the frog sciatic nerve \[1\] using the
-`rho_weerasuriya()` method in the Python Waveform class. See Fig. 2 for
+`rho_weerasuriya()` method in the Python Waveform class. See [Fig. 2](https://doi.org/10.1371/journal.pcbi.1009285.g002) for
 identification of tissue types in a compound nerve cross section (i.e.,
 epineurium, perineurium, endoneurium).
 

@@ -9,7 +9,7 @@ and “fill” (i.e., saline, mineral oil, or encapsulation tissue). The
 contents of the “preset” JSON file direct the Part class on which part
 primitives to add as well as their size, shape, placement, and material
 function (i.e., cuff “insulator”, contact “conductor”, contact “recess”,
-and cuff “fill”). Fig 3A shows some examples of “preset” cuffs
+and cuff “fill”). [Fig 3A](https://doi.org/10.1371/journal.pcbi.1009285.g003) shows some examples of “preset” cuffs
 constructed from our library of COMSOL part primitives which are
 included in the pipeline repository in `config/system/cuffs/`. Users
 should not modify existing “preset” cuff files. Rather, a user should

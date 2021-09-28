@@ -12,7 +12,7 @@ use indices that are consistent with the indices of ***Sample***,
     must match “sample” parameter in ***Sample***) with binary masks of
     neural tissue boundaries using either:
 
-    a.  Segmented histology ([S11 Text](S11-Morphology-files) and Fig 2), or
+    a.  Segmented histology ([S11 Text](S11-Morphology-files) and [Fig 2](https://doi.org/10.1371/journal.pcbi.1009285.g002)), or
 
     b.  Running the `mock_morphology_generator.py` script ([S12 Text](S12-Python-MockSample-class-for-creating-binary-masks-of-nerve-morphology)).
 

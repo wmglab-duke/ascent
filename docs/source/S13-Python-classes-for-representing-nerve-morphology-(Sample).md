@@ -12,7 +12,7 @@ reported in ***Sample*** ([S8 Text](S8-JSON-file-parameter-guide)).
 
 Trace is the core Python class for handling a list of points that define
 a closed loop for a tissue boundary in a nerve cross section (see
-“Tissue Boundaries” in Fig 2). Trace has built-in functionality for
+“Tissue Boundaries” in [Fig 2](https://doi.org/10.1371/journal.pcbi.1009285.g002)). Trace has built-in functionality for
 transforming, reporting, displaying, saving, and performing calculations
 on its data contents and properties. Python classes Nerve, Fascicle, and
 Slide are all special instances or hierarchical collections of Trace.
