@@ -9,6 +9,10 @@ The source code can be found on the following GitHub repository: https://github.
 import sys
 import os
 import importlib
+
+if os.path.split(os.environ['CONDA_PREFIX'])[-1]!='ascent':
+    sys.exit('ASCENT must be run in the "ascent" environment')
+    
 from src.utils.welcome import welcome
 
 welcome()
