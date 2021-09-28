@@ -8,6 +8,7 @@ The source code can be found on the following GitHub repository: https://github.
 
 # builtins
 import os
+
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "1"
 import pickle
 from typing import List
@@ -20,6 +21,7 @@ from copy import deepcopy
 from quantiphy import Quantity
 from shapely.geometry import Point
 import pymunkoptions
+
 pymunkoptions.options["debug"] = False
 
 # ascent
@@ -441,7 +443,10 @@ class Runner(Exceptionable, Configurable):
         nerve_mode: NerveMode = self.search_mode(NerveMode, Config.SAMPLE)
 
         if nerve_mode == NerveMode.PRESENT:
-            deform_ratio = self.search(Config.SAMPLE, 'deform_ratio')
+            if 'deform_ratio' not in self.configs[Config.SAMPLE.value].keys():
+                deform_ratio = 1
+            else:
+                deform_ratio = self.search(Config.SAMPLE, 'deform_ratio')
             if deform_ratio > 1:
                 self.throw(109)
         else:

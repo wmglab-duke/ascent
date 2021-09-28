@@ -1384,7 +1384,22 @@ public class ModelWrapper {
                             } else {
                                 JSONObject nerve = (JSONObject) morphology.get("Nerve");
                                 nerveParams.set("a_nerve", nerve.get("area") + " [" + morphology_unit + "^2]");
-                                if (sampleData.getDouble("deform_ratio") < 1) { //Use trace
+
+                                // backwards compatibility
+                                String reshapenerveMode = (String) sampleData.getJSONObject("modes").get("reshape_nerve");
+                                double deform_ratio = 0;
+                                if (sampleData.has("deform_ratio")) {
+                                    deform_ratio = sampleData.getDouble("deform_ratio");
+                                } else {
+                                    if (reshapenerveMode.equals("CIRCLE")) {
+                                        deform_ratio = 1;
+                                    } else if (reshapenerveMode.equals("NONE")) {
+                                        deform_ratio = 0;
+                                    }
+                                }
+                                //
+
+                                if (deform_ratio < 1) { //Use trace
                                     nerveParams.set("r_nerve", modelData.getDouble("min_radius_enclosing_circle") + " [" + morphology_unit + "]");
                                 } else { //Use area of nerve
                                     nerveParams.set("r_nerve", "sqrt(a_nerve/pi)");
