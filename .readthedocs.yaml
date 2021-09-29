@@ -9,3 +9,10 @@ python:
   version: 3.7
   install:
     - requirements: docs/rtd_requirements.txt
+
+sphinx:
+  fail_on_warning: true
+
+formats:
+  - pdf
+  - epub
