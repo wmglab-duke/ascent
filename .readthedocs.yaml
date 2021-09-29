@@ -10,9 +10,3 @@ python:
   install:
     - requirements: docs/rtd_requirements.txt
 
-sphinx:
-  fail_on_warning: true
-
-formats:
-  - pdf
-  - epub
