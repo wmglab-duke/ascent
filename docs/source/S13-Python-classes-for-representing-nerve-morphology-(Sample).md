@@ -301,7 +301,7 @@ inner’s perineurium thickness is defined by the
 “PerineuriumThicknessMode” in ***Sample***
 (`“ci_perineurium_thickness”`, [S8 Text](S8-JSON-file-parameter-guide)), which specifies the linear
 relationship between inner diameter and perineurium thickness defined in
-`config/system/ci_peri_thickness.json` ([S8 Text]()). Deformable’s
+`config/system/ci_peri_thickness.json` ([S8 Text](S8-JSON-file-parameter-guide)). Deformable’s
 `from_slide()` method uses Deformable’s `deform_steps()` method to
 calculate the intermediately-deformed nerve traces between the
 `boundary_start` and the `boundary_end`, which contain the same number of
