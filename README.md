@@ -11,7 +11,7 @@
 **Cite the paper:**  
 **Musselman ED**, **Cariello JE**, Grill WM, Pelot NA. ASCENT (Automated Simulations to Characterize Electrical Nerve Thresholds): A Pipeline for Sample-Specific Computational Modeling of Electrical Stimulation of Peripheral Nerves. PLoS Comput Biol [Internet]. 2021; Available from: https://doi.org/10.1371/journal.pcbi.1009285
 
-**ASCENT** is an open source platform for simulating peripheral nerve stimulation. For more information, see the ASCENT documentation: *link*
+**ASCENT** is an open source platform for simulating peripheral nerve stimulation. For more information, see the ASCENT documentation: [https://wmglab-duke-ascent.readthedocs.io/en/latest/](https://wmglab-duke-ascent.readthedocs.io/en/latest/)
 
 The copyrights of this software are owned by Duke University. As such, two licenses to this software are offered:
 
