@@ -10,16 +10,18 @@ Welcome to ASCENT's documentation!
 ==================================
 **Please check out the associated** `publication <https://doi.org/10.1371/journal.pcbi.1009285>`_ **in PLOS Computational Biology!**
 
-Cite both the paper and the DOI for the release of the repository used for your work. We encourage you to clone the most recent commit of the repository.
+**Cite both the paper and the DOI for the release of the repository used for your work. We encourage you to clone the most recent commit of the repository.**
 
-**Cite the paper:**
+* **Cite the paper:**
+    **Musselman ED**, **Cariello JE**, Grill WM, Pelot NA. ASCENT (Automated Simulations to Characterize Electrical Nerve Thresholds): A 
+    Pipeline for Sample-Specific Computational Modeling of Electrical Stimulation of Peripheral Nerves. PLoS Comput Biol [Internet]. 2021; 
+    Available from: https://doi.org/10.1371/journal.pcbi.1009285
 
-**Musselman ED**, **Cariello JE**, Grill WM, Pelot NA. ASCENT (Automated Simulations to Characterize Electrical Nerve Thresholds): A Pipeline for Sample-Specific Computational Modeling of Electrical Stimulation of Peripheral Nerves. PLoS Comput Biol [Internet]. 2021; Available from: https://doi.org/10.1371/journal.pcbi.1009285
 
-
-**Cite the code (use the DOI for the version of code used):** |doi|
-
-**Musselman ED**, **Cariello JE**, Grill WM, Pelot NA. ASCENT (Automated Simulations to Characterize Electrical Nerve Thresholds): A Pipeline for Sample-Specific Computational Modeling of Electrical Stimulation of Peripheral Nerves. PLoS Comput Biol [Internet]. 2021, DOI: 10.5281/zenodo.5500260
+* **Cite the code (use the DOI for the version of code used):** |doi|
+    **Musselman ED**, **Cariello JE**, Grill WM, Pelot NA. ASCENT (Automated Simulations to Characterize Electrical Nerve Thresholds): A 
+    Pipeline for Sample-Specific Computational Modeling of Electrical Stimulation of Peripheral Nerves. PLoS Comput Biol [Internet]. 2021, 
+    DOI: 10.5281/zenodo.5500260
 
 **ASCENT** is an open source platform for simulating peripheral nerve stimulation. To download the software, visit the `ASCENT GitHub repository <https://github.com/wmglab-duke/ascent>`_.
 
