@@ -269,7 +269,7 @@ boundary (Figure A).
 
 ![Inline image](uploads/1c83c0b093212df340597c3339d9023b/Picture16.jpg)
 
-Figure A. Snapshots at 0%, 50%, and 100% (left-to-right) of the deformation process powered by the pygame package \[6\]. The deformation process is shown for two minimum fascicle separation constraints: 10 µm (top row) and 20 µm (bottom row). The geometry at 0% deformation is shown after the fascicles have been spread out to the minimum separation constraint.
+Figure A. Snapshots at 0%, 50%, and 100% (left-to-right) of the deformation process powered by the pygame package [6]. The deformation process is shown for two minimum fascicle separation constraints: 10 µm (top row) and 20 µm (bottom row). The geometry at 0% deformation is shown after the fascicles have been spread out to the minimum separation constraint.
 
 The `deform()` method updates the nerve boundary to
 intermediately-deformed nerve traces between the nerve’s
