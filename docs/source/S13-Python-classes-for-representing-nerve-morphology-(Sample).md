@@ -269,7 +269,7 @@ boundary (Figure A).
 
 ![Inline image](uploads/1c83c0b093212df340597c3339d9023b/Picture16.jpg)
 
-Figure A. Snapshots at 0%, 50%, and 100% (left-to-right) of the deformation process powered by the pygame package [6]. The deformation process is shown for two minimum fascicle separation constraints: 10 µm (top row) and 20 µm (bottom row). The geometry at 0% deformation is shown after the fascicles have been spread out to the minimum separation constraint.
+Figure A. Snapshots at 0%, 50%, and 100% (left-to-right) of the deformation process powered by the pygame package \[6\]. The deformation process is shown for two minimum fascicle separation constraints: 10 µm (top row) and 20 µm (bottom row). The geometry at 0% deformation is shown after the fascicles have been spread out to the minimum separation constraint.
 
 The `deform()` method updates the nerve boundary to
 intermediately-deformed nerve traces between the nerve’s
@@ -301,7 +301,7 @@ inner’s perineurium thickness is defined by the
 “PerineuriumThicknessMode” in ***Sample***
 (`“ci_perineurium_thickness”`, [S8 Text](S8-JSON-file-parameter-guide)), which specifies the linear
 relationship between inner diameter and perineurium thickness defined in
-`config/system/ci_peri_thickness.json` ([S8 Text]()). Deformable’s
+`config/system/ci_peri_thickness.json` ([S8 Text](S8-JSON-file-parameter-guide)). Deformable’s
 `from_slide()` method uses Deformable’s `deform_steps()` method to
 calculate the intermediately-deformed nerve traces between the
 `boundary_start` and the `boundary_end`, which contain the same number of
