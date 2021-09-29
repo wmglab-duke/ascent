@@ -1,5 +1,5 @@
 
-**User support: daniel.p.marshall (at) duke (dot) edu**
+**User support: daniel.p.marshall@duke.edu**
 
 **Funding: NIH SPARC OT2 OD025340**  
 
