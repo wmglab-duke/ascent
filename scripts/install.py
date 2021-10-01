@@ -12,6 +12,11 @@ import subprocess
 
 
 def run(args):
+    
+    def ensure_dir(directory):
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+            
     sys.argv = args
 
     if sys.version_info[0] < 3:
@@ -23,16 +28,25 @@ def run(args):
         sys.exit()
     else:
         print('Great, proceeding with installation.\n')
+    
+    #define and generate user directories
+    binpath = 'bin'
+    defdirs = [
+        binpath,
+        'samples',
+        'input',
+        'config/user',
+        'config/user/runs',
+        'config/user/sims']
+    
+    for path in defdirs:
+        ensure_dir(path)
 
     # download required JAR(s)
-    bin = 'bin'
-    if not os.path.exists(bin):
-        os.mkdir(bin)
-
     jars = ['https://repo1.maven.org/maven2/org/json/json/20190722/json-20190722.jar']
     for jar in jars:
         retrieve = True
-        target = os.path.join(bin, jar.split('/')[-1])
+        target = os.path.join(binpath, jar.split('/')[-1])
         if os.path.exists(target):
             reply = input('{} already found! download again and overwrite? [y/N] '.format(target)).lower().strip()
             if reply[0] != 'y':
