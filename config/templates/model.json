@@ -25,6 +25,7 @@
   },
   "inner_interp_tol": 0.02,
   "outer_interp_tol": 0.02,
+  "nerve_interp_tol": 0.02,
   "cuff": {
     "preset": "Purdue.json",
     "rotate": {
