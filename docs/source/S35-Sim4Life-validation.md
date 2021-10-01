@@ -10,7 +10,7 @@ the required electrical anisotropy of tissue conductivities and the
 boundary condition to represent the thin layer approximation used to
 model the perineurium.
 
-## 1.1 Monofascicular rat nerve model
+## Monofascicular rat nerve model
 
 We validated activation thresholds for fibers seeded in a model of a rat
 cervical vagus nerve instrumented with a bipolar cuff electrode (Figure A and B).
@@ -129,7 +129,7 @@ fibers, demonstrating strong agreement (Figure C).
 
 Figure C. Comparison of activation thresholds for the rat cervical vagus nerve implementation in ASCENT and Sim4Life.
 
-## 1.2 Multifascicular dummy nerve model
+## Multifascicular dummy nerve model
 
 We validated activation thresholds for fibers seeded in a
 multifascicular dummy nerve instrumented with a bipolar cuff electrode
@@ -153,7 +153,7 @@ Between the ASCENT and IT’IS implementations, there was less than a 3%
 difference in threshold to a single 100 µs duration monophasic
 rectangular pulse.
 
-## 1.3 Multifascicular human nerve model
+## Multifascicular human nerve model
 
 We validated activation thresholds for fibers seeded in a
 multifascicular human cervical vagus nerve instrumented with a LivaNova

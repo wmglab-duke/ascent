@@ -22,7 +22,7 @@ not require changes in ***Model*** or ***Sample***, and changes in
 
 Figure A. ASCENT pipeline file structure in the context of Sample (blue), Model (green), and Sim (purple) configurations. [S7 Text](S7-JSON-configuration-files) describes the JSON configuration files an their contents, and [S8 Text](S8-JSON-file-parameter-guide) details the syntax and data types of the key-value parameter pairs.
 
-##  1.1 Batching and sweeping of parameters
+##  Batching and sweeping of parameters
 
 ASCENT enables the user to batch rapidly simulations to sweep cuff
 electrode placement on the nerve, material properties, stimulation
@@ -53,5 +53,5 @@ the user would like to assess the impact of ranges of parameters for
 and ***Model*** configuration files for each parameter value.
 
 ***Sim*** can contain lists of parameters in `“active_srcs”` (i.e., cuff
-electrode contact weightings), “fibers”, “waveform”, and
+electrode contact weightings), `“fibers”`, `“waveform”`, and
 `“supersampled_bases”`.

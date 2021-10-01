@@ -233,7 +233,7 @@ class Fascicle(Exceptionable):
         """
         Generates list of fascicle objects from an inner and an outer image
         Example usage:
-            fascicles = Fascicle.separate_to_list(my_inner_image_path,
+            fascicles = Fascicle.to_list(my_inner_image_path,
                                                   my_outer_image_path, ... )
 
         :param z:

@@ -9,7 +9,7 @@ by the current amplitude in `RunSim.hoc` to either simulate fiber thresholds of
 activation or block with a binary search algorithm, or response to set
 amplitudes.
 
-##  1.1 Binary search
+##  Binary search
 
 In searching for activation thresholds (i.e., the minimum stimulation
 amplitude required to generate a propagating action potential) or block
@@ -37,7 +37,7 @@ or block criteria, threshold criteria, method for searching for starting
 upper- and lower bounds, or termination criteria) are contained in the
 “protocol” JSON Object within ***Sim*** ([S8 Text](S8-JSON-file-parameter-guide)).
 
-##  1.2 Activation threshold protocol
+##  Activation threshold protocol
 
 The pipeline has a NEURON simulation protocol for determining thresholds
 of activation of nerve fibers in response to extracellular stimulation.
@@ -51,7 +51,7 @@ can be specified by user with `“ap_detect_location”` parameter in
 ***Sim***) ([S8 Text](S8-JSON-file-parameter-guide)). The parameters for control over the activation threshold
 protocol are found in ***Sim*** within the “protocol” JSON Object ([S8 Text](S8-JSON-file-parameter-guide)).
 
-##  1.3 Block threshold protocol
+##  Block threshold protocol
 
 The pipeline has a NEURON simulation protocol for determining block
 thresholds for nerve fibers in response to extracellular stimulation.
@@ -78,12 +78,12 @@ of the binary search for block thresholds. Especially for small diameter
 myelinated fibers, users must be aware of and check for re-excitation
 using a stimulation amplitude sweep \[1\].
 
-##  1.4 Response to set amplitudes
+##  Response to set amplitudes
 
 Alternatively, users may simulate the response of nerve fibers in
 response to extracellular stimulation for a user-specified set of
 amplitudes. The “protocol” JSON Object within ***Sim*** contains the set
 of amplitudes that the user would like to simulate ([S8 Text](S8-JSON-file-parameter-guide)).
 
-## 1.5 References
+##  References
 1. Pelot NA, Behrend CE, Grill WM. Modeling the response of small myelinated axons in a compound nerve to kilohertz  frequency signals. J Neural Eng. 2017 Aug;14(4):46022. Available from: [https://doi.org/10.1088/1741-2552/aa6a5f](https://doi.org/10.1088/1741-2552/aa6a5f)
