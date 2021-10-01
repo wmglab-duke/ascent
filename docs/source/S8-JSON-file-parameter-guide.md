@@ -848,6 +848,7 @@ of the file.
       },
       "inner_interp_tol": Double,
       "outer_interp_tol": Double,
+      "nerve_interp_tol": Double,
       "cuff": {
         "preset": String,
         "rotate": {
@@ -1022,6 +1023,16 @@ of the file.
 
     `“outer_interp_tol”`: The value (Double) sets the relative tolerance for
     the representation of the outer trace(s) in COMSOL. When the value is
+    set to 0, the curve is jagged, and increasing the value of this
+    parameter increases the smoothness of the curve. COMSOL’s “closed curve”
+    setting interpolates the points of the curve with continuous first- and
+    second-order derivatives. Generally, we find an interpolation tolerance
+    of \~0.01 to be appropriate, but the user should check that the
+    interpolation tolerance is set correctly for their input nerve sample
+    morphology. Required.
+
+    `“nerve_interp_tol”`: The value (Double) sets the relative tolerance for
+    the representation of the nerve (i.e. epineurium) trace in COMSOL. When the value is
     set to 0, the curve is jagged, and increasing the value of this
     parameter increases the smoothness of the curve. COMSOL’s “closed curve”
     setting interpolates the points of the curve with continuous first- and
@@ -1238,6 +1249,7 @@ of the file.
       },
       "inner_interp_tol": 0.01,
       "outer_interp_tol": 0.01,
+      "nerve_interp_tol": 0.01,
       "cuff": {
         "preset": "CorTec300.json",
         "rotate": {

@@ -3431,7 +3431,7 @@ class Part {
                     throw new Exception("Both trace_interp_tol and nerve_interp_tol defined in Model. " +
                             "Use new convention for inners (outer_interp_tol), outers (outer_interp_tol), and nerve (nerve_interp_tol) separately!");
                 } else  {
-                    throw new Exception("You must specify an interpolation tolerance");
+                    throw new Exception("You must specify a nerve interpolation tolerance (nerve_interp_tol in model.json)");
                 }
 
                 //Generate surface from curve
