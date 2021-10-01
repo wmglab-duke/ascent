@@ -6,7 +6,7 @@ The following guidelines are to help users adhere to FAIR principles when using 
 
 To streamline dissemination of work, upon acceptance of a manuscript to a journal, we encourage users to either make their fork/branch of the ASCENT repository publicly available, or to make a “Merge Request” to the ASCENT GitHub repository (i.e., if your developments would be of general interest to ASCENT users) so that we can review and incorporate your changes to our public repository.
 
-## 1.1 Configuration files
+## Configuration files
 Provide the JSON configuration files used as inputs to ASCENT.
 * sample.json
 * model.json
@@ -17,7 +17,7 @@ Provide the JSON configuration files used as inputs to ASCENT.
 * materials.json (if using new materials that have been added to this file and referenced in model.json rather than explicitly defined in model.json)
 * fiber_z.json (if using fiber models with ultrastructure that is not integrated in the ASCENT repository)
 
-## 1.2 Nerve segmentation files
+## Nerve segmentation files
 Indicate the software and methods used to generate the binary image inputs (e.g., Adobe Photoshop).
 
 If defining nerve geometry with segmented binary images of nerve microanatomy, indicate the methods for the technique used to obtain the nerve images (i.e., histology, Micro-CT, ultrasound, etc.) and to segment the tissue boundaries.
@@ -34,39 +34,39 @@ Provide the image files used as inputs to ASCENT.
 * s.tif
 * a.tif (if applicable)
 
-## 1.3 Cuff
+## Cuff
 If the “preset” cuff configuration file used to define the cuff electrode is not publicly available in the ASCENT repository, please provide it with your materials.
 
 If new part primitives were created to represent the cuff electrode ([S18 Text](S18-Creating-new-part-primitives)), please include copies of Java code that perform the FEM operations for the new parts. These sections of code should be from src/model/Part.java as “cases” (i.e., in switch-case statement) for new parts in the createCuffPartPrimitive() and createCuffPartInstance() methods.
 
 Indicate how the cuff was placed on the nerve. Specifically, state the longitudinal placement of the cuff and how the cuff rotation was determined (e.g., the cuff rotation modes, or used a.tif to rotate the cuff to replicate in vivo cuff rotation).
 
-## 1.4 Materials
+## Materials
 Cite the original source for each conductivity value used to define materials as indicated in materials.json and/or model.json.
 
-## 1.5 Domains
+## Domains
 Report the model length and radius, along with a statement to justify your model’s dimensions (i.e., convergence studies). Report the presence and dimensions of any cuff fill domains (e.g., saline, encapsulation, or mineral oil between the nerve and the cuff electrode).
 
-## 1.6 Perineurium
+## Perineurium
 Report if a thin-layer approximation or a finite thickness material was used to define the perineurium. If a thin-layer approximation was used, indicate how the thickness of the perineurium was determined (e.g., measured from histology, or previously published relationship between inner diameter and perineurium thickness).
 
-## 1.7 Mesh
+## Mesh
 Indicate the method used to mesh the FEM in addition to the number of domain elements. Include a statement to justify your model’s meshing parameters (i.e., convergence studies) ([S34 Text](S34-Convergence-analysis-example)).
 
-## 1.8 Solution
+## Solution
 Indicate that the FEM was solved using Laplace’s equation once for each contact delivering 1 mA of current. Indicate if the outer surfaces of the model were grounded or set to insulation.
 
-## 1.9 HOC/MOD files
+## HOC/MOD files
 If using novel fiber model ultrastructure or channel mechanisms, please share the code required to implement it in ASCENT.
 
-## 1.10 Waveform
+## Waveform
 State the stimulation waveform shape, timestep, and simulation time used. Be certain that the timestep chosen is short enough to simulate accurately fiber response to stimulation.
 
-## 1.11 NEURON simulations
+## NEURON simulations
 If computing thresholds of activation and/or block, state the search algorithm used (e.g., binary search) and the exit criteria (e.g., tolerance).
 
-## 1.12 Analysis
+## Analysis
 State the methods and software tools used to analyze and present data.
 
-## 1.13 References
+## References
 1. Wilkinson MD, Dumontier M, Aalbersberg IJJ, Appleton G, Axton M, Baak A, et al. The FAIR Guiding Principles for scientific data management and stewardship. Sci data. 2016 Mar;3:160018. Available from: [https://doi.org/10.1038/sdata.2016.18](https://doi.org/10.1038/sdata.2016.18)

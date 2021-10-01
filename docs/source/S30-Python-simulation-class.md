@@ -1,5 +1,5 @@
 # S30: Python simulation class
-##  1.1 (Pre-Java)
+##  (Pre-Java)
 
 The user is unlikely to interface directly with Simulation’s
 `resolve_factors()` method as it operates behind the scenes. The method
@@ -20,7 +20,7 @@ defined in ***Sim*** as `“pulse_repetition_freq”`. The
 `write_waveforms()` method instantiates a Python Waveform class for each
 `“wave_set”` (i.e., one combination of stimulation parameters).
 
-##  1.2 (Post-Java)
+##  (Post-Java)
 
 The unique combinations of ***Sim*** parameters are found with a
 Cartesian product from the listed values for individual parameters in

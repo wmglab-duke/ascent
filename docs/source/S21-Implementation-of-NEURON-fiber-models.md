@@ -1,13 +1,13 @@
 # S21: Implementation of NEURON fiber models
 
-## 1.1 Myelinated fiber models
+## Myelinated fiber models
 
 The `CreateAxon_Myel.hoc` file is loaded in `Wrapper.hoc` if the user
 chooses either `“MRG_DISCRETE”` or `“MRG_INTERPOLATION”`. The length of
 each section in NEURON varies depending on both the diameter and the
 “FiberGeometry” mode chosen in ***Sim***.
 
-### 1.1.1 MRG discrete diameter (as previously published)
+### MRG discrete diameter (as previously published)
 
 The “FiberGeometry” mode `“MRG_DISCRETE”` in ***Sim*** instructs the
 program to simulate a double cable structure for mammalian myelinated
@@ -22,9 +22,9 @@ the index of the discrete diameter in “diameters”. The parameters are
 used by the Fiberset class to create `fibersets/` (i.e., coordinates to
 probe `potentials/` from COMSOL) for MRG fibers.
 
-### 1.1.2 MRG interpolated diameters
+### MRG interpolated diameters
 
-The “FiberGeometry” mode `“MRG_INTERPOLATION”` in ***Sim*** instructs the
+The `“FiberGeometry”` mode `“MRG_INTERPOLATION”` in ***Sim*** instructs the
 program to simulate a double cable structure for mammalian myelinated
 fibers for any diameter fiber between 2 and 16 µm (throws an error if
 not in this range) by using an *interpolation* over the originally
@@ -62,14 +62,14 @@ upper and lower bound stimulation amplitudes were within 1%.
 
 Figure B. Comparison of thresholds between the originally published models and the interpolation of the MRG fiber diameters (evaluated at the original diameters). Thresholds are expected to vary between the originally published models and the interpolated fiber geometries given their slightly different ultrastructure parameters (Figure A). Used original MRG thresholds as reference.
 
-## 1.2 Unmyelinated Fiber Models
+## Unmyelinated Fiber Models
 
 The pipeline includes several unmyelinated (i.e., C-fiber) models
 \[3-5\]. Users should be aware of the `“delta_zs”` parameter that
 they are using in `config/system/fiber_z.json`, which controls the
 spatial discretization of the fiber (i.e., the length of each section).
 
-## 1.3 References
+## References
 1. McIntyre CC, Grill WM, Sherman DL, Thakor N V. Cellular effects of deep brain stimulation: model-based analysis of activation and  inhibition. J Neurophysiol. 2004 Apr;91(4):1457–69. Available from: [https://doi.org/10.1152/jn.00989.2003](https://doi.org/10.1152/jn.00989.2003)
 2. 	McIntyre CC, Richardson AG, Grill WM. Modeling the excitability of mammalian nerve fibers: influence of afterpotentials on the recovery cycle. J Neurophysiol. 2002 Feb;87(2):995–1006. Available from: [https://doi.org/10.1152/jn.00353.2001](https://doi.org/10.1152/jn.00353.2001)
 3. 	Sundt D, Gamper N, Jaffe DB. Spike propagation through the dorsal root ganglia in an unmyelinated sensory neuron: a modeling study. J Neurophysiol. 2015 Dec;114(6):3140–53. Available from: [https://doi.org/10.1152/jn.00226.2015](https://doi.org/10.1152/jn.00226.2015)

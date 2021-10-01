@@ -27,7 +27,7 @@ The order of key-value pairs within a JSON Object does not matter.
 Saving/loading the file to/from memory is likely to reorder the contents
 of the file.
 
-## 1.1 run.json
+## run.json
 
 1.  Named file: `config/user/runs/<run_index>.json`
 
@@ -179,7 +179,7 @@ of the file.
       "override_compiled_mods": false
     }
     ```
-## 1.2 sample.json
+## sample.json
 
 1.  Named file: `samples/<sample_index>/sample.json`
 
@@ -214,6 +214,14 @@ of the file.
         "ci_perineurium_thickness": String,
         "reshape_nerve": String,
         "scale_input": String
+      },
+      "smoothing": {
+        "nerve_distance": Double,
+        "fascicle_distance": Double
+      },
+      "image_preprocessing": {
+        "fill_holes": Boolean,
+        "object_removal_area": Integer
       },
       "morph_count": Integer,
       "deform_ratio": Double,
@@ -306,7 +314,7 @@ of the file.
 
     `“modes”`: 
 
-      - `“mask_input”`:  The value (String) is the “MaskInputMode” that tells
+      - `“mask_input”`:  The value (String) is the `“MaskInputMode”` that tells
         the program which segmented histology images to expect as inputs for
         fascicles. Required.
 
@@ -405,6 +413,22 @@ of the file.
 
     <!-- end list -->
 
+
+    `“smoothing”`: Smoothing is applied via a dilating the nerve/fascicle boundary by a specified distance value and then shrinking it by that same value.
+
+      - `“nerve_distance”`: Amount (Double) to smooth nerve boundary. Units of micrometers.
+
+      - `“fascicle_distance”`: Amount (Double) to smooth fascicle boundaries (inners and outers). Units of micrometers.
+
+    <!-- end list -->
+
+    `“image_preprocessing”`: Operations applied to the input masks before analysis.
+
+      - `“fill_holes”`: The value (Boolean) indicates whether to fill gaps in the binary masks. If true, any areas of black pixels completely enclosed by white pixels will be turned white.
+
+      - `“object_removal_area”`: The value (Integer) indicates the maximum size of islands to remove from the binary masks. Any isolated islands of white pixels with area less than or equal to object_removal_area will be turned black. Units of pixels.
+
+    <!-- end list -->
     `“morph_count”`: The value (Integer) can be used to set the number of
     intermediately deformed nerve traces between the `boundary_start` and
     `boundary_end` in Deformable ([S13 Text](S13-Python-classes-for-representing-nerve-morphology-(Sample))) if the `“DeformationMode”` is “PHYSCIS”. An
@@ -421,7 +445,7 @@ of the file.
     `boundary_end` will be the original nerve trace. A value between 0 and 1
     will result in a partially deformed nerve “on the way” to the final
     circle nerve boundary. Optional, but default value is 1 if not defined
-    explicitly.
+    explicitly. Note: if `deform_ratio` = 0, then `“DeformationMode”` must be `"NONE"`.
 
     `“Morphology”`: This JSON Object is used to store information about the
     area and best-fit ellipse information of the nerve and fascicles (outer
@@ -453,6 +477,14 @@ of the file.
         "reshape_nerve": "NONE",
         "scale_input": "MASK"
       },
+      "smoothing": {
+        "nerve_distance": 0,
+        "fascicle_distance": 0
+      },
+      "image_preprocessing": {
+        "fill_holes": true,
+        "object_removal_area": 10
+      },
       "Morphology": {
         "Nerve": null,
         "Fascicles": [     
@@ -480,7 +512,7 @@ of the file.
       }
     }
     ```
-## 1.3 mock\_sample.json
+## mock\_sample.json
 
 1.  Named file: `config/user/<mock_sample_index>.json`
 
@@ -805,7 +837,7 @@ of the file.
       }
     }
     ```
-## 1.4 model.json
+## model.json
 
 1.  Named file:
     `samples/<sample_index>/models/<model_index>/model.json`
@@ -941,7 +973,7 @@ of the file.
                 conductivity in “conductivities” (under “perineurium”) with
                 no automated correction for frequency.
 
-      - `“cuff_shift”`: The value (String) is the “CuffShiftMode” that tells
+      - `“cuff_shift”`: The value (String) is the `“CuffShiftMode”` that tells
         the program how to shift the cuff on the nerve ([S17](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives) and [S19](S19-Cuff-placement-on-nerve) Text). Required.
 
           - As listed in Enums ([S6 Text](S6-Enums)), known modes include
@@ -971,7 +1003,7 @@ of the file.
               - `“NONE”`: Program keeps both the nerve centroid and cuff
                 centered at (x,y) =(0,0) and no cuff rotation is performed ([S17](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives) and [S19](S19-Cuff-placement-on-nerve) Text).
 
-      - `“fiber_z”`: The value (String) is the “FiberZMode” that tells the
+      - `“fiber_z”`: The value (String) is the `“FiberZMode”` that tells the
         program how to seed the NEURON fibers along the length of the FEM.
         In the current implementation of the pipeline, this value must be
         “EXTRUSION”. Required.
@@ -1058,7 +1090,7 @@ of the file.
           - Each key defines the translation of the cuff in the Cartesian
             coordinate system (Double, units: micrometer). The values are
             automatically populated by the pipeline based on the
-            “CuffShiftMode” (i.e., `“cuff_shift”` parameter within
+            `“CuffShiftMode”` (i.e., `“cuff_shift”` parameter within
             “modes”). Origin (x,y) = (0,0) corresponds to the centroid
             of the nerve sample (or fascicle best-fit ellipse of the Trace
             if monofascicular), and shift in z-direction is along the
@@ -1313,7 +1345,7 @@ of the file.
     }
     ```
 
-## 1.5 sim.json
+## sim.json
 
 1.  Named file: `config/user/sims/<sim_index>.json`
 
@@ -1679,7 +1711,7 @@ of the file.
         sample potentials inside inners in the nerve cross section ([Fig 3B](https://doi.org/10.1371/journal.pcbi.1009285.g003)). Include only *one* version of this block in your `sim.json`
         file. Required.
 
-         `“mode”`: The value (String) is the “FiberXYMode” that tells the
+         `“mode”`: The value (String) is the `“FiberXYMode”` that tells the
          program how to seed fiber locations inside each inner in the nerve
          cross section. Required.
 
@@ -1817,7 +1849,7 @@ of the file.
     number of digits of precision will increase computational load and waste
     storage resources.
 
-    Note: if one of the parameter values in the “WaveformMode” JSON Object
+    Note: if one of the parameter values in the `“WaveformMode”` JSON Object
     is a list, then there are `n_sim/` folders created for as many waveforms
     as parameter values in the list. If more than one parameter value is a
     list, then there are `n_sim/` folders created for each combination of
@@ -2272,7 +2304,7 @@ of the file.
     }
     ```
 
-## 1.6 query\_criteria.json
+## query\_criteria.json
 
 1.  Named file: `config/user/query_criteria/<query criteria
     index>.json`
@@ -2360,7 +2392,7 @@ of the file.
     }
     ```
 
-## 1.7 env.json
+## env.json
 
 1.  Named file: `config/system/env.json`
 
@@ -2416,7 +2448,7 @@ of the file.
     }
     ```
 
-## 1.8 exceptions.json
+## exceptions.json
 
 1.  Named file: `config/system/exceptions.json`
 
@@ -2459,7 +2491,7 @@ of the file.
     ]
     ```
 
-## 1.9 materials.json
+## materials.json
 
 1.  Named file: `config/system/materials.json`
 
@@ -2555,7 +2587,7 @@ of the file.
     unless the `“PerineuriumResistivityMode”` is `“MANUAL”` and the conductivity
     is defined explicitly in ***Model*** ([](S28-Definition-of-perineurium)).
 
-## 1.10 ci\_peri\_thickness.json
+## ci\_peri\_thickness.json
 
 1.  Named file: `config/system/ci_peri_thickness.json`
 
@@ -2599,7 +2631,7 @@ of the file.
       - See: `config/system/ci_peri_thickness.json` to see all built-in
         `PerineuriumThicknessMode` relationships.
 
-## 1.11 mesh\_dependent\_model.json
+## mesh\_dependent\_model.json
 
 1.  Named file: `config/system/mesh_dependent_model.json`
 
@@ -2645,7 +2677,7 @@ of the file.
         parameters to ***Model*** for expanded/modified pipeline
         functionality.
 
-## 1.12 References
+## References
 1. Weerasuriya A, Spangler RA, Rapoport SI, Taylor RE. AC impedance of the perineurium of the frog sciatic nerve. Biophys J. 1984 Aug;46(2):167–74. Available from: [https://dx.doi.org/10.1016%2FS0006-3495(84)84009-6](https://dx.doi.org/10.1016%2FS0006-3495(84)84009-6)
 2. 	Virtanen P, Gommers R, Oliphant TE, Haberland M, Reddy T, Cournapeau D, et al. SciPy 1.0: fundamental algorithms for scientific computing in Python. Nat Methods [Internet]. 2020;17(3):261–72. Available from: [https://doi.org/10.1038/s41592-019-0686-2
 ](https://doi.org/10.1038/s41592-019-0686-2)

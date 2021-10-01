@@ -10,7 +10,7 @@ materials in the default materials library
 (`config/system/materials.json`) by name, or with explicit definitions
 of a materials name and conductivity as a JSON Object ([S8 Text](S8-JSON-file-parameter-guide)).
 
-## 1.1 ModelWrapper.addMaterialDefinitions()
+## ModelWrapper.addMaterialDefinitions()
 
 The user is unlikely to interface directly with the
 `addMaterialDefinitions()` method in Java as it operates behind the
@@ -24,7 +24,7 @@ a new material if it does not yet exist as `“mat<#>”` using Part’s
 `defineMaterial()` method, and adds the identifier (e.g., “mat1”) to the
 `IdentifierManager`.
 
-## 1.2 Part.defineMaterial()
+## Part.defineMaterial()
 
 The user is unlikely to interface directly with the `defineMaterial()`
 method in Java as it operates behind the scenes to add a new material to
@@ -47,7 +47,7 @@ anisotropic, the material value is assigned a string “anisotropic” which
 tells the program to look for independent `“sigma_x”`, `“sigma_y”`, and
 `“sigma_z”` values in the material JSON Object.
 
-## 1.3 ModelWrapper.addCuffPartMaterialAssignment()
+## ModelWrapper.addCuffPartMaterialAssignment()
 
 The user is unlikely to interface directly with the
 `addCuffPartMaterialAssignment()` method in Java as it operates behind the
@@ -58,7 +58,7 @@ function in the “preset” cuff configuration file, the method creates a
 COMSOL Material Link to assign a previously defined selection in a cuff
 part instance to a defined material.
 
-## 1.4 ModelWrapper.addCuffPartMaterialAssignments()
+## ModelWrapper.addCuffPartMaterialAssignments()
 
 The user is unlikely to interface directly with the
 `addCuffMaterialAssignments()` method in Java as it operates behind the
@@ -76,7 +76,7 @@ part instances in “preset” cuff files in a nested order (i.e., the
 outermost domains first, knowing that domains nested in space within
 them will overwrite earlier domain assignments).
 
-## 1.5 Adding and assigning default material properties
+## Adding and assigning default material properties
 
 Default material properties defined in `config/system/materials.json`
 are listed in Table A. To accommodate automation of
@@ -105,7 +105,7 @@ Table A. Default material conductivities.
 | saline        | 1.76 \[S/m\]                 | \[11\]                |
 | perineurium   | 1/1149 \[S/m\]               | \[1,5\]           |
 
-## 1.6 References
+## References
 1. Weerasuriya A, Spangler RA, Rapoport SI, Taylor RE. AC impedance of the perineurium of the frog sciatic nerve. Biophys J. 1984 Aug;46(2):167–74. [https://dx.doi.org/10.1016%2FS0006-3495(84)84009-6](https://dx.doi.org/10.1016%2FS0006-3495(84)84009-6)
 1. Callister WD, Rethwisch DG. Fundamentals of Material Science and Engineering An Integrated Approach. In: Fundamentals Of Material Science and Engineering An Integrated Approach. 2012.
 1. de Podesta M, Laboratory NP, UK. Understanding the Properties of Matter. Understanding the Properties of Matter. 1996.

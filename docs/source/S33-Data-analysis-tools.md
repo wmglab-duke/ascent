@@ -1,6 +1,6 @@
 # S33: Data analysis tools
 
-## 1.1 Python Query class
+## Python Query class
 
 The general usage of Query is as follows:
 
@@ -65,7 +65,7 @@ convenience methods are included in `examples/analysis/`.
 
   - `plot_waveform.py`
 
-## 1.2 Video generation for NEURON state variables
+## Video generation for NEURON state variables
 
 In `examples/analysis/` we provide a script, `plot_video.py`, that creates
 an animation of saved state variables as a function of space and time

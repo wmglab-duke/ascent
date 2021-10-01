@@ -8,7 +8,7 @@ and fascicle(s) cross-sectional areas and centroids, major and minor
 axis lengths, and rotations of the best-fit ellipses) are automatically
 reported in ***Sample*** ([S8 Text](S8-JSON-file-parameter-guide)).
 
-##  1.1 Trace
+##  Trace
 
 Trace is the core Python class for handling a list of points that define
 a closed loop for a tissue boundary in a nerve cross section (see
@@ -79,14 +79,14 @@ Lastly, Trace has a few utility methods:
     —ASCII with .txt extension
     containing column vectors for x- and y-coordinates—is supported).
 
-##  1.2 Nerve
+##  Nerve
 
 Nerve is the name of a special instance of Trace reserved for
 representing the outer nerve (epineurium) boundary. It functions as an
 alias for Trace. An instance of the Nerve class is created if the
-“NerveMode” in ***Sample*** (“nerve”) is “PRESENT” ([S8 Text](S8-JSON-file-parameter-guide))"
+`“NerveMode”` in ***Sample*** (“nerve”) is “PRESENT” ([S8 Text](S8-JSON-file-parameter-guide))"
 
-##  1.3 Fascicle
+##  Fascicle
 
 Fascicle is a class that bundles together instance(s) of Trace to
 represent a single fascicle in a slide. Fascicle can be defined with
@@ -103,7 +103,7 @@ Trace intersects another inner instance of Trace.
 Fascicle contains methods for converting a binary mask image of
 segmented fascicles into instances of the Fascicle class. The method
 used depends on the contents of the binary image inputs to the pipeline
-as indicated by the “MaskInputMode” in ***Sample*** (`“mask_input”`)
+as indicated by the `“MaskInputMode”` in ***Sample*** (`“mask_input”`)
 (i.e., `INNER_AND_OUTER_SEPARATE`, `INNER_AND_OUTER_COMPILED`, or
 `INNERS`). For each of the mask-to-Fascicle conversion methods, the OpenCV
 Python package finds material boundaries and reports their nested
@@ -113,20 +113,18 @@ expecting a *maximum* hierarchical level of 2: one level for inners and
 one level for outers.
 
   - If separate binary images were provided containing contours for
-    inners (`i.tif`) and outers (`o.tif`), then the “MaskInputMode” in
-    ***Sample*** (`“mask_input”`, [S8 Text](S8-JSON-file-parameter-guide)) is `INNER_AND_OUTER_SEPARATE`; in this
-    case, the Fascicle class uses its `separate_to_list()` method.
+    inners (`i.tif`) and outers (`o.tif`), then the `“MaskInputMode”` in
+    ***Sample*** (`“mask_input”`, [S8 Text](S8-JSON-file-parameter-guide)) is `INNER_AND_OUTER_SEPARATE`.
 
   - If a single binary image was provided containing combined contours
-    of inners and outers (`c.tif`), then the “MaskInputMode” in
-    ***Sample*** (`“mask_input”`, [S8 Text](S8-JSON-file-parameter-guide)) is `INNER_AND_OUTER_COMPILED`; in this
-    case, the Fascicle class uses its `compiled_to_list()` method.
+    of inners and outers (`c.tif`), then the `“MaskInputMode”` in
+    ***Sample*** (`“mask_input”`, [S8 Text](S8-JSON-file-parameter-guide)) is `INNER_AND_OUTER_COMPILED`.
 
   - If only a binary image was provided for contours of inners (`i.tif`),
-    the “MaskInputMode” (`“mask_input”`, [S8 Text](S8-JSON-file-parameter-guide)) in ***Sample*** is INNERS; in
-    this case, Fascicle class uses its `inner_to_list()` method.
+    the `“MaskInputMode”` (`“mask_input”`, [S8 Text](S8-JSON-file-parameter-guide)) in ***Sample*** is `INNERS`.
 
-Additionally, Fascicle has a `write()` method which saves a Fascicle’s
+In all cases, the Fascicle class uses its `to_list()` method to generate the appropriate
+Traces. Additionally, Fascicle has a `write()` method which saves a Fascicle’s
 inner (one or many) and outer Traces to files that later serve as inputs
 for COMSOL to define material boundaries in a nerve cross section
 ([sectionwise file format](https://www.comsol.com/fileformats)
@@ -136,7 +134,7 @@ has a `morphology_data()` method which uses Trace’s `area()` and `ellipse()`
 methods to return the area and the best-fit ellipse centroid, axes, and
 rotation of each outer and inner as a JSON Object to ***Sample*** ([S8 Text](S8-JSON-file-parameter-guide)).
 
-##  1.4 Slide
+##  Slide
 
 The Slide class represents the morphology of a single transverse cross
 section of a nerve sample (i.e., nerve and fascicle boundaries). An
@@ -152,13 +150,13 @@ defined:
 
   - A list of instance(s) of the Fascicle class.
 
-  - “NerveMode” from ***Sample*** (“nerve”) (i.e., `PRESENT` as in the
+  - `“NerveMode”` from ***Sample*** (“nerve”) (i.e., `PRESENT` as in the
     case of nerves with epineurium (`n.tif`) or `NOT_PRESENT` otherwise, ([S8 Text](S8-JSON-file-parameter-guide))).
 
-  - An instance of the Nerve class if "NerveMode" is `PRESENT`.
+  - An instance of the Nerve class if `"NerveMode"` is `PRESENT`.
 
   - A Boolean for whether to reposition fascicles within the
-    nerve from “ReshapeNerveMode” in ***Sample*** ([S8 Text](S8-JSON-file-parameter-guide)).
+    nerve from `“ReshapeNerveMode”` in ***Sample*** ([S8 Text](S8-JSON-file-parameter-guide)).
 
   - A list of exceptions.
 
@@ -171,13 +169,17 @@ The Slide class validates, manipulates, and writes its contents.
 
 <!-- end list -->
 
+  - In Slide’s `smooth_traces()` method, Slide applies a smooth operation to each Trace
+    in the slide, leveraging the offset method, and applying smoothing based on
+    `smoothing` parameters. defined in ***Sample*** ([S8 Text](S8-JSON-file-parameter-guide)).
+
   - In Slide’s `move_center()` method, Slide repositions its contents
     about a central coordinate using Trace’s `shift()` method available to
     both the Nerve and Fascicle classes (by convention, in ASCENT this
     is (x,y) = (0,0)).
 
   - In Slide’s `reshaped_nerve()` method, Slide returns the deformed
-    boundary of Nerve based on the “ReshapeNerveMode” in ***Sample***
+    boundary of Nerve based on the `“ReshapeNerveMode”` in ***Sample***
     (`“reshape_nerve”`, ([S8 Text](S8-JSON-file-parameter-guide))) (e.g., CIRCLE).
 
   - Using the methods of Nerve and Fascicle, which are both
@@ -195,7 +197,7 @@ the pipeline data processing assumes that only a single Slide exists.
 This will allow the current data hierarchy to be backwards compatible if
 multi-Slide samples are processed in the future.*
 
-##  1.5 Map
+##  Map
 
 Map is a Python class used to keep track of the relationship of the
 longitudinal position of all Slide instances for a Sample class. At
@@ -207,7 +209,7 @@ serial histological sections). If only one slide is provided, Map is
 generated automatically, and the user should have little need to
 interact with this class.
 
-##  1.6 Sample
+##  Sample
 
 The Sample class is initialized within Runner’s `run()` method by loading
 ***Sample*** and ***Run*** configurations ([S7](S7-JSON-configuration-files) and [S8](S8-JSON-file-parameter-guide) Text). First, Sample’s
@@ -220,6 +222,10 @@ input sample morphology binary images (see Fascicle class above for
 details). Sample’s `populate()` method packages instances of Nerve and
 Fascicle(s) into an instance of Slide.
 
+Sample's `get_factor()` method obtains the ratio of microns/pixel for the input masks,
+either utilizing a scale bar image, or an explicit scale factor input depending on
+the user's `ScaleInputMode` defined in ***Sample*** ([S8 Text](S8-JSON-file-parameter-guide)).
+
 Sample’s `scale()` method is used to convert Trace points from pixel
 coordinates to coordinates with units of distance based either on the length of
 the horizontal scale bar as defined in ***Sample*** (micrometers) and
@@ -231,11 +237,23 @@ increase for shrinkage correction in the slide's 2D geometry is stored
 as a parameter “shrinkage” in ***Sample*** ([S8 Text](S8-JSON-file-parameter-guide)). Additionally, Slide has a
 `move_center()` method which is used to center Slide about a point within
 `populate()`. Note that Sample is centered with the centroid of the
-best-fit ellipse of the outermost Trace (Nerve if “NerveMode” in
-***Sample*** (“nerve”) is `“PRESENT”`, outer Trace if “NerveMode” is
+best-fit ellipse of the outermost Trace (Nerve if `“NerveMode”` in
+***Sample*** (“nerve”) is `“PRESENT”`, outer Trace if `“NerveMode”` is
 `“NOT_PRESENT”`, ([S8 Text](S8-JSON-file-parameter-guide))) at the origin (0,0,0). Change in rotational or
 translational placement of the cuff around the nerve is accomplished by
 moving the cuff and keeping the nerve position fixed ([S19 Text](S19-Cuff-placement-on-nerve)).
+
+Sample's `im_preprocess()` method performs preprocessing operations on the binary input
+masks based on the parameters given under `preprocess` in ***Sample*** ([S8 Text](S8-JSON-file-parameter-guide)).
+
+Sample's `io_from_compiled()` generates outers (o.tif) and inners (i.tif) from the
+(compiled) c.tif mask if `"MaskInputMode"` is `INNER_AND_OUTER_COMPILED`. These generated
+masks are then used in Fascicle's `to_list()` method.
+
+Sample's `generate_perineurium()` method is used to generate the perineurium for fascicle
+inners in the case where `"MaskInputMode"` = `INNERS`. This leverages Trace's `offset()`
+method, and fits the generated perineurium based on `ci_perineurium_thickness` defined in
+***Sample*** ([S8 Text](S8-JSON-file-parameter-guide)).
 
 Sample’s `populate()` method also manages operations for saving tissue
 boundaries of the Sample (Nerve and Fascicles) to CAD files
@@ -251,15 +269,15 @@ inners and outers, and Nerve) and saves the data under “Morphology” in
 Lastly, since Sample inherits `Saveable`, Sample has access to the `save()`
 method which saves the Python object to file.
 
-##  1.7 Deformable
+##  Deformable
 
-If “DeformationMode” in ***Sample*** (“deform”) is set to NONE, then the
-Deformable class takes no action ([S8 Text](S8-JSON-file-parameter-guide)). However, if “DeformationMode” in
-***Sample*** is set to PHYSICS, then Deformable’s `deform()` method
+If `“DeformationMode”` in ***Sample*** (“deform”) is set to `NONE`, then the
+Deformable class takes no action ([S8 Text](S8-JSON-file-parameter-guide)). However, if `“DeformationMode”` in
+***Sample*** is set to `PHYSICS`, then Deformable’s `deform()` method
 simulates the change in nerve cross section that occurs when a nerve is
 placed in a cuff electrode. Specifically, the outer boundary of a
 Slide’s Nerve mask is transformed into a user-defined final geometry
-based on the “ReshapeNerveMode” in ***Sample*** (i.e., CIRCLE) while
+based on the `“ReshapeNerveMode”` in ***Sample*** (i.e., `CIRCLE`) while
 maintaining the cross-sectional area. Meanwhile, the fascicles (i.e.,
 outers) are repositioned within the new nerve cross section in a
 physics-based way using Pymunk \[5\], a 2D physics library, in which
@@ -294,11 +312,11 @@ Deformable’s convenience constructor, `from_slide()`, is automatically
 called in Sample’s `populate()` method, where a Slide is deformed to user
 specification. The `from_slide()` method takes three input arguments: The
 Slide object from which to construct the current Deformable object, the
-“ReshapeNerveMode” (e.g., CIRCLE, [S8 Text](S8-JSON-file-parameter-guide)), and the minimum distance between
+`“ReshapeNerveMode”` (e.g., CIRCLE, [S8 Text](S8-JSON-file-parameter-guide)), and the minimum distance between
 fascicles. If only inners are provided, virtual outers interact during
 nerve deformation to account for the thickness of the perineurium. Each
 inner’s perineurium thickness is defined by the
-“PerineuriumThicknessMode” in ***Sample***
+`“PerineuriumThicknessMode”` in ***Sample***
 (`“ci_perineurium_thickness”`, [S8 Text](S8-JSON-file-parameter-guide)), which specifies the linear
 relationship between inner diameter and perineurium thickness defined in
 `config/system/ci_peri_thickness.json` ([S8 Text]()). Deformable’s
@@ -345,7 +363,7 @@ for debugging but increases computational load and slows down the
 deformation process significantly. When performing deformation on many
 slides, we advise setting this flag to false.
 
-## 1.8 References
+## References
 1. Boyd IA, Kalu KU. Scaling factor relating conduction velocity and diameter for myelinated afferent  nerve fibres in the cat hind limb. J Physiol. 1979 Apr;289:277–97. Available from: [https://doi.org/10.1113/jphysiol.1979.sp012737](https://doi.org/10.1113/jphysiol.1979.sp012737)
 2. 	Bradski G, Daebler A. Learning OpenCV. Computer vision with OpenCV library. 2008 Jan 1;222–64.
 3. 	Johnson A, Chalton M, Treyer L, Ratajc G. pyclipper · PyPI [Internet]. 2019 [cited 2020 Apr 20]. Available from: [https://pypi.org/project/pyclipper/](https://pypi.org/project/pyclipper/)
