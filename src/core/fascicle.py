@@ -48,7 +48,7 @@ class Fascicle(Exceptionable):
         self.inners: List[Trace] = inners
         self.outer: Trace = outer
 
-        if inners: self.validate()
+        if len(inners)>0: self.validate()
 
     def validate(self):
         """
