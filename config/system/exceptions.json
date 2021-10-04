@@ -478,5 +478,13 @@
   {
     "code": 120,
     "text": "Object removal area (image_preprocessing->object_removal_area->sample.json) cannot be negative"
+  },
+  {
+    "code": 121,
+    "text": "No input morphology masks found"
+  },
+  {
+    "code": 122,
+    "text": "Input morphology masks do not have identical dimensions"
   }
 ]
