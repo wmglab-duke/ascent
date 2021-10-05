@@ -57,7 +57,7 @@ class Exceptionable(Configurable):
         """
 
         # force to exception 0 if incorrect bounds
-        if code not in range(1, len(self.configs[Config.EXCEPTIONS.value])):
+        if code not in [x['code'] for x in self.configs[Config.EXCEPTIONS.value]]:
             code = 0
 
         exception = self.configs[Config.EXCEPTIONS.value][code]
