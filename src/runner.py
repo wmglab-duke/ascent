@@ -582,7 +582,7 @@ class Runner(Exceptionable, Configurable):
                 model_config['cuff']['rotate']['pos_ang'] = theta_f + theta_c - theta_i
 
                 # if nerve is present, use 0,0
-                if slide.nerve is not None:  # has nerve
+                if slide.nerve is not None and deform_ratio==1:  # has nerve
                     model_config['cuff']['shift']['x'] = 0
                     model_config['cuff']['shift']['y'] = 0
                 else:
@@ -678,17 +678,14 @@ class Runner(Exceptionable, Configurable):
                 model_config['cuff']['rotate']['pos_ang'] = 0
 
                 # if nerve is present, use 0,0
-                if slide.nerve is not None:  # has nerve
+                if slide.nerve is not None and deform_ratio==1:  # has nerve
                     model_config['cuff']['shift']['x'] = 0
                     model_config['cuff']['shift']['y'] = 0
                 else:
                     # else, use
                     model_config['cuff']['shift']['x'] = x
                     model_config['cuff']['shift']['y'] = y
-
-        if 'add_ang' not in model_config['cuff']['rotate'].keys():
-            model_config['cuff']['rotate']['add_ang'] = 0
-
+                    
         return model_config
 
     def compute_electrical_parameters(self, all_configs, model_index):
