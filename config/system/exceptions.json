@@ -478,5 +478,9 @@
   {
     "code": 120,
     "text": "Object removal area (image_preprocessing->object_removal_area->sample.json) cannot be negative"
+  },
+  {
+    "code": 121,
+    "text": "Slide is not centered at the origin"
   }
 ]
