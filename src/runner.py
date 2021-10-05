@@ -489,7 +489,7 @@ class Runner(Exceptionable, Configurable):
         # angle of centroid of nerve to center of minimum bounding circle
         reference_x = reference_y = 0.0
         if not slide.monofasc() and not (round(slide.nerve.centroid()[0],1)==round(slide.nerve.centroid()[1],1)==0):
-            self.throw(121) #if the slide is not centered at the nerve throw error
+            self.throw(123) #if the slide is not centered at the nerve throw error
         if not slide.monofasc():
             reference_x, reference_y = slide.fascicle_centroid()
         theta_c = (np.arctan2(reference_y - y, reference_x - x) * (360 / (2 * np.pi))) % 360
