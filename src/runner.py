@@ -476,22 +476,20 @@ class Runner(Exceptionable, Configurable):
         # get center and radius of nerve's min_bound circle
         nerve_copy = deepcopy(slide.nerve if nerve_mode == NerveMode.PRESENT else slide.fascicles[0].outer)
 
-        # for speed, downsample nerves to n_points_nerve (100) points
-        n_points_nerve = 100
-        nerve_copy.down_sample(DownSampleMode.KEEP, int(np.floor(nerve_copy.points.size / n_points_nerve)))
-
         # Get the boundary and center information for computing cuff shift
         if self.search_mode(ReshapeNerveMode, Config.SAMPLE) and not slide.monofasc() and deform_ratio == 1:
             x, y = 0, 0
             r_bound = np.sqrt(sample_config['Morphology']['Nerve']['area'] / np.pi)
         else:
-            x, y, r_bound = nerve_copy.smallest_enclosing_circle_naive()
+            x, y, r_bound = nerve_copy.make_circle()
 
         # next calculate the angle of the "centroid" to the center of min bound circle
         # if mono fasc, just use 0, 0 as centroid (i.e., centroid of nerve same as centroid of all fasc)
         # if poly fasc, use centroid of all fascicle as reference, not 0, 0
         # angle of centroid of nerve to center of minimum bounding circle
         reference_x = reference_y = 0.0
+        if not(round(slide.nerve.centroid()[0],1)==round(slide.nerve.centroid()[1],1)==0) and not slide.monofasc():
+            self.throw(121) #if the slide is not centered at the nerve throw error
         if not slide.monofasc():
             reference_x, reference_y = slide.fascicle_centroid()
         theta_c = (np.arctan2(reference_y - y, reference_x - x) * (360 / (2 * np.pi))) % 360
