@@ -317,8 +317,8 @@ class Sample(Exceptionable, Configurable, Saveable):
                 if exists(maskfile):
                     mask_dims.append(cv2.imread(getattr(maskfile,'value')).shape)
                     self.im_preprocess(getattr(maskfile,'value'))
-                if len(mask_dims)==0: self.throw(121)
-                if not np.all(np.array(mask_dims)==mask_dims[0]): self.throw(122)
+            if len(mask_dims)==0: self.throw(121)
+            if not np.all(np.array(mask_dims)==mask_dims[0]): self.throw(122)
             
             # fascicles list
             fascicles: List[Fascicle] = []
