@@ -100,7 +100,7 @@ def get_thresh_bounds(sim_dir: str, sim_name: str, inner_ind: int):
     sim_config = load(os.path.join(sim_dir, sim_name, '{}.json'.format(n_sim)))
 
     if sim_config['protocol']['mode'] == 'ACTIVATION_THRESHOLD' or sim_config['protocol']['mode'] == 'BLOCK_THRESHOLD':
-        if 'scout_sim' in sim_config['protocol']['bounds_search'].keys():
+        if 'scout_sim' in sim_config['protocol']['bounds_search'].keys() and sim_config['protocol']['bounds_search']['scout_sim']==True:
             # load in threshold from scout_sim (example use: run centroid first, then any other xy-mode after)
 
             scout_sim = sim_config['protocol']['bounds_search']['scout_sim']
