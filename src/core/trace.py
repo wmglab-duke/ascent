@@ -93,7 +93,7 @@ class Trace(Exceptionable):
 
         if fit is not None:
             # find offset distance from factor and mean radius
-            distance: float = fit.get("a") * 2 * np.sqrt(self.area/np.pi) + fit.get("b")
+            distance: float = fit.get("a") * 2 * np.sqrt(self.area()/np.pi) + fit.get("b")
         elif distance is None:
             self.throw(29)
 
