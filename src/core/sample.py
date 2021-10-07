@@ -256,7 +256,7 @@ class Sample(Exceptionable, Configurable, Saveable):
             
         def exists(mask_file_name: MaskFileNames):
             return os.path.exists(mask_file_name.value)
-
+        
         # get starting point so able to go back
         start_directory: str = os.getcwd()
 
@@ -269,7 +269,7 @@ class Sample(Exceptionable, Configurable, Saveable):
         elif scale_input_mode == ScaleInputMode.RATIO:
             scale_path = ''
         else: self.throw(108)
-
+            
         for slide_info in self.map.slides:
 
             orientation_centroid: Union[Tuple[float, float], None] = None
@@ -279,7 +279,7 @@ class Sample(Exceptionable, Configurable, Saveable):
             cassette, number = (str(item) for item in (cassette, number))
 
             os.chdir(os.path.join('samples', str(sample), 'slides', cassette, number, 'masks'))
-
+            
             # convert any TIFF to TIF
             proc = None
             if any(fname.endswith('.tiff') for fname in os.listdir('.')):
@@ -383,7 +383,56 @@ class Sample(Exceptionable, Configurable, Saveable):
                                  nerve_mode,
                                  self.configs[Config.EXCEPTIONS.value],
                                  will_reposition=(deform_mode != DeformationMode.NONE))
+            
+            
+            
+            # shrinkage correction
+            slide.scale(1 + self.search(Config.SAMPLE, "scale", "shrinkage"))
 
+            # shift slide about (0,0)
+            slide.move_center(np.array([0, 0]))
+
+            self.slides.append(slide)
+
+            os.chdir(start_directory)
+            
+        #get scaling factor (to convert from pixels to microns)
+        if os.path.exists(scale_path) and scale_input_mode == ScaleInputMode.MASK:
+            factor = self.get_factor(scale_path, self.search(Config.SAMPLE, 'scale', 'scale_bar_length'),False)
+        elif scale_input_mode == ScaleInputMode.RATIO:
+            factor = self.get_factor(scale_path, self.search(Config.SAMPLE, 'scale', 'scale_ratio'),True)
+        else:
+            print(scale_path)
+            self.throw(19)
+            
+        #scale to microns
+        self.scale(factor)
+
+        #get smoothing params
+        n_distance = self.search(Config.SAMPLE, 'smoothing', 'nerve_distance',optional = True)
+        i_distance = self.search(Config.SAMPLE, 'smoothing', 'fascicle_distance',optional = True)
+        #smooth traces
+        if not (n_distance==i_distance==None):
+            if nerve_mode == NerveMode.PRESENT and n_distance is None:
+                self.throw(112)
+            else: 
+                self.smooth(n_distance,i_distance)
+                self.scale(1) #does not scale but reconnects ends of traces after offset
+                
+        #after scaling, if only inners were provided, generate outers
+        if mask_input_mode == MaskInputMode.INNERS:
+            peri_thick_mode: PerineuriumThicknessMode = self.search_mode(PerineuriumThicknessMode,
+                                                             Config.SAMPLE)
+
+            perineurium_thk_info: dict = self.search(Config.CI_PERINEURIUM_THICKNESS,
+                                         PerineuriumThicknessMode.parameters.value,
+                                         str(peri_thick_mode).split('.')[-1])
+
+            self.generate_perineurium(perineurium_thk_info)
+        
+        # repositioning!
+        for i, slide in enumerate(self.slides):
+            
             # find index of orientation point for rotating later (will be added to pos_ang)
             if orientation_centroid is not None:
 
@@ -409,52 +458,6 @@ class Sample(Exceptionable, Configurable, Saveable):
                 # plt.plot(*tuple(slide.nerve.points[slide.orientation_point_index][:2]), 'b*')
                 # plt.show()
 
-            # shrinkage correction
-            slide.scale(1 + self.search(Config.SAMPLE, "scale", "shrinkage"))
-
-            # shift slide about (0,0)
-            slide.move_center(np.array([0, 0]))
-
-            self.slides.append(slide)
-
-            os.chdir(start_directory)
-            
-        #get scaling factor (to convert from pixels to microns)
-        if os.path.exists(scale_path) and scale_input_mode == ScaleInputMode.MASK:
-            factor = self.get_factor(scale_path, self.search(Config.SAMPLE, 'scale', 'scale_bar_length'),False)
-        elif scale_input_mode == ScaleInputMode.RATIO:
-            factor = self.get_factor(scale_path, self.search(Config.SAMPLE, 'scale', 'scale_ratio'),True)
-        else:
-            print(scale_path)
-            self.throw(19)
-            
-        #scale to microns
-        self.scale(factor)
-    
-        #get smoothing params
-        n_distance = self.search(Config.SAMPLE, 'smoothing', 'nerve_distance',optional = True)
-        i_distance = self.search(Config.SAMPLE, 'smoothing', 'fascicle_distance',optional = True)
-        #smooth traces
-        if not (n_distance==i_distance==None):
-            if nerve_mode == NerveMode.PRESENT and n_distance is None:
-                self.throw(112)
-            else: 
-                self.smooth(n_distance,i_distance)
-                self.scale(1) #does not scale but reconnects ends of traces after offset
-                
-        #after scaling, if only inners were provided, generate outers
-        if mask_input_mode == MaskInputMode.INNERS:
-            peri_thick_mode: PerineuriumThicknessMode = self.search_mode(PerineuriumThicknessMode,
-                                                             Config.SAMPLE)
-
-            perineurium_thk_info: dict = self.search(Config.CI_PERINEURIUM_THICKNESS,
-                                         PerineuriumThicknessMode.parameters.value,
-                                         str(peri_thick_mode).split('.')[-1])
-
-            self.generate_perineurium(perineurium_thk_info)
-        
-        # repositioning!
-        for i, slide in enumerate(self.slides):
             print('\tslide {} of {}'.format(1 + i, len(self.slides)))
             title = ''
 
@@ -523,14 +526,12 @@ class Sample(Exceptionable, Configurable, Saveable):
                     slide.orientation_point = slide.nerve.points[slide.orientation_point_index][:2]
                     slide.nerve.offset(distance=sep_nerve)
                 else:
-                    slide.orientation_point = slide.nerve.points[slide.orientation_point_index][:2]
                     slide.nerve = slide.reshaped_nerve(reshape_nerve_mode)
+                    slide.orientation_point = slide.nerve.points[slide.orientation_point_index][:2]
                     slide.nerve.offset(distance=sep_nerve)
                     
         #scale with ratio = 1 (no scaling happens, but connects the ends of each trace to itself)
         self.scale(1)
-        
-            # slide.plot(fix_aspect_ratio=True, title=title)
 
             # plt.figure(2)
             # slide.nerve.plot()
