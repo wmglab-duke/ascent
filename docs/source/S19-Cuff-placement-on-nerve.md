@@ -42,7 +42,7 @@ cuff toward the nerve until the nerve’s outermost Trace (i.e., for
 monofascicular nerve an inner or outer, and same result as
 `“NAIVE_ROTATION_MIN_CIRCLE_BOUNDARY”` for nerve’s with epineurium)
 is within the distance of the `“thk_medium_gap_internal”` parameter for
-the cuff.
+the cuff. Note: orientation masks (`a.tif`) are ignored when using these modes.
 
 For “automatic” `CuffShiftModes` (i.e.,
 `“AUTO_ROTATION_MIN_CIRCLE_BOUNDARY”,
