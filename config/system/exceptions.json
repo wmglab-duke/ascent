@@ -468,10 +468,6 @@
     "text": "ap_end_times is defined in Sim, so the system is saving AP times at the ends of the fiber. \nThe values for loc_min and/or loc_max are the terminal nodes  (i.e., 0 or 1), which are also set to passive_end_nodes=1 (i.e., grounded therefore no APs)."
   },
   {
-    "code": 117,
-    "text": "If deformation mode is set to physics, deform_ratio cannot be zero (sample.json)"
-  },
-  {
     "code": 118,
     "text": "Deformation mode is set to physics, but no deform ratio is defined in sample.json"
   },

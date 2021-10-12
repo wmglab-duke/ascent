@@ -335,6 +335,8 @@ intermediately-deformed nerve traces between the `boundary_start` and
 vector to `boundary_start`. Also note that by defining `“deform_ratio”`
 (value between 0 and 1) in ***Sample***, the user can optionally
 indicate a partial deformation of the Nerve ([S8 Text](S8-JSON-file-parameter-guide)).
+In the case where `"deform_ratio"` is set to 0, minimum fascicle separation will still be
+enforced, but no changes to the nerve boundary will occur.
 
 Enforcing a minimum fascicle separation that is extremely large (e.g.,
 20 µm) can cause inaccurate deformation, as fascicles may be unable to
