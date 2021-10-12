@@ -486,5 +486,13 @@
   {
     "code": 123,
     "text": "Slide is not centered at the origin"
+  },
+  {
+    "code": 124,
+    "text": "Multiple objects were found in orientation mask. A single object of white pixels must be provided"
+  },
+  {
+    "code": 125,
+    "text": "No objects were found in orientation mask. An object of white pixels must be provided"
   }
 ]
