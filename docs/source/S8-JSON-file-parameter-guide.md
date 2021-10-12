@@ -225,6 +225,8 @@ of the file.
       },
       "morph_count": Integer,
       "deform_ratio": Double,
+      "plot": Boolean,
+      "plot_folder": Boolean,
       "Morphology": {
         "Nerve": {
           "Area": Double
@@ -448,6 +450,14 @@ of the file.
     explicitly. Note: if `deform_ratio` = 0, no changes to the nerve boundary will
     occur, but the physics system will ensure the requirements in `"boundary_separation"` are met.
 
+    `“plot”`: The value (Boolean) determines whether the program
+    will generate output plots of sample morphology. If true, plots are generated,
+    if false, no plots are generated
+
+    `“plot_folder”`: The value (Boolean) describes plotting behavior (if enabled).
+    If true, plots are generated in the folder samples/<sample_index>/plots, if
+    false, plots will pop up in a window.
+
     `“Morphology”`: This JSON Object is used to store information about the
     area and best-fit ellipse information of the nerve and fascicles (outer
     and inners). The user does not set values to these JSON structures, but
@@ -486,6 +496,10 @@ of the file.
         "fill_holes": true,
         "object_removal_area": 10
       },
+      "morph_count": 36,
+      "deform_ratio": 1,
+      "plot": true,
+      "plot_folder": true,
       "Morphology": {
         "Nerve": null,
         "Fascicles": [     
@@ -1376,6 +1390,7 @@ of the file.
     ```
     {
       "n_dimensions": Integer,
+      "plot_folder" : Boolean,
       "active_srcs": {
         "CorTec300.json": [[Double, Double]], // for example
         "default": [[1, -1]]
@@ -1603,6 +1618,11 @@ of the file.
     creating unintended NEURON simulations. The pipeline will only loop over
     the first n-dimensions. Required.
 
+    `“plot_folder”`: The value (Boolean) tells the program whether to output
+    plots in a folder if true, or as a popup window if false. If not specified,
+    the program assumes false. If true plots are saved in a folder in the simulation
+    directory. (i.e., /samples/<sample_index>/models/<model_index>/sims/<sim_index>/plots)
+
     `“active_srcs”`: The value is a JSON Object containing key-value pairs of
     contact weightings for preset cuffs. Each value (`List[List[Double]]`)
     is the contact weighting to use to make extracellular potentials inputs
@@ -1634,8 +1654,8 @@ of the file.
     length of the fiber). Required.
 
       - `“plot”`: The value (Boolean) tells the program to plot the fiber
-        (x,y)-coordinates for the user to inspect. A figure window pops up
-        on the user’s screen during the pipeline run. Required.
+        (x,y)-coordinates for the user to inspect. Whether the figure pops up or
+        is saved is controlled by the `"plot_folder"` parameter. Required.
 
       - `“mode”`: The value (String) is the “FiberGeometry” mode that tells
         the program which fiber geometries to simulate in NEURON ([S21](S21-Implementation-of-NEURON-fiber-models) and [S32](S32-NEURON-Wrapper.hoc) Text). Required.
@@ -1827,8 +1847,8 @@ of the file.
     stimulation waveform parameters ([Fig 3C](https://doi.org/10.1371/journal.pcbi.1009285.g003)). Required.
 
       - `“plot”`: The value (Boolean) turns plotting of the waveform to a
-        figure on/off as each waveform is written to file. A figure is
-        displayed to the user’s screen during the pipeline run.
+        figure on/off as each waveform is written to file. Whether the figure pops up or
+        is saved is controlled by the `"plot_folder"` parameter.
 
       - `“global”`: the value (JSON Object) contains key-value pairs that
         define NEURON time discretization parameters. Required.
@@ -2226,11 +2246,12 @@ of the file.
     ```
     {
       "n_dimensions": 3,
+      "plot_folder" : true,
       "active_srcs": {
         "CorTec300.json": [[1, -1]]
       },
       "fibers": {
-        "plot": false,
+        "plot": true,
         "mode": "MRG_DISCRETE",
         "xy_trace_buffer": 5.0,
         "z_parameters": {
@@ -2251,7 +2272,7 @@ of the file.
         }
       },
       "waveform": {
-        "plot": false,
+        "plot": true,
         "global": {
           "dt": 0.001,
           "on": 1,

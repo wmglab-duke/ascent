@@ -423,15 +423,18 @@ class Waveform(Exceptionable, Configurable, Saveable):
 
         return self
 
-    def plot(self, ax: plt.Axes = None, final: bool = False):
-
+    def plot(self, ax: plt.Axes = None, final: bool = False, path: str = None):
+        
+        plt.figure()
+        
         if ax is None:
             ax = plt.gca()
 
         ax.plot(np.linspace(self.start, self.dt * len(self.wave), len(self.wave)), self.wave)
 
         if final:
-            plt.show()
+            if path is None: plt.show() 
+            else: plt.savefig(path, dpi=300)
 
     def write(self, mode: WriteMode, path: str):
         """

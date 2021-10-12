@@ -169,7 +169,12 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 plot: bool = self.search(Config.SIM, 'waveform', 'plot')
 
             if plot:
-                waveform.plot(final=True)
+                if self.search(Config.SIM, 'plot_folder',optional = True) == True: 
+                    path = sim_directory+'/plots/waveforms/{}.png'.format(i)
+                    if not os.path.exists(sim_directory+'/plots/waveforms'):
+                        os.makedirs(sim_directory+'/plots/waveforms')
+                else: path = None
+                waveform.plot(final=True,path=path)
 
             self.waveforms.append(waveform)
 
