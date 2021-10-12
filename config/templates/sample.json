@@ -32,6 +32,8 @@
   },
   "morph_count": 36,
   "deform_ratio": 1,
+  "plot" : true,
+  "plot_folder" : true,
   "Morphology": {
     "outer": {
       "area": 3822.2482582148805,

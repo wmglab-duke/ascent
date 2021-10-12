@@ -248,6 +248,9 @@ class Runner(Exceptionable, Configurable):
                         else:
                             if not os.path.exists(sim_obj_dir):
                                 os.makedirs(sim_obj_dir)
+                            
+                            if not os.path.exists(sim_obj_dir+'/plots'):
+                                os.makedirs(sim_obj_dir+'/plots')
 
                             simulation: Simulation = Simulation(sample, self.configs[Config.EXCEPTIONS.value])
                             simulation \

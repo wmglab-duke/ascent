@@ -250,6 +250,8 @@ class Sample(Exceptionable, Configurable, Saveable):
         deform_mode = self.search_mode(DeformationMode, Config.SAMPLE)
         deform_ratio = None
         scale_input_mode = self.search_mode(ScaleInputMode, Config.SAMPLE,optional = True)
+        plot = self.search(Config.SAMPLE, 'plot',optional = True)
+        plot_folder = self.search(Config.SAMPLE, 'plot_folder', optional = True)
         #For backwards compatibility, if scale mode is not specified assume a mask image is provided
         if scale_input_mode is None:
             scale_input_mode = ScaleInputMode.MASK
@@ -269,6 +271,10 @@ class Sample(Exceptionable, Configurable, Saveable):
         elif scale_input_mode == ScaleInputMode.RATIO:
             scale_path = ''
         else: self.throw(108)
+
+        plotpath=os.path.join('samples', str(sample),'plots')
+        if not os.path.exists(plotpath):
+            os.makedirs(plotpath)
 
         for slide_info in self.map.slides:
 
@@ -419,7 +425,16 @@ class Sample(Exceptionable, Configurable, Saveable):
             
         #scale to microns
         self.scale(factor)
-    
+
+        if plot==True:
+            plt.figure()
+            slide.plot(final = False)
+            if plot_folder==True:
+                plt.savefig(plotpath+'/sample_initial')
+                plt.close('all')
+            else:
+                plt.show()
+
         #get smoothing params
         n_distance = self.search(Config.SAMPLE, 'smoothing', 'nerve_distance',optional = True)
         i_distance = self.search(Config.SAMPLE, 'smoothing', 'fascicle_distance',optional = True)
@@ -531,6 +546,22 @@ class Sample(Exceptionable, Configurable, Saveable):
         
         #scale with ratio = 1 (no scaling happens, but connects the ends of each trace to itself)
         self.scale(1)
+        
+            # slide.plot(fix_aspect_ratio=True, title=title)
+
+        if plot==True:
+            plt.figure()
+            slide.plot(final = False)
+            if plot_folder==True:
+                plt.savefig(plotpath+'/sample_final')
+                plt.close()
+            else:
+                plt.show()
+
+            # plt.figure(2)
+            # slide.nerve.plot()
+            # plt.plot(*tuple(slide.nerve.points[slide.orientation_point_index][:2]), 'b*')
+            # plt.show()
 
         return self
     def io_from_compiled(self,imgin,i_out,o_out):
