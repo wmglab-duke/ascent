@@ -521,7 +521,7 @@ class Runner(Exceptionable, Configurable):
             if not r_f <= r_i:
                 self.throw(51)
 
-            theta_f = 0
+            theta_f = theta_i
         else:
             # get initial cuff radius
             r_i_str: str = [item["expression"] for item in cuff_config["params"]
@@ -535,9 +535,15 @@ class Runner(Exceptionable, Configurable):
             ).real  # [um] (scaled from any arbitrary length unit)
 
             if r_i < r_f:
-                theta_f = (0.5 * ((r_f / r_i) * theta_i - theta_i)) % 360
+                fixed_point = cuff_config.get('fixed_point')
+                if fixed_point is None:
+                    self.throw(126)
+                if fixed_point == 'clockwise_end':
+                    theta_f = theta_i*(r_i/r_f)
+                elif fixed_point == 'center':
+                    theta_f = theta_i
             else:
-                theta_f = 0
+                theta_f = theta_i
 
         offset = 0
         for key, coef in cuff_config["offset"].items():
@@ -566,14 +572,14 @@ class Runner(Exceptionable, Configurable):
         if cuff_shift_mode == CuffShiftMode.AUTO_ROTATION_MIN_CIRCLE_BOUNDARY \
                 or cuff_shift_mode == CuffShiftMode.MIN_CIRCLE_BOUNDARY:  # for backwards compatibility
             if r_i > r_f:
-                model_config['cuff']['rotate']['pos_ang'] = theta_f + theta_c - theta_i
+                model_config['cuff']['rotate']['pos_ang'] = theta_c-theta_f
                 model_config['cuff']['shift']['x'] = x - (r_i - offset - cuff_r_buffer - r_bound) * np.cos(
                     theta_c * ((2 * np.pi) / 360))
                 model_config['cuff']['shift']['y'] = y - (r_i - offset - cuff_r_buffer - r_bound) * np.sin(
                     theta_c * ((2 * np.pi) / 360))
 
             else:
-                model_config['cuff']['rotate']['pos_ang'] = theta_f + theta_c - theta_i
+                model_config['cuff']['rotate']['pos_ang'] = theta_c-theta_f
 
                 # if nerve is present, use 0,0
                 if slide.nerve is not None and deform_ratio==1:  # has nerve
@@ -587,7 +593,7 @@ class Runner(Exceptionable, Configurable):
         elif cuff_shift_mode == CuffShiftMode.AUTO_ROTATION_TRACE_BOUNDARY \
                 or cuff_shift_mode == CuffShiftMode.TRACE_BOUNDARY:  # for backwards compatibility
             if r_i < r_f:
-                model_config['cuff']['rotate']['pos_ang'] = theta_f + theta_c - theta_i
+                model_config['cuff']['rotate']['pos_ang'] = theta_c-theta_f
                 model_config['cuff']['shift']['x'] = x
                 model_config['cuff']['shift']['y'] = y
             else:
@@ -615,7 +621,7 @@ class Runner(Exceptionable, Configurable):
                 center_x += x_step
                 center_y += y_step
 
-                model_config['cuff']['rotate']['pos_ang'] = (theta_f + theta_c - theta_i)
+                model_config['cuff']['rotate']['pos_ang'] = (theta_c-theta_f)
                 model_config['cuff']['shift']['x'] = center_x
                 model_config['cuff']['shift']['y'] = center_y
 
