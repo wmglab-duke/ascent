@@ -365,7 +365,7 @@ of the file.
                 the nerve to the final inner profile of the nerve cuff,
                 morphing from the original trace towards a circular trace.
                 In the pipeline’s current implementation, this is the
-                required `“DeformationMode”` for modeling compound nerve
+                only `“DeformationMode”` for deforming compound nerve
                 samples. See `“deform_ratio”` below; if `deform_ratio = 0`,
                 then the original nerve trace is used and if `deform_ratio
                 = 1`, then the nerve trace will be made circular.
@@ -445,7 +445,8 @@ of the file.
     `boundary_end` will be the original nerve trace. A value between 0 and 1
     will result in a partially deformed nerve “on the way” to the final
     circle nerve boundary. Optional, but default value is 1 if not defined
-    explicitly. Note: if `deform_ratio` = 0, then `“DeformationMode”` must be `"NONE"`.
+    explicitly. Note: if `deform_ratio` = 0, no changes to the nerve boundary will
+    occur, but the physics system will ensure the requirements in `"boundary_separation"` are met.
 
     `“Morphology”`: This JSON Object is used to store information about the
     area and best-fit ellipse information of the nerve and fascicles (outer

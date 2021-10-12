@@ -461,7 +461,6 @@ class Sample(Exceptionable, Configurable, Saveable):
                     
                 if 'deform_ratio' in self.search(Config.SAMPLE).keys():
                     deform_ratio = self.search(Config.SAMPLE, 'deform_ratio')
-                    if deform_ratio == 0: self.throw(117)
                     print('\t\tdeform ratio set to {}'.format(deform_ratio))
                 else: self.throw(118)
 
@@ -501,7 +500,7 @@ class Sample(Exceptionable, Configurable, Saveable):
                 if 'nerve' in self.search(Config.SAMPLE, 'boundary_separation').keys():
                     sep_nerve = self.search(Config.SAMPLE, 'boundary_separation', 'nerve')
                 if sep_nerve != 0:
-                    warnings.warn('NO DEFORMATION is happening! AND sep_nerve != 0, sep_nerve = {}'.format(sep_nerve))
+                    warnings.warn('NO DEFORMATION is happening! AND sep_nerve is not 0, sep_nerve = {}'.format(sep_nerve))
                 else:
                     warnings.warn('NO DEFORMATION is happening!')
 
