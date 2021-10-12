@@ -1017,7 +1017,7 @@ of the file.
                 defined in the preset cuff JSON file ([S17](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives) and [S19](S19-Cuff-placement-on-nerve) Text).
 
               - `“NONE”`: Program keeps both the nerve centroid and cuff
-                centered at (x,y) =(0,0) and no cuff rotation is performed ([S17](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives) and [S19](S19-Cuff-placement-on-nerve) Text).
+                centered at (x,y) =(0,0) and no cuff rotation is performed ([S17](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives) and [S19](S19-Cuff-placement-on-nerve) Text). Note: This mode will ignore any supplied orientation image (`a.tif`).
 
       - `“fiber_z”`: The value (String) is the `“FiberZMode”` that tells the
         program how to seed the NEURON fibers along the length of the FEM.
