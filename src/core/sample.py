@@ -305,6 +305,8 @@ class Sample(Exceptionable, Configurable, Saveable):
                 contour, _ = cv2.findContours(img,
                                               cv2.RETR_TREE,
                                               cv2.CHAIN_APPROX_SIMPLE)
+                if len(contour)>1: self.throw(124)
+                if len(contour)<1: self.throw(125)
                 trace = Trace([point + [0] for point in contour[0][:, 0, :]], self.configs[Config.EXCEPTIONS.value])
                 orientation_centroid = trace.centroid()
             else:
