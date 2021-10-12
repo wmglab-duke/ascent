@@ -619,6 +619,8 @@ class Runner(Exceptionable, Configurable):
                 model_config['cuff']['shift']['y'] = center_y
 
         elif cuff_shift_mode == CuffShiftMode.NAIVE_ROTATION_TRACE_BOUNDARY:
+            if orientation_point is not None:
+                print('Warning: orientation tif image will be ignored because a NAIVE cuff shift mode was chosen.')
             if r_i < r_f:
                 model_config['cuff']['rotate']['pos_ang'] = 0
                 model_config['cuff']['shift']['x'] = x
@@ -659,6 +661,8 @@ class Runner(Exceptionable, Configurable):
 
         elif cuff_shift_mode == CuffShiftMode.NAIVE_ROTATION_MIN_CIRCLE_BOUNDARY \
                 or cuff_shift_mode == CuffShiftMode.PURPLE:
+            if orientation_point is not None:
+                print('Warning: orientation tif image will be ignored because a NAIVE cuff shift mode was chosen.')
             if r_i > r_f:
                 model_config['cuff']['rotate']['pos_ang'] = 0
 

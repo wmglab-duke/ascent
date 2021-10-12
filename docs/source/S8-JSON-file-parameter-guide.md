@@ -982,12 +982,12 @@ of the file.
               - `“NAIVE_ROTATION_MIN_CIRCLE_BOUNDARY”`: Program shifts the
                 cuff to within a user-defined distance of the minimum
                 bounding circle of the nerve sample. The direction of the
-                shift is defined in the preset cuff JSON file ([S17](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives) and [S19](S19-Cuff-placement-on-nerve) Text).
+                shift is defined in the preset cuff JSON file ([S17](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives) and [S19](S19-Cuff-placement-on-nerve) Text). Since this mode does not align the cuff with the sample centroid, orientation masks (`a.tif`) are ignored.
 
               - `“NAIVE_ROTATION_TRACE_BOUNDARY”`: Program shifts the cuff
                 to within a user-defined distance of the nerve trace
                 boundary. The direction of the shift is defined in the
-                preset cuff JSON file ([S17](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives) and [S19](S19-Cuff-placement-on-nerve) Text).
+                preset cuff JSON file ([S17](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives) and [S19](S19-Cuff-placement-on-nerve) Text). Since this mode does not align the cuff with the sample centroid, orientation masks (`a.tif`) are ignored.
 
               - `“AUTO_ROTATION_MIN_CIRCLE_BOUNDARY”`: Program
                 shifts/rotates the cuff to within a user-defined distance of
