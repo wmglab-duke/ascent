@@ -559,17 +559,8 @@ class Runner(Exceptionable, Configurable):
         model_config = self.remove(Config.MODEL)
         model_config['min_radius_enclosing_circle'] = r_bound
 
-        # add to theta_f using the orientation point
-        orientation_point = None
-        if slide.orientation_point_index is not None:
-            if slide.nerve is not None:  # has nerve
-                orientation_point = slide.orientation_point
-            else:  # monofasc, no nerve
-                orientation_point = slide.fascicles[0].outer.points[slide.orientation_point_index][:2]
-
-        if orientation_point is not None:
-            theta_c = (np.arctan2(orientation_point[1], orientation_point[0])) * (
-                    360 / (2 * np.pi)) % 360  # overwrite theta_c, use our own orientation
+        if slide.orientation_angle is not None:
+            theta_c = (slide.orientation_angle) * (360 / (2 * np.pi)) % 360  # overwrite theta_c, use our own orientation
 
         if cuff_shift_mode == CuffShiftMode.AUTO_ROTATION_MIN_CIRCLE_BOUNDARY \
                 or cuff_shift_mode == CuffShiftMode.MIN_CIRCLE_BOUNDARY:  # for backwards compatibility
