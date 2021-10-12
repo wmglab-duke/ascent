@@ -485,7 +485,7 @@
   },
   {
     "code": 123,
-    "text": "Slide is not centered at the origin"
+    "text": "Slide is not centered at [0,0]"
   },
   {
     "code": 124,

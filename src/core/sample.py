@@ -409,9 +409,6 @@ class Sample(Exceptionable, Configurable, Saveable):
             # shrinkage correction
             slide.scale(1 + self.search(Config.SAMPLE, "scale", "shrinkage"))
 
-            # shift slide about (0,0)
-            slide.move_center(np.array([0, 0]))
-
             self.slides.append(slide)
 
             os.chdir(start_directory)
@@ -529,6 +526,9 @@ class Sample(Exceptionable, Configurable, Saveable):
                 else:
                     slide.nerve = slide.reshaped_nerve(reshape_nerve_mode)
                     slide.nerve.offset(distance=sep_nerve)
+                    
+            # shift slide about (0,0)
+            slide.move_center(np.array([0, 0]))
             
             #Generate orientation point so src/core/query.py is happy
             if slide.orientation_angle is not None:
@@ -545,7 +545,6 @@ class Sample(Exceptionable, Configurable, Saveable):
                 # find intersection point with outer (interpolated)
                 slide.orientation_point = np.array(ray.intersection(outer.polygon().boundary))
     
-        
         #scale with ratio = 1 (no scaling happens, but connects the ends of each trace to itself)
         self.scale(1)
         
