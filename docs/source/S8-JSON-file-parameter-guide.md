@@ -1049,9 +1049,9 @@ of the file.
     parameter increases the smoothness of the curve. COMSOL’s “closed curve”
     setting interpolates the points of the curve with continuous first- and
     second-order derivatives. Generally, we find an interpolation tolerance
-    of \~0.01 to be appropriate, but the user should check that the
+    in the range of 0.01-0.02 to be appropriate, but the user should check that the
     interpolation tolerance is set correctly for their input nerve sample
-    morphology. Required.
+    morphology. See the [COMSOL Documentation](https://doc.comsol.com/5.5/doc/com.comsol.help.comsol/comsol_ref_geometry.14.038.html) for more info. Required.
 
     `“outer_interp_tol”`: The value (Double) sets the relative tolerance for
     the representation of the outer trace(s) in COMSOL. When the value is
@@ -1059,9 +1059,9 @@ of the file.
     parameter increases the smoothness of the curve. COMSOL’s “closed curve”
     setting interpolates the points of the curve with continuous first- and
     second-order derivatives. Generally, we find an interpolation tolerance
-    of \~0.01 to be appropriate, but the user should check that the
+    in the range of 0.01-0.02 to be appropriate, but the user should check that the
     interpolation tolerance is set correctly for their input nerve sample
-    morphology. Required.
+    morphology. See the [COMSOL Documentation](https://doc.comsol.com/5.5/doc/com.comsol.help.comsol/comsol_ref_geometry.14.038.html) for more info. Required.
 
     `“nerve_interp_tol”`: The value (Double) sets the relative tolerance for
     the representation of the nerve (i.e. epineurium) trace in COMSOL. When the value is
@@ -1069,9 +1069,9 @@ of the file.
     parameter increases the smoothness of the curve. COMSOL’s “closed curve”
     setting interpolates the points of the curve with continuous first- and
     second-order derivatives. Generally, we find an interpolation tolerance
-    of \~0.01 to be appropriate, but the user should check that the
+    in the range of 0.001-0.005 to be appropriate, but the user should check that the
     interpolation tolerance is set correctly for their input nerve sample
-    morphology. Required.
+    morphology. See the [COMSOL Documentation](https://doc.comsol.com/5.5/doc/com.comsol.help.comsol/comsol_ref_geometry.14.038.html) for more info. Required.
 
     `“cuff”`: The cuff JSON Object contains key-value pairs that define which
     cuff to model on the nerve in addition to how it is placed on the nerve
