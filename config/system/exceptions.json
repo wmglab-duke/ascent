@@ -482,5 +482,9 @@
   {
     "code": 122,
     "text": "Input morphology masks do not have identical dimensions"
+  },
+  {
+    "code": 123,
+    "text": "Slide is not centered at the origin"
   }
 ]

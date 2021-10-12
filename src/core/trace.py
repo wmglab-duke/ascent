@@ -553,7 +553,7 @@ class Trace(Exceptionable):
 
     def make_circle(self):
         # Convert to float and randomize order
-        shuffled = [(float(x), float(y)) for (x, y) in self.points]
+        shuffled = [(float(x), float(y)) for (x, y) in self.points[:,0:2]]
         random.shuffle(shuffled)
 
         # Progressively add points to circle or recompute circle
