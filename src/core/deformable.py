@@ -226,12 +226,6 @@ class Deformable(Exceptionable):
         while True:
             associated_points[start_i] = (start.points[start_i], end.points[end_i])
 
-            # map slide.orientation_point_index
-            if (slide is not None) and \
-                    (slide.orientation_point_index is not None) and \
-                    (slide.orientation_point_index == start_i):
-                slide.orientation_point_index = end_i
-
             if start_i == len(start.points) - 1:
                 start_i = 0
             else:

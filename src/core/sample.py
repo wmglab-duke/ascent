@@ -383,32 +383,21 @@ class Sample(Exceptionable, Configurable, Saveable):
                                  nerve_mode,
                                  self.configs[Config.EXCEPTIONS.value],
                                  will_reposition=(deform_mode != DeformationMode.NONE))
-
-            # find index of orientation point for rotating later (will be added to pos_ang)
+            
+            # get orientation angle (used later to calculate pos_ang for model.json)
             if orientation_centroid is not None:
-
+                #logic updated 10/11/2021
+                
                 # choose outer (based on if nerve is present)
                 outer = slide.nerve if (slide.nerve is not None) else slide.fascicles[0].outer
 
                 # create line between outer centroid and orientation centroid
                 outer_x, outer_y = outer.centroid()
                 ori_x, ori_y = orientation_centroid
-                ray = LineString([outer.centroid(), ((ori_x + ((ori_x - outer_x) * 1000), (ori_y + ((ori_y - outer_y) * 1000))))])
-
-                # find intersection point with outer (interpolated)
-                intersection = ray.intersection(outer.polygon().boundary)
-
-                # find all distances from discrete outer points to intersection point
-                distances = [Point(point[:2]).distance(intersection) for point in outer.points]
-
-                # get index of minimized distance (i.e., index of point on outer trace)
-                slide.orientation_point_index = np.where(np.array(distances == np.min(distances)))[0][0]
-
-                # nerve.plot()
-                # plt.plot(*orientation_centroid, 'r*')
-                # plt.plot(*tuple(slide.nerve.points[slide.orientation_point_index][:2]), 'b*')
-                # plt.show()
-
+                
+                #set orientation_angle
+                slide.orientation_angle = np.arctan2(ori_y-outer_y,ori_x-outer_x)
+            
             # shrinkage correction
             slide.scale(1 + self.search(Config.SAMPLE, "scale", "shrinkage"))
 
@@ -520,22 +509,29 @@ class Sample(Exceptionable, Configurable, Saveable):
                 if deform_ratio != 1 and partially_deformed_nerve is not None:
                     partially_deformed_nerve.shift(-np.asarray(list(partially_deformed_nerve.centroid()) + [0]))
                     slide.nerve = partially_deformed_nerve
-                    slide.orientation_point = slide.nerve.points[slide.orientation_point_index][:2]
                     slide.nerve.offset(distance=sep_nerve)
                 else:
-                    slide.orientation_point = slide.nerve.points[slide.orientation_point_index][:2]
                     slide.nerve = slide.reshaped_nerve(reshape_nerve_mode)
                     slide.nerve.offset(distance=sep_nerve)
-                    
+            
+            #Generate orientation point so src/core/query.py is happy
+            if slide.orientation_angle is not None:
+    
+                # choose outer (based on if nerve is present)
+                outer = slide.nerve if (slide.nerve is not None) else slide.fascicles[0].outer
+                
+                length = outer.mean_radius()*10
+
+                o_pt = np.array([np.cos(slide.orientation_angle), np.sin(slide.orientation_angle)])*length
+                
+                ray = LineString([outer.centroid(),o_pt])
+    
+                # find intersection point with outer (interpolated)
+                slide.orientation_point = np.array(ray.intersection(outer.polygon().boundary))
+    
+        
         #scale with ratio = 1 (no scaling happens, but connects the ends of each trace to itself)
         self.scale(1)
-        
-            # slide.plot(fix_aspect_ratio=True, title=title)
-
-            # plt.figure(2)
-            # slide.nerve.plot()
-            # plt.plot(*tuple(slide.nerve.points[slide.orientation_point_index][:2]), 'b*')
-            # plt.show()
 
         return self
     def io_from_compiled(self,imgin,i_out,o_out):
