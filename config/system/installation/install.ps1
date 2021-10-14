@@ -1,5 +1,5 @@
 # package installation
-conda create -n ascent python=3.7 anaconda
+conda create -n ascent python=3.7
 conda activate ascent
 pip install -r requirements.txt
 
@@ -17,7 +17,7 @@ if ($decision -eq 0) {
     $Shortcut.TargetPath = $TargetFile
     $Shortcut.Arguments = $Arguments
     $Shortcut.Save()
-    
+
     Write-Host 'Saved shortcut to ' $ShortcutFile
 
 } else {
