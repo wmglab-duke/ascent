@@ -44,9 +44,10 @@ is measured *relative to the centroid of the nerve/singular fascicle*,
 so this image should be constructed while referencing `n.tif` (or, if
 monofascicular, `i.tif`, `o.tif`, or `c.tif`). By default, the 0º position of
 our cuffs correspond with the coordinate halfway along the arc length of
-the cuff inner diameter while the circular portion of a cuff’s diameter
-is centered at the origin (`“angle_to_contacts_deg”` in a “preset”
-cuff’s JSON file, and [S17](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives) and [S19](S19-Cuff-placement-on-nerve) Text). If `a.tif` is provided, other cuff rotation methods
+the cuff inner diameter (i.e., the cuff will be rotated such that the sample center, cuff
+contact center, and centroid of the white portion of `a.tif` form a line) while the
+circular portion of a cuff’s diameter is centered at the origin (Note: this rotation process uses `“angle_to_contacts_deg”` and `"fixed_point"` in a “preset”
+cuff’s JSON file, see [S17](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives) and [S19](S19-Cuff-placement-on-nerve) Text). If `a.tif` is provided, other cuff rotation methods
 (`“cuff_shift”` in ***Model***, which calculate `“pos_ang”`) are
 overridden.
 

@@ -2,7 +2,7 @@
 ## Installing commercial software
 
 First, these software packages must be manually installed:
-* [Python 3.7](https://www.python.org/downloads/) (or later; choose 32/64 bit depending on operating system; if not using Miniconda, check "add Python to PATH")
+* [Python 3.7](https://www.python.org/downloads/) (or later; choose 32/64 bit depending on operating system; if not using Miniconda/Anaconda, check "add Python to PATH")
     - If you already have Python added to your PATH and that installation is version 3.7 or later, there is no need to reinstall
 Python, and you may use your own preferred Python environment rather than Miniconda. Otherwise, we recommend that you install Miniconda and select the "add to path" option.
     - [https://www.python.org/downloads/](https://www.python.org/downloads/)
@@ -11,11 +11,11 @@ Python, and you may use your own preferred Python environment rather than Minico
 * [COMSOL 5.5](https://www.comsol.com/product-download/5.5) (requires purchase of license; only based package needed, which includes the COMSOL Java API)
     - Once COMSOL 5.5 is installed, alter 'File System Access' permissions via  File → Preferences → Security → Methods and Java Libraries → File System Access → All Files.
     - [https://www.comsol.com/product-download/5.5](https://www.comsol.com/product-download/5.5)
-* [NEURON 7.6](https://neuron.yale.edu/ftp/neuron/versions/v7.6/) (version 7.7 has since been released, but compatibility has yet to be confirmed; choose appropriate installer depending on operating system; install auxiliary software as prompted by NEURON installer)
+* [NEURON 7.6](https://neuron.yale.edu/ftp/neuron/versions/v7.6/) (newer versions have been released, but compatibility has yet to be confirmed; choose appropriate installer depending on operating system; install auxiliary software as prompted by NEURON installer)
     - [https://neuron.yale.edu/ftp/neuron/versions/v7.6/](https://neuron.yale.edu/ftp/neuron/versions/v7.6/)
     - If having issues with the NEURON installation, try running the compatibility troubleshooter.
 
-In this stage of development, all programs/commands are run from a command line environment on both MacOS/Linux and Windows operating systems (Bash terminal for MacOS/Linux, Powershell for Windows). For users less familiar with this environment and for the quickest setup, it is suggested that the user install the package management system [Miniconda](https://docs.conda.io/en/latest/miniconda.html) (if using MacOS, choose .pkg for ease of use).
+In this stage of development, all programs/commands are run from a command line environment on both MacOS/Linux and Windows operating systems (Bash terminal for MacOS/Linux, Powershell for Windows). For users less familiar with this environment and for the quickest setup, it is suggested that the user install the package management system [Miniconda](https://docs.conda.io/en/latest/miniconda.html) or [Anaconda](https://www.anaconda.com/products/individual) (if using MacOS, choose .pkg for ease of use).
 
 If using MacOS to run local NEURON simulations, it may be necessary to install the Xcode Command Line Tools via ```xcode-select --install```, as well as [Xquartz](https://www.xquartz.org/releases/XQuartz-2.7.11.html).
 

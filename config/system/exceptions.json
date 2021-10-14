@@ -494,5 +494,9 @@
   {
     "code": 125,
     "text": "No objects were found in orientation mask. An object of white pixels must be provided"
+  },
+  {
+    "code": 126,
+    "text": "Cuff configuration file must specify a fixed end. See Creating custom preset cuffs from instances of part primitives in the documentation"
   }
 ]

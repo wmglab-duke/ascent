@@ -208,6 +208,7 @@
   ],
 
   "expandable": true,
+  "fixed_point": "center",
   "angle_to_contacts_deg": 90,
   "offset": {
   }
