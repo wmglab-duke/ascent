@@ -18,6 +18,6 @@ while true; do
     esac
 done
 
-echo "\nalias ascent_setup='source $CONDA_SETUP_SCRIPT; conda activate ascent; cd $PWD'" >> ~/.bash_profile
+echo "alias ascent_setup='source $CONDA_SETUP_SCRIPT; conda activate ascent; cd $PWD'" >> ~/.bash_profile
 echo "Added. Remember to run 'ascent_setup' to use (requires shell restart)."
 exit 0
