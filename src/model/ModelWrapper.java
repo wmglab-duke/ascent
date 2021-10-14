@@ -602,7 +602,7 @@ public class ModelWrapper {
                 } else {
                     src_combo_list = active_srcs.getJSONArray("default");
                     System.out.println("WARNING: did NOT find the assigned contact weighting for " + cuff +
-                            " in model config file, moving forward with DEFAULT (use with caution)");
+                            " in sim " + sim_num + " config file, moving forward with DEFAULT (use with caution)");
                 }
 
                 // build path to directory of sim
