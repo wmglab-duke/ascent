@@ -7,7 +7,7 @@ Welcome message for ascent software
 
 def welcome():
     print("""
-Funding for development of this sofware provided by NIH SPARC OT2 OD025340\n
+Funding for development of this software provided by NIH SPARC OT2 OD025340\n
   -+*+-    -+++=:      -:       ====:     .-==:   
  -@= +@:   *@::*@.    :**.      @#-=%#   .@*-=@=  
  :%#  -.   *@  =@:    =**-      @*  *@   -@-  +-  
