@@ -1546,7 +1546,8 @@ of the file.
           "gating": Boolean,
           "istim": Boolean,
           "locs": [Double] OR String
-        }
+        },
+        "runtimes": Boolean
       },
 
       // EXAMPLE PROTOCOL for FINITE_AMPLITUDES
@@ -2079,6 +2080,11 @@ of the file.
             timesteps. Alternatively, the user can use the value “all”
             (String) to prompt the program to save the state variables at
             all segments (unmyelinated) and sections (myelinated). Required.
+            
+      - `“runtimes”`: The value (Boolean), if true, tells the program to save 
+            the NEURON runtime for either the finite amplitude or binary search for 
+            threshold simulation. If this key-value pair is omitted, the default 
+            behavior is False.
 
     `“protocol”`: 
 
@@ -2300,14 +2306,15 @@ of the file.
         "space": {
           "vm": false,
           "gating": false,
-          "times": [0],
+          "times": [0]
         },
         "time": {
           "vm": false,
           "gating": false,
           "istim": false,
           "locs": [0]
-        }
+        },
+        "runtimes": false
       },
       "protocol": {
         "mode": "ACTIVATION_THRESHOLD",

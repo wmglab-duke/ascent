@@ -213,10 +213,12 @@ proc run_all(){local myinner, myfiber, myamp, amp_ind
 		// Save data
 		Saving()
 
-		// Save individual run time (for each simulation)
-		trun_individual = startsw() - trun_individual
-		sprint(runtime_fname_output, "../%s/data/outputs/runtime_inner%d_fiber%d_amp%d.dat", sim_path, myinner, myfiber, amp_ind)
-		Saving_Runtime()
+        if (saveflag_runtime == 1) {
+            // Save individual run time (for each simulation)
+            trun_individual = startsw() - trun_individual
+            sprint(runtime_fname_output, "../%s/data/outputs/runtime_inner%d_fiber%d_amp%d.dat", sim_path, myinner, myfiber, amp_ind)
+            Saving_Runtime()
+		}
 
 
 	}   else if (find_thresh == 1){
@@ -232,10 +234,12 @@ proc run_all(){local myinner, myfiber, myamp, amp_ind
 		// Save data
 		Saving()
 
-		// Save individual run time (for each simulation)
-		trun_individual = startsw() - trun_individual
-		sprint(runtime_fname_output, "../%s/data/outputs/runtime_inner%d_fiber%d_amp%d.dat", sim_path, myinner, myfiber, amp_ind)
-		Saving_Runtime()
+        if (saveflag_runtime == 1) {
+            // Save individual run time (for each simulation)
+            trun_individual = startsw() - trun_individual
+            sprint(runtime_fname_output, "../%s/data/outputs/runtime_inner%d_fiber%d_amp%d.dat", sim_path, myinner, myfiber, amp_ind)
+            Saving_Runtime()
+		}
 	}
 
 	if (saveflag_end_ap_times==1) {
