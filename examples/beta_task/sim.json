@@ -1,5 +1,5 @@
 {
-  "n_dimensions": 1,
+  "n_dimensions": 0,
   "active_srcs": {
     "Purdue.json": [[1, -1]],
     "default": [[1, -1]]
@@ -62,7 +62,8 @@
       "gating": false,
       "istim": false,
       "locs": [0]
-    }
+    },
+    "runtimes": false
   },
   "protocol": {
     "mode": "ACTIVATION_THRESHOLD",
