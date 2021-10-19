@@ -1,5 +1,5 @@
 
-**User support: daniel.p.marshall@duke.edu**
+**User support: nikki.pelot@duke.edu**
 
 **Funding: NIH SPARC OT2 OD025340**
 
