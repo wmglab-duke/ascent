@@ -1019,6 +1019,8 @@ public class ModelWrapper {
                     index + ".mph"
             });
 
+            System.out.println("Solving electric currents for "+key_on+".");
+
             boolean save = true;
             if (! new File(mphFile).exists()) {
                 model.sol("sol1").runAll();
