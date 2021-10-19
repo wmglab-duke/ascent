@@ -458,7 +458,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
                 # calculate orientation point location (i.e., contact location)
                 orientation_point = None
-                if slide.orientation_point_index is not None:
+                if slide.orientation_point is not None:
                     r = slide.nerve.mean_radius() * 1.15  # scale up so orientation point is outside nerve
                     # theta = np.arctan2(*tuple(np.flip(slide.nerve.points[slide.orientation_point_index][:2])))
                     theta = np.arctan2(*tuple(np.flip(slide.orientation_point)))
