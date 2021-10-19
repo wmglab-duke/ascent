@@ -216,6 +216,7 @@
   ],
 
   "expandable": true,
+  "fixed_point": "clockwise_end",
   "angle_to_contacts_deg": 171.89,
   "offset": {
   }

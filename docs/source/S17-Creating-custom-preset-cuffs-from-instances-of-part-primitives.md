@@ -182,7 +182,8 @@ implementation of the cuff in COMSOL to be able to expand beyond the
 manufactured resting cuff diameter to fit around a nerve. For a cuff to
 be expandable, it must be constructed from part primitives that have
 been parameterized to expand as a function of `“R_in”`. See
-`config/system/cuffs/Purdue.json` for an example of an expandable cuff.
+`config/system/cuffs/Purdue.json` for an example of an expandable cuff. Expandable
+cuffs should be parameterized such that the contact length remains constant.
 
 `"fixed_point"`: The value (String) defines which point on the cuff remains fixed
 when expanding. Note that these are not behaviors, this option will change nothing
