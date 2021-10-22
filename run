@@ -14,11 +14,12 @@ available_scripts = os.listdir('scripts')
 args = sys.argv
 
 if args[1]!='install':
-    if os.path.split(os.environ['CONDA_PREFIX'])[-1]!='ascent':
+    env = os.environ.get('CONDA_PREFIX')
+    if env is not None and os.path.split(env)[-1]!='ascent':
         sys.exit('''
-            ASCENT must be run in the "ascent" environment. 
-            If you have not installed ascent yet, please do so (python run install). 
-            Otherwise, please activate the "ascent" environment (conda activate ascent) before running.''') 
+            ASCENT must be run in the "ascent" environment.
+            If you have not installed ascent yet, please do so (python run install).
+            Otherwise, please activate the "ascent" environment (conda activate ascent) before running.''')
     from src.utils.welcome import welcome
     welcome()
 
