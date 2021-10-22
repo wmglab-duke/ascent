@@ -1,5 +1,5 @@
 # package installation
-conda create -n ascent python=3.7
+conda create -n ascent python=3.7 pip setuptools wheel
 conda activate ascent
 pip install -r requirements.txt
 
@@ -9,9 +9,11 @@ $question = 'Do you want to save a shortcut for the "ascent" Conda environment t
 $choices  = '&Yes', '&No'
 $decision = $Host.UI.PromptForChoice($title, $question, $choices, 1)
 if ($decision -eq 0) {
-    $Arguments = "-ExecutionPolicy ByPass -NoExit -Command `"& `'C:\Users\" + $env:UserName + "\Miniconda3\shell\condabin\conda-hook.ps1`' ; conda activate ascent; cd `'" + (Get-Item .).FullName + "`'"
+    $condapath = conda info --base
+    $condaps = $condapath + "\shell\condabin\conda-hook.ps1"
+    $Arguments = "-ExecutionPolicy ByPass -NoExit -Command `"& `'$condaps'` ; conda activate ascent; cd `'" + (Get-Item .).FullName + "`'"
     $TargetFile = '%windir%\System32\WindowsPowerShell\v1.0\powershell.exe'
-    $ShortcutFile = 'ASCENT.lnk'
+    $ShortcutFile = [Environment]::GetFolderPath("Desktop")+'\ASCENT.lnk'
     $WScriptShell = New-Object -ComObject WScript.Shell
     $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
     $Shortcut.TargetPath = $TargetFile
