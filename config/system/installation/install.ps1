@@ -1,8 +1,8 @@
 # package installation
+conda init powershell
 conda create -n ascent python=3.7 pip setuptools wheel
-$condapath = conda info --base
-$ourpip = $condapath + "/envs/ascent/Lib/site-packages/pip"
-python $ourpip install -r requirements.txt
+conda activate ascent
+pip install -r requirements.txt
 
 # shortcut creation
 $title    = 'ASCENT Conda Environment'
