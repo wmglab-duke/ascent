@@ -72,7 +72,7 @@ def run(args):
     proc = None
 
     if sys.platform.startswith('darwin') or sys.platform.startswith('linux'):
-        proc = subprocess.Popen(['bash','-i', './config/system/installation/install.sh'])
+        proc = subprocess.Popen("source config/system/installation/install.sh -i", shell=True, executable="/bin/bash")
     else:
         proc = subprocess.Popen(['powershell.exe', '.\\config\\system\\installation\\install.ps1'])
 
