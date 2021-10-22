@@ -25,4 +25,3 @@ if ($decision -eq 0) {
 } else {
     Write-Host 'Did not save shortcut.'
 }
-conda activate ascent
