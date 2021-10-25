@@ -11,16 +11,14 @@ else
     CONDA_BIN=~/opt/miniconda3/envs/ascent/bin
 fi
 
-source $CONDA_SETUP_SCRIPT
-
-# package installation
-conda create -n ascent -y
+conda init
+CONDA_ENVPY=$(conda info --base)/envs/ascent/bin/python
+CONDA_BASE=$(conda info --base)/etc/profile.d/conda.sh
+source $CONDA_BASE
+conda create -n ascent python=3.7 pip setuptools wheel shapely
+eval "$(conda shell.bash hook)"
 conda activate ascent
-conda install -y python=3.7
-"$CONDA_BIN/pip" install --upgrade pip setuptools wheel
-"$CONDA_BIN/pip" install pillow==5.2 numpy==1.16.* shapely==1.6.* matplotlib==3.2.* pyclipper==1.1.* pygame==1.9.* pymunk==5.6.* scipy==1.1.* pandas==0.25.* openpyxl==3.0.* opencv-python quantiphy scikit-image
-conda install -y shapely
-rm =*  # weird bug where pip creates empty files named "=<version>"
+$CONDA_ENVPY -m pip install -r requirements.txt
 
 echo
 echo "Installation complete."
