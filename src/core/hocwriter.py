@@ -178,9 +178,10 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                 },
                 "runtimes": False
             }
-            saving: dict = self.search(Config.SIM, "saving")
+            # saving: dict = self.search(Config.SIM, "saving")
         else:
-            saving: dict = self.search(Config.SIM, "saving")
+            pass
+            # saving: dict = self.search(Config.SIM, "saving")
 
         file_object.write("saveflag_Vm_time      = %0.0f\n" % int(self.search(Config.SIM, "saving", "time", "vm") == True))
         file_object.write("saveflag_gating_time  = %0.0f\n" % int(self.search(Config.SIM, "saving", "time", "gating") == True))

@@ -485,7 +485,7 @@ class Trace(Exceptionable):
                 else:
                     self.throw(4)
 
-        except EnvironmentError as _:
+        except EnvironmentError:
             # only one of these can run, so comment at will
             self.throw(7)
             # raise

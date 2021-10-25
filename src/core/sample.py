@@ -17,7 +17,7 @@ import shutil
 import numpy as np
 import matplotlib.pyplot as plt
 import subprocess
-from shapely.geometry import LineString, Point
+from shapely.geometry import LineString
 from scipy.ndimage.morphology import binary_fill_holes
 from skimage import morphology
 
@@ -459,7 +459,7 @@ class Sample(Exceptionable, Configurable, Saveable):
         # repositioning!
         for i, slide in enumerate(self.slides):
             print('\tslide {} of {}'.format(1 + i, len(self.slides)))
-            title = ''
+            # title = ''
 
             if nerve_mode == NerveMode.NOT_PRESENT and deform_mode is not DeformationMode.NONE:
                 self.throw(40)

@@ -157,13 +157,13 @@ class Waveform(Exceptionable, Configurable, Saveable):
             za = (1 / r1a + 1j * w * c1a + 1 / (r2a + 1 / (1j * w * c2a))) ** (-1)
             za_mag = abs(za)
             za_mag = za_mag / 100 ** 2  # [ohm-cm^2 -> ohm-m^2]
-            sigmas_mag = 1 / za_mag  # [S/m^2]
+            # sigmas_mag = 1 / za_mag  # [S/m^2]
 
             # Model B: Z = [R1 // 1/(jwC1)] + [R2 // 1/(jwC2)]
             zb = (1 / r1b + 1j * w * c1b) ** (-1) + (1 / r2b + 1j * w * c2b) ** (-1)
             zb_mag = abs(zb)
             zb_mag = zb_mag / 100 ** 2  # [ohm-cm^2 -> ohm-m^2]
-            sigmas_mag = 1 / zb_mag  # [S/m^2]
+            # sigmas_mag = 1 / zb_mag  # [S/m^2]
 
             # Model C: Z = R2 // [ 1/(jwC2) + [R1 // 1/(jwC1)] ]
             tmp = (1 / r1c + 1j * w * c1c) ** (-1)  # [R1 // 1/(jwC1)]
@@ -171,7 +171,7 @@ class Waveform(Exceptionable, Configurable, Saveable):
             zc = (1 / r2c + 1 / tmp) ** (-1)
             zc_mag = abs(zc)
             zc_mag = zc_mag / 100 ** 2  # [ohm-cm^2 -> ohm-m^2]
-            sigmas_mag = 1 / zc_mag  # [S/m^2]
+            # sigmas_mag = 1 / zc_mag  # [S/m^2]
 
             # Model D: Z = (1/(jwC2)) // [ R2 + [R1 // 1/(jwC1)] ]
             tmp = (1 / r1d + 1j * w * c1d) ** (-1)  # [R1 // 1/(jwC1)]
@@ -179,7 +179,7 @@ class Waveform(Exceptionable, Configurable, Saveable):
             zd = (1j * w * c2d + 1 / tmp) ** (-1)
             zd_mag = abs(zd)
             zd_mag = zd_mag / 100 ** 2  # [ohm-cm^2 -> ohm-m^2]
-            sigmas_mag = 1 / zd_mag  # [S/m^2]
+            # sigmas_mag = 1 / zd_mag  # [S/m^2]
 
             # Mean of models A & B
             # Discussion indicates that models A & B are more likely candidates
