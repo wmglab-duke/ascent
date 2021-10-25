@@ -390,7 +390,8 @@ public class ModelWrapper {
             while(!file.canWrite() || !file.canRead()) {
                 System.out.println("waiting");
             }
-            Model basis = ModelUtil.load("Model", basis_dir);
+            String model_tag = ModelUtil.uniquetag("Model");
+            Model basis = ModelUtil.load(model_tag, basis_dir);
 
             bases[basis_ind] = new double[sims_list.length()][][][];
             ss_bases[basis_ind] = new double[sims_list.length()][][][];
@@ -1289,7 +1290,7 @@ public class ModelWrapper {
                         System.out.println("Running pre-mesh procedure.");
 
                         // Define model object
-                        model = ModelUtil.create("Model");
+                        model = ModelUtil.createUnique("Model");
                         // Add component node 1
                         model.component().create("comp1", true);
                         // Add 3D geom to component node 1
