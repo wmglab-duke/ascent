@@ -369,7 +369,7 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
                             continue
 
                         else:
-                            print(f"MISSING {thresh_path} -->\t\trunning inner ({inner_ind}) fiber ({fiber_ind})")
+                            print(f"RUNNING inner ({inner_ind}) fiber ({fiber_ind})  -->  {thresh_path}")
                             time.sleep(1)
 
                             if inner_fiber_diam_key is not None:
