@@ -406,8 +406,8 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             # compute offset z coordinate
             z_offset = [my_z + offset + random_offset_value + additional_offset for my_z in z_values]
 
-            xy_mode_name: str = self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode')
-            xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
+            # xy_mode_name: str = self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode')
+            # xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
 
             # only clip if NOT an SL fiber
 
@@ -465,8 +465,8 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             else:
                 z_shift_to_center_in_model_range = 0
 
-            xy_mode_name: str = self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode')
-            xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
+            # xy_mode_name: str = self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode')
+            # xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
 
             # check that proximal model length is greater than or equal to fiber length (fibers only in nerve trunk)
             # override this functionality if using SL (not in nerve trunk)

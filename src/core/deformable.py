@@ -58,9 +58,9 @@ class Deformable(Exceptionable):
         # copy the "contents" so multiple deformations are possible
         contents = [trace.deepcopy() for trace in self.contents]
 
-        bounds = self.start.polygon().bounds
-        width = int(1.5 * (bounds[2] - bounds[0]))
-        height = int(1.5 * (bounds[3] - bounds[1]))
+        # bounds = self.start.polygon().bounds
+        # width = int(1.5 * (bounds[2] - bounds[0]))
+        # height = int(1.5 * (bounds[3] - bounds[1]))
 
         # offset all the traces to provide for an effective minimum distance for original fascicles
         for trace in contents:
@@ -68,7 +68,7 @@ class Deformable(Exceptionable):
 
         # initialize drawing vars, regardless of whether or not actually rendering
         # these have been moved below (if render...)
-        drawing_screen = options = display_dimensions = screen = None
+        drawing_screen = options = display_dimensions = None
 
         # initialize the physics space (gravity is 0)
         space = pymunk.Space()
@@ -86,8 +86,8 @@ class Deformable(Exceptionable):
             from pygame.locals import KEYDOWN, K_ESCAPE, QUIT, K_SPACE
             from pygame.colordict import THECOLORS
 
-            width = int(1.5 * (bounds[2] - bounds[0]))
-            height = int(1.5 * (bounds[3] - bounds[1]))
+            # width = int(1.5 * (bounds[2] - bounds[0]))
+            # height = int(1.5 * (bounds[3] - bounds[1]))
 
             aspect = 2
 
@@ -167,7 +167,7 @@ class Deformable(Exceptionable):
                 # draw the actual screen
                 space.debug_draw(options)
 
-                temp_surf = drawing_screen.copy()
+                # temp_surf = drawing_screen.copy()
                 # drawing_screen.fill((0,0,0))  # here, you can fill the screen with whatever you want to take the place of what was there before
                 # drawing_screen.blit(temp_surf, (width/2,-height/2))
 

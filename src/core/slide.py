@@ -17,7 +17,6 @@ from shapely.geometry import LineString, Point
 from shapely.affinity import scale
 import numpy as np
 import matplotlib.pyplot as plt
-from PIL import Image, ImageDraw, ImageFont
 
 # ascent
 from .fascicle import Fascicle
