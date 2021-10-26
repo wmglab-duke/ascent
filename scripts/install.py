@@ -12,11 +12,11 @@ import subprocess
 
 
 def run(args):
-    
+
     def ensure_dir(directory):
         if not os.path.exists(directory):
             os.makedirs(directory)
-            
+
     sys.argv = args
 
     if sys.version_info[0] < 3:
@@ -28,7 +28,7 @@ def run(args):
         sys.exit()
     else:
         print('Great, proceeding with installation.\n')
-    
+
     #define and generate user directories
     binpath = 'bin'
     defdirs = [
@@ -38,7 +38,7 @@ def run(args):
         'config/user',
         'config/user/runs',
         'config/user/sims']
-    
+
     for path in defdirs:
         ensure_dir(path)
 
@@ -74,6 +74,6 @@ def run(args):
     if sys.platform.startswith('darwin') or sys.platform.startswith('linux'):
         proc = subprocess.Popen(['bash', './config/system/installation/install.sh'])
     else:
-        proc = subprocess.Popen(['powershell.exe', '.\\config\\system\\installation\\install.ps1'])
+        proc = subprocess.Popen("source config/system/installation/install.sh -i", shell=True, executable="/bin/bash")
 
     proc.wait()
