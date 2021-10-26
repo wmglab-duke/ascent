@@ -1,40 +1,24 @@
 #! /bin/bash
 
-# set up conda for this environment, choosing between Linux/macOS
-if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    # Linux
-    CONDA_SETUP_SCRIPT=/hpc/group/wmglab/jec91/miniconda3/etc/profile.d/conda.bash
-    CONDA_BIN=/hpc/group/wmglab/jec91/miniconda3/envs/ascent/bin
-else
-    # macOS
-    CONDA_SETUP_SCRIPT=~/opt/miniconda3/etc/profile.d/conda.sh
-    CONDA_BIN=~/opt/miniconda3/envs/ascent/bin
-fi
-
-source $CONDA_SETUP_SCRIPT
-
-# package installation
-conda create -n ascent -y
+conda init
+CONDA_ENVPY=$(conda info --base)/envs/ascent/bin/python
+CONDA_BASE=$(conda info --base)/etc/profile.d/conda.sh
+source $CONDA_BASE
+conda create -n ascent python=3.7 pip setuptools wheel shapely
+eval "$(conda shell.bash hook)"
 conda activate ascent
-conda install -y python=3.7
-"$CONDA_BIN/pip" install --upgrade pip setuptools wheel
-"$CONDA_BIN/pip" install pillow==5.2 numpy==1.16.* shapely==1.6.* matplotlib==3.2.* pyclipper==1.1.* pygame==1.9.* pymunk==5.6.* scipy==1.1.* pandas==0.25.* openpyxl==3.0.* opencv-python quantiphy scikit-image
-conda install -y shapely
-rm =*  # weird bug where pip creates empty files named "=<version>"
+$CONDA_ENVPY -m pip install -r requirements.txt
 
 echo
 echo "Installation complete."
 echo
 # create shortcut
-while true; do
-    read -p "Add ASCENT environment setup alias to '.bash_profile'? (recommended) [y/N] " yn
-    case $yn in
-        [Yy]* ) break;;
-        [Nn]* ) echo "Not added"; exit 0;;
-        * ) echo "Not added."; exit 0;;
-    esac
-done
-
-echo "alias ascent_setup='source $CONDA_SETUP_SCRIPT; conda activate ascent; cd $PWD'" >> ~/.bash_profile
-echo "Added. Remember to run 'ascent_setup' to use (requires shell restart)."
+read -p "Add ASCENT environment setup alias to '.bash_profile'? (recommended) [y/N] " yn
+case $yn in
+    [Yy]* )
+        echo "alias ascent_setup='source $CONDA_SETUP_SCRIPT; conda activate ascent; cd $PWD'" >> ~/.bash_profile
+        echo "Added. Remember to run 'ascent_setup' to use (requires shell restart)."
+        ;;
+    [Nn]* ) echo "Not added";;
+esac
 exit 0
