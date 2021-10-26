@@ -464,7 +464,9 @@ of the file.
     they are a convenient record of the nerve morphometry for assigning
     model attributes based on the anatomy and data analysis. Units:
     micrometer<sup>2</sup> (area); micrometer (length). User does NOT
-    manually set these values. Automatically populated.
+    manually set these values. Automatically populated. The values `a` and `b` are 
+    the full width and height of the ellipse major and minor axes, respectively 
+    (i.e., analogous to diameter rather than radius of a circle).
 
 1.  Example: 
     ```
@@ -551,9 +553,9 @@ of the file.
       },
       "scalebar_length": Double,
       "nerve": {
-        "a_nerve": Double,
-        "b_nerve": Double,
-        "rot_nerve": Double
+        "a": Double,
+        "b": Double,
+        "rot": Double
       },
       "figure": {
         "fig_margin": Double,
@@ -625,10 +627,10 @@ of the file.
     `“nerve”`: The nerve JSON Object contains key-value pairs for the
     elliptical nerve’s size and rotation. Required.
 
-      - `“a_nerve”`: Value is the nerve ellipse axis ‘a’ (Double, units:
+      - `“a”`: Value is the nerve ellipse axis ‘a’ which is the full width major axis (Double, units:
         micrometer). Required.
 
-      - `“b_nerve”`: Value is the nerve ellipse axis ‘b’ (Double, units:
+      - `“b”`: Value is the nerve ellipse axis ‘b’ which is the full width minor axis (Double, units:
         micrometer). Required.
 
       - `“rot_nerve”`: Value is the nerve ellipse axis rotation (Double,
@@ -643,7 +645,7 @@ of the file.
       - `“fig_margin”`: The value (Double, \>1 otherwise an error is thrown)
         sets the x- and y-limits of the binary masks generated. The limits
         are set relative to the maximum nerve ellipse axis dimension (+/-
-        `fig_margin`\*max(`a_nerve`, `b_nerve`) in both x- and y-directions).
+        `fig_margin`\*max(`a`, `b`) in both x- and y-directions).
         Required.
 
       - `“fig_dpi”`: The value (Integer) is the “dots per inch” resolution of
@@ -685,10 +687,10 @@ of the file.
                         the y-coordinate of the centroid of the best-fit
                         ellipse of the Trace. Required.
 
-                      - `“a”`: Value is the ellipse axis ‘a’ (Double, units:
+                      - `“a”`: Value is the ellipse axis ‘a’ which is the full width major axis (Double, units:
                         micrometer). Required.
 
-                      - `“b”`: Value is the ellipse axis ‘b’ (Double, units:
+                      - `“b”`: Value is the ellipse axis ‘b’ which is the full width minor axis (Double, units:
                         micrometer). Required.
 
                       - `“rot”`: Value is the ellipse axis rotation (Double,
@@ -830,9 +832,9 @@ of the file.
       },
       scalebar_length": 1000,
       "nerve": {
-        "a_nerve": 2200,
-        "b_nerve": 1800,
-        "rot_nerve": 0
+        "a": 4400,
+        "b": 3600,
+        "rot": 0
       },
       "figure": {
         "fig_margin": 1.2,
