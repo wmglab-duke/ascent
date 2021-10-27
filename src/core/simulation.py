@@ -234,7 +234,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
         key_file_dir = os.path.join(sim_directory, "potentials")
         key_filepath = os.path.join(sim_directory, "potentials", "key.dat")
         if not os.path.exists(key_file_dir):
-            os.mkdir(key_file_dir)
+            os.makedirs(key_file_dir)
 
         with open(key_filepath, 'w') as f:
             for row in output:
@@ -580,7 +580,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
         # make NSIM_EXPORT_PATH (defined in Env.json) directory if it does not yet exist
         if not os.path.exists(target):
-            os.mkdir(target)
+            os.makedirs(target)
 
         # neuron files
         du.copy_tree(os.path.join(os.environ[Env.PROJECT_PATH.value], 'src', 'neuron'), target)
