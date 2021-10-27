@@ -1,4 +1,4 @@
-# S18: Creating new part primitives
+# Creating new part primitives
 Though we provide a library of part primitives to assemble
 representations of many cuff electrodes as shown in
 `examples/parts/sandbox.mph`, users may find it necessary to add their own

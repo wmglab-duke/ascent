@@ -1,4 +1,4 @@
-# S4: Your first run
+# Your first run
 *How to run the ASCENT pipeline, after completing the initial setup.*
 
 The user provides binary mask inputs for the nerve and saves ***Sample***

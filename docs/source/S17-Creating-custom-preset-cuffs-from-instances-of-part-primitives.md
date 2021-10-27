@@ -1,4 +1,4 @@
-# S17: Creating custom preset cuffs from instances of part primitives
+# Creating custom preset cuffs from instances of part primitives
 The operations by which cuffs are added to the COMSOL “model” object are
 contained in the Java Part class (`src/model/Part.java`). A complete cuff
 design is defined by a JSON file (e.g., `Purdue.json`) stored in

@@ -1,4 +1,4 @@
-# S9: Python utility classes
+# Python utility classes
 
 ##  Configurable
 

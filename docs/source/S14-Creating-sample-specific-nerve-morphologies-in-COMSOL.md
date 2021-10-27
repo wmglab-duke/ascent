@@ -1,4 +1,4 @@
-# S14: Creating sample specific nerve morphologies in COMSOL
+# Creating sample specific nerve morphologies in COMSOL
 ##  ModelWrapper.addNerve()
 
 The `addNerve()` method adds the nerve components to the COMSOL “model”

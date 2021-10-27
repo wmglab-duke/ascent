@@ -1,4 +1,4 @@
-# S25: Control of medium surrounding nerve and cuff electrode
+# Control of medium surrounding nerve and cuff electrode
 The medium surrounding the nerve and cuff electrode (e.g., fat, skeletal
 muscle) must contain a “proximal” domain, which runs the full length of
 the nerve, and may optionally include a “distal” domain. The

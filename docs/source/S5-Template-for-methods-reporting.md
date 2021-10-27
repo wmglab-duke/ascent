@@ -1,4 +1,4 @@
-# S5: Template for methods reporting
+# Template for methods reporting
 
 For uses of ASCENT, either stand-alone in its publicly available form, as a starting point upon which further work is developed, or as a component of a system (e.g., connected with other organ models or engineering optimization techniques), we ask that the author(s) cite the ASCENT [publication](https://doi.org/10.1371/journal.pcbi.100928) and indicate the release of ASCENT used (e.g., ASCENT v1.0.0).
 

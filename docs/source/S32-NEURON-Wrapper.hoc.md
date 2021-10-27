@@ -1,4 +1,4 @@
-# S32: NEURON Wrapper.hoc
+# NEURON Wrapper.hoc
 
 The ```Wrapper.hoc``` file coordinates all program operations to create a
 biophysically realistic discrete cable fiber model, simulate the fiber’s

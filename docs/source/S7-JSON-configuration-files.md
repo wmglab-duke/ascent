@@ -1,4 +1,4 @@
-# S7: JSON configuration files
+# JSON configuration files
 
 We store parameters in JSON configuration files because the JSON format
 is accessible, readable, and well-documented for metadata interchange.

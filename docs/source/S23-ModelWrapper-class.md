@@ -1,4 +1,4 @@
-# S23: ModelWrapper Class
+# ModelWrapper Class
 ## ModelWrapper
 The `ModelWrapper` class in Java takes inputs of the ASCENT_PROJECT_PATH
 (`env.json`, [S7](S7-JSON-configuration-files) and [S8](S8-JSON-file-parameter-guide) Text) and a list of ***Run*** paths. `ModelWrapper` contains a COMSOL

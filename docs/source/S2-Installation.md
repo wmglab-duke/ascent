@@ -1,4 +1,4 @@
-# S2: Installation
+# Installation
 ## Installing commercial software
 
 First, these software packages must be manually installed:

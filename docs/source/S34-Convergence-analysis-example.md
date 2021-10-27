@@ -1,4 +1,4 @@
-# S34: Convergence analysis example
+# Convergence analysis example
 ## Convergence analysis example
 
 \*Note: The following convergence analysis was performed for a rat

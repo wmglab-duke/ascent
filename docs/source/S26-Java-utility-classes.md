@@ -1,4 +1,4 @@
-# S26: Java utility classes
+# Java utility classes
 
 ##  IdentifierManager
 

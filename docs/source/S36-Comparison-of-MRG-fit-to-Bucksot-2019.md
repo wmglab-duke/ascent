@@ -1,4 +1,4 @@
-# S36: Comparison of MRG fit to Bucksot 2019
+# Comparison of MRG fit to Bucksot 2019
 ## Comparison of MRG fit to Bucksot et al. 2019
 
 ![Inline image](uploads/f494c4342a397b94f92dacb2418b8e1e/Picture11.jpg)
