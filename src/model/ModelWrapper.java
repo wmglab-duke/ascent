@@ -1501,6 +1501,7 @@ public class ModelWrapper {
                         } catch (Exception e) {
                             System.out.println("Failed to run geometry for Model Index " + modelStr + ", continuing " +
                                     "to any remaining Models");
+                            e.printStackTrace();
                             continue;
                         }
 
@@ -1616,9 +1617,9 @@ public class ModelWrapper {
                          try {
                              model.component("comp1").mesh("mesh1").run(mw.im.get(meshProximalLabel));
                          } catch (Exception e) {
-                             System.out.println(e);
                              System.out.println("Failed to mesh proximal geometry for Model Index " + modelStr +
                                      ", continuing to any remaining Models");
+                             e.printStackTrace();
                              continue;
                          }
 
@@ -1711,6 +1712,7 @@ public class ModelWrapper {
                             } catch (Exception e) {
                                 System.out.println("Failed to mesh distal geometry for Model Index " + modelStr +
                                         ", continuing to any remaining Models");
+                                e.printStackTrace();
                                 continue;
                             }
                             long estimatedRestMeshTime = System.nanoTime() - distalMeshStartTime;
@@ -2004,7 +2006,7 @@ public class ModelWrapper {
                     } catch (Exception e) {
                         System.out.println("Failed to extract potentials for Model Index " + modelStr +
                                 ", continuing to any remaining Models");
-                        System.out.println(e);
+                        e.printStackTrace();
                         continue;
                     }
                 }
@@ -2033,9 +2035,9 @@ public class ModelWrapper {
 
                 models_exit_status[model_index] = true;
             } catch (Exception e) {
-                System.out.println(e);
                 models_exit_status[model_index] = false;
                 System.out.println("Failed to mesh/solve/extract potentials for model " + models_list.get(model_index));
+                e.printStackTrace();
             }
         }
         // keep track of successful and failed model indices, continue in Python for successes only
