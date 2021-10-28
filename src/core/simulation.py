@@ -611,7 +611,8 @@ class Simulation(Exceptionable, Configurable, Saveable):
         for dirname in [f for f in os.listdir(source) if os.path.isdir(os.path.join(source, f))]:
             this_sample, this_model, this_sim, product_index = tuple(dirname.split('_'))
             if sample == int(this_sample) and model == int(this_model) and sim == int(this_sim):
-                shutil.rmtree(os.path.join(sim_dir, product_index))
+                if os.path.isdir(os.path.join(sim_dir, product_index)):
+                    shutil.rmtree(os.path.join(sim_dir, product_index))
                 shutil.copytree(os.path.join(source, dirname), os.path.join(sim_dir, product_index))
 
     def potentials_exist(self, sim_dir: str) -> bool:
