@@ -10,8 +10,6 @@ conda activate ascent
 $CONDA_ENVPY -m pip install -r requirements.txt
 
 echo
-echo "Installation complete."
-echo
 # create shortcut
 read -p "Add ASCENT environment setup alias to '.bash_profile'? (recommended) [y/N] " yn
 case $yn in

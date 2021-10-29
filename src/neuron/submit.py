@@ -54,6 +54,8 @@ def get_diameter(my_inner_fiber_diam_key, my_inner_ind, my_fiber_ind):
             break
         else:
             continue
+    if isinstance(my_diameter, list) and len(my_diameter)==1:
+        my_diameter = my_diameter[0]
 
     return my_diameter
 

@@ -18,40 +18,14 @@ EXCLUDED_FILENAMES = [
 
 def run(args):
     
+    for sample in args.sample_indices:
 
-    # if no verbose arg passed (minimum number of args)
-    VALID_ARGS = len(args) >= 2
-    first_sample_index = 1
-    VERBOSE = False
-    
-    # if verbose arg passed
-    if args[1] == '-v':
-        VALID_ARGS = len(args) >= 3
-        first_sample_index = 2
-        VERBOSE = True
-
-    # ensure all args are integers
-    for arg in args[first_sample_index:]:
-        try:
-            int(arg)
-        except ValueError:
-            VALID_ARGS = False
-            break
-        
-    # exit if any validation failed
-    if not VALID_ARGS:
-        print('Usage: python run clean_samples [-v] sample_1 sample_2 ...\n where all sample_i are integers')
-        return
-
-    for sample in args[first_sample_index:]:
-
-        if VERBOSE:
+        if args.verbose:
             print(f'Sample: {sample}')
-
         sample_path = Path(os.path.join('samples', f'{sample}'))
 
         # remove files
-        if VERBOSE:
+        if args.verbose:
             print('\n\t- - - - - - FILES - - - - - -\n')
         for filepath in [str(path.absolute()) for path in sample_path.glob('**/*')]:
 
@@ -61,15 +35,15 @@ def run(args):
 
             if not any([filepath.endswith(excluded_filename) for excluded_filename in EXCLUDED_FILENAMES]):
                 os.remove(filepath)
-                if VERBOSE:
+                if args.verbose:
                     print(f'\tREMOVE FILE: {filepath}')
 
             else:
-                if VERBOSE:
+                if args.verbose:
                     print(f'\tKEEP FILE: {filepath}')
 
         # remove empty directories
-        if VERBOSE:
+        if args.verbose:
             print('\n\t- - - - - DIRECTORIES - - - -\n')
         def remove_empty_directories(directory: str):
 
@@ -80,15 +54,15 @@ def run(args):
             
             if os.path.isdir(directory) and len(os.listdir(directory)) == 0:
                 os.rmdir(directory)
-                if VERBOSE:
+                if args.verbose:
                     print(f'\tREMOVE DIR: {directory}')
 
             else:
-                if VERBOSE:
+                if args.verbose:
                     print(f'\tKEEP DIR: {directory}')
 
         remove_empty_directories(str(sample_path.absolute()))
     
-        if VERBOSE:
+        if args.verbose:
             print('\n\n')
 
