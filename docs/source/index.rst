@@ -37,6 +37,7 @@ Welcome to ASCENT's documentation!
    S2-Installation
    S3-ASCENT-data-hierarchy
    S4-Your-first-run
+   Helper-scripts
    S5-Template-for-methods-reporting
    S6-Enums
    S7-JSON-configuration-files

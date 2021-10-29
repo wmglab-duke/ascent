@@ -45,13 +45,14 @@ def run(args):
         # remove empty directories
         if args.verbose:
             print('\n\t- - - - - DIRECTORIES - - - -\n')
+
         def remove_empty_directories(directory: str):
 
             for path in os.listdir(directory):
                 subdirectory = os.path.join(directory, path)
                 if os.path.isdir(subdirectory):
                     remove_empty_directories(subdirectory)
-            
+
             if os.path.isdir(directory) and len(os.listdir(directory)) == 0:
                 os.rmdir(directory)
                 if args.verbose:
@@ -65,4 +66,3 @@ def run(args):
     
         if args.verbose:
             print('\n\n')
-
