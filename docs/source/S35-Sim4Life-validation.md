@@ -1,4 +1,4 @@
-# S35: Sim4Life validation
+# Sim4Life validation
 
 We designed test simulations to verify ASCENT’s activation thresholds.
 The verifications were performed by The Foundation for Research

@@ -1,4 +1,4 @@
-# S13: Python classes for representing nerve morphology (Sample)
+# Python classes for representing nerve morphology (Sample)
 The nerve cross section includes the outer nerve trace (if present; not
 required for monofascicular nerves) and, for each fascicle, either a
 single “inner” perineurium trace or both “inner” and “outer” perineurium

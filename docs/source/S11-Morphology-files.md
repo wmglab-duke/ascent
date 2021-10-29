@@ -1,4 +1,4 @@
-# S11: Morphology Files
+# Morphology Files
 Each mask must be binary (i.e., white pixels (‘1’) for the segmented
 tissue and black pixels (‘0’) elsewhere) and must use Tagged Image File
 Format (i.e., `.tif`, or `.tiff`). All masks must be defined within the same

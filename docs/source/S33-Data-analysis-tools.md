@@ -1,4 +1,4 @@
-# S33: Data analysis tools
+# Data analysis tools
 
 ## Python Query class
 

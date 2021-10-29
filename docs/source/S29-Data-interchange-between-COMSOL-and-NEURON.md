@@ -1,4 +1,4 @@
-# S29: Data interchange between COMSOL and NEURON
+# Data interchange between COMSOL and NEURON
 The user is unlikely to interface directly with ModelWrapper’s
 `extractAllPotentials()` method in Java as it operates behind the scenes.
 The method takes input arguments for the project path and a run path.

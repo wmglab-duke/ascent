@@ -1,4 +1,4 @@
-# S27: Defining and assigning materials in COMSOL
+# Defining and assigning materials in COMSOL
 
 Materials are defined in the COMSOL “Materials” node for each material
 “function” indicated in the “preset” cuff configuration file (i.e.,

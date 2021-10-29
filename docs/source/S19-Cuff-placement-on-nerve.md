@@ -1,4 +1,4 @@
-# S19: Cuff placement on nerve
+# Cuff placement on nerve
 This section provides an overview of how the cuff is placed on the
 nerve. The `compute_cuff_shift()` method within Runner (`src/runner.py`)
 determines the cuff’s rotation around the nerve and translation in the

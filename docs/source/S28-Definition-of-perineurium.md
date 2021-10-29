@@ -1,4 +1,4 @@
-# S28: Definition of perineurium
+# Definition of perineurium
 ## Definition of perineurium
 
 The perineurium is a thin highly resistive layer of connective tissue

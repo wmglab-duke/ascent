@@ -1,4 +1,4 @@
-# S20: Fiberset
+# Fiberset
 Runner’s `run()` method first loads JSON configuration files for
 ***Sample***, ***Model***, and ***Sim*** into memory and instantiates a
 Python Sample class. The Sample instance produces two-dimensional CAD

@@ -1,4 +1,4 @@
-# S2: Installation
+# Installation
 ## Installing commercial software
 
 It is *highly* recommended that you use a distribution of Anaconda/Miniconda with ASCENT. However, advanced users who wish to use another Python distribution may.

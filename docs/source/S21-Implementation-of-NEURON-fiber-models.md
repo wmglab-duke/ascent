@@ -1,4 +1,4 @@
-# S21: Implementation of NEURON fiber models
+# Implementation of NEURON fiber models
 
 ## Myelinated fiber models
 

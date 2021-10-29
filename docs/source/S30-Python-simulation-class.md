@@ -1,4 +1,4 @@
-# S30: Python simulation class
+# Python simulation class
 ##  (Pre-Java)
 
 The user is unlikely to interface directly with Simulation’s

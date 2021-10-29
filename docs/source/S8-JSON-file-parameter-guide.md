@@ -1,4 +1,4 @@
-# S8: JSON file parameter guide
+# JSON file parameter guide
 
 Notes:
 
@@ -464,8 +464,8 @@ of the file.
     they are a convenient record of the nerve morphometry for assigning
     model attributes based on the anatomy and data analysis. Units:
     micrometer<sup>2</sup> (area); micrometer (length). User does NOT
-    manually set these values. Automatically populated. The values `a` and `b` are 
-    the full width and height of the ellipse major and minor axes, respectively 
+    manually set these values. Automatically populated. The values `a` and `b` are
+    the full width and height of the ellipse major and minor axes, respectively
     (i.e., analogous to diameter rather than radius of a circle).
 
 1.  Example: 
@@ -2082,10 +2082,10 @@ of the file.
             timesteps. Alternatively, the user can use the value “all”
             (String) to prompt the program to save the state variables at
             all segments (unmyelinated) and sections (myelinated). Required.
-            
-      - `“runtimes”`: The value (Boolean), if true, tells the program to save 
-            the NEURON runtime for either the finite amplitude or binary search for 
-            threshold simulation. If this key-value pair is omitted, the default 
+
+      - `“runtimes”`: The value (Boolean), if true, tells the program to save
+            the NEURON runtime for either the finite amplitude or binary search for
+            threshold simulation. If this key-value pair is omitted, the default
             behavior is False.
 
     `“protocol”`: 

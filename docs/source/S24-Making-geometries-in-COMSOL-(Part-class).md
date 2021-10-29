@@ -1,4 +1,4 @@
-# S24: Making geometries in COMSOL (Part class)
+# Making geometries in COMSOL (Part class)
 ##  Part.createEnvironmentPartPrimitive()
 
 The `createEnvironmentPartPrimitive()` method in Java

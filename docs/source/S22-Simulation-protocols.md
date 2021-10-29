@@ -1,4 +1,4 @@
-# S22: Simulation Protocols
+# Simulation Protocols
 
 Fiber response to electrical stimulation is computed by applying
 electric potentials along the length of a fiber from COMSOL as a
