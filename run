@@ -9,7 +9,7 @@ The source code can be found on the following GitHub repository: https://github.
 import sys
 import os
 import importlib
-from bin.run_utils import parse_args, welcome
+from config.system.run_utils import parse_args, welcome
 
 args = parse_args.parse()
 
