@@ -490,6 +490,7 @@ class Query(Exceptionable, Configurable, Saveable):
                     cols = int(np.ceil(master_product_count / rows))
                     # figure, axes = plt.subplots(2, 5, constrained_layout=False, figsize=(25, 20))
                     figure, axes = plt.subplots(rows, cols, constrained_layout=False, figsize=(25, 20))
+                    axes = np.array(axes)
                     axes = axes.reshape(-1)
 
                     for ax in axes:
@@ -572,7 +573,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
                         # generate colors from colorbar and thresholds
                         # print('min: {} \t max:{}'.format(min_thresh, max_thresh))
-                        cmap = plt.cm.get_cmap(colormap_str).copy()
+                        cmap = plt.cm.get_cmap(colormap_str)
                         cmap.set_bad(color='w')
 
                         if reverse_colormap:
@@ -646,7 +647,7 @@ class Query(Exceptionable, Configurable, Saveable):
                         # plot orientation point if applicable
                         if orientation_point is not None and show_orientation_point is True:
                             # ax.plot(*tuple(slide.nerve.points[slide.orientation_point_index][:2]), 'b*')
-                            ax.plot(*orientation_point, '.', markersize=20, color='grey')
+                            ax.plot(*orientation_point, 'o', markersize=30, color='red')
 
                         if add_colorbar:
                             # cb_label = r'mA'
@@ -694,7 +695,7 @@ class Query(Exceptionable, Configurable, Saveable):
                     # save figure as png
                     if save_path is not None:
                         if not os.path.exists(save_path):
-                            os.mkdir(save_path)
+                            os.makedirs(save_path)
                         dest = '{}{}{}_{}_{}.png'.format(save_path, os.sep, sample_index, model_index, sim_index)
                         figure.savefig(dest, dpi=300)
                         # print('done')
@@ -921,8 +922,8 @@ class Query(Exceptionable, Configurable, Saveable):
                 )
 
             # add x-axis values
-            # ax.set_xticks(x_vals)
-            # ax.set_xticklabels(xlabels)
+            ax.set_xticks(x_vals)
+            ax.set_xticklabels(xlabels)
 
             # set log scale
             if logscale:
@@ -943,12 +944,17 @@ class Query(Exceptionable, Configurable, Saveable):
             #     item.set_fontsize(12)
 
             # add legend
-            # plt.legend(fontsize=12)
+            plt.legend(fontsize=12)
 
             # plot!
             if plot:
                 print('PLOTTING!')
                 plt.show()
+            if save_path is not None:
+                if not os.path.exists(save_path):
+                    os.makedirs(save_path)
+                dest = '{}{}bc_{}.png'.format(save_path, os.sep, sample_index)
+                fig.savefig(dest, dpi=300)
 
         # def barcharts_compare_models(self,
         #                              sim_index: int = None,
@@ -1221,7 +1227,7 @@ class Query(Exceptionable, Configurable, Saveable):
             sample_indices = [sample_result['index'] for sample_result in self._result['samples']]
 
         if sample_labels is None:
-            sample_labels = ['Model {}'.format(i) for i in sample_indices]
+            sample_labels = ['Sample {}'.format(i) for i in sample_indices]
 
         if sim_index is None:
             sim_index = self.search(Config.CRITERIA, 'indices', 'sim')[0]
@@ -1358,14 +1364,14 @@ class Query(Exceptionable, Configurable, Saveable):
                                     threshold = np.loadtxt(thresh_path)
                                     if len(np.atleast_1d(threshold)) > 1:
                                         threshold = threshold[-1]
-                                    thresholds.append(threshold)
+                                    thresholds.append(abs(threshold))
                                 else:
                                     print(thresh_path)
                     else:
-                        thresholds.append(np.loadtxt(os.path.join(n_sim_dir,
+                        thresholds.append(abs(np.loadtxt(os.path.join(n_sim_dir,
                                                                   'data',
                                                                   'outputs',
-                                                                  'thresh_inner0_fiber0.dat')))
+                                                                  'thresh_inner0_fiber0.dat'))))
 
                     thresholds: np.ndarray = np.array(thresholds)
 
@@ -1475,7 +1481,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
             # save figure as png
             if save_path is not None:
-                plt.savefig(
+                fig.savefig(
                     '{}{}{}_{}_{}.png'.format(
                         save_path, os.sep, '-'.join([str(s) for s in sample_indices]), model, sim_index
                     ), dpi=400
@@ -1789,7 +1795,7 @@ class Query(Exceptionable, Configurable, Saveable):
                                 axes[0].plot(fiber[:, 0], fiber[:, 2], 'b.')
 
                                 # plot AP location
-                                axes[0].plot(fiber[11 * node, 0], fiber[11 * node, 2], 'r*')
+                                axes[0].plot(fiber[11 * node, 0], fiber[11 * node, 2], 'r*', markersize = 10)
 
                                 # location display settings
                                 n_sim_label = f'n_sim: {n_sim_index}' if (
@@ -1799,7 +1805,7 @@ class Query(Exceptionable, Configurable, Saveable):
                                 axes[0].set_ylabel('z location, µm')
                                 axes[0].set_title(f'{n_sim_label}{model_label}')
                                 axes[0].legend(['fiber', f'AP ({message})'])
-                                axes[0].set_aspect(1)
+                                # axes[0].set_aspect(1)
                                 plt.tight_layout()
 
                                 # plot voltages
