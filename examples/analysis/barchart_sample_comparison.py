@@ -83,6 +83,6 @@ qMonoPolar = Query({
     }
 }).run()
 
-axMonoPolar = qMonoPolar.barcharts_compare_samples(merge_bars=True, calculation='i50')
+axMonoPolar = qMonoPolar.barcharts_compare_samples(save_path='out/analysis')
 
 print('done')
