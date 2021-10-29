@@ -18,26 +18,19 @@ from .env_setup import run as env_setup
 
 
 def run(args):
-    sys.argv = args
     # test
     if not (sys.version_info.major == 3 and sys.version_info.minor >= 7):
         print('You are running Python {}.{}, but 3.7 or later required'.format(sys.version_info.major,
                                                                                sys.version_info.minor))
         exit(1)
 
-    if len(sys.argv) == 1:
-        print('Too few arguments to start.py (must have at least one run index)')
-        exit(1)
-
     # create bin/ directory for storing compiled Java files if it does not yet exist
     if not (os.path.exists('bin')):
         os.mkdir('bin')
 
-    for argument_index in range(1, len(sys.argv)):
+    for argument in args.run_indices:
         # START timer
         start = time.time()
-
-        argument = sys.argv[argument_index]
 
         try:
             int(argument)
@@ -46,7 +39,7 @@ def run(args):
                   'All arguments must be positive integers.'.format(argument))
             exit(1)
 
-        if int(argument_index) < 0:
+        if int(argument) < 0:
             print('Invalid sign for argument: {}\n'
                   'All arguments must be positive integers.'.format(argument))
             exit(1)
@@ -67,6 +60,7 @@ def run(args):
         runner = Runner(int(argument))
         runner.add(SetupMode.NEW, Config.RUN, run_path)
         runner.add(SetupMode.NEW, Config.ENV, env_path)
+        runner.add(SetupMode.OLD, Config.CLI_ARGS, vars(args))
 
         # populate environment variables
         runner.populate_env_vars()

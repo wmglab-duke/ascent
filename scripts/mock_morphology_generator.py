@@ -18,19 +18,14 @@ from src.utils import *
 
 def run(args):
     start = time.time()
-
-    sys.argv = args
-    if len(sys.argv) != 2:
-        print('INVALID number of arguments to mock_morphology_generator.py')
-        exit(1)
-
+    
     exceptions_file = os.path.join('config', 'system', 'exceptions.json')
 
     with open(exceptions_file, "r") as handle:
         exceptions_config: dict = json.load(handle)
 
     # load mock sample configuration
-    mock_config = os.path.join('config', 'user', 'mock_samples', '{}.json'.format(sys.argv[1]))
+    mock_config = os.path.join('config', 'user', 'mock_samples', '{}.json'.format(args.mock_sample_index))
     mock_sample = MockSample(exceptions_config)
     mock_sample.add(SetupMode.NEW, Config.MOCK_SAMPLE, mock_config) \
         .make_nerve() \

@@ -69,11 +69,15 @@ def run(args):
                 p.stdin.close()
 
     # run system-specific installation
-    proc = None
-
-    if sys.platform.startswith('darwin') or sys.platform.startswith('linux'):
-        proc = subprocess.Popen(['bash', './config/system/installation/install.sh'])
+    if args.no_conda:
+        print('Skipping conda portion of installation\n')
     else:
-        proc = subprocess.Popen("source config/system/installation/install.sh -i", shell=True, executable="/bin/bash")
+        proc = None
 
-    proc.wait()
+        if sys.platform.startswith('darwin') or sys.platform.startswith('linux'):
+            proc = subprocess.Popen("source config/system/installation/install.sh -i", shell=True, executable="/bin/bash")
+        else:
+            proc = subprocess.Popen(['powershell.exe', '.\\config\\system\\installation\\install.ps1'])
+
+        proc.wait()
+    print('Installation complete!\n')
