@@ -20,6 +20,10 @@ First, these software packages must be manually installed:
 
 In this stage of development, all programs/commands are run from a command line environment on both MacOS/Linux and Windows operating systems (Bash terminal for MacOS/Linux, Powershell for Windows). For users less familiar with this environment and for the quickest setup, it is suggested that the user install the package management system [Miniconda](https://docs.conda.io/en/latest/miniconda.html) or [Anaconda](https://www.anaconda.com/products/individual) (if using MacOS, choose .pkg for ease of use).
 
+Note that compiling NEURON files (when submitting sims) requires that the following packages be installed and on your path (Mac and Linux ONLY):
+    - openmpi-2.0.0
+    - libreadlines.so.6
+
 If using MacOS to run local NEURON simulations, it may be necessary to install the Xcode Command Line Tools via ```xcode-select --install```, as well as [Xquartz](https://www.xquartz.org/releases/XQuartz-2.7.11.html).
 
 Users may also download a text editor or integrated development environment (IDE) of their choosing to view/edit code (e.g., [Atom](https://atom.io/), [Visual Studio Code](https://code.visualstudio.com/), [IntelliJ IDEA](https://www.jetbrains.com/idea/download/)). For Java code, full autocomplete functionality requires adding both the path to the COMSOL installation ending in `plugins` as well as the path ```<ASCENT_PATH>/bin/json-20190722.jar``` to the list of available libraries (usually from within the IDE’s project settings).
