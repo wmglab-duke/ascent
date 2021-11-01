@@ -158,6 +158,7 @@ class Runner(Exceptionable, Configurable):
             sample \
                 .add(SetupMode.OLD, Config.SAMPLE, all_configs[Config.SAMPLE.value][0]) \
                 .add(SetupMode.OLD, Config.RUN, self.configs[Config.RUN.value]) \
+                .add(SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value]) \
                 .init_map(SetupMode.OLD) \
                 .build_file_structure() \
                 .populate(deform_animate=False) \
@@ -256,6 +257,7 @@ class Runner(Exceptionable, Configurable):
                             simulation \
                                 .add(SetupMode.OLD, Config.MODEL, model_config) \
                                 .add(SetupMode.OLD, Config.SIM, sim_config) \
+                                .add(SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value]) \
                                 .resolve_factors() \
                                 .write_waveforms(sim_obj_dir) \
                                 .write_fibers(sim_obj_dir) \
