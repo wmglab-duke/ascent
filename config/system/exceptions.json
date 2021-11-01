@@ -498,5 +498,9 @@
   {
     "code": 126,
     "text": "Cuff configuration file must specify a fixed point if expandable=true. See Creating custom preset cuffs from instances of part primitives in the documentation"
+  },
+  {
+    "code": 127,
+    "text": "If Sim parameter is a list, it must have multiple values. See the printout above for the offending item."
   }
 ]
