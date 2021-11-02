@@ -14,7 +14,7 @@ echo
 read -p "Add ASCENT environment setup alias to '.bash_profile'? (recommended) [y/N] " yn
 case $yn in
     [Yy]* )
-        echo "alias ascent_setup='source $CONDA_SETUP_SCRIPT; conda activate ascent; cd $PWD'" >> ~/.bash_profile
+        echo "alias ascent_setup='source $CONDA_BASE; conda activate ascent; cd $PWD'" >> ~/.bash_profile
         echo "Added. Remember to run 'ascent_setup' to use (requires shell restart)."
         ;;
     [Nn]* ) echo "Not added";;
