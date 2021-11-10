@@ -6,6 +6,7 @@ import argparse
 parser = argparse.ArgumentParser(description='ASCENT: Automated Simulations to Characterize Electrical Nerve Thresholds')
 # parser.add_argument('-s','--silent',action='store_true', help = 'silence printing')
 parser.add_argument('-v','--verbose',action='store_true', help = 'verbose printing')
+parser.add_argument('-l','--list',choices=['runs'],help='List all available indices for the specified option')
 
 #add subparsers
 subparsers = parser.add_subparsers(help = 'which script to run', dest='script')
@@ -32,7 +33,7 @@ def parse():
     #parse arguments
     args = parser.parse_args()
     
-    if args.script is None: 
+    if not len(sys.argv)>1: 
         parser.print_help()
         sys.exit()
     
