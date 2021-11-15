@@ -1,4 +1,4 @@
-# S7: JSON configuration files
+# JSON configuration files
 
 We store parameters in JSON configuration files because the JSON format
 is accessible, readable, and well-documented for metadata interchange.
@@ -13,9 +13,9 @@ notes to a JSON file (e.g., to remember what a ***Sample***,
 simply add a key to the JSON file that is not in use (e.g., “notes”) and
 provide a value (`String`) with a message.
 
-##  1.1 User configuration files
+##  User configuration files
 
-### 1.1.1 run.json
+### run.json
 
 The `run.json` file is passed to `pipeline.py` to instruct the program
 which ***Sample***, ***Model(s)***, and ***Sim(s)*** to run. All
@@ -31,7 +31,7 @@ file reports which ***Model*** indices were generated successfully in
 COMSOL and indicates if the user is submitting the NEURON jobs to a
 SLURM cluster or locally.
 
-### 1.1.2 sample.json
+### sample.json
 
 An example ***Sample*** configuration file is stored in
 `config/templates/` for users to reference when defining their own
@@ -62,7 +62,7 @@ JSON Object in `config/system/ci_peri_thickness.json` that contains
 coefficients for linear relationships between inner diameter and
 perineurium thickness (i.e., thk<sub>peri,inner</sub> =
 a\*(diameter<sub>inner</sub>) + b). In `ci_peri_thickness.json`, we
-provided a “PerineuriumThicknessMode” named `“GRINBERG_2008”`, which
+provided a `“PerineuriumThicknessMode”` named `“GRINBERG_2008”`, which
 defines perineurium thickness as 3% of inner diameter \[1\], and
 relationships for human, pig, and rat vagus nerve perineurium thickness
 (i.e., `“HUMAN_VN_INHOUSE_200601”`, `“PIG_VN_INHOUSE_200523”`, and
@@ -71,7 +71,7 @@ morphometry data become available, users may define perineurium
 thickness with new models by adding the coefficients to this JSON
 file.***
 
-### 1.1.3 mock\_sample.json
+### mock\_sample.json
 
 The `mock_sample.json` file, which is stored in the file structure in
 `config/user/mock_samples/<mock_sample_index>/`, is used to
@@ -79,9 +79,9 @@ define binary segmented images that serve as inputs to the pipeline. In
 the “populate” JSON Object, the user must define the “PopulateMode”
 (e.g., EXPLICIT, TRUNCNORM, UNIFORM defined by the “mode” parameter),
 which defines the process by which the nerve morphology is defined in
-the MockSample Python class. Each “PopulateMode” requires a certain set
+the MockSample Python class. Each `“PopulateMode”` requires a certain set
 of parameters to define the nerve and to define and place the fascicles;
-the set of parameters for each “PopulateMode” are defined in
+the set of parameters for each `“PopulateMode”` are defined in
 `config/templates/mock_sample_params_all_modes.json`.
 
 Probabilistic “PopulateModes” (i.e., TRUNCNORM, UNIFORM) populate an
@@ -99,13 +99,13 @@ nerve is chosen until either a location that preserves a minimum
 separation is achieved or the program exceeds a maximum number of
 attempts (`“max_attempt_iter”`).
 
-The EXPLICIT “PopulateMode” populates an elliptical nerve with
+The EXPLICIT `“PopulateMode”` populates an elliptical nerve with
 elliptical fascicles of user-defined sizes, locations, and rotations.
 The program validates that the defined fascicle ellipses are at least
 `“min_fascicle_separation”` distance apart; otherwise, if the
 conditions are not met, the program throws an error.
 
-### 1.1.4 model.json
+### model.json
 
 An example ***Model*** configuration file is stored in
 `config/templates/` for users to reference when creating their own
@@ -119,7 +119,7 @@ physics), the meshing parameters (i.e., how the volume is discretized),
 and output statistics (e.g., time required to mesh, mesh element quality
 measures).
 
-### 1.1.5 sim.json
+### sim.json
 
 An example ***Sim*** configuration file is stored in
 `config/templates/` for users to reference when creating their own
@@ -138,7 +138,7 @@ so that the user can inspect which parameters were used in a single
 NEURON simulation, and they do not hold any other function within the
 pipeline.
 
-### 1.1.6 query\_criteria.json
+### query\_criteria.json
 
 In data analysis, summary, and plotting, the user needs to inform the
 program which output data are of interest. The `query_criteria.json`
@@ -196,9 +196,9 @@ matches are included in the result if `“include_downstream”` is true
 (since the user did not specify criteria for ***Sim***). Otherwise, if
 `“include_downstream”` is false, no ***Sim*** indices are returned.
 
-##  1.2 config/system/
+##  config/system/
 
-### 1.2.1 env.json
+### env.json
 
 The `env.json` file stores the file paths for:
 
@@ -216,7 +216,7 @@ The `env.json` file stores the file paths for:
 When the pipeline is run, the key-value pairs are stored as environment
 variables so that they are globally accessible.
 
-### 1.2.2 exceptions.json
+### exceptions.json
 
 The `exceptions.json` file contains a list of exceptions that are
 intentionally thrown in the Python portion of the pipeline. Each error
@@ -227,7 +227,7 @@ onto `exceptions.json` that are called from Python code file (i.e.,
 `self.throw(<exception index>)`) will help give informative feedback to
 the user.
 
-### 1.2.3 materials.json
+### materials.json
 
 The `materials.json` file contains default values for material
 properties that can be assigned to each type of neural tissue, each
@@ -235,7 +235,7 @@ electrode material, the extraneural medium, and the medium between the
 nerve and inner cuff surface. The materials are referenced by using
 their labels in the “conductivities” JSON Object of ***Model***.
 
-### 1.2.4 fiber\_z.json
+### fiber\_z.json
 
 The `fiber_z.json` file defines z-coordinates to be sampled along the
 length of the FEM for different fiber types to be simulated in NEURON.
@@ -247,7 +247,7 @@ defined as a mathematical relationship in the form of a string to be
 evaluated in Python. Additionally, the file contains instructions (e.g.,
 flags) that corresponds to fiber-type specific operations in NEURON.
 
-### 1.2.5 ci\_perineurium\_thickness.json
+### ci\_perineurium\_thickness.json
 
 In the case of fascicles with exactly one inner perineurium trace for
 each outer perineurium trace, to reduce the required computational
@@ -263,7 +263,7 @@ from a list of modes in ***Sample*** for assigning a perineurium
 thickness (e.g., 3% of fascicle diameter \[1\],
 `“ci_perineurium_thickness”` parameter in ***Sample***).
 
-### 1.2.6 mesh\_dependent\_model.json
+### mesh\_dependent\_model.json
 
 Since meshing can take substantial time and RAM, if the FEM has the same
 geometry and mesh parameters as a previous model, this JSON file allows
@@ -276,7 +276,7 @@ parameter value would not prohibit a mesh be reused. The
 `mesh_dependent_model.json` file is used by our `ModelSearcher` Java
 utility class  ([S26 Text](S26-Java-utility-classes)).
 
-## 1.3 References
+## References
 1. Grinberg Y, Schiefer MA, Tyler DJ, Gustafson KJ. Fascicular perineurium thickness, size, and position affect model predictions of  neural excitation. IEEE Trans Neural Syst Rehabil Eng. 2008 Dec;16(6):572–81. Available from: [https://doi.org/10.1109/tnsre.2008.2010348](https://doi.org/10.1109/tnsre.2008.2010348)
 2. 	Pelot NA, Goldhagen GB, Cariello JE, Musselman ED, Clissold KA, Ezzell JA, et al. Quantified Morphology of the Cervical and Subdiaphragmatic Vagus Nerves of Human, Pig, and Rat. Front Neurosci [Internet]. 2020;14:1148. Available from: [https://www.frontiersin.org/article/10.3389/fnins.2020.601479](https://www.frontiersin.org/article/10.3389/fnins.2020.601479)
 3. 	McIntyre CC, Richardson AG, Grill WM. Modeling the excitability of mammalian nerve fibers: influence of afterpotentials on the recovery cycle. J Neurophysiol. 2002 Feb;87(2):995–1006. Available from: [https://doi.org/10.1152/jn.00353.2001](https://doi.org/10.1152/jn.00353.2001)

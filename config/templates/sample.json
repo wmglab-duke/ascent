@@ -22,8 +22,18 @@
     "ci_perineurium_thickness": "MEASURED",
     "reshape_nerve": "NONE"
   },
+  "smoothing": {
+    "nerve_distance": 0,
+    "fascicle_distance": 0
+  },
+  "image_preprocessing": {
+    "fill_holes": true,
+    "object_removal_area": 10
+  },
   "morph_count": 36,
   "deform_ratio": 1,
+  "plot" : true,
+  "plot_folder" : true,
   "Morphology": {
     "outer": {
       "area": 3822.2482582148805,

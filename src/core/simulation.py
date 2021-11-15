@@ -169,7 +169,12 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 plot: bool = self.search(Config.SIM, 'waveform', 'plot')
 
             if plot:
-                waveform.plot(final=True)
+                if self.search(Config.SIM, 'plot_folder',optional = True) == True: 
+                    path = sim_directory+'/plots/waveforms/{}.png'.format(i)
+                    if not os.path.exists(sim_directory+'/plots/waveforms'):
+                        os.makedirs(sim_directory+'/plots/waveforms')
+                else: path = None
+                waveform.plot(final=True,path=path)
 
             self.waveforms.append(waveform)
 
@@ -229,7 +234,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
         key_file_dir = os.path.join(sim_directory, "potentials")
         key_filepath = os.path.join(sim_directory, "potentials", "key.dat")
         if not os.path.exists(key_file_dir):
-            os.mkdir(key_file_dir)
+            os.makedirs(key_file_dir)
 
         with open(key_filepath, 'w') as f:
             for row in output:
@@ -259,12 +264,9 @@ class Simulation(Exceptionable, Configurable, Saveable):
             diams = np.loadtxt(os.path.join(my_potentials_directory, my_file))
             for fiber_ind in range(len(diams)):
                 diam = diams[fiber_ind]
-
-                # NOTE: if SL interp, writes files as inner0_fiber<q>.dat
-                if not my_xy_mode == FiberXYMode.SL_PSEUDO_INTERP:
-                    inner, fiber = self.indices_fib_to_n(my_p, fiber_ind)
-                else:
-                    inner, fiber = 0, fiber_ind
+                
+                inner, fiber = self.indices_fib_to_n(my_p, fiber_ind)
+                
                 inner_fiber_diam_key.append((inner, fiber, diam))
 
             inner_fiber_diam_key_filename = os.path.join(nsim_inputs_directory, 'inner_fiber_diam_key.obj')
@@ -334,7 +336,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
             hocwriter \
                 .add(SetupMode.OLD, Config.MODEL, self.configs[Config.MODEL.value]) \
                 .add(SetupMode.OLD, Config.SIM, sim_copy) \
-                .build_hoc(n_inners, n_fiber_coords[fiberset_ind], n_tsteps)
+                .build_hoc(n_tsteps)
 
             # copy in potentials data into neuron simulation data/inputs folder
             # the potentials files are matched to their inner and fiber index, and saved in destination folder with
@@ -365,10 +367,8 @@ class Simulation(Exceptionable, Configurable, Saveable):
                             # NOTE: if SL interp, writes files as inner0_fiber<q>.dat
                             l: int
                             k: int
-                            if not xy_mode == FiberXYMode.SL_PSEUDO_INTERP:
-                                l, k = self.indices_fib_to_n(p, q)
-                            else:
-                                l, k = 0, q
+                            
+                            l, k = self.indices_fib_to_n(p, q)
 
                             is_member = np.in1d(l, inner_list)
                             if not is_member:
@@ -477,10 +477,8 @@ class Simulation(Exceptionable, Configurable, Saveable):
                                             # NOTE: if SL interp, writes files as inner0_fiber<q>.dat
                                             l: int
                                             k: int
-                                            if not xy_mode == FiberXYMode.SL_PSEUDO_INTERP:
-                                                l, k = self.indices_fib_to_n(p, q)
-                                            else:
-                                                l, k = 0, q
+                                            
+                                            l, k = self.indices_fib_to_n(p, q)
 
                                             ss_filename = 'inner{}_fiber{}.dat'.format(l, k)
 
@@ -582,7 +580,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
         # make NSIM_EXPORT_PATH (defined in Env.json) directory if it does not yet exist
         if not os.path.exists(target):
-            os.mkdir(target)
+            os.makedirs(target)
 
         # neuron files
         du.copy_tree(os.path.join(os.environ[Env.PROJECT_PATH.value], 'src', 'neuron'), target)
@@ -613,7 +611,8 @@ class Simulation(Exceptionable, Configurable, Saveable):
         for dirname in [f for f in os.listdir(source) if os.path.isdir(os.path.join(source, f))]:
             this_sample, this_model, this_sim, product_index = tuple(dirname.split('_'))
             if sample == int(this_sample) and model == int(this_model) and sim == int(this_sim):
-                shutil.rmtree(os.path.join(sim_dir, product_index))
+                if os.path.isdir(os.path.join(sim_dir, product_index)):
+                    shutil.rmtree(os.path.join(sim_dir, product_index))
                 shutil.copytree(os.path.join(source, dirname), os.path.join(sim_dir, product_index))
 
     def potentials_exist(self, sim_dir: str) -> bool:

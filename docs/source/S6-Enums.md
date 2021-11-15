@@ -1,4 +1,4 @@
-# S6: Enums
+# Enums
 In the Python portions of the pipeline we use
 [Enums](https://docs.python.org/3/library/enum.html)
 which are “… a set of

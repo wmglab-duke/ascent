@@ -1,11 +1,12 @@
 {
-  "n_dimensions": 3,
+  "n_dimensions": 1,
+  "plot_folder" : true,
   "active_srcs": {
     "CorTec300.json": [[1, -1]],
     "default": [[1, -1]]
   },
   "fibers": {
-    "plot": false,
+    "plot": true,
     "mode": "MRG_DISCRETE",
     "xy_trace_buffer": 5.0,
     "z_parameters": {
@@ -27,7 +28,7 @@
     }
   },
   "waveform": {
-    "plot": false,
+    "plot": true,
     "global": {
       "dt": 0.001,
       "on": 1,
@@ -62,7 +63,13 @@
       "gating": false,
       "istim": false,
       "locs": [0]
-    }
+    },
+    "end_ap_times": {
+      "loc_min": 0.1,
+      "loc_max": 0.9,
+      "threshold": -30
+    },
+    "runtimes": false
   },
   "protocol": {
     "mode": "ACTIVATION_THRESHOLD",

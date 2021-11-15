@@ -1,5 +1,5 @@
-# S28: Definition of perineurium
-## 1.1 Definition of perineurium
+# Definition of perineurium
+## Definition of perineurium
 
 The perineurium is a thin highly resistive layer of connective tissue
 and has a profound impact on thresholds of activation and block. Our
@@ -47,7 +47,7 @@ modes:
     explicitly defined in either `materials.json` or ***Model*** without
     any corrections for temperature or frequency.
 
-## 1.2 References
+## References
 1. Pelot NA, Behrend CE, Grill WM. On the parameters used in finite element modeling of compound peripheral nerves. J Neural Eng [Internet]. 2019;16(1):16007. Available from: [http://dx.doi.org/10.1088/1741-2552/aaeb0c](http://dx.doi.org/10.1088/1741-2552/aaeb0c)
 2. 	Pelot NA, Goldhagen GB, Cariello JE, Musselman ED, Clissold KA, Ezzell JA, et al. Quantified Morphology of the Cervical and Subdiaphragmatic Vagus Nerves of Human, Pig, and Rat. Front Neurosci [Internet]. 2020;14:1148. Available from: [https://doi.org/10.3389/fnins.2020.601479](https://doi.org/10.3389/fnins.2020.601479)
 3. 	Weerasuriya A, Spangler RA, Rapoport SI, Taylor RE. AC impedance of the perineurium of the frog sciatic nerve. Biophys J. 1984 Aug;46(2):167–74. Available from: [https://dx.doi.org/10.1016%2FS0006-3495(84)84009-6](https://dx.doi.org/10.1016%2FS0006-3495(84)84009-6)

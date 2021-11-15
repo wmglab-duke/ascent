@@ -32,11 +32,12 @@ Welcome to ASCENT's documentation!
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
-
+	
    S1-Metadata-required-to-model-an-in-vivo-experiment-using-the-ASCENT-pipeline
    S2-Installation
    S3-ASCENT-data-hierarchy
    S4-Your-first-run
+   Helper-scripts
    S5-Template-for-methods-reporting
    S6-Enums
    S7-JSON-configuration-files
@@ -69,4 +70,5 @@ Welcome to ASCENT's documentation!
    S34-Convergence-analysis-example
    S35-Sim4Life-validation
    S36-Comparison-of-MRG-fit-to-Bucksot-2019
+   Troubleshooting-Guide
    Paper-References

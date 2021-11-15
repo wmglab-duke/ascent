@@ -1,4 +1,4 @@
-# S17: Creating custom preset cuffs from instances of part primitives
+# Creating custom preset cuffs from instances of part primitives
 The operations by which cuffs are added to the COMSOL “model” object are
 contained in the Java Part class (`src/model/Part.java`). A complete cuff
 design is defined by a JSON file (e.g., `Purdue.json`) stored in
@@ -90,6 +90,7 @@ file are shown in the skeleton structure below:
    ]
   },
   "expandable": Boolean,
+  "fixed_point": String,
   "angle_to_contacts_deg": Double,
   "offset": {
      "parameter1": Double,
@@ -181,7 +182,18 @@ implementation of the cuff in COMSOL to be able to expand beyond the
 manufactured resting cuff diameter to fit around a nerve. For a cuff to
 be expandable, it must be constructed from part primitives that have
 been parameterized to expand as a function of `“R_in”`. See
-`config/system/cuffs/Purdue.json` for an example of an expandable cuff.
+`config/system/cuffs/Purdue.json` for an example of an expandable cuff. Expandable
+cuffs should be parameterized such that the contact length remains constant.
+
+`"fixed_point"`: The value (String) defines which point on the cuff remains fixed
+when expanding. Note that these are not behaviors, this option will change nothing
+regarding how the cuff is generated. This parameter is descriptive only, indicating
+how the cuff is parameterized based on the part primitives.
+This parameter is to inform the cuff shift algorithm on how
+it should account for cuff expansion. Currently two options are implemented:
+1. `"center"`: In this case, the center of the contact always remains at the same angle when expanding.
+2. `"clockwise_end"`: In this case, the clockwise end of either the cuff, or the contact
+(both will work correctly) remains fixed. Note, this option assumes that the fixed point for the clockwise end is at theta = 0.
 
 `“angle_to_contacts_deg”`: The value (Double, units: degrees) defines
 the angle to the contact point of the nerve on the inside of the cuff of

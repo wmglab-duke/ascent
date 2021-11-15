@@ -15,7 +15,9 @@ import numpy as np
 import os
 
 # ascent
-from src.utils import *
+from src.utils import (Config, Configurable, Exceptionable, FiberGeometry, FiberXYMode,
+                       MyelinationMode, NeuronRunMode, Saveable, SearchAmplitudeIncrementMode,
+                       SetupMode, TerminationCriteriaMode, WriteMode)
 
 
 class HocWriter(Exceptionable, Configurable, Saveable):
@@ -33,7 +35,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
     def define_sim_indices(self, args: List[List[np.array]]):
         return itertools.product(args)
 
-    def build_hoc(self, n_inners, n_fiber_coords, n_tsteps):
+    def build_hoc(self, n_tsteps):
         """
         Write file LaunchSim###.hoc
         :return:
@@ -173,11 +175,13 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                     "gating": False,
                     "istim": False,
                     "locs": [0]
-                }
+                },
+                "runtimes": False
             }
-            saving: dict = self.search(Config.SIM, "saving")
+            # saving: dict = self.search(Config.SIM, "saving")
         else:
-            saving: dict = self.search(Config.SIM, "saving")
+            pass
+            # saving: dict = self.search(Config.SIM, "saving")
 
         file_object.write("saveflag_Vm_time      = %0.0f\n" % int(self.search(Config.SIM, "saving", "time", "vm") == True))
         file_object.write("saveflag_gating_time  = %0.0f\n" % int(self.search(Config.SIM, "saving", "time", "gating") == True))
@@ -185,6 +189,27 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         file_object.write("saveflag_gating_space = %0.0f\n" % int(self.search(Config.SIM, "saving", "space", "gating") == True))
         file_object.write("saveflag_Ve           = %0.0f\n" % int(False))
         file_object.write("saveflag_Istim        = %0.0f\n" % int(self.search(Config.SIM, "saving", "time", "istim") == True))
+
+        if 'runtimes' not in self.configs[Config.SIM.value]['saving'].keys():
+            file_object.write("saveflag_runtime     = %0.0f\n" % 0)
+        else:
+            file_object.write("saveflag_runtime     = %0.0f\n" % int(self.search(Config.SIM, "saving", "runtimes") == True))
+
+        if 'end_ap_times' in self.configs[Config.SIM.value]['saving'].keys():
+            loc_min = self.search(Config.SIM, "saving", "end_ap_times", "loc_min")
+            loc_max = self.search(Config.SIM, "saving", "end_ap_times", "loc_max")
+
+            if loc_min > loc_max:
+                self.throw(114)
+            if not ((1 >= loc_min >= 0) and (1 >= loc_max >= 0)):
+                self.throw(115)
+            if any([loc_min == 0, loc_min == 1, loc_max == 0, loc_max == 1]) and fiber_model_info.get("passive_end_nodes"):
+                self.throw(116)
+
+            file_object.write("saveflag_end_ap_times = %0.0f\n\n" % 1)  # if Sim has "ap_end_times" defined, then we are recording them
+            file_object.write("loc_min_end_ap        = %0.2f\n" % loc_min)
+            file_object.write("loc_max_end_ap        = %0.2f\n" % loc_max)
+            file_object.write("ap_end_thresh         = %0.0f\n" % self.search(Config.SIM, "saving", "end_ap_times", "threshold"))
 
         file_object.write("\n//***************** Protocol Parameters *********\n")
 
@@ -259,7 +284,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
             file_object.write("Namp = %0.0f\n" % num_amps)
             file_object.write("objref stimamp_values\n")
             file_object.write("stimamp_values = new Vector(Namp,%0.0f)\n" % 0)
-            file_object.write("\nap_thresh = %0.0f\n" % 1000)  # arbitrarily high, not ever be used
+            file_object.write("\nap_thresh = %0.0f\n" % 1000)  # arbitrarily high, not ever used
             for amp_ind in range(num_amps):
                 file_object.write("stimamp_values.x[%0.0f] = %0.4f\n" % (amp_ind, amps[amp_ind]))
 
