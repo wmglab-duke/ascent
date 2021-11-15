@@ -323,7 +323,7 @@ class Query(Exceptionable, Configurable, Saveable):
                  cutoff_thresh: bool = 0,
                  suprathresh_color: Tuple[int, int, int, int] = (0, 1, 0, 1),
                  subthresh_color: Tuple[int, int, int, int] = (0, 0, 1, 1),
-                 select_fascicles: List = None,
+                 select_fascicles: List = None
                  ):
 
         """
@@ -710,6 +710,7 @@ class Query(Exceptionable, Configurable, Saveable):
                     print('\t{},'.format(bounds))
                 print(']')
 
+        # return plt.gcf(), axes, colormap_bounds_tracking
         return plt.gcf(), axes
 
     def barcharts_compare_models(self,
