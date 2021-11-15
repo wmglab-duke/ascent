@@ -63,9 +63,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
                     # print('adding key {} to sub {}'.format(key, sub))
                     self.factors[path + '->' + key] = value
                     remaining_n_dims -= 1
-                if type(value) == list and len(value) == 1:
-                    print('Single value list found - {}:{}'.format(key,value))
-                    self.throw(127)
                 elif type(value) == dict:
                     # print('recurse: {}'.format(value))
                     search(value, remaining_n_dims, path + '->' + key)
