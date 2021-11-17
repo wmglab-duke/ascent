@@ -330,7 +330,7 @@ class Sample(Exceptionable, Configurable, Saveable):
                     self.im_preprocess(getattr(maskfile, 'value'))
             if len(mask_dims) == 0: self.throw(121)
             if not np.all(np.array(mask_dims) == mask_dims[0]): self.throw(122)
-            scalemask = getattr(MaskFileNames, "SCALE")
+            scalemask = getattr(MaskFileNames, "SCALE_BAR")
             if exists(scalemask):
                 mask_dims.append(cv2.imread(getattr(scalemask, 'value')).shape))
                 if not np.all(np.array(mask_dims) == mask_dims[0]): print('WARNING: Scale bar mask has a different resolution than morphology masks. \nProgram will continue and assume that the scale bar mask microns/pixel ratio is correct.')
