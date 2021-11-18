@@ -436,6 +436,7 @@ class Sample(Exceptionable, Configurable, Saveable):
             slide.plot(final=False, fix_aspect_ratio='True',axlabel=u"\u03bcm",title='Initial sample from morphology masks')
             if plot_folder == True:
                 plt.savefig(plotpath + '/sample_initial')
+                plt.clf()
                 plt.close('all')
             else:
                 plt.show()
@@ -562,6 +563,7 @@ class Sample(Exceptionable, Configurable, Saveable):
             slide.plot(final=False, fix_aspect_ratio='True',axlabel=u"\u03bcm",title='Final sample after any user specified processing')
             if plot_folder == True:
                 plt.savefig(plotpath + '/sample_final')
+                plt.clf()
                 plt.close()
             else:
                 plt.show()

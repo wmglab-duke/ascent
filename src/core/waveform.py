@@ -425,7 +425,7 @@ class Waveform(Exceptionable, Configurable, Saveable):
 
     def plot(self, ax: plt.Axes = None, final: bool = False, path: str = None):
         
-        plt.figure()
+        fig = plt.figure()
         
         if ax is None:
             ax = plt.gca()
@@ -437,7 +437,10 @@ class Waveform(Exceptionable, Configurable, Saveable):
 
         if final:
             if path is None: plt.show() 
-            else: plt.savefig(path, dpi=300)
+            else: 
+                plt.savefig(path, dpi=300)
+                fig.clear()
+                plt.close(fig)
 
     def write(self, mode: WriteMode, path: str):
         """

@@ -269,13 +269,14 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                         self.throw(71)
 
             if plot:
-                plt.figure()
+                fig = plt.figure()
                 self.sample.slides[0].plot(final=False, fix_aspect_ratio='True',axlabel=u"\u03bcm",title = 'Fiber locations for nerve model')
                 for point in points:
                     plt.plot(point[0], point[1], 'r.', markersize = 1)
                 if self.search(Config.SIM, 'plot_folder',optional = True) == True: 
                     plt.savefig(sim_directory+'/plots/fibers_xy.png',dpi=300)
-                    plt.close()
+                    fig.clear
+                    plt.close(fig)
                 else: plt.show()
         else:
             self.throw(30)
