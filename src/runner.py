@@ -485,6 +485,8 @@ class Runner(Exceptionable, Configurable):
             r_bound = np.sqrt(sample_config['Morphology']['Nerve']['area'] / np.pi)
         else:
             x, y, r_bound = nerve_copy.make_circle()
+        if model_config['cuff'].get('min_radius_override') is not None:
+            r_bound = model_config['cuff'].get('min_radius_override')
 
         # next calculate the angle of the "centroid" to the center of min bound circle
         # if mono fasc, just use 0, 0 as centroid (i.e., centroid of nerve same as centroid of all fasc)
