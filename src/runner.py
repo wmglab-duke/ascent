@@ -14,6 +14,8 @@ import pickle
 from typing import List
 
 # packages
+import json
+import base64
 import sys
 import numpy as np
 import subprocess
@@ -312,7 +314,7 @@ class Runner(Exceptionable, Configurable):
                 self.remove(Config.RUN)
                 run_path = os.path.join('config', 'user', 'runs', '{}.json'.format(self.number))
                 self.add(SetupMode.NEW, Config.RUN, run_path)
-
+                                
                 #  continue by using simulation objects
                 models_exit_status = self.search(Config.RUN, "models_exit_status")
 
@@ -384,6 +386,11 @@ class Runner(Exceptionable, Configurable):
 
         core_name = 'ModelWrapper'
 
+        argstring = json.dumps(self.configs[Config.CLI_ARGS.value])
+        argbytes = argstring.encode('ascii')
+        argbase = base64.b64encode(argbytes)
+        argfinal = argbase.decode('ascii')
+        
         if sys.platform.startswith('darwin'):  # macOS
 
             subprocess.Popen(['{}/bin/comsol'.format(comsol_path), 'server'], close_fds=True)
@@ -394,11 +401,12 @@ class Runner(Exceptionable, Configurable):
             # https://stackoverflow.com/questions/219585/including-all-the-jars-in-a-directory-within-the-java-classpath
             os.system('{}/java/maci64/jre/Contents/Home/bin/java '
                       '-cp .:$(echo {}/plugins/*.jar | '
-                      'tr \' \' \':\'):../bin/json-20190722.jar:../bin model.{} "{}" "{}"'.format(comsol_path,
+                      'tr \' \' \':\'):../bin/json-20190722.jar:../bin model.{} "{}" "{}" "{}"'.format(comsol_path,
                                                                                                   comsol_path,
                                                                                                   core_name,
                                                                                                   project_path,
-                                                                                                  run_path))
+                                                                                                  run_path,
+                                                                                                  argfinal))
             os.chdir('..')
 
         elif sys.platform.startswith('linux'):  # linux
@@ -411,11 +419,12 @@ class Runner(Exceptionable, Configurable):
             # https://stackoverflow.com/questions/219585/including-all-the-jars-in-a-directory-within-the-java-classpath
             os.system('{}/java/glnxa64/jre/bin/java '
                       '-cp .:$(echo {}/plugins/*.jar | '
-                      'tr \' \' \':\'):../bin/json-20190722.jar:../bin model.{} "{}" "{}"'.format(comsol_path,
+                      'tr \' \' \':\'):../bin/json-20190722.jar:../bin model.{} "{}" "{}" "{}"'.format(comsol_path,
                                                                                                   comsol_path,
                                                                                                   core_name,
                                                                                                   project_path,
-                                                                                                  run_path))
+                                                                                                  run_path,
+                                                                                                  argfinal))
             os.chdir('..')
 
         else:  # assume to be 'win64'

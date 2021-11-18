@@ -1143,6 +1143,11 @@ public class ModelWrapper {
 
         // Load RUN configuration data
         String runPath = args[1]; // Take runPath input to ModelWrapper and assign to string
+        //Load CLI args
+        byte[] decodedBytes = Base64.getDecoder().decode(args[2]);
+        String decodedString = new String(decodedBytes);
+        JSONObject cli_args = new JSONObject(decodedString);
+
         JSONObject run = null;
         try {
             run = JSONio.read(runPath);
@@ -1150,13 +1155,17 @@ public class ModelWrapper {
             e.printStackTrace();
         }
         JSONArray models_list = run.getJSONArray("models"); // get array of COMSOL models
-        JSONObject break_points;
-        try {
-            break_points = run.getJSONObject("break_points");   
-        } catch(JSONException e) {
-            break_points = new JSONObject();
+        JSONObject break_points = new JSONObject();
+        if (cli_args.has("break_point")) {
+            break_points.put(cli_args.getString("break_point"),true);
         }
-
+        else {
+            try {
+                break_points = run.getJSONObject("break_points");
+            } catch (JSONException e) {
+                break_points = new JSONObject();
+            }
+        }
         boolean nerve_only;
         boolean cuff_only;
         if (run.has("partial_fem")) {
