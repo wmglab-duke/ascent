@@ -18,14 +18,14 @@ Sample, Model(s), and Sim(s) to import the NEURON simulation data.
 ##`scripts/clean_samples.py`
 If you would like to remove all contents for a single sample (i.e., `samples/<sample_index>/`) EXCEPT a list of files
 (e.g., `sample.json`, `model.json`) or EXCEPT a certain file format (e.g., all files ending `.mph`), use this script.
-Run this script from your `"ASCENT_PROJECT_PATH"`.
+Run this script from your `"ASCENT_PROJECT_PATH"`. Files to keep are specified within the python script.
 
 `python run clean_samples <list of sample indices>`
 
 ##`scripts/tidy_samples.py`
-If you would like to remove ONLY FOR CERTAIN FILES for a single sample (i.e., `samples/<sample_index>/`), use this script.
+If you would like to remove ONLY CERTAIN FILES for a single sample (i.e., `samples/<sample_index>/`), use this script.
  This script is useful for removing logs, runtimes, special,
- and *.bat or *.sh scripts. Run this script from your `"ASCENT_PROJECT_PATH"`.
+ and *.bat or *.sh scripts. Run this script from your `"ASCENT_PROJECT_PATH"`. Files to remove are specified within the python script.
 
 `python run tidy_samples <list of sample indices>`
 

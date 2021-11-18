@@ -11,7 +11,7 @@ $choices  = '&Yes', '&No'
 $decision = $Host.UI.PromptForChoice($title, $question, $choices, 1)
 if ($decision -eq 0) {
     $condaps = $condapath + "\shell\condabin\conda-hook.ps1"
-    $Arguments = "-ExecutionPolicy ByPass -NoExit -Command `"& `'$condaps'` ; conda activate ascent; cd `'" + (Get-Item .).FullName + "`
+    $Arguments = "-ExecutionPolicy ByPass -NoExit -Command `"& `'$condaps'` ; conda activate ascent; cd `'" + (Get-Item .).FullName + "`'"
     $TargetFile = '%windir%\System32\WindowsPowerShell\v1.0\powershell.exe'
     $ShortcutFile = [Environment]::GetFolderPath("Desktop")+'\ASCENT.lnk'
     $WScriptShell = New-Object -ComObject WScript.Shell

@@ -50,7 +50,8 @@ def run(args):
                 continue
 
             if any([included_filename in filepath for included_filename in INCLUDED_FILENAMES]):
-                os.remove(filepath)
+                try: os.remove(filepath)
+                except: print('Could not remove {}'.format(filepath))
                 if args.verbose:
                     print(f'\tREMOVE FILE: {filepath}')
 
@@ -69,7 +70,8 @@ def run(args):
                     remove_empty_directories(subdirectory)
 
             if os.path.isdir(directory) and len(os.listdir(directory)) == 0:
-                os.rmdir(directory)
+                try: os.rmdir(directory)
+                except: print('Could not remove {}'.format(directory))
                 if args.verbose:
                     print(f'\tREMOVE DIR: {directory}')
 

@@ -431,6 +431,9 @@ class Waveform(Exceptionable, Configurable, Saveable):
             ax = plt.gca()
 
         ax.plot(np.linspace(self.start, self.dt * len(self.wave), len(self.wave)), self.wave)
+        ax.set_ylabel('Normalized magnitude')
+        ax.set_xlabel('Time step')
+        ax.set_title('Waveform generated from user parameters in sim.json')
 
         if final:
             if path is None: plt.show() 

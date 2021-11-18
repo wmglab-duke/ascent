@@ -36,7 +36,6 @@ stimamp_extra = 0
 
 // Set multiplicative scaling factor such that Ve will be in millivolts (as required for e_extracellular mechanism)
 Ve_unitconv = 1000
-record_ap_times_fiber_ends=1
 
 // Set appropriate initialization potentials (i.e. Vrest)
 /*
