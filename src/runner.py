@@ -436,11 +436,12 @@ class Runner(Exceptionable, Configurable):
                                                          comsol_path))
             os.system('""{}\\java\\win64\\jre\\bin\\java" '
                       '-cp "{}\\plugins\\*";"..\\bin\\json-20190722.jar";"..\\bin" '
-                      'model.{} "{}" "{}""'.format(comsol_path,
+                      'model.{} "{}" "{}" "{}""'.format(comsol_path,
                                                    comsol_path,
                                                    core_name,
                                                    project_path,
-                                                   run_path))
+                                                   run_path,
+                                                   argfinal))
             os.chdir('..')
 
     def compute_cuff_shift(self, model_config: dict, sample: Sample, sample_config: dict):

@@ -21,6 +21,7 @@ ts_parser = subparsers.add_parser('tidy_samples', help = 'Remove specified files
 #add subparser arguments
 # pipeline_parser.add_argument('-w','--wait',dest='wait_time', help = 'wait the specified amount of time (hours) for an available COMSOL license')
 pipeline_parser.add_argument('run_indices', nargs = '+', help = 'Space separated indices to run the pipeline over')
+pipeline_parser.add_argument('-b','--break-point',choices = ["pre_geom_run","post_geom_run","pre_java","post_mesh_distal","pre_mesh_distal","post_material_assign","pre_loop_currents","pre_mesh_proximal","post_mesh_proximal"], help = 'Point in pipeline to exit and continue to next run')
 ts_parser.add_argument('sample_indices', nargs = '+',type=int, help = 'Space separated sample indices to tidy')
 nsims_parser.add_argument('run_indices', nargs = '+',type=int, help = 'Space separated run indices to import')
 cs_parser.add_argument('sample_indices', nargs = '+',type=int, help = 'Space separated sample indices to clean')
