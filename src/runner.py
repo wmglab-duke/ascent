@@ -293,12 +293,11 @@ class Runner(Exceptionable, Configurable):
                                     ss_bases_exist.append(
                                         simulation.ss_bases_exist(source_sim_obj_dir)
                                     )
-
-            if ('break_points' in self.configs[Config.RUN.value].keys()) and \
-                    ('pre_java' in self.search(Config.RUN, 'break_points').keys()):
-                if self.search(Config.RUN, 'break_points', 'pre_java'):
-                    print('KILLING PRE JAVA')
-                    sys.exit()
+            if self.configs[Config.CLI_ARGS.value].get('break_point')=='pre_java' or \
+                    (('break_points' in self.configs[Config.RUN.value].keys()) and \
+                     self.search(Config.RUN, 'break_points').get('pre_java')==True):
+                print('KILLING PRE JAVA')
+                sys.exit()
 
             # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials if necessary
             if 'models' in all_configs.keys() and 'sims' in all_configs.keys():
