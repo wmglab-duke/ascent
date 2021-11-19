@@ -385,6 +385,7 @@ class Runner(Exceptionable, Configurable):
 
         core_name = 'ModelWrapper'
 
+        #Encode command line args as jason string, then encode to base64 for passing to java
         argstring = json.dumps(self.configs[Config.CLI_ARGS.value])
         argbytes = argstring.encode('ascii')
         argbase = base64.b64encode(argbytes)
