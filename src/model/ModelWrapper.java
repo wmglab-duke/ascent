@@ -1154,17 +1154,14 @@ public class ModelWrapper {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+
         JSONArray models_list = run.getJSONArray("models"); // get array of COMSOL models
         JSONObject break_points = new JSONObject();
         if (cli_args.has("break_point")) {
             break_points.put(cli_args.getString("break_point"),true);
         }
-        else {
-            try {
+        else if (run.has("break_points")) {
                 break_points = run.getJSONObject("break_points");
-            } catch (JSONException e) {
-                break_points = new JSONObject();
-            }
         }
         boolean nerve_only;
         boolean cuff_only;
