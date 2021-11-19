@@ -29,7 +29,7 @@ release = 'v1.0.3'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 
-extensions = ['myst_parser','sphinxarg.ext','nbsphinx_link']
+extensions = ['myst_parser','sphinxarg.ext']
 
 source_suffix = {
     '.rst': 'restructuredtext',
