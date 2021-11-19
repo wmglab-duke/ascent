@@ -269,13 +269,14 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                         self.throw(71)
 
             if plot:
-                plt.figure()
+                fig = plt.figure()
                 self.sample.slides[0].plot(final=False, fix_aspect_ratio='True',axlabel=u"\u03bcm",title = 'Fiber locations for nerve model')
                 for point in points:
                     plt.plot(point[0], point[1], 'r.', markersize = 1)
                 if self.search(Config.SIM, 'plot_folder',optional = True) == True: 
                     plt.savefig(sim_directory+'/plots/fibers_xy.png',dpi=300)
-                    plt.close()
+                    fig.clear
+                    plt.close(fig)
                 else: plt.show()
         else:
             self.throw(30)
@@ -420,6 +421,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
             return my_fiber
 
+      
         # %% START ALGORITHM
 
         # get top-level fiber z generation
@@ -438,10 +440,13 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                 self.configs['sims']['fibers'][FiberZMode.parameters.value]['min'] = 0
                 self.configs['sims']['fibers'][FiberZMode.parameters.value]['max'] = fiber_length
 
-                if override_length is None:
+                if override_length is None and self.configs['sims']['fibers']['z_parameters'].get('full_nerve_length')!=True:
                     warnings.warn('Program assumed fiber length same as proximal length since "min" and "max" fiber '
                                   'length not defined in Config.Sim "fibers" -> "z_parameters"')
             else:
+                if self.configs['sims']['fibers']['z_parameters'].get('full_nerve_length')==True:
+                    self.throw(127)
+                    
                 min_fiber_z_limit = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'min')
                 max_fiber_z_limit = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'max')
 

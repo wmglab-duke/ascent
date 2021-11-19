@@ -498,5 +498,9 @@
   {
     "code": 126,
     "text": "Cuff configuration file must specify a fixed point if expandable=true. See Creating custom preset cuffs from instances of part primitives in the documentation"
+  },
+  {
+    "code": 127,
+    "text": "If min and max are defined (sim config>fiber>z_parameters), then full_nerve_length must either not be defined, or be false"
   }
 ]

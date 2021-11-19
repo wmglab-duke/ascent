@@ -1430,6 +1430,7 @@ of the file.
 
           "min": Double,
           "max": Double,
+          "full_nerve_length": Boolean,
           "offset": Double, // or omitted for random jitter within +/- 1 internodal length
           "seed": Integer
         },
@@ -1733,6 +1734,8 @@ of the file.
             `model.json`, the length of the nerve). Optional: if min and max
             are not both provided then the fiber length is assumed to be the
             proximal medium length by default.
+
+          - `full_nerve_length`: (Boolean) Optional. If true, suppresses the warning message associated with using the full length nerve when `"min"` and `"max"` are not defined. Must be false or not defined if `"min"` and `"max"` are defined.
 
           - `“offset”`: The value (Double or List\[Double\]) is the fraction
             of the node-node length (myelinated fibers) or segment length
@@ -2291,6 +2294,7 @@ of the file.
           "diameter": [1, 2, 5.7, 7.3, 8.7, 10],
           "min": 0,
           "max": 12500,
+          "full_nerve_length": False,
           "offset": 0,
           "seed": 123
         },
