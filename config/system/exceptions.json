@@ -442,5 +442,61 @@
   {
     "code": 110,
     "text": "NerveMode is not set to present (Sample.json). Multifascicular simulations without a nerve mask are not supported"
+  },
+  {
+    "code": 111,
+    "text": "Smoothing value cannot be negative (Sample.json)"
+  },
+  {
+    "code": 112,
+    "text": "If NerveMode is set to PRESENT and smoothing is defined in Sample.json, nerve_distance must be defined"
+  },
+  {
+    "code": 113,
+    "text": "If smoothing is defined in Sample.json, fascicle_distance must be defined"
+  },
+  {
+    "code": 114,
+    "text": "ap_end_times is defined in Sim, so the system is saving AP times at the ends of the fiber. \nThe values defined in Sim violated loc_min > loc_max."
+  },
+  {
+    "code": 115,
+    "text": "ap_end_times is defined in Sim. \nThe values for loc_min and loc_max defined in Sim are not in [0,1]."
+  },
+  {
+    "code": 116,
+    "text": "ap_end_times is defined in Sim, so the system is saving AP times at the ends of the fiber. \nThe values for loc_min and/or loc_max are the terminal nodes  (i.e., 0 or 1), which are also set to passive_end_nodes=1 (i.e., grounded therefore no APs)."
+  },
+  {
+    "code": 118,
+    "text": "Deformation mode is set to physics, but no deform ratio is defined in sample.json"
+  },
+  {
+    "code": 120,
+    "text": "Object removal area (image_preprocessing->object_removal_area->sample.json) cannot be negative"
+  },
+  {
+    "code": 121,
+    "text": "No input morphology masks found"
+  },
+  {
+    "code": 122,
+    "text": "Input morphology masks do not have identical dimensions"
+  },
+  {
+    "code": 123,
+    "text": "Slide is not centered at [0,0]"
+  },
+  {
+    "code": 124,
+    "text": "Multiple objects were found in orientation mask. A single object of white pixels must be provided"
+  },
+  {
+    "code": 125,
+    "text": "No objects were found in orientation mask. An object of white pixels must be provided"
+  },
+  {
+    "code": 126,
+    "text": "Cuff configuration file must specify a fixed point if expandable=true. See Creating custom preset cuffs from instances of part primitives in the documentation"
   }
 ]

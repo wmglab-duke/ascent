@@ -1,6 +1,6 @@
-# S9: Python utility classes
+# Python utility classes
 
-##  1.1 Configurable
+##  Configurable
 
 Configurable is inherited by other Python classes in the ASCENT pipeline
 to grant access to parameter and data configuration JSON files loaded to
@@ -16,27 +16,27 @@ their properties from JSON configuration files (e.g., `sample.json`,
 `model.json`, `sim.json`, `fiber_z.json`). The Configurable class takes three
 input parameters:
 
-### 1.1.1 SetupMode (from Enums, [S6 Text](S6-Enums))
+### `"SetupMode"` (from Enums, [S6 Text](S6-Enums))
 
 Either NEW or OLD which determines if Configurable loads a new JSON
 (from file) or uses data that has already been created in Python memory
 as a dictionary or list, respectively.
 
-### 1.1.2 ConfigKey (from Enums, [S6 Text](S6-Enums))
+### ConfigKey (from Enums, [S6 Text](S6-Enums))
 
 The ConfigKey indicates the choice of configuration data type and is
 also the name of the configuration JSON file (e.g., `sample.json`,
 `model.json`, `sim.json`, `run.json`, `env.json`).
 
-### 1.1.3 Config:
+### Config:
 
 The Config input to Configurable can take one of three data types. If
-“SetupMode” is “OLD”, the value can be a dictionary or list of already
-loaded configuration data. If “SetupMode” is “NEW”, the value must be a
+`“SetupMode”` is “OLD”, the value can be a dictionary or list of already
+loaded configuration data. If `“SetupMode”` is “NEW”, the value must be a
 string of the file path to the configuration file to be loaded into
 memory.
 
-###  1.1.4 Example use of Configurable:
+###  Example use of Configurable:
 
 When the Sample class is instantiated in Runner, it inherits
 functionality from Configurable (see Sample constructor
@@ -54,7 +54,7 @@ class can access the contents of the JSON dictionary. For example, in
 
 `self.search(Config.SAMPLE, ‘scale’, ‘scale_bar_length’)`
 
-##  1.2 Exceptionable
+##  Exceptionable
 
 Exceptionable is a centralized way to organize and throw exceptions
 (errors) to the user’s console. Exceptionable inherits functionality
@@ -66,7 +66,7 @@ configuration file is a list of numbered errors with an associated text
 description. These contents, along with the path of the script which called
 exceptionable, are listed in the event of a raised exception.
 
-##  1.3 Saveable
+##  Saveable
 
 Saveable is a simple Python class that, when inherited by a Python class
 (e.g., Sample and Simulation, described in [S13](S13-Python-classes-for-representing-nerve-morphology-(Sample)) and [S30](S30-Python-simulation-class) Text, respectively) enables the class to save itself using

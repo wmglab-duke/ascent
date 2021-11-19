@@ -1,4 +1,4 @@
-# S20: Fiberset
+# Fiberset
 Runner’s `run()` method first loads JSON configuration files for
 ***Sample***, ***Model***, and ***Sim*** into memory and instantiates a
 Python Sample class. The Sample instance produces two-dimensional CAD
@@ -31,8 +31,8 @@ indicates intended for use only by the Fiberset class) defines the
 coordinates of simulated fibers in the cross section of the nerve
 according to the `“xy_parameters”` JSON Object in ***Sim*** ([S8 Text](S8-JSON-file-parameter-guide)). The pipeline
 defines (x,y)-coordinates of the fibers in the nerve cross section
-according to the user’s selection of sampling rules (CENTROID,
-UNIFORM_DENSITY, UNIFORM_COUNT, and WHEEL); the pre-defined modes for
+according to the user’s selection of sampling rules (`CENTROID`,
+`UNIFORM_DENSITY`, `UNIFORM_COUNT`, and `WHEEL`); the pre-defined modes for
 defining fiber locations are easily expandable. To add a new mode for
 defining (x,y)-coordinates, the user must add a `“FiberXYMode”` in
 `src/utils/enums.py` ([S6 Text](S6-Enums)) and add an `IF` statement code block in
@@ -47,5 +47,5 @@ Fibserset using the `plot_fiberset.py` script ([S33 Text](S33-Data-analysis-tool
 Fiberset’s private method `_generate_z()` defines the coordinates of the
 compartments of simulated fibers along the length of the nerve based on
 global parameters in `config/system/fiber_z.json` and simulation-specific
-parameters in the “fibers” JSON Object in ***Sim*** (i.e., “mode”,
-“diameter”, “min”, “max”, and “offset”).
+parameters in the `“fibers”` JSON Object in ***Sim*** (i.e., `“mode”`,
+`“diameter”`, `“min”`, `“max”`, and `“offset”`).

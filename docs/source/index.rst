@@ -32,7 +32,7 @@ Welcome to ASCENT's documentation!
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
-
+	
    S1-Metadata-required-to-model-an-in-vivo-experiment-using-the-ASCENT-pipeline
    S2-Installation
    S3-ASCENT-data-hierarchy

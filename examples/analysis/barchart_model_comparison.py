@@ -68,4 +68,4 @@ q = Query({
 #                                          'Model 2: Goodall Epineurium, \n              Veltink Perineurium',
 #                                          'Model 3: Goodall Epineurium, \n              Goodall Perineurium']
 #                            )
-q.barcharts_compare_models(sl=True)
+q.barcharts_compare_models(save_path='out/analysis')

@@ -1,4 +1,4 @@
-# S19: Cuff placement on nerve
+# Cuff placement on nerve
 This section provides an overview of how the cuff is placed on the
 nerve. The `compute_cuff_shift()` method within Runner (`src/runner.py`)
 determines the cuff’s rotation around the nerve and translation in the
@@ -17,7 +17,7 @@ orientation of a cuff on the nerve.
 ASCENT has different `CuffShiftModes` (i.e., `“cuff_shift”` parameter in
 ***Model***) that control the translation of the cuff (i.e., “shift”
 JSON Object in ***Model***) and default rotation around the nerve (i.e.,
-`“pos_ang”` in ***Model***). Runner’s `compute`_cuff_shift()` method is
+`“pos_ang”` in ***Model***). Runner’s `compute_cuff_shift()` method is
 easily expandable for users to add their own `CuffShiftModes` to control
 cuff placement on the nerve.
 
@@ -42,7 +42,7 @@ cuff toward the nerve until the nerve’s outermost Trace (i.e., for
 monofascicular nerve an inner or outer, and same result as
 `“NAIVE_ROTATION_MIN_CIRCLE_BOUNDARY”` for nerve’s with epineurium)
 is within the distance of the `“thk_medium_gap_internal”` parameter for
-the cuff.
+the cuff. Note: orientation masks (`a.tif`) are ignored when using these modes.
 
 For “automatic” `CuffShiftModes` (i.e.,
 `“AUTO_ROTATION_MIN_CIRCLE_BOUNDARY”,
@@ -61,7 +61,8 @@ If the user would like to rotate the cuff from beyond this position, they may se
 `“add_ang”` parameter in ***Model*** ([S8 Text](S8-JSON-file-parameter-guide)). The user may override the
 default “AUTO” rotation of the cuff on the nerve by adding an
 orientation mask (`a.tif`) to align a certain surface of the nerve sample
-with the cuff’s center ([S11 Text](S11-Morphology-files)). `“AUTO_ROTATION_MIN_CIRCLE_BOUNDARY”`
+with the cuff’s center ([S11 Text](S11-Morphology-files)). This behavior depends on the
+cuff's `"fixed_point"` parameter ([S17 text](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives)) The `“AUTO_ROTATION_MIN_CIRCLE_BOUNDARY”`
 `CuffShiftMode` moves the cuff toward the nerve until the nerve’s minimum
 radius enclosing circle is within the distance of the
 `“thk_medium_gap_internal”` parameter for the cuff.

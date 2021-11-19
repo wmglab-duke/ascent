@@ -1,0 +1,55 @@
+/*
+The copyrights of this software are owned by Duke University.
+Please refer to the LICENSE.txt and README.txt files for licensing instructions.
+The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
+*/
+
+/*
+Author: Eric Musselman
+Date created: August 10, 2021
+
+Description:
+- Save Ap times to file (in ms)
+
+Important notes:
+-
+
+Variables that must be defined in wrapper/params file:
+
+*/
+
+objref output_file_aptimes
+
+// https://www.neuron.yale.edu/neuron/static/new_doc/programming/ockeywor.html
+func max() {
+    if ($1 > $2){
+            return $1
+    } else {
+            return $2
+    }
+}
+
+proc Saving_Ap_end_times() {
+
+    // Open file for writing
+    output_file_aptimes = new File()
+    output_file_aptimes.wopen(Ap_times_fname_output)
+
+    min_size = apc_end_min_timevector.size()
+    max_size = apc_end_max_timevector.size()
+    rows = max(min_size, max_size)
+
+    for i=0, rows-1 {
+        // Print output to file
+        if (i < min_size && i < max_size) {
+            output_file_aptimes.printf("%f %f\n", apc_end_min_timevector.x[i], apc_end_max_timevector.x[i])
+        } else if (i < min_size && i >= max_size) {
+            output_file_aptimes.printf("%f %s\n", apc_end_min_timevector.x[i], "nan")
+        } else if (i >= min_size && i < max_size) {
+            output_file_aptimes.printf("%s %f\n", "nan", apc_end_max_timevector.x[i])
+        }
+    }
+
+    // Close file
+    output_file_aptimes.close()
+}

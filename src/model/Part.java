@@ -3152,6 +3152,7 @@ class Part {
                 ic.set("contributeto", im.get(icLabel));
                 ic.set("source", "file");
                 ic.set("filename", ci_inner_path);
+                ic.set("type","closed");
 
                 if (modelData.has("inner_interp_tol") && !modelData.has("trace_interp_tol")) {
                     ic.set("rtol", modelData.getDouble("inner_interp_tol"));
@@ -3272,6 +3273,7 @@ class Part {
                     icMesh.set("contributeto", im.get(icselLabel));
                     icMesh.set("source", "file");
                     icMesh.set("filename", mesh_inner_path);
+                    icMesh.set("type","closed");
 
                     if (modelData.has("inner_interp_tol") && !modelData.has("trace_interp_tol")) {
                         icMesh.set("rtol", modelData.getDouble("inner_interp_tol"));
@@ -3311,6 +3313,7 @@ class Part {
                 outeric1.set("contributeto", im.get(oc1Label));
                 outeric1.set("source", "file");
                 outeric1.set("filename", mesh_outer_path);
+                outeric1.set("type","closed");
 
                 if (modelData.has("outer_interp_tol") && !modelData.has("trace_interp_tol")) {
                     outeric1.set("rtol", modelData.getDouble("outer_interp_tol"));
@@ -3421,6 +3424,7 @@ class Part {
                 nerveic.set("contributeto",im.get(nerveLabel));
                 nerveic.set("source","file");
                 nerveic.set("filename",nerve_trace_path);
+                nerveic.set("type","closed");
 
                 //set interpolation tolerance for nerve curve
                 if (modelData.has("nerve_interp_tol") && !modelData.has("trace_interp_tol")) {
@@ -3431,7 +3435,7 @@ class Part {
                     throw new Exception("Both trace_interp_tol and nerve_interp_tol defined in Model. " +
                             "Use new convention for inners (outer_interp_tol), outers (outer_interp_tol), and nerve (nerve_interp_tol) separately!");
                 } else  {
-                    throw new Exception("You must specify an interpolation tolerance");
+                    throw new Exception("You must specify a nerve interpolation tolerance (nerve_interp_tol in model.json)");
                 }
 
                 //Generate surface from curve

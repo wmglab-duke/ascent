@@ -152,11 +152,6 @@
       "description": ""
     },
     {
-      "name": "z_nerve_CT400",
-      "expression": "30 [mm]",
-      "description": ""
-    },
-    {
       "name": "thk_medium_gap_internal_CT400",
       "expression": "10 [um]",
       "description": ""
@@ -229,6 +224,7 @@
   ],
 
   "expandable": true,
+  "fixed_point": "clockwise_end",
   "angle_to_contacts_deg": 157.56,
   "offset": {}
 }

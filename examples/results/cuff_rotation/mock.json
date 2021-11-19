@@ -4,9 +4,9 @@
   },
   "scalebar_length": 1000,
   "nerve": {
-    "a_nerve": 2200,
-    "b_nerve": 1800,
-    "rot_nerve": 0
+    "a": 4400,
+    "b": 3600,
+    "rot": 0
   },
   "figure": {
     "fig_margin": 1.2,

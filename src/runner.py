@@ -8,6 +8,7 @@ The source code can be found on the following GitHub repository: https://github.
 
 # builtins
 import os
+
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "1"
 import pickle
 from typing import List
@@ -19,6 +20,9 @@ import subprocess
 from copy import deepcopy
 from quantiphy import Quantity
 from shapely.geometry import Point
+import pymunkoptions
+
+pymunkoptions.options["debug"] = False
 
 # ascent
 from src.core import Sample, Simulation, Waveform
@@ -244,6 +248,9 @@ class Runner(Exceptionable, Configurable):
                         else:
                             if not os.path.exists(sim_obj_dir):
                                 os.makedirs(sim_obj_dir)
+                            
+                            if not os.path.exists(sim_obj_dir+'/plots'):
+                                os.makedirs(sim_obj_dir+'/plots')
 
                             simulation: Simulation = Simulation(sample, self.configs[Config.EXCEPTIONS.value])
                             simulation \
@@ -439,7 +446,10 @@ class Runner(Exceptionable, Configurable):
         nerve_mode: NerveMode = self.search_mode(NerveMode, Config.SAMPLE)
 
         if nerve_mode == NerveMode.PRESENT:
-            deform_ratio = self.search(Config.SAMPLE, 'deform_ratio')
+            if 'deform_ratio' not in self.configs[Config.SAMPLE.value].keys():
+                deform_ratio = 1
+            else:
+                deform_ratio = self.search(Config.SAMPLE, 'deform_ratio')
             if deform_ratio > 1:
                 self.throw(109)
         else:
@@ -469,22 +479,20 @@ class Runner(Exceptionable, Configurable):
         # get center and radius of nerve's min_bound circle
         nerve_copy = deepcopy(slide.nerve if nerve_mode == NerveMode.PRESENT else slide.fascicles[0].outer)
 
-        # for speed, downsample nerves to n_points_nerve (100) points
-        n_points_nerve = 100
-        nerve_copy.down_sample(DownSampleMode.KEEP, int(np.floor(nerve_copy.points.size / n_points_nerve)))
-
         # Get the boundary and center information for computing cuff shift
         if self.search_mode(ReshapeNerveMode, Config.SAMPLE) and not slide.monofasc() and deform_ratio == 1:
             x, y = 0, 0
             r_bound = np.sqrt(sample_config['Morphology']['Nerve']['area'] / np.pi)
         else:
-            x, y, r_bound = nerve_copy.smallest_enclosing_circle_naive()
+            x, y, r_bound = nerve_copy.make_circle()
 
         # next calculate the angle of the "centroid" to the center of min bound circle
         # if mono fasc, just use 0, 0 as centroid (i.e., centroid of nerve same as centroid of all fasc)
         # if poly fasc, use centroid of all fascicle as reference, not 0, 0
         # angle of centroid of nerve to center of minimum bounding circle
         reference_x = reference_y = 0.0
+        if not slide.monofasc() and not (round(slide.nerve.centroid()[0])==round(slide.nerve.centroid()[1])==0):
+            self.throw(123) #if the slide has nerve and is not centered at the nerve throw error
         if not slide.monofasc():
             reference_x, reference_y = slide.fascicle_centroid()
         theta_c = (np.arctan2(reference_y - y, reference_x - x) * (360 / (2 * np.pi))) % 360
@@ -513,7 +521,7 @@ class Runner(Exceptionable, Configurable):
             if not r_f <= r_i:
                 self.throw(51)
 
-            theta_f = 0
+            theta_f = theta_i
         else:
             # get initial cuff radius
             r_i_str: str = [item["expression"] for item in cuff_config["params"]
@@ -527,9 +535,15 @@ class Runner(Exceptionable, Configurable):
             ).real  # [um] (scaled from any arbitrary length unit)
 
             if r_i < r_f:
-                theta_f = (0.5 * ((r_f / r_i) * theta_i - theta_i)) % 360
+                fixed_point = cuff_config.get('fixed_point')
+                if fixed_point is None:
+                    self.throw(126)
+                if fixed_point == 'clockwise_end':
+                    theta_f = theta_i*(r_i/r_f)
+                elif fixed_point == 'center':
+                    theta_f = theta_i
             else:
-                theta_f = 0
+                theta_f = theta_i
 
         offset = 0
         for key, coef in cuff_config["offset"].items():
@@ -552,32 +566,23 @@ class Runner(Exceptionable, Configurable):
         model_config = self.remove(Config.MODEL)
         model_config['min_radius_enclosing_circle'] = r_bound
 
-        # add to theta_f using the orientation point
-        orientation_point = None
-        if slide.orientation_point_index is not None:
-            if slide.nerve is not None:  # has nerve
-                orientation_point = slide.orientation_point
-            else:  # monofasc, no nerve
-                orientation_point = slide.fascicles[0].outer.points[slide.orientation_point_index][:2]
-
-        if orientation_point is not None:
-            theta_c = (np.arctan2(orientation_point[1], orientation_point[0])) * (
-                    360 / (2 * np.pi)) % 360  # overwrite theta_c, use our own orientation
+        if slide.orientation_angle is not None:
+            theta_c = (slide.orientation_angle) * (360 / (2 * np.pi)) % 360  # overwrite theta_c, use our own orientation
 
         if cuff_shift_mode == CuffShiftMode.AUTO_ROTATION_MIN_CIRCLE_BOUNDARY \
                 or cuff_shift_mode == CuffShiftMode.MIN_CIRCLE_BOUNDARY:  # for backwards compatibility
             if r_i > r_f:
-                model_config['cuff']['rotate']['pos_ang'] = theta_f + theta_c - theta_i
+                model_config['cuff']['rotate']['pos_ang'] = theta_c-theta_f
                 model_config['cuff']['shift']['x'] = x - (r_i - offset - cuff_r_buffer - r_bound) * np.cos(
                     theta_c * ((2 * np.pi) / 360))
                 model_config['cuff']['shift']['y'] = y - (r_i - offset - cuff_r_buffer - r_bound) * np.sin(
                     theta_c * ((2 * np.pi) / 360))
 
             else:
-                model_config['cuff']['rotate']['pos_ang'] = theta_f + theta_c - theta_i
+                model_config['cuff']['rotate']['pos_ang'] = theta_c-theta_f
 
                 # if nerve is present, use 0,0
-                if slide.nerve is not None:  # has nerve
+                if slide.nerve is not None and deform_ratio==1:  # has nerve
                     model_config['cuff']['shift']['x'] = 0
                     model_config['cuff']['shift']['y'] = 0
                 else:
@@ -588,7 +593,7 @@ class Runner(Exceptionable, Configurable):
         elif cuff_shift_mode == CuffShiftMode.AUTO_ROTATION_TRACE_BOUNDARY \
                 or cuff_shift_mode == CuffShiftMode.TRACE_BOUNDARY:  # for backwards compatibility
             if r_i < r_f:
-                model_config['cuff']['rotate']['pos_ang'] = theta_f + theta_c - theta_i
+                model_config['cuff']['rotate']['pos_ang'] = theta_c-theta_f
                 model_config['cuff']['shift']['x'] = x
                 model_config['cuff']['shift']['y'] = y
             else:
@@ -616,11 +621,13 @@ class Runner(Exceptionable, Configurable):
                 center_x += x_step
                 center_y += y_step
 
-                model_config['cuff']['rotate']['pos_ang'] = (theta_f + theta_c - theta_i)
+                model_config['cuff']['rotate']['pos_ang'] = (theta_c-theta_f)
                 model_config['cuff']['shift']['x'] = center_x
                 model_config['cuff']['shift']['y'] = center_y
 
         elif cuff_shift_mode == CuffShiftMode.NAIVE_ROTATION_TRACE_BOUNDARY:
+            if slide.orientation_point is not None:
+                print('Warning: orientation tif image will be ignored because a NAIVE cuff shift mode was chosen.')
             if r_i < r_f:
                 model_config['cuff']['rotate']['pos_ang'] = 0
                 model_config['cuff']['shift']['x'] = x
@@ -661,6 +668,8 @@ class Runner(Exceptionable, Configurable):
 
         elif cuff_shift_mode == CuffShiftMode.NAIVE_ROTATION_MIN_CIRCLE_BOUNDARY \
                 or cuff_shift_mode == CuffShiftMode.PURPLE:
+            if slide.orientation_point is not None:
+                print('Warning: orientation tif image will be ignored because a NAIVE cuff shift mode was chosen.')
             if r_i > r_f:
                 model_config['cuff']['rotate']['pos_ang'] = 0
 
@@ -673,17 +682,14 @@ class Runner(Exceptionable, Configurable):
                 model_config['cuff']['rotate']['pos_ang'] = 0
 
                 # if nerve is present, use 0,0
-                if slide.nerve is not None:  # has nerve
+                if slide.nerve is not None and deform_ratio==1:  # has nerve
                     model_config['cuff']['shift']['x'] = 0
                     model_config['cuff']['shift']['y'] = 0
                 else:
                     # else, use
                     model_config['cuff']['shift']['x'] = x
                     model_config['cuff']['shift']['y'] = y
-
-        if 'add_ang' not in model_config['cuff']['rotate'].keys():
-            model_config['cuff']['rotate']['add_ang'] = 0
-
+                    
         return model_config
 
     def compute_electrical_parameters(self, all_configs, model_index):

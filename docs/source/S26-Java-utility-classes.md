@@ -1,6 +1,6 @@
-# S26: Java utility classes
+# Java utility classes
 
-##  1.1 IdentifierManager
+##  IdentifierManager
 
 In working with highly customized COMSOL FEMs, we found it convenient to
 abstract away from the underlying COMSOL indexing to improve code
@@ -44,7 +44,7 @@ updating model materials and physics. Therefore, we developed
 saves an `IdentifierManager` to a JSON file and loads an `IdentifierManager`
 into Java from a JSON Object, respectively.
 
-##  1.2 JSONio
+##  JSONio
 
 `JSONio` is a convenient Java class used for reading and writing JSON
 Objects to file. The `read()` method takes an input String containing the
@@ -52,7 +52,7 @@ file path to read and returns a JSON Object to memory. The `write()`
 method takes an input String containing the file path for the saving
 destination and a JSON Object containing the data to write to file.
 
-##  1.3 ModelSearcher
+##  ModelSearcher
 
 The `ModelSearcher` class in Java is used to look for previously created
 FEM meshed geometries that can be repurposed. For example, if

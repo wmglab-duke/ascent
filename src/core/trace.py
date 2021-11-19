@@ -93,7 +93,7 @@ class Trace(Exceptionable):
 
         if fit is not None:
             # find offset distance from factor and mean radius
-            distance: float = fit.get("a") * 2 * self.mean_radius() + fit.get("b")
+            distance: float = fit.get("a") * 2 * np.sqrt(self.area()/np.pi) + fit.get("b")
         elif distance is None:
             self.throw(29)
 
@@ -105,7 +105,18 @@ class Trace(Exceptionable):
         # cleanup
         self.__update()
         pco.Clear()
-
+        
+    def smooth(self,distance):
+        """
+        Smooths a contour using a dilation followed by erosion
+        :param distance: amount to use for dilation and erosion, in whatever units the trace is using
+        """
+        if distance<0: self.throw(111)
+        if distance == 0: return
+        self.offset(fit = None,distance = distance)
+        self.offset(fit = None,distance = -distance)
+        self.points = np.flip(self.points,axis = 0) # set points to opencv orientation
+        
     def scale(self, factor: float = 1, center: Union[List[float], str] = 'centroid'):
         """
         :param factor: scaling factor to scale up by - multiple all points by a factor.
@@ -474,7 +485,7 @@ class Trace(Exceptionable):
                 else:
                     self.throw(4)
 
-        except EnvironmentError as _:
+        except EnvironmentError:
             # only one of these can run, so comment at will
             self.throw(7)
             # raise
@@ -542,7 +553,7 @@ class Trace(Exceptionable):
 
     def make_circle(self):
         # Convert to float and randomize order
-        shuffled = [(float(x), float(y)) for (x, y) in self.points]
+        shuffled = [(float(x), float(y)) for (x, y) in self.points[:,0:2]]
         random.shuffle(shuffled)
 
         # Progressively add points to circle or recompute circle

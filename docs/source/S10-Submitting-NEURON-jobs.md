@@ -1,4 +1,4 @@
-# S10: Submitting NEURON jobs
+# Submitting NEURON jobs
 We provide scripts for the user to submit NEURON jobs in `src/neuron/`. It
 is suggested that the script ending in `“.sh”` is used for Linux-based
 cluster contexts; on the other hand, if running locally, the environment

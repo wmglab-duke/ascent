@@ -19,7 +19,9 @@ import os
 import scipy.stats as stats
 
 # ascent
-from src.utils import *
+from src.utils import (Config, Configurable, DiamDistMode, Exceptionable, FiberGeometry,
+                       FiberXYMode, FiberZMode, MyelinatedSamplingType, MyelinationMode, Saveable,
+                       SetupMode, WriteMode)
 from .sample import Sample
 
 
@@ -59,74 +61,9 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         xy_mode_name: str = self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode')
         xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
 
-        if not xy_mode == FiberXYMode.SL_PSEUDO_INTERP:
-            fibers_xy = self._generate_xy(sim_directory)
-            self.out_to_fib, self.out_to_in = self._generate_maps(fibers_xy)
-            self.fibers = self._generate_z(fibers_xy, super_sample=super_sample)
-
-        else:
-            # SL generation algorithm
-            sample_position = self.sample.configs[Config.SAMPLE.value].get('position', None)
-            if sample_position is not None:
-                pass
-                # print('\t\tUsing {} µm positioning for SL curve'.format(sample_position))
-            else:
-                sample_position = 5000  # default
-                # print('\t\tNo positioning for SL curve found. Using {} µm.'.format(sample_position))
-
-            z_nerve = self.search(Config.MODEL, 'medium', 'proximal', 'length')
-            z_medium = self.search(Config.MODEL, 'medium', 'distal', 'length')
-            # NOTE: for now, the sample position will be interpreted as the z-position of the SL branch
-            z_offset = sample_position  # + z_nerve / 2  # sample_position is distance from center of cuff to SL branch
-            r_medium = self.search(Config.MODEL, 'medium', 'distal', 'radius')
-            buffer = 50  # minimum distance from top of distal model
-
-            if z_offset >= z_medium - 1000:
-                print('\t\tWARNING: SL z_offset ({}) within 1000 µm of distal model length ({})'.format(z_offset,
-                                                                                                        z_medium))
-
-            def fit_z(t):
-                return (10 ** 5 / t) + z_offset
-
-            def fit_3d(t, theta, function):
-                return t * np.cos(theta), t * np.sin(theta), function(t)
-
-            def magnitude(vec):
-                return np.sqrt(sum(item ** 2 for item in vec))
-
-            # generate parameter range
-            t_min = 0.001
-            t_max = r_medium - buffer
-            t_step = 1
-            t_range = np.arange(t_min, t_max, t_step)
-
-            while fit_z(t_range[0]) > z_medium - 50:
-                # print('\t\tclip')
-                t_range = t_range[1:]
-
-            # init theta
-            theta = self.search(Config.SIM, 'theta') if 'theta' in self.configs[Config.SIM.value].keys() else 0
-
-            # set angle theta to orientation point if defined
-            slide = self.sample.slides[0]
-            # if slide.orientation_point_index is not None:
-            #     outer = slide.fascicles[0] if slide.monofasc() else slide.nerve
-            #     orientation_x, orientation_y = tuple(outer.points[slide.orientation_point_index][:2])
-            #     theta = np.arctan2(orientation_y, orientation_x)
-
-            x, y, z = fit_3d(t_range, theta, fit_z)
-            points = list(zip(x, y, z))
-            fiber_length = sum(
-                magnitude(np.asarray(points[i]) - np.asarray(points[i + 1])) for i in range(len(points) - 1))
-
-            fibers_xy = np.asarray([(0, 0)])
-            fibers = self._generate_z(fibers_xy, override_length=fiber_length, super_sample=super_sample)
-
-            fiber_z_points = np.asarray(fibers[0])[:, 2]
-            fiber_z_points = fiber_z_points - np.min(fiber_z_points)
-            ratios = fiber_z_points / np.max(fiber_z_points)
-
-            self.fibers = [interparc(ratios, x, y, z)]
+        fibers_xy = self._generate_xy(sim_directory)
+        self.out_to_fib, self.out_to_in = self._generate_maps(fibers_xy)
+        self.fibers = self._generate_z(fibers_xy, super_sample=super_sample)
 
         return self
 
@@ -335,8 +272,11 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                 plt.figure()
                 self.sample.slides[0].plot(final=False, fix_aspect_ratio=True)
                 for point in points:
-                    plt.plot(point[0], point[1], 'r*')
-                plt.show()
+                    plt.plot(point[0], point[1], 'r.', markersize = 1)
+                if self.search(Config.SIM, 'plot_folder',optional = True) == True: 
+                    plt.savefig(sim_directory+'/plots/fibers_xy.png',dpi=300)
+                    plt.close()
+                else: plt.show()
         else:
             self.throw(30)
 
@@ -466,15 +406,15 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             # compute offset z coordinate
             z_offset = [my_z + offset + random_offset_value + additional_offset for my_z in z_values]
 
-            xy_mode_name: str = self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode')
-            xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
+            # xy_mode_name: str = self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode')
+            # xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
 
             # only clip if NOT an SL fiber
-            if xy_mode != FiberXYMode.SL_PSEUDO_INTERP:
-                z_offset = clip(z_offset,
-                                self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'min'),
-                                self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'max'),
-                                myel)
+
+            z_offset = clip(z_offset,
+                            self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'min'),
+                            self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'max'),
+                            myel)
 
             my_fiber = [(my_x, my_y, z) for z in z_offset]
 
@@ -491,8 +431,9 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             model_length = self.search(Config.MODEL, 'medium', 'proximal', 'length') if (
                     override_length is None) else override_length
 
-            if not ('min' in self.configs['sims']['fibers']['z_parameters'].keys() and 'max' in
-                    self.configs['sims']['fibers']['z_parameters'].keys()):
+            if not 'min' in self.configs['sims']['fibers']['z_parameters'].keys() or \
+                    not 'max' in self.configs['sims']['fibers']['z_parameters'].keys() or \
+                    override_length is not None:
                 fiber_length = model_length if override_length is None else override_length
                 self.configs['sims']['fibers'][FiberZMode.parameters.value]['min'] = 0
                 self.configs['sims']['fibers'][FiberZMode.parameters.value]['max'] = fiber_length
@@ -524,18 +465,22 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             else:
                 z_shift_to_center_in_model_range = 0
 
-            xy_mode_name: str = self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode')
-            xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
+            # xy_mode_name: str = self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode')
+            # xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
 
             # check that proximal model length is greater than or equal to fiber length (fibers only in nerve trunk)
             # override this functionality if using SL (not in nerve trunk)
-            if not xy_mode == FiberXYMode.SL_PSEUDO_INTERP:
-                assert model_length >= fiber_length, 'proximal length: ({}) < fiber length: ({})'.format(model_length,
-                                                                                                         fiber_length)
+
+            assert model_length >= fiber_length, 'proximal length: ({}) < fiber length: ({})'.format(model_length,
+                                                                                                     fiber_length)
 
             fiber_geometry_mode_name: str = self.search(Config.SIM, 'fibers', 'mode')
 
             # use key from above to get myelination mode from fiber_z
+            diams = []
+            diameter = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'diameter')
+            diam_distribution: bool = True if type(diameter) is dict else False
+
             if super_sample:
                 myelinated = False
             else:
@@ -543,18 +488,16 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                     Config.FIBER_Z,
                     MyelinationMode.parameters.value,
                     fiber_geometry_mode_name,
-                    "myelinated"
+                    'myelinated'
                 )
 
-                diams = []
                 my_z_seed = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'seed')
-                diameter = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'diameter')
-                diam_distribution: bool = True if type(diameter) is dict else False
+
                 if diam_distribution:
                     sampling_mode = self.search(Config.FIBER_Z,
                                                 MyelinationMode.parameters.value,
                                                 fiber_geometry_mode_name,
-                                                "sampling")
+                                                'sampling')
                     if myelinated and not (sampling_mode == MyelinatedSamplingType.INTERPOLATION.value):
                         self.throw(104)
 
@@ -566,7 +509,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                                                        str(mode).split('.')[-1] == distribution_mode_name][0]
                     # seed rng
                     my_diam_seed: int = self.search(Config.SIM,
-                                                    "fibers",
+                                                    'fibers',
                                                     FiberZMode.parameters.value,
                                                     'diameter',
                                                     'seed')
@@ -577,12 +520,12 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
                         # load parameters
                         lower_fiber_diam: float = self.search(Config.SIM,
-                                                              "fibers",
+                                                              'fibers',
                                                               FiberZMode.parameters.value,
                                                               'diameter',
                                                               'lower')
                         upper_fiber_diam: float = self.search(Config.SIM,
-                                                              "fibers",
+                                                              'fibers',
                                                               FiberZMode.parameters.value,
                                                               'diameter',
                                                               'upper')
@@ -600,17 +543,17 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
                         # load parameters
                         n_std_fiber_diam_limit: float = self.search(Config.SIM,
-                                                                    "fibers",
+                                                                    'fibers',
                                                                     FiberZMode.parameters.value,
                                                                     'diameter',
                                                                     'n_std_limit')
                         mu_fiber_diam: float = self.search(Config.SIM,
-                                                           "fibers",
+                                                           'fibers',
                                                            FiberZMode.parameters.value,
                                                            'diameter',
                                                            'mu')
                         std_fiber_diam: float = self.search(Config.SIM,
-                                                            "fibers",
+                                                            'fibers',
                                                             FiberZMode.parameters.value,
                                                             'diameter',
                                                             'std')
@@ -643,6 +586,8 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                                                         delta_z,
                                                         x, y,
                                                         z_shift_to_center_in_model_range + z_shift_to_center_in_fiber_range)
+                    if np.amax(np.array(fiber_pre)[:, 2]) - np.amin(np.array(fiber_pre)[:, 2]) > fiber_length:
+                        self.throw(119)
                     if diam_distribution:
                         fiber = {'diam': diam, 'fiber': fiber_pre}
                     else:
@@ -671,7 +616,8 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                     z_bottom_half = z_bottom_half[1:]
 
                 if len(diams) == 0:
-                    diams = [diameter] * len(fibers_xy)
+                    diams = [self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'diameter')] * len(
+                        fibers_xy)
 
                 for (x, y), diam in zip(fibers_xy, diams):
                     fiber_pre = build_fiber_with_offset(list(np.concatenate((z_bottom_half[:-1], z_top_half))),
@@ -679,6 +625,8 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                                                         delta_z,
                                                         x, y,
                                                         z_shift_to_center_in_model_range)
+                    if np.amax(np.array(fiber_pre)[:, 2]) - np.amin(
+                            np.array(fiber_pre)[:, 2]) > fiber_length: self.throw(119)
                     if diam_distribution:
                         fiber = {'diam': diam, 'fiber': fiber_pre}
                     else:

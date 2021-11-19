@@ -8,6 +8,7 @@ The source code can be found on the following GitHub repository: https://github.
 
 import os
 from pathlib import Path
+import sys
 
 # these are the parts of files we want removed
 # NOTE: be careful with "out" -- added warning!
@@ -32,40 +33,15 @@ if 'out' in INCLUDED_FILENAMES:
 
 def run(args):
 
+    for sample in args.sample_indices:
 
-    # if no verbose arg passed (minimum number of args)
-    VALID_ARGS = len(args) >= 2
-    first_sample_index = 1
-    VERBOSE = False
-
-    # if verbose arg passed
-    if args[1] == '-v':
-        VALID_ARGS = len(args) >= 3
-        first_sample_index = 2
-        VERBOSE = True
-
-    # ensure all args are integers
-    for arg in args[first_sample_index:]:
-        try:
-            int(arg)
-        except ValueError:
-            VALID_ARGS = False
-            break
-
-    # exit if any validation failed
-    if not VALID_ARGS:
-        print('Usage: python run tidy_samples [-v] sample_1 sample_2 ...\n where all sample_i are integers')
-        return
-
-    for sample in args[first_sample_index:]:
-
-        if VERBOSE:
+        if args.verbose:
             print(f'Sample: {sample}')
 
         sample_path = Path(os.path.join('samples', f'{sample}'))
 
         # remove files
-        if VERBOSE:
+        if args.verbose:
             print('\n\t- - - - - - FILES - - - - - -\n')
         for filepath in [str(path.absolute()) for path in sample_path.glob('**/*')]:
 
@@ -75,15 +51,15 @@ def run(args):
 
             if any([included_filename in filepath for included_filename in INCLUDED_FILENAMES]):
                 os.remove(filepath)
-                if VERBOSE:
+                if args.verbose:
                     print(f'\tREMOVE FILE: {filepath}')
 
             else:
-                if VERBOSE:
+                if args.verbose:
                     print(f'\tKEEP FILE: {filepath}')
 
         # remove empty directories
-        if VERBOSE:
+        if args.verbose:
             print('\n\t- - - - - DIRECTORIES - - - -\n')
         def remove_empty_directories(directory: str):
 
@@ -94,15 +70,15 @@ def run(args):
 
             if os.path.isdir(directory) and len(os.listdir(directory)) == 0:
                 os.rmdir(directory)
-                if VERBOSE:
+                if args.verbose:
                     print(f'\tREMOVE DIR: {directory}')
 
             else:
-                if VERBOSE:
+                if args.verbose:
                     print(f'\tKEEP DIR: {directory}')
 
         remove_empty_directories(str(sample_path.absolute()))
 
-        if VERBOSE:
+        if args.verbose:
             print('\n\n')
 
