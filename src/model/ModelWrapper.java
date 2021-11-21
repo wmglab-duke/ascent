@@ -1157,7 +1157,7 @@ public class ModelWrapper {
 
         JSONArray models_list = run.getJSONArray("models"); // get array of COMSOL models
         JSONObject break_points = new JSONObject();
-        if (cli_args.has("break_point")) {
+        if (cli_args.has("break_point") & cli_args.get("break_point") != null) {
             break_points.put(cli_args.getString("break_point"),true);
         }
         else if (run.has("break_points")) {
