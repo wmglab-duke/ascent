@@ -1155,9 +1155,6 @@ public class ModelWrapper {
             }
         }
 
-        boolean lic = ModelUtil.checkoutLicenseForFile("D:\\ASCENT\\ascent\\samples\\0\\models\\0\\bases\\0.mph");
-        boolean lic2 = ModelUtil.checkoutLicense("COMSOL");
-
         // Take projectPath input to ModelWrapper and assign to string.
         String projectPath = args[0];
 
