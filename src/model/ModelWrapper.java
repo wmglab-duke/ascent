@@ -1127,6 +1127,11 @@ public class ModelWrapper {
      * @param args
      */
     public static void main(String[] args) throws InterruptedException {
+        //Load CLI args
+        byte[] decodedBytes = Base64.getDecoder().decode(args[2]);
+        String decodedString = new String(decodedBytes);
+        JSONObject cli_args = new JSONObject(decodedString);
+
         // Start COMSOL Instance
         try {
             ModelUtil.connect("localhost", 2036);
@@ -1138,15 +1143,26 @@ public class ModelWrapper {
         ModelUtil.initStandalone(false);
 //        ModelUtil.showProgress(null); // if you want to see COMSOL progress (as it makes all geometry, runs, etc.)
 
+        long start = System.currentTimeMillis();
+        long stop = cli_args.getLong("wait_license")*60*60*1000+start;
+        while (System.currentTimeMillis()<stop) {
+            boolean lic = ModelUtil.checkoutLicense("COMSOL");
+            if (lic==true) {
+                break;
+            }
+            else {
+                TimeUnit.SECONDS.sleep(600);
+            }
+        }
+
+        boolean lic = ModelUtil.checkoutLicenseForFile("D:\\ASCENT\\ascent\\samples\\0\\models\\0\\bases\\0.mph");
+        boolean lic2 = ModelUtil.checkoutLicense("COMSOL");
+
         // Take projectPath input to ModelWrapper and assign to string.
         String projectPath = args[0];
 
         // Load RUN configuration data
         String runPath = args[1]; // Take runPath input to ModelWrapper and assign to string
-        //Load CLI args
-        byte[] decodedBytes = Base64.getDecoder().decode(args[2]);
-        String decodedString = new String(decodedBytes);
-        JSONObject cli_args = new JSONObject(decodedString);
 
         JSONObject run = null;
         try {
