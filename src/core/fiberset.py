@@ -392,18 +392,17 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
             random_offset_value = 0
             # get offset param - NOTE: raw value is a FRACTION of dz (explanation for multiplication by dz)
-            if 'offset' in self.search(Config.SIM, 'fibers', FiberZMode.parameters.value).keys():
-                offset = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'offset') * dz
-
-                if 0 <= offset <= 1:
-                    pass
-                else:
-                    self.throw(99)
-
-            else:
+            offset = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value,'offset',optional=True)
+            
+            if offset is None: 
                 offset = 0
                 random_offset_value = dz * (random.random() - 0.5)
-
+            else:
+                if 0 <= offset <= 1:
+                    offset = offset*dz
+                else:
+                    self.throw(99)
+             
             # compute offset z coordinate
             z_offset = [my_z + offset + random_offset_value + additional_offset for my_z in z_values]
 
