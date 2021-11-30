@@ -115,12 +115,12 @@ class Runner(Exceptionable, Configurable):
         # load all json configs into memory
         all_configs = self.load_configs()
 
-        def load(path: str):
+        def load_obj(path: str):
             """
             :param path: path to python obj file
             :return: obj file
             """
-            return pickle.load(open(path, 'rb'))
+            return pickle.load(open(path, 'rb')).add(SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value])
 
         # ensure NEURON files exist in export location
         Simulation.export_neuron_files(os.environ[Env.NSIM_EXPORT_PATH.value])
@@ -151,7 +151,7 @@ class Runner(Exceptionable, Configurable):
         # instantiate sample
         if smart and os.path.exists(sample_file):
             print('Found existing sample {} ({})'.format(self.configs[Config.RUN.value]['sample'], sample_file))
-            sample = load(sample_file)
+            sample = load_obj(sample_file)
         else:
             # init slide manager
             sample = Sample(self.configs[Config.EXCEPTIONS.value])
@@ -220,7 +220,7 @@ class Runner(Exceptionable, Configurable):
                             print('\t    Found existing sim object for sim {} ({})'.format(
                                 self.configs[Config.RUN.value]['sims'][sim_index], sim_obj_file))
 
-                            simulation: Simulation = load(sim_obj_file)
+                            simulation: Simulation = load_obj(sim_obj_file)
                             potentials_exist.append(simulation.potentials_exist(sim_obj_dir))
 
                             if 'supersampled_bases' in simulation.configs['sims'].keys():
@@ -238,7 +238,7 @@ class Runner(Exceptionable, Configurable):
                                     )
 
                                     # do Sim.fibers.xy_parameters match between Sim and source_sim?
-                                    source_sim: simulation = load(os.path.join(source_sim_obj_dir, 'sim.obj'))
+                                    source_sim: simulation = load_obj(os.path.join(source_sim_obj_dir, 'sim.obj'))
                                     source_xy_dict: dict = source_sim.configs['sims']['fibers']['xy_parameters']
                                     xy_dict: dict = simulation.configs['sims']['fibers']['xy_parameters']
 
@@ -284,7 +284,7 @@ class Runner(Exceptionable, Configurable):
                                     )
 
                                     # do Sim.fibers.xy_parameters match between Sim and source_sim?
-                                    source_sim: simulation = load(os.path.join(sim_obj_dir, 'sim.obj'))
+                                    source_sim: simulation = load_obj(os.path.join(sim_obj_dir, 'sim.obj'))
                                     source_xy_dict: dict = source_sim.configs['sims']['fibers']['xy_parameters']
                                     xy_dict: dict = simulation.configs['sims']['fibers']['xy_parameters']
 
@@ -345,7 +345,7 @@ class Runner(Exceptionable, Configurable):
                             )
 
                             # load up correct simulation and build required sims
-                            simulation: Simulation = load(sim_obj_path)
+                            simulation: Simulation = load_obj(sim_obj_path)
                             simulation.build_n_sims(sim_dir, sim_num)
 
                             # export simulations
