@@ -1157,8 +1157,7 @@ public class ModelWrapper {
                     if (lic == true) {
                         break;
                     } else {
-                        System.out.println("waiting");
-                        TimeUnit.SECONDS.sleep(5);
+                        TimeUnit.SECONDS.sleep(600);
                     }
                 }
                 if (lic == false) {
