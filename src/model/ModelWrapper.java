@@ -1143,15 +1143,28 @@ public class ModelWrapper {
         ModelUtil.initStandalone(false);
 //        ModelUtil.showProgress(null); // if you want to see COMSOL progress (as it makes all geometry, runs, etc.)
 
-        long start = System.currentTimeMillis();
-        long stop = cli_args.getLong("wait_license")*60*60*1000+start;
-        while (System.currentTimeMillis()<stop) {
-            boolean lic = ModelUtil.checkoutLicense("COMSOL");
-            if (lic==true) {
-                break;
-            }
-            else {
-                TimeUnit.SECONDS.sleep(600);
+        //checkout comsol license
+        if (cli_args.has("wait_for_license"));
+        {
+            if (!cli_args.isNull("wait_for_license")) {
+                long wait_hours = cli_args.getLong("wait_for_license");
+                System.out.println("Checking out COMSOL license. System will wait up to " + String.valueOf(wait_hours) + " hours for an available license seat.");
+                boolean lic = false;
+                long start = System.currentTimeMillis();
+                long stop = wait_hours * 60 * 60 * 1000 + start;
+                while (System.currentTimeMillis() < stop) {
+                    lic = ModelUtil.checkoutLicense("COMSOL");
+                    if (lic == true) {
+                        break;
+                    } else {
+                        System.out.println("waiting");
+                        TimeUnit.SECONDS.sleep(5);
+                    }
+                }
+                if (lic == false) {
+                    System.out.println("A COMSOL license did not become available within the specified time window. Exiting...");
+                    System.exit(1);
+                }
             }
         }
 
