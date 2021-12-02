@@ -1127,6 +1127,11 @@ public class ModelWrapper {
      * @param args
      */
     public static void main(String[] args) throws InterruptedException {
+        //Load CLI args
+        byte[] decodedBytes = Base64.getDecoder().decode(args[2]);
+        String decodedString = new String(decodedBytes);
+        JSONObject cli_args = new JSONObject(decodedString);
+
         // Start COMSOL Instance
         try {
             ModelUtil.connect("localhost", 2036);
@@ -1138,25 +1143,51 @@ public class ModelWrapper {
         ModelUtil.initStandalone(false);
 //        ModelUtil.showProgress(null); // if you want to see COMSOL progress (as it makes all geometry, runs, etc.)
 
+        //checkout comsol license
+        if (cli_args.has("wait_for_license"));
+        {
+            if (!cli_args.isNull("wait_for_license")) {
+                long wait_hours = cli_args.getLong("wait_for_license");
+                System.out.println("Checking out COMSOL license. System will wait up to " + String.valueOf(wait_hours) + " hours for an available license seat.");
+                boolean lic = false;
+                long start = System.currentTimeMillis();
+                long stop = wait_hours * 60 * 60 * 1000 + start;
+                while (System.currentTimeMillis() < stop) {
+                    lic = ModelUtil.checkoutLicense("COMSOL");
+                    if (lic == true) {
+                        break;
+                    } else {
+                        TimeUnit.SECONDS.sleep(600);
+                    }
+                }
+                if (lic == false) {
+                    System.out.println("A COMSOL license did not become available within the specified time window. Exiting...");
+                    System.exit(1);
+                }
+            }
+        }
+
         // Take projectPath input to ModelWrapper and assign to string.
         String projectPath = args[0];
 
         // Load RUN configuration data
         String runPath = args[1]; // Take runPath input to ModelWrapper and assign to string
+
         JSONObject run = null;
         try {
             run = JSONio.read(runPath);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        JSONArray models_list = run.getJSONArray("models"); // get array of COMSOL models
-        JSONObject break_points;
-        try {
-            break_points = run.getJSONObject("break_points");   
-        } catch(JSONException e) {
-            break_points = new JSONObject();
-        }
 
+        JSONArray models_list = run.getJSONArray("models"); // get array of COMSOL models
+        JSONObject break_points = new JSONObject();
+        if (cli_args.has("break_point") && !cli_args.isNull("break_point")) {
+            break_points.put(cli_args.getString("break_point"),true);
+        }
+        else if (run.has("break_points")) {
+                break_points = run.getJSONObject("break_points");
+        }
         boolean nerve_only;
         boolean cuff_only;
         if (run.has("partial_fem")) {

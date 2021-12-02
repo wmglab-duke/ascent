@@ -108,6 +108,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
             fiberset \
                 .add(SetupMode.OLD, Config.SIM, sim_copy) \
                 .add(SetupMode.OLD, Config.MODEL, self.configs[Config.MODEL.value]) \
+                .add(SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value]) \
                 .generate(sim_directory) \
                 .write(WriteMode.DATA, fiberset_directory)
 
@@ -133,6 +134,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
             fiberset \
                 .add(SetupMode.OLD, Config.SIM, self.configs[Config.SIM.value]) \
                 .add(SetupMode.OLD, Config.MODEL, self.configs[Config.MODEL.value]) \
+                .add(SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value]) \
                 .generate(sim_directory, super_sample=generate_ss_bases) \
                 .write(WriteMode.DATA, ss_fibercoords_directory)
 
@@ -159,6 +161,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
             waveform \
                 .add(SetupMode.OLD, Config.SIM, sim_copy) \
                 .add(SetupMode.OLD, Config.MODEL, self.configs[Config.MODEL.value]) \
+                .add(SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value]) \
                 .init_post_config() \
                 .generate() \
                 .write(WriteMode.DATA, os.path.join(directory, str(i))) \
@@ -336,6 +339,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
             hocwriter \
                 .add(SetupMode.OLD, Config.MODEL, self.configs[Config.MODEL.value]) \
                 .add(SetupMode.OLD, Config.SIM, sim_copy) \
+                .add(SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value]) \
                 .build_hoc(n_tsteps)
 
             # copy in potentials data into neuron simulation data/inputs folder
@@ -583,7 +587,8 @@ class Simulation(Exceptionable, Configurable, Saveable):
             os.makedirs(target)
 
         # neuron files
-        du.copy_tree(os.path.join(os.environ[Env.PROJECT_PATH.value], 'src', 'neuron'), target)
+        try:du.copy_tree(os.path.join(os.environ[Env.PROJECT_PATH.value], 'src', 'neuron'), target)
+        except:pass
 
         submit_target = os.path.join(target, 'submit.py')
         if os.path.isfile(submit_target):

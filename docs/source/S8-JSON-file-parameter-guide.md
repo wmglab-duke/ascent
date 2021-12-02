@@ -102,7 +102,8 @@ of the file.
     to run only up to certain steps of the pipeline, which can be
     particularly useful for debugging. If a breakpoint is not defined, the
     default behavior is false (i.e., the pipeline continues beyond the
-    breakpoint). Optional.
+    breakpoint). Note: specifying a break point via command line arguments
+    will override any break points set in your run config. Optional.
 
     `“models_exit_status”`: The value (\[Boolean, ...\]) of this property
     indicates if Java successfully made the FEMs for the corresponding model

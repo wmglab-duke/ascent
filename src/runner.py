@@ -14,6 +14,8 @@ import pickle
 from typing import List
 
 # packages
+import json
+import base64
 import sys
 import numpy as np
 import subprocess
@@ -113,12 +115,12 @@ class Runner(Exceptionable, Configurable):
         # load all json configs into memory
         all_configs = self.load_configs()
 
-        def load(path: str):
+        def load_obj(path: str):
             """
             :param path: path to python obj file
             :return: obj file
             """
-            return pickle.load(open(path, 'rb'))
+            return pickle.load(open(path, 'rb')).add(SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value])
 
         # ensure NEURON files exist in export location
         Simulation.export_neuron_files(os.environ[Env.NSIM_EXPORT_PATH.value])
@@ -149,7 +151,7 @@ class Runner(Exceptionable, Configurable):
         # instantiate sample
         if smart and os.path.exists(sample_file):
             print('Found existing sample {} ({})'.format(self.configs[Config.RUN.value]['sample'], sample_file))
-            sample = load(sample_file)
+            sample = load_obj(sample_file)
         else:
             # init slide manager
             sample = Sample(self.configs[Config.EXCEPTIONS.value])
@@ -158,6 +160,7 @@ class Runner(Exceptionable, Configurable):
             sample \
                 .add(SetupMode.OLD, Config.SAMPLE, all_configs[Config.SAMPLE.value][0]) \
                 .add(SetupMode.OLD, Config.RUN, self.configs[Config.RUN.value]) \
+                .add(SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value]) \
                 .init_map(SetupMode.OLD) \
                 .build_file_structure() \
                 .populate(deform_animate=False) \
@@ -217,7 +220,7 @@ class Runner(Exceptionable, Configurable):
                             print('\t    Found existing sim object for sim {} ({})'.format(
                                 self.configs[Config.RUN.value]['sims'][sim_index], sim_obj_file))
 
-                            simulation: Simulation = load(sim_obj_file)
+                            simulation: Simulation = load_obj(sim_obj_file)
                             potentials_exist.append(simulation.potentials_exist(sim_obj_dir))
 
                             if 'supersampled_bases' in simulation.configs['sims'].keys():
@@ -235,7 +238,7 @@ class Runner(Exceptionable, Configurable):
                                     )
 
                                     # do Sim.fibers.xy_parameters match between Sim and source_sim?
-                                    source_sim: simulation = load(os.path.join(source_sim_obj_dir, 'sim.obj'))
+                                    source_sim: simulation = load_obj(os.path.join(source_sim_obj_dir, 'sim.obj'))
                                     source_xy_dict: dict = source_sim.configs['sims']['fibers']['xy_parameters']
                                     xy_dict: dict = simulation.configs['sims']['fibers']['xy_parameters']
 
@@ -257,6 +260,7 @@ class Runner(Exceptionable, Configurable):
                             simulation \
                                 .add(SetupMode.OLD, Config.MODEL, model_config) \
                                 .add(SetupMode.OLD, Config.SIM, sim_config) \
+                                .add(SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value]) \
                                 .resolve_factors() \
                                 .write_waveforms(sim_obj_dir) \
                                 .write_fibers(sim_obj_dir) \
@@ -280,7 +284,7 @@ class Runner(Exceptionable, Configurable):
                                     )
 
                                     # do Sim.fibers.xy_parameters match between Sim and source_sim?
-                                    source_sim: simulation = load(os.path.join(sim_obj_dir, 'sim.obj'))
+                                    source_sim: simulation = load_obj(os.path.join(sim_obj_dir, 'sim.obj'))
                                     source_xy_dict: dict = source_sim.configs['sims']['fibers']['xy_parameters']
                                     xy_dict: dict = simulation.configs['sims']['fibers']['xy_parameters']
 
@@ -290,12 +294,11 @@ class Runner(Exceptionable, Configurable):
                                     ss_bases_exist.append(
                                         simulation.ss_bases_exist(source_sim_obj_dir)
                                     )
-
-            if ('break_points' in self.configs[Config.RUN.value].keys()) and \
-                    ('pre_java' in self.search(Config.RUN, 'break_points').keys()):
-                if self.search(Config.RUN, 'break_points', 'pre_java'):
-                    print('KILLING PRE JAVA')
-                    sys.exit()
+            if self.configs[Config.CLI_ARGS.value].get('break_point')=='pre_java' or \
+                    (('break_points' in self.configs[Config.RUN.value].keys()) and \
+                     self.search(Config.RUN, 'break_points').get('pre_java')==True):
+                print('KILLING PRE JAVA')
+                sys.exit()
 
             # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials if necessary
             if 'models' in all_configs.keys() and 'sims' in all_configs.keys():
@@ -311,7 +314,7 @@ class Runner(Exceptionable, Configurable):
                 self.remove(Config.RUN)
                 run_path = os.path.join('config', 'user', 'runs', '{}.json'.format(self.number))
                 self.add(SetupMode.NEW, Config.RUN, run_path)
-
+                                
                 #  continue by using simulation objects
                 models_exit_status = self.search(Config.RUN, "models_exit_status")
 
@@ -342,7 +345,7 @@ class Runner(Exceptionable, Configurable):
                             )
 
                             # load up correct simulation and build required sims
-                            simulation: Simulation = load(sim_obj_path)
+                            simulation: Simulation = load_obj(sim_obj_path)
                             simulation.build_n_sims(sim_dir, sim_num)
 
                             # export simulations
@@ -383,6 +386,12 @@ class Runner(Exceptionable, Configurable):
 
         core_name = 'ModelWrapper'
 
+        #Encode command line args as jason string, then encode to base64 for passing to java
+        argstring = json.dumps(self.configs[Config.CLI_ARGS.value])
+        argbytes = argstring.encode('ascii')
+        argbase = base64.b64encode(argbytes)
+        argfinal = argbase.decode('ascii')
+        
         if sys.platform.startswith('darwin'):  # macOS
 
             subprocess.Popen(['{}/bin/comsol'.format(comsol_path), 'server'], close_fds=True)
@@ -393,11 +402,12 @@ class Runner(Exceptionable, Configurable):
             # https://stackoverflow.com/questions/219585/including-all-the-jars-in-a-directory-within-the-java-classpath
             os.system('{}/java/maci64/jre/Contents/Home/bin/java '
                       '-cp .:$(echo {}/plugins/*.jar | '
-                      'tr \' \' \':\'):../bin/json-20190722.jar:../bin model.{} "{}" "{}"'.format(comsol_path,
+                      'tr \' \' \':\'):../bin/json-20190722.jar:../bin model.{} "{}" "{}" "{}"'.format(comsol_path,
                                                                                                   comsol_path,
                                                                                                   core_name,
                                                                                                   project_path,
-                                                                                                  run_path))
+                                                                                                  run_path,
+                                                                                                  argfinal))
             os.chdir('..')
 
         elif sys.platform.startswith('linux'):  # linux
@@ -410,11 +420,12 @@ class Runner(Exceptionable, Configurable):
             # https://stackoverflow.com/questions/219585/including-all-the-jars-in-a-directory-within-the-java-classpath
             os.system('{}/java/glnxa64/jre/bin/java '
                       '-cp .:$(echo {}/plugins/*.jar | '
-                      'tr \' \' \':\'):../bin/json-20190722.jar:../bin model.{} "{}" "{}"'.format(comsol_path,
+                      'tr \' \' \':\'):../bin/json-20190722.jar:../bin model.{} "{}" "{}" "{}"'.format(comsol_path,
                                                                                                   comsol_path,
                                                                                                   core_name,
                                                                                                   project_path,
-                                                                                                  run_path))
+                                                                                                  run_path,
+                                                                                                  argfinal))
             os.chdir('..')
 
         else:  # assume to be 'win64'
@@ -426,11 +437,12 @@ class Runner(Exceptionable, Configurable):
                                                          comsol_path))
             os.system('""{}\\java\\win64\\jre\\bin\\java" '
                       '-cp "{}\\plugins\\*";"..\\bin\\json-20190722.jar";"..\\bin" '
-                      'model.{} "{}" "{}""'.format(comsol_path,
+                      'model.{} "{}" "{}" "{}""'.format(comsol_path,
                                                    comsol_path,
                                                    core_name,
                                                    project_path,
-                                                   run_path))
+                                                   run_path,
+                                                   argfinal))
             os.chdir('..')
 
     def compute_cuff_shift(self, model_config: dict, sample: Sample, sample_config: dict):
