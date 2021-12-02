@@ -298,7 +298,7 @@ class Runner(Exceptionable, Configurable):
                     (('break_points' in self.configs[Config.RUN.value].keys()) and \
                      self.search(Config.RUN, 'break_points').get('pre_java')==True):
                 print('KILLING PRE JAVA')
-                sys.exit()
+                return
 
             # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials if necessary
             if 'models' in all_configs.keys() and 'sims' in all_configs.keys():
