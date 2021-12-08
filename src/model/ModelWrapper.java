@@ -1881,7 +1881,7 @@ public class ModelWrapper {
                     String mediumMaterial = mw.im.get("medium");
                     IdentifierManager myIM = mw.getPartPrimitiveIM(mediumPrimitiveString);
                     if (myIM == null)
-                        throw new IllegalArgumentException("IdentfierManager not created for name: " + mediumPrimitiveString);
+                        throw new IllegalArgumentException("IdentifierManager not created for name: " + mediumPrimitiveString);
                     String[] myLabels = myIM.labels; // may be null, but that is ok if not used
                     String selection = myLabels[0];
 
