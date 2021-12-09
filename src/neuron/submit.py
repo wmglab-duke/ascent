@@ -471,13 +471,14 @@ def make_local_submission_list(run_number: int):
                 fibers_path = os.path.abspath(os.path.join(sim_path, 'data', 'inputs'))
                 output_path = os.path.abspath(os.path.join(sim_path, 'data', 'outputs'))
 
-                # ensure log directories exist
+
                 out_dir = os.path.abspath(os.path.join(sim_path, 'logs', 'out'))
                 err_dir = os.path.abspath(os.path.join(sim_path, 'logs', 'err'))
-                for cur_dir in [out_dir, err_dir]:
+
+                # ensure necessary directories exist
+                for cur_dir in [fibers_path, output_path, out_dir, err_dir]:
                     if not os.path.exists(cur_dir):
                         os.makedirs(cur_dir)
-
                 # ensure blank.hoc exists
                 blank_path = os.path.join(sim_path, 'blank.hoc')
                 if not os.path.exists(blank_path):
