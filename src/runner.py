@@ -23,6 +23,7 @@ from copy import deepcopy
 from quantiphy import Quantity
 from shapely.geometry import Point
 import pymunkoptions
+import traceback
 
 pymunkoptions.options["debug"] = False
 
@@ -238,7 +239,12 @@ class Runner(Exceptionable, Configurable):
                                     )
 
                                     # do Sim.fibers.xy_parameters match between Sim and source_sim?
-                                    source_sim: simulation = load_obj(os.path.join(source_sim_obj_dir, 'sim.obj'))
+                                    try: 
+                                        source_sim: simulation = load_obj(os.path.join(source_sim_obj_dir, 'sim.obj'))
+                                    except FileNotFoundError:
+                                        traceback.print_exc()
+                                        self.throw(129)
+                                        
                                     source_xy_dict: dict = source_sim.configs['sims']['fibers']['xy_parameters']
                                     xy_dict: dict = simulation.configs['sims']['fibers']['xy_parameters']
 
