@@ -8,7 +8,7 @@
         "Radius": "R_out_M+Thk_fill_M",
         "Thk": "Thk_fill_M",
         "L": "L_M+2*Thk_fill_M",
-        "Center": "Center_M",
+        "Center": "z_nerve",
         "x_shift": "0",
         "y_shift": "0"
       },
@@ -25,7 +25,7 @@
       "def": {
         "N_holes": "N_holes_M",
         "Tube_theta": "Theta_M",
-        "Center": "Center_M",
+        "Center": "z_nerve",
         "R_in": "R_in_M",
         "R_out": "R_out_M",
         "Tube_L": "L_M",
