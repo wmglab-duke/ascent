@@ -1,0 +1,231 @@
+{
+  "code": "M",
+  "instances": [
+    {
+      "type": "CuffFill_Primitive",
+      "label": "M18HumanBipolar Cuff Fill",
+      "def": {
+        "Radius": "R_out_M+Thk_fill_M",
+        "Thk": "Thk_fill_M",
+        "L": "L_M+2*Thk_fill_M",
+        "Center": "z_nerve/2",
+        "x_shift": "0",
+        "y_shift": "0"
+      },
+      "materials": [
+        {
+          "info": "fill",
+          "label_index": 0
+        }
+      ]
+    },
+    {
+      "type": "TubeCuff_Primitive",
+      "label": "M18HumanBipolar Cuff",
+      "def": {
+        "N_holes": "N_holes_M",
+        "Tube_theta": "Theta_M",
+        "Center": "z_nerve/2",
+        "R_in": "R_in_M",
+        "R_out": "R_out_M",
+        "Tube_L": "L_M",
+        "Rot_def": "Rot_def_M",
+        "D_hole": "D_hole_M",
+        "Buffer_hole": "Buffer_hole_M",
+        "L_holecenter_cuffseam": "L_holecenter_cuffseam_M",
+        "Pitch_holecenter_holecenter": "Pitch_holecenter_holecenter_M"
+      },
+      "materials": [
+        {
+          "info": "insulator",
+          "label_index": 2
+        }
+      ]
+    },
+    {
+      "type": "RibbonContact_Primitive",
+      "label": "M18HumanBipolar Contact 1",
+      "def": {
+        "Ribbon_thk": "Thk_elec_M",
+        "Ribbon_z": "L_elec_M",
+        "R_in": "R_in_M",
+        "Ribbon_recess": "Recess_M",
+        "Center": "(z_nerve/2)-(sep_elec_M/2)",
+        "Ribbon_theta": "Theta_contact_M",
+        "Rot_def": "Rot_def_contact_M"
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "label_index": 3
+        },
+        {
+          "info": "recess",
+          "label_index": 4
+        }
+      ]
+    },
+    {
+      "type": "RibbonContact_Primitive",
+      "label": "M18HumanBipolar Contact 2",
+      "def": {
+        "Ribbon_thk": "Thk_elec_M",
+        "Ribbon_z": "L_elec_M",
+        "R_in": "R_in_M",
+        "Ribbon_recess": "Recess_M",
+        "Center": "(z_nerve/2)+(sep_elec_M/2)",
+        "Ribbon_theta": "Theta_contact_M",
+        "Rot_def": "Rot_def_contact_M"
+      },
+      "materials": [
+        {
+          "info": "conductor",
+          "label_index": 3
+        },
+        {
+          "info": "recess",
+          "label_index": 4
+        }
+      ]
+    }
+  ],
+
+  "params": [
+    {
+      "name": "N_holes_M",
+      "expression": "0",
+      "description": ""
+    },
+    {
+      "name": "Override_Theta_M",
+      "expression": "45 [deg]",
+      "description": ""
+    },
+    {
+      "name": "sep_elec_M",
+      "expression": "1 [mm]",
+      "description": ""
+    },
+    {
+      "name": "Theta_M",
+      "expression": "percent_circ_cuff_M*360 [deg]",
+      "description": ""
+    },
+    {
+      "name": "R_in_M",
+      "expression": "max(r_nerve+thk_medium_gap_internal_M,r_cuff_in_pre_M)",
+      "description": ""
+    },
+    {
+      "name": "R_out_M",
+      "expression": "R_in_M+thk_cuff_M",
+      "description": ""
+    },
+    {
+      "name": "L_M",
+      "expression": "3 [mm]",
+      "description": ""
+    },
+    {
+      "name": "Rot_def_M",
+      "expression": "0",
+      "description": ""
+    },
+    {
+      "name": "D_hole_M",
+      "expression": "NaN",
+      "description": ""
+    },
+    {
+      "name": "Buffer_hole_M",
+      "expression": "NaN",
+      "description": ""
+    },
+    {
+      "name": "L_holecenter_cuffseam_M",
+      "expression": "NaN",
+      "description": ""
+    },
+    {
+      "name": "Pitch_holecenter_holecenter_M",
+      "expression": "NaN",
+      "description": ""
+    },
+    {
+      "name": "percent_circ_cuff_M",
+      "expression": "percent_circ_cuff_pre_M*(r_cuff_in_pre_M/R_in_M)",
+      "description": ""
+    },
+    {
+      "name": "r_cuff_in_pre_M",
+      "expression": "940 [um]",
+      "description": ""
+    },
+    {
+      "name": "percent_circ_cuff_pre_M",
+      "expression": "1",
+      "description": ""
+    },
+    {
+      "name": "z_nerve_M",
+      "expression": "20 [mm]",
+      "description": ""
+    },
+    {
+      "name": "thk_medium_gap_internal_M",
+      "expression": "10 [um]",
+      "description": ""
+    },
+    {
+      "name": "thk_cuff_M",
+      "expression": ".5 [mm]",
+      "description": ""
+    },
+    {
+      "name": "Recess_M",
+      "expression": "0 [mm]",
+      "description": ""
+    },
+    {
+      "name": "Thk_elec_M",
+      "expression": "0.05 [mm]",
+      "description": ""
+    },
+    {
+      "name": "L_elec_M",
+      "expression": ".25 [mm]",
+      "description": ""
+    },
+    {
+      "name": "Theta_contact_M",
+      "expression": "360*(w_elec_M/(pi*2*(R_in_M+Recess_M))) [deg]",
+      "description": ""
+    },
+    {
+      "name": "w_elec_M",
+      "expression": "R_in_M*2*pi*(contact_wrap_M/360)",
+      "description": ""
+    },
+    {
+      "name": "contact_wrap_M",
+      "expression": "360",
+      "description": ""
+    },
+    {
+      "name": "Rot_def_contact_M",
+      "expression": "(Theta_M/2)-(Theta_contact_M/2)",
+      "description": ""
+    },
+    {
+      "name": "Thk_fill_M",
+      "expression": "100 [um]",
+      "description": ""
+    }
+  ],
+
+  "expandable": true,
+  "fixed_point": "clockwise_end",
+  "angle_to_contacts_deg": 180,
+  "offset": {
+  }
+}
