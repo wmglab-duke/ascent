@@ -295,7 +295,7 @@ of the file.
         nerve morphology binary images provided as a decimal (e.g., 0.20
         results in a 20% expansion of the nerve, and 0 results in no
         shrinkage correction of the nerve). Required, must be greater than
-        0.
+        0. Note: Shrinkage correction scaling is linear (i.e. a nerve with diameter d and area a scaled by scaling factor s will have a final diameter of d_final=d\*(1+s) and a final area a_final = a\*(1+s)<sup>2</sup>)
 
     `“boundary_separation”`
 
