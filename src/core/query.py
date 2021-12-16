@@ -1681,7 +1681,9 @@ class Query(Exceptionable, Configurable, Saveable):
             absolute_voltage: bool = True,
             n_sim_label_override: str = None,
             model_labels: List[str] = None,
-            save: bool = False):
+            save: bool = False,
+            subplots = False,
+            nodes_only=False):
 
         print(
             f'Finding time and location of action potentials, which are defined as any voltage deflection of {delta_V} mV.')
@@ -1705,7 +1707,10 @@ class Query(Exceptionable, Configurable, Saveable):
                     print('\t\tsim: {}'.format(sim_index))
 
                     sim_object = self.get_object(Object.SIMULATION, [sample_index, model_index, sim_index])
-
+                    
+                    if subplots == True:
+                        fig,axs = plt.subplots(ncols=len(sim_object.master_product_indices),nrows=2, sharey="row")
+                    
                     # loop nsims
                     for n_sim_index, (potentials_product_index, waveform_index) in enumerate(
                             sim_object.master_product_indices):
@@ -1787,13 +1792,19 @@ class Query(Exceptionable, Configurable, Saveable):
                             # plot the AP location with voltage trace
                             # create subplots
                             if plot or save:
-                                fig, axes = plt.subplots(2, 1)
-
+                                if subplots !=True:
+                                    fig, axes = plt.subplots(2, 1)
+                                else:
+                                    axes = [axs[0][n_sim_index],axs[1][n_sim_index]]
                                 # load fiber coordinates
                                 fiber = np.loadtxt(os.path.join(fiberset_dir, '0.dat'), skiprows=1)
-
+                                nodefiber = fiber[0::11,:]
+                                
                                 # plot fiber coordinates in 2D
-                                axes[0].plot(fiber[:, 0], fiber[:, 2], 'b.')
+                                if nodes_only != True:
+                                    axes[0].plot(fiber[:, 0], fiber[:, 2], 'b.', label = 'fiber')
+                                else:                                     
+                                    axes[0].plot(nodefiber[:, 0], nodefiber[:, 2], 'b.', label = 'fiber')
 
                                 # plot AP location
                                 axes[0].plot(fiber[11 * node, 0], fiber[11 * node, 2], 'r*', markersize = 10)
@@ -1803,9 +1814,13 @@ class Query(Exceptionable, Configurable, Saveable):
                                         n_sim_label_override is None) else n_sim_label_override
                                 model_label = '' if (model_labels is None) else f', {model_labels[model_index]}'
                                 axes[0].set_xlabel('x location, µm')
-                                axes[0].set_ylabel('z location, µm')
+                                
                                 axes[0].set_title(f'{n_sim_label}{model_label}')
-                                axes[0].legend(['fiber', f'AP ({message})'])
+                                if subplots!= True:
+                                    axes[0].legend(['fiber', f'AP ({message})'])
+                                else: 
+                                    axes[0].legend(['fiber', 'AP'])
+
                                 # axes[0].set_aspect(1)
                                 plt.tight_layout()
 
@@ -1814,10 +1829,12 @@ class Query(Exceptionable, Configurable, Saveable):
 
                                 # voltages display settings
                                 axes[1].set_xlabel('node')
-                                axes[1].set_ylabel('voltage (mV)')
-                                axes[1].set_aspect(0.25)
+                                if subplots!=True or n_sim_index==0:
+                                    axes[1].set_ylabel('voltage (mV)')
+                                    axes[0].set_ylabel('z location, µm')
+                                # axes[1].set_aspect(0.25)
                                 plt.tight_layout()
-
+                                
                             # display
                             if save:
                                 plt.savefig(
