@@ -506,5 +506,9 @@
   {
     "code": 128,
     "text": "After smoothing trace, could not restore original area."
+  },
+  {
+    "code": 129,
+    "text": "Could not load indicated super-sampled sim object. See traceback for sim number searched for (Defined in sim.json)."
   }
 ]
