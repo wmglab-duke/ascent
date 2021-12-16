@@ -34,7 +34,7 @@ def parse():
     
     def g0(args,argstring):
         '''checks that argument is greater than 0'''
-        if getattr(args,argstring)!=None and getattr(args,argstring)<=0:
+        if hasattr(args,argstring) and getattr(args,argstring)!=None and getattr(args,argstring)<=0:
             sys.exit('Arguments for {} must be greater than 0'.format(argstring))
     
     #parse arguments
