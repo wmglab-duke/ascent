@@ -40,4 +40,6 @@ q.ap_time_and_location(
     #     '10000 µm model radius',
     # ],
     # n_sim_filter=[0, 1, 2],
-    save=True)
+    save=True,
+    subplots = True,
+    nodes_only = True)
