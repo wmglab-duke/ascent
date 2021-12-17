@@ -97,11 +97,6 @@
       "description": ""
     },
     {
-      "name": "Override_Theta_M",
-      "expression": "45 [deg]",
-      "description": ""
-    },
-    {
       "name": "sep_elec_M",
       "expression": "1 [mm]",
       "description": ""

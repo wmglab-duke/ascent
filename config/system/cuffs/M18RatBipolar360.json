@@ -98,7 +98,7 @@
     },
     {
       "name": "sep_elec_M",
-      "expression": "1 [mm]",
+      "expression": ".5 [mm]",
       "description": ""
     },
     {
@@ -118,7 +118,7 @@
     },
     {
       "name": "L_M",
-      "expression": "3 [mm]",
+      "expression": "1.5 [mm]",
       "description": ""
     },
     {
@@ -153,7 +153,7 @@
     },
     {
       "name": "r_cuff_in_pre_M",
-      "expression": "940 [um]",
+      "expression": "209 [um]",
       "description": ""
     },
     {
@@ -173,7 +173,7 @@
     },
     {
       "name": "thk_cuff_M",
-      "expression": ".5 [mm]",
+      "expression": ".25 [mm]",
       "description": ""
     },
     {
