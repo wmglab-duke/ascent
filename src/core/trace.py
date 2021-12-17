@@ -106,15 +106,21 @@ class Trace(Exceptionable):
         self.__update()
         pco.Clear()
         
-    def smooth(self,distance):
+    def smooth(self,distance,area_compensation=True):
         """
         Smooths a contour using a dilation followed by erosion
         :param distance: amount to use for dilation and erosion, in whatever units the trace is using
         """
         if distance<0: self.throw(111)
         if distance == 0: return
+        pre_area = self.area()
         self.offset(fit = None,distance = distance)
         self.offset(fit = None,distance = -distance)
+        if area_compensation==True:
+            #scale back to area of original trace
+            self.scale((pre_area/self.area())**.5)
+            if round(pre_area,0)!=round(self.area(),0):
+                self.throw(128)
         self.points = np.flip(self.points,axis = 0) # set points to opencv orientation
         
     def scale(self, factor: float = 1, center: Union[List[float], str] = 'centroid'):
