@@ -3,7 +3,7 @@
   "instances": [
     {
       "type": "CuffFill_Primitive",
-      "label": "M18HumanMonopolar Cuff Fill",
+      "label": "M18RatMonopolar360 Cuff Fill",
       "def": {
         "Radius": "R_out_M+Thk_fill_M",
         "Thk": "Thk_fill_M",
@@ -21,7 +21,7 @@
     },
     {
       "type": "TubeCuff_Primitive",
-      "label": "M18HumanMonopolar Cuff",
+      "label": "M18RatMonopolar360 Cuff",
       "def": {
         "N_holes": "N_holes_M",
         "Tube_theta": "Theta_M",
@@ -44,7 +44,7 @@
     },
     {
       "type": "RibbonContact_Primitive",
-      "label": "M18HumanMonopolar Contact 1",
+      "label": "M18RatMonopolar360 Contact 1",
       "def": {
         "Ribbon_thk": "Thk_elec_M",
         "Ribbon_z": "L_elec_M",

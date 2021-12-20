@@ -3,7 +3,7 @@
   "instances": [
     {
       "type": "CuffFill_Primitive",
-      "label": "M18HumanBipolar Cuff Fill",
+      "label": "M18RatBipolar45 Cuff Fill",
       "def": {
         "Radius": "R_out_M+Thk_fill_M",
         "Thk": "Thk_fill_M",
@@ -21,7 +21,7 @@
     },
     {
       "type": "TubeCuff_Primitive",
-      "label": "M18HumanBipolar Cuff",
+      "label": "M18RatBipolar45 Cuff",
       "def": {
         "N_holes": "N_holes_M",
         "Tube_theta": "Theta_M",
@@ -44,7 +44,7 @@
     },
     {
       "type": "RibbonContact_Primitive",
-      "label": "M18HumanBipolar Contact 1",
+      "label": "M18RatBipolar45 Contact 1",
       "def": {
         "Ribbon_thk": "Thk_elec_M",
         "Ribbon_z": "L_elec_M",
@@ -67,7 +67,7 @@
     },
     {
       "type": "RibbonContact_Primitive",
-      "label": "M18HumanBipolar Contact 2",
+      "label": "M18RatBipolar45 Contact 2",
       "def": {
         "Ribbon_thk": "Thk_elec_M",
         "Ribbon_z": "L_elec_M",
