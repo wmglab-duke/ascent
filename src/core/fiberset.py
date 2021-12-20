@@ -438,10 +438,13 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                 fiber_length = model_length if override_length is None else override_length
                 self.configs['sims']['fibers'][FiberZMode.parameters.value]['min'] = 0
                 self.configs['sims']['fibers'][FiberZMode.parameters.value]['max'] = fiber_length
-
+                
                 if override_length is None and self.configs['sims']['fibers']['z_parameters'].get('full_nerve_length')!=True:
                     warnings.warn('Program assumed fiber length same as proximal length since "min" and "max" fiber '
                                   'length not defined in Config.Sim "fibers" -> "z_parameters". Suppress this warning by adding "full_nerve_length = true" to your z_parameters.')
+                
+                self.configs['sims']['fibers'][FiberZMode.parameters.value]['full_nerve_length']=False
+
             else:
                 if self.configs['sims']['fibers']['z_parameters'].get('full_nerve_length')==True:
                     self.throw(127)
