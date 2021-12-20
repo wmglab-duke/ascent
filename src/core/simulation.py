@@ -424,7 +424,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
                             for basis_ind in range(len(active_src_vals[0])):
 
-                                ss_bases[basis_ind].append([])
                                 ss_bases_src_path = os.path.join(sim_dir,
                                                                  str(source_sim),
                                                                  'ss_bases',
@@ -438,6 +437,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
                                     self.throw(81)
 
                                 for f_root, f_dirs, f_files in os.walk(ss_bases_src_path):
+                                    ss_bases[basis_ind] = [[] for x in f_files]
                                     for f_file in f_files:
                                         q = int(f_file.split('.')[0])
 
@@ -472,12 +472,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
                                             # create interpolation from super_coords and super_bases
                                             f = sci.interp1d(ss_fiber_coords, ss_weighted_bases_vec)
                                             neuron_potentials_input = f(neuron_fiber_coords)
-
-                                            # as is convention, append length to start
-                                            neuron_potentials_input = np.insert(neuron_potentials_input,
-                                                                                0,
-                                                                                len(neuron_potentials_input))
-
+                                            
                                             # NOTE: if SL interp, writes files as inner0_fiber<q>.dat
                                             l: int
                                             k: int
@@ -488,10 +483,9 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
                                             np.savetxt(os.path.join(nsim_inputs_directory, ss_filename),
                                                        neuron_potentials_input,
-                                                       fmt='%0.18f')
+                                                       fmt='%0.18f',header=str(len(neuron_potentials_input)))
                         elif file == 'diams.txt':
                             make_inner_fiber_diam_key(xy_mode, p, nsim_inputs_directory, potentials_directory, file)
-
         return self
 
     def indices_fib_to_n(self, p, q) -> Tuple[int, int]:
