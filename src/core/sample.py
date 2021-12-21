@@ -117,12 +117,16 @@ class Sample(Exceptionable, Configurable, Saveable):
         img = cv2.imread(path, -1)
 
         if self.search(Config.SAMPLE, 'image_preprocessing', 'fill_holes', optional=True) == True:
-            img = binary_fill_holes(img)
+            if self.search_mode(MaskInputMode, Config.SAMPLE) == MaskInputMode.INNER_AND_OUTER_COMPILED:
+                print('WARNING: Skipping fill holes since MaskInputMode is INNER_AND_OUTER_COMPILED. Change fill_holes to False to suppress this warning.')
+            else:
+                img = binary_fill_holes(img)
         removal_size = self.search(Config.SAMPLE, 'image_preprocessing', 'object_removal_area', optional=True)
         if removal_size:
             if removal_size < 0: self.throw(119)
             img = morphology.remove_small_objects(img, removal_size)
         cv2.imwrite(path, img.astype(int) * 255)
+
 
     def get_factor(self, scale_bar_mask_path: str, scale_bar_length: float, scale_bar_is_literal: bool) -> 'Sample':
         """
