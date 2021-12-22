@@ -10,9 +10,11 @@ import os
 from pathlib import Path
 
 EXCLUDED_FILENAMES = [
+    '.mph',
+    'im.json',
+    'Primitive.json',
     'sample.json',
-    'model.json',
-    '.mph'
+    'model.json'
 ]
 
 
