@@ -192,6 +192,9 @@ class Simulation(Exceptionable, Configurable, Saveable):
         if cuff in self.configs[Config.SIM.value]["active_srcs"].keys():
             active_srcs_list = self.search(Config.SIM, "active_srcs", cuff)
         else:
+            ss = self.search(Config.SIM, 'supersampled_bases',optional=True)
+            if ss is not None and ss['use']==True:           
+                self.throw(130)
             # otherwise, use the default weights (generally you don't want to rely on this as cuffs have different
             # numbers of contacts
             active_srcs_list = self.search(Config.SIM, "active_srcs", "default")
