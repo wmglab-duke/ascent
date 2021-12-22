@@ -95,7 +95,7 @@
   "supersampled_bases": {
     "generate": false,
     "use": false,
-    "dz": 0.01,
+    "dz": 1.0,
     "source_sim": 1009
   }
 }
