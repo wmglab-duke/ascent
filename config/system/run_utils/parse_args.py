@@ -28,12 +28,12 @@ install_parser.add_argument('--no-conda',action='store_true', help = 'Skip conda
 
 
 def parse():
- 
+
     #parse arguments
     args = parser.parse_args()
-    
-    if args.script is None: 
+
+    if args.script is None:
         parser.print_help()
         sys.exit()
-    
+
     return args
