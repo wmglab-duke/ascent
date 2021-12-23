@@ -1,4 +1,4 @@
-# S31: NEURON launch.hoc
+# NEURON launch.hoc
 The ```launch.hoc``` file defines the parameters and simulation protocol for
 modeling fiber response to electrical stimulation in NEURON and is
 automatically populated based on parameters in ***Model*** and

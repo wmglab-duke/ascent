@@ -12,6 +12,11 @@ import subprocess
 
 
 def run(args):
+
+    def ensure_dir(directory):
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
     sys.argv = args
 
     if sys.version_info[0] < 3:
@@ -24,15 +29,24 @@ def run(args):
     else:
         print('Great, proceeding with installation.\n')
 
-    # download required JAR(s)
-    bin = 'bin'
-    if not os.path.exists(bin):
-        os.mkdir(bin)
+    #define and generate user directories
+    binpath = 'bin'
+    defdirs = [
+        binpath,
+        'samples',
+        'input',
+        'config/user',
+        'config/user/runs',
+        'config/user/sims']
 
+    for path in defdirs:
+        ensure_dir(path)
+
+    # download required JAR(s)
     jars = ['https://repo1.maven.org/maven2/org/json/json/20190722/json-20190722.jar']
     for jar in jars:
         retrieve = True
-        target = os.path.join(bin, jar.split('/')[-1])
+        target = os.path.join(binpath, jar.split('/')[-1])
         if os.path.exists(target):
             reply = input('{} already found! download again and overwrite? [y/N] '.format(target)).lower().strip()
             if reply[0] != 'y':
@@ -55,11 +69,15 @@ def run(args):
                 p.stdin.close()
 
     # run system-specific installation
-    proc = None
-
-    if sys.platform.startswith('darwin') or sys.platform.startswith('linux'):
-        proc = subprocess.Popen(['bash', './config/system/installation/install.sh'])
+    if args.no_conda:
+        print('Skipping conda portion of installation\n')
     else:
-        proc = subprocess.Popen(['powershell.exe', '.\\config\\system\\installation\\install.ps1'])
+        proc = None
 
-    proc.wait()
+        if sys.platform.startswith('darwin') or sys.platform.startswith('linux'):
+            proc = subprocess.Popen("source config/system/installation/install.sh -i", shell=True, executable="/bin/bash")
+        else:
+            proc = subprocess.Popen(['powershell.exe', '.\\config\\system\\installation\\install.ps1'])
+
+        proc.wait()
+    print('Installation complete!\n')

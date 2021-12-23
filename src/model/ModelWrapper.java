@@ -390,7 +390,8 @@ public class ModelWrapper {
             while(!file.canWrite() || !file.canRead()) {
                 System.out.println("waiting");
             }
-            Model basis = ModelUtil.load("Model", basis_dir);
+            String model_tag = ModelUtil.uniquetag("Model");
+            Model basis = ModelUtil.load(model_tag, basis_dir);
 
             bases[basis_ind] = new double[sims_list.length()][][][];
             ss_bases[basis_ind] = new double[sims_list.length()][][][];
@@ -602,7 +603,7 @@ public class ModelWrapper {
                 } else {
                     src_combo_list = active_srcs.getJSONArray("default");
                     System.out.println("WARNING: did NOT find the assigned contact weighting for " + cuff +
-                            " in model config file, moving forward with DEFAULT (use with caution)");
+                            " in sim " + sim_num + " config file, moving forward with DEFAULT (use with caution)");
                 }
 
                 // build path to directory of sim
@@ -1019,6 +1020,8 @@ public class ModelWrapper {
                     index + ".mph"
             });
 
+            System.out.println("Solving electric currents for "+key_on+".");
+
             boolean save = true;
             if (! new File(mphFile).exists()) {
                 model.sol("sol1").runAll();
@@ -1287,7 +1290,7 @@ public class ModelWrapper {
                         System.out.println("Running pre-mesh procedure.");
 
                         // Define model object
-                        model = ModelUtil.create("Model");
+                        model = ModelUtil.createUnique("Model");
                         // Add component node 1
                         model.component().create("comp1", true);
                         // Add 3D geom to component node 1
@@ -1384,7 +1387,22 @@ public class ModelWrapper {
                             } else {
                                 JSONObject nerve = (JSONObject) morphology.get("Nerve");
                                 nerveParams.set("a_nerve", nerve.get("area") + " [" + morphology_unit + "^2]");
-                                if (sampleData.getDouble("deform_ratio") < 1) { //Use trace
+
+                                // backwards compatibility
+                                String reshapenerveMode = (String) sampleData.getJSONObject("modes").get("reshape_nerve");
+                                double deform_ratio = 0;
+                                if (sampleData.has("deform_ratio")) {
+                                    deform_ratio = sampleData.getDouble("deform_ratio");
+                                } else {
+                                    if (reshapenerveMode.equals("CIRCLE")) {
+                                        deform_ratio = 1;
+                                    } else if (reshapenerveMode.equals("NONE")) {
+                                        deform_ratio = 0;
+                                    }
+                                }
+                                //
+
+                                if (deform_ratio < 1) { //Use trace
                                     nerveParams.set("r_nerve", modelData.getDouble("min_radius_enclosing_circle") + " [" + morphology_unit + "]");
                                 } else { //Use area of nerve
                                     nerveParams.set("r_nerve", "sqrt(a_nerve/pi)");
@@ -1483,6 +1501,7 @@ public class ModelWrapper {
                         } catch (Exception e) {
                             System.out.println("Failed to run geometry for Model Index " + modelStr + ", continuing " +
                                     "to any remaining Models");
+                            e.printStackTrace();
                             continue;
                         }
 
@@ -1598,9 +1617,9 @@ public class ModelWrapper {
                          try {
                              model.component("comp1").mesh("mesh1").run(mw.im.get(meshProximalLabel));
                          } catch (Exception e) {
-                             System.out.println(e);
                              System.out.println("Failed to mesh proximal geometry for Model Index " + modelStr +
                                      ", continuing to any remaining Models");
+                             e.printStackTrace();
                              continue;
                          }
 
@@ -1693,6 +1712,7 @@ public class ModelWrapper {
                             } catch (Exception e) {
                                 System.out.println("Failed to mesh distal geometry for Model Index " + modelStr +
                                         ", continuing to any remaining Models");
+                                e.printStackTrace();
                                 continue;
                             }
                             long estimatedRestMeshTime = System.nanoTime() - distalMeshStartTime;
@@ -1986,7 +2006,7 @@ public class ModelWrapper {
                     } catch (Exception e) {
                         System.out.println("Failed to extract potentials for Model Index " + modelStr +
                                 ", continuing to any remaining Models");
-                        System.out.println(e);
+                        e.printStackTrace();
                         continue;
                     }
                 }
@@ -2015,9 +2035,9 @@ public class ModelWrapper {
 
                 models_exit_status[model_index] = true;
             } catch (Exception e) {
-                System.out.println(e);
                 models_exit_status[model_index] = false;
                 System.out.println("Failed to mesh/solve/extract potentials for model " + models_list.get(model_index));
+                e.printStackTrace();
             }
         }
         // keep track of successful and failed model indices, continue in Python for successes only

@@ -20,9 +20,10 @@ import matplotlib.pyplot as plt
 import json
 import numpy as np
 import os
+import sys
 
 # ascent
-from src.utils import *
+from src.utils import Config, Configurable, Exceptionable, PopulateMode, SetupMode
 
 
 class MockSample(Exceptionable, Configurable):
@@ -102,11 +103,27 @@ class MockSample(Exceptionable, Configurable):
         #            and the corresponding semi-axis
         p = Point(0.0, 0.0)
 
-        a_nerve: float = self.search(Config.MOCK_SAMPLE, 'nerve', 'a_nerve')
-        b_nerve: float = self.search(Config.MOCK_SAMPLE, 'nerve', 'b_nerve')
-        rot_nerve: float = self.search(Config.MOCK_SAMPLE, 'nerve', 'rot_nerve')
+        if 'a_nerve' not in list(self.configs['mock_sample']['nerve'].keys()):
+            # a is the major diameter of the ellipse
+            a: float = self.search(Config.MOCK_SAMPLE, 'nerve', 'a') / 2
+        else:
+            # backwards compatible: a_nerve is the major radius
+            a: float = self.search(Config.MOCK_SAMPLE, 'nerve', 'a_nerve')
 
-        ellipse = (p, (a_nerve, b_nerve), rot_nerve)
+        if 'b_nerve' not in list(self.configs['mock_sample']['nerve'].keys()):
+            # b is the minor diameter of the ellipse
+            b: float = self.search(Config.MOCK_SAMPLE, 'nerve', 'b') / 2
+        else:
+            # backwards compatible: b_nerve is the minor radius
+            b: float = self.search(Config.MOCK_SAMPLE, 'nerve', 'b_nerve')
+
+        if 'rot_nerve' not in list(self.configs['mock_sample']['nerve'].keys()):
+            rot: float = self.search(Config.MOCK_SAMPLE, 'nerve', 'rot')
+        else:
+            # backwards compatible
+            rot: float = self.search(Config.MOCK_SAMPLE, 'nerve', 'rot_nerve')
+
+        ellipse = (p, (a, b), rot)
         self.nerve = self.gen_ellipse(ellipse)
         return self
 
@@ -142,9 +159,27 @@ class MockSample(Exceptionable, Configurable):
             for fasc_ind, fascicle in enumerate(fascs_explicit):
                 fasc_centroid_xs[fasc_ind] = fascicle.get('centroid_x')
                 fasc_centroid_ys[fasc_ind] = fascicle.get('centroid_y')
-                fasc_as[fasc_ind] = fascicle.get('a')
-                fasc_bs[fasc_ind] = fascicle.get('b')
+                fasc_as[fasc_ind] = fascicle.get('a') / 2
+                fasc_bs[fasc_ind] = fascicle.get('b') / 2
                 fasc_rots[fasc_ind] = fascicle.get('rot')
+
+            if any(x in list(self.configs['mock_sample']['nerve'].keys()) for x in ['a_nerve' or 'b_nerve']):
+                reply = input('Looks like might be using an old MockSample JSON template. \n'
+                              'The ellipse parameters (a,b) for fascicles now are the full width major and minor axes \n'
+                              '(i.e., analogous to circle diameter rather than radii). Make sure your values are set \n'
+                              'appropriately. This change is new in v1.1.0 to be consistent with the ellipse parameters \n'
+                              '(a,b) in Sample which are full width ellipse major/minor axes lengths.\n\n'
+                              'See config/templates/mock_sample.json for new template and avoid this message.\n'
+                              'Would you like to proceed with the values currently set for (a,b) as diameter? [y/N] ').lower().strip()
+                if reply[0] != 'y':
+                    print('Please make changes to have (a,b) values be diameter of ellipse and re-run.\n')
+                    sys.exit()
+                else:
+                    print('Proceeding with existing MockSample.\n')
+
+                # You are using an old MockSample JSON template. The ellipse parameters for fascicles now are the major
+                # and minor diameters. Make sure you values are set appropriately. This change is new in v.1.1.0 to
+                # be consistent with the ellipse parameters in Sample. Would you like to proceed? y/n
 
             # check that the loaded fascicles are far enough apart from each other and the nerve
             for fasc_ind, fascicle in enumerate(fascs_explicit):
@@ -389,10 +424,22 @@ class MockSample(Exceptionable, Configurable):
 
         with open(os.path.join(sample_dir, 'mock.json'), "w") as handle:
             handle.write(json.dumps(self.configs['mock_sample'], indent=2))
-        
-        a_nerve = self.search(Config.MOCK_SAMPLE, 'nerve', 'a_nerve')
-        b_nerve = self.search(Config.MOCK_SAMPLE, 'nerve', 'b_nerve')
-        max_diam = 2 * max(a_nerve, b_nerve)
+
+        if 'a_nerve' not in list(self.configs['mock_sample']['nerve'].keys()):
+            # a is the major diameter of the ellipse
+            a: float = self.search(Config.MOCK_SAMPLE, 'nerve', 'a') / 2
+        else:
+            # backwards compatible: a_nerve is the major radius
+            a: float = self.search(Config.MOCK_SAMPLE, 'nerve', 'a_nerve')
+
+        if 'b_nerve' not in list(self.configs['mock_sample']['nerve'].keys()):
+            # b is the minor diameter of the ellipse
+            b: float = self.search(Config.MOCK_SAMPLE, 'nerve', 'b') / 2
+        else:
+            # backwards compatible: b_nerve is the minor radius
+            b: float = self.search(Config.MOCK_SAMPLE, 'nerve', 'b_nerve')
+
+        max_diam = 2 * max(a, b)
 
         fig_margin: float = self.search(Config.MOCK_SAMPLE, 'figure', 'fig_margin')
 

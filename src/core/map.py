@@ -51,7 +51,7 @@ import warnings
 from typing import List
 
 # ascent
-from src.utils import *
+from src.utils import Config, Configurable, Exceptionable, SetupMode
 
 
 class Map(Exceptionable, Configurable):

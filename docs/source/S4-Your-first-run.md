@@ -1,4 +1,4 @@
-# S4: Your first run
+# Your first run
 *How to run the ASCENT pipeline, after completing the initial setup.*
 
 The user provides binary mask inputs for the nerve and saves ***Sample***
@@ -16,17 +16,17 @@ use indices that are consistent with the indices of ***Sample***,
 
     b.  Running the `mock_morphology_generator.py` script ([S12 Text](S12-Python-MockSample-class-for-creating-binary-masks-of-nerve-morphology)).
 
-       i.  Copy `mock_sample.json` from `config/templates/` to
-            `config/user/mock_samples/` as `<mock_sample_index>.json`
-            and update file contents, including the “NAME” parameter
-            used to construct the destination path for the output binary
-            masks, which serve as inputs to the pipeline.
+         i.  Copy `mock_sample.json` from `config/templates/` to
+              `config/user/mock_samples/` as `<mock_sample_index>.json`
+              and update file contents, including the “NAME” parameter
+              used to construct the destination path for the output binary
+              masks, which serve as inputs to the pipeline.
 
-       ii.  Call `“python run mock_morphology_generator
-            <mock_sample_index>”`.
+         ii.  Call `“python run mock_morphology_generator
+              <mock_sample_index>”`.
 
-       iii.  The program saves a copy of the user’s `mock_sample.json` and
-            binary masks in `input/<NAME>/`.
+         iii.  The program saves a copy of the user’s `mock_sample.json` and
+              binary masks in `input/<NAME>/`.
 
 2.  ***For one Sample:*** User copies `sample.json` from `config/templates/`
     to `samples/<sample_index>/` as `sample.json` and edits its contents
@@ -70,7 +70,7 @@ use indices that are consistent with the indices of ***Sample***,
     are run locally or submitted to a computer cluster with the command
     `“python submit.py <run indices>”` from the export directory.
 
-## 1.1 Task given to beta testers
+## Task given to beta testers
 
 We sent the pipeline code, manuscript, and the following task to beta
 testers (both within our lab at Duke and externally). Following this

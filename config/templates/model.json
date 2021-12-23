@@ -1,7 +1,7 @@
 {
   "modes": {
     "rho_perineurium": "RHO_WEERASURIYA",
-    "cuff_shift": "MIN_CIRCLE_BOUNDARY",
+    "cuff_shift": "AUTO_ROTATION_MIN_CIRCLE_BOUNDARY",
     "fiber_z": "EXTRUSION",
     "use_ci": true
   },
@@ -25,6 +25,7 @@
   },
   "inner_interp_tol": 0.02,
   "outer_interp_tol": 0.02,
+  "nerve_interp_tol": 0.002,
   "cuff": {
     "preset": "Purdue.json",
     "rotate": {

@@ -1,4 +1,4 @@
-# S1: Metadata required to model an in vivo experiment using the ASCENT pipeline
+# Metadata required to model an in vivo experiment using the ASCENT pipeline
 
 1.  Detailed specifications / dimensions of the stimulating cuff
     electrode.

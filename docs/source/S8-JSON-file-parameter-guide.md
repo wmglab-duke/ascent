@@ -1,4 +1,4 @@
-# S8: JSON file parameter guide
+# JSON file parameter guide
 
 Notes:
 
@@ -27,7 +27,7 @@ The order of key-value pairs within a JSON Object does not matter.
 Saving/loading the file to/from memory is likely to reorder the contents
 of the file.
 
-## 1.1 run.json
+## run.json
 
 1.  Named file: `config/user/runs/<run_index>.json`
 
@@ -179,7 +179,7 @@ of the file.
       "override_compiled_mods": false
     }
     ```
-## 1.2 sample.json
+## sample.json
 
 1.  Named file: `samples/<sample_index>/sample.json`
 
@@ -215,8 +215,18 @@ of the file.
         "reshape_nerve": String,
         "scale_input": String
       },
+      "smoothing": {
+        "nerve_distance": Double,
+        "fascicle_distance": Double
+      },
+      "image_preprocessing": {
+        "fill_holes": Boolean,
+        "object_removal_area": Integer
+      },
       "morph_count": Integer,
       "deform_ratio": Double,
+      "plot": Boolean,
+      "plot_folder": Boolean,
       "Morphology": {
         "Nerve": {
           "Area": Double
@@ -306,7 +316,7 @@ of the file.
 
     `“modes”`: 
 
-      - `“mask_input”`:  The value (String) is the “MaskInputMode” that tells
+      - `“mask_input”`:  The value (String) is the `“MaskInputMode”` that tells
         the program which segmented histology images to expect as inputs for
         fascicles. Required.
 
@@ -357,7 +367,7 @@ of the file.
                 the nerve to the final inner profile of the nerve cuff,
                 morphing from the original trace towards a circular trace.
                 In the pipeline’s current implementation, this is the
-                required `“DeformationMode”` for modeling compound nerve
+                only `“DeformationMode”` for deforming compound nerve
                 samples. See `“deform_ratio”` below; if `deform_ratio = 0`,
                 then the original nerve trace is used and if `deform_ratio
                 = 1`, then the nerve trace will be made circular.
@@ -405,6 +415,22 @@ of the file.
 
     <!-- end list -->
 
+
+    `“smoothing”`: Smoothing is applied via a dilating the nerve/fascicle boundary by a specified distance value and then shrinking it by that same value.
+
+      - `“nerve_distance”`: Amount (Double) to smooth nerve boundary. Units of micrometers.
+
+      - `“fascicle_distance”`: Amount (Double) to smooth fascicle boundaries (inners and outers). Units of micrometers.
+
+    <!-- end list -->
+
+    `“image_preprocessing”`: Operations applied to the input masks before analysis.
+
+      - `“fill_holes”`: The value (Boolean) indicates whether to fill gaps in the binary masks. If true, any areas of black pixels completely enclosed by white pixels will be turned white.
+
+      - `“object_removal_area”`: The value (Integer) indicates the maximum size of islands to remove from the binary masks. Any isolated islands of white pixels with area less than or equal to object_removal_area will be turned black. Units of pixels.
+
+    <!-- end list -->
     `“morph_count”`: The value (Integer) can be used to set the number of
     intermediately deformed nerve traces between the `boundary_start` and
     `boundary_end` in Deformable ([S13 Text](S13-Python-classes-for-representing-nerve-morphology-(Sample))) if the `“DeformationMode”` is “PHYSCIS”. An
@@ -421,7 +447,16 @@ of the file.
     `boundary_end` will be the original nerve trace. A value between 0 and 1
     will result in a partially deformed nerve “on the way” to the final
     circle nerve boundary. Optional, but default value is 1 if not defined
-    explicitly.
+    explicitly. Note: if `deform_ratio` = 0, no changes to the nerve boundary will
+    occur, but the physics system will ensure the requirements in `"boundary_separation"` are met.
+
+    `“plot”`: The value (Boolean) determines whether the program
+    will generate output plots of sample morphology. If true, plots are generated,
+    if false, no plots are generated
+
+    `“plot_folder”`: The value (Boolean) describes plotting behavior (if enabled).
+    If true, plots are generated in the folder samples/<sample_index>/plots, if
+    false, plots will pop up in a window.
 
     `“Morphology”`: This JSON Object is used to store information about the
     area and best-fit ellipse information of the nerve and fascicles (outer
@@ -429,7 +464,9 @@ of the file.
     they are a convenient record of the nerve morphometry for assigning
     model attributes based on the anatomy and data analysis. Units:
     micrometer<sup>2</sup> (area); micrometer (length). User does NOT
-    manually set these values. Automatically populated.
+    manually set these values. Automatically populated. The values `a` and `b` are
+    the full width and height of the ellipse major and minor axes, respectively
+    (i.e., analogous to diameter rather than radius of a circle).
 
 1.  Example: 
     ```
@@ -453,6 +490,18 @@ of the file.
         "reshape_nerve": "NONE",
         "scale_input": "MASK"
       },
+      "smoothing": {
+        "nerve_distance": 0,
+        "fascicle_distance": 0
+      },
+      "image_preprocessing": {
+        "fill_holes": true,
+        "object_removal_area": 10
+      },
+      "morph_count": 36,
+      "deform_ratio": 1,
+      "plot": true,
+      "plot_folder": true,
       "Morphology": {
         "Nerve": null,
         "Fascicles": [     
@@ -480,7 +529,7 @@ of the file.
       }
     }
     ```
-## 1.3 mock\_sample.json
+## mock\_sample.json
 
 1.  Named file: `config/user/<mock_sample_index>.json`
 
@@ -504,9 +553,9 @@ of the file.
       },
       "scalebar_length": Double,
       "nerve": {
-        "a_nerve": Double,
-        "b_nerve": Double,
-        "rot_nerve": Double
+        "a": Double,
+        "b": Double,
+        "rot": Double
       },
       "figure": {
         "fig_margin": Double,
@@ -578,10 +627,10 @@ of the file.
     `“nerve”`: The nerve JSON Object contains key-value pairs for the
     elliptical nerve’s size and rotation. Required.
 
-      - `“a_nerve”`: Value is the nerve ellipse axis ‘a’ (Double, units:
+      - `“a”`: Value is the nerve ellipse axis ‘a’ which is the full width major axis (Double, units:
         micrometer). Required.
 
-      - `“b_nerve”`: Value is the nerve ellipse axis ‘b’ (Double, units:
+      - `“b”`: Value is the nerve ellipse axis ‘b’ which is the full width minor axis (Double, units:
         micrometer). Required.
 
       - `“rot_nerve”`: Value is the nerve ellipse axis rotation (Double,
@@ -596,7 +645,7 @@ of the file.
       - `“fig_margin”`: The value (Double, \>1 otherwise an error is thrown)
         sets the x- and y-limits of the binary masks generated. The limits
         are set relative to the maximum nerve ellipse axis dimension (+/-
-        `fig_margin`\*max(`a_nerve`, `b_nerve`) in both x- and y-directions).
+        `fig_margin`\*max(`a`, `b`) in both x- and y-directions).
         Required.
 
       - `“fig_dpi”`: The value (Integer) is the “dots per inch” resolution of
@@ -638,10 +687,10 @@ of the file.
                         the y-coordinate of the centroid of the best-fit
                         ellipse of the Trace. Required.
 
-                      - `“a”`: Value is the ellipse axis ‘a’ (Double, units:
+                      - `“a”`: Value is the ellipse axis ‘a’ which is the full width major axis (Double, units:
                         micrometer). Required.
 
-                      - `“b”`: Value is the ellipse axis ‘b’ (Double, units:
+                      - `“b”`: Value is the ellipse axis ‘b’ which is the full width minor axis (Double, units:
                         micrometer). Required.
 
                       - `“rot”`: Value is the ellipse axis rotation (Double,
@@ -783,9 +832,9 @@ of the file.
       },
       scalebar_length": 1000,
       "nerve": {
-        "a_nerve": 2200,
-        "b_nerve": 1800,
-        "rot_nerve": 0
+        "a": 4400,
+        "b": 3600,
+        "rot": 0
       },
       "figure": {
         "fig_margin": 1.2,
@@ -805,7 +854,7 @@ of the file.
       }
     }
     ```
-## 1.4 model.json
+## model.json
 
 1.  Named file:
     `samples/<sample_index>/models/<model_index>/model.json`
@@ -848,6 +897,7 @@ of the file.
       },
       "inner_interp_tol": Double,
       "outer_interp_tol": Double,
+      "nerve_interp_tol": Double,
       "cuff": {
         "preset": String,
         "rotate": {
@@ -941,7 +991,7 @@ of the file.
                 conductivity in “conductivities” (under “perineurium”) with
                 no automated correction for frequency.
 
-      - `“cuff_shift”`: The value (String) is the “CuffShiftMode” that tells
+      - `“cuff_shift”`: The value (String) is the `“CuffShiftMode”` that tells
         the program how to shift the cuff on the nerve ([S17](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives) and [S19](S19-Cuff-placement-on-nerve) Text). Required.
 
           - As listed in Enums ([S6 Text](S6-Enums)), known modes include
@@ -949,12 +999,12 @@ of the file.
               - `“NAIVE_ROTATION_MIN_CIRCLE_BOUNDARY”`: Program shifts the
                 cuff to within a user-defined distance of the minimum
                 bounding circle of the nerve sample. The direction of the
-                shift is defined in the preset cuff JSON file ([S17](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives) and [S19](S19-Cuff-placement-on-nerve) Text).
+                shift is defined in the preset cuff JSON file ([S17](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives) and [S19](S19-Cuff-placement-on-nerve) Text). Since this mode does not align the cuff with the sample centroid, orientation masks (`a.tif`) are ignored.
 
               - `“NAIVE_ROTATION_TRACE_BOUNDARY”`: Program shifts the cuff
                 to within a user-defined distance of the nerve trace
                 boundary. The direction of the shift is defined in the
-                preset cuff JSON file ([S17](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives) and [S19](S19-Cuff-placement-on-nerve) Text).
+                preset cuff JSON file ([S17](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives) and [S19](S19-Cuff-placement-on-nerve) Text). Since this mode does not align the cuff with the sample centroid, orientation masks (`a.tif`) are ignored.
 
               - `“AUTO_ROTATION_MIN_CIRCLE_BOUNDARY”`: Program
                 shifts/rotates the cuff to within a user-defined distance of
@@ -969,9 +1019,9 @@ of the file.
                 defined in the preset cuff JSON file ([S17](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives) and [S19](S19-Cuff-placement-on-nerve) Text).
 
               - `“NONE”`: Program keeps both the nerve centroid and cuff
-                centered at (x,y) =(0,0) and no cuff rotation is performed ([S17](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives) and [S19](S19-Cuff-placement-on-nerve) Text).
+                centered at (x,y) =(0,0) and no cuff rotation is performed ([S17](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives) and [S19](S19-Cuff-placement-on-nerve) Text). Note: This mode will ignore any supplied orientation image (`a.tif`).
 
-      - `“fiber_z”`: The value (String) is the “FiberZMode” that tells the
+      - `“fiber_z”`: The value (String) is the `“FiberZMode”` that tells the
         program how to seed the NEURON fibers along the length of the FEM.
         In the current implementation of the pipeline, this value must be
         “EXTRUSION”. Required.
@@ -1016,9 +1066,9 @@ of the file.
     parameter increases the smoothness of the curve. COMSOL’s “closed curve”
     setting interpolates the points of the curve with continuous first- and
     second-order derivatives. Generally, we find an interpolation tolerance
-    of \~0.01 to be appropriate, but the user should check that the
+    in the range of 0.01-0.02 to be appropriate, but the user should check that the
     interpolation tolerance is set correctly for their input nerve sample
-    morphology. Required.
+    morphology. See the [COMSOL Documentation](https://doc.comsol.com/5.5/doc/com.comsol.help.comsol/comsol_ref_geometry.14.038.html) for more info. Required.
 
     `“outer_interp_tol”`: The value (Double) sets the relative tolerance for
     the representation of the outer trace(s) in COMSOL. When the value is
@@ -1026,9 +1076,19 @@ of the file.
     parameter increases the smoothness of the curve. COMSOL’s “closed curve”
     setting interpolates the points of the curve with continuous first- and
     second-order derivatives. Generally, we find an interpolation tolerance
-    of \~0.01 to be appropriate, but the user should check that the
+    in the range of 0.01-0.02 to be appropriate, but the user should check that the
     interpolation tolerance is set correctly for their input nerve sample
-    morphology. Required.
+    morphology. See the [COMSOL Documentation](https://doc.comsol.com/5.5/doc/com.comsol.help.comsol/comsol_ref_geometry.14.038.html) for more info. Required.
+
+    `“nerve_interp_tol”`: The value (Double) sets the relative tolerance for
+    the representation of the nerve (i.e. epineurium) trace in COMSOL. When the value is
+    set to 0, the curve is jagged, and increasing the value of this
+    parameter increases the smoothness of the curve. COMSOL’s “closed curve”
+    setting interpolates the points of the curve with continuous first- and
+    second-order derivatives. Generally, we find an interpolation tolerance
+    in the range of 0.001-0.005 to be appropriate, but the user should check that the
+    interpolation tolerance is set correctly for their input nerve sample
+    morphology. See the [COMSOL Documentation](https://doc.comsol.com/5.5/doc/com.comsol.help.comsol/comsol_ref_geometry.14.038.html) for more info. Required.
 
     `“cuff”`: The cuff JSON Object contains key-value pairs that define which
     cuff to model on the nerve in addition to how it is placed on the nerve
@@ -1058,7 +1118,7 @@ of the file.
           - Each key defines the translation of the cuff in the Cartesian
             coordinate system (Double, units: micrometer). The values are
             automatically populated by the pipeline based on the
-            “CuffShiftMode” (i.e., `“cuff_shift”` parameter within
+            `“CuffShiftMode”` (i.e., `“cuff_shift”` parameter within
             “modes”). Origin (x,y) = (0,0) corresponds to the centroid
             of the nerve sample (or fascicle best-fit ellipse of the Trace
             if monofascicular), and shift in z-direction is along the
@@ -1238,6 +1298,7 @@ of the file.
       },
       "inner_interp_tol": 0.01,
       "outer_interp_tol": 0.01,
+      "nerve_interp_tol": 0.01,
       "cuff": {
         "preset": "CorTec300.json",
         "rotate": {
@@ -1313,7 +1374,7 @@ of the file.
     }
     ```
 
-## 1.5 sim.json
+## sim.json
 
 1.  Named file: `config/user/sims/<sim_index>.json`
 
@@ -1331,6 +1392,7 @@ of the file.
     ```
     {
       "n_dimensions": Integer,
+      "plot_folder" : Boolean,
       "active_srcs": {
         "CorTec300.json": [[Double, Double]], // for example
         "default": [[1, -1]]
@@ -1486,7 +1548,13 @@ of the file.
           "gating": Boolean,
           "istim": Boolean,
           "locs": [Double] OR String
+        },
+        "end_ap_times": {
+          "loc_min": Double,
+          "loc_max": Double,
+          "threshold": Double
         }
+        "runtimes": Boolean
       },
 
       // EXAMPLE PROTOCOL for FINITE_AMPLITUDES
@@ -1558,6 +1626,11 @@ of the file.
     creating unintended NEURON simulations. The pipeline will only loop over
     the first n-dimensions. Required.
 
+    `“plot_folder”`: The value (Boolean) tells the program whether to output
+    plots in a folder if true, or as a popup window if false. If not specified,
+    the program assumes false. If true plots are saved in a folder in the simulation
+    directory. (i.e., /samples/<sample_index>/models/<model_index>/sims/<sim_index>/plots)
+
     `“active_srcs”`: The value is a JSON Object containing key-value pairs of
     contact weightings for preset cuffs. Each value (`List[List[Double]]`)
     is the contact weighting to use to make extracellular potentials inputs
@@ -1589,8 +1662,8 @@ of the file.
     length of the fiber). Required.
 
       - `“plot”`: The value (Boolean) tells the program to plot the fiber
-        (x,y)-coordinates for the user to inspect. A figure window pops up
-        on the user’s screen during the pipeline run. Required.
+        (x,y)-coordinates for the user to inspect. Whether the figure pops up or
+        is saved is controlled by the `"plot_folder"` parameter. Required.
 
       - `“mode”`: The value (String) is the “FiberGeometry” mode that tells
         the program which fiber geometries to simulate in NEURON ([S21](S21-Implementation-of-NEURON-fiber-models) and [S32](S32-NEURON-Wrapper.hoc) Text). Required.
@@ -1679,7 +1752,7 @@ of the file.
         sample potentials inside inners in the nerve cross section ([Fig 3B](https://doi.org/10.1371/journal.pcbi.1009285.g003)). Include only *one* version of this block in your `sim.json`
         file. Required.
 
-         `“mode”`: The value (String) is the “FiberXYMode” that tells the
+         `“mode”`: The value (String) is the `“FiberXYMode”` that tells the
          program how to seed fiber locations inside each inner in the nerve
          cross section. Required.
 
@@ -1782,8 +1855,8 @@ of the file.
     stimulation waveform parameters ([Fig 3C](https://doi.org/10.1371/journal.pcbi.1009285.g003)). Required.
 
       - `“plot”`: The value (Boolean) turns plotting of the waveform to a
-        figure on/off as each waveform is written to file. A figure is
-        displayed to the user’s screen during the pipeline run.
+        figure on/off as each waveform is written to file. Whether the figure pops up or
+        is saved is controlled by the `"plot_folder"` parameter.
 
       - `“global”`: the value (JSON Object) contains key-value pairs that
         define NEURON time discretization parameters. Required.
@@ -1817,7 +1890,7 @@ of the file.
     number of digits of precision will increase computational load and waste
     storage resources.
 
-    Note: if one of the parameter values in the “WaveformMode” JSON Object
+    Note: if one of the parameter values in the `“WaveformMode”` JSON Object
     is a list, then there are `n_sim/` folders created for as many waveforms
     as parameter values in the list. If more than one parameter value is a
     list, then there are `n_sim/` folders created for each combination of
@@ -2014,6 +2087,30 @@ of the file.
             timesteps. Alternatively, the user can use the value “all”
             (String) to prompt the program to save the state variables at
             all segments (unmyelinated) and sections (myelinated). Required.
+            
+       - `“end_ap_times”`:
+          - `“loc_min”`: The value (Double) tells the program at which location to save
+            times at which V<sub>m</sub> passes the threshold voltage (defined below)
+            with a positive slope. The value must be between 0 and 1, and less than the 
+            value for `“loc_max”`. Be certain not to record from the end section (i.e., 0) 
+            if it is passive. A value 0 corresponds to z=0, and a value of 1 corresponds to 
+            z=length of proximal domain. Required if this JSON object (which is optional) is included.
+            
+          - `“loc_max”`: The value (Double) tells the program at which location to save
+            times at which V<sub>m</sub> passes the threshold voltage (defined below)
+            with a positive slope. The value must be between 0 and 1, and greater than the 
+            value for `“loc_min”`. Be certain not to record from the end section (i.e., 1) 
+            if it is passive. A value 0 corresponds to z=0, and a value of 1 corresponds to 
+            z=length of proximal domain. Required if this JSON object (which is optional) is included.
+            
+          - `“threshold”`: The value (Double, units: mV) is the threshold value for V<sub>m</sub> to pass
+            for an action potential to be detected. Required if this JSON object (which is optional) 
+            is included.
+            
+      - `“runtimes”`: The value (Boolean), if true, tells the program to save 
+            the NEURON runtime for either the finite amplitude or binary search for 
+            threshold simulation. If this key-value pair is omitted, the default 
+            behavior is False.
 
     `“protocol”`: 
 
@@ -2181,11 +2278,12 @@ of the file.
     ```
     {
       "n_dimensions": 3,
+      "plot_folder" : true,
       "active_srcs": {
         "CorTec300.json": [[1, -1]]
       },
       "fibers": {
-        "plot": false,
+        "plot": true,
         "mode": "MRG_DISCRETE",
         "xy_trace_buffer": 5.0,
         "z_parameters": {
@@ -2206,7 +2304,7 @@ of the file.
         }
       },
       "waveform": {
-        "plot": false,
+        "plot": true,
         "global": {
           "dt": 0.001,
           "on": 1,
@@ -2234,14 +2332,20 @@ of the file.
         "space": {
           "vm": false,
           "gating": false,
-          "times": [0],
+          "times": [0]
         },
         "time": {
           "vm": false,
           "gating": false,
           "istim": false,
           "locs": [0]
-        }
+        },
+        "ap_end_times": {
+          "loc_min": 0.1,
+          "loc_max": 0.9,
+          "threshold": -30
+        },
+        "runtimes": false
       },
       "protocol": {
         "mode": "ACTIVATION_THRESHOLD",
@@ -2272,7 +2376,7 @@ of the file.
     }
     ```
 
-## 1.6 query\_criteria.json
+## query\_criteria.json
 
 1.  Named file: `config/user/query_criteria/<query criteria
     index>.json`
@@ -2360,7 +2464,7 @@ of the file.
     }
     ```
 
-## 1.7 env.json
+## env.json
 
 1.  Named file: `config/system/env.json`
 
@@ -2416,7 +2520,7 @@ of the file.
     }
     ```
 
-## 1.8 exceptions.json
+## exceptions.json
 
 1.  Named file: `config/system/exceptions.json`
 
@@ -2459,7 +2563,7 @@ of the file.
     ]
     ```
 
-## 1.9 materials.json
+## materials.json
 
 1.  Named file: `config/system/materials.json`
 
@@ -2555,7 +2659,7 @@ of the file.
     unless the `“PerineuriumResistivityMode”` is `“MANUAL”` and the conductivity
     is defined explicitly in ***Model*** ([](S28-Definition-of-perineurium)).
 
-## 1.10 ci\_peri\_thickness.json
+## ci\_peri\_thickness.json
 
 1.  Named file: `config/system/ci_peri_thickness.json`
 
@@ -2599,7 +2703,7 @@ of the file.
       - See: `config/system/ci_peri_thickness.json` to see all built-in
         `PerineuriumThicknessMode` relationships.
 
-## 1.11 mesh\_dependent\_model.json
+## mesh\_dependent\_model.json
 
 1.  Named file: `config/system/mesh_dependent_model.json`
 
@@ -2645,7 +2749,7 @@ of the file.
         parameters to ***Model*** for expanded/modified pipeline
         functionality.
 
-## 1.12 References
+## References
 1. Weerasuriya A, Spangler RA, Rapoport SI, Taylor RE. AC impedance of the perineurium of the frog sciatic nerve. Biophys J. 1984 Aug;46(2):167–74. Available from: [https://dx.doi.org/10.1016%2FS0006-3495(84)84009-6](https://dx.doi.org/10.1016%2FS0006-3495(84)84009-6)
 2. 	Virtanen P, Gommers R, Oliphant TE, Haberland M, Reddy T, Cournapeau D, et al. SciPy 1.0: fundamental algorithms for scientific computing in Python. Nat Methods [Internet]. 2020;17(3):261–72. Available from: [https://doi.org/10.1038/s41592-019-0686-2
 ](https://doi.org/10.1038/s41592-019-0686-2)

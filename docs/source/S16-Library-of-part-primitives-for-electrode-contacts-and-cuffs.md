@@ -1,4 +1,4 @@
-# S16: Library of part primitives for electrode contacts and cuffs
+# Library of part primitives for electrode contacts and cuffs
 ![Inline image](uploads/c2cd14737ce3bdbedeac561077c74118/Picture20.jpg)
 
 Figure A. Library of parts for electrode contacts. In the top two panels, “circle material” and “rectangle material” indicate that the contact’s dimensions refer to the length of the materials, rather than the dimension of the contact when it is bent to wrap around the circular inner diameter of the cuff. The dimensions “_thk” refer to the contact thickness. The dimensions “_recess” refer to the thickness of the domain created if the contact is recessed into the cuff.

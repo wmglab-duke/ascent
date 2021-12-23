@@ -100,11 +100,14 @@ class Configurable:
                                 '\ttext:\tInvalid search parameter:\tTYPE: {}\tVALUE: {}\n'
                                 '\tsource:\tconfigurable.py'.format(type(arg), arg))
 
-        if result is None and not optional:
-            raise Exception('\n\tcode:\t-5\n'
-                            '\ttext:\tValue {} not defined in {}\n'
-                            '\tsource:\tsrc.utils.Configurable.search'.format(
-                ''.join([arg + '->' for arg in args[:-1]]) + args[-1], key))
+            if result is None:
+                if optional: return result
+                else:
+                    raise Exception('\n\tcode:\t-5\n'
+                                    '\ttext:\tValue {} not defined in {}\n'
+                                    '\tsource:\tsrc.utils.Configurable.search'.format(
+                        ''.join([arg + '->' for arg in args[:-1]]) + args[-1], key))
+                    
 
         if isinstance(result, list):
             if len(result) < 1 and not optional:

@@ -1,4 +1,4 @@
-# S15: Micro Leads cuff measurements
+# Micro Leads cuff measurements
 We collected and measured images of 200, 300, and 400 µm Micro-Leads
 Neuro cuffs (Somerville, MA) (Figure A and Table A).
 
