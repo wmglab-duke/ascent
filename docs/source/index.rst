@@ -71,5 +71,4 @@ Welcome to ASCENT's documentation!
    S34-Convergence-analysis-example
    S35-Sim4Life-validation
    S36-Comparison-of-MRG-fit-to-Bucksot-2019
-   Troubleshooting-Guide
    Paper-References
