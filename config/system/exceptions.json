@@ -510,5 +510,9 @@
   {
     "code": 129,
     "text": "Could not load indicated super-sampled sim object. See traceback for sim number searched for (Defined in sim.json)."
+  },
+  {
+    "code": 130,
+    "text": "Using default active_srcs is not allowed when running supersampled bases"
   }
 ]

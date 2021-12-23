@@ -439,7 +439,8 @@ class MockSample(Exceptionable, Configurable):
             # backwards compatible: b_nerve is the minor radius
             b: float = self.search(Config.MOCK_SAMPLE, 'nerve', 'b_nerve')
 
-        max_diam = 2 * max(a, b)
+        scalebar_length: int = self.search(Config.MOCK_SAMPLE, 'scalebar_length')
+        max_diam = max(scalebar_length, 2 * max(a, b))
 
         fig_margin: float = self.search(Config.MOCK_SAMPLE, 'figure', 'fig_margin')
 
@@ -466,7 +467,6 @@ class MockSample(Exceptionable, Configurable):
         # SCALEBAR BINARY IMAGE
         dest_s = os.path.join(project_path, sample_dir, 's.tif')
         figure_s = self.binary_mask_canvas(fig_margin, max_diam)
-        scalebar_length: int = self.search(Config.MOCK_SAMPLE, 'scalebar_length')
         figure_s = self.add_scalebar_binary_mask(figure_s, scalebar_length)
         self.write_binary_mask(figure_s, dest_s, fig_dpi)
 

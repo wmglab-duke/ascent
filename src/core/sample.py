@@ -453,7 +453,6 @@ class Sample(Exceptionable, Configurable, Saveable):
                 self.throw(112)
             else:
                 self.smooth(n_distance, i_distance)
-                self.scale(1)  # does not scale but reconnects ends of traces after offset
 
         # after scaling, if only inners were provided, generate outers
         if mask_input_mode == MaskInputMode.INNERS:
