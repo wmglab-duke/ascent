@@ -37,7 +37,6 @@ Welcome to ASCENT's documentation!
    S2-Installation
    S3-ASCENT-data-hierarchy
    S4-Your-first-run
-   command_line_args
    Helper-scripts
    S5-Template-for-methods-reporting
    S6-Enums
