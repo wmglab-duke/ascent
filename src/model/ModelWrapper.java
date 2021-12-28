@@ -1308,9 +1308,8 @@ public class ModelWrapper {
                             }
 
                         } catch (IOException e) {
-                            System.out.println("Issue in mesh recycling logic.");
+                            System.out.println("Issue in mesh recycling logic. Rebuilding mesh.");
                             e.printStackTrace();
-                            System.exit(1);
                         }
                     }
                     System.out.println("End mesh recycling logic.");
