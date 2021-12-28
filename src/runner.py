@@ -222,38 +222,41 @@ class Runner(Exceptionable, Configurable):
                                 self.configs[Config.RUN.value]['sims'][sim_index], sim_obj_file))
 
                             simulation: Simulation = load_obj(sim_obj_file)
-                            potentials_exist.append(simulation.potentials_exist(sim_obj_dir))
 
-                            if 'supersampled_bases' in simulation.configs['sims'].keys():
-                                if simulation.configs['sims']['supersampled_bases']['use']:
-                                    source_sim = simulation.configs['sims']['supersampled_bases']['source_sim']
+                            if 'supersampled_bases' in simulation.configs['sims'].keys() and simulation.configs['sims']['supersampled_bases']['use']:
+                                source_sim_index = simulation.configs['sims']['supersampled_bases']['source_sim']
 
-                                    source_sim_obj_dir = os.path.join(
-                                        os.getcwd(),
-                                        'samples',
-                                        str(sample_num),
-                                        'models',
-                                        str(model_num),
-                                        'sims',
-                                        str(source_sim)
-                                    )
+                                source_sim_obj_dir = os.path.join(
+                                    os.getcwd(),
+                                    'samples',
+                                    str(sample_num),
+                                    'models',
+                                    str(model_num),
+                                    'sims',
+                                    str(source_sim_index)
+                                )
 
-                                    # do Sim.fibers.xy_parameters match between Sim and source_sim?
-                                    try: 
-                                        source_sim: simulation = load_obj(os.path.join(source_sim_obj_dir, 'sim.obj'))
-                                    except FileNotFoundError:
-                                        traceback.print_exc()
-                                        self.throw(129)
-                                        
-                                    source_xy_dict: dict = source_sim.configs['sims']['fibers']['xy_parameters']
-                                    xy_dict: dict = simulation.configs['sims']['fibers']['xy_parameters']
+                                # do Sim.fibers.xy_parameters match between Sim and source_sim?
+                                try: 
+                                    source_sim: simulation = load_obj(os.path.join(source_sim_obj_dir, 'sim.obj'))
+                                    print('\t    Found existing source sim {} for supersampled bases ({})'.format(
+                                        source_sim_index, source_sim_obj_dir))
+                                except FileNotFoundError:
+                                    traceback.print_exc()
+                                    self.throw(129)
+                                    
+                                source_xy_dict: dict = source_sim.configs['sims']['fibers']['xy_parameters']
+                                xy_dict: dict = simulation.configs['sims']['fibers']['xy_parameters']
 
-                                    if not source_xy_dict == xy_dict:
-                                        self.throw(82)
+                                if not source_xy_dict == xy_dict:
+                                    self.throw(82)
 
-                                    ss_bases_exist.append(
-                                        simulation.ss_bases_exist(source_sim_obj_dir)
-                                    )
+                                ss_bases_exist.append(
+                                    simulation.ss_bases_exist(source_sim_obj_dir)
+                                )
+                            else:
+                                potentials_exist.append(simulation.potentials_exist(sim_obj_dir))
+
 
                         else:
                             if not os.path.exists(sim_obj_dir):
@@ -273,33 +276,40 @@ class Runner(Exceptionable, Configurable):
                                 .validate_srcs(sim_obj_dir) \
                                 .save(sim_obj_file)
 
-                            potentials_exist.append(simulation.potentials_exist(sim_obj_dir))
+                            if 'supersampled_bases' in simulation.configs['sims'].keys() and simulation.configs['sims']['supersampled_bases']['use']:
+                                source_sim_index = simulation.configs['sims']['supersampled_bases']['source_sim']
 
-                            if 'supersampled_bases' in simulation.configs['sims'].keys():
-                                if simulation.configs['sims']['supersampled_bases']['use']:
-                                    source_sim = simulation.configs['sims']['supersampled_bases']['source_sim']
+                                source_sim_obj_dir = os.path.join(
+                                    os.getcwd(),
+                                    'samples',
+                                    str(sample_num),
+                                    'models',
+                                    str(model_num),
+                                    'sims',
+                                    str(source_sim_index)
+                                )
 
-                                    source_sim_obj_dir = os.path.join(
-                                        os.getcwd(),
-                                        'samples',
-                                        str(sample_num),
-                                        'models',
-                                        str(model_num),
-                                        'sims',
-                                        str(source_sim)
-                                    )
+                                # do Sim.fibers.xy_parameters match between Sim and source_sim?
+                                try: 
+                                    source_sim: simulation = load_obj(os.path.join(source_sim_obj_dir, 'sim.obj'))
+                                    print('\t    Found existing source sim {} for supersampled bases ({})'.format(
+                                        source_sim_index, source_sim_obj_dir))
+                                except FileNotFoundError:
+                                    traceback.print_exc()
+                                    self.throw(129)                                
+                            
+                                source_xy_dict: dict = source_sim.configs['sims']['fibers']['xy_parameters']
+                                xy_dict: dict = simulation.configs['sims']['fibers']['xy_parameters']
 
-                                    # do Sim.fibers.xy_parameters match between Sim and source_sim?
-                                    source_sim: simulation = load_obj(os.path.join(sim_obj_dir, 'sim.obj'))
-                                    source_xy_dict: dict = source_sim.configs['sims']['fibers']['xy_parameters']
-                                    xy_dict: dict = simulation.configs['sims']['fibers']['xy_parameters']
+                                if not source_xy_dict == xy_dict:
+                                    self.throw(82)
 
-                                    if not source_xy_dict == xy_dict:
-                                        self.throw(82)
-
-                                    ss_bases_exist.append(
-                                        simulation.ss_bases_exist(source_sim_obj_dir)
-                                    )
+                                ss_bases_exist.append(
+                                    simulation.ss_bases_exist(source_sim_obj_dir)
+                                )
+                            else:
+                                potentials_exist.append(simulation.potentials_exist(sim_obj_dir))
+                        
             if self.configs[Config.CLI_ARGS.value].get('break_point')=='pre_java' or \
                     (('break_points' in self.configs[Config.RUN.value].keys()) and \
                      self.search(Config.RUN, 'break_points').get('pre_java')==True):
@@ -327,7 +337,17 @@ class Runner(Exceptionable, Configurable):
                 for model_index, model_config in enumerate(all_configs[Config.MODEL.value]):
                     model_num = self.configs[Config.RUN.value]['models'][model_index]
                     conditions = [models_exit_status is not None, len(models_exit_status) > model_index]
-                    if models_exit_status[model_index] if all(conditions) else True:
+                    model_ran = models_exit_status[model_index] if all(conditions) else True
+                    ss_use_notgen = []
+                    #check if all supersampled bases are "use" and not generating
+                    for sim_index, sim_config in enumerate(all_configs['sims']):
+                        if 'supersampled_bases' in simulation.configs['sims'].keys() and \
+                        simulation.configs['sims']['supersampled_bases']['use'] and not \
+                            simulation.configs['sims']['supersampled_bases']['generate']:
+                            ss_use_notgen.append(True)
+                        else:
+                            ss_use_notgen.append(False)
+                    if model_ran or np.all(ss_use_notgen):
                         for sim_index, sim_config in enumerate(all_configs['sims']):
                             sim_num = self.configs[Config.RUN.value]['sims'][sim_index]
                             sim_obj_path = os.path.join(
@@ -372,7 +392,7 @@ class Runner(Exceptionable, Configurable):
 
                         print('Model {} data exported to appropriate folders in {}'.format(model_num, os.environ[
                             Env.NSIM_EXPORT_PATH.value]))
-
+                    
                     elif not models_exit_status[model_index]:
                         print('\nDid not create NEURON simulations for Sims associated with: \n'
                               '\t Model Index: {} \n'
