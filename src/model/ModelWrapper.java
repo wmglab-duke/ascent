@@ -526,7 +526,7 @@ public class ModelWrapper {
                         }
 
                         String ss_ve_path = String.join("/", new String[]{
-                                ss_ve_fiberset_basis_dir, ss_fiber_ind + ".dat"
+                                ss_ve_fiberset_basis_dir, ss_fiber_file_ind + ".dat"
                         });
 
                         if (new File(ss_ve_path).exists()) {
