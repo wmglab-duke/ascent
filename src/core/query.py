@@ -515,6 +515,8 @@ class Query(Exceptionable, Configurable, Saveable):
                         missing_indices = []
 
                         if plot_mode == 'fiber0' or plot_mode == 'on_off':
+                            if n_inners==1:
+                                self.throw(131)
                             for i in range(n_inners):
                                 if select_fascicles is None or select_fascicles[i]:
                                     thresh_path = os.path.join(n_sim_dir, 'data', 'outputs',
@@ -585,13 +587,12 @@ class Query(Exceptionable, Configurable, Saveable):
                             for i in range(n_inners):
                                 actual_i = i - offset
                                 if actual_i not in missing_indices:
-                                    if select_fascicles[actual_i]:
-                                        mapped = (thresholds[actual_i] - min_thresh) / (max_thresh - min_thresh)
-                                        colors.append(tuple(cmap(mapped)))
-
-                                    elif not select_fascicles[actual_i]:
+                                    if select_fascicles is not None and not select_fascicles[actual_i]:
                                         # colors.append(tuple((0, 0, 0, 0)))  # missing_color
                                         colors.append(cmap(np.nan))  # missing_color
+                                    else:
+                                        mapped = (thresholds[actual_i] - min_thresh) / (max_thresh - min_thresh)
+                                        colors.append(tuple(cmap(mapped)))
 
                                 elif actual_i in missing_indices:
                                     # NOTE: PLOTS MISSING VALUES AS RED
@@ -677,7 +678,7 @@ class Query(Exceptionable, Configurable, Saveable):
                         elif plot_mode == 'fibers':
                             sample_object.slides[0].plot(final=False, fix_aspect_ratio=True, ax=ax,
                                                          outers_flag=plot_outers, inner_format='k-')
-                            sim_object.fibersets[0].plot(ax=ax, fiber_colors=colors, size=3)
+                            sim_object.fibersets[0].plot(ax=ax, fiber_colors=colors, size=20)
 
                     # set super title
                     if title_toggle:
