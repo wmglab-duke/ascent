@@ -22,8 +22,8 @@ os.chdir('D:/ASCENT/m18')
 import matplotlib.pyplot as plt
 from src.core.query import Query
 
-# set default fig size
-plt.rcParams['figure.figsize'] = [16.8/3, 10.14*2 * 0.9]
+# # set default fig size
+# plt.rcParams['figure.figsize'] = [16.8/3, 10.14*2 * 0.9]
 
 # initialize and run Querys
 q = Query({
@@ -32,7 +32,7 @@ q = Query({
     'indices': {
         'sample': [18],
         'model': [451],
-        'sim': [1,18,1819,18199]
+        'sim': [1,18]
     }
 }).run()
 
@@ -42,7 +42,7 @@ colormap_bounds_override = None
 # builds heatmaps
 q.heatmaps(plot=False,
             save_path='out/analysis',
-            plot_mode='fiber0',
+            plot_mode='fibers',
         #    rows_override=6,
            colorbar_aspect=5,
            colormap_str='viridis',
@@ -62,3 +62,4 @@ q.heatmaps(plot=False,
 #                 # also, look into adding documentation to Simulation (might be useful for above task too)
 
 #plt.close('all')
+# plt.tight_layout()
