@@ -14,7 +14,8 @@ EXCLUDED_FILENAMES = [
     'im.json',
     'Primitive.json',
     'sample.json',
-    'model.json'
+    'model.json',
+    'explicit.txt'
 ]
 
 
