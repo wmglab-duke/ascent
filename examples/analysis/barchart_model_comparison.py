@@ -12,11 +12,13 @@ import os
 import sys
 
 sys.path.append(os.path.sep.join([os.getcwd(), '']))
-
+os.chdir(r'D:/ASCENT/m18')
 import numpy as np
 
 import matplotlib.pyplot as plt
 from src.core.query import Query
+
+
 
 # set default fig size
 plt.rcParams['figure.figsize'] = list(np.array([16.8, 10.14]) / 2)
@@ -55,9 +57,9 @@ q = Query({
     'partial_matches': False,
     'include_downstream': True,
     'indices': {
-        'sample': [3008],
-        'model': [0, 1, 2],
-        'sim': [3001]
+        'sample': [18],
+        'model': [451],
+        'sim': [1]
     }
 }).run()
 

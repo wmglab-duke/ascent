@@ -483,7 +483,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
                             np.savetxt(os.path.join(nsim_inputs_directory, ss_filename),
                                        neuron_potentials_input,
-                                       fmt='%0.18f',header=str(len(neuron_potentials_input)))
+                                       fmt='%0.18f',header=str(len(neuron_potentials_input)),comments='')
                         elif file == 'diams.txt':
                             make_inner_fiber_diam_key(xy_mode, p, nsim_inputs_directory, potentials_directory, file)
         return self
