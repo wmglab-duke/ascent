@@ -515,7 +515,7 @@ class Query(Exceptionable, Configurable, Saveable):
                         missing_indices = []
 
                         if plot_mode == 'fiber0' or plot_mode == 'on_off':
-                            if len(n_inners)==1:
+                            if n_inners==1:
                                 self.throw(131)
                             for i in range(n_inners):
                                 if select_fascicles is None or select_fascicles[i]:
