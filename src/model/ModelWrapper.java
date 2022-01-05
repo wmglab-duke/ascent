@@ -1192,7 +1192,7 @@ public class ModelWrapper {
 
         boolean nerve_only = false;
         boolean cuff_only = false;
-        if (cli_args.has("partial_fem")) {
+        if (cli_args.has("partial_fem")  && !cli_args.isNull("partial_fem")) {
             if (cli_args.getString("partial_fem").equals("cuff_only")) {
                 cuff_only = true;
             }
