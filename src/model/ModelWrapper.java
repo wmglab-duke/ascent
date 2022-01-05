@@ -1249,6 +1249,8 @@ public class ModelWrapper {
                 String modelStr = String.valueOf(models_list.get(model_index));
                 String bases_directory = String.join("/", new String[]{projectPath, "samples", sample, "models", modelStr, "bases"});
 
+                System.out.println("BEGIN RUN - Model " + modelStr);
+
                 // if bases directory does not yet exist, make it. If it exists, check that the bases are valid
                 File basesPathFile = new File(bases_directory);
                 boolean basesValid = true;
