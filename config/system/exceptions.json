@@ -514,5 +514,9 @@
   {
     "code": 130,
     "text": "Using default active_srcs is not allowed when running supersampled bases"
+  },
+  {
+    "code": 131,
+    "text": "Cannot use fiber0 mode for heatmaps if there is only one inner"
   }
 ]
