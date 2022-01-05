@@ -392,6 +392,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
             random_offset_value = 0
             # get offset param - NOTE: raw value is a FRACTION of dz (explanation for multiplication by dz)
+
             offset = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value,'offset',optional=True)
             
             if offset is None: 

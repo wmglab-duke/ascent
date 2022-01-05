@@ -31,10 +31,10 @@ install_parser.add_argument('--no-conda',action='store_true', help = 'Skip conda
 
 
 def parse():
-    '''parse all args'''
+    """parse all args"""
     
-    def g0(args,argstring):
-        '''checks that argument is greater than 0'''
+    def g0(args, argstring):
+        """checks that argument is greater than 0"""
         if hasattr(args,argstring) and getattr(args,argstring)!=None and getattr(args,argstring)<=0:
             sys.exit('Arguments for {} must be greater than 0'.format(argstring))
     
@@ -43,9 +43,9 @@ def parse():
     
     g0(args,'wait_for_license')
     
-    if not len(sys.argv)>1: 
+    if not len(sys.argv)>1:
         parser.print_help()
         sys.exit()
-    
+
     return args
 
