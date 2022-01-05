@@ -18,7 +18,6 @@ import os
 import sys
 
 sys.path.append(os.path.sep.join([os.getcwd(), '']))
-os.chdir('D:/ASCENT/m18')
 import matplotlib.pyplot as plt
 from src.core.query import Query
 
