@@ -135,7 +135,8 @@ of the file.
     set both values for `“cuff_only”` and `“nerve_only”` to true. To build the
     geometry of both the cuff and the nerve, but not proceed with meshing or
     solving the FEM, the user should set the value for `“post_geom_run”`
-    under `“break_points”` to true. Optional.
+    under `“break_points”` to true. Overriden 
+    if the `"partial_fem"` command line argument is used. Optional.
 
     `“local_avail_cpus”`: The value (Integer) sets the number of CPUs that
     the program will take if the `“submission_context”` is “local”. We check
