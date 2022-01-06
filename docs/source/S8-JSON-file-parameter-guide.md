@@ -76,7 +76,9 @@ of the file.
 
     `“submission_context”`: The value (String) of this property tells the
     system how to submit the n\_sim NEURON jobs based on the computational
-    resources available. Value can be either “cluster” or “local”. Required.
+    resources available. Value can be “cluster”, “local”, or "auto" (if "auto", "hostname_prefix" is required). Required.
+
+    `"hostname_prefix"`: This value (String) tells the program what prefix to look out for in the "HOSTNAME" environment variable. If the "HOSTNAME" begins with the "hostname prefix", submission context is set to cluster, otherwise it is set to local (does not change the value in the configuration file). Example: if your high performance computing cluster hostname always begins with ourclust, e.g. ourclust-node-15, ourclust-login-20, etc., you would set the value of this variable to "ourclust." If the "HOSTNAME" environment variable is not present, the program defaults to "local." Required if "submission_context" is "auto", otherwise Optional.
 
     `“sample”`: The value (Integer) of this property sets the sample
     configuration index (“***Sample***”). Note that this is only ever one
