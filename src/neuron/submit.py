@@ -583,8 +583,8 @@ def main():
         #check for auto submission context
         if submission_context == 'auto':
             host = os.environ.get("HOSTNAME")
-            run.get('hostname_prefix')
-            if host is not None and host.startswith('hostname_prefix'):
+            prefix = run.get('hostname_prefix')
+            if host is not None and host.startswith(prefix):
                 submission_context = 'cluster'
             else:
                 submission_context = 'local'
