@@ -62,4 +62,8 @@ q.heatmaps(plot=False,
 #                 # also, look into adding documentation to Simulation (might be useful for above task too)
 
 #plt.close('all')
+<<<<<<< HEAD
 # plt.tight_layout()
+=======
+# plt.tight_layout()
+>>>>>>> master

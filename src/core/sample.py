@@ -127,6 +127,7 @@ class Sample(Exceptionable, Configurable, Saveable):
             img = morphology.remove_small_objects(img, removal_size)
         cv2.imwrite(path, img.astype(int) * 255)
 
+
     def get_factor(self, scale_bar_mask_path: str, scale_bar_length: float, scale_bar_is_literal: bool) -> 'Sample':
         """
         Returns scaling factor (micrometers per pixel)
@@ -536,7 +537,6 @@ class Sample(Exceptionable, Configurable, Saveable):
                     slide.nerve.offset(distance=sep_nerve)
                 else:
                     slide.nerve = slide.reshaped_nerve(reshape_nerve_mode)
-                    slide.nerve.offset(distance=sep_nerve)
 
             # shift slide about (0,0)
             slide.move_center(np.array([0, 0]))

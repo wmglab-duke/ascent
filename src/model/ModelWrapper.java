@@ -908,12 +908,13 @@ public class ModelWrapper {
                 System.exit(0);
             }
 
-            if (nerveMode.equals("PRESENT") && deform_ratio<1) { //Use trace if deform ratio is not 1
-                Part.createNervePartInstance("Epi_trace", 0,
-                        nervePath, this, ndata, sampleData, nerveParams, modelData);
-            } else if (nerveMode.equals("PRESENT") && deform_ratio==1 && reshapenerveMode.equals("CIRCLE")) { //Use a circle otherwise
+            if (nerveMode.equals("PRESENT") && deform_ratio==1 && reshapenerveMode.equals("CIRCLE")) { //Use a circle otherwise
                 Part.createNervePartInstance("Epi_circle", 0,
                         null, this, null, sampleData, nerveParams, modelData);
+            } 
+            else { //Use trace 
+                Part.createNervePartInstance("Epi_trace", 0,
+                        nervePath, this, ndata, sampleData, nerveParams, modelData);
             }
 
             // Loop over all fascicle dirs
@@ -1188,27 +1189,29 @@ public class ModelWrapper {
         else if (run.has("break_points")) {
                 break_points = run.getJSONObject("break_points");
         }
-        boolean nerve_only;
-        boolean cuff_only;
-        if (run.has("partial_fem")) {
+
+        boolean nerve_only = false;
+        boolean cuff_only = false;
+        if (cli_args.has("partial_fem")  && !cli_args.isNull("partial_fem")) {
+            if (cli_args.getString("partial_fem").equals("cuff_only")) {
+                cuff_only = true;
+            }
+            else if (cli_args.getString("partial_fem").equals("nerve_only")) {
+                nerve_only = true;
+            }
+        }
+        else if (run.has("partial_fem")) {
             JSONObject partial_fem_params = run.getJSONObject("partial_fem");
-            
+
             if (partial_fem_params.has("nerve_only")) {
                 nerve_only = partial_fem_params.getBoolean("nerve_only");
-            } else {
-                nerve_only = false;
             }
 
             if (partial_fem_params.has("cuff_only")) {
                 cuff_only = partial_fem_params.getBoolean("cuff_only");
-            } else {
-                cuff_only = false;
             }
-
-        } else {
-            nerve_only = false;
-            cuff_only = false;
         }
+
 
         String sample = null;
         JSONObject sampleData = null;
@@ -1248,6 +1251,8 @@ public class ModelWrapper {
 
                 String modelStr = String.valueOf(models_list.get(model_index));
                 String bases_directory = String.join("/", new String[]{projectPath, "samples", sample, "models", modelStr, "bases"});
+
+                System.out.println("BEGIN RUN - Model " + modelStr);
 
                 // if bases directory does not yet exist, make it. If it exists, check that the bases are valid
                 File basesPathFile = new File(bases_directory);
@@ -1308,9 +1313,8 @@ public class ModelWrapper {
                             }
 
                         } catch (IOException e) {
-                            System.out.println("Issue in mesh recycling logic.");
+                            System.out.println("Issue in mesh recycling logic. Rebuilding mesh.");
                             e.printStackTrace();
-                            System.exit(1);
                         }
                     }
                     System.out.println("End mesh recycling logic.");

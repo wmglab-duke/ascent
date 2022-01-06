@@ -18,7 +18,7 @@ import numpy as np
 import warnings
 import pickle
 
-ALLOWED_SUBMISSION_CONTEXTS = ['cluster', 'local']
+ALLOWED_SUBMISSION_CONTEXTS = ['cluster', 'local','auto']
 OS = 'UNIX-LIKE' if any([s in sys.platform for s in ['darwin', 'linux']]) else 'WINDOWS'
 
 
@@ -243,7 +243,7 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
             sim_dir = os.path.join('n_sims')
             sim_name_base = '{}_{}_{}_'.format(sample, model, sim)
 
-            for sim_name in [x for x in os.listdir(sim_dir) if sim_name_base in x]:
+            for sim_name in [x for x in os.listdir(sim_dir) if x.startswith(sim_name_base)]:
                 print('\n\n################ {} ################\n\n'.format(sim_name))
 
                 sim_path = os.path.join(sim_dir, sim_name)
@@ -575,17 +575,28 @@ def main():
         assert len(run.items()) > 0, 'Encountered empty run configuration: {}'.format(filename)
 
         submission_context = run.get('submission_context', 'cluster')
+        
         # submission context is valid
         assert submission_context in ALLOWED_SUBMISSION_CONTEXTS, 'Invalid submission context: {}'.format(
             submission_context)
-        submission_contexts.append(submission_context)
+        
+        #check for auto submission context
+        if submission_context == 'auto':
+            host = os.environ.get("HOSTNAME")
+            prefix = run.get('hostname_prefix')
+            if host is not None and host.startswith(prefix):
+                submission_context = 'cluster'
+            else:
+                submission_context = 'local'
 
+        submission_contexts.append(submission_context)
+        
         auto_compile_flag = run.get('override_compiled_mods', False)
         auto_compile_flags.append(auto_compile_flag)
-
+        
     # submit_lists, sub_contexts, run_filenames = make_submission_list()
     for sub_context, run_index, auto_compile_flag in zip(submission_contexts, runs, auto_compile_flags):
-
+        
         if auto_compile_flag and not compiled:
             auto_compile(override=True)
 

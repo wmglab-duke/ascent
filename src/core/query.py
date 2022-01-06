@@ -1116,7 +1116,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
                     # default fiberset index to 0
                     fiberset_index: int = 0
-                    if comparison_key.split('->')[0] == 'fiber':
+                    if comparison_key.split('->')[0] == 'fibers':
                         fiberset_index = nsim_index  # if dimension is fibers, use correct fiberset
 
                     # fetch outer->inner->fiber and out->inner maps
@@ -1349,7 +1349,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
         #             # default fiberset index to 0
         #             fiberset_index: int = 0
-        #             if comparison_key.split('->')[0] == 'fiber':
+        #             if comparison_key.split('->')[0] == 'fibers':
         #                 fiberset_index = nsim_index  # if dimension is fibers, use correct fiberset
 
         #             # fetch outer->inner->fiber and out->inner maps
@@ -1599,7 +1599,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
                     # default fiberset index to 0
                     fiberset_index: int = 0
-                    if comparison_key.split('->')[0] == 'fiber':
+                    if comparison_key.split('->')[0] == 'fibers':
                         fiberset_index = nsim_index  # if dimension is fibers, use correct fiberset
 
                     # fetch outer->inner->fiber and out->inner maps

@@ -22,6 +22,7 @@ ts_parser = subparsers.add_parser('tidy_samples', help = 'Remove specified files
 pipeline_parser.add_argument('run_indices', nargs = '+', help = 'Space separated indices to run the pipeline over')
 pipeline_parser.add_argument('-b','--break-point',choices = ["pre_geom_run","post_geom_run","pre_java","post_mesh_distal","pre_mesh_distal","post_material_assign","pre_loop_currents","pre_mesh_proximal","post_mesh_proximal"], help = 'Point in pipeline to exit and continue to next run')
 pipeline_parser.add_argument('-w','--wait-for-license',type=float,help = "Wait the specified number of hours for a comsol license to become available.")
+pipeline_parser.add_argument('-P','--partial-fem',choices = ["cuff_only","nerve_only"],help = "Only generate the specified geometry.")
 ts_parser.add_argument('sample_indices', nargs = '+',type=int, help = 'Space separated sample indices to tidy')
 nsims_parser.add_argument('run_indices', nargs = '+',type=int, help = 'Space separated run indices to import')
 cs_parser.add_argument('sample_indices', nargs = '+',type=int, help = 'Space separated sample indices to clean')
@@ -30,10 +31,10 @@ install_parser.add_argument('--no-conda',action='store_true', help = 'Skip conda
 
 
 def parse():
-    '''parse all args'''
+    """parse all args"""
     
-    def g0(args,argstring):
-        '''checks that argument is greater than 0'''
+    def g0(args, argstring):
+        """checks that argument is greater than 0"""
         if hasattr(args,argstring) and getattr(args,argstring)!=None and getattr(args,argstring)<=0:
             sys.exit('Arguments for {} must be greater than 0'.format(argstring))
     
@@ -42,9 +43,9 @@ def parse():
     
     g0(args,'wait_for_license')
     
-    if not len(sys.argv)>1: 
+    if not len(sys.argv)>1:
         parser.print_help()
         sys.exit()
-    
+
     return args
 
