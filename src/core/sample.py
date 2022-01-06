@@ -537,7 +537,6 @@ class Sample(Exceptionable, Configurable, Saveable):
                     slide.nerve.offset(distance=sep_nerve)
                 else:
                     slide.nerve = slide.reshaped_nerve(reshape_nerve_mode)
-                    slide.nerve.offset(distance=sep_nerve)
 
             # shift slide about (0,0)
             slide.move_center(np.array([0, 0]))
