@@ -243,7 +243,7 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
             sim_dir = os.path.join('n_sims')
             sim_name_base = '{}_{}_{}_'.format(sample, model, sim)
 
-            for sim_name in [x for x in os.listdir(sim_dir) if sim_name_base in x]:
+            for sim_name in [x for x in os.listdir(sim_dir) if x.startswith(sim_name_base)]:
                 print('\n\n################ {} ################\n\n'.format(sim_name))
 
                 sim_path = os.path.join(sim_dir, sim_name)
