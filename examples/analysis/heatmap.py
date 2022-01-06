@@ -32,7 +32,7 @@ q = Query({
     'indices': {
         'sample': [18],
         'model': [451],
-        'sim': [1,18]
+        'sim': [20]
     }
 }).run()
 

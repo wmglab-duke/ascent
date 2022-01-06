@@ -296,6 +296,273 @@ class Query(Exceptionable, Configurable, Saveable):
                     return False
 
         return True
+    
+    def vm(self,
+                 plot: bool = True,
+                 plot_mode: str = 'average',
+                 save_path: str = None,
+                 plot_outers: bool = False,
+                 rows_override: int = None,
+                 add_colorbar: bool = True,
+                 colorbar_mode: str = 'subplot',
+                 colormap_str: str = 'coolwarm',
+                 colorbar_text_size_override: int = None,
+                 reverse_colormap: bool = True,
+                 colorbar_aspect: int = None,
+                 colomap_bounds_override: List[List[Tuple[float, float]]] = None,
+                 track_colormap_bounds: bool = False,
+                 track_colormap_bounds_offset_ratio: float = 0.0,
+                 missing_color: Tuple[int, int, int, int] = (1, 0, 0, 1),
+                 title_toggle: bool = True,
+                 subplot_title_toggle: bool = True,
+                 tick_count: int = 5,
+                 tick_bounds: bool = False,
+                 show_orientation_point: bool = True,
+                 subplot_assign: str = 'standard',
+                 min_max_ticks: bool = False,
+                 cutoff_thresh: bool = 0,
+                 suprathresh_color: Tuple[int, int, int, int] = (0, 1, 0, 1),
+                 subthresh_color: Tuple[int, int, int, int] = (0, 0, 1, 1),
+                 select_fascicles: List = None
+                 ):
+
+        """
+        Generate activation thresholds heatmaps
+
+        Each plot represents a single 1-dimensional simulation, with each subplot representing a single value from the
+        parameter that is being iterated over. For instace, a sim with many different fiber diamaters will have each subplot
+        represent a single fiber diameter. In a future release, multidimensional sims will be accounted for; this may
+        illicit changing the underlying data structure.
+
+        Args:
+            plot (bool, optional): Show plots via matplotlib. Defaults to True.
+            plot_mode (str, optional):
+                'average': each inner is filled with the color corresponding to the average of its fiber thresholds
+                'individual': each fiber is plotted individually with its corresponding color.
+                Defaults to 'average'.
+            save_path (str, optional): Path to which plots are saved as PNG files. If None, will not save. Defaults to None.
+            plot_outers (bool, optional): Draw outer perineurium trace. Defaults to False.
+            rows_override (int, optional):
+                Force number of rows; this number <= number of items in sim dimension (i.e., fiber diameters).
+                If None, an arrangement closest to a square will be chosen. Defaults to None.
+            colorbar_mode (str, optional):
+                'subplot': one colorbar/colormap per subplot (i.e., one colorbar for each nsim)
+                'figure': one colorbar for the entire figure (i.e., all colors are on same scale).
+                Defaults to 'subplot'.
+            colormap_str (str, optional): Matplotlib colormap theme. Defaults to 'coolwarm'.
+            colorbar_text_size_override (int, optional): Override system default for colorbar text size. Defaults to None.
+            reverse_colormap (bool, optional): Invert direction of colormap. Defaults to True.
+            colorbar_aspect (int, optional): Override system default for color aspect ratio. Defaults to None.
+            colomap_bounds_override (List[List[Tuple[float, float]]], optional):
+                List (an item per sim/figure), where each item is a list of tuples (bounds for each subplot).
+                These bounds may be generated as output by toggling the `track_colormap_bounds` parameter.  Defaults to None.
+            track_colormap_bounds (bool, optional): Output colormap bounds in format described above. Defaults to False.
+            track_colormap_bounds_offset_ratio (float, optional):
+                Step bound extremes towards mean by ratio. This can be helpful when a few fascicle have thresholds that
+                are drastically different than the rest of the fascicles. Assumes sims are in order, starting from 0.
+                Defaults to 0.0.
+            missing_color (Tuple[int, int, int, int], optional):
+                RGBA Color to represent missing thresholds. Defaults to (1, 0, 0, 1) (red).
+            title_toggle (bool, optional): Plot title. Defaults to True.
+            subplot_title_toggle (bool, optional): Plot subplot title. Defaults to True.
+            tick_count (int, optional): Colorbar tick count. Defaults to 2.
+            tick_bounds (bool, optional): Ticks only at min and max of colorbar (override tick_count). Defaults to False.
+            show_orientation_point (bool, optional):
+                If an orientation mask was used, plot the direction as a dot outside of the nerve trace. Defaults to True.
+                        :param subthresh_color:
+            :param suprathresh_color:
+            :param cutoff_thresh:
+            :param show_orientation_point:
+            :param tick_bounds:
+            :param tick_count:
+            :param subplot_title_toggle:
+            :param title_toggle:
+            :param missing_color:
+            :param track_colormap_bounds_offset_ratio:
+            :param track_colormap_bounds:
+            :param colorbar_aspect:
+            :param reverse_colormap:
+            :param colorbar_text_size_override:
+            :param colormap_str:
+            :param colorbar_mode:
+            :param plot_outers:
+            :param rows_override:
+            :param save_path:
+            :param plot:
+            :param add_colorbar:
+            :param plot_mode:
+            :param colomap_bounds_override:
+            :param min_max_ticks:
+            :param subplot_assign:
+
+        Returns:
+            matplotlib.pyplot.Figure: Handle to final figure (uses .gcf())
+        """
+
+        if self._result is None:
+            self.throw(66)
+
+        def _renumber_subplot(my_n: int, my_rows: int, my_cols: int):
+
+            classic_indices = [[0 for x in range(my_cols)] for y in range(my_rows)]
+            renumber_indices = [[0 for x in range(my_cols)] for y in range(my_rows)]
+            new_n = 0
+
+            if my_n == 0:
+                new_n = 0
+            else:
+                ind = 0
+                for row_ind in range(my_rows):
+                    for col_ind in range(my_cols):
+                        classic_indices[row_ind][col_ind] = ind
+                        ind += 1
+
+                ind = 0
+                for col_ind in range(my_cols):
+                    for row_ind in range(my_rows):
+                        renumber_indices[row_ind][col_ind] = ind
+                        ind += 1
+
+                # find row
+                for row_ind in range(my_rows):
+                    if renumber_indices[row_ind].__contains__(my_n):
+                        rw = row_ind
+                        cl = renumber_indices[row_ind].index(my_n)
+                        new_n = classic_indices[rw][cl]
+
+            return new_n
+        
+        # loop samples
+        sample_results: dict
+        for num_sam, sample_results in enumerate(self._result.get('samples', [])):
+            sample_index = sample_results['index']
+            sample_object: Sample = self.get_object(Object.SAMPLE, [sample_index])
+            sample_config: dict = self.get_config(Config.SAMPLE, [sample_index])
+            slide = sample_object.slides[0]
+            n_inners = sum(len(fasc.inners) for fasc in slide.fascicles)
+
+            # init colormap bounds tracking
+            tracking_sim_index = None
+            colormap_bounds_tracking: List[Tuple[float, float]] = []
+
+            # offset for consecutive samples with colormap bounds override
+
+            print('sample: {}'.format(sample_index))
+
+            # loop models
+            model_results: dict
+            for model_results in sample_results.get('models', []):
+                model_index = model_results['index']
+
+                print('\tmodel: {}'.format(model_index))
+
+                # calculate orientation point location (i.e., contact location)
+                orientation_point = None
+                if slide.orientation_point is not None:
+                    r = slide.nerve.mean_radius() * 1.15  # scale up so orientation point is outside nerve
+                    # theta = np.arctan2(*tuple(np.flip(slide.nerve.points[slide.orientation_point_index][:2])))
+                    theta = np.arctan2(*tuple(np.flip(slide.orientation_point)))
+                    theta += np.deg2rad(
+                        self.get_config(Config.MODEL, [sample_index, model_index]).get('cuff').get('rotate').get(
+                            'add_ang')
+                    )
+                    orientation_point = r * np.cos(theta), r * np.sin(theta)
+
+                # loop sims
+                for sim_index in model_results.get('sims', []):
+                    sim_object = self.get_object(Object.SIMULATION, [sample_index, model_index, sim_index])
+
+                    print('\t\tsim: {}'.format(sim_index))
+                    
+                    for innum in range(n_inners):
+
+                        # init figure with subplots
+                        master_product_count = len(sim_object.master_product_indices)
+                        rows = int(np.floor(np.sqrt(master_product_count))) if rows_override is None else rows_override
+                        cols = int(np.ceil(master_product_count / rows))
+                        # figure, axes = plt.subplots(2, 5, constrained_layout=False, figsize=(25, 20))
+                        figure, axes = plt.subplots(rows, cols, constrained_layout=False, figsize=(25, 20))
+                        axes = np.array(axes)
+                        axes = axes.reshape(-1)
+    
+                        # loop nsims
+                        for n, (potentials_product_index, waveform_index) in enumerate(sim_object.master_product_indices):
+                            active_src_index, fiberset_index = sim_object.potentials_product[potentials_product_index]
+    
+                            # fetch axis
+                            ax: plt.Axes = axes[n if subplot_assign == "standard" else _renumber_subplot(n, 2, 5)]
+    
+                            # fetch sim information
+                            sim_dir = self.build_path(Object.SIMULATION, [sample_index, model_index, sim_index],
+                                                      just_directory=True)
+                            n_sim_dir = os.path.join(sim_dir, 'n_sims', str(n))
+                            # fiberset_dir = os.path.join(sim_dir, 'fibersets', str(fiberset_index))
+    
+                            # fetch thresholds, then find min and max
+                            thresholds = []
+                            missing_indices = []
+    
+                            vmpath = os.path.join(n_sim_dir, 'data', 'outputs',
+                                                           'Vm_time_inner{}_fiber0_amp0.dat'.format(innum))
+                            
+                            vm=np.loadtxt(vmpath,skiprows=1)[:, 0:]
+                            
+                            if vm.shape[1]!=2:
+                                self.throw()
+                                
+                            t=vm[:,0][:10000]
+                            v=vm[:,1][:10000]
+                            ax.plot(t,v)
+                            
+                            # figure title -- make arbitrary, hard-coded subplot title modifications here (add elif's)
+                            title = ''
+                            for fib_key_name, fib_key_value in zip(sim_object.fiberset_key,
+                                                                   sim_object.fiberset_product[fiberset_index]):
+    
+                                if fib_key_name == 'fibers->z_parameters->diameter':
+                                    title = u'{} fiber diameter: {} \u03bcm'.format(title, fib_key_value)
+                                else:
+                                    # default title
+                                    title = '{} {}:{}'.format(title, fib_key_name, fib_key_value)
+                            title+='\n'
+                            for wave_key_name, wave_key_value in zip(sim_object.wave_key,
+                                                                     sim_object.wave_product[waveform_index]):
+                                if wave_key_name == 'waveform->BIPHASIC_PULSE_TRAIN->pulse_width':
+                                    title = '{} pulse width: {} ms'.format(title, wave_key_value)
+                                else:
+                                    title = '{} {}:{}'.format(title, wave_key_name, wave_key_value)
+    
+                            # set title
+                            if subplot_title_toggle:
+                                ax.set_title(title, fontsize=35)
+                            ax.set_ylabel('V (mv)',rotation=90)
+                            ax.set_xlabel('Time (ms)',rotation=0)
+                        plt.gcf().tight_layout(rect=[0, 0.03, 1, 0.95])
+    
+                        # set super title
+                        if title_toggle:
+                            plt.suptitle(
+                                'Voltage/t: {} (model {},inner {})'.format(
+                                    sample_config.get('sample'),
+                                    model_index,
+                                    innum
+                                ),
+                                size=40
+                            )
+                        
+                        # save figure as png
+                        if save_path is not None:
+                            if not os.path.exists(save_path):
+                                os.makedirs(save_path)
+                            dest = '{}{}{}_{}_{}.png'.format(save_path, os.sep, sample_index, model_index, sim_index)
+                            figure.savefig(dest, dpi=300)
+                            # print('done')
+    
+                        # plot figure
+                        if plot:
+                            plt.show()
+
+        return plt.gcf(), axes
 
     def heatmaps(self,
                  plot: bool = True,
