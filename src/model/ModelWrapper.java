@@ -908,12 +908,13 @@ public class ModelWrapper {
                 System.exit(0);
             }
 
-            if (nerveMode.equals("PRESENT") && deform_ratio<1) { //Use trace if deform ratio is not 1
-                Part.createNervePartInstance("Epi_trace", 0,
-                        nervePath, this, ndata, sampleData, nerveParams, modelData);
-            } else if (nerveMode.equals("PRESENT") && deform_ratio==1 && reshapenerveMode.equals("CIRCLE")) { //Use a circle otherwise
+            if (nerveMode.equals("PRESENT") && deform_ratio==1 && reshapenerveMode.equals("CIRCLE")) { //Use a circle otherwise
                 Part.createNervePartInstance("Epi_circle", 0,
                         null, this, null, sampleData, nerveParams, modelData);
+            } 
+            else { //Use trace 
+                Part.createNervePartInstance("Epi_trace", 0,
+                        nervePath, this, ndata, sampleData, nerveParams, modelData);
             }
 
             // Loop over all fascicle dirs
@@ -1249,15 +1250,25 @@ public class ModelWrapper {
                 String modelStr = String.valueOf(models_list.get(model_index));
                 String bases_directory = String.join("/", new String[]{projectPath, "samples", sample, "models", modelStr, "bases"});
 
-                // if bases directory does not yet exist, make it
+                System.out.println("BEGIN RUN - Model " + modelStr);
+
+                // if bases directory does not yet exist, make it. If it exists, check that the bases are valid
                 File basesPathFile = new File(bases_directory);
                 boolean basesValid = true;
                 if (basesPathFile.exists()) {
-                    for (String basisFilename : basesPathFile.list()) {
-                        if (!basisFilename.matches("[0-9]{1,3}\\.mph")) {
-                            basesValid = false;
-                            break;
+                    String imFile = String.join("/", new String[]{projectPath, "samples", sample, "models", modelStr, "mesh", "im.json"});
+                    try {
+                        JSONObject imdata = JSONio.read(imFile);
+                        for (int cu=0;cu<imdata.getJSONObject("currentIDs").length();cu++) {
+                            File basisFile = new File(bases_directory+"/"+String.valueOf(cu)+".mph");
+                            if (!basisFile.exists()) {
+                                basesValid = false;
+                            }
                         }
+                    }
+                    catch (FileNotFoundException e) {
+                        System.out.println("Could not validate bases because no identifier manager record exists (mesh/im.json).");
+                        basesValid = false;
                     }
                 } else {
                     basesValid = false;
@@ -1300,9 +1311,8 @@ public class ModelWrapper {
                             }
 
                         } catch (IOException e) {
-                            System.out.println("Issue in mesh recycling logic.");
+                            System.out.println("Issue in mesh recycling logic. Rebuilding mesh.");
                             e.printStackTrace();
-                            System.exit(1);
                         }
                     }
                     System.out.println("End mesh recycling logic.");

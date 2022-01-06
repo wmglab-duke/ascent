@@ -119,8 +119,10 @@ class Trace(Exceptionable):
         if area_compensation==True:
             #scale back to area of original trace
             self.scale((pre_area/self.area())**.5)
-            if round(pre_area,0)!=round(self.area(),0):
+            if abs(pre_area-self.area())>1:
                 self.throw(128)
+        else:
+            self.scale(1)
         self.points = np.flip(self.points,axis = 0) # set points to opencv orientation
         
     def scale(self, factor: float = 1, center: Union[List[float], str] = 'centroid'):
