@@ -428,9 +428,9 @@ of the file.
                of the nerve cross section was reduced from the fresh tissue to the imaged tissue. Formula: r_post = r_original * (1-shrinkage)
             2. `“LENGTH_FORWARDS”`: The value for "scale"->"shrinkage" refers to how much the length (e.g., radius, diameter, or perimeter)
                of the nerve cross section increases from the imaged tissue to the fresh tissue. Formula: r_post = r_original / (1+shrinkage)
-            1. `“AREA_BACKWARDS”`: The value for "scale"->"shrinkage" refers to how much the area
+            3. `“AREA_BACKWARDS”`: The value for "scale"->"shrinkage" refers to how much the area
                of the nerve cross section was reduced from the fresh tissue to the imaged tissue. Formula: A_post = A_original * (1-shrinkage)
-            2. `“AREA_FORWARDS”`: The value for "scale"->"shrinkage" refers to how much the area
+            4. `“AREA_FORWARDS”`: The value for "scale"->"shrinkage" refers to how much the area
                of the nerve cross section increases from the imaged tissue to the fresh tissue. Formula: A_post = A_original / (1+shrinkage)
 
     <!-- end list -->
