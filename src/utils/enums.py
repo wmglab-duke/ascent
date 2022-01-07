@@ -126,7 +126,7 @@ class MaskFileNames(ASCENTEnum):
 
 @unique
 class ShrinkageMode(ASCENTEnum):
-    config = 'shrink_definition'
+    config = 'shrinkage_definition'
 
     LENGTH_BACKWARDS = 0
     LENGTH_FORWARDS = 1
