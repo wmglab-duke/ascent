@@ -213,11 +213,12 @@ of the file.
       },
       "modes": {
         "mask_input": String,
+        "scale_input": String,
         "nerve": String,
         "deform": String,
         "ci_perineurium_thickness": String,
         "reshape_nerve": String,
-        "scale_input": String
+        "shrinkage_definition": String
       },
       "smoothing": {
         "nerve_distance": Double,
@@ -336,6 +337,15 @@ of the file.
             3.  `“INNER_AND_OUTER_COMPILED”`: Program expects a single
                 segmented image containing boundaries of both inners and
                 outers.
+                
+      - `“scale_input”`: The value (String) is the `“ScaleInputMode”`
+        that tells the program which type of scale input to look for.
+
+          - As listed in Enums ([S6 Text](S6-Enums)), known `“ScaleInputModes”` include
+
+            1.  `“MASK”`: The program will determine image scale from the user's scale bar mask image and the `scale_bar_length` parameter.
+            2.  `“RATIO”`: The program will use the scale directly specified in `scale_ratio`. If using this option, a scale bar image need not be
+                provided.
 
       - `“nerve”`: The value (String) is the `“NerveMode”` that tells the
         program if there is an outer nerve boundary (epineurium) segmented
@@ -404,18 +414,24 @@ of the file.
 
           - As listed in Enums ([S6 Text](S6-Enums)), known `“ReshapeNerveModes”` include
 
-              - `“CIRCLE”`: The program creates a circular nerve boundary
+            1. `“CIRCLE”`: The program creates a circular nerve boundary
                 with a preserved cross-sectional area (i.e., for multifascicular nerves/nerves that have epineurium).
-              - `“NONE”`: The program does not deform the nerve boundary (i.e., for monofascicular nerves/nerves that do not have epineurium).
+            2. `“NONE”`: The program does not deform the nerve boundary (i.e., for monofascicular nerves/nerves that do not have epineurium).
+            
+      - `“shrinkage_definition”`: The value (String) is the `“ShrinkageMode”`
+        that tells the program how to interpret the "scale"->"shrinkage" parameter, which is provided as a decimal (i.e., 0.2 = 20%).
+        Optional, but assumes the mode "LENGTH_FORWARDS if omitted, since this was the original behavior before this mode was added.
 
-      - `“scale_input”`: The value (String) is the `“ScaleInputMode”`
-        that tells the program which type of scale input to look for.
+          - As listed in Enums ([S6 Text](S6-Enums)), known `“ShrinkageModes”` include
 
-          - As listed in Enums ([S6 Text](S6-Enums)), known `“ScaleInputModes”` include
-
-              - `“MASK”`: The program will determine image scale from the user's scale bar mask image and the `scale_bar_length` parameter.
-              - `“RATIO”`: The program will use the scale directly specified in `scale_ratio`. If using this option, a scale bar image need not be
-               provided.
+            1. `“LENGTH_BACKWARDS”`: The value for "scale"->"shrinkage" refers to how much the length (e.g., radius, diameter, or perimeter)
+               of the nerve cross section was reduced from the fresh tissue to the imaged tissue. Formula: r_post = r_original * (1-shrinkage)
+            2. `“LENGTH_FORWARDS”`: The value for "scale"->"shrinkage" refers to how much the length (e.g., radius, diameter, or perimeter)
+               of the nerve cross section increases from the imaged tissue to the fresh tissue. Formula: r_post = r_original / (1+shrinkage)
+            1. `“AREA_BACKWARDS”`: The value for "scale"->"shrinkage" refers to how much the area
+               of the nerve cross section was reduced from the fresh tissue to the imaged tissue. Formula: A_post = A_original * (1-shrinkage)
+            2. `“AREA_FORWARDS”`: The value for "scale"->"shrinkage" refers to how much the area
+               of the nerve cross section increases from the imaged tissue to the fresh tissue. Formula: A_post = A_original / (1+shrinkage)
 
     <!-- end list -->
 
