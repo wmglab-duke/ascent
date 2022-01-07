@@ -292,14 +292,13 @@ of the file.
         the ratio of micrometers per pixel for the input mask(s).
         Required if scale_input = "RATIO".
 
-
-    <!-- end list -->
-
       - `“shrinkage”`: The value (Double) is the shrinkage correction for the
         nerve morphology binary images provided as a decimal (e.g., 0.20
         results in a 20% expansion of the nerve, and 0 results in no
         shrinkage correction of the nerve). Required, must be greater than
         0. Note: Shrinkage correction scaling is linear (i.e. a nerve with diameter d and area a scaled by scaling factor s will have a final diameter of d_final=d\*(1+s) and a final area a_final = a\*(1+s)<sup>2</sup>)
+
+        <!-- end list -->
 
     `“boundary_separation”`
 
@@ -425,16 +424,17 @@ of the file.
           - As listed in Enums ([S6 Text](S6-Enums)), known `“ShrinkageModes”` include
 
             1. `“LENGTH_BACKWARDS”`: The value for "scale"->"shrinkage" refers to how much the length (e.g., radius, diameter, or perimeter)
-               of the nerve cross section was reduced from the fresh tissue to the imaged tissue. Formula: r_post = r_original * (1-shrinkage)
+               of the nerve cross section was reduced from the fresh tissue to the imaged tissue. 
+                 - Formula: r_post = r_original * (1-shrinkage)
             2. `“LENGTH_FORWARDS”`: The value for "scale"->"shrinkage" refers to how much the length (e.g., radius, diameter, or perimeter)
-               of the nerve cross section increases from the imaged tissue to the fresh tissue. Formula: r_post = r_original / (1+shrinkage)
+               of the nerve cross section increases from the imaged tissue to the fresh tissue. 
+                 - Formula: r_post = r_original / (1+shrinkage)
             3. `“AREA_BACKWARDS”`: The value for "scale"->"shrinkage" refers to how much the area
-               of the nerve cross section was reduced from the fresh tissue to the imaged tissue. Formula: A_post = A_original * (1-shrinkage)
+               of the nerve cross section was reduced from the fresh tissue to the imaged tissue. 
+                 - Formula: A_post = A_original * (1-shrinkage)
             4. `“AREA_FORWARDS”`: The value for "scale"->"shrinkage" refers to how much the area
-               of the nerve cross section increases from the imaged tissue to the fresh tissue. Formula: A_post = A_original / (1+shrinkage)
-
-    <!-- end list -->
-
+               of the nerve cross section increases from the imaged tissue to the fresh tissue. 
+                 - Formula: A_post = A_original / (1+shrinkage)
 
     `“smoothing”`: Smoothing is applied via a dilating the nerve/fascicle boundary by a specified distance value and then shrinking it by that same value.
 
