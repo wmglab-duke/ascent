@@ -8,27 +8,26 @@ The source code can be found on the following GitHub repository: https://github.
 
 # builtins
 import os
-import time
-
-import sys
+import shutil
+import subprocess
 from typing import List, Tuple, Union
 
 # packages
 import cv2
-import shutil
-import numpy as np
 import matplotlib.pyplot as plt
-import subprocess
-from shapely.geometry import LineString
+import numpy as np
+import sys
+import warnings
 from scipy.ndimage.morphology import binary_fill_holes
+from shapely.geometry import LineString
 from skimage import morphology
 
 # ascent
 from src.core import Slide, Map, Fascicle, Nerve, Trace
-from .deformable import Deformable
 from src.utils import Exceptionable, Configurable, Saveable, SetupMode, Config, MaskFileNames, NerveMode, \
     MaskInputMode, ReshapeNerveMode, DeformationMode, PerineuriumThicknessMode, WriteMode, CuffInnerMode, \
     TemplateOutput, TemplateMode, ScaleInputMode, ShrinkageMode
+from .deformable import Deformable
 
 
 class Sample(Exceptionable, Configurable, Saveable):
@@ -118,7 +117,8 @@ class Sample(Exceptionable, Configurable, Saveable):
 
         if self.search(Config.SAMPLE, 'image_preprocessing', 'fill_holes', optional=True) == True:
             if self.search_mode(MaskInputMode, Config.SAMPLE) == MaskInputMode.INNER_AND_OUTER_COMPILED:
-                print('WARNING: Skipping fill holes since MaskInputMode is INNER_AND_OUTER_COMPILED. Change fill_holes to False to suppress this warning.')
+                print(
+                    'WARNING: Skipping fill holes since MaskInputMode is INNER_AND_OUTER_COMPILED. Change fill_holes to False to suppress this warning.')
             else:
                 img = binary_fill_holes(img)
         removal_size = self.search(Config.SAMPLE, 'image_preprocessing', 'object_removal_area', optional=True)
@@ -126,7 +126,6 @@ class Sample(Exceptionable, Configurable, Saveable):
             if removal_size < 0: self.throw(119)
             img = morphology.remove_small_objects(img, removal_size)
         cv2.imwrite(path, img.astype(int) * 255)
-
 
     def get_factor(self, scale_bar_mask_path: str, scale_bar_length: float, scale_bar_is_literal: bool) -> 'Sample':
         """
@@ -327,7 +326,7 @@ class Sample(Exceptionable, Configurable, Saveable):
 
             # preprocess binary masks
             mask_dims = []
-            for mask in ["COMPILED", "INNERS", "OUTERS", "NERVE","ORIENTATION"]:
+            for mask in ["COMPILED", "INNERS", "OUTERS", "NERVE", "ORIENTATION"]:
                 maskfile = getattr(MaskFileNames, mask)
                 if exists(maskfile):
                     mask_dims.append(cv2.imread(getattr(maskfile, 'value')).shape)
@@ -337,7 +336,8 @@ class Sample(Exceptionable, Configurable, Saveable):
             scalemask = getattr(MaskFileNames, "SCALE_BAR")
             if exists(scalemask):
                 mask_dims.append(cv2.imread(getattr(scalemask, 'value')).shape)
-                if not np.all(np.array(mask_dims) == mask_dims[0]): print('WARNING: Scale bar mask has a different resolution than morphology masks. \nProgram will continue and assume that the scale bar mask microns/pixel ratio is correct.')
+                if not np.all(np.array(mask_dims) == mask_dims[0]): print(
+                    'WARNING: Scale bar mask has a different resolution than morphology masks. \nProgram will continue and assume that the scale bar mask microns/pixel ratio is correct.')
             # fascicles list
             fascicles: List[Fascicle] = []
 
@@ -417,23 +417,30 @@ class Sample(Exceptionable, Configurable, Saveable):
                 slide.orientation_angle = np.arctan2(ori_y - outer_y, ori_x - outer_x)
 
             # shrinkage correction
-            s_mode = self.search_mode(ShrinkageMode, Config.SAMPLE)
+            s_mode = self.search_mode(ShrinkageMode, Config.SAMPLE, optional=True)
             s_pre = self.search(Config.SAMPLE, "scale", "shrinkage")
-            if s_mode == ShrinkageMode.LENGTH_BACKWARDS:
-                s = -1 + 1 / (1 - s_pre)
-            elif s_mode == ShrinkageMode.LENGTH_FORWARDS:
+            if s_mode is None:
+                print('WARNING: ShrinkageMode in Config.Sample is not defined. Proceeding with backwards'
+                      ' compatible (i.e., original default functionality) of LENGTH_FORWARDS shrinkage'
+                      ' correction.\n')
                 s = s_pre
-            elif s_mode == ShrinkageMode.AREA_BACKWARDS:
-                s = 1 - np.sqrt(1-s_pre)
-            elif s_mode == ShrinkageMode.AREA_FORWARDS:
-                s = -1 + np.sqrt(1+s_pre)
             else:
-                self.throw(132)
+                s = None
+                if s_mode == ShrinkageMode.LENGTH_BACKWARDS:
+                    s = -1 + 1 / (1 - s_pre)
+                elif s_mode == ShrinkageMode.LENGTH_FORWARDS:
+                    s = s_pre
+                elif s_mode == ShrinkageMode.AREA_BACKWARDS:
+                    s = 1 - np.sqrt(1 - s_pre)
+                elif s_mode == ShrinkageMode.AREA_FORWARDS:
+                    s = -1 + np.sqrt(1 + s_pre)
+                else:
+                    self.throw(132)
 
             if s < 0:
                 self.throw(133)
 
-            slide.scale(1+s)
+            slide.scale(1 + s)
 
             self.slides.append(slide)
 
@@ -453,7 +460,8 @@ class Sample(Exceptionable, Configurable, Saveable):
 
         if plot == True:
             plt.figure()
-            slide.plot(final=False, fix_aspect_ratio='True',axlabel=u"\u03bcm",title='Initial sample from morphology masks')
+            slide.plot(final=False, fix_aspect_ratio='True', axlabel=u"\u03bcm",
+                       title='Initial sample from morphology masks')
             if plot_folder == True:
                 plt.savefig(plotpath + '/sample_initial')
                 plt.clf()
@@ -578,7 +586,8 @@ class Sample(Exceptionable, Configurable, Saveable):
 
         if plot == True:
             plt.figure()
-            slide.plot(final=False, fix_aspect_ratio='True',axlabel=u"\u03bcm",title='Final sample after any user specified processing')
+            slide.plot(final=False, fix_aspect_ratio='True', axlabel=u"\u03bcm",
+                       title='Final sample after any user specified processing')
             if plot_folder == True:
                 plt.savefig(plotpath + '/sample_final')
                 plt.clf()
