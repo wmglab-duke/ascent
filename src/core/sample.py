@@ -28,7 +28,7 @@ from src.core import Slide, Map, Fascicle, Nerve, Trace
 from .deformable import Deformable
 from src.utils import Exceptionable, Configurable, Saveable, SetupMode, Config, MaskFileNames, NerveMode, \
     MaskInputMode, ReshapeNerveMode, DeformationMode, PerineuriumThicknessMode, WriteMode, CuffInnerMode, \
-    TemplateOutput, TemplateMode, ScaleInputMode
+    TemplateOutput, TemplateMode, ScaleInputMode, ShrinkageMode
 
 
 class Sample(Exceptionable, Configurable, Saveable):
@@ -417,7 +417,23 @@ class Sample(Exceptionable, Configurable, Saveable):
                 slide.orientation_angle = np.arctan2(ori_y - outer_y, ori_x - outer_x)
 
             # shrinkage correction
-            slide.scale(1 + self.search(Config.SAMPLE, "scale", "shrinkage"))
+            s_mode = self.search_mode(ShrinkageMode, Config.SAMPLE)
+            s_pre = self.search(Config.SAMPLE, "scale", "shrinkage")
+            if s_mode == ShrinkageMode.LENGTH_BACKWARDS:
+                s = -1 + 1 / (1 - s_pre)
+            elif s_mode == ShrinkageMode.LENGTH_FORWARDS:
+                s = s_pre
+            elif s_mode == ShrinkageMode.AREA_BACKWARDS:
+                s = 1 - np.sqrt(1-s_pre)
+            elif s_mode == ShrinkageMode.AREA_FORWARDS:
+                s = -1 + np.sqrt(1+s_pre)
+            else:
+                self.throw(132)
+
+            if s < 0:
+                self.throw(133)
+
+            slide.scale(1+s)
 
             self.slides.append(slide)
 
