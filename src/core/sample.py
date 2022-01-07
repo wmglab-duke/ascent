@@ -420,9 +420,9 @@ class Sample(Exceptionable, Configurable, Saveable):
             s_mode = self.search_mode(ShrinkageMode, Config.SAMPLE, optional=True)
             s_pre = self.search(Config.SAMPLE, "scale", "shrinkage")
             if s_mode is None:
-                print('WARNING: ShrinkageMode in Config.Sample is not defined. Proceeding with backwards'
-                      ' compatible (i.e., original default functionality) of LENGTH_FORWARDS shrinkage'
-                      ' correction.\n')
+                print('WARNING: ShrinkageMode in Config.Sample is not defined or mode provided is not a known option. '
+                      'Proceeding with backwards compatible (i.e., original default functionality) of LENGTH_FORWARDS'
+                      ' shrinkage correction.\n')
                 s = s_pre
             else:
                 s = None
