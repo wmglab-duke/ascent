@@ -297,7 +297,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
         return True
     
-    def vm(self,
+    def voltage_time(self,
                  plot: bool = True,
                  plot_mode: str = 'average',
                  save_path: str = None,
@@ -431,7 +431,8 @@ class Query(Exceptionable, Configurable, Saveable):
                         new_n = classic_indices[rw][cl]
 
             return new_n
-        
+        plt.rcParams.update({'font.size': 20})
+
         # loop samples
         sample_results: dict
         for num_sam, sample_results in enumerate(self._result.get('samples', [])):
@@ -510,8 +511,8 @@ class Query(Exceptionable, Configurable, Saveable):
                             if vm.shape[1]!=2:
                                 self.throw()
                                 
-                            t=vm[:,0][:10000]
-                            v=vm[:,1][:10000]
+                            t=vm[:,0][:5000]
+                            v=vm[:,1][:5000]
                             ax.plot(t,v)
                             
                             # figure title -- make arbitrary, hard-coded subplot title modifications here (add elif's)
@@ -520,7 +521,7 @@ class Query(Exceptionable, Configurable, Saveable):
                                                                    sim_object.fiberset_product[fiberset_index]):
     
                                 if fib_key_name == 'fibers->z_parameters->diameter':
-                                    title = u'{} fiber diameter: {} \u03bcm'.format(title, fib_key_value)
+                                    title = u'{} fd: {} \u03bcm'.format(title, fib_key_value)
                                 else:
                                     # default title
                                     title = '{} {}:{}'.format(title, fib_key_name, fib_key_value)
@@ -528,13 +529,13 @@ class Query(Exceptionable, Configurable, Saveable):
                             for wave_key_name, wave_key_value in zip(sim_object.wave_key,
                                                                      sim_object.wave_product[waveform_index]):
                                 if wave_key_name == 'waveform->BIPHASIC_PULSE_TRAIN->pulse_width':
-                                    title = '{} pulse width: {} ms'.format(title, wave_key_value)
+                                    title = '{} pw: {} ms'.format(title, wave_key_value)
                                 else:
                                     title = '{} {}:{}'.format(title, wave_key_name, wave_key_value)
     
                             # set title
                             if subplot_title_toggle:
-                                ax.set_title(title, fontsize=35)
+                                ax.set_title(title)
                             ax.set_ylabel('V (mv)',rotation=90)
                             ax.set_xlabel('Time (ms)',rotation=0)
                         plt.gcf().tight_layout(rect=[0, 0.03, 1, 0.95])
@@ -542,9 +543,10 @@ class Query(Exceptionable, Configurable, Saveable):
                         # set super title
                         if title_toggle:
                             plt.suptitle(
-                                'Voltage/t: {} (model {},inner {})'.format(
+                                'Voltage/t: {} (model {}, sim {}, inner {})'.format(
                                     sample_config.get('sample'),
                                     model_index,
+                                    sim_index,
                                     innum
                                 ),
                                 size=40
@@ -590,7 +592,9 @@ class Query(Exceptionable, Configurable, Saveable):
                  cutoff_thresh: bool = 0,
                  suprathresh_color: Tuple[int, int, int, int] = (0, 1, 0, 1),
                  subthresh_color: Tuple[int, int, int, int] = (0, 0, 1, 1),
-                 select_fascicles: List = None
+                 select_fascicles: List = None,
+                 alltitle = False,
+                 microamps=False
                  ):
 
         """
@@ -760,8 +764,6 @@ class Query(Exceptionable, Configurable, Saveable):
                     axes = np.array(axes)
                     axes = axes.reshape(-1)
 
-                    for ax in axes:
-                        ax.axis('off')
 
                     # loop nsims
                     for n, (potentials_product_index, waveform_index) in enumerate(sim_object.master_product_indices):
@@ -769,8 +771,6 @@ class Query(Exceptionable, Configurable, Saveable):
 
                         # fetch axis
                         ax: plt.Axes = axes[n if subplot_assign == "standard" else _renumber_subplot(n, 2, 5)]
-                        ax.axis('off')
-
                         # fetch sim information
                         sim_dir = self.build_path(Object.SIMULATION, [sample_index, model_index, sim_index],
                                                   just_directory=True)
@@ -823,7 +823,8 @@ class Query(Exceptionable, Configurable, Saveable):
                                 else:
                                     for fiber_ind in range(len(sim_object.fibersets[0].out_to_fib[inner_ind][0])):
                                         thresholds.append(np.nan)
-
+                        if microamps:
+                            thresholds = [x*1000 for x in thresholds]
                         max_thresh = np.nanmax(thresholds)
                         min_thresh = np.nanmin(thresholds)
 
@@ -896,31 +897,48 @@ class Query(Exceptionable, Configurable, Saveable):
                         title = ''
                         for fib_key_name, fib_key_value in zip(sim_object.fiberset_key,
                                                                sim_object.fiberset_product[fiberset_index]):
+                            if alltitle:
+    
+                                if fib_key_name == 'fibers->z_parameters->diameter':
+                                    title = u'{} fiber diameter: {} \u03bcm'.format(title, fib_key_value)
+                                else:
+                                    # default title
+                                    title = '{} {}:{}'.format(title, fib_key_name, fib_key_value)
+                                title+='\n'
+                            elif waveform_index==0:
+                                ax.set_ylabel('{}'.format(fib_key_value),fontsize=35,rotation=0,labelpad = 20)
 
-                            if fib_key_name == 'fibers->z_parameters->diameter':
-                                title = u'{} fiber diameter: {} \u03bcm'.format(title, fib_key_value)
-                            else:
-                                # default title
-                                title = '{} {}:{}'.format(title, fib_key_name, fib_key_value)
-                        title+='\n'
                         for wave_key_name, wave_key_value in zip(sim_object.wave_key,
                                                                  sim_object.wave_product[waveform_index]):
-                            if wave_key_name == 'waveform->BIPHASIC_PULSE_TRAIN->pulse_width':
-                                title = '{} pulse width: {} ms'.format(title, wave_key_value)
-                            else:
-                                title = '{} {}:{}'.format(title, wave_key_name, wave_key_value)
+                            if alltitle:
+                                if wave_key_name == 'waveform->BIPHASIC_PULSE_TRAIN->pulse_width':
+                                    title = '{} pulse width: {} ms'.format(title, wave_key_value)
+                                else:
+                                    title = '{} {}:{}'.format(title, wave_key_name, wave_key_value)
+                            elif potentials_product_index==max([x[0] for x in sim_object.master_product_indices]):
+                                ax.set_xlabel('{}'.format(wave_key_value),fontsize=35,rotation=0)
+                        ax.spines['left'].set_visible(False)
+                        ax.spines['top'].set_visible(False)
+                        ax.spines['right'].set_visible(False)
+                        ax.spines['bottom'].set_visible(False)
+                        ax.set_xticks([])
+                        ax.set_yticks([])
+
 
                         # set title
-                        if subplot_title_toggle:
-                            ax.set_title(title, fontsize=35)
-
+                        if subplot_title_toggle and alltitle:
+                            ax.set_title(title, fontsize=25)
+                            
                         # plot orientation point if applicable
                         if orientation_point is not None and show_orientation_point is True:
                             # ax.plot(*tuple(slide.nerve.points[slide.orientation_point_index][:2]), 'b*')
                             ax.plot(*orientation_point, 'o', markersize=30, color='red')
 
                         if add_colorbar:
-                            # cb_label = r'mA'
+                            if not microamps:
+                                cb_label = r'mA'
+                            else:
+                                cb_label = u'\u03bcA'
                             cb: cbar.Colorbar = plt.colorbar(
                                 mappable=plt.cm.ScalarMappable(
                                     cmap=cmap,
@@ -932,14 +950,15 @@ class Query(Exceptionable, Configurable, Saveable):
                                 orientation='vertical',
                                 # label=cb_label,
                                 aspect=colorbar_aspect if colorbar_aspect is not None else 20,
-                                format='%0.2f'
+                                format='%0.2f',
                             )
-
+                            cb.set_label(cb_label,fontsize=colorbar_text_size_override if (
+                                    colorbar_text_size_override is not None) else 25 ,rotation=90)
                             # colorbar font size
                             if colorbar_text_size_override is not None:
                                 cb.ax.tick_params(labelsize=colorbar_text_size_override if (
                                         colorbar_text_size_override is not None) else 25)
-
+                                
                         if plot_mode == 'fiber0' or plot_mode == 'on_off':
                             # plot slide (nerve and fascicles, defaulting to no outers)
                             sample_object.slides[0].plot(final=False, fix_aspect_ratio=True, fascicle_colors=colors,
@@ -954,12 +973,16 @@ class Query(Exceptionable, Configurable, Saveable):
                     # set super title
                     if title_toggle:
                         plt.suptitle(
-                            'Activation thresholds: {} (model {})'.format(
+                            'Activation thresholds: {} (model {}, sim {})'.format(
                                 sample_config.get('sample'),
-                                model_index
+                                model_index,
+                                sim_index
                             ),
                             size=40
                         )
+                    if not alltitle:  
+                        plt.gcf().text(0.5,0.01,"pulse width (ms)", ha="center", va="center",fontsize=35)
+                        plt.gcf().text(-0.02,0.5, "fiber diameter (um)" , ha="center", va="center", rotation=90,fontsize=35)
 
                     # plt.tight_layout(pad=0)
                     # plt.tight_layout(pad=5.0)
@@ -983,7 +1006,7 @@ class Query(Exceptionable, Configurable, Saveable):
                 print(']')
 
         # return plt.gcf(), axes, colormap_bounds_tracking
-        return plt.gcf(), axes
+        return plt.gcf(), axes, colormap_bounds_tracking
 
     def barcharts_compare_models(self,
                                  sim_index: int = None,
