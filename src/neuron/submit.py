@@ -559,11 +559,9 @@ def get_args():
 
 def main():
     #parse args
+    slurm_params = load(os.path.join('config', 'system', 'slurm_params.json'))
     args = get_args()
-    partition = default_partition
-    if args.partition is not None:
-        partition = args.partition
-    
+
     #validate inputs
     runs = args.run_indices
     submission_contexts = []
@@ -637,6 +635,12 @@ def main():
             result = pool.map(local_submit, submit_list)
 
         elif sub_context == 'cluster':
+            
+            if args.partition is None:
+                partition = slurm_params['partition']
+            else:
+                partition = args.partition
+            
             cluster_submit(run_index)
 
         else:
