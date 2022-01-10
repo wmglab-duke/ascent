@@ -18,6 +18,7 @@ import json
 import base64
 import sys
 import numpy as np
+import time
 import subprocess
 from copy import deepcopy
 from quantiphy import Quantity
@@ -421,6 +422,7 @@ class Runner(Exceptionable, Configurable):
         if sys.platform.startswith('darwin'):  # macOS
 
             subprocess.Popen(['{}/bin/comsol'.format(comsol_path), 'server'], close_fds=True)
+            time.sleep(30)        
             os.chdir('src')
             os.system(
                 '{}/javac -classpath ../bin/json-20190722.jar:{}/plugins/* model/*.java -d ../bin'.format(jdk_path,
@@ -439,6 +441,7 @@ class Runner(Exceptionable, Configurable):
         elif sys.platform.startswith('linux'):  # linux
 
             subprocess.Popen(['{}/bin/comsol'.format(comsol_path), 'server'], close_fds=True)
+            time.sleep(30)
             os.chdir('src')
             os.system(
                 '{}/javac -classpath ../bin/json-20190722.jar:{}/plugins/* model/*.java -d ../bin'.format(jdk_path,
@@ -456,6 +459,7 @@ class Runner(Exceptionable, Configurable):
 
         else:  # assume to be 'win64'
             subprocess.Popen(['{}\\bin\\win64\\comsolmphserver.exe'.format(comsol_path)], close_fds=True)
+            time.sleep(30)
             os.chdir('src')
             os.system('""{}\\javac" '
                       '-cp "..\\bin\\json-20190722.jar";"{}\\plugins\\*" '
