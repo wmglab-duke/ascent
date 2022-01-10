@@ -17,6 +17,7 @@ import time
 import numpy as np
 import warnings
 import pickle
+import argparse
 
 ALLOWED_SUBMISSION_CONTEXTS = ['cluster', 'local','auto']
 OS = 'UNIX-LIKE' if any([s in sys.platform for s in ['darwin', 'linux']]) else 'WINDOWS'
@@ -342,7 +343,7 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
                             '--output={}'.format(output_log),
                             '--error={}'.format(error_log),
                             '--mem=2000',
-                            '-p', 'wmglab',
+                            '-p', partition,
                             '-c', '1',
                             start_path_solo
                         ])
@@ -428,7 +429,8 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
 
                             os.system(f"sbatch --job-name={job_name} --output={out_dir}%a.log "
                                       f"--error={err_dir}%a.log --array={start}-{job_count - 1} "
-                                      f"array_launch.slurm {start_path_base}")
+                                      f"--mem=2000 --cpus-per-task=1 "
+                                      f"--partition={partition} array_launch.slurm {start_path_base}")
 
                             # allow job to start before removing slurm file
                             time.sleep(1.0)
@@ -547,9 +549,23 @@ def make_local_submission_list(run_number: int):
     return local_args_list
 
 
+def get_args():
+    #Set up parser and top level args
+    parser = argparse.ArgumentParser(description='ASCENT: Automated Simulations to Characterize Electrical Nerve Thresholds')
+    parser.add_argument('run_indices', nargs = '+', help = 'Space separated indices to submit NEURON sims for')
+    parser.add_argument('-p','--partition', help = 'If submitting on a cluster, overrides default partition assignment')
+    args = parser.parse_args()
+    return args
+
 def main():
-    # validate inputs
-    runs = []
+    #parse args
+    args = get_args()
+    partition = default_partition
+    if args.partition is not None:
+        partition = args.partition
+    
+    #validate inputs
+    runs = args.run_indices
     submission_contexts = []
     auto_compile_flags = []
 
