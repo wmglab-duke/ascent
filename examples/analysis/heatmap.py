@@ -91,7 +91,9 @@ fig = plt.gcf()
 fig.subplots_adjust(right=0.8)
 cbar_ax = fig.add_axes([0.8, 0.15, 0.05, 0.7])
 
-mp = plt.cm.ScalarMappable()
+cmap = plt.get_cmap('viridis')
+cmap = cmap.reversed()
+mp = plt.cm.ScalarMappable(cmap=cmap)
 mp.set_clim(superbound[0][0],superbound[0][1])
 
 cb= fig.colorbar(
@@ -108,7 +110,6 @@ if not microamps:
     cbar_ax.set_title(r'mA',fontsize = 50)
 else:
     cbar_ax.set_title(u'\u03bcA',fontsize = 50)
-
 colorbar_text_size_override = 100
 # colorbar font size
 # if colorbar_text_size_override is not None:

@@ -982,7 +982,7 @@ class Query(Exceptionable, Configurable, Saveable):
                         )
                     if not alltitle:  
                         plt.gcf().text(0.5,0.01,"pulse width (ms)", ha="center", va="center",fontsize=35)
-                        plt.gcf().text(-0.02,0.5, "fiber diameter (um)" , ha="center", va="center", rotation=90,fontsize=35)
+                        plt.gcf().text(-0.02,0.5, u"fiber diameter (\u03bcm)" , ha="center", va="center", rotation=90,fontsize=35)
 
                     # plt.tight_layout(pad=0)
                     # plt.tight_layout(pad=5.0)
