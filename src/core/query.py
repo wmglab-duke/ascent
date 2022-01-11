@@ -537,25 +537,24 @@ class Query(Exceptionable, Configurable, Saveable):
                                     thresholds.append(np.nan)
 
                         elif plot_mode == 'fibers':
-                            for inner_ind in range(n_inners):
+                            for i in range(len(sim_object.fibersets[0].fibers)):
+                                inner_ind,fiber_ind = sim_object.indices_fib_to_n(0,i)
                                 if select_fascicles is None or select_fascicles[inner_ind]:
-                                    for fiber_ind in range(len(sim_object.fibersets[0].out_to_fib[inner_ind][0])):
-                                        thresh_path = os.path.join(n_sim_dir, 'data', 'outputs',
-                                                                   'thresh_inner{}_fiber{}.dat'.format(
-                                                                       inner_ind,
-                                                                       fiber_ind
-                                                                   ))
-                                        if os.path.exists(thresh_path):
-                                            threshold = abs(np.loadtxt(thresh_path))
-                                            if len(np.atleast_1d(threshold)) > 1:
-                                                threshold = threshold[-1]
-                                            thresholds.append(threshold)
-                                        else:
-                                            missing_indices.append((inner_ind, fiber_ind))
-                                            print('MISSING: {}'.format(thresh_path))
+                                    thresh_path = os.path.join(n_sim_dir, 'data', 'outputs',
+                                                               'thresh_inner{}_fiber{}.dat'.format(
+                                                                   inner_ind,
+                                                                   fiber_ind
+                                                               ))
+                                    if os.path.exists(thresh_path):
+                                        threshold = abs(np.loadtxt(thresh_path))
+                                        if len(np.atleast_1d(threshold)) > 1:
+                                            threshold = threshold[-1]
+                                        thresholds.append(threshold)
+                                    else:
+                                        missing_indices.append((inner_ind, fiber_ind))
+                                        print('MISSING: {}'.format(thresh_path))
                                 else:
-                                    for fiber_ind in range(len(sim_object.fibersets[0].out_to_fib[inner_ind][0])):
-                                        thresholds.append(np.nan)
+                                    thresholds.append(np.nan)
 
                         max_thresh = np.nanmax(thresholds)
                         min_thresh = np.nanmin(thresholds)
@@ -601,17 +600,17 @@ class Query(Exceptionable, Configurable, Saveable):
 
                         elif plot_mode == 'fibers':
                             loop_fiber = 0
-                            for inner_ind in range(n_inners):
-                                actual_i = inner_ind - offset
-                                for fiber_ind in range(len(sim_object.fibersets[0].out_to_fib[inner_ind][0])):
-                                    if (inner_ind, fiber_ind) not in missing_indices:
-                                        colors.append(tuple(
-                                            cmap((thresholds[loop_fiber] - min_thresh) / (max_thresh - min_thresh))))
-                                        loop_fiber += 1
-                                    else:
-                                        # NOTE: PLOTS MISSING VALUES AS RED
-                                        offset += 1
-                                        colors.append(missing_color)
+                            for i in range(len(sim_object.fibersets[0].fibers)):
+                                inner_ind,fiber_ind = sim_object.indices_fib_to_n(0,i)      
+                                if (inner_ind, fiber_ind) not in missing_indices:
+                                    colors.append(tuple(
+                                        cmap((thresholds[loop_fiber] - min_thresh) / (max_thresh - min_thresh))))
+                                    loop_fiber += 1
+                                else:
+                                    # NOTE: PLOTS MISSING VALUES AS RED
+                                    offset += 1
+                                    colors.append(missing_color)
+                                    
                         elif plot_mode == 'on_off':
                             for i in range(n_inners):
                                 actual_i = i - offset
