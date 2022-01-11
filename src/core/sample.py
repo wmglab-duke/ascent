@@ -498,10 +498,15 @@ class Sample(Exceptionable, Configurable, Saveable):
                 if 'nerve' in self.search(Config.SAMPLE, 'boundary_separation').keys():
                     sep_nerve = self.search(Config.SAMPLE, 'boundary_separation', 'nerve')
                     print('\t\tensuring minimum nerve:fascicle separation of {} um'.format(sep_nerve))
+                
+                #scale nerve trace down by sep nerve, will be scaled back up later
+                pre_area = slide.nerve.area()
+                slide.nerve.offset(distance = -sep_nerve)
+                slide.nerve.scale(1)
+                slide.nerve.points = np.flip(slide.nerve.points,axis = 0) # set points to opencv orientation
 
-                deformable = Deformable.from_slide(slide,
-                                                   ReshapeNerveMode.CIRCLE,
-                                                   sep_nerve=sep_nerve)
+                
+                deformable = Deformable.from_slide(slide, ReshapeNerveMode.CIRCLE)
 
                 movements, rotations = deformable.deform(morph_count=morph_count,
                                                          render=deform_animate,
@@ -537,6 +542,12 @@ class Sample(Exceptionable, Configurable, Saveable):
                     slide.nerve.offset(distance=sep_nerve)
                 else:
                     slide.nerve = slide.reshaped_nerve(reshape_nerve_mode)
+                #deforms+offsets usually shrinks the area a bit, so reset back to the original area
+                if slide.nerve.area()<pre_area:
+                    slide.scale((pre_area/slide.nerve.area())**.5)
+                else:
+                    print('Note: nerve area before deformation was {}, post deformation is {}'.format(
+                        pre_area, self.nerve.area()))
 
             # shift slide about (0,0)
             slide.move_center(np.array([0, 0]))
