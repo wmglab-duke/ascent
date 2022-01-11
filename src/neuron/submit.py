@@ -220,7 +220,7 @@ def local_submit(my_local_args: dict):
         p = subprocess.call(['bash', start] if OS == 'UNIX-LIKE' else [start], stdout=fo, stderr=fe)
 
 
-def cluster_submit(run_number: int, array_length_max: int = 10):
+def cluster_submit(run_number: int, partition: str, mem: int=2000, array_length_max: int = 10):
     # configuration is not empty
     assert array_length_max > 0, 'SLURM Job Array length is not > 0: array_length_max={}'.format(array_length_max)
 
@@ -342,7 +342,7 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
                             '--job-name={}'.format(job_name),
                             '--output={}'.format(output_log),
                             '--error={}'.format(error_log),
-                            '--mem=2000',
+                            '--mem={}'.format(mem),
                             '-p', partition,
                             '-c', '1',
                             start_path_solo
@@ -429,7 +429,7 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
 
                             os.system(f"sbatch --job-name={job_name} --output={out_dir}%a.log "
                                       f"--error={err_dir}%a.log --array={start}-{job_count - 1} "
-                                      f"--mem=2000 --cpus-per-task=1 "
+                                      f"--mem={mem} --cpus-per-task=1 "
                                       f"--partition={partition} array_launch.slurm {start_path_base}")
 
                             # allow job to start before removing slurm file
@@ -559,7 +559,6 @@ def get_args():
 
 def main():
     #parse args
-    slurm_params = load(os.path.join('config', 'system', 'slurm_params.json'))
     args = get_args()
 
     #validate inputs
@@ -635,13 +634,18 @@ def main():
             result = pool.map(local_submit, submit_list)
 
         elif sub_context == 'cluster':
+            #load slurm params
+            slurm_params = load(os.path.join('config', 'system', 'slurm_params.json'))
             
+            #assign params for array submission
             if args.partition is None:
                 partition = slurm_params['partition']
             else:
                 partition = args.partition
+            njobs = slurm_params.get("jobs_per_array") 
+            mem = slurm_params.get("memory_per_fiber") 
             
-            cluster_submit(run_index)
+            cluster_submit(run_index,partition,array_length_max=njobs,mem=mem)
 
         else:
             # something went horribly wrong
