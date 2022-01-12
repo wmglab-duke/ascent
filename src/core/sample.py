@@ -544,7 +544,7 @@ class Sample(Exceptionable, Configurable, Saveable):
                     slide.nerve = slide.reshaped_nerve(reshape_nerve_mode)
                 #deforms+offsets usually shrinks the area a bit, so reset back to the original area
                 if slide.nerve.area()<pre_area:
-                    slide.scale((pre_area/slide.nerve.area())**.5)
+                    slide.nerve.scale((pre_area/slide.nerve.area())**.5)
                 else:
                     print('Note: nerve area before deformation was {}, post deformation is {}'.format(
                         pre_area, self.nerve.area()))
