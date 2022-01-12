@@ -570,7 +570,7 @@ def main():
     compiled: bool = False
     compiled = auto_compile()
 
-    for run_number in sys.argv[1:]:
+    for run_number in runs:
         # run number is numeric
         assert re.search('[0-9]+', run_number), 'Encountered non-number run number argument: {}'.format(run_number)
 
