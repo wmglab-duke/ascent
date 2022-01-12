@@ -18,7 +18,6 @@ nsims_parser = subparsers.add_parser('import_n_sims', help = 'Move NEURON output
 mmg_parser = subparsers.add_parser('mock_morphology_generator', help = 'Generate mock morpology for an ASCENT run')
 ts_parser = subparsers.add_parser('tidy_samples', help = 'Remove specified files from Sample directories')
 
-
 #add subparser arguments
 pipeline_parser.add_argument('run_indices', nargs = '+', help = 'Space separated indices to run the pipeline over')
 pipeline_parser.add_argument('-b','--break-point',choices = ["pre_geom_run","post_geom_run","pre_java","post_mesh_distal","pre_mesh_distal","post_material_assign","pre_loop_currents","pre_mesh_proximal","post_mesh_proximal"], help = 'Point in pipeline to exit and continue to next run')
