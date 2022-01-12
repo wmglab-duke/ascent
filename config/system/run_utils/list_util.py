@@ -27,12 +27,12 @@ def run(mode):
         for j in sample_jsons:
             with open(j) as f:
                 sampledata = json.load(f)
-                data.append({'SAMPLE':os.path.splitext(j)[0],
+                data.append({'SAMPLE':j.split(os.sep)[1],
                      'INPUT':sampledata['sample'],
                      'NERVEMODE':sampledata['modes'].get('nerve'),
                      'MASKINPUTMODE':sampledata['modes'].get('mask_input')})
         df = pd.DataFrame(data)
-        print('Run indices available (defined by user .json files in {}):\n'.format(run_path))
+        print('Sample indices available (defined by user folders in {}):\n'.format(run_path))
         print(df.to_string(index = False))
             
     elif mode == 'sims':
@@ -47,5 +47,5 @@ def run(mode):
                      'PROTOCOL':simdata['protocol'].get('mode'),
                      'XYMODE':simdata['fibers']['xy_parameters'].get('mode')})
         df = pd.DataFrame(data)
-        print('Run indices available (defined by user .json files in {}):\n'.format(run_path))
+        print('Sim indices available (defined by user .json files in {}):\n'.format(run_path))
         print(df.to_string(index = False))
