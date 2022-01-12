@@ -17,8 +17,6 @@ cs_parser = subparsers.add_parser('clean_samples', help = 'Remove all files exce
 nsims_parser = subparsers.add_parser('import_n_sims', help = 'Move NEURON outputs into ASCENT directories for analysis')
 mmg_parser = subparsers.add_parser('mock_morphology_generator', help = 'Generate mock morpology for an ASCENT run')
 ts_parser = subparsers.add_parser('tidy_samples', help = 'Remove specified files from Sample directories')
-ec_parser = subparsers.add_parser('edit_config', help = 'Edit configuration files')
-
 
 #add subparser arguments
 pipeline_parser.add_argument('run_indices', nargs = '+', help = 'Space separated indices to run the pipeline over')
@@ -31,7 +29,6 @@ cs_parser.add_argument('sample_indices', nargs = '+',type=int, help = 'Space sep
 mmg_parser.add_argument('mock_sample_index',type=int, help = 'Mock Sample Index to generate')
 install_parser.add_argument('--no-conda',action='store_true', help = 'Skip conda portion of installation')
 
-
 def parse():
     """parse all args"""
     
@@ -42,10 +39,7 @@ def parse():
     
     #parse arguments
     args = parser.parse_args()
-    try:
-        g0(args,'wait_for_license')
-    except:
-        pass
+    g0(args,'wait_for_license')
     
     if not len(sys.argv)>1:
         parser.print_help()
