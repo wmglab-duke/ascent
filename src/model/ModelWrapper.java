@@ -1149,7 +1149,7 @@ public class ModelWrapper {
         {
             if (!cli_args.isNull("wait_for_license")) {
                 long wait_hours = cli_args.getLong("wait_for_license");
-                System.out.println("Checking out COMSOL license. System will wait up to " + String.valueOf(wait_hours) + " hours for an available license seat.");
+                System.out.println("Attempting to check out COMSOL license. System will wait up to " + String.valueOf(wait_hours) + " hours for an available license seat.");
                 boolean lic = false;
                 long start = System.currentTimeMillis();
                 long stop = wait_hours * 60 * 60 * 1000 + start;
