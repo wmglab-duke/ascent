@@ -29,7 +29,6 @@ cs_parser.add_argument('sample_indices', nargs = '+',type=int, help = 'Space sep
 mmg_parser.add_argument('mock_sample_index',type=int, help = 'Mock Sample Index to generate')
 install_parser.add_argument('--no-conda',action='store_true', help = 'Skip conda portion of installation')
 
-
 def parse():
     """parse all args"""
     
