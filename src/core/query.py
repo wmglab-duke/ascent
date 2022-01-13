@@ -296,7 +296,7 @@ class Query(Exceptionable, Configurable, Saveable):
                     return False
 
         return True
-    
+
     def voltage_time(self,
                  plot: bool = True,
                  plot_mode: str = 'average',
@@ -474,7 +474,7 @@ class Query(Exceptionable, Configurable, Saveable):
                     sim_object = self.get_object(Object.SIMULATION, [sample_index, model_index, sim_index])
 
                     print('\t\tsim: {}'.format(sim_index))
-                    
+
                     for innum in range(n_inners):
 
                         # init figure with subplots
@@ -485,41 +485,41 @@ class Query(Exceptionable, Configurable, Saveable):
                         figure, axes = plt.subplots(rows, cols, constrained_layout=False, figsize=(25, 20))
                         axes = np.array(axes)
                         axes = axes.reshape(-1)
-    
+
                         # loop nsims
                         for n, (potentials_product_index, waveform_index) in enumerate(sim_object.master_product_indices):
                             active_src_index, fiberset_index = sim_object.potentials_product[potentials_product_index]
-    
+
                             # fetch axis
                             ax: plt.Axes = axes[n if subplot_assign == "standard" else _renumber_subplot(n, 2, 5)]
-    
+
                             # fetch sim information
                             sim_dir = self.build_path(Object.SIMULATION, [sample_index, model_index, sim_index],
                                                       just_directory=True)
                             n_sim_dir = os.path.join(sim_dir, 'n_sims', str(n))
                             # fiberset_dir = os.path.join(sim_dir, 'fibersets', str(fiberset_index))
-    
+
                             # fetch thresholds, then find min and max
                             thresholds = []
                             missing_indices = []
-    
+
                             vmpath = os.path.join(n_sim_dir, 'data', 'outputs',
                                                            'Vm_time_inner{}_fiber0_amp0.dat'.format(innum))
-                            
+
                             vm=np.loadtxt(vmpath,skiprows=1)[:, 0:]
-                            
+
                             if vm.shape[1]!=2:
                                 self.throw()
-                                
+
                             t=vm[:,0][:5000]
                             v=vm[:,1][:5000]
                             ax.plot(t,v)
-                            
+
                             # figure title -- make arbitrary, hard-coded subplot title modifications here (add elif's)
                             title = ''
                             for fib_key_name, fib_key_value in zip(sim_object.fiberset_key,
                                                                    sim_object.fiberset_product[fiberset_index]):
-    
+
                                 if fib_key_name == 'fibers->z_parameters->diameter':
                                     title = u'{} fd: {} \u03bcm'.format(title, fib_key_value)
                                 else:
@@ -532,14 +532,14 @@ class Query(Exceptionable, Configurable, Saveable):
                                     title = '{} pw: {} ms'.format(title, wave_key_value)
                                 else:
                                     title = '{} {}:{}'.format(title, wave_key_name, wave_key_value)
-    
+
                             # set title
                             if subplot_title_toggle:
                                 ax.set_title(title)
                             ax.set_ylabel('V (mv)',rotation=90)
                             ax.set_xlabel('Time (ms)',rotation=0)
                         plt.gcf().tight_layout(rect=[0, 0.03, 1, 0.95])
-    
+
                         # set super title
                         if title_toggle:
                             plt.suptitle(
@@ -551,7 +551,7 @@ class Query(Exceptionable, Configurable, Saveable):
                                 ),
                                 size=40
                             )
-                        
+
                         # save figure as png
                         if save_path is not None:
                             if not os.path.exists(save_path):
@@ -559,7 +559,7 @@ class Query(Exceptionable, Configurable, Saveable):
                             dest = '{}{}{}_{}_{}.png'.format(save_path, os.sep, sample_index, model_index, sim_index)
                             figure.savefig(dest, dpi=300)
                             # print('done')
-    
+
                         # plot figure
                         if plot:
                             plt.show()
@@ -804,22 +804,22 @@ class Query(Exceptionable, Configurable, Saveable):
                                     thresholds.append(np.nan)
 
                         elif plot_mode == 'fibers':
-                            for inner_ind in range(n_inners):
+                            for i in range(len(sim_object.fibersets[0].fibers)):
+                                inner_ind,fiber_ind = sim_object.indices_fib_to_n(0,i)
                                 if select_fascicles is None or select_fascicles[inner_ind]:
-                                    for fiber_ind in range(len(sim_object.fibersets[0].out_to_fib[inner_ind][0])):
-                                        thresh_path = os.path.join(n_sim_dir, 'data', 'outputs',
-                                                                   'thresh_inner{}_fiber{}.dat'.format(
-                                                                       inner_ind,
-                                                                       fiber_ind
-                                                                   ))
-                                        if os.path.exists(thresh_path):
-                                            threshold = abs(np.loadtxt(thresh_path))
-                                            if len(np.atleast_1d(threshold)) > 1:
-                                                threshold = threshold[-1]
-                                            thresholds.append(threshold)
-                                        else:
-                                            missing_indices.append((inner_ind, fiber_ind))
-                                            print('MISSING: {}'.format(thresh_path))
+                                    thresh_path = os.path.join(n_sim_dir, 'data', 'outputs',
+                                                               'thresh_inner{}_fiber{}.dat'.format(
+                                                                   inner_ind,
+                                                                   fiber_ind
+                                                               ))
+                                    if os.path.exists(thresh_path):
+                                        threshold = abs(np.loadtxt(thresh_path))
+                                        if len(np.atleast_1d(threshold)) > 1:
+                                            threshold = threshold[-1]
+                                        thresholds.append(threshold)
+                                    else:
+                                        missing_indices.append((inner_ind, fiber_ind))
+                                        print('MISSING: {}'.format(thresh_path))
                                 else:
                                     for fiber_ind in range(len(sim_object.fibersets[0].out_to_fib[inner_ind][0])):
                                         thresholds.append(np.nan)
@@ -869,17 +869,17 @@ class Query(Exceptionable, Configurable, Saveable):
 
                         elif plot_mode == 'fibers':
                             loop_fiber = 0
-                            for inner_ind in range(n_inners):
-                                actual_i = inner_ind - offset
-                                for fiber_ind in range(len(sim_object.fibersets[0].out_to_fib[inner_ind][0])):
-                                    if (inner_ind, fiber_ind) not in missing_indices:
-                                        colors.append(tuple(
-                                            cmap((thresholds[loop_fiber] - min_thresh) / (max_thresh - min_thresh))))
-                                        loop_fiber += 1
-                                    else:
-                                        # NOTE: PLOTS MISSING VALUES AS RED
-                                        offset += 1
-                                        colors.append(missing_color)
+                            for i in range(len(sim_object.fibersets[0].fibers)):
+                                inner_ind,fiber_ind = sim_object.indices_fib_to_n(0,i)
+                                if (inner_ind, fiber_ind) not in missing_indices:
+                                    colors.append(tuple(
+                                        cmap((thresholds[loop_fiber] - min_thresh) / (max_thresh - min_thresh))))
+                                    loop_fiber += 1
+                                else:
+                                    # NOTE: PLOTS MISSING VALUES AS RED
+                                    offset += 1
+                                    colors.append(missing_color)
+
                         elif plot_mode == 'on_off':
                             for i in range(n_inners):
                                 actual_i = i - offset
@@ -898,7 +898,7 @@ class Query(Exceptionable, Configurable, Saveable):
                         for fib_key_name, fib_key_value in zip(sim_object.fiberset_key,
                                                                sim_object.fiberset_product[fiberset_index]):
                             if alltitle:
-    
+
                                 if fib_key_name == 'fibers->z_parameters->diameter':
                                     title = u'{} fiber diameter: {} \u03bcm'.format(title, fib_key_value)
                                 else:
@@ -928,7 +928,7 @@ class Query(Exceptionable, Configurable, Saveable):
                         # set title
                         if subplot_title_toggle and alltitle:
                             ax.set_title(title, fontsize=25)
-                            
+
                         # plot orientation point if applicable
                         if orientation_point is not None and show_orientation_point is True:
                             # ax.plot(*tuple(slide.nerve.points[slide.orientation_point_index][:2]), 'b*')
@@ -958,7 +958,7 @@ class Query(Exceptionable, Configurable, Saveable):
                             if colorbar_text_size_override is not None:
                                 cb.ax.tick_params(labelsize=colorbar_text_size_override if (
                                         colorbar_text_size_override is not None) else 25)
-                                
+
                         if plot_mode == 'fiber0' or plot_mode == 'on_off':
                             # plot slide (nerve and fascicles, defaulting to no outers)
                             sample_object.slides[0].plot(final=False, fix_aspect_ratio=True, fascicle_colors=colors,
@@ -967,7 +967,7 @@ class Query(Exceptionable, Configurable, Saveable):
                             sample_object.slides[0].plot(final=False, fix_aspect_ratio=True, ax=ax,
                                                          outers_flag=plot_outers, inner_format='k-')
                             sim_object.fibersets[0].plot(ax=ax, fiber_colors=colors, size=20)
-                    
+
                     plt.gcf().tight_layout(rect=[0, 0.03, 1, 0.95])
 
                     # set super title
@@ -980,7 +980,7 @@ class Query(Exceptionable, Configurable, Saveable):
                             ),
                             size=40
                         )
-                    if not alltitle:  
+                    if not alltitle:
                         plt.gcf().text(0.5,0.01,"pulse width (ms)", ha="center", va="center",fontsize=35)
                         plt.gcf().text(-0.02,0.5, "fiber diameter (um)" , ha="center", va="center", rotation=90,fontsize=35)
 
@@ -2002,10 +2002,10 @@ class Query(Exceptionable, Configurable, Saveable):
                     print('\t\tsim: {}'.format(sim_index))
 
                     sim_object = self.get_object(Object.SIMULATION, [sample_index, model_index, sim_index])
-                    
+
                     if subplots == True:
                         fig,axs = plt.subplots(ncols=len(sim_object.master_product_indices),nrows=2, sharey="row")
-                    
+
                     # loop nsims
                     for n_sim_index, (potentials_product_index, waveform_index) in enumerate(
                             sim_object.master_product_indices):
@@ -2094,11 +2094,11 @@ class Query(Exceptionable, Configurable, Saveable):
                                 # load fiber coordinates
                                 fiber = np.loadtxt(os.path.join(fiberset_dir, '0.dat'), skiprows=1)
                                 nodefiber = fiber[0::11,:]
-                                
+
                                 # plot fiber coordinates in 2D
                                 if nodes_only != True:
                                     axes[0].plot(fiber[:, 0], fiber[:, 2], 'b.', label = 'fiber')
-                                else:                                     
+                                else:
                                     axes[0].plot(nodefiber[:, 0], nodefiber[:, 2], 'b.', label = 'fiber')
 
                                 # plot AP location
@@ -2109,11 +2109,11 @@ class Query(Exceptionable, Configurable, Saveable):
                                         n_sim_label_override is None) else n_sim_label_override
                                 model_label = '' if (model_labels is None) else f', {model_labels[model_index]}'
                                 axes[0].set_xlabel('x location, µm')
-                                
+
                                 axes[0].set_title(f'{n_sim_label}{model_label}')
                                 if subplots!= True:
                                     axes[0].legend(['fiber', f'AP ({message})'])
-                                else: 
+                                else:
                                     axes[0].legend(['fiber', 'AP'])
 
                                 # axes[0].set_aspect(1)
@@ -2129,7 +2129,7 @@ class Query(Exceptionable, Configurable, Saveable):
                                     axes[0].set_ylabel('z location, µm')
                                 # axes[1].set_aspect(0.25)
                                 plt.tight_layout()
-                                
+
                             # display
                             if save:
                                 plt.savefig(

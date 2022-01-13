@@ -372,7 +372,7 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
 
                         else:
                             print(f"RUNNING inner ({inner_ind}) fiber ({fiber_ind})  -->  {thresh_path}")
-                            time.sleep(1)
+                            #time.sleep(1)
 
                             if inner_fiber_diam_key is not None:
                                 diameter = get_diameter(inner_fiber_diam_key, inner_ind, fiber_ind)
