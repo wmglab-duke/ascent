@@ -907,14 +907,15 @@ public class ModelWrapper {
                         "CIRCLE (or NONE) is not yet implemented");
                 System.exit(0);
             }
-
-            if (nerveMode.equals("PRESENT") && deform_ratio==1 && reshapenerveMode.equals("CIRCLE")) { //Use a circle otherwise
-                Part.createNervePartInstance("Epi_circle", 0,
-                        null, this, null, sampleData, nerveParams, modelData);
-            } 
-            else { //Use trace 
-                Part.createNervePartInstance("Epi_trace", 0,
-                        nervePath, this, ndata, sampleData, nerveParams, modelData);
+            
+            if (nerveMode.equals("PRESENT")) {
+                if (deform_ratio == 1 && reshapenerveMode.equals("CIRCLE")) { //Use a circle otherwise
+                    Part.createNervePartInstance("Epi_circle", 0,
+                            null, this, null, sampleData, nerveParams, modelData);
+                } else { //Use trace
+                    Part.createNervePartInstance("Epi_trace", 0,
+                            nervePath, this, ndata, sampleData, nerveParams, modelData);
+                }
             }
 
             // Loop over all fascicle dirs
