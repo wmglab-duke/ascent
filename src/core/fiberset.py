@@ -359,7 +359,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                     inter_length = eval(inter_length_str)
 
             z_steps: List = []
-            while (sum(z_steps) - half_fiber_length) < 0.001:
+            while (sum(z_steps) - half_fiber_length) < 1:
                 z_steps += [(node_length / 2) + (paranodal_length_1 / 2),
                             (paranodal_length_1 / 2) + (paranodal_length_2 / 2),
                             (paranodal_length_2 / 2) + (inter_length / 2),
