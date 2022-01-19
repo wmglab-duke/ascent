@@ -656,6 +656,8 @@ class Sample(Exceptionable, Configurable, Saveable):
                 except:
                     pass
                 
+                os.chdir(directory_to_create)
+                
                 # WRITE
                 self.slides[i].write(mode, os.getcwd())
 
