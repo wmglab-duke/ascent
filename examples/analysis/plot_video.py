@@ -10,6 +10,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
+import shutil
 
 samples = [200,201,205]
 models = [0]
@@ -21,6 +22,8 @@ amp = 0
 
 outpath = 'out/analysis/videos'
 
+if shutil.which('ffmpeg') is None:
+    sys.exit('Please install ffmpeg and add to your PATH before continuing.')
 
 for sample in samples:
     for model in models:
