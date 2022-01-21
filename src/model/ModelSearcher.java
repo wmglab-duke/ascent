@@ -71,7 +71,7 @@ public class ModelSearcher {
                 JSONObject target = JSONio.read(file.toString());
                 String directory = String.join("/", Arrays.copyOfRange(fileParts, 0, fileParts.length - 1));
                 if (ModelSearcher.meshMatch(reference, query, target) && ModelSearcher.meshFilesExist(directory)) {
-                    System.out.println("Skipping meshing because found mesh match: " + directory);
+                    System.out.println("\tSkipping meshing because found mesh match: " + directory);
                     return Match.fromMeshPath(directory);
                 }
             }

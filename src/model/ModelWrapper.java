@@ -1157,6 +1157,9 @@ public class ModelWrapper {
                 while (System.currentTimeMillis() < stop) {
                     lic = ModelUtil.checkoutLicense("COMSOL");
                     if (lic == true) {
+                        long now = System.currentTimeMillis();
+                        long elapsed = (now-start)/(60 * 60 * 1000);
+                        System.out.println("COMSOL license seat obtained (took "+String.valueOf(elapsed)+" hours).");
                         break;
                     } else {
                         TimeUnit.SECONDS.sleep(600);
@@ -1168,6 +1171,7 @@ public class ModelWrapper {
                 }
             }
         }
+
 
         // Take projectPath input to ModelWrapper and assign to string.
         String projectPath = args[0];
