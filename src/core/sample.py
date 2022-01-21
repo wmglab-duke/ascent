@@ -423,24 +423,24 @@ class Sample(Exceptionable, Configurable, Saveable):
                 print('WARNING: ShrinkageMode in Config.Sample is not defined or mode provided is not a known option. '
                       'Proceeding with backwards compatible (i.e., original default functionality) of LENGTH_FORWARDS'
                       ' shrinkage correction.\n')
-                s = s_pre
+                shrinkage_correction = s_pre
             else:
-                s = None
+                shrinkage_correction = None
                 if s_mode == ShrinkageMode.LENGTH_BACKWARDS:
-                    s = -1 + 1 / (1 - s_pre)
+                    shrinkage_correction = 1 / (1 - s_pre)
                 elif s_mode == ShrinkageMode.LENGTH_FORWARDS:
-                    s = s_pre
+                    shrinkage_correction = s_pre + 1
                 elif s_mode == ShrinkageMode.AREA_BACKWARDS:
-                    s = 1 - np.sqrt(1 - s_pre)
+                    shrinkage_correction = 1 / np.sqrt(1 - s_pre)
                 elif s_mode == ShrinkageMode.AREA_FORWARDS:
-                    s = -1 + np.sqrt(1 + s_pre)
+                    shrinkage_correction = np.sqrt(1 + s_pre)
                 else:
                     self.throw(132)
 
-            if s < 0:
+            if s < 1:
                 self.throw(133)
 
-            slide.scale(1 + s)
+            slide.scale(shrinkage_correction)
 
             self.slides.append(slide)
 
