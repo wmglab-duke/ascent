@@ -600,6 +600,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
         # fiber_z.json files
         shutil.copy2(os.path.join(os.environ[Env.PROJECT_PATH.value], 'config', 'system', 'fiber_z.json'), target)
+        shutil.copy2(os.path.join(os.environ[Env.PROJECT_PATH.value], 'config', 'system', 'slurm_params.json'), target)
 
     @staticmethod
     def import_n_sims(sample: int, model: int, sim: int, sim_dir: str, source: str):
