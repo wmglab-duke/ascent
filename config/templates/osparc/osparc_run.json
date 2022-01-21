@@ -1,0 +1,15 @@
+{
+  "models": ["osparc"],
+  "override_compiled_mods": false,
+  "local_avail_cpus": "osparc",
+  "recycle_meshes": true,
+  "models_exit_status": [false],
+  "keep": {
+    "bases": true,
+    "debug_geom": true,
+    "mesh": true
+  },
+  "sims": ["osparc"],
+  "sample": "osparc",
+  "submission_context": "osparc"
+}
