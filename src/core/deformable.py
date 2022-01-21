@@ -142,7 +142,6 @@ class Deformable(Exceptionable):
 
             if loop_count % morph_index_step == 0:
                 # print('PRINT PRINT PRINT')
-                space.remove(*morph_step)
                 morph_index += 1
                 Deformable.printProgressBar(morph_index,
                                             len(morph_steps),
@@ -154,6 +153,7 @@ class Deformable(Exceptionable):
                 if morph_index == len(morph_steps):
                     running = False
                 else:
+                    space.remove(*morph_step)
                     morph_step = morph_steps[morph_index]
                     add_boundary()
 
