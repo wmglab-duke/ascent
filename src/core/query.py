@@ -594,7 +594,8 @@ class Query(Exceptionable, Configurable, Saveable):
                  subthresh_color: Tuple[int, int, int, int] = (0, 0, 1, 1),
                  select_fascicles: List = None,
                  alltitle = False,
-                 microamps=False
+                 microamps=False,
+                 suptitle_override=None
                  ):
 
         """
@@ -972,14 +973,17 @@ class Query(Exceptionable, Configurable, Saveable):
 
                     # set super title
                     if title_toggle:
-                        plt.suptitle(
-                            'Activation thresholds: {} (model {}, sim {})'.format(
-                                sample_config.get('sample'),
-                                model_index,
-                                sim_index
-                            ),
-                            size=40
-                        )
+                        if suptitle_override is None:
+                            plt.suptitle(
+                                'Activation thresholds: {} (model {}, sim {})'.format(
+                                    sample_config.get('sample'),
+                                    model_index,
+                                    sim_index
+                                ),
+                                size=40
+                            )
+                        else:
+                            plt.suptitle(suptitle_override, size=40)
                     if not alltitle:
                         plt.gcf().text(0.5,0.01,"pulse width (ms)", ha="center", va="center",fontsize=35)
                         plt.gcf().text(-0.02,0.5, u"fiber diameter (\u03bcm)" , ha="center", va="center", rotation=90,fontsize=35)
