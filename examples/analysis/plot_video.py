@@ -12,11 +12,9 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 import shutil
 
-os.chdir(r'D:/ASCENT\fresh')
-
-samples = [2110]
-models = [5]
-sims = [0,10,21]
+samples = [200,201,205]
+models = [0]
+sims = [0,1,2]
 inner = 0
 fiber = 0
 n_sims = [0,1,2]

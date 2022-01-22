@@ -273,7 +273,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                 self.sample.slides[0].plot(final=False, fix_aspect_ratio='True',axlabel=u"\u03bcm",title = 'Fiber locations for nerve model')
                 for point in points:
                     plt.plot(point[0], point[1], 'r.', markersize = 1)
-                if self.search(Config.SIM, 'plot_folder',optional = True) == True:
+                if self.search(Config.SIM, 'plot_folder',optional = True) == True: 
                     plt.savefig(sim_directory+'/plots/fibers_xy.png',dpi=300)
                     fig.clear
                     plt.close(fig)
@@ -394,8 +394,8 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             # get offset param - NOTE: raw value is a FRACTION of dz (explanation for multiplication by dz)
 
             offset = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value,'offset',optional=True)
-
-            if offset is None:
+            
+            if offset is None: 
                 offset = 0
                 random_offset_value = dz * (random.random() - 0.5)
             else:
@@ -403,7 +403,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                     offset = offset*dz
                 else:
                     self.throw(99)
-
+             
             # compute offset z coordinate
             z_offset = [my_z + offset + random_offset_value + additional_offset for my_z in z_values]
 
@@ -421,7 +421,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
             return my_fiber
 
-
+      
         # %% START ALGORITHM
 
         # get top-level fiber z generation
@@ -448,7 +448,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             else:
                 if self.configs['sims']['fibers']['z_parameters'].get('full_nerve_length')==True:
                     self.throw(127)
-
+                    
                 min_fiber_z_limit = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'min')
                 max_fiber_z_limit = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'max')
 

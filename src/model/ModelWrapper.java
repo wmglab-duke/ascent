@@ -907,7 +907,7 @@ public class ModelWrapper {
                         "CIRCLE (or NONE) is not yet implemented");
                 System.exit(0);
             }
-
+            
             if (nerveMode.equals("PRESENT")) {
                 if (deform_ratio == 1 && reshapenerveMode.equals("CIRCLE")) { //Use a circle otherwise
                     Part.createNervePartInstance("Epi_circle", 0,
