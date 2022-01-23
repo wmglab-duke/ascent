@@ -11,6 +11,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 import shutil
+import sys
 
 samples = [200,201,205]
 models = [0]
