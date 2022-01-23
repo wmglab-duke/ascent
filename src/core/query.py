@@ -179,7 +179,7 @@ class Query(Exceptionable, Configurable, Saveable):
                 result[samples_key].pop(-1)
 
         if len(result['samples'])==0:
-            self.throw(0)
+            self.throw(132)
 
         self._result = result
 
