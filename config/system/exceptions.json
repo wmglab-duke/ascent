@@ -518,5 +518,10 @@
   {
     "code": 131,
     "text": "Cannot use fiber0 mode for heatmaps if there is only one inner"
+  },
+  {
+    "code": 132,
+    "text": "Query run did not return any sample results. Check your indices and try again."
   }
 ]
+

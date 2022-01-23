@@ -178,6 +178,9 @@ class Query(Exceptionable, Configurable, Saveable):
             if len(result[samples_key][-1][models_key]) == 0:
                 result[samples_key].pop(-1)
 
+        if len(result['samples'])==0:
+            self.throw(132)
+
         self._result = result
 
         return self
