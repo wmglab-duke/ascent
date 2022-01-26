@@ -18,6 +18,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
@@ -1158,8 +1159,8 @@ public class ModelWrapper {
                     lic = ModelUtil.checkoutLicense("COMSOL");
                     if (lic == true) {
                         long now = System.currentTimeMillis();
-                        long elapsed = (now-start)/(60 * 60 * 1000);
-                        System.out.println("COMSOL license seat obtained (took "+String.valueOf(elapsed)+" hours).");
+                        double elapsed = (Long.valueOf(now).doubleValue()-Long.valueOf(start).doubleValue())/(60 * 60 * 1000);
+                        System.out.printf("COMSOL license seat obtained (took %.3f hours).%n", elapsed);
                         break;
                     } else {
                         TimeUnit.SECONDS.sleep(600);
