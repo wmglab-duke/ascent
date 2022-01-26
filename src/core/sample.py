@@ -437,7 +437,7 @@ class Sample(Exceptionable, Configurable, Saveable):
                 else:
                     self.throw(132)
 
-            if s < 1:
+            if shrinkage_correction < 1:
                 self.throw(133)
 
             slide.scale(shrinkage_correction)
