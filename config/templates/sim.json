@@ -14,8 +14,7 @@
       "min": 0,
       "max": 12500,
       "offset": 0,
-      "seed": 123,
-      "longitudinally_centered": true
+      "seed": 123
     },
     "xy_parameters": {
       "mode": "UNIFORM_DENSITY",

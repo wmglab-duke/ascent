@@ -20,7 +20,8 @@
     "nerve": "NOT_PRESENT",
     "deform": "NONE",
     "ci_perineurium_thickness": "MEASURED",
-    "reshape_nerve": "NONE"
+    "reshape_nerve": "NONE",
+    "shrinkage_definition": "LENGTH_BACKWARDS"
   },
   "smoothing": {
     "nerve_distance": 0,

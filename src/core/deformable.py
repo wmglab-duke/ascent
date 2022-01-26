@@ -2,7 +2,7 @@
 
 """
 The copyrights of this software are owned by Duke University.
-Please refer to the LICENSE.txt and README.txt files for licensing instructions.
+Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
@@ -142,7 +142,6 @@ class Deformable(Exceptionable):
 
             if loop_count % morph_index_step == 0:
                 # print('PRINT PRINT PRINT')
-                space.remove(*morph_step)
                 morph_index += 1
                 Deformable.printProgressBar(morph_index,
                                             len(morph_steps),
@@ -154,6 +153,7 @@ class Deformable(Exceptionable):
                 if morph_index == len(morph_steps):
                     running = False
                 else:
+                    space.remove(*morph_step)
                     morph_step = morph_steps[morph_index]
                     add_boundary()
 
