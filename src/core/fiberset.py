@@ -2,7 +2,7 @@
 
 """
 The copyrights of this software are owned by Duke University.
-Please refer to the LICENSE.txt and README.txt files for licensing instructions.
+Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
@@ -359,7 +359,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                     inter_length = eval(inter_length_str)
 
             z_steps: List = []
-            while (sum(z_steps) - half_fiber_length) < 0.001:
+            while (sum(z_steps) - half_fiber_length) < 1:
                 z_steps += [(node_length / 2) + (paranodal_length_1 / 2),
                             (paranodal_length_1 / 2) + (paranodal_length_2 / 2),
                             (paranodal_length_2 / 2) + (inter_length / 2),

@@ -2,7 +2,7 @@
 
 """
 The copyrights of this software are owned by Duke University.
-Please refer to the LICENSE.txt and README.txt files for licensing instructions.
+Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
@@ -10,6 +10,8 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
+import shutil
+import sys
 
 samples = [200,201,205]
 models = [0]
@@ -21,6 +23,8 @@ amp = 0
 
 outpath = 'out/analysis/videos'
 
+if shutil.which('ffmpeg') is None:
+    sys.exit('Please install ffmpeg and add to your PATH before continuing.')
 
 for sample in samples:
     for model in models:

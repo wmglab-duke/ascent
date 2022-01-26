@@ -2,7 +2,7 @@
 
 """
 The copyrights of this software are owned by Duke University.
-Please refer to the LICENSE.txt and README.txt files for licensing instructions.
+Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
@@ -19,19 +19,31 @@ INCLUDED_FILENAMES = [
     'logs',
     'start_'
 ]
-
-if 'out' in INCLUDED_FILENAMES:
-    proceed = input('You included \'out\' in INCLUDED_FILENAMES (i.e., files to remove). '
+        
+def run(args):
+    
+    proceed = input('All files with names containing any of the following strings:\n'
+                    '\t{}\n'
+                    'will be removed from the following sample directories:\n'
+                    '\t{}\n'
                     '\n\t Would you like to proceed?\n'
                     '\t\t 0 = NO\n'
-                    '\t\t 1 = YES\n')
+                    '\t\t 1 = YES\n'.format(INCLUDED_FILENAMES,args.sample_indices))
     if not int(proceed):
         quit()
     else:
         print('Proceeding...')
 
-
-def run(args):
+    if 'out' in INCLUDED_FILENAMES:
+        proceed = input('You included \'out\' in INCLUDED_FILENAMES (i.e., files to remove). '
+                        '\n\t Are you sure you would you like to proceed?\n'
+                        '\t\t 0 = NO\n'
+                        '\t\t 1 = YES\n')
+        if not int(proceed):
+            quit()
+        else:
+            print('Proceeding...')
+    
 
     for sample in args.sample_indices:
 

@@ -1,6 +1,6 @@
 /*
 The copyrights of this software are owned by Duke University.
-Please refer to the LICENSE.txt and README.txt files for licensing instructions.
+Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 */
 
@@ -71,7 +71,7 @@ public class ModelSearcher {
                 JSONObject target = JSONio.read(file.toString());
                 String directory = String.join("/", Arrays.copyOfRange(fileParts, 0, fileParts.length - 1));
                 if (ModelSearcher.meshMatch(reference, query, target) && ModelSearcher.meshFilesExist(directory)) {
-                    System.out.println("Skipping meshing because found mesh match: " + directory);
+                    System.out.println("\tSkipping meshing because found mesh match: " + directory);
                     return Match.fromMeshPath(directory);
                 }
             }

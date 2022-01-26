@@ -520,6 +520,10 @@
     "text": "Cannot use fiber0 mode for heatmaps if there is only one inner"
   },
   {
+    "code": 132,
+    "text": "Query run did not return any sample results. Check your indices and try again."
+  },
+  {
     "code": 133,
     "text": "Shrinkage parameter (s) derived from your input (Sample->shrinkage->scale) results in further shrinkage, \nrather than expansion, which is not expected functionality."
   },
@@ -528,3 +532,4 @@
     "text": "Invalid ShrinkageMode defined in sample.json"
   }
 ]
+

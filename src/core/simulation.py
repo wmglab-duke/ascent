@@ -2,7 +2,7 @@
 
 """
 The copyrights of this software are owned by Duke University.
-Please refer to the LICENSE.txt and README.txt files for licensing instructions.
+Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
@@ -600,6 +600,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
         # fiber_z.json files
         shutil.copy2(os.path.join(os.environ[Env.PROJECT_PATH.value], 'config', 'system', 'fiber_z.json'), target)
+        shutil.copy2(os.path.join(os.environ[Env.PROJECT_PATH.value], 'config', 'system', 'slurm_params.json'), target)
 
     @staticmethod
     def import_n_sims(sample: int, model: int, sim: int, sim_dir: str, source: str):
