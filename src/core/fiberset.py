@@ -457,6 +457,13 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
                 fiber_length = (max_fiber_z_limit - min_fiber_z_limit) if override_length is None else override_length
 
+            if self.search(Config.SIM,
+                           'fibers',
+                           FiberZMode.parameters.value,
+                           'longitudinally_centered',optional=True) is False:
+                print('WARNING: the sim>fibers>z_parameters>longitudinally_centered parameter is deprecated.\
+                      \nFibers will be centered to the model.')
+
             half_model_length = model_length / 2
 
             assert model_length >= fiber_length, 'proximal length: ({}) < fiber length: ({})'.format(model_length,
