@@ -435,7 +435,7 @@ class Sample(Exceptionable, Configurable, Saveable):
                 elif s_mode == ShrinkageMode.AREA_FORWARDS:
                     shrinkage_correction = np.sqrt(1 + s_pre)
                 else:
-                    self.throw(132)
+                    self.throw(134)
 
             if shrinkage_correction < 1:
                 self.throw(133)
