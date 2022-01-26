@@ -27,5 +27,4 @@ if args.script is not None:
     importlib.import_module('scripts.' + args.script).run(args)
 else:
     if args.list is not None:
-        if args.list == 'runs':
-            list_util.runs()
+        list_util.run(args.list)

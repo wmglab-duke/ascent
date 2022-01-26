@@ -6,7 +6,7 @@ import argparse
 parser = argparse.ArgumentParser(description='ASCENT: Automated Simulations to Characterize Electrical Nerve Thresholds')
 # parser.add_argument('-s','--silent',action='store_true', help = 'silence printing')
 parser.add_argument('-v','--verbose',action='store_true', help = 'verbose printing')
-parser.add_argument('-l','--list',choices=['runs'],help='List all available indices for the specified option')
+parser.add_argument('-l','--list',choices=['runs','samples','sims'],help='List all available indices for the specified option')
 
 #add subparsers
 subparsers = parser.add_subparsers(help = 'which script to run', dest='script')
@@ -29,7 +29,6 @@ cs_parser.add_argument('sample_indices', nargs = '+',type=int, help = 'Space sep
 mmg_parser.add_argument('mock_sample_index',type=int, help = 'Mock Sample Index to generate')
 install_parser.add_argument('--no-conda',action='store_true', help = 'Skip conda portion of installation')
 
-
 def parse():
     """parse all args"""
     
@@ -40,7 +39,6 @@ def parse():
     
     #parse arguments
     args = parser.parse_args()
-    
     g0(args,'wait_for_license')
     
     if not len(sys.argv)>1:
