@@ -21,7 +21,6 @@
       "full_nerve_length": true,
       "offset": 0,
       "seed": 123,
-      "longitudinally_centered": true
     },
     "xy_parameters": {
       "mode": "WHEEL",
