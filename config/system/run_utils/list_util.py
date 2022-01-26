@@ -15,6 +15,8 @@ def run(mode):
                      'MODELS':rundata['models'],
                      'SIMS':rundata['sims']})
         df = pd.DataFrame(data)
+        df.RUN = df.RUN.astype(int)
+        df = df.sort_values('RUN')
         print('Run indices available (defined by user .json files in {}):\n'.format(run_path))
         print(df.to_string(index = False))
         
@@ -32,6 +34,8 @@ def run(mode):
                      'NERVEMODE':sampledata['modes'].get('nerve'),
                      'MASKINPUTMODE':sampledata['modes'].get('mask_input')})
         df = pd.DataFrame(data)
+        df.SAMPLE = df.SAMPLE.astype(int)
+        df = df.sort_values('SAMPLE')
         print('Sample indices available (defined by user folders in {}):\n'.format(run_path))
         print(df.to_string(index = False))
             
@@ -47,5 +51,7 @@ def run(mode):
                      'PROTOCOL':simdata['protocol'].get('mode'),
                      'XYMODE':simdata['fibers']['xy_parameters'].get('mode')})
         df = pd.DataFrame(data)
+        df.SIM = df.SIM.astype(int)
+        df = df.sort_values('SIM')
         print('Sim indices available (defined by user .json files in {}):\n'.format(run_path))
         print(df.to_string(index = False))
