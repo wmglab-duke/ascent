@@ -32,6 +32,8 @@ def run(args):
         .make_fascicles() \
         .make_masks()
 
+    TemplateOutput.write(mock_sample.configs['mock_sample'], mock_config)
+
     # END timer
     end = time.time()
     print('\nruntime: {}'.format(end - start))
