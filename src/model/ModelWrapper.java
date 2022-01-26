@@ -1,6 +1,6 @@
 /*
 The copyrights of this software are owned by Duke University.
-Please refer to the LICENSE.txt and README.txt files for licensing instructions.
+Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 */
 
@@ -18,6 +18,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
@@ -348,7 +349,7 @@ public class ModelWrapper {
      * @param run_path
      */
     public static void extractAllPotentials(String projectPath, String run_path, String modelStr) throws IOException {
-        System.out.println("Extracting/writing all potentials - skips if file already exists");
+        System.out.println("\tExtracting/writing all potentials - skips if file already exists");
 
         // READ IN RUN CONFIGURATION DATA
         JSONObject runData = JSONio.read(run_path);
@@ -388,7 +389,7 @@ public class ModelWrapper {
             });
             File file = new File(basis_dir);
             while(!file.canWrite() || !file.canRead()) {
-                System.out.println("waiting");
+                System.out.println("\twaiting");
             }
             String model_tag = ModelUtil.uniquetag("Model");
             Model basis = ModelUtil.load(model_tag, basis_dir);
@@ -526,7 +527,7 @@ public class ModelWrapper {
                         }
 
                         String ss_ve_path = String.join("/", new String[]{
-                                ss_ve_fiberset_basis_dir, ss_fiber_ind + ".dat"
+                                ss_ve_fiberset_basis_dir, ss_fiber_file_ind + ".dat"
                         });
 
                         if (new File(ss_ve_path).exists()) {
@@ -599,10 +600,10 @@ public class ModelWrapper {
                 JSONArray src_combo_list;
                 if (active_srcs.has(cuff)) {
                     src_combo_list = active_srcs.getJSONArray(cuff);
-                    System.out.println("Found the assigned contact weighting for " + cuff + " in sim " + sim_num + " config file");
+                    System.out.println("\tFound the assigned contact weighting for " + cuff + " in sim " + sim_num + " config file");
                 } else {
                     src_combo_list = active_srcs.getJSONArray("default");
-                    System.out.println("WARNING: did NOT find the assigned contact weighting for " + cuff +
+                    System.out.println("\tWARNING: did NOT find the assigned contact weighting for " + cuff +
                             " in sim " + sim_num + " config file, moving forward with DEFAULT (use with caution)");
                 }
 
@@ -907,13 +908,15 @@ public class ModelWrapper {
                         "CIRCLE (or NONE) is not yet implemented");
                 System.exit(0);
             }
-
-            if (nerveMode.equals("PRESENT") && deform_ratio<1) { //Use trace if deform ratio is not 1
-                Part.createNervePartInstance("Epi_trace", 0,
-                        nervePath, this, ndata, sampleData, nerveParams, modelData);
-            } else if (nerveMode.equals("PRESENT") && deform_ratio==1 && reshapenerveMode.equals("CIRCLE")) { //Use a circle otherwise
-                Part.createNervePartInstance("Epi_circle", 0,
-                        null, this, null, sampleData, nerveParams, modelData);
+            
+            if (nerveMode.equals("PRESENT")) {
+                if (deform_ratio == 1 && reshapenerveMode.equals("CIRCLE")) { //Use a circle otherwise
+                    Part.createNervePartInstance("Epi_circle", 0,
+                            null, this, null, sampleData, nerveParams, modelData);
+                } else { //Use trace
+                    Part.createNervePartInstance("Epi_trace", 0,
+                            nervePath, this, ndata, sampleData, nerveParams, modelData);
+                }
             }
 
             // Loop over all fascicle dirs
@@ -1020,25 +1023,25 @@ public class ModelWrapper {
                     index + ".mph"
             });
 
-            System.out.println("Solving electric currents for "+key_on+".");
+            System.out.println("\tSolving electric currents for "+key_on+".");
 
             boolean save = true;
             if (! new File(mphFile).exists()) {
                 model.sol("sol1").runAll();
             } else {
                 save = false;
-                System.out.println("Skipping solving and saving for basis " + key_on + " because found existing file: " + mphFile);
+                System.out.println("\tSkipping solving and saving for basis " + key_on + " because found existing file: " + mphFile);
             }
 
             try {
                 if (save) {
-                    System.out.println("Saving MPH (mesh and solution) file to: " + mphFile);
+                    System.out.println("\tSaving MPH (mesh and solution) file to: " + mphFile);
                     model.save(mphFile);
 
                     File mphFileFile = new File(mphFile);
 
                     while(!mphFileFile.canWrite() || !mphFileFile.canRead()) {
-                        System.out.println("waiting");
+                        System.out.println("\twaiting");
                         // wait!
                     }
                 }
@@ -1127,6 +1130,11 @@ public class ModelWrapper {
      * @param args
      */
     public static void main(String[] args) throws InterruptedException {
+        //Load CLI args
+        byte[] decodedBytes = Base64.getDecoder().decode(args[2]);
+        String decodedString = new String(decodedBytes);
+        JSONObject cli_args = new JSONObject(decodedString);
+
         // Start COMSOL Instance
         try {
             ModelUtil.connect("localhost", 2036);
@@ -1138,46 +1146,78 @@ public class ModelWrapper {
         ModelUtil.initStandalone(false);
 //        ModelUtil.showProgress(null); // if you want to see COMSOL progress (as it makes all geometry, runs, etc.)
 
+        //checkout comsol license
+        if (cli_args.has("wait_for_license"));
+        {
+            if (!cli_args.isNull("wait_for_license")) {
+                long wait_hours = cli_args.getLong("wait_for_license");
+                System.out.println("Attempting to check out COMSOL license. System will wait up to " + String.valueOf(wait_hours) + " hours for an available license seat.");
+                boolean lic = false;
+                long start = System.currentTimeMillis();
+                long stop = wait_hours * 60 * 60 * 1000 + start;
+                while (System.currentTimeMillis() < stop) {
+                    lic = ModelUtil.checkoutLicense("COMSOL");
+                    if (lic == true) {
+                        long now = System.currentTimeMillis();
+                        double elapsed = (Long.valueOf(now).doubleValue()-Long.valueOf(start).doubleValue())/(60 * 60 * 1000);
+                        System.out.printf("COMSOL license seat obtained (took %.3f hours).%n", elapsed);
+                        break;
+                    } else {
+                        TimeUnit.SECONDS.sleep(600);
+                    }
+                }
+                if (lic == false) {
+                    System.out.println("A COMSOL license did not become available within the specified time window. Exiting...");
+                    System.exit(1);
+                }
+            }
+        }
+
+
         // Take projectPath input to ModelWrapper and assign to string.
         String projectPath = args[0];
 
         // Load RUN configuration data
         String runPath = args[1]; // Take runPath input to ModelWrapper and assign to string
+
         JSONObject run = null;
         try {
             run = JSONio.read(runPath);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+
         JSONArray models_list = run.getJSONArray("models"); // get array of COMSOL models
-        JSONObject break_points;
-        try {
-            break_points = run.getJSONObject("break_points");   
-        } catch(JSONException e) {
-            break_points = new JSONObject();
+        JSONObject break_points = new JSONObject();
+        if (cli_args.has("break_point") && !cli_args.isNull("break_point")) {
+            break_points.put(cli_args.getString("break_point"),true);
+        }
+        else if (run.has("break_points")) {
+                break_points = run.getJSONObject("break_points");
         }
 
-        boolean nerve_only;
-        boolean cuff_only;
-        if (run.has("partial_fem")) {
+        boolean nerve_only = false;
+        boolean cuff_only = false;
+        if (cli_args.has("partial_fem")  && !cli_args.isNull("partial_fem")) {
+            if (cli_args.getString("partial_fem").equals("cuff_only")) {
+                cuff_only = true;
+            }
+            else if (cli_args.getString("partial_fem").equals("nerve_only")) {
+                nerve_only = true;
+            }
+        }
+        else if (run.has("partial_fem")) {
             JSONObject partial_fem_params = run.getJSONObject("partial_fem");
-            
+
             if (partial_fem_params.has("nerve_only")) {
                 nerve_only = partial_fem_params.getBoolean("nerve_only");
-            } else {
-                nerve_only = false;
             }
 
             if (partial_fem_params.has("cuff_only")) {
                 cuff_only = partial_fem_params.getBoolean("cuff_only");
-            } else {
-                cuff_only = false;
             }
-
-        } else {
-            nerve_only = false;
-            cuff_only = false;
         }
+
 
         String sample = null;
         JSONObject sampleData = null;
@@ -1218,15 +1258,25 @@ public class ModelWrapper {
                 String modelStr = String.valueOf(models_list.get(model_index));
                 String bases_directory = String.join("/", new String[]{projectPath, "samples", sample, "models", modelStr, "bases"});
 
-                // if bases directory does not yet exist, make it
+                System.out.println("BEGIN RUN - Model " + modelStr);
+
+                // if bases directory does not yet exist, make it. If it exists, check that the bases are valid
                 File basesPathFile = new File(bases_directory);
                 boolean basesValid = true;
                 if (basesPathFile.exists()) {
-                    for (String basisFilename : basesPathFile.list()) {
-                        if (!basisFilename.matches("[0-9]{1,3}\\.mph")) {
-                            basesValid = false;
-                            break;
+                    String imFile = String.join("/", new String[]{projectPath, "samples", sample, "models", modelStr, "mesh", "im.json"});
+                    try {
+                        JSONObject imdata = JSONio.read(imFile);
+                        for (int cu=0;cu<imdata.getJSONObject("currentIDs").length();cu++) {
+                            File basisFile = new File(bases_directory+"/"+String.valueOf(cu)+".mph");
+                            if (!basisFile.exists()) {
+                                basesValid = false;
+                            }
                         }
+                    }
+                    catch (FileNotFoundException e) {
+                        System.out.println("\tCould not validate bases because no identifier manager record exists (mesh/im.json).");
+                        basesValid = false;
                     }
                 } else {
                     basesValid = false;
@@ -1240,7 +1290,7 @@ public class ModelWrapper {
                     try {
                         modelData = JSONio.read(projectPath + "/" + modelFile);
                     } catch (FileNotFoundException e) {
-                        System.out.println("Failed to read MODEL config data.");
+                        System.out.println("\tFailed to read MODEL config data.");
                         e.printStackTrace();
                     }
 
@@ -1253,7 +1303,7 @@ public class ModelWrapper {
                     }
 
                     if (recycle_meshes) {
-                        System.out.println("Entering mesh recycling logic.");
+                        System.out.println("\tEntering mesh recycling logic.");
                         try {
                             ModelSearcher modelSearcher = new ModelSearcher(String.join("/", new String[]{projectPath, "samples", sample, "models"}));
                             ModelSearcher.Match meshMatch = modelSearcher.searchMeshMatch(modelData, meshReferenceData, projectPath + "/" + modelFile);
@@ -1269,12 +1319,11 @@ public class ModelWrapper {
                             }
 
                         } catch (IOException e) {
-                            System.out.println("Issue in mesh recycling logic.");
+                            System.out.println("\tIssue in mesh recycling logic. Rebuilding mesh.");
                             e.printStackTrace();
-                            System.exit(1);
                         }
                     }
-                    System.out.println("End mesh recycling logic.");
+                    System.out.println("\tEnd mesh recycling logic.");
 
                     String mediumPrimitiveString = "Medium_Primitive";
                     String instanceLabelDistalMedium = DISTAL_MEDIUM;
@@ -1287,7 +1336,7 @@ public class ModelWrapper {
                     // START PRE MESH
                     if (!skipMesh) {
 
-                        System.out.println("Running pre-mesh procedure.");
+                        System.out.println("\tRunning pre-mesh procedure.");
 
                         // Define model object
                         model = ModelUtil.createUnique("Model");
@@ -1353,7 +1402,7 @@ public class ModelWrapper {
                             String mediumDistal_instanceID = mw.im.next("pi", instanceLabelDistalMedium);
 
                             if (proximalMedium.getBoolean("distant_ground")) {
-                                System.out.println("WARNING: you have a distal domain, as well as a proximal domain " +
+                                System.out.println("\tWARNING: you have a distal domain, as well as a proximal domain " +
                                         "that is grounded... make sure this is something you actually want to do...");
                             }
 
@@ -1473,7 +1522,7 @@ public class ModelWrapper {
 
                         // Saved model pre-run geometry for debugging
                         try {
-                            System.out.println("Saving MPH (pre-geom_run) file to: " + geomFile);
+                            System.out.println("\tSaving MPH (pre-geom_run) file to: " + geomFile);
                             model.save(geomFile);
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -1489,17 +1538,17 @@ public class ModelWrapper {
 
                         if (pre_geom_run) {
                             models_exit_status[model_index] = false;
-                            System.out.println("pre_geom_run is the first break point encountered, moving on with next model index\n");
+                            System.out.println("\tpre_geom_run is the first break point encountered, moving on with next model index\n");
                             continue;
                         }
 
                         // BUILD GEOMETRY
-                        System.out.println("Building the FEM geometry.");
+                        System.out.println("\tBuilding the FEM geometry.");
 
                         try {
                             model.component("comp1").geom("geom1").run("fin");
                         } catch (Exception e) {
-                            System.out.println("Failed to run geometry for Model Index " + modelStr + ", continuing " +
+                            System.out.println("\tFailed to run geometry for Model Index " + modelStr + ", continuing " +
                                     "to any remaining Models");
                             e.printStackTrace();
                             continue;
@@ -1507,7 +1556,7 @@ public class ModelWrapper {
 
                         // Saved model post-run geometry for debugging
                         try {
-                            System.out.println("Saving MPH (post-geom_run) file to: " + geomFile);
+                            System.out.println("\tSaving MPH (post-geom_run) file to: " + geomFile);
                             model.save(geomFile);
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -1523,7 +1572,7 @@ public class ModelWrapper {
 
                         if (post_geom_run || nerve_only || cuff_only) {
                             models_exit_status[model_index] = false;
-                            System.out.println("post_geom_run is the first break point encountered, moving on with next model index\n");
+                            System.out.println("\tpost_geom_run is the first break point encountered, moving on with next model index\n");
                             continue;
                         }
 
@@ -1536,7 +1585,7 @@ public class ModelWrapper {
                         }
 
                         // ditto for ppims
-                        System.out.println("Creating PPIM dirs");
+                        System.out.println("\tCreating PPIM dirs");
                         String ppimPath = meshPath + "/ppim";
                         File ppimPathFile = new File(ppimPath);
                         if (!ppimPathFile.exists()) {
@@ -1588,10 +1637,10 @@ public class ModelWrapper {
 
                         // Saved model pre-mesh for debugging
                         try {
-                            System.out.println("Saving MPH (pre-proximal mesh) file to: " + meshFile);
+                            System.out.println("\tSaving MPH (pre-proximal mesh) file to: " + meshFile);
                             model.save(meshFile);
                         } catch (IOException e) {
-                            System.out.println("Failed to save geometry for Model Index " + modelStr + ", continuing " +
+                            System.out.println("\tFailed to save geometry for Model Index " + modelStr + ", continuing " +
                                     "to any remaining Models");
                             e.printStackTrace();
                             continue;
@@ -1607,17 +1656,17 @@ public class ModelWrapper {
 
                         if (pre_mesh_proximal) {
                             models_exit_status[model_index] = false;
-                            System.out.println("pre_mesh_proximal is the first break point encountered, moving on with next model index\n");
+                            System.out.println("\tpre_mesh_proximal is the first break point encountered, moving on with next model index\n");
                             continue;
                         }
 
-                        System.out.println("Meshing proximal parts... will take a while");
+                        System.out.println("\tMeshing proximal parts... will take a while");
 
                         long proximalMeshStartTime = System.nanoTime();
                          try {
                              model.component("comp1").mesh("mesh1").run(mw.im.get(meshProximalLabel));
                          } catch (Exception e) {
-                             System.out.println("Failed to mesh proximal geometry for Model Index " + modelStr +
+                             System.out.println("\tFailed to mesh proximal geometry for Model Index " + modelStr +
                                      ", continuing to any remaining Models");
                              e.printStackTrace();
                              continue;
@@ -1647,7 +1696,7 @@ public class ModelWrapper {
 
                         if (post_mesh_proximal) {
                             models_exit_status[model_index] = false;
-                            System.out.println("post_mesh_proximal is the first break point encountered, moving on with next model index\n");
+                            System.out.println("\tpost_mesh_proximal is the first break point encountered, moving on with next model index\n");
                             continue;
                         }
 
@@ -1682,10 +1731,10 @@ public class ModelWrapper {
 
                             // Saved model pre-mesh for debugging
                             try {
-                                System.out.println("Saving MPH (pre-distal mesh) file to: " + meshFile);
+                                System.out.println("\tSaving MPH (pre-distal mesh) file to: " + meshFile);
                                 model.save(meshFile);
                             } catch (IOException e) {
-                                System.out.println("Failed to save geometry for Model Index " + modelStr + ", continuing " +
+                                System.out.println("\tFailed to save geometry for Model Index " + modelStr + ", continuing " +
                                         "to any remaining Models");
                                 e.printStackTrace();
                                 continue;
@@ -1701,16 +1750,16 @@ public class ModelWrapper {
 
                             if (pre_mesh_distal) {
                                 models_exit_status[model_index] = false;
-                                System.out.println("pre_mesh_distal is the first break point encountered, moving on with next model index\n");
+                                System.out.println("\tpre_mesh_distal is the first break point encountered, moving on with next model index\n");
                                 continue;
                             }
 
-                            System.out.println("Meshing the distal parts... will take a while");
+                            System.out.println("\tMeshing the distal parts... will take a while");
                             long distalMeshStartTime = System.nanoTime();
                             try {
                                 model.component("comp1").mesh("mesh1").run(mw.im.get(meshDistalLabel));
                             } catch (Exception e) {
-                                System.out.println("Failed to mesh distal geometry for Model Index " + modelStr +
+                                System.out.println("\tFailed to mesh distal geometry for Model Index " + modelStr +
                                         ", continuing to any remaining Models");
                                 e.printStackTrace();
                                 continue;
@@ -1724,10 +1773,10 @@ public class ModelWrapper {
 
                             // Saved model post-mesh distal for debugging
                             try {
-                                System.out.println("Saving MPH (post-distal mesh) file to: " + meshFile);
+                                System.out.println("\tSaving MPH (post-distal mesh) file to: " + meshFile);
                                 model.save(meshFile);
                             } catch (IOException e) {
-                                System.out.println("Failed to save geometry for Model Index " + modelStr + ", continuing " +
+                                System.out.println("\tFailed to save geometry for Model Index " + modelStr + ", continuing " +
                                         "to any remaining Models");
                                 e.printStackTrace();
                                 continue;
@@ -1743,12 +1792,12 @@ public class ModelWrapper {
 
                             if (post_mesh_distal) {
                                 models_exit_status[model_index] = false;
-                                System.out.println("post_mesh_distal is the first break point encountered, moving on with next model index\n");
+                                System.out.println("\tpost_mesh_distal is the first break point encountered, moving on with next model index\n");
                                 continue;
                             }
                         }
 
-                        System.out.println("Saving mesh statistics.");
+                        System.out.println("\tSaving mesh statistics.");
 
                         // MESH STATISTICS
                         String quality_measure = modelData.getJSONObject("mesh").getJSONObject("stats").getString("quality_measure");
@@ -1773,14 +1822,14 @@ public class ModelWrapper {
                         mesh.put("stats", meshStats);
                         modelData.put("mesh", mesh);
 
-                        System.out.println("DONE MESHING");
+                        System.out.println("\tDONE MESHING");
 
                         try {
                             // save mesh.mph
-                            System.out.println("Saving MPH (post-mesh) file to: " + meshFile);
+                            System.out.println("\tSaving MPH (post-mesh) file to: " + meshFile);
                             model.save(meshFile);
                         } catch (IOException e) {
-                            System.out.println("Failed to save mesh.mph file for Model Index " + modelStr +
+                            System.out.println("\tFailed to save mesh.mph file for Model Index " + modelStr +
                                     ", continuing to any remaining Models");
                             e.printStackTrace();
                         }
@@ -1805,7 +1854,7 @@ public class ModelWrapper {
                         if (!keep_debug_geom) {
                             File debug_geom_file = new File(geomFile);
                             debug_geom_file.delete();
-                            System.out.println("Successfully saved mesh.mph and ppim's, therefore deleted debug_geom.mph file.");
+                            System.out.println("\tSuccessfully saved mesh.mph and ppim's, therefore deleted debug_geom.mph file.");
                         }
 
                     }
@@ -1850,7 +1899,7 @@ public class ModelWrapper {
                     String mediumMaterial = mw.im.get("medium");
                     IdentifierManager myIM = mw.getPartPrimitiveIM(mediumPrimitiveString);
                     if (myIM == null)
-                        throw new IllegalArgumentException("IdentfierManager not created for name: " + mediumPrimitiveString);
+                        throw new IllegalArgumentException("IdentifierManager not created for name: " + mediumPrimitiveString);
                     String[] myLabels = myIM.labels; // may be null, but that is ok if not used
                     String selection = myLabels[0];
 
@@ -1909,7 +1958,7 @@ public class ModelWrapper {
 
                     if (post_material_assign) {
                         models_exit_status[model_index] = false;
-                        System.out.println("post_material_assign is the first break point encountered, moving on with next model index\n");
+                        System.out.println("\tpost_material_assign is the first break point encountered, moving on with next model index\n");
                         continue;
                     }
 
@@ -1969,7 +2018,7 @@ public class ModelWrapper {
 
                     if (pre_loop_currents) {
                         models_exit_status[model_index] = false;
-                        System.out.println("pre_loop_currents is the first break point encountered, moving on with next model index\n");
+                        System.out.println("\tpre_loop_currents is the first break point encountered, moving on with next model index\n");
                         continue;
                     }
 
@@ -1987,7 +2036,7 @@ public class ModelWrapper {
                     if (!keep_mesh) {
                         File mesh_path = new File(meshPath);
                         deleteDir(mesh_path);
-                        System.out.println("Successfully solved for /bases, therefore deleted /mesh directory.");
+                        System.out.println("\tSuccessfully solved for /bases, therefore deleted /mesh directory.");
                     }
 
                     try (FileWriter file = new FileWriter("../" + modelFile)) {
@@ -2004,7 +2053,7 @@ public class ModelWrapper {
                     try {
                         extractAllPotentials(projectPath, runPath, modelStr);
                     } catch (Exception e) {
-                        System.out.println("Failed to extract potentials for Model Index " + modelStr +
+                        System.out.println("\tFailed to extract potentials for Model Index " + modelStr +
                                 ", continuing to any remaining Models");
                         e.printStackTrace();
                         continue;
@@ -2030,13 +2079,13 @@ public class ModelWrapper {
                 if (!keep_bases) {
                     File bases_path = new File(basesPath);
                     deleteDir(bases_path);
-                    System.out.println("Successfully extracted potentials, therefore deleted /bases directory.");
+                    System.out.println("\tSuccessfully extracted potentials, therefore deleted /bases directory.");
                 }
 
                 models_exit_status[model_index] = true;
             } catch (Exception e) {
                 models_exit_status[model_index] = false;
-                System.out.println("Failed to mesh/solve/extract potentials for model " + models_list.get(model_index));
+                System.out.println("\tFailed to mesh/solve/extract potentials for model " + models_list.get(model_index));
                 e.printStackTrace();
             }
         }

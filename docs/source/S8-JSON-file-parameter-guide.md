@@ -76,7 +76,9 @@ of the file.
 
     `“submission_context”`: The value (String) of this property tells the
     system how to submit the n\_sim NEURON jobs based on the computational
-    resources available. Value can be either “cluster” or “local”. Required.
+    resources available. Value can be “cluster”, “local”, or "auto" (if "auto", "hostname_prefix" is required). Required.
+
+    `"hostname_prefix"`: This value (String) tells the program what prefix to look out for in the "HOSTNAME" environment variable. If the "HOSTNAME" begins with the "hostname prefix", submission context is set to cluster, otherwise it is set to local (does not change the value in the configuration file). Example: if your high performance computing cluster hostname always begins with ourclust, e.g. ourclust-node-15, ourclust-login-20, etc., you would set the value of this variable to "ourclust." If the "HOSTNAME" environment variable is not present, the program defaults to "local." Required if "submission_context" is "auto", otherwise Optional.
 
     `“sample”`: The value (Integer) of this property sets the sample
     configuration index (“***Sample***”). Note that this is only ever one
@@ -102,7 +104,8 @@ of the file.
     to run only up to certain steps of the pipeline, which can be
     particularly useful for debugging. If a breakpoint is not defined, the
     default behavior is false (i.e., the pipeline continues beyond the
-    breakpoint). Optional.
+    breakpoint). Note: specifying a break point via command line arguments
+    will override any break points set in your run config. Optional.
 
     `“models_exit_status”`: The value (\[Boolean, ...\]) of this property
     indicates if Java successfully made the FEMs for the corresponding model
@@ -134,7 +137,8 @@ of the file.
     set both values for `“cuff_only”` and `“nerve_only”` to true. To build the
     geometry of both the cuff and the nerve, but not proceed with meshing or
     solving the FEM, the user should set the value for `“post_geom_run”`
-    under `“break_points”` to true. Optional.
+    under `“break_points”` to true. Overriden 
+    if the `"partial_fem"` command line argument is used. Optional.
 
     `“local_avail_cpus”`: The value (Integer) sets the number of CPUs that
     the program will take if the `“submission_context”` is “local”. We check
@@ -209,11 +213,12 @@ of the file.
       },
       "modes": {
         "mask_input": String,
+        "scale_input": String,
         "nerve": String,
         "deform": String,
         "ci_perineurium_thickness": String,
         "reshape_nerve": String,
-        "scale_input": String
+        "shrinkage_definition": String
       },
       "smoothing": {
         "nerve_distance": Double,
@@ -287,14 +292,13 @@ of the file.
         the ratio of micrometers per pixel for the input mask(s).
         Required if scale_input = "RATIO".
 
-
-    <!-- end list -->
-
       - `“shrinkage”`: The value (Double) is the shrinkage correction for the
         nerve morphology binary images provided as a decimal (e.g., 0.20
         results in a 20% expansion of the nerve, and 0 results in no
         shrinkage correction of the nerve). Required, must be greater than
-        0.
+        0. Note: Shrinkage correction scaling is linear (i.e. a nerve with diameter d and area a scaled by scaling factor s will have a final diameter of d_final=d\*(1+s) and a final area a_final = a\*(1+s)<sup>2</sup>)
+
+        <!-- end list -->
 
     `“boundary_separation”`
 
@@ -332,6 +336,15 @@ of the file.
             3.  `“INNER_AND_OUTER_COMPILED”`: Program expects a single
                 segmented image containing boundaries of both inners and
                 outers.
+                
+      - `“scale_input”`: The value (String) is the `“ScaleInputMode”`
+        that tells the program which type of scale input to look for.
+
+          - As listed in Enums ([S6 Text](S6-Enums)), known `“ScaleInputModes”` include
+
+            1.  `“MASK”`: The program will determine image scale from the user's scale bar mask image and the `scale_bar_length` parameter.
+            2.  `“RATIO”`: The program will use the scale directly specified in `scale_ratio`. If using this option, a scale bar image need not be
+                provided.
 
       - `“nerve”`: The value (String) is the `“NerveMode”` that tells the
         program if there is an outer nerve boundary (epineurium) segmented
@@ -400,21 +413,28 @@ of the file.
 
           - As listed in Enums ([S6 Text](S6-Enums)), known `“ReshapeNerveModes”` include
 
-              - `“CIRCLE”`: The program creates a circular nerve boundary
+            1. `“CIRCLE”`: The program creates a circular nerve boundary
                 with a preserved cross-sectional area (i.e., for multifascicular nerves/nerves that have epineurium).
-              - `“NONE”`: The program does not deform the nerve boundary (i.e., for monofascicular nerves/nerves that do not have epineurium).
+            2. `“NONE”`: The program does not deform the nerve boundary (i.e., for monofascicular nerves/nerves that do not have epineurium).
+            
+      - `“shrinkage_definition”`: The value (String) is the `“ShrinkageMode”`
+        that tells the program how to interpret the "scale"->"shrinkage" parameter, which is provided as a decimal (i.e., 0.2 = 20%).
+        Optional, but assumes the mode "LENGTH_FORWARDS if omitted, since this was the original behavior before this mode was added.
 
-      - `“scale_input”`: The value (String) is the `“ScaleInputMode”`
-        that tells the program which type of scale input to look for.
+          - As listed in Enums ([S6 Text](S6-Enums)), known `“ShrinkageModes”` include
 
-          - As listed in Enums ([S6 Text](S6-Enums)), known `“ScaleInputModes”` include
-
-              - `“MASK”`: The program will determine image scale from the user's scale bar mask image and the `scale_bar_length` parameter.
-              - `“RATIO”`: The program will use the scale directly specified in `scale_ratio`. If using this option, a scale bar image need not be
-               provided.
-
-    <!-- end list -->
-
+            1. `“LENGTH_BACKWARDS”`: The value for "scale"->"shrinkage" refers to how much the length (e.g., radius, diameter, or perimeter)
+               of the nerve cross section was reduced from the fresh tissue to the imaged tissue. 
+                 - Formula: r_post = r_original * (1-shrinkage)
+            2. `“LENGTH_FORWARDS”`: The value for "scale"->"shrinkage" refers to how much the length (e.g., radius, diameter, or perimeter)
+               of the nerve cross section increases from the imaged tissue to the fresh tissue. 
+                 - Formula: r_post = r_original / (1+shrinkage)
+            3. `“AREA_BACKWARDS”`: The value for "scale"->"shrinkage" refers to how much the area
+               of the nerve cross section was reduced from the fresh tissue to the imaged tissue. 
+                 - Formula: A_post = A_original * (1-shrinkage)
+            4. `“AREA_FORWARDS”`: The value for "scale"->"shrinkage" refers to how much the area
+               of the nerve cross section increases from the imaged tissue to the fresh tissue. 
+                 - Formula: A_post = A_original / (1+shrinkage)
 
     `“smoothing”`: Smoothing is applied via a dilating the nerve/fascicle boundary by a specified distance value and then shrinking it by that same value.
 
@@ -1429,6 +1449,7 @@ of the file.
 
           "min": Double,
           "max": Double,
+          "full_nerve_length": Boolean,
           "offset": Double, // or omitted for random jitter within +/- 1 internodal length
           "seed": Integer
         },
@@ -1732,6 +1753,8 @@ of the file.
             `model.json`, the length of the nerve). Optional: if min and max
             are not both provided then the fiber length is assumed to be the
             proximal medium length by default.
+
+          - `full_nerve_length`: (Boolean) Optional. If true, suppresses the warning message associated with using the full length nerve when `"min"` and `"max"` are not defined. Must be false or not defined if `"min"` and `"max"` are defined.
 
           - `“offset”`: The value (Double or List\[Double\]) is the fraction
             of the node-node length (myelinated fibers) or segment length
@@ -2087,29 +2110,29 @@ of the file.
             timesteps. Alternatively, the user can use the value “all”
             (String) to prompt the program to save the state variables at
             all segments (unmyelinated) and sections (myelinated). Required.
-            
+
        - `“end_ap_times”`:
           - `“loc_min”`: The value (Double) tells the program at which location to save
             times at which V<sub>m</sub> passes the threshold voltage (defined below)
-            with a positive slope. The value must be between 0 and 1, and less than the 
-            value for `“loc_max”`. Be certain not to record from the end section (i.e., 0) 
-            if it is passive. A value 0 corresponds to z=0, and a value of 1 corresponds to 
+            with a positive slope. The value must be between 0 and 1, and less than the
+            value for `“loc_max”`. Be certain not to record from the end section (i.e., 0)
+            if it is passive. A value 0 corresponds to z=0, and a value of 1 corresponds to
             z=length of proximal domain. Required if this JSON object (which is optional) is included.
-            
+
           - `“loc_max”`: The value (Double) tells the program at which location to save
             times at which V<sub>m</sub> passes the threshold voltage (defined below)
-            with a positive slope. The value must be between 0 and 1, and greater than the 
-            value for `“loc_min”`. Be certain not to record from the end section (i.e., 1) 
-            if it is passive. A value 0 corresponds to z=0, and a value of 1 corresponds to 
+            with a positive slope. The value must be between 0 and 1, and greater than the
+            value for `“loc_min”`. Be certain not to record from the end section (i.e., 1)
+            if it is passive. A value 0 corresponds to z=0, and a value of 1 corresponds to
             z=length of proximal domain. Required if this JSON object (which is optional) is included.
-            
+
           - `“threshold”`: The value (Double, units: mV) is the threshold value for V<sub>m</sub> to pass
-            for an action potential to be detected. Required if this JSON object (which is optional) 
+            for an action potential to be detected. Required if this JSON object (which is optional)
             is included.
-            
-      - `“runtimes”`: The value (Boolean), if true, tells the program to save 
-            the NEURON runtime for either the finite amplitude or binary search for 
-            threshold simulation. If this key-value pair is omitted, the default 
+
+      - `“runtimes”`: The value (Boolean), if true, tells the program to save
+            the NEURON runtime for either the finite amplitude or binary search for
+            threshold simulation. If this key-value pair is omitted, the default
             behavior is False.
 
     `“protocol”`: 
@@ -2290,6 +2313,7 @@ of the file.
           "diameter": [1, 2, 5.7, 7.3, 8.7, 10],
           "min": 0,
           "max": 12500,
+          "full_nerve_length": False,
           "offset": 0,
           "seed": 123
         },

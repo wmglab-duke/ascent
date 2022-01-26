@@ -2,7 +2,7 @@
 
 """
 The copyrights of this software are owned by Duke University.
-Please refer to the LICENSE.txt and README.txt files for licensing instructions.
+Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
@@ -122,6 +122,16 @@ class MaskFileNames(ASCENTEnum):
     SCALE_BAR = 's.tif'
     NERVE = 'n.tif'
     ORIENTATION = 'a.tif'  # a for angle
+
+
+@unique
+class ShrinkageMode(ASCENTEnum):
+    config = 'shrinkage_definition'
+
+    LENGTH_BACKWARDS = 0
+    LENGTH_FORWARDS = 1
+    AREA_BACKWARDS = 2
+    AREA_FORWARDS = 3
 
 
 @unique

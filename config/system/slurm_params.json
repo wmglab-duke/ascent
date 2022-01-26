@@ -1,0 +1,5 @@
+{
+  "partition":"common",
+  "memory_per_fiber": 2000,
+  "jobs_per_array": 10
+}

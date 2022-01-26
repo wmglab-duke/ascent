@@ -2,7 +2,7 @@
 
 """
 The copyrights of this software are owned by Duke University.
-Please refer to the LICENSE.txt and README.txt files for licensing instructions.
+Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
@@ -425,16 +425,22 @@ class Waveform(Exceptionable, Configurable, Saveable):
 
     def plot(self, ax: plt.Axes = None, final: bool = False, path: str = None):
         
-        plt.figure()
+        fig = plt.figure()
         
         if ax is None:
             ax = plt.gca()
 
         ax.plot(np.linspace(self.start, self.dt * len(self.wave), len(self.wave)), self.wave)
+        ax.set_ylabel('Normalized magnitude')
+        ax.set_xlabel('Time step')
+        ax.set_title('Waveform generated from user parameters in sim.json')
 
         if final:
             if path is None: plt.show() 
-            else: plt.savefig(path, dpi=300)
+            else: 
+                plt.savefig(path, dpi=300)
+                fig.clear()
+                plt.close(fig)
 
     def write(self, mode: WriteMode, path: str):
         """

@@ -2,7 +2,7 @@
 
 """
 The copyrights of this software are owned by Duke University.
-Please refer to the LICENSE.txt and README.txt files for licensing instructions.
+Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
@@ -40,4 +40,6 @@ q.ap_time_and_location(
     #     '10000 µm model radius',
     # ],
     # n_sim_filter=[0, 1, 2],
-    save=True)
+    save=True,
+    subplots = True,
+    nodes_only = True)

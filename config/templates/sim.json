@@ -14,8 +14,7 @@
       "min": 0,
       "max": 12500,
       "offset": 0,
-      "seed": 123,
-      "longitudinally_centered": true
+      "seed": 123
     },
     "xy_parameters": {
       "mode": "UNIFORM_DENSITY",
@@ -95,7 +94,7 @@
   "supersampled_bases": {
     "generate": false,
     "use": false,
-    "dz": 0.01,
+    "dz": 1.0,
     "source_sim": 1009
   }
 }
