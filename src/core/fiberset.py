@@ -602,9 +602,9 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                                           fiber_geometry_mode_name,
                                           'delta_zs')
 
-                z_top_half = np.arange(fiber_length / 2, fiber_length + delta_z, delta_z)
-                z_bottom_half = -np.flip(z_top_half) + fiber_length
-                while z_top_half[-1] > fiber_length:
+                z_top_half = np.arange(model_length / 2, model_length + delta_z, delta_z)
+                z_bottom_half = -np.flip(z_top_half) + model_length
+                while z_top_half[-1] > model_length:
                     # trim top of top half
                     z_top_half = z_top_half[:-1]
                     z_bottom_half = z_bottom_half[1:]
@@ -617,8 +617,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                     fiber_pre = build_fiber_with_offset(list(np.concatenate((z_bottom_half[:-1], z_top_half))),
                                                         myelinated,
                                                         delta_z,
-                                                        x, y,
-                                                        z_shift_to_center_in_model_range)
+                                                        x, y)
                     if np.amax(np.array(fiber_pre)[:, 2]) - np.amin(
                             np.array(fiber_pre)[:, 2]) > fiber_length: self.throw(119)
                     if diam_distribution:
