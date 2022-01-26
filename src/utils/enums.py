@@ -125,6 +125,16 @@ class MaskFileNames(ASCENTEnum):
 
 
 @unique
+class ShrinkageMode(ASCENTEnum):
+    config = 'shrinkage_definition'
+
+    LENGTH_BACKWARDS = 0
+    LENGTH_FORWARDS = 1
+    AREA_BACKWARDS = 2
+    AREA_FORWARDS = 3
+
+
+@unique
 class NerveMode(ASCENTEnum):
     config = 'nerve'
 

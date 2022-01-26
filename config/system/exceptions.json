@@ -522,6 +522,14 @@
   {
     "code": 132,
     "text": "Query run did not return any sample results. Check your indices and try again."
+  },
+  {
+    "code": 133,
+    "text": "Shrinkage parameter (s) derived from your input (Sample->shrinkage->scale) results in further shrinkage, \nrather than expansion, which is not expected functionality."
+  },
+  {
+    "code": 134,
+    "text": "Invalid ShrinkageMode defined in sample.json"
   }
 ]
 
