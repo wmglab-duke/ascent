@@ -5,6 +5,8 @@ The copyrights of this software are owned by Duke University.
 Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
+import argparse
+
 if __name__ == "__main__":
     import multiprocessing
     import os
@@ -17,7 +19,6 @@ if __name__ == "__main__":
     import numpy as np
     import warnings
     import pickle
-    import argparse
 
     ALLOWED_SUBMISSION_CONTEXTS = ['cluster', 'local','auto']
     OS = 'UNIX-LIKE' if any([s in sys.platform for s in ['darwin', 'linux']]) else 'WINDOWS'
@@ -549,18 +550,17 @@ if __name__ == "__main__":
         return local_args_list
 
 
-    def get_args():
+    def get_arg_parser():
         #Set up parser and top level args
         parser = argparse.ArgumentParser(description='ASCENT: Automated Simulations to Characterize Electrical Nerve Thresholds')
         parser.add_argument('run_indices', nargs = '+', help = 'Space separated indices to submit NEURON sims for')
         parser.add_argument('-p','--partition', help = 'If submitting on a cluster, overrides default partition assignment')
-        args = parser.parse_args()
-        return args
+        return parser
 
     def main():
         #parse args
-        args = get_args()
-
+        parser = get_arg_parser()
+        args = parser.parse_args()
         #validate inputs
         run_inds = args.run_indices
         runs = []
