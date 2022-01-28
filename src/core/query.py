@@ -327,7 +327,7 @@ class Query(Exceptionable, Configurable, Saveable):
                  suprathresh_color: Tuple[int, int, int, int] = (0, 1, 0, 1),
                  subthresh_color: Tuple[int, int, int, int] = (0, 0, 1, 1),
                  select_fascicles: List = None,
-                 alltitle = False,
+                 alltitle = True,
                  microamps=False,
                  suptitle_override=None
                  ):
