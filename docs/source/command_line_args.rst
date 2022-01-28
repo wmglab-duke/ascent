@@ -14,5 +14,5 @@ submit.py
 
 .. argparse::
    :filename: ../../src/neuron/submit.py
-   :func: parser
+   :func: get_arg_parser
    :prog: submit.py
