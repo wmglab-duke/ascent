@@ -2,7 +2,7 @@
 
 """
 The copyrights of this software are owned by Duke University.
-Please refer to the LICENSE.txt and README.txt files for licensing instructions.
+Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
@@ -108,6 +108,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
             fiberset \
                 .add(SetupMode.OLD, Config.SIM, sim_copy) \
                 .add(SetupMode.OLD, Config.MODEL, self.configs[Config.MODEL.value]) \
+                .add(SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value]) \
                 .generate(sim_directory) \
                 .write(WriteMode.DATA, fiberset_directory)
 
@@ -133,6 +134,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
             fiberset \
                 .add(SetupMode.OLD, Config.SIM, self.configs[Config.SIM.value]) \
                 .add(SetupMode.OLD, Config.MODEL, self.configs[Config.MODEL.value]) \
+                .add(SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value]) \
                 .generate(sim_directory, super_sample=generate_ss_bases) \
                 .write(WriteMode.DATA, ss_fibercoords_directory)
 
@@ -159,6 +161,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
             waveform \
                 .add(SetupMode.OLD, Config.SIM, sim_copy) \
                 .add(SetupMode.OLD, Config.MODEL, self.configs[Config.MODEL.value]) \
+                .add(SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value]) \
                 .init_post_config() \
                 .generate() \
                 .write(WriteMode.DATA, os.path.join(directory, str(i))) \
@@ -189,6 +192,9 @@ class Simulation(Exceptionable, Configurable, Saveable):
         if cuff in self.configs[Config.SIM.value]["active_srcs"].keys():
             active_srcs_list = self.search(Config.SIM, "active_srcs", cuff)
         else:
+            ss = self.search(Config.SIM, 'supersampled_bases',optional=True)
+            if ss is not None and ss['use']==True:           
+                self.throw(130)
             # otherwise, use the default weights (generally you don't want to rely on this as cuffs have different
             # numbers of contacts
             active_srcs_list = self.search(Config.SIM, "active_srcs", "default")
@@ -336,6 +342,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
             hocwriter \
                 .add(SetupMode.OLD, Config.MODEL, self.configs[Config.MODEL.value]) \
                 .add(SetupMode.OLD, Config.SIM, sim_copy) \
+                .add(SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value]) \
                 .build_hoc(n_tsteps)
 
             # copy in potentials data into neuron simulation data/inputs folder
@@ -391,36 +398,37 @@ class Simulation(Exceptionable, Configurable, Saveable):
             # SUPER SAMPLING - PROBED COMSOL AT SS_COORDS --> /SS_BASES
             elif supersampled_bases is not None and supersampled_bases.get('use') is True:
                 fiberset_directory = os.path.join(sim_dir, str(sim_num), 'fibersets', str(p))
+    
+                ss_bases = [None for _ in active_src_vals[0]]
+                source_sim = supersampled_bases.get('source_sim')
+
+                # check that dz in source_sim matches the dz (if provided) in current sim
+                source_sim_obj_dir = os.path.join(sim_dir, str(source_sim))
+
+                if not os.path.exists(source_sim_obj_dir):
+                    self.throw(94)
+
+                source_sim_obj_file = os.path.join(source_sim_obj_dir, 'sim.obj')
+
+                source_simulation: Simulation = load(source_sim_obj_file)
+
+                source_dz = source_simulation.configs['sims']['supersampled_bases']['dz']
+
+                if 'dz' in supersampled_bases.keys():
+                    if supersampled_bases.get('dz') != source_dz:
+                        self.throw(79)
+                elif 'dz' not in supersampled_bases.keys():
+                    warnings.warn(
+                        'dz not provided in Sim, so will accept dz={} specified in source Sim'.format(
+                            source_dz))
+                    
                 for root, dirs, files in os.walk(fiberset_directory):
                     for file in files:
                         if re.match('[0-9]+\\.dat', file):
 
-                            ss_bases = [[] for _ in active_src_vals[0]]
-                            source_sim = supersampled_bases.get('source_sim')
-
-                            # check that dz in source_sim matches the dz (if provided) in current sim
-                            source_sim_obj_dir = os.path.join(sim_dir, str(source_sim))
-
-                            if not os.path.exists(source_sim_obj_dir):
-                                self.throw(94)
-
-                            source_sim_obj_file = os.path.join(source_sim_obj_dir, 'sim.obj')
-
-                            source_simulation: Simulation = load(source_sim_obj_file)
-
-                            source_dz = source_simulation.configs['sims']['supersampled_bases']['dz']
-
-                            if 'dz' in supersampled_bases.keys():
-                                if supersampled_bases.get('dz') != source_dz:
-                                    self.throw(79)
-                            elif 'dz' not in supersampled_bases.keys():
-                                warnings.warn(
-                                    'dz not provided in Sim, so will accept dz={} specified in source Sim'.format(
-                                        source_dz))
 
                             for basis_ind in range(len(active_src_vals[0])):
 
-                                ss_bases[basis_ind].append([])
                                 ss_bases_src_path = os.path.join(sim_dir,
                                                                  str(source_sim),
                                                                  'ss_bases',
@@ -432,62 +440,52 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
                                 if not os.path.exists(ss_bases_src_path):
                                     self.throw(81)
+                                    
+                                if not os.path.exists(os.path.join(ss_bases_src_path, file)):
+                                    self.throw(81)
+                                else:
+                                    ss_bases[basis_ind] = np.loadtxt(os.path.join(ss_bases_src_path, file))[1:]
 
-                                for f_root, f_dirs, f_files in os.walk(ss_bases_src_path):
-                                    for f_file in f_files:
-                                        q = int(f_file.split('.')[0])
+                            q = int(file.split('.')[0])
 
-                                        if not os.path.exists(os.path.join(f_root, f_file)):
-                                            self.throw(81)
-                                        else:
-                                            ss_bases[basis_ind][q] = np.loadtxt(os.path.join(f_root, f_file))[1:]
+                            ss_weighted_bases_vec = np.zeros(len(ss_bases[0]))
+                            for src_ind, src_weight in enumerate(active_src_vals[0]):
+                                ss_weighted_bases_vec += ss_bases[src_ind] * src_weight
 
-                                        if basis_ind == len(active_src_vals[0]) - 1:
+                            # down-sample super_save_vec
+                            with open(os.path.join(root, file), 'r') as neuron_fiberset_file:
+                                neuron_fiberset_file_lines = neuron_fiberset_file.readlines()[1:]
+                                neuron_fiber_coords = []
+                                for neuron_fiberset_file_line in neuron_fiberset_file_lines:
+                                    neuron_fiber_coords = \
+                                        np.append(neuron_fiber_coords,
+                                                  float(neuron_fiberset_file_line.split(' ')[-2])
+                                                  )
+                            
+                            with open(os.path.join(ss_fiberset_path, file), 'r') as ss_fiberset_file:
+                                ss_fiberset_file_lines = ss_fiberset_file.readlines()[1:]
+                                ss_fiber_coords = []
+                                for ss_fiberset_file_line in ss_fiberset_file_lines:
+                                    ss_fiber_coords = np.append(ss_fiber_coords,
+                                                                float(ss_fiberset_file_line.split(' ')[-2]))
 
-                                            ss_weighted_bases_vec = np.zeros(len(ss_bases[basis_ind][q]))
-                                            for src_ind, src_weight in enumerate(active_src_vals[0]):
-                                                ss_weighted_bases_vec += ss_bases[src_ind][q] * src_weight
+                            # create interpolation from super_coords and super_bases
+                            f = sci.interp1d(ss_fiber_coords, ss_weighted_bases_vec)
+                            neuron_potentials_input = f(neuron_fiber_coords)
+                            
+                            # NOTE: if SL interp, writes files as inner0_fiber<q>.dat
+                            l: int
+                            k: int
+                            
+                            l, k = self.indices_fib_to_n(p, q)
 
-                                            # down-sample super_save_vec
-                                            with open(os.path.join(root, file), 'r') as neuron_fiberset_file:
-                                                neuron_fiberset_file_lines = neuron_fiberset_file.readlines()[1:]
-                                                neuron_fiber_coords = []
-                                                for neuron_fiberset_file_line in neuron_fiberset_file_lines:
-                                                    neuron_fiber_coords = \
-                                                        np.append(neuron_fiber_coords,
-                                                                  float(neuron_fiberset_file_line.split(' ')[-2])
-                                                                  )
-                                            
-                                            with open(os.path.join(ss_fiberset_path, file), 'r') as ss_fiberset_file:
-                                                ss_fiberset_file_lines = ss_fiberset_file.readlines()[1:]
-                                                ss_fiber_coords = []
-                                                for ss_fiberset_file_line in ss_fiberset_file_lines:
-                                                    ss_fiber_coords = np.append(ss_fiber_coords,
-                                                                                float(ss_fiberset_file_line.split(' ')[-2]))
+                            ss_filename = 'inner{}_fiber{}.dat'.format(l, k)
 
-                                            # create interpolation from super_coords and super_bases
-                                            f = sci.interp1d(ss_fiber_coords, ss_weighted_bases_vec)
-                                            neuron_potentials_input = f(neuron_fiber_coords)
-
-                                            # as is convention, append length to start
-                                            neuron_potentials_input = np.insert(neuron_potentials_input,
-                                                                                0,
-                                                                                len(neuron_potentials_input))
-
-                                            # NOTE: if SL interp, writes files as inner0_fiber<q>.dat
-                                            l: int
-                                            k: int
-                                            
-                                            l, k = self.indices_fib_to_n(p, q)
-
-                                            ss_filename = 'inner{}_fiber{}.dat'.format(l, k)
-
-                                            np.savetxt(os.path.join(nsim_inputs_directory, ss_filename),
-                                                       neuron_potentials_input,
-                                                       fmt='%0.18f')
+                            np.savetxt(os.path.join(nsim_inputs_directory, ss_filename),
+                                       neuron_potentials_input,
+                                       fmt='%0.18f',header=str(len(neuron_potentials_input)),comments='')
                         elif file == 'diams.txt':
                             make_inner_fiber_diam_key(xy_mode, p, nsim_inputs_directory, potentials_directory, file)
-
         return self
 
     def indices_fib_to_n(self, p, q) -> Tuple[int, int]:
@@ -583,7 +581,8 @@ class Simulation(Exceptionable, Configurable, Saveable):
             os.makedirs(target)
 
         # neuron files
-        du.copy_tree(os.path.join(os.environ[Env.PROJECT_PATH.value], 'src', 'neuron'), target)
+        try:du.copy_tree(os.path.join(os.environ[Env.PROJECT_PATH.value], 'src', 'neuron'), target)
+        except:pass
 
         submit_target = os.path.join(target, 'submit.py')
         if os.path.isfile(submit_target):
@@ -601,6 +600,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
         # fiber_z.json files
         shutil.copy2(os.path.join(os.environ[Env.PROJECT_PATH.value], 'config', 'system', 'fiber_z.json'), target)
+        shutil.copy2(os.path.join(os.environ[Env.PROJECT_PATH.value], 'config', 'system', 'slurm_params.json'), target)
 
     @staticmethod
     def import_n_sims(sample: int, model: int, sim: int, sim_dir: str, source: str):

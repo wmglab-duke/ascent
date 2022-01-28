@@ -2,7 +2,7 @@
 
 """
 The copyrights of this software are owned by Duke University.
-Please refer to the LICENSE.txt and README.txt files for licensing instructions.
+Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
@@ -10,20 +10,35 @@ import os
 from pathlib import Path
 
 EXCLUDED_FILENAMES = [
+    '.mph',
+    'im.json',
+    'Primitive.json',
     'sample.json',
     'model.json',
-    '.mph'
+    'explicit.txt'
 ]
 
 
 def run(args):
     
+    proceed = input('All files EXCEPT those whose names end with the following strings:\n'
+                    '\t{}\n'
+                    'will be removed from the following sample directories:\n'
+                    '\t{}\n'
+                    '\n\t Would you like to proceed?\n'
+                    '\t\t 0 = NO\n'
+                    '\t\t 1 = YES\n'.format(EXCLUDED_FILENAMES,args.sample_indices))
+    if not int(proceed):
+        quit()
+    else:
+        print('Proceeding...')
+    
     for sample in args.sample_indices:
-
+        
         if args.verbose:
             print(f'Sample: {sample}')
         sample_path = Path(os.path.join('samples', f'{sample}'))
-
+        
         # remove files
         if args.verbose:
             print('\n\t- - - - - - FILES - - - - - -\n')
@@ -34,7 +49,8 @@ def run(args):
                 continue
 
             if not any([filepath.endswith(excluded_filename) for excluded_filename in EXCLUDED_FILENAMES]):
-                os.remove(filepath)
+                try: os.remove(filepath)
+                except: print('Could not remove {}'.format(filepath))
                 if args.verbose:
                     print(f'\tREMOVE FILE: {filepath}')
 
@@ -54,7 +70,8 @@ def run(args):
                     remove_empty_directories(subdirectory)
 
             if os.path.isdir(directory) and len(os.listdir(directory)) == 0:
-                os.rmdir(directory)
+                try: os.rmdir(directory)
+                except: print('Could not remove {}'.format(directory))
                 if args.verbose:
                     print(f'\tREMOVE DIR: {directory}')
 

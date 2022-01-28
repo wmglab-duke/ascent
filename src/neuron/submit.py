@@ -2,7 +2,7 @@
 
 """
 The copyrights of this software are owned by Duke University.
-Please refer to the LICENSE.txt and README.txt files for licensing instructions.
+Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
@@ -17,8 +17,9 @@ import time
 import numpy as np
 import warnings
 import pickle
+import argparse
 
-ALLOWED_SUBMISSION_CONTEXTS = ['cluster', 'local']
+ALLOWED_SUBMISSION_CONTEXTS = ['cluster', 'local','auto']
 OS = 'UNIX-LIKE' if any([s in sys.platform for s in ['darwin', 'linux']]) else 'WINDOWS'
 
 
@@ -219,7 +220,7 @@ def local_submit(my_local_args: dict):
         p = subprocess.call(['bash', start] if OS == 'UNIX-LIKE' else [start], stdout=fo, stderr=fe)
 
 
-def cluster_submit(run_number: int, array_length_max: int = 10):
+def cluster_submit(run_number: int, partition: str, mem: int=2000, array_length_max: int = 10):
     # configuration is not empty
     assert array_length_max > 0, 'SLURM Job Array length is not > 0: array_length_max={}'.format(array_length_max)
 
@@ -243,7 +244,7 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
             sim_dir = os.path.join('n_sims')
             sim_name_base = '{}_{}_{}_'.format(sample, model, sim)
 
-            for sim_name in [x for x in os.listdir(sim_dir) if sim_name_base in x]:
+            for sim_name in [x for x in os.listdir(sim_dir) if x.startswith(sim_name_base)]:
                 print('\n\n################ {} ################\n\n'.format(sim_name))
 
                 sim_path = os.path.join(sim_dir, sim_name)
@@ -341,8 +342,8 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
                             '--job-name={}'.format(job_name),
                             '--output={}'.format(output_log),
                             '--error={}'.format(error_log),
-                            '--mem=2000',
-                            '-p', 'wmglab',
+                            '--mem={}'.format(mem),
+                            '-p', partition,
                             '-c', '1',
                             start_path_solo
                         ])
@@ -372,7 +373,7 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
 
                         else:
                             print(f"RUNNING inner ({inner_ind}) fiber ({fiber_ind})  -->  {thresh_path}")
-                            time.sleep(1)
+                            #time.sleep(1)
 
                             if inner_fiber_diam_key is not None:
                                 diameter = get_diameter(inner_fiber_diam_key, inner_ind, fiber_ind)
@@ -428,7 +429,8 @@ def cluster_submit(run_number: int, array_length_max: int = 10):
 
                             os.system(f"sbatch --job-name={job_name} --output={out_dir}%a.log "
                                       f"--error={err_dir}%a.log --array={start}-{job_count - 1} "
-                                      f"array_launch.slurm {start_path_base}")
+                                      f"--mem={mem} --cpus-per-task=1 "
+                                      f"--partition={partition} array_launch.slurm {start_path_base}")
 
                             # allow job to start before removing slurm file
                             time.sleep(1.0)
@@ -471,13 +473,14 @@ def make_local_submission_list(run_number: int):
                 fibers_path = os.path.abspath(os.path.join(sim_path, 'data', 'inputs'))
                 output_path = os.path.abspath(os.path.join(sim_path, 'data', 'outputs'))
 
-                # ensure log directories exist
+
                 out_dir = os.path.abspath(os.path.join(sim_path, 'logs', 'out'))
                 err_dir = os.path.abspath(os.path.join(sim_path, 'logs', 'err'))
-                for cur_dir in [out_dir, err_dir]:
+
+                # ensure necessary directories exist
+                for cur_dir in [fibers_path, output_path, out_dir, err_dir]:
                     if not os.path.exists(cur_dir):
                         os.makedirs(cur_dir)
-
                 # ensure blank.hoc exists
                 blank_path = os.path.join(sim_path, 'blank.hoc')
                 if not os.path.exists(blank_path):
@@ -546,8 +549,20 @@ def make_local_submission_list(run_number: int):
     return local_args_list
 
 
+def get_args():
+    #Set up parser and top level args
+    parser = argparse.ArgumentParser(description='ASCENT: Automated Simulations to Characterize Electrical Nerve Thresholds')
+    parser.add_argument('run_indices', nargs = '+', help = 'Space separated indices to submit NEURON sims for')
+    parser.add_argument('-p','--partition', help = 'If submitting on a cluster, overrides default partition assignment')
+    args = parser.parse_args()
+    return args
+
 def main():
-    # validate inputs
+    #parse args
+    args = get_args()
+
+    #validate inputs
+    run_inds = args.run_indices
     runs = []
     submission_contexts = []
     auto_compile_flags = []
@@ -556,7 +571,7 @@ def main():
     compiled: bool = False
     compiled = auto_compile()
 
-    for run_number in sys.argv[1:]:
+    for run_number in run_inds:
         # run number is numeric
         assert re.search('[0-9]+', run_number), 'Encountered non-number run number argument: {}'.format(run_number)
 
@@ -574,9 +589,20 @@ def main():
         assert len(run.items()) > 0, 'Encountered empty run configuration: {}'.format(filename)
 
         submission_context = run.get('submission_context', 'cluster')
+
         # submission context is valid
         assert submission_context in ALLOWED_SUBMISSION_CONTEXTS, 'Invalid submission context: {}'.format(
             submission_context)
+
+        #check for auto submission context
+        if submission_context == 'auto':
+            host = os.environ.get("HOSTNAME")
+            prefix = run.get('hostname_prefix')
+            if host is not None and host.startswith(prefix):
+                submission_context = 'cluster'
+            else:
+                submission_context = 'local'
+
         submission_contexts.append(submission_context)
 
         auto_compile_flag = run.get('override_compiled_mods', False)
@@ -609,7 +635,18 @@ def main():
             result = pool.map(local_submit, submit_list)
 
         elif sub_context == 'cluster':
-            cluster_submit(run_index)
+            #load slurm params
+            slurm_params = load(os.path.join('config', 'system', 'slurm_params.json'))
+
+            #assign params for array submission
+            if args.partition is None:
+                partition = slurm_params['partition']
+            else:
+                partition = args.partition
+            njobs = slurm_params.get("jobs_per_array")
+            mem = slurm_params.get("memory_per_fiber")
+
+            cluster_submit(run_index,partition,array_length_max=njobs,mem=mem)
 
         else:
             # something went horribly wrong

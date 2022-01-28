@@ -2,7 +2,7 @@
 
 """
 The copyrights of this software are owned by Duke University.
-Please refer to the LICENSE.txt and README.txt files for licensing instructions.
+Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
@@ -178,6 +178,9 @@ class Query(Exceptionable, Configurable, Saveable):
             if len(result[samples_key][-1][models_key]) == 0:
                 result[samples_key].pop(-1)
 
+        if len(result['samples'])==0:
+            self.throw(132)
+
         self._result = result
 
         return self
@@ -324,6 +327,9 @@ class Query(Exceptionable, Configurable, Saveable):
                  suprathresh_color: Tuple[int, int, int, int] = (0, 1, 0, 1),
                  subthresh_color: Tuple[int, int, int, int] = (0, 0, 1, 1),
                  select_fascicles: List = None,
+                 alltitle = True,
+                 microamps=False,
+                 suptitle_override=None
                  ):
 
         """
@@ -493,8 +499,6 @@ class Query(Exceptionable, Configurable, Saveable):
                     axes = np.array(axes)
                     axes = axes.reshape(-1)
 
-                    for ax in axes:
-                        ax.axis('off')
 
                     # loop nsims
                     for n, (potentials_product_index, waveform_index) in enumerate(sim_object.master_product_indices):
@@ -502,8 +506,6 @@ class Query(Exceptionable, Configurable, Saveable):
 
                         # fetch axis
                         ax: plt.Axes = axes[n if subplot_assign == "standard" else _renumber_subplot(n, 2, 5)]
-                        ax.axis('off')
-
                         # fetch sim information
                         sim_dir = self.build_path(Object.SIMULATION, [sample_index, model_index, sim_index],
                                                   just_directory=True)
@@ -515,6 +517,8 @@ class Query(Exceptionable, Configurable, Saveable):
                         missing_indices = []
 
                         if plot_mode == 'fiber0' or plot_mode == 'on_off':
+                            if n_inners==1:
+                                self.throw(131)
                             for i in range(n_inners):
                                 if select_fascicles is None or select_fascicles[i]:
                                     thresh_path = os.path.join(n_sim_dir, 'data', 'outputs',
@@ -535,26 +539,27 @@ class Query(Exceptionable, Configurable, Saveable):
                                     thresholds.append(np.nan)
 
                         elif plot_mode == 'fibers':
-                            for inner_ind in range(n_inners):
+                            for i in range(len(sim_object.fibersets[0].fibers)):
+                                inner_ind,fiber_ind = sim_object.indices_fib_to_n(0,i)
                                 if select_fascicles is None or select_fascicles[inner_ind]:
-                                    for fiber_ind in range(len(sim_object.fibersets[0].out_to_fib[inner_ind][0])):
-                                        thresh_path = os.path.join(n_sim_dir, 'data', 'outputs',
-                                                                   'thresh_inner{}_fiber{}.dat'.format(
-                                                                       inner_ind,
-                                                                       fiber_ind
-                                                                   ))
-                                        if os.path.exists(thresh_path):
-                                            threshold = abs(np.loadtxt(thresh_path))
-                                            if len(np.atleast_1d(threshold)) > 1:
-                                                threshold = threshold[-1]
-                                            thresholds.append(threshold)
-                                        else:
-                                            missing_indices.append((inner_ind, fiber_ind))
-                                            print('MISSING: {}'.format(thresh_path))
+                                    thresh_path = os.path.join(n_sim_dir, 'data', 'outputs',
+                                                               'thresh_inner{}_fiber{}.dat'.format(
+                                                                   inner_ind,
+                                                                   fiber_ind
+                                                               ))
+                                    if os.path.exists(thresh_path):
+                                        threshold = abs(np.loadtxt(thresh_path))
+                                        if len(np.atleast_1d(threshold)) > 1:
+                                            threshold = threshold[-1]
+                                        thresholds.append(threshold)
+                                    else:
+                                        missing_indices.append((inner_ind, fiber_ind))
+                                        print('MISSING: {}'.format(thresh_path))
                                 else:
                                     for fiber_ind in range(len(sim_object.fibersets[0].out_to_fib[inner_ind][0])):
                                         thresholds.append(np.nan)
-
+                        if microamps:
+                            thresholds = [x*1000 for x in thresholds]
                         max_thresh = np.nanmax(thresholds)
                         min_thresh = np.nanmin(thresholds)
 
@@ -585,13 +590,12 @@ class Query(Exceptionable, Configurable, Saveable):
                             for i in range(n_inners):
                                 actual_i = i - offset
                                 if actual_i not in missing_indices:
-                                    if select_fascicles[actual_i]:
-                                        mapped = (thresholds[actual_i] - min_thresh) / (max_thresh - min_thresh)
-                                        colors.append(tuple(cmap(mapped)))
-
-                                    elif not select_fascicles[actual_i]:
+                                    if select_fascicles is not None and not select_fascicles[actual_i]:
                                         # colors.append(tuple((0, 0, 0, 0)))  # missing_color
                                         colors.append(cmap(np.nan))  # missing_color
+                                    else:
+                                        mapped = (thresholds[actual_i] - min_thresh) / (max_thresh - min_thresh)
+                                        colors.append(tuple(cmap(mapped)))
 
                                 elif actual_i in missing_indices:
                                     # NOTE: PLOTS MISSING VALUES AS RED
@@ -600,17 +604,17 @@ class Query(Exceptionable, Configurable, Saveable):
 
                         elif plot_mode == 'fibers':
                             loop_fiber = 0
-                            for inner_ind in range(n_inners):
-                                actual_i = inner_ind - offset
-                                for fiber_ind in range(len(sim_object.fibersets[0].out_to_fib[inner_ind][0])):
-                                    if (inner_ind, fiber_ind) not in missing_indices:
-                                        colors.append(tuple(
-                                            cmap((thresholds[loop_fiber] - min_thresh) / (max_thresh - min_thresh))))
-                                        loop_fiber += 1
-                                    else:
-                                        # NOTE: PLOTS MISSING VALUES AS RED
-                                        offset += 1
-                                        colors.append(missing_color)
+                            for i in range(len(sim_object.fibersets[0].fibers)):
+                                inner_ind,fiber_ind = sim_object.indices_fib_to_n(0,i)
+                                if (inner_ind, fiber_ind) not in missing_indices:
+                                    colors.append(tuple(
+                                        cmap((thresholds[loop_fiber] - min_thresh) / (max_thresh - min_thresh))))
+                                    loop_fiber += 1
+                                else:
+                                    # NOTE: PLOTS MISSING VALUES AS RED
+                                    offset += 1
+                                    colors.append(missing_color)
+
                         elif plot_mode == 'on_off':
                             for i in range(n_inners):
                                 actual_i = i - offset
@@ -628,21 +632,37 @@ class Query(Exceptionable, Configurable, Saveable):
                         title = ''
                         for fib_key_name, fib_key_value in zip(sim_object.fiberset_key,
                                                                sim_object.fiberset_product[fiberset_index]):
+                            if alltitle:
 
-                            if fib_key_name == 'fibers->z_parameters->diameter':
-                                title = r'{} {}nm'.format(title, int(fib_key_value * 1000))
-                            else:
-                                # default title
-                                title = '{} {}:{}'.format(title, fib_key_name, fib_key_value)
+                                if fib_key_name == 'fibers->z_parameters->diameter':
+                                    title = u'{} fiber diameter: {} \u03bcm'.format(title, fib_key_value)
+                                else:
+                                    # default title
+                                    title = '{} {}:{}'.format(title, fib_key_name, fib_key_value)
+                                title+='\n'
+                            elif waveform_index==0:
+                                ax.set_ylabel('{}'.format(fib_key_value),fontsize=35,rotation=0,labelpad = 20)
 
                         for wave_key_name, wave_key_value in zip(sim_object.wave_key,
                                                                  sim_object.wave_product[waveform_index]):
-                            # default title
-                            title = '{} {}:{}'.format(title, wave_key_name, wave_key_value)
+                            if alltitle:
+                                if wave_key_name == 'waveform->BIPHASIC_PULSE_TRAIN->pulse_width':
+                                    title = '{} pulse width: {} ms'.format(title, wave_key_value)
+                                else:
+                                    title = '{} {}:{}'.format(title, wave_key_name, wave_key_value)
+                            elif potentials_product_index==max([x[0] for x in sim_object.master_product_indices]):
+                                ax.set_xlabel('{}'.format(wave_key_value),fontsize=35,rotation=0)
+                        ax.spines['left'].set_visible(False)
+                        ax.spines['top'].set_visible(False)
+                        ax.spines['right'].set_visible(False)
+                        ax.spines['bottom'].set_visible(False)
+                        ax.set_xticks([])
+                        ax.set_yticks([])
+
 
                         # set title
-                        if subplot_title_toggle:
-                            ax.set_title(title, fontsize=35)
+                        if subplot_title_toggle and alltitle:
+                            ax.set_title(title, fontsize=25)
 
                         # plot orientation point if applicable
                         if orientation_point is not None and show_orientation_point is True:
@@ -650,7 +670,10 @@ class Query(Exceptionable, Configurable, Saveable):
                             ax.plot(*orientation_point, 'o', markersize=30, color='red')
 
                         if add_colorbar:
-                            # cb_label = r'mA'
+                            if not microamps:
+                                cb_label = r'mA'
+                            else:
+                                cb_label = u'\u03bcA'
                             cb: cbar.Colorbar = plt.colorbar(
                                 mappable=plt.cm.ScalarMappable(
                                     cmap=cmap,
@@ -662,9 +685,10 @@ class Query(Exceptionable, Configurable, Saveable):
                                 orientation='vertical',
                                 # label=cb_label,
                                 aspect=colorbar_aspect if colorbar_aspect is not None else 20,
-                                format='%0.2f'
+                                format='%0.2f',
                             )
-
+                            cb.set_label(cb_label,fontsize=colorbar_text_size_override if (
+                                    colorbar_text_size_override is not None) else 25 ,rotation=90)
                             # colorbar font size
                             if colorbar_text_size_override is not None:
                                 cb.ax.tick_params(labelsize=colorbar_text_size_override if (
@@ -677,19 +701,28 @@ class Query(Exceptionable, Configurable, Saveable):
                         elif plot_mode == 'fibers':
                             sample_object.slides[0].plot(final=False, fix_aspect_ratio=True, ax=ax,
                                                          outers_flag=plot_outers, inner_format='k-')
-                            sim_object.fibersets[0].plot(ax=ax, fiber_colors=colors, size=3)
+                            sim_object.fibersets[0].plot(ax=ax, fiber_colors=colors, size=20)
+
+                    plt.gcf().tight_layout(rect=[0, 0.03, 1, 0.95])
 
                     # set super title
                     if title_toggle:
-                        plt.suptitle(
-                            'Activation thresholds: {} (model {})'.format(
-                                sample_config.get('sample'),
-                                model_index
-                            ),
-                            size=40
-                        )
+                        if suptitle_override is None:
+                            plt.suptitle(
+                                'Activation thresholds: {} (model {}, sim {})'.format(
+                                    sample_config.get('sample'),
+                                    model_index,
+                                    sim_index
+                                ),
+                                size=40
+                            )
+                        else:
+                            plt.suptitle(suptitle_override, size=40)
+                    if not alltitle:
+                        plt.gcf().text(0.5,0.01,"pulse width (ms)", ha="center", va="center",fontsize=35)
+                        plt.gcf().text(-0.02,0.5, u"fiber diameter (\u03bcm)" , ha="center", va="center", rotation=90,fontsize=35)
 
-                    plt.tight_layout(pad=0)
+                    # plt.tight_layout(pad=0)
                     # plt.tight_layout(pad=5.0)
 
                     # save figure as png
@@ -710,7 +743,8 @@ class Query(Exceptionable, Configurable, Saveable):
                     print('\t{},'.format(bounds))
                 print(']')
 
-        return plt.gcf(), axes
+        # return plt.gcf(), axes, colormap_bounds_tracking
+        return plt.gcf(), axes, colormap_bounds_tracking
 
     def barcharts_compare_models(self,
                                  sim_index: int = None,
@@ -757,14 +791,8 @@ class Query(Exceptionable, Configurable, Saveable):
         if model_indices is None:
             model_indices = self.search(Config.CRITERIA, 'indices', 'model')
 
-        if model_labels is None:
-            model_labels = ['Model {}'.format(i) for i in model_indices]
-
         if sim_index is None:
             sim_index = self.search(Config.CRITERIA, 'indices', 'sim')[0]
-
-        if not len(model_labels) == len(model_indices):
-            self.throw(67)
 
         # more metadata
         sample_indices = [sample_result['index'] for sample_result in self._result['samples']]
@@ -787,6 +815,12 @@ class Query(Exceptionable, Configurable, Saveable):
             sample_config: dict = self.get_config(Config.SAMPLE, [sample_index])
             slide: Slide = sample_object.slides[0]
             n_inners = sum(len(fasc.inners) for fasc in slide.fascicles)
+             
+            if model_labels is None:
+                model_labels = ['Model {}'.format(i['index']) for i in sample_results.get('models', [])]
+     
+            if not len(model_labels) == len(model_indices):
+                self.throw(67)
 
             print('sample: {}'.format(sample_index))
 
@@ -843,7 +877,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
                     # default fiberset index to 0
                     fiberset_index: int = 0
-                    if comparison_key.split('->')[0] == 'fiber':
+                    if comparison_key.split('->')[0] == 'fibers':
                         fiberset_index = nsim_index  # if dimension is fibers, use correct fiberset
 
                     # fetch outer->inner->fiber and out->inner maps
@@ -955,209 +989,6 @@ class Query(Exceptionable, Configurable, Saveable):
                     os.makedirs(save_path)
                 dest = '{}{}bc_{}.png'.format(save_path, os.sep, sample_index)
                 fig.savefig(dest, dpi=300)
-
-        # def barcharts_compare_models(self,
-        #                              sim_index: int = None,
-        #                              model_indices: List[int] = None,
-        #                              model_labels: List[str] = None,
-        #                              title: str = 'Activation Thresholds',
-        #                              plot: bool = True,
-        #                              save_path: str = None,
-        #                              width: float = 0.8,
-        #                              capsize: float = 5,
-        #                              fascicle_filter_indices: List[int] = None,
-        #                              logscale: bool = False):
-        #     """
-
-        #     :param nsim_indices:
-        #     :param plot:
-        #     :param save_path:
-        #     :return:
-        #     """
-
-        # # quick helper class for storing data values
-        # class DataPoint():
-        #     def __init__(self, value: float, error: float = None):
-        #         self.value = value
-        #         self.error = error
-
-        # # warning
-        # print('NOTE: assumes a SINGLE dimension for the selected sim (functionality defined otherwise)')
-
-        # # validation
-        # if self._result is None:
-        #     self.throw(66)
-
-        # if model_indices is None:
-        #     model_indices = self.search(Config.CRITERIA, 'indices', 'model')
-
-        # if model_labels is None:
-        #     model_labels = ['Model {}'.format(i) for i in model_indices]
-
-        # if sim_index is None:
-        #     sim_index = self.search(Config.CRITERIA, 'indices', 'sim')[0]
-
-        # if not len(model_labels) == len(model_indices):
-        #     self.throw(67)
-
-        # # more metadata
-        # sample_indices = [sample_result['index'] for sample_result in self._result['samples']]
-        # comparison_key: str = \
-        #     list(self.get_object(Object.SIMULATION, [sample_indices[0], model_indices[0], sim_index]).factors.keys())[0]
-
-        # # summary of functionality
-        # print('For samples {}, comparing sim {} of models {} along dimension \"{}\"'.format(
-        #     sample_indices,
-        #     sim_index,
-        #     model_indices,
-        #     comparison_key)
-        # )
-
-        # # loop samples
-        # sample_results: dict
-        # for sample_results in self._result.get('samples', []):
-        #     sample_index = sample_results['index']
-        #     sample_object: Sample = self.get_object(Object.SAMPLE, [sample_index])
-        #     sample_config: dict = self.get_config(Config.SAMPLE, [sample_index])
-        #     slide: Slide = sample_object.slides[0]
-        #     n_inners = sum(len(fasc.inners) for fasc in slide.fascicles)
-
-        #     print('sample: {}'.format(sample_index))
-
-        #     # init fig, ax
-        #     fig: plt.Figure
-        #     ax: plt.Axes
-        #     fig, ax = plt.subplots()
-
-        #     # x label
-        #     xlabel = comparison_key.split('->')[-1]
-        #     if xlabel == 'diameter':
-        #         ax.set_xlabel('Axon Diameter (µm)')
-        #     else:
-        #         ax.set_xlabel(xlabel)
-        #     # y label
-        #     ax.set_ylabel('Activation Threshold (mA)')
-
-        #     # init x group labels
-        #     xlabels = []
-        #     first_iteration: bool = True  # for appending to xlabels (only do this first time around)
-
-        #     # init master data container (indices or outer list correspond to each model)
-        #     sample_data: List[List[DataPoint]] = []
-
-        #     # loop models
-        #     model_results: dict
-        #     for model_results in sample_results.get('models', []):
-        #         model_index = model_results['index']
-
-        #         print('\tmodel: {}'.format(model_index))
-
-        #         # init data container for this model
-        #         model_data: List[DataPoint] = []
-
-        #         # sim index is already set from input, so no need to loop
-        #         sim_object = self.get_object(Object.SIMULATION, [sample_index, model_index, sim_index])
-
-        #         # validate sim object
-        #         if len(sim_object.factors) is not 1:
-        #             self.throw(68)
-        #         if not list(sim_object.factors.keys())[0] == comparison_key:
-        #             self.throw(69)
-
-        #         # whether the comparison key is for 'fiber' or 'wave', the nsims will always be in order!
-        #         # this realization allows us to simply loop through the factors in sim.factors[key] and treat the
-        #         # indices as if they were the nsim indices
-        #         for nsim_index, nsim_value in enumerate(sim_object.factors[comparison_key]):
-
-        #             # this x group label
-        #             if first_iteration:
-        #                 # print(nsim_value)
-        #                 xlabels.append(nsim_value)
-
-        #             # default fiberset index to 0
-        #             fiberset_index: int = 0
-        #             if comparison_key.split('->')[0] == 'fiber':
-        #                 fiberset_index = nsim_index  # if dimension is fibers, use correct fiberset
-
-        #             # fetch outer->inner->fiber and out->inner maps
-        #             out_in_fib, out_in = sim_object.fiberset_map_pairs[fiberset_index]
-
-        #             # build base dirs for fetching thresholds
-        #             sim_dir = self.build_path(Object.SIMULATION,
-        #                                       [sample_index, model_index, sim_index],
-        #                                       just_directory=True)
-        #             n_sim_dir = os.path.join(sim_dir, 'n_sims', str(nsim_index))
-
-        #             # init thresholds container for this model, sim, nsim
-        #             thresholds: List[float] = []
-
-        #             # fetch all thresholds
-        #             for inner in range(n_inners):
-
-        #                 outer = [index for index, inners in enumerate(out_in) if inner in inners][0]
-
-        #                 if (fascicle_filter_indices is not None) and (outer not in fascicle_filter_indices):
-        #                     continue
-
-        #                 for local_fiber_index, _ in enumerate(out_in_fib[outer][out_in[outer].index(inner)]):
-        #                     thresh_path = os.path.join(n_sim_dir,
-        #                                                'data',
-        #                                                'outputs',
-        #                                                'thresh_inner{}_fiber{}.dat'.format(inner, local_fiber_index))
-        #                     threshold = np.loadtxt(thresh_path)
-        #                     if len(threshold) > 1:
-        #                         threshold = threshold[-1]
-        #                     thresholds.append(threshold)
-
-        #             thresholds: np.ndarray = np.array(thresholds)
-
-        #             model_data.append(
-        #                 DataPoint(np.mean(thresholds), np.std(thresholds, ddof=1) if len(thresholds) > 1 else None))
-
-        #         first_iteration = False
-
-        #         sample_data.append(model_data)
-
-        #     # make the bars
-        #     x_vals = np.arange(len(sample_data[0]))
-        #     n_models = len(sample_data)
-        #     effective_width = width / n_models
-
-        #     for model_index, model_data in enumerate(sample_data):
-        #         errors = [data.error for data in model_data]
-        #         errors_valid = all([data.error is not None for data in model_data])
-        #         ax.bar(
-        #             x=x_vals - ((n_models - 1) * effective_width / 2) + (effective_width * model_index),
-        #             height=[data.value for data in model_data],
-        #             width=effective_width,
-        #             label=model_labels[model_index],
-        #             yerr=errors if errors_valid else None,
-        #             capsize=capsize
-        #         )
-
-        #     # add x-axis values
-        #     ax.set_xticks(x_vals)
-        #     ax.set_xticklabels(xlabels)
-
-        #     # set log scale
-        #     if logscale:
-        #         ax.set_yscale('log')
-
-        #     # title
-        #     title = '{} for sample {}'.format(title, sample_config['sample'])
-        #     if fascicle_filter_indices is not None:
-        #         if len(fascicle_filter_indices) == 1:
-        #             title = '{} (fascicle {})'.format(title, fascicle_filter_indices[0])
-        #         else:
-        #             title = '{} (fascicles {})'.format(title, ', '.join([str(i) for i in fascicle_filter_indices]))
-        #     plt.title(title)
-
-        #     # add legend
-        #     plt.legend()
-
-        #     # plot!
-        #     if plot:
-        #         plt.show()
 
     def barcharts_compare_samples(self,
                                   sim_index: int = None,
@@ -1326,7 +1157,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
                     # default fiberset index to 0
                     fiberset_index: int = 0
-                    if comparison_key.split('->')[0] == 'fiber':
+                    if comparison_key.split('->')[0] == 'fibers':
                         fiberset_index = nsim_index  # if dimension is fibers, use correct fiberset
 
                     # fetch outer->inner->fiber and out->inner maps
@@ -1680,7 +1511,9 @@ class Query(Exceptionable, Configurable, Saveable):
             absolute_voltage: bool = True,
             n_sim_label_override: str = None,
             model_labels: List[str] = None,
-            save: bool = False):
+            save: bool = False,
+            subplots = False,
+            nodes_only=False):
 
         print(
             f'Finding time and location of action potentials, which are defined as any voltage deflection of {delta_V} mV.')
@@ -1704,6 +1537,9 @@ class Query(Exceptionable, Configurable, Saveable):
                     print('\t\tsim: {}'.format(sim_index))
 
                     sim_object = self.get_object(Object.SIMULATION, [sample_index, model_index, sim_index])
+
+                    if subplots == True:
+                        fig,axs = plt.subplots(ncols=len(sim_object.master_product_indices),nrows=2, sharey="row")
 
                     # loop nsims
                     for n_sim_index, (potentials_product_index, waveform_index) in enumerate(
@@ -1786,13 +1622,19 @@ class Query(Exceptionable, Configurable, Saveable):
                             # plot the AP location with voltage trace
                             # create subplots
                             if plot or save:
-                                fig, axes = plt.subplots(2, 1)
-
+                                if subplots !=True:
+                                    fig, axes = plt.subplots(2, 1)
+                                else:
+                                    axes = [axs[0][n_sim_index],axs[1][n_sim_index]]
                                 # load fiber coordinates
                                 fiber = np.loadtxt(os.path.join(fiberset_dir, '0.dat'), skiprows=1)
+                                nodefiber = fiber[0::11,:]
 
                                 # plot fiber coordinates in 2D
-                                axes[0].plot(fiber[:, 0], fiber[:, 2], 'b.')
+                                if nodes_only != True:
+                                    axes[0].plot(fiber[:, 0], fiber[:, 2], 'b.', label = 'fiber')
+                                else:
+                                    axes[0].plot(nodefiber[:, 0], nodefiber[:, 2], 'b.', label = 'fiber')
 
                                 # plot AP location
                                 axes[0].plot(fiber[11 * node, 0], fiber[11 * node, 2], 'r*', markersize = 10)
@@ -1802,9 +1644,13 @@ class Query(Exceptionable, Configurable, Saveable):
                                         n_sim_label_override is None) else n_sim_label_override
                                 model_label = '' if (model_labels is None) else f', {model_labels[model_index]}'
                                 axes[0].set_xlabel('x location, µm')
-                                axes[0].set_ylabel('z location, µm')
+
                                 axes[0].set_title(f'{n_sim_label}{model_label}')
-                                axes[0].legend(['fiber', f'AP ({message})'])
+                                if subplots!= True:
+                                    axes[0].legend(['fiber', f'AP ({message})'])
+                                else:
+                                    axes[0].legend(['fiber', 'AP'])
+
                                 # axes[0].set_aspect(1)
                                 plt.tight_layout()
 
@@ -1813,8 +1659,10 @@ class Query(Exceptionable, Configurable, Saveable):
 
                                 # voltages display settings
                                 axes[1].set_xlabel('node')
-                                axes[1].set_ylabel('voltage (mV)')
-                                axes[1].set_aspect(0.25)
+                                if subplots!=True or n_sim_index==0:
+                                    axes[1].set_ylabel('voltage (mV)')
+                                    axes[0].set_ylabel('z location, µm')
+                                # axes[1].set_aspect(0.25)
                                 plt.tight_layout()
 
                             # display

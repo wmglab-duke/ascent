@@ -2,7 +2,7 @@
 
 """
 The copyrights of this software are owned by Duke University.
-Please refer to the LICENSE.txt and README.txt files for licensing instructions.
+Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 from PIL import Image, ImageDraw, ImageFont
@@ -197,7 +197,8 @@ class Slide(Exceptionable):
              ax: plt.Axes = None,
              outers_flag: bool = True,
              inner_index_labels: bool = False,
-             show_axis: bool = True):
+             show_axis: bool = True,
+             axlabel: str = None):
         """
         Quick util for plotting the nerve and fascicles
         :param show_axis:
@@ -244,6 +245,10 @@ class Slide(Exceptionable):
 
         if title is not None:
             ax.title.set_text(title)
+            
+        if axlabel is not None:
+            ax.set_xlabel(axlabel)
+            ax.set_ylabel(axlabel)
 
         # if final plot, show
         if final:

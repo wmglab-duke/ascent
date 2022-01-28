@@ -2,7 +2,7 @@
 
 """
 The copyrights of this software are owned by Duke University.
-Please refer to the LICENSE.txt and README.txt files for licensing instructions.
+Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
@@ -31,6 +31,8 @@ def run(args):
         .make_nerve() \
         .make_fascicles() \
         .make_masks()
+
+    TemplateOutput.write(mock_sample.configs['mock_sample'], mock_config)
 
     # END timer
     end = time.time()

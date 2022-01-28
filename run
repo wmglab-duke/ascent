@@ -2,14 +2,14 @@
 
 """
 The copyrights of this software are owned by Duke University.
-Please refer to the LICENSE.txt and README.txt files for licensing instructions.
+Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
 import sys
 import os
 import importlib
-from config.system.run_utils import parse_args, welcome
+from config.system.run_utils import parse_args, welcome, list_util
 
 args = parse_args.parse()
 
@@ -23,4 +23,8 @@ if args.script!='install':
             If you have not installed ascent yet, please do so (python run install).
             Otherwise, please activate the "ascent" environment (conda activate ascent) before running.''')
 
-importlib.import_module('scripts.' + args.script).run(args)
+if args.script is not None:
+    importlib.import_module('scripts.' + args.script).run(args)
+else:
+    if args.list is not None:
+        list_util.run(args.list)
