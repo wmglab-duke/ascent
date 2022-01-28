@@ -550,17 +550,17 @@ if __name__ == "__main__":
         return local_args_list
 
 
-    def get_arg_parser():
+    def get_args():
         #Set up parser and top level args
         parser = argparse.ArgumentParser(description='ASCENT: Automated Simulations to Characterize Electrical Nerve Thresholds')
         parser.add_argument('run_indices', nargs = '+', help = 'Space separated indices to submit NEURON sims for')
         parser.add_argument('-p','--partition', help = 'If submitting on a cluster, overrides default partition assignment')
-        return parser
+        args = parser.parse_args()
+        return args
 
     def main():
         #parse args
-        parser = get_arg_parser()
-        args = parser.parse_args()
+        args = get_args()
         #validate inputs
         run_inds = args.run_indices
         runs = []
