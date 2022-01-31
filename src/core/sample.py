@@ -423,7 +423,7 @@ class Sample(Exceptionable, Configurable, Saveable):
                 print('WARNING: ShrinkageMode in Config.Sample is not defined or mode provided is not a known option. '
                       'Proceeding with backwards compatible (i.e., original default functionality) of LENGTH_FORWARDS'
                       ' shrinkage correction.\n')
-                shrinkage_correction = s_pre
+                shrinkage_correction = 1 + s_pre
             else:
                 shrinkage_correction = None
                 if s_mode == ShrinkageMode.LENGTH_BACKWARDS:
