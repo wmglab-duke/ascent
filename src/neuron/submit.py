@@ -5,6 +5,17 @@ The copyrights of this software are owned by Duke University.
 Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
+import multiprocessing
+import os
+import shutil
+import subprocess
+import sys
+import re
+import json
+import time
+import numpy as np
+import warnings
+import pickle
 import argparse
 #Set up parser and top level args
 parser = argparse.ArgumentParser(description='ASCENT: Automated Simulations to Characterize Electrical Nerve Thresholds')
@@ -542,17 +553,6 @@ def make_local_submission_list(run_number: int):
     return local_args_list
 
 def main():
-    import multiprocessing
-    import os
-    import shutil
-    import subprocess
-    import sys
-    import re
-    import json
-    import time
-    import numpy as np
-    import warnings
-    import pickle
 
     #validate inputs
     args = parser.parse_args()
