@@ -10,7 +10,6 @@ import argparse
 parser = argparse.ArgumentParser(description='ASCENT: Automated Simulations to Characterize Electrical Nerve Thresholds')
 parser.add_argument('run_indices', nargs = '+', help = 'Space separated indices to submit NEURON sims for')
 parser.add_argument('-p','--partition', help = 'If submitting on a cluster, overrides default partition assignment')
-args = parser.parse_args()
 
 if __name__ == "__main__":
     import multiprocessing
@@ -556,6 +555,7 @@ if __name__ == "__main__":
     
     def main():
         #validate inputs
+        args = parser.parse_args()
         run_inds = args.run_indices
         runs = []
         submission_contexts = []
