@@ -6,6 +6,11 @@ Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 import argparse
+#Set up parser and top level args
+parser = argparse.ArgumentParser(description='ASCENT: Automated Simulations to Characterize Electrical Nerve Thresholds')
+parser.add_argument('run_indices', nargs = '+', help = 'Space separated indices to submit NEURON sims for')
+parser.add_argument('-p','--partition', help = 'If submitting on a cluster, overrides default partition assignment')
+args = parser.parse_args()
 
 if __name__ == "__main__":
     import multiprocessing
@@ -548,19 +553,8 @@ if __name__ == "__main__":
                         local_args_list.append(local_args.copy())
 
         return local_args_list
-
-
-    def get_args():
-        #Set up parser and top level args
-        parser = argparse.ArgumentParser(description='ASCENT: Automated Simulations to Characterize Electrical Nerve Thresholds')
-        parser.add_argument('run_indices', nargs = '+', help = 'Space separated indices to submit NEURON sims for')
-        parser.add_argument('-p','--partition', help = 'If submitting on a cluster, overrides default partition assignment')
-        args = parser.parse_args()
-        return args
-
+    
     def main():
-        #parse args
-        args = get_args()
         #validate inputs
         run_inds = args.run_indices
         runs = []
