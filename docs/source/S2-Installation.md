@@ -11,6 +11,9 @@ First, these software packages must be manually installed:
     - https://www.anaconda.com/products/individual
 * [Java SE Development Kit 8 (1.8)](https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html) (need to register for a free account)
     - [https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html](https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html)
+* [Homebrew](https://docs.brew.sh/Installation) (Mac and Linux only)
+    - ```/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"```
+    - ```brew install wget```
 * [COMSOL 5.5](https://www.comsol.com/product-download/5.5) (requires purchase of license; only based package needed, which includes the COMSOL Java API)
     - Once COMSOL 5.5 is installed, alter 'File System Access' permissions via  File → Preferences → Security → Methods and Java Libraries → File System Access → All Files.
     - [https://www.comsol.com/product-download/5.5](https://www.comsol.com/product-download/5.5)
