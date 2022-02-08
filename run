@@ -9,7 +9,7 @@ The source code can be found on the following GitHub repository: https://github.
 import sys
 import os
 import importlib
-from config.system.run_utils import parse_args, welcome, list_util
+from config.system.run_utils import parse_args, welcome
 
 args = parse_args.parse()
 
@@ -27,4 +27,5 @@ if args.script is not None:
     importlib.import_module('scripts.' + args.script).run(args)
 else:
     if args.list is not None:
+        from config.system.run_utils import list_util
         list_util.run(args.list)
