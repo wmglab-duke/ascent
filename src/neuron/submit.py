@@ -18,6 +18,11 @@ import numpy as np
 import warnings
 import pickle
 import argparse
+#Set up parser and top level args
+parser = argparse.ArgumentParser(description='ASCENT: Automated Simulations to Characterize Electrical Nerve Thresholds')
+parser.add_argument('run_indices', nargs = '+', help = 'Space separated indices to submit NEURON sims for')
+parser.add_argument('-p','--partition', help = 'If submitting on a cluster, overrides default partition assignment')
+
 
 ALLOWED_SUBMISSION_CONTEXTS = ['cluster', 'local','auto']
 OS = 'UNIX-LIKE' if any([s in sys.platform for s in ['darwin', 'linux']]) else 'WINDOWS'
@@ -548,20 +553,10 @@ def make_local_submission_list(run_number: int):
 
     return local_args_list
 
-
-def get_args():
-    #Set up parser and top level args
-    parser = argparse.ArgumentParser(description='ASCENT: Automated Simulations to Characterize Electrical Nerve Thresholds')
-    parser.add_argument('run_indices', nargs = '+', help = 'Space separated indices to submit NEURON sims for')
-    parser.add_argument('-p','--partition', help = 'If submitting on a cluster, overrides default partition assignment')
-    args = parser.parse_args()
-    return args
-
 def main():
-    #parse args
-    args = get_args()
 
     #validate inputs
+    args = parser.parse_args()
     run_inds = args.run_indices
     runs = []
     submission_contexts = []
