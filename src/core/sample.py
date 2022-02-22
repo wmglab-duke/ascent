@@ -589,6 +589,9 @@ class Sample(Exceptionable, Configurable, Saveable):
 
                 # find intersection point with outer (interpolated)
                 slide.orientation_point = np.array(ray.intersection(outer.polygon().boundary))
+            
+            #ensure that nothing went wrong in slide processing
+            slide.validation()
 
         # scale with ratio = 1 (no scaling happens, but connects the ends of each trace to itself)
         self.scale(1)
