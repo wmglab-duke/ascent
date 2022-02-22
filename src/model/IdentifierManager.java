@@ -74,6 +74,7 @@ public class IdentifierManager {
             identifierPseudonyms.put(pseudonym, id);
             return id; // pseudonym was NOT already in use!
         }
+        System.out.println("WARNING: Attempted to use extant identifier manager pseudonym: "+pseudonym);
         return null; // pseudonym was already in use!
     }
 
