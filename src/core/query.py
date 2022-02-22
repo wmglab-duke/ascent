@@ -589,7 +589,7 @@ class Query(Exceptionable, Configurable, Saveable):
                         if plot_mode == 'fiber0':
                             for i in range(n_inners):
                                 actual_i = i - offset
-                                if actual_i not in missing_indices:
+                                if i not in missing_indices:
                                     if select_fascicles is not None and not select_fascicles[actual_i]:
                                         # colors.append(tuple((0, 0, 0, 0)))  # missing_color
                                         colors.append(cmap(np.nan))  # missing_color
