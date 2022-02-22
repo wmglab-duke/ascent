@@ -55,23 +55,19 @@ class Simulation(Exceptionable, Configurable, Saveable):
         if len(self.factors.items()) > 0:
             self.factors = dict()
 
-        def search(dictionary, remaining_n_dims, path):
-            if remaining_n_dims < 1:
-                return
+        def search(dictionary, path):
             for key, value in dictionary.items():
                 if type(value) == list and len(value) > 1:
                     # print('adding key {} to sub {}'.format(key, sub))
                     self.factors[path + '->' + key] = value
-                    remaining_n_dims -= 1
                 elif type(value) == dict:
                     # print('recurse: {}'.format(value))
-                    search(value, remaining_n_dims, path + '->' + key)
+                    search(value, path + '->' + key)
 
         for flag in ['fibers', 'waveform', 'supersampled_bases']:
             if flag in self.configs[Config.SIM.value].keys():
                 search(
                     self.configs[Config.SIM.value][flag],
-                    self.search(Config.SIM, "n_dimensions"),
                     flag
                 )
 
