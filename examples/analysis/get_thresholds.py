@@ -6,22 +6,38 @@ Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
+# Returns nsim thresholds from the selected sample/model/sim combos as a dataframe
+# Use arg meanify=True to instead get the mean threshold for each nsim with stats
+
+# RUN THIS FROM REPOSITORY ROOT
+
+#%% imports
 import os
+import sys
 
-from src.core import Sample
-from src.core import Simulation
+sys.path.append(os.path.sep.join([os.getcwd(), '']))
+
 from src.core.query import Query
-from src.utils import Object
 
-ind = 1
-criteria: str = os.path.join('config', 'user', 'query_criteria', '{}.json'.format(ind))
-q = Query(criteria)
-q.run()
-results = q.summary()
+#%% metadata
+samples = [670,672]
 
-sam: Sample = q.get_object(Object.SAMPLE, [results['samples'][0]['index']])
-sam.slides[0].plot()
+models = [0]
 
-sim: Simulation = q.get_object(Object.SIMULATION, [results['samples'][0]['models'][0]['sims'][0]])
-print('here')
+sims = [33]
 
+dats = []
+
+#%% run query search
+q = Query({
+    'partial_matches': False,
+    'include_downstream': True,
+    'indices': {
+        'sample': samples,
+        'model': models,
+        'sim': sims
+    }
+}).run()
+
+#%% obtain thresholds
+data = q.threshdat(meanify=False)
