@@ -19,7 +19,7 @@ def run(args, env_path = os.path.join('config', 'system', 'env.json')):
         while True:
             value = input('Enter path for {}: '.format(key))
 
-            if os.path.exists(value):
+            if os.path.exists(value) or key=='ASCENT_NSIM_EXPORT_PATH':
                 result[key] = value
                 break
             else:
