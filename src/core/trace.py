@@ -422,7 +422,7 @@ class Trace(Exceptionable):
         return Trace(points, self.configs[Config.EXCEPTIONS.value])
 
     # %% output
-       def plot(self, plot_format: str = 'k-', color: Tuple[float, float, float, float] = None, ax: plt.Axes = None,linewidth=1):
+    def plot(self, plot_format: str = 'k-', color: Tuple[float, float, float, float] = None, ax: plt.Axes = None,linewidth=1):
         """
         :param ax:
         :param color:
