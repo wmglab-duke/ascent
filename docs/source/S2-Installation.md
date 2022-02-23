@@ -43,8 +43,8 @@ Users may also download a text editor or integrated development environment (IDE
         5. For more information on using Git, check out the [official documentation](https://git-scm.com/doc).
 
 2. Next, install ASCENT dependencies:
-    * Windows: Open the Miniconda Powershell Prompt from the Windows Start Menu as Administrator, and use cd to navigate to the root directory of the pipeline. Then, run ```python run install```.
-    * MacOS/Linux: Open a terminal window and use cd to navigate to the root directory of the pipeline. Then, run ```python run install```.
+    * Windows: Open the Anaconda Powershell Prompt from the Windows Start Menu as Administrator, and use cd to navigate to the root directory of the pipeline. Then, run ```python run install```.
+    * MacOS/Linux: Open Anaconda Prompt and use cd to navigate to the root directory of the pipeline. Then, run ```python run install```.
     * For advanced users using their own (non-conda) Python distribution:
       - From the ascent root directory execute ```python run install --no-conda```
       - From the ascent root directory execute ```pip install -r requirements.txt```
