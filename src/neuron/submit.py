@@ -646,7 +646,7 @@ def main():
         else:
             # something went horribly wrong
             pass
-
+    print('done')
 
 if __name__ == "__main__":  # Allows for the safe importing of the main module
     main()
