@@ -1902,7 +1902,7 @@ of the file.
     The user can only loop parameters for one type of waveform in a
     ***Sim***.
 
-    Note: the “digits” parameter for the following “WareformModes” sets the
+    Note: the “digits” parameter for the following “WaveformModes” sets the
     precision of the unscaled current amplitude. For waveforms that are only
     ever +/-1 and 0 (e.g., `MONOPHASIC_PULSE_TRAIN`, `BIPHASIC_FULL_DUTY`,
     `BIPHASIC_PULSE_TRAIN`), the user can represent the waveform faithfully
