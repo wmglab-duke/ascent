@@ -1,2 +1,4 @@
 *.hoc linguist-language=NEURON
 *.mod linguist-language=NMODL
+*.hoc linguist-detectable=true
+*.mod linguist-detectable=true
