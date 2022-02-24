@@ -1639,7 +1639,7 @@ of the file.
     ```
 1.  Properties:
 
-    `“n\_dimensions”`: The value (Integer) is the number of parameters in
+    `“n_dimensions”`: The value (Integer) is the number of parameters in
     ***Sim*** for which a list is provided rather than a single value. The
     user sets the number of parameters they are looping over (e.g., if
     looping over waveform pulse width and fiber diameter, `n_dimensions =
