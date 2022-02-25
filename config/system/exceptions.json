@@ -4,6 +4,10 @@
     "text": "Invalid code (out of bounds starting at index 1)."
   },
   {
+    "code": 9001,
+    "text": "Placeholder error for development"
+  },
+  {
     "code": 1,
     "text": "Path must be full file name if not generating new map."
   },
