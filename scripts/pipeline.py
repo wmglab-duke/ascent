@@ -70,7 +70,7 @@ def run(args):
 
         # END timer
         end = time.time()
-        print('\nruntime: {}'.format(end - start))
+        print('\nruntime: {} minutes ({} hours)'.format(end - start,(end - start)/60))
 
     # cleanup for console viewing/inspecting
     del start, end
