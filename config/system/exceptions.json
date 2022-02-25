@@ -530,6 +530,10 @@
   {
     "code": 134,
     "text": "Invalid ShrinkageMode defined in sample.json"
+  },
+  {
+    "code": 135,
+    "text": "Invalid protocol mode defined in sim configuration file"
   }
 ]
 
