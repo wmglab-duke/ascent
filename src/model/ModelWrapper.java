@@ -1136,11 +1136,7 @@ public class ModelWrapper {
         JSONObject cli_args = new JSONObject(decodedString);
 
         // Start COMSOL Instance
-        try {
-            ModelUtil.connect("localhost", 2036);
-        } catch(FlException e) {
-            ModelUtil.connect("localhost", 2037);
-        }
+        ModelUtil.connect();
 
         TimeUnit.SECONDS.sleep(5);
         ModelUtil.initStandalone(false);
