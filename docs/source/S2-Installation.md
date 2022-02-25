@@ -16,6 +16,7 @@ First, these software packages must be manually installed:
     - ```brew install wget```
 * [COMSOL 5.5](https://www.comsol.com/product-download/5.5) (requires purchase of license; only based package needed, which includes the COMSOL Java API)
     - Once COMSOL 5.5 is installed, alter 'File System Access' permissions via  File → Preferences → Security → Methods and Java Libraries → File System Access → All Files.
+    - Open the COMSOL Server and log in with a username and password of your choosing (arbitrary and not needed thereafter). This can be done by navigating to the bin/ directory in the COMSOL installation and running ```comsolmphserver``` (Windows) or ```./comsol server``` (MacOS/Linux).
     - [https://www.comsol.com/product-download/5.5](https://www.comsol.com/product-download/5.5)
 * [NEURON 7.6](https://neuron.yale.edu/ftp/neuron/versions/v7.6/) (newer versions have been released, but compatibility has yet to be confirmed; choose appropriate installer depending on operating system; install auxiliary software as prompted by NEURON installer)
     - [https://neuron.yale.edu/ftp/neuron/versions/v7.6/](https://neuron.yale.edu/ftp/neuron/versions/v7.6/)
@@ -60,7 +61,7 @@ After confirming that you are in the correct directory, the script will install 
       - ASCENT_NSIM_EXPORT_PATH: Path to the export location for NEURON “simulation” directories. This path only depends on on the user's desired file system organization.
     * Manual Setup: Copy the file ```config/templates/env.json``` into ```config/system/env.json``` (new file). This file holds important paths for software used by the pipeline (see env.json in S6 and S7). Then, edit each of the four values as specified below. Use ```\\``` in Windows and ```/``` in MacOS/Linux operating systems. Note that the file separators are operating system dependent, so even if you installed in step 2 with Unix-like command environment on a Windows machine (e.g., using [Git Bash](https://gitforwindows.org/), [Cygwin](https://www.cygwin.com/), or a VM with [Ubuntu](https://ubuntu.com/)), you will still need to choose the proper file separator for Windows, i.e., ```\\```). See example env.json files for both MacOS and Windows ([S8 Text](S8-JSON-file-parameter-guide)).
     * Automatic setup: Upon the initiation of your first run, you will be prompted to enter the above four paths if you did not choose to complete the manual setup. Enter them as prompted, following the guidelines detailed above and exemplified in [S7](S7-JSON-configuration-files). Note that you may at any time update paths with ```python run env_setup``` to rewrite this file if the information should change.
-4. Before the first time you run the pipeline, you must open the COMSOL Server and log in with a username and password of your choosing (arbitrary and not needed thereafter). This can be done by navigating to the bin/ directory in the COMSOL installation and running ```comsolmphserver``` (Windows) or ```./comsol server``` (MacOS/Linux).
+
 
 ## References
 1. Clark A. Pillow: a modern fork of PIL — Pillow v2.3.0 (PIL fork) [Internet]. 2020 [cited 2020 Apr 20]. Available from: [https://pillow.readthedocs.io/en/2.3.0/](https://pillow.readthedocs.io/en/2.3.0/)
