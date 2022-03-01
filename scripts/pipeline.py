@@ -70,7 +70,8 @@ def run(args):
 
         # END timer
         end = time.time()
-        print('\nruntime: {} seconds ({} minutes)'.format(round(end - start,2),round((end - start)/60),3))
+        elapsed = end - start
+        print('\nruntime: {} (hh:mm:ss)'.format(time.strftime('%H:%M:%S', time.gmtime(elapsed))))
 
     # cleanup for console viewing/inspecting
     del start, end
