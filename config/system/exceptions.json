@@ -337,7 +337,7 @@
   },
   {
     "code": 83,
-    "text": "FiberXYMode.EXPLICIT indicated in Sim but to explicit.txt file with coordinates provided in the Sim directory. See config/system/templates/explicit.txt for example of this file's required format."
+    "text": "FiberXYMode.EXPLICIT indicated in Sim but no explicit.txt file with coordinates provided in the Sim directory. See config/system/templates/explicit.txt for example of this file's required format."
   },
   {
     "code": 84,
