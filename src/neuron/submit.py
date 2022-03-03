@@ -138,27 +138,6 @@ def get_thresh_bounds(sim_dir: str, sim_name: str, inner_ind: int):
             else:
                 warnings.warn(f"No fiber threshold exists for scout sim: inner{inner_ind} fiber0")
 
-        elif sim_config['protocol']['bounds_search'].get("auto_initialize") is not None:
-
-            fiberspec_config = load(os.path.join('config', 'system', 'threshold_initialization.json'))
-            fiberspec = sim_config['protocol']['bounds_search'].get("auto_initialize")
-            specs = fiberspec_config.get(fiberspec)
-            if specs is None: self.throw(9001)
-            ab = specs.get(fiber_model)
-            if ab is None: self.throw(9001)
-            if "EXPONENTIAL" in fiberspec:
-                expected_thresh = a*np.exp(b*diameter)
-
-            step = sim_config['protocol']['bounds_search']['step'] / 100
-            top = (1 + step) * expected_thresh
-            bottom = (1 - step) * expected_thresh
-
-            unused_protocol_keys = ['top', 'bottom']
-
-            if any(unused_protocol_key in sim_config['protocol']['bounds_search'].keys()
-                   for unused_protocol_key in unused_protocol_keys):
-                warnings.warn('WARNING: Bounds search > auto_initialize is set, so not using "top" or "bottom" '
-                              'which you also defined \n')
         else:
             top = sim_config['protocol']['bounds_search']['top']
             bottom = sim_config['protocol']['bounds_search']['bottom']

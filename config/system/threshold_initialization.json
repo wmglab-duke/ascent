@@ -1,7 +1,0 @@
-{
-  "HUMAN_EXPONENTIAL" :
-  {
-    "MRG_DISCRETE": {"a":5.781,"b": -0.457},
-    "MRG_INTERPOLATION": {"a":5.781,"b": -0.457}
-  }
-}
