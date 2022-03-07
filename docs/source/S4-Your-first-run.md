@@ -112,11 +112,7 @@ Through this exercise, you will:
   - Simulate activation thresholds for a specific fiber model by
     submitting NEURON simulations locally or to a computer cluster
 
-  - View and analyze your data
-
-      - Plot samples with color-coded fiber (x,y)-coordinates
-
-      - Heatmap of fiber thresholds
+  - Generate a heatmap of fiber thresholds
 
 For the following exercise, we ask that you please attempt to accomplish
 the prescribed modeling tasks with the paper and associated supplemental
