@@ -1148,8 +1148,6 @@ public class ModelWrapper {
             System.out.println("Could not connect to COMSOL server on port 2037, trying without specifying a port...")
             ModelUtil.connect();
         }
-        
-
 
         TimeUnit.SECONDS.sleep(5);
         ModelUtil.initStandalone(false);
