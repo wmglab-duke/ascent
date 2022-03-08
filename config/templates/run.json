@@ -1,5 +1,5 @@
 {
-  "submission_context": "cluster",
+  "submission_context": "local",
   "sample": 62,
   "models": [0],
   "sims": [99],

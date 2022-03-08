@@ -123,7 +123,7 @@ the prescribed modeling tasks with the paper and associated supplemental
 documentation as your primary reference.
 
 Check: Threshold for inner0\_fiber0 (`thresh_inner0_fiber0.dat`) should
-be -0.028732 mA
+be -0.027402 mA
 
 We provided ***Sample***, ***Model***, and ***Sim*** JSON files for the
 solution in `examples/beta_task/`.

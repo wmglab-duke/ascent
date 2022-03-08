@@ -40,4 +40,4 @@ q = Query({
 }).run()
 
 #%% obtain thresholds
-data = q.threshdat(meanify=False)
+data = q.threshold_data(meanify=False)

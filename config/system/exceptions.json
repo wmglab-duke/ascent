@@ -4,6 +4,10 @@
     "text": "Invalid code (out of bounds starting at index 1)."
   },
   {
+    "code": 9001,
+    "text": "Placeholder error for development"
+  },
+  {
     "code": 1,
     "text": "Path must be full file name if not generating new map."
   },
@@ -333,7 +337,7 @@
   },
   {
     "code": 83,
-    "text": "FiberXYMode.EXPLICIT indicated in Sim but to explicit.txt file with coordinates provided in the Sim directory. See config/system/templates/explicit.txt for example of this file's required format."
+    "text": "FiberXYMode.EXPLICIT indicated in Sim but no explicit.txt file with coordinates provided in the Sim directory. See config/system/templates/explicit.txt for example of this file's required format."
   },
   {
     "code": 84,
@@ -530,6 +534,10 @@
   {
     "code": 134,
     "text": "Invalid ShrinkageMode defined in sample.json"
+  },
+  {
+    "code": 135,
+    "text": "Invalid protocol mode defined in sim configuration file"
   }
 ]
 
