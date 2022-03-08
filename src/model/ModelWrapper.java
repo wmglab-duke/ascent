@@ -1139,14 +1139,13 @@ public class ModelWrapper {
         try {
             ModelUtil.connect("localhost", 2036);
         } catch(FlException e) {
-            System.out.println("Could not connect to COMSOL server on port 2036, trying on port 2037...")
-        }
-
-        try {
-            ModelUtil.connect("localhost", 2037);
-        } catch(FlException e) {
-            System.out.println("Could not connect to COMSOL server on port 2037, trying without specifying a port...")
-            ModelUtil.connect();
+            System.out.println("Could not connect to COMSOL server on port 2036, trying on port 2037...");
+            try {
+                ModelUtil.connect("localhost", 2037);
+            } catch(FlException exc) {
+                System.out.println("Could not connect to COMSOL server on port 2037, trying without specifying a port...");
+                ModelUtil.connect();
+            }
         }
 
         TimeUnit.SECONDS.sleep(5);
