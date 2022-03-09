@@ -599,7 +599,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
         shutil.copy2(os.path.join(os.environ[Env.PROJECT_PATH.value], 'config', 'system', 'slurm_params.json'), target)
 
     @staticmethod
-    def import_n_sims(sample: int, model: int, sim: int, sim_dir: str, source: str):
+    def import_n_sims(sample: int, model: int, sim: int, sim_dir: str, source: str, delete: bool= False):
         print(f'sample: {sample}, model: {model}, sim: {sim}, sim_dir: {sim_dir}, source: {source}')
 
         sim_dir = os.path.join(sim_dir, 'n_sims')
