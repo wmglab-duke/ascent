@@ -812,7 +812,7 @@ class Query(Exceptionable, Configurable, Saveable):
                                 cb.ax.set_title(cb_label,fontsize=colorbar_text_size_override if (
                                         colorbar_text_size_override is not None) else 25 ,rotation=0)
                             else:
-                                cb.ax.set_label(cb_label,fontsize=colorbar_text_size_override if (
+                                cb.set_label(cb_label,fontsize=colorbar_text_size_override if (
                                     colorbar_text_size_override is not None) else 25 ,rotation=0)
                             # colorbar font size
                             if colorbar_text_size_override is not None:
