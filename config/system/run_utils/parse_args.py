@@ -25,7 +25,7 @@ pipeline_parser.add_argument('-w','--wait-for-license',type=float,help = "Wait t
 pipeline_parser.add_argument('-P','--partial-fem',choices = ["cuff_only","nerve_only"],help = "Only generate the specified geometry.")
 ts_parser.add_argument('sample_indices', nargs = '+',type=int, help = 'Space separated sample indices to tidy')
 nsims_parser.add_argument('run_indices', nargs = '+',type=int, help = 'Space separated run indices to import')
-nsims_parser.add_argument('-D','--delete-nsims',type=bool, help='After importing delete n_sim folder from NSIM_EXPORT_PATH')
+nsims_parser.add_argument('-D','--delete-nsims',action='store_true', help='After importing delete n_sim folder from NSIM_EXPORT_PATH')
 cs_parser.add_argument('sample_indices', nargs = '+',type=int, help = 'Space separated sample indices to clean')
 mmg_parser.add_argument('mock_sample_index',type=int, help = 'Mock Sample Index to generate')
 install_parser.add_argument('--no-conda',action='store_true', help = 'Skip conda portion of installation')
