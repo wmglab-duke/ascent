@@ -813,7 +813,7 @@ class Query(Exceptionable, Configurable, Saveable):
                                         colorbar_text_size_override is not None) else 25 ,rotation=0)
                             else:
                                 cb.set_label(cb_label,fontsize=colorbar_text_size_override if (
-                                    colorbar_text_size_override is not None) else 25 ,rotation=0)
+                                    colorbar_text_size_override is not None) else 25 ,rotation=90)
                             # colorbar font size
                             if colorbar_text_size_override is not None:
                                 cb.ax.tick_params(labelsize=colorbar_text_size_override if (
