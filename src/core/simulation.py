@@ -610,7 +610,8 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 if os.path.isdir(os.path.join(sim_dir, product_index)):
                     shutil.rmtree(os.path.join(sim_dir, product_index))
                 shutil.copytree(os.path.join(source, dirname), os.path.join(sim_dir, product_index))
-
+                if delete: shutil.rmtree(os.path.join(source, dirname))
+                
     def potentials_exist(self, sim_dir: str) -> bool:
         """
         Return bool deciding if potentials have already been written

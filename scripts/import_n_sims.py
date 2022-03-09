@@ -7,7 +7,6 @@ The source code can be found on the following GitHub repository: https://github.
 """
 
 import os
-import sys
 
 from src.core import Simulation
 from src.utils import Configurable
@@ -34,4 +33,5 @@ def run(args):
         for model in models:
             for sim in sims:
                 sim_dir = os.path.join('samples', str(sample), 'models', str(model), 'sims', str(sim))
-                Simulation.import_n_sims(sample, model, sim, sim_dir, os.path.join(nsim_source, 'n_sims'))
+                Simulation.import_n_sims(sample, model, sim, sim_dir, os.path.join(nsim_source, 'n_sims'),delete = args.delete_nsims)
+                
