@@ -10,7 +10,6 @@ The source code can be found on the following GitHub repository: https://github.
 import os
 import sys
 sys.path.append(os.path.sep.join([os.getcwd(), '']))
-os.chdir('D:/ASCENT/fresh')
 import matplotlib.pyplot as plt
 from src.core.query import Query
 
