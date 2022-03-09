@@ -606,18 +606,25 @@ def main():
 
         auto_compile_flag = run.get('override_compiled_mods', False)
         auto_compile_flags.append(auto_compile_flag)
+        
+        #get list of fibers to run
         print('Generating run list for run {}'.format(run_number))
         summary.append(make_local_submission_list(run_number, printout=False))
         rundata.append({'RUN':run_number,
              'SAMPLE':run['sample'],
              'MODELS':run['models'],
              'SIMS':run['sims']})
+    #check that all submission contexts are the same
+    if not np.all([x==submission_contexts[0] for x in submission_contexts]):
+        sys.exit('Runs with different submission contexts cannot be submitted at the same time')
+    #format run data
+    n_fibers = sum([len(x) for x in summary])
     df = pd.DataFrame(rundata)
     df.RUN = df.RUN.astype(int)
     df = df.sort_values('RUN')
-    print('The following runs:')
+    #print out and check that the user is happy
+    print('Submitting the following runs (submission_context={}):'.format(submission_context))
     print(df.to_string(index = False))
-    n_fibers = sum([len(x) for x in summary])
     print('Will result in running {} fiber simulations'.format(n_fibers))
     proceed = input('\t Would you like to proceed?\n'
                 '\t\t 0 = NO\n'
