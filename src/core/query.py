@@ -448,7 +448,8 @@ class Query(Exceptionable, Configurable, Saveable):
                  select_fascicles: List = None,
                  alltitle = True,
                  microamps=False,
-                 suptitle_override=None
+                 suptitle_override=None,
+                 dotsize=10
                  ):
 
         """
@@ -754,7 +755,7 @@ class Query(Exceptionable, Configurable, Saveable):
                             if alltitle:
 
                                 if fib_key_name == 'fibers->z_parameters->diameter':
-                                    title = u'{} fiber diameter: {} \u03bcm'.format(title, fib_key_value)
+                                    title = u'{} Fiber Diameter: {} \u03bcm'.format(title, fib_key_value)
                                 else:
                                     # default title
                                     title = '{} {}:{}'.format(title, fib_key_name, fib_key_value)
@@ -766,7 +767,7 @@ class Query(Exceptionable, Configurable, Saveable):
                                                                  sim_object.wave_product[waveform_index]):
                             if alltitle:
                                 if wave_key_name == 'waveform->BIPHASIC_PULSE_TRAIN->pulse_width':
-                                    title = '{} pulse width: {} ms'.format(title, wave_key_value)
+                                    title = '{} Pulse Width: {} ms'.format(title, wave_key_value)
                                 else:
                                     title = '{} {}:{}'.format(title, wave_key_name, wave_key_value)
                             elif potentials_product_index==max([x[0] for x in sim_object.master_product_indices]):
@@ -806,8 +807,8 @@ class Query(Exceptionable, Configurable, Saveable):
                                 aspect=colorbar_aspect if colorbar_aspect is not None else 20,
                                 format='%0.2f',
                             )
-                            cb.set_label(cb_label,fontsize=colorbar_text_size_override if (
-                                    colorbar_text_size_override is not None) else 25 ,rotation=90)
+                            cb.ax.set_title(cb_label,fontsize=colorbar_text_size_override if (
+                                    colorbar_text_size_override is not None) else 25 ,rotation=0)
                             # colorbar font size
                             if colorbar_text_size_override is not None:
                                 cb.ax.tick_params(labelsize=colorbar_text_size_override if (
@@ -820,7 +821,7 @@ class Query(Exceptionable, Configurable, Saveable):
                         elif plot_mode == 'fibers':
                             sample_object.slides[0].plot(final=False, fix_aspect_ratio=True, ax=ax,
                                                          outers_flag=plot_outers, inner_format='k-')
-                            sim_object.fibersets[0].plot(ax=ax, fiber_colors=colors, size=20)
+                            sim_object.fibersets[0].plot(ax=ax, fiber_colors=colors, size=dotsize)
 
                     plt.gcf().tight_layout(rect=[0, 0.03, 1, 0.95])
 
@@ -838,8 +839,8 @@ class Query(Exceptionable, Configurable, Saveable):
                         else:
                             plt.suptitle(suptitle_override, size=40)
                     if not alltitle:
-                        plt.gcf().text(0.5,0.01,"pulse width (ms)", ha="center", va="center",fontsize=35)
-                        plt.gcf().text(-0.02,0.5, u"fiber diameter (\u03bcm)" , ha="center", va="center", rotation=90,fontsize=35)
+                        plt.gcf().text(0.5,0.01,"Pulse Width (ms)", ha="center", va="center",fontsize=35)
+                        plt.gcf().text(-0.02,0.5, u"Fiber Diameter (\u03bcm)" , ha="center", va="center", rotation=90,fontsize=35)
 
                     # plt.tight_layout(pad=0)
                     # plt.tight_layout(pad=5.0)

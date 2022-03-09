@@ -16,6 +16,7 @@ The source code can be found on the following GitHub repository: https://github.
 
 import os
 import sys
+os.chdir('D:/ASCENT/fresh')
 
 sys.path.append(os.path.sep.join([os.getcwd(), '']))
 import matplotlib.pyplot as plt
@@ -30,8 +31,8 @@ q = Query({
     'include_downstream': True,
     'indices': {
         'sample': [18],
-        'model': [451],
-        'sim': [1,18]
+        'model': [451,452,3601,3602],
+        'sim': [18]
     }
 }).run()
 

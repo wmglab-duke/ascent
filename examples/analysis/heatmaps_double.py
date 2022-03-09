@@ -10,7 +10,7 @@ The source code can be found on the following GitHub repository: https://github.
 import os
 import sys
 sys.path.append(os.path.sep.join([os.getcwd(), '']))
-os.chdir('D:/ASCENT/m18')
+os.chdir('D:/ASCENT/fresh')
 import matplotlib.pyplot as plt
 from src.core.query import Query
 
@@ -18,10 +18,10 @@ params = {
     'outpath' : 'out/analysis',
     'sample' : 18,
     'model' : 451,
-    'sim' : 20,
+    'sim' : 18,
     'microamps' : False,
-    'title' : 'nonsharetest',
-    'title_shared' : 'test'
+    'title' : 'Activation Thresholds: Cadaver57-3',
+    'title_shared' : 'Activation Thresholds: Cadaver57-3'
     }
 
 def run_heatmaps(params):
@@ -31,9 +31,9 @@ def run_heatmaps(params):
         'partial_matches': True,
         'include_downstream': True,
         'indices': {
-            'sample': [params['sample']],
-            'model': [params['model']],
-            'sim': [params['sim']]
+            'sample': [19],
+            'model': [3601],
+            'sim': [18]
         }
     }).run()
     
@@ -50,9 +50,11 @@ def run_heatmaps(params):
                 reverse_colormap=True,
                 alltitle = False,
                 colorbar_mode='subplot',
+                dotsize = 5,
                 track_colormap_bounds=True,
                 colorbar_text_size_override=30,
                 microamps = params['microamps'],
+                min_max_ticks = True,
                 suptitle_override = params['title']
                )
     
@@ -65,6 +67,8 @@ def run_heatmaps(params):
                colorbar_aspect=5,
                colormap_str='viridis',
                tick_count=4,
+                dotsize = 5,
+                alltitle = False,
                reverse_colormap=True,
                 track_colormap_bounds=False,
                 colomap_bounds_override=superbound,
@@ -76,8 +80,8 @@ def run_heatmaps(params):
     
     
     fig = plt.gcf()
-    fig.subplots_adjust(right=0.8)
-    cbar_ax = fig.add_axes([0.8, 0.15, 0.05, 0.7])
+    fig.subplots_adjust(right=0.8,wspace=.1)
+    cbar_ax = fig.add_axes([0.85, 0.15, 0.02, 0.7])
     
     cmap = plt.get_cmap('viridis')
     cmap = cmap.reversed()
