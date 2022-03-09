@@ -449,7 +449,8 @@ class Query(Exceptionable, Configurable, Saveable):
                  alltitle = True,
                  microamps=False,
                  suptitle_override=None,
-                 dotsize=10
+                 dotsize=10,
+                 cbar_label_func = 'title' #'title' or 'label'
                  ):
 
         """
@@ -807,7 +808,11 @@ class Query(Exceptionable, Configurable, Saveable):
                                 aspect=colorbar_aspect if colorbar_aspect is not None else 20,
                                 format='%0.2f',
                             )
-                            cb.ax.set_title(cb_label,fontsize=colorbar_text_size_override if (
+                            if cbar_label_func=='title':
+                                cb.ax.set_title(cb_label,fontsize=colorbar_text_size_override if (
+                                        colorbar_text_size_override is not None) else 25 ,rotation=0)
+                            else:
+                                cb.ax.set_label(cb_label,fontsize=colorbar_text_size_override if (
                                     colorbar_text_size_override is not None) else 25 ,rotation=0)
                             # colorbar font size
                             if colorbar_text_size_override is not None:
