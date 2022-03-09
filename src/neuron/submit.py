@@ -23,6 +23,7 @@ parser = argparse.ArgumentParser(description='ASCENT: Automated Simulations to C
 parser.add_argument('run_indices', nargs = '+', help = 'Space separated indices to submit NEURON sims for')
 parser.add_argument('-p','--partition', help = 'If submitting on a cluster, overrides default partition assignment')
 
+
 ALLOWED_SUBMISSION_CONTEXTS = ['cluster', 'local','auto']
 OS = 'UNIX-LIKE' if any([s in sys.platform for s in ['darwin', 'linux']]) else 'WINDOWS'
 

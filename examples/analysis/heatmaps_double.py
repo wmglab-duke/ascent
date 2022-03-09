@@ -31,9 +31,9 @@ def run_heatmaps(params):
         'partial_matches': True,
         'include_downstream': True,
         'indices': {
-            'sample': [19],
-            'model': [3601],
-            'sim': [18]
+            'sample': [params['sample']],
+            'model': [params['model']],
+            'sim': [params['sim']]
         }
     }).run()
     
