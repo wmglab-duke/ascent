@@ -18,6 +18,7 @@ import numpy as np
 import warnings
 import pickle
 import argparse
+import pandas as pd
 #Set up parser and top level args
 parser = argparse.ArgumentParser(description='ASCENT: Automated Simulations to Characterize Electrical Nerve Thresholds')
 parser.add_argument('run_indices', nargs = '+', help = 'Space separated indices to submit NEURON sims for')
@@ -452,7 +453,7 @@ def cluster_submit(run_number: int, partition: str, mem: int=2000, array_length_
                             fiber_index_tally = []
 
 
-def make_local_submission_list(run_number: int):
+def make_local_submission_list(run_number: int,printout = True):
     # build configuration filename
     filename = os.path.join('runs', run_number + '.json')
 
@@ -477,7 +478,7 @@ def make_local_submission_list(run_number: int):
             sim_name_base = '{}_{}_{}_'.format(sample, model, sim)
 
             for sim_name in [x for x in os.listdir(sim_dir) if sim_name_base in x]:
-                print('\n\n################ {} ################\n\n'.format(sim_name))
+                if printout: print('\n\n################ {} ################\n\n'.format(sim_name))
 
                 sim_path = os.path.join(sim_dir, sim_name)
                 fibers_path = os.path.abspath(os.path.join(sim_path, 'data', 'inputs'))
@@ -521,7 +522,7 @@ def make_local_submission_list(run_number: int):
                     thresh_path = os.path.join(output_path,
                                                'thresh_inner{}_fiber{}.dat'.format(inner_ind, fiber_ind))
                     if os.path.exists(thresh_path):
-                        print('Found {} -->\t\tskipping inner ({}) fiber ({})'.format(thresh_path, inner_ind,
+                        if printout: print('Found {} -->\t\tskipping inner ({}) fiber ({})'.format(thresh_path, inner_ind,
                                                                                       fiber_ind))
                         continue
 
@@ -571,6 +572,9 @@ def main():
     compiled: bool = False
     compiled = auto_compile()
 
+    summary = []
+    rundata = []
+    
     for run_number in run_inds:
         # run number is numeric
         assert re.search('[0-9]+', run_number), 'Encountered non-number run number argument: {}'.format(run_number)
@@ -607,10 +611,37 @@ def main():
 
         auto_compile_flag = run.get('override_compiled_mods', False)
         auto_compile_flags.append(auto_compile_flag)
-
+        
+        #get list of fibers to run
+        print('Generating run list for run {}'.format(run_number))
+        summary.append(make_local_submission_list(run_number, printout=False))
+        rundata.append({'RUN':run_number,
+             'SAMPLE':run['sample'],
+             'MODELS':run['models'],
+             'SIMS':run['sims']})
+    #check that all submission contexts are the same
+    if not np.all([x==submission_contexts[0] for x in submission_contexts]):
+        sys.exit('Runs with different submission contexts cannot be submitted at the same time')
+    #format run data
+    n_fibers = sum([len(x) for x in summary])
+    df = pd.DataFrame(rundata)
+    df.RUN = df.RUN.astype(int)
+    df = df.sort_values('RUN')
+    #print out and check that the user is happy
+    print('Submitting the following runs (submission_context={}):'.format(submission_context))
+    print(df.to_string(index = False))
+    print('Will result in running {} fiber simulations'.format(n_fibers))
+    proceed = input('\t Would you like to proceed?\n'
+                '\t\t 0 = NO\n'
+                '\t\t 1 = YES\n')
+    if not int(proceed)==1:
+        quit()
+    else:
+        print('Proceeding...')
+    
     # submit_lists, sub_contexts, run_filenames = make_submission_list()
     for sub_context, run_index, auto_compile_flag in zip(submission_contexts, runs, auto_compile_flags):
-
+        
         if auto_compile_flag and not compiled:
             auto_compile(override=True)
 
