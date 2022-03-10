@@ -623,7 +623,7 @@ def main():
     df.RUN = df.RUN.astype(int)
     df = df.sort_values('RUN')
     #print out and check that the user is happy
-    print('Submitting the following runs (submission_context={}):'.format(submission_context))
+    print('Submitting the following runs (submission_context={}):'.format(submission_contexts[0]))
     print(df.to_string(index = False))
     print('Will result in running {} fiber simulations'.format(n_fibers))
     proceed = input('\t Would you like to proceed?\n'
