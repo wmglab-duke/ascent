@@ -36,5 +36,11 @@ def run(args):
                 sim_dir = os.path.join('samples', str(sample), 'models', str(model), 'sims', str(sim))
                 sim_path = os.path.join('samples', str(sample), 'models', str(model), 'sims', str(sim),'sim.obj')
                 check = Simulation.thresholds_exist(sample, model, sim, sim_dir, os.path.join(nsim_source, 'n_sims'))
-                # Simulation.import_n_sims(sample, model, sim, sim_dir, os.path.join(nsim_source, 'n_sims'),delete = args.delete_nsims)
+                if check==False:
+                    if args.force==True:
+                        print('Force argument passed, continuing with import')
+                    else:
+                        print('At least one thresholds was missing, skipping import for run {} sample {} model {} sim {}'.format(argument,sample,model,sim))
+                        continue
+                Simulation.import_n_sims(sample, model, sim, sim_dir, os.path.join(nsim_source, 'n_sims'),delete = args.delete_nsims)
                 

@@ -623,7 +623,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 indir = os.path.join(nsim_dir,'data','inputs')
                 for file in [f for f in os.listdir(indir) if f.startswith('inner') and f.endswith('.dat')]:
                     if not os.path.exists(os.path.join(outdir,'thresh_'+file)):
-                        print('Missing threshold for {}'.format(file))
+                        print('Missing threshold {}'.format(os.path.join(outdir,'thresh_'+file)))
                         allthresh=False
         return allthresh
     
