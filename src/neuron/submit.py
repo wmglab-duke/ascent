@@ -23,12 +23,12 @@ import pandas as pd
 parser = argparse.ArgumentParser(description='ASCENT: Automated Simulations to Characterize Electrical Nerve Thresholds')
 parser.add_argument('run_indices', nargs = '+', help = 'Space separated indices to submit NEURON sims for')
 parser.add_argument('-p','--partition', help = 'If submitting on a cluster, overrides slurm_params.json')
-parser.add_argument('-L','--local-submit', action='store_true', help = 'Set submission context to local, overrides run.json')
-parser.add_argument('-C','--cluster-submit', action='store_true', help = 'Set submission context to cluster, overrides run.json')
 parser.add_argument('-n','--num-cpu', type=int, help = 'For local submission: set number of CPUs to use, overrides run.json')
 parser.add_argument('-m','--job-mem', type=int, help = 'For cluster submission: set amount of RAM per job (in MB), overrides slurm_params.json')
 parser.add_argument('-j','--num-jobs', type=int, help = 'For cluster submission: set number of jobs per array, overrides slurm_params.json')
-
+submit_context_group = parser.add_mutually_exclusive_group()
+submit_context_group.add_argument('-L','--local-submit', action='store_true', help = 'Set submission context to local, overrides run.json')
+submit_context_group.add_argument('-C','--cluster-submit', action='store_true', help = 'Set submission context to cluster, overrides run.json')
 
 ALLOWED_SUBMISSION_CONTEXTS = ['cluster', 'local','auto']
 OS = 'UNIX-LIKE' if any([s in sys.platform for s in ['darwin', 'linux']]) else 'WINDOWS'
@@ -574,7 +574,7 @@ def main():
 
     summary = []
     rundata = []
-    
+
     for run_number in run_inds:
         # run number is numeric
         assert re.search('[0-9]+', run_number), 'Encountered non-number run number argument: {}'.format(run_number)
@@ -611,7 +611,7 @@ def main():
 
         auto_compile_flag = run.get('override_compiled_mods', False)
         auto_compile_flags.append(auto_compile_flag)
-        
+
         #get list of fibers to run
         print('Generating run list for run {}'.format(run_number))
         summary.append(make_local_submission_list(run_number, printout=False))
@@ -620,8 +620,13 @@ def main():
              'MODELS':run['models'],
              'SIMS':run['sims']})
     #check that all submission contexts are the same
+    if args.local_submit==True:
+        submission_contexts=['local' for i in submission_contexts]
+    if args.cluster_submit==True:
+        submission_contexts=['cluster' for i in submission_contexts]
     if not np.all([x==submission_contexts[0] for x in submission_contexts]):
         sys.exit('Runs with different submission contexts cannot be submitted at the same time')
+
     #format run data
     n_fibers = sum([len(x) for x in summary])
     df = pd.DataFrame(rundata)
@@ -638,10 +643,10 @@ def main():
         quit()
     else:
         print('Proceeding...')
-    
+
     # submit_lists, sub_contexts, run_filenames = make_submission_list()
     for sub_context, run_index, auto_compile_flag in zip(submission_contexts, runs, auto_compile_flags):
-        
+
         if auto_compile_flag and not compiled:
             auto_compile(override=True)
 
