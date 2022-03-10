@@ -21,7 +21,12 @@ import argparse
 #Set up parser and top level args
 parser = argparse.ArgumentParser(description='ASCENT: Automated Simulations to Characterize Electrical Nerve Thresholds')
 parser.add_argument('run_indices', nargs = '+', help = 'Space separated indices to submit NEURON sims for')
-parser.add_argument('-p','--partition', help = 'If submitting on a cluster, overrides default partition assignment')
+parser.add_argument('-p','--partition', help = 'If submitting on a cluster, overrides slurm_params.json')
+parser.add_argument('-L','--local-submit', action='store_true', help = 'Set submission context to local, overrides run.json')
+parser.add_argument('-C','--cluster-submit', action='store_true', help = 'Set submission context to cluster, overrides run.json')
+parser.add_argument('-n','--num-cpu', type=int, help = 'For local submission: set number of CPUs to use, overrides run.json')
+parser.add_argument('-m','--job-mem', type=int, help = 'For cluster submission: set amount of RAM per job (in MB), overrides slurm_params.json')
+parser.add_argument('-j','--num-jobs', type=int, help = 'For cluster submission: set number of jobs per array, overrides slurm_params.json')
 
 
 ALLOWED_SUBMISSION_CONTEXTS = ['cluster', 'local','auto']
@@ -634,12 +639,9 @@ def main():
             slurm_params = load(os.path.join('config', 'system', 'slurm_params.json'))
 
             #assign params for array submission
-            if args.partition is None:
-                partition = slurm_params['partition']
-            else:
-                partition = args.partition
-            njobs = slurm_params.get("jobs_per_array")
-            mem = slurm_params.get("memory_per_fiber")
+            partition = slurm_params['partition'] if args.partition is None else args.partition
+            njobs = slurm_params['jobs_per_array'] if args.num_jobs is None else args.num_jobs
+            mem = slurm_params['memory_per_fiber'] if args.job_mem is None else args.job_mem
 
             cluster_submit(run_index,partition,array_length_max=njobs,mem=mem)
 
