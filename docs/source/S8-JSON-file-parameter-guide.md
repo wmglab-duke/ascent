@@ -137,7 +137,7 @@ of the file.
     set both values for `“cuff_only”` and `“nerve_only”` to true. To build the
     geometry of both the cuff and the nerve, but not proceed with meshing or
     solving the FEM, the user should set the value for `“post_geom_run”`
-    under `“break_points”` to true. Overriden 
+    under `“break_points”` to true. Overriden
     if the `"partial_fem"` command line argument is used. Optional.
 
     `“local_avail_cpus”`: The value (Integer) sets the number of CPUs that
@@ -336,7 +336,7 @@ of the file.
             3.  `“INNER_AND_OUTER_COMPILED”`: Program expects a single
                 segmented image containing boundaries of both inners and
                 outers.
-                
+
       - `“scale_input”`: The value (String) is the `“ScaleInputMode”`
         that tells the program which type of scale input to look for.
 
@@ -416,7 +416,7 @@ of the file.
             1. `“CIRCLE”`: The program creates a circular nerve boundary
                 with a preserved cross-sectional area (i.e., for multifascicular nerves/nerves that have epineurium).
             2. `“NONE”`: The program does not deform the nerve boundary (i.e., for monofascicular nerves/nerves that do not have epineurium).
-            
+
       - `“shrinkage_definition”`: The value (String) is the `“ShrinkageMode”`
         that tells the program how to interpret the "scale"->"shrinkage" parameter, which is provided as a decimal (i.e., 0.2 = 20%).
         Optional, but assumes the mode "LENGTH_FORWARDS if omitted, since this was the original behavior before this mode was added.
@@ -424,16 +424,16 @@ of the file.
           - As listed in Enums ([S6 Text](S6-Enums)), known `“ShrinkageModes”` include
 
             1. `“LENGTH_BACKWARDS”`: The value for "scale"->"shrinkage" refers to how much the length (e.g., radius, diameter, or perimeter)
-               of the nerve cross section was reduced from the fresh tissue to the imaged tissue. 
+               of the nerve cross section was reduced from the fresh tissue to the imaged tissue.
                  - Formula: r_post = r_original * (1-shrinkage)
             2. `“LENGTH_FORWARDS”`: The value for "scale"->"shrinkage" refers to how much the length (e.g., radius, diameter, or perimeter)
-               of the nerve cross section increases from the imaged tissue to the fresh tissue. 
+               of the nerve cross section increases from the imaged tissue to the fresh tissue.
                  - Formula: r_post = r_original / (1+shrinkage)
             3. `“AREA_BACKWARDS”`: The value for "scale"->"shrinkage" refers to how much the area
-               of the nerve cross section was reduced from the fresh tissue to the imaged tissue. 
+               of the nerve cross section was reduced from the fresh tissue to the imaged tissue.
                  - Formula: A_post = A_original * (1-shrinkage)
             4. `“AREA_FORWARDS”`: The value for "scale"->"shrinkage" refers to how much the area
-               of the nerve cross section increases from the imaged tissue to the fresh tissue. 
+               of the nerve cross section increases from the imaged tissue to the fresh tissue.
                  - Formula: A_post = A_original / (1+shrinkage)
 
     `“smoothing”`: Smoothing is applied via a dilating the nerve/fascicle boundary by a specified distance value and then shrinking it by that same value.
@@ -1478,7 +1478,8 @@ of the file.
 
         // EXAMPLE XY Parameters for EXPLICIT
         "xy_parameters": {
-          "mode": "EXPLICIT"
+          "mode": "EXPLICIT",
+          "explicit_fiberset_index" : Integer
         },
 
         // EXAMPLE XY Parameters for UNIFORM_DENSITY
@@ -1823,16 +1824,9 @@ of the file.
                 degrees. If false, the program interprets `“angle_offset”` in
                 radians. Required.
 
-          - `“EXPLICIT”`: The mode looks for the `“explicit.txt”` file that the
-            user saved in the simulation directory
-            (`samples/<sample_index>/models/<model_index>/sims/<sim
-            index>/`) for user-specified fiber (x,y)-coordinates (see
-            `config/templates/explicit.txt`). Note, this file is only required
-            if the user is using the `“EXPLICIT”` `“FiberXYMode”`. An error is
-            thrown if any explicitly defined coordinates are not inside any
-            inners.
+          - `“EXPLICIT”`: The mode looks for a `“<explicit_index>.txt”` file in the user created directory (`samples/<sample_index>/explicit_fibersets`) for user-specified fiber (x,y)-coordinates (see `config/templates/explicit.txt`). Note, this file is only required if the user is using the `“EXPLICIT”` `“FiberXYMode”`. An error is thrown if any explicitly defined coordinates are not inside any inners.
 
-              - No parameters required.
+              - `“explicit_fiberset_index”`: The value (Integer) indicates which explicit index file to use.
 
           - `“UNIFORM_DENSITY”`: Place fibers randomly in each inner to
             achieve a consistent number of fibers per unit area.
