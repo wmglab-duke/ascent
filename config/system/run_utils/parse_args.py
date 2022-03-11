@@ -19,7 +19,7 @@ mmg_parser = subparsers.add_parser('mock_morphology_generator', help = 'Generate
 ts_parser = subparsers.add_parser('tidy_samples', help = 'Remove specified files from Sample directories')
 
 #add subparser arguments
-pipeline_parser.add_argument('run_indices', nargs = '+', help = 'Space separated indices to run the pipeline over')
+pipeline_parser.add_argument('run_indices', type=int, nargs = '+', help = 'Space separated indices to run the pipeline over')
 pipeline_parser.add_argument('-b','--break-point',choices = ["pre_geom_run","post_geom_run","pre_java","post_mesh_distal","pre_mesh_distal","post_material_assign","pre_loop_currents","pre_mesh_proximal","post_mesh_proximal"], help = 'Point in pipeline to exit and continue to next run')
 pipeline_parser.add_argument('-w','--wait-for-license',type=float,help = "Wait the specified number of hours for a comsol license to become available.")
 pipeline_parser.add_argument('-P','--partial-fem',choices = ["cuff_only","nerve_only"],help = "Only generate the specified geometry.")

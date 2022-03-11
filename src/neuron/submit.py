@@ -21,7 +21,7 @@ import argparse
 import pandas as pd
 #Set up parser and top level args
 parser = argparse.ArgumentParser(description='ASCENT: Automated Simulations to Characterize Electrical Nerve Thresholds')
-parser.add_argument('run_indices', nargs = '+', help = 'Space separated indices to submit NEURON sims for')
+parser.add_argument('run_indices', type=int, nargs = '+', help = 'Space separated indices to submit NEURON sims for')
 parser.add_argument('-p','--partition', help = 'If submitting on a cluster, overrides slurm_params.json')
 parser.add_argument('-n','--num-cpu', type=int, help = 'For local submission: set number of CPUs to use, overrides run.json')
 parser.add_argument('-m','--job-mem', type=int, help = 'For cluster submission: set amount of RAM per job (in MB), overrides slurm_params.json')
@@ -446,7 +446,7 @@ def cluster_submit(run_number: int, partition: str, mem: int=2000, array_length_
                             # allow job to start before removing slurm file
                             time.sleep(1.0)
 
-                            array_index = 1
+                            array_index = 0
                             sim_array_batch += 1
                             start_paths_list = []
                             inner_index_tally = []
@@ -633,7 +633,7 @@ def main():
     df.RUN = df.RUN.astype(int)
     df = df.sort_values('RUN')
     #print out and check that the user is happy
-    print('Submitting the following runs (submission_context={}):'.format(submission_context))
+    print('Submitting the following runs (submission_context={}):'.format(submission_contexts[0]))
     print(df.to_string(index = False))
     print('Will result in running {} fiber simulations'.format(n_fibers))
     proceed = input('\t Would you like to proceed?\n'
@@ -654,7 +654,15 @@ def main():
             filename = os.path.join('runs', run_index + '.json')
             run = load(filename)
 
-            if 'local_avail_cpus' in run:
+            if args.num_cpu is not None:
+                cpus = args.num_cpu
+
+                if cpus > multiprocessing.cpu_count() - 1:
+                    raise ValueError('num_cpu argument is more than cpu_count-1 CPUs')
+
+                print(f"Submitting Run {run_index} locally to {cpus} CPUs (defined by num_cpu argument)")
+
+            elif 'local_avail_cpus' in run:
                 cpus = run.get('local_avail_cpus')
 
                 if cpus > multiprocessing.cpu_count() - 1:
