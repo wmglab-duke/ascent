@@ -20,7 +20,7 @@ import pickle
 import argparse
 #Set up parser and top level args
 parser = argparse.ArgumentParser(description='ASCENT: Automated Simulations to Characterize Electrical Nerve Thresholds')
-parser.add_argument('run_indices', nargs = '+', help = 'Space separated indices to submit NEURON sims for')
+parser.add_argument('run_indices', type=int, nargs = '+', help = 'Space separated indices to submit NEURON sims for')
 parser.add_argument('-p','--partition', help = 'If submitting on a cluster, overrides default partition assignment')
 
 
