@@ -446,7 +446,7 @@ def cluster_submit(run_number: int, partition: str, mem: int=2000, array_length_
                             # allow job to start before removing slurm file
                             time.sleep(1.0)
 
-                            array_index = 1
+                            array_index = 0
                             sim_array_batch += 1
                             start_paths_list = []
                             inner_index_tally = []
@@ -654,7 +654,15 @@ def main():
             filename = os.path.join('runs', run_index + '.json')
             run = load(filename)
 
-            if 'local_avail_cpus' in run:
+            if args.num_cpu is not None:
+                cpus = args.num_cpu
+
+                if cpus > multiprocessing.cpu_count() - 1:
+                    raise ValueError('num_cpu argument is more than cpu_count-1 CPUs')
+
+                print(f"Submitting Run {run_index} locally to {cpus} CPUs (defined by num_cpu argument)")
+
+            elif 'local_avail_cpus' in run:
                 cpus = run.get('local_avail_cpus')
 
                 if cpus > multiprocessing.cpu_count() - 1:
