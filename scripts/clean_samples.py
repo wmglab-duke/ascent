@@ -7,6 +7,7 @@ The source code can be found on the following GitHub repository: https://github.
 """
 
 import os
+import sys
 from pathlib import Path
 
 EXCLUDED_FILENAMES = [
