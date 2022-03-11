@@ -30,7 +30,7 @@ def run(args):
                     '\t\t 0 = NO\n'
                     '\t\t 1 = YES\n'.format(INCLUDED_FILENAMES,args.sample_indices))
     if not int(proceed)==1:
-        quit()
+        sys.exit()
     else:
         print('Proceeding...')
 
@@ -40,7 +40,7 @@ def run(args):
                         '\t\t 0 = NO\n'
                         '\t\t 1 = YES\n')
         if not int(proceed):
-            quit()
+            sys.exit()
         else:
             print('Proceeding...')
     
