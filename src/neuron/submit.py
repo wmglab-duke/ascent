@@ -233,7 +233,6 @@ def local_submit(my_local_args: dict):
 
 def cluster_submit(run_number: int, partition: str, mem: int=2000, array_length_max: int = 10):
     
-    run_number = str(run_number)
     # configuration is not empty
     assert array_length_max > 0, 'SLURM Job Array length is not > 0: array_length_max={}'.format(array_length_max)
 
@@ -578,6 +577,8 @@ def main():
     rundata = []
 
     for run_number in run_inds:
+
+        run_number = str(run_number)
         # run number is numeric
         assert re.search('[0-9]+', run_number), 'Encountered non-number run number argument: {}'.format(run_number)
 
