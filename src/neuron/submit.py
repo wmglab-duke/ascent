@@ -440,7 +440,7 @@ def cluster_submit(run_number: int, partition: str, mem: int=2000, array_length_
                             # allow job to start before removing slurm file
                             time.sleep(1.0)
 
-                            array_index = 1
+                            array_index = 0
                             sim_array_batch += 1
                             start_paths_list = []
                             inner_index_tally = []
