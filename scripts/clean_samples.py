@@ -7,6 +7,7 @@ The source code can be found on the following GitHub repository: https://github.
 """
 
 import os
+import sys
 from pathlib import Path
 
 EXCLUDED_FILENAMES = [
@@ -29,7 +30,7 @@ def run(args):
                     '\t\t 0 = NO\n'
                     '\t\t 1 = YES\n'.format(EXCLUDED_FILENAMES,args.sample_indices))
     if not int(proceed)==1:
-        quit()
+        sys.exit()
     else:
         print('Proceeding...')
     
