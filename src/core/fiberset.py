@@ -9,6 +9,7 @@ The source code can be found on the following GitHub repository: https://github.
 import random
 import warnings
 from typing import List, Tuple
+import shutil
 
 from shapely.affinity import scale
 from shapely.geometry import LineString, Point
@@ -250,7 +251,18 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                                 points.append(point)
 
             elif xy_mode == FiberXYMode.EXPLICIT:
-
+                
+                explicit_index = self.search(Config.SIM, 'fibers','xy_parameters','explicit_fiberset_index',optional=True)
+                
+                if explicit_index is not None:
+                    explicit_source = os.path.join(sim_directory.split(os.sep)[0],os.sep,*sim_directory.split(os.sep)[1:-4],'explicit_fibersets','{}.txt'.format(explicit_index))
+                    explicit_dest = os.path.join(sim_directory,'explicit.txt')
+                    shutil.copyfile(explicit_source,explicit_dest)
+                else:
+                    print('\t\tWARNING: Explicit fiberset index not specified.'
+                          '\n\t\tProceeding with backwards compatible check for explicit.txt in:'
+                          '\n\t\t{}'.format(sim_directory))
+                    
                 if not os.path.exists(os.path.join(sim_directory, 'explicit.txt')):
                     self.throw(83)
 
