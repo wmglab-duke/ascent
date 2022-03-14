@@ -25,27 +25,27 @@ pipeline_parser.add_argument('-w','--wait-for-license',type=float,help = "Wait t
 pipeline_parser.add_argument('-P','--partial-fem',choices = ["cuff_only","nerve_only"],help = "Only generate the specified geometry.")
 ts_parser.add_argument('sample_indices', nargs = '+',type=int, help = 'Space separated sample indices to tidy')
 nsims_parser.add_argument('run_indices', nargs = '+',type=int, help = 'Space separated run indices to import')
-nsims_parser.add_argument('-f','--force',action='store_true', help='Import n_sims even if all thresholds are not found')
-nsims_parser.add_argument('-D','--delete-nsims',action='store_true', help='After importing delete n_sim folder from NSIM_EXPORT_PATH')
+nsims_group = nsims_parser.add_mutually_exclusive_group()
+nsims_group.add_argument('-f','--force',action='store_true', help='Import n_sims even if all thresholds are not found')
+nsims_group.add_argument('-D','--delete-nsims',action='store_true', help='After importing delete n_sim folder from NSIM_EXPORT_PATH')
 cs_parser.add_argument('sample_indices', nargs = '+',type=int, help = 'Space separated sample indices to clean')
 mmg_parser.add_argument('mock_sample_index',type=int, help = 'Mock Sample Index to generate')
 install_parser.add_argument('--no-conda',action='store_true', help = 'Skip conda portion of installation')
 
 def parse():
     """parse all args"""
-    
+
     def g0(args, argstring):
         """checks that argument is greater than 0"""
         if hasattr(args,argstring) and getattr(args,argstring)!=None and getattr(args,argstring)<=0:
             sys.exit('Arguments for {} must be greater than 0'.format(argstring))
-    
+
     #parse arguments
     args = parser.parse_args()
     g0(args,'wait_for_license')
-    
+
     if not len(sys.argv)>1:
         parser.print_help()
         sys.exit()
 
     return args
-
