@@ -1028,6 +1028,7 @@ public class ModelWrapper {
             boolean save = true;
             if (! new File(mphFile).exists()) {
                 model.sol("sol1").runAll();
+                model.component("comp1").mesh("mesh1").clearMesh();
             } else {
                 save = false;
                 System.out.println("\tSkipping solving and saving for basis " + key_on + " because found existing file: " + mphFile);
@@ -1179,7 +1180,6 @@ public class ModelWrapper {
             }
         }
 
-
         // Take projectPath input to ModelWrapper and assign to string.
         String projectPath = args[0];
 
@@ -1200,6 +1200,14 @@ public class ModelWrapper {
         }
         else if (run.has("break_points")) {
                 break_points = run.getJSONObject("break_points");
+        }
+
+        Boolean endo_only_solution = false;
+        if (cli_args.has("endo_only_solution") && cli_args.getBoolean("endo_only_solution")) {
+            endo_only_solution = true;
+        }
+        else if (run.has("endo_only_solution") && run.getBoolean("endo_only_solution")) {
+            endo_only_solution = true;
         }
 
         boolean nerve_only = false;
@@ -1986,6 +1994,10 @@ public class ModelWrapper {
                     model.study("std1").feature("stat").set("notsolnum", "1");
                     model.study("std1").feature("stat").set("listsolnum", 1);
                     model.study("std1").feature("stat").set("solnum", "1");
+                    if (endo_only_solution) {
+                        model.study("std1").feature("stat").set("usestoresel", "selection");
+                        model.study("std1").feature("stat").set("storesel", new String[]{"geom1_" + mw.im.get(ENDO_UNION) + "_dom"});
+                    }
 
                     model.sol("sol1").create("st1", "StudyStep");
                     model.sol("sol1").feature("st1").set("study", "std1");
