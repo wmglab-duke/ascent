@@ -70,7 +70,7 @@ for sample in samples:
                 # build and save animation
                 print('WARNING: DO NOT ATTEMPT TO OPEN FILE UNTIL FRAME INDICES HAVE FINISHED PRINTING')
                 ani = FuncAnimation(fig, update, frames=np.arange(1, 5000, 5),  # frames=np.arange(0, 5000, 1),
-                                    init_func=init, blit=False, interval=1, save_count=5000, repeat=False)
+                                    init_func=init, blit=False, interval=10, save_count=5000, repeat=False)
                 # ani.save(os.path.join(data_path,
                 #                       'video_gating_h_time_inner{}_fiber{}_amp0.gif'.format(inner, fiber)  # or .mp4
                 #                       ))
