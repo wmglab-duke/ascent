@@ -23,7 +23,7 @@ pipeline_parser.add_argument('run_indices', type=int, nargs = '+', help = 'Space
 pipeline_parser.add_argument('-b','--break-point',choices = ["pre_geom_run","post_geom_run","pre_java","post_mesh_distal","pre_mesh_distal","post_material_assign","pre_loop_currents","pre_mesh_proximal","post_mesh_proximal"], help = 'Point in pipeline to exit and continue to next run')
 pipeline_parser.add_argument('-w','--wait-for-license',type=float,help = "Wait the specified number of hours for a comsol license to become available.")
 pipeline_parser.add_argument('-P','--partial-fem',choices = ["cuff_only","nerve_only"],help = "Only generate the specified geometry.")
-pipeline_parser.add_argument('-e','--endo-only-solution',action='store_true',help ="")
+pipeline_parser.add_argument('-e','--endo-only-solution',action='store_true',help ="Store basis solutions for endoneurial geometry ONLY")
 ts_parser.add_argument('sample_indices', nargs = '+',type=int, help = 'Space separated sample indices to tidy')
 nsims_parser.add_argument('run_indices', nargs = '+',type=int, help = 'Space separated run indices to import')
 nsims_parser.add_argument('-D','--delete-nsims',action='store_true', help='After importing delete n_sim folder from NSIM_EXPORT_PATH')
