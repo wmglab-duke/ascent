@@ -1996,7 +1996,7 @@ public class ModelWrapper {
                     model.study("std1").feature("stat").set("solnum", "1");
                     if (endo_only_solution) {
                         model.study("std1").feature("stat").set("usestoresel", "selection");
-                        model.study("std1").feature("stat").set("storesel", new String[]{"geom1_" + mw.im.get(ENDO_UNION) + "_dom"});
+                        model.study("std1").feature("stat").set("storesel", new String[]{"geom1_" + mw.im.get("endoUnionCsel") + "_dom"});
                     }
 
                     model.sol("sol1").create("st1", "StudyStep");
