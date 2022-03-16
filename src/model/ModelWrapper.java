@@ -331,7 +331,7 @@ public class ModelWrapper {
         String id = ve_im.next("interp");
         model.result().numerical().create(id, "Interp");
         model.result().numerical(id).set("expr", "V");
-        model.result().numerical(id).set("recover", "ppr");
+        model.result().numerical(id).set("recover", "pprint");
         model.result().numerical(id).set("matherr", "on");
         model.result().numerical(id).setInterpolationCoordinates(coordinates);
         double[][][] ve_pre = model.result().numerical(id).getData();
