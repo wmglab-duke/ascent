@@ -30,8 +30,9 @@ import java.util.regex.Pattern;
  * assigning physics, and extracting potentials. This class houses the "meaty" operations of actually interacting with
  * the model object when creating parts in the static class model.Parts.
  */
-public class ModelWrapper {
 
+@SuppressWarnings({"unchecked","rawtypes","path"})
+public class ModelWrapper {
 
     // UNION PSEUDONYM CONSTANTS
     public static final String ALL_NERVE_PARTS_UNION = "allNervePartsUnion";
@@ -1153,29 +1154,26 @@ public class ModelWrapper {
 //        ModelUtil.showProgress(null); // if you want to see COMSOL progress (as it makes all geometry, runs, etc.)
 
         //checkout comsol license
-        if (cli_args.has("wait_for_license"));
-        {
-            if (!cli_args.isNull("wait_for_license")) {
-                long wait_hours = cli_args.getLong("wait_for_license");
-                System.out.println("Attempting to check out COMSOL license. System will wait up to " + String.valueOf(wait_hours) + " hours for an available license seat.");
-                boolean lic = false;
-                long start = System.currentTimeMillis();
-                long stop = wait_hours * 60 * 60 * 1000 + start;
-                while (System.currentTimeMillis() < stop) {
-                    lic = ModelUtil.checkoutLicense("COMSOL");
-                    if (lic == true) {
-                        long now = System.currentTimeMillis();
-                        double elapsed = (Long.valueOf(now).doubleValue()-Long.valueOf(start).doubleValue())/(60 * 60 * 1000);
-                        System.out.printf("COMSOL license seat obtained (took %.3f hours).%n", elapsed);
-                        break;
-                    } else {
-                        TimeUnit.SECONDS.sleep(600);
-                    }
+        if (cli_args.has("wait_for_license") && !cli_args.isNull("wait_for_license")) {
+            long wait_hours = cli_args.getLong("wait_for_license");
+            System.out.println("Attempting to check out COMSOL license. System will wait up to " + String.valueOf(wait_hours) + " hours for an available license seat.");
+            boolean lic = false;
+            long start = System.currentTimeMillis();
+            long stop = wait_hours * 60 * 60 * 1000 + start;
+            while (System.currentTimeMillis() < stop) {
+                lic = ModelUtil.checkoutLicense("COMSOL");
+                if (lic == true) {
+                    long now = System.currentTimeMillis();
+                    double elapsed = (Long.valueOf(now).doubleValue()-Long.valueOf(start).doubleValue())/(60 * 60 * 1000);
+                    System.out.printf("COMSOL license seat obtained (took %.3f hours).%n", elapsed);
+                    break;
+                } else {
+                    TimeUnit.SECONDS.sleep(600);
                 }
-                if (lic == false) {
-                    System.out.println("A COMSOL license did not become available within the specified time window. Exiting...");
-                    System.exit(1);
-                }
+            }
+            if (lic == false) {
+                System.out.println("A COMSOL license did not become available within the specified time window. Exiting...");
+                System.exit(1);
             }
         }
 

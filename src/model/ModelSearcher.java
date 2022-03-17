@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+@SuppressWarnings({"unchecked","rawtypes","path"})
 public class ModelSearcher {
 
     private Path root;

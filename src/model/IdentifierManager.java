@@ -10,6 +10,7 @@ import org.json.JSONObject;
 
 import java.util.*;
 
+@SuppressWarnings({"unchecked","rawtypes","path"})
 public class IdentifierManager {
 
     private HashMap<String, Integer> identifierStates = new HashMap<>();
