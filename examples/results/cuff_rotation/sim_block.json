@@ -78,7 +78,7 @@
     },
     "bounds_search": {
       "mode": "PERCENT_INCREMENT",
-      "step": 0.1,
+      "step": 10,
       "top": -1.2,
       "bottom": -0.8
     },
