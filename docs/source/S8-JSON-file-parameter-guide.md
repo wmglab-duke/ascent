@@ -1451,6 +1451,7 @@ of the file.
           "max": Double,
           "full_nerve_length": Boolean,
           "offset": Double, // or omitted for random jitter within +/- 1 internodal length
+          "absolute_offset": Double,
           "seed": Integer
         },
 
@@ -1765,6 +1766,10 @@ of the file.
             be randomly selected between +/- 0.5 section/segment length; to
             avoid the randomized longitudinal placement, set the offset
             value to ‘0’ for no offset.
+
+          - `“absolute_offset”`: The value (Double) is the distance (micrometers) that the center coordinate of the fiber is
+            shifted along the z-axis from the longitudinal center of the
+            proximal medium. This value is additive with `"offset"`. Note that the shift is with respect to the model center. If a negative value is passed, the fiber will be shifted in the -z direction.
 
           - `“seed”`: The value (Integer) seeds the random number generator
             before any random offsets are created. Required only if “offset”
@@ -2309,6 +2314,7 @@ of the file.
           "max": 12500,
           "full_nerve_length": False,
           "offset": 0,
+          "absolute_offset": 0,
           "seed": 123
         },
         "xy_parameters": {

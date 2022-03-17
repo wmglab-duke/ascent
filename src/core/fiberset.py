@@ -381,7 +381,13 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                             (paranodal_length_1 / 2) + (node_length / 2)]
 
             # account for difference between last node z and half fiber length -> must shift extra distance
-            my_z_shift_to_center_in_fiber_range = half_model_length - sum(z_steps)
+            
+            if shift is None:
+                modshift = 0
+            else:
+                modshift = shift % delta_z
+            
+            my_z_shift_to_center_in_fiber_range = half_model_length - sum(z_steps) + modshift
 
             reverse_z_steps = z_steps.copy()
             reverse_z_steps.reverse()
@@ -444,7 +450,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
             model_length = self.search(Config.MODEL, 'medium', 'proximal', 'length') if (
                     override_length is None) else override_length
-
+            
             if not 'min' in self.configs['sims']['fibers']['z_parameters'].keys() or \
                     not 'max' in self.configs['sims']['fibers']['z_parameters'].keys() or \
                     override_length is not None:
@@ -475,7 +481,12 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                            'longitudinally_centered',optional=True) is False:
                 print('WARNING: the sim>fibers>z_parameters>longitudinally_centered parameter is deprecated.\
                       \nFibers will be centered to the model.')
-
+                      
+            shift =  self.search(Config.SIM,
+                           'fibers',
+                           FiberZMode.parameters.value,
+                           'absolute_offset',optional=True)
+            
             half_model_length = model_length / 2
 
             assert model_length >= fiber_length, 'proximal length: ({}) < fiber length: ({})'.format(model_length,
