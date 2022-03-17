@@ -15,6 +15,7 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 
+@SuppressWarnings({"unchecked","rawtypes","path"})
 class Part {
     /**
      * Create a defined part primitive. There is a finite number of choices, as seen below in the switch.

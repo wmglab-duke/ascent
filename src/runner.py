@@ -462,7 +462,7 @@ class Runner(Exceptionable, Configurable):
             time.sleep(30)
             os.chdir('src')
             os.system('""{}\\javac" '
-                      '-cp "..\\bin\\json-20190722.jar";"{}\\plugins\\*" '
+                      '-Xlint -cp "..\\bin\\json-20190722.jar";"{}\\plugins\\*" '
                       'model\\*.java -d ..\\bin"'.format(jdk_path,
                                                          comsol_path))
             os.system('""{}\\java\\win64\\jre\\bin\\java" '
