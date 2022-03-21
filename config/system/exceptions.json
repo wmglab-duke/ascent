@@ -538,6 +538,10 @@
   {
     "code": 135,
     "text": "Invalid protocol mode defined in sim configuration file"
+  },
+  {
+    "code": 136,
+    "text": "Invalid SetupMode for Map object"
   }
 ]
 
