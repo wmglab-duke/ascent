@@ -2,6 +2,7 @@
 
 We provide scripts to help users efficiently manage data created by ASCENT. Run all of these scripts from the directory
 to which you installed ASCENT (i.e., `"ASCENT_PROJECT_PATH"` as defined in `config/system/env.json`).
+For more usage information, including optional arguments, see [Command-Line Arguments](command_line_args).
 
 ## `scripts/import_n_sims.py`
 To import NEURON simulation outputs (e.g., thresholds, recordings of V<sub>m</sub>) from your `ASCENT_NSIM_EXPORT_PATH`
