@@ -59,6 +59,7 @@ of the file.
         "pre_loop_currents": Boolean // immediately before solving for bases
       },
       "models_exit_status": [Boolean, ...], // one entry for each Model
+      "endo_only_solution": Boolean,
       "keep": {
         "debug_geom": Boolean,
         "mesh": Boolean,
@@ -106,6 +107,17 @@ of the file.
     default behavior is false (i.e., the pipeline continues beyond the
     breakpoint). Note: specifying a break point via command line arguments
     will override any break points set in your run config. Optional.
+
+    `"endo_only_solution"`: The value (Boolean) determines what data the electric pre_loop_currents
+    solution will save. Since fibers are sample from the endoneurium, after the
+    solution is completed, only the endoneurial Ve data is necessary to run fiber
+    simulations. If `"endo_only_solution"` is `true`, then COMSOL will save ONLY
+    the Ve data for the endoneurium. If `false`, COMSOL will save Ve data for the entire model.
+    Recommended value is `true` unless you intend to generate plots or other analyses
+    which require Ve data for geometry other than the endoneurium. If this key-value pairs
+    is not present, defaults to `false`. Note: this parameter only affects storage
+    space after the solution has completed, and will not have any affect on memory
+    usage or solution time.
 
     `“models_exit_status”`: The value (\[Boolean, ...\]) of this property
     indicates if Java successfully made the FEMs for the corresponding model
@@ -169,6 +181,7 @@ of the file.
         "post_material_assign": false,  
         "pre_loop_currents": false
       },
+      "endo_only_solution":true,
       "models_exit_status": [true],
       "keep": {
         "debug_geom": true,
