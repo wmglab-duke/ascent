@@ -16,6 +16,7 @@
     "pre_loop_currents": false
   },
   "models_exit_status": [true],
+  "endo_only_solution":true,
   "keep": {
     "debug_geom": true,
     "mesh": true,
