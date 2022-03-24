@@ -109,7 +109,7 @@ of the file.
     will override any break points set in your run config. Optional.
 
     `"endo_only_solution"`: The value (Boolean) determines what data the electric currents
-    solution will save. Since fibers are sample from the endoneurium, after the
+    solution will save. Since fibers are sampled from the endoneurium, after the
     solution is completed, only the endoneurial Ve data is necessary to run fiber
     simulations. If `"endo_only_solution"` is `true`, then COMSOL will save ONLY
     the Ve data for the endoneurium. If `false`, COMSOL will save Ve data for the entire model.
