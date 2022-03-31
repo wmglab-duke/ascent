@@ -232,7 +232,7 @@ def local_submit(my_local_args: dict):
 
 
 def cluster_submit(run_number: int, partition: str, mem: int=2000, array_length_max: int = 10):
-    
+
     # configuration is not empty
     assert array_length_max > 0, 'SLURM Job Array length is not > 0: array_length_max={}'.format(array_length_max)
 
@@ -426,13 +426,13 @@ def cluster_submit(run_number: int, partition: str, mem: int=2000, array_length_
                             data[1].append(inner_index_tally)
                             data[2].append(fiber_index_tally)
 
+                            key_arr = np.transpose(np.array([x for xs in data[0] for x in xs],
+                                                             [y for ys in data[1] for y in ys],
+                                                             [z for zs in data[2] for z in zs]))
+
                             if fiber_file_ind == max_fibers_files_ind:
                                 with open(key_file, "ab") as f:
-                                    np.savetxt(f,
-                                               ([x for xs in data[0] for x in xs],
-                                                [y for ys in data[1] for y in ys],
-                                                [z for zs in data[2] for z in zs]),
-                                               fmt='%d')
+                                    np.savetxt(f, key_arr, fmt='%d', header='job_n inner fiber')
 
                                 data = [[], [], []]
 
