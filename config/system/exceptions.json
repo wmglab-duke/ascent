@@ -542,6 +542,9 @@
   {
     "code": 136,
     "text": "Invalid SetupMode for Map object"
+  },
+  {
+    "code": 137,
+    "text": "If a list, loopable sim parameters must have length greater than 1."
   }
 ]
-
