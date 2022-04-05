@@ -545,6 +545,6 @@
   },
   {
     "code": 137,
-    "text": "If a list, loopable sim parameters must have length greater than 1."
+    "text": "If type list, loopable sim parameters must have length greater than 1. For a single (non-looping) value, use a Double."
   }
 ]
