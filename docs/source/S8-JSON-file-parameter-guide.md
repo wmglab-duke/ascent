@@ -914,7 +914,7 @@ of the file.
 
     ```
     {
-      "pseudonym: String,
+      "pseudonym": String,
       "modes": {
         "rho_perineurium": String,
         "cuff_shift": String,
