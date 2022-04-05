@@ -184,7 +184,7 @@ class Runner(Exceptionable, Configurable):
             for model_index, model_config in enumerate(all_configs[Config.MODEL.value]):
                 model_num = self.configs[Config.RUN.value]['models'][model_index]
                 model_pseudonym = model_config.get('pseudonym')
-                print('    MODEL {}'.format(model_num),
+                print('\tMODEL {}'.format(model_num),
                       '- {}'.format(model_pseudonym) if model_pseudonym is not None else '')
                         
 
@@ -211,7 +211,7 @@ class Runner(Exceptionable, Configurable):
                     for sim_index, sim_config in enumerate(all_configs['sims']):
                         sim_num = self.configs[Config.RUN.value]['sims'][sim_index]
                         sim_pseudonym = sim_config.get('pseudonym')
-                        print('        SIM {}'.format(self.configs[Config.RUN.value]['sims'][sim_index]),
+                        print('\t\tSIM {}'.format(self.configs[Config.RUN.value]['sims'][sim_index]),
                               '- {}'.format(sim_pseudonym) if sim_pseudonym is not None else '')
                         
                         sim_obj_dir = os.path.join(
