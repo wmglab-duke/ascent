@@ -61,7 +61,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
                     # print('adding key {} to sub {}'.format(key, sub))
                     self.factors[path + '->' + key] = value
                 elif type(value) == list and len(value) <= 1:
-                    print("If a list," key,"must have length greater than 1.")
+                    print("ERROR:",key,"is a list, but has length",len(value))
                     self.throw(137)
                 elif type(value) == dict:
                     # print('recurse: {}'.format(value))
