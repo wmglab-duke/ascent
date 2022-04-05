@@ -42,6 +42,7 @@ of the file.
     following syntax:
     ```
     {
+      "pseudonym": String,
       "submission_context": String,
       "sample": Integer, // note, only one value here!
       "models": [Integer, ...], // pipeline will create all pairwise combos of …
@@ -74,6 +75,9 @@ of the file.
     }
     ```
 1.  Properties:
+
+    `"pseudonym"`: This value (String) informs pipeline print statements, allowing
+    users to better keep track of the purpose of each configuration file. Optional.
 
     `“submission_context”`: The value (String) of this property tells the
     system how to submit the n\_sim NEURON jobs based on the computational
@@ -165,6 +169,7 @@ of the file.
 1.  Example:
     ```
     {
+      "pseudonym": "My example run",
       "submission_context": “cluster”,
       "sample": 62,
       "models": [0],
@@ -210,6 +215,7 @@ of the file.
     ```
     {
       "sample": String,
+      "pseudonym": String,
       "sex": String,
       "level": String,
       "samples_path": [
@@ -282,6 +288,9 @@ of the file.
     name/identifier (e.g., “Rat1-1”) to relate to bookkeeping for input
     morphology files ([S3 Text Figure A](S3-ASCENT-data-hierarchy)). The value must match the directory name in
     `input/<NAME>/` that contains the input morphology files. Required.
+
+    `"pseudonym"`: This value (String) informs pipeline print statements, allowing
+    users to better keep track of the purpose of each configuration file. Optional.
 
     `“sex”`: The value (String) of this property assigns the sex of the
     sample. Optional, for user records only.
@@ -505,6 +514,7 @@ of the file.
     ```
     {
       "sample": "Rat16-3", // monofascicular nerve without epineurium
+      "pseudonym": "My example sample",
       "sex": "M",
       "level": "Cervical",
       "samples_path": [
@@ -904,6 +914,7 @@ of the file.
 
     ```
     {
+      "pseudonym: String,
       "modes": {
         "rho_perineurium": String,
         "cuff_shift": String,
@@ -1005,6 +1016,9 @@ of the file.
     }
     ```
 1.  Properties:
+
+    `"pseudonym"`: This value (String) informs pipeline print statements, allowing
+    users to better keep track of the purpose of each configuration file. Optional.
 
     “modes”
 
@@ -1305,6 +1319,7 @@ of the file.
 1.  Example:
     ```
     {
+      "pseudonym": "My example model",
       "modes": {
         "rho_perineurium": "RHO_WEERASURIYA",
         "cuff_shift": "AUTO_ROTATION_MIN_CIRCLE_BOUNDARY",
@@ -1424,6 +1439,7 @@ of the file.
     following syntax:
     ```
     {
+      "pseudonym": String,
       "n_dimensions": Integer,
       "plot_folder" : Boolean,
       "active_srcs": {
@@ -1653,6 +1669,9 @@ of the file.
     }
     ```
 1.  Properties:
+
+    `"pseudonym"`: This value (String) informs pipeline print statements, allowing
+    users to better keep track of the purpose of each configuration file. Optional.
 
     `“n_dimensions”`: The value (Integer) is the number of parameters in
     ***Sim*** for which a list is provided rather than a single value. The
@@ -2312,6 +2331,7 @@ of the file.
 1.  Example:
     ```
     {
+      "pseudonym": "My example sim",
       "n_dimensions": 3,
       "plot_folder" : true,
       "active_srcs": {
