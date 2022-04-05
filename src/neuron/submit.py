@@ -44,6 +44,9 @@ def load(config_path: str):
         # print('load "{}" --> key "{}"'.format(config, key))
         return json.load(handle)
 
+def ensure_dir(directory):
+    if not os.path.exists(directory):
+        os.makedirs(directory)
 
 def auto_compile(override: bool = False):
     if (not os.path.exists(os.path.join('MOD_Files/x86_64')) and OS == 'UNIX-LIKE') or \
@@ -258,11 +261,12 @@ def cluster_submit(run_number: int, partition: str, mem: int=2000, array_length_
 
             for sim_name in [x for x in os.listdir(sim_dir) if x.startswith(sim_name_base)]:
                 print('\n\n################ {} ################\n\n'.format(sim_name))
-
+                
                 sim_path = os.path.join(sim_dir, sim_name)
                 fibers_path = os.path.abspath(os.path.join(sim_path, 'data', 'inputs'))
                 output_path = os.path.abspath(os.path.join(sim_path, 'data', 'outputs'))
-                start_path_base = os.path.join(sim_path,'start_scripts', 'start_')
+                start_dir = os.path.join(sim_path, 'start_scripts')
+                start_path_base = os.path.join(start_dir, 'start_')
 
                 n_sim = sim_name.split('_')[3]
                 sim_config = load(os.path.join(sim_dir, sim_name, '{}.json'.format(n_sim)))
@@ -272,9 +276,8 @@ def cluster_submit(run_number: int, partition: str, mem: int=2000, array_length_
                 # ensure log directories exist
                 out_dir = os.path.join(sim_path, 'logs', 'out', '')
                 err_dir = os.path.join(sim_path, 'logs', 'err', '')
-                for cur_dir in [out_dir, err_dir]:
-                    if not os.path.exists(cur_dir):
-                        os.makedirs(cur_dir)
+                for cur_dir in [fibers_path, output_path, out_dir, err_dir, start_dir]:
+                    ensure_dir(cur_dir)
 
                 # ensure blank.hoc exists
                 blank_path = os.path.join(sim_path, 'blank.hoc')
@@ -484,15 +487,15 @@ def make_local_submission_list(run_number: int,printout = True):
                 sim_path = os.path.join(sim_dir, sim_name)
                 fibers_path = os.path.abspath(os.path.join(sim_path, 'data', 'inputs'))
                 output_path = os.path.abspath(os.path.join(sim_path, 'data', 'outputs'))
-
+                start_dir = os.path.join(sim_path,"start_scripts")
 
                 out_dir = os.path.abspath(os.path.join(sim_path, 'logs', 'out'))
                 err_dir = os.path.abspath(os.path.join(sim_path, 'logs', 'err'))
 
                 # ensure necessary directories exist
-                for cur_dir in [fibers_path, output_path, out_dir, err_dir]:
-                    if not os.path.exists(cur_dir):
-                        os.makedirs(cur_dir)
+                for cur_dir in [fibers_path, output_path, out_dir, err_dir, start_dir]:
+                    ensure_dir(cur_dir)
+                    
                 # ensure blank.hoc exists
                 blank_path = os.path.join(sim_path, 'blank.hoc')
                 if not os.path.exists(blank_path):
@@ -528,7 +531,7 @@ def make_local_submission_list(run_number: int,printout = True):
                         continue
 
                     # local
-                    start_path = os.path.join(sim_path, '{}_{}_start{}'.format(inner_ind, fiber_ind,
+                    start_path = os.path.join(start_dir, '{}_{}_start{}'.format(inner_ind, fiber_ind,
                                                                                '.sh' if OS == 'UNIX-LIKE'
                                                                                else '.bat'))
                     stimamp_top, stimamp_bottom = get_thresh_bounds(sim_dir, sim_name, inner_ind)
@@ -552,7 +555,7 @@ def make_local_submission_list(run_number: int,printout = True):
                     error_log = os.path.join(err_dir, '{}{}'.format(master_fiber_name, '.log'))
 
                     local_args = dict.fromkeys(local_run_keys, [])
-                    local_args['start'] = start_path.split(os.path.sep)[-1]
+                    local_args['start'] = os.path.join('start_scripts',start_path.split(os.path.sep)[-1])
                     local_args['output_log'] = os.path.join('logs', 'out', output_log.split(os.path.sep)[-1])
                     local_args['error_log'] = os.path.join('logs', 'err', error_log.split(os.path.sep)[-1])
                     local_args['sim_path'] = os.path.abspath(sim_path)
