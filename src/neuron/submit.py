@@ -432,7 +432,7 @@ def cluster_submit(run_number: int, partition: str, mem: int=2000, array_length_
 
                             if fiber_file_ind == max_fibers_files_ind:
                                 with open(key_file, "ab") as f:
-                                    np.savetxt(f, key_arr, fmt='%d', header='job_n inner fiber')
+                                    np.savetxt(f, key_arr, fmt='%d', header='job_n, inner, fiber',comments='',delimiter = ", ")
 
                                 data = [[], [], []]
 
