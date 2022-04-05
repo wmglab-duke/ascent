@@ -262,7 +262,7 @@ def cluster_submit(run_number: int, partition: str, mem: int=2000, array_length_
                 sim_path = os.path.join(sim_dir, sim_name)
                 fibers_path = os.path.abspath(os.path.join(sim_path, 'data', 'inputs'))
                 output_path = os.path.abspath(os.path.join(sim_path, 'data', 'outputs'))
-                start_path_base = os.path.join(sim_path, 'start_')
+                start_path_base = os.path.join(sim_path,'start_scripts', 'start_')
 
                 n_sim = sim_name.split('_')[3]
                 sim_config = load(os.path.join(sim_dir, sim_name, '{}.json'.format(n_sim)))
