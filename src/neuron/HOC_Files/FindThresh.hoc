@@ -42,7 +42,7 @@ proc FindThresh() {//local key
 		}
 
 		if (N_APs_top == 0) {
-			print "ERROR: Initial stimamp_top value does not elicit an AP (find_block_thresh = 0) or does not block (find_block_thresh = 1) - need to increase its magnitude and/or increase tstop to detect evoked AP"
+			print "WARNING: Initial stimamp_top value does not elicit an AP (find_block_thresh = 0) or does not block (find_block_thresh = 1) - need to increase its magnitude and/or increase tstop to detect evoked AP"
 
 			if (increment_flag == 1) { // relative (increase upper-bound by a certain percentage of the previous value, e.g., 10%)
 				stimamp_top    = stimamp_top*(1+rel_increment)
@@ -63,7 +63,7 @@ proc FindThresh() {//local key
 		}
 
 		if (N_APs_bottom != (0)) {
-			print "ERROR: Initial stimamp_bottom value elicits an AP (find_block_thresh = 0) or blocks (find_block_thresh = 1) - need to decrease its magnitude and/or increase tstop to detect block test pulses"
+			print "WARNING: Initial stimamp_bottom value elicits an AP (find_block_thresh = 0) or blocks (find_block_thresh = 1) - need to decrease its magnitude and/or increase tstop to detect block test pulses"
 
 			if (increment_flag == 1) { // relative
 				stimamp_bottom    = stimamp_bottom*(1-rel_increment) // relative (decrease lower-bound by a certain percentage of the previous value, e.g., -10%)
