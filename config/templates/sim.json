@@ -1,4 +1,5 @@
 {
+  "pseudonym":null,
   "n_dimensions": 1,
   "plot_folder" : true,
   "active_srcs": {
