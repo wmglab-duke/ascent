@@ -2013,17 +2013,6 @@ public class ModelWrapper {
                     model.sol("sol1").feature("s1").feature().remove("fcDef");
                     model.sol("sol1").attach("std1");
 
-                    model.result().create("pg1", "PlotGroup3D");
-                    model.result("pg1").label("Electric Potential (ec)");
-                    model.result("pg1").set("frametype", "spatial");
-                    model.result("pg1").set("data", "dset1");
-                    model.result("pg1").feature().create("mslc1", "Multislice");
-                    model.result("pg1").feature("mslc1").set("colortable", "RainbowLight");
-                    model.result("pg1").feature("mslc1").set("data", "parent");
-
-                    model.result("pg1").run();
-                    model.result("pg1").set("data", "dset1");
-
                     // break point "post_mesh_distal"
                     boolean pre_loop_currents;
                     if (break_points.has("pre_loop_currents")) {
