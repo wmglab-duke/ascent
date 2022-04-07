@@ -563,7 +563,7 @@ def make_local_submission_list(run_number: int,summary_gen = False):
                         local_args['sim_path'] = os.path.abspath(sim_path)
                         local_args_list.append(local_args.copy())
 
-        return local_args_list
+    return local_args_list
 
 def main():
 
