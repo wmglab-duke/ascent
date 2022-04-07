@@ -1058,7 +1058,7 @@ public class ModelWrapper {
             index += 1;
         }
 
-        JSONObject solution = modelData.getJSONObject("solution");
+        JSONObject solution = new JSONObject();
         long estimatedRunSolTime = System.nanoTime() - runSolStartTime;
         solution.put("sol_time", estimatedRunSolTime/Math.pow(10,6)); // convert nanos to millis, this is for solving all contacts
         modelData.put("solution", solution);
@@ -1835,6 +1835,13 @@ public class ModelWrapper {
                         mesh.put("proximal", proximalMeshParams);
                         mesh.put("stats", meshStats);
                         modelData.put("mesh", mesh);
+
+                        try (FileWriter file = new FileWriter("../" + modelFile)) {
+                            String output = modelData.toString(2);
+                            file.write(output);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
 
                         System.out.println("\tDONE MESHING");
 
