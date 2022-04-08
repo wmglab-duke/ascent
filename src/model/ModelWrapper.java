@@ -974,7 +974,7 @@ public class ModelWrapper {
      * Pre-built for-loop to iterate through all current sources in model (added in Part)
      * Can be super useful for quickly setting different currents and possibly sweeping currents
      */
-    public void loopCurrents(JSONObject modelData, String projectPath, String sample, String modelStr, Boolean skipMesh) throws IOException {
+    public void loopCurrents(JSONObject modelData, String projectPath, String sample, String modelStr, Boolean skipMesh, boolean pre_solve_break) throws IOException {
 
         long runSolStartTime = System.nanoTime();
         int index = 0;
@@ -1030,8 +1030,12 @@ public class ModelWrapper {
 
             boolean save = true;
             if (! new File(mphFile).exists()) {
-                model.sol("sol1").runAll();
-                model.component("comp1").mesh("mesh1").clearMesh();
+                if (!pre_solve_break) {
+                    model.sol("sol1").runAll();
+                    model.component("comp1").mesh("mesh1").clearMesh();
+                }
+                else {
+                    System.out.println("\tSkipped solving for basis " +key_on+" because encountered pre_solve breakpoint. Basis MPH will be saved with no solution.");                }
             } else {
                 save = false;
                 System.out.println("\tSkipping solving and saving for basis " + key_on + " because found existing file: " + mphFile);
@@ -2029,7 +2033,21 @@ public class ModelWrapper {
                         continue;
                     }
 
-                    mw.loopCurrents(modelData, projectPath, sample, modelStr, skipMesh);
+                    // break point "post_mesh_distal"
+                    boolean pre_solve_break;
+                    if (break_points.has("pre_solve")) {
+                        pre_solve_break = break_points.getBoolean("pre_solve");
+                    } else {
+                        pre_solve_break = false;
+                    }
+
+                    mw.loopCurrents(modelData, projectPath, sample, modelStr, skipMesh, pre_solve_break);
+
+                    if (pre_solve_break) {
+                        models_exit_status[model_index] = false;
+                        System.out.println("\tpre_solve is the first break point encountered, moving on with next model index\n");
+                        continue;
+                    }
 
                     ModelUtil.remove(model.tag());
 
