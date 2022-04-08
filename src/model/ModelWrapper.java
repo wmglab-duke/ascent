@@ -1834,6 +1834,7 @@ public class ModelWrapper {
 
                         mesh.put("proximal", proximalMeshParams);
                         mesh.put("stats", meshStats);
+                        mesh.put("name", ModelUtil.getComsolVersion());
                         modelData.put("mesh", mesh);
 
                         try (FileWriter file = new FileWriter("../" + modelFile)) {
