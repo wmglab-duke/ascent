@@ -232,7 +232,7 @@ def local_submit(my_local_args: dict):
 
 
 def cluster_submit(run_number: int, partition: str, mem: int=2000, array_length_max: int = 10):
-    
+
     # configuration is not empty
     assert array_length_max > 0, 'SLURM Job Array length is not > 0: array_length_max={}'.format(array_length_max)
 
@@ -454,7 +454,7 @@ def cluster_submit(run_number: int, partition: str, mem: int=2000, array_length_
                             fiber_index_tally = []
 
 
-def make_local_submission_list(run_number: int,printout = True):
+def make_local_submission_list(run_number: int,summary_gen = False):
     # build configuration filename
     filename = os.path.join('runs', run_number + '.json')
 
@@ -479,7 +479,7 @@ def make_local_submission_list(run_number: int,printout = True):
             sim_name_base = '{}_{}_{}_'.format(sample, model, sim)
 
             for sim_name in [x for x in os.listdir(sim_dir) if sim_name_base in x]:
-                if printout: print('\n\n################ {} ################\n\n'.format(sim_name))
+                if not summary_gen: print('\n\n################ {} ################\n\n'.format(sim_name))
 
                 sim_path = os.path.join(sim_dir, sim_name)
                 fibers_path = os.path.abspath(os.path.join(sim_path, 'data', 'inputs'))
@@ -523,7 +523,7 @@ def make_local_submission_list(run_number: int,printout = True):
                     thresh_path = os.path.join(output_path,
                                                'thresh_inner{}_fiber{}.dat'.format(inner_ind, fiber_ind))
                     if os.path.exists(thresh_path):
-                        if printout: print('Found {} -->\t\tskipping inner ({}) fiber ({})'.format(thresh_path, inner_ind,
+                        if not summary_gen: print('Found {} -->\t\tskipping inner ({}) fiber ({})'.format(thresh_path, inner_ind,
                                                                                       fiber_ind))
                         continue
 
@@ -544,7 +544,7 @@ def make_local_submission_list(run_number: int,printout = True):
                     elif neuron_flag == 3:
                         axonnodes = int(n_fiber_coords)
 
-                    make_task(OS, start_path, sim_path, inner_ind, fiber_ind, stimamp_top, stimamp_bottom,
+                    if not summary_gen: make_task(OS, start_path, sim_path, inner_ind, fiber_ind, stimamp_top, stimamp_bottom,
                               diameter, deltaz, axonnodes)
 
                     # submit batch job for fiber
@@ -617,7 +617,7 @@ def main():
 
         #get list of fibers to run
         print('Generating run list for run {}'.format(run_number))
-        summary.append(make_local_submission_list(run_number, printout=False))
+        summary.append(make_local_submission_list(run_number, summary_gen=True))
         rundata.append({'RUN':run_number,
              'SAMPLE':run['sample'],
              'MODELS':run['models'],

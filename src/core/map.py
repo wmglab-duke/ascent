@@ -127,7 +127,7 @@ class Map(Exceptionable, Configurable):
 
         else:
             # the above if statements are exhaustive, so this should be unreachable
-            print('how the hell?')
+            self.throw(136)
 
     def find(self, cassette: str, number: int) -> 'SlideInfo':
         """
