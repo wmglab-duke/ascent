@@ -125,7 +125,7 @@ def get_thresh_bounds(sim_dir: str, sim_name: str, inner_ind: int):
             scout_thresh_path = os.path.join(scout_output_path, 'thresh_inner{}_fiber{}.dat'.format(inner_ind, 0))
 
             if os.path.exists(scout_thresh_path):
-                stimamp = abs(np.loadtxt(scout_thresh_path))
+                stimamp = np.loadtxt(scout_thresh_path)
 
                 if len(np.atleast_1d(stimamp)) > 1:
                     stimamp = stimamp[-1]
