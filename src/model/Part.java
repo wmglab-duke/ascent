@@ -1517,7 +1517,9 @@ class Part {
                         "CONTACT FINAL",
                         "SRC",
                         "RECESS XS",
-                        "RECESS FINAL"
+                        "RECESS FINAL",
+                        "EXCESS", // 5
+                        "EXCESS2"
 
                 };
 
@@ -1530,7 +1532,7 @@ class Part {
                 String ucontactxsLabel = "Contact XS";
                 GeomFeature ucontactxs = model.geom(id).create(im.next("wp",ucontactxsLabel), "WorkPlane");
                 ucontactxs.label(ucontactxsLabel);
-                ucontactxs.set("contributeto", im.get("CONTACT XS"));
+                ucontactxs.set("contributeto", im.get(im.labels[0]));
                 ucontactxs.set("quickz", "Center-U_z/2");
                 ucontactxs.set("unite", true);
 
@@ -1598,12 +1600,39 @@ class Part {
                 diff2cxs.selection("input").named(im.get(outLineLabel));
                 diff2cxs.selection("input2").named(im.get(inLineLabel));
 
+                String ifucontactoverhangLabel = "If Contact Overhang";
+                GeomFeature ifucontactoverhang = ucontactxs.geom().create(im.next("if", ifucontactoverhangLabel), "If");
+                ifucontactoverhang.set("condition", "R_in+U_thk+U_recess > U_tangent");
+                ifucontactoverhang.label(ifucontactoverhangLabel);
+                String endifucontactoverhangLabel = "EndIf Contact Overhang";
+                im.next("endif", endifucontactoverhangLabel);
+
+                String ballselexcessu1Label = "Ball Selection Excess Contact";
+                GeomFeature ballselexcessu1 = model.geom(id).create(im.next("ballsel", ballselexcessu1Label), "BallSelection");
+                ballselexcessu1.label(ballselexcessu1Label);
+                ballselexcessu1.set("entitydim", 2);
+                ballselexcessu1.set("posx", "U_recess+R_in+0.5*U_thk");
+                ballselexcessu1.set("posz", "Center-U_z/2");
+                ballselexcessu1.set("r", 1);
+                ballselexcessu1.set("contributeto", im.get(im.labels[5]));
+
+                String deleteexcessu1Label = "Delete Excess Contact";
+                GeomFeature deleteexcessu1 = model.geom(id).create(im.next("del", deleteexcessu1Label), "Delete");
+                deleteexcessu1.label(deleteexcessu1Label);
+                deleteexcessu1.set("selresult", true);
+                deleteexcessu1.set("selresultshow", "all");
+                deleteexcessu1.selection("input").named(im.get(im.labels[5]));
+
+                GeomFeature endifucontactoverhang = ucontactxs.geom().create(im.get(endifucontactoverhangLabel), "EndIf");
+                endifucontactoverhang.label(endifucontactoverhangLabel);
+
                 String umcLabel = "Make Contact";
                 GeomFeature umc = model.geom(id).create(im.next("ext",umcLabel), "Extrude");
                 umc.label(umcLabel);
-                umc.set("contributeto", im.get("CONTACT FINAL"));
+                umc.set("contributeto", im.get(im.labels[1]));
+                umc.set("extrudefrom", "faces");
                 umc.setIndex("distance", "U_z", 0);
-                umc.selection("input").named(im.get("CONTACT XS"));
+                umc.selection("inputface").named(im.get(im.labels[0]));
 
                 String usrcLabel = "Src";
                 GeomFeature usrc = model.geom(id).create(im.next("pt",usrcLabel), "Point");
@@ -1615,6 +1644,8 @@ class Part {
                 GeomFeature ifurecess = model.geom(id).create(im.next("if", ifurecessLabel), "If");
                 ifurecess.label(ifurecessLabel);
                 ifurecess.set("condition", "U_recess > 0");
+                String endifurecessLabel = "EndIf uRecess";
+                im.next("endif", endifurecessLabel);
 
                 String urecessxsLabel = "Recess XS";
                 GeomFeature urecessxs = model.geom(id).create(im.next("wp",urecessxsLabel), "WorkPlane");
@@ -1687,14 +1718,41 @@ class Part {
                 difftoRecessXS.selection("input").named(im.get(outLineRecessLabel));
                 difftoRecessXS.selection("input2").named(im.get(inLineRecessLabel));
 
+                String ifurecessoverhangLabel = "If Recess Overhang";
+                GeomFeature ifurecessoverhang = ucontactxs.geom().create(im.next("if", ifurecessoverhangLabel), "If");
+                ifurecessoverhang.set("condition", "R_in+U_recess > U_tangent");
+                ifurecessoverhang.label(ifurecessoverhangLabel);
+
+                String ballselexcessu2Label = "Ball Selection Excess Recess";
+                GeomFeature ballselexcessu2 = model.geom(id).create(im.next("ballsel", ballselexcessu2Label), "BallSelection");
+                ballselexcessu2.label(ballselexcessu2Label);
+                ballselexcessu2.set("entitydim", 2);
+                ballselexcessu2.set("posx", "R_in+0.5*U_recess");
+                ballselexcessu2.set("posz", "Center-U_z/2");
+                ballselexcessu2.set("r", 1);
+                ballselexcessu2.set("contributeto", im.get(im.labels[6]));
+
+                String deleteexcessu2Label = "Delete Excess Recess";
+                GeomFeature deleteexcessu2 = model.geom(id).create(im.next("del", deleteexcessu2Label), "Delete");
+                deleteexcessu2.label(deleteexcessu2Label);
+                deleteexcessu2.set("selresult", true);
+                deleteexcessu2.set("selresultshow", "all");
+                deleteexcessu2.selection("input").named(im.get(im.labels[6]));
+
+                String endifurecessoverhangLabel = "EndIf Recess Overhang";
+                GeomFeature endifurecessoverhang = ucontactxs.geom().create(im.next("endif", endifurecessoverhangLabel), "EndIf");
+                endifurecessoverhang.label(endifurecessoverhangLabel);
+
                 String makeRecessLabel = "Make Recess";
                 GeomFeature makeRecess = model.geom(id).create(im.next("ext", makeRecessLabel), "Extrude");
                 makeRecess.label(makeRecessLabel);
-                makeRecess.set("contributeto", im.get("RECESS FINAL"));
+                makeRecess.set("contributeto", im.get(im.labels[4]));
+                makeRecess.set("extrudefrom", "faces");
                 makeRecess.setIndex("distance", "U_z", 0);
-                makeRecess.selection("input").named(im.get("RECESS XS"));
+                makeRecess.selection("inputface").named(im.get(im.labels[3]));
 
-                model.geom(id).create(im.next("endif"), "EndIf");
+                GeomFeature endifurecess = model.geom(id).create(im.get(endifurecessLabel), "EndIf");
+                endifurecess.label(endifurecessLabel);
 
                 model.geom(id).run();
 

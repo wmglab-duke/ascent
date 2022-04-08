@@ -49,7 +49,7 @@ for sim in sims:
     }).run()
     
     
-    data.append(q.threshdat(sl=False))
+    data.append(q.threshold_data())
 data = pd.concat(data)
 
 #%% Calculate error values
@@ -62,6 +62,8 @@ for i in range(len(data)):
                          (data["index"]==row["index"]) &
                        (data["sim"]==row['sim']) & 
                        (data["nsim"]==row['nsim'])]['threshold'])
+    data.iloc[i,-1]=pe(correct,est)
+
     
 #%% Generate convergence plot
 g = sb.catplot(
