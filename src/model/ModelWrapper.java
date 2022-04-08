@@ -1372,6 +1372,8 @@ public class ModelWrapper {
                         // and mesh node to component node 1
                         model.component("comp1").mesh().create("mesh1");
 
+                        model.nodeGroup().create(mw.im.next("grp","Contact Impedances"), "Physics", "ec");
+
                         // Define ModelWrapper class instance for model and projectPath
                         mw = new ModelWrapper(model, projectPath);
 
