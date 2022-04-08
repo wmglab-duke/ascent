@@ -24,6 +24,8 @@ pipeline_parser.add_argument('-b','--break-point',choices = ["pre_geom_run","pos
 pipeline_parser.add_argument('-w','--wait-for-license',type=float,help = "Wait the specified number of hours for a comsol license to become available.")
 pipeline_parser.add_argument('-P','--partial-fem',choices = ["cuff_only","nerve_only"],help = "Only generate the specified geometry.")
 pipeline_parser.add_argument('-e','--endo-only-solution',action='store_true',help ="Store basis solutions for endoneurial geometry ONLY")
+pipeline_parser.add_argument('-c','--comsol-progress',action='store_true',help ="Print COMSOL progress to stdout")
+pipeline_parser.add_argument('-C','--comsol-progress-popup',action='store_true',help ="Show COMSOL progress in a pop-up window")
 ts_parser.add_argument('sample_indices', nargs = '+',type=int, help = 'Space separated sample indices to tidy')
 nsims_parser.add_argument('run_indices', nargs = '+',type=int, help = 'Space separated run indices to import')
 nsims_group = nsims_parser.add_mutually_exclusive_group()

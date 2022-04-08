@@ -1154,7 +1154,14 @@ public class ModelWrapper {
 
         TimeUnit.SECONDS.sleep(5);
         ModelUtil.initStandalone(false);
-//        ModelUtil.showProgress(null); // if you want to see COMSOL progress (as it makes all geometry, runs, etc.)
+        
+        if (cli_args.has("comsol_progress") && cli_args.getBoolean("comsol_progress")) {
+            ModelUtil.showProgress(null); // if you want to see COMSOL progress (as it makes all geometry, runs, etc.)
+        }
+
+        if (cli_args.has("comsol_progress") && cli_args.getBoolean("comsol_progress_popup")) {
+            ModelUtil.showProgress(true); // if you want to see COMSOL progress (as it makes all geometry, runs, etc.)
+        }
 
         //checkout comsol license
         if (cli_args.has("wait_for_license") && !cli_args.isNull("wait_for_license")) {
