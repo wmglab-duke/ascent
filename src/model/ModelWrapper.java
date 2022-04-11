@@ -1552,7 +1552,7 @@ public class ModelWrapper {
 
                         if (pre_geom_run) {
                             models_exit_status[model_index] = false;
-                            System.out.println("\tpre_geom_run is the first break point encountered, moving on with next model index\n");
+                            System.out.println("\tpre_geom_run is the first break point encountered, moving on with next model index");
                             continue;
                         }
 
@@ -1586,7 +1586,7 @@ public class ModelWrapper {
 
                         if (post_geom_run || nerve_only || cuff_only) {
                             models_exit_status[model_index] = false;
-                            System.out.println("\tpost_geom_run is the first break point encountered, moving on with next model index\n");
+                            System.out.println("\tpost_geom_run is the first break point encountered, moving on with next model index");
                             continue;
                         }
 
@@ -1670,7 +1670,7 @@ public class ModelWrapper {
 
                         if (pre_mesh_proximal) {
                             models_exit_status[model_index] = false;
-                            System.out.println("\tpre_mesh_proximal is the first break point encountered, moving on with next model index\n");
+                            System.out.println("\tpre_mesh_proximal is the first break point encountered, moving on with next model index");
                             continue;
                         }
 
@@ -1710,7 +1710,7 @@ public class ModelWrapper {
 
                         if (post_mesh_proximal) {
                             models_exit_status[model_index] = false;
-                            System.out.println("\tpost_mesh_proximal is the first break point encountered, moving on with next model index\n");
+                            System.out.println("\tpost_mesh_proximal is the first break point encountered, moving on with next model index");
                             continue;
                         }
 
@@ -1764,7 +1764,7 @@ public class ModelWrapper {
 
                             if (pre_mesh_distal) {
                                 models_exit_status[model_index] = false;
-                                System.out.println("\tpre_mesh_distal is the first break point encountered, moving on with next model index\n");
+                                System.out.println("\tpre_mesh_distal is the first break point encountered, moving on with next model index");
                                 continue;
                             }
 
@@ -1806,7 +1806,7 @@ public class ModelWrapper {
 
                             if (post_mesh_distal) {
                                 models_exit_status[model_index] = false;
-                                System.out.println("\tpost_mesh_distal is the first break point encountered, moving on with next model index\n");
+                                System.out.println("\tpost_mesh_distal is the first break point encountered, moving on with next model index");
                                 continue;
                             }
                         }
@@ -1972,7 +1972,7 @@ public class ModelWrapper {
 
                     if (post_material_assign) {
                         models_exit_status[model_index] = false;
-                        System.out.println("\tpost_material_assign is the first break point encountered, moving on with next model index\n");
+                        System.out.println("\tpost_material_assign is the first break point encountered, moving on with next model index");
                         continue;
                     }
 
@@ -2025,7 +2025,7 @@ public class ModelWrapper {
 
                     if (pre_loop_currents) {
                         models_exit_status[model_index] = false;
-                        System.out.println("\tpre_loop_currents is the first break point encountered, moving on with next model index\n");
+                        System.out.println("\tpre_loop_currents is the first break point encountered, moving on with next model index");
                         continue;
                     }
 
