@@ -1308,6 +1308,15 @@ public class ModelWrapper {
                         e.printStackTrace();
                     }
 
+                    modelData.put("solution",JSONObject.NULL);
+
+                    try (FileWriter file = new FileWriter("../" + modelFile)) {
+                        String output = modelData.toString(2);
+                        file.write(output);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
                     // if optimizing
                     boolean recycle_meshes;
                     if (run.has("recycle_meshes") && !nerve_only && !cuff_only) {
