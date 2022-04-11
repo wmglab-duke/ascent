@@ -492,7 +492,7 @@ class Sample(Exceptionable, Configurable, Saveable):
 
         # repositioning!
         for i, slide in enumerate(self.slides):
-            print('\tslide {} of {}'.format(1 + i, len(self.slides)))
+            #print('\tslide {} of {}'.format(1 + i, len(self.slides)))
             # title = ''
 
             if nerve_mode == NerveMode.NOT_PRESENT and deform_mode is not DeformationMode.NONE:
@@ -501,7 +501,7 @@ class Sample(Exceptionable, Configurable, Saveable):
             partially_deformed_nerve = None
 
             if deform_mode == DeformationMode.PHYSICS:
-                print('\t\tsetting up physics')
+                #print('\tsetting up physics')
                 if 'morph_count' in self.search(Config.SAMPLE).keys():
                     morph_count = self.search(Config.SAMPLE, 'morph_count')
                 else:
@@ -509,7 +509,7 @@ class Sample(Exceptionable, Configurable, Saveable):
 
                 if 'deform_ratio' in self.search(Config.SAMPLE).keys():
                     deform_ratio = self.search(Config.SAMPLE, 'deform_ratio')
-                    print('\t\tdeform ratio set to {}'.format(deform_ratio))
+                    print('\tdeform ratio set to {}'.format(deform_ratio))
                 else:
                     self.throw(118)
 
@@ -517,11 +517,11 @@ class Sample(Exceptionable, Configurable, Saveable):
                 sep_fascicles = self.search(Config.SAMPLE, "boundary_separation", "fascicles")
                 sep_nerve = None
 
-                print('\t\tensuring minimum fascicle separation of {} um'.format(sep_fascicles))
+                print('\tensuring minimum fascicle separation of {} um'.format(sep_fascicles))
 
                 if 'nerve' in self.search(Config.SAMPLE, 'boundary_separation').keys():
                     sep_nerve = self.search(Config.SAMPLE, 'boundary_separation', 'nerve')
-                    print('\t\tensuring minimum nerve:fascicle separation of {} um'.format(sep_nerve))
+                    print('\tensuring minimum nerve:fascicle separation of {} um'.format(sep_nerve))
                 
                 #scale nerve trace down by sep nerve, will be scaled back up later
                 pre_area = slide.nerve.area()
