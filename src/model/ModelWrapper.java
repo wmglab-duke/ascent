@@ -1371,6 +1371,16 @@ public class ModelWrapper {
                         // Define ModelWrapper class instance for model and projectPath
                         mw = new ModelWrapper(model, projectPath);
 
+                        //Clear mesh stats
+                        modelData.getJSONObject("mesh").put("stats", JSONObject.NULL);
+
+                        try (FileWriter file = new FileWriter("../" + modelFile)) {
+                            String output = modelData.toString(2);
+                            file.write(output);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
                         // FEM MODEL GEOMETRY
                         // Set MEDIUM parameters
                         JSONObject distalMedium = modelData.getJSONObject("medium").getJSONObject("distal");
@@ -1814,7 +1824,15 @@ public class ModelWrapper {
                         System.out.println("\tSaving mesh statistics.");
 
                         // MESH STATISTICS
-                        String quality_measure = modelData.getJSONObject("mesh").getJSONObject("stats").getString("quality_measure");
+                        String quality_measure;
+                        if (modelData.getJSONObject("mesh").has("quality_measure")) {
+                            quality_measure = modelData.getJSONObject("mesh").getString("quality_measure");
+                        }
+                        else {
+                            quality_measure = "vollength";
+                            System.out.println("\tNo quality measure for mesh, using default (vollength)");
+                        }
+
                         model.component("comp1").mesh("mesh1").stat().setQualityMeasure(quality_measure);
                         // could use: skewness, maxangle, volcircum, vollength, condition, growth...
 
