@@ -332,6 +332,8 @@ public class ModelWrapper {
         String id = ve_im.next("interp");
         model.result().numerical().create(id, "Interp");
         model.result().numerical(id).set("expr", "V");
+        model.result().numerical(id).set("recover", "pprint");
+        model.result().numerical(id).set("matherr", "on");
         model.result().numerical(id).setInterpolationCoordinates(coordinates);
         double[][][] ve_pre = model.result().numerical(id).getData();
         int len = ve_pre[0][0].length; // number of coordinates
@@ -2012,17 +2014,6 @@ public class ModelWrapper {
                     model.sol("sol1").feature("s1").feature("fc1").set("linsolver", "i1");
                     model.sol("sol1").feature("s1").feature().remove("fcDef");
                     model.sol("sol1").attach("std1");
-
-                    model.result().create("pg1", "PlotGroup3D");
-                    model.result("pg1").label("Electric Potential (ec)");
-                    model.result("pg1").set("frametype", "spatial");
-                    model.result("pg1").set("data", "dset1");
-                    model.result("pg1").feature().create("mslc1", "Multislice");
-                    model.result("pg1").feature("mslc1").set("colortable", "RainbowLight");
-                    model.result("pg1").feature("mslc1").set("data", "parent");
-
-                    model.result("pg1").run();
-                    model.result("pg1").set("data", "dset1");
 
                     // break point "post_mesh_distal"
                     boolean pre_loop_currents;

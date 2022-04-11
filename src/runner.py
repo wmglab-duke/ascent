@@ -116,7 +116,10 @@ class Runner(Exceptionable, Configurable):
 
         # load all json configs into memory
         all_configs = self.load_configs()
-
+        
+        run_pseudonym = self.configs[Config.RUN.value].get('pseudonym')
+        if run_pseudonym is not None: print('Run pseudonym:',run_pseudonym)
+        
         def load_obj(path: str):
             """
             :param path: path to python obj file
@@ -147,9 +150,12 @@ class Runner(Exceptionable, Configurable):
             str(sample_num),
             'sample.obj'
         )
+        
+        sample_pseudonym = all_configs[Config.SAMPLE.value][0].get('pseudonym')
 
-        print('SAMPLE {}'.format(self.configs[Config.RUN.value]['sample']))
-
+        print('SAMPLE {}'.format(self.configs[Config.RUN.value]['sample']),
+              '- {}'.format(sample_pseudonym) if sample_pseudonym is not None else '')
+                
         # instantiate sample
         if smart and os.path.exists(sample_file):
             print('Found existing sample {} ({})'.format(self.configs[Config.RUN.value]['sample'], sample_file))
@@ -177,7 +183,10 @@ class Runner(Exceptionable, Configurable):
         else:
             for model_index, model_config in enumerate(all_configs[Config.MODEL.value]):
                 model_num = self.configs[Config.RUN.value]['models'][model_index]
-                print('    MODEL {}'.format(model_num))
+                model_pseudonym = model_config.get('pseudonym')
+                print('\tMODEL {}'.format(model_num),
+                      '- {}'.format(model_pseudonym) if model_pseudonym is not None else '')
+                        
 
                 # use current model index to computer maximum cuff shift (radius) .. SAVES to file in method
                 model_config = self.compute_cuff_shift(model_config, sample, all_configs[Config.SAMPLE.value][0])
@@ -201,7 +210,10 @@ class Runner(Exceptionable, Configurable):
                 if 'sims' in all_configs.keys():
                     for sim_index, sim_config in enumerate(all_configs['sims']):
                         sim_num = self.configs[Config.RUN.value]['sims'][sim_index]
-                        print('        SIM {}'.format(self.configs[Config.RUN.value]['sims'][sim_index]))
+                        sim_pseudonym = sim_config.get('pseudonym')
+                        print('\t\tSIM {}'.format(self.configs[Config.RUN.value]['sims'][sim_index]),
+                              '- {}'.format(sim_pseudonym) if sim_pseudonym is not None else '')
+                        
                         sim_obj_dir = os.path.join(
                             os.getcwd(),
                             'samples',
@@ -422,7 +434,7 @@ class Runner(Exceptionable, Configurable):
         if sys.platform.startswith('darwin'):  # macOS
 
             subprocess.Popen(['{}/bin/comsol'.format(comsol_path), 'server'], close_fds=True)
-            time.sleep(30)        
+            time.sleep(10)        
             os.chdir('src')
             os.system(
                 '{}/javac -classpath ../bin/json-20190722.jar:{}/plugins/* model/*.java -d ../bin'.format(jdk_path,
@@ -441,7 +453,7 @@ class Runner(Exceptionable, Configurable):
         elif sys.platform.startswith('linux'):  # linux
 
             subprocess.Popen(['{}/bin/comsol'.format(comsol_path), 'server'], close_fds=True)
-            time.sleep(30)
+            time.sleep(10)
             os.chdir('src')
             os.system(
                 '{}/javac -classpath ../bin/json-20190722.jar:{}/plugins/* model/*.java -d ../bin'.format(jdk_path,
@@ -459,7 +471,7 @@ class Runner(Exceptionable, Configurable):
 
         else:  # assume to be 'win64'
             subprocess.Popen(['{}\\bin\\win64\\comsolmphserver.exe'.format(comsol_path)], close_fds=True)
-            time.sleep(30)
+            time.sleep(10)
             os.chdir('src')
             os.system('""{}\\javac" '
                       '-Xlint -cp "..\\bin\\json-20190722.jar";"{}\\plugins\\*" '

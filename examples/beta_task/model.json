@@ -1,4 +1,5 @@
 {
+  "pseudonym": "beta model",
   "modes": {
     "use_ci": true,
     "cuff_shift": "MIN_CIRCLE_BOUNDARY",
