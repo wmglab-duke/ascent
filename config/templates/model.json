@@ -39,9 +39,7 @@
     }
   },
   "mesh": {
-    "stats":{
-      "quality_measure":"vollength"
-    },
+    "quality_measure":"vollength",
     "shape_order": 2,
     "proximal": {
       "type": {
