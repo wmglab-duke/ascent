@@ -1372,8 +1372,6 @@ public class ModelWrapper {
                         // and mesh node to component node 1
                         model.component("comp1").mesh().create("mesh1");
 
-                        model.nodeGroup().create(mw.im.next("grp","Contact Impedances"), "Physics", "ec");
-
                         // Define ModelWrapper class instance for model and projectPath
                         mw = new ModelWrapper(model, projectPath);
 
@@ -1533,6 +1531,7 @@ public class ModelWrapper {
                         }
 
                         if (!cuff_only) {
+                            model.nodeGroup().create(mw.im.next("grp","Contact Impedances"), "Physics", "ec");
                             // there are no primitives/instances for nerve parts, just build them
                             mw.addNerve(sample, nerveParams, modelData);
                         }
