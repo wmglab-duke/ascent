@@ -1840,7 +1840,7 @@ public class ModelWrapper {
                         }
 
                         model.component("comp1").mesh("mesh1").stat().setQualityMeasure(quality_measure);
-                        // could use: skewness, maxangle, volcircum, vollength, condition, growth...
+                            // could use: skewness, maxangle, volcircum, vollength, condition, growth...
 
                         Integer number_elements = model.component("comp1").mesh("mesh1").getNumElem("all");
                         Double min_quality = model.component("comp1").mesh("mesh1").getMinQuality("all");
