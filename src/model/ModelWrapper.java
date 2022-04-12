@@ -1062,9 +1062,11 @@ public class ModelWrapper {
             index += 1;
         }
 
-        JSONObject solution = modelData.getJSONObject("solution");
+        JSONObject solution = new JSONObject();
         long estimatedRunSolTime = System.nanoTime() - runSolStartTime;
         solution.put("sol_time", estimatedRunSolTime/Math.pow(10,6)); // convert nanos to millis, this is for solving all contacts
+        String version = ModelUtil.getComsolVersion(); //The getComsolVersion method returns the current COMSOL Multiphysics
+        solution.put("name", version);
         modelData.put("solution", solution);
     }
 
@@ -1312,6 +1314,15 @@ public class ModelWrapper {
                         e.printStackTrace();
                     }
 
+                    modelData.put("solution",JSONObject.NULL);
+
+                    try (FileWriter file = new FileWriter("../" + modelFile)) {
+                        String output = modelData.toString(2);
+                        file.write(output);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
                     // if optimizing
                     boolean recycle_meshes;
                     if (run.has("recycle_meshes") && !nerve_only && !cuff_only) {
@@ -1375,10 +1386,21 @@ public class ModelWrapper {
                         // Define ModelWrapper class instance for model and projectPath
                         mw = new ModelWrapper(model, projectPath);
 
+                        //Clear mesh stats
+                        modelData.getJSONObject("mesh").put("stats", JSONObject.NULL);
+
+                        try (FileWriter file = new FileWriter("../" + modelFile)) {
+                            String output = modelData.toString(2);
+                            file.write(output);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
                         // FEM MODEL GEOMETRY
                         // Set MEDIUM parameters
                         JSONObject distalMedium = modelData.getJSONObject("medium").getJSONObject("distal");
                         JSONObject proximalMedium = modelData.getJSONObject("medium").getJSONObject("proximal");
+                        JSONObject meshTimes = new JSONObject();
 
                         String mediumParamsLabel = "Medium Parameters";
                         ModelParamGroup mediumParams = model.param().group().create(mediumParamsLabel);
@@ -1692,12 +1714,10 @@ public class ModelWrapper {
                          }
 
                         long estimatedProximalMeshTime = System.nanoTime() - proximalMeshStartTime;
-                        proximalMeshParams.put("mesh_time", estimatedProximalMeshTime / Math.pow(10, 6)); // convert nanos to millis
+                        meshTimes.put("proximal", estimatedProximalMeshTime / Math.pow(10, 6)); // convert nanos to millis
 
                         // put nerve to mesh, rest to mesh, mesh to modelData
                         JSONObject mesh = modelData.getJSONObject("mesh");
-                        mesh.put("proximal", proximalMeshParams);
-                        modelData.put("mesh", mesh);
 
                         TimeUnit.SECONDS.sleep(1);
 
@@ -1784,11 +1804,7 @@ public class ModelWrapper {
                                 continue;
                             }
                             long estimatedRestMeshTime = System.nanoTime() - distalMeshStartTime;
-                            distalMeshParams.put("mesh_time", estimatedRestMeshTime / Math.pow(10, 6)); // convert nanos to millis
-
-                            // put nerve to mesh, rest to mesh, mesh to modelData
-                            mesh.put("distal", distalMeshParams);
-                            modelData.put("mesh", mesh);
+                            meshTimes.put("distal", estimatedRestMeshTime / Math.pow(10, 6)); // convert nanos to millis
 
                             // Saved model post-mesh distal for debugging
                             try {
@@ -1819,9 +1835,17 @@ public class ModelWrapper {
                         System.out.println("\tSaving mesh statistics.");
 
                         // MESH STATISTICS
-                        String quality_measure = modelData.getJSONObject("mesh").getJSONObject("stats").getString("quality_measure");
+                        String quality_measure;
+                        if (modelData.getJSONObject("mesh").has("quality_measure")) {
+                            quality_measure = modelData.getJSONObject("mesh").getString("quality_measure");
+                        }
+                        else {
+                            quality_measure = "vollength";
+                            System.out.println("\tNo quality measure for mesh, using default (vollength)");
+                        }
+
                         model.component("comp1").mesh("mesh1").stat().setQualityMeasure(quality_measure);
-                        // could use: skewness, maxangle, volcircum, vollength, condition, growth...
+                            // could use: skewness, maxangle, volcircum, vollength, condition, growth...
 
                         Integer number_elements = model.component("comp1").mesh("mesh1").getNumElem("all");
                         Double min_quality = model.component("comp1").mesh("mesh1").getMinQuality("all");
@@ -1829,17 +1853,25 @@ public class ModelWrapper {
                         Double min_volume = model.component("comp1").mesh("mesh1").getMinVolume("all");
                         Double volume = model.component("comp1").mesh("mesh1").getVolume("all");
 
-                        JSONObject meshStats = modelData.getJSONObject("mesh").getJSONObject("stats");
+                        JSONObject meshStats = new JSONObject();
+                        meshStats.put("mesh_times",meshTimes);
                         meshStats.put("number_elements", number_elements);
                         meshStats.put("min_quality", min_quality);
                         meshStats.put("mean_quality", mean_quality);
+                        meshStats.put("mean_quality", mean_quality);
                         meshStats.put("min_volume", min_volume);
                         meshStats.put("volume", volume);
-                        meshStats.put("quality_measure", quality_measure);
-
-                        mesh.put("proximal", proximalMeshParams);
+                        meshStats.put("quality_measure_used", quality_measure);
+                        meshStats.put("name", ModelUtil.getComsolVersion());
                         mesh.put("stats", meshStats);
                         modelData.put("mesh", mesh);
+
+                        try (FileWriter file = new FileWriter("../" + modelFile)) {
+                            String output = modelData.toString(2);
+                            file.write(output);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
 
                         System.out.println("\tDONE MESHING");
 
@@ -1982,11 +2014,6 @@ public class ModelWrapper {
                     }
 
                     // Solve
-                    JSONObject solver = modelData.getJSONObject("solver");
-                    String version = ModelUtil.getComsolVersion(); //The getComsolVersion method returns the current COMSOL Multiphysics
-                    solver.put("name", version);
-                    modelData.put("solver", solver);
-
                     model.study().create("std1");
                     model.study("std1").setGenConv(true);
                     model.study("std1").create("stat", "Stationary");

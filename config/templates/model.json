@@ -1,5 +1,5 @@
 {
-  "pseudonym":null,
+  "pseudonym":"template_model",
   "modes": {
     "rho_perineurium": "RHO_WEERASURIYA",
     "cuff_shift": "AUTO_ROTATION_MIN_CIRCLE_BOUNDARY",
@@ -30,18 +30,16 @@
   "cuff": {
     "preset": "Purdue.json",
     "rotate": {
-      "add_ang": 0,
-      "pos_ang": 13.990590613341357
+      "add_ang": 0
     },
     "shift": {
-      "x": -2.984035600398961,
-      "y": 1.20619872660847,
+      "x": 0,
+      "y": 0,
       "z": 0
     }
   },
-  "min_radius_enclosing_circle": 237.44249404941704,
   "mesh": {
-    "name": "COMSOL Multiphysics 5.5 (Build TBD)",
+    "quality_measure":"vollength",
     "shape_order": 2,
     "proximal": {
       "type": {
@@ -52,8 +50,7 @@
       "hmin": 10,
       "hgrad": 2.2,
       "hcurve": 0.2,
-      "hnarrow": 1,
-      "mesh_time": 0
+      "hnarrow": 1
     },
     "distal": {
       "type": {
@@ -64,16 +61,7 @@
       "hmin": 10,
       "hgrad": 2.5,
       "hcurve": 0.2,
-      "hnarrow": 1,
-      "mesh_time": 0
-    },
-    "stats": {
-      "quality_measure": "vollength",
-      "number_elements": 0,
-      "min_quality": 0,
-      "mean_quality": 0,
-      "min_volume": 0,
-      "volume": 0
+      "hnarrow": 1
     }
   },
   "frequency": 1,
@@ -92,10 +80,6 @@
     "epineurium": "epineurium"
   },
   "solver": {
-    "sorder": "quadratic",
-    "name": "COMSOL Multiphysics 5.5 (Build: TBD)"
-  },
-  "solution": {
-    "sol_time": 69.376554
+    "sorder": "quadratic"
   }
 }
