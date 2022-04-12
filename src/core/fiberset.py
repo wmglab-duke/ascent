@@ -413,7 +413,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
             offset = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value,'offset',optional=True)
             if offset is None:
-                warnings.warn('No offset specified. Proceeding with randomized offset. Suppress this warning by including the parameter "offset":"random" in fiber z_parameters.')
+                warnings.warn('No offset specified. Proceeding with (original default functionality) of randomized offset. Suppress this warning by including the parameter "offset":"random" in fiber z_parameters.')
                 offset = 'random'
             if offset == 'random': 
                 offset = 0
