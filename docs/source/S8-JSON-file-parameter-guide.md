@@ -1479,7 +1479,7 @@ of the file.
           "min": Double,
           "max": Double,
           "full_nerve_length": Boolean,
-          "offset": Double, // or "random" for random jitter within +/- .5 internodal length
+          "offset": Double, // or "random" for random jitter within +/- 0.5 internodal length
           "absolute_offset": Double,
           "seed": Integer
         },
