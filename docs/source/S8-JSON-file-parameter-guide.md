@@ -1631,7 +1631,8 @@ of the file.
           "mode": String,
           "top": Double,
           "bottom": Double,
-          "step": Double
+          "step": Double,
+          "scout_sim": Integer,
         },
         "termination_criteria": {
           "mode": "ABSOLUTE_DIFFERENCE",
@@ -2261,6 +2262,20 @@ of the file.
 
               - If `“PERCENT_INCREMENT”`, the value (Double, units: %) is a
                 percentage (e.g., 10 is 10%).
+                
+          - `“scout_sim”`: the value (Integer) is the index of a previously run "scout"
+            Sim for the same Sample and Model. Use this feature to reduce CPU time required for many
+            fibers placed in the same inner for a new Sim. If this key is present, ASCENT will
+            look for thresholds in n_sim folders in your ASCENT_NSIM_EXPORT_PATH 
+            (i.e., the path you set in config/system/env.json) for fiber0 of each 
+            inner for each n_sim. The program will load this threshold value and use 
+            it as a starting point for the threshold bounds for each inner in your new Sim.
+            The upper- and lower-bounds in the binary search will be "bounds_search" -> "step" %
+            higher and lower, respectively, of the scout Sim's fiber0 threshold. All parameters except
+            fiber location (i.e., "fibers" -> "xy_location" in Sim) must match between 
+            the scout Sim and the current Sim, since the n_sim indices must match between the 
+            scout Sim and current Sim. If this key ("scout_sim") is present, the program will ignore
+            the threshold bounds "top" and "bottom" in "protocol" -> "bounds_search". Optional.
 
     <!-- end list -->
 
