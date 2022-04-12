@@ -1479,7 +1479,7 @@ of the file.
           "min": Double,
           "max": Double,
           "full_nerve_length": Boolean,
-          "offset": Double, // or omitted for random jitter within +/- 1 internodal length
+          "offset": Double, // or "random" for random jitter within +/- 0.5 internodal length
           "absolute_offset": Double,
           "seed": Integer
         },
@@ -1790,11 +1790,11 @@ of the file.
 
           - `full_nerve_length`: (Boolean) Optional. If true, suppresses the warning message associated with using the full length nerve when `"min"` and `"max"` are not defined. Must be false or not defined if `"min"` and `"max"` are defined.
 
-          - `“offset”`: The value (Double or List\[Double\]) is the fraction
+          - `“offset”`: The value (Double or String) is the fraction
             of the node-node length (myelinated fibers) or segment length
             (unmyelinated fibers) that the center coordinate of the fiber is
             shifted along the z-axis from the longitudinal center of the
-            proximal medium. Optional, but if not defined, the offset will
+            proximal medium. If the value is "random", the offset will
             be randomly selected between +/- 0.5 section/segment length; to
             avoid the randomized longitudinal placement, set the offset
             value to ‘0’ for no offset.

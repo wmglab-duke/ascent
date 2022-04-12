@@ -412,8 +412,10 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             # get offset param - NOTE: raw value is a FRACTION of dz (explanation for multiplication by dz)
 
             offset = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value,'offset',optional=True)
-            
-            if offset is None: 
+            if offset is None:
+                warnings.warn('No offset specified. Proceeding with (original default functionality) of randomized offset. Suppress this warning by including the parameter "offset":"random" in fiber z_parameters.')
+                offset = 'random'
+            if offset == 'random': 
                 offset = 0
                 random_offset_value = dz * (random.random() - 0.5)
             else:
