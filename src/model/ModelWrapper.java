@@ -1159,7 +1159,7 @@ public class ModelWrapper {
             ModelUtil.showProgress(null); // if you want to see COMSOL progress (as it makes all geometry, runs, etc.)
         }
 
-        if (cli_args.has("comsol_progress") && cli_args.getBoolean("comsol_progress_popup")) {
+        if (cli_args.has("comsol_progress_popup") && cli_args.getBoolean("comsol_progress_popup")) {
             ModelUtil.showProgress(true); // if you want to see COMSOL progress (as it makes all geometry, runs, etc.)
         }
 
