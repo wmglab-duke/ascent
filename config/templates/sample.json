@@ -1,6 +1,6 @@
 {
   "sample": "Rat16-3",
-  "pseudonym":null,
+  "pseudonym":"template_sample",
   "sex": "M",
   "level": "Cervical",
   "samples_path": [

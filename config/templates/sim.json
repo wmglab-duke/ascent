@@ -1,5 +1,5 @@
 {
-  "pseudonym":null,
+  "pseudonym":"template_sim",
   "n_dimensions": 1,
   "plot_folder" : true,
   "active_srcs": {

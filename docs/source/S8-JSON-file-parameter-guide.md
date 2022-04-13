@@ -956,7 +956,6 @@ of the file.
       },
       "min_radius_enclosing_circle": Double,
       "mesh": {
-      "name": String,
       "shape_order": Integer,
         "proximal": {
           "type": {
@@ -967,8 +966,7 @@ of the file.
           "hmin": Double,
           "hgrad": Double,
           "hcurve": Double,
-          "hnarrow": Double,
-          "mesh_time": Double
+          "hnarrow": Double
         },
         "distal": {
           "type": {
@@ -979,16 +977,21 @@ of the file.
           "hmin": Double,
           "hgrad": Double,
           "hcurve": Double,
-          "hnarrow": Double,
-          "mesh_time": Double
+          "hnarrow": Double
         },
         "stats": {
+          "name": String,
           "quality_measure": String,
           "number_elements": Double,
           "min_quality": Double,
           "mean_quality": Double,
           "min_volume": Double,
           "volume": Double
+          "mesh_times": {
+            "distal": Double,
+            "proximal": Double
+          },
+
         }
       },
       "frequency": Double,
@@ -1007,11 +1010,11 @@ of the file.
         "epineurium": String
       },
       "solver": {
-        "sorder": String,
-        "name": String
+        "sorder": String
       },
       "solution": {
-        "sol_time": Double
+        "sol_time": Double,
+        "name": String
       }
     }
     ```
@@ -1181,9 +1184,7 @@ of the file.
     COMSOL’s meshing parameters (required, user-defined) and resulting
     meshing statistics (automatically calculated).
 
-      - `“name”`: Mesher identity (String) to use. In current pipeline
-        implementation, only COMSOL is supported (e.g., “COMSOL Multiphysics
-        5.5”). Required.
+      - `“quality_measure”`: (String) COMSOL measure to use in calculating mesh quality stats. Options include skewness, maxangle, volcircum, vollength, condition, growth. Default is "vollength" if not specified.
 
       - `“shape_order”`: Order of geometric shape functions (Integer) (e.g.,
         quadratic = 2). Required.
@@ -1217,9 +1218,6 @@ of the file.
           - `“hnarrow”`: Resolution of narrow regions (Double). We recommend
             1. Required.
 
-          - `“mesh_time”`: CPU time required for the mesh to build (Double,
-            units: milliseconds). Automatically populated.
-
       - `“distal”`: Meshing parameters for the distal cylindrical domain (as
         defined in “medium”). Required if distal domain present (see
         “medium”).
@@ -1248,11 +1246,10 @@ of the file.
           - `“hnarrow”`: Resolution of narrow regions (Double). We recommend
             1. Required.
 
-          - `“mesh_time”`: CPU time required for the mesh to build (Double,
-            units: milliseconds). Automatically populated.
-
       - `“stats”`: Meshing statistics. See COMSOL documentation for more
         details. Automatically populated.
+
+          - `“name”`: Mesher identity (String) which generated the mesh (i.e., COMSOL version)
 
           - `“quality_measure”`: (String) (e.g., “skewness”, “maxangle”,
             “volcircum”, “vollength”, “condition”, or “growth”)
@@ -1266,6 +1263,8 @@ of the file.
           - `“min_volume”`: (Double)
 
           - `“volume”`: (Double)
+
+          - `“mesh_times”`: JSON Object containing key value parirs storing the elapsed time (in milliseconds) for each mesh type (Proximal and Distal).
 
     `“frequency”`: Defines the frequency value used for frequency-dependent
     material conductivities (Double, unit Hz) ([S28 Text](S28-Definition-of-perineurium)). Required only if
@@ -1307,14 +1306,11 @@ of the file.
       - `“sorder”`: Order of solution shape functions (String) (e.g.,
         quadratic). Required.
 
-      - `“name”`: Solver identity (String) to use. In current pipeline
-        implementation, only COMSOL is supported (e.g., “COMSOL Multiphysics
-        5.5”). Required.
-
     `“solution”`: The solution JSON Object contains key-value pairs to keep
-    record of FEM solver processes. Currently, the only information stored
-    in this JSON Object is the CPU solution time (`“sol_time”`, units:
-    milliseconds). Optional.
+    record of FEM solver processes. Automatically populated.
+      - `“sol_time”`: (Double) Time (in milliseconds) elapsed in solving electric currents.
+
+      - `“name”`: Solver identity (String) used to solve electric currents (i.e., COMSOL version).
 
 1.  Example:
     ```
@@ -1361,7 +1357,7 @@ of the file.
       },
       "min_radius_enclosing_circle": 78.985163169824,
       "mesh": {
-      "name": "COMSOL Multiphysics 5.5",
+      "quality_measure":"vollength",
       "shape_order": 2,
         "proximal": {
           "type": {
@@ -1372,8 +1368,7 @@ of the file.
           "hmin": 10,
           "hgrad": 1.8,
           "hcurve": 0.2,
-          "hnarrow": 1,
-          "mesh_time": 35186.652381
+          "hnarrow": 1
         },
         "distal": {
           "type": {
@@ -1384,17 +1379,20 @@ of the file.
           "hmin": 10,
           "hgrad": 1.8,
           "hcurve": 0.2,
-          "hnarrow": 1,
-          "mesh_time": 3196.938087
+          "hnarrow": 1
         },
-        "stats": {
-          "quality_measure": "vollength",
-          "number_elements": 1171823,
-          "min_quality": 0.244,
-          "mean_quality": 0.7237,
-          "min_volume": 19.42,
-          "volume": 1954000000000.0
-        }
+        "stats": {
+          "mesh_times": {
+            "distal": 555.2927,
+            "proximal": 6470.4786
+          },
+          "volume": 9.77E11,
+          "quality_measure_used": "vollength",
+          "min_quality": 0.1703,
+          "min_volume": 9.391,
+          "name": "COMSOL Multiphysics 5.6 (Build: 401)",
+          "number_elements": 180980,
+          "mean_quality": 0.6824
       },
       "frequency": 1, // in this example, no change in material properties
       occurs
@@ -1413,12 +1411,12 @@ of the file.
         "epineurium": "epineurium"
       },
       "solver": {
-        "sorder": "quadratic",
-        "name": "COMSOL Multiphysics 5.5"
+        "sorder": "quadratic"
       },
       "solution": {
-        "sol_time": 194028.727942
-      }
+        "name": "COMSOL Multiphysics 5.6 (Build: 401)",
+        "sol_time": 23801.7899
+      },
     }
     ```
 
