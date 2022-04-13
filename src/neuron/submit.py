@@ -26,6 +26,7 @@ parser.add_argument('-p','--partition', help = 'If submitting on a cluster, over
 parser.add_argument('-n','--num-cpu', type=int, help = 'For local submission: set number of CPUs to use, overrides run.json')
 parser.add_argument('-m','--job-mem', type=int, help = 'For cluster submission: set amount of RAM per job (in MB), overrides slurm_params.json')
 parser.add_argument('-j','--num-jobs', type=int, help = 'For cluster submission: set number of jobs per array, overrides slurm_params.json')
+parser.add_argument('-l','--list-runs', action='store_true', help = 'List info for available runs')
 submit_context_group = parser.add_mutually_exclusive_group()
 submit_context_group.add_argument('-L','--local-submit', action='store_true', help = 'Set submission context to local, overrides run.json')
 submit_context_group.add_argument('-C','--cluster-submit', action='store_true', help = 'Set submission context to cluster, overrides run.json')
@@ -33,6 +34,28 @@ submit_context_group.add_argument('-C','--cluster-submit', action='store_true', 
 ALLOWED_SUBMISSION_CONTEXTS = ['cluster', 'local','auto']
 OS = 'UNIX-LIKE' if any([s in sys.platform for s in ['darwin', 'linux']]) else 'WINDOWS'
 
+def runlist():
+    run_path = 'runs'
+    jsons = [file for file in os.listdir(run_path) if file.endswith('.json')]
+    data = []
+    for j in jsons:
+        with open(run_path+'/'+j) as f:
+            try:
+                rundata = json.load(f)
+            except Exception as e:
+                print('WARNING: Could not load {}'.format(j))
+                print(e)
+                continue
+            data.append({'RUN':os.path.splitext(j)[0],
+                'PSEUDONYM': rundata.get('pseudonym'),
+                 'SAMPLE':rundata['sample'],
+                 'MODELS':rundata['models'],
+                 'SIMS':rundata['sims']})
+    df = pd.DataFrame(data)
+    df.RUN = df.RUN.astype(int)
+    df = df.sort_values('RUN')
+    print('Run indices available (defined by user .json files in {}):\n'.format(run_path))
+    print(df.to_string(index = False))
 
 def load(config_path: str):
     """
@@ -567,7 +590,7 @@ def make_local_submission_list(run_number: int,summary_gen = False):
     return local_args_list
 
 def main():
-
+    
     #validate inputs
     args = parser.parse_args()
     run_inds = args.run_indices
@@ -581,6 +604,10 @@ def main():
 
     summary = []
     rundata = []
+    
+    if args.run_list:
+        runlist()
+        sys.exit()
 
     for run_number in run_inds:
 
