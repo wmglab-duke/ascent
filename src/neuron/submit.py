@@ -117,12 +117,11 @@ def get_thresh_bounds(sim_dir: str, sim_name: str, inner_ind: int):
     sim_config = load(os.path.join(sim_dir, sim_name, '{}.json'.format(n_sim)))
 
     if sim_config['protocol']['mode'] == 'ACTIVATION_THRESHOLD' or sim_config['protocol']['mode'] == 'BLOCK_THRESHOLD':
-        if 'scout_sim' in sim_config['protocol']['bounds_search'].keys() and sim_config['protocol']['bounds_search']['scout_sim']!=False:
+        if 'scout' in sim_config['protocol']['bounds_search'].keys():
             # load in threshold from scout_sim (example use: run centroid first, then any other xy-mode after)
-
-            scout_sim = sim_config['protocol']['bounds_search']['scout_sim']
+            scout = sim_config['protocol']['bounds_search']['scout']
             scout_sim_dir = os.path.join('n_sims')
-            scout_sim_name = '{}_{}_{}_{}'.format(sample, model, scout_sim, n_sim)
+            scout_sim_name = '{}_{}_{}_{}'.format(sample, scout['model'], scout['sim'], n_sim)
             scout_sim_path = os.path.join(scout_sim_dir, scout_sim_name)
             scout_output_path = os.path.abspath(os.path.join(scout_sim_path, 'data', 'outputs'))
             scout_thresh_path = os.path.join(scout_output_path, 'thresh_inner{}_fiber{}.dat'.format(inner_ind, 0))
@@ -145,7 +144,9 @@ def get_thresh_bounds(sim_dir: str, sim_name: str, inner_ind: int):
                                   'which you also defined \n')
 
             else:
-                warnings.warn(f"No fiber threshold exists for scout sim: inner{inner_ind} fiber0")
+                warnings.warn(f"No fiber threshold exists for scout sim: inner{inner_ind} fiber0, using standard top and bottom")
+                top = sim_config['protocol']['bounds_search']['top']
+                bottom = sim_config['protocol']['bounds_search']['bottom']
 
         else:
             top = sim_config['protocol']['bounds_search']['top']
@@ -252,7 +253,7 @@ def cluster_submit(run_number: int, partition: str, mem: int=2000, array_length_
 
     job_count = 1
     data = [[], [], []]
-    
+
     for sample in samples:
         # loop models, sims
         for model in models:
@@ -262,7 +263,7 @@ def cluster_submit(run_number: int, partition: str, mem: int=2000, array_length_
 
                 for sim_name in [x for x in os.listdir(sim_dir) if x.startswith(sim_name_base)]:
                     print('\n\n################ {} ################\n\n'.format(sim_name))
-                    
+
                     sim_path = os.path.join(sim_dir, sim_name)
                     fibers_path = os.path.abspath(os.path.join(sim_path, 'data', 'inputs'))
                     output_path = os.path.abspath(os.path.join(sim_path, 'data', 'outputs'))
@@ -497,7 +498,7 @@ def make_local_submission_list(run_number: int,summary_gen = False):
                     # ensure necessary directories exist
                     for cur_dir in [fibers_path, output_path, out_dir, err_dir, start_dir]:
                         ensure_dir(cur_dir)
-                        
+
                     # ensure blank.hoc exists
                     blank_path = os.path.join(sim_path, 'blank.hoc')
                     if not os.path.exists(blank_path):
