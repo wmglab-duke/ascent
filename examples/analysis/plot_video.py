@@ -23,6 +23,10 @@ amp = 0
 
 outpath = 'out/analysis/videos'
 
+#create output directory
+if not os.path.exists(outpath):
+    os.makedirs(outpath)
+
 if shutil.which('ffmpeg') is None:
     sys.exit('Please install ffmpeg and add to your PATH before continuing.')
 
