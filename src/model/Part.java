@@ -3282,6 +3282,7 @@ class Part {
                     System.out.println("OUTERS ONLY NOT IMPLEMENTED - NO PERI CONTACT IMPEDANCE SET");
 
                 }
+                model.nodeGroup(im.get("Contact Impedances")).add(im.get(ciLabel));
 
                 break;
 
