@@ -6,12 +6,11 @@ Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 import pygame
-from pygame.locals import *
+from pygame.locals import DOUBLEBUF, HWSURFACE, RESIZABLE
 from pygame.locals import KEYDOWN, K_ESCAPE, QUIT, K_SPACE
 from pygame.colordict import THECOLORS
 # builtin
 from typing import List, Tuple
-from scipy.spatial import distance
 
 # packages
 import pymunk.pygame_util
@@ -93,7 +92,7 @@ class Deformable(Exceptionable):
             # width = int(1.5 * (bounds[2] - bounds[0]))
             # height = int(1.5 * (bounds[3] - bounds[1]))
 
-            aspect = 2
+            pass
 
             screen = pygame.display.set_mode((800, int(800*im_ratio)),HWSURFACE|DOUBLEBUF|RESIZABLE)
             # fake_screen = pygame.display.set_mode((width, height),HWSURFACE|DOUBLEBUF|RESIZABLE)
