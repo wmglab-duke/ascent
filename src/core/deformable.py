@@ -5,10 +5,7 @@ The copyrights of this software are owned by Duke University.
 Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
-import pygame
-from pygame.locals import DOUBLEBUF, HWSURFACE, RESIZABLE
-from pygame.locals import KEYDOWN, K_ESCAPE, QUIT, K_SPACE
-from pygame.colordict import THECOLORS
+
 # builtin
 from typing import List, Tuple
 
@@ -16,6 +13,10 @@ from typing import List, Tuple
 import pymunk.pygame_util
 import numpy as np
 from shapely.geometry import LineString, Point
+import pygame
+from pygame.locals import DOUBLEBUF, HWSURFACE, RESIZABLE
+from pygame.locals import KEYDOWN, K_ESCAPE, QUIT, K_SPACE
+from pygame.colordict import THECOLORS
 
 # ascent
 from src.core import Trace, Slide
@@ -85,15 +86,7 @@ class Deformable(Exceptionable):
 
         # draw the deformation
         if render:
-            # packages
-
-
-
-            # width = int(1.5 * (bounds[2] - bounds[0]))
-            # height = int(1.5 * (bounds[3] - bounds[1]))
-
-            pass
-
+            
             screen = pygame.display.set_mode((800, int(800*im_ratio)),HWSURFACE|DOUBLEBUF|RESIZABLE)
             # fake_screen = pygame.display.set_mode((width, height),HWSURFACE|DOUBLEBUF|RESIZABLE)
 
