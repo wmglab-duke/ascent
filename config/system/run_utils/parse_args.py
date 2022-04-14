@@ -1,5 +1,4 @@
 import sys
-import os
 import argparse
 
 #Set up parser and top level args

@@ -17,7 +17,6 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
-import warnings
 from scipy.ndimage.morphology import binary_fill_holes
 from shapely.geometry import LineString
 from skimage import morphology

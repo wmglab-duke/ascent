@@ -7,7 +7,6 @@ The source code can be found on the following GitHub repository: https://github.
 """
 
 import os
-import pickle
 
 from src.core import Simulation
 from src.utils import Configurable
@@ -34,7 +33,7 @@ def run(args):
         for model in models:
             for sim in sims:
                 sim_dir = os.path.join('samples', str(sample), 'models', str(model), 'sims', str(sim))
-                sim_path = os.path.join('samples', str(sample), 'models', str(model), 'sims', str(sim),'sim.obj')
+                os.path.join('samples', str(sample), 'models', str(model), 'sims', str(sim),'sim.obj')
                 check = Simulation.thresholds_exist(sample, model, sim, sim_dir, os.path.join(nsim_source, 'n_sims'))
                 if check==False:
                     if args.force==True:

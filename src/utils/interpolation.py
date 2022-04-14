@@ -111,7 +111,6 @@ def replaceIndex(A, B):
 
 def matSUB(first, second):
     newMAT = []
-    newCOL = []
     for i in range(len(first)):
         for j in range(len(first[i])):
             newMAT.append(first[i][j] - second[i][j])
@@ -121,7 +120,6 @@ def matSUB(first, second):
 
 def matADD(first, second):
     newMAT = []
-    newCOL = []
     for i in range(len(first)):
         for j in range(len(first[i])):
             newMAT.append(first[i][j] + second[i][j])
@@ -136,7 +134,6 @@ def matMULTI(first, second):
     return a new matrix
     """
     newMAT = []
-    newCOL = []
     for i in range(len(first)):
         for j in range(len(first[i])):
             newMAT.append(first[i][j] * second[i][j])
@@ -151,7 +148,6 @@ def matDIV(first, second):
     return a new matrix
     """
     newMAT = []
-    newCOL = []
     for i in range(len(first)):
         for j in range(len(first[i])):
             newMAT.append(first[i][j] / second[i][j])
@@ -238,7 +234,7 @@ def interparc(t, px, py, *args):
     cumarc = cumsumMAT(chordlen)
     if method == 'linear':
         inter = np.histogram(bins=t, a=cumarc)
-        tbins = inter[1]
+        inter[1]
         hist = inter[0]
         tbinset = []
         index = 0
