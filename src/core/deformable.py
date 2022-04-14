@@ -32,7 +32,7 @@ class Deformable(Exceptionable):
         :param boundary_end: end trace
         :param contents: list of traces assumed to be within boundary start, not required to be within boundary end.
         Assumed boundary end will be able to hold all contents.
-        
+
         """
 
         # init superclass
@@ -86,14 +86,10 @@ class Deformable(Exceptionable):
 
         # draw the deformation
         if render:
-            
+            #Initialize screen and surface which each frame will be drawn on
             screen = pygame.display.set_mode((800, int(800*im_ratio)),HWSURFACE|DOUBLEBUF|RESIZABLE)
-            # fake_screen = pygame.display.set_mode((width, height),HWSURFACE|DOUBLEBUF|RESIZABLE)
-
-            # drawing_screen.blit(zoomed_screen,(1600,800))
             drawsurf = pygame.surface.Surface((width, height))
-            # pygame.init()
-            # drawing_screen = pygame.Surface((width, height))
+            #pygame debug draw options
             options = pymunk.pygame_util.DrawOptions(drawsurf)
             options.shape_outline_color = (0, 0, 0, 255)
             options.shape_static_color = (0, 0, 0, 255)
@@ -160,28 +156,17 @@ class Deformable(Exceptionable):
 
             # draw screen
             if render:
+                #add white fill and draw objects on surface
                 drawsurf.fill(THECOLORS["white"])
-
-                # draw the actual screen
                 space.debug_draw(options)
-
-                # temp_surf = drawing_screen.copy()
-                # drawing_screen.fill((0,0,0))  # here, you can fill the screen with whatever you want to take the place of what was there before
-                # drawing_screen.blit(temp_surf, (width/2,-height/2))
-
-                # pygame.display.update()
-
-                # drawing_screen = pygame.transform.scale(drawing_screen, display_dimensions)#, screen)
-                # fake_screen.fill(THECOLORS["white"])
-                # fake_screen.blit(drawsurf, (0, 0))
+                #resize surface and project on screen
                 screen.blit(pygame.transform.flip(pygame.transform.scale(drawsurf, (800,int(800*im_ratio))),False,True), (0, 0))
                 pygame.display.flip()
                 pygame.display.set_caption('nerve morph step {} of {}'.format(morph_index, len(morph_steps)))
-                
+
             loop_count += 1
 
         step_physics(space, 500)
-
         # get end positions
         end_positions: List[np.ndarray] = []
         end_rotations: List[float] = []
@@ -251,7 +236,7 @@ class Deformable(Exceptionable):
             for i, point in enumerate(trace.points):
                 point += vectors[i] * ratio
             traces.append(trace)
-        if deform_ratio !=0: 
+        if deform_ratio !=0:
             def_traces = traces[:int((deform_ratio if deform_ratio is not None else 1) * count)]
         else: #still need fascicle sep physics with deform_ratio = 0, so pass starting trace only
             def_traces = [traces[0]]
