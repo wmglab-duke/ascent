@@ -234,7 +234,6 @@ def interparc(t, px, py, *args):
     cumarc = cumsumMAT(chordlen)
     if method == 'linear':
         inter = np.histogram(bins=t, a=cumarc)
-        inter[1]
         hist = inter[0]
         tbinset = []
         index = 0
@@ -290,4 +289,3 @@ if __name__ == '__main__':
     ax.scatter(res[:, 0], res[:, 1], res[:, 2], c='b', marker='o')
 
     plt.show()
-
