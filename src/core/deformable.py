@@ -5,9 +5,13 @@ The copyrights of this software are owned by Duke University.
 Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
-
+import pygame
+from pygame.locals import *
+from pygame.locals import KEYDOWN, K_ESCAPE, QUIT, K_SPACE
+from pygame.colordict import THECOLORS
 # builtin
 from typing import List, Tuple
+from scipy.spatial import distance
 
 # packages
 import pymunk.pygame_util
@@ -58,9 +62,10 @@ class Deformable(Exceptionable):
         # copy the "contents" so multiple deformations are possible
         contents = [trace.deepcopy() for trace in self.contents]
 
-        # bounds = self.start.polygon().bounds
-        # width = int(1.5 * (bounds[2] - bounds[0]))
-        # height = int(1.5 * (bounds[3] - bounds[1]))
+        bounds = self.start.polygon().bounds
+        width = int(1 * (bounds[2]+bounds[0]))
+        height = int(1 * (bounds[3]+bounds[1]))
+        im_ratio=height/width
 
         # offset all the traces to provide for an effective minimum distance for original fascicles
         for trace in contents:
@@ -82,21 +87,22 @@ class Deformable(Exceptionable):
         # draw the deformation
         if render:
             # packages
-            import pygame
-            from pygame.locals import KEYDOWN, K_ESCAPE, QUIT, K_SPACE
-            from pygame.colordict import THECOLORS
+
+
 
             # width = int(1.5 * (bounds[2] - bounds[0]))
             # height = int(1.5 * (bounds[3] - bounds[1]))
 
             aspect = 2
 
-            display_dimensions = int(800 * aspect), 800
-            drawing_screen = pygame.display.set_mode(display_dimensions)
+            screen = pygame.display.set_mode((800, int(800*im_ratio)),HWSURFACE|DOUBLEBUF|RESIZABLE)
+            # fake_screen = pygame.display.set_mode((width, height),HWSURFACE|DOUBLEBUF|RESIZABLE)
 
+            # drawing_screen.blit(zoomed_screen,(1600,800))
+            drawsurf = pygame.surface.Surface((width, height))
             # pygame.init()
             # drawing_screen = pygame.Surface((width, height))
-            options = pymunk.pygame_util.DrawOptions(drawing_screen)
+            options = pymunk.pygame_util.DrawOptions(drawsurf)
             options.shape_outline_color = (0, 0, 0, 255)
             options.shape_static_color = (0, 0, 0, 255)
 
@@ -162,7 +168,7 @@ class Deformable(Exceptionable):
 
             # draw screen
             if render:
-                drawing_screen.fill(THECOLORS["white"])
+                drawsurf.fill(THECOLORS["white"])
 
                 # draw the actual screen
                 space.debug_draw(options)
@@ -174,9 +180,12 @@ class Deformable(Exceptionable):
                 # pygame.display.update()
 
                 # drawing_screen = pygame.transform.scale(drawing_screen, display_dimensions)#, screen)
+                # fake_screen.fill(THECOLORS["white"])
+                # fake_screen.blit(drawsurf, (0, 0))
+                screen.blit(pygame.transform.flip(pygame.transform.scale(drawsurf, (800,int(800*im_ratio))),False,True), (0, 0))
                 pygame.display.flip()
                 pygame.display.set_caption('nerve morph step {} of {}'.format(morph_index, len(morph_steps)))
-
+                
             loop_count += 1
 
         step_physics(space, 500)
