@@ -1,5 +1,5 @@
 # Installation
-## Installing commercial software
+## Installing commercial software dependencies
 
 It is *highly* recommended that you use a distribution of Anaconda/Miniconda with ASCENT. However, advanced users who wish to use another Python distribution may.
 
@@ -32,7 +32,7 @@ If using MacOS to run local NEURON simulations, it may be necessary to install t
 
 Users may also download a text editor or integrated development environment (IDE) of their choosing to view/edit code (e.g., [Atom](https://atom.io/), [Visual Studio Code](https://code.visualstudio.com/), [IntelliJ IDEA](https://www.jetbrains.com/idea/download/)). For Java code, full autocomplete functionality requires adding both the path to the COMSOL installation ending in `plugins` as well as the path ```<ASCENT_PATH>/bin/json-20190722.jar``` to the list of available libraries (usually from within the IDE’s project settings).
 
-## Installing ASCENT pipeline
+## Installing ASCENT
 
 1. First, download or clone the SPARC ASCENT pipeline from [GitHub](https://github.com/wmglab-duke/ascent) to a desired location that will be referenced in step 3. Downloading is a much simpler process than cloning via Git, but does not easily allow for you to get the most recent updates/bug fixes, nor does it allow you to suggest new features/changes. If you are interested in either of these features, you should clone via Git rather than downloading.
     * Downloading: Click the [download](https://github.com/wmglab-duke/ascent/archive/refs/heads/master.zip) button on GitHub and choose the location to which you would like to save. Note that you will need to extract the files, as they will be downloaded in a compressed format. When presented with a choice of compression format, ".zip" is a safe choice that most computers will be able to extract.
@@ -44,7 +44,7 @@ Users may also download a text editor or integrated development environment (IDE
         5. For more information on using Git, check out the [official documentation](https://git-scm.com/doc).
 
 2. Next, install ASCENT dependencies:
-    * Windows: Open the Anaconda Powershell Prompt from the Windows Start Menu as Administrator, and use cd to navigate to the root directory of the pipeline. Then, run ```python run install```.
+    * Windows: Open the Anaconda Powershell Prompt from the Windows Start Menu as Administrator, and use cd to navigate to the root directory of the pipeline. Then, run ```python run install```. Note: If reinstalling ASCENT after having changed your Anaconda/Miniconda installation, it may be necessary to delete the `#region conda initialize` block from `C:\Users\<username>\Documents\WindowsPowerShell\profile.ps1` in order to use Anaconda Powershell Prompt.
     * MacOS/Linux: Open Anaconda Prompt and use cd to navigate to the root directory of the pipeline. Then, run ```python run install```.
     * For advanced users using their own (non-conda) Python distribution:
       - From the ascent root directory execute ```python run install --no-conda```

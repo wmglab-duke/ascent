@@ -44,6 +44,9 @@ def load(config_path: str):
         # print('load "{}" --> key "{}"'.format(config, key))
         return json.load(handle)
 
+def ensure_dir(directory):
+    if not os.path.exists(directory):
+        os.makedirs(directory)
 
 def auto_compile(override: bool = False):
     if (not os.path.exists(os.path.join('MOD_Files/x86_64')) and OS == 'UNIX-LIKE') or \
@@ -114,12 +117,11 @@ def get_thresh_bounds(sim_dir: str, sim_name: str, inner_ind: int):
     sim_config = load(os.path.join(sim_dir, sim_name, '{}.json'.format(n_sim)))
 
     if sim_config['protocol']['mode'] == 'ACTIVATION_THRESHOLD' or sim_config['protocol']['mode'] == 'BLOCK_THRESHOLD':
-        if 'scout_sim' in sim_config['protocol']['bounds_search'].keys() and sim_config['protocol']['bounds_search']['scout_sim']!=False:
+        if 'scout' in sim_config['protocol']['bounds_search'].keys():
             # load in threshold from scout_sim (example use: run centroid first, then any other xy-mode after)
-
-            scout_sim = sim_config['protocol']['bounds_search']['scout_sim']
+            scout = sim_config['protocol']['bounds_search']['scout']
             scout_sim_dir = os.path.join('n_sims')
-            scout_sim_name = '{}_{}_{}_{}'.format(sample, model, scout_sim, n_sim)
+            scout_sim_name = '{}_{}_{}_{}'.format(sample, scout['model'], scout['sim'], n_sim)
             scout_sim_path = os.path.join(scout_sim_dir, scout_sim_name)
             scout_output_path = os.path.abspath(os.path.join(scout_sim_path, 'data', 'outputs'))
             scout_thresh_path = os.path.join(scout_output_path, 'thresh_inner{}_fiber{}.dat'.format(inner_ind, 0))
@@ -142,7 +144,9 @@ def get_thresh_bounds(sim_dir: str, sim_name: str, inner_ind: int):
                                   'which you also defined \n')
 
             else:
-                warnings.warn(f"No fiber threshold exists for scout sim: inner{inner_ind} fiber0")
+                warnings.warn(f"No fiber threshold exists for scout sim: inner{inner_ind} fiber0, using standard top and bottom")
+                top = sim_config['protocol']['bounds_search']['top']
+                bottom = sim_config['protocol']['bounds_search']['bottom']
 
         else:
             top = sim_config['protocol']['bounds_search']['top']
@@ -243,135 +247,63 @@ def cluster_submit(run_number: int, partition: str, mem: int=2000, array_length_
     run: dict = load(filename)
 
     # assign appropriate configuration data
-    sample = run.get('sample', [])
+    samples = [run.get('sample', [])]
     models = run.get('models', [])
     sims = run.get('sims', [])
 
     job_count = 1
     data = [[], [], []]
 
-    # loop models, sims
-    for model in models:
-        for sim in sims:
-            sim_dir = os.path.join('n_sims')
-            sim_name_base = '{}_{}_{}_'.format(sample, model, sim)
+    for sample in samples:
+        # loop models, sims
+        for model in models:
+            for sim in sims:
+                sim_dir = os.path.join('n_sims')
+                sim_name_base = '{}_{}_{}_'.format(sample, model, sim)
 
-            for sim_name in [x for x in os.listdir(sim_dir) if x.startswith(sim_name_base)]:
-                print('\n\n################ {} ################\n\n'.format(sim_name))
+                for sim_name in [x for x in os.listdir(sim_dir) if x.startswith(sim_name_base)]:
+                    print('\n\n################ {} ################\n\n'.format(sim_name))
 
-                sim_path = os.path.join(sim_dir, sim_name)
-                fibers_path = os.path.abspath(os.path.join(sim_path, 'data', 'inputs'))
-                output_path = os.path.abspath(os.path.join(sim_path, 'data', 'outputs'))
-                start_path_base = os.path.join(sim_path, 'start_')
+                    sim_path = os.path.join(sim_dir, sim_name)
+                    fibers_path = os.path.abspath(os.path.join(sim_path, 'data', 'inputs'))
+                    output_path = os.path.abspath(os.path.join(sim_path, 'data', 'outputs'))
+                    start_dir = os.path.join(sim_path, 'start_scripts')
+                    start_path_base = os.path.join(start_dir, 'start_')
 
-                n_sim = sim_name.split('_')[3]
-                sim_config = load(os.path.join(sim_dir, sim_name, '{}.json'.format(n_sim)))
+                    n_sim = sim_name.split('_')[3]
+                    sim_config = load(os.path.join(sim_dir, sim_name, '{}.json'.format(n_sim)))
 
-                fiber_model = sim_config['fibers']['mode']
+                    fiber_model = sim_config['fibers']['mode']
 
-                # ensure log directories exist
-                out_dir = os.path.join(sim_path, 'logs', 'out', '')
-                err_dir = os.path.join(sim_path, 'logs', 'err', '')
-                for cur_dir in [out_dir, err_dir]:
-                    if not os.path.exists(cur_dir):
-                        os.makedirs(cur_dir)
+                    # ensure log directories exist
+                    out_dir = os.path.join(sim_path, 'logs', 'out', '')
+                    err_dir = os.path.join(sim_path, 'logs', 'err', '')
+                    for cur_dir in [fibers_path, output_path, out_dir, err_dir, start_dir]:
+                        ensure_dir(cur_dir)
 
-                # ensure blank.hoc exists
-                blank_path = os.path.join(sim_path, 'blank.hoc')
-                if not os.path.exists(blank_path):
-                    open(blank_path, 'w').close()
+                    # ensure blank.hoc exists
+                    blank_path = os.path.join(sim_path, 'blank.hoc')
+                    if not os.path.exists(blank_path):
+                        open(blank_path, 'w').close()
 
-                fibers_files = [x for x in os.listdir(fibers_path) if re.match('inner[0-9]+_fiber[0-9]+\\.dat', x)]
-                max_fibers_files_ind = len(fibers_files) - 1
+                    fibers_files = [x for x in os.listdir(fibers_path) if re.match('inner[0-9]+_fiber[0-9]+\\.dat', x)]
+                    max_fibers_files_ind = len(fibers_files) - 1
 
-                start_paths_list = []
-                sim_array_batch = 1
-                inner_index_tally = []
-                fiber_index_tally = []
-                missing_total = 0
+                    start_paths_list = []
+                    sim_array_batch = 1
+                    inner_index_tally = []
+                    fiber_index_tally = []
+                    missing_total = 0
 
-                inner_fiber_diam_key_file = os.path.join(fibers_path, 'inner_fiber_diam_key.obj')
-                inner_fiber_diam_key = None
-                if os.path.exists(inner_fiber_diam_key_file):
-                    with open(inner_fiber_diam_key_file, 'rb') as f:
-                        inner_fiber_diam_key = pickle.load(f)
-                    f.close()
-                else:
-                    diameter = sim_config['fibers']['z_parameters']['diameter']
-
-                for fiber_file_ind, fiber_filename in enumerate(fibers_files):
-                    master_fiber_name = str(fiber_filename.split('.')[0])
-                    inner_name, fiber_name = tuple(master_fiber_name.split('_'))
-                    inner_ind = int(inner_name.split('inner')[-1])
-                    fiber_ind = int(fiber_name.split('fiber')[-1])
-
-                    thresh_path = os.path.join(output_path, f"thresh_inner{inner_ind}_fiber{fiber_ind}.dat")
-                    if os.path.exists(thresh_path):
-                        continue
+                    inner_fiber_diam_key_file = os.path.join(fibers_path, 'inner_fiber_diam_key.obj')
+                    inner_fiber_diam_key = None
+                    if os.path.exists(inner_fiber_diam_key_file):
+                        with open(inner_fiber_diam_key_file, 'rb') as f:
+                            inner_fiber_diam_key = pickle.load(f)
+                        f.close()
                     else:
-                        missing_total += 1
-                        inner_ind_solo = inner_ind
-                        fiber_ind_solo = fiber_ind
-                        master_fiber_name_solo = master_fiber_name
+                        diameter = sim_config['fibers']['z_parameters']['diameter']
 
-                if missing_total == 0:
-                    continue
-
-                elif missing_total == 1:
-                    stimamp_top, stimamp_bottom = get_thresh_bounds(sim_dir, sim_name, inner_ind_solo)
-                    start_path_solo = os.path.join(sim_path, 'start{}'.format('.sh' if OS == 'UNIX-LIKE' else '.bat'))
-
-                    if inner_fiber_diam_key is not None:
-                        diameter = get_diameter(inner_fiber_diam_key, inner_ind, fiber_ind)
-
-                    deltaz, neuron_flag = get_deltaz(fiber_model, diameter)
-
-                    if stimamp_top is not None and stimamp_bottom is not None:
-
-                        # get the axonnodes from data/inputs/inner{}_fiber{}.dat top line
-                        fiber_ve_path = os.path.join(fibers_path,
-                                                     'inner{}_fiber{}.dat'.format(inner_ind_solo, fiber_ind_solo))
-                        fiber_ve = np.loadtxt(fiber_ve_path)
-                        n_fiber_coords = int(fiber_ve[0])
-
-                        if neuron_flag == 2:
-                            axonnodes = int(1 + (n_fiber_coords - 1) / 11)
-                        elif neuron_flag == 3:
-                            axonnodes = int(n_fiber_coords)
-
-                        make_task(OS, start_path_solo, sim_path, inner_ind_solo, fiber_ind_solo, stimamp_top, stimamp_bottom,
-                                  diameter, deltaz, axonnodes)
-
-                        # submit batch job for fiber
-                        job_name = '{}_{}'.format(sim_name, master_fiber_name_solo)
-                        output_log = os.path.join(out_dir, '{}{}'.format(master_fiber_name_solo, '.log'))
-                        error_log = os.path.join(err_dir, '{}{}'.format(master_fiber_name_solo, '.log'))
-
-                        print('========= SUBMITTING SOLO: {} ==========='.format(job_name))
-
-                        command = ' '.join([
-                            'sbatch',
-                            '--job-name={}'.format(job_name),
-                            '--output={}'.format(output_log),
-                            '--error={}'.format(error_log),
-                            '--mem={}'.format(mem),
-                            '-p', partition,
-                            '-c', '1',
-                            start_path_solo
-                        ])
-                        os.system(command)
-
-                        # allow job to start before removing slurm file
-                        time.sleep(1.0)
-                    else:
-                        print(
-                            '========================== MISSING DEFINITION OF TOP AND BOTTOM ==========================')
-                        continue
-
-                else:
-
-                    print('================= ARRAY SUBMITTING ====================')
-                    array_index = 0
                     for fiber_file_ind, fiber_filename in enumerate(fibers_files):
                         master_fiber_name = str(fiber_filename.split('.')[0])
                         inner_name, fiber_name = tuple(master_fiber_name.split('_'))
@@ -380,20 +312,30 @@ def cluster_submit(run_number: int, partition: str, mem: int=2000, array_length_
 
                         thresh_path = os.path.join(output_path, f"thresh_inner{inner_ind}_fiber{fiber_ind}.dat")
                         if os.path.exists(thresh_path):
-                            # print(f"Found {thresh_path} -->\t\tskipping inner ({inner_ind}) fiber ({fiber_ind})")
                             continue
-
                         else:
-                            print(f"RUNNING inner ({inner_ind}) fiber ({fiber_ind})  -->  {thresh_path}")
-                            #time.sleep(1)
+                            missing_total += 1
+                            inner_ind_solo = inner_ind
+                            fiber_ind_solo = fiber_ind
+                            master_fiber_name_solo = master_fiber_name
 
-                            if inner_fiber_diam_key is not None:
-                                diameter = get_diameter(inner_fiber_diam_key, inner_ind, fiber_ind)
-                            deltaz, neuron_flag = get_deltaz(fiber_model, diameter)
+                    if missing_total == 0:
+                        continue
+
+                    elif missing_total == 1:
+                        stimamp_top, stimamp_bottom = get_thresh_bounds(sim_dir, sim_name, inner_ind_solo)
+                        start_path_solo = os.path.join(sim_path, 'start{}'.format('.sh' if OS == 'UNIX-LIKE' else '.bat'))
+
+                        if inner_fiber_diam_key is not None:
+                            diameter = get_diameter(inner_fiber_diam_key, inner_ind, fiber_ind)
+
+                        deltaz, neuron_flag = get_deltaz(fiber_model, diameter)
+
+                        if stimamp_top is not None and stimamp_bottom is not None:
 
                             # get the axonnodes from data/inputs/inner{}_fiber{}.dat top line
                             fiber_ve_path = os.path.join(fibers_path,
-                                                         'inner{}_fiber{}.dat'.format(inner_ind, fiber_ind))
+                                                        'inner{}_fiber{}.dat'.format(inner_ind_solo, fiber_ind_solo))
                             fiber_ve = np.loadtxt(fiber_ve_path)
                             n_fiber_coords = int(fiber_ve[0])
 
@@ -402,56 +344,119 @@ def cluster_submit(run_number: int, partition: str, mem: int=2000, array_length_
                             elif neuron_flag == 3:
                                 axonnodes = int(n_fiber_coords)
 
-                            start_path = '{}{}{}'.format(start_path_base, job_count,
-                                                         '.sh' if OS == 'UNIX-LIKE' else '.bat')
-                            start_paths_list.append(start_path)
-
-                            inner_index_tally.append(inner_ind)
-                            fiber_index_tally.append(fiber_ind)
-
-                            stimamp_top, stimamp_bottom = get_thresh_bounds(sim_dir, sim_name, inner_ind)
-                            if stimamp_top is not None and stimamp_bottom is not None:
-                                make_task(OS, start_path, sim_path, inner_ind, fiber_ind, stimamp_top, stimamp_bottom,
-                                          diameter, deltaz, axonnodes)
-                                array_index += 1
-                                job_count += 1
-
-                        if array_index == array_length_max or fiber_file_ind == max_fibers_files_ind:
-                            # output key, since we lose this in array method
-                            start = job_count - len(start_paths_list)
-
-                            key_file = os.path.join(sim_path, 'out_err_key.txt')
-
-                            data[0].append([x for x in range(start, job_count)])  # note: last value is job_count - 1
-                            data[1].append(inner_index_tally)
-                            data[2].append(fiber_index_tally)
-
-                            if fiber_file_ind == max_fibers_files_ind:
-                                with open(key_file, "ab") as f:
-                                    np.savetxt(f,
-                                               ([x for xs in data[0] for x in xs],
-                                                [y for ys in data[1] for y in ys],
-                                                [z for zs in data[2] for z in zs]),
-                                               fmt='%d')
-
-                                data = [[], [], []]
+                            make_task(OS, start_path_solo, sim_path, inner_ind_solo, fiber_ind_solo, stimamp_top, stimamp_bottom,
+                                    diameter, deltaz, axonnodes)
 
                             # submit batch job for fiber
-                            job_name = f"{sim_name}_{sim_array_batch}"
+                            job_name = '{}_{}'.format(sim_name, master_fiber_name_solo)
+                            output_log = os.path.join(out_dir, '{}{}'.format(master_fiber_name_solo, '.log'))
+                            error_log = os.path.join(err_dir, '{}{}'.format(master_fiber_name_solo, '.log'))
 
-                            os.system(f"sbatch --job-name={job_name} --output={out_dir}%a.log "
-                                      f"--error={err_dir}%a.log --array={start}-{job_count - 1} "
-                                      f"--mem={mem} --cpus-per-task=1 "
-                                      f"--partition={partition} array_launch.slurm {start_path_base}")
+                            print('========= SUBMITTING SOLO: {} ==========='.format(job_name))
+
+                            command = ' '.join([
+                                'sbatch',
+                                '--job-name={}'.format(job_name),
+                                '--output={}'.format(output_log),
+                                '--error={}'.format(error_log),
+                                '--mem={}'.format(mem),
+                                '-p', partition,
+                                '-c', '1',
+                                start_path_solo
+                            ])
+                            os.system(command)
 
                             # allow job to start before removing slurm file
                             time.sleep(1.0)
+                        else:
+                            print(
+                                '========================== MISSING DEFINITION OF TOP AND BOTTOM ==========================')
+                            continue
 
-                            array_index = 0
-                            sim_array_batch += 1
-                            start_paths_list = []
-                            inner_index_tally = []
-                            fiber_index_tally = []
+                    else:
+
+                        print('================= ARRAY SUBMITTING ====================')
+                        array_index = 0
+                        for fiber_file_ind, fiber_filename in enumerate(fibers_files):
+                            master_fiber_name = str(fiber_filename.split('.')[0])
+                            inner_name, fiber_name = tuple(master_fiber_name.split('_'))
+                            inner_ind = int(inner_name.split('inner')[-1])
+                            fiber_ind = int(fiber_name.split('fiber')[-1])
+
+                            thresh_path = os.path.join(output_path, f"thresh_inner{inner_ind}_fiber{fiber_ind}.dat")
+                            if os.path.exists(thresh_path):
+                                # print(f"Found {thresh_path} -->\t\tskipping inner ({inner_ind}) fiber ({fiber_ind})")
+                                continue
+
+                            else:
+                                print(f"RUNNING inner ({inner_ind}) fiber ({fiber_ind})  -->  {thresh_path}")
+                                #time.sleep(1)
+
+                                if inner_fiber_diam_key is not None:
+                                    diameter = get_diameter(inner_fiber_diam_key, inner_ind, fiber_ind)
+                                deltaz, neuron_flag = get_deltaz(fiber_model, diameter)
+
+                                # get the axonnodes from data/inputs/inner{}_fiber{}.dat top line
+                                fiber_ve_path = os.path.join(fibers_path,
+                                                            'inner{}_fiber{}.dat'.format(inner_ind, fiber_ind))
+                                fiber_ve = np.loadtxt(fiber_ve_path)
+                                n_fiber_coords = int(fiber_ve[0])
+
+                                if neuron_flag == 2:
+                                    axonnodes = int(1 + (n_fiber_coords - 1) / 11)
+                                elif neuron_flag == 3:
+                                    axonnodes = int(n_fiber_coords)
+
+                                start_path = '{}{}{}'.format(start_path_base, job_count,
+                                                            '.sh' if OS == 'UNIX-LIKE' else '.bat')
+                                start_paths_list.append(start_path)
+
+                                inner_index_tally.append(inner_ind)
+                                fiber_index_tally.append(fiber_ind)
+
+                                stimamp_top, stimamp_bottom = get_thresh_bounds(sim_dir, sim_name, inner_ind)
+                                if stimamp_top is not None and stimamp_bottom is not None:
+                                    make_task(OS, start_path, sim_path, inner_ind, fiber_ind, stimamp_top, stimamp_bottom,
+                                            diameter, deltaz, axonnodes)
+                                    array_index += 1
+                                    job_count += 1
+
+                            if array_index == array_length_max or fiber_file_ind == max_fibers_files_ind:
+                                # output key, since we lose this in array method
+                                start = job_count - len(start_paths_list)
+
+                                key_file = os.path.join(sim_path, 'out_err_key.txt')
+
+                                data[0].append([x for x in range(start, job_count)])  # note: last value is job_count - 1
+                                data[1].append(inner_index_tally)
+                                data[2].append(fiber_index_tally)
+
+                                key_arr = np.transpose(np.array([[x for xs in data[0] for x in xs],
+                                                                [y for ys in data[1] for y in ys],
+                                                                [z for zs in data[2] for z in zs]]))
+
+                                if fiber_file_ind == max_fibers_files_ind:
+                                    with open(key_file, "ab") as f:
+                                        np.savetxt(f, key_arr, fmt='%d', header='job_n, inner, fiber',comments='',delimiter = ", ")
+
+                                    data = [[], [], []]
+
+                                # submit batch job for fiber
+                                job_name = f"{sim_name}_{sim_array_batch}"
+
+                                os.system(f"sbatch --job-name={job_name} --output={out_dir}%a.log "
+                                        f"--error={err_dir}%a.log --array={start}-{job_count - 1} "
+                                        f"--mem={mem} --cpus-per-task=1 "
+                                        f"--partition={partition} array_launch.slurm {start_path_base}")
+
+                                # allow job to start before removing slurm file
+                                time.sleep(1.0)
+
+                                array_index = 0
+                                sim_array_batch += 1
+                                start_paths_list = []
+                                inner_index_tally = []
+                                fiber_index_tally = []
 
 
 def make_local_submission_list(run_number: int,summary_gen = False):
@@ -468,95 +473,96 @@ def make_local_submission_list(run_number: int,summary_gen = False):
     local_run_keys = ['start', 'output_log', 'error_log', 'sim_path']
 
     # assign appropriate configuration data
-    sample = run.get('sample', [])
+    samples = [run.get('sample', [])]
     models = run.get('models', [])
     sims = run.get('sims', [])
 
-    # loop models, sims
-    for model in models:
-        for sim in sims:
-            sim_dir = os.path.join('n_sims')
-            sim_name_base = '{}_{}_{}_'.format(sample, model, sim)
+    for sample in samples:
+        # loop models, sims
+        for model in models:
+            for sim in sims:
+                sim_dir = os.path.join('n_sims')
+                sim_name_base = '{}_{}_{}_'.format(sample, model, sim)
 
-            for sim_name in [x for x in os.listdir(sim_dir) if sim_name_base in x]:
-                if not summary_gen: print('\n\n################ {} ################\n\n'.format(sim_name))
+                for sim_name in [x for x in os.listdir(sim_dir) if sim_name_base in x]:
+                    if not summary_gen: print('\n\n################ {} ################\n\n'.format(sim_name))
 
-                sim_path = os.path.join(sim_dir, sim_name)
-                fibers_path = os.path.abspath(os.path.join(sim_path, 'data', 'inputs'))
-                output_path = os.path.abspath(os.path.join(sim_path, 'data', 'outputs'))
+                    sim_path = os.path.join(sim_dir, sim_name)
+                    fibers_path = os.path.abspath(os.path.join(sim_path, 'data', 'inputs'))
+                    output_path = os.path.abspath(os.path.join(sim_path, 'data', 'outputs'))
+                    start_dir = os.path.join(sim_path,"start_scripts")
 
+                    out_dir = os.path.abspath(os.path.join(sim_path, 'logs', 'out'))
+                    err_dir = os.path.abspath(os.path.join(sim_path, 'logs', 'err'))
 
-                out_dir = os.path.abspath(os.path.join(sim_path, 'logs', 'out'))
-                err_dir = os.path.abspath(os.path.join(sim_path, 'logs', 'err'))
+                    # ensure necessary directories exist
+                    for cur_dir in [fibers_path, output_path, out_dir, err_dir, start_dir]:
+                        ensure_dir(cur_dir)
 
-                # ensure necessary directories exist
-                for cur_dir in [fibers_path, output_path, out_dir, err_dir]:
-                    if not os.path.exists(cur_dir):
-                        os.makedirs(cur_dir)
-                # ensure blank.hoc exists
-                blank_path = os.path.join(sim_path, 'blank.hoc')
-                if not os.path.exists(blank_path):
-                    open(blank_path, 'w').close()
+                    # ensure blank.hoc exists
+                    blank_path = os.path.join(sim_path, 'blank.hoc')
+                    if not os.path.exists(blank_path):
+                        open(blank_path, 'w').close()
 
-                # load JSON file with binary search amplitudes
-                n_sim = sim_name.split('_')[-1]
-                sim_config = load(os.path.join(sim_path, '{}.json'.format(n_sim)))
-                fiber_model = sim_config['fibers']['mode']
+                    # load JSON file with binary search amplitudes
+                    n_sim = sim_name.split('_')[-1]
+                    sim_config = load(os.path.join(sim_path, '{}.json'.format(n_sim)))
+                    fiber_model = sim_config['fibers']['mode']
 
-                # load the inner x fiber -> diam key saved in the n_sim folder
-                inner_fiber_diam_key_file = os.path.join(fibers_path, 'inner_fiber_diam_key.obj')
-                inner_fiber_diam_key = None
-                if os.path.exists(inner_fiber_diam_key_file):
-                    with open(inner_fiber_diam_key_file, 'rb') as f:
-                        inner_fiber_diam_key = pickle.load(f)
-                    f.close()
-                else:
-                    diameter = sim_config['fibers']['z_parameters']['diameter']
+                    # load the inner x fiber -> diam key saved in the n_sim folder
+                    inner_fiber_diam_key_file = os.path.join(fibers_path, 'inner_fiber_diam_key.obj')
+                    inner_fiber_diam_key = None
+                    if os.path.exists(inner_fiber_diam_key_file):
+                        with open(inner_fiber_diam_key_file, 'rb') as f:
+                            inner_fiber_diam_key = pickle.load(f)
+                        f.close()
+                    else:
+                        diameter = sim_config['fibers']['z_parameters']['diameter']
 
-                for fiber_filename in [x for x in os.listdir(fibers_path) if re.match('inner[0-9]+_fiber['
-                                                                                      '0-9]+\\.dat', x)]:
-                    master_fiber_name = str(fiber_filename.split('.')[0])
-                    inner_name, fiber_name = tuple(master_fiber_name.split('_'))
-                    inner_ind = int(inner_name.split('inner')[-1])
-                    fiber_ind = int(fiber_name.split('fiber')[-1])
+                    for fiber_filename in [x for x in os.listdir(fibers_path) if re.match('inner[0-9]+_fiber['
+                                                                                        '0-9]+\\.dat', x)]:
+                        master_fiber_name = str(fiber_filename.split('.')[0])
+                        inner_name, fiber_name = tuple(master_fiber_name.split('_'))
+                        inner_ind = int(inner_name.split('inner')[-1])
+                        fiber_ind = int(fiber_name.split('fiber')[-1])
 
-                    thresh_path = os.path.join(output_path,
-                                               'thresh_inner{}_fiber{}.dat'.format(inner_ind, fiber_ind))
-                    if os.path.exists(thresh_path):
-                        if not summary_gen: print('Found {} -->\t\tskipping inner ({}) fiber ({})'.format(thresh_path, inner_ind,
-                                                                                      fiber_ind))
-                        continue
+                        thresh_path = os.path.join(output_path,
+                                                'thresh_inner{}_fiber{}.dat'.format(inner_ind, fiber_ind))
+                        if os.path.exists(thresh_path):
+                            if not summary_gen: print('Found {} -->\t\tskipping inner ({}) fiber ({})'.format(thresh_path, inner_ind,
+                                                                                        fiber_ind))
+                            continue
 
-                    # local
-                    start_path = os.path.join(sim_path, '{}_{}_start{}'.format(inner_ind, fiber_ind,
-                                                                               '.sh' if OS == 'UNIX-LIKE'
-                                                                               else '.bat'))
-                    stimamp_top, stimamp_bottom = get_thresh_bounds(sim_dir, sim_name, inner_ind)
-                    if inner_fiber_diam_key is not None:
-                        diameter = get_diameter(inner_fiber_diam_key, inner_ind, fiber_ind)
-                    deltaz, neuron_flag = get_deltaz(fiber_model, diameter)
-                    fiber_ve_path = os.path.join(fibers_path, 'inner{}_fiber{}.dat'.format(inner_ind, fiber_ind))
-                    fiber_ve = np.loadtxt(fiber_ve_path)
-                    n_fiber_coords = int(fiber_ve[0])
+                        # local
+                        start_path = os.path.join(start_dir, '{}_{}_start{}'.format(inner_ind, fiber_ind,
+                                                                                '.sh' if OS == 'UNIX-LIKE'
+                                                                                else '.bat'))
+                        stimamp_top, stimamp_bottom = get_thresh_bounds(sim_dir, sim_name, inner_ind)
+                        if inner_fiber_diam_key is not None:
+                            diameter = get_diameter(inner_fiber_diam_key, inner_ind, fiber_ind)
+                        deltaz, neuron_flag = get_deltaz(fiber_model, diameter)
+                        fiber_ve_path = os.path.join(fibers_path, 'inner{}_fiber{}.dat'.format(inner_ind, fiber_ind))
+                        fiber_ve = np.loadtxt(fiber_ve_path)
+                        n_fiber_coords = int(fiber_ve[0])
 
-                    if neuron_flag == 2:
-                        axonnodes = int(1 + (n_fiber_coords - 1) / 11)
-                    elif neuron_flag == 3:
-                        axonnodes = int(n_fiber_coords)
+                        if neuron_flag == 2:
+                            axonnodes = int(1 + (n_fiber_coords - 1) / 11)
+                        elif neuron_flag == 3:
+                            axonnodes = int(n_fiber_coords)
 
-                    if not summary_gen: make_task(OS, start_path, sim_path, inner_ind, fiber_ind, stimamp_top, stimamp_bottom,
-                              diameter, deltaz, axonnodes)
+                        if not summary_gen: make_task(OS, start_path, sim_path, inner_ind, fiber_ind, stimamp_top, stimamp_bottom,
+                                diameter, deltaz, axonnodes)
 
-                    # submit batch job for fiber
-                    output_log = os.path.join(out_dir, '{}{}'.format(master_fiber_name, '.log'))
-                    error_log = os.path.join(err_dir, '{}{}'.format(master_fiber_name, '.log'))
+                        # submit batch job for fiber
+                        output_log = os.path.join(out_dir, '{}{}'.format(master_fiber_name, '.log'))
+                        error_log = os.path.join(err_dir, '{}{}'.format(master_fiber_name, '.log'))
 
-                    local_args = dict.fromkeys(local_run_keys, [])
-                    local_args['start'] = start_path.split(os.path.sep)[-1]
-                    local_args['output_log'] = os.path.join('logs', 'out', output_log.split(os.path.sep)[-1])
-                    local_args['error_log'] = os.path.join('logs', 'err', error_log.split(os.path.sep)[-1])
-                    local_args['sim_path'] = os.path.abspath(sim_path)
-                    local_args_list.append(local_args.copy())
+                        local_args = dict.fromkeys(local_run_keys, [])
+                        local_args['start'] = os.path.join('start_scripts',start_path.split(os.path.sep)[-1])
+                        local_args['output_log'] = os.path.join('logs', 'out', output_log.split(os.path.sep)[-1])
+                        local_args['error_log'] = os.path.join('logs', 'err', error_log.split(os.path.sep)[-1])
+                        local_args['sim_path'] = os.path.abspath(sim_path)
+                        local_args_list.append(local_args.copy())
 
     return local_args_list
 

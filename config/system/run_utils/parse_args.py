@@ -20,10 +20,13 @@ ts_parser = subparsers.add_parser('tidy_samples', help = 'Remove specified files
 
 #add subparser arguments
 pipeline_parser.add_argument('run_indices', type=int, nargs = '+', help = 'Space separated indices to run the pipeline over')
-pipeline_parser.add_argument('-b','--break-point',choices = ["pre_geom_run","post_geom_run","pre_java","post_mesh_distal","pre_mesh_distal","post_material_assign","pre_loop_currents","pre_mesh_proximal","post_mesh_proximal"], help = 'Point in pipeline to exit and continue to next run')
+pipeline_parser.add_argument('-b','--break-point',choices = ["pre_geom_run","post_geom_run","pre_java","post_mesh_distal","pre_mesh_distal","post_material_assign","pre_loop_currents","pre_mesh_proximal","post_mesh_proximal", "pre_solve"], help = 'Point in pipeline to exit and continue to next run')
 pipeline_parser.add_argument('-w','--wait-for-license',type=float,help = "Wait the specified number of hours for a comsol license to become available.")
 pipeline_parser.add_argument('-P','--partial-fem',choices = ["cuff_only","nerve_only"],help = "Only generate the specified geometry.")
 pipeline_parser.add_argument('-e','--endo-only-solution',action='store_true',help ="Store basis solutions for endoneurial geometry ONLY")
+prog_group = pipeline_parser.add_mutually_exclusive_group()
+prog_group.add_argument('-c','--comsol-progress',action='store_true',help ="Print COMSOL progress to stdout")
+prog_group.add_argument('-C','--comsol-progress-popup',action='store_true',help ="Show COMSOL progress in a pop-up window")
 ts_parser.add_argument('sample_indices', nargs = '+',type=int, help = 'Space separated sample indices to tidy')
 nsims_parser.add_argument('run_indices', nargs = '+',type=int, help = 'Space separated run indices to import')
 nsims_group = nsims_parser.add_mutually_exclusive_group()

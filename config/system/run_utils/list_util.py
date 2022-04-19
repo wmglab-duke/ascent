@@ -16,6 +16,7 @@ def run(mode):
                     print(e)
                     continue
                 data.append({'RUN':os.path.splitext(j)[0],
+                    'PSEUDONYM': rundata.get('pseudonym'),
                      'SAMPLE':rundata['sample'],
                      'MODELS':rundata['models'],
                      'SIMS':rundata['sims']})
@@ -40,6 +41,7 @@ def run(mode):
                     print(e)
                     continue
                 data.append({'SAMPLE':j.split(os.sep)[1],
+                    'PSEUDONYM': sampledata.get('pseudonym'),
                      'INPUT':sampledata['sample'],
                      'NERVEMODE':sampledata['modes'].get('nerve'),
                      'MASKINPUTMODE':sampledata['modes'].get('mask_input')})
@@ -62,6 +64,7 @@ def run(mode):
                     print(e)
                     continue
                 data.append({'SIM':os.path.splitext(j)[0],
+                     'PSEUDONYM': simdata.get('pseudonym'),
                      'FIBERMODE':simdata['fibers'].get('mode'),
                      'PROTOCOL':simdata['protocol'].get('mode'),
                      'XYMODE':simdata['fibers']['xy_parameters'].get('mode')})
