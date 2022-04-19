@@ -384,11 +384,7 @@ def cluster_submit(run_number: int, partition: str, mem: int=2000, array_length_
                             fiber_ind = int(fiber_name.split('fiber')[-1])
 
                             thresh_path = os.path.join(output_path, f"thresh_inner{inner_ind}_fiber{fiber_ind}.dat")
-                            if os.path.exists(thresh_path):
-                                # print(f"Found {thresh_path} -->\t\tskipping inner ({inner_ind}) fiber ({fiber_ind})")
-                                continue
-
-                            else:
+                            if not os.path.exists(thresh_path):
                                 print(f"RUNNING inner ({inner_ind}) fiber ({fiber_ind})  -->  {thresh_path}")
                                 #time.sleep(1)
 
