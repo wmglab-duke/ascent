@@ -22,7 +22,7 @@ def run(args):
     if not (sys.version_info.major == 3 and sys.version_info.minor >= 7):
         print('You are running Python {}.{}, but 3.7 or later required'.format(sys.version_info.major,
                                                                                sys.version_info.minor))
-        exit(1)
+        sys.exit()
 
     # create bin/ directory for storing compiled Java files if it does not yet exist
     if not (os.path.exists('bin')):
@@ -37,19 +37,19 @@ def run(args):
         except ValueError:
             print('Invalid type for argument: {}\n'
                   'All arguments must be positive integers.'.format(argument))
-            exit(1)
+            sys.exit()
 
         if int(argument) < 0:
             print('Invalid sign for argument: {}\n'
                   'All arguments must be positive integers.'.format(argument))
-            exit(1)
+            sys.exit()
 
         print('\n\n########## STARTING RUN {} ##########\n\n'.format(argument))
 
         run_path = os.path.join('config', 'user', 'runs', '{}.json'.format(argument))
         if not os.path.exists(run_path):
             print('Invalid run configuration path: {}'.format(run_path))
-            exit(1)
+            sys.exit()
 
         env_path = os.path.join('config', 'system', 'env.json')
         if not os.path.exists(env_path):
