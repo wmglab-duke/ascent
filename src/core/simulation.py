@@ -566,15 +566,15 @@ class Simulation(Exceptionable, Configurable, Saveable):
             target = sim_export_base + product_index
             
             if os.path.exists(target):
-                if export_behavior == 'overwrite':
+                if export_behavior == ExportMode.OVERWRITE.value:
                     shutil.rmtree(target)
-                elif export_behavior == 'error':
-                    sys.exit('n_sim {} already exists, exiting...'.format(target))
-                elif export_behavior is None:
-                    print('Skipping n_sim export for {} because folder already exists'.format(target))
+                elif export_behavior == ExportMode.ERROR.value:
+                    sys.exit('{} already exists, exiting...'.format(target))
+                elif export_behavior == ExportMode.SELECTIVE.value or export_behavior==None:
+                    print('\tSkipping n_sim export for {} because folder already exists.'.format(target))
                     continue
                 else: 
-                    self.throw(9001)
+                    sys.exit('Invalid export_behavior')
                 
             shutil.copytree(
                 os.path.join(sim_dir, product_index),

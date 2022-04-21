@@ -34,7 +34,7 @@ except:
 # ascent
 from src.core import Sample, Simulation, Waveform
 from src.utils import Exceptionable, Configurable, SetupMode, Config, NerveMode, DownSampleMode, WriteMode, \
-    CuffShiftMode, PerineuriumResistivityMode, TemplateOutput, Env, ReshapeNerveMode
+    CuffShiftMode, PerineuriumResistivityMode, TemplateOutput, Env, ReshapeNerveMode, ExportMode
 
 
 class Runner(Exceptionable, Configurable):
@@ -390,11 +390,17 @@ class Runner(Exceptionable, Configurable):
                             simulation: Simulation = load_obj(sim_obj_path)
                             simulation.build_n_sims(sim_dir, sim_num)
                             
+                            #get export behavior
                             export_behavior = None
                             if self.configs[Config.CLI_ARGS.value].get('export_behavior') is not None:
                                 export_behavior = self.configs[Config.CLI_ARGS.value]['export_behavior']
                             elif self.configs[Config.RUN.value].get('export_behavior') is not None:
                                 export_behavior = self.configs[Config.RUN.value]['export_behavior']
+                            else:
+                                export_behavior = ExportMode.SELECTIVE
+                            #check to make sure we have a valid behavior
+                            if not np.any([export_behavior == x.value for x in ExportMode]):
+                                self.throw(9001)
                             
                             # export simulations
                             Simulation.export_n_sims(

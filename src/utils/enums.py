@@ -255,11 +255,10 @@ class WaveformMode(ASCENTEnum):
 # %% Simulation
 @unique
 class ExportMode(ASCENTEnum):
-    config = 'export_behavior'
-
-    OVERWRITE = 0
-    ERROR = 1
-    SELECTIVE = 2
+    
+    OVERWRITE = "overwrite"
+    ERROR = "error"
+    SELECTIVE = "selective"
 
 # %% NEURON Protocols
 
