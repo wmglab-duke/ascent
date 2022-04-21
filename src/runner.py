@@ -386,14 +386,21 @@ class Runner(Exceptionable, Configurable):
                             # load up correct simulation and build required sims
                             simulation: Simulation = load_obj(sim_obj_path)
                             simulation.build_n_sims(sim_dir, sim_num)
-
+                            
+                            export_behavior = None
+                            if self.configs[Config.CLI_ARGS.value].get('export_behavior') is not None:
+                                export_behavior = self.configs[Config.CLI_ARGS.value]['export_behavior']
+                            elif self.configs[Config.RUN.value].get('export_behavior') is not None:
+                                export_behavior = self.configs[Config.RUN.value]['export_behavior']
+                            
                             # export simulations
                             Simulation.export_n_sims(
                                 sample_num,
                                 model_num,
                                 sim_num,
                                 sim_dir,
-                                os.environ[Env.NSIM_EXPORT_PATH.value]
+                                os.environ[Env.NSIM_EXPORT_PATH.value],
+                                export_behavior = export_behavior
                             )
 
                             # ensure run configuration is present

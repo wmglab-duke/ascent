@@ -10,6 +10,7 @@ import copy
 import json
 import os
 from typing import Tuple, List
+import sys
 
 import itertools
 import shutil
@@ -25,7 +26,7 @@ from .hocwriter import HocWriter
 from .fiberset import FiberSet
 from .waveform import Waveform
 from src.core import Sample
-from src.utils import Exceptionable, Configurable, Saveable, SetupMode, Config, WriteMode, FiberXYMode, Env
+from src.utils import Exceptionable, Configurable, Saveable, SetupMode, Config, WriteMode, FiberXYMode, Env, ExportMode
 
 
 class Simulation(Exceptionable, Configurable, Saveable):
@@ -556,17 +557,25 @@ class Simulation(Exceptionable, Configurable, Saveable):
         shutil.copy2(source, target_full)
 
     @staticmethod
-    def export_n_sims(sample: int, model: int, sim: int, sim_obj_dir: str, target: str, overwrite: bool = True):
+    def export_n_sims(sample: int, model: int, sim: int, sim_obj_dir: str, target: str, export_behavior = None):
 
         sim_dir = os.path.join(sim_obj_dir, str(sim), 'n_sims')
         sim_export_base = os.path.join(target, 'n_sims', '{}_{}_{}_'.format(sample, model, sim))
 
         for product_index in [f for f in os.listdir(sim_dir) if os.path.isdir(os.path.join(sim_dir, f))]:
             target = sim_export_base + product_index
-
-            if overwrite and os.path.exists(target):
-                shutil.rmtree(target)
-
+            
+            if os.path.exists(target):
+                if export_behavior == 'overwrite':
+                    shutil.rmtree(target)
+                elif export_behavior == 'error':
+                    sys.exit('n_sim {} already exists, exiting...'.format(target))
+                elif export_behavior is None:
+                    print('Skipping n_sim export for {} because folder already exists'.format(target))
+                    continue
+                else: 
+                    self.throw(9001)
+                
             shutil.copytree(
                 os.path.join(sim_dir, product_index),
                 sim_export_base + product_index
