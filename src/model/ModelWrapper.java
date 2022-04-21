@@ -1562,7 +1562,6 @@ public class ModelWrapper {
                         if (!cuff_only) {
                             model.nodeGroup().create(mw.im.next("grp","Contact Impedances"), "Physics", "ec");
                             model.nodeGroup(mw.im.get("Contact Impedances")).label("Contact Impedances");
-                            model.nodeGroup().create(mw.im.next("grp","Contact Impedances"), "Physics", "ec");
                             // there are no primitives/instances for nerve parts, just build them
                             mw.addNerve(sample, nerveParams, modelData);
                         }
