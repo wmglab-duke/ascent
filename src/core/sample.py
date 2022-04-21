@@ -242,9 +242,8 @@ class Sample(Exceptionable, Configurable, Saveable):
 
             return self
 
-    def populate(self, deform_animate: bool = True) -> 'Sample':
+    def populate(self) -> 'Sample':
         """
-        :param deform_animate: boolean indicating whether to show nerve deformation
         :return:
         """
 
@@ -528,12 +527,17 @@ class Sample(Exceptionable, Configurable, Saveable):
                 slide.nerve.offset(distance = -sep_nerve)
                 slide.nerve.scale(1)
                 slide.nerve.points = np.flip(slide.nerve.points,axis = 0) # set points to opencv orientation
-
                 
+                if self.configs[Config.CLI_ARGS.value].get('render_deform') == True or \
+                    self.search(Config.SAMPLE, 'render_deform',optional = True) == True:
+                    render_deform = True
+                else:
+                    render_deform = False
+                    
                 deformable = Deformable.from_slide(slide, ReshapeNerveMode.CIRCLE)
-
+                    
                 movements, rotations = deformable.deform(morph_count=morph_count,
-                                                         render=deform_animate,
+                                                         render=render_deform,
                                                          minimum_distance=sep_fascicles,
                                                          ratio=deform_ratio)
 
