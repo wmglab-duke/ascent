@@ -26,6 +26,7 @@ parser.add_argument('-p','--partition', help = 'If submitting on a cluster, over
 parser.add_argument('-n','--num-cpu', type=int, help = 'For local submission: set number of CPUs to use, overrides run.json')
 parser.add_argument('-m','--job-mem', type=int, help = 'For cluster submission: set amount of RAM per job (in MB), overrides slurm_params.json')
 parser.add_argument('-j','--num-jobs', type=int, help = 'For cluster submission: set number of jobs per array, overrides slurm_params.json')
+parser.add_argument('-s','--skip-summary', action='store_true', help = 'Begin submitting fibers without asking for confirmation')
 submit_context_group = parser.add_mutually_exclusive_group()
 submit_context_group.add_argument('-L','--local-submit', action='store_true', help = 'Set submission context to local, overrides run.json')
 submit_context_group.add_argument('-C','--cluster-submit', action='store_true', help = 'Set submission context to cluster, overrides run.json')
@@ -618,12 +619,15 @@ def main():
         auto_compile_flags.append(auto_compile_flag)
 
         #get list of fibers to run
-        print('Generating run list for run {}'.format(run_number))
-        summary.append(make_local_submission_list(run_number, summary_gen=True))
-        rundata.append({'RUN':run_number,
-             'SAMPLE':run['sample'],
-             'MODELS':run['models'],
-             'SIMS':run['sims']})
+        if args.skip_summary:
+            'Skipping summary generation, submitting fibers...'
+        else:
+            print('Generating run list for run {}'.format(run_number))
+            summary.append(make_local_submission_list(run_number, summary_gen=True))
+            rundata.append({'RUN':run_number,
+                 'SAMPLE':run['sample'],
+                 'MODELS':run['models'],
+                 'SIMS':run['sims']})
     #check that all submission contexts are the same
     if args.local_submit==True:
         submission_contexts=['local' for i in submission_contexts]
@@ -631,23 +635,23 @@ def main():
         submission_contexts=['cluster' for i in submission_contexts]
     if not np.all([x==submission_contexts[0] for x in submission_contexts]):
         sys.exit('Runs with different submission contexts cannot be submitted at the same time')
-
-    #format run data
-    n_fibers = sum([len(x) for x in summary])
-    df = pd.DataFrame(rundata)
-    df.RUN = df.RUN.astype(int)
-    df = df.sort_values('RUN')
-    #print out and check that the user is happy
-    print('Submitting the following runs (submission_context={}):'.format(submission_contexts[0]))
-    print(df.to_string(index = False))
-    print('Will result in running {} fiber simulations'.format(n_fibers))
-    proceed = input('\t Would you like to proceed?\n'
-                '\t\t 0 = NO\n'
-                '\t\t 1 = YES\n')
-    if not int(proceed)==1:
-        quit()
-    else:
-        print('Proceeding...')
+    if not args.skip_summary:
+        #format run data
+        n_fibers = sum([len(x) for x in summary])
+        df = pd.DataFrame(rundata)
+        df.RUN = df.RUN.astype(int)
+        df = df.sort_values('RUN')
+        #print out and check that the user is happy
+        print('Submitting the following runs (submission_context={}):'.format(submission_contexts[0]))
+        print(df.to_string(index = False))
+        print('Will result in running {} fiber simulations'.format(n_fibers))
+        proceed = input('\t Would you like to proceed?\n'
+                    '\t\t 0 = NO\n'
+                    '\t\t 1 = YES\n')
+        if not int(proceed)==1:
+            quit()
+        else:
+            print('Proceeding...')
 
     # submit_lists, sub_contexts, run_filenames = make_submission_list()
     for sub_context, run_index, auto_compile_flag in zip(submission_contexts, runs, auto_compile_flags):
