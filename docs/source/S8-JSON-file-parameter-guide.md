@@ -205,7 +205,7 @@ of the file.
       "partial_fem": {
         "cuff_only": false,
         "nerve_only": false
-      }
+      },
       "export_behavior": "selective",
       "local_avail_cpus": 3,
       "override_compiled_mods": false
