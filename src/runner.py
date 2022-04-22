@@ -282,6 +282,7 @@ class Runner(Exceptionable, Configurable):
                             simulation \
                                 .add(SetupMode.OLD, Config.MODEL, model_config) \
                                 .add(SetupMode.OLD, Config.SIM, sim_config) \
+                                .add(SetupMode.OLD, Config.RUN, self.configs[Config.RUN.value]) \
                                 .add(SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value]) \
                                 .resolve_factors() \
                                 .write_waveforms(sim_obj_dir) \

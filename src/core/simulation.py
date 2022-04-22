@@ -165,18 +165,14 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 .generate() \
                 .write(WriteMode.DATA, os.path.join(directory, str(i))) \
 
-            if 'plot' not in self.configs[Config.SIM.value]['waveform'].keys():
-                plot = False
-            else:
-                plot: bool = self.search(Config.SIM, 'waveform', 'plot')
+            path = sim_directory+'/plots/waveforms/{}.png'.format(i)
+            if not os.path.exists(sim_directory+'/plots/waveforms'):
+                os.makedirs(sim_directory+'/plots/waveforms')
+                
+            waveform.plot(final=True,path=path)
 
-            if plot:
-                if self.search(Config.SIM, 'plot_folder',optional = True) == True:
-                    path = sim_directory+'/plots/waveforms/{}.png'.format(i)
-                    if not os.path.exists(sim_directory+'/plots/waveforms'):
-                        os.makedirs(sim_directory+'/plots/waveforms')
-                else: path = None
-                waveform.plot(final=True,path=path)
+            if self.search(Config.RUN, "popup_plot")==True:
+                waveform.plot(final=True,path=None)
 
             self.waveforms.append(waveform)
 
