@@ -171,7 +171,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 
             waveform.plot(final=True,path=path)
 
-            if self.search(Config.RUN, "popup_plot")==True:
+            if self.search(Config.RUN,"popup_plots",optional=True)==True:
                 waveform.plot(final=True,path=None)
 
             self.waveforms.append(waveform)

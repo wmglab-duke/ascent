@@ -461,7 +461,7 @@ class Sample(Exceptionable, Configurable, Saveable):
         slide.plot(final=False, fix_aspect_ratio='True', axlabel=u"\u03bcm",
                    title='Initial sample from morphology masks')
         plt.savefig(plotpath + '/sample_initial')
-        if self.search(Config.RUN,"popup_plot"==True):
+        if self.search(Config.RUN,"popup_plots",optional=True)==True:
             plt.show()
         else:
             plt.clf()
@@ -598,7 +598,7 @@ class Sample(Exceptionable, Configurable, Saveable):
         slide.plot(final=False, fix_aspect_ratio='True', axlabel=u"\u03bcm",
                        title='Final sample after any user specified processing')
         plt.savefig(plotpath + '/sample_final')
-        if self.search(Config.RUN,"popup_plot"==True):
+        if self.search(Config.RUN,"popup_plots",optional=True)==True:
             plt.show()
         else:
             plt.clf()
