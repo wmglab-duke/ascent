@@ -400,7 +400,7 @@ class Runner(Exceptionable, Configurable):
                                 export_behavior = ExportMode.SELECTIVE
                             #check to make sure we have a valid behavior
                             if not np.any([export_behavior == x.value for x in ExportMode]):
-                                self.throw(9001)
+                                self.throw(138)
                             
                             # export simulations
                             Simulation.export_n_sims(
