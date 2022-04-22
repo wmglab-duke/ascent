@@ -144,7 +144,7 @@ of the file.
     new ***Sim*** for a previously computed ***Sample*** and ***Model*** can
     be probed along new fibersets/ to create potentials/*.* Optional.
 
-    `"export_behavior"`: The value (String) Instructs the pipeline how to behave if
+    `"export_behavior"`: The value (String) instructs the pipeline how to behave if
     an export n_sim directory (i.e., ASCENT_NSIM_EXPORT_PATH/n_sims/<directory>)
     already exists. There are three options: `"selective"` is the default behavior,
     output directories which already exist will be skipped, but any which do not exist
