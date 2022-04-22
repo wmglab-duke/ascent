@@ -251,6 +251,7 @@ of the file.
       "deform_ratio": Double,
       "plot": Boolean,
       "plot_folder": Boolean,
+      "render_deform": Boolean,
       "Morphology": {
         "Nerve": {
           "Area": Double
@@ -500,6 +501,9 @@ of the file.
     If true, plots are generated in the folder samples/<sample_index>/plots, if
     false, plots will pop up in a window.
 
+    `"render_deform"`: The value (Boolean) if true, causes the pipeline to generated
+    a popup window and display a video of sample deformation as it occurs.
+
     `“Morphology”`: This JSON Object is used to store information about the
     area and best-fit ellipse information of the nerve and fascicles (outer
     and inners). The user does not set values to these JSON structures, but
@@ -545,6 +549,7 @@ of the file.
       "deform_ratio": 1,
       "plot": true,
       "plot_folder": true,
+      "render_deform": false,
       "Morphology": {
         "Nerve": null,
         "Fascicles": [     
