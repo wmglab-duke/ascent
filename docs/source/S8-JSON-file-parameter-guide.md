@@ -66,6 +66,7 @@ of the file.
         "mesh": Boolean,
         "bases": Boolean
       },
+      "export_behavior": String,
       "partial_fem": {
         "cuff_only": Boolean,
         "nerve_only": Boolean
@@ -143,6 +144,14 @@ of the file.
     new ***Sim*** for a previously computed ***Sample*** and ***Model*** can
     be probed along new fibersets/ to create potentials/*.* Optional.
 
+    `"export_behavior"`: The value (String) Instructs the pipeline how to behave if
+    an export n_sim directory (i.e., ASCENT_NSIM_EXPORT_PATH/n_sims/<directory>)
+    already exists. There are three options: `"selective"` is the default behavior,
+    output directories which already exist will be skipped, but any which do not exist
+    will be generated, `"overwrite"` will remove the extant directory,
+    and generate a new clean output directory in its place, `"error"` instructs the
+    pipeline to exit if any export n_sim directory is found to already exist.
+
     `“partial_fem”`: The value (Boolean) of each property results in the
     program terminating after building the COMSOL FEM geometry for only the
     cuff (`“cuff_only”`) or only the nerve (`“nerve_only”`). The program
@@ -196,7 +205,8 @@ of the file.
       "partial_fem": {
         "cuff_only": false,
         "nerve_only": false
-      },
+      }
+      "export_behavior": "selective",
       "local_avail_cpus": 3,
       "override_compiled_mods": false
     }

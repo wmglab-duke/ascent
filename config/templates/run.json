@@ -28,5 +28,6 @@
     "nerve_only": false
   },
   "local_avail_cpus": 3,
+  "export_behavior": "selective",
   "override_compiled_mods": false
 }
