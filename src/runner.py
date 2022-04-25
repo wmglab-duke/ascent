@@ -509,7 +509,9 @@ class Runner(Exceptionable, Configurable):
                 self.throw(109)
         else:
             deform_ratio = None
-
+        
+        cuff_data = self.search(Config.MODEL,"cuff")
+        
         # fetch cuff config
         cuff_config: dict = self.load(
             os.path.join(os.getcwd(), "config", "system", "cuffs", model_config['cuff']['preset'])
