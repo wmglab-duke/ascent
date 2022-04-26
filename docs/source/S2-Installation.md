@@ -17,7 +17,7 @@ First, these software packages must be manually installed:
 * [COMSOL 5.4 or newer](https://www.comsol.com/product-download) (requires purchase of license; only based package needed, which includes the COMSOL Java API)
     - Once COMSOL is installed, alter 'File System Access' permissions via  File → Preferences → Security → Methods and Java Libraries → File System Access → All Files.
     - Open the COMSOL Server and log in with a username and password of your choosing (arbitrary and not needed thereafter). This can be done by navigating to the bin/ directory in the COMSOL installation and running ```comsolmphserver``` (Windows) or ```./comsol server``` (MacOS/Linux).
-    - [https://www.comsol.com/product-downloa](https://www.comsol.com/product-download)
+    - [https://www.comsol.com/product-download](https://www.comsol.com/product-download)
 * [NEURON 7.6](https://neuron.yale.edu/ftp/neuron/versions/v7.6/) (newer versions have been released, but compatibility has yet to be confirmed; choose appropriate installer depending on operating system; install auxiliary software as prompted by NEURON installer)
     - [https://neuron.yale.edu/ftp/neuron/versions/v7.6/](https://neuron.yale.edu/ftp/neuron/versions/v7.6/)
     - If having issues with the NEURON installation, try running the compatibility troubleshooter.
