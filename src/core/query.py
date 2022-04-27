@@ -421,7 +421,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
     def heatmaps(self,
                  plot: bool = True,
-                 plot_mode: str = 'average',
+                 plot_mode: str = 'fibers',
                  save_path: str = None,
                  plot_outers: bool = False,
                  rows_override: int = None,
