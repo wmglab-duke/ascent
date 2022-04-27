@@ -1389,7 +1389,7 @@ public class ModelWrapper {
                         //set solution order
                         int shape_order;
                         try {
-                            shape_order = modelData.getJSONObject("solver").getInt("shape_order");
+                            shape_order = modelData.getJSONObject("solver").getInt("order");
                         } catch (Exception e) {
                             System.out.println("Invalid solution order, or solution order not specified. Proceeding with default order of 2 (quadratic)");
                             shape_order = 2;
