@@ -869,7 +869,7 @@ class Query(Exceptionable, Configurable, Saveable):
                 print(']')
 
         # return plt.gcf(), axes, colormap_bounds_tracking
-        return plt.gcf(), axes, colormap_bounds_tracking
+        return figure, axes, colormap_bounds_tracking
 
     def barcharts_compare_models(self,
                                  sim_index: int = None,
