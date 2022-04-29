@@ -7,10 +7,8 @@ The source code can be found on the following GitHub repository: https://github.
 """
 
 from matplotlib import pyplot as plt
-import matplotlib
 import numpy as np
 import os
-import matplotlib.backend_tools as bt
 
 print(os.getcwd())
 

@@ -139,8 +139,6 @@ def get_thresh_bounds(sim_dir: str, sim_name: str, inner_ind: int):
     top, bottom = None, None
 
     sample = sim_name.split('_')[0]
-    model = sim_name.split('_')[1]
-    sim = sim_name.split('_')[2]
     n_sim = sim_name.split('_')[3]
 
     sim_config = load(os.path.join(sim_dir, sim_name, '{}.json'.format(n_sim)))
@@ -715,7 +713,7 @@ def main():
 
             submit_list = make_local_submission_list(run_index)
             pool = multiprocessing.Pool(cpus)
-            result = pool.map(local_submit, submit_list)
+            pool.map(local_submit, submit_list)
 
         elif sub_context == 'cluster':
             #load slurm params

@@ -1,5 +1,4 @@
 import sys
-import os
 import argparse
 from config.system import _version
 

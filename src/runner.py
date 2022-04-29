@@ -30,8 +30,8 @@ pymunkoptions.options["debug"] = False
 
 # ascent
 from src.core import Sample, Simulation, Waveform
-from src.utils import Exceptionable, Configurable, SetupMode, Config, NerveMode, DownSampleMode, WriteMode, \
-    CuffShiftMode, PerineuriumResistivityMode, TemplateOutput, Env, ReshapeNerveMode
+from src.utils import Exceptionable, Configurable, SetupMode, Config, NerveMode, WriteMode, CuffShiftMode, \
+    PerineuriumResistivityMode, TemplateOutput, Env, ReshapeNerveMode
 
 
 class Runner(Exceptionable, Configurable):
@@ -179,7 +179,6 @@ class Runner(Exceptionable, Configurable):
         # iterate through models
         if 'models' not in all_configs.keys():
             print('NO MODELS TO MAKE IN Config.RUN - killing process')
-            pass
         else:
             for model_index, model_config in enumerate(all_configs[Config.MODEL.value]):
                 model_num = self.configs[Config.RUN.value]['models'][model_index]
