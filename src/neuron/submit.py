@@ -27,6 +27,7 @@ parser.add_argument('-n','--num-cpu', type=int, help = 'For local submission: se
 parser.add_argument('-m','--job-mem', type=int, help = 'For cluster submission: set amount of RAM per job (in MB), overrides slurm_params.json')
 parser.add_argument('-j','--num-jobs', type=int, help = 'For cluster submission: set number of jobs per array, overrides slurm_params.json')
 parser.add_argument('-s','--skip-summary', action='store_true', help = 'Begin submitting fibers without asking for confirmation')
+parser.add_argument('-S','--slurm-params', type=str, help = 'For cluster submission: string for additional slurm parameters (enclose in quotes)')
 submit_context_group = parser.add_mutually_exclusive_group()
 submit_context_group.add_argument('-L','--local-submit', action='store_true', help = 'Set submission context to local, overrides run.json')
 submit_context_group.add_argument('-C','--cluster-submit', action='store_true', help = 'Set submission context to cluster, overrides run.json')
@@ -236,7 +237,7 @@ def local_submit(my_local_args: dict):
         p = subprocess.call(['bash', start] if OS == 'UNIX-LIKE' else [start], stdout=fo, stderr=fe)
 
 
-def cluster_submit(run_number: int, partition: str, mem: int=2000, array_length_max: int = 10):
+def cluster_submit(run_number: int, partition: str, mem: int=2000, array_length_max: int = 10,slurm_params = None):
 
     # configuration is not empty
     assert array_length_max > 0, 'SLURM Job Array length is not > 0: array_length_max={}'.format(array_length_max)
@@ -356,7 +357,7 @@ def cluster_submit(run_number: int, partition: str, mem: int=2000, array_length_
                             print('========= SUBMITTING SOLO: {} ==========='.format(job_name))
 
                             command = ' '.join([
-                                'sbatch',
+                                'sbatch{}'.format(' ' +slurm_params if slurm_params is not None else ''),
                                 '--job-name={}'.format(job_name),
                                 '--output={}'.format(output_log),
                                 '--error={}'.format(error_log),
@@ -440,8 +441,9 @@ def cluster_submit(run_number: int, partition: str, mem: int=2000, array_length_
 
                                 # submit batch job for fiber
                                 job_name = f"{sim_name}_{sim_array_batch}"
-
-                                os.system(f"sbatch --job-name={job_name} --output={out_dir}%a.log "
+                                
+                                sp_string = slurm_params + ' ' if slurm_params is not None else ''
+                                os.system(f"sbatch {sp_string}--job-name={job_name} --output={out_dir}%a.log "
                                         f"--error={err_dir}%a.log --array={start}-{job_count - 1} "
                                         f"--mem={mem} --cpus-per-task=1 "
                                         f"--partition={partition} array_launch.slurm {start_path_base}")
@@ -696,7 +698,7 @@ def main():
             njobs = slurm_params['jobs_per_array'] if args.num_jobs is None else args.num_jobs
             mem = slurm_params['memory_per_fiber'] if args.job_mem is None else args.job_mem
 
-            cluster_submit(run_index,partition,array_length_max=njobs,mem=mem)
+            cluster_submit(run_index,partition,array_length_max=njobs,mem=mem,slurm_params = args.slurm_params)
 
         else:
             # something went horribly wrong
