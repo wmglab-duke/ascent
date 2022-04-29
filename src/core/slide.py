@@ -192,7 +192,7 @@ class Slide(Exceptionable):
              title: str = None,
              final: bool = True,
              inner_format: str = 'b-',
-             fix_aspect_ratio: bool = False,
+             fix_aspect_ratio: bool = True,
              fascicle_colors: List[Tuple[float, float, float, float]] = None,
              ax: plt.Axes = None,
              outers_flag: bool = True,
@@ -224,7 +224,7 @@ class Slide(Exceptionable):
 
         # loop through constituents and plot each
         if not self.monofasc():
-            self.nerve.plot(plot_format='k-', ax=ax)
+            self.nerve.plot(plot_format='k-', ax=ax,linewidth=1.5)
 
         if fascicle_colors is not None:
             if not len(self.fascicles) == len(fascicle_colors):

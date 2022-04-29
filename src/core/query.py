@@ -299,6 +299,125 @@ class Query(Exceptionable, Configurable, Saveable):
                     return False
 
         return True
+    
+    def threshold_data(self,
+                                 sim_index: int = None,
+                                 model_indices: List[int] = None,
+                                 meanify=False):
+        """
+        :param meanify: return mean of thresholds for a given nsim along with stats
+        :return:
+        """
+
+        # quick helper class for storing data values
+        class DataPoint():
+            def __init__(self, value: float, error: float = None):
+                self.value = value
+                self.error = error
+
+        # validation
+        if self._result is None:
+            self.throw(66)
+
+        if model_indices is None:
+            model_indices = self.search(Config.CRITERIA, 'indices', 'model')
+
+        if sim_index is None:
+            sim_index = self.search(Config.CRITERIA, 'indices', 'sim')[0]
+        
+        alldat = []
+        
+        # loop samples
+        sample_results: dict
+        for sample_results in self._result.get('samples', []):
+            sample_index = sample_results['index']
+            sample_object: Sample = self.get_object(Object.SAMPLE, [sample_index])
+            slide: Slide = sample_object.slides[0]
+            n_inners = sum(len(fasc.inners) for fasc in slide.fascicles)
+
+            print('sample: {}'.format(sample_index))
+
+            # loop models
+            for model_results in sample_results.get('models', []):
+                model_index = model_results['index']
+
+                print('\tmodel: {}'.format(model_index))
+
+                # sim index is already set from input, so no need to loop
+                sim_object = self.get_object(Object.SIMULATION, [sample_index, model_index, sim_index])
+
+                # whether the comparison key is for 'fiber' or 'wave', the nsims will always be in order!
+                # this realization allows us to simply loop through the factors in sim.factors[key] and treat the
+                # indices as if they were the nsim indices
+                for nsim_index, (potentials_product_index, waveform_index) in enumerate(
+                        sim_object.master_product_indices):
+                    
+                    # fetch outer->inner->fiber and out->inner maps
+                    out_in_fib, out_in = sim_object.fiberset_map_pairs[nsim_index]
+
+                    # build base dirs for fetching thresholds
+                    sim_dir = self.build_path(Object.SIMULATION,
+                                              [sample_index, model_index, sim_index],
+                                              just_directory=True)
+                    n_sim_dir = os.path.join(sim_dir, 'n_sims', str(nsim_index))
+
+                    # init thresholds container for this model, sim, nsim
+                    thresholds: List[float] = []
+
+                    # fetch all thresholds
+                    for inner in range(n_inners):
+                        
+                        outer = [index for index, inners in enumerate(out_in) if inner in inners][0]
+                            
+                        for local_fiber_index, _ in enumerate(out_in_fib[outer][out_in[outer].index(inner)]):
+                            
+                            master_index = sim_object.indices_n_to_fib(nsim_index,inner,local_fiber_index)
+
+                            thresh_path = os.path.join(n_sim_dir,
+                                                       'data',
+                                                       'outputs',
+                                                       'thresh_inner{}_fiber{}.dat'.format(inner,
+                                                                                           local_fiber_index))
+                            threshold = np.loadtxt(thresh_path)
+                            if threshold.size > 1:
+                                threshold = threshold[-1]
+                            if meanify==True:
+                                thresholds.append(abs(threshold))
+                            else:
+                                alldat.append({
+                                    'sample':sample_results['index'],
+                                    'model':  model_results['index'],
+                                    'sim':sim_index,
+                                    'nsim':nsim_index,
+                                    'inner':inner,
+                                    'fiber':local_fiber_index,
+                                    'index':master_index,
+                                    'threshold':abs(threshold)
+                                    })
+                    
+                    if meanify==True:
+                        if len(thresholds)==0:
+                            alldat.append({
+                                'sample':sample_results['index'],
+                                'model':  model_results['index'],
+                                'sim':sim_index,
+                                'nsim':nsim_index,
+                                'mean' : np.nan,
+                                })
+                        else:
+                            thresholds: np.ndarray = np.array(thresholds)
+        
+                            alldat.append({
+                                'sample':sample_results['index'],
+                                'model':  model_results['index'],
+                                'sim':sim_index,
+                                'nsim':nsim_index,
+                                'mean' : np.mean(thresholds),
+                                'std':  np.std(thresholds, ddof=1),
+                                'sem':stats.sem(thresholds)
+                                })
+                    
+        return pd.DataFrame(alldat)
 
     def heatmaps(self,
                  plot: bool = True,
@@ -329,7 +448,9 @@ class Query(Exceptionable, Configurable, Saveable):
                  select_fascicles: List = None,
                  alltitle = True,
                  microamps=False,
-                 suptitle_override=None
+                 suptitle_override=None,
+                 dotsize=10,
+                 cbar_label_func = 'title' #'title' or 'label'
                  ):
 
         """
@@ -589,7 +710,7 @@ class Query(Exceptionable, Configurable, Saveable):
                         if plot_mode == 'fiber0':
                             for i in range(n_inners):
                                 actual_i = i - offset
-                                if actual_i not in missing_indices:
+                                if i not in missing_indices:
                                     if select_fascicles is not None and not select_fascicles[actual_i]:
                                         # colors.append(tuple((0, 0, 0, 0)))  # missing_color
                                         colors.append(cmap(np.nan))  # missing_color
@@ -635,7 +756,7 @@ class Query(Exceptionable, Configurable, Saveable):
                             if alltitle:
 
                                 if fib_key_name == 'fibers->z_parameters->diameter':
-                                    title = u'{} fiber diameter: {} \u03bcm'.format(title, fib_key_value)
+                                    title = u'{} Fiber Diameter: {} \u03bcm'.format(title, fib_key_value)
                                 else:
                                     # default title
                                     title = '{} {}:{}'.format(title, fib_key_name, fib_key_value)
@@ -647,7 +768,7 @@ class Query(Exceptionable, Configurable, Saveable):
                                                                  sim_object.wave_product[waveform_index]):
                             if alltitle:
                                 if wave_key_name == 'waveform->BIPHASIC_PULSE_TRAIN->pulse_width':
-                                    title = '{} pulse width: {} ms'.format(title, wave_key_value)
+                                    title = '{} Pulse Width: {} ms'.format(title, wave_key_value)
                                 else:
                                     title = '{} {}:{}'.format(title, wave_key_name, wave_key_value)
                             elif potentials_product_index==max([x[0] for x in sim_object.master_product_indices]):
@@ -687,7 +808,11 @@ class Query(Exceptionable, Configurable, Saveable):
                                 aspect=colorbar_aspect if colorbar_aspect is not None else 20,
                                 format='%0.2f',
                             )
-                            cb.set_label(cb_label,fontsize=colorbar_text_size_override if (
+                            if cbar_label_func=='title':
+                                cb.ax.set_title(cb_label,fontsize=colorbar_text_size_override if (
+                                        colorbar_text_size_override is not None) else 25 ,rotation=0)
+                            else:
+                                cb.set_label(cb_label,fontsize=colorbar_text_size_override if (
                                     colorbar_text_size_override is not None) else 25 ,rotation=90)
                             # colorbar font size
                             if colorbar_text_size_override is not None:
@@ -701,7 +826,7 @@ class Query(Exceptionable, Configurable, Saveable):
                         elif plot_mode == 'fibers':
                             sample_object.slides[0].plot(final=False, fix_aspect_ratio=True, ax=ax,
                                                          outers_flag=plot_outers, inner_format='k-')
-                            sim_object.fibersets[0].plot(ax=ax, fiber_colors=colors, size=20)
+                            sim_object.fibersets[0].plot(ax=ax, fiber_colors=colors, size=dotsize)
 
                     plt.gcf().tight_layout(rect=[0, 0.03, 1, 0.95])
 
@@ -719,8 +844,8 @@ class Query(Exceptionable, Configurable, Saveable):
                         else:
                             plt.suptitle(suptitle_override, size=40)
                     if not alltitle:
-                        plt.gcf().text(0.5,0.01,"pulse width (ms)", ha="center", va="center",fontsize=35)
-                        plt.gcf().text(-0.02,0.5, u"fiber diameter (\u03bcm)" , ha="center", va="center", rotation=90,fontsize=35)
+                        plt.gcf().text(0.5,0.01,"Pulse Width (ms)", ha="center", va="center",fontsize=35)
+                        plt.gcf().text(-0.02,0.5, u"Fiber Diameter (\u03bcm)" , ha="center", va="center", rotation=90,fontsize=35)
 
                     # plt.tight_layout(pad=0)
                     # plt.tight_layout(pad=5.0)

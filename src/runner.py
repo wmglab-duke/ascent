@@ -117,6 +117,9 @@ class Runner(Exceptionable, Configurable):
         # load all json configs into memory
         all_configs = self.load_configs()
 
+        run_pseudonym = self.configs[Config.RUN.value].get('pseudonym')
+        if run_pseudonym is not None: print('Run pseudonym:',run_pseudonym)
+
         def load_obj(path: str):
             """
             :param path: path to python obj file
@@ -148,7 +151,10 @@ class Runner(Exceptionable, Configurable):
             'sample.obj'
         )
 
-        print('SAMPLE {}'.format(self.configs[Config.RUN.value]['sample']))
+        sample_pseudonym = all_configs[Config.SAMPLE.value][0].get('pseudonym')
+
+        print('SAMPLE {}'.format(self.configs[Config.RUN.value]['sample']),
+              '- {}'.format(sample_pseudonym) if sample_pseudonym is not None else '')
 
         # instantiate sample
         if smart and os.path.exists(sample_file):
@@ -177,7 +183,10 @@ class Runner(Exceptionable, Configurable):
         else:
             for model_index, model_config in enumerate(all_configs[Config.MODEL.value]):
                 model_num = self.configs[Config.RUN.value]['models'][model_index]
-                print('    MODEL {}'.format(model_num))
+                model_pseudonym = model_config.get('pseudonym')
+                print('\tMODEL {}'.format(model_num),
+                      '- {}'.format(model_pseudonym) if model_pseudonym is not None else '')
+
 
                 # use current model index to computer maximum cuff shift (radius) .. SAVES to file in method
                 model_config = self.compute_cuff_shift(model_config, sample, all_configs[Config.SAMPLE.value][0])
@@ -201,7 +210,10 @@ class Runner(Exceptionable, Configurable):
                 if 'sims' in all_configs.keys():
                     for sim_index, sim_config in enumerate(all_configs['sims']):
                         sim_num = self.configs[Config.RUN.value]['sims'][sim_index]
-                        print('        SIM {}'.format(self.configs[Config.RUN.value]['sims'][sim_index]))
+                        sim_pseudonym = sim_config.get('pseudonym')
+                        print('\t\tSIM {}'.format(self.configs[Config.RUN.value]['sims'][sim_index]),
+                              '- {}'.format(sim_pseudonym) if sim_pseudonym is not None else '')
+
                         sim_obj_dir = os.path.join(
                             os.getcwd(),
                             'samples',
@@ -238,14 +250,14 @@ class Runner(Exceptionable, Configurable):
                                 )
 
                                 # do Sim.fibers.xy_parameters match between Sim and source_sim?
-                                try: 
+                                try:
                                     source_sim: simulation = load_obj(os.path.join(source_sim_obj_dir, 'sim.obj'))
                                     print('\t    Found existing source sim {} for supersampled bases ({})'.format(
                                         source_sim_index, source_sim_obj_dir))
                                 except FileNotFoundError:
                                     traceback.print_exc()
                                     self.throw(129)
-                                    
+
                                 source_xy_dict: dict = source_sim.configs['sims']['fibers']['xy_parameters']
                                 xy_dict: dict = simulation.configs['sims']['fibers']['xy_parameters']
 
@@ -262,7 +274,7 @@ class Runner(Exceptionable, Configurable):
                         else:
                             if not os.path.exists(sim_obj_dir):
                                 os.makedirs(sim_obj_dir)
-                            
+
                             if not os.path.exists(sim_obj_dir+'/plots'):
                                 os.makedirs(sim_obj_dir+'/plots')
 
@@ -291,14 +303,14 @@ class Runner(Exceptionable, Configurable):
                                 )
 
                                 # do Sim.fibers.xy_parameters match between Sim and source_sim?
-                                try: 
+                                try:
                                     source_sim: simulation = load_obj(os.path.join(source_sim_obj_dir, 'sim.obj'))
                                     print('\t    Found existing source sim {} for supersampled bases ({})'.format(
                                         source_sim_index, source_sim_obj_dir))
                                 except FileNotFoundError:
                                     traceback.print_exc()
-                                    self.throw(129)                                
-                            
+                                    self.throw(129)
+
                                 source_xy_dict: dict = source_sim.configs['sims']['fibers']['xy_parameters']
                                 xy_dict: dict = simulation.configs['sims']['fibers']['xy_parameters']
 
@@ -310,7 +322,7 @@ class Runner(Exceptionable, Configurable):
                                 )
                             else:
                                 potentials_exist.append(simulation.potentials_exist(sim_obj_dir))
-                        
+
             if self.configs[Config.CLI_ARGS.value].get('break_point')=='pre_java' or \
                     (('break_points' in self.configs[Config.RUN.value].keys()) and \
                      self.search(Config.RUN, 'break_points').get('pre_java')==True):
@@ -331,7 +343,7 @@ class Runner(Exceptionable, Configurable):
                 self.remove(Config.RUN)
                 run_path = os.path.join('config', 'user', 'runs', '{}.json'.format(self.number))
                 self.add(SetupMode.NEW, Config.RUN, run_path)
-                                
+
                 #  continue by using simulation objects
                 models_exit_status = self.search(Config.RUN, "models_exit_status")
 
@@ -393,7 +405,7 @@ class Runner(Exceptionable, Configurable):
 
                         print('Model {} data exported to appropriate folders in {}'.format(model_num, os.environ[
                             Env.NSIM_EXPORT_PATH.value]))
-                    
+
                     elif not models_exit_status[model_index]:
                         print('\nDid not create NEURON simulations for Sims associated with: \n'
                               '\t Model Index: {} \n'
@@ -418,11 +430,11 @@ class Runner(Exceptionable, Configurable):
         argbytes = argstring.encode('ascii')
         argbase = base64.b64encode(argbytes)
         argfinal = argbase.decode('ascii')
-        
+
         if sys.platform.startswith('darwin'):  # macOS
 
             subprocess.Popen(['{}/bin/comsol'.format(comsol_path), 'server'], close_fds=True)
-            time.sleep(30)        
+            time.sleep(10)
             os.chdir('src')
             os.system(
                 '{}/javac -classpath ../bin/json-20190722.jar:{}/plugins/* model/*.java -d ../bin'.format(jdk_path,
@@ -441,7 +453,7 @@ class Runner(Exceptionable, Configurable):
         elif sys.platform.startswith('linux'):  # linux
 
             subprocess.Popen(['{}/bin/comsol'.format(comsol_path), 'server'], close_fds=True)
-            time.sleep(30)
+            time.sleep(10)
             os.chdir('src')
             os.system(
                 '{}/javac -classpath ../bin/json-20190722.jar:{}/plugins/* model/*.java -d ../bin'.format(jdk_path,
@@ -459,7 +471,7 @@ class Runner(Exceptionable, Configurable):
 
         else:  # assume to be 'win64'
             subprocess.Popen(['{}\\bin\\win64\\comsolmphserver.exe'.format(comsol_path)], close_fds=True)
-            time.sleep(30)
+            time.sleep(10)
             os.chdir('src')
             os.system('""{}\\javac" '
                       '-cp "..\\bin\\json-20190722.jar";"{}\\plugins\\*" '
@@ -732,7 +744,7 @@ class Runner(Exceptionable, Configurable):
                     # else, use
                     model_config['cuff']['shift']['x'] = x
                     model_config['cuff']['shift']['y'] = y
-                    
+
         return model_config
 
     def compute_electrical_parameters(self, all_configs, model_index):

@@ -18,10 +18,8 @@ defined by `“ASCENT_NSIM_EXPORT_PATH”` in `env.json`.
 When using a high-performance computing cluster running SLURM:
 1. Set your default parameters, particularly your partition (can be found in
 `"config/system/slurm_params.json"`). The partition you set here (default is "common"
-) will apply to all `submit.py` runs. To override this on a per-run basis, pass
-the command line argument --partition. (e.g.
-`"python submit.py --partition my_partition <run indices>"`)
-For more information, see [Command-Line Arguments](command_line_args).
+) will apply to all `submit.py` runs.
 2. Optionally, set your `"submission_context"` to `"auto"`, and configure your `run.json` with the
 appropriate hostname prefix. (Only necessary if you plan to submit runs both locally and
 on a cluster, see [S8 Text](S8-JSON-file-parameter-guide).)
+3. Many parameters which `submit.py` sources from JSON configuration files can be overridden with command line arguments. For more information, see [Command-Line Arguments](command_line_args).

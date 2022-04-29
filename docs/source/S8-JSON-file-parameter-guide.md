@@ -42,6 +42,7 @@ of the file.
     following syntax:
     ```
     {
+      "pseudonym": String,
       "submission_context": String,
       "sample": Integer, // note, only one value here!
       "models": [Integer, ...], // pipeline will create all pairwise combos of …
@@ -59,6 +60,7 @@ of the file.
         "pre_loop_currents": Boolean // immediately before solving for bases
       },
       "models_exit_status": [Boolean, ...], // one entry for each Model
+      "endo_only_solution": Boolean,
       "keep": {
         "debug_geom": Boolean,
         "mesh": Boolean,
@@ -73,6 +75,9 @@ of the file.
     }
     ```
 1.  Properties:
+
+    `"pseudonym"`: This value (String) informs pipeline print statements, allowing
+    users to better keep track of the purpose of each configuration file. Optional.
 
     `“submission_context”`: The value (String) of this property tells the
     system how to submit the n\_sim NEURON jobs based on the computational
@@ -107,6 +112,17 @@ of the file.
     breakpoint). Note: specifying a break point via command line arguments
     will override any break points set in your run config. Optional.
 
+    `"endo_only_solution"`: The value (Boolean) determines what data the electric currents
+    solution will save. Since fibers are sampled from the endoneurium, after the
+    solution is completed, only the endoneurial Ve data is necessary to run fiber
+    simulations. If `"endo_only_solution"` is `true`, then COMSOL will save ONLY
+    the Ve data for the endoneurium. If `false`, COMSOL will save Ve data for the entire model.
+    Recommended value is `true` unless you intend to generate plots or other analyses
+    which require Ve data for geometry other than the endoneurium. If this key-value pair
+    is not present, defaults to `false`. Note: this parameter only affects storage
+    space after the solution has completed, and will not have any affect on memory
+    usage or solution time.
+
     `“models_exit_status”`: The value (\[Boolean, ...\]) of this property
     indicates if Java successfully made the FEMs for the corresponding model
     indices (“models” property). The user does not need to include this
@@ -137,7 +153,7 @@ of the file.
     set both values for `“cuff_only”` and `“nerve_only”` to true. To build the
     geometry of both the cuff and the nerve, but not proceed with meshing or
     solving the FEM, the user should set the value for `“post_geom_run”`
-    under `“break_points”` to true. Overriden 
+    under `“break_points”` to true. Overriden
     if the `"partial_fem"` command line argument is used. Optional.
 
     `“local_avail_cpus”`: The value (Integer) sets the number of CPUs that
@@ -153,6 +169,7 @@ of the file.
 1.  Example:
     ```
     {
+      "pseudonym": "My example run",
       "submission_context": “cluster”,
       "sample": 62,
       "models": [0],
@@ -169,6 +186,7 @@ of the file.
         "post_material_assign": false,  
         "pre_loop_currents": false
       },
+      "endo_only_solution":true,
       "models_exit_status": [true],
       "keep": {
         "debug_geom": true,
@@ -197,6 +215,7 @@ of the file.
     ```
     {
       "sample": String,
+      "pseudonym": String,
       "sex": String,
       "level": String,
       "samples_path": [
@@ -270,6 +289,9 @@ of the file.
     morphology files ([S3 Text Figure A](S3-ASCENT-data-hierarchy)). The value must match the directory name in
     `input/<NAME>/` that contains the input morphology files. Required.
 
+    `"pseudonym"`: This value (String) informs pipeline print statements, allowing
+    users to better keep track of the purpose of each configuration file. Optional.
+
     `“sex”`: The value (String) of this property assigns the sex of the
     sample. Optional, for user records only.
 
@@ -336,7 +358,7 @@ of the file.
             3.  `“INNER_AND_OUTER_COMPILED”`: Program expects a single
                 segmented image containing boundaries of both inners and
                 outers.
-                
+
       - `“scale_input”`: The value (String) is the `“ScaleInputMode”`
         that tells the program which type of scale input to look for.
 
@@ -416,7 +438,7 @@ of the file.
             1. `“CIRCLE”`: The program creates a circular nerve boundary
                 with a preserved cross-sectional area (i.e., for multifascicular nerves/nerves that have epineurium).
             2. `“NONE”`: The program does not deform the nerve boundary (i.e., for monofascicular nerves/nerves that do not have epineurium).
-            
+
       - `“shrinkage_definition”`: The value (String) is the `“ShrinkageMode”`
         that tells the program how to interpret the "scale"->"shrinkage" parameter, which is provided as a decimal (i.e., 0.2 = 20%).
         Optional, but assumes the mode "LENGTH_FORWARDS if omitted, since this was the original behavior before this mode was added.
@@ -424,16 +446,16 @@ of the file.
           - As listed in Enums ([S6 Text](S6-Enums)), known `“ShrinkageModes”` include
 
             1. `“LENGTH_BACKWARDS”`: The value for "scale"->"shrinkage" refers to how much the length (e.g., radius, diameter, or perimeter)
-               of the nerve cross section was reduced from the fresh tissue to the imaged tissue. 
+               of the nerve cross section was reduced from the fresh tissue to the imaged tissue.
                  - Formula: r_post = r_original * (1-shrinkage)
             2. `“LENGTH_FORWARDS”`: The value for "scale"->"shrinkage" refers to how much the length (e.g., radius, diameter, or perimeter)
-               of the nerve cross section increases from the imaged tissue to the fresh tissue. 
+               of the nerve cross section increases from the imaged tissue to the fresh tissue.
                  - Formula: r_post = r_original / (1+shrinkage)
             3. `“AREA_BACKWARDS”`: The value for "scale"->"shrinkage" refers to how much the area
-               of the nerve cross section was reduced from the fresh tissue to the imaged tissue. 
+               of the nerve cross section was reduced from the fresh tissue to the imaged tissue.
                  - Formula: A_post = A_original * (1-shrinkage)
             4. `“AREA_FORWARDS”`: The value for "scale"->"shrinkage" refers to how much the area
-               of the nerve cross section increases from the imaged tissue to the fresh tissue. 
+               of the nerve cross section increases from the imaged tissue to the fresh tissue.
                  - Formula: A_post = A_original / (1+shrinkage)
 
     `“smoothing”`: Smoothing is applied via a dilating the nerve/fascicle boundary by a specified distance value and then shrinking it by that same value.
@@ -492,6 +514,7 @@ of the file.
     ```
     {
       "sample": "Rat16-3", // monofascicular nerve without epineurium
+      "pseudonym": "My example sample",
       "sex": "M",
       "level": "Cervical",
       "samples_path": [
@@ -891,6 +914,7 @@ of the file.
 
     ```
     {
+      "pseudonym": String,
       "modes": {
         "rho_perineurium": String,
         "cuff_shift": String,
@@ -932,7 +956,6 @@ of the file.
       },
       "min_radius_enclosing_circle": Double,
       "mesh": {
-      "name": String,
       "shape_order": Integer,
         "proximal": {
           "type": {
@@ -943,8 +966,7 @@ of the file.
           "hmin": Double,
           "hgrad": Double,
           "hcurve": Double,
-          "hnarrow": Double,
-          "mesh_time": Double
+          "hnarrow": Double
         },
         "distal": {
           "type": {
@@ -955,16 +977,21 @@ of the file.
           "hmin": Double,
           "hgrad": Double,
           "hcurve": Double,
-          "hnarrow": Double,
-          "mesh_time": Double
+          "hnarrow": Double
         },
         "stats": {
+          "name": String,
           "quality_measure": String,
           "number_elements": Double,
           "min_quality": Double,
           "mean_quality": Double,
           "min_volume": Double,
           "volume": Double
+          "mesh_times": {
+            "distal": Double,
+            "proximal": Double
+          },
+
         }
       },
       "frequency": Double,
@@ -983,15 +1010,18 @@ of the file.
         "epineurium": String
       },
       "solver": {
-        "sorder": String,
-        "name": String
+        "sorder": String
       },
       "solution": {
-        "sol_time": Double
+        "sol_time": Double,
+        "name": String
       }
     }
     ```
 1.  Properties:
+
+    `"pseudonym"`: This value (String) informs pipeline print statements, allowing
+    users to better keep track of the purpose of each configuration file. Optional.
 
     “modes”
 
@@ -1154,9 +1184,7 @@ of the file.
     COMSOL’s meshing parameters (required, user-defined) and resulting
     meshing statistics (automatically calculated).
 
-      - `“name”`: Mesher identity (String) to use. In current pipeline
-        implementation, only COMSOL is supported (e.g., “COMSOL Multiphysics
-        5.5”). Required.
+      - `“quality_measure”`: (String) COMSOL measure to use in calculating mesh quality stats. Options include skewness, maxangle, volcircum, vollength, condition, growth. Default is "vollength" if not specified.
 
       - `“shape_order”`: Order of geometric shape functions (Integer) (e.g.,
         quadratic = 2). Required.
@@ -1190,9 +1218,6 @@ of the file.
           - `“hnarrow”`: Resolution of narrow regions (Double). We recommend
             1. Required.
 
-          - `“mesh_time”`: CPU time required for the mesh to build (Double,
-            units: milliseconds). Automatically populated.
-
       - `“distal”`: Meshing parameters for the distal cylindrical domain (as
         defined in “medium”). Required if distal domain present (see
         “medium”).
@@ -1221,11 +1246,10 @@ of the file.
           - `“hnarrow”`: Resolution of narrow regions (Double). We recommend
             1. Required.
 
-          - `“mesh_time”`: CPU time required for the mesh to build (Double,
-            units: milliseconds). Automatically populated.
-
       - `“stats”`: Meshing statistics. See COMSOL documentation for more
         details. Automatically populated.
+
+          - `“name”`: Mesher identity (String) which generated the mesh (i.e., COMSOL version)
 
           - `“quality_measure”`: (String) (e.g., “skewness”, “maxangle”,
             “volcircum”, “vollength”, “condition”, or “growth”)
@@ -1239,6 +1263,8 @@ of the file.
           - `“min_volume”`: (Double)
 
           - `“volume”`: (Double)
+
+          - `“mesh_times”`: JSON Object containing key value parirs storing the elapsed time (in milliseconds) for each mesh type (Proximal and Distal).
 
     `“frequency”`: Defines the frequency value used for frequency-dependent
     material conductivities (Double, unit Hz) ([S28 Text](S28-Definition-of-perineurium)). Required only if
@@ -1280,18 +1306,16 @@ of the file.
       - `“sorder”`: Order of solution shape functions (String) (e.g.,
         quadratic). Required.
 
-      - `“name”`: Solver identity (String) to use. In current pipeline
-        implementation, only COMSOL is supported (e.g., “COMSOL Multiphysics
-        5.5”). Required.
-
     `“solution”`: The solution JSON Object contains key-value pairs to keep
-    record of FEM solver processes. Currently, the only information stored
-    in this JSON Object is the CPU solution time (`“sol_time”`, units:
-    milliseconds). Optional.
+    record of FEM solver processes. Automatically populated.
+      - `“sol_time”`: (Double) Time (in milliseconds) elapsed in solving electric currents.
+
+      - `“name”`: Solver identity (String) used to solve electric currents (i.e., COMSOL version).
 
 1.  Example:
     ```
     {
+      "pseudonym": "My example model",
       "modes": {
         "rho_perineurium": "RHO_WEERASURIYA",
         "cuff_shift": "AUTO_ROTATION_MIN_CIRCLE_BOUNDARY",
@@ -1333,7 +1357,7 @@ of the file.
       },
       "min_radius_enclosing_circle": 78.985163169824,
       "mesh": {
-      "name": "COMSOL Multiphysics 5.5",
+      "quality_measure":"vollength",
       "shape_order": 2,
         "proximal": {
           "type": {
@@ -1344,8 +1368,7 @@ of the file.
           "hmin": 10,
           "hgrad": 1.8,
           "hcurve": 0.2,
-          "hnarrow": 1,
-          "mesh_time": 35186.652381
+          "hnarrow": 1
         },
         "distal": {
           "type": {
@@ -1356,17 +1379,20 @@ of the file.
           "hmin": 10,
           "hgrad": 1.8,
           "hcurve": 0.2,
-          "hnarrow": 1,
-          "mesh_time": 3196.938087
+          "hnarrow": 1
         },
-        "stats": {
-          "quality_measure": "vollength",
-          "number_elements": 1171823,
-          "min_quality": 0.244,
-          "mean_quality": 0.7237,
-          "min_volume": 19.42,
-          "volume": 1954000000000.0
-        }
+        "stats": {
+          "mesh_times": {
+            "distal": 555.2927,
+            "proximal": 6470.4786
+          },
+          "volume": 9.77E11,
+          "quality_measure_used": "vollength",
+          "min_quality": 0.1703,
+          "min_volume": 9.391,
+          "name": "COMSOL Multiphysics 5.6 (Build: 401)",
+          "number_elements": 180980,
+          "mean_quality": 0.6824
       },
       "frequency": 1, // in this example, no change in material properties
       occurs
@@ -1385,12 +1411,12 @@ of the file.
         "epineurium": "epineurium"
       },
       "solver": {
-        "sorder": "quadratic",
-        "name": "COMSOL Multiphysics 5.5"
+        "sorder": "quadratic"
       },
       "solution": {
-        "sol_time": 194028.727942
-      }
+        "name": "COMSOL Multiphysics 5.6 (Build: 401)",
+        "sol_time": 23801.7899
+      },
     }
     ```
 
@@ -1411,6 +1437,7 @@ of the file.
     following syntax:
     ```
     {
+      "pseudonym": String,
       "n_dimensions": Integer,
       "plot_folder" : Boolean,
       "active_srcs": {
@@ -1450,7 +1477,8 @@ of the file.
           "min": Double,
           "max": Double,
           "full_nerve_length": Boolean,
-          "offset": Double, // or omitted for random jitter within +/- 1 internodal length
+          "offset": Double, // or "random" for random jitter within +/- 0.5 internodal length
+          "absolute_offset": Double,
           "seed": Integer
         },
 
@@ -1478,7 +1506,8 @@ of the file.
 
         // EXAMPLE XY Parameters for EXPLICIT
         "xy_parameters": {
-          "mode": "EXPLICIT"
+          "mode": "EXPLICIT",
+          "explicit_fiberset_index" : Integer
         },
 
         // EXAMPLE XY Parameters for UNIFORM_DENSITY
@@ -1600,7 +1629,11 @@ of the file.
           "mode": String,
           "top": Double,
           "bottom": Double,
-          "step": Double
+          "step": Double,
+          "scout": {
+            "model":Integer,
+            "sim": Integer
+          },
         },
         "termination_criteria": {
           "mode": "ABSOLUTE_DIFFERENCE",
@@ -1639,7 +1672,10 @@ of the file.
     ```
 1.  Properties:
 
-    `“n\_dimensions”`: The value (Integer) is the number of parameters in
+    `"pseudonym"`: This value (String) informs pipeline print statements, allowing
+    users to better keep track of the purpose of each configuration file. Optional.
+
+    `“n_dimensions”`: The value (Integer) is the number of parameters in
     ***Sim*** for which a list is provided rather than a single value. The
     user sets the number of parameters they are looping over (e.g., if
     looping over waveform pulse width and fiber diameter, `n_dimensions =
@@ -1756,14 +1792,18 @@ of the file.
 
           - `full_nerve_length`: (Boolean) Optional. If true, suppresses the warning message associated with using the full length nerve when `"min"` and `"max"` are not defined. Must be false or not defined if `"min"` and `"max"` are defined.
 
-          - `“offset”`: The value (Double or List\[Double\]) is the fraction
+          - `“offset”`: The value (Double or String) is the fraction
             of the node-node length (myelinated fibers) or segment length
             (unmyelinated fibers) that the center coordinate of the fiber is
             shifted along the z-axis from the longitudinal center of the
-            proximal medium. Optional, but if not defined, the offset will
+            proximal medium. If the value is "random", the offset will
             be randomly selected between +/- 0.5 section/segment length; to
             avoid the randomized longitudinal placement, set the offset
             value to ‘0’ for no offset.
+
+          - `“absolute_offset”`: The value (Double) is the distance (micrometers) that the center coordinate of the fiber is
+            shifted along the z-axis from the longitudinal center of the
+            proximal medium. This value is additive with `"offset"`. Note that the shift is with respect to the model center. If a negative value is passed, the fiber will be shifted in the -z direction.
 
           - `“seed”`: The value (Integer) seeds the random number generator
             before any random offsets are created. Required only if “offset”
@@ -1823,16 +1863,9 @@ of the file.
                 degrees. If false, the program interprets `“angle_offset”` in
                 radians. Required.
 
-          - `“EXPLICIT”`: The mode looks for the `“explicit.txt”` file that the
-            user saved in the simulation directory
-            (`samples/<sample_index>/models/<model_index>/sims/<sim
-            index>/`) for user-specified fiber (x,y)-coordinates (see
-            `config/templates/explicit.txt`). Note, this file is only required
-            if the user is using the `“EXPLICIT”` `“FiberXYMode”`. An error is
-            thrown if any explicitly defined coordinates are not inside any
-            inners.
+          - `“EXPLICIT”`: The mode looks for a `“<explicit_index>.txt”` file in the user created directory (`samples/<sample_index>/explicit_fibersets`) for user-specified fiber (x,y)-coordinates (see `config/templates/explicit.txt`). Note, this file is only required if the user is using the `“EXPLICIT”` `“FiberXYMode”`. An error is thrown if any explicitly defined coordinates are not inside any inners.
 
-              - No parameters required.
+              - `“explicit_fiberset_index”`: The value (Integer) indicates which explicit index file to use.
 
           - `“UNIFORM_DENSITY”`: Place fibers randomly in each inner to
             achieve a consistent number of fibers per unit area.
@@ -1902,7 +1935,7 @@ of the file.
     The user can only loop parameters for one type of waveform in a
     ***Sim***.
 
-    Note: the “digits” parameter for the following “WareformModes” sets the
+    Note: the “digits” parameter for the following “WaveformModes” sets the
     precision of the unscaled current amplitude. For waveforms that are only
     ever +/-1 and 0 (e.g., `MONOPHASIC_PULSE_TRAIN`, `BIPHASIC_FULL_DUTY`,
     `BIPHASIC_PULSE_TRAIN`), the user can represent the waveform faithfully
@@ -2231,6 +2264,26 @@ of the file.
               - If `“PERCENT_INCREMENT”`, the value (Double, units: %) is a
                 percentage (e.g., 10 is 10%).
 
+          - `“scout”`: The value (JSONObject) is a set of key-value pairs specifying a previously run "scout"
+            Sim for the same Sample. Use this feature to reduce CPU time required for many
+            fibers placed in the same inner for a new Sim or Model. If this key is present, ASCENT will
+            look for thresholds in n_sim folders in your ASCENT_NSIM_EXPORT_PATH
+            (i.e., the path you set in config/system/env.json) for fiber0 of each
+            inner for each n_sim. The program will load this threshold value and use
+            it as a starting point for the threshold bounds for each inner in your new Sim.
+            The upper- and lower-bounds in the binary search will be "bounds_search" -> "step" %
+            higher and lower, respectively, of the scout Sim's fiber0 threshold. All parameters except
+            fiber location (i.e., "fibers" -> "xy_location" in Sim) must match between
+            the scout Sim and the current Sim, since the n_sim indices must match between the
+            scout Sim and current Sim. If this key ("scout") is present, the program will ignore
+            the threshold bounds "top" and "bottom" in "protocol" -> "bounds_search"
+            (Unless the specified scout Sim is not found, in which case
+            "top" and "bottom" will be used). Optional.
+
+              - `"model"`: The value (Integer) indicates which model index to use for the scout Sim. Required if `"scout"` is used.
+
+              - `"sim"`: The value (Integer) indicates which sim index to use fo the scout Sim (can be the current Sim's index). Required if `"scout"` is used.
+
     <!-- end list -->
 
       - `“termination_criteria”`: Required for threshold finding protocols
@@ -2300,6 +2353,7 @@ of the file.
 1.  Example:
     ```
     {
+      "pseudonym": "My example sim",
       "n_dimensions": 3,
       "plot_folder" : true,
       "active_srcs": {
@@ -2315,6 +2369,7 @@ of the file.
           "max": 12500,
           "full_nerve_length": False,
           "offset": 0,
+          "absolute_offset": 0,
           "seed": 123
         },
         "xy_parameters": {
