@@ -1,11 +1,17 @@
 import sys
 import os
 import argparse
+from config.system import _version
+
+class versionAction(argparse.Action):
+    def __call__(self, parser, args, values, option_string=None):
+        print('ASCENT version {}'.format(_version.__version__))
 
 #Set up parser and top level args
 parser = argparse.ArgumentParser(description='ASCENT: Automated Simulations to Characterize Electrical Nerve Thresholds')
 # parser.add_argument('-s','--silent',action='store_true', help = 'silence printing')
 parser.add_argument('-v','--verbose',action='store_true', help = 'verbose printing')
+parser.add_argument('-V','--version',action=versionAction, nargs=0, help = 'print version')
 parser.add_argument('-l','--list',choices=['runs','samples','sims'],help='List all available indices for the specified option')
 
 #add subparsers
