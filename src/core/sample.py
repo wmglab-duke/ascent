@@ -392,7 +392,9 @@ class Sample(Exceptionable, Configurable, Saveable):
                                                   cv2.CHAIN_APPROX_SIMPLE)
                     nerve = Nerve(Trace([point + [0] for point in contour[0][:, 0, :]],
                                         self.configs[Config.EXCEPTIONS.value]))
-
+                else:
+                    self.throw(138)
+                
             if len(fascicles) > 1 and nerve_mode != NerveMode.PRESENT:
                 self.throw(110)
 
