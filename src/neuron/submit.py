@@ -19,13 +19,40 @@ import warnings
 import pickle
 import argparse
 import pandas as pd
-#Set up parser and top level args
+
+#%%Set up parser and top level args
+class listAction(argparse.Action):
+    def __call__(self, parser, args, values, option_string=None):
+        run_path = 'runs'
+        jsons = [file for file in os.listdir(run_path) if file.endswith('.json')]
+        data = []
+        for j in jsons:
+            with open(run_path+'/'+j) as f:
+                try:
+                    rundata = json.load(f)
+                except Exception as e:
+                    print('WARNING: Could not load {}'.format(j))
+                    print(e)
+                    continue
+                data.append({'RUN':os.path.splitext(j)[0],
+                    'PSEUDONYM': rundata.get('pseudonym'),
+                     'SAMPLE':rundata['sample'],
+                     'MODELS':rundata['models'],
+                     'SIMS':rundata['sims']})
+        df = pd.DataFrame(data)
+        df.RUN = df.RUN.astype(int)
+        df = df.sort_values('RUN')
+        print('Run indices available (defined by user .json files in {}):\n'.format(run_path))
+        print(df.to_string(index = False))
+        sys.exit()
+        
 parser = argparse.ArgumentParser(description='ASCENT: Automated Simulations to Characterize Electrical Nerve Thresholds')
 parser.add_argument('run_indices', type=int, nargs = '+', help = 'Space separated indices to submit NEURON sims for')
 parser.add_argument('-p','--partition', help = 'If submitting on a cluster, overrides slurm_params.json')
 parser.add_argument('-n','--num-cpu', type=int, help = 'For local submission: set number of CPUs to use, overrides run.json')
 parser.add_argument('-m','--job-mem', type=int, help = 'For cluster submission: set amount of RAM per job (in MB), overrides slurm_params.json')
 parser.add_argument('-j','--num-jobs', type=int, help = 'For cluster submission: set number of jobs per array, overrides slurm_params.json')
+parser.add_argument('-l','--list-runs', action=listAction,nargs=0, help = 'List info for available runs')
 parser.add_argument('-s','--skip-summary', action='store_true', help = 'Begin submitting fibers without asking for confirmation')
 parser.add_argument('-S','--slurm-params', type=str, help = 'For cluster submission: string for additional slurm parameters (enclose in quotes)')
 submit_context_group = parser.add_mutually_exclusive_group()
@@ -35,7 +62,7 @@ submit_context_group.add_argument('-C','--cluster-submit', action='store_true', 
 ALLOWED_SUBMISSION_CONTEXTS = ['cluster', 'local','auto']
 OS = 'UNIX-LIKE' if any([s in sys.platform for s in ['darwin', 'linux']]) else 'WINDOWS'
 
-
+#%% Set up utility functions
 def load(config_path: str):
     """
     Loads in json data and returns to user, assuming it has already been validated.
@@ -565,8 +592,9 @@ def make_local_submission_list(run_number: int,summary_gen = False):
 
     return local_args_list
 
+#%% main
 def main():
-
+    
     #validate inputs
     args = parser.parse_args()
     run_inds = args.run_indices
@@ -580,7 +608,7 @@ def main():
 
     summary = []
     rundata = []
-
+    
     for run_number in run_inds:
 
         run_number = str(run_number)
