@@ -17,7 +17,6 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
-import warnings
 from scipy.ndimage.morphology import binary_fill_holes
 from shapely.geometry import LineString
 from skimage import morphology
@@ -242,9 +241,8 @@ class Sample(Exceptionable, Configurable, Saveable):
 
             return self
 
-    def populate(self, deform_animate: bool = True) -> 'Sample':
+    def populate(self) -> 'Sample':
         """
-        :param deform_animate: boolean indicating whether to show nerve deformation
         :return:
         """
 
@@ -256,7 +254,6 @@ class Sample(Exceptionable, Configurable, Saveable):
         deform_ratio = None
         scale_input_mode = self.search_mode(ScaleInputMode, Config.SAMPLE, optional=True)
         plot = self.search(Config.SAMPLE, 'plot', optional=True)
-        plot_folder = self.search(Config.SAMPLE, 'plot_folder', optional=True)
         # For backwards compatibility, if scale mode is not specified assume a mask image is provided
         if scale_input_mode is None:
             scale_input_mode = ScaleInputMode.MASK
@@ -392,7 +389,9 @@ class Sample(Exceptionable, Configurable, Saveable):
                                                   cv2.CHAIN_APPROX_SIMPLE)
                     nerve = Nerve(Trace([point + [0] for point in contour[0][:, 0, :]],
                                         self.configs[Config.EXCEPTIONS.value]))
-
+                else:
+                    self.throw(138)
+                
             if len(fascicles) > 1 and nerve_mode != NerveMode.PRESENT:
                 self.throw(110)
 
@@ -458,17 +457,16 @@ class Sample(Exceptionable, Configurable, Saveable):
         # scale to microns
         self.scale(factor)
 
-        if plot == True:
-            plt.figure()
-            slide.plot(final=False, fix_aspect_ratio='True', axlabel=u"\u03bcm",
-                       title='Initial sample from morphology masks')
-            if plot_folder == True:
-                plt.savefig(plotpath + '/sample_initial')
-                plt.clf()
-                plt.close('all')
-            else:
-                plt.show()
-
+        plt.figure()
+        slide.plot(final=False, fix_aspect_ratio='True', axlabel=u"\u03bcm",
+                   title='Initial sample from morphology masks')
+        plt.savefig(plotpath + '/sample_initial')
+        if self.search(Config.RUN,"popup_plots",optional=True)==True:
+            plt.show()
+        else:
+            plt.clf()
+            plt.close('all')
+        
         # get smoothing params
         n_distance = self.search(Config.SAMPLE, 'smoothing', 'nerve_distance', optional=True)
         i_distance = self.search(Config.SAMPLE, 'smoothing', 'fascicle_distance', optional=True)
@@ -529,12 +527,17 @@ class Sample(Exceptionable, Configurable, Saveable):
                 slide.nerve.offset(distance = -sep_nerve)
                 slide.nerve.scale(1)
                 slide.nerve.points = np.flip(slide.nerve.points,axis = 0) # set points to opencv orientation
-
                 
+                if self.configs[Config.CLI_ARGS.value].get('render_deform') == True or \
+                    self.search(Config.SAMPLE, 'render_deform',optional = True) == True:
+                    render_deform = True
+                else:
+                    render_deform = False
+                    
                 deformable = Deformable.from_slide(slide, ReshapeNerveMode.CIRCLE)
-
+                    
                 movements, rotations = deformable.deform(morph_count=morph_count,
-                                                         render=deform_animate,
+                                                         render=render_deform,
                                                          minimum_distance=sep_fascicles,
                                                          ratio=deform_ratio)
 
@@ -597,23 +600,15 @@ class Sample(Exceptionable, Configurable, Saveable):
         # scale with ratio = 1 (no scaling happens, but connects the ends of each trace to itself)
         self.scale(1)
 
-        # slide.plot(fix_aspect_ratio=True, title=title)
-
-        if plot == True:
-            plt.figure()
-            slide.plot(final=False, fix_aspect_ratio='True', axlabel=u"\u03bcm",
+        plt.figure()
+        slide.plot(final=False, fix_aspect_ratio='True', axlabel=u"\u03bcm",
                        title='Final sample after any user specified processing')
-            if plot_folder == True:
-                plt.savefig(plotpath + '/sample_final')
-                plt.clf()
-                plt.close()
-            else:
-                plt.show()
-
-            # plt.figure(2)
-            # slide.nerve.plot()
-            # plt.plot(*tuple(slide.nerve.points[slide.orientation_point_index][:2]), 'b*')
-            # plt.show()
+        plt.savefig(plotpath + '/sample_final')
+        if self.search(Config.RUN,"popup_plots",optional=True)==True:
+            plt.show()
+        else:
+            plt.clf()
+            plt.close('all')
 
         return self
 

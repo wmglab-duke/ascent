@@ -9,7 +9,7 @@ Description:
 - Binary search algorithm to find threshold.
 
 Important notes:
-- 
+-
 
 Variables that must be defined in wrapper/params file:
 - thresh_resoln
@@ -42,7 +42,11 @@ proc FindThresh() {//local key
 		}
 
 		if (N_APs_top == 0) {
-			print "WARNING: Initial stimamp_top value does not elicit an AP (find_block_thresh = 0) or does not block (find_block_thresh = 1) - need to increase its magnitude and/or increase tstop to detect evoked AP"
+			if (find_block_thresh == 0) {
+				print "WARNING: Initial stimamp_top value does not elicit an AP - need to increase its magnitude and/or increase tstop to detect evoked AP"
+			} else {
+				print "WARNING: Initial stimamp_top value does not block - need to increase its magnitude and/or increase tstop to block test pulse evoked AP"
+			}
 
 			if (increment_flag == 1) { // relative (increase upper-bound by a certain percentage of the previous value, e.g., 10%)
 				stimamp_top    = stimamp_top*(1+rel_increment)
@@ -63,7 +67,11 @@ proc FindThresh() {//local key
 		}
 
 		if (N_APs_bottom != (0)) {
-			print "WARNING: Initial stimamp_bottom value elicits an AP (find_block_thresh = 0) or blocks (find_block_thresh = 1) - need to decrease its magnitude and/or increase tstop to detect block test pulses"
+			if (find_block_thresh == 0) {
+				print "WARNING: Initial stimamp_bottom value elicits an AP - need to decrease its magnitude and/or increase tstop to prevent evoked AP"
+			} else {
+				print "WARNING: Initial stimamp_bottom value blocks - need to decrease its magnitude and/or increase tstop to detect test pulse evoked AP"
+			}
 
 			if (increment_flag == 1) { // relative
 				stimamp_bottom    = stimamp_bottom*(1-rel_increment) // relative (decrease lower-bound by a certain percentage of the previous value, e.g., -10%)
@@ -85,7 +93,7 @@ proc FindThresh() {//local key
 		if (iter > max_iter) {
 			print "maximum number of bounds searching steps reached. breaking."
 			quit()
-		} 
+		}
 	}
 
 	while(1) {
@@ -97,7 +105,7 @@ proc FindThresh() {//local key
 		print "N_APs = ", N_APs
 
 		if (termination_flag == 0) {
-			//rel_thresh_resoln 
+			//rel_thresh_resoln
 			thresh_resoln = abs(rel_thresh_resoln) // not sure why user would enter negative tolerance, but just in case
 			tolerance = abs((stimamp_bottom - stimamp_top) / stimamp_top)
 
@@ -114,11 +122,11 @@ proc FindThresh() {//local key
 			if (N_APs == 0) {
 				stimamp = stimamp_prev
 			}
-			
+
 			print "Done searching! stimamp: ", stimamp, "mA for extracellular and nA for intracellular (check flag_whichstim)"
-			
+
 			RunSim(stimamp)
-			
+
 			break
 		} else if (N_APs >= 1) {				// found an AP
 			if (find_block_thresh == 1) {
@@ -137,7 +145,7 @@ proc FindThresh() {//local key
 				stimamp_prev = stimamp_top
 			}
 		}
-			
+
 		print "stimamptop ", stimamp_top
 		print "stimampbottom ", stimamp_bottom
 
@@ -145,6 +153,6 @@ proc FindThresh() {//local key
 
 	print "Threshold: ", stimamp, "mA for extracellular and nA for intracellular (check flag_whichstim)"
 
-		
+
 	thresh_values.x[0] = stimamp
 }
