@@ -13,6 +13,10 @@ from typing import List, Tuple
 import pymunk.pygame_util
 import numpy as np
 from shapely.geometry import LineString, Point
+import pygame
+from pygame.locals import DOUBLEBUF, HWSURFACE, RESIZABLE
+from pygame.locals import KEYDOWN, K_ESCAPE, QUIT, K_SPACE
+from pygame.colordict import THECOLORS
 
 # ascent
 from src.core import Trace, Slide
@@ -28,7 +32,7 @@ class Deformable(Exceptionable):
         :param boundary_end: end trace
         :param contents: list of traces assumed to be within boundary start, not required to be within boundary end.
         Assumed boundary end will be able to hold all contents.
-        
+
         """
 
         # init superclass
@@ -58,9 +62,10 @@ class Deformable(Exceptionable):
         # copy the "contents" so multiple deformations are possible
         contents = [trace.deepcopy() for trace in self.contents]
 
-        # bounds = self.start.polygon().bounds
-        # width = int(1.5 * (bounds[2] - bounds[0]))
-        # height = int(1.5 * (bounds[3] - bounds[1]))
+        bounds = self.start.polygon().bounds
+        width = int(1 * (bounds[2]+bounds[0]))
+        height = int(1 * (bounds[3]+bounds[1]))
+        im_ratio=height/width
 
         # offset all the traces to provide for an effective minimum distance for original fascicles
         for trace in contents:
@@ -81,22 +86,11 @@ class Deformable(Exceptionable):
 
         # draw the deformation
         if render:
-            # packages
-            import pygame
-            from pygame.locals import KEYDOWN, K_ESCAPE, QUIT, K_SPACE
-            from pygame.colordict import THECOLORS
-
-            # width = int(1.5 * (bounds[2] - bounds[0]))
-            # height = int(1.5 * (bounds[3] - bounds[1]))
-
-            aspect = 2
-
-            display_dimensions = int(800 * aspect), 800
-            drawing_screen = pygame.display.set_mode(display_dimensions)
-
-            # pygame.init()
-            # drawing_screen = pygame.Surface((width, height))
-            options = pymunk.pygame_util.DrawOptions(drawing_screen)
+            #Initialize screen and surface which each frame will be drawn on
+            screen = pygame.display.set_mode((800, int(800*im_ratio)),HWSURFACE|DOUBLEBUF|RESIZABLE)
+            drawsurf = pygame.surface.Surface((width, height))
+            #pygame debug draw options
+            options = pymunk.pygame_util.DrawOptions(drawsurf)
             options.shape_outline_color = (0, 0, 0, 255)
             options.shape_static_color = (0, 0, 0, 255)
 
@@ -162,25 +156,17 @@ class Deformable(Exceptionable):
 
             # draw screen
             if render:
-                drawing_screen.fill(THECOLORS["white"])
-
-                # draw the actual screen
+                #add white fill and draw objects on surface
+                drawsurf.fill(THECOLORS["white"])
                 space.debug_draw(options)
-
-                # temp_surf = drawing_screen.copy()
-                # drawing_screen.fill((0,0,0))  # here, you can fill the screen with whatever you want to take the place of what was there before
-                # drawing_screen.blit(temp_surf, (width/2,-height/2))
-
-                # pygame.display.update()
-
-                # drawing_screen = pygame.transform.scale(drawing_screen, display_dimensions)#, screen)
+                #resize surface and project on screen
+                screen.blit(pygame.transform.flip(pygame.transform.scale(drawsurf, (800,int(800*im_ratio))),False,True), (0, 0))
                 pygame.display.flip()
                 pygame.display.set_caption('nerve morph step {} of {}'.format(morph_index, len(morph_steps)))
 
             loop_count += 1
 
         step_physics(space, 500)
-
         # get end positions
         end_positions: List[np.ndarray] = []
         end_rotations: List[float] = []
@@ -250,7 +236,7 @@ class Deformable(Exceptionable):
             for i, point in enumerate(trace.points):
                 point += vectors[i] * ratio
             traces.append(trace)
-        if deform_ratio !=0: 
+        if deform_ratio !=0:
             def_traces = traces[:int((deform_ratio if deform_ratio is not None else 1) * count)]
         else: #still need fascicle sep physics with deform_ratio = 0, so pass starting trace only
             def_traces = [traces[0]]

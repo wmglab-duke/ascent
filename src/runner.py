@@ -174,7 +174,7 @@ class Runner(Exceptionable, Configurable):
                 .add(SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value]) \
                 .init_map(SetupMode.OLD) \
                 .build_file_structure() \
-                .populate(deform_animate=False) \
+                .populate() \
                 .write(WriteMode.SECTIONWISE2D) \
                 .output_morphology_data() \
                 .save(os.path.join(sample_file))

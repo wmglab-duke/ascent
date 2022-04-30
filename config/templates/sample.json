@@ -34,5 +34,8 @@
   },
   "morph_count": 36,
   "deform_ratio": 1,
+  "plot" : true,
+  "plot_folder" : true,
+  "render_deform": false,
   "Morphology": null
 }
