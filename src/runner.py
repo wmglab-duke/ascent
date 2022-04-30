@@ -33,8 +33,8 @@ except:
 
 # ascent
 from src.core import Sample, Simulation, Waveform
-from src.utils import Exceptionable, Configurable, SetupMode, Config, NerveMode, WriteMode, CuffShiftMode, \
-    PerineuriumResistivityMode, TemplateOutput, Env, ReshapeNerveMode
+from src.utils import Exceptionable, Configurable, SetupMode, Config, NerveMode, WriteMode, CuffShiftMode,  \
+    PerineuriumResistivityMode, TemplateOutput, Env, ReshapeNerveMode, ExportMode, DownSampleMode
 
 
 class Runner(Exceptionable, Configurable):
@@ -389,14 +389,27 @@ class Runner(Exceptionable, Configurable):
                             # load up correct simulation and build required sims
                             simulation: Simulation = load_obj(sim_obj_path)
                             simulation.build_n_sims(sim_dir, sim_num)
-
+                            
+                            #get export behavior
+                            export_behavior = None
+                            if self.configs[Config.CLI_ARGS.value].get('export_behavior') is not None:
+                                export_behavior = self.configs[Config.CLI_ARGS.value]['export_behavior']
+                            elif self.configs[Config.RUN.value].get('export_behavior') is not None:
+                                export_behavior = self.configs[Config.RUN.value]['export_behavior']
+                            else:
+                                export_behavior = ExportMode.SELECTIVE
+                            #check to make sure we have a valid behavior
+                            if not np.any([export_behavior == x.value for x in ExportMode]):
+                                self.throw(139)
+                            
                             # export simulations
                             Simulation.export_n_sims(
                                 sample_num,
                                 model_num,
                                 sim_num,
                                 sim_dir,
-                                os.environ[Env.NSIM_EXPORT_PATH.value]
+                                os.environ[Env.NSIM_EXPORT_PATH.value],
+                                export_behavior = export_behavior
                             )
 
                             # ensure run configuration is present
