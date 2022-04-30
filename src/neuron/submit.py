@@ -19,13 +19,42 @@ import warnings
 import pickle
 import argparse
 import pandas as pd
-#Set up parser and top level args
+
+#%%Set up parser and top level args
+class listAction(argparse.Action):
+    def __call__(self, parser, args, values, option_string=None):
+        run_path = 'runs'
+        jsons = [file for file in os.listdir(run_path) if file.endswith('.json')]
+        data = []
+        for j in jsons:
+            with open(run_path+'/'+j) as f:
+                try:
+                    rundata = json.load(f)
+                except Exception as e:
+                    print('WARNING: Could not load {}'.format(j))
+                    print(e)
+                    continue
+                data.append({'RUN':os.path.splitext(j)[0],
+                    'PSEUDONYM': rundata.get('pseudonym'),
+                     'SAMPLE':rundata['sample'],
+                     'MODELS':rundata['models'],
+                     'SIMS':rundata['sims']})
+        df = pd.DataFrame(data)
+        df.RUN = df.RUN.astype(int)
+        df = df.sort_values('RUN')
+        print('Run indices available (defined by user .json files in {}):\n'.format(run_path))
+        print(df.to_string(index = False))
+        sys.exit()
+        
 parser = argparse.ArgumentParser(description='ASCENT: Automated Simulations to Characterize Electrical Nerve Thresholds')
 parser.add_argument('run_indices', type=int, nargs = '+', help = 'Space separated indices to submit NEURON sims for')
 parser.add_argument('-p','--partition', help = 'If submitting on a cluster, overrides slurm_params.json')
 parser.add_argument('-n','--num-cpu', type=int, help = 'For local submission: set number of CPUs to use, overrides run.json')
 parser.add_argument('-m','--job-mem', type=int, help = 'For cluster submission: set amount of RAM per job (in MB), overrides slurm_params.json')
 parser.add_argument('-j','--num-jobs', type=int, help = 'For cluster submission: set number of jobs per array, overrides slurm_params.json')
+parser.add_argument('-l','--list-runs', action=listAction,nargs=0, help = 'List info for available runs')
+parser.add_argument('-s','--skip-summary', action='store_true', help = 'Begin submitting fibers without asking for confirmation')
+parser.add_argument('-S','--slurm-params', type=str, help = 'For cluster submission: string for additional slurm parameters (enclose in quotes)')
 submit_context_group = parser.add_mutually_exclusive_group()
 submit_context_group.add_argument('-L','--local-submit', action='store_true', help = 'Set submission context to local, overrides run.json')
 submit_context_group.add_argument('-C','--cluster-submit', action='store_true', help = 'Set submission context to cluster, overrides run.json')
@@ -33,7 +62,7 @@ submit_context_group.add_argument('-C','--cluster-submit', action='store_true', 
 ALLOWED_SUBMISSION_CONTEXTS = ['cluster', 'local','auto']
 OS = 'UNIX-LIKE' if any([s in sys.platform for s in ['darwin', 'linux']]) else 'WINDOWS'
 
-
+#%% Set up utility functions
 def load(config_path: str):
     """
     Loads in json data and returns to user, assuming it has already been validated.
@@ -110,8 +139,6 @@ def get_thresh_bounds(sim_dir: str, sim_name: str, inner_ind: int):
     top, bottom = None, None
 
     sample = sim_name.split('_')[0]
-    model = sim_name.split('_')[1]
-    sim = sim_name.split('_')[2]
     n_sim = sim_name.split('_')[3]
 
     sim_config = load(os.path.join(sim_dir, sim_name, '{}.json'.format(n_sim)))
@@ -235,7 +262,7 @@ def local_submit(my_local_args: dict):
         p = subprocess.call(['bash', start] if OS == 'UNIX-LIKE' else [start], stdout=fo, stderr=fe)
 
 
-def cluster_submit(run_number: int, partition: str, mem: int=2000, array_length_max: int = 10):
+def cluster_submit(run_number: int, partition: str, mem: int=2000, array_length_max: int = 10,slurm_params = None):
 
     # configuration is not empty
     assert array_length_max > 0, 'SLURM Job Array length is not > 0: array_length_max={}'.format(array_length_max)
@@ -355,7 +382,7 @@ def cluster_submit(run_number: int, partition: str, mem: int=2000, array_length_
                             print('========= SUBMITTING SOLO: {} ==========='.format(job_name))
 
                             command = ' '.join([
-                                'sbatch',
+                                'sbatch{}'.format(' ' +slurm_params if slurm_params is not None else ''),
                                 '--job-name={}'.format(job_name),
                                 '--output={}'.format(output_log),
                                 '--error={}'.format(error_log),
@@ -439,8 +466,9 @@ def cluster_submit(run_number: int, partition: str, mem: int=2000, array_length_
 
                                 # submit batch job for fiber
                                 job_name = f"{sim_name}_{sim_array_batch}"
-
-                                os.system(f"sbatch --job-name={job_name} --output={out_dir}%a.log "
+                                
+                                sp_string = slurm_params + ' ' if slurm_params is not None else ''
+                                os.system(f"sbatch {sp_string}--job-name={job_name} --output={out_dir}%a.log "
                                         f"--error={err_dir}%a.log --array={start}-{job_count - 1} "
                                         f"--mem={mem} --cpus-per-task=1 "
                                         f"--partition={partition} array_launch.slurm {start_path_base}")
@@ -562,8 +590,9 @@ def make_local_submission_list(run_number: int,summary_gen = False):
 
     return local_args_list
 
+#%% main
 def main():
-
+    
     #validate inputs
     args = parser.parse_args()
     run_inds = args.run_indices
@@ -577,7 +606,7 @@ def main():
 
     summary = []
     rundata = []
-
+    
     for run_number in run_inds:
 
         run_number = str(run_number)
@@ -618,12 +647,15 @@ def main():
         auto_compile_flags.append(auto_compile_flag)
 
         #get list of fibers to run
-        print('Generating run list for run {}'.format(run_number))
-        summary.append(make_local_submission_list(run_number, summary_gen=True))
-        rundata.append({'RUN':run_number,
-             'SAMPLE':run['sample'],
-             'MODELS':run['models'],
-             'SIMS':run['sims']})
+        if args.skip_summary:
+            'Skipping summary generation, submitting fibers...'
+        else:
+            print('Generating run list for run {}'.format(run_number))
+            summary.append(make_local_submission_list(run_number, summary_gen=True))
+            rundata.append({'RUN':run_number,
+                 'SAMPLE':run['sample'],
+                 'MODELS':run['models'],
+                 'SIMS':run['sims']})
     #check that all submission contexts are the same
     if args.local_submit==True:
         submission_contexts=['local' for i in submission_contexts]
@@ -631,23 +663,23 @@ def main():
         submission_contexts=['cluster' for i in submission_contexts]
     if not np.all([x==submission_contexts[0] for x in submission_contexts]):
         sys.exit('Runs with different submission contexts cannot be submitted at the same time')
-
-    #format run data
-    n_fibers = sum([len(x) for x in summary])
-    df = pd.DataFrame(rundata)
-    df.RUN = df.RUN.astype(int)
-    df = df.sort_values('RUN')
-    #print out and check that the user is happy
-    print('Submitting the following runs (submission_context={}):'.format(submission_contexts[0]))
-    print(df.to_string(index = False))
-    print('Will result in running {} fiber simulations'.format(n_fibers))
-    proceed = input('\t Would you like to proceed?\n'
-                '\t\t 0 = NO\n'
-                '\t\t 1 = YES\n')
-    if not int(proceed)==1:
-        quit()
-    else:
-        print('Proceeding...')
+    if not args.skip_summary:
+        #format run data
+        n_fibers = sum([len(x) for x in summary])
+        df = pd.DataFrame(rundata)
+        df.RUN = df.RUN.astype(int)
+        df = df.sort_values('RUN')
+        #print out and check that the user is happy
+        print('Submitting the following runs (submission_context={}):'.format(submission_contexts[0]))
+        print(df.to_string(index = False))
+        print('Will result in running {} fiber simulations'.format(n_fibers))
+        proceed = input('\t Would you like to proceed?\n'
+                    '\t\t 0 = NO\n'
+                    '\t\t 1 = YES\n')
+        if not int(proceed)==1:
+            quit()
+        else:
+            print('Proceeding...')
 
     # submit_lists, sub_contexts, run_filenames = make_submission_list()
     for sub_context, run_index, auto_compile_flag in zip(submission_contexts, runs, auto_compile_flags):
@@ -681,7 +713,7 @@ def main():
 
             submit_list = make_local_submission_list(run_index)
             pool = multiprocessing.Pool(cpus)
-            result = pool.map(local_submit, submit_list)
+            pool.map(local_submit, submit_list)
 
         elif sub_context == 'cluster':
             #load slurm params
@@ -692,7 +724,7 @@ def main():
             njobs = slurm_params['jobs_per_array'] if args.num_jobs is None else args.num_jobs
             mem = slurm_params['memory_per_fiber'] if args.job_mem is None else args.job_mem
 
-            cluster_submit(run_index,partition,array_length_max=njobs,mem=mem)
+            cluster_submit(run_index,partition,array_length_max=njobs,mem=mem,slurm_params = args.slurm_params)
 
         else:
             # something went horribly wrong

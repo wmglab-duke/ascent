@@ -10,6 +10,7 @@ import copy
 import json
 import os
 from typing import Tuple, List
+import sys
 
 import itertools
 import shutil
@@ -25,7 +26,7 @@ from .hocwriter import HocWriter
 from .fiberset import FiberSet
 from .waveform import Waveform
 from src.core import Sample
-from src.utils import Exceptionable, Configurable, Saveable, SetupMode, Config, WriteMode, FiberXYMode, Env
+from src.utils import Exceptionable, Configurable, Saveable, SetupMode, Config, WriteMode, FiberXYMode, Env, ExportMode
 
 
 class Simulation(Exceptionable, Configurable, Saveable):
@@ -165,18 +166,14 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 .generate() \
                 .write(WriteMode.DATA, os.path.join(directory, str(i))) \
 
-            if 'plot' not in self.configs[Config.SIM.value]['waveform'].keys():
-                plot = False
-            else:
-                plot: bool = self.search(Config.SIM, 'waveform', 'plot')
+            path = sim_directory+'/plots/waveforms/{}.png'.format(i)
+            if not os.path.exists(sim_directory+'/plots/waveforms'):
+                os.makedirs(sim_directory+'/plots/waveforms')
+                
+            waveform.plot(final=True,path=path)
 
-            if plot:
-                if self.search(Config.SIM, 'plot_folder',optional = True) == True:
-                    path = sim_directory+'/plots/waveforms/{}.png'.format(i)
-                    if not os.path.exists(sim_directory+'/plots/waveforms'):
-                        os.makedirs(sim_directory+'/plots/waveforms')
-                else: path = None
-                waveform.plot(final=True,path=path)
+            if self.search(Config.RUN,"popup_plots",optional=True)==True:
+                waveform.plot(final=True,path=None)
 
             self.waveforms.append(waveform)
 
@@ -556,17 +553,25 @@ class Simulation(Exceptionable, Configurable, Saveable):
         shutil.copy2(source, target_full)
 
     @staticmethod
-    def export_n_sims(sample: int, model: int, sim: int, sim_obj_dir: str, target: str, overwrite: bool = True):
+    def export_n_sims(sample: int, model: int, sim: int, sim_obj_dir: str, target: str, export_behavior = None):
 
         sim_dir = os.path.join(sim_obj_dir, str(sim), 'n_sims')
         sim_export_base = os.path.join(target, 'n_sims', '{}_{}_{}_'.format(sample, model, sim))
 
         for product_index in [f for f in os.listdir(sim_dir) if os.path.isdir(os.path.join(sim_dir, f))]:
             target = sim_export_base + product_index
-
-            if overwrite and os.path.exists(target):
-                shutil.rmtree(target)
-
+            
+            if os.path.exists(target):
+                if export_behavior == ExportMode.OVERWRITE.value:
+                    shutil.rmtree(target)
+                elif export_behavior == ExportMode.ERROR.value:
+                    sys.exit('{} already exists, exiting...'.format(target))
+                elif export_behavior == ExportMode.SELECTIVE.value or export_behavior==None:
+                    print('\tSkipping n_sim export for {} because folder already exists.'.format(target))
+                    continue
+                else: 
+                    sys.exit('Invalid export_behavior')
+                
             shutil.copytree(
                 os.path.join(sim_dir, product_index),
                 sim_export_base + product_index

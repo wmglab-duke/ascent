@@ -23,15 +23,18 @@ import subprocess
 from copy import deepcopy
 from quantiphy import Quantity
 from shapely.geometry import Point
-import pymunkoptions
 import traceback
 
-pymunkoptions.options["debug"] = False
+try:
+    import pymunkoptions
+    pymunkoptions.options["debug"] = False
+except:
+    pass
 
 # ascent
 from src.core import Sample, Simulation, Waveform
-from src.utils import Exceptionable, Configurable, SetupMode, Config, NerveMode, DownSampleMode, WriteMode, \
-    CuffShiftMode, PerineuriumResistivityMode, TemplateOutput, Env, ReshapeNerveMode
+from src.utils import Exceptionable, Configurable, SetupMode, Config, NerveMode, WriteMode, CuffShiftMode,  \
+    PerineuriumResistivityMode, TemplateOutput, Env, ReshapeNerveMode, ExportMode, DownSampleMode
 
 
 class Runner(Exceptionable, Configurable):
@@ -171,7 +174,7 @@ class Runner(Exceptionable, Configurable):
                 .add(SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value]) \
                 .init_map(SetupMode.OLD) \
                 .build_file_structure() \
-                .populate(deform_animate=False) \
+                .populate() \
                 .write(WriteMode.SECTIONWISE2D) \
                 .output_morphology_data() \
                 .save(os.path.join(sample_file))
@@ -179,7 +182,6 @@ class Runner(Exceptionable, Configurable):
         # iterate through models
         if 'models' not in all_configs.keys():
             print('NO MODELS TO MAKE IN Config.RUN - killing process')
-            pass
         else:
             for model_index, model_config in enumerate(all_configs[Config.MODEL.value]):
                 model_num = self.configs[Config.RUN.value]['models'][model_index]
@@ -282,6 +284,7 @@ class Runner(Exceptionable, Configurable):
                             simulation \
                                 .add(SetupMode.OLD, Config.MODEL, model_config) \
                                 .add(SetupMode.OLD, Config.SIM, sim_config) \
+                                .add(SetupMode.OLD, Config.RUN, self.configs[Config.RUN.value]) \
                                 .add(SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value]) \
                                 .resolve_factors() \
                                 .write_waveforms(sim_obj_dir) \
@@ -386,14 +389,27 @@ class Runner(Exceptionable, Configurable):
                             # load up correct simulation and build required sims
                             simulation: Simulation = load_obj(sim_obj_path)
                             simulation.build_n_sims(sim_dir, sim_num)
-
+                            
+                            #get export behavior
+                            export_behavior = None
+                            if self.configs[Config.CLI_ARGS.value].get('export_behavior') is not None:
+                                export_behavior = self.configs[Config.CLI_ARGS.value]['export_behavior']
+                            elif self.configs[Config.RUN.value].get('export_behavior') is not None:
+                                export_behavior = self.configs[Config.RUN.value]['export_behavior']
+                            else:
+                                export_behavior = ExportMode.SELECTIVE
+                            #check to make sure we have a valid behavior
+                            if not np.any([export_behavior == x.value for x in ExportMode]):
+                                self.throw(139)
+                            
                             # export simulations
                             Simulation.export_n_sims(
                                 sample_num,
                                 model_num,
                                 sim_num,
                                 sim_dir,
-                                os.environ[Env.NSIM_EXPORT_PATH.value]
+                                os.environ[Env.NSIM_EXPORT_PATH.value],
+                                export_behavior = export_behavior
                             )
 
                             # ensure run configuration is present

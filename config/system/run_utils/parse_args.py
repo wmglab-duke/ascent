@@ -1,11 +1,16 @@
 import sys
-import os
 import argparse
+from config.system import _version
+
+class versionAction(argparse.Action):
+    def __call__(self, parser, args, values, option_string=None):
+        print('ASCENT version {}'.format(_version.__version__))
 
 #Set up parser and top level args
 parser = argparse.ArgumentParser(description='ASCENT: Automated Simulations to Characterize Electrical Nerve Thresholds')
 # parser.add_argument('-s','--silent',action='store_true', help = 'silence printing')
 parser.add_argument('-v','--verbose',action='store_true', help = 'verbose printing')
+parser.add_argument('-V','--version',action=versionAction, nargs=0, help = 'print version')
 parser.add_argument('-l','--list',choices=['runs','samples','sims'],help='List all available indices for the specified option')
 
 #add subparsers
@@ -23,7 +28,9 @@ pipeline_parser.add_argument('run_indices', type=int, nargs = '+', help = 'Space
 pipeline_parser.add_argument('-b','--break-point',choices = ["pre_geom_run","post_geom_run","pre_java","post_mesh_distal","pre_mesh_distal","post_material_assign","pre_loop_currents","pre_mesh_proximal","post_mesh_proximal", "pre_solve"], help = 'Point in pipeline to exit and continue to next run')
 pipeline_parser.add_argument('-w','--wait-for-license',type=float,help = "Wait the specified number of hours for a comsol license to become available.")
 pipeline_parser.add_argument('-P','--partial-fem',choices = ["cuff_only","nerve_only"],help = "Only generate the specified geometry.")
+pipeline_parser.add_argument('-E','--export-behavior',choices = ["overwrite","error","selective"],help = "Behavior if n_sim export encounters extant data. Default is selective.")
 pipeline_parser.add_argument('-e','--endo-only-solution',action='store_true',help ="Store basis solutions for endoneurial geometry ONLY")
+pipeline_parser.add_argument('-r','--render_deform',action='store_true',help ="Pop-up window will render deformation operations")
 prog_group = pipeline_parser.add_mutually_exclusive_group()
 prog_group.add_argument('-c','--comsol-progress',action='store_true',help ="Print COMSOL progress to stdout")
 prog_group.add_argument('-C','--comsol-progress-popup',action='store_true',help ="Show COMSOL progress in a pop-up window")
