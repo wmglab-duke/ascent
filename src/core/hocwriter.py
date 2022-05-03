@@ -195,6 +195,11 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         else:
             file_object.write("saveflag_runtime     = %0.0f\n" % int(self.search(Config.SIM, "saving", "runtimes") == True))
 
+        if 'aploctime' not in self.configs[Config.SIM.value]['saving'].keys():
+            file_object.write("saveflag_ap_loctime  = %0.0f\n" % 0)
+        else:
+            file_object.write("saveflag_ap_loctime  = %0.0f\n" % int(self.search(Config.SIM, "saving", "aploctime") == True))
+
         if 'end_ap_times' in self.configs[Config.SIM.value]['saving'].keys():
             loc_min = self.search(Config.SIM, "saving", "end_ap_times", "loc_min")
             loc_max = self.search(Config.SIM, "saving", "end_ap_times", "loc_max")

@@ -130,6 +130,7 @@ strdef fname_output_gating_m_space, fname_output_gating_h_space, fname_output_ga
 strdef Ve_fname_output, Istim_fname_output
 strdef runtime_fname_output
 strdef thresh_fname_output
+strdef aploctime_fname_output
 strdef stim_units
 strdef Ap_times_fname_output
 
@@ -149,6 +150,10 @@ if (saveflag_end_ap_times==1) {
 if (find_thresh == 1){
 	load_file("FindThresh.hoc")
 	load_file("Saving_Thresh.hoc")
+}
+
+if (saveflag_ap_loctime == 1){
+	load_file("Saving_APLocTime.hoc")
 }
 
 proc run_all(){local myinner, myfiber, myamp, amp_ind
@@ -229,6 +234,12 @@ proc run_all(){local myinner, myfiber, myamp, amp_ind
 		// Save threshold value
 		sprint(thresh_fname_output, "../%s/data/outputs/thresh_inner%d_fiber%d.dat", sim_path, myinner, myfiber)
 		Saving_Thresh()
+
+		if (saveflag_ap_loctime == 1) {
+			sprint(aploctime_fname_output, "../%s/data/outputs/ap_loctime_inner%d_fiber%d.dat", sim_path, myinner, myfiber)
+			Saving_APLocTime()
+		}
+
 
 		// Save data
 		Saving()
