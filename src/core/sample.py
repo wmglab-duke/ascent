@@ -520,6 +520,7 @@ class Sample(Exceptionable, Configurable, Saveable):
                 if 'nerve' in self.search(Config.SAMPLE, 'boundary_separation').keys():
                     sep_nerve = self.search(Config.SAMPLE, 'boundary_separation', 'nerve')
                     print('\tensuring minimum nerve:fascicle separation of {} um'.format(sep_nerve))
+                    sep_nerve = sep_nerve - sep_fascicles/2
                 
                 #scale nerve trace down by sep nerve, will be scaled back up later
                 pre_area = slide.nerve.area()
