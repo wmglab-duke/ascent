@@ -397,7 +397,7 @@ class Runner(Exceptionable, Configurable):
                             elif self.configs[Config.RUN.value].get('export_behavior') is not None:
                                 export_behavior = self.configs[Config.RUN.value]['export_behavior']
                             else:
-                                export_behavior = ExportMode.SELECTIVE
+                                export_behavior = 'selective'
                             #check to make sure we have a valid behavior
                             if not np.any([export_behavior == x.value for x in ExportMode]):
                                 self.throw(139)
