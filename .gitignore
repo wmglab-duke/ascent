@@ -137,6 +137,7 @@ samples/
 submit/
 data/tmp/
 data/*.pickle
+data/
 
 input/
 */user/*
