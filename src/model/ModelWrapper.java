@@ -977,7 +977,6 @@ public class ModelWrapper {
     public void loopCurrents(JSONObject modelData, String projectPath, String sample, String modelStr, Boolean skipMesh, boolean pre_solve_break) throws IOException {
 
         long runSolStartTime = System.nanoTime();
-        int index = 0;
 
         Set<Integer> s;
         s = this.im.currentIDs.keySet();
@@ -987,12 +986,11 @@ public class ModelWrapper {
             String key_on;
             String src;
             if (skipMesh){
-                String key_on_int_str = Integer.toString(key_on_int + 1);
-                Map key_on_obj = (Map) this.im.currentIDs.get(key_on_int_str);
+                Map key_on_obj = (Map) this.im.currentIDs.get(Integer.toString(key_on_int));
                 key_on = (String) key_on_obj.keySet().toArray()[0];
                 src = (String) key_on_obj.get(key_on);
             } else {
-                JSONObject key_on_obj = this.im.currentIDs.get(key_on_int + 1);
+                JSONObject key_on_obj = this.im.currentIDs.get(key_on_int);
                 key_on = (String) key_on_obj.keySet().toArray()[0];
                 src = (String) key_on_obj.get(key_on);
             }
@@ -1023,7 +1021,7 @@ public class ModelWrapper {
                     "models",
                     modelStr,
                     "bases",
-                    index + ".mph"
+                    String.valueOf(key_on_int) + ".mph"
             });
 
             System.out.println("\tSolving electric currents for "+key_on+".");
@@ -1058,8 +1056,6 @@ public class ModelWrapper {
             }
 
             current_on.set("Qjp", 0.000); // reset current
-
-            index += 1;
         }
 
         JSONObject solution = new JSONObject();
