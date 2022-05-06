@@ -12,7 +12,7 @@ Description:
 - save AP initiation loc (node ind) and time (ms)
 
 Important notes:
-- 
+-
 
 Variables that must be defined in wrapper/params file:
 - min_ap_time_node_ind
@@ -26,10 +26,11 @@ proc Saving_APLocTime() {
 	// Open file for writing
 	output_file_aploctime = new File()
 	output_file_aploctime.wopen(aploctime_fname_output)
-	
-	// Print output to file
-	output_file_aploctime.printf("%f\n", min_ap_time_node_ind) // NoR where the first AP was detected (i.e., the site of AP initiation)
-	output_file_aploctime.printf("%f\n", min_ap_time) // time when first NoR AP was detected (i.e., time at the site of AP initiation)
+
+	// output APcount times for all nodes
+	for loc_node_ind=0, axonnodes-1 {
+		output_file_aploctime.printf("%f\n", apc[loc_node_ind].time) // time when last NoR AP was detected (i.e., time at the site of AP initiation)
+	}
 
 	// Close file
 	output_file_aploctime.close()

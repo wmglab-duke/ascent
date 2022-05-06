@@ -177,22 +177,6 @@ proc RunSim() {local myamp
 			if (apc[node_ind].n >= N_APs) {
 				N_APs = apc[node_ind].n			// Detected an action potential
 			}
-
-			if (saveflag_ap_loctime == 1) { // TODO -- add default to 0, and control to Sim/HocWriter
-				apc_node_times = new Vector(axonnodes, 0)
-				for loc_node_ind=0, axonnodes-1 {
-					apc_node_times.x[loc_node_ind] = apc[loc_node_ind].time
-					print loc_node_ind
-					print apc[loc_node_ind].time
-				}
-
-				// find min time, and loc of AP initiation
-				// NOTE: assumes you allowed enough time for the AP to propagate the whole length of the fiber
-				// If not allowed time for the AP to prop the whole length of the fiber, this could return ends with
-				// ap_node_times of 0
-				min_ap_time_node_ind = apc_node_times.min_ind()
-				min_ap_time = apc_node_times.min()
-			}
 		}
 	}
 }
