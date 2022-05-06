@@ -65,7 +65,7 @@ if (fiber_type == 3) {
 } else if 	(fiber_type == 2 && flag_model_b_fiber==1) {		v_init = v_init_b_fiber			// [mV]
 }
 
-// ***************************************************************************	
+// ***************************************************************************
 // IntracellularStim.hoc
 objref stim
 
@@ -229,7 +229,9 @@ proc run_all(){local myinner, myfiber, myamp, amp_ind
 		// Run binary search for thresholds
 		FindThresh()
 		// Run sim once more with final thresh from FindThresh()
+		print "Running stimamp in final check for AP."
 		RunSim(stimamp)
+		print "N_APs = ", N_APs
 
 		// Save threshold value
 		sprint(thresh_fname_output, "../%s/data/outputs/thresh_inner%d_fiber%d.dat", sim_path, myinner, myfiber)
