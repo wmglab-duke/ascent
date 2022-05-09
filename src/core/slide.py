@@ -70,7 +70,7 @@ class Slide(Exceptionable):
             area_sum += area
 
         return (x_sum / area_sum), (y_sum / area_sum)
-    def validation(self, specific: bool = True, die: bool = True, tolerance: float = None, plotpath='') -> bool:
+    def validation(self, specific: bool = True, die: bool = True, tolerance: float = None, plotpath=None) -> bool:
         """
         Checks to make sure nerve geometry is not overlapping itself
         :param specific: if you want to know what made it fail first
@@ -80,6 +80,8 @@ class Slide(Exceptionable):
         """
 
         def debug_plot():
+            if plotpath is None:
+                return
             plt.figure()
             self.plot(final=False, fix_aspect_ratio='True', axlabel=u"\u03bcm",
                        title='Debug sample which failed validation.')

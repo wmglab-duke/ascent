@@ -595,7 +595,7 @@ class Sample(Exceptionable, Configurable, Saveable):
                 slide.orientation_point = np.array(ray.intersection(outer.polygon().boundary))
             
             #ensure that nothing went wrong in slide processing
-            slide.validation()
+            slide.validation(plotpath=plotpath)
 
         # scale with ratio = 1 (no scaling happens, but connects the ends of each trace to itself)
         self.scale(1)
