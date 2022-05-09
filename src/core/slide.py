@@ -70,8 +70,7 @@ class Slide(Exceptionable):
             area_sum += area
 
         return (x_sum / area_sum), (y_sum / area_sum)
-    
-    def validation(self, specific: bool = True, die: bool = True, tolerance: float = None) -> bool:
+    def validation(self, specific: bool = True, die: bool = True, tolerance: float = None, plotpath='') -> bool:
         """
         Checks to make sure nerve geometry is not overlapping itself
         :param specific: if you want to know what made it fail first
@@ -80,23 +79,35 @@ class Slide(Exceptionable):
         :return: Boolean for True (no intersection) or False (issues with geometry overlap)
         """
 
+        def debug_plot():
+            plt.figure()
+            self.plot(final=False, fix_aspect_ratio='True', axlabel=u"\u03bcm",
+                       title='Debug sample which failed validation.')
+            plt.savefig(plotpath + '/sample_final')
+            plt.clf()
+            plt.close()
+
         if self.monofasc():
             return True
 
         if specific:
             if self.fascicle_fascicle_intersection():
+                debug_plot()
                 self.throw(10)
 
             if self.fascicle_nerve_intersection():
+                debug_plot()
                 self.throw(11)
 
             if self.fascicles_outside_nerve():
+                debug_plot()
                 self.throw(12)
 
         else:
             if any([self.fascicle_fascicle_intersection(), self.fascicle_nerve_intersection(),
                     self.fascicles_outside_nerve(), self.fascicles_too_close(tolerance)]):
                 if die:
+                    debug_plot()
                     self.throw(13)
                 else:
                     return False
