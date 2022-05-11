@@ -489,7 +489,239 @@ class Runner(Exceptionable, Configurable):
                                                    run_path,
                                                    argfinal))
             os.chdir('..')
-
+    
+    def cuffshiftcalc(self,cuff_dict,slide,deform_ratio,nerve_mode,sample_config,model_config): 
+        # fetch cuff config
+        cuff_config: dict = self.load(
+            os.path.join(os.getcwd(), "config", "system", "cuffs", cuff_dict['preset'])
+        )
+    
+        # fetch 1-2 letter code for cuff (ex: 'CT')
+        cuff_code: str = cuff_config['code']
+    
+        # fetch radius buffer string (ex: '0.003 [in]')
+        cuff_r_buffer_str: str = [item["expression"] for item in cuff_config["params"]
+                                  if item["name"] == '_'.join(['thk_medium_gap_internal', cuff_code])][0]
+    
+        # calculate value of radius buffer in micrometers (ex: 76.2)
+        cuff_r_buffer: float = Quantity(
+            Quantity(
+                cuff_r_buffer_str.translate(cuff_r_buffer_str.maketrans('', '', ' []')),
+                scale='m'
+            ),
+            scale='um'
+        ).real  # [um] (scaled from any arbitrary length unit)
+    
+        # get center and radius of nerve's min_bound circle
+        nerve_copy = deepcopy(slide.nerve if nerve_mode == NerveMode.PRESENT else slide.fascicles[0].outer)
+    
+        # Get the boundary and center information for computing cuff shift
+        if self.search_mode(ReshapeNerveMode, Config.SAMPLE) and not slide.monofasc() and deform_ratio == 1:
+            x, y = 0, 0
+            r_bound = np.sqrt(sample_config['Morphology']['Nerve']['area'] / np.pi)
+        else:
+            x, y, r_bound = nerve_copy.make_circle()
+    
+        # next calculate the angle of the "centroid" to the center of min bound circle
+        # if mono fasc, just use 0, 0 as centroid (i.e., centroid of nerve same as centroid of all fasc)
+        # if poly fasc, use centroid of all fascicle as reference, not 0, 0
+        # angle of centroid of nerve to center of minimum bounding circle
+        reference_x = reference_y = 0.0
+        if not slide.monofasc() and not (round(slide.nerve.centroid()[0])==round(slide.nerve.centroid()[1])==0):
+            self.throw(123) #if the slide has nerve and is not centered at the nerve throw error
+        if not slide.monofasc():
+            reference_x, reference_y = slide.fascicle_centroid()
+        theta_c = (np.arctan2(reference_y - y, reference_x - x) * (360 / (2 * np.pi))) % 360
+    
+        # calculate final necessary radius by adding buffer
+        r_f = r_bound + cuff_r_buffer
+    
+        # fetch initial cuff rotation (convert to rads)
+        theta_i = cuff_config.get('angle_to_contacts_deg') % 360
+    
+        # fetch boolean for cuff expandability
+        expandable: bool = cuff_config['expandable']
+    
+        # check radius iff not expandable
+        if not expandable:
+            r_i_str: str = [item["expression"] for item in cuff_config["params"]
+                            if item["name"] == '_'.join(['R_in', cuff_code])][0]
+            r_i: float = Quantity(
+                Quantity(
+                    r_i_str.translate(r_i_str.maketrans('', '', ' []')),
+                    scale='m'
+                ),
+                scale='um'
+            ).real  # [um] (scaled from any arbitrary length unit)
+    
+            if not r_f <= r_i:
+                self.throw(51)
+    
+            theta_f = theta_i
+        else:
+            # get initial cuff radius
+            r_i_str: str = [item["expression"] for item in cuff_config["params"]
+                            if item["name"] == '_'.join(['r_cuff_in_pre', cuff_code])][0]
+            r_i: float = Quantity(
+                Quantity(
+                    r_i_str.translate(r_i_str.maketrans('', '', ' []')),
+                    scale='m'
+                ),
+                scale='um'
+            ).real  # [um] (scaled from any arbitrary length unit)
+    
+            if r_i < r_f:
+                fixed_point = cuff_config.get('fixed_point')
+                if fixed_point is None:
+                    self.throw(126)
+                if fixed_point == 'clockwise_end':
+                    theta_f = theta_i*(r_i/r_f)
+                elif fixed_point == 'center':
+                    theta_f = theta_i
+            else:
+                theta_f = theta_i
+    
+        offset = 0
+        for key, coef in cuff_config["offset"].items():
+            value_str = [item["expression"] for item in cuff_config["params"] if item['name'] == key][0]
+            value: float = Quantity(
+                Quantity(
+                    value_str.translate(value_str.maketrans('', '', ' []')),
+                    scale='m'
+                ),
+                scale='um'
+            ).real  # [um] (scaled from any arbitrary length unit)
+            offset += coef * value
+    
+        cuff_shift_mode: CuffShiftMode = self.search_mode(CuffShiftMode, Config.MODEL)
+    
+        model_config['min_radius_enclosing_circle'] = r_bound
+    
+        if slide.orientation_angle is not None:
+            theta_c = (slide.orientation_angle) * (360 / (2 * np.pi)) % 360  # overwrite theta_c, use our own orientation
+    
+        if cuff_shift_mode == CuffShiftMode.AUTO_ROTATION_MIN_CIRCLE_BOUNDARY \
+                or cuff_shift_mode == CuffShiftMode.MIN_CIRCLE_BOUNDARY:  # for backwards compatibility
+            if r_i > r_f:
+                cuff_dict['rotate']['pos_ang'] = theta_c-theta_f
+                cuff_dict['shift']['x'] = x - (r_i - offset - cuff_r_buffer - r_bound) * np.cos(
+                    theta_c * ((2 * np.pi) / 360))
+                cuff_dict['shift']['y'] = y - (r_i - offset - cuff_r_buffer - r_bound) * np.sin(
+                    theta_c * ((2 * np.pi) / 360))
+    
+            else:
+                cuff_dict['rotate']['pos_ang'] = theta_c-theta_f
+    
+                # if nerve is present, use 0,0
+                if slide.nerve is not None and deform_ratio==1:  # has nerve
+                    cuff_dict['shift']['x'] = 0
+                    cuff_dict['shift']['y'] = 0
+                else:
+                    # else, use
+                    cuff_dict['shift']['x'] = x
+                    cuff_dict['shift']['y'] = y
+    
+        elif cuff_shift_mode == CuffShiftMode.AUTO_ROTATION_TRACE_BOUNDARY \
+                or cuff_shift_mode == CuffShiftMode.TRACE_BOUNDARY:  # for backwards compatibility
+            if r_i < r_f:
+                cuff_dict['rotate']['pos_ang'] = theta_c-theta_f
+                cuff_dict['shift']['x'] = x
+                cuff_dict['shift']['y'] = y
+            else:
+                id_boundary = Point(0, 0).buffer(r_i - offset)
+                n_boundary = Point(x, y).buffer(r_f)
+    
+                if id_boundary.boundary.distance(n_boundary.boundary) < cuff_r_buffer:
+                    nerve_copy.shift([x, y, 0])
+                    print("WARNING: NERVE CENTERED ABOUT MIN CIRCLE CENTER (BEFORE PLACEMENT) BECAUSE "
+                          "CENTROID PLACEMENT VIOLATED REQUIRED CUFF BUFFER DISTANCE\n")
+    
+                center_x = 0
+                center_y = 0
+                step = 1  # [um] STEP SIZE
+                x_step = step * np.cos(-theta_c + np.pi)  # STEP VECTOR X-COMPONENT
+                y_step = step * np.sin(-theta_c + np.pi)  # STEP VECTOR X-COMPONENT
+    
+                # shift nerve within cuff until one step within the minimum separation from cuff
+                while nerve_copy.polygon().boundary.distance(id_boundary.boundary) >= cuff_r_buffer:
+                    nerve_copy.shift([x_step, y_step, 0])
+                    center_x -= x_step
+                    center_y -= y_step
+    
+                # to maintain minimum separation from cuff, reverse last step
+                center_x += x_step
+                center_y += y_step
+    
+                cuff_dict['rotate']['pos_ang'] = (theta_c-theta_f)
+                cuff_dict['shift']['x'] = center_x
+                cuff_dict['shift']['y'] = center_y
+    
+        elif cuff_shift_mode == CuffShiftMode.NAIVE_ROTATION_TRACE_BOUNDARY:
+            if slide.orientation_point is not None:
+                print('Warning: orientation tif image will be ignored because a NAIVE cuff shift mode was chosen.')
+            if r_i < r_f:
+                cuff_dict['rotate']['pos_ang'] = 0
+                cuff_dict['shift']['x'] = x
+                cuff_dict['shift']['y'] = y
+            else:
+                id_boundary = Point(0, 0).buffer(r_i - offset)
+                n_boundary = Point(x, y).buffer(r_f)
+    
+                if id_boundary.boundary.distance(n_boundary.boundary) < cuff_r_buffer:
+                    nerve_copy.shift([x, y, 0])
+                    print("WARNING: NERVE CENTERED ABOUT MIN CIRCLE CENTER (BEFORE PLACEMENT) BECAUlf. "
+                          "CENTROID PLACEMENT VIOLATED REQUIRED CUFF BUFFER DISTANCE\n")
+    
+                center_x = 0
+                center_y = 0
+                step = 1  # [um] STEP SIZE
+                x_step = step * np.cos(-theta_c + np.pi)  # STEP VECTOR X-COMPONENT
+                y_step = step * np.sin(-theta_c + np.pi)  # STEP VECTOR X-COMPONENT
+    
+                # shift nerve within cuff until one step within the minimum separation from cuff
+                while nerve_copy.polygon().boundary.distance(id_boundary.boundary) >= cuff_r_buffer:
+                    nerve_copy.shift([x_step, y_step, 0])
+                    center_x -= x_step
+                    center_y -= y_step
+    
+                # to maintain minimum separation from cuff, reverse last step
+                center_x += x_step
+                center_y += y_step
+    
+                cuff_dict['rotate']['pos_ang'] = 0
+                cuff_dict['shift']['x'] = center_x
+                cuff_dict['shift']['y'] = center_y
+    
+        elif cuff_shift_mode == CuffShiftMode.NONE:
+            cuff_dict['rotate']['pos_ang'] = 0
+            cuff_dict['shift']['x'] = 0
+            cuff_dict['shift']['y'] = 0
+    
+        elif cuff_shift_mode == CuffShiftMode.NAIVE_ROTATION_MIN_CIRCLE_BOUNDARY \
+                or cuff_shift_mode == CuffShiftMode.PURPLE:
+            if slide.orientation_point is not None:
+                print('Warning: orientation tif image will be ignored because a NAIVE cuff shift mode was chosen.')
+            if r_i > r_f:
+                cuff_dict['rotate']['pos_ang'] = 0
+    
+                cuff_dict['shift']['x'] = x - (r_i - offset - cuff_r_buffer - r_bound) * np.cos(
+                    theta_i * ((2 * np.pi) / 360))
+                cuff_dict['shift']['y'] = y - (r_i - offset - cuff_r_buffer - r_bound) * np.sin(
+                    theta_i * ((2 * np.pi) / 360))
+    
+            else:
+                cuff_dict['rotate']['pos_ang'] = 0
+    
+                # if nerve is present, use 0,0
+                if slide.nerve is not None and deform_ratio==1:  # has nerve
+                    cuff_dict['shift']['x'] = 0
+                    cuff_dict['shift']['y'] = 0
+                else:
+                    # else, use
+                    cuff_dict['shift']['x'] = x
+                    cuff_dict['shift']['y'] = y
+        return cuff_dict
+    
     def compute_cuff_shift(self, model_config: dict, sample: Sample, sample_config: dict):
         # NOTE: ASSUMES SINGLE SLIDE
 
@@ -518,238 +750,16 @@ class Runner(Exceptionable, Configurable):
         if type(cuff_data)==dict:
             cuff_data = [cuff_data]
         cuff_dicts = []
+        
         for cuff_dict in cuff_data:
-                
-            # fetch cuff config
-            cuff_config: dict = self.load(
-                os.path.join(os.getcwd(), "config", "system", "cuffs", cuff_dict['preset'])
-            )
-    
-            # fetch 1-2 letter code for cuff (ex: 'CT')
-            cuff_code: str = cuff_config['code']
-    
-            # fetch radius buffer string (ex: '0.003 [in]')
-            cuff_r_buffer_str: str = [item["expression"] for item in cuff_config["params"]
-                                      if item["name"] == '_'.join(['thk_medium_gap_internal', cuff_code])][0]
-    
-            # calculate value of radius buffer in micrometers (ex: 76.2)
-            cuff_r_buffer: float = Quantity(
-                Quantity(
-                    cuff_r_buffer_str.translate(cuff_r_buffer_str.maketrans('', '', ' []')),
-                    scale='m'
-                ),
-                scale='um'
-            ).real  # [um] (scaled from any arbitrary length unit)
-    
-            # get center and radius of nerve's min_bound circle
-            nerve_copy = deepcopy(slide.nerve if nerve_mode == NerveMode.PRESENT else slide.fascicles[0].outer)
-    
-            # Get the boundary and center information for computing cuff shift
-            if self.search_mode(ReshapeNerveMode, Config.SAMPLE) and not slide.monofasc() and deform_ratio == 1:
-                x, y = 0, 0
-                r_bound = np.sqrt(sample_config['Morphology']['Nerve']['area'] / np.pi)
-            else:
-                x, y, r_bound = nerve_copy.make_circle()
-    
-            # next calculate the angle of the "centroid" to the center of min bound circle
-            # if mono fasc, just use 0, 0 as centroid (i.e., centroid of nerve same as centroid of all fasc)
-            # if poly fasc, use centroid of all fascicle as reference, not 0, 0
-            # angle of centroid of nerve to center of minimum bounding circle
-            reference_x = reference_y = 0.0
-            if not slide.monofasc() and not (round(slide.nerve.centroid()[0])==round(slide.nerve.centroid()[1])==0):
-                self.throw(123) #if the slide has nerve and is not centered at the nerve throw error
-            if not slide.monofasc():
-                reference_x, reference_y = slide.fascicle_centroid()
-            theta_c = (np.arctan2(reference_y - y, reference_x - x) * (360 / (2 * np.pi))) % 360
-    
-            # calculate final necessary radius by adding buffer
-            r_f = r_bound + cuff_r_buffer
-    
-            # fetch initial cuff rotation (convert to rads)
-            theta_i = cuff_config.get('angle_to_contacts_deg') % 360
-    
-            # fetch boolean for cuff expandability
-            expandable: bool = cuff_config['expandable']
-    
-            # check radius iff not expandable
-            if not expandable:
-                r_i_str: str = [item["expression"] for item in cuff_config["params"]
-                                if item["name"] == '_'.join(['R_in', cuff_code])][0]
-                r_i: float = Quantity(
-                    Quantity(
-                        r_i_str.translate(r_i_str.maketrans('', '', ' []')),
-                        scale='m'
-                    ),
-                    scale='um'
-                ).real  # [um] (scaled from any arbitrary length unit)
-    
-                if not r_f <= r_i:
-                    self.throw(51)
-    
-                theta_f = theta_i
-            else:
-                # get initial cuff radius
-                r_i_str: str = [item["expression"] for item in cuff_config["params"]
-                                if item["name"] == '_'.join(['r_cuff_in_pre', cuff_code])][0]
-                r_i: float = Quantity(
-                    Quantity(
-                        r_i_str.translate(r_i_str.maketrans('', '', ' []')),
-                        scale='m'
-                    ),
-                    scale='um'
-                ).real  # [um] (scaled from any arbitrary length unit)
-    
-                if r_i < r_f:
-                    fixed_point = cuff_config.get('fixed_point')
-                    if fixed_point is None:
-                        self.throw(126)
-                    if fixed_point == 'clockwise_end':
-                        theta_f = theta_i*(r_i/r_f)
-                    elif fixed_point == 'center':
-                        theta_f = theta_i
-                else:
-                    theta_f = theta_i
-    
-            offset = 0
-            for key, coef in cuff_config["offset"].items():
-                value_str = [item["expression"] for item in cuff_config["params"] if item['name'] == key][0]
-                value: float = Quantity(
-                    Quantity(
-                        value_str.translate(value_str.maketrans('', '', ' []')),
-                        scale='m'
-                    ),
-                    scale='um'
-                ).real  # [um] (scaled from any arbitrary length unit)
-                offset += coef * value
-    
-            cuff_shift_mode: CuffShiftMode = self.search_mode(CuffShiftMode, Config.MODEL)
-    
-            model_config['min_radius_enclosing_circle'] = r_bound
-    
-            if slide.orientation_angle is not None:
-                theta_c = (slide.orientation_angle) * (360 / (2 * np.pi)) % 360  # overwrite theta_c, use our own orientation
-    
-            if cuff_shift_mode == CuffShiftMode.AUTO_ROTATION_MIN_CIRCLE_BOUNDARY \
-                    or cuff_shift_mode == CuffShiftMode.MIN_CIRCLE_BOUNDARY:  # for backwards compatibility
-                if r_i > r_f:
-                    cuff_dict['rotate']['pos_ang'] = theta_c-theta_f
-                    cuff_dict['shift']['x'] = x - (r_i - offset - cuff_r_buffer - r_bound) * np.cos(
-                        theta_c * ((2 * np.pi) / 360))
-                    cuff_dict['shift']['y'] = y - (r_i - offset - cuff_r_buffer - r_bound) * np.sin(
-                        theta_c * ((2 * np.pi) / 360))
-    
-                else:
-                    cuff_dict['rotate']['pos_ang'] = theta_c-theta_f
-    
-                    # if nerve is present, use 0,0
-                    if slide.nerve is not None and deform_ratio==1:  # has nerve
-                        cuff_dict['shift']['x'] = 0
-                        cuff_dict['shift']['y'] = 0
-                    else:
-                        # else, use
-                        cuff_dict['shift']['x'] = x
-                        cuff_dict['shift']['y'] = y
-    
-            elif cuff_shift_mode == CuffShiftMode.AUTO_ROTATION_TRACE_BOUNDARY \
-                    or cuff_shift_mode == CuffShiftMode.TRACE_BOUNDARY:  # for backwards compatibility
-                if r_i < r_f:
-                    cuff_dict['rotate']['pos_ang'] = theta_c-theta_f
-                    cuff_dict['shift']['x'] = x
-                    cuff_dict['shift']['y'] = y
-                else:
-                    id_boundary = Point(0, 0).buffer(r_i - offset)
-                    n_boundary = Point(x, y).buffer(r_f)
-    
-                    if id_boundary.boundary.distance(n_boundary.boundary) < cuff_r_buffer:
-                        nerve_copy.shift([x, y, 0])
-                        print("WARNING: NERVE CENTERED ABOUT MIN CIRCLE CENTER (BEFORE PLACEMENT) BECAUSE "
-                              "CENTROID PLACEMENT VIOLATED REQUIRED CUFF BUFFER DISTANCE\n")
-    
-                    center_x = 0
-                    center_y = 0
-                    step = 1  # [um] STEP SIZE
-                    x_step = step * np.cos(-theta_c + np.pi)  # STEP VECTOR X-COMPONENT
-                    y_step = step * np.sin(-theta_c + np.pi)  # STEP VECTOR X-COMPONENT
-    
-                    # shift nerve within cuff until one step within the minimum separation from cuff
-                    while nerve_copy.polygon().boundary.distance(id_boundary.boundary) >= cuff_r_buffer:
-                        nerve_copy.shift([x_step, y_step, 0])
-                        center_x -= x_step
-                        center_y -= y_step
-    
-                    # to maintain minimum separation from cuff, reverse last step
-                    center_x += x_step
-                    center_y += y_step
-    
-                    cuff_dict['rotate']['pos_ang'] = (theta_c-theta_f)
-                    cuff_dict['shift']['x'] = center_x
-                    cuff_dict['shift']['y'] = center_y
-    
-            elif cuff_shift_mode == CuffShiftMode.NAIVE_ROTATION_TRACE_BOUNDARY:
-                if slide.orientation_point is not None:
-                    print('Warning: orientation tif image will be ignored because a NAIVE cuff shift mode was chosen.')
-                if r_i < r_f:
-                    cuff_dict['rotate']['pos_ang'] = 0
-                    cuff_dict['shift']['x'] = x
-                    cuff_dict['shift']['y'] = y
-                else:
-                    id_boundary = Point(0, 0).buffer(r_i - offset)
-                    n_boundary = Point(x, y).buffer(r_f)
-    
-                    if id_boundary.boundary.distance(n_boundary.boundary) < cuff_r_buffer:
-                        nerve_copy.shift([x, y, 0])
-                        print("WARNING: NERVE CENTERED ABOUT MIN CIRCLE CENTER (BEFORE PLACEMENT) BECAUlf. "
-                              "CENTROID PLACEMENT VIOLATED REQUIRED CUFF BUFFER DISTANCE\n")
-    
-                    center_x = 0
-                    center_y = 0
-                    step = 1  # [um] STEP SIZE
-                    x_step = step * np.cos(-theta_c + np.pi)  # STEP VECTOR X-COMPONENT
-                    y_step = step * np.sin(-theta_c + np.pi)  # STEP VECTOR X-COMPONENT
-    
-                    # shift nerve within cuff until one step within the minimum separation from cuff
-                    while nerve_copy.polygon().boundary.distance(id_boundary.boundary) >= cuff_r_buffer:
-                        nerve_copy.shift([x_step, y_step, 0])
-                        center_x -= x_step
-                        center_y -= y_step
-    
-                    # to maintain minimum separation from cuff, reverse last step
-                    center_x += x_step
-                    center_y += y_step
-    
-                    cuff_dict['rotate']['pos_ang'] = 0
-                    cuff_dict['shift']['x'] = center_x
-                    cuff_dict['shift']['y'] = center_y
-    
-            elif cuff_shift_mode == CuffShiftMode.NONE:
-                cuff_dict['rotate']['pos_ang'] = 0
-                cuff_dict['shift']['x'] = 0
-                cuff_dict['shift']['y'] = 0
-    
-            elif cuff_shift_mode == CuffShiftMode.NAIVE_ROTATION_MIN_CIRCLE_BOUNDARY \
-                    or cuff_shift_mode == CuffShiftMode.PURPLE:
-                if slide.orientation_point is not None:
-                    print('Warning: orientation tif image will be ignored because a NAIVE cuff shift mode was chosen.')
-                if r_i > r_f:
-                    cuff_dict['rotate']['pos_ang'] = 0
-    
-                    cuff_dict['shift']['x'] = x - (r_i - offset - cuff_r_buffer - r_bound) * np.cos(
-                        theta_i * ((2 * np.pi) / 360))
-                    cuff_dict['shift']['y'] = y - (r_i - offset - cuff_r_buffer - r_bound) * np.sin(
-                        theta_i * ((2 * np.pi) / 360))
-    
-                else:
-                    cuff_dict['rotate']['pos_ang'] = 0
-    
-                    # if nerve is present, use 0,0
-                    if slide.nerve is not None and deform_ratio==1:  # has nerve
-                        cuff_dict['shift']['x'] = 0
-                        cuff_dict['shift']['y'] = 0
-                    else:
-                        # else, use
-                        cuff_dict['shift']['x'] = x
-                        cuff_dict['shift']['y'] = y
+            cuff_dict = self.cuffshiftcalc(cuff_dict,
+                                           slide,
+                                           deform_ratio,
+                                           nerve_mode,
+                                           sample_config,
+                                           model_config)
             cuff_dicts.append(cuff_dict)
+            
         model_config['cuff']=cuff_dicts
         # remove sample config
         self.remove(Config.SAMPLE)
