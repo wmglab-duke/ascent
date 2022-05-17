@@ -1386,15 +1386,24 @@ public class ModelWrapper {
                         model.component("comp1").physics().create("ec", "ConductiveMedia", "geom1");
                         // and mesh node to component node 1
                         model.component("comp1").mesh().create("mesh1");
-                        //set solution order
-                        int shape_order;
+                        //set geometry order
+                        int geometry_order;
                         try {
-                            shape_order = modelData.getJSONObject("solver").getInt("order");
+                            geometry_order = modelData.getJSONObject("mesh").getString("shape_order");
                         } catch (Exception e) {
-                            System.out.println("Invalid solution order, or solution order not specified. Proceeding with default order of 2 (quadratic)");
-                            shape_order = 2;
+                            System.out.println("Invalid geometry shape order, or geometry shape order not specified. Proceeding with default order of quadratic");
+                            geometry_order = "quadratic";
                         }
-                        model.component("comp1").physics("ec").prop("ShapeProperty").set("order_electricpotential", shape_order);
+                        model.component("comp1").sorder(geometry_order);
+                        //set solution order
+                        int solution_order;
+                        try {
+                            solution_order = modelData.getJSONObject("solver").getInt("sorder");
+                        } catch (Exception e) {
+                            System.out.println("Invalid solution shape order, or solution shape order not specified. Proceeding with default order of 2 (quadratic)");
+                            solution_order = 2;
+                        }
+                        model.component("comp1").physics("ec").prop("ShapeProperty").set("order_electricpotential", solution_order);
 
                         // Define ModelWrapper class instance for model and projectPath
                         mw = new ModelWrapper(model, projectPath);
