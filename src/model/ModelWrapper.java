@@ -1568,10 +1568,12 @@ public class ModelWrapper {
                                 Double cuff_rot_pos = cuffSpec.getJSONObject("rotate").getDouble("pos_ang");
                                 Double cuff_rot_add = cuffSpec.getJSONObject("rotate").getDouble("add_ang");
 
-                                cuffConformationParams.set(cuff+"_cuff_shift_x", cuff_shift_x + " " + cuff_shift_unit);
-                                cuffConformationParams.set(cuff+"_cuff_shift_y", cuff_shift_y + " " + cuff_shift_unit);
-                                cuffConformationParams.set(cuff+"_cuff_shift_z", cuff_shift_z + " " + cuff_shift_unit);
-                                cuffConformationParams.set(cuff+"_cuff_rot", cuff_rot_pos + cuff_rot_add + " " + cuff_rot_unit);
+                                String cuffname = cuff.split("\\.")[0]+"_"+String.valueOf(i);
+
+                                cuffConformationParams.set(cuffname+"_cuff_shift_x", cuff_shift_x + " " + cuff_shift_unit);
+                                cuffConformationParams.set(cuffname+"_cuff_shift_y", cuff_shift_y + " " + cuff_shift_unit);
+                                cuffConformationParams.set(cuffname+"_cuff_shift_z", cuff_shift_z + " " + cuff_shift_unit);
+                                cuffConformationParams.set(cuffname+"_cuff_rot", cuff_rot_pos + cuff_rot_add + " " + cuff_rot_unit);
                             }
                         }
 
