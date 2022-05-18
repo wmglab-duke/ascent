@@ -34,7 +34,7 @@ except:
 # ascent
 from src.core import Sample, Simulation, Waveform
 from src.utils import Exceptionable, Configurable, SetupMode, Config, NerveMode, DownSampleMode, WriteMode, \
-    CuffShiftMode, PerineuriumResistivityMode, TemplateOutput, Env, ReshapeNerveMode
+    CuffShiftMode, PerineuriumResistivityMode, TemplateOutput, Env, ReshapeNerveMode, Validatable
 
 
 class Runner(Exceptionable, Configurable):
@@ -108,7 +108,15 @@ class Runner(Exceptionable, Configurable):
             validate_and_add(configs, 'sims', sim_path)
 
         return configs
-
+    
+    def precheck(self):
+        #check cuff configs for uniqueness
+        VD = Validatable()
+        VD.validate_cuff_configs(os.path.join(os.getcwd(),
+                                    'config',
+                                    'system',
+                                    'cuffs'))
+    
     def run(self, smart: bool = True):
         """
         :param smart: bool telling the program whether to reprocess the sample or not if it already exists as sample.obj
@@ -118,6 +126,10 @@ class Runner(Exceptionable, Configurable):
         #       possible addition of functionality for looping samples in start.py
 
         # load all json configs into memory
+        
+        #run precheck
+        self.precheck()
+        
         all_configs = self.load_configs()
         
         run_pseudonym = self.configs[Config.RUN.value].get('pseudonym')
