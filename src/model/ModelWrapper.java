@@ -187,45 +187,49 @@ public class ModelWrapper {
     public boolean addCuffPartPrimitives(String name) {
         // extract data from json
         try {
-            JSONObject cuffData = JSONio.read(
-                    String.join("/", new String[]{this.root, "config", "system", "cuffs", name})
-            );
-
-            // get the id for the next "par" (i.e., parameters section), and give it a name from the JSON file name
-            String id = this.next("par", name);
-            model.param().group().create(id);
-            model.param(id).label(name.split("\\.")[0] + " Parameters");
-
-            // loop through all parameters in file, and set in parameters
-            for (Object item : (JSONArray) cuffData.get("params")) {
-                JSONObject itemObject = (JSONObject) item;
-                model.param(id).set(
-                        (String) itemObject.get("name"),
-                        (String) itemObject.get("expression"),
-                        (String) itemObject.get("description")
+            System.out.println(name);
+            System.out.println(this.im.hasPseudonym(name));
+            if (!this.im.hasPseudonym(name)) {
+                JSONObject cuffData = JSONio.read(
+                        String.join("/", new String[]{this.root, "config", "system", "cuffs", name})
                 );
-            }
 
-            // for each required part primitive, create it (if not already existing)
-            for (Object item: (JSONArray) cuffData.get("instances")) {
-                JSONObject itemObject = (JSONObject) item;
-                String partPrimitiveName = (String) itemObject.get("type"); // quick cast to String
+                // get the id for the next "par" (i.e., parameters section), and give it a name from the JSON file name
+                String id = this.next("par", name);
+                model.param().group().create(id);
+                model.param(id).label(name.split("\\.")[0] + " Parameters");
 
-                // create the part primitive if it has not already been created
-                if (! this.im.hasPseudonym(partPrimitiveName)) {
-                    // get next available (TOP LEVEL) "part" id
-                    String partID = this.im.next("part", partPrimitiveName);
-                    try {
-                        // TRY to create the part primitive (catch error if no existing implementation)
-                        IdentifierManager partPrimitiveIM = Part.createCuffPartPrimitive(partID, partPrimitiveName, this);
+                // loop through all parameters in file, and set in parameters
+                for (Object item : (JSONArray) cuffData.get("params")) {
+                    JSONObject itemObject = (JSONObject) item;
+                    model.param(id).set(
+                            (String) itemObject.get("name"),
+                            (String) itemObject.get("expression"),
+                            (String) itemObject.get("description")
+                    );
+                }
 
-                        // add the returned id manager to the HashMap of IMs with the partName as its key
-                        this.partPrimitiveIMs.put(partPrimitiveName, partPrimitiveIM);
+                // for each required part primitive, create it (if not already existing)
+                for (Object item : (JSONArray) cuffData.get("instances")) {
+                    JSONObject itemObject = (JSONObject) item;
+                    String partPrimitiveName = (String) itemObject.get("type"); // quick cast to String
 
-                    } catch (IllegalArgumentException e) {
-                        e.printStackTrace();
-                        return false;
+                    // create the part primitive if it has not already been created
+                    if (!this.im.hasPseudonym(partPrimitiveName)) {
+                        // get next available (TOP LEVEL) "part" id
+                        String partID = this.im.next("part", partPrimitiveName);
+                        try {
+                            // TRY to create the part primitive (catch error if no existing implementation)
+                            IdentifierManager partPrimitiveIM = Part.createCuffPartPrimitive(partID, partPrimitiveName, this);
 
+                            // add the returned id manager to the HashMap of IMs with the partName as its key
+                            this.partPrimitiveIMs.put(partPrimitiveName, partPrimitiveIM);
+
+                        } catch (IllegalArgumentException e) {
+                            e.printStackTrace();
+                            return false;
+
+                        }
                     }
                 }
             }
@@ -243,7 +247,7 @@ public class ModelWrapper {
      * @param modelData
      * @return success indicator
      */
-    public boolean addCuffPartInstances(String name, JSONObject modelData) {
+    public boolean addCuffPartInstances(String name, JSONObject modelData,int index) {
         // extract data from json (name is something like Enteromedics.json)
         try {
             JSONObject cuffData = JSONio.read(
@@ -254,10 +258,11 @@ public class ModelWrapper {
             for (Object item: (JSONArray) cuffData.get("instances")) {
                 JSONObject itemObject = (JSONObject) item;
 
-                String instanceLabel = (String) itemObject.get("label");
+                String instanceLabel = (String) itemObject.get("label")+"_"+index;
                 String instanceID = this.im.next("pi", instanceLabel);
                 String type = (String) itemObject.get("type");
-                Part.createCuffPartInstance(instanceID, instanceLabel, type , this, itemObject, name);
+                String cuffname = name.split("\\.")[0];
+                Part.createCuffPartInstance(instanceID, instanceLabel, type, this, itemObject, cuffname, index);
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -1557,8 +1562,16 @@ public class ModelWrapper {
                                 String cuff = cuffSpec.getString("preset");
                                 mw.addCuffPartPrimitives(cuff);
 
+                                // Saved model pre-run geometry for debugging
+                                try {
+                                    System.out.println("\tSaving MPH (pre-geom_run) file to: " + geomFile);
+                                    model.save(geomFile);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+
                                 // add PART INSTANCES for cuff
-                                mw.addCuffPartInstances(cuff, modelData);
+                                mw.addCuffPartInstances(cuff, modelData,i);
 
                                 String cuff_shift_unit = "[micrometer]";
                                 String cuff_rot_unit = "[degree]";

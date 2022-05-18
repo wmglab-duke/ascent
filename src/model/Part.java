@@ -2461,7 +2461,7 @@ class Part {
      * @throws IllegalArgumentException if the primitive specified by pseudonym has not been created
      */
     public static void createCuffPartInstance(String instanceID, String instanceLabel, String pseudonym, ModelWrapper mw,
-                                              JSONObject instanceParams, String name) throws IllegalArgumentException {
+                                              JSONObject instanceParams, String name, int index) throws IllegalArgumentException {
 
         Model model = mw.getModel();
 
@@ -2469,8 +2469,8 @@ class Part {
         partInstance.label(instanceLabel);
         partInstance.set("part", mw.im.get(pseudonym));
 
-        partInstance.set("displ", new String[]{name+"_cuff_shift_x", name+"_cuff_shift_y", name+"_cuff_shift_z"}); // moves cuff around the nerve
-        partInstance.set("rot", name+"_cuff_rot");
+        partInstance.set("displ", new String[]{name+"_"+index+"_cuff_shift_x", name+"_"+index+"_cuff_shift_y", name+"_"+index+"_cuff_shift_z"}); // moves cuff around the nerve
+        partInstance.set("rot", name+"_"+index+"_cuff_rot");
 
         JSONObject itemObject = instanceParams.getJSONObject("def");
         IdentifierManager myIM = mw.getPartPrimitiveIM(pseudonym);
