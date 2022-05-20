@@ -1387,7 +1387,7 @@ public class ModelWrapper {
                         // and mesh node to component node 1
                         model.component("comp1").mesh().create("mesh1");
                         //set geometry order
-                        int geometry_order;
+                        String geometry_order;
                         try {
                             geometry_order = modelData.getJSONObject("mesh").getString("shape_order");
                         } catch (Exception e) {
