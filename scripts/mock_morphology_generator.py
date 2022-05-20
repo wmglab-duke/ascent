@@ -8,7 +8,6 @@ The source code can be found on the following GitHub repository: https://github.
 
 # builtins
 import json
-import sys
 import time
 
 # access

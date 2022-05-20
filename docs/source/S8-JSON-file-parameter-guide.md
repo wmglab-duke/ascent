@@ -66,11 +66,13 @@ of the file.
         "mesh": Boolean,
         "bases": Boolean
       },
+      "export_behavior": String,
       "partial_fem": {
         "cuff_only": Boolean,
         "nerve_only": Boolean
       },
       "local_avail_cpus": Integer,
+      "popup_plots": Boolean,
       "override_compiled_mods": Boolean
     }
     ```
@@ -143,6 +145,14 @@ of the file.
     new ***Sim*** for a previously computed ***Sample*** and ***Model*** can
     be probed along new fibersets/ to create potentials/*.* Optional.
 
+    `"export_behavior"`: The value (String) instructs the pipeline how to behave if
+    an export n_sim directory (i.e., ASCENT_NSIM_EXPORT_PATH/n_sims/<directory>)
+    already exists. There are three options: `"selective"` is the default behavior,
+    output directories which already exist will be skipped, but any which do not exist
+    will be generated, `"overwrite"` will remove the extant directory,
+    and generate a new clean output directory in its place, `"error"` instructs the
+    pipeline to exit if any export n_sim directory is found to already exist.
+
     `“partial_fem”`: The value (Boolean) of each property results in the
     program terminating after building the COMSOL FEM geometry for only the
     cuff (`“cuff_only”`) or only the nerve (`“nerve_only”`). The program
@@ -163,6 +173,10 @@ of the file.
     machine to perform other processes. Optional, but if using submitting
     locally, the program will take all CPUs except 1 if this value is not
     defined.
+
+    `“popup_plots”`: The value (Boolean) will instruct the pipeline to display plots
+    (e.g. sample plot, fiberset plot, waveform plot) in a popup window. This is in addition
+    to saving the plots in the relevant folders (i.e., the sample and sim folders).
 
     `“override_compiled_mods”`: The value (Boolean) indicates if the program will override previously compiled *.mod files (i.e. files defining channel mechanisms in NEURON) with each system call of submit.py. Optional, but if the key is omitted the program will not override previously compiled *.mod files.
 
@@ -197,7 +211,9 @@ of the file.
         "cuff_only": false,
         "nerve_only": false
       },
+      "export_behavior": "selective",
       "local_avail_cpus": 3,
+      “popup_plots”: true,
       "override_compiled_mods": false
     }
     ```
@@ -251,6 +267,7 @@ of the file.
       "deform_ratio": Double,
       "plot": Boolean,
       "plot_folder": Boolean,
+      "render_deform": Boolean,
       "Morphology": {
         "Nerve": {
           "Area": Double
@@ -500,6 +517,9 @@ of the file.
     If true, plots are generated in the folder samples/<sample_index>/plots, if
     false, plots will pop up in a window.
 
+    `"render_deform"`: The value (Boolean) if true, causes the pipeline to generated
+    a popup window and display a video of sample deformation as it occurs.
+
     `“Morphology”`: This JSON Object is used to store information about the
     area and best-fit ellipse information of the nerve and fascicles (outer
     and inners). The user does not set values to these JSON structures, but
@@ -545,6 +565,7 @@ of the file.
       "deform_ratio": 1,
       "plot": true,
       "plot_folder": true,
+      "render_deform": false,
       "Morphology": {
         "Nerve": null,
         "Fascicles": [     
@@ -1439,13 +1460,11 @@ of the file.
     {
       "pseudonym": String,
       "n_dimensions": Integer,
-      "plot_folder" : Boolean,
       "active_srcs": {
         "CorTec300.json": [[Double, Double]], // for example
         "default": [[1, -1]]
       },
       "fibers": {
-        "plot": Boolean,
         "mode": String,
         "xy_trace_buffer": Double,
         "z_parameters": {
@@ -1525,7 +1544,6 @@ of the file.
         }
       },
       "waveform": {
-        "plot": Boolean,
         "global": {
           "dt": Double,
           "on": Double,
@@ -1683,11 +1701,6 @@ of the file.
     creating unintended NEURON simulations. The pipeline will only loop over
     the first n-dimensions. Required.
 
-    `“plot_folder”`: The value (Boolean) tells the program whether to output
-    plots in a folder if true, or as a popup window if false. If not specified,
-    the program assumes false. If true plots are saved in a folder in the simulation
-    directory. (i.e., /samples/<sample_index>/models/<model_index>/sims/<sim_index>/plots)
-
     `“active_srcs”`: The value is a JSON Object containing key-value pairs of
     contact weightings for preset cuffs. Each value (`List[List[Double]]`)
     is the contact weighting to use to make extracellular potentials inputs
@@ -1717,10 +1730,6 @@ of the file.
     extracellular potentials in NEURON (i.e., the Cartesian coordinates of
     the midpoint for each compartment (i.e., section or segment) along the
     length of the fiber). Required.
-
-      - `“plot”`: The value (Boolean) tells the program to plot the fiber
-        (x,y)-coordinates for the user to inspect. Whether the figure pops up or
-        is saved is controlled by the `"plot_folder"` parameter. Required.
 
       - `“mode”`: The value (String) is the “FiberGeometry” mode that tells
         the program which fiber geometries to simulate in NEURON ([S21](S21-Implementation-of-NEURON-fiber-models) and [S32](S32-NEURON-Wrapper.hoc) Text). Required.
@@ -1909,10 +1918,6 @@ of the file.
     `“waveform”`: The waveform JSON Object contains key-value pairs to
     instruct the system in setting global time discretization settings and
     stimulation waveform parameters ([Fig 3C](https://doi.org/10.1371/journal.pcbi.1009285.g003)). Required.
-
-      - `“plot”`: The value (Boolean) turns plotting of the waveform to a
-        figure on/off as each waveform is written to file. Whether the figure pops up or
-        is saved is controlled by the `"plot_folder"` parameter.
 
       - `“global”`: the value (JSON Object) contains key-value pairs that
         define NEURON time discretization parameters. Required.
@@ -2355,12 +2360,10 @@ of the file.
     {
       "pseudonym": "My example sim",
       "n_dimensions": 3,
-      "plot_folder" : true,
       "active_srcs": {
         "CorTec300.json": [[1, -1]]
       },
       "fibers": {
-        "plot": true,
         "mode": "MRG_DISCRETE",
         "xy_trace_buffer": 5.0,
         "z_parameters": {
@@ -2383,7 +2386,6 @@ of the file.
         }
       },
       "waveform": {
-        "plot": true,
         "global": {
           "dt": 0.001,
           "on": 1,

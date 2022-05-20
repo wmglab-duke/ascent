@@ -251,7 +251,14 @@ class WaveformMode(ASCENTEnum):
     BIPHASIC_PULSE_TRAIN = 3
     BIPHASIC_PULSE_TRAIN_Q_BALANCED_UNEVEN_PW = 4
     EXPLICIT = 5
-
+    
+# %% Simulation
+@unique
+class ExportMode(ASCENTEnum):
+    
+    OVERWRITE = "overwrite"
+    ERROR = "error"
+    SELECTIVE = "selective"
 
 # %% NEURON Protocols
 

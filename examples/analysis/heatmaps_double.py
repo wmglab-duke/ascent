@@ -37,7 +37,6 @@ def run_heatmaps(params):
     }).run()
     
     # NOTE: these values were copied from the output of heatmaps(), setting the track_colormap_bounds flag True
-    colormap_bounds_override = None
     
     # builds heatmaps
     useless, also_useless, bounds = q.heatmaps(plot=False,
@@ -101,7 +100,6 @@ def run_heatmaps(params):
         cbar_ax.set_title(r'mA',fontsize = 50)
     else:
         cbar_ax.set_title(u'\u03bcA',fontsize = 50)
-    colorbar_text_size_override = 100
     dest = '{}{}{}_{}_{}_shared_cbar.png'.format(params['outpath'], os.sep, params['sample'], params['model'], params['sim'])
     fig.savefig(dest,dpi=500)
 
