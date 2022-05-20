@@ -1391,16 +1391,16 @@ public class ModelWrapper {
                         try {
                             geometry_order = modelData.getJSONObject("mesh").getString("shape_order");
                         } catch (Exception e) {
-                            System.out.println("Invalid geometry shape order, or geometry shape order not specified. Proceeding with default order of quadratic");
+                            System.out.println("\tWARNING: Invalid geometry shape order, or geometry shape order not specified. Proceeding with default order of quadratic");
                             geometry_order = "quadratic";
-                        }
+                        }f
                         model.component("comp1").sorder(geometry_order);
                         //set solution order
                         int solution_order;
                         try {
                             solution_order = modelData.getJSONObject("solver").getInt("sorder");
                         } catch (Exception e) {
-                            System.out.println("Invalid solution shape order, or solution shape order not specified. Proceeding with default order of 2 (quadratic)");
+                            System.out.println("\tWARNING: Invalid solution shape order, or solution shape order not specified. Proceeding with default order of 2 (quadratic)");
                             solution_order = 2;
                         }
                         model.component("comp1").physics("ec").prop("ShapeProperty").set("order_electricpotential", solution_order);
