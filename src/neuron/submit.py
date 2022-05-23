@@ -45,7 +45,7 @@ class listAction(argparse.Action):
         print('Run indices available (defined by user .json files in {}):\n'.format(run_path))
         print(df.to_string(index = False))
         sys.exit()
-        
+
 parser = argparse.ArgumentParser(description='ASCENT: Automated Simulations to Characterize Electrical Nerve Thresholds')
 parser.add_argument('run_indices', type=int, nargs = '+', help = 'Space separated indices to submit NEURON sims for')
 parser.add_argument('-p','--partition', help = 'If submitting on a cluster, overrides slurm_params.json')
@@ -391,7 +391,9 @@ def cluster_submit(run_number: int, partition: str, mem: int=2000, array_length_
                                 '-c', '1',
                                 start_path_solo
                             ])
-                            os.system(command)
+                            exit_code = os.system(command)
+                            if exit_code!=0:
+                                sys.exit('Non-zero exit code during job submission')
 
                             # allow job to start before removing slurm file
                             time.sleep(1.0)
@@ -466,12 +468,14 @@ def cluster_submit(run_number: int, partition: str, mem: int=2000, array_length_
 
                                 # submit batch job for fiber
                                 job_name = f"{sim_name}_{sim_array_batch}"
-                                
+
                                 sp_string = slurm_params + ' ' if slurm_params is not None else ''
-                                os.system(f"sbatch {sp_string}--job-name={job_name} --output={out_dir}%a.log "
+                                exit_code = os.system(f"sbatch {sp_string}--job-name={job_name} --output={out_dir}%a.log "
                                         f"--error={err_dir}%a.log --array={start}-{job_count - 1} "
                                         f"--mem={mem} --cpus-per-task=1 "
                                         f"--partition={partition} array_launch.slurm {start_path_base}")
+                                if exit_code!=0:
+                                    sys.exit('Non-zero exit code during job array submission')
 
                                 # allow job to start before removing slurm file
                                 time.sleep(1.0)
@@ -592,7 +596,7 @@ def make_local_submission_list(run_number: int,summary_gen = False):
 
 #%% main
 def main():
-    
+
     #validate inputs
     args = parser.parse_args()
     run_inds = args.run_indices
@@ -606,7 +610,7 @@ def main():
 
     summary = []
     rundata = []
-    
+
     for run_number in run_inds:
 
         run_number = str(run_number)
