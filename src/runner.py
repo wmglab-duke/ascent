@@ -389,7 +389,7 @@ class Runner(Exceptionable, Configurable):
                             # load up correct simulation and build required sims
                             simulation: Simulation = load_obj(sim_obj_path)
                             simulation.build_n_sims(sim_dir, sim_num)
-                            
+
                             #get export behavior
                             export_behavior = None
                             if self.configs[Config.CLI_ARGS.value].get('export_behavior') is not None:
@@ -401,7 +401,7 @@ class Runner(Exceptionable, Configurable):
                             #check to make sure we have a valid behavior
                             if not np.any([export_behavior == x.value for x in ExportMode]):
                                 self.throw(139)
-                            
+
                             # export simulations
                             Simulation.export_n_sims(
                                 sample_num,
@@ -447,61 +447,54 @@ class Runner(Exceptionable, Configurable):
         argbase = base64.b64encode(argbytes)
         argfinal = argbase.decode('ascii')
 
-        if sys.platform.startswith('darwin'):  # macOS
-
-            subprocess.Popen(['{}/bin/comsol'.format(comsol_path), 'server'], close_fds=True)
-            time.sleep(10)
-            os.chdir('src')
-            os.system(
-                '{}/javac -classpath ../bin/json-20190722.jar:{}/plugins/* model/*.java -d ../bin'.format(jdk_path,
-                                                                                                          comsol_path))
-            # https://stackoverflow.com/questions/219585/including-all-the-jars-in-a-directory-within-the-java-classpath
-            os.system('{}/java/maci64/jre/Contents/Home/bin/java '
-                      '-cp .:$(echo {}/plugins/*.jar | '
-                      'tr \' \' \':\'):../bin/json-20190722.jar:../bin model.{} "{}" "{}" "{}"'.format(comsol_path,
-                                                                                                  comsol_path,
-                                                                                                  core_name,
-                                                                                                  project_path,
-                                                                                                  run_path,
-                                                                                                  argfinal))
-            os.chdir('..')
-
-        elif sys.platform.startswith('linux'):  # linux
-
-            subprocess.Popen(['{}/bin/comsol'.format(comsol_path), 'server'], close_fds=True)
-            time.sleep(10)
-            os.chdir('src')
-            os.system(
-                '{}/javac -classpath ../bin/json-20190722.jar:{}/plugins/* model/*.java -d ../bin'.format(jdk_path,
-                                                                                                          comsol_path))
-            # https://stackoverflow.com/questions/219585/including-all-the-jars-in-a-directory-within-the-java-classpath
-            os.system('{}/java/glnxa64/jre/bin/java '
-                      '-cp .:$(echo {}/plugins/*.jar | '
-                      'tr \' \' \':\'):../bin/json-20190722.jar:../bin model.{} "{}" "{}" "{}"'.format(comsol_path,
-                                                                                                  comsol_path,
-                                                                                                  core_name,
-                                                                                                  project_path,
-                                                                                                  run_path,
-                                                                                                  argfinal))
-            os.chdir('..')
-
-        else:  # assume to be 'win64'
-            subprocess.Popen(['{}\\bin\\win64\\comsolmphserver.exe'.format(comsol_path)], close_fds=True)
-            time.sleep(10)
-            os.chdir('src')
-            os.system('""{}\\javac" '
-                      '-cp "..\\bin\\json-20190722.jar";"{}\\plugins\\*" '
+        if sys.platform.startswith('win'): #windows
+            server_command = ['{}\\bin\\win64\\comsolmphserver.exe'.format(comsol_path)]
+            compile_command = '""{}\\javac" '\
+                      '-cp "..\\bin\\json-20190722.jar";"{}\\plugins\\*" '\
                       'model\\*.java -d ..\\bin"'.format(jdk_path,
-                                                         comsol_path))
-            os.system('""{}\\java\\win64\\jre\\bin\\java" '
-                      '-cp "{}\\plugins\\*";"..\\bin\\json-20190722.jar";"..\\bin" '
+                                                         comsol_path)
+            java_command = '""{}\\java\\win64\\jre\\bin\\java" '\
+                      '-cp "{}\\plugins\\*";"..\\bin\\json-20190722.jar";"..\\bin" '\
                       'model.{} "{}" "{}" "{}""'.format(comsol_path,
                                                    comsol_path,
                                                    core_name,
                                                    project_path,
                                                    run_path,
-                                                   argfinal))
-            os.chdir('..')
+                                                   argfinal)
+        else:
+            server_command = ['{}/bin/comsol'.format(comsol_path), 'server']
+
+            compile_command = '{}/javac -classpath ../bin/json-20190722.jar:{}/plugins/* model/*.java -d ../bin'.format(jdk_path,
+                                                                                                          comsol_path)
+            # https://stackoverflow.com/questions/219585/including-all-the-jars-in-a-directory-within-the-java-classpath
+            if sys.platform.startswith('linux'):  # linux
+                java_comsol_path = comsol_path+'/java/glnxa64/jre/bin/java'
+            else: #mac
+                java_comsol_path = comsol_path+'/java/maci64/jre/Contents/Home/bin/java'
+
+            java_command = '{} '\
+                      '-cp .:$(echo {}/plugins/*.jar | '\
+                      'tr \' \' \':\'):../bin/json-20190722.jar:../bin model.{} "{}" "{}" "{}"'.format(java_comsol_path,
+                                                                                                  comsol_path,
+                                                                                                  core_name,
+                                                                                                  project_path,
+                                                                                                  run_path,
+                                                                                                  argfinal)
+
+        #start comsol server
+        subprocess.Popen(server_command, close_fds=True)
+        #wait for server to start
+        time.sleep(10)
+        os.chdir('src')
+        #compile java code
+        exit_code = os.system(compile_command)
+        if exit_code != 0:
+            self.throw(9001)
+        #run java code
+        exit_code = os.system(java_command)
+        if exit_code != 0:
+            self.throw(9001)
+        os.chdir('..')
 
     def compute_cuff_shift(self, model_config: dict, sample: Sample, sample_config: dict):
         # NOTE: ASSUMES SINGLE SLIDE
