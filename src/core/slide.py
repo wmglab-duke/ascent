@@ -241,14 +241,26 @@ class Slide(Exceptionable):
         if not self.monofasc():
             self.nerve.plot(plot_format='k-', ax=ax,linewidth=1.5)
 
+        out_to_in = []
+        inner_ind = 0
+        for i, fascicle in enumerate(self.fascicles):
+            out_to_in.append([])
+            for inner in fascicle.inners:
+                out_to_in[i].append(inner_ind)
+                inner_ind += 1
+
         if fascicle_colors is not None:
-            if not len(self.fascicles) == len(fascicle_colors):
+            if not inner_ind == len(fascicle_colors):
                 self.throw(65)
         else:
-            fascicle_colors = [None] * len(self.fascicles)
+            fascicle_colors = [None] * inner_ind
 
         inner_index = 0
-        for fascicle, color in zip(self.fascicles, fascicle_colors):
+        for fascicle_ind, fascicle in enumerate(self.fascicles):
+            inners = out_to_in[fascicle_ind]
+            color = []
+            for inner in inners:
+                color.append(fascicle_colors[inner])
             fascicle.plot(
                 inner_format,
                 color,
