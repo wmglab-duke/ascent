@@ -18,7 +18,6 @@ import os
 import sys
 
 sys.path.append(os.path.sep.join([os.getcwd(), '']))
-import matplotlib.pyplot as plt
 from src.core.query import Query
 
 # # set default fig size
@@ -60,5 +59,6 @@ q.heatmaps(plot=False,
 #                 # TODO: Finish building heatmap of polyfasc nerve (1 fiber/fasc)
 #                 # also, look into adding documentation to Simulation (might be useful for above task too)
 
+# plt.show(block=True)
 #plt.close('all')
 # plt.tight_layout()

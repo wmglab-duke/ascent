@@ -14,9 +14,8 @@ root = os.path.abspath(os.path.join(*'../../'.split('/')))
 sys.path.append(root)
 
 from src.core import Simulation
-from src.core import Waveform
 from src.core.query import Query
-from src.utils import *
+from src.utils import Object
 import matplotlib.pyplot as plt
 
 
