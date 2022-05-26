@@ -80,11 +80,9 @@ def run(args):
             export_path = runner.search(Config.ENV, Env.NSIM_EXPORT_PATH.value)
             os.chdir(export_path)
             with open(os.devnull, 'wb') as devnull:
-                #-s flag to skip summary
-                exit_code = subprocess.check_call(['python','submit.py', '-s',str(argument)], stdout=devnull, stderr=devnull)
-                if exit_code !=0: print('WARNING: Non-zero exit code during fiber submission. Continuing to next run...')
+                subprocess.check_call(['python','submit.py', '-s',str(argument)], stdout=devnull, stderr=devnull)
             os.chdir(reset_dir)
-            
+
         print('\nruntime: {} (hh:mm:ss)'.format(time.strftime('%H:%M:%S', time.gmtime(elapsed))))
 
     # cleanup for console viewing/inspecting
