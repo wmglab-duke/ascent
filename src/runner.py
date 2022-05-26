@@ -489,11 +489,11 @@ class Runner(Exceptionable, Configurable):
         #compile java code
         exit_code = os.system(compile_command)
         if exit_code != 0:
-            self.throw(9001)
+            self.throw(140)
         #run java code
         exit_code = os.system(java_command)
         if exit_code != 0:
-            self.throw(9001)
+            self.throw(141)
         os.chdir('..')
 
     def compute_cuff_shift(self, model_config: dict, sample: Sample, sample_config: dict):
