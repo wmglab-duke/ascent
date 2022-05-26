@@ -13,7 +13,7 @@ import sys
 
 # ascent
 from src.runner import Runner
-from src.utils.enums import SetupMode, Config
+from src.utils.enums import SetupMode, Config, Env
 from .env_setup import run as env_setup
 
 
@@ -72,6 +72,15 @@ def run(args):
         end = time.time()
         elapsed = end - start
         print('\nruntime: {} (hh:mm:ss)'.format(time.strftime('%H:%M:%S', time.gmtime(elapsed))))
+
+        if args.auto_submit:
+            print('Submitting fibers for run {}'.format(argument))
+            #submit fibers before moving on to next run
+            reset_dir = os.getcwd()
+            export_path = runner.search(Config.ENV, Env.NSIM_EXPORT_PATH.value)
+            os.chdir(export_path)
+            os.system("python submit.py -s {}".format(argument)) #-s flag to skip summary
+            os.chdir(reset_dir)
 
     # cleanup for console viewing/inspecting
     del start, end
