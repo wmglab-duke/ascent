@@ -1380,15 +1380,30 @@ public class ModelWrapper {
                         model.component().create("comp1", true);
                         // Add 3D geom to component node 1
                         model.component("comp1").geom().create("geom1", 3);
-                        // geometry shape order
-                        String sorder = modelData.getJSONObject("solver").getString("sorder");
-                        model.component("comp1").sorder(sorder);
                         // Set default length units to micron
                         model.component("comp1").geom("geom1").lengthUnit("\u00b5m");
                         // Add materials node to component node 1
                         model.component("comp1").physics().create("ec", "ConductiveMedia", "geom1");
                         // and mesh node to component node 1
                         model.component("comp1").mesh().create("mesh1");
+                        //set geometry order
+                        String geometry_order;
+                        try {
+                            geometry_order = modelData.getJSONObject("mesh").getString("shape_order");
+                        } catch (Exception e) {
+                            System.out.println("\tWARNING: Invalid geometry shape order, or geometry shape order not specified. Proceeding with default order of quadratic");
+                            geometry_order = "quadratic";
+                        }f
+                        model.component("comp1").sorder(geometry_order);
+                        //set solution order
+                        int solution_order;
+                        try {
+                            solution_order = modelData.getJSONObject("solver").getInt("sorder");
+                        } catch (Exception e) {
+                            System.out.println("\tWARNING: Invalid solution shape order, or solution shape order not specified. Proceeding with default order of 2 (quadratic)");
+                            solution_order = 2;
+                        }
+                        model.component("comp1").physics("ec").prop("ShapeProperty").set("order_electricpotential", solution_order);
 
                         // Define ModelWrapper class instance for model and projectPath
                         mw = new ModelWrapper(model, projectPath);
@@ -1641,15 +1656,6 @@ public class ModelWrapper {
                             boolean success = ppimPathFile.mkdirs();
                             assert success;
                         }
-
-                        int shape_order;
-                        if (modelData.getJSONObject("mesh").has("shape_order")) {
-                            shape_order = modelData.getJSONObject("mesh").getInt("shape_order");
-                        } else {
-                            shape_order = modelData.getJSONObject("solver").getInt("shape_order"); // bkwds compatible
-                        }
-
-                        model.component("comp1").physics("ec").prop("ShapeProperty").set("order_electricpotential", shape_order);
 
                         // define MESH for PROXIMAL
                         // swept: name (Sweep) and im (swe), facemethod (tri)
