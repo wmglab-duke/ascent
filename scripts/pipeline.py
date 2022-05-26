@@ -81,6 +81,7 @@ def run(args):
             export_path = runner.search(Config.ENV, Env.NSIM_EXPORT_PATH.value)
             os.chdir(export_path)
             with open(os.devnull, 'wb') as devnull:
+                #-s flag to skip summary
                 subprocess.check_call(['python','submit.py', '-s',str(argument)], stdout=devnull, stderr=devnull)
             os.chdir(reset_dir)
 
