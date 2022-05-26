@@ -157,26 +157,24 @@ proc RunSim() {local myamp
 	}
 
 	// Check for at least one action potential at at least one node of Ranvier
-	if (find_thresh == 1) {
-		print "Checking for AP"
-		N_APs = 0
+	print "Checking for AP"
+	N_APs = 0
 
-		if (find_block_thresh == 1) {
-			node_ind = int((axonnodes-1)*ap_detect_location)
+	if (find_block_thresh == 1) {
+		node_ind = int((axonnodes-1)*ap_detect_location)
 
-			if (apc[node_ind].time > IntraStim_PulseTrain_delay) { // Detected at least one AP, so didn't get block, so need to raise the lower bound (N_APs<N_minAPs) on the binary search
-				//print apc[node_ind].time
-				//check_AP = 0			// Detected an action potential
-				N_APs = 0
-			} else { // Didn't detect an AP, so got block, so need to drop the upper bound (N_APs>=N_minAPs) on the binary search
-				N_APs = 1
-			}
-		} else if (find_block_thresh == 0) {
-			node_ind = int((axonnodes-1)*ap_detect_location)
+		if (apc[node_ind].time > IntraStim_PulseTrain_delay) { // Detected at least one AP, so didn't get block, so need to raise the lower bound (N_APs<N_minAPs) on the binary search
+			//print apc[node_ind].time
+			//check_AP = 0			// Detected an action potential
+			N_APs = 0
+		} else { // Didn't detect an AP, so got block, so need to drop the upper bound (N_APs>=N_minAPs) on the binary search
+			N_APs = 1
+		}
+	} else if (find_block_thresh == 0) {
+		node_ind = int((axonnodes-1)*ap_detect_location)
 
-			if (apc[node_ind].n >= N_APs) {
-				N_APs = apc[node_ind].n			// Detected an action potential
-			}
+		if (apc[node_ind].n >= N_APs) {
+			N_APs = apc[node_ind].n			// Detected an action potential
 		}
 	}
 }

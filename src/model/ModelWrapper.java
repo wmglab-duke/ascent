@@ -1393,7 +1393,7 @@ public class ModelWrapper {
                         } catch (Exception e) {
                             System.out.println("\tWARNING: Invalid geometry shape order, or geometry shape order not specified. Proceeding with default order of quadratic");
                             geometry_order = "quadratic";
-                        }f
+                        }
                         model.component("comp1").sorder(geometry_order);
                         //set solution order
                         int solution_order;
