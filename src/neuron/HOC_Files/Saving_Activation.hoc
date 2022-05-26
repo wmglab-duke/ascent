@@ -1,0 +1,34 @@
+/*
+The copyrights of this software are owned by Duke University.
+Please refer to the LICENSE and README.md files for licensing instructions.
+The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
+*/
+
+/*
+Author: Daniel Marshall
+Date created: May 26, 2022
+
+Description:
+- Save N_APs detected to file (integer)
+
+Important notes:
+-
+
+Variables that must be defined in wrapper/params file:
+- thresh
+- activation_fname_output
+*/
+
+objref output_file_activation
+
+proc Saving_Activation() {
+	// Open file for writing
+	output_file_activation = new File()
+	output_file_activation.wopen(activation_fname_output)
+
+	// Print output to file
+	output_file_activation.printf("%d", N_APs) // where stimamp is the threshold found in FindThresh(), units mA for extracellular & nA for intracellular
+
+	// Close file
+	output_file_activation.close()
+}
