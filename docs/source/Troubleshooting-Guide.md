@@ -18,6 +18,8 @@
     - solutions:
         - Increase inner_interp_tol and/or outer_interp_tol in  sample.json (depending on whether the issue exists for outers or inners)
         - If your mask is very pixelated, increase smoothing>fascicle distance in sample.json
+    - issue: The pipeline solves one basis, then errors.
+    - solution: In COMSOL, disable automatic saving of recovery files.
 
 ## NEURON Issues
 Issue: Compiling NEURON files with `python submit.py` results in an error, `mpicc: command not found`
