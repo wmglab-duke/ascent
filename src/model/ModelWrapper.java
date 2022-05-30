@@ -1358,8 +1358,8 @@ public class ModelWrapper {
                             System.out.println("\tIssue in mesh recycling logic. Rebuilding mesh.");
                             e.printStackTrace();
                         }
+                        System.out.println("\tEnd mesh recycling logic.");
                     }
-                    System.out.println("\tEnd mesh recycling logic.");
 
                     String mediumPrimitiveString = "Medium_Primitive";
                     String instanceLabelDistalMedium = DISTAL_MEDIUM;
