@@ -19,7 +19,6 @@ import warnings
 import pickle
 import argparse
 import pandas as pd
-import traceback
 
 #%%Set up parser and top level args
 class listAction(argparse.Action):
@@ -215,7 +214,6 @@ def make_task(my_os: str, start_p: str, sim_p: str, inner: int, fiber: int, top:
         if my_os == 'UNIX-LIKE':
             lines = [
                 '#!/bin/bash\n',
-                'cd \"{}\"\n'.format(sim_p),
                 'chmod a+rwx special\n',
                 './special -nobanner '
                 '-c \"strdef sim_path\" '
@@ -731,12 +729,6 @@ def main():
 
         submission_contexts.append(submission_context)
 
-<<<<<<< HEAD
-=======
-        auto_compile_flag = run.get('override_compiled_mods', False)
-        auto_compile_flags.append(auto_compile_flag)
-
->>>>>>> 6ef2ed5f (temp)
         #get list of fibers to run
         if args.skip_summary:
             'Skipping summary generation, submitting fibers...'
