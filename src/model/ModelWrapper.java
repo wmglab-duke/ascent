@@ -187,8 +187,6 @@ public class ModelWrapper {
     public boolean addCuffPartPrimitives(String name) {
         // extract data from json
         try {
-            System.out.println(name);
-            System.out.println(this.im.hasPseudonym(name));
             if (!this.im.hasPseudonym(name)) {
                 JSONObject cuffData = JSONio.read(
                         String.join("/", new String[]{this.root, "config", "system", "cuffs", name})
