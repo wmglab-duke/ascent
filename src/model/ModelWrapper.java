@@ -187,6 +187,7 @@ public class ModelWrapper {
     public boolean addCuffPartPrimitives(String name) {
         // extract data from json
         try {
+            // Only add primitives if this is the first time for this cuff
             if (!this.im.hasPseudonym(name)) {
                 JSONObject cuffData = JSONio.read(
                         String.join("/", new String[]{this.root, "config", "system", "cuffs", name})
@@ -256,6 +257,7 @@ public class ModelWrapper {
             for (Object item: (JSONArray) cuffData.get("instances")) {
                 JSONObject itemObject = (JSONObject) item;
 
+                // add cuff index to instance label
                 String instanceLabel = (String) itemObject.get("label")+"_"+index;
                 String instanceID = this.im.next("pi", instanceLabel);
                 String type = (String) itemObject.get("type");
@@ -279,6 +281,7 @@ public class ModelWrapper {
         for (Object item: (JSONArray) cuffData.get("instances")) {
             JSONObject itemObject = (JSONObject) item;
 
+            //add cuff index to instance label
             String instanceLabel = (String) itemObject.get("label")+"_"+index;
             String type = (String) itemObject.get("type");
 
@@ -585,8 +588,8 @@ public class ModelWrapper {
             ModelUtil.remove(basis.tag());
         }
 
+        //Check if cuff is a json array (multiple cuffs) or a json object (single cuff)
         String cuff="";
-
         Object cuffObject = modelData.get("cuff");
         if (cuffObject instanceof JSONArray) {
             // It's an array
@@ -1574,6 +1577,7 @@ public class ModelWrapper {
                             ModelParamGroup cuffConformationParams = model.param().group().create(cuffConformationParamsLabel);
                             cuffConformationParams.label(cuffConformationParamsLabel);
 
+                            //Check if there are multiple cuffs (array) or only a single cuff (json object)
                             Object cuffObject = modelData.get("cuff");
                             JSONArray allCuffSpec = null;
                             if (cuffObject instanceof JSONArray) {
@@ -1585,7 +1589,7 @@ public class ModelWrapper {
                                 allCuffSpec = new JSONArray();
                                 allCuffSpec.put(cuffObject);
                             }
-
+                        
                             for (int i = 0; i < allCuffSpec.length(); i++) {
                                 // Read cuff to build from model.json (cuff.preset) which links to JSON containing instantiations of parts
                                 JSONObject cuffSpec = allCuffSpec.getJSONObject(i);
@@ -1594,17 +1598,10 @@ public class ModelWrapper {
                                 String cuff = cuffSpec.getString("preset");
                                 mw.addCuffPartPrimitives(cuff);
 
-                                // Saved model pre-run geometry for debugging
-                                try {
-                                    System.out.println("\tSaving MPH (pre-geom_run) file to: " + geomFile);
-                                    model.save(geomFile);
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-
                                 // add PART INSTANCES for cuff
                                 mw.addCuffPartInstances(cuff, modelData,i);
 
+                                //Set cuff conformation parameters
                                 String cuff_shift_unit = "[micrometer]";
                                 String cuff_rot_unit = "[degree]";
                                 Double cuff_shift_x = cuffSpec.getJSONObject("shift").getDouble("x");
@@ -2014,6 +2011,7 @@ public class ModelWrapper {
                         mat.selection().named("geom1_" + mw.im.get(instanceLabelProximalMedium) + "_" + myIM.get(selection) + "_dom");
                     }
 
+                    // Check if multiple cuffs (array) or single cuff (json object)
                     Object cuffObject = modelData.get("cuff");
                     JSONArray allCuffSpec = null;
                     if (cuffObject instanceof JSONArray) {
@@ -2026,7 +2024,7 @@ public class ModelWrapper {
                         allCuffSpec.put(cuffObject);
                     }
 
-                    //CUFF
+                    //Loop through all cuffs
                     for (int i = 0; i < allCuffSpec.length(); i++) {
                         // Read cuff to build from model.json (cuff.preset) which links to JSON containing instantiations of parts
                         JSONObject cuffSpec = allCuffSpec.getJSONObject(i);
