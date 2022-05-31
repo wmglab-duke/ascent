@@ -591,7 +591,7 @@ public class ModelWrapper {
         if (cuffObject instanceof JSONArray) {
             // It's an array
             System.out.println("Potential extraction not implemented for multi-cuff. Exiting...");
-            System.exit(1);
+            System.exit(0);
         } else if (cuffObject instanceof JSONObject) {
             // It's an object
             cuff = modelData.getJSONObject("cuff").getString("preset");
@@ -1204,7 +1204,7 @@ public class ModelWrapper {
             }
             if (lic == false) {
                 System.out.println("A COMSOL license did not become available within the specified time window. Exiting...");
-                System.exit(1);
+                System.exit(0);
             }
         }
 
@@ -1352,6 +1352,13 @@ public class ModelWrapper {
                     } else {
                         recycle_meshes = false;
                     }
+
+                    //temp block to skip mesh match logic for multicuff
+                    if (modelData.get("cuff") instanceof JSONArray) {
+                        System.out.println("WARNING: Currently cannot recycle multi-cuff meshes due to mesh recycling logic not allowing arrays");
+                        recycle_meshes = false;
+                    }
+                    //end temp
 
                     if (recycle_meshes) {
                         System.out.println("\tEntering mesh recycling logic.");
