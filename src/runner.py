@@ -116,7 +116,7 @@ class Runner(Exceptionable, Configurable):
                                     'config',
                                     'system',
                                     'cuffs'))
-    
+
     def run(self, smart: bool = True):
         """
         :param smart: bool telling the program whether to reprocess the sample or not if it already exists as sample.obj
@@ -126,10 +126,10 @@ class Runner(Exceptionable, Configurable):
         #       possible addition of functionality for looping samples in start.py
 
         # load all json configs into memory
-        
+
         #run precheck
         self.precheck()
-        
+
         all_configs = self.load_configs()
 
         run_pseudonym = self.configs[Config.RUN.value].get('pseudonym')
@@ -401,7 +401,7 @@ class Runner(Exceptionable, Configurable):
                             # load up correct simulation and build required sims
                             simulation: Simulation = load_obj(sim_obj_path)
                             simulation.build_n_sims(sim_dir, sim_num)
-                            
+
                             #get export behavior
                             export_behavior = None
                             if self.configs[Config.CLI_ARGS.value].get('export_behavior') is not None:
@@ -413,7 +413,7 @@ class Runner(Exceptionable, Configurable):
                             #check to make sure we have a valid behavior
                             if not np.any([export_behavior == x.value for x in ExportMode]):
                                 self.throw(139)
-                            
+
                             # export simulations
                             Simulation.export_n_sims(
                                 sample_num,
@@ -459,75 +459,68 @@ class Runner(Exceptionable, Configurable):
         argbase = base64.b64encode(argbytes)
         argfinal = argbase.decode('ascii')
 
-        if sys.platform.startswith('darwin'):  # macOS
-
-            subprocess.Popen(['{}/bin/comsol'.format(comsol_path), 'server'], close_fds=True)
-            time.sleep(10)
-            os.chdir('src')
-            os.system(
-                '{}/javac -classpath ../bin/json-20190722.jar:{}/plugins/* model/*.java -d ../bin'.format(jdk_path,
-                                                                                                          comsol_path))
-            # https://stackoverflow.com/questions/219585/including-all-the-jars-in-a-directory-within-the-java-classpath
-            os.system('{}/java/maci64/jre/Contents/Home/bin/java '
-                      '-cp .:$(echo {}/plugins/*.jar | '
-                      'tr \' \' \':\'):../bin/json-20190722.jar:../bin model.{} "{}" "{}" "{}"'.format(comsol_path,
-                                                                                                  comsol_path,
-                                                                                                  core_name,
-                                                                                                  project_path,
-                                                                                                  run_path,
-                                                                                                  argfinal))
-            os.chdir('..')
-
-        elif sys.platform.startswith('linux'):  # linux
-
-            subprocess.Popen(['{}/bin/comsol'.format(comsol_path), 'server'], close_fds=True)
-            time.sleep(10)
-            os.chdir('src')
-            os.system(
-                '{}/javac -classpath ../bin/json-20190722.jar:{}/plugins/* model/*.java -d ../bin'.format(jdk_path,
-                                                                                                          comsol_path))
-            # https://stackoverflow.com/questions/219585/including-all-the-jars-in-a-directory-within-the-java-classpath
-            os.system('{}/java/glnxa64/jre/bin/java '
-                      '-cp .:$(echo {}/plugins/*.jar | '
-                      'tr \' \' \':\'):../bin/json-20190722.jar:../bin model.{} "{}" "{}" "{}"'.format(comsol_path,
-                                                                                                  comsol_path,
-                                                                                                  core_name,
-                                                                                                  project_path,
-                                                                                                  run_path,
-                                                                                                  argfinal))
-            os.chdir('..')
-
-        else:  # assume to be 'win64'
-            subprocess.Popen(['{}\\bin\\win64\\comsolmphserver.exe'.format(comsol_path)], close_fds=True)
-            time.sleep(10)
-            os.chdir('src')
-            os.system('""{}\\javac" '
-                      '-cp "..\\bin\\json-20190722.jar";"{}\\plugins\\*" '
+        if sys.platform.startswith('win'): #windows
+            server_command = ['{}\\bin\\win64\\comsolmphserver.exe'.format(comsol_path)]
+            compile_command = '""{}\\javac" '\
+                      '-cp "..\\bin\\json-20190722.jar";"{}\\plugins\\*" '\
                       'model\\*.java -d ..\\bin"'.format(jdk_path,
-                                                         comsol_path))
-            os.system('""{}\\java\\win64\\jre\\bin\\java" '
-                      '-cp "{}\\plugins\\*";"..\\bin\\json-20190722.jar";"..\\bin" '
+                                                         comsol_path)
+            java_command = '""{}\\java\\win64\\jre\\bin\\java" '\
+                      '-cp "{}\\plugins\\*";"..\\bin\\json-20190722.jar";"..\\bin" '\
                       'model.{} "{}" "{}" "{}""'.format(comsol_path,
                                                    comsol_path,
                                                    core_name,
                                                    project_path,
                                                    run_path,
-                                                   argfinal))
-            os.chdir('..')
-    
-    def cuffshiftcalc(self,cuff_dict,slide,deform_ratio,nerve_mode,sample_config,model_config): 
+                                                   argfinal)
+        else:
+            server_command = ['{}/bin/comsol'.format(comsol_path), 'server']
+
+            compile_command = '{}/javac -classpath ../bin/json-20190722.jar:{}/plugins/* model/*.java -d ../bin'.format(jdk_path,
+                                                                                                          comsol_path)
+            # https://stackoverflow.com/questions/219585/including-all-the-jars-in-a-directory-within-the-java-classpath
+            if sys.platform.startswith('linux'):  # linux
+                java_comsol_path = comsol_path+'/java/glnxa64/jre/bin/java'
+            else: #mac
+                java_comsol_path = comsol_path+'/java/maci64/jre/Contents/Home/bin/java'
+
+            java_command = '{} '\
+                      '-cp .:$(echo {}/plugins/*.jar | '\
+                      'tr \' \' \':\'):../bin/json-20190722.jar:../bin model.{} "{}" "{}" "{}"'.format(java_comsol_path,
+                                                                                                  comsol_path,
+                                                                                                  core_name,
+                                                                                                  project_path,
+                                                                                                  run_path,
+                                                                                                  argfinal)
+
+        #start comsol server
+        subprocess.Popen(server_command, close_fds=True)
+        #wait for server to start
+        time.sleep(10)
+        os.chdir('src')
+        #compile java code
+        exit_code = os.system(compile_command)
+        if exit_code != 0:
+            self.throw(140)
+        #run java code
+        exit_code = os.system(java_command)
+        if exit_code != 0:
+            self.throw(141)
+        os.chdir('..')
+
+    def cuffshiftcalc(self,cuff_dict,slide,deform_ratio,nerve_mode,sample_config,model_config):
         # fetch cuff config
         cuff_config: dict = self.load(
             os.path.join(os.getcwd(), "config", "system", "cuffs", cuff_dict['preset'])
         )
-    
+
         # fetch 1-2 letter code for cuff (ex: 'CT')
         cuff_code: str = cuff_config['code']
-    
+
         # fetch radius buffer string (ex: '0.003 [in]')
         cuff_r_buffer_str: str = [item["expression"] for item in cuff_config["params"]
                                   if item["name"] == '_'.join(['thk_medium_gap_internal', cuff_code])][0]
-    
+
         # calculate value of radius buffer in micrometers (ex: 76.2)
         cuff_r_buffer: float = Quantity(
             Quantity(
@@ -536,17 +529,17 @@ class Runner(Exceptionable, Configurable):
             ),
             scale='um'
         ).real  # [um] (scaled from any arbitrary length unit)
-    
+
         # get center and radius of nerve's min_bound circle
         nerve_copy = deepcopy(slide.nerve if nerve_mode == NerveMode.PRESENT else slide.fascicles[0].outer)
-    
+
         # Get the boundary and center information for computing cuff shift
         if self.search_mode(ReshapeNerveMode, Config.SAMPLE) and not slide.monofasc() and deform_ratio == 1:
             x, y = 0, 0
             r_bound = np.sqrt(sample_config['Morphology']['Nerve']['area'] / np.pi)
         else:
             x, y, r_bound = nerve_copy.make_circle()
-    
+
         # next calculate the angle of the "centroid" to the center of min bound circle
         # if mono fasc, just use 0, 0 as centroid (i.e., centroid of nerve same as centroid of all fasc)
         # if poly fasc, use centroid of all fascicle as reference, not 0, 0
@@ -557,16 +550,16 @@ class Runner(Exceptionable, Configurable):
         if not slide.monofasc():
             reference_x, reference_y = slide.fascicle_centroid()
         theta_c = (np.arctan2(reference_y - y, reference_x - x) * (360 / (2 * np.pi))) % 360
-    
+
         # calculate final necessary radius by adding buffer
         r_f = r_bound + cuff_r_buffer
-    
+
         # fetch initial cuff rotation (convert to rads)
         theta_i = cuff_config.get('angle_to_contacts_deg') % 360
-    
+
         # fetch boolean for cuff expandability
         expandable: bool = cuff_config['expandable']
-    
+
         # check radius iff not expandable
         if not expandable:
             r_i_str: str = [item["expression"] for item in cuff_config["params"]
@@ -578,10 +571,10 @@ class Runner(Exceptionable, Configurable):
                 ),
                 scale='um'
             ).real  # [um] (scaled from any arbitrary length unit)
-    
+
             if not r_f <= r_i:
                 self.throw(51)
-    
+
             theta_f = theta_i
         else:
             # get initial cuff radius
@@ -594,7 +587,7 @@ class Runner(Exceptionable, Configurable):
                 ),
                 scale='um'
             ).real  # [um] (scaled from any arbitrary length unit)
-    
+
             if r_i < r_f:
                 fixed_point = cuff_config.get('fixed_point')
                 if fixed_point is None:
@@ -605,7 +598,7 @@ class Runner(Exceptionable, Configurable):
                     theta_f = theta_i
             else:
                 theta_f = theta_i
-    
+
         offset = 0
         for key, coef in cuff_config["offset"].items():
             value_str = [item["expression"] for item in cuff_config["params"] if item['name'] == key][0]
@@ -617,14 +610,14 @@ class Runner(Exceptionable, Configurable):
                 scale='um'
             ).real  # [um] (scaled from any arbitrary length unit)
             offset += coef * value
-    
+
         cuff_shift_mode: CuffShiftMode = self.search_mode(CuffShiftMode, Config.MODEL)
-    
+
         model_config['min_radius_enclosing_circle'] = r_bound
-    
+
         if slide.orientation_angle is not None:
             theta_c = (slide.orientation_angle) * (360 / (2 * np.pi)) % 360  # overwrite theta_c, use our own orientation
-    
+
         if cuff_shift_mode == CuffShiftMode.AUTO_ROTATION_MIN_CIRCLE_BOUNDARY \
                 or cuff_shift_mode == CuffShiftMode.MIN_CIRCLE_BOUNDARY:  # for backwards compatibility
             if r_i > r_f:
@@ -633,10 +626,10 @@ class Runner(Exceptionable, Configurable):
                     theta_c * ((2 * np.pi) / 360))
                 cuff_dict['shift']['y'] = y - (r_i - offset - cuff_r_buffer - r_bound) * np.sin(
                     theta_c * ((2 * np.pi) / 360))
-    
+
             else:
                 cuff_dict['rotate']['pos_ang'] = theta_c-theta_f
-    
+
                 # if nerve is present, use 0,0
                 if slide.nerve is not None and deform_ratio==1:  # has nerve
                     cuff_dict['shift']['x'] = 0
@@ -645,7 +638,7 @@ class Runner(Exceptionable, Configurable):
                     # else, use
                     cuff_dict['shift']['x'] = x
                     cuff_dict['shift']['y'] = y
-    
+
         elif cuff_shift_mode == CuffShiftMode.AUTO_ROTATION_TRACE_BOUNDARY \
                 or cuff_shift_mode == CuffShiftMode.TRACE_BOUNDARY:  # for backwards compatibility
             if r_i < r_f:
@@ -655,32 +648,32 @@ class Runner(Exceptionable, Configurable):
             else:
                 id_boundary = Point(0, 0).buffer(r_i - offset)
                 n_boundary = Point(x, y).buffer(r_f)
-    
+
                 if id_boundary.boundary.distance(n_boundary.boundary) < cuff_r_buffer:
                     nerve_copy.shift([x, y, 0])
                     print("WARNING: NERVE CENTERED ABOUT MIN CIRCLE CENTER (BEFORE PLACEMENT) BECAUSE "
                           "CENTROID PLACEMENT VIOLATED REQUIRED CUFF BUFFER DISTANCE\n")
-    
+
                 center_x = 0
                 center_y = 0
                 step = 1  # [um] STEP SIZE
                 x_step = step * np.cos(-theta_c + np.pi)  # STEP VECTOR X-COMPONENT
                 y_step = step * np.sin(-theta_c + np.pi)  # STEP VECTOR X-COMPONENT
-    
+
                 # shift nerve within cuff until one step within the minimum separation from cuff
                 while nerve_copy.polygon().boundary.distance(id_boundary.boundary) >= cuff_r_buffer:
                     nerve_copy.shift([x_step, y_step, 0])
                     center_x -= x_step
                     center_y -= y_step
-    
+
                 # to maintain minimum separation from cuff, reverse last step
                 center_x += x_step
                 center_y += y_step
-    
+
                 cuff_dict['rotate']['pos_ang'] = (theta_c-theta_f)
                 cuff_dict['shift']['x'] = center_x
                 cuff_dict['shift']['y'] = center_y
-    
+
         elif cuff_shift_mode == CuffShiftMode.NAIVE_ROTATION_TRACE_BOUNDARY:
             if slide.orientation_point is not None:
                 print('Warning: orientation tif image will be ignored because a NAIVE cuff shift mode was chosen.')
@@ -691,52 +684,52 @@ class Runner(Exceptionable, Configurable):
             else:
                 id_boundary = Point(0, 0).buffer(r_i - offset)
                 n_boundary = Point(x, y).buffer(r_f)
-    
+
                 if id_boundary.boundary.distance(n_boundary.boundary) < cuff_r_buffer:
                     nerve_copy.shift([x, y, 0])
                     print("WARNING: NERVE CENTERED ABOUT MIN CIRCLE CENTER (BEFORE PLACEMENT) BECAUlf. "
                           "CENTROID PLACEMENT VIOLATED REQUIRED CUFF BUFFER DISTANCE\n")
-    
+
                 center_x = 0
                 center_y = 0
                 step = 1  # [um] STEP SIZE
                 x_step = step * np.cos(-theta_c + np.pi)  # STEP VECTOR X-COMPONENT
                 y_step = step * np.sin(-theta_c + np.pi)  # STEP VECTOR X-COMPONENT
-    
+
                 # shift nerve within cuff until one step within the minimum separation from cuff
                 while nerve_copy.polygon().boundary.distance(id_boundary.boundary) >= cuff_r_buffer:
                     nerve_copy.shift([x_step, y_step, 0])
                     center_x -= x_step
                     center_y -= y_step
-    
+
                 # to maintain minimum separation from cuff, reverse last step
                 center_x += x_step
                 center_y += y_step
-    
+
                 cuff_dict['rotate']['pos_ang'] = 0
                 cuff_dict['shift']['x'] = center_x
                 cuff_dict['shift']['y'] = center_y
-    
+
         elif cuff_shift_mode == CuffShiftMode.NONE:
             cuff_dict['rotate']['pos_ang'] = 0
             cuff_dict['shift']['x'] = 0
             cuff_dict['shift']['y'] = 0
-    
+
         elif cuff_shift_mode == CuffShiftMode.NAIVE_ROTATION_MIN_CIRCLE_BOUNDARY \
                 or cuff_shift_mode == CuffShiftMode.PURPLE:
             if slide.orientation_point is not None:
                 print('Warning: orientation tif image will be ignored because a NAIVE cuff shift mode was chosen.')
             if r_i > r_f:
                 cuff_dict['rotate']['pos_ang'] = 0
-    
+
                 cuff_dict['shift']['x'] = x - (r_i - offset - cuff_r_buffer - r_bound) * np.cos(
                     theta_i * ((2 * np.pi) / 360))
                 cuff_dict['shift']['y'] = y - (r_i - offset - cuff_r_buffer - r_bound) * np.sin(
                     theta_i * ((2 * np.pi) / 360))
-    
+
             else:
                 cuff_dict['rotate']['pos_ang'] = 0
-    
+
                 # if nerve is present, use 0,0
                 if slide.nerve is not None and deform_ratio==1:  # has nerve
                     cuff_dict['shift']['x'] = 0
@@ -746,7 +739,7 @@ class Runner(Exceptionable, Configurable):
                     cuff_dict['shift']['x'] = x
                     cuff_dict['shift']['y'] = y
         return cuff_dict
-    
+
     def compute_cuff_shift(self, model_config: dict, sample: Sample, sample_config: dict):
         # NOTE: ASSUMES SINGLE SLIDE
 
@@ -769,13 +762,13 @@ class Runner(Exceptionable, Configurable):
                 self.throw(109)
         else:
             deform_ratio = None
-        
+
         cuff_data = self.search(Config.MODEL,"cuff")
-        
+
         if type(cuff_data)==dict:
             cuff_data = [cuff_data]
         cuff_dicts = []
-        
+
         for cuff_dict in cuff_data:
             cuff_dict = self.cuffshiftcalc(cuff_dict,
                                            slide,
@@ -784,7 +777,7 @@ class Runner(Exceptionable, Configurable):
                                            sample_config,
                                            model_config)
             cuff_dicts.append(cuff_dict)
-            
+
         model_config['cuff']=cuff_dicts
         # remove sample config
         self.remove(Config.SAMPLE)
