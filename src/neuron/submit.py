@@ -720,7 +720,7 @@ def main():
                 submission_context = 'local'
 
         submission_contexts.append(submission_context)
-        
+
         #get list of fibers to run
         if args.skip_summary:
             'Skipping summary generation, submitting fibers...'
