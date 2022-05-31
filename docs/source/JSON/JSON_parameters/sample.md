@@ -313,6 +313,10 @@ manually set these values. Automatically populated. The values `a` and `b` are
 the full width and height of the ellipse major and minor axes, respectively
 (i.e., analogous to diameter rather than radius of a circle).
 
+`"rotation"`: The value (Double) instructs the pipeline to rotate the nerve about its centroid by the specified amount (units = Degrees).
+This parameter may NOT be used if providing an orientation tif image (See [Morphology Input Files](../../Running_ASCENT/Info.md#morphology-Input-Files)).
+
+
 ## Example 
 ```
 {
