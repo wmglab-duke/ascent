@@ -187,7 +187,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
         try:
             cuff = self.search(Config.MODEL, "cuff", "preset")
         except:
-            print("Need to modify to accept multiple cuffs, using default for now so can debug the FEM")
+            print("WARNING: Active sources not implemented for multiple cuffs, using default")
             cuff="default"
         if cuff in self.configs[Config.SIM.value]["active_srcs"].keys():
             active_srcs_list = self.search(Config.SIM, "active_srcs", cuff)
