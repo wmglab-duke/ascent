@@ -9,6 +9,7 @@ The source code can be found on the following GitHub repository: https://github.
 # packages
 import json
 import os
+import sys
 from src.utils import Exceptionable, SetupMode
 
 class Validatable(Exceptionable):
@@ -34,3 +35,9 @@ class Validatable(Exceptionable):
         if len(repeatcode) > 0:
             print('Cuff config codes duplicated: {}'.format(repeatcode))
             self.throw(9001)
+    
+    def validate_versions(self):
+        if not (sys.version_info.major == 3 and sys.version_info.minor >= 7):
+            print('You are running Python {}.{}, but 3.7 or later required'.format(sys.version_info.major,
+                                                                                   sys.version_info.minor))
+            sys.exit()

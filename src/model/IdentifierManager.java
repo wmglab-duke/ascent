@@ -54,7 +54,7 @@ public class IdentifierManager {
      * @return a Integer for the current index
      */
     public Integer present(String key) {
-        // default next index to 1 (assume first call of key)
+        // default next index to 0 (assume first call of key)
         int presentIndex = 0;
         // if the key already exists, set
         if (identifierStates.containsKey(key)) presentIndex = identifierStates.get(key);

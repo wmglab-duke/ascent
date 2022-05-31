@@ -275,14 +275,15 @@ public class ModelWrapper {
      * Assign previously defined materials to domains in part instances
      * @param cuffData is loaded JSON data for a defined cuff
      */
-    public boolean addCuffPartMaterialAssignments(JSONObject cuffData) {
+    public boolean addCuffPartMaterialAssignments(JSONObject cuffData, int index) {
         // extract data from json, its name is something like Enteromedics.json
         // loop through all part instances
         for (Object item: (JSONArray) cuffData.get("instances")) {
             JSONObject itemObject = (JSONObject) item;
 
-            String instanceLabel = (String) itemObject.get("label");
+            String instanceLabel = (String) itemObject.get("label")+"_"+index;
             String type = (String) itemObject.get("type");
+
             Part.addCuffPartMaterialAssignment(instanceLabel, type, this, itemObject);
         }
         return true;
@@ -586,7 +587,18 @@ public class ModelWrapper {
             ModelUtil.remove(basis.tag());
         }
 
-        String cuff = modelData.getJSONObject("cuff").getString("preset");
+        String cuff="";
+
+        Object cuffObject = modelData.get("cuff");
+        if (cuffObject instanceof JSONArray) {
+            // It's an array
+            System.out.println("Potential extraction not implemented for multi-cuff. Exiting...");
+            System.exit(1);
+        } else if (cuffObject instanceof JSONObject) {
+            // It's an object
+            cuff = modelData.getJSONObject("cuff").getString("preset");
+        }
+
 
         // COMBINE AND MAKE POTENTIALS FOR N_SIMS FROM BASES
         double[][][][] final_ve = new double[sims_list.length()][][][];
@@ -1324,7 +1336,7 @@ public class ModelWrapper {
 
                     modelData.put("solution",JSONObject.NULL);
 
-                    try (FileWriter file = new FileWriter("../" + modelFile)) {
+                    try (FileWriter file = new FileWriter(projectPath + "/" + modelFile)) {
                         String output = modelData.toString(2);
                         file.write(output);
                     } catch (IOException e) {
@@ -1397,7 +1409,7 @@ public class ModelWrapper {
                         //Clear mesh stats
                         modelData.getJSONObject("mesh").put("stats", JSONObject.NULL);
 
-                        try (FileWriter file = new FileWriter("../" + modelFile)) {
+                        try (FileWriter file = new FileWriter(projectPath + "/" + modelFile)) {
                             String output = modelData.toString(2);
                             file.write(output);
                         } catch (IOException e) {
@@ -1901,7 +1913,7 @@ public class ModelWrapper {
                         mesh.put("stats", meshStats);
                         modelData.put("mesh", mesh);
 
-                        try (FileWriter file = new FileWriter("../" + modelFile)) {
+                        try (FileWriter file = new FileWriter(projectPath + "/" + modelFile)) {
                             String output = modelData.toString(2);
                             file.write(output);
                         } catch (IOException e) {
@@ -1971,7 +1983,6 @@ public class ModelWrapper {
                         throw new IllegalArgumentException("IdentifierManager not created for name: " + mediumPrimitiveString);
                     String[] myLabels = myIM.labels; // may be null, but that is ok if not used
                     String selection = myLabels[0];
-
                     if (distalMedium.getBoolean("exist")) {
 
                         String linkLabel = String.join("/", new String[]{instanceLabelDistalMedium, selection, "medium"});
@@ -2020,7 +2031,7 @@ public class ModelWrapper {
                             }
                         }
                         mw.addMaterialDefinitions(cuff_materials, modelData, materialParams);
-                        mw.addCuffPartMaterialAssignments(cuffData);
+                        mw.addCuffPartMaterialAssignments(cuffData,i);
                     }
 
                     // NERVE
@@ -2142,7 +2153,7 @@ public class ModelWrapper {
                         System.out.println("\tSuccessfully solved for /bases, therefore deleted /mesh directory.");
                     }
 
-                    try (FileWriter file = new FileWriter("../" + modelFile)) {
+                    try (FileWriter file = new FileWriter(projectPath + "/" + modelFile)) {
                         String output = modelData.toString(2);
                         file.write(output);
                     } catch (IOException e) {

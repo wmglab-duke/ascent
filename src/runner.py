@@ -34,7 +34,7 @@ except:
 # ascent
 from src.core import Sample, Simulation, Waveform
 from src.utils import Exceptionable, Configurable, SetupMode, Config, NerveMode, WriteMode, CuffShiftMode,  \
-    PerineuriumResistivityMode, TemplateOutput, Env, ReshapeNerveMode, ExportMode, DownSampleMode
+    PerineuriumResistivityMode, TemplateOutput, Env, ReshapeNerveMode, ExportMode, DownSampleMode, Validatable
 
 
 class Runner(Exceptionable, Configurable):
@@ -108,7 +108,7 @@ class Runner(Exceptionable, Configurable):
             validate_and_add(configs, 'sims', sim_path)
 
         return configs
-    
+
     def precheck(self):
         #check cuff configs for uniqueness
         VD = Validatable()
