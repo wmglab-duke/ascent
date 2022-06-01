@@ -653,7 +653,7 @@ def submit_run(sub_context, run_index, args):
             cpus = multiprocessing.cpu_count() - 1
             print(f"local_avail_cpus not defined in Run, so proceeding with cpu_count-1={cpus} CPUs")
 
-        submit_list = make_local_submission_list(run_index)
+        submit_list = make_local_submission_list(run_index, args)
         pool = multiprocessing.Pool(cpus)
         pool.map(local_submit, submit_list)
 
@@ -666,8 +666,7 @@ def submit_run(sub_context, run_index, args):
         njobs = slurm_params['jobs_per_array'] if args.num_jobs is None else args.num_jobs
         mem = slurm_params['memory_per_fiber'] if args.job_mem is None else args.job_mem
 
-        cluster_submit(run_index,partition,array_length_max=njobs,mem=mem,slurm_params = args.slurm_params)
-
+        cluster_submit(run_index,partition,args,array_length_max=njobs,mem=mem)
     else:
         sys.exit('Invalid submission context: {}'.format(sub_context))
 
@@ -764,7 +763,6 @@ def main():
         else:
             print('Proceeding...')
 
-    # submit_lists, sub_contexts, run_filenames = make_submission_list()
     for sub_context, run_index in zip(submission_contexts, runs):
         try:
             submit_run(sub_context, run_index, args)
