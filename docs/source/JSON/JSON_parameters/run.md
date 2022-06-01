@@ -46,7 +46,6 @@ following syntax:
   },
   "local_avail_cpus": Integer,
   "popup_plots": Boolean,
-  "override_compiled_mods": Boolean,
   "auto_submit_fibers": Boolean
 }
 ```
@@ -148,8 +147,6 @@ machine to perform other processes. Optional, but if using submitting
 locally, the program will take all CPUs except 1 if this value is not
 defined.
 
-`"override_compiled_mods"`: The value (Boolean) indicates if the program will override previously compiled *.mod files (i.e. files defining channel mechanisms in NEURON) with each system call of submit.py. Optional, but if the key is omitted the program will not override previously compiled *.mod files.
-
 `“popup_plots”`: The value (Boolean) will instruct the pipeline to display plots
 (e.g. sample plot, fiberset plot, waveform plot) in a popup window. This is in addition
 to saving the plots in the relevant folders (i.e., the sample and sim folders).
@@ -192,7 +189,6 @@ the next run will start after all batch NEURON jobs are submitted.
   "export_behavior": "selective",
   "local_avail_cpus": 3,
   “popup_plots”: true,
-  "override_compiled_mods": false,
   "auto_submit_fibers": false
 }
 ```
