@@ -19,7 +19,6 @@ import warnings
 import pickle
 import argparse
 import pandas as pd
-import traceback
 
 #%%Set up parser and top level args
 class listAction(argparse.Action):
@@ -56,7 +55,6 @@ parser.add_argument('-j','--num-jobs', type=int, help = 'For cluster submission:
 parser.add_argument('-l','--list-runs', action=listAction,nargs=0, help = 'List info for available runs.z If supplying this argument, do not pass any run indices')
 parser.add_argument('-A','--all-runs', action='store_true', help = 'Submit all runs in the present export folder. If supplying this argument, do not pass any run indices')
 parser.add_argument('-s','--skip-summary', action='store_true', help = 'Begin submitting fibers without asking for confirmation')
-parser.add_argument('-R','--recompile-mods', action='store_true', help = 'Override already compiled .mod files by recompiling')
 parser.add_argument('-S','--slurm-params', type=str, help = 'For cluster submission: string for additional slurm parameters (enclose in quotes)')
 submit_context_group = parser.add_mutually_exclusive_group()
 submit_context_group.add_argument('-L','--local-submit', action='store_true', help = 'Set submission context to local, overrides run.json')
@@ -656,6 +654,7 @@ def submit_run(sub_context, run_index, args):
         submit_list = make_local_submission_list(run_index, args)
         pool = multiprocessing.Pool(cpus)
         pool.map(local_submit, submit_list)
+        import time
 
     elif sub_context == 'cluster':
         #load slurm params
@@ -685,9 +684,11 @@ def main():
     run_inds = args.run_indices
     runs = []
     submission_contexts = []
+    auto_compile_flags = []
 
     # compile MOD files if they have not yet been compiled
-    auto_compile(override=args.recompile_mods)
+    compiled: bool = False
+    compiled = auto_compile()
 
     summary = []
     rundata = []
@@ -727,7 +728,10 @@ def main():
                 submission_context = 'local'
 
         submission_contexts.append(submission_context)
-        
+
+        auto_compile_flag = run.get('override_compiled_mods', False)
+        auto_compile_flags.append(auto_compile_flag)
+
         #get list of fibers to run
         if args.skip_summary:
             'Skipping summary generation, submitting fibers...'
@@ -772,4 +776,4 @@ def main():
 
 if __name__ == "__main__":  # Allows for the safe importing of the main module
     main()
-    print('Finished fiber submission.')
+    print('done')
