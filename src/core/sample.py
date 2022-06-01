@@ -533,6 +533,7 @@ class Sample(Exceptionable, Configurable, Saveable):
                 if self.configs[Config.CLI_ARGS.value].get('render_deform') == True or \
                     self.search(Config.SAMPLE, 'render_deform',optional = True) == True:
                     render_deform = True
+                    print('Sample deformation is set to render. Rendering...')
                 else:
                     render_deform = False
 
