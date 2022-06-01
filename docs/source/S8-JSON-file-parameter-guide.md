@@ -530,6 +530,9 @@ of the file.
     the full width and height of the ellipse major and minor axes, respectively
     (i.e., analogous to diameter rather than radius of a circle).
 
+    `"rotation"`: The value (Double) instructs the pipeline to rotate the nerve about its centroid by the specified amount (units=Degrees).
+    This parameter may NOT be used if using an orientation tif image (See [Morphology Files](S11-Morphology-files)).
+
 1.  Example: 
     ```
     {
