@@ -562,5 +562,13 @@
   {
     "code": 141,
     "text": "Encountered an error during handoff to java."
+  },
+  {
+    "code": 142,
+    "text": "Currently SIM configuration only supports protocol>threshold>n_min_aps = 1"
+  },
+  {
+    "code": 143,
+    "text": "Rotation cannot be defined in sample.json if using an orientation image input."
   }
 ]

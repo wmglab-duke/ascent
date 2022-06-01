@@ -254,6 +254,8 @@ class Sample(Exceptionable, Configurable, Saveable):
         deform_ratio = None
         scale_input_mode = self.search_mode(ScaleInputMode, Config.SAMPLE, optional=True)
         plot = self.search(Config.SAMPLE, 'plot', optional=True)
+        sample_rotation = self.search(Config.SAMPLE, "rotation", optional=True)
+
         # For backwards compatibility, if scale mode is not specified assume a mask image is provided
         if scale_input_mode is None:
             scale_input_mode = ScaleInputMode.MASK
@@ -300,8 +302,8 @@ class Sample(Exceptionable, Configurable, Saveable):
                                              'Dir | Rename-Item –NewName { $_.name –replace “.tiff“,”.tif” }'])
                 proc.wait()
 
-            if not exists(MaskFileNames.RAW):
-                print('No raw tif found, but continuing. (Sample.populate)')
+            # if not exists(MaskFileNames.RAW):
+                # print('No raw tif found, but continuing. (Sample.populate)')
                 # self.throw(18)
 
             if exists(MaskFileNames.ORIENTATION):
@@ -318,8 +320,8 @@ class Sample(Exceptionable, Configurable, Saveable):
                 if len(contour) < 1: self.throw(125)
                 trace = Trace([point + [0] for point in contour[0][:, 0, :]], self.configs[Config.EXCEPTIONS.value])
                 orientation_centroid = trace.centroid()
-            else:
-                print('No orientation tif found, but continuing. (Sample.populate)')
+            # else:
+                # print('No orientation tif found, but continuing. (Sample.populate)')
 
             # preprocess binary masks
             mask_dims = []
@@ -391,7 +393,7 @@ class Sample(Exceptionable, Configurable, Saveable):
                                         self.configs[Config.EXCEPTIONS.value]))
                 else:
                     self.throw(138)
-                
+
             if len(fascicles) > 1 and nerve_mode != NerveMode.PRESENT:
                 self.throw(110)
 
@@ -466,7 +468,7 @@ class Sample(Exceptionable, Configurable, Saveable):
         else:
             plt.clf()
             plt.close('all')
-        
+
         # get smoothing params
         n_distance = self.search(Config.SAMPLE, 'smoothing', 'nerve_distance', optional=True)
         i_distance = self.search(Config.SAMPLE, 'smoothing', 'fascicle_distance', optional=True)
@@ -521,21 +523,22 @@ class Sample(Exceptionable, Configurable, Saveable):
                     sep_nerve = self.search(Config.SAMPLE, 'boundary_separation', 'nerve')
                     print('\tensuring minimum nerve:fascicle separation of {} um'.format(sep_nerve))
                     sep_nerve = sep_nerve - sep_fascicles/2
-                
+
                 #scale nerve trace down by sep nerve, will be scaled back up later
                 pre_area = slide.nerve.area()
                 slide.nerve.offset(distance = -sep_nerve)
                 slide.nerve.scale(1)
                 slide.nerve.points = np.flip(slide.nerve.points,axis = 0) # set points to opencv orientation
-                
+
                 if self.configs[Config.CLI_ARGS.value].get('render_deform') == True or \
                     self.search(Config.SAMPLE, 'render_deform',optional = True) == True:
                     render_deform = True
+                    print('Sample deformation is set to render. Rendering...')
                 else:
                     render_deform = False
-                    
+
                 deformable = Deformable.from_slide(slide, ReshapeNerveMode.CIRCLE)
-                    
+
                 movements, rotations = deformable.deform(morph_count=morph_count,
                                                          render=render_deform,
                                                          minimum_distance=sep_fascicles,
@@ -580,6 +583,12 @@ class Sample(Exceptionable, Configurable, Saveable):
             # shift slide about (0,0)
             slide.move_center(np.array([0, 0]))
 
+            #Rotate sample
+            if sample_rotation is not None:
+                if slide.orientation_angle is not None:
+                    self.throw(143)
+                slide.rotate(np.radians(sample_rotation))
+
             # Generate orientation point so src/core/query.py is happy
             if slide.orientation_angle is not None:
                 # choose outer (based on if nerve is present)
@@ -593,7 +602,7 @@ class Sample(Exceptionable, Configurable, Saveable):
 
                 # find intersection point with outer (interpolated)
                 slide.orientation_point = np.array(ray.intersection(outer.polygon().boundary))
-            
+
             #ensure that nothing went wrong in slide processing
             slide.validation(plotpath=plotpath)
 
@@ -668,7 +677,7 @@ class Sample(Exceptionable, Configurable, Saveable):
                     directory_to_create = 'sectionwise'
                 else:
                     self.throw(28)
-                
+
                 #clear directory if it exists, then create
                 if os.path.exists(directory_to_create):
                     try:
@@ -679,9 +688,9 @@ class Sample(Exceptionable, Configurable, Saveable):
                     os.makedirs(directory_to_create)
                 except:
                     pass
-                
+
                 os.chdir(directory_to_create)
-                
+
                 # WRITE
                 self.slides[i].write(mode, os.getcwd())
 
