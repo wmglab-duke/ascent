@@ -300,8 +300,8 @@ class Sample(Exceptionable, Configurable, Saveable):
                                              'Dir | Rename-Item –NewName { $_.name –replace ".tiff",".tif" }'])
                 proc.wait()
 
-            if not exists(MaskFileNames.RAW):
-                print('No raw tif found, but continuing. (Sample.populate)')
+            # if not exists(MaskFileNames.RAW):
+                # print('No raw tif found, but continuing. (Sample.populate)')
                 # self.throw(18)
 
             if exists(MaskFileNames.ORIENTATION):
@@ -318,8 +318,8 @@ class Sample(Exceptionable, Configurable, Saveable):
                 if len(contour) < 1: self.throw(125)
                 trace = Trace([point + [0] for point in contour[0][:, 0, :]], self.configs[Config.EXCEPTIONS.value])
                 orientation_centroid = trace.centroid()
-            else:
-                print('No orientation tif found, but continuing. (Sample.populate)')
+            # else:
+                # print('No orientation tif found, but continuing. (Sample.populate)')
 
             # preprocess binary masks
             mask_dims = []
