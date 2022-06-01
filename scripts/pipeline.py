@@ -10,6 +10,7 @@ The source code can be found on the following GitHub repository: https://github.
 import os
 import time
 import sys
+import subprocess
 
 # ascent
 from src.runner import Runner
@@ -71,16 +72,20 @@ def run(args):
         # END timer
         end = time.time()
         elapsed = end - start
-        print('\nruntime: {} (hh:mm:ss)'.format(time.strftime('%H:%M:%S', time.gmtime(elapsed))))
 
-        if args.auto_submit:
-            print('Submitting fibers for run {}'.format(argument))
+        if args.auto_submit or runner.search(Config.RUN,'auto_submit_fibers')==True:
+            print('Auto submitting fibers for run {}'.format(argument))
             #submit fibers before moving on to next run
             reset_dir = os.getcwd()
             export_path = runner.search(Config.ENV, Env.NSIM_EXPORT_PATH.value)
             os.chdir(export_path)
-            os.system("python submit.py -s {}".format(argument)) #-s flag to skip summary
+            with open(os.devnull, 'wb') as devnull:
+                #-s flag to skip summary
+                exit_code = subprocess.check_call(['python','submit.py', '-s',str(argument)], stdout=devnull, stderr=devnull)
+                if exit_code !=0: print('WARNING: Non-zero exit code during fiber submission. Continuing to next run...')
             os.chdir(reset_dir)
+            
+        print('\nruntime: {} (hh:mm:ss)'.format(time.strftime('%H:%M:%S', time.gmtime(elapsed))))
 
     # cleanup for console viewing/inspecting
     del start, end
