@@ -85,7 +85,7 @@ def printProgressBar(iteration, total, prefix='', suffix='', decimals=1, length=
     # Print New Line on Complete
     if iteration == total:
         print()
-        
+
 def load(config_path: str):
     """
     Loads in json data and returns to user, assuming it has already been validated.
@@ -303,7 +303,7 @@ def cluster_submit(run_number: int, partition: str, args, mem: int=2000, array_l
     job_count = 1
     data = [[], [], []]
     current_iteration = 0
-    
+
     for sample in samples:
         # loop models, sims
         for model in models:
@@ -319,7 +319,7 @@ def cluster_submit(run_number: int, partition: str, args, mem: int=2000, array_l
                         #print progress bar
                         total_iterations = len(samples)*len(models)*len(sims)*len(nsim_list)
                         printProgressBar(current_iteration, total_iterations,length=40,prefix='Run {}:'.format(run_number))
-                        
+
                     sim_path = os.path.join(sim_dir, sim_name)
                     fibers_path = os.path.abspath(os.path.join(sim_path, 'data', 'inputs'))
                     output_path = os.path.abspath(os.path.join(sim_path, 'data', 'outputs'))
@@ -625,6 +625,50 @@ def make_local_submission_list(run_number: int, args, summary_gen = False):
 
     return local_args_list
 
+def submit_run(sub_context, run_index, args):
+
+    if sub_context == 'local':
+        filename = os.path.join('runs', run_index + '.json')
+        run = load(filename)
+
+        if args.num_cpu is not None:
+            cpus = args.num_cpu
+
+            if cpus > multiprocessing.cpu_count() - 1:
+                raise ValueError('num_cpu argument is more than cpu_count-1 CPUs')
+
+            print(f"Submitting Run {run_index} locally to {cpus} CPUs (defined by num_cpu argument)")
+
+        elif 'local_avail_cpus' in run:
+            cpus = run.get('local_avail_cpus')
+
+            if cpus > multiprocessing.cpu_count() - 1:
+                raise ValueError('local_avail_cpus in Run asking for more than cpu_count-1 CPUs')
+
+            print(f"Submitting Run {run_index} locally to {cpus} CPUs (defined by local_avail_cpus in Run)")
+
+        else:
+            cpus = multiprocessing.cpu_count() - 1
+            print(f"local_avail_cpus not defined in Run, so proceeding with cpu_count-1={cpus} CPUs")
+
+        submit_list = make_local_submission_list(run_index, args)
+        pool = multiprocessing.Pool(cpus)
+        pool.map(local_submit, submit_list)
+        import time
+
+    elif sub_context == 'cluster':
+        #load slurm params
+        slurm_params = load(os.path.join('config', 'system', 'slurm_params.json'))
+
+        #assign params for array submission
+        partition = slurm_params['partition'] if args.partition is None else args.partition
+        njobs = slurm_params['jobs_per_array'] if args.num_jobs is None else args.num_jobs
+        mem = slurm_params['memory_per_fiber'] if args.job_mem is None else args.job_mem
+
+        cluster_submit(run_index,partition,args,array_length_max=njobs,mem=mem)
+    else:
+        sys.exit('Invalid submission context: {}'.format(sub_context))
+
 #%% main
 def main():
 
@@ -723,55 +767,12 @@ def main():
         else:
             print('Proceeding...')
 
-    # submit_lists, sub_contexts, run_filenames = make_submission_list()
-    for sub_context, run_index, auto_compile_flag in zip(submission_contexts, runs, auto_compile_flags):
-
-        if auto_compile_flag and not compiled:
-            auto_compile(override=True)
-
-        if sub_context == 'local':
-            filename = os.path.join('runs', run_index + '.json')
-            run = load(filename)
-
-            if args.num_cpu is not None:
-                cpus = args.num_cpu
-
-                if cpus > multiprocessing.cpu_count() - 1:
-                    raise ValueError('num_cpu argument is more than cpu_count-1 CPUs')
-
-                print(f"Submitting Run {run_index} locally to {cpus} CPUs (defined by num_cpu argument)")
-
-            elif 'local_avail_cpus' in run:
-                cpus = run.get('local_avail_cpus')
-
-                if cpus > multiprocessing.cpu_count() - 1:
-                    raise ValueError('local_avail_cpus in Run asking for more than cpu_count-1 CPUs')
-
-                print(f"Submitting Run {run_index} locally to {cpus} CPUs (defined by local_avail_cpus in Run)")
-
-            else:
-                cpus = multiprocessing.cpu_count() - 1
-                print(f"local_avail_cpus not defined in Run, so proceeding with cpu_count-1={cpus} CPUs")
-
-            submit_list = make_local_submission_list(run_index, args)
-            pool = multiprocessing.Pool(cpus)
-            pool.map(local_submit, submit_list)
-            import time
-
-        elif sub_context == 'cluster':
-            #load slurm params
-            slurm_params = load(os.path.join('config', 'system', 'slurm_params.json'))
-
-            #assign params for array submission
-            partition = slurm_params['partition'] if args.partition is None else args.partition
-            njobs = slurm_params['jobs_per_array'] if args.num_jobs is None else args.num_jobs
-            mem = slurm_params['memory_per_fiber'] if args.job_mem is None else args.job_mem
-
-            cluster_submit(run_index,partition,args,array_length_max=njobs,mem=mem)
-
-        else:
-            # something went horribly wrong
-            pass
+    for sub_context, run_index in zip(submission_contexts, runs):
+        try:
+            submit_run(sub_context, run_index, args)
+        except Exception:
+            traceback.print_exc()
+            print('WARNING: Error during submission of run {}. See traceback for more information.\n Proceeding to next run...'.format(run_index))
 
 if __name__ == "__main__":  # Allows for the safe importing of the main module
     main()
