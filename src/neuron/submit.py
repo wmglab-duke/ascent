@@ -47,12 +47,13 @@ class listAction(argparse.Action):
         sys.exit()
 
 parser = argparse.ArgumentParser(description='ASCENT: Automated Simulations to Characterize Electrical Nerve Thresholds')
-parser.add_argument('run_indices', type=int, nargs = '+', help = 'Space separated indices to submit NEURON sims for')
+parser.add_argument('run_indices', type=int, nargs = '*', help = 'Space separated indices to submit NEURON sims for')
 parser.add_argument('-p','--partition', help = 'If submitting on a cluster, overrides slurm_params.json')
 parser.add_argument('-n','--num-cpu', type=int, help = 'For local submission: set number of CPUs to use, overrides run.json')
 parser.add_argument('-m','--job-mem', type=int, help = 'For cluster submission: set amount of RAM per job (in MB), overrides slurm_params.json')
 parser.add_argument('-j','--num-jobs', type=int, help = 'For cluster submission: set number of jobs per array, overrides slurm_params.json')
-parser.add_argument('-l','--list-runs', action=listAction,nargs=0, help = 'List info for available runs')
+parser.add_argument('-l','--list-runs', action=listAction,nargs=0, help = 'List info for available runs.z If supplying this argument, do not pass any run indices')
+parser.add_argument('-A','--all-runs', action='store_true', help = 'Submit all runs in the present export folder. If supplying this argument, do not pass any run indices')
 parser.add_argument('-s','--skip-summary', action='store_true', help = 'Begin submitting fibers without asking for confirmation')
 parser.add_argument('-S','--slurm-params', type=str, help = 'For cluster submission: string for additional slurm parameters (enclose in quotes)')
 submit_context_group = parser.add_mutually_exclusive_group()
@@ -629,6 +630,13 @@ def main():
 
     #validate inputs
     args = parser.parse_args()
+
+    if args.all_runs == True:
+        if len(args.run_indices)>0:
+            sys.exit('Error: Cannot use -A/--run-all argument and pass run indices.')
+        args.run_indices = [int(os.path.splitext(file)[0]) for file in os.listdir('runs') if file.endswith('.json')]
+    if len(args.run_indices) == 0: sys.exit("Error: No run indices to use.")
+
     run_inds = args.run_indices
     runs = []
     submission_contexts = []
