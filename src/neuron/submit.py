@@ -301,7 +301,6 @@ def cluster_submit(run_number: int, partition: str, args, mem: int=2000, array_l
 
     job_count = 1
     data = [[], [], []]
-    print(args.verbose)
     current_iteration = 0
     
     for sample in samples:
