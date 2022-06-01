@@ -58,8 +58,7 @@ parser.add_argument('-S','--slurm-params', type=str, help = 'For cluster submiss
 submit_context_group = parser.add_mutually_exclusive_group()
 submit_context_group.add_argument('-L','--local-submit', action='store_true', help = 'Set submission context to local, overrides run.json')
 submit_context_group.add_argument('-C','--cluster-submit', action='store_true', help = 'Set submission context to cluster, overrides run.json')
-parser.add_argument('-v','--verbose', action='store_true',nargs=0, help = 'Print detailed submission info')
-
+parser.add_argument('-v','--verbose', action='store_true', help = 'Print detailed submission info')
 
 ALLOWED_SUBMISSION_CONTEXTS = ['cluster', 'local','auto']
 OS = 'UNIX-LIKE' if any([s in sys.platform for s in ['darwin', 'linux']]) else 'WINDOWS'
@@ -303,28 +302,25 @@ def cluster_submit(run_number: int, partition: str, args, mem: int=2000, array_l
 
     job_count = 1
     data = [[], [], []]
-    
-    if not args.verbose:
-        print('Run {}: '.format(run_number),end='')
-        total_iterations = len(samples)*len(models)*len(sims)
-        current_iteration = 0
+    print(args.verbose)
+    current_iteration = 0
     
     for sample in samples:
         # loop models, sims
         for model in models:
             for sim in sims:
-                if not args.verbose:
-                    #print progress bar
-                    current_iteration+=1
-                    printProgressBar(current_iteration, total_iterations,length=40)
-                    
                 sim_dir = os.path.join('n_sims')
                 sim_name_base = '{}_{}_{}_'.format(sample, model, sim)
-
-                for sim_name in [x for x in os.listdir(sim_dir) if x.startswith(sim_name_base)]:
+                nsim_list = [x for x in os.listdir(sim_dir) if x.startswith(sim_name_base)]
+                for sim_name in nsim_list:
+                    current_iteration+=1
                     if args.verbose:
                         print('\n\n################ {} ################\n\n'.format(sim_name))
-
+                    else:
+                        #print progress bar
+                        total_iterations = len(samples)*len(models)*len(sims)*len(nsim_list)
+                        printProgressBar(current_iteration, total_iterations,length=40,prefix='Run {}:'.format(run_number))
+                        
                     sim_path = os.path.join(sim_dir, sim_name)
                     fibers_path = os.path.abspath(os.path.join(sim_path, 'data', 'inputs'))
                     output_path = os.path.abspath(os.path.join(sim_path, 'data', 'outputs'))
@@ -428,12 +424,12 @@ def cluster_submit(run_number: int, partition: str, args, mem: int=2000, array_l
                             ])
                             exit_code = os.system(command)
                             if exit_code!=0:
-                                sys.exit('Non-zero exit code during job submission')
+                                sys.exit('Non-zero exit code during job submission. Exiting.')
 
                             # allow job to start before removing slurm file
                             time.sleep(1.0)
                         else:
-                            sys.exit('Top and bottom bounds not defined for threshold search. Exiting...')
+                            sys.exit('Top and bottom bounds not defined for threshold search. Exiting.')
 
                     else:
                         if args.verbose:
@@ -509,7 +505,7 @@ def cluster_submit(run_number: int, partition: str, args, mem: int=2000, array_l
                                         f"--mem={mem} --cpus-per-task=1 "
                                         f"--partition={partition} array_launch.slurm {start_path_base}")
                                 if exit_code!=0:
-                                    sys.exit('Non-zero exit code during job array submission')
+                                    sys.exit('Non-zero exit code during job array submission. Exiting.')
 
                                 # allow job to start before removing slurm file
                                 time.sleep(1.0)
@@ -521,7 +517,7 @@ def cluster_submit(run_number: int, partition: str, args, mem: int=2000, array_l
                                 fiber_index_tally = []
 
 
-def make_local_submission_list(run_number: int,summary_gen = False):
+def make_local_submission_list(run_number: int, args, summary_gen = False):
     # build configuration filename
     filename = os.path.join('runs', run_number + '.json')
 
@@ -691,7 +687,7 @@ def main():
             'Skipping summary generation, submitting fibers...'
         else:
             print('Generating run list for run {}'.format(run_number))
-            summary.append(make_local_submission_list(run_number, summary_gen=True))
+            summary.append(make_local_submission_list(run_number, args, summary_gen=True))
             rundata.append({'RUN':run_number,
                  'SAMPLE':run['sample'],
                  'MODELS':run['models'],
@@ -737,8 +733,7 @@ def main():
                 if cpus > multiprocessing.cpu_count() - 1:
                     raise ValueError('num_cpu argument is more than cpu_count-1 CPUs')
 
-                if args.verbose:
-                    print(f"Submitting Run {run_index} locally to {cpus} CPUs (defined by num_cpu argument)")
+                print(f"Submitting Run {run_index} locally to {cpus} CPUs (defined by num_cpu argument)")
 
             elif 'local_avail_cpus' in run:
                 cpus = run.get('local_avail_cpus')
@@ -746,16 +741,16 @@ def main():
                 if cpus > multiprocessing.cpu_count() - 1:
                     raise ValueError('local_avail_cpus in Run asking for more than cpu_count-1 CPUs')
 
-                if args.verbose:
-                    print(f"Submitting Run {run_index} locally to {cpus} CPUs (defined by local_avail_cpus in Run)")
+                print(f"Submitting Run {run_index} locally to {cpus} CPUs (defined by local_avail_cpus in Run)")
 
             else:
                 cpus = multiprocessing.cpu_count() - 1
                 print(f"local_avail_cpus not defined in Run, so proceeding with cpu_count-1={cpus} CPUs")
 
-            submit_list = make_local_submission_list(run_index)
+            submit_list = make_local_submission_list(run_index, args)
             pool = multiprocessing.Pool(cpus)
             pool.map(local_submit, submit_list)
+            import time
 
         elif sub_context == 'cluster':
             #load slurm params
