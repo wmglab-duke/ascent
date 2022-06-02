@@ -36,15 +36,15 @@ Welcome to ASCENT's documentation!
    Getting_Started
    JSON_overview
    JSON_parameters
-   Helper-scripts
+   Scripts
    command_line_args
-   S33-Data-analysis-tools
-   S5-Template-for-methods-reporting
+   Data_Analysis
+   Methods_Template
 
 .. toctree::
    :maxdepth: 2
    :caption: Advanced ASCENT Usage
-
+   Convergence_Example
    Troubleshooting-Guide
 
 .. toctree::
@@ -53,7 +53,7 @@ Welcome to ASCENT's documentation!
    :caption: ASCENT data and code hierarchies
 
    Code_Hierarchy/index
-   S3-ASCENT-data-hierarchy
+   Data_Hierarchy
 
 .. toctree::
    :maxdepth: 2

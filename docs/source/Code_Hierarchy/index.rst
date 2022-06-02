@@ -1,4 +1,4 @@
-Section to show off pages with many sub-pages
+ASCENT Code Hierarchy
 =============================================
 
 To create an additional level of nesting in the sidebar, construct a
