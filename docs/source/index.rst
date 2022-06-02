@@ -41,6 +41,7 @@ Welcome to ASCENT's documentation!
    command_line_args
    Simulation_Protocols
    Medium_Control
+   Running_The_Pipeline
    NEURON_Submission
    Data_Analysis
    Methods_Template
