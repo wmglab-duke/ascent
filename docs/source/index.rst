@@ -44,6 +44,7 @@ Welcome to ASCENT's documentation!
 .. toctree::
    :maxdepth: 2
    :caption: Advanced ASCENT Usage
+   MockSample
    Convergence_Example
    Troubleshooting-Guide
 
@@ -65,6 +66,7 @@ Welcome to ASCENT's documentation!
 .. toctree::
    :maxdepth: 2
    :caption: Miscellaneous
+   Fiber_Models
    Validation
    Paper-References
 

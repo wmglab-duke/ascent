@@ -1,4 +1,4 @@
-# Python MockSample class for creating binary masks of nerve morphology
+# Creating Mock Morphology
 MockSample is a Python class that manages the *data* and contains all
 operations to create binary masks of mock nerve morphology (i.e., nerve:
 `n.tif`, inners: `i.tif`, and scale bar: `s.tif`) to use as inputs to the
