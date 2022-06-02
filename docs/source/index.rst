@@ -56,5 +56,6 @@ Welcome to ASCENT's documentation!
 .. toctree::
    :maxdepth: 2
    :caption: Miscellaneous
+   ASCENT Publication <https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1009285>
+   ASCENT on GitHub <https://github.com/wmglab-duke/ascent>
    Paper-References
-   index
