@@ -1,9 +1,8 @@
 ASCENT Code Hierarchy
 =============================================
 
-
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
     Python
     Java
