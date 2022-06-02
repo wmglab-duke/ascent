@@ -44,41 +44,17 @@ Welcome to ASCENT's documentation!
 .. toctree::
    :maxdepth: 2
    :caption: Advanced ASCENT Usage
+   Troubleshooting-Guide
 
 .. toctree::
     :maxdepth: 3
     :numbered:
     :caption: ASCENT data and code hierarchies
-   subpages/index
+   Code_Hierarchy/index
    S3-ASCENT-data-hierarchy
-   S9-Python-utility-classes
-   S10-Submitting-NEURON-jobs
-   S11-Morphology-files
-   S12-Python-MockSample-class-for-creating-binary-masks-of-nerve-morphology
-   S13-Python-classes-for-representing-nerve-morphology-(Sample)
-   S14-Creating-sample-specific-nerve-morphologies-in-COMSOL
-   S15-Micro-Leads-cuff-measurements
-   S16-Library-of-part-primitives-for-electrode-contacts-and-cuffs
-   S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives
-   S18-Creating-new-part-primitives
-   S19-Cuff-placement-on-nerve
-   S20-Fiberset
-   S21-Implementation-of-NEURON-fiber-models
-   S22-Simulation-protocols
-   S23-ModelWrapper-class
-   S24-Making-geometries-in-COMSOL-(Part-class)
-   S25-Control-of-medium-surrounding-nerve-and-cuff-electrode
-   S26-Java-utility-classes
-   S27-Defining-and-assigning-materials-in-COMSOL
-   S28-Definition-of-perineurium
-   S29-Data-interchange-between-COMSOL-and-NEURON
-   S30-Python-simulation-class
-   S31-NEURON-launch.hoc
-   S32-NEURON-Wrapper.hoc
 
-   S34-Convergence-analysis-example
-   S35-Sim4Life-validation
-   S36-Comparison-of-MRG-fit-to-Bucksot-2019
-   Troubleshooting-Guide
+.. toctree::
+   :maxdepth: 2
+   :caption: Miscellaneous
    Paper-References
    index
