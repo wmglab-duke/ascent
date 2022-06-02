@@ -48,8 +48,7 @@ Welcome to ASCENT's documentation!
    Troubleshooting-Guide
 
 .. toctree::
-   :maxdepth: 3
-   :numbered:
+   :maxdepth: 2
    :caption: ASCENT data and code hierarchies
 
    Code_Hierarchy/index
@@ -66,6 +65,6 @@ Welcome to ASCENT's documentation!
 .. toctree::
    :maxdepth: 2
    :caption: Miscellaneous
-
+   Validation
    Paper-References
 
