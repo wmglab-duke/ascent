@@ -1,12 +1,10 @@
 ASCENT Code Hierarchy
 =============================================
 
-To create an additional level of nesting in the sidebar, construct a
-nested ``toctree``:
 
 .. toctree::
+   :maxdepth: 2
 
     Python
     Java
     NEURON
-    subsubpages/index
