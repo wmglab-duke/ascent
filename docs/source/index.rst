@@ -31,18 +31,20 @@ Welcome to ASCENT's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
-	
-   S1-Metadata-required-to-model-an-in-vivo-experiment-using-the-ASCENT-pipeline
-   S2-Installation
-   S3-ASCENT-data-hierarchy
-   S4-Your-first-run
+   :caption: Basic ASCENT Usage
+
+   Getting_Started
+   JSON_overview
+   JSON_parameters
    Helper-scripts
    command_line_args
+   S33-Data-analysis-tools
    S5-Template-for-methods-reporting
-   S6-Enums
-   S7-JSON-configuration-files
-   S8-JSON-file-parameter-guide
+
+   :caption: Advanced ASCENT Usage
+
+   :caption: ASCENT data and code hierarchies
+   S3-ASCENT-data-hierarchy
    S9-Python-utility-classes
    S10-Submitting-NEURON-jobs
    S11-Morphology-files
@@ -67,7 +69,7 @@ Welcome to ASCENT's documentation!
    S30-Python-simulation-class
    S31-NEURON-launch.hoc
    S32-NEURON-Wrapper.hoc
-   S33-Data-analysis-tools
+
    S34-Convergence-analysis-example
    S35-Sim4Life-validation
    S36-Comparison-of-MRG-fit-to-Bucksot-2019
