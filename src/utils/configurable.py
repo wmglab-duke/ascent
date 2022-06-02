@@ -11,7 +11,7 @@ import json
 from typing import Type, List, Union
 
 # ascent
-from .enums import *
+from .enums import Config, Enum, SetupMode, os
 
 """
 Description:

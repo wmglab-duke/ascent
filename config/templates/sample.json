@@ -1,5 +1,6 @@
 {
   "sample": "Rat16-3",
+  "pseudonym":"template_sample",
   "sex": "M",
   "level": "Cervical",
   "samples_path": [
@@ -35,5 +36,6 @@
   "deform_ratio": 1,
   "plot" : true,
   "plot_folder" : true,
+  "render_deform": false,
   "Morphology": null
 }

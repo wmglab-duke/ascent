@@ -422,7 +422,7 @@ class Trace(Exceptionable):
         return Trace(points, self.configs[Config.EXCEPTIONS.value])
 
     # %% output
-    def plot(self, plot_format: str = 'k-', color: Tuple[float, float, float, float] = None, ax: plt.Axes = None):
+    def plot(self, plot_format: str = 'k-', color: Tuple[float, float, float, float] = None, ax: plt.Axes = None,linewidth=1):
         """
         :param ax:
         :param color:
@@ -438,9 +438,7 @@ class Trace(Exceptionable):
         if color is not None:
             ax.fill(points[:, 0], points[:, 1], color=color)
 
-        ax.plot(points[:, 0], points[:, 1], plot_format, linewidth=1)
-
-
+        ax.plot(points[:, 0], points[:, 1], plot_format, linewidth=linewidth)
 
     def plot_centroid(self, plot_format: str = 'k*'):
         """

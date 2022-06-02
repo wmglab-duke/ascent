@@ -21,7 +21,7 @@ copyright = '2021, Duke University'
 author = 'Musselman ED, Cariello JE, Grill WM, Pelot NA.'
 
 # The full version, including alpha/beta/rc tags
-release = 'v1.0.3'
+release = 'v1.1.2'
 
 # -- General configuration ---------------------------------------------------
 
@@ -39,7 +39,7 @@ source_suffix = {
 
 import mock
 
-MOCK_MODULES = ['numpy']
+MOCK_MODULES = ['numpy','pandas']
 
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = mock.Mock()

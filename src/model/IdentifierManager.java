@@ -10,6 +10,7 @@ import org.json.JSONObject;
 
 import java.util.*;
 
+@SuppressWarnings({"unchecked","rawtypes","path"})
 public class IdentifierManager {
 
     private HashMap<String, Integer> identifierStates = new HashMap<>();
@@ -74,6 +75,7 @@ public class IdentifierManager {
             identifierPseudonyms.put(pseudonym, id);
             return id; // pseudonym was NOT already in use!
         }
+        System.out.println("WARNING: Attempted to use extant identifier manager pseudonym: "+pseudonym);
         return null; // pseudonym was already in use!
     }
 

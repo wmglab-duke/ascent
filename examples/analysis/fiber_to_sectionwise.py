@@ -17,7 +17,7 @@ usage: str = 'USAGE: ./fiber_to_sectionwise.py <[xyz]*> <source_path.dat> <targe
 
 if len(sys.argv) != 4:
     print('Invalid argument count: {}\n{}'.format(len(sys.argv), usage))
-    exit()
+    sys.exit()
 
 options: str = sys.argv[1]
 source: str = sys.argv[2]
@@ -26,16 +26,16 @@ target_dir, _ = os.path.split(target)
 
 if not re.match('[xyz]*', options):
     print('Invalid output options: {}\n{}'.format(options, usage))
-    exit()
+    sys.exit()
 
 if len(options) not in [1, 2, 3]:
     print('Invalid output options length: {}\n{}'.format(len(options), usage))
-    exit()
+    sys.exit()
 
 for name, value in zip(['source', 'target directory'], [source, target_dir]):
     if not os.path.exists(value):
         print('Invalid path for {}: {}\n{}'.format(name, value, usage))
-        exit()
+        sys.exit()
 
 data: np.ndarray = np.loadtxt(source, skiprows=1)
 

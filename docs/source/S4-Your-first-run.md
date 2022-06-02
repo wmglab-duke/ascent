@@ -112,18 +112,14 @@ Through this exercise, you will:
   - Simulate activation thresholds for a specific fiber model by
     submitting NEURON simulations locally or to a computer cluster
 
-  - View and analyze your data
-
-      - Plot samples with color-coded fiber (x,y)-coordinates
-
-      - Heatmap of fiber thresholds
+  - Generate a heatmap of fiber activation thresholds
 
 For the following exercise, we ask that you please attempt to accomplish
 the prescribed modeling tasks with the paper and associated supplemental
 documentation as your primary reference.
 
 Check: Threshold for inner0\_fiber0 (`thresh_inner0_fiber0.dat`) should
-be -0.028732 mA
+be -0.027402 mA
 
 We provided ***Sample***, ***Model***, and ***Sim*** JSON files for the
 solution in `examples/beta_task/`.
