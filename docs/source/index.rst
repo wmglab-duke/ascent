@@ -46,8 +46,10 @@ Welcome to ASCENT's documentation!
    :caption: Advanced ASCENT Usage
 
 .. toctree::
-   :maxdepth: 2
-   :caption: ASCENT data and code hierarchies
+    :maxdepth: 3
+    :numbered:
+    :caption: ASCENT data and code hierarchies
+   subpages/index
    S3-ASCENT-data-hierarchy
    S9-Python-utility-classes
    S10-Submitting-NEURON-jobs
