@@ -41,8 +41,12 @@ Welcome to ASCENT's documentation!
    S33-Data-analysis-tools
    S5-Template-for-methods-reporting
 
+.. toctree::
+   :maxdepth: 2
    :caption: Advanced ASCENT Usage
 
+.. toctree::
+   :maxdepth: 2
    :caption: ASCENT data and code hierarchies
    S3-ASCENT-data-hierarchy
    S9-Python-utility-classes
