@@ -1,6 +1,6 @@
-# Getting Started
-# Installation
-## Installing commercial software
+## Getting Started
+## Installation
+### Installing commercial software
 
 It is *highly* recommended that you use a distribution of Anaconda/Miniconda with ASCENT. However, advanced users who wish to use another Python distribution may.
 
@@ -29,7 +29,7 @@ If using MacOS to run local NEURON simulations, it may be necessary to install t
 
 Users may also download a text editor or integrated development environment (IDE) of their choosing to view/edit code (e.g., [Atom](https://atom.io/), [Visual Studio Code](https://code.visualstudio.com/), [IntelliJ IDEA](https://www.jetbrains.com/idea/download/)). For Java code, full autocomplete functionality requires adding both the path to the COMSOL installation ending in `plugins` as well as the path ```<ASCENT_PATH>/bin/json-20190722.jar``` to the list of available libraries (usually from within the IDE’s project settings).
 
-## Installing ASCENT pipeline
+### Installing ASCENT pipeline
 
 1. First, download or clone the SPARC ASCENT pipeline from [GitHub](https://github.com/wmglab-duke/ascent) to a desired location that will be referenced in step 3. Downloading is a much simpler process than cloning via Git, but does not easily allow for you to get the most recent updates/bug fixes, nor does it allow you to suggest new features/changes. If you are interested in either of these features, you should clone via Git rather than downloading.
     * Downloading: Click the [download](https://github.com/wmglab-duke/ascent/archive/refs/heads/master.zip) button on GitHub and choose the location to which you would like to save. Note that you will need to extract the files, as they will be downloaded in a compressed format. When presented with a choice of compression format, ".zip" is a safe choice that most computers will be able to extract.
@@ -60,7 +60,7 @@ After confirming that you are in the correct directory, the script will install 
     * Automatic setup: Upon the initiation of your first run, you will be prompted to enter the above four paths if you did not choose to complete the manual setup. Enter them as prompted, following the guidelines detailed above and exemplified in [S7](S7-JSON-configuration-files). Note that you may at any time update paths with ```python run env_setup``` to rewrite this file if the information should change.
 4. Before the first time you run the pipeline, you must open the COMSOL Server and log in with a username and password of your choosing (arbitrary and not needed thereafter). This can be done by navigating to the bin/ directory in the COMSOL installation and running ```comsolmphserver``` (Windows) or ```./comsol server``` (MacOS/Linux).
 
-## References
+### References
 1. Clark A. Pillow: a modern fork of PIL — Pillow v2.3.0 (PIL fork) [Internet]. 2020 [cited 2020 Apr 20]. Available from: [https://pillow.readthedocs.io/en/2.3.0/](https://pillow.readthedocs.io/en/2.3.0/)
 1. Oliphant TE. A Guide to NumPy [Internet]. Trelgol Publishing; 2006. Available from: [https://books.google.com/books?id=fKulSgAACAAJ](https://books.google.com/books?id=fKulSgAACAAJ)
 1. Gillies S. Shapely · PyPI [Internet]. 2019 [cited 2020 Apr 20]. Available from: [https://pypi.org/project/Shapely/](https://pypi.org/project/Shapely/)
@@ -74,7 +74,7 @@ After confirming that you are in the correct directory, the script will install 
 1. The pandas development team. pandas-dev/pandas: Pandas [Internet]. Zenodo; 2020. Available from: [https://doi.org/10.5281/zenodo.3509134](https://doi.org/10.5281/zenodo.3509134)
 1. Gazoni E, Clark C. openpyxl - A Python library to read/write Excel 2010 xlsx/xlsm files [Internet]. 2020. Available from: [https://openpyxl.readthedocs.io/en/stable/](https://openpyxl.readthedocs.io/en/stable/)
 
-# Metadata required to model an in vivo experiment using the ASCENT pipeline
+## Metadata required to model an in vivo experiment using the ASCENT pipeline
 Note: All metadata required for the [tutorial run](#Tutorial-Run) are provided with ASCENT.
 
 1.  Detailed specifications / dimensions of the stimulating cuff
@@ -130,7 +130,7 @@ Note: All metadata required for the [tutorial run](#Tutorial-Run) are provided w
     stimulation cuff to the location where the nerve inserts into the
     muscle.
 
-# Tutorial Run
+## Tutorial Run
 *How to run the ASCENT pipeline, after completing the initial setup.*
 
 The user provides binary mask inputs for the nerve and saves ***Sample***
@@ -202,7 +202,7 @@ use indices that are consistent with the indices of ***Sample***,
     are run locally or submitted to a computer cluster with the command
     `“python submit.py <run indices>”` from the export directory.
 
-## Task given to beta testers
+### Task given to beta testers
 
 We sent the pipeline code, manuscript, and the following task to beta
 testers (both within our lab at Duke and externally). Following this
