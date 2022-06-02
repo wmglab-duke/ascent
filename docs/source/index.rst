@@ -80,7 +80,7 @@ Welcome to ASCENT's documentation!
    Fiber_Models
    Validation
    Documentation_References
-   Paper-References
+   Publication_References
 
 
 .. toctree::
