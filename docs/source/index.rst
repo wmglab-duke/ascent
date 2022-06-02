@@ -79,3 +79,4 @@ Welcome to ASCENT's documentation!
    S36-Comparison-of-MRG-fit-to-Bucksot-2019
    Troubleshooting-Guide
    Paper-References
+   index
