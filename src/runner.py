@@ -66,7 +66,12 @@ class Runner(Exceptionable, Configurable):
             if os.path.exists(path):
                 if key not in config_source.keys():
                     config_source[key] = []
-                config_source[key] += [self.load(path)]
+                try:
+                    config_source[key] += [self.load(path)]
+                except:
+                    warnings.warn('Issue loading {} config: {}'.format(key, path))
+                    self.throw(9001)
+
             else:
                 print('Missing {} config: {}'.format(key, path))
                 self.throw(37)
