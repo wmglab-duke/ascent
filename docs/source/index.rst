@@ -43,6 +43,7 @@ Welcome to ASCENT's documentation!
    :caption: Advanced ASCENT Usage
 
    MockSample
+   Materials
    Primitives_and_Cuffs/index
    Convergence_Example
    Troubleshooting-Guide
@@ -67,8 +68,7 @@ Welcome to ASCENT's documentation!
    :caption: Reference
    
    Publications_Using_ASCENT
-   Documentation_References
-   Publication_References
+   reftest
    refs
 
 .. toctree::

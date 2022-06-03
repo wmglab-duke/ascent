@@ -9,72 +9,7 @@ epineurium). Material properties for each function are assigned in
 materials in the default materials library
 (`config/system/materials.json`) by name, or with explicit definitions
 of a materials name and conductivity as a JSON Object ([S8 Text](S8-JSON-file-parameter-guide)).
-
-## ModelWrapper.addMaterialDefinitions()
-
-The user is unlikely to interface directly with the
-`addMaterialDefinitions()` method in Java as it operates behind the
-scenes. The method takes an input of a list of strings containing the
-material functions (i.e., endoneurium, perineurium, epineurium, cuff
-“fill”, cuff “insulator”, contact “conductor”, and contact “recess”),
-***Model***, and a COMSOL `ModelParamGroup` for containing the material
-properties as a COMSOL “Parameters Group” under COMSOL’s “Global
-Definitions”. The method then loops over all material functions, creates
-a new material if it does not yet exist as `“mat<#>”` using Part’s
-`defineMaterial()` method, and adds the identifier (e.g., “mat1”) to the
-`IdentifierManager`.
-
-## Part.defineMaterial()
-
-The user is unlikely to interface directly with the `defineMaterial()`
-method in Java as it operates behind the scenes to add a new material to
-the COMSOL “Materials” node under “Global Definitions”. The method takes
-inputs of the material’s identifier in COMSOL (e.g., “mat1”), function
-(e.g., cuff “fill”), ***Model***, a library of predefined materials
-(e.g., `materials.json`), a ModelWrapper instance, and the COMSOL
-ModelParamGroup for material conductivities. The `defineMaterial()` method
-uses materials present in ***Model’s*** “conductivities” JSON Object to
-assign to each material function in the COMSOL model (e.g., insulator,
-conductor, fill, endoneurium, perineurium, epineurium, or medium). The
-material value for a function key in ***Model*** is either a string for
-a pre-defined material in `materials.json`, or a JSON Object (containing
-unit, label, and value) for a custom material. Assigning material
-conductivities to material functions in this manner enables control for
-a user to reference a pre-defined material or explicitly link a custom
-material to a COMSOL model. In either the case of a predefined material
-in `materials.json` or custom material in ***Model***, if the material is
-anisotropic, the material value is assigned a string “anisotropic” which
-tells the program to look for independent `“sigma_x”`, `“sigma_y”`, and
-`“sigma_z”` values in the material JSON Object.
-
-## ModelWrapper.addCuffPartMaterialAssignment()
-
-The user is unlikely to interface directly with the
-`addCuffPartMaterialAssignment()` method in Java as it operates behind the
-scenes. The method loads in a cuff part primitive’s labels from its
-IdentifierManager. The method loops over the list of material JSON
-Objects in the “preset” cuff configuration file. For each material
-function in the “preset” cuff configuration file, the method creates a
-COMSOL Material Link to assign a previously defined selection in a cuff
-part instance to a defined material.
-
-## ModelWrapper.addCuffPartMaterialAssignments()
-
-The user is unlikely to interface directly with the
-`addCuffMaterialAssignments()` method in Java as it operates behind the
-scenes. The method loops through all part instances in the cuff
-configuration file, which is linked to ***Model*** by a string of its
-file name under the “preset” key, and calls the
-`addCuffMaterialAssignment()` method for each part instance. As described
-in `addCuffPartMaterialAssignment()` above, a material is connected to the
-selection within the part primitive by its label. In COMSOL, material
-links appear in the “Materials” node. COMSOL assigns the material links
-in the order of the part instances defined in the “preset” cuff
-configuration file, which is important since material links overwrite
-previous domain assignments. For this reason, it is important to list
-part instances in “preset” cuff files in a nested order (i.e., the
-outermost domains first, knowing that domains nested in space within
-them will overwrite earlier domain assignments).
+See [link](link to ModelWrapper.addMaterialDefinitions()) for code one how this happens.
 
 ## Adding and assigning default material properties
 
@@ -117,3 +52,65 @@ Table A. Default material conductivities.
 1. Gielen FLH, Wallinga-de Jonge W, Boon KL. Electrical conductivity of skeletal muscle tissue: Experimental results from different musclesin vivo. Med Biol Eng Comput [Internet]. 1984;22(6):569–77. Available from: [https://doi.org/10.1007/BF02443872](https://doi.org/10.1007/BF02443872)
 1. Geddes LA, Baker LE. The specific resistance of biological material—A compendium of data for the biomedical engineer and physiologist. Med Biol Eng [Internet]. 1967;5(3):271–93. Available from: [https://doi.org/10.1007/BF02474537](https://doi.org/10.1007/BF02474537)
 1. Horch K. Neuroprosthetics: Theory and practice: Second edition. Neuroprosthetics: Theory and Practice: Second Edition. 2017. 1–925 p.
+
+
+## Definition of perineurium
+
+The perineurium is a thin highly resistive layer of connective tissue
+and has a profound impact on thresholds of activation and block. Our
+previous modeling work demonstrates that representing the perineurium
+with a thin layer approximation (Rm = rho\*peri\_thk), rather than as a
+thinly meshed domain, reduces mesh complexity and is a reasonable
+approximation \[1\]. Therefore, perineurium can be modeled with a thin
+layer approximation (except with “peanut” fascicles; see an example in
+[Fig 2](https://doi.org/10.1371/journal.pcbi.1009285.g002)), termed “contact impedance” in COMSOL (if ***Model’s***
+`“use_ci”` parameter is true ([S8 Text](S8-JSON-file-parameter-guide))), which relates the normal component of
+the current density through the surface
+![f5] to the drop in electric
+potentials ![f3] and the sheet resistance ![f4]:
+
+![f1]
+
+The sheet resistance ![f4] is defined as the sheet thickness
+![f6] divided by the material bulk conductivity ![f7] :
+
+![f2]
+
+Our previously published work quantified the relationship between fascicle diameter and perineurium thickness \[2\] (Table A).
+
+Table A. Previously published relationships between fascicle diameter and
+perineurium thickness.
+
+| **Species** | **peri\_thk:** ***f*(species, d<sub>fasc</sub>)** | **References** |
+| ----------- | ------------------------------------------------------------ | -------------- |
+| Rat         | peri\_thk = 0.01292\*d<sub>fasc</sub> + 1.367 \[um\]         | \[2\]         |
+| Pig         | peri\_thk = 0.02547\*d<sub>fasc</sub> + 3.440 \[um\]         | \[2\]         |
+| Human       | peri\_thk = 0.03702\*d<sub>fasc</sub> + 10.50 \[um\]         | \[2\]         |
+
+
+The “rho\_perineurium” parameter in ***Model*** can take either of two
+modes:
+
+  - “RHO\_WEERASURIYA”: The perineurium conductivity value changes with the frequency of electrical stimulation (for
+    a single value, not a spectrum, defined in ***Model*** as
+    “frequency”) and temperature (using a Q10 adjustment, defined in
+    ***Model*** as “temperature”) based on measurements of frog sciatic
+    perineurium \[1,3\]. The equation is defined in
+    `src/core/Waveform.py` in the `rho_weerasuriya()` method.
+
+  - “MANUAL”: Conductivity value assigned to the perineurium is as
+    explicitly defined in either `materials.json` or ***Model*** without
+    any corrections for temperature or frequency.
+
+## References
+1. Pelot NA, Behrend CE, Grill WM. On the parameters used in finite element modeling of compound peripheral nerves. J Neural Eng [Internet]. 2019;16(1):16007. Available from: [http://dx.doi.org/10.1088/1741-2552/aaeb0c](http://dx.doi.org/10.1088/1741-2552/aaeb0c)
+2. 	Pelot NA, Goldhagen GB, Cariello JE, Musselman ED, Clissold KA, Ezzell JA, et al. Quantified Morphology of the Cervical and Subdiaphragmatic Vagus Nerves of Human, Pig, and Rat. Front Neurosci [Internet]. 2020;14:1148. Available from: [https://doi.org/10.3389/fnins.2020.601479](https://doi.org/10.3389/fnins.2020.601479)
+3. 	Weerasuriya A, Spangler RA, Rapoport SI, Taylor RE. AC impedance of the perineurium of the frog sciatic nerve. Biophys J. 1984 Aug;46(2):167–74. Available from: [https://dx.doi.org/10.1016%2FS0006-3495(84)84009-6](https://dx.doi.org/10.1016%2FS0006-3495(84)84009-6)
+
+[f1]: https://chart.apis.google.com/chart?cht=tx&chl=\vec{n}\cdot\vec{J_{1}}=\frac{1}{\rho_{s}}(V_{1}-V_{2})
+[f2]: https://chart.apis.google.com/chart?cht=tx&chl=\rho_{s}=\frac{d_{s}}{\sigma_{s}}
+[f3]: https://chart.apis.google.com/chart?cht=tx&chl=(V_{1}-V_{2})
+[f4]: https://chart.apis.google.com/chart?cht=tx&chl=(\rho_{s})
+[f5]: https://chart.apis.google.com/chart?cht=tx&chl=(\vec{n}\cdot\vec{J_{1}})
+[f6]: https://chart.apis.google.com/chart?cht=tx&chl=(\d_{s})
+[f7]: https://chart.apis.google.com/chart?cht=tx&chl=(\sigma_{s})
