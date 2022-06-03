@@ -70,7 +70,7 @@ class Runner(Exceptionable, Configurable):
                     config_source[key] += [self.load(path)]
                 except:
                     warnings.warn('Issue loading {} config: {}'.format(key, path))
-                    self.throw(9001)
+                    self.throw(144)
 
             else:
                 print('Missing {} config: {}'.format(key, path))
