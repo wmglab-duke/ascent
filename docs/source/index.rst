@@ -70,16 +70,4 @@ Welcome to ASCENT's documentation!
    Publications_Using_ASCENT
    reftest
    refs
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Placeholder (Uncategorized)
-
-   Fiber_Models
    Validation
-   S14-Creating-sample-specific-nerve-morphologies-in-COMSOL
-   S15-Micro-Leads-cuff-measurements
-   S20-Fiberset
-   S27-Defining-and-assigning-materials-in-COMSOL
-   S28-Definition-of-perineurium
-   S29-Data-interchange-between-COMSOL-and-NEURON
