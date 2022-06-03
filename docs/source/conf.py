@@ -29,7 +29,7 @@ release = 'v1.0.3'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 
-extensions = ['myst_parser','sphinxarg.ext','sphinx.ext.intersphinx','sphinx.ext.autodoc']
+extensions = ['myst_parser','sphinxarg.ext','sphinx.ext.intersphinx','sphinx.ext.autodoc','sphinxcontrib.bibtex']
 
 source_suffix = {
     '.rst': 'restructuredtext',
@@ -63,3 +63,7 @@ html_theme = 'sphinx_rtd_theme'
 html_show_copyright = True
 
 html_show_sphinx = False
+
+myst_heading_anchors = 4
+
+bibtex_bibfiles = ['refs.bib']

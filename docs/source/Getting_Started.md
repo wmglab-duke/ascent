@@ -75,7 +75,7 @@ After confirming that you are in the correct directory, the script will install 
 1. Gazoni E, Clark C. openpyxl - A Python library to read/write Excel 2010 xlsx/xlsm files [Internet]. 2020. Available from: [https://openpyxl.readthedocs.io/en/stable/](https://openpyxl.readthedocs.io/en/stable/)
 
 ## Metadata required to model an in vivo experiment using the ASCENT pipeline
-Note: All metadata required for the [tutorial run](#Tutorial-Run) are provided with ASCENT.
+Note: All metadata required for the [tutorial run](#tutorial-run) are provided with ASCENT.
 
 1.  Detailed specifications / dimensions of the stimulating cuff
     electrode.

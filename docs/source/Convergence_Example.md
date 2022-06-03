@@ -1,5 +1,4 @@
 # Convergence analysis example
-## Convergence analysis example
 
 \*Note: The following convergence analysis was performed for a rat
 cervical vagus nerve and is provided as an illustrative example.

@@ -1,4 +1,4 @@
-# ASCENT Troubleshooting Guide
+# Troubleshooting Guide
 
 ## General Troubleshooting Steps
 - Check your geometry (ascent/samples/sample_index/models/model_index/debug_geom.mph)

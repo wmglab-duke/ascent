@@ -1,0 +1,314 @@
+# Information on ASCENT controls
+## Morphology Input Files
+Each mask must be binary (i.e., white pixels (‘1’) for the segmented
+tissue and black pixels (‘0’) elsewhere) and must use Tagged Image File
+Format (i.e., `.tif`, or `.tiff`). All masks must be defined within the same
+field of view, be the same size, and be the same resolution. To convert
+between pixels of the input masks to dimensioned length (micrometers), the user must specify
+a `“ScaleInputMode”` in ***Sample*** ([S7](S7-JSON-configuration-files) and [S8](S8-JSON-file-parameter-guide) Text). If using the mask input mode, a mask for the scale bar (`s.tif`) of known length (oriented horizontally) must be provided (see “Scale Bar” in [Fig 2](https://doi.org/10.1371/journal.pcbi.1009285.g002)) and the length of the scale
+bar must be indicated in ***Sample*** ([S7](S7-JSON-configuration-files) and [S8](S8-JSON-file-parameter-guide) Text). If using the ratio input mode, the user explicitly specifies the micrometers/pixel of the input masks in ***Sample*** ([S7](S7-JSON-configuration-files) and [S8](S8-JSON-file-parameter-guide) Text), and no scale bar image is required.
+
+The user is required to set the `“MaskInputMode”` in ***Sample***
+(`“mask_input”`) to communicate the contents of the segmented histology
+files ([S7](S7-JSON-configuration-files) and [S8](S8-JSON-file-parameter-guide) Text). Ideally, segmented images of boundaries for both the “outers”
+(`o.tif`) and “inners” (`i.tif`) of the perineurium will be provided, either
+as two separate files (`o.tif` and `i.tif`) or combined in the same image
+(`c.tif`) (see “Inners”, “Outers”, and “Combined” in [Fig 2](https://doi.org/10.1371/journal.pcbi.1009285.g002)). However, if
+only inners are provided—which identify the outer edge of the
+endoneurium—a surrounding perineurium thickness is defined by the
+`“PerineuriumThicknessMode”` in ***Sample***
+(`“ci_perineurium_thickness”`); the thickness is user-defined,
+relating perineurium thickness to features of the inners (e.g., their
+diameter). It should be noted that defining nerve morphology with only
+inners does not allow the model to represent accurately fascicles
+containing multiple endoneurium inners within a single outer perineurium
+boundary (“peanut” fascicles; see an example in [Fig 2](https://doi.org/10.1371/journal.pcbi.1009285.g002)); in this case,
+each inner trace will be assumed to represent a single independent
+fascicle that does not share its perineurium with any other inners; more
+accurate representation requires segmentation of the “outers” as well.
+
+The user is required to set the `“NerveMode”` in ***Sample*** (“nerve”) to
+communicate the contents of the segmented histology files ([S7](S7-JSON-configuration-files) and [S8](S8-JSON-file-parameter-guide) Text). The outer
+nerve boundary, if present, is defined with a separate mask (`n.tif`). In
+the case of a compound nerve with epineurium, the pipeline expects the
+outer boundary of the epineurium to be provided as the “nerve”. In the
+case of a nerve with a single fascicle, no nerve mask is required—in
+which case either the outer perineurium boundary (if present) or the
+inner perineurium boundary (otherwise) is used as the nerve
+boundary—although one may be provided if epineurium or other tissue
+that would be within the cuff is present in the sample histology.
+
+Lastly, an “orientation” mask (`a.tif`) can be optionally defined. This
+mask should be all black except for a small portion that is white,
+representing the position to which the cuff must be rotated. The angle
+is measured *relative to the centroid of the nerve/singular fascicle*,
+so this image should be constructed while referencing `n.tif` (or, if
+monofascicular, `i.tif`, `o.tif`, or `c.tif`). By default, the 0º position of
+our cuffs correspond with the coordinate halfway along the arc length of
+the cuff inner diameter (i.e., the cuff will be rotated such that the sample center, cuff
+contact center, and centroid of the white portion of `a.tif` form a line) while the
+circular portion of a cuff’s diameter is centered at the origin (Note: this rotation process uses `“angle_to_contacts_deg”` and `"fixed_point"` in a “preset”
+cuff’s JSON file, see [S17](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives) and [S19](S19-Cuff-placement-on-nerve) Text). If `a.tif` is provided, other cuff rotation methods
+(`“cuff_shift”` in ***Model***, which calculate `“pos_ang”`) are
+overridden.
+
+The user must provide segmented image morphology files, either from
+histology or the `mock_morphology_generator.py` script, with a specific
+naming convention in the `input/` directory.
+
+  - Raw RGB image, to be available for convenience and used for data
+    visualization: `r.tif` (optional).
+
+  - Combined (i.e., inners and outers): `c.tif`.
+
+  - Inners: `i.tif`
+
+      - An “inner” is the internal boundary of the perineurium that
+        forms the boundary between the perineurium and the endoneurium.
+
+  - Outers: `o.tif`
+
+      - An “outer” is the external boundary of the perineurium that
+        forms the boundary between the perineurium and the epineurium or
+        extraneural medium.
+
+  - Scale bar: `s.tif` (scale bar oriented horizontally, required unless scale input mode is set to ratio).
+
+  - Nerve: `n.tif` (optional for monofascicular nerves).
+
+  - Orientation: `a.tif` (optional).
+
+For an example of input files, see [Fig 2](https://doi.org/10.1371/journal.pcbi.1009285.g002). The user must properly set
+the `“MaskInputMode”` in ***Sample*** (`“mask_input”`) for their provided
+segmented image morphology files ([S7](S7-JSON-configuration-files) and [S8](S8-JSON-file-parameter-guide) Text).
+
+## Control of medium surrounding nerve and cuff electrode
+The medium surrounding the nerve and cuff electrode (e.g., fat, skeletal
+muscle) must contain a “proximal” domain, which runs the full length of
+the nerve, and may optionally include a “distal” domain. The
+parameterization for the geometry of the “proximal” and “distal” domains
+is shown below in Figure A. For details on how to define the
+“proximal” and “distal” domain geometries and meshing parameters, see
+`model.json` in [S8 Text](S8-JSON-file-parameter-guide).
+
+![Inline image](../uploads/2019a527f15dc364c132f95ade650b12/Picture23.jpg)
+
+Figure A. The user must define a “proximal” domain, and may optionally define a “distal” domain for independent assignment of meshing parameters for the site of stimulation from the rest of the FEM. The “proximal” domain runs the full length of the nerve and is anchored at (0,0,0). The distal domain’s radius and length may be independently assigned, and the entire distal domain may be shifted (“shift”: (x, y, z)). Having a proximal domain that is overly voluminous can significantly decrease COMSOL meshing efficiency and even, rarely, cause errors. At all costs, avoid having a proximal or distal domain whose boundary intersects with a geometry (other than the nerve ends, which are by definition at the longitudinal boundaries of the proximal domain) or the boundary of other geometries (e.g., the cuff-nerve boundary); this will likely create a meshing error.
+
+## Cuff placement on nerve
+This section provides an overview of how the cuff is placed on the
+nerve. The `compute_cuff_shift()` method within Runner (`src/runner.py`)
+determines the cuff’s rotation around the nerve and translation in the
+(x,y)-plane. The pipeline imports the coordinates of the traces for the
+nerve tissue boundaries saved in
+`samples/<sample_index>/slides/0/0/sectionwise2d/` which are, by
+convention, shifted such that the centroid of the nerve is at the origin
+(0,0) (i.e., nerve centroid from best-fit ellipse if nerve trace (`n.tif`)
+is provided, inner or outer best-fit ellipse centroid for monofascicular
+nerves without nerve trace). Importantly, the nerve sample cross section
+is never moved from or rotated around the origin in COMSOL. By
+maintaining consistent nerve location across all ***Model’s*** for a
+***Sample,*** the coordinates in `fibersets/` are correct for any
+orientation of a cuff on the nerve.
+
+ASCENT has different `CuffShiftModes` (i.e., `“cuff_shift”` parameter in
+***Model***) that control the translation of the cuff (i.e., “shift”
+JSON Object in ***Model***) and default rotation around the nerve (i.e.,
+`“pos_ang”` in ***Model***). Runner’s `compute_cuff_shift()` method is
+easily expandable for users to add their own `CuffShiftModes` to control
+cuff placement on the nerve.
+
+The rotation and translation of the cuff are populated
+automatically by the `compute_cuff_shift()` method based on sample morphology, parameterization of the "preset" cuff, and the `CuffShiftMode`, and are defined in the “cuff” JSON
+Object (“shift” and “rotate”) in ***Model***.
+
+For “naïve” `CuffShiftModes` (i.e.,
+`“NAIVE_ROTATION_MIN_CIRCLE_BOUNDARY”,
+“NAIVE_ROTATION_TRACE_BOUNDARY”`) the cuff is placed on the nerve
+with rotation according to the parameters used to instantiate the cuff
+from part primitives ([S16](S16-Library-of-part-primitives-for-electrode-contacts-and-cuffs), [S17](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives), and [S18](S18-Creating-new-part-primitives) Text). If the user would like to rotate the cuff from
+beyond this position, they may set the `“add_ang”` parameter in
+***Model*** ([S8 Text](S8-JSON-file-parameter-guide)). For naïve `CuffShiftModes`, the cuff is shifted along the
+vector from (0,0) in the direction of the `“angle_to_contacts_deg”`
+parameter in the “preset” JSON file.
+`“NAIVE_ROTATION_MIN_CIRCLE_BOUNDARY”` `CuffShiftMode` moves the cuff
+toward the nerve until the nerve’s minimum radius enclosing circle is
+within the distance of the `“thk_medium_gap_internal”` parameter for
+the cuff. `“NAIVE_ROTATION_TRACE_BOUNDARY”` `CuffShiftMode` moves the
+cuff toward the nerve until the nerve’s outermost Trace (i.e., for
+monofascicular nerve an inner or outer, and same result as
+`“NAIVE_ROTATION_MIN_CIRCLE_BOUNDARY”` for nerve’s with epineurium)
+is within the distance of the `“thk_medium_gap_internal”` parameter for
+the cuff. Note: orientation masks (`a.tif`) are ignored when using these modes.
+
+For “automatic” `CuffShiftModes` (i.e.,
+`“AUTO_ROTATION_MIN_CIRCLE_BOUNDARY”,
+“AUTO_ROTATION_TRACE_BOUNDARY”`) the cuff is rotated around the
+nerve based on the size and position of the nerve’s fascicle(s) before
+the cuff is moved toward the nerve sample (Figure A). The point at
+the intersection of the vector from (0,0) in the direction of the
+`“angle_to_contacts_deg”` parameter in the “preset” JSON file with
+the cuff (i.e., cuff’s “center” in following text) is rotated to meet a specific location of the nerve/monofascicle’s
+surface. Specifically, the center of the cuff is rotated around the
+nerve to make (0,0), the center of the cuff, and ***Sample’s***
+`“fascicle_centroid”` (computed with Slide’s `fascicle_centroid()`
+method, which calculates the area and centroid of each inner and then
+averages the inners’ centroids weighted by each inner’s area) colinear.
+If the user would like to rotate the cuff from beyond this position, they may set the
+`“add_ang”` parameter in ***Model*** ([S8 Text](S8-JSON-file-parameter-guide)). The user may override the
+default “AUTO” rotation of the cuff on the nerve by adding an
+orientation mask (`a.tif`) to align a certain surface of the nerve sample
+with the cuff’s center ([S11 Text](S11-Morphology-files)). This behavior depends on the
+cuff's `"fixed_point"` parameter ([S17 text](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives)) The `“AUTO_ROTATION_MIN_CIRCLE_BOUNDARY”`
+`CuffShiftMode` moves the cuff toward the nerve until the nerve’s minimum
+radius enclosing circle is within the distance of the
+`“thk_medium_gap_internal”` parameter for the cuff.
+`“AUTO_ROTATION_TRACE_BOUNDARY”` `CuffShiftMode` moves the cuff toward
+the nerve until the nerve’s outermost Trace (i.e., for monofascicular
+nerve an inner or outer, and same result as
+`“AUTO_ROTATION_MIN_CIRCLE_BOUNDARY”` for nerve’s with epineurium)
+is within the distance of the `“thk_medium_gap_internal”` parameter for
+the cuff.
+
+![Inline image](../uploads/01a27546f96467d15bdf091a13ff5f28/Picture22.jpg)
+
+Figure A. Demonstration of cuff placement on a multifascicular nerve (top) and a monofascicular nerve without epineurium (bottom) with the same “preset” cuff (Purdue.json) for three different cuff rotations using the “AUTO_ROTATION_TRACE_BOUNDARY” CuffShiftMode. The cuff rotations are different in the top and bottom rows since the point on the surface of the nerve sample closest to the most endoneurium is unique to each sample (black arrows). Additional angles of rotation were applied to the cuff directly using the “add_ang” parameter in the ***Model’s*** “cuff” JSON Object (red arrows).
+
+The default z-position of each part along the nerve is defined in the
+“preset” cuff JSON file by the expression assigned to the part
+instance’s “Center” parameter (referenced to z = 0 at one end of the
+model’s proximal cylindrical domain). However, if the user would like to
+move the entire “preset” cuff along the length of the nerve, in the
+“cuff” JSON Object within ***Model***, the user may change the “z”
+parameter.
+
+Since some cuffs can open in response to a nerve diameter larger
+than the manufactured cuff’s inner diameter, they maybe be parameterized
+as a function of `“R_in”`. In this case, in the “preset” cuff JSON, the
+“expandable” Boolean parameter is true. If the cuff is “expandable”
+and the minimum enclosing diameter of the sample is larger than the
+cuff, the program will modify the angle for the center of the cuff to
+preserve the length of materials. If the cuff is not expandable and the
+sum of the minimum enclosing circle radius of the sample and
+`“thk_medium_gap_internal”` are larger than the inner radius of the
+cuff, an error is thrown as the cuff cannot accommodate the sample
+morphology.
+
+The inner radius of the cuff is defined within the list of “params” in
+each “preset” cuff configuration file as `“R_in”`, and a JSON Object
+called “offset” contains a parameterized definition of any additional
+buffer required within the inner radius of the cuff (e.g., exposed wire
+contacts as in the `Purdue.json` cuff “preset”). Each key in the “offset”
+JSON Object must match a parameter value defined in the “params” list of
+the cuff configuration file. For each key in “offset”, the value is the
+multiplicative coefficient for the parameter key to include in a sum of
+all key-value products. For example, in `Purdue.json`:
+
+```
+"offset": {
+  "sep_wire_P": 1, // separation between outer boundary of wire contact and internal
+                 // surface of insulator
+  "r_wire_P": 2 // radius of the wire contact’s gauge
+}
+```
+
+This JSON Object in `Purdue.json` will instruct the system to maintain
+added separation between the internal surface of the cuff and the nerve
+of:
+
+
+The div element has its own alignment attribute, align.
+
+<div align="center">
+(1) * <i>sep_wire_P</i> + (2) * <i>r_wire_P</i>
+</div>
+
+## Simulation Protocols
+
+Fiber response to electrical stimulation is computed by applying
+electric potentials along the length of a fiber from COMSOL as a
+time-varying signal in NEURON. The stimulation waveform, saved in a
+`n_sim’s data/inputs/` directory as `waveform.dat`, is unscaled (i.e., the
+maximum current magnitude at any timestep is +/-1), and is then scaled
+by the current amplitude in `RunSim.hoc` to either simulate fiber thresholds of
+activation or block with a binary search algorithm, or response to set
+amplitudes.
+
+###  Binary search
+
+In searching for activation thresholds (i.e., the minimum stimulation
+amplitude required to generate a propagating action potential) or block
+thresholds (i.e., the minimum stimulation amplitude required to block
+the propagation of an action potential) in the pipeline, the NEURON code
+uses a binary search algorithm.
+
+The basics of a binary search algorithm are as follows. By starting with
+one value that is above threshold (i.e., upper bound) and one value that
+is below threshold (i.e., lower bound), the program tests the midpoint
+amplitude to determine if it is above or below threshold. If the
+midpoint amplitude is found to be below threshold, the midpoint
+amplitude becomes the new lower bound. However, if the midpoint
+amplitude is found to be above threshold, the midpoint amplitude becomes
+the new upper bound. At each iteration of this process, half of the
+remaining amplitude range is removed. The process is continued until the
+termination criteria is satisfied (e.g., some threshold resolution
+tolerance is achieved). The average performance of a binary search
+algorithm is Ο(log(*n*)) where n is the number of
+elements in the search array (i.e., linearly spaced range of
+amplitudes).
+
+In the pipeline, the binary search protocol parameters (i.e., activation
+or block criteria, threshold criteria, method for searching for starting
+upper- and lower bounds, or termination criteria) are contained in the
+“protocol” JSON Object within ***Sim*** ([S8 Text](S8-JSON-file-parameter-guide)).
+
+###  Activation threshold protocol
+
+The pipeline has a NEURON simulation protocol for determining thresholds
+of activation of nerve fibers in response to extracellular stimulation.
+Threshold amplitude for fiber activation is defined as the minimum
+stimulation amplitude required to initiate a propagating action
+potential. The pipeline uses a binary search algorithm to converge on
+the threshold amplitude. Current amplitudes are determined to be above
+threshold if the stimulation results in at least `n_AP` propagating
+action potentials detected at 75% of the fiber’s length (note: location
+can be specified by user with `“ap_detect_location”` parameter in
+***Sim***) ([S8 Text](S8-JSON-file-parameter-guide)). The parameters for control over the activation threshold
+protocol are found in ***Sim*** within the “protocol” JSON Object ([S8 Text](S8-JSON-file-parameter-guide)).
+
+###  Block threshold protocol
+
+The pipeline has a NEURON simulation protocol for determining block
+thresholds for nerve fibers in response to extracellular stimulation.
+Threshold amplitude for fiber block is defined as the minimum
+stimulation amplitude required to block a propagating action potential.
+The simulation protocol for determining block thresholds starts by
+delivering the blocking waveform through the cuff. After a user-defined
+delay during the stimulation onset period, the protocol delivers a test
+pulse (or a train of pulses if the user chooses) where the user placed
+it (see “ind” parameter in ***Sim*** within the `“intracellular_stim”`
+JSON Object ([S8 Text](S8-JSON-file-parameter-guide))), near the proximal end. The code checks for action
+potentials near the distal end of the fiber (see `“ap_detect_location”`
+parameter in ***Sim*** within the “threshold” JSON Object ([S8 Text](S8-JSON-file-parameter-guide))). If at least
+one action potential is detected, then transmission of the test pulse
+occurred (i.e., the stimulation amplitude is below block threshold).
+However, the absence of an action potential indicates block (i.e., the
+stimulation amplitude is above block threshold). The pipeline uses a
+binary search algorithm to converge on the threshold amplitude. The
+parameters for control over the block threshold protocol are found in
+***Sim*** within the “protocol” JSON Object ([S8 Text](S8-JSON-file-parameter-guide)).
+
+The user must be careful in setting the initial upper and lower bounds
+of the binary search for block thresholds. Especially for small diameter
+myelinated fibers, users must be aware of and check for re-excitation
+using a stimulation amplitude sweep \[1\].
+
+###  Response to set amplitudes
+
+Alternatively, users may simulate the response of nerve fibers in
+response to extracellular stimulation for a user-specified set of
+amplitudes. The “protocol” JSON Object within ***Sim*** contains the set
+of amplitudes that the user would like to simulate ([S8 Text](S8-JSON-file-parameter-guide)).
+
+###  References
+1. Pelot NA, Behrend CE, Grill WM. Modeling the response of small myelinated axons in a compound nerve to kilohertz  frequency signals. J Neural Eng. 2017 Aug;14(4):46022. Available from: [https://doi.org/10.1088/1741-2552/aa6a5f](https://doi.org/10.1088/1741-2552/aa6a5f)

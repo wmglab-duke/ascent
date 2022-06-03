@@ -34,16 +34,9 @@ Welcome to ASCENT's documentation!
    :caption: Basic ASCENT Usage
 
    Getting_Started
-   JSON_overview
-   JSON_parameters
-   Morphology_Files
-   Scripts
-   command_line_args
-   Simulation_Protocols
-   Medium_Control
-   Running_The_Pipeline
-   NEURON_Submission
-   Data_Analysis
+   Getting_Startedrst
+   Running_ASCENT/index
+   JSON/index
    Methods_Template
 
 .. toctree::
@@ -51,10 +44,7 @@ Welcome to ASCENT's documentation!
    :caption: Advanced ASCENT Usage
 
    MockSample
-   Cuff_Shift
-   Cuff_Primitives
-   Custom_Cuffs
-   Creating_Primitives
+   Primitives_and_Cuffs/index
    Convergence_Example
    Troubleshooting-Guide
 
@@ -75,11 +65,9 @@ Welcome to ASCENT's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Miscellaneous
+   :caption: Reference
    
    Publications_Using_ASCENT
-   Fiber_Models
-   Validation
    Documentation_References
    Publication_References
 
@@ -88,6 +76,8 @@ Welcome to ASCENT's documentation!
    :maxdepth: 2
    :caption: Placeholder (Uncategorized)
 
+   Fiber_Models
+   Validation
    S14-Creating-sample-specific-nerve-morphologies-in-COMSOL
    S15-Micro-Leads-cuff-measurements
    S20-Fiberset

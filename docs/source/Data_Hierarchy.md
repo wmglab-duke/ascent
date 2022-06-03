@@ -1,4 +1,4 @@
-# ASCENT Data Hierarchy
+# Data Hierarchy
 Each execution of the ASCENT pipeline requires a ***Run*** JavaScript
 Object Notation (JSON) configuration file (`<run_index>.json`) that
 contains indices for a user-defined set of JSON files. Specifically, a
