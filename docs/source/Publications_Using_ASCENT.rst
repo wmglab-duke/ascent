@@ -1,2 +1,0 @@
-Publications Using ASCENT
-=========================
