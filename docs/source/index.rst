@@ -57,17 +57,17 @@ Welcome to ASCENT's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: External Links
-
-   ASCENT Publication <https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1009285>
-   ASCENT on GitHub <https://github.com/wmglab-duke/ascent>
-   The Grill Lab <https://www.neuro.duke.edu/research/faculty-labs/grill-lab>
-
-.. toctree::
-   :maxdepth: 2
    :caption: Reference
    
    Publications_Using_ASCENT
    reftest
    refs
    Validation
+
+.. toctree::
+   :maxdepth: 2
+   :caption: External Links
+
+   ASCENT Publication <https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1009285>
+   ASCENT on GitHub <https://github.com/wmglab-duke/ascent>
+   The Grill Lab <https://www.neuro.duke.edu/research/faculty-labs/grill-lab>
