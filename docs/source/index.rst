@@ -34,7 +34,6 @@ Welcome to ASCENT's documentation!
    :caption: Basic ASCENT Usage
 
    Getting_Started
-   Getting_Startedrst
    Running_ASCENT/index
    JSON/index
    Methods_Template
@@ -70,7 +69,7 @@ Welcome to ASCENT's documentation!
    Publications_Using_ASCENT
    Documentation_References
    Publication_References
-
+   refs
 
 .. toctree::
    :maxdepth: 2
