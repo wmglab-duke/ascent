@@ -31,7 +31,6 @@ Saving/loading the file to/from memory is likely to reorder the contents
 of the file.
 
 .. toctree::
-   :maxdepth: 1
 
     run
     sample
