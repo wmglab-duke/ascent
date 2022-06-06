@@ -10,7 +10,7 @@ import os
 import sys
 
 sys.path.append(os.path.sep.join([os.getcwd(), '']))
-os.chdir('D:/ASCENT/fresh')
+os.chdir('D:/ASCENT/madison')
 import numpy as np
 
 import matplotlib.pyplot as plt
@@ -23,9 +23,9 @@ q = Query({
     'partial_matches': False,
     'include_downstream': True,
     'indices': {
-        'sample': [0],
+        'sample': [21],
         'model': [0],
-        'sim': [8]
+        'sim': [1051]
     }
 }).run()
 

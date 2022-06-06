@@ -1867,13 +1867,15 @@ class Query(Exceptionable, Configurable, Saveable):
                         outputs_path = os.path.join(n_sim_dir, 'data', 'outputs')
     
                         # path of the first inner, first fiber vm(t) data
-                        vm_t_path = os.path.join(outputs_path, 'ap_loctime_inner0_fiber0_amp1.dat')
+                        vm_t_path = os.path.join(outputs_path, 'ap_loctime_inner0_fiber0.dat')
     
                         # load vm(t) data (see path above)
                         # each row is a snapshot of the voltages at each node [mV]
                         # the first column is the time [ms]
                         # first row is holds column labels, so this is skipped (time, node0, node1, ...)
-                        aploc_data = np.loadtxt(vm_t_path, skiprows=0)[1:-1]
+                        aploc_data = np.loadtxt(vm_t_path, skiprows=0)
+                        
+                        aploc_data[np.where(aploc_data==0)]=float('Inf')
                         
                         time = min(aploc_data)
                         
