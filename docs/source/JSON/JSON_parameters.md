@@ -1003,7 +1003,7 @@ of the file.
           - As listed in Enums ([S6 Text](S6-Enums)), known `“PerineuriumResistivityModes”` include
 
               - `“RHO_WEERASURIYA”`: Program uses mean of circuits C and D
-                from Weerasuriya 1984 needrefhere (frog sciatic nerve) ([S28 Text](S28-Definition-of-perineurium)) to adjust
+                from Weerasuriya 1984 {cite}`Weerasuriya1984` (frog sciatic nerve) ([S28 Text](S28-Definition-of-perineurium)) to adjust
                 perineurium conductivity to account for temperature and
                 frequency (which are both stored in `model.json`).
 
@@ -2024,7 +2024,7 @@ of the file.
             (see “global” above). If the difference in time step is larger
             than `“dt_atol”`, the user’s explicit waveform is interpolated
             and resampled at the “global” timestep used in NEURON using
-            SciPy’s Signal Processing package (`scipy.signal`) needrefhere.
+            SciPy’s Signal Processing package (`scipy.signal`) {cite}`Virtanen2020`.
             Required.
 
           - `“period_repeats”`: The number of times (Integer) the input
@@ -2772,11 +2772,6 @@ of the file.
       - Note: The user should not need to change this file unless adding new
         parameters to ***Model*** for expanded/modified pipeline
         functionality.
-
-## References
-1. Weerasuriya A, Spangler RA, Rapoport SI, Taylor RE. AC impedance of the perineurium of the frog sciatic nerve. Biophys J. 1984 Aug;46(2):167–74. Available from: [https://dx.doi.org/10.1016%2FS0006-3495(84)84009-6](https://dx.doi.org/10.1016%2FS0006-3495(84)84009-6)
-2. 	Virtanen P, Gommers R, Oliphant TE, Haberland M, Reddy T, Cournapeau D, et al. SciPy 1.0: fundamental algorithms for scientific computing in Python. Nat Methods [Internet]. 2020;17(3):261–72. Available from: [https://doi.org/10.1038/s41592-019-0686-2
-](https://doi.org/10.1038/s41592-019-0686-2)
 
 [f1]: https://chart.apis.google.com/chart?cht=tx&chl=e=\sqrt{1-\frac{b^{2}}{a^{2}}}
 [f2]: https://chart.apis.google.com/chart?cht=tx&chl=V_{e}=(amplitude)*potentials

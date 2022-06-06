@@ -25,7 +25,7 @@ geometry, mesh, assign boundary conditions and physics, and solve. The
 resulting FEM potentials are obtained for 1 mA applied to one of the
 electrode contacts while the electric potential on the other contacts is
 floating (i.e., condition of continuity); this is repeated for each
-contact to define the “bases” of the solution space needrefhere. For each
+contact to define the “bases” of the solution space {cite}`Pelot2018current`. For each
 ***Sim***, the program then creates a superposition of the “bases” for
 extracellular potentials at the coordinates defined in `fibersets/` and
 `ss_coords/` (i.e., the coordinates along the length of the nerve used to
@@ -168,10 +168,6 @@ previous domain assignments. For this reason, it is important to list
 part instances in “preset” cuff files in a nested order (i.e., the
 outermost domains first, knowing that domains nested in space within
 them will overwrite earlier domain assignments).
-
-
-### References
-1. Pelot NA, Thio BJ, Grill WM. Modeling Current Sources for Neural Stimulation in COMSOL. Front Comput Neurosci [Internet]. 2018;12:40. Available from: [https://www.frontiersin.org/article/10.3389/fncom.2018.00040](https://www.frontiersin.org/article/10.3389/fncom.2018.00040)
 
 
 ## Making geometries in COMSOL (Part class)

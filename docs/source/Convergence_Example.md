@@ -44,12 +44,9 @@ model axons using the previously found model radius and mesh density to
 ensure that the model length incorporated enough nodes
 of Ranvier for convergence of threshold for all native fiber diameters.
 A conservative estimate for the largest myelinated fiber diameter found
-in the cervical level of a rat vagus nerve is 10 µm needrefhere. The largest
+in the cervical level of a rat vagus nerve is 10 µm {cite}`LicursideAlcntara2008`. The largest
 diameter nerve fiber native to this region is of interest in our
 convergence studies because it will have the fewest number of nodes per
 unit length (based on INL=100\*D). We found that the FEM length needed
 to be longer for 10 µm diameter myelinated fibers (12.5 mm) than 2 µm
 diameter myelinated fibers (6.25 mm).
-
-## References
-1. Licursi de Alcântara AC, Salgado HC, Sassoli Fazan VP. Morphology and morphometry of the vagus nerve in male and female spontaneously  hypertensive rats. Brain Res. 2008 Mar;1197:170–80. Available from: [https://doi.org/10.1016/j.brainres.2007.12.045](https://doi.org/10.1016/j.brainres.2007.12.045)

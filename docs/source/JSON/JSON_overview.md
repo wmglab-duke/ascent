@@ -63,10 +63,10 @@ coefficients for linear relationships between inner diameter and
 perineurium thickness (i.e., thk<sub>peri,inner</sub> =
 a\*(diameter<sub>inner</sub>) + b). In `ci_peri_thickness.json`, we
 provided a `“PerineuriumThicknessMode”` named `“GRINBERG_2008”`, which
-defines perineurium thickness as 3% of inner diameter needrefhere, and
+defines perineurium thickness as 3% of inner diameter {cite}`Grinberg2008`, and
 relationships for human, pig, and rat vagus nerve perineurium thickness
 (i.e., `“HUMAN_VN_INHOUSE_200601”`, `“PIG_VN_INHOUSE_200523”`, and
-`“RAT_VN_INHOUSE_200601”`) needrefhere. As additional vagus nerve
+`“RAT_VN_INHOUSE_200601”`) {cite}`Pelot2020`. As additional vagus nerve
 morphometry data become available, users may define perineurium
 thickness with new models by adding the coefficients to this JSON
 file.***
@@ -240,7 +240,7 @@ their labels in the “conductivities” JSON Object of ***Model***.
 The `fiber_z.json` file defines z-coordinates to be sampled along the
 length of the FEM for different fiber types to be simulated in NEURON.
 In some instances, the section lengths are a single fixed value. In
-other instances, such as the MRG model needrefhere, the section lengths are
+other instances, such as the MRG model {cite}`McIntyre2002`, the section lengths are
 defined for each fiber diameter in a discrete list. Section lengths can
 also be a continuous function of a parameter, such as fiber diameter,
 defined as a mathematical relationship in the form of a string to be
@@ -260,7 +260,7 @@ the difference between the effective circular diameters of the outer and
 inner perineurium traces. If each fascicle is only defined by a single
 trace (rather than inner and outer perineurium traces), the user chooses
 from a list of modes in ***Sample*** for assigning a perineurium
-thickness (e.g., 3% of fascicle diameter needrefhere,
+thickness (e.g., 3% of fascicle diameter {cite}`Grinberg2008`,
 `“ci_perineurium_thickness”` parameter in ***Sample***).
 
 ### mesh\_dependent\_model.json
@@ -275,8 +275,3 @@ Boolean indicating true if the parameter value must match between two
 parameter value would not prohibit a mesh be reused. The
 `mesh_dependent_model.json` file is used by our `ModelSearcher` Java
 utility class  ([S26 Text](S26-Java-utility-classes)).
-
-## References
-1. Grinberg Y, Schiefer MA, Tyler DJ, Gustafson KJ. Fascicular perineurium thickness, size, and position affect model predictions of  neural excitation. IEEE Trans Neural Syst Rehabil Eng. 2008 Dec;16(6):572–81. Available from: [https://doi.org/10.1109/tnsre.2008.2010348](https://doi.org/10.1109/tnsre.2008.2010348)
-2. 	Pelot NA, Goldhagen GB, Cariello JE, Musselman ED, Clissold KA, Ezzell JA, et al. Quantified Morphology of the Cervical and Subdiaphragmatic Vagus Nerves of Human, Pig, and Rat. Front Neurosci [Internet]. 2020;14:1148. Available from: [https://www.frontiersin.org/article/10.3389/fnins.2020.601479](https://www.frontiersin.org/article/10.3389/fnins.2020.601479)
-3. 	McIntyre CC, Richardson AG, Grill WM. Modeling the excitability of mammalian nerve fibers: influence of afterpotentials on the recovery cycle. J Neurophysiol. 2002 Feb;87(2):995–1006. Available from: [https://doi.org/10.1152/jn.00353.2001](https://doi.org/10.1152/jn.00353.2001)
