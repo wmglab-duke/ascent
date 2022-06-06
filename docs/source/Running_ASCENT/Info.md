@@ -301,7 +301,7 @@ parameters for control over the block threshold protocol are found in
 The user must be careful in setting the initial upper and lower bounds
 of the binary search for block thresholds. Especially for small diameter
 myelinated fibers, users must be aware of and check for re-excitation
-using a stimulation amplitude sweep needrefhere.
+using a stimulation amplitude sweep {cite}`Pelot2017`.
 
 ###  Response to set amplitudes
 
@@ -309,10 +309,6 @@ Alternatively, users may simulate the response of nerve fibers in
 response to extracellular stimulation for a user-specified set of
 amplitudes. The “protocol” JSON Object within ***Sim*** contains the set
 of amplitudes that the user would like to simulate ([S8 Text](S8-JSON-file-parameter-guide)).
-
-###  References
-1. Pelot NA, Behrend CE, Grill WM. Modeling the response of small myelinated axons in a compound nerve to kilohertz  frequency signals. J Neural Eng. 2017 Aug;14(4):46022. Available from: [https://doi.org/10.1088/1741-2552/aa6a5f](https://doi.org/10.1088/1741-2552/aa6a5f)
-
 
 ## Implementation of NEURON fiber models
 
@@ -327,7 +323,7 @@ each section in NEURON varies depending on both the diameter and the
 
 The “FiberGeometry” mode `“MRG_DISCRETE”` in ***Sim*** instructs the
 program to simulate a double cable structure for mammalian myelinated
-fibers needrefhere. In the pipeline, we refer to this model as
+fibers {cite}`McIntyre2004,McIntyre2002`. In the pipeline, we refer to this model as
 `“MRG_DISCRETE”` since the model’s geometric parameters were originally
 published for a *discrete* list of fiber diameters: 1, 2, 5.7, 7.3, 8.7,
 10, 11.5, 12.8, 14.0, 15.0, and 16.0 μm. Since the MRG fiber model has
@@ -344,7 +340,7 @@ The `“FiberGeometry”` mode `“MRG_INTERPOLATION”` in ***Sim*** instructs 
 program to simulate a double cable structure for mammalian myelinated
 fibers for any diameter fiber between 2 and 16 µm (throws an error if
 not in this range) by using an *interpolation* over the originally
-published fiber geometries needrefhere. In the pipeline, we refer to
+published fiber geometries {cite}`McIntyre2004,McIntyre2002`. In the pipeline, we refer to
 this model as `“MRG_INTERPOLATION”` since it enables the user to simulate
 any fiber diameter between the originally published diameters.
 
@@ -381,16 +377,9 @@ Figure B. Comparison of thresholds between the originally published models and t
 ### Unmyelinated Fiber Models
 
 The pipeline includes several unmyelinated (i.e., C-fiber) models
-needrefhere. Users should be aware of the `“delta_zs”` parameter that
+{cite}`Sundt2015,Tigerholm2014,Rattay1993`. Users should be aware of the `“delta_zs”` parameter that
 they are using in `config/system/fiber_z.json`, which controls the
 spatial discretization of the fiber (i.e., the length of each section).
-
-### References
-1. McIntyre CC, Grill WM, Sherman DL, Thakor N V. Cellular effects of deep brain stimulation: model-based analysis of activation and  inhibition. J Neurophysiol. 2004 Apr;91(4):1457–69. Available from: [https://doi.org/10.1152/jn.00989.2003](https://doi.org/10.1152/jn.00989.2003)
-2. 	McIntyre CC, Richardson AG, Grill WM. Modeling the excitability of mammalian nerve fibers: influence of afterpotentials on the recovery cycle. J Neurophysiol. 2002 Feb;87(2):995–1006. Available from: [https://doi.org/10.1152/jn.00353.2001](https://doi.org/10.1152/jn.00353.2001)
-3. 	Sundt D, Gamper N, Jaffe DB. Spike propagation through the dorsal root ganglia in an unmyelinated sensory neuron: a modeling study. J Neurophysiol. 2015 Dec;114(6):3140–53. Available from: [https://doi.org/10.1152/jn.00226.2015](https://doi.org/10.1152/jn.00226.2015)
-4. 	Tigerholm J, Petersson ME, Obreja O, Lampert A, Carr R, Schmelz M, et al. Modeling activity-dependent changes of axonal spike conduction in primary afferent C-nociceptors. J Neurophysiol. 2014 May;111(9):1721–35. Available from: [https://doi.org/10.1152/jn.00777.2012](https://doi.org/10.1152/jn.00777.2012)
-5. 	Rattay F, Aberham M. Modeling axon membranes for functional electrical stimulation. IEEE Trans Biomed Eng. 1993 Dec;40(12):1201–9. Available from: [https://doi.org/10.1109/10.250575](https://doi.org/10.1109/10.250575)
 
 ## Defining and assigning materials in COMSOL
 
@@ -415,7 +404,7 @@ the stimulation frequency are calculated in Runner’s
 `compute_electrical_parameters()` method and saved to ***Model*** before
 the handoff() method is called. Our pipeline supports calculation of the
 frequency-dependent conductivity of the perineurium based on
-measurements from the frog sciatic nerve needrefhere using the
+measurements from the frog sciatic nerve {cite}`Weerasuriya1984` using the
 `rho_weerasuriya()` method in the Python Waveform class. See [Fig. 2](https://doi.org/10.1371/journal.pcbi.1009285.g002) for
 identification of tissue types in a compound nerve cross section (i.e.,
 epineurium, perineurium, endoneurium).
@@ -424,29 +413,15 @@ Table A. Default material conductivities.
 
 | **Material**  | **Conductivity**             | **References**         |
 | ------------- | ---------------------------- | ---------------------- |
-| silicone      | 10^-12 \[S/m\]               | needrefhere                 |
-| platinum      | 9.43 ⨉ 10^6 \[S/m\]          | needrefhere                 |
-| endoneurium   | {1/6, 1/6, 1/1.75} \[S/m\]   | needrefhere       |
-| epineurium    | 1/6.3 \[S/m\]                | needrefhere |
-| muscle        | {0.086, 0.086, 0.35} \[S/m\] | needrefhere             |
-| fat           | 1/30 \[S/m\]                 | needrefhere             |
-| encapsulation | 1/6.3 \[S/m\]                | needrefhere                 |
-| saline        | 1.76 \[S/m\]                 | needrefhere                |
-| perineurium   | 1/1149 \[S/m\]               | needrefhere           |
-
-### References
-1. Weerasuriya A, Spangler RA, Rapoport SI, Taylor RE. AC impedance of the perineurium of the frog sciatic nerve. Biophys J. 1984 Aug;46(2):167–74. [https://dx.doi.org/10.1016%2FS0006-3495(84)84009-6](https://dx.doi.org/10.1016%2FS0006-3495(84)84009-6)
-1. Callister WD, Rethwisch DG. Fundamentals of Material Science and Engineering An Integrated Approach. In: Fundamentals Of Material Science and Engineering An Integrated Approach. 2012.
-1. de Podesta M, Laboratory NP, UK. Understanding the Properties of Matter. Understanding the Properties of Matter. 1996.
-1. Ranck JB, BeMent SL. The specific impedance of the dorsal columns of cat: An anisotropic medium. Exp Neurol [Internet]. 1965 Apr 1 [cited 2020 Apr 20];11(4):451–63. Available from: [https://doi.org/10.1016/0014-4886(65)90059-2](https://doi.org/10.1016/0014-4886(65)90059-2)
-1. Pelot NA, Behrend CE, Grill WM. On the parameters used in finite element modeling of compound peripheral nerves. J Neural Eng [Internet]. 2019;16(1):16007. Available from: [http://dx.doi.org/10.1088/1741-2552/aaeb0c](http://dx.doi.org/10.1088/1741-2552/aaeb0c)
-1. Stolinski C. Structure and composition of the outer connective tissue sheaths of peripheral nerve. J Anat [Internet]. 1995 Feb;186 ( Pt 1(Pt 1):123–30. Available from: [https://pubmed.ncbi.nlm.nih.gov/7649808](https://pubmed.ncbi.nlm.nih.gov/7649808)
-1. Grill WM, Mortimer TJ. Electrical properties of implant encapsulation tissue. Ann Biomed Eng [Internet]. 1994;22(1):23–33. Available from: [https://doi.org/10.1007/BF02368219](https://doi.org/10.1007/BF02368219)
-1. Pelot NA, Behrend CE, Grill WM. Modeling the response of small myelinated axons in a compound nerve to kilohertz  frequency signals. J Neural Eng. 2017 Aug;14(4):46022. Available from: [https://doi.org/10.1088/1741-2552/aa6a5f](https://doi.org/10.1088/1741-2552/aa6a5f)
-1. Gielen FLH, Wallinga-de Jonge W, Boon KL. Electrical conductivity of skeletal muscle tissue: Experimental results from different musclesin vivo. Med Biol Eng Comput [Internet]. 1984;22(6):569–77. Available from: [https://doi.org/10.1007/BF02443872](https://doi.org/10.1007/BF02443872)
-1. Geddes LA, Baker LE. The specific resistance of biological material—A compendium of data for the biomedical engineer and physiologist. Med Biol Eng [Internet]. 1967;5(3):271–93. Available from: [https://doi.org/10.1007/BF02474537](https://doi.org/10.1007/BF02474537)
-1. Horch K. Neuroprosthetics: Theory and practice: Second edition. Neuroprosthetics: Theory and Practice: Second Edition. 2017. 1–925 p.
-
+| silicone      | 10^-12 \[S/m\]               | {cite}`Callister2011-iv`                 |
+| platinum      | 9.43 ⨉ 10^6 \[S/m\]          | {cite}`De_Podesta1997-jq`                   |
+| endoneurium   | {1/6, 1/6, 1/1.75} \[S/m\]   | {cite}`RanckJr1965,Pelot2018`         |
+| epineurium    | 1/6.3 \[S/m\]                | {cite}`stolinski_structure_1995,Grill1994,Pelot2017`     |
+| muscle        | {0.086, 0.086, 0.35} \[S/m\] | {cite}`Gielen1984`            |
+| fat           | 1/30 \[S/m\]                 | {cite}`Geddes1967`               |
+| encapsulation | 1/6.3 \[S/m\]                | {cite}`Grill1994`                   |
+| saline        | 1.76 \[S/m\]                 | {cite}`Horch2017-nm`                  |
+| perineurium   | 1/1149 \[S/m\]               | {cite}`Weerasuriya1984,Pelot2018`             |
 
 ### Definition of perineurium
 
@@ -455,7 +430,7 @@ and has a profound impact on thresholds of activation and block. Our
 previous modeling work demonstrates that representing the perineurium
 with a thin layer approximation (Rm = rho\*peri\_thk), rather than as a
 thinly meshed domain, reduces mesh complexity and is a reasonable
-approximation needrefhere. Therefore, perineurium can be modeled with a thin
+approximation {cite}`Pelot2018`. Therefore, perineurium can be modeled with a thin
 layer approximation (except with “peanut” fascicles; see an example in
 [Fig 2](https://doi.org/10.1371/journal.pcbi.1009285.g002)), termed “contact impedance” in COMSOL (if ***Model’s***
 `“use_ci”` parameter is true ([S8 Text](S8-JSON-file-parameter-guide))), which relates the normal component of
@@ -470,16 +445,16 @@ The sheet resistance ![f4] is defined as the sheet thickness
 
 ![f2]
 
-Our previously published work quantified the relationship between fascicle diameter and perineurium thickness needrefhere (Table A).
+Our previously published work quantified the relationship between fascicle diameter and perineurium thickness {cite}`Pelot2020` (Table A).
 
 Table A. Previously published relationships between fascicle diameter and
 perineurium thickness.
 
 | **Species** | **peri\_thk:** ***f*(species, d<sub>fasc</sub>)** | **References** |
 | ----------- | ------------------------------------------------------------ | -------------- |
-| Rat         | peri\_thk = 0.01292\*d<sub>fasc</sub> + 1.367 \[um\]         | needrefhere         |
-| Pig         | peri\_thk = 0.02547\*d<sub>fasc</sub> + 3.440 \[um\]         | needrefhere         |
-| Human       | peri\_thk = 0.03702\*d<sub>fasc</sub> + 10.50 \[um\]         | needrefhere         |
+| Rat         | peri\_thk = 0.01292\*d<sub>fasc</sub> + 1.367 \[um\]         | {cite}`Pelot2020`         |
+| Pig         | peri\_thk = 0.02547\*d<sub>fasc</sub> + 3.440 \[um\]         | {cite}`Pelot2020`         |
+| Human       | peri\_thk = 0.03702\*d<sub>fasc</sub> + 10.50 \[um\]         | {cite}`Pelot2020`         |
 
 
 The “rho\_perineurium” parameter in ***Model*** can take either of two
@@ -489,7 +464,7 @@ modes:
     a single value, not a spectrum, defined in ***Model*** as
     “frequency”) and temperature (using a Q10 adjustment, defined in
     ***Model*** as “temperature”) based on measurements of frog sciatic
-    perineurium needrefhere. The equation is defined in
+    perineurium {cite}`Pelot2018,Weerasuriya1984`. The equation is defined in
     `src/core/Waveform.py` in the `rho_weerasuriya()` method.
 
   - “MANUAL”: Conductivity value assigned to the perineurium is as
