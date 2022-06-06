@@ -301,7 +301,7 @@ parameters for control over the block threshold protocol are found in
 The user must be careful in setting the initial upper and lower bounds
 of the binary search for block thresholds. Especially for small diameter
 myelinated fibers, users must be aware of and check for re-excitation
-using a stimulation amplitude sweep \[1\].
+using a stimulation amplitude sweep needrefhere.
 
 ###  Response to set amplitudes
 
@@ -327,7 +327,7 @@ each section in NEURON varies depending on both the diameter and the
 
 The “FiberGeometry” mode `“MRG_DISCRETE”` in ***Sim*** instructs the
 program to simulate a double cable structure for mammalian myelinated
-fibers \[1,2\]. In the pipeline, we refer to this model as
+fibers needrefhere. In the pipeline, we refer to this model as
 `“MRG_DISCRETE”` since the model’s geometric parameters were originally
 published for a *discrete* list of fiber diameters: 1, 2, 5.7, 7.3, 8.7,
 10, 11.5, 12.8, 14.0, 15.0, and 16.0 μm. Since the MRG fiber model has
@@ -344,7 +344,7 @@ The `“FiberGeometry”` mode `“MRG_INTERPOLATION”` in ***Sim*** instructs 
 program to simulate a double cable structure for mammalian myelinated
 fibers for any diameter fiber between 2 and 16 µm (throws an error if
 not in this range) by using an *interpolation* over the originally
-published fiber geometries \[1,2\]. In the pipeline, we refer to
+published fiber geometries needrefhere. In the pipeline, we refer to
 this model as `“MRG_INTERPOLATION”` since it enables the user to simulate
 any fiber diameter between the originally published diameters.
 
@@ -381,7 +381,7 @@ Figure B. Comparison of thresholds between the originally published models and t
 ### Unmyelinated Fiber Models
 
 The pipeline includes several unmyelinated (i.e., C-fiber) models
-\[3-5\]. Users should be aware of the `“delta_zs”` parameter that
+needrefhere. Users should be aware of the `“delta_zs”` parameter that
 they are using in `config/system/fiber_z.json`, which controls the
 spatial discretization of the fiber (i.e., the length of each section).
 
@@ -415,7 +415,7 @@ the stimulation frequency are calculated in Runner’s
 `compute_electrical_parameters()` method and saved to ***Model*** before
 the handoff() method is called. Our pipeline supports calculation of the
 frequency-dependent conductivity of the perineurium based on
-measurements from the frog sciatic nerve \[1\] using the
+measurements from the frog sciatic nerve needrefhere using the
 `rho_weerasuriya()` method in the Python Waveform class. See [Fig. 2](https://doi.org/10.1371/journal.pcbi.1009285.g002) for
 identification of tissue types in a compound nerve cross section (i.e.,
 epineurium, perineurium, endoneurium).
@@ -424,15 +424,15 @@ Table A. Default material conductivities.
 
 | **Material**  | **Conductivity**             | **References**         |
 | ------------- | ---------------------------- | ---------------------- |
-| silicone      | 10^-12 \[S/m\]               | \[2\]                 |
-| platinum      | 9.43 ⨉ 10^6 \[S/m\]          | \[3\]                 |
-| endoneurium   | {1/6, 1/6, 1/1.75} \[S/m\]   | \[4,5\]       |
-| epineurium    | 1/6.3 \[S/m\]                | \[6-8\] |
-| muscle        | {0.086, 0.086, 0.35} \[S/m\] | \[9\]             |
-| fat           | 1/30 \[S/m\]                 | \[10\]             |
-| encapsulation | 1/6.3 \[S/m\]                | \[7\]                 |
-| saline        | 1.76 \[S/m\]                 | \[11\]                |
-| perineurium   | 1/1149 \[S/m\]               | \[1,5\]           |
+| silicone      | 10^-12 \[S/m\]               | needrefhere                 |
+| platinum      | 9.43 ⨉ 10^6 \[S/m\]          | needrefhere                 |
+| endoneurium   | {1/6, 1/6, 1/1.75} \[S/m\]   | needrefhere       |
+| epineurium    | 1/6.3 \[S/m\]                | needrefhere |
+| muscle        | {0.086, 0.086, 0.35} \[S/m\] | needrefhere             |
+| fat           | 1/30 \[S/m\]                 | needrefhere             |
+| encapsulation | 1/6.3 \[S/m\]                | needrefhere                 |
+| saline        | 1.76 \[S/m\]                 | needrefhere                |
+| perineurium   | 1/1149 \[S/m\]               | needrefhere           |
 
 ### References
 1. Weerasuriya A, Spangler RA, Rapoport SI, Taylor RE. AC impedance of the perineurium of the frog sciatic nerve. Biophys J. 1984 Aug;46(2):167–74. [https://dx.doi.org/10.1016%2FS0006-3495(84)84009-6](https://dx.doi.org/10.1016%2FS0006-3495(84)84009-6)
@@ -455,7 +455,7 @@ and has a profound impact on thresholds of activation and block. Our
 previous modeling work demonstrates that representing the perineurium
 with a thin layer approximation (Rm = rho\*peri\_thk), rather than as a
 thinly meshed domain, reduces mesh complexity and is a reasonable
-approximation \[1\]. Therefore, perineurium can be modeled with a thin
+approximation needrefhere. Therefore, perineurium can be modeled with a thin
 layer approximation (except with “peanut” fascicles; see an example in
 [Fig 2](https://doi.org/10.1371/journal.pcbi.1009285.g002)), termed “contact impedance” in COMSOL (if ***Model’s***
 `“use_ci”` parameter is true ([S8 Text](S8-JSON-file-parameter-guide))), which relates the normal component of
@@ -470,16 +470,16 @@ The sheet resistance ![f4] is defined as the sheet thickness
 
 ![f2]
 
-Our previously published work quantified the relationship between fascicle diameter and perineurium thickness \[2\] (Table A).
+Our previously published work quantified the relationship between fascicle diameter and perineurium thickness needrefhere (Table A).
 
 Table A. Previously published relationships between fascicle diameter and
 perineurium thickness.
 
 | **Species** | **peri\_thk:** ***f*(species, d<sub>fasc</sub>)** | **References** |
 | ----------- | ------------------------------------------------------------ | -------------- |
-| Rat         | peri\_thk = 0.01292\*d<sub>fasc</sub> + 1.367 \[um\]         | \[2\]         |
-| Pig         | peri\_thk = 0.02547\*d<sub>fasc</sub> + 3.440 \[um\]         | \[2\]         |
-| Human       | peri\_thk = 0.03702\*d<sub>fasc</sub> + 10.50 \[um\]         | \[2\]         |
+| Rat         | peri\_thk = 0.01292\*d<sub>fasc</sub> + 1.367 \[um\]         | needrefhere         |
+| Pig         | peri\_thk = 0.02547\*d<sub>fasc</sub> + 3.440 \[um\]         | needrefhere         |
+| Human       | peri\_thk = 0.03702\*d<sub>fasc</sub> + 10.50 \[um\]         | needrefhere         |
 
 
 The “rho\_perineurium” parameter in ***Model*** can take either of two
@@ -489,7 +489,7 @@ modes:
     a single value, not a spectrum, defined in ***Model*** as
     “frequency”) and temperature (using a Q10 adjustment, defined in
     ***Model*** as “temperature”) based on measurements of frog sciatic
-    perineurium \[1,3\]. The equation is defined in
+    perineurium needrefhere. The equation is defined in
     `src/core/Waveform.py` in the `rho_weerasuriya()` method.
 
   - “MANUAL”: Conductivity value assigned to the perineurium is as

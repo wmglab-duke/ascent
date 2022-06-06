@@ -25,7 +25,7 @@ geometry, mesh, assign boundary conditions and physics, and solve. The
 resulting FEM potentials are obtained for 1 mA applied to one of the
 electrode contacts while the electric potential on the other contacts is
 floating (i.e., condition of continuity); this is repeated for each
-contact to define the “bases” of the solution space \[1\]. For each
+contact to define the “bases” of the solution space needrefhere. For each
 ***Sim***, the program then creates a superposition of the “bases” for
 extracellular potentials at the coordinates defined in `fibersets/` and
 `ss_coords/` (i.e., the coordinates along the length of the nerve used to

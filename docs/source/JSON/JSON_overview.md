@@ -63,10 +63,10 @@ coefficients for linear relationships between inner diameter and
 perineurium thickness (i.e., thk<sub>peri,inner</sub> =
 a\*(diameter<sub>inner</sub>) + b). In `ci_peri_thickness.json`, we
 provided a `“PerineuriumThicknessMode”` named `“GRINBERG_2008”`, which
-defines perineurium thickness as 3% of inner diameter \[1\], and
+defines perineurium thickness as 3% of inner diameter needrefhere, and
 relationships for human, pig, and rat vagus nerve perineurium thickness
 (i.e., `“HUMAN_VN_INHOUSE_200601”`, `“PIG_VN_INHOUSE_200523”`, and
-`“RAT_VN_INHOUSE_200601”`) \[2]\. As additional vagus nerve
+`“RAT_VN_INHOUSE_200601”`) needrefhere. As additional vagus nerve
 morphometry data become available, users may define perineurium
 thickness with new models by adding the coefficients to this JSON
 file.***
@@ -240,7 +240,7 @@ their labels in the “conductivities” JSON Object of ***Model***.
 The `fiber_z.json` file defines z-coordinates to be sampled along the
 length of the FEM for different fiber types to be simulated in NEURON.
 In some instances, the section lengths are a single fixed value. In
-other instances, such as the MRG model \[3]\, the section lengths are
+other instances, such as the MRG model needrefhere, the section lengths are
 defined for each fiber diameter in a discrete list. Section lengths can
 also be a continuous function of a parameter, such as fiber diameter,
 defined as a mathematical relationship in the form of a string to be
@@ -260,7 +260,7 @@ the difference between the effective circular diameters of the outer and
 inner perineurium traces. If each fascicle is only defined by a single
 trace (rather than inner and outer perineurium traces), the user chooses
 from a list of modes in ***Sample*** for assigning a perineurium
-thickness (e.g., 3% of fascicle diameter \[1\],
+thickness (e.g., 3% of fascicle diameter needrefhere,
 `“ci_perineurium_thickness”` parameter in ***Sample***).
 
 ### mesh\_dependent\_model.json

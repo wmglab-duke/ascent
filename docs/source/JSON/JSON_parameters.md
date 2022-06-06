@@ -1003,7 +1003,7 @@ of the file.
           - As listed in Enums ([S6 Text](S6-Enums)), known `“PerineuriumResistivityModes”` include
 
               - `“RHO_WEERASURIYA”`: Program uses mean of circuits C and D
-                from Weerasuriya 1984 \[1\] (frog sciatic nerve) ([S28 Text](S28-Definition-of-perineurium)) to adjust
+                from Weerasuriya 1984 needrefhere (frog sciatic nerve) ([S28 Text](S28-Definition-of-perineurium)) to adjust
                 perineurium conductivity to account for temperature and
                 frequency (which are both stored in `model.json`).
 
@@ -2024,7 +2024,7 @@ of the file.
             (see “global” above). If the difference in time step is larger
             than `“dt_atol”`, the user’s explicit waveform is interpolated
             and resampled at the “global” timestep used in NEURON using
-            SciPy’s Signal Processing package (`scipy.signal`) \[2\].
+            SciPy’s Signal Processing package (`scipy.signal`) needrefhere.
             Required.
 
           - `“period_repeats”`: The number of times (Integer) the input
