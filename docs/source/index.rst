@@ -60,7 +60,6 @@ Welcome to ASCENT's documentation!
    :caption: Reference
    
    Publications_Using_ASCENT
-   reftest
    refs
    Validation
 
