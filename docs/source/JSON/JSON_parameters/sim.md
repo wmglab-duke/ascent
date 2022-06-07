@@ -631,7 +631,7 @@ To declare this entity in `config/user/sims/`, use the
           (see “global” above). If the difference in time step is larger
           than `“dt_atol”`, the user’s explicit waveform is interpolated
           and resampled at the “global” timestep used in NEURON using
-          SciPy’s Signal Processing package (`scipy.signal`) {cite}`Virtanen2020`.
+          SciPy’s Signal Processing package (`scipy.signal`) {cite:p}`Virtanen2020`.
           Required.
 
         - `“period_repeats”`: The number of times (Integer) the input

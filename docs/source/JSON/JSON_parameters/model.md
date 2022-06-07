@@ -129,7 +129,7 @@ To declare this entity in
         - As listed in Enums ([S6 Text](S6-Enums)), known `“PerineuriumResistivityModes”` include
 
             - `“RHO_WEERASURIYA”`: Program uses mean of circuits C and D
-              from Weerasuriya 1984 {cite}`Weerasuriya1984` (frog sciatic nerve) ([S28 Text](S28-Definition-of-perineurium)) to adjust
+              from Weerasuriya 1984 {cite:p}`Weerasuriya1984` (frog sciatic nerve) ([S28 Text](S28-Definition-of-perineurium)) to adjust
               perineurium conductivity to account for temperature and
               frequency (which are both stored in `model.json`).
 

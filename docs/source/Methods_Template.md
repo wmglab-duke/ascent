@@ -2,7 +2,7 @@
 
 For uses of ASCENT, either stand-alone in its publicly available form, as a starting point upon which further work is developed, or as a component of a system (e.g., connected with other organ models or engineering optimization techniques), we ask that the author(s) cite the ASCENT [publication](https://doi.org/10.1371/journal.pcbi.100928) and indicate the release of ASCENT used (e.g., ASCENT v1.0.0).
 
-The following guidelines are to help users adhere to FAIR principles when using ASCENT and thereby enable model reproducibility and reduce duplication of efforts {cite}`Wilkinson2016`. With published modeling studies using ASCENT, we ask that   users provide all code and input files required to reproduce their work.
+The following guidelines are to help users adhere to FAIR principles when using ASCENT and thereby enable model reproducibility and reduce duplication of efforts {cite:p}`Wilkinson2016`. With published modeling studies using ASCENT, we ask that   users provide all code and input files required to reproduce their work.
 
 To streamline dissemination of work, upon acceptance of a manuscript to a journal, we encourage users to either make their fork/branch of the ASCENT repository publicly available, or to make a “Merge Request” to the ASCENT GitHub repository (i.e., if your developments would be of general interest to ASCENT users) so that we can review and incorporate your changes to our public repository.
 
