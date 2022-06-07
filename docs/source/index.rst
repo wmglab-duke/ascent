@@ -49,7 +49,6 @@ Also need to get toctree maxdepth working on subpages
    :caption: Advanced ASCENT Usage
 
    MockSample
-   Materials
    Primitives_and_Cuffs/index
    Convergence_Example
    Troubleshooting-Guide

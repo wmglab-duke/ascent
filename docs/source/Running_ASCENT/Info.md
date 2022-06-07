@@ -352,7 +352,7 @@ to fiber “diameter” as a continuous variable, the expressions for all
 the dimensions that change with fiber diameter, as shown in Figure A, are stored as a String
 that is computed using Python’s built-in `“eval()”` function.
 
-![Inline image](uploads/9baecd20e1604f988861fb36945ab50d/Picture12.jpg)
+![Inline image](../uploads/9baecd20e1604f988861fb36945ab50d/Picture12.jpg)
 
 Figure A. Piecewise polynomial fits to published MRG fiber parameters. Single quadratic fits were used for all parameters except for internode length, which has a linear fit below 5.643 µm (using MRG data at 2 and 5.7 µm) and a single quadratic fit at diameters greater than or equal to 5.643 µm (using MRG data >= 5.7 µm); 5.643 µm is the fiber diameter at which the linear and quadratic fits intersected. The fiber diameter is the diameter of the myelin. “Paranode 1” is the MYSA section, “paranode 2” is the FLUT section, and “internode” is the STIN section. The axon diameter is the same for the node of Ranvier and MYSA (“node diameter”), as well as for the FLUT and STIN (“axon diameter”). The node and MYSA lengths are fixed at 1 and 3 μm, respectively, for all fiber diameters.
 
@@ -370,7 +370,7 @@ interpolation of the MRG fiber diameters are compared in Figure B below.
 The threshold values were determined using a binary search until the
 upper and lower bound stimulation amplitudes were within 1%.
 
-![Inline image](uploads/0f81dcebee604a443aeaac6c13b2325c/Picture13.jpg)
+![Inline image](../uploads/0f81dcebee604a443aeaac6c13b2325c/Picture13.jpg)
 
 Figure B. Comparison of thresholds between the originally published models and the interpolation of the MRG fiber diameters (evaluated at the original diameters). Thresholds are expected to vary between the originally published models and the interpolated fiber geometries given their slightly different ultrastructure parameters (Figure A). Used original MRG thresholds as reference.
 
