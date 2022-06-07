@@ -65,7 +65,7 @@ Also need to get toctree maxdepth working on subpages
    :caption: Reference
    
    Publications_Using_ASCENT
-   refs
+   references
    Validation
 
 .. toctree::
