@@ -16,6 +16,7 @@ Note: Here add copy button, and other citation types including bibtex. Might wan
 Note also add copy button to json configs
 Note I also think these citations should be changed to APA?
 Also need to rewrite tutorial text
+Also need to get toctree maxdepth working on subpages
 
 * **Cite the paper:**
     **Musselman ED**, **Cariello JE**, Grill WM, Pelot NA. ASCENT (Automated Simulations to Characterize Electrical Nerve Thresholds): A

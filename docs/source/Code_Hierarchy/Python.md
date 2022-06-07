@@ -4,7 +4,7 @@ The nerve cross section includes the outer nerve trace (if present; not
 required for monofascicular nerves) and, for each fascicle, either a
 single “inner” perineurium trace or both “inner” and “outer” perineurium
 traces. We provide automated control to correct for tissue shrinkage
-during histological processes needrefhere ([S8 Text](S8-JSON-file-parameter-guide)). Morphology metrics (e.g., nerve
+during histological processes {cite}`Boyd1979` ([S8 Text](S8-JSON-file-parameter-guide)). Morphology metrics (e.g., nerve
 and fascicle(s) cross-sectional areas and centroids, major and minor
 axis lengths, and rotations of the best-fit ellipses) are automatically
 reported in ***Sample*** ([S8 Text](S8-JSON-file-parameter-guide)).
@@ -24,7 +24,7 @@ to be ‘0’. The Trace class already provides many built-in
 functionalities, but any further user-desired methods needed either to
 mutate or access nerve morphology should be added to the Trace class.
 
-Trace uses the *OpenCV* needrefhere, *Pyclipper* needrefhere, and *Shapely* needrefhere Python packages to
+Trace uses the *OpenCV* {cite}`opencv_library`, *Pyclipper* {cite}`pyclipper2015`, and *Shapely* {cite}`shapely2007` Python packages to
 support modifier methods (e.g., for performing transformations):
 
   - `scale()`: Used to assign dimensional units to points and to correct
@@ -281,14 +281,14 @@ Slide’s Nerve mask is transformed into a user-defined final geometry
 based on the `“ReshapeNerveMode”` in ***Sample*** (i.e., `CIRCLE`) while
 maintaining the cross-sectional area. Meanwhile, the fascicles (i.e.,
 outers) are repositioned within the new nerve cross section in a
-physics-based way using Pymunk needrefhere, a 2D physics library, in which
+physics-based way using Pymunk {cite}`pymunk`, a 2D physics library, in which
 each fascicle is treated as rigid body with no elasticity as it is
 slowly “pushed” into place by both surrounding fascicles and the nerve
 boundary (Figure A).
 
 ![Inline image](../uploads/1c83c0b093212df340597c3339d9023b/Picture16.jpg)
 
-Figure A. Snapshots at 0%, 50%, and 100% (left-to-right) of the deformation process powered by the pygame package needrefhere. The deformation process is shown for two minimum fascicle separation constraints: 10 µm (top row) and 20 µm (bottom row). The geometry at 0% deformation is shown after the fascicles have been spread out to the minimum separation constraint.
+Figure A. Snapshots at 0%, 50%, and 100% (left-to-right) of the deformation process powered by the pygame package {cite}`pygame2011`. The deformation process is shown for two minimum fascicle separation constraints: 10 µm (top row) and 20 µm (bottom row). The geometry at 0% deformation is shown after the fascicles have been spread out to the minimum separation constraint.
 
 The `deform()` method updates the nerve boundary to
 intermediately-deformed nerve traces between the nerve’s
