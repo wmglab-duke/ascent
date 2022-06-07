@@ -16,7 +16,27 @@ Note: Here add copy button, and other citation types including bibtex. Might wan
 Note also add copy button to json configs
 Note I also think these citations should be changed to APA?
 Also need to rewrite tutorial text
-Also need to get toctree maxdepth working on subpages
+need to update all cross refernces
+Use this with the container directive: https://stackoverflow.com/questions/55710416/toggle-text-between-multiple-buttons
+or copy https://docs.opencv.org/3.4.11/d4/dee/tutorial_optical_flow.html
+Add email for user support (or maybe just add readme as a page)
+add sphinx copybutton
+https://pypi.org/project/sphinx-rtd-dark-mode/
+https://github.com/opencv/opencv/blob/4.x/doc/tutorial-utils.js
+https://github.com/opencv/opencv/blob/4.x/doc/Doxyfile.in
+add note on citing to methods reporting
+add note on methods reporting and citing in index (below) about letting us know and we will add your paper to the pubs using ascent page.
+add to template reporting page DOI for most recent ver.
+spellchecker?
+https://github.com/sphinx-contrib/email
+https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details
+Not sure if there is any need but can also add sidebar content
+put figure captions in sidebar
+set up google analytics https://sphinx-rtd-theme.readthedocs.io/en/stable/configuring.html
+add logo https://sphinx-rtd-theme.readthedocs.io/en/stable/configuring.html
+use this in adding the multichoice citation: https://docs.readthedocs.io/en/stable/guides/adding-custom-css.html
+make figure captions actual caption and add cross references to the images
+add syntax highlighting to code (specifically json)
 
 * **Cite the paper:**
     **Musselman ED**, **Cariello JE**, Grill WM, Pelot NA. ASCENT (Automated Simulations to Characterize Electrical Nerve Thresholds): A
@@ -41,6 +61,7 @@ Also need to get toctree maxdepth working on subpages
 
    Getting_Started
    Running_ASCENT/index
+   test
    JSON/index
    Methods_Template
 
@@ -63,7 +84,7 @@ Also need to get toctree maxdepth working on subpages
 .. toctree::
    :maxdepth: 2
    :caption: Reference
-   
+
    Publications_Using_ASCENT
    references
    Validation
