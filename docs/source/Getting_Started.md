@@ -29,7 +29,7 @@ If using MacOS to run local NEURON simulations, it may be necessary to install t
 
 Users may also download a text editor or integrated development environment (IDE) of their choosing to view/edit code (e.g., [Atom](https://atom.io/), [Visual Studio Code](https://code.visualstudio.com/), [IntelliJ IDEA](https://www.jetbrains.com/idea/download/)). For Java code, full autocomplete functionality requires adding both the path to the COMSOL installation ending in `plugins` as well as the path ```<ASCENT_PATH>/bin/json-20190722.jar``` to the list of available libraries (usually from within the IDE’s project settings).
 
-### Installing ASCENT pipeline
+### Installing the ASCENT pipeline
 
 1. First, download or clone the SPARC ASCENT pipeline from [GitHub](https://github.com/wmglab-duke/ascent) to a desired location that will be referenced in step 3. Downloading is a much simpler process than cloning via Git, but does not easily allow for you to get the most recent updates/bug fixes, nor does it allow you to suggest new features/changes. If you are interested in either of these features, you should clone via Git rather than downloading.
     * Downloading: Click the [download](https://github.com/wmglab-duke/ascent/archive/refs/heads/master.zip) button on GitHub and choose the location to which you would like to save. Note that you will need to extract the files, as they will be downloaded in a compressed format. When presented with a choice of compression format, ".zip" is a safe choice that most computers will be able to extract.
@@ -60,20 +60,6 @@ ffmpeg {cite}`tomar2006converting`, xlsxwriter {cite}`xlsxwriter2017`, seaborn {
     * Manual Setup: Copy the file ```config/templates/env.json``` into ```config/system/env.json``` (new file). This file holds important paths for software used by the pipeline (see env.json in S6 and S7). Then, edit each of the four values as specified below. Use ```\\``` in Windows and ```/``` in MacOS/Linux operating systems. Note that the file separators are operating system dependent, so even if you installed in step 2 with Unix-like command environment on a Windows machine (e.g., using [Git Bash](https://gitforwindows.org/), [Cygwin](https://www.cygwin.com/), or a VM with [Ubuntu](https://ubuntu.com/)), you will still need to choose the proper file separator for Windows, i.e., ```\\```). See example env.json files for both MacOS and Windows ([S8 Text](S8-JSON-file-parameter-guide)).
     * Automatic setup: Upon the initiation of your first run, you will be prompted to enter the above four paths if you did not choose to complete the manual setup. Enter them as prompted, following the guidelines detailed above and exemplified in [S7](S7-JSON-configuration-files). Note that you may at any time update paths with ```python run env_setup``` to rewrite this file if the information should change.
 4. Before the first time you run the pipeline, you must open the COMSOL Server and log in with a username and password of your choosing (arbitrary and not needed thereafter). This can be done by navigating to the bin/ directory in the COMSOL installation and running ```comsolmphserver``` (Windows) or ```./comsol server``` (MacOS/Linux).
-
-### References
-1. Clark A. Pillow: a modern fork of PIL — Pillow v2.3.0 (PIL fork) [Internet]. 2020 [cited 2020 Apr 20]. Available from: [https://pillow.readthedocs.io/en/2.3.0/](https://pillow.readthedocs.io/en/2.3.0/)
-1. Oliphant TE. A Guide to NumPy [Internet]. Trelgol Publishing; 2006. Available from: [https://books.google.com/books?id=fKulSgAACAAJ](https://books.google.com/books?id=fKulSgAACAAJ)
-1. Gillies S. Shapely · PyPI [Internet]. 2019 [cited 2020 Apr 20]. Available from: [https://pypi.org/project/Shapely/](https://pypi.org/project/Shapely/)
-1. Hunter JD. Matplotlib: A 2D Graphics Environment. Comput Sci Eng. 2007 May;9(3):90–5.
-1. Johnson A, Chalton M, Treyer L, Ratajc G. pyclipper · PyPI [Internet]. 2019 [cited 2020 Apr 20]. Available from: [https://pypi.org/project/pyclipper/](https://pypi.org/project/pyclipper/)
-1. Shinners P. Pygame Intro — pygame v2.0.0.dev5 documentation [Internet]. [cited 2020 Apr 20]. Available from: [https://www.pygame.org/docs/tut/PygameIntro.html](https://www.pygame.org/docs/tut/PygameIntro.html)
-1. Kundert K. QuantiPhy: Physical Quantities — quantiphy 2.10.0 documentation [Internet]. 2020 [cited 2020 Apr 20]. Available from: [https://quantiphy.readthedocs.io/en/stable/](https://quantiphy.readthedocs.io/en/stable/)
-1. Bradski G, Daebler A. Learning OpenCV. Computer vision with OpenCV library. 2008 Jan 1;222–64.
-1. Blomqvist V. pymunk · PyPI [Internet]. 2019 [cited 2020 Apr 20]. Available from: [https://pypi.org/project/pymunk/](https://pypi.org/project/pymunk/)
-1. Virtanen P, Gommers R, Oliphant TE, Haberland M, Reddy T, Cournapeau D, et al. SciPy 1.0: fundamental algorithms for scientific computing in Python. Nat Methods [Internet]. 2020;17(3):261–72. Available from: [https://doi.org/10.1038/s41592-019-0686-2](https://doi.org/10.1038/s41592-019-0686-2)
-1. The pandas development team. pandas-dev/pandas: Pandas [Internet]. Zenodo; 2020. Available from: [https://doi.org/10.5281/zenodo.3509134](https://doi.org/10.5281/zenodo.3509134)
-1. Gazoni E, Clark C. openpyxl - A Python library to read/write Excel 2010 xlsx/xlsm files [Internet]. 2020. Available from: [https://openpyxl.readthedocs.io/en/stable/](https://openpyxl.readthedocs.io/en/stable/)
 
 ## Metadata required to model an in vivo experiment using the ASCENT pipeline
 Note: All metadata required for the [tutorial run](#tutorial-run) are provided with ASCENT.

@@ -125,51 +125,6 @@ part instances in “preset” cuff files in a nested order (i.e., the
 outermost domains first, knowing that domains nested in space within
 them will overwrite earlier domain assignments).
 
-
-### ModelWrapper.addMaterialDefinitions()
-
-The user is unlikely to interface directly with the
-`addMaterialDefinitions()` method in Java as it operates behind the
-scenes. The method takes an input of a list of strings containing the
-material functions (i.e., endoneurium, perineurium, epineurium, cuff
-“fill”, cuff “insulator”, contact “conductor”, and contact “recess”),
-***Model***, and a COMSOL `ModelParamGroup` for containing the material
-properties as a COMSOL “Parameters Group” under COMSOL’s “Global
-Definitions”. The method then loops over all material functions, creates
-a new material if it does not yet exist as `“mat<#>”` using Part’s
-`defineMaterial()` method, and adds the identifier (e.g., “mat1”) to the
-`IdentifierManager`.
-
-### ModelWrapper.addCuffPartMaterialAssignment()
-
-The user is unlikely to interface directly with the
-`addCuffPartMaterialAssignment()` method in Java as it operates behind the
-scenes. The method loads in a cuff part primitive’s labels from its
-IdentifierManager. The method loops over the list of material JSON
-Objects in the “preset” cuff configuration file. For each material
-function in the “preset” cuff configuration file, the method creates a
-COMSOL Material Link to assign a previously defined selection in a cuff
-part instance to a defined material.
-
-### ModelWrapper.addCuffPartMaterialAssignments()
-
-The user is unlikely to interface directly with the
-`addCuffMaterialAssignments()` method in Java as it operates behind the
-scenes. The method loops through all part instances in the cuff
-configuration file, which is linked to ***Model*** by a string of its
-file name under the “preset” key, and calls the
-`addCuffMaterialAssignment()` method for each part instance. As described
-in `addCuffPartMaterialAssignment()` above, a material is connected to the
-selection within the part primitive by its label. In COMSOL, material
-links appear in the “Materials” node. COMSOL assigns the material links
-in the order of the part instances defined in the “preset” cuff
-configuration file, which is important since material links overwrite
-previous domain assignments. For this reason, it is important to list
-part instances in “preset” cuff files in a nested order (i.e., the
-outermost domains first, knowing that domains nested in space within
-them will overwrite earlier domain assignments).
-
-
 ## Making geometries in COMSOL (Part class)
 ###  Part.createEnvironmentPartPrimitive()
 
@@ -211,7 +166,7 @@ is an instantiation of a part primitive previously defined in the COMSOL
 “model” object and will take specific form based on its input
 parameters.
 
-### Part.createEnvironmentPartInstance()
+#### Part.createEnvironmentPartInstance()
 
 The `createEnvironmentPartInstance()` method in Java creates a “part
 instance” in COMSOL’s “Geometry” node based on a primitive previously
@@ -224,7 +179,7 @@ the medium part stored in the `identifierManager`), an instance of
 Object in ***Model***, the parameters required to instantiate the
 environment part primitive are defined.
 
-### Part.createCuffPartInstance()
+#### Part.createCuffPartInstance()
 
 The `createCuffPartInstance()` method in Java is analogous to
 `createEnvironmentPartInstance()`, but it is used to instantiate cuff part
@@ -233,7 +188,7 @@ geometries. We decided to separate these methods since all products of
 shift (x,y,z) and rotation values.
 
 
-###  Part.createNervePartInstance()
+####  Part.createNervePartInstance()
 
 The `createNervePartInstance()` method in Part (`src/model/Part.java`)
 creates three-dimensional representations of the nerve sample including

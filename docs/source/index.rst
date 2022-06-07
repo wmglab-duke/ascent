@@ -12,6 +12,11 @@ Welcome to ASCENT's documentation!
 
 **Cite both the paper and the DOI for the release of the repository used for your work. We encourage you to clone the most recent commit of the repository.**
 
+Note: Here add copy button, and other citation types including bibtex. Might want to add whole citation page.
+Note also add copy button to json configs
+Note I also think these citations should be changed to APA?
+Also need to rewrite tutorial text
+
 * **Cite the paper:**
     **Musselman ED**, **Cariello JE**, Grill WM, Pelot NA. ASCENT (Automated Simulations to Characterize Electrical Nerve Thresholds): A
     Pipeline for Sample-Specific Computational Modeling of Electrical Stimulation of Peripheral Nerves. PLoS Comput Biol [Internet]. 2021;
