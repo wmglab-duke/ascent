@@ -67,3 +67,5 @@ html_show_sphinx = False
 myst_heading_anchors = 4
 
 bibtex_bibfiles = ['refs.bib']
+
+bibtex_reference_style = 'author_year'
