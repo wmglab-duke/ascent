@@ -114,23 +114,7 @@ Welcome to ASCENT's documentation!
    The Grill Lab <https://www.neuro.duke.edu/research/faculty-labs/grill-lab>
 
 Todo
-Note also add copy button to json configs
-Note I also think these citations should be changed to APA?
-Need to write or link running the pipeline text
-https://pypi.org/project/sphinx-rtd-dark-mode/
-add note on citing to methods reporting
+Write running ascent pipeline section
 add note on methods reporting and citing in index (below) about letting us know and we will add your paper to the pubs using ascent page.
-add to template reporting page DOI for most recent ver.
-https://github.com/sphinx-contrib/email
-set up google analytics https://sphinx-rtd-theme.readthedocs.io/en/stable/configuring.html
-add logo https://sphinx-rtd-theme.readthedocs.io/en/stable/configuring.html
 make figure captions actual caption and add cross references to the images
-add syntax highlighting to code (specifically json)
 Update all cross references
-
-Use this with the container directive: https://stackoverflow.com/questions/55710416/toggle-text-between-multiple-buttons
-or copy https://docs.opencv.org/3.4.11/d4/dee/tutorial_optical_flow.html
-https://github.com/opencv/opencv/blob/4.x/doc/tutorial-utils.js
-https://github.com/opencv/opencv/blob/4.x/doc/Doxyfile.in
-use this in adding the multichoice citation: https://docs.readthedocs.io/en/stable/guides/adding-custom-css.html
-https://stackoverflow.com/questions/66971299/sphinx-documentation-with-readthedocs-theme-text-block-wrapping

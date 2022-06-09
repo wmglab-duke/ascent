@@ -1,6 +1,6 @@
 # Template for Reporting Methods in a Publication
 
-For uses of ASCENT, either stand-alone in its publicly available form, as a starting point upon which further work is developed, or as a component of a system (e.g., connected with other organ models or engineering optimization techniques), we ask that the author(s) cite the ASCENT [publication](https://doi.org/10.1371/journal.pcbi.100928) and indicate the release of ASCENT used (e.g., ASCENT v1.0.0).
+For uses of ASCENT, either stand-alone in its publicly available form, as a starting point upon which further work is developed, or as a component of a system (e.g., connected with other organ models or engineering optimization techniques), we ask that the author(s) cite both the ASCENT [publication](https://doi.org/10.1371/journal.pcbi.100928) and  the release of ASCENT (e.g., ASCENT v1.0.0). Make sure to use the correct [DOI](https://zenodo.org/badge/latestdoi/379064819) for the release used.
 
 The following guidelines are to help users adhere to FAIR principles when using ASCENT and thereby enable model reproducibility and reduce duplication of efforts {cite:p}`Wilkinson2016`. With published modeling studies using ASCENT, we ask that   users provide all code and input files required to reproduce their work.
 
