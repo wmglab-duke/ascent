@@ -17,7 +17,7 @@ Welcome to ASCENT's documentation!
   .. details:: APA
      :open:
 
-      **Musselman, E. D.**, **Cariello, J. E.**, Grill, W. M., & Pelot, N. A. (2021). ASCENT (Automated Simulations to Characterize Electrical Nerve Thresholds): A pipeline for sample-specific computational modeling of electrical stimulation of peripheral nerves. PLOS Computational Biology, 17(9), e1009285. https://doi.org/10.1371/journal.pcbi.1009285
+     **Musselman, E. D.**, **Cariello, J. E.**, Grill, W. M., & Pelot, N. A. (2021). ASCENT (Automated Simulations to Characterize Electrical Nerve Thresholds): A pipeline for sample-specific computational modeling of electrical stimulation of peripheral nerves. PLOS Computational Biology, 17(9), e1009285. https://doi.org/10.1371/journal.pcbi.1009285
 
   .. details:: MLA
 
@@ -47,7 +47,7 @@ Welcome to ASCENT's documentation!
   .. details:: APA
      :open:
 
-      **Musselman, E. D.**, **Cariello, J. E.**, Grill, W. M., & Pelot, N. A. (2022). wmglab-duke/ascent: ASCENT v1.1.2 (v1.1.2) [Computer software]. Zenodo. https://doi.org/10.5281/ZENODO.6537277
+     **Musselman, E. D.**, **Cariello, J. E.**, Grill, W. M., & Pelot, N. A. (2022). wmglab-duke/ascent: ASCENT v1.1.2 (v1.1.2) [Computer software]. Zenodo. https://doi.org/10.5281/ZENODO.6537277
 
   .. details:: MLA
 
