@@ -214,6 +214,7 @@ def make_task(my_os: str, start_p: str, sim_p: str, inner: int, fiber: int, top:
         if my_os == 'UNIX-LIKE':
             lines = [
                 '#!/bin/bash\n',
+                'cd \"{}\"\n'.format(sim_p),
                 'chmod a+rwx special\n',
                 './special -nobanner '
                 '-c \"strdef sim_path\" '
