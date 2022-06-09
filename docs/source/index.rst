@@ -12,42 +12,64 @@ Welcome to ASCENT's documentation!
 
 **Cite both the paper and the DOI for the release of the repository used for your work. We encourage you to clone the most recent commit of the repository.**
 
-Note also add copy button to json configs
-Note I also think these citations should be changed to APA?
-Need to write or link running the pipeline text
-https://pypi.org/project/sphinx-rtd-dark-mode/
-add note on citing to methods reporting
-add note on methods reporting and citing in index (below) about letting us know and we will add your paper to the pubs using ascent page.
-add to template reporting page DOI for most recent ver.
-https://github.com/sphinx-contrib/email
-set up google analytics https://sphinx-rtd-theme.readthedocs.io/en/stable/configuring.html
-add logo https://sphinx-rtd-theme.readthedocs.io/en/stable/configuring.html
-make figure captions actual caption and add cross references to the images
-add syntax highlighting to code (specifically json)
-Update all cross references
-
-Use this with the container directive: https://stackoverflow.com/questions/55710416/toggle-text-between-multiple-buttons
-or copy https://docs.opencv.org/3.4.11/d4/dee/tutorial_optical_flow.html
-https://github.com/opencv/opencv/blob/4.x/doc/tutorial-utils.js
-https://github.com/opencv/opencv/blob/4.x/doc/Doxyfile.in
-use this in adding the multichoice citation: https://docs.readthedocs.io/en/stable/guides/adding-custom-css.html
-https://stackoverflow.com/questions/66971299/sphinx-documentation-with-readthedocs-theme-text-block-wrapping
-
 * **Cite the paper:**
-    **Musselman ED**, **Cariello JE**, Grill WM, Pelot NA. ASCENT (Automated Simulations to Characterize Electrical Nerve Thresholds): A
-    Pipeline for Sample-Specific Computational Modeling of Electrical Stimulation of Peripheral Nerves. PLoS Comput Biol [Internet]. 2021;
-    Available from: https://doi.org/10.1371/journal.pcbi.1009285
 
+  .. details:: APA
+     :open:
+
+      **Musselman, E. D.**, **Cariello, J. E.**, Grill, W. M., & Pelot, N. A. (2021). ASCENT (Automated Simulations to Characterize Electrical Nerve Thresholds): A pipeline for sample-specific computational modeling of electrical stimulation of peripheral nerves. PLOS Computational Biology, 17(9), e1009285. https://doi.org/10.1371/journal.pcbi.1009285
+
+  .. details:: MLA
+
+      Musselman, Eric D., et al. “ASCENT (Automated Simulations to Characterize Electrical Nerve Thresholds): A Pipeline for Sample-Specific Computational Modeling of Electrical Stimulation of Peripheral Nerves.” PLOS Computational Biology, vol. 17, no. 9, Sept. 2021, p. e1009285. PLoS Journals, https://doi.org/10.1371/journal.pcbi.1009285.
+
+  .. details:: BibTeX
+
+    .. code-block:: BibTeX
+
+        @article{Musselman2021,
+          doi = {10.1371/journal.pcbi.1009285},
+          url = {https://doi.org/10.1371/journal.pcbi.1009285},
+          year = {2021},
+          month = sep,
+          publisher = {Public Library of Science ({PLoS})},
+          volume = {17},
+          number = {9},
+          pages = {e1009285},
+          author = {Eric D. Musselman and Jake E. Cariello and Warren M. Grill and Nicole A. Pelot},
+          editor = {Dina Schneidman-Duhovny},
+          title = {{ASCENT} (Automated Simulations to Characterize Electrical Nerve Thresholds): A pipeline for sample-specific computational modeling of electrical stimulation of peripheral nerves},
+          journal = {{PLOS} Computational Biology}
+        }
 
 * **Cite the code (use the DOI for the version of code used):** |doi|
-    **Musselman ED**, **Cariello JE**, Grill WM, Pelot NA. ASCENT (Automated Simulations to Characterize Electrical Nerve Thresholds): A
-    Pipeline for Sample-Specific Computational Modeling of Electrical Stimulation of Peripheral Nerves. PLoS Comput Biol [Internet]. 2021,
-    DOI: 10.5281/zenodo.5500260
+
+  .. details:: APA
+     :open:
+
+      **Musselman, E. D.**, **Cariello, J. E.**, Grill, W. M., & Pelot, N. A. (2022). wmglab-duke/ascent: ASCENT v1.1.2 (v1.1.2) [Computer software]. Zenodo. https://doi.org/10.5281/ZENODO.6537277
+
+  .. details:: MLA
+
+      Musselman, Eric D., et al. Wmglab-Duke/Ascent: ASCENT v1.1.2. v1.1.2, Zenodo, 2022, doi:10.5281/ZENODO.6537277.
+
+  .. details:: BibTeX
+
+    .. code-block:: BibTeX
+
+        @misc{https://doi.org/10.5281/zenodo.6537277,
+          doi = {10.5281/ZENODO.6537277},
+          url = {https://zenodo.org/record/6537277},
+          author = {Musselman,  Eric D and Cariello,  Jake E and Grill,  Warren M and Pelot,  Nicole A},
+          title = {wmglab-duke/ascent: ASCENT v1.1.2},
+          publisher = {Zenodo},
+          year = {2022},
+          copyright = {MIT License}
+        }
 
 **ASCENT** is an open source platform for simulating peripheral nerve stimulation. To download the software, visit the `ASCENT GitHub repository <https://github.com/wmglab-duke/ascent>`_.
 
 .. image:: uploads/ascent_media_release_v2.png
-
 
 
 .. toctree::
@@ -90,3 +112,25 @@ https://stackoverflow.com/questions/66971299/sphinx-documentation-with-readthedo
    ASCENT Publication <https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1009285>
    ASCENT on GitHub <https://github.com/wmglab-duke/ascent>
    The Grill Lab <https://www.neuro.duke.edu/research/faculty-labs/grill-lab>
+
+Todo
+Note also add copy button to json configs
+Note I also think these citations should be changed to APA?
+Need to write or link running the pipeline text
+https://pypi.org/project/sphinx-rtd-dark-mode/
+add note on citing to methods reporting
+add note on methods reporting and citing in index (below) about letting us know and we will add your paper to the pubs using ascent page.
+add to template reporting page DOI for most recent ver.
+https://github.com/sphinx-contrib/email
+set up google analytics https://sphinx-rtd-theme.readthedocs.io/en/stable/configuring.html
+add logo https://sphinx-rtd-theme.readthedocs.io/en/stable/configuring.html
+make figure captions actual caption and add cross references to the images
+add syntax highlighting to code (specifically json)
+Update all cross references
+
+Use this with the container directive: https://stackoverflow.com/questions/55710416/toggle-text-between-multiple-buttons
+or copy https://docs.opencv.org/3.4.11/d4/dee/tutorial_optical_flow.html
+https://github.com/opencv/opencv/blob/4.x/doc/tutorial-utils.js
+https://github.com/opencv/opencv/blob/4.x/doc/Doxyfile.in
+use this in adding the multichoice citation: https://docs.readthedocs.io/en/stable/guides/adding-custom-css.html
+https://stackoverflow.com/questions/66971299/sphinx-documentation-with-readthedocs-theme-text-block-wrapping

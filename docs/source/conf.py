@@ -29,7 +29,7 @@ release = 'v1.0.3'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 
-extensions = ['myst_parser','sphinxarg.ext','sphinx.ext.intersphinx','sphinx.ext.autodoc','sphinxcontrib.bibtex']
+extensions = ['myst_parser','sphinxarg.ext','sphinx.ext.intersphinx','sphinx.ext.autodoc','sphinxcontrib.bibtex','sphinxcontrib.details.directive']
 
 source_suffix = {
     '.rst': 'restructuredtext',
@@ -59,7 +59,14 @@ exclude_patterns = []
 # a list of builtin themes.
 #
 html_theme = 'sphinx_rtd_theme'
+# These folders are copied to the documentation's HTML output
+html_static_path = ['_static']
 
+# These paths are either relative to html_static_path
+# or fully qualified paths (eg. https://...)
+html_css_files = [
+    'details.css',
+]
 html_show_copyright = True
 
 html_show_sphinx = False
