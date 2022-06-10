@@ -2,5 +2,5 @@ myst-parser==0.15.2
 sphinx-argparse
 sphinxcontrib-bibtex
 sphinxcontrib-details-directive
-sphinxcontrib_copybutton
+sphinx-copybutton
 sphinx-rtd-dark-mode
