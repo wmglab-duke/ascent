@@ -1708,8 +1708,9 @@ of the file.
 
     `“active_srcs”`: The value is a JSON Object containing key-value pairs of
     contact weightings for preset cuffs. Each value (`List[List[Double]]`)
-    is the contact weighting to use to make extracellular potentials inputs
-    to NEURON simulations. The values should not exceed +/-1 in magnitude,
+    is the contact weighting used to make extracellular potentials inputs
+    to NEURON simulations. The order of weights matches the order of parts 
+    containing point current sources. The values should not exceed +/-1 in magnitude,
     otherwise an error is thrown. For monopolar cuff electrodes, the value
     should be either +1 or -1. For cuff electrodes with more than one
     contact (2+), the sum of weightings should be +1, -1, or 0. If the
