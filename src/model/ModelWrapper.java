@@ -388,7 +388,7 @@ public class ModelWrapper {
 
             // LOAD BASIS MPH MODEL
             String basis_dir = String.join("/", new String[]{
-                    bases_directory, bases_paths[basis_ind]
+                    bases_directory, basis_ind + ".mph"
             });
             File file = new File(basis_dir);
             while(!file.canWrite() || !file.canRead()) {
