@@ -194,7 +194,10 @@ def get_thresh_bounds(sim_dir: str, sim_name: str, inner_ind: int):
                                   'which you also defined \n')
 
             else:
-                warnings.warn(f"No fiber threshold exists for scout sim: inner{inner_ind} fiber0, using standard top and bottom")
+                if args.verbose:
+                    warnings.warn(f"No fiber threshold exists for scout sim: inner{inner_ind} fiber0, using standard top and bottom")
+                else:
+                    warnings.warn(f"Missing at least on scout threshold, using standard top and bottom. Rerun with --verbose flag for specific inner index.")
                 top = sim_config['protocol']['bounds_search']['top']
                 bottom = sim_config['protocol']['bounds_search']['bottom']
 
