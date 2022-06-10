@@ -208,7 +208,7 @@ def get_thresh_bounds(sim_dir: str, sim_name: str, inner_ind: int):
     return top, bottom
 
 
-def make_task(my_os: str, start_p: str, sim_p: str, inner: int, fiber: int, top: float, bottom: float,
+def make_task(my_os: str,sub_con: str, start_p: str, sim_p: str, inner: int, fiber: int, top: float, bottom: float,
               diam: float, deltaz: float, axonnodes: int):
     with open(start_p, 'w+') as handle:
         if my_os == 'UNIX-LIKE':
@@ -237,6 +237,8 @@ def make_task(my_os: str, start_p: str, sim_p: str, inner: int, fiber: int, top:
                                                                           deltaz,
                                                                           axonnodes)
             ]
+            if sub_con is not 'cluster':
+                lines.remove('cd \"{}\"\n'.format(sim_p))
 
             # copy special files ahead of time to avoid 'text file busy error'
             if not os.path.exists('special'):
@@ -401,7 +403,7 @@ def cluster_submit(run_number: int, partition: str, args, mem: int=2000, array_l
                             elif neuron_flag == 3:
                                 axonnodes = int(n_fiber_coords)
 
-                            make_task(OS, start_path_solo, sim_path, inner_ind_solo, fiber_ind_solo, stimamp_top, stimamp_bottom,
+                            make_task(OS,'cluster', start_path_solo, sim_path, inner_ind_solo, fiber_ind_solo, stimamp_top, stimamp_bottom,
                                     diameter, deltaz, axonnodes)
 
                             # submit batch job for fiber
@@ -471,7 +473,7 @@ def cluster_submit(run_number: int, partition: str, args, mem: int=2000, array_l
 
                                 stimamp_top, stimamp_bottom = get_thresh_bounds(sim_dir, sim_name, inner_ind)
                                 if stimamp_top is not None and stimamp_bottom is not None:
-                                    make_task(OS, start_path, sim_path, inner_ind, fiber_ind, stimamp_top, stimamp_bottom,
+                                    make_task(OS,'cluster', start_path, sim_path, inner_ind, fiber_ind, stimamp_top, stimamp_bottom,
                                             diameter, deltaz, axonnodes)
                                     array_index += 1
                                     job_count += 1
@@ -610,7 +612,7 @@ def make_local_submission_list(run_number: int, args, summary_gen = False):
                         elif neuron_flag == 3:
                             axonnodes = int(n_fiber_coords)
 
-                        if not summary_gen: make_task(OS, start_path, sim_path, inner_ind, fiber_ind, stimamp_top, stimamp_bottom,
+                        if not summary_gen: make_task(OS,'local', start_path, sim_path, inner_ind, fiber_ind, stimamp_top, stimamp_bottom,
                                 diameter, deltaz, axonnodes)
 
                         # submit batch job for fiber
