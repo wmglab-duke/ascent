@@ -119,3 +119,5 @@ add note on methods reporting and citing in index (below) about letting us know 
 make figure captions actual caption and add cross references to the images
 Update all cross references
 Update citations on readme
+Note manually check rsts for cross references
+APA citation is still adding blockquote element
