@@ -503,20 +503,19 @@ def cluster_submit(run_number: int, partition: str, args, mem: int=2000, array_l
                                 # submit batch job for fiber
                                 job_name = f"{sim_name}_{sim_array_batch}"
 
-                                sp_string = args.slurm_params + ' ' if args.slurm_params is not None else ''
-")
                                 command = [
                                     'sbatch{}'.format(' ' +args.slurm_params if args.slurm_params is not None else ''),
                                     '--job-name={}'.format(job_name),
-                                    '--output={}.log'.format(out_dir),
-                                    '--error={}.log'.format(err_dir),
-                                    '--array={}'.format(start-job_count - 1),
+                                    '--output={}%a.log'.format(out_dir),
+                                    '--error={}%a.log'.format(err_dir),
+                                    '--array={}-{}'.format(start,job_count - 1),
                                     '--mem={}'.format(mem),
-                                    '--partition', partition,
+                                    '--partition={}'.format(partition),
                                     '--cpus-per-task=1',
                                     'array_launch.slurm',
                                     start_path_base
                                     ]
+
                                 if not args.verbose:
                                     with open(os.devnull, 'wb') as devnull:
                                         exit_code = subprocess.check_call(command, stdout=devnull)
