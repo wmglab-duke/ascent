@@ -85,7 +85,7 @@ def printProgressBar(iteration, total, prefix='', suffix='', decimals=1, length=
     # Print New Line on Complete
     if iteration == total:
         print()
-        
+
 def load(config_path: str):
     """
     Loads in json data and returns to user, assuming it has already been validated.
@@ -303,7 +303,7 @@ def cluster_submit(run_number: int, partition: str, args, mem: int=2000, array_l
     job_count = 1
     data = [[], [], []]
     current_iteration = 0
-    
+
     for sample in samples:
         # loop models, sims
         for model in models:
@@ -319,7 +319,7 @@ def cluster_submit(run_number: int, partition: str, args, mem: int=2000, array_l
                         #print progress bar
                         total_iterations = len(samples)*len(models)*len(sims)*len(nsim_list)
                         printProgressBar(current_iteration, total_iterations,length=40,prefix='Run {}:'.format(run_number))
-                        
+
                     sim_path = os.path.join(sim_dir, sim_name)
                     fibers_path = os.path.abspath(os.path.join(sim_path, 'data', 'inputs'))
                     output_path = os.path.abspath(os.path.join(sim_path, 'data', 'outputs'))
@@ -411,7 +411,7 @@ def cluster_submit(run_number: int, partition: str, args, mem: int=2000, array_l
                             if args.verbose:
                                 print('========= SUBMITTING SOLO: {} ==========='.format(job_name))
 
-                            command = ' '.join([
+                            command = [
                                 'sbatch{}'.format(' ' +args.slurm_params if args.slurm_params is not None else ''),
                                 '--job-name={}'.format(job_name),
                                 '--output={}'.format(output_log),
@@ -420,8 +420,12 @@ def cluster_submit(run_number: int, partition: str, args, mem: int=2000, array_l
                                 '-p', partition,
                                 '-c', '1',
                                 start_path_solo
-                            ])
-                            exit_code = os.system(command)
+                                ]
+                            if not args.verbose:
+                                with open(os.devnull, 'wb') as devnull:
+                                    exit_code = subprocess.check_call(command, stdout=devnull)
+                            else:
+                                    exit_code = subprocess.check_call(command)
                             if exit_code!=0:
                                 sys.exit('Non-zero exit code during job submission. Exiting.')
 
@@ -499,10 +503,24 @@ def cluster_submit(run_number: int, partition: str, args, mem: int=2000, array_l
                                 job_name = f"{sim_name}_{sim_array_batch}"
 
                                 sp_string = args.slurm_params + ' ' if args.slurm_params is not None else ''
-                                exit_code = os.system(f"sbatch {sp_string}--job-name={job_name} --output={out_dir}%a.log "
-                                        f"--error={err_dir}%a.log --array={start}-{job_count - 1} "
-                                        f"--mem={mem} --cpus-per-task=1 "
-                                        f"--partition={partition} array_launch.slurm {start_path_base}")
+")
+                                command = [
+                                    'sbatch{}'.format(' ' +args.slurm_params if args.slurm_params is not None else ''),
+                                    '--job-name={}'.format(job_name),
+                                    '--output={}.log'.format(out_dir),
+                                    '--error={}.log'.format(err_dir),
+                                    '--array={}'.format(start-job_count - 1),
+                                    '--mem={}'.format(mem),
+                                    '--partition', partition,
+                                    '--cpus-per-task=1',
+                                    'array_launch.slurm',
+                                    start_path_base
+                                    ]
+                                if not args.verbose:
+                                    with open(os.devnull, 'wb') as devnull:
+                                        exit_code = subprocess.check_call(command, stdout=devnull)
+                                else:
+                                        exit_code = subprocess.check_call(command)
                                 if exit_code!=0:
                                     sys.exit('Non-zero exit code during job array submission. Exiting.')
 
