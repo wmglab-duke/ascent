@@ -118,3 +118,4 @@ Write running ascent pipeline section
 add note on methods reporting and citing in index (below) about letting us know and we will add your paper to the pubs using ascent page.
 make figure captions actual caption and add cross references to the images
 Update all cross references
+Update citations on readme
