@@ -66,6 +66,18 @@ OS = 'UNIX-LIKE' if any([s in sys.platform for s in ['darwin', 'linux']]) else '
 
 #%% Set up utility functions
 
+class WarnOnlyOnce:
+    warnings = set()
+
+    @classmethod
+    def warn(cls,message):
+        # storing int == less memory then storing raw message
+        h = hash(message)
+        if h not in cls.warnings:
+            # do your warning
+            print(f"Warning: {message}")
+            cls.warnings.add(h)
+
 def printProgressBar(iteration, total, prefix='', suffix='', decimals=1, length=100, fill='█'):
     """
     Call in a loop to create terminal progress bar
@@ -190,14 +202,19 @@ def get_thresh_bounds(sim_dir: str, sim_name: str, inner_ind: int):
 
                 if any(unused_protocol_key in sim_config['protocol']['bounds_search'].keys()
                        for unused_protocol_key in unused_protocol_keys):
-                    warnings.warn('WARNING: scout_sim is defined in Sim, so not using "top" or "bottom" '
+                    if args.verbose:
+                        warnings.warn('WARNING: scout_sim is defined in Sim, so not using "top" or "bottom" '
+                                  'which you also defined \n')
+                    else:
+                        WarnOnlyOnce.warn('WARNING: scout_sim is defined in Sim, so not using "top" or "bottom" '
                                   'which you also defined \n')
 
             else:
                 if args.verbose:
                     warnings.warn(f"No fiber threshold exists for scout sim: inner{inner_ind} fiber0, using standard top and bottom")
                 else:
-                    warnings.warn(f"Missing at least on scout threshold, using standard top and bottom. Rerun with --verbose flag for specific inner index.")
+                    WarnOnlyOnce.warn(f"Missing at least on scout threshold, using standard top and bottom. Rerun with --verbose flag for specific inner index.")
+
                 top = sim_config['protocol']['bounds_search']['top']
                 bottom = sim_config['protocol']['bounds_search']['bottom']
 
