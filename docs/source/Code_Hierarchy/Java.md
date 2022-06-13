@@ -45,7 +45,7 @@ successful).
 
 The `addNerve()` method adds the nerve components to the COMSOL "model"
 object using Java. If the `"NerveMode"` in ***Sample*** ("nerve") is
-"PRESENT" ([S8 Text](S8-JSON-file-parameter-guide)) the program creates a part instance of epineurium using the
+"PRESENT" ([Sample Parameters](../JSON/JSON_parameters/sample)) the program creates a part instance of epineurium using the
 `createNervePartInstance()` method in Part (`src/model/Part.java`). The
 `addNerve()` method then searches through all directories
 in `fascicles/` for the sample being modeled, and, for each fascicle,
@@ -207,7 +207,7 @@ ASCENT uses CAD [sectionwise](https://www.comsol.com/fileformats)
 extension containing column vectors for x- and y-coordinates) created by
 the Python Sample class to define fascicle tissue boundaries in COMSOL.
 
-We provide the `"use_ci"` mode in ***Model*** ([S8 Text](S8-JSON-file-parameter-guide)) to model the perineurium
+We provide the `"use_ci"` mode in ***Model*** ([Model Parameters](../JSON/JSON_parameters/model)) to model the perineurium
 using COMSOL’s contact impedance boundary condition for fascicles with
 only one inner (i.e., endoneurium) domain for each outer (i.e.,
 perineurium) domain ([Perineurium Properties](../Running_ASCENT/Info.md#definition-of-perineurium)). If `"use_ci"` mode is true, the perineurium for all
@@ -235,7 +235,7 @@ epineurium cross section is represented one of two ways:
 -  If `deform_ratio`
     in ***Sample*** is set to 1 and `"DeformationMode"` is not `"NONE"`,
     the nerve shape matches the `"ReshapeNerveMode"` from ***Sample***
-    (e.g., `"CIRCLE"`). ([S8 Text](S8-JSON-file-parameter-guide)).
+    (e.g., `"CIRCLE"`). ([Sample Parameters](../JSON/JSON_parameters/sample)).
     An epineurium boundary is then created from this shape.
 
 -  Otherwise, the coordinate data contained in
@@ -244,7 +244,7 @@ epineurium cross section is represented one of two ways:
 
 The epineurium boundary is then extruded into the third dimension. This
 is only performed if the `"NerveMode"` (i.e., "nerve") in ***Sample*** is
-`"PRESENT"` and `n.tif` is provided ([S8 Text](S8-JSON-file-parameter-guide)).
+`"PRESENT"` and `n.tif` is provided ([Sample Parameters](../JSON/JSON_parameters/sample)).
 
 
 ###  Part.defineMaterial()

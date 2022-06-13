@@ -89,7 +89,7 @@ the nerve, and may optionally include a "distal" domain. The
 parameterization for the geometry of the "proximal" and "distal" domains
 is shown below in Figure A. For details on how to define the
 "proximal" and "distal" domain geometries and meshing parameters, see
-`model.json` in [S8 Text](S8-JSON-file-parameter-guide).
+[Model Parameters](../JSON/JSON_parameters/model).
 
 ![Inline image](../uploads/2019a527f15dc364c132f95ade650b12/Picture23.jpg)
 
@@ -128,7 +128,7 @@ For "naïve" `CuffShiftModes` (i.e.,
 with rotation according to the parameters used to instantiate the cuff
 from part primitives ([Part Primitives and Custom Cuffs](../Primitives_and_Cuffs/index)). If the user would like to rotate the cuff from
 beyond this position, they may set the `"add_ang"` parameter in
-***Model*** ([S8 Text](S8-JSON-file-parameter-guide)). For naïve `CuffShiftModes`, the cuff is shifted along the
+***Model*** ([Model Parameters](../JSON/JSON_parameters/model)). For naïve `CuffShiftModes`, the cuff is shifted along the
 vector from (0,0) in the direction of the `"angle_to_contacts_deg"`
 parameter in the "preset" JSON file.
 `"NAIVE_ROTATION_MIN_CIRCLE_BOUNDARY"` `CuffShiftMode` moves the cuff
@@ -155,7 +155,7 @@ nerve to make (0,0), the center of the cuff, and ***Sample’s***
 method, which calculates the area and centroid of each inner and then
 averages the inners’ centroids weighted by each inner’s area) colinear.
 If the user would like to rotate the cuff from beyond this position, they may set the
-`"add_ang"` parameter in ***Model*** ([S8 Text](S8-JSON-file-parameter-guide)). The user may override the
+`"add_ang"` parameter in ***Model*** ([Model Parameters](../JSON/JSON_parameters/model)). The user may override the
 default "AUTO" rotation of the cuff on the nerve by adding an
 orientation mask (`a.tif`) to align a certain surface of the nerve sample
 with the cuff’s center (../Running_ASCENT/Info.md#morphology-Input-Files)). This behavior depends on the
@@ -260,7 +260,7 @@ amplitudes).
 In the pipeline, the binary search protocol parameters (i.e., activation
 or block criteria, threshold criteria, method for searching for starting
 upper- and lower bounds, or termination criteria) are contained in the
-"protocol" JSON Object within ***Sim*** ([S8 Text](S8-JSON-file-parameter-guide)).
+"protocol" JSON Object within ***Sim*** ([Sim Parameters](../JSON/JSON_parameters/sim)).
 
 ###  Activation threshold protocol
 
@@ -273,8 +273,8 @@ the threshold amplitude. Current amplitudes are determined to be above
 threshold if the stimulation results in at least `n_AP` propagating
 action potentials detected at 75% of the fiber’s length (note: location
 can be specified by user with `"ap_detect_location"` parameter in
-***Sim***) ([S8 Text](S8-JSON-file-parameter-guide)). The parameters for control over the activation threshold
-protocol are found in ***Sim*** within the "protocol" JSON Object ([S8 Text](S8-JSON-file-parameter-guide)).
+***Sim***) ([Sim Parameters](../JSON/JSON_parameters/sim)). The parameters for control over the activation threshold
+protocol are found in ***Sim*** within the "protocol" JSON Object ([Sim Parameters](../JSON/JSON_parameters/sim)).
 
 ###  Block threshold protocol
 
@@ -287,16 +287,16 @@ delivering the blocking waveform through the cuff. After a user-defined
 delay during the stimulation onset period, the protocol delivers a test
 pulse (or a train of pulses if the user chooses) where the user placed
 it (see "ind" parameter in ***Sim*** within the `"intracellular_stim"`
-JSON Object ([S8 Text](S8-JSON-file-parameter-guide))), near the proximal end. The code checks for action
+JSON Object ([Sim Parameters](../JSON/JSON_parameters/sim))), near the proximal end. The code checks for action
 potentials near the distal end of the fiber (see `"ap_detect_location"`
-parameter in ***Sim*** within the "threshold" JSON Object ([S8 Text](S8-JSON-file-parameter-guide))). If at least
+parameter in ***Sim*** within the "threshold" JSON Object ([Sim Parameters](../JSON/JSON_parameters/sim))). If at least
 one action potential is detected, then transmission of the test pulse
 occurred (i.e., the stimulation amplitude is below block threshold).
 However, the absence of an action potential indicates block (i.e., the
 stimulation amplitude is above block threshold). The pipeline uses a
 binary search algorithm to converge on the threshold amplitude. The
 parameters for control over the block threshold protocol are found in
-***Sim*** within the "protocol" JSON Object ([S8 Text](S8-JSON-file-parameter-guide)).
+***Sim*** within the "protocol" JSON Object ([Sim Parameters](../JSON/JSON_parameters/sim)).
 
 The user must be careful in setting the initial upper and lower bounds
 of the binary search for block thresholds. Especially for small diameter
@@ -308,7 +308,7 @@ using a stimulation amplitude sweep {cite:p}`Pelot2017`.
 Alternatively, users may simulate the response of nerve fibers in
 response to extracellular stimulation for a user-specified set of
 amplitudes. The "protocol" JSON Object within ***Sim*** contains the set
-of amplitudes that the user would like to simulate ([S8 Text](S8-JSON-file-parameter-guide)).
+of amplitudes that the user would like to simulate ([Sim Parameters](../JSON/JSON_parameters/sim)).
 
 ## Implementation of NEURON fiber models
 
@@ -391,7 +391,7 @@ epineurium). Material properties for each function are assigned in
 ***Model*’s** "conductivities" JSON Object by either referencing
 materials in the default materials library
 (`config/system/materials.json`) by name, or with explicit definitions
-of a materials name and conductivity as a JSON Object ([S8 Text](S8-JSON-file-parameter-guide)).
+of a materials name and conductivity as a JSON Object ([Material Parameters](../JSON/JSON_parameters/materials)).
 See [link](link to ModelWrapper.addMaterialDefinitions()) for code one how this happens.
 
 ### Adding and assigning default material properties
@@ -433,7 +433,7 @@ thinly meshed domain, reduces mesh complexity and is a reasonable
 approximation {cite:p}`Pelot2018`. Therefore, perineurium can be modeled with a thin
 layer approximation (except with "peanut" fascicles; see an example in
 [Fig 2](https://doi.org/10.1371/journal.pcbi.1009285.g002)), termed "contact impedance" in COMSOL (if ***Model’s***
-`"use_ci"` parameter is true ([S8 Text](S8-JSON-file-parameter-guide))), which relates the normal component of
+`"use_ci"` parameter is true ([Model Parameters](../JSON/JSON_parameters/model))), which relates the normal component of
 the current density through the surface
 ![f5] to the drop in electric
 potentials ![f3] and the sheet resistance ![f4]:

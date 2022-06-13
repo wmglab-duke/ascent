@@ -30,6 +30,6 @@ and `make_fascicles()` are called to create ellipses for the nerve and
 fascicles in memory based on the parameters in the `mock_sample.json`
 file. MockSample’s methods ensure that the fascicles have a minimum
 distance between each fascicle boundary and the nerve and between
-fascicle boundaries. For details on the parameters that define sample morphology using our mock nerve morphology generator, see [JSON Overview](JSON/JSON_overview) for a description of mock_sample.json and [S8 Text](S8-JSON-file-parameter-guide) for details of the syntax/data type of the key-value parameter pairs required to define a mock sample. Lastly, MockSample’s `make_masks()` method is called
+fascicle boundaries. For details on the parameters that define sample morphology using our mock nerve morphology generator, see [JSON Overview](JSON/JSON_overview) for a description of mock_sample.json and [Mock Sample Parameters](JSON/JSON_parameters/mock_sample) for details of the syntax/data type of the key-value parameter pairs required to define a mock sample. Lastly, MockSample’s `make_masks()` method is called
 on the class instance to create binary masks and save them as TIFs in
 the `input/<NAME>/` directory.

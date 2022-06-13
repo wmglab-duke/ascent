@@ -4,10 +4,10 @@ The nerve cross section includes the outer nerve trace (if present; not
 required for monofascicular nerves) and, for each fascicle, either a
 single "inner" perineurium trace or both "inner" and "outer" perineurium
 traces. We provide automated control to correct for tissue shrinkage
-during histological processes {cite:p}`Boyd1979` ([S8 Text](S8-JSON-file-parameter-guide)). Morphology metrics (e.g., nerve
+during histological processes {cite:p}`Boyd1979` ([Sample Parameters](../JSON/JSON_parameters/sample)). Morphology metrics (e.g., nerve
 and fascicle(s) cross-sectional areas and centroids, major and minor
 axis lengths, and rotations of the best-fit ellipses) are automatically
-reported in ***Sample*** ([S8 Text](S8-JSON-file-parameter-guide)).
+reported in ***Sample*** ([Sample Parameters](../JSON/JSON_parameters/sample)).
 
 ###  Trace
 
@@ -85,7 +85,7 @@ Lastly, Trace has a few utility methods:
 Nerve is the name of a special instance of Trace reserved for
 representing the outer nerve (epineurium) boundary. It functions as an
 alias for Trace. An instance of the Nerve class is created if the
-`"NerveMode"` in ***Sample*** ("nerve") is "PRESENT" ([S8 Text](S8-JSON-file-parameter-guide))"
+`"NerveMode"` in ***Sample*** ("nerve") is "PRESENT" ([Sample Parameters](../JSON/JSON_parameters/sample))"
 
 ###  Fascicle
 
@@ -96,7 +96,7 @@ and one or more instances of Trace representing inner perineurium
 traces, or (2) an inner perineurium trace that is subsequently scaled to
 make a virtual outer using Trace’s methods `deepcopy()` and `offset()` and
 the perineurium thickness defined by the `"PerineuriumThicknessMode"` in
-***Sample*** (`"ci_perineurium_thickness"`) ([S8 Text](S8-JSON-file-parameter-guide)). Upon instantiation,
+***Sample*** (`"ci_perineurium_thickness"`) ([Sample Parameters](../JSON/JSON_parameters/sample)). Upon instantiation,
 Fascicle automatically validates that each inner instance of Trace is
 fully within its outer instance of Trace and that no inner instance of
 Trace intersects another inner instance of Trace.
@@ -115,14 +115,14 @@ one level for outers.
 
   - If separate binary images were provided containing contours for
     inners (`i.tif`) and outers (`o.tif`), then the `"MaskInputMode"` in
-    ***Sample*** (`"mask_input"`, [S8 Text](S8-JSON-file-parameter-guide)) is `INNER_AND_OUTER_SEPARATE`.
+    ***Sample*** (`"mask_input"`, [Sample Parameters](../JSON/JSON_parameters/sample)) is `INNER_AND_OUTER_SEPARATE`.
 
   - If a single binary image was provided containing combined contours
     of inners and outers (`c.tif`), then the `"MaskInputMode"` in
-    ***Sample*** (`"mask_input"`, [S8 Text](S8-JSON-file-parameter-guide)) is `INNER_AND_OUTER_COMPILED`.
+    ***Sample*** (`"mask_input"`, [Sample Parameters](../JSON/JSON_parameters/sample)) is `INNER_AND_OUTER_COMPILED`.
 
   - If only a binary image was provided for contours of inners (`i.tif`),
-    the `"MaskInputMode"` (`"mask_input"`, [S8 Text](S8-JSON-file-parameter-guide)) in ***Sample*** is `INNERS`.
+    the `"MaskInputMode"` (`"mask_input"`, [Sample Parameters](../JSON/JSON_parameters/sample)) in ***Sample*** is `INNERS`.
 
 In all cases, the Fascicle class uses its `to_list()` method to generate the appropriate
 Traces. Additionally, Fascicle has a `write()` method which saves a Fascicle’s
@@ -133,7 +133,7 @@ for COMSOL to define material boundaries in a nerve cross section
 containing column vectors for x- and y-coordinates). Lastly, Fascicle
 has a `morphology_data()` method which uses Trace’s `area()` and `ellipse()`
 methods to return the area and the best-fit ellipse centroid, axes, and
-rotation of each outer and inner as a JSON Object to ***Sample*** ([S8 Text](S8-JSON-file-parameter-guide)).
+rotation of each outer and inner as a JSON Object to ***Sample*** ([Sample Parameters](../JSON/JSON_parameters/sample)).
 
 ###  Slide
 
@@ -152,12 +152,12 @@ defined:
   - A list of instance(s) of the Fascicle class.
 
   - `"NerveMode"` from ***Sample*** ("nerve") (i.e., `PRESENT` as in the
-    case of nerves with epineurium (`n.tif`) or `NOT_PRESENT` otherwise, ([S8 Text](S8-JSON-file-parameter-guide))).
+    case of nerves with epineurium (`n.tif`) or `NOT_PRESENT` otherwise, ([Sample Parameters](../JSON/JSON_parameters/sample))).
 
   - An instance of the Nerve class if `"NerveMode"` is `PRESENT`.
 
   - A Boolean for whether to reposition fascicles within the
-    nerve from `"ReshapeNerveMode"` in ***Sample*** ([S8 Text](S8-JSON-file-parameter-guide)).
+    nerve from `"ReshapeNerveMode"` in ***Sample*** ([Sample Parameters](../JSON/JSON_parameters/sample)).
 
   - A list of exceptions.
 
@@ -172,7 +172,7 @@ The Slide class validates, manipulates, and writes its contents.
 
   - In Slide’s `smooth_traces()` method, Slide applies a smooth operation to each Trace
     in the slide, leveraging the offset method, and applying smoothing based on
-    `smoothing` parameters. defined in ***Sample*** ([S8 Text](S8-JSON-file-parameter-guide)).
+    `smoothing` parameters. defined in ***Sample*** ([Sample Parameters](../JSON/JSON_parameters/sample)).
 
   - In Slide’s `move_center()` method, Slide repositions its contents
     about a central coordinate using Trace’s `shift()` method available to
@@ -181,7 +181,7 @@ The Slide class validates, manipulates, and writes its contents.
 
   - In Slide’s `reshaped_nerve()` method, Slide returns the deformed
     boundary of Nerve based on the `"ReshapeNerveMode"` in ***Sample***
-    (`"reshape_nerve"`, ([S8 Text](S8-JSON-file-parameter-guide))) (e.g., CIRCLE).
+    (`"reshape_nerve"`, ([Sample Parameters](../JSON/JSON_parameters/sample))) (e.g., CIRCLE).
 
   - Using the methods of Nerve and Fascicle, which are both
     manifestations of Trace, Slide has its own methods `plot()`, `scale()`,
@@ -225,27 +225,27 @@ Fascicle(s) into an instance of Slide.
 
 Sample's `get_factor()` method obtains the ratio of microns/pixel for the input masks,
 either utilizing a scale bar image, or an explicit scale factor input depending on
-the user's `ScaleInputMode` defined in ***Sample*** ([S8 Text](S8-JSON-file-parameter-guide)).
+the user's `ScaleInputMode` defined in ***Sample*** ([Sample Parameters](../JSON/JSON_parameters/sample)).
 
 Sample’s `scale()` method is used to convert Trace points from pixel
 coordinates to coordinates with units of distance based either on the length of
 the horizontal scale bar as defined in ***Sample*** (micrometers) and
-the width of the scale bar (pixels) in the input binary image (`s.tif`), or on the explicitly specified scale ratio defined in ***Sample*** ([S8 Text](S8-JSON-file-parameter-guide)).
+the width of the scale bar (pixels) in the input binary image (`s.tif`), or on the explicitly specified scale ratio defined in ***Sample*** ([Sample Parameters](../JSON/JSON_parameters/sample)).
 If using a scale bar for scale input, it must be a perfectly horizontal line. Sample’s scale()
 method is also used within `populate()` to correct for shrinkage that may
 have occurred during the histological tissue processing. The percentage
 increase for shrinkage correction in the slide's 2D geometry is stored
-as a parameter "shrinkage" in ***Sample*** ([S8 Text](S8-JSON-file-parameter-guide)). Additionally, Slide has a
+as a parameter "shrinkage" in ***Sample*** ([Sample Parameters](../JSON/JSON_parameters/sample)). Additionally, Slide has a
 `move_center()` method which is used to center Slide about a point within
 `populate()`. Note that Sample is centered with the centroid of the
 best-fit ellipse of the outermost Trace (Nerve if `"NerveMode"` in
 ***Sample*** ("nerve") is `"PRESENT"`, outer Trace if `"NerveMode"` is
-`"NOT_PRESENT"`, ([S8 Text](S8-JSON-file-parameter-guide))) at the origin (0,0,0). Change in rotational or
+`"NOT_PRESENT"`, ([Sample Parameters](../JSON/JSON_parameters/sample))) at the origin (0,0,0). Change in rotational or
 translational placement of the cuff around the nerve is accomplished by
 moving the cuff and keeping the nerve position fixed ([Cuff Placement on the Nerve](../Running_ASCENT/Info.md#cuff-placement-on-nerve)).
 
 Sample's `im_preprocess()` method performs preprocessing operations on the binary input
-masks based on the parameters given under `preprocess` in ***Sample*** ([S8 Text](S8-JSON-file-parameter-guide)).
+masks based on the parameters given under `preprocess` in ***Sample*** ([Sample Parameters](../JSON/JSON_parameters/sample)).
 
 Sample's `io_from_compiled()` generates outers (o.tif) and inners (i.tif) from the
 (compiled) c.tif mask if `"MaskInputMode"` is `INNER_AND_OUTER_COMPILED`. These generated
@@ -254,7 +254,7 @@ masks are then used in Fascicle's `to_list()` method.
 Sample's `generate_perineurium()` method is used to generate the perineurium for fascicle
 inners in the case where `"MaskInputMode"` = `INNERS`. This leverages Trace's `offset()`
 method, and fits the generated perineurium based on `ci_perineurium_thickness` defined in
-***Sample*** ([S8 Text](S8-JSON-file-parameter-guide)).
+***Sample*** ([Sample Parameters](../JSON/JSON_parameters/sample)).
 
 Sample’s `populate()` method also manages operations for saving tissue
 boundaries of the Sample (Nerve and Fascicles) to CAD files
@@ -273,7 +273,7 @@ method which saves the Python object to file.
 ###  Deformable
 
 If `"DeformationMode"` in ***Sample*** ("deform") is set to `NONE`, then the
-Deformable class takes no action ([S8 Text](S8-JSON-file-parameter-guide)). However, if `"DeformationMode"` in
+Deformable class takes no action ([Sample Parameters](../JSON/JSON_parameters/sample)). However, if `"DeformationMode"` in
 ***Sample*** is set to `PHYSICS`, then Deformable’s `deform()` method
 simulates the change in nerve cross section that occurs when a nerve is
 placed in a cuff electrode. Specifically, the outer boundary of a
@@ -295,7 +295,7 @@ intermediately-deformed nerve traces between the nerve’s
 `"boundary_start"` (i.e., the Trace’s profile in segmented image) and
 `"boundary_end"` (i.e., the Trace’s profile after accommodation to the
 cuff’s inner diameter, which is determined by the "ReshapeNerveMode"
-(`"reshape_nerve"`, [S8 Text](S8-JSON-file-parameter-guide)) while the fascicle contents are allowed to
+(`"reshape_nerve"`, [Sample Parameters](../JSON/JSON_parameters/sample)) while the fascicle contents are allowed to
 rearrange in a physics-space. By default, all fascicles have the same
 "mass", but their moment of inertia is calculated for each fascicle
 based on its geometry (see Trace’s `pymunk_poly()` method). Each fascicle
@@ -313,14 +313,14 @@ Deformable’s convenience constructor, `from_slide()`, is automatically
 called in Sample’s `populate()` method, where a Slide is deformed to user
 specification. The `from_slide()` method takes three input arguments: The
 Slide object from which to construct the current Deformable object, the
-`"ReshapeNerveMode"` (e.g., CIRCLE, [S8 Text](S8-JSON-file-parameter-guide)), and the minimum distance between
+`"ReshapeNerveMode"` (e.g., CIRCLE, [Sample Parameters](../JSON/JSON_parameters/sample)), and the minimum distance between
 fascicles. If only inners are provided, virtual outers interact during
 nerve deformation to account for the thickness of the perineurium. Each
 inner’s perineurium thickness is defined by the
 `"PerineuriumThicknessMode"` in ***Sample***
-(`"ci_perineurium_thickness"`, [S8 Text](S8-JSON-file-parameter-guide)), which specifies the linear
+(`"ci_perineurium_thickness"`, [Sample Parameters](../JSON/JSON_parameters/sample)), which specifies the linear
 relationship between inner diameter and perineurium thickness defined in
-`config/system/ci_peri_thickness.json` ([S8 Text](S8-JSON-file-parameter-guide)). Deformable’s
+`config/system/ci_peri_thickness.json` ([Contact Impedance](../JSON/JSON_parameters/ci_peri_thickness)). Deformable’s
 `from_slide()` method uses Deformable’s `deform_steps()` method to
 calculate the intermediately-deformed nerve traces between the
 `boundary_start` and the `boundary_end`, which contain the same number of
@@ -335,7 +335,7 @@ intermediately-deformed nerve traces between the `boundary_start` and
 `boundary_end` by adding linearly-spaced portions of each point pair’s
 vector to `boundary_start`. Also note that by defining `"deform_ratio"`
 (value between 0 and 1) in ***Sample***, the user can optionally
-indicate a partial deformation of the Nerve ([S8 Text](S8-JSON-file-parameter-guide)).
+indicate a partial deformation of the Nerve ([Sample Parameters](../JSON/JSON_parameters/sample)).
 In the case where `"deform_ratio"` is set to 0, minimum fascicle separation will still be
 enforced, but no changes to the nerve boundary will occur.
 
@@ -352,7 +352,7 @@ space. At regular intervals in physics simulation time, the nerve
 boundary is updated to the next Trace in the list of
 intermediately-deformed nerve traces created by `deform_steps()`. This
 number of Trace steps defaults to 36 but can be optionally set in
-***Sample*** with the `"morph_count"` parameter by the user ([S8 Text](S8-JSON-file-parameter-guide)). It is
+***Sample*** with the `"morph_count"` parameter by the user ([Sample Parameters](../JSON/JSON_parameters/sample)). It is
 important to note that too few Trace steps can result in fascicles lying
 outside of the nerve during deformation, while too many Trace steps can
 be unnecessarily time intensive. We’ve set the default to 36 because it
@@ -361,7 +361,7 @@ and types that we have tested.
 
 The user may also visualize nerve deformation by setting the
 `"deform_animate"` argument to true in `sample.populate()` (called in
-Runner’s `run()` method) ([S8 Text](S8-JSON-file-parameter-guide)). Visualizing sample deformation can be helpful
+Runner’s `run()` method) ([Sample Parameters](../JSON/JSON_parameters/sample)). Visualizing sample deformation can be helpful
 for debugging but increases computational load and slows down the
 deformation process significantly. When performing deformation on many
 slides, we advise setting this flag to false.
@@ -387,7 +387,7 @@ The parameters over which the user has indicated to sweep in ***Sim***
 are saved to the Simulation class as a dictionary named "factors" with
 the path to each parameter in ***Sim***.
 
-The required parameters to define each type of waveform are in [S8 Text](S8-JSON-file-parameter-guide). The Python Waveform class is configured with ***Sim***, which contains
+The required parameters to define each type of waveform are in [Sim Parameters](../JSON/JSON_parameters/sim). The Python Waveform class is configured with ***Sim***, which contains
 all parameters that define the Waveform. Since FEMs may have
 frequency-dependent conductivities, the parameter for frequency of
 stimulation is optionally defined in ***Model*** (for frequency-dependent
@@ -467,7 +467,7 @@ z-coordinates along the length of the nerve are saved in `fibersets/`.
 Fiberset’s method `_generate_xy()` (first character being an underscore
 indicates intended for use only by the Fiberset class) defines the
 coordinates of simulated fibers in the cross section of the nerve
-according to the `"xy_parameters"` JSON Object in ***Sim*** ([S8 Text](S8-JSON-file-parameter-guide)). The pipeline
+according to the `"xy_parameters"` JSON Object in ***Sim*** ([Sim Parameters](../JSON/JSON_parameters/sim)). The pipeline
 defines (x,y)-coordinates of the fibers in the nerve cross section
 according to the user’s selection of sampling rules (`CENTROID`,
 `UNIFORM_DENSITY`, `UNIFORM_COUNT`, and `WHEEL`); the pre-defined modes for

@@ -57,7 +57,7 @@ ffmpeg {cite:p}`tomar2006converting`, xlsxwriter {cite:p}`xlsxwriter2017`, seabo
       - ASCENT_JDK_PATH: Path to the JDK 1.8 installation, ending in ```bin```, as seen in the template and S7. Hint: This is the correct path if the directory contains many executables (for Windows: java.exe, etc.; MacOS/Linux: java, etc.).
       - ASCENT_PROJECT_PATH: Path to the root directory of the pipeline, as chosen for step 1.
       - ASCENT_NSIM_EXPORT_PATH: Path to the export location for NEURON "simulation" directories. This path only depends on on the user's desired file system organization.
-    * Manual Setup: Copy the file ```config/templates/env.json``` into ```config/system/env.json``` (new file). This file holds important paths for software used by the pipeline (see env.json in S6 and S7). Then, edit each of the four values as specified below. Use ```\\``` in Windows and ```/``` in MacOS/Linux operating systems. Note that the file separators are operating system dependent, so even if you installed in step 2 with Unix-like command environment on a Windows machine (e.g., using [Git Bash](https://gitforwindows.org/), [Cygwin](https://www.cygwin.com/), or a VM with [Ubuntu](https://ubuntu.com/)), you will still need to choose the proper file separator for Windows, i.e., ```\\```). See example env.json files for both MacOS and Windows ([S8 Text](S8-JSON-file-parameter-guide)).
+    * Manual Setup: Copy the file ```config/templates/env.json``` into ```config/system/env.json``` (new file). This file holds important paths for software used by the pipeline (see env.json in S6 and S7). Then, edit each of the four values as specified below. Use ```\\``` in Windows and ```/``` in MacOS/Linux operating systems. Note that the file separators are operating system dependent, so even if you installed in step 2 with Unix-like command environment on a Windows machine (e.g., using [Git Bash](https://gitforwindows.org/), [Cygwin](https://www.cygwin.com/), or a VM with [Ubuntu](https://ubuntu.com/)), you will still need to choose the proper file separator for Windows, i.e., ```\\```). See example env.json files for both MacOS and Windows ([Environment Parameters](JSON/JSON_parameters/env)).
     * Automatic setup: Upon the initiation of your first run, you will be prompted to enter the above four paths if you did not choose to complete the manual setup. Enter them as prompted, following the guidelines detailed above and exemplified in [S7](S7-JSON-configuration-files). Note that you may at any time update paths with ```python run env_setup``` to rewrite this file if the information should change.
 4. Before the first time you run the pipeline, you must open the COMSOL Server and log in with a username and password of your choosing (arbitrary and not needed thereafter). This can be done by navigating to the bin/ directory in the COMSOL installation and running ```comsolmphserver``` (Windows) or ```./comsol server``` (MacOS/Linux).
 
@@ -209,7 +209,7 @@ use indices that are consistent with the indices of ***Sample***,
     particular, change "sample" to match `<NAME>`, the
     `"scale_bar_length"` parameter for `s.tif` (i.e., length in microns
     of your scale bar, which is oriented horizontally), and
-    `"mask_input"` in ***Sample*** accordingly ([S8 Text](S8-JSON-file-parameter-guide)). You have now created
+    `"mask_input"` in ***Sample*** accordingly ([Sample Parameters](JSON/JSON_parameters/sample)). You have now created
     the directory for your first sample: `sample #<sample_index>`. Note: in lieu of a scale bar image, the user may optionally specify the microns/pixel ratio for the sample mask(s).
 
 
@@ -225,11 +225,11 @@ use indices that are consistent with the indices of ***Sample***,
           saves it as `config/system/cuffs/<preset_str>.json`.
 
       1.  The `<preset_str>.json` file name must be assigned to the
-          "preset" parameter in ***Model*** ([S8 Text](S8-JSON-file-parameter-guide)).
+          "preset" parameter in ***Model*** ([Model Parameters](JSON/JSON_parameters/model)).
 
 4.  ***For each Sim:*** Copy `sim.json` from `config/templates/` to
     `config/user/sims/` as `<sim_index>.json` and edit its contents to
-    inform the NEURON simulations ([S8 Text](S8-JSON-file-parameter-guide)).
+    inform the NEURON simulations ([Sim Parameters](JSON/JSON_parameters/sim)).
 
 5.  ***Run:*** Copy `run.json` from `config/templates/` to
     `config/user/runs/` as `<run_index>.json` and edit the indices for
@@ -243,6 +243,6 @@ use indices that are consistent with the indices of ***Sample***,
     ***Run*** indices (if multiple ***Sample*** indices, one ***Run***
     for each). The pipeline outputs ready-to-submit NEURON simulations
     and associated ***Run file(s)*** to the `"ASCENT_NSIM_EXPORT_PATH"`
-    directory as defined in `config/system/env.json` ([S8 Text](S8-JSON-file-parameter-guide)). NEURON simulations
+    directory as defined in `config/system/env.json` ([Environment Parameters](JSON/JSON_parameters/env)). NEURON simulations
     are run locally or submitted to a computer cluster with the command
     `"python submit.py <run indices>"` from the export directory.

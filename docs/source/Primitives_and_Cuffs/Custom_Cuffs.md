@@ -17,7 +17,7 @@ use our "preset" cuffs as a guide in constructing their own custom
 cuffs, which require a unique file name. Once a cuff is defined as a
 "preset" in `config/system/cuffs/` as its own JSON file, the user may
 choose to place the cuff on a nerve in COMSOL using the "preset"
-parameter in ***Model*** ([S8 Text](S8-JSON-file-parameter-guide)).
+parameter in ***Model*** ([Model Parameters](../JSON/JSON_parameters/model)).
 
 We provide a COMSOL file in `examples/parts/sandbox.mph` that contains our
 library of "Geometry Parts" (i.e., part primitives) for users to

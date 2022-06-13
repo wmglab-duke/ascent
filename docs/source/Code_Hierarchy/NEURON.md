@@ -31,7 +31,7 @@ stimulation parameters are defined in ***Sim*** and are defined as
 parameters in NEURON within the ```launch.hoc``` file. The parameters in
 ***Sim*** control the pulse delay, pulse width, pulse repetition
 frequency, pulse amplitude, and node/section index of the intracellular
-stimulus ([S8 Text](S8-JSON-file-parameter-guide)). For simulating activation thresholds, the intracellular
+stimulus ([Sim Parameters](../JSON/JSON_parameters/sim)). For simulating activation thresholds, the intracellular
 stimulation amplitude should be set to zero.
 
 ###  Extracellular stimulus

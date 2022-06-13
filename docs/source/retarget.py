@@ -13,7 +13,7 @@ jsonlist = ['[JSON Parameters](prepend/JSON/JSON_parameters/index)',
                                            '[Contact Impedance](prepend/JSON/JSON_parameters/ci_peri_thickness)']
 
 redict = {
-    # '[S8 Text](S8-JSON-file-parameter-guide)':jsonlist,
+    '[S8 Text](S8-JSON-file-parameter-guide)':jsonlist,
     '[S16](S16-Library-of-part-primitives-for-electrode-contacts-and-cuffs), [S17](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives), and [S18](S18-Creating-new-part-primitives) Text':'[Part Primitives and Custom Cuffs](prepend/Primitives_and_Cuffs/index)',
 #    '[S7](S7-JSON-configuration-files)':'[JSON Overview](prepend/JSON/JSON_overview)',
     '[S7 Text](S7-JSON-configuration-files)':'[JSON Overview](prepend/JSON/JSON_overview)',

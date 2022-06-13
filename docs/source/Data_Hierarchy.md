@@ -20,7 +20,7 @@ not require changes in ***Model*** or ***Sample***, and changes in
 
 ![Inline image](uploads/e675a31c0bf2bda687c6d696fa145c0c/Picture15.jpg)
 
-Figure A. ASCENT pipeline file structure in the context of Sample (blue), Model (green), and Sim (purple) configurations. [JSON Overview](JSON/JSON_overview) describes the JSON configuration files an their contents, and [S8 Text](S8-JSON-file-parameter-guide) details the syntax and data types of the key-value parameter pairs.
+Figure A. ASCENT pipeline file structure in the context of Sample (blue), Model (green), and Sim (purple) configurations. [JSON Overview](JSON/JSON_overview) describes the JSON configuration files an their contents, and [JSON Parameters](JSON/JSON_parameters/index) details the syntax and data types of the key-value parameter pairs.
 
 ##  Batching and sweeping of parameters
 
