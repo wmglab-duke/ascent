@@ -1,6 +1,7 @@
 # How to use ASCENT
 ## Running the ASCENT Pipeline
-need new text here
+See [Running the Pipeline](../Getting_Started.md#setting-up-a-run-of-ascent).
+
 ## Submitting NEURON jobs
 We provide scripts for the user to submit NEURON jobs in `src/neuron/`. It
 is suggested that the script ending in `".sh"` is used for Linux-based
