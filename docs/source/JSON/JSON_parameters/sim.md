@@ -11,7 +11,7 @@ fiber model and placement in the FEM, extracellular stimulation
 waveform, intracellular stimulation, flags to indicate which
 outputs to save (e.g., state variables of channel gating mechanisms,
 transmembrane potential, intracellular stimulation), and stimulation
-threshold-finding protocol ([S22](S22-Simulation-protocols), [S32](S32-NEURON-Wrapper.hoc), and [S33](S33-Data-analysis-tools) Text).
+threshold-finding protocol ([Simulation Protocols](../../Running_ASCENT/Info.md#simulation-protocols)).
 
 ## Syntax
 To declare this entity in `config/user/sims/`, use the
@@ -279,7 +279,7 @@ weight<sub>2</sub> (for src 2 on)]]
 
 The value of potentials/ is applied to a model fiber in NEURON
 multiplied by the stimulation amplitude, which is either from a list of
-finite amplitudes or a binary search for thresholds ([Simulation Protocols](../../Running_ASCENT/Info.md#simulation-protocols))
+finite amplitudes or a binary search for thresholds ([Simulation Protocols](../../Running_ASCENT/Info.md#simulation-protocols)).
 
 ![f4]
 
@@ -294,7 +294,7 @@ length of the fiber). Required.
     is saved is controlled by the `"plot_folder"` parameter. Required.
 
   - `"mode"`: The value (String) is the "FiberGeometry" mode that tells
-    the program which fiber geometries to simulate in NEURON ([S21](S21-Implementation-of-NEURON-fiber-models) and [S32](S32-NEURON-Wrapper.hoc) Text). Required.
+    the program which fiber geometries to simulate in NEURON ([NEURON Fiber Models](../../Running_ASCENT/Info.md#implementation-of-neuron-fiber-models)). Required.
 
       - As listed in [Enums](../../Code_Hierarchy/Python.md#enums)), known modes include
 
@@ -333,7 +333,7 @@ length of the fiber). Required.
     pairs to instruct the system in seeding fibers along the length of
     the nerve. Required.
 
-      - `"diameter"` The value can take multiple forms to define the fiber diameter that the user is simulating in NEURON ([S21](S21-Implementation-of-NEURON-fiber-models) and [S32](S32-NEURON-Wrapper.hoc) Text). The value can control simulation of either fixed diameter fibers or fibers chosen from a distribution of diameters (note simulating a distribution of fiber diameters is only compatible with `"MRG_INTERPOLATION"`myelinated or unmyelinated fiber types, not `"MRG_DISCRETE"`). In ***Sim***, only one mode of defining fiber diameters can be used. Required.
+      - `"diameter"` The value can take multiple forms to define the fiber diameter that the user is simulating in NEURON (([NEURON Fiber Models](../../Running_ASCENT/Info.md#implementation-of-neuron-fiber-models)). The value can control simulation of either fixed diameter fibers or fibers chosen from a distribution of diameters (note simulating a distribution of fiber diameters is only compatible with `"MRG_INTERPOLATION"`myelinated or unmyelinated fiber types, not `"MRG_DISCRETE"`). In ***Sim***, only one mode of defining fiber diameters can be used. Required.
          - Fixed diameter: the value (Double or List[Double], units: micrometer) is the diameter of the fiber models. If using with `"MRG_DISCRETE"`, the diameters must be members of the set of published diameters.
          - Distribution of diameters: the value is a dictionary of key-value pairs to define the distribution of diameters based on the `"mode"` parameter, which can be either `"TRUNCNORM"` or `"UNIFORM"`.
              - `"TRUNCNORM"`

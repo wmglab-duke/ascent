@@ -348,7 +348,7 @@ Specifically, this class compares ***Model*** configurations to
 determine if their parameters are compatible to repurpose the geometry
 and mesh from a previously generated COMSOL model using the `meshMatch()`
 method. The `meshMatch()` method takes the inputs of a reference JSON
-(i.e., `config/templates/mesh_dependent_model.json`, see [JSON Configuration Files](../JSON/index)) containing
+(i.e., `config/templates/mesh_dependent_model.json`, see [Mesh Dependent Model](../JSON/JSON_parameters/mesh_dependent_model)) containing
 conditions for compatibility and a JSON Object for each of two
 ***Model*** configurations to compare. The parameter keys correspond
 one-to-one in ***Model*** and `mesh_dependent_model.json`. However, in

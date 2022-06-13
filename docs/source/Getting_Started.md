@@ -58,7 +58,7 @@ ffmpeg {cite:p}`tomar2006converting`, xlsxwriter {cite:p}`xlsxwriter2017`, seabo
       - ASCENT_PROJECT_PATH: Path to the root directory of the pipeline, as chosen for step 1.
       - ASCENT_NSIM_EXPORT_PATH: Path to the export location for NEURON "simulation" directories. This path only depends on on the user's desired file system organization.
     * Manual Setup: Copy the file ```config/templates/env.json``` into ```config/system/env.json``` (new file). This file holds important paths for software used by the pipeline (see env.json in S6 and S7). Then, edit each of the four values as specified below. Use ```\\``` in Windows and ```/``` in MacOS/Linux operating systems. Note that the file separators are operating system dependent, so even if you installed in step 2 with Unix-like command environment on a Windows machine (e.g., using [Git Bash](https://gitforwindows.org/), [Cygwin](https://www.cygwin.com/), or a VM with [Ubuntu](https://ubuntu.com/)), you will still need to choose the proper file separator for Windows, i.e., ```\\```). See example env.json files for both MacOS and Windows ([Environment Parameters](JSON/JSON_parameters/env)).
-    * Automatic setup: Upon the initiation of your first run, you will be prompted to enter the above four paths if you did not choose to complete the manual setup. Enter them as prompted, following the guidelines detailed above and exemplified in [S7](S7-JSON-configuration-files). Note that you may at any time update paths with ```python run env_setup``` to rewrite this file if the information should change.
+    * Automatic setup: Upon the initiation of your first run, you will be prompted to enter the above four paths if you did not choose to complete the manual setup. Enter them as prompted, following the guidelines detailed above and exemplified in [JSON Overview](JSON/JSON_overview). Note that you may at any time update paths with ```python run env_setup``` to rewrite this file if the information should change.
 4. Before the first time you run the pipeline, you must open the COMSOL Server and log in with a username and password of your choosing (arbitrary and not needed thereafter). This can be done by navigating to the bin/ directory in the COMSOL installation and running ```comsolmphserver``` (Windows) or ```./comsol server``` (MacOS/Linux).
 
 ## Metadata required to model an in vivo experiment using the ASCENT pipeline
@@ -234,7 +234,7 @@ use indices that are consistent with the indices of ***Sample***,
 5.  ***Run:*** Copy `run.json` from `config/templates/` to
     `config/user/runs/` as `<run_index>.json` and edit the indices for
     the created ***Sample***, ***Model(s)***, and ***Sim(s)***
-    configurations ([S8 Text](S8-JSON-file-parameter-guide)).
+    configurations ([Run Parameters](JSON/JSON_parameters/run)).
 
 6.  The pipeline is run from the project path (i.e., the path to the
     root of the ASCENT pipeline, which is defined in

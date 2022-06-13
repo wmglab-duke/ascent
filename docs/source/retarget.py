@@ -49,6 +49,8 @@ redict = {
     '(e.g., Sample and Simulation, described in [S13](S13-Python-classes-for-representing-nerve-morphology-(Sample)) and [S30](S30-Python-simulation-class) Text, respectively)':'(e.g., [Sample](#python-classes-for-representing-nerve-morphology-sample) and [Simulation](#simulation))',
     'Enums ([S6 Enums](S6-Enums)':'[Enums](prepend/Code_Hierarchy/Python.md#enums)',
     '[S31](S31-NEURON-launch.hoc) and [S32](S32-NEURON-Wrapper.hoc) Text':'[NEURON Scripts](prepend/Code_Hierarchy/NEURON)',
+    '([S8](S8-JSON-file-parameter-guide) and [S12](S12-Python-MockSample-class-for-creating-binary-masks-of-nerve-morphology) Text)':'[Mock Morphology](prepend/MockSample)',
+    '[S14](S14-Creating-sample-specific-nerve-morphologies-in-COMSOL) and [S28](S28-Definition-of-perineurium) Text':'[Java Utility Classes](prepend/Code_Hierarchy/Java.md#fascicles), and [Perineurium Properties](prepend/Running_ASCENT/Info.md#definition-of-perineurium)',
     }
 
 for path in Path('').rglob('*.md'):

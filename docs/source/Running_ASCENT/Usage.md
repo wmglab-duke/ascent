@@ -27,7 +27,7 @@ the command line argument --partition. (e.g.
 For more information, see [Command-Line Arguments](command_line_args).
 2. Optionally, set your `"submission_context"` to `"auto"`, and configure your `run.json` with the
 appropriate hostname prefix. (Only necessary if you plan to submit runs both locally and
-on a cluster, see [S8 Text](S8-JSON-file-parameter-guide).)
+on a cluster, see [Run Parameters](../JSON/JSON_parameters/run).)
 
 ## Other Scripts
 We provide scripts to help users efficiently manage data created by ASCENT. Run all of these scripts from the directory
@@ -148,4 +148,4 @@ Users need to determine an appropriate number of points along the fiber
 to record state variables. Users have the option to either record state
 variables at all Nodes of Ranvier (myelinated fibers) or sections
 (unmyelinated fibers), or at discrete locations along the length of the
-fiber ([S8 Text](S8-JSON-file-parameter-guide)).
+fiber ([Sim Parameters](../JSON/JSON_parameters/sim)).
