@@ -16,7 +16,7 @@ parameter is true, then the parameter values between two
 false, then the parameter values between the two ***Models*** can be
 different and still constitute a "mesh match". The process of
 identifying "mesh matches" is automated and is only performed if the
-`“recycle_meshes”` parameter in ***Run*** is true.
+`"recycle_meshes"` parameter in ***Run*** is true.
 
 ## Syntax
 To declare this entity in

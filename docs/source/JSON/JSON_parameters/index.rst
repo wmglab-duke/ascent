@@ -7,11 +7,11 @@ See `S7 Text <S7-JSON-configuration-files>`__ for a general overview of
 the contents and usage of each of the following JSON files used in
 ASCENT.
 
-``“//"`` is not valid JSON syntax; comments are not possible in JSON.
+``"//"`` is not valid JSON syntax; comments are not possible in JSON.
 However, we sparingly used this notation in the JSON examples below to
 provide context or more information about the associated line. Each
 value following a key in the syntax denotes the *type* of the value, not
-its literal value: “[<Type X>, …]” syntax indicates that the type is an
+its literal value: "[<Type X>, …]" syntax indicates that the type is an
 array of Type X. Occasionally, a single value may be substituted for the
 list if only a single value is desired, but this functionality differs
 between keys, so be sure to read the documentation before attempting for

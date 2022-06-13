@@ -22,14 +22,14 @@ following syntax:
 ```
 ## Properties
 
-`“code”`: The value (Integer) is an identifier that enables easy reference
+`"code"`: The value (Integer) is an identifier that enables easy reference
 to a specific exception using Exceptionable’s
 `self.throw(<code_index>)`. This value must be unique because the
 Exeptionable class uses this value to find any given exception. We
 suggest that you increment the code with each successive exception (akin
 to indexing), but any number will work as long as its value is unique.
 
-`“text”`: The value (String) is a message to the user explaining why the
+`"text"`: The value (String) is a message to the user explaining why the
 pipeline failed.
 
 ## Example

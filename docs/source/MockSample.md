@@ -7,19 +7,19 @@ pipeline.
 The user defines the parameter values in
 `config/user/mock_samples/<mock_sample_index>.json` (with a template
 provided in `config/templates/mock_sample.json`). The mock sample
-morphology is then created using the JSON file by executing `“python run
-mock_morphology_generator <mock_sample_index>”` at the project
+morphology is then created using the JSON file by executing `"python run
+mock_morphology_generator <mock_sample_index>"` at the project
 root. The mock morphology generator uses the MockSample Python class to
 create binary images of the nerve, inner perineurium traces (fascicles),
 and the scale bar in `input/<NAME>/` (NAME is analogous to the
-“sample” parameter in ***Sample***, following the standard naming
+"sample" parameter in ***Sample***, following the standard naming
 convention ([S7](S7-JSON-configuration-files) and [S8](S8-JSON-file-parameter-guide) Text)), which allow the pipeline to function as if binary
 images of segmented histology were provided. The
 `<mock_sample_index>.json` file and the resulting segmented nerve
 morphology files are automatically saved in `input/<NAME>/`.
 
 MockSample is Exceptionable, Configurable, and has instance attributes
-of “nerve” and a list “fascicles”. After the MockSample class is
+of "nerve" and a list "fascicles". After the MockSample class is
 initialized, a `mock_sample.json` file is added to the class instance.
 The `mock_morphology_generator.py` script configures an instance of the
 MockSample class using the first input argument, which references the

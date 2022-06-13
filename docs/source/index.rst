@@ -21,7 +21,7 @@ Welcome to ASCENT's documentation!
 
   .. details:: MLA
 
-      Musselman, Eric D., et al. “ASCENT (Automated Simulations to Characterize Electrical Nerve Thresholds): A Pipeline for Sample-Specific Computational Modeling of Electrical Stimulation of Peripheral Nerves.” PLOS Computational Biology, vol. 17, no. 9, Sept. 2021, p. e1009285. PLoS Journals, https://doi.org/10.1371/journal.pcbi.1009285.
+      Musselman, Eric D., et al. "ASCENT (Automated Simulations to Characterize Electrical Nerve Thresholds): A Pipeline for Sample-Specific Computational Modeling of Electrical Stimulation of Peripheral Nerves." PLOS Computational Biology, vol. 17, no. 9, Sept. 2021, p. e1009285. PLoS Journals, https://doi.org/10.1371/journal.pcbi.1009285.
 
   .. details:: BibTeX
 

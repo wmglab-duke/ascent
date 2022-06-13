@@ -53,10 +53,10 @@ ffmpeg {cite:p}`tomar2006converting`, xlsxwriter {cite:p}`xlsxwriter2017`, seabo
 
 3. Then, configure the environment variables. This step may be completed several ways, described below.
     * Recommended Setup: Open Anaconda prompt, navigate to the ASCENT root directory, and  execute ```python run env_setup```. You will be prompted for the following paths:
-      - ASCENT_COMSOL_PATH: Path to the COMSOL installation, ending in the directory name “Multiphysics”, as seen in the template and S7.
+      - ASCENT_COMSOL_PATH: Path to the COMSOL installation, ending in the directory name "Multiphysics", as seen in the template and S7.
       - ASCENT_JDK_PATH: Path to the JDK 1.8 installation, ending in ```bin```, as seen in the template and S7. Hint: This is the correct path if the directory contains many executables (for Windows: java.exe, etc.; MacOS/Linux: java, etc.).
       - ASCENT_PROJECT_PATH: Path to the root directory of the pipeline, as chosen for step 1.
-      - ASCENT_NSIM_EXPORT_PATH: Path to the export location for NEURON “simulation” directories. This path only depends on on the user's desired file system organization.
+      - ASCENT_NSIM_EXPORT_PATH: Path to the export location for NEURON "simulation" directories. This path only depends on on the user's desired file system organization.
     * Manual Setup: Copy the file ```config/templates/env.json``` into ```config/system/env.json``` (new file). This file holds important paths for software used by the pipeline (see env.json in S6 and S7). Then, edit each of the four values as specified below. Use ```\\``` in Windows and ```/``` in MacOS/Linux operating systems. Note that the file separators are operating system dependent, so even if you installed in step 2 with Unix-like command environment on a Windows machine (e.g., using [Git Bash](https://gitforwindows.org/), [Cygwin](https://www.cygwin.com/), or a VM with [Ubuntu](https://ubuntu.com/)), you will still need to choose the proper file separator for Windows, i.e., ```\\```). See example env.json files for both MacOS and Windows ([S8 Text](S8-JSON-file-parameter-guide)).
     * Automatic setup: Upon the initiation of your first run, you will be prompted to enter the above four paths if you did not choose to complete the manual setup. Enter them as prompted, following the guidelines detailed above and exemplified in [S7](S7-JSON-configuration-files). Note that you may at any time update paths with ```python run env_setup``` to rewrite this file if the information should change.
 4. Before the first time you run the pipeline, you must open the COMSOL Server and log in with a username and password of your choosing (arbitrary and not needed thereafter). This can be done by navigating to the bin/ directory in the COMSOL installation and running ```comsolmphserver``` (Windows) or ```./comsol server``` (MacOS/Linux).
@@ -182,8 +182,8 @@ project path defined in `config/system/env.json`. The directory names must
 use indices that are consistent with the indices of ***Sample***,
 ***Model(s)***, and ***Sim(s)*** defined in ***Run***.
 
-1.  ***Masks:*** Populate `input/<NAME>/` (e.g., “Rat1-1”, which
-    must match “sample” parameter in ***Sample***) with binary masks of
+1.  ***Masks:*** Populate `input/<NAME>/` (e.g., "Rat1-1", which
+    must match "sample" parameter in ***Sample***) with binary masks of
     neural tissue boundaries using either:
 
     a.  Segmented histology ([S11 Text](S11-Morphology-files) and [Fig 2](https://doi.org/10.1371/journal.pcbi.1009285.g002)), or
@@ -192,12 +192,12 @@ use indices that are consistent with the indices of ***Sample***,
 
        1.  Copy `mock_sample.json` from `config/templates/` to
             `config/user/mock_samples/` as `<mock_sample_index>.json`
-            and update file contents, including the “NAME” parameter
+            and update file contents, including the "NAME" parameter
             used to construct the destination path for the output binary
             masks, which serve as inputs to the pipeline.
 
-       1.  Call `“python run mock_morphology_generator
-            <mock_sample_index>”`.
+       1.  Call `"python run mock_morphology_generator
+            <mock_sample_index>"`.
 
        11.  The program saves a copy of your `mock_sample.json` and
             binary masks in `input/<NAME>/`.
@@ -206,10 +206,10 @@ use indices that are consistent with the indices of ***Sample***,
     to `samples/<sample_index>/` as `sample.json` and edit its contents
     to define the processing of binary masks to generate the
     two-dimensional cross section geometry of the nerve in the FEM. In
-    particular, change “sample” to match `<NAME>`, the
-    `“scale_bar_length”` parameter for `s.tif` (i.e., length in microns
+    particular, change "sample" to match `<NAME>`, the
+    `"scale_bar_length"` parameter for `s.tif` (i.e., length in microns
     of your scale bar, which is oriented horizontally), and
-    `“mask_input”` in ***Sample*** accordingly ([S8 Text](S8-JSON-file-parameter-guide)). You have now created
+    `"mask_input"` in ***Sample*** accordingly ([S8 Text](S8-JSON-file-parameter-guide)). You have now created
     the directory for your first sample: `sample #<sample_index>`. Note: in lieu of a scale bar image, the user may optionally specify the microns/pixel ratio for the sample mask(s).
 
 
@@ -220,12 +220,12 @@ use indices that are consistent with the indices of ***Sample***,
     a. Assign the cuff geometry to be used by placing a file name from `config/system/cuffs` in `"cuff":"preset"`.
 
     b. Optionally, define a new cuff geometry specific to your needs:
-      1.  ***Preset:*** User defines a new “preset” cuff JSON file, which
+      1.  ***Preset:*** User defines a new "preset" cuff JSON file, which
           contains instructions for creating their cuff electrode, and
           saves it as `config/system/cuffs/<preset_str>.json`.
 
       1.  The `<preset_str>.json` file name must be assigned to the
-          “preset” parameter in ***Model*** ([S8 Text](S8-JSON-file-parameter-guide)).
+          "preset" parameter in ***Model*** ([S8 Text](S8-JSON-file-parameter-guide)).
 
 4.  ***For each Sim:*** Copy `sim.json` from `config/templates/` to
     `config/user/sims/` as `<sim_index>.json` and edit its contents to
@@ -238,11 +238,11 @@ use indices that are consistent with the indices of ***Sample***,
 
 6.  The pipeline is run from the project path (i.e., the path to the
     root of the ASCENT pipeline, which is defined in
-    `config/system/env.json`) with the command `“python run pipeline <run
-    indices>”`, where `<run indices>` is a list of space-separated
+    `config/system/env.json`) with the command `"python run pipeline <run
+    indices>"`, where `<run indices>` is a list of space-separated
     ***Run*** indices (if multiple ***Sample*** indices, one ***Run***
     for each). The pipeline outputs ready-to-submit NEURON simulations
-    and associated ***Run file(s)*** to the `“ASCENT_NSIM_EXPORT_PATH”`
+    and associated ***Run file(s)*** to the `"ASCENT_NSIM_EXPORT_PATH"`
     directory as defined in `config/system/env.json` ([S8 Text](S8-JSON-file-parameter-guide)). NEURON simulations
     are run locally or submitted to a computer cluster with the command
-    `“python submit.py <run indices>”` from the export directory.
+    `"python submit.py <run indices>"` from the export directory.

@@ -4,7 +4,7 @@ For uses of ASCENT, either stand-alone in its publicly available form, as a star
 
 The following guidelines are to help users adhere to FAIR principles when using ASCENT and thereby enable model reproducibility and reduce duplication of efforts {cite:p}`Wilkinson2016`. With published modeling studies using ASCENT, we ask that   users provide all code and input files required to reproduce their work.
 
-To streamline dissemination of work, upon acceptance of a manuscript to a journal, we encourage users to either make their fork/branch of the ASCENT repository publicly available, or to make a “Merge Request” to the ASCENT GitHub repository (i.e., if your developments would be of general interest to ASCENT users) so that we can review and incorporate your changes to our public repository.
+To streamline dissemination of work, upon acceptance of a manuscript to a journal, we encourage users to either make their fork/branch of the ASCENT repository publicly available, or to make a "Merge Request" to the ASCENT GitHub repository (i.e., if your developments would be of general interest to ASCENT users) so that we can review and incorporate your changes to our public repository.
 
 ## Configuration files
 Provide the JSON configuration files used as inputs to ASCENT.
@@ -35,9 +35,9 @@ Provide the image files used as inputs to ASCENT.
 * a.tif (if applicable)
 
 ## Cuff
-If the “preset” cuff configuration file used to define the cuff electrode is not publicly available in the ASCENT repository, please provide it with your materials.
+If the "preset" cuff configuration file used to define the cuff electrode is not publicly available in the ASCENT repository, please provide it with your materials.
 
-If new part primitives were created to represent the cuff electrode ([S18 Text](S18-Creating-new-part-primitives)), please include copies of Java code that perform the FEM operations for the new parts. These sections of code should be from src/model/Part.java as “cases” (i.e., in switch-case statement) for new parts in the createCuffPartPrimitive() and createCuffPartInstance() methods.
+If new part primitives were created to represent the cuff electrode ([S18 Text](S18-Creating-new-part-primitives)), please include copies of Java code that perform the FEM operations for the new parts. These sections of code should be from src/model/Part.java as "cases" (i.e., in switch-case statement) for new parts in the createCuffPartPrimitive() and createCuffPartInstance() methods.
 
 Indicate how the cuff was placed on the nerve. Specifically, state the longitudinal placement of the cuff and how the cuff rotation was determined (e.g., the cuff rotation modes, or used a.tif to rotate the cuff to replicate in vivo cuff rotation).
 

@@ -10,7 +10,7 @@ the file must be placed in the directory structure, and a description of
 its contents. For a detailed description of each JSON file (i.e., which parameters are required or optional, known value data types, and known values), see [S8 Text](S8-JSON-file-parameter-guide). Though JSON does not allow comments, users may want to add
 notes to a JSON file (e.g., to remember what a ***Sample***,
 ***Model***, or ***Sim*** file was used to accomplish). The user can
-simply add a key to the JSON file that is not in use (e.g., “notes”) and
+simply add a key to the JSON file that is not in use (e.g., "notes") and
 provide a value (`String`) with a message.
 
 ##  User configuration files
@@ -25,7 +25,7 @@ indices are used as the identifying values in `run.json`.
 Additionally, the file contains break points that enable the user to
 terminate the pipeline at intermediate processes, flags for user control
 over which COMSOL files are saved, flags to selectively build a
-`“debug_geom.mph”` file of just the nerve or cuff electrode, and flags
+`"debug_geom.mph"` file of just the nerve or cuff electrode, and flags
 to recycle previous meshes where appropriate. Lastly, the `run.json`
 file reports which ***Model*** indices were generated successfully in
 COMSOL and indicates if the user is submitting the NEURON jobs to a
@@ -45,28 +45,28 @@ informed by ***Sample*** output the Python object `sample.obj`.
 The information in ***Sample*** must parallel how the sample morphology
 binary images are saved on the user’s machine (sample name, path to the
 sample). The user must
-define the `“mask_input”` parameter in ***Sample*** to indicate which set
+define the `"mask_input"` parameter in ***Sample*** to indicate which set
 of input masks will be used. ***Sample*** also contains parameters that
 determine how the morphology is processed before being represented in
-the FEM such as shrinkage correction (“shrinkage”), required minimum
-fascicle separation (`“boundary_separation”`), presence of epineurium
-(“nerve”), perineurium thickness (`“ci_perineurium_thickness”`),
-deformation method (“deform”), reshaped nerve profile
-(`“reshape_nerve”`), and parameters for specifying CAD geometry input
-file formats for nerve morphology (“write”). ***Sample*** also contains
+the FEM such as shrinkage correction ("shrinkage"), required minimum
+fascicle separation (`"boundary_separation"`), presence of epineurium
+("nerve"), perineurium thickness (`"ci_perineurium_thickness"`),
+deformation method ("deform"), reshaped nerve profile
+(`"reshape_nerve"`), and parameters for specifying CAD geometry input
+file formats for nerve morphology ("write"). ***Sample*** also contains
 information about the mask scaling (i.e.
-`“scale_bar_length”` if supplying a binary image of a scale bar or, if no scale bar image, `“scale_ratio”`).
+`"scale_bar_length"` if supplying a binary image of a scale bar or, if no scale bar image, `"scale_ratio"`).
 
-The value of the `“ci_perineurium_thickness”` in ***Sample*** refers to a
+The value of the `"ci_perineurium_thickness"` in ***Sample*** refers to a
 JSON Object in `config/system/ci_peri_thickness.json` that contains
 coefficients for linear relationships between inner diameter and
 perineurium thickness (i.e., thk<sub>peri,inner</sub> =
 a\*(diameter<sub>inner</sub>) + b). In `ci_peri_thickness.json`, we
-provided a `“PerineuriumThicknessMode”` named `“GRINBERG_2008”`, which
+provided a `"PerineuriumThicknessMode"` named `"GRINBERG_2008"`, which
 defines perineurium thickness as 3% of inner diameter {cite:p}`Grinberg2008`, and
 relationships for human, pig, and rat vagus nerve perineurium thickness
-(i.e., `“HUMAN_VN_INHOUSE_200601”`, `“PIG_VN_INHOUSE_200523”`, and
-`“RAT_VN_INHOUSE_200601”`) {cite:p}`Pelot2020`. As additional vagus nerve
+(i.e., `"HUMAN_VN_INHOUSE_200601"`, `"PIG_VN_INHOUSE_200523"`, and
+`"RAT_VN_INHOUSE_200601"`) {cite:p}`Pelot2020`. As additional vagus nerve
 morphometry data become available, users may define perineurium
 thickness with new models by adding the coefficients to this JSON
 file.***
@@ -76,33 +76,33 @@ file.***
 The `mock_sample.json` file, which is stored in the file structure in
 `config/user/mock_samples/<mock_sample_index>/`, is used to
 define binary segmented images that serve as inputs to the pipeline. In
-the “populate” JSON Object, the user must define the “PopulateMode”
-(e.g., EXPLICIT, TRUNCNORM, UNIFORM defined by the “mode” parameter),
+the "populate" JSON Object, the user must define the "PopulateMode"
+(e.g., EXPLICIT, TRUNCNORM, UNIFORM defined by the "mode" parameter),
 which defines the process by which the nerve morphology is defined in
-the MockSample Python class. Each `“PopulateMode”` requires a certain set
+the MockSample Python class. Each `"PopulateMode"` requires a certain set
 of parameters to define the nerve and to define and place the fascicles;
-the set of parameters for each `“PopulateMode”` are defined in
+the set of parameters for each `"PopulateMode"` are defined in
 `config/templates/mock_sample_params_all_modes.json`.
 
-Probabilistic “PopulateModes” (i.e., TRUNCNORM, UNIFORM) populate an
+Probabilistic "PopulateModes" (i.e., TRUNCNORM, UNIFORM) populate an
 elliptical nerve with elliptical fascicles of diameter and eccentricity
 defined by a statistical distribution. Since the nerve morphology
-parameters are defined probabilistically, a “seed” parameter is required
+parameters are defined probabilistically, a "seed" parameter is required
 for the random number generator to enable reproducibility. The fascicles
 are placed at randomly chosen locations
 within the nerve using a disk point picking method; the fascicles are
 placed at a rotational orientation randomly chosen from
 0-360<sup>o</sup>. If a fascicle is placed in the nerve without
-maintaining a user-defined `“min_fascicle_separation”` distance from the
+maintaining a user-defined `"min_fascicle_separation"` distance from the
 other fascicles and the nerve, another randomly chosen point within the
 nerve is chosen until either a location that preserves a minimum
 separation is achieved or the program exceeds a maximum number of
-attempts (`“max_attempt_iter”`).
+attempts (`"max_attempt_iter"`).
 
-The EXPLICIT `“PopulateMode”` populates an elliptical nerve with
+The EXPLICIT `"PopulateMode"` populates an elliptical nerve with
 elliptical fascicles of user-defined sizes, locations, and rotations.
 The program validates that the defined fascicle ellipses are at least
-`“min_fascicle_separation”` distance apart; otherwise, if the
+`"min_fascicle_separation"` distance apart; otherwise, if the
 conditions are not met, the program throws an error.
 
 ### model.json
@@ -142,7 +142,7 @@ pipeline.
 
 In data analysis, summary, and plotting, the user needs to inform the
 program which output data are of interest. The `query_criteria.json`
-file stores the “criteria” for a user’s search through previously
+file stores the "criteria" for a user’s search through previously
 processed data. The `query_criteria.json` file may be used to guide
 the Query class’s searching algorithm in the `run()` method. We suggest
 that all `query_criteria.json`-like files are stored in the
@@ -151,7 +151,7 @@ these files is arbitrary, and when initializing the Query object, the
 user must manually pass in the path of either the
 `query_criteria.json`-like file or the hard-coded criteria as a
 Python dictionary. An instance of the Query class contains the
-“criteria” and an empty `_result`, which is populated by Query’s
+"criteria" and an empty `_result`, which is populated by Query’s
 `run()` method with found indices of ***Sample***, ***Model***, and
 ***Sim*** that match the criteria given.
 
@@ -179,22 +179,22 @@ matched in a query result. If the parameter of interest is found nested
 within a JSON Object structure or list in the configuration file, the
 same hierarchy must be replicated in the `query_criteria.json` file.
 
-The `query_criteria.json` parameter `“partial_matches”` is a Boolean
+The `query_criteria.json` parameter `"partial_matches"` is a Boolean
 indicating whether the search should return indices of ***Sample***,
 ***Model***, and ***Sim*** configuration files that are a partial match, i.e.,
 the parameters in `query_criteria.json` are satisfied by a subset of
 parameters listed in the found JSON configuration.
 
-The `query_criteria.json` parameter `“include_downstream”` is a
+The `query_criteria.json` parameter `"include_downstream"` is a
 Boolean indicating whether the search should return indices of
 downstream (***Sample***\>***Model***\>***Sim***) configurations that
 exist if match criteria are not provided for them. For example, if only
 criteria for a ***Sample*** and ***Model*** are provided, Query will
 return the indices of ***Sample*** and ***Model*** that match the
 criteria. In addition, the indices of the ***Sims*** downstream of the
-matches are included in the result if `“include_downstream”` is true
+matches are included in the result if `"include_downstream"` is true
 (since the user did not specify criteria for ***Sim***). Otherwise, if
-`“include_downstream”` is false, no ***Sim*** indices are returned.
+`"include_downstream"` is false, no ***Sim*** indices are returned.
 
 ##  config/system/
 
@@ -220,7 +220,7 @@ variables so that they are globally accessible.
 
 The `exceptions.json` file contains a list of exceptions that are
 intentionally thrown in the Python portion of the pipeline. Each error
-has its own “code” (index), and “text” (informative message hinting to the
+has its own "code" (index), and "text" (informative message hinting to the
 reason the program failed). As developers add new methods to Python classes
 that inherit the Exceptionable class, appending errors
 onto `exceptions.json` that are called from Python code file (i.e.,
@@ -233,7 +233,7 @@ The `materials.json` file contains default values for material
 properties that can be assigned to each type of neural tissue, each
 electrode material, the extraneural medium, and the medium between the
 nerve and inner cuff surface. The materials are referenced by using
-their labels in the “conductivities” JSON Object of ***Model***.
+their labels in the "conductivities" JSON Object of ***Model***.
 
 ### fiber\_z.json
 
@@ -252,16 +252,16 @@ flags) that corresponds to fiber-type specific operations in NEURON.
 In the case of fascicles with exactly one inner perineurium trace for
 each outer perineurium trace, to reduce the required computational
 resources, the pipeline can represent the perineurium using a thin layer
-approximation in COMSOL ([S28 Text](S28-Definition-of-perineurium)). Specifically, if ***Model’s*** `“use_ci”`
+approximation in COMSOL ([S28 Text](S28-Definition-of-perineurium)). Specifically, if ***Model’s*** `"use_ci"`
 parameter is true, the perineurium is modeled as a surface with a sheet
-resistance (termed “contact impedance” in COMSOL) defined by the product
+resistance (termed "contact impedance" in COMSOL) defined by the product
 of the resistivity and thickness. The thickness is calculated as half of
 the difference between the effective circular diameters of the outer and
 inner perineurium traces. If each fascicle is only defined by a single
 trace (rather than inner and outer perineurium traces), the user chooses
 from a list of modes in ***Sample*** for assigning a perineurium
 thickness (e.g., 3% of fascicle diameter {cite:p}`Grinberg2008`,
-`“ci_perineurium_thickness”` parameter in ***Sample***).
+`"ci_perineurium_thickness"` parameter in ***Sample***).
 
 ### mesh\_dependent\_model.json
 

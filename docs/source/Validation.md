@@ -65,7 +65,7 @@ verifications.
 </tr>
 <tr class="odd">
 <td align="center"style="vertical-align:middle" >Muscle</td>
-<td align="center"style="vertical-align:middle" >Used for the surrounding “medium”: Everything outside of the nerve and cuff, other than the saline layer between the nerve and cuff</td>
+<td align="center"style="vertical-align:middle" >Used for the surrounding "medium": Everything outside of the nerve and cuff, other than the saline layer between the nerve and cuff</td>
 <td align="center"style="vertical-align:middle" ><p>1/0.35 longitudinal</p>
 <p>1/0.086 radial</p></td>
 </tr>
@@ -182,7 +182,7 @@ single 100 µs duration monophasic rectangular pulse.
 
 ![Inline image](uploads/f494c4342a397b94f92dacb2418b8e1e/Picture11.jpg)
 
-Figure A. Our piecewise polynomial fits to published MRG fiber parameters compared to the Bucksot et al. 2019’s interpolation {cite:p}`Bucksot2019`. Single quadratic fits were used for all parameters except for internode length, which has a linear fit below 5.643 µm (using MRG data at 2 and 5.7 µm) and a single quadratic fit at diameters greater than or equal to 5.643 µm (using MRG data >= 5.7 µm); 5.643 µm is the fiber diameter at which the linear and quadratic fits intersected. The fiber diameter is the diameter of the myelin. “Paranode 1” is the MYSA section, “paranode 2” is the FLUT section, and “internode” is the STIN section. The axon diameter is the same for the node of Ranvier and MYSA (“node diameter”), as well as for the FLUT and STIN (“axon diameter”). The node and MYSA lengths are fixed at 1 and 3 μm, respectively, for all fiber diameters.
+Figure A. Our piecewise polynomial fits to published MRG fiber parameters compared to the Bucksot et al. 2019’s interpolation {cite:p}`Bucksot2019`. Single quadratic fits were used for all parameters except for internode length, which has a linear fit below 5.643 µm (using MRG data at 2 and 5.7 µm) and a single quadratic fit at diameters greater than or equal to 5.643 µm (using MRG data >= 5.7 µm); 5.643 µm is the fiber diameter at which the linear and quadratic fits intersected. The fiber diameter is the diameter of the myelin. "Paranode 1" is the MYSA section, "paranode 2" is the FLUT section, and "internode" is the STIN section. The axon diameter is the same for the node of Ranvier and MYSA ("node diameter"), as well as for the FLUT and STIN ("axon diameter"). The node and MYSA lengths are fixed at 1 and 3 μm, respectively, for all fiber diameters.
 
 
 ## Micro Leads cuff measurements
@@ -305,7 +305,7 @@ Table B. Cuff measurements (units: micrometer) for 100 µm inner diameter Micro-
 </tbody>
 </table>
 
-For all “preset” cuff JSON files based on our Micro-Leads cuff
+For all "preset" cuff JSON files based on our Micro-Leads cuff
 measurements, we recessed the contacts by 50 µm. Though we were not able
 to directly measure the recess depth of the contacts, Micro-Leads
 informed us that the surface of the electrode metal could never be

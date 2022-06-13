@@ -2,7 +2,7 @@
 ## Python classes for representing nerve morphology (Sample)
 The nerve cross section includes the outer nerve trace (if present; not
 required for monofascicular nerves) and, for each fascicle, either a
-single “inner” perineurium trace or both “inner” and “outer” perineurium
+single "inner" perineurium trace or both "inner" and "outer" perineurium
 traces. We provide automated control to correct for tissue shrinkage
 during histological processes {cite:p}`Boyd1979` ([S8 Text](S8-JSON-file-parameter-guide)). Morphology metrics (e.g., nerve
 and fascicle(s) cross-sectional areas and centroids, major and minor
@@ -13,7 +13,7 @@ reported in ***Sample*** ([S8 Text](S8-JSON-file-parameter-guide)).
 
 Trace is the core Python class for handling a list of points that define
 a closed loop for a tissue boundary in a nerve cross section (see
-“Tissue Boundaries” in [Fig 2](https://doi.org/10.1371/journal.pcbi.1009285.g002)). Trace has built-in functionality for
+"Tissue Boundaries" in [Fig 2](https://doi.org/10.1371/journal.pcbi.1009285.g002)). Trace has built-in functionality for
 transforming, reporting, displaying, saving, and performing calculations
 on its data contents and properties. Python classes Nerve, Fascicle, and
 Slide are all special instances or hierarchical collections of Trace.
@@ -85,7 +85,7 @@ Lastly, Trace has a few utility methods:
 Nerve is the name of a special instance of Trace reserved for
 representing the outer nerve (epineurium) boundary. It functions as an
 alias for Trace. An instance of the Nerve class is created if the
-`“NerveMode”` in ***Sample*** (“nerve”) is “PRESENT” ([S8 Text](S8-JSON-file-parameter-guide))"
+`"NerveMode"` in ***Sample*** ("nerve") is "PRESENT" ([S8 Text](S8-JSON-file-parameter-guide))"
 
 ###  Fascicle
 
@@ -95,8 +95,8 @@ either (1) an instance of Trace representing an outer perineurium trace
 and one or more instances of Trace representing inner perineurium
 traces, or (2) an inner perineurium trace that is subsequently scaled to
 make a virtual outer using Trace’s methods `deepcopy()` and `offset()` and
-the perineurium thickness defined by the `“PerineuriumThicknessMode”` in
-***Sample*** (`“ci_perineurium_thickness”`) ([S8 Text](S8-JSON-file-parameter-guide)). Upon instantiation,
+the perineurium thickness defined by the `"PerineuriumThicknessMode"` in
+***Sample*** (`"ci_perineurium_thickness"`) ([S8 Text](S8-JSON-file-parameter-guide)). Upon instantiation,
 Fascicle automatically validates that each inner instance of Trace is
 fully within its outer instance of Trace and that no inner instance of
 Trace intersects another inner instance of Trace.
@@ -104,7 +104,7 @@ Trace intersects another inner instance of Trace.
 Fascicle contains methods for converting a binary mask image of
 segmented fascicles into instances of the Fascicle class. The method
 used depends on the contents of the binary image inputs to the pipeline
-as indicated by the `“MaskInputMode”` in ***Sample*** (`“mask_input”`)
+as indicated by the `"MaskInputMode"` in ***Sample*** (`"mask_input"`)
 (i.e., `INNER_AND_OUTER_SEPARATE`, `INNER_AND_OUTER_COMPILED`, or
 `INNERS`). For each of the mask-to-Fascicle conversion methods, the OpenCV
 Python package finds material boundaries and reports their nested
@@ -114,15 +114,15 @@ expecting a *maximum* hierarchical level of 2: one level for inners and
 one level for outers.
 
   - If separate binary images were provided containing contours for
-    inners (`i.tif`) and outers (`o.tif`), then the `“MaskInputMode”` in
-    ***Sample*** (`“mask_input”`, [S8 Text](S8-JSON-file-parameter-guide)) is `INNER_AND_OUTER_SEPARATE`.
+    inners (`i.tif`) and outers (`o.tif`), then the `"MaskInputMode"` in
+    ***Sample*** (`"mask_input"`, [S8 Text](S8-JSON-file-parameter-guide)) is `INNER_AND_OUTER_SEPARATE`.
 
   - If a single binary image was provided containing combined contours
-    of inners and outers (`c.tif`), then the `“MaskInputMode”` in
-    ***Sample*** (`“mask_input”`, [S8 Text](S8-JSON-file-parameter-guide)) is `INNER_AND_OUTER_COMPILED`.
+    of inners and outers (`c.tif`), then the `"MaskInputMode"` in
+    ***Sample*** (`"mask_input"`, [S8 Text](S8-JSON-file-parameter-guide)) is `INNER_AND_OUTER_COMPILED`.
 
   - If only a binary image was provided for contours of inners (`i.tif`),
-    the `“MaskInputMode”` (`“mask_input”`, [S8 Text](S8-JSON-file-parameter-guide)) in ***Sample*** is `INNERS`.
+    the `"MaskInputMode"` (`"mask_input"`, [S8 Text](S8-JSON-file-parameter-guide)) in ***Sample*** is `INNERS`.
 
 In all cases, the Fascicle class uses its `to_list()` method to generate the appropriate
 Traces. Additionally, Fascicle has a `write()` method which saves a Fascicle’s
@@ -151,13 +151,13 @@ defined:
 
   - A list of instance(s) of the Fascicle class.
 
-  - `“NerveMode”` from ***Sample*** (“nerve”) (i.e., `PRESENT` as in the
+  - `"NerveMode"` from ***Sample*** ("nerve") (i.e., `PRESENT` as in the
     case of nerves with epineurium (`n.tif`) or `NOT_PRESENT` otherwise, ([S8 Text](S8-JSON-file-parameter-guide))).
 
   - An instance of the Nerve class if `"NerveMode"` is `PRESENT`.
 
   - A Boolean for whether to reposition fascicles within the
-    nerve from `“ReshapeNerveMode”` in ***Sample*** ([S8 Text](S8-JSON-file-parameter-guide)).
+    nerve from `"ReshapeNerveMode"` in ***Sample*** ([S8 Text](S8-JSON-file-parameter-guide)).
 
   - A list of exceptions.
 
@@ -180,8 +180,8 @@ The Slide class validates, manipulates, and writes its contents.
     is (x,y) = (0,0)).
 
   - In Slide’s `reshaped_nerve()` method, Slide returns the deformed
-    boundary of Nerve based on the `“ReshapeNerveMode”` in ***Sample***
-    (`“reshape_nerve”`, ([S8 Text](S8-JSON-file-parameter-guide))) (e.g., CIRCLE).
+    boundary of Nerve based on the `"ReshapeNerveMode"` in ***Sample***
+    (`"reshape_nerve"`, ([S8 Text](S8-JSON-file-parameter-guide))) (e.g., CIRCLE).
 
   - Using the methods of Nerve and Fascicle, which are both
     manifestations of Trace, Slide has its own methods `plot()`, `scale()`,
@@ -235,12 +235,12 @@ If using a scale bar for scale input, it must be a perfectly horizontal line. Sa
 method is also used within `populate()` to correct for shrinkage that may
 have occurred during the histological tissue processing. The percentage
 increase for shrinkage correction in the slide's 2D geometry is stored
-as a parameter “shrinkage” in ***Sample*** ([S8 Text](S8-JSON-file-parameter-guide)). Additionally, Slide has a
+as a parameter "shrinkage" in ***Sample*** ([S8 Text](S8-JSON-file-parameter-guide)). Additionally, Slide has a
 `move_center()` method which is used to center Slide about a point within
 `populate()`. Note that Sample is centered with the centroid of the
-best-fit ellipse of the outermost Trace (Nerve if `“NerveMode”` in
-***Sample*** (“nerve”) is `“PRESENT”`, outer Trace if `“NerveMode”` is
-`“NOT_PRESENT”`, ([S8 Text](S8-JSON-file-parameter-guide))) at the origin (0,0,0). Change in rotational or
+best-fit ellipse of the outermost Trace (Nerve if `"NerveMode"` in
+***Sample*** ("nerve") is `"PRESENT"`, outer Trace if `"NerveMode"` is
+`"NOT_PRESENT"`, ([S8 Text](S8-JSON-file-parameter-guide))) at the origin (0,0,0). Change in rotational or
 translational placement of the cuff around the nerve is accomplished by
 moving the cuff and keeping the nerve position fixed ([S19 Text](S19-Cuff-placement-on-nerve)).
 
@@ -264,7 +264,7 @@ boundaries of the Sample (Nerve and Fascicles) to CAD files
 Sample’s `output_morphology_data()` method collects sample morphology
 information (area, and the best-fit ellipse information: centroid, major
 axis, minor axis, and rotation) for each original Trace (i.e., Fascicle
-inners and outers, and Nerve) and saves the data under “Morphology” in
+inners and outers, and Nerve) and saves the data under "Morphology" in
 ***Sample.***
 
 Lastly, since Sample inherits `Saveable`, Sample has access to the `save()`
@@ -272,18 +272,18 @@ method which saves the Python object to file.
 
 ###  Deformable
 
-If `“DeformationMode”` in ***Sample*** (“deform”) is set to `NONE`, then the
-Deformable class takes no action ([S8 Text](S8-JSON-file-parameter-guide)). However, if `“DeformationMode”` in
+If `"DeformationMode"` in ***Sample*** ("deform") is set to `NONE`, then the
+Deformable class takes no action ([S8 Text](S8-JSON-file-parameter-guide)). However, if `"DeformationMode"` in
 ***Sample*** is set to `PHYSICS`, then Deformable’s `deform()` method
 simulates the change in nerve cross section that occurs when a nerve is
 placed in a cuff electrode. Specifically, the outer boundary of a
 Slide’s Nerve mask is transformed into a user-defined final geometry
-based on the `“ReshapeNerveMode”` in ***Sample*** (i.e., `CIRCLE`) while
+based on the `"ReshapeNerveMode"` in ***Sample*** (i.e., `CIRCLE`) while
 maintaining the cross-sectional area. Meanwhile, the fascicles (i.e.,
 outers) are repositioned within the new nerve cross section in a
 physics-based way using Pymunk {cite:p}`pymunk`, a 2D physics library, in which
 each fascicle is treated as rigid body with no elasticity as it is
-slowly “pushed” into place by both surrounding fascicles and the nerve
+slowly "pushed" into place by both surrounding fascicles and the nerve
 boundary (Figure A).
 
 ![Inline image](../uploads/1c83c0b093212df340597c3339d9023b/Picture16.jpg)
@@ -292,14 +292,14 @@ Figure A. Snapshots at 0%, 50%, and 100% (left-to-right) of the deformation proc
 
 The `deform()` method updates the nerve boundary to
 intermediately-deformed nerve traces between the nerve’s
-`“boundary_start”` (i.e., the Trace’s profile in segmented image) and
-`“boundary_end”` (i.e., the Trace’s profile after accommodation to the
-cuff’s inner diameter, which is determined by the “ReshapeNerveMode”
-(`“reshape_nerve”`, [S8 Text](S8-JSON-file-parameter-guide)) while the fascicle contents are allowed to
+`"boundary_start"` (i.e., the Trace’s profile in segmented image) and
+`"boundary_end"` (i.e., the Trace’s profile after accommodation to the
+cuff’s inner diameter, which is determined by the "ReshapeNerveMode"
+(`"reshape_nerve"`, [S8 Text](S8-JSON-file-parameter-guide)) while the fascicle contents are allowed to
 rearrange in a physics-space. By default, all fascicles have the same
-“mass”, but their moment of inertia is calculated for each fascicle
+"mass", but their moment of inertia is calculated for each fascicle
 based on its geometry (see Trace’s `pymunk_poly()` method). Each fascicle
-is also assigned a “friction coefficient” of 0.5 as well as a “density”
+is also assigned a "friction coefficient" of 0.5 as well as a "density"
 of 0.01. These measurements are mostly important as they relate to one
 another, not as absolute values. Importantly, we set the elasticity of
 all the fascicles to 0, so all kinetic energy is absorbed, and fascicles
@@ -313,12 +313,12 @@ Deformable’s convenience constructor, `from_slide()`, is automatically
 called in Sample’s `populate()` method, where a Slide is deformed to user
 specification. The `from_slide()` method takes three input arguments: The
 Slide object from which to construct the current Deformable object, the
-`“ReshapeNerveMode”` (e.g., CIRCLE, [S8 Text](S8-JSON-file-parameter-guide)), and the minimum distance between
+`"ReshapeNerveMode"` (e.g., CIRCLE, [S8 Text](S8-JSON-file-parameter-guide)), and the minimum distance between
 fascicles. If only inners are provided, virtual outers interact during
 nerve deformation to account for the thickness of the perineurium. Each
 inner’s perineurium thickness is defined by the
-`“PerineuriumThicknessMode”` in ***Sample***
-(`“ci_perineurium_thickness”`, [S8 Text](S8-JSON-file-parameter-guide)), which specifies the linear
+`"PerineuriumThicknessMode"` in ***Sample***
+(`"ci_perineurium_thickness"`, [S8 Text](S8-JSON-file-parameter-guide)), which specifies the linear
 relationship between inner diameter and perineurium thickness defined in
 `config/system/ci_peri_thickness.json` ([S8 Text](S8-JSON-file-parameter-guide)). Deformable’s
 `from_slide()` method uses Deformable’s `deform_steps()` method to
@@ -333,7 +333,7 @@ the Nerve’s best-fit ellipse intersects `boundary_start` and
 The `deform_steps()` method then returns a list of
 intermediately-deformed nerve traces between the `boundary_start` and
 `boundary_end` by adding linearly-spaced portions of each point pair’s
-vector to `boundary_start`. Also note that by defining `“deform_ratio”`
+vector to `boundary_start`. Also note that by defining `"deform_ratio"`
 (value between 0 and 1) in ***Sample***, the user can optionally
 indicate a partial deformation of the Nerve ([S8 Text](S8-JSON-file-parameter-guide)).
 In the case where `"deform_ratio"` is set to 0, minimum fascicle separation will still be
@@ -352,7 +352,7 @@ space. At regular intervals in physics simulation time, the nerve
 boundary is updated to the next Trace in the list of
 intermediately-deformed nerve traces created by `deform_steps()`. This
 number of Trace steps defaults to 36 but can be optionally set in
-***Sample*** with the `“morph_count”` parameter by the user ([S8 Text](S8-JSON-file-parameter-guide)). It is
+***Sample*** with the `"morph_count"` parameter by the user ([S8 Text](S8-JSON-file-parameter-guide)). It is
 important to note that too few Trace steps can result in fascicles lying
 outside of the nerve during deformation, while too many Trace steps can
 be unnecessarily time intensive. We’ve set the default to 36 because it
@@ -360,7 +360,7 @@ tends to minimize both aforementioned issues for all sample sizes
 and types that we have tested.
 
 The user may also visualize nerve deformation by setting the
-`“deform_animate”` argument to true in `sample.populate()` (called in
+`"deform_animate"` argument to true in `sample.populate()` (called in
 Runner’s `run()` method) ([S8 Text](S8-JSON-file-parameter-guide)). Visualizing sample deformation can be helpful
 for debugging but increases computational load and slows down the
 deformation process significantly. When performing deformation on many
@@ -379,12 +379,12 @@ slides, we advise setting this flag to false.
 
 The user is unlikely to interface directly with Simulation’s
 `resolve_factors()` method as it operates behind the scenes. The method
-searches through ***Sim*** for lists of parameters within the “fibers”
-and “waveform” JSON Objects until the indicated number of dimensions
-(“n_dimensions” parameter in ***Sim***, which is a handshake to
+searches through ***Sim*** for lists of parameters within the "fibers"
+and "waveform" JSON Objects until the indicated number of dimensions
+("n_dimensions" parameter in ***Sim***, which is a handshake to
 prevent erroneous generation of NEURON simulations) has been reached.
 The parameters over which the user has indicated to sweep in ***Sim***
-are saved to the Simulation class as a dictionary named “factors” with
+are saved to the Simulation class as a dictionary named "factors" with
 the path to each parameter in ***Sim***.
 
 The required parameters to define each type of waveform are in [S8 Text](S8-JSON-file-parameter-guide). The Python Waveform class is configured with ***Sim***, which contains
@@ -392,9 +392,9 @@ all parameters that define the Waveform. Since FEMs may have
 frequency-dependent conductivities, the parameter for frequency of
 stimulation is optionally defined in ***Model*** (for frequency-dependent
 material conductivities), but the pulse repetition frequency is
-defined in ***Sim*** as `“pulse_repetition_freq”`. The
+defined in ***Sim*** as `"pulse_repetition_freq"`. The
 `write_waveforms()` method instantiates a Python Waveform class for each
-`“wave_set”` (i.e., one combination of stimulation parameters).
+`"wave_set"` (i.e., one combination of stimulation parameters).
 
 ###  (Post-Java)
 
@@ -402,12 +402,12 @@ The unique combinations of ***Sim*** parameters are found with a
 Cartesian product from the listed values for individual parameters in
 ***Sim***: Waveforms ⨉ Src_weights ⨉ Fibersets. The pipeline manages
 the indexing of simulations. For ease of debugging and inspection, into
-each `n_sim/` directory we copy in a modified “reduced” version of
+each `n_sim/` directory we copy in a modified "reduced" version of
 ***Sim*** with any lists of parameters replaced by the single list
 element value investigated in the particular `n_sim/` directory.
 
 The Simulation class loops over ***Model*** and ***Sim*** as listed in
-***Run*** and loads the Python `“sim.obj”` object saved in each simulation
+***Run*** and loads the Python `"sim.obj"` object saved in each simulation
 directory `(sims/\<sim index\>/)` prior to Python’s `handoff()` to Java.
 Using the Python object for the simulation loaded into memory, the
 Simulation class’s method `build_n_sims()` loops over the
@@ -416,9 +416,9 @@ For each `master_product_index`, the program creates the `n_sim` file
 structure (```sims/<sim index>/n_sims/<n_sim index>/data/inputs/``` and
 ```sims/<sim index>/n_sims/<n_sim index>/data/outputs/```).
 Corresponding to the `n_sim’s` `master_product_index`, files are copied
-into the `n_sim` directory for a “reduced” ***Sim***, stimulation
+into the `n_sim` directory for a "reduced" ***Sim***, stimulation
 waveform, and fiber potentials. Additionally, the program writes a HOC
-file (i.e., `“launch.hoc”`) containing parameters for and a call to our
+file (i.e., `"launch.hoc"`) containing parameters for and a call to our
 `Wrapper.hoc` file using the Python `HocWriter` class.
 
 To conveniently submit the `n\_sim` directories to a computer cluster, we
@@ -426,7 +426,7 @@ created methods within Simulation named `export_n_sims()`,
 `export_run()`, and `export_neuron_files()`. The method `export_n_sims()`
 copies `n_sims` from our native hierarchical file structure to a target
 directory as defined in the system `env.json` config file by the value for
-the `“ASCENT_NSIM_EXPORT_PATH”` key. Within the target directory, a
+the `"ASCENT_NSIM_EXPORT_PATH"` key. Within the target directory, a
 directory named `n_sims/` contains all `n_sims`. Each `n_sim` is renamed
 corresponding to its sample, model, sim, and `master_product_index`
 (`<sample_index>_<model_index>_<sim_index>_<master_product_index>`)
@@ -434,7 +434,7 @@ and is therefore unique. Analogously, `export_run()` creates a copy of
 ***Run*** within the target directory in a directory named `runs/`. Lastly,
 `export_neuron_files()` is used to create a copy of the NEURON `*.hoc`
 and `*.mod` files in the target directory in directories named
-`“HOC_Files”` and `“MOD_Files”`, respectively.
+`"HOC_Files"` and `"MOD_Files"`, respectively.
 
 ## Fiberset
 Runner’s `run()` method first loads JSON configuration files for
@@ -443,9 +443,9 @@ Python Sample class. The Sample instance produces two-dimensional CAD
 files that define nerve and fascicle tissue boundaries in COMSOL from
 the input binary masks. The `run()` method also instantiates Python
 Simulation classes using the ***Model*** and ***Sim*** configurations to
-define the coordinates of “fibersets” where “potentials” are sampled in
+define the coordinates of "fibersets" where "potentials" are sampled in
 COMSOL to be applied extracellularly in NEURON and to define the current
-amplitude versus time stimulation waveform used in NEURON (“waveforms”).
+amplitude versus time stimulation waveform used in NEURON ("waveforms").
 The Simulation class is unique in that it performs operations both
 before and after the program performs a handoff to Java for COMSOL
 operations. Before the handoff to Java, each Simulation writes
@@ -467,26 +467,26 @@ z-coordinates along the length of the nerve are saved in `fibersets/`.
 Fiberset’s method `_generate_xy()` (first character being an underscore
 indicates intended for use only by the Fiberset class) defines the
 coordinates of simulated fibers in the cross section of the nerve
-according to the `“xy_parameters”` JSON Object in ***Sim*** ([S8 Text](S8-JSON-file-parameter-guide)). The pipeline
+according to the `"xy_parameters"` JSON Object in ***Sim*** ([S8 Text](S8-JSON-file-parameter-guide)). The pipeline
 defines (x,y)-coordinates of the fibers in the nerve cross section
 according to the user’s selection of sampling rules (`CENTROID`,
 `UNIFORM_DENSITY`, `UNIFORM_COUNT`, and `WHEEL`); the pre-defined modes for
 defining fiber locations are easily expandable. To add a new mode for
-defining (x,y)-coordinates, the user must add a `“FiberXYMode”` in
+defining (x,y)-coordinates, the user must add a `"FiberXYMode"` in
 `src/utils/enums.py` ([S6 Text](S6-Enums)) and add an `IF` statement code block in
-`_generate_xy()` containing the operations for constructing “points”
+`_generate_xy()` containing the operations for constructing "points"
 `(List[Tuple[float]])`. The user must add the parameters to define how
-fibers are placed in the nerve within the `“xy_parameters”` JSON Object
-in ***Sim***. In ***Sim***, the user may control the “plot” parameter
-(Boolean) in the “fibers” JSON Object to create a figure of fiber
+fibers are placed in the nerve within the `"xy_parameters"` JSON Object
+in ***Sim***. In ***Sim***, the user may control the "plot" parameter
+(Boolean) in the "fibers" JSON Object to create a figure of fiber
 (x,y)-coordinates on the slide. Alternatively, the user may plot a
 Fibserset using the `plot_fiberset.py` script ([S33 Text](S33-Data-analysis-tools)).
 
 Fiberset’s private method `_generate_z()` defines the coordinates of the
 compartments of simulated fibers along the length of the nerve based on
 global parameters in `config/system/fiber_z.json` and simulation-specific
-parameters in the `“fibers”` JSON Object in ***Sim*** (i.e., `“mode”`,
-`“diameter”`, `“min”`, `“max”`, and `“offset”`).
+parameters in the `"fibers"` JSON Object in ***Sim*** (i.e., `"mode"`,
+`"diameter"`, `"min"`, `"max"`, and `"offset"`).
 
 
 ## Python utility classes
@@ -494,10 +494,10 @@ parameters in the `“fibers”` JSON Object in ***Sim*** (i.e., `“mode”`,
 ### Enums
 In the Python portions of the pipeline we use
 [Enums](https://docs.python.org/3/library/enum.html)
-which are “… a set of
+which are "… a set of
 symbolic names (members) bound to unique, constant values. Within an
 enumeration, the members can be compared by identity, and the
-enumeration itself can be iterated over.” Enums improve code readability
+enumeration itself can be iterated over." Enums improve code readability
 and are useful when a parameter can only assume one value from a set of
 possible values.
 
@@ -539,8 +539,8 @@ also the name of the configuration JSON file (e.g., `sample.json`,
 #### Config:
 
 The Config input to Configurable can take one of three data types. If
-`“SetupMode”` is “OLD”, the value can be a dictionary or list of already
-loaded configuration data. If `“SetupMode”` is “NEW”, the value must be a
+`"SetupMode"` is "OLD", the value can be a dictionary or list of already
+loaded configuration data. If `"SetupMode"` is "NEW", the value must be a
 string of the file path to the configuration file to be loaded into
 memory.
 
@@ -567,7 +567,7 @@ class can access the contents of the JSON dictionary. For example, in
 Exceptionable is a centralized way to organize and throw exceptions
 (errors) to the user’s console. Exceptionable inherits functionality
 from Configurable. Exceptionable, like Configurable, is initialized with
-“SetupMode”, ConfigKey, and a Config. However, the data contents for
+"SetupMode", ConfigKey, and a Config. However, the data contents for
 Exceptionable are specifically a list of exceptions stored in
 `config/system/exceptions.json`. The contents of the exceptions
 configuration file is a list of numbered errors with an associated text

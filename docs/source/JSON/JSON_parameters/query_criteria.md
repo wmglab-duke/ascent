@@ -31,34 +31,34 @@ or ***Sim*** fit the user’s restricted parameter values ([S33 Text](S33-Data-a
 ```
 ## Properties
 
-`“partial_matches”`: The value (Boolean) indicates whether Query should
+`"partial_matches"`: The value (Boolean) indicates whether Query should
 return configuration indices for ***Sample***, ***Model***, or ***Sim***
 that are a partial match (i.e., a subset of the parameters were found,
 but not all).
 
-`“include_downstream"`: The value (Boolean) indicates whether Query
+`"include_downstream"`: The value (Boolean) indicates whether Query
 should return indices of downstream (***Sample*** \> ***Model*** \>
 ***Sim***) configurations that exist if match criteria are not provided
 for them.
 
-`“sample”`: The value is a JSON Object that mirrors the path to the
+`"sample"`: The value is a JSON Object that mirrors the path to the
 parameters of interest in ***Sample*** and their value(s).
 
-`“model”`: The value is a JSON Object that mirrors the path to the
+`"model"`: The value is a JSON Object that mirrors the path to the
 parameters of interest in ***Model*** and their value(s).
 
-`“sim”`: The value is a JSON Object that mirrors the path to the
+`"sim"`: The value is a JSON Object that mirrors the path to the
 parameters of interest in ***Sim*** and their value(s).
 
-`“indices”`: 
+`"indices"`: 
 
-  - `“sample”`: The value (null, Integer, or \[Integer, …\]) for
+  - `"sample"`: The value (null, Integer, or \[Integer, …\]) for
     explicitly desired ***Sample*** indices
 
-  - `“model”`: The value (null, Integer, or \[Integer, …\]) for explicitly
+  - `"model"`: The value (null, Integer, or \[Integer, …\]) for explicitly
     desired ***Model*** indices
 
-  - `“sim”`: The value (null, Integer, or \[Integer, …\]) for explicitly
+  - `"sim"`: The value (null, Integer, or \[Integer, …\]) for explicitly
     desired ***Sim*** indices
 
 Note: you can have BOTH lists of desired ***Sample***, ***Model***, and

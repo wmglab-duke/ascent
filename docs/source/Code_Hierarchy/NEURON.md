@@ -13,11 +13,11 @@ at discrete times and/or locations.
 
 ###  Create fiber model
 
-Based on the flag for “fiber\_type” set in ```launch.hoc``` (associated by a
+Based on the flag for "fiber\_type" set in ```launch.hoc``` (associated by a
 fiber type parameter in ```fiber_z.json``` and ```FiberGeometryMode``` ([S8 Text](S8-JSON-file-parameter-guide))),
 ```Wrapper.hoc``` loads the corresponding template for defining fiber geometry
-discretization, i.e., ```“GeometryBuilder.hoc”``` for myelinated fibers and
-```“cFiberBuilder.hoc”``` for unmyelinated fibers. For all fiber types, the
+discretization, i.e., ```"GeometryBuilder.hoc"``` for myelinated fibers and
+```"cFiberBuilder.hoc"``` for unmyelinated fibers. For all fiber types, the
 segments created and connected in NEURON have lengths that correspond to
 the coordinates of the input potentials.
 

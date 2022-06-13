@@ -82,61 +82,61 @@ Note: Eccentricity (e) is defined as a function of the major (a-) and minor
 ```
 ## Properties
 
-`“global”`: The global JSON Object contains key-value pairs to document
+`"global"`: The global JSON Object contains key-value pairs to document
 characteristics of the sample being synthesized. Required.
 
-  - `“NAME”`: The value (String) of this property sets the sample
+  - `"NAME"`: The value (String) of this property sets the sample
     name/identifier (e.g., Pig1-1) to relate to bookkeeping. The value
     will match the directory name in input/ containing the synthesized
     morphology files created by the `mock_morphology_generator.py`.
     Required.
 
-`“scalebar_length”`: The value (Double, units: micrometer) is the desired
+`"scalebar_length"`: The value (Double, units: micrometer) is the desired
 length of the scale bar in the generated binary image of the scale bar
 (`s.tif`). Required.
 
-`“nerve”`: The nerve JSON Object contains key-value pairs for the
+`"nerve"`: The nerve JSON Object contains key-value pairs for the
 elliptical nerve’s size and rotation. Required.
 
-  - `“a”`: Value is the nerve ellipse axis ‘a’ which is the full width major axis (Double, units:
+  - `"a"`: Value is the nerve ellipse axis ‘a’ which is the full width major axis (Double, units:
     micrometer). Required.
 
-  - `“b”`: Value is the nerve ellipse axis ‘b’ which is the full width minor axis (Double, units:
+  - `"b"`: Value is the nerve ellipse axis ‘b’ which is the full width minor axis (Double, units:
     micrometer). Required.
 
-  - `“rot_nerve”`: Value is the nerve ellipse axis rotation (Double,
+  - `"rot_nerve"`: Value is the nerve ellipse axis rotation (Double,
     units: degrees). Positive angles are counter-clockwise and negative
     are clockwise, relative to orientation with a-axis aligned with
     +x-direction. Required.
 
-“figure”: The figure JSON Object contains key-value pairs for parameters
+"figure": The figure JSON Object contains key-value pairs for parameters
 that determine the size and resolution of the generated binary masks.
 Required.
 
-  - `“fig_margin”`: The value (Double, \>1 otherwise an error is thrown)
+  - `"fig_margin"`: The value (Double, \>1 otherwise an error is thrown)
     sets the x- and y-limits of the binary masks generated. The limits
     are set relative to the maximum nerve ellipse axis dimension (+/-
     `fig_margin`\*max(`a`, `b`) in both x- and y-directions).
     Required.
 
-  - `“fig_dpi”`: The value (Integer) is the “dots per inch” resolution of
+  - `"fig_dpi"`: The value (Integer) is the "dots per inch" resolution of
     the synthesized binary images. Higher resolutions will result in
     more accurate interpolation curves of inners in COMSOL. We recommend
     \>1000 for this value. Required.
 
-`“populate”`: The populate JSON Object contains key-value pairs for
+`"populate"`: The populate JSON Object contains key-value pairs for
 parameters that determine how the nerve contents (i.e., fascicle inners)
 are populated. Required.
 
-  - `“mode”`: The value (String) is the `“PopulateMode”` that tells the
+  - `"mode"`: The value (String) is the `"PopulateMode"` that tells the
     program which method to use to populate the nerve. Required.
 
-      - As listed in Enums ([S6 Text](S6-Enums)), known `“PopulateModes”` include 
+      - As listed in Enums ([S6 Text](S6-Enums)), known `"PopulateModes"` include 
 
-          - `“EXPLICIT”`: Populates the nerve with elliptical inners that
+          - `"EXPLICIT"`: Populates the nerve with elliptical inners that
             are defined explicitly by the user.
 
-              - `“min_fascicle_separation”`: The value (Double, units:
+              - `"min_fascicle_separation"`: The value (Double, units:
                 micrometer) determines the minimum distance between
                 fascicle boundaries in the binary mask image that the
                 pipeline will allow without throwing an error. This
@@ -146,49 +146,49 @@ are populated. Required.
                 between fascicles and between fascicles and the nerve
                 boundary in `sample.json`. Required.
 
-              - `“Fascicles”`: The value `List[JSON Object]` contains a
+              - `"Fascicles"`: The value `List[JSON Object]` contains a
                 JSON Object for each inner. Required. Within each JSON
                 Object, the following key-value pairs are present:
 
-                  - `“centroid_x”`: Value (Double, units: micrometer) is
+                  - `"centroid_x"`: Value (Double, units: micrometer) is
                     the x-coordinate of the centroid of the best-fit
                     ellipse of the Trace. Required.
 
-                  - `“centroid_y”`: Value (Double, units: micrometer) is
+                  - `"centroid_y"`: Value (Double, units: micrometer) is
                     the y-coordinate of the centroid of the best-fit
                     ellipse of the Trace. Required.
 
-                  - `“a”`: Value is the ellipse axis ‘a’ which is the full width major axis (Double, units:
+                  - `"a"`: Value is the ellipse axis ‘a’ which is the full width major axis (Double, units:
                     micrometer). Required.
 
-                  - `“b”`: Value is the ellipse axis ‘b’ which is the full width minor axis (Double, units:
+                  - `"b"`: Value is the ellipse axis ‘b’ which is the full width minor axis (Double, units:
                     micrometer). Required.
 
-                  - `“rot”`: Value is the ellipse axis rotation (Double,
+                  - `"rot"`: Value is the ellipse axis rotation (Double,
                     units: degrees). Positive angles are
                     counter-clockwise and negative are clockwise,
                     relative to orientation with a-axis aligned with
                     +x-direction. Required.
 
-          - `“TRUNCNORM”`: Places fascicles in the nerve with size and
+          - `"TRUNCNORM"`: Places fascicles in the nerve with size and
             eccentricity randomly based on a truncated normal
             distribution. Rotation of fascicles is randomly drawn from
             uniform distribution from 0 to 360 degrees.
 
-              - `“mu_fasc_diam”`: The value (Double, units: micrometer)
+              - `"mu_fasc_diam"`: The value (Double, units: micrometer)
                 is the mean fascicle diameter in the distribution.
                 Required.
 
-              - `“std_fasc_diam”`: The value (Double, units: micrometer)
+              - `"std_fasc_diam"`: The value (Double, units: micrometer)
                 is the standard deviation of fascicle diameter in the
                 distribution. Required.
 
-              - `“n_std_diam_limit”`: The value (Double) is the limited
+              - `"n_std_diam_limit"`: The value (Double) is the limited
                 number of standard deviations for the truncated normal
                 fascicle diameter distribution. The value does not need
                 to be an integer. Required.
 
-              - `“num_fascicle_attempt”`: The value (Integer) is the
+              - `"num_fascicle_attempt"`: The value (Integer) is the
                 number of different fascicles from the distribution that
                 the program will attempt to place. Required.
 
@@ -197,7 +197,7 @@ are populated. Required.
                     console instructing user to reduce the number, size,
                     and/or separation of the fascicles.
 
-              - `“num_fascicle_placed”`: The value (Integer) is the
+              - `"num_fascicle_placed"`: The value (Integer) is the
                 number of successfully placed fascicles in the nerve
                 cross section. Automatically populated.
 
@@ -206,25 +206,25 @@ are populated. Required.
                     console instructing user to reduce the number, size,
                     and/or separation of the fascicles.
 
-              - `“mu_fasc_ecc”`: The value (Double) is the mean fascicle
+              - `"mu_fasc_ecc"`: The value (Double) is the mean fascicle
                 eccentricity in the distribution. Must be \<= 1 and \>
                 0. Set to 1 for circles. Required.
 
-              - `“std_fasc_ecc”`: The value (Double, units: micrometer)
+              - `"std_fasc_ecc"`: The value (Double, units: micrometer)
                 is the standard deviation of fascicle eccentricity in
                 the distribution. Required.
 
-              - `“n_std_ecc_limit”`: The value (Double) is the limited
+              - `"n_std_ecc_limit"`: The value (Double) is the limited
                 number of standard deviations for the truncated normal
                 fascicle eccentricity distribution. Required.
 
-              - `“max_attempt_iter”`: The value (Integer) is the number
+              - `"max_attempt_iter"`: The value (Integer) is the number
                 of different random locations within the nerve that the
                 program will attempt to place a fascicle before skipping
                 it (presumably because it cannot possibly fit in the
                 nerve). We recommend using 100+. Required.
 
-              - `“min_fascicle_separation”`: The value (Double, units:
+              - `"min_fascicle_separation"`: The value (Double, units:
                 micrometer) determines the minimum distance between
                 fascicle boundaries in the binary mask image that the
                 pipeline will allow without throwing an error. This
@@ -234,23 +234,23 @@ are populated. Required.
                 between fascicles and between fascicles and the nerve
                 boundary in `sample.json`. Required.
 
-              - `“seed”`: The value (Integer) initiates the random number
+              - `"seed"`: The value (Integer) initiates the random number
                 generator. Required.
 
-          - `“UNIFORM”`: Places fascicles in the nerve with size and
+          - `"UNIFORM"`: Places fascicles in the nerve with size and
             eccentricity randomly based on a uniform distribution.
             Rotation of fascicles is randomly drawn from uniform
             distribution from 0 to 360 degrees.
 
-              - `“lower_fasc_diam”`: The value (Double, units:
+              - `"lower_fasc_diam"`: The value (Double, units:
                 micrometer) is the lower limit of the uniform
                 distribution for fascicle diameter. Required.
 
-              - `“upper_fasc_diam”`: The value (Double, units:
+              - `"upper_fasc_diam"`: The value (Double, units:
                 micrometer) is the upper limit of the uniform
                 distribution for fascicle diameter. Required.
 
-              - `“num_fascicle_attempt”`: The value (Integer) is the
+              - `"num_fascicle_attempt"`: The value (Integer) is the
                 number of different fascicles from the distribution that
                 the program will attempt to place. Required.
 
@@ -259,7 +259,7 @@ are populated. Required.
                     console instructing user to reduce the number, size,
                     and/or separation of the fascicles.
 
-              - `“num_fascicle_placed”`: The value (Integer) is the
+              - `"num_fascicle_placed"`: The value (Integer) is the
                 number of successfully placed fascicles in the nerve
                 cross section. Automatically populated.
 
@@ -268,21 +268,21 @@ are populated. Required.
                     console instructing user to reduce the number, size,
                     and/or separation of the fascicles.
 
-              - `“lower_fasc_ecc”`: The value (Double) is the lower
+              - `"lower_fasc_ecc"`: The value (Double) is the lower
                 limit of the uniform distribution for fascicle
                 eccentricity. Must be <= 1 and > 0. Set to 1 for circles. Required.
 
-              - `“upper_fasc_ecc”`: The value (Double) is the upper
+              - `"upper_fasc_ecc"`: The value (Double) is the upper
                 limit of the uniform distribution for fascicle
                 eccentricity. Must be <= 1 and > 0. Set to 1 for circles. Required.
 
-              - `“max_attempt_iter”`: The value (Integer) is the number
+              - `"max_attempt_iter"`: The value (Integer) is the number
                 of different random locations within the nerve that the
                 program will attempt to place a fascicle before skipping
                 it (presumably because it cannot possibly fit in the
                 nerve). We recommend using 100+. Required.
 
-              - `“min_fascicle_separation”`: The value (Double, units:
+              - `"min_fascicle_separation"`: The value (Double, units:
                 micrometer) determines the minimum distance between
                 fascicle boundaries in the binary mask image that the
                 pipeline will allow without throwing an error. This
@@ -292,7 +292,7 @@ are populated. Required.
                 between fascicles and between fascicles and the nerve
                 boundary in `sample.json`. Required.
 
-              - `“seed”`: The value (Integer) initiates the random number
+              - `"seed"`: The value (Integer) initiates the random number
                 generator. Required.
 
 ## Example
