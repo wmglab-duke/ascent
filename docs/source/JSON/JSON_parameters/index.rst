@@ -3,7 +3,7 @@ JSON Configuration Parameter Guide
 
 Notes:
 
-See `S7 Text <S7-JSON-configuration-files>`__ for a general overview of
+See `JSON Overview <../JSON_overview>`__ for a summary of
 the contents and usage of each of the following JSON files used in
 ASCENT.
 
