@@ -6,7 +6,7 @@ Named file: `samples/<sample_index>/sample.json`
 Instructs the pipeline on which sample-specific input data
 and user-defined parameters to use for processing nerve sample
 morphology inputs in preparation for 3D representation of the sample
-in the FEM (***Sample***) ([S7](S7-JSON-configuration-files) and [S14](S14-Creating-sample-specific-nerve-morphologies-in-COMSOL) Text).
+in the FEM (***Sample***) ([Creating Nerve Morphology in COMSOL](../../Code_Hierarchy/Java.md#partcreatenervepartinstance)).
 
 ## Syntax
 To declare this entity in
@@ -84,7 +84,7 @@ To declare this entity in
 
 `"sample"`: The value (String) of this property sets the sample
 name/identifier (e.g., "Rat1-1") to relate to bookkeeping for input
-morphology files ([S3 Text Figure A](S3-ASCENT-data-hierarchy)). The value must match the directory name in
+morphology files ([ASCENT Data Hierarchy](../../Data_Hierarchy) Figure A). The value must match the directory name in
 `input/<NAME>/` that contains the input morphology files. Required.
 
 `"sex"`: The value (String) of this property assigns the sex of the

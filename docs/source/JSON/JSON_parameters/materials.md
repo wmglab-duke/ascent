@@ -95,4 +95,4 @@ Note: Perineurium can be represented in the pipeline as either a meshed
 domain with a finite thickness or as a thin layer approximation, but the
 conductivity value used for either method is defined in `materials.json`
 unless the `"PerineuriumResistivityMode"` is `"MANUAL"` and the conductivity
-is defined explicitly in ***Model*** ([](S28-Definition-of-perineurium)).
+is defined explicitly in ***Model*** ([Perineurium Properties](../../Running_ASCENT/Info.md#definition-of-perineurium)).
