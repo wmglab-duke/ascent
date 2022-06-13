@@ -3,7 +3,7 @@ JSON Configuration Parameter Guide
 
 Notes:
 
-See `JSON Overview <../JSON_overview>`__ for a summary of
+See  :doc:`JSON Overview <../JSON_overview>`  for a summary of
 the contents and usage of each of the following JSON files used in
 ASCENT.
 
