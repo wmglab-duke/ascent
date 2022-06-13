@@ -11,7 +11,7 @@ inners if `"ci_perineurium_thickness"` is not specified as "MEASURED".
 The calculated thickness may be explicitly built in the FEM geometry
 and meshed (i.e., if `"use_ci"` in ***Model*** is false) or may only
 be used for calculating the contact impedance if modeling the
-perineurium with a thin layer approximation ([S14](S14-Creating-sample-specific-nerve-morphologies-in-COMSOL) and [S28](S28-Definition-of-perineurium) Text).
+perineurium with a thin layer approximation ([Java Utility Classes](../../Code_Hierarchy/Java.md#fascicles), and [Perineurium Properties](../../Running_ASCENT/Info.md#definition-of-perineurium)).
 
 ## Syntax
 ```
