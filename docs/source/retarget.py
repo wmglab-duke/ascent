@@ -46,7 +46,43 @@ redict = {
     '[S19](S19-Cuff-placement-on-nerve) Text':'[Cuff Placement on the Nerve](prepend/Running_ASCENT/Info.md#cuff-placement-on-nerve)',
     '["ASCENT data hierarchy"](S3-ASCENT-data-hierarchy)':'[ASCENT Data Hierarchy](prepend/Data_Hierarchy)',
     '.(S18-Creating-new-part-primitives)':'[Creating New Part Primitives](prepend/Primitives_and_Cuffs/Creating_Primitives)',
+    '(e.g., Sample and Simulation, described in [S13](S13-Python-classes-for-representing-nerve-morphology-(Sample)) and [S30](S30-Python-simulation-class) Text, respectively)':'(e.g., [Sample](#python-classes-for-representing-nerve-morphology-sample) and [Simulation](#simulation))',
+    'Enums ([S6 Enums](S6-Enums)':'[Enums](prepend/Code_Hierarchy/Python.md#enums)',
+    '[S31](S31-NEURON-launch.hoc) and [S32](S32-NEURON-Wrapper.hoc) Text':'[NEURON Scripts](prepend/Code_Hierarchy/NEURON)',
     }
+
+for path in Path('').rglob('*.md'):
+    # print(path)
+    count = len(str(path).split('\\'))
+    prepend = '../'*(count-1)
+    with open(path,'r',encoding='utf8') as f:
+        text=f.readlines()
+    for i,line in enumerate(text):
+        replaced = False
+        for key,value in redict.items():
+            if key[1:] in line and key.startswith('.'):
+                print(line)
+            elif key in line:
+                if type(value) is list:
+                    print()
+                    print(text[i-1:i+1])
+                    num = int(input(list(enumerate(value))))
+                    # num=0
+                    if num<0: continue
+                    choice = value[num]
+                else:
+                    choice= value
+                newstr = choice.replace('prepend/',prepend)
+                newline=line.replace(key,newstr)
+                text[i]=newline
+                print('replaced')
+                replaced = True
+        if ' Text](S' in line and not replaced:
+            print(line)
+    with open(path,'w',encoding='utf8') as f:
+        f.writelines(text)
+
+redict['[S17](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives)']='[Creating Custom Cuffs](prepend/Primitives_and_Cuffs/Custom_Cuffs)'
 
 for path in Path('').rglob('*.md'):
     # print(path)
@@ -78,5 +114,3 @@ for path in Path('').rglob('*.md'):
             print(line)
     with open(path,'w',encoding='utf8') as f:
         f.writelines(text)
-
-redict['[S17](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives)']='[Creating Custom Cuffs](prepend/Primitives_and_Cuffs/Custom_Cuffs)'
