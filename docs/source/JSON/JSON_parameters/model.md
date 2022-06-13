@@ -126,10 +126,10 @@ the following syntax:
     calculate the perineurium conductivity in a frequency and/or
     temperature dependent way. Required.
 
-      - As listed in Enums ([S6 Text](S6-Enums)), known `"PerineuriumResistivityModes"` include
+      - As listed in Enums ([Enums](../../Code_Hierarchy/Python.md#enums)), known `"PerineuriumResistivityModes"` include
 
           - `"RHO_WEERASURIYA"`: Program uses mean of circuits C and D
-            from Weerasuriya 1984 {cite:p}`Weerasuriya1984` (frog sciatic nerve) ([S28 Text](S28-Definition-of-perineurium)) to adjust
+            from Weerasuriya 1984 {cite:p}`Weerasuriya1984` (frog sciatic nerve) ([Perineurium Properties](../../Running_ASCENT/Info.md#definition-of-perineurium)) to adjust
             perineurium conductivity to account for temperature and
             frequency (which are both stored in `model.json`).
 
@@ -138,34 +138,34 @@ the following syntax:
             no automated correction for frequency.
 
   - `"cuff_shift"`: The value (String) is the `"CuffShiftMode"` that tells
-    the program how to shift the cuff on the nerve ([S17](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives) and [S19](S19-Cuff-placement-on-nerve) Text). Required.
+    the program how to shift the cuff on the nerve ([Creating Custom Cuffs](../../Primitives_and_Cuffs/Custom_Cuffs) and [Cuff Placement on the Nerve](../../Running_ASCENT/Info.md#cuff-placement-on-nerve)). Required.
 
-      - As listed in Enums ([S6 Text](S6-Enums)), known modes include
+      - As listed in Enums ([Enums](../../Code_Hierarchy/Python.md#enums)), known modes include
 
           - `"NAIVE_ROTATION_MIN_CIRCLE_BOUNDARY"`: Program shifts the
             cuff to within a user-defined distance of the minimum
             bounding circle of the nerve sample. The direction of the
-            shift is defined in the preset cuff JSON file ([S17](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives) and [S19](S19-Cuff-placement-on-nerve) Text). Since this mode does not align the cuff with the sample centroid, orientation masks (`a.tif`) are ignored.
+            shift is defined in the preset cuff JSON file ([Creating Custom Cuffs](../../Primitives_and_Cuffs/Custom_Cuffs) and [Cuff Placement on the Nerve](../../Running_ASCENT/Info.md#cuff-placement-on-nerve)). Since this mode does not align the cuff with the sample centroid, orientation masks (`a.tif`) are ignored.
 
           - `"NAIVE_ROTATION_TRACE_BOUNDARY"`: Program shifts the cuff
             to within a user-defined distance of the nerve trace
             boundary. The direction of the shift is defined in the
-            preset cuff JSON file ([S17](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives) and [S19](S19-Cuff-placement-on-nerve) Text). Since this mode does not align the cuff with the sample centroid, orientation masks (`a.tif`) are ignored.
+            preset cuff JSON file ([Creating Custom Cuffs](../../Primitives_and_Cuffs/Custom_Cuffs) and [Cuff Placement on the Nerve](../../Running_ASCENT/Info.md#cuff-placement-on-nerve)). Since this mode does not align the cuff with the sample centroid, orientation masks (`a.tif`) are ignored.
 
           - `"AUTO_ROTATION_MIN_CIRCLE_BOUNDARY"`: Program
             shifts/rotates the cuff to within a user-defined distance of
             the minimum bounding circle of the nerve sample to align
             with the Slide’s `"fascicle_centroid"`. The direction of the
-            shift is defined in the preset cuff JSON file ([S17](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives) and [S19](S19-Cuff-placement-on-nerve) Text).
+            shift is defined in the preset cuff JSON file ([Creating Custom Cuffs](../../Primitives_and_Cuffs/Custom_Cuffs) and [Cuff Placement on the Nerve](../../Running_ASCENT/Info.md#cuff-placement-on-nerve)).
 
           - `"AUTO_ROTATION_MIN_TRACE_BOUNDARY"`: Program
             shifts/rotates the cuff to within a user-defined distance of
             the nerve trace boundary to align with the Slide’s
             `"fascicle_centroid"`. The direction of the shift is
-            defined in the preset cuff JSON file ([S17](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives) and [S19](S19-Cuff-placement-on-nerve) Text).
+            defined in the preset cuff JSON file ([Creating Custom Cuffs](../../Primitives_and_Cuffs/Custom_Cuffs) and [Cuff Placement on the Nerve](../../Running_ASCENT/Info.md#cuff-placement-on-nerve)).
 
           - `"NONE"`: Program keeps both the nerve centroid and cuff
-            centered at (x,y) =(0,0) and no cuff rotation is performed ([S17](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives) and [S19](S19-Cuff-placement-on-nerve) Text). Note: This mode will ignore any supplied orientation image (`a.tif`).
+            centered at (x,y) =(0,0) and no cuff rotation is performed ([Creating Custom Cuffs](../../Primitives_and_Cuffs/Custom_Cuffs) and [Cuff Placement on the Nerve](../../Running_ASCENT/Info.md#cuff-placement-on-nerve)). Note: This mode will ignore any supplied orientation image (`a.tif`).
 
   - `"fiber_z"`: The value (String) is the `"FiberZMode"` that tells the
     program how to seed the NEURON fibers along the length of the FEM.
@@ -244,15 +244,15 @@ for each cuff preset. Required.
 
   - `"preset"`: The value (String) indicates which cuff to model, selected
     from the list of filenames of the "preset" cuffs in
-    `config/system/cuffs/<filename>.json` ([Fig 3A](https://doi.org/10.1371/journal.pcbi.1009285.g003) and [S17 Text](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives)). Required.
+    `config/system/cuffs/<filename>.json` ([Fig 3A](https://doi.org/10.1371/journal.pcbi.1009285.g003) and [Creating Custom Cuffs](../../Primitives_and_Cuffs/Custom_Cuffs)). Required.
 
   - `"rotate"`: Contains two keys: `"pos_ang"` (automatically populated
     based on "CuffShiftMode", i.e., "cuff\_shift" parameter in
     ***Model***) and `"add_ang"` (optionally set by user to rotate cuff
-    by an additional angle) ([S19 Text](S19-Cuff-placement-on-nerve)).
+    by an additional angle) ([Cuff Placement on the Nerve](../../Running_ASCENT/Info.md#cuff-placement-on-nerve)).
 
       - `"pos_ang"` (Double, units: degrees) is calculated by the
-        pipeline for the "AUTO" CuffShiftModes ([S19 Text](S19-Cuff-placement-on-nerve)).
+        pipeline for the "AUTO" CuffShiftModes ([Cuff Placement on the Nerve](../../Running_ASCENT/Info.md#cuff-placement-on-nerve)).
 
       - `"add_ang"` (Double, units: degrees) is user-defined and adds
         additional rotation in the counterclockwise direction. If the
@@ -290,11 +290,11 @@ meshing statistics (automatically calculated).
 <!-- end list -->
 
   - `"proximal"`: Meshing parameters for the proximal cylindrical domain
-    (as defined in "medium"). Required ([S25 Text](S25-Control-of-medium-surrounding-nerve-and-cuff-electrode)).
+    (as defined in "medium"). Required ([Assigning Material Properties](../../Running_ASCENT/Info.md#control-of-medium-surrounding-nerve and-cuff-electrode)).
 
       - `"type"`: JSON Object containing parameters/definitions specific
         to meshing discretization method (e.g., free tetrahedral
-        "ftet"). We recommend free tetrahedral meshes. Required ([S25 Text](S25-Control-of-medium-surrounding-nerve-and-cuff-electrode)).
+        "ftet"). We recommend free tetrahedral meshes. Required ([Assigning Material Properties](../../Running_ASCENT/Info.md#control-of-medium-surrounding-nerve and-cuff-electrode)).
 
           - `"im"`: COMSOL indexing prefix (String) (e.g., free
             tetrahedral "ftet"). Required.
@@ -325,7 +325,7 @@ meshing statistics (automatically calculated).
 
       - `"type"`: JSON Object containing parameters/definitions specific
         to meshing discretization method (e.g., free tetrahedral
-        "ftet"). We recommend free tetrahedral meshes. Required ([S25 Text](S25-Control-of-medium-surrounding-nerve-and-cuff-electrode)).
+        "ftet"). We recommend free tetrahedral meshes. Required ([Assigning Material Properties](../../Running_ASCENT/Info.md#control-of-medium-surrounding-nerve and-cuff-electrode)).
 
           - `"im"`: COMSOL indexing prefix (String) (e.g., free
             tetrahedral "ftet"). Required.
@@ -367,7 +367,7 @@ meshing statistics (automatically calculated).
       - `"volume"`: (Double)
 
 `"frequency"`: Defines the frequency value used for frequency-dependent
-material conductivities (Double, unit Hz) ([S28 Text](S28-Definition-of-perineurium)). Required only if
+material conductivities (Double, unit Hz) ([Perineurium Properties](../../Running_ASCENT/Info.md#definition-of-perineurium)). Required only if
 `"PerineuriumResistivityMode"` is `"RHO_WEERASURIYA"`.
 
 `"temperature"`: Defines the temperature of the nerve environment, which
@@ -390,7 +390,7 @@ no recessed domain in the preset’s parameterized implementation.
     following structure:
 
       - `"label"`: Communicates type of material assigned to domains
-        (String). The label is used to assign materials to domains ([S27 Text](S27-Defining-and-assigning-materials-in-COMSOL)).
+        (String). The label is used to assign materials to domains ([Assigning Material Properties](../../Running_ASCENT/Info.md#defining-and-assigning-materials-in-comsol)).
         Required.
 
       - `"value"`: Required. Material conductivity for isotropic materials

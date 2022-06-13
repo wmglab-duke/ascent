@@ -135,7 +135,7 @@ Figure C. Comparison of activation thresholds for the rat cervical vagus nerve i
 We validated activation thresholds for fibers seeded in a
 multifascicular dummy nerve instrumented with a bipolar cuff electrode
 (Figure D and E). The segmented histology was created using
-our `mock_morphology_generator.py` script ([S12 Text](S12-Python-MockSample-class-for-creating-binary-masks-of-nerve-morphology)).
+our `mock_morphology_generator.py` script ([Mock Morphology](MockSample)).
 
 ![Inline image](uploads/2869942c6f0a8197e76ff97b8ad0133b/Picture5.jpg)
 

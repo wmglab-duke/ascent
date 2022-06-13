@@ -193,7 +193,7 @@ The Slide class validates, manipulates, and writes its contents.
 
 *Note that the sample data hierarchy can contain more than
 a single Slide instance (the default being 0 as the cassette index and 0
-as the section index, hence the 0/0 seen in [S3 Text](S3-ASCENT-data-hierarchy) Figure A) even though
+as the section index, hence the 0/0 seen in [ASCENT Data Hierarchy](../Data_Hierarchy) Figure A) even though
 the pipeline data processing assumes that only a single Slide exists.
 This will allow the current data hierarchy to be backwards compatible if
 multi-Slide samples are processed in the future.*
@@ -213,7 +213,7 @@ interact with this class.
 ###  Sample
 
 The Sample class is initialized within Runner’s `run()` method by loading
-***Sample*** and ***Run*** configurations ([S7](S7-JSON-configuration-files) and [S8](S8-JSON-file-parameter-guide) Text). First, Sample’s
+***Sample*** and ***Run*** configurations ([JSON Configuration Files](../JSON/index)). First, Sample’s
 `build_file_structure()` method creates directories in `samples/` and
 populates them with the user’s file inputs from `input/<NAME>/;` the
 images are copied over for subsequent processing, as well as for
@@ -242,7 +242,7 @@ best-fit ellipse of the outermost Trace (Nerve if `"NerveMode"` in
 ***Sample*** ("nerve") is `"PRESENT"`, outer Trace if `"NerveMode"` is
 `"NOT_PRESENT"`, ([S8 Text](S8-JSON-file-parameter-guide))) at the origin (0,0,0). Change in rotational or
 translational placement of the cuff around the nerve is accomplished by
-moving the cuff and keeping the nerve position fixed ([S19 Text](S19-Cuff-placement-on-nerve)).
+moving the cuff and keeping the nerve position fixed ([Cuff Placement on the Nerve](../Running_ASCENT/Info.md#cuff-placement-on-nerve)).
 
 Sample's `im_preprocess()` method performs preprocessing operations on the binary input
 masks based on the parameters given under `preprocess` in ***Sample*** ([S8 Text](S8-JSON-file-parameter-guide)).
@@ -454,7 +454,7 @@ are complete, each Simulation builds folders (i.e., `n_sims/`), each
 containing NEURON code and input data for simulating fiber responses for
 a single ***Sample***, ***Model***, fiberset, waveform, and contact
 weighting. Each instance of the Simulation class is saved as a Python
-object using `Saveable` ([S9 Text](S9-Python-utility-classes)), which is used for resuming operations after the
+object using `Saveable` ([Python Utility Classes](../Code_Hierarchy/Python.md#python-utility-classes), which is used for resuming operations after the
 `handoff()` method to Java is completed.
 
 Within the `write_fibers()` method of the Python Simulation class, the
@@ -473,14 +473,14 @@ according to the user’s selection of sampling rules (`CENTROID`,
 `UNIFORM_DENSITY`, `UNIFORM_COUNT`, and `WHEEL`); the pre-defined modes for
 defining fiber locations are easily expandable. To add a new mode for
 defining (x,y)-coordinates, the user must add a `"FiberXYMode"` in
-`src/utils/enums.py` ([S6 Text](S6-Enums)) and add an `IF` statement code block in
+`src/utils/enums.py` ([Enums](../Code_Hierarchy/Python.md#enums)) and add an `IF` statement code block in
 `_generate_xy()` containing the operations for constructing "points"
 `(List[Tuple[float]])`. The user must add the parameters to define how
 fibers are placed in the nerve within the `"xy_parameters"` JSON Object
 in ***Sim***. In ***Sim***, the user may control the "plot" parameter
 (Boolean) in the "fibers" JSON Object to create a figure of fiber
 (x,y)-coordinates on the slide. Alternatively, the user may plot a
-Fibserset using the `plot_fiberset.py` script ([S33 Text](S33-Data-analysis-tools)).
+Fibserset using the `plot_fiberset.py` script ([Python Morphology Classes](../Running_ASCENT/Usage.md#data-analysis-tools)).
 
 Fiberset’s private method `_generate_z()` defines the coordinates of the
 compartments of simulated fibers along the length of the nerve based on
@@ -524,13 +524,13 @@ their properties from JSON configuration files (e.g., `sample.json`,
 `model.json`, `sim.json`, `fiber_z.json`). The Configurable class takes three
 input parameters:
 
-#### `"SetupMode"` (from Enums, [S6 Text](S6-Enums))
+#### `"SetupMode"` (from [Enums](../Code_Hierarchy/Python.md#enums),)
 
 Either NEW or OLD which determines if Configurable loads a new JSON
 (from file) or uses data that has already been created in Python memory
 as a dictionary or list, respectively.
 
-#### ConfigKey (from Enums, [S6 Text](S6-Enums))
+#### ConfigKey (from [Enums](../Code_Hierarchy/Python.md#enums),)
 
 The ConfigKey indicates the choice of configuration data type and is
 also the name of the configuration JSON file (e.g., `sample.json`,
@@ -577,7 +577,7 @@ exceptionable, are listed in the event of a raised exception.
 ###  Saveable
 
 Saveable is a simple Python class that, when inherited by a Python class
-(e.g., Sample and Simulation, described in [S13](S13-Python-classes-for-representing-nerve-morphology-(Sample)) and [S30](S30-Python-simulation-class) Text, respectively) enables the class to save itself using
+(e.g., [Sample](#python-classes-for-representing-nerve-morphology-sample) and [Simulation](#simulation)) enables the class to save itself using
 Saveable’s `save()` method. Using `pickle.dump()`, the object is saved as a
 Python object to file at the location of the destination path, which is
 an input parameter to `save()`.

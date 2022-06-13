@@ -117,7 +117,7 @@ model.geom(id).selection().create(im.next("csel", cselLabel),
 
   - The lines that follow the Cumulative Selection labeling add the
     geometry features of the COMSOL part which COMSOL has also
-    conveniently exported for you in the `*.java` file. See [S26 Text](S26-Java-utility-classes) for an explanation of our Java
+    conveniently exported for you in the `*.java` file. See [Java Utility Classes](../Code_Hierarchy/Java.md#java-utility-classes) for an explanation of our Java
     `IdentifierManager` utility class that we created to abstract away from COMSOL’s
     indexing system to improve code readability. Our `"IdentifierManager"`
     class enables the user to access previously defined selection tags

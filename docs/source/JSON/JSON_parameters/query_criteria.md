@@ -9,7 +9,7 @@ Used to guide the Query class’s searching algorithm in the
 `run()` and `_match()` methods. This is used for pulling ***Sample***,
 ***Model***, or ***Sim*** indices for data analysis. The
 `query_criteria.json` dictates if a given ***Sample***, ***Model***,
-or ***Sim*** fit the user’s restricted parameter values ([S33 Text](S33-Data-analysis-tools)).
+or ***Sim*** fit the user’s restricted parameter values ([Python Morphology Classes](../../Running_ASCENT/Usage.md#data-analysis-tools)).
 
 ## Syntax
 ```

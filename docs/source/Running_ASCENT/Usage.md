@@ -37,7 +37,7 @@ to which you installed ASCENT (i.e., `"ASCENT_PROJECT_PATH"` as defined in `conf
 To import NEURON simulation outputs (e.g., thresholds, recordings of V<sub>m</sub>) from your `ASCENT_NSIM_EXPORT_PATH`
 (i.e., `<"ASCENT_NSIM_EXPORT_PATH" as defined in env.json>/n_sims/<concatenated indices as
 sample_model_sim_nsim>/data/outputs/`) into the native file structure
-(see ["ASCENT data hierarchy"](S3-ASCENT-data-hierarchy), `samples/<sample_index>/models/<model_index>/sims/<sim_index>/n_sims/<n_sim_index>/data/outputs/`)
+(see [ASCENT Data Hierarchy](../Data_Hierarchy), `samples/<sample_index>/models/<model_index>/sims/<sim_index>/n_sims/<n_sim_index>/data/outputs/`)
 run this script from your `"ASCENT_PROJECT_PATH"`.
 
 `python run import_n_sims <list of run indices>`

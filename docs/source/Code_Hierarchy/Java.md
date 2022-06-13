@@ -1,9 +1,9 @@
 # Java Classes
 ## ModelWrapper Class
 The `ModelWrapper` class in Java takes inputs of the ASCENT_PROJECT_PATH
-(`env.json`, [S7](S7-JSON-configuration-files) and [S8](S8-JSON-file-parameter-guide) Text) and a list of ***Run*** paths. `ModelWrapper` contains a COMSOL
+(`env.json`, [JSON Configuration Files](../JSON/index)) and a list of ***Run*** paths. `ModelWrapper` contains a COMSOL
 "model" object, model source directory (String), model destination
-directory (String), an `"IdentifierManager"` ([S26 Text](S26-Java-utility-classes)), and `HashMaps` with key-value
+directory (String), an `"IdentifierManager"` ([Java Utility Classes](../Code_Hierarchy/Java.md#java-utility-classes)), and `HashMaps` with key-value
 pairs linking COMSOL domains to unions of domains. `ModelWrapper` has
 accessor methods `getModel()` for retrieving the model object, `getRoot()`
 for retrieving the project path’s root String, and `getDest()` for
@@ -13,7 +13,7 @@ default saving destination String (`setDest()`).
 
 `ModelWrapper’s` `main()` method starts an instance of COMSOL and loads
 ***Run***, ***Sample***, ***Model***, and ***Sim*** configurations as
-JSON Objects into memory. We developed Java class `JSONio` ([S26 Text](S26-Java-utility-classes)) for reading and
+JSON Objects into memory. We developed Java class `JSONio` ([Java Utility Classes](../Code_Hierarchy/Java.md#java-utility-classes)) for reading and
 writing JSON Objects to file.
 
 Since each ***Run*** contains a list of ***Model*** and ***Sim***
@@ -136,7 +136,7 @@ and surfaces in COMSOL requires that geometry operations be contributed
 to "selections" (`csel<#>`). In this simple example of a part
 primitive, the `im.labels String[]` contains the string "MEDIUM" which
 is used to label the COMSOL selection (`csel<#>`) for the medium domain
-by association with an `IdentifierManager` ([S26 Text](S26-Java-utility-classes)). When the geometry of the
+by association with an `IdentifierManager` ([Java Utility Classes](../Code_Hierarchy/Java.md#java-utility-classes)). When the geometry of the
 primitive is built, the resulting medium domain’s `csel<#>` can be
 accessed instead with the key "MEDIUM" in the `IdentifierManager`, thereby
 improving readability and accessibility when materials and boundary
@@ -155,7 +155,7 @@ Primitive, Wire Contact Primitive, Circle Contact Primitive, and
 Rectangular Contact Primitive), cuff insulation (e.g., Tube Cuff), cuff
 fill (e.g., saline, mineral oil), and specific interactions of a cuff
 insulator and electrode contact (e.g., LivaNova-inspired helical coil)
-([S16 Text](S16-Library-of-part-primitives-for-electrode-contacts-and-cuffs)).
+([ASCENT Part Primitives](../Primitives_and_Cuffs/Cuff_Primitives)).
 
 ###  Part Instances
 
@@ -210,7 +210,7 @@ the Python Sample class to define fascicle tissue boundaries in COMSOL.
 We provide the `"use_ci"` mode in ***Model*** ([S8 Text](S8-JSON-file-parameter-guide)) to model the perineurium
 using COMSOL’s contact impedance boundary condition for fascicles with
 only one inner (i.e., endoneurium) domain for each outer (i.e.,
-perineurium) domain ([S28 Text](S28-Definition-of-perineurium)). If `"use_ci"` mode is true, the perineurium for all
+perineurium) domain ([Perineurium Properties](../Running_ASCENT/Info.md#definition-of-perineurium)). If `"use_ci"` mode is true, the perineurium for all
 fascicles with exactly one inner and one outer is represented with a
 contact impedance. The pipeline does not support control of using the
 contact impedance boundary condition on a fascicle-by-fascicle basis.
@@ -348,7 +348,7 @@ Specifically, this class compares ***Model*** configurations to
 determine if their parameters are compatible to repurpose the geometry
 and mesh from a previously generated COMSOL model using the `meshMatch()`
 method. The `meshMatch()` method takes the inputs of a reference JSON
-(i.e., `config/templates/mesh_dependent_model.json`, see [S7](S7-JSON-configuration-files) and [S8](S8-JSON-file-parameter-guide) Text) containing
+(i.e., `config/templates/mesh_dependent_model.json`, see [JSON Configuration Files](../JSON/index)) containing
 conditions for compatibility and a JSON Object for each of two
 ***Model*** configurations to compare. The parameter keys correspond
 one-to-one in ***Model*** and `mesh_dependent_model.json`. However, in

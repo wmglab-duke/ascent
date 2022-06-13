@@ -252,7 +252,7 @@ flags) that corresponds to fiber-type specific operations in NEURON.
 In the case of fascicles with exactly one inner perineurium trace for
 each outer perineurium trace, to reduce the required computational
 resources, the pipeline can represent the perineurium using a thin layer
-approximation in COMSOL ([S28 Text](S28-Definition-of-perineurium)). Specifically, if ***Model’s*** `"use_ci"`
+approximation in COMSOL ([Perineurium Properties](../Running_ASCENT/Info.md#definition-of-perineurium)). Specifically, if ***Model’s*** `"use_ci"`
 parameter is true, the perineurium is modeled as a surface with a sheet
 resistance (termed "contact impedance" in COMSOL) defined by the product
 of the resistivity and thickness. The thickness is calculated as half of
@@ -274,4 +274,4 @@ Boolean indicating true if the parameter value must match between two
 ***Model*** configurations to recycle a mesh, or false if a different
 parameter value would not prohibit a mesh be reused. The
 `mesh_dependent_model.json` file is used by our `ModelSearcher` Java
-utility class  ([S26 Text](S26-Java-utility-classes)).
+utility class  ([Java Utility Classes](../Code_Hierarchy/Java.md#java-utility-classes)).

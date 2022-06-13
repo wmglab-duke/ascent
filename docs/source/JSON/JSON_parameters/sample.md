@@ -121,18 +121,18 @@ project. Required.
 
   - `"fascicles"`: The value (Double, units: micrometer) is the minimum
     distance required between boundaries of adjacent fascicles
-    (post-deformation, see Deformable in [S13 Text](S13-Python-classes-for-representing-nerve-morphology-(Sample))). Required for samples with
+    (post-deformation, see Deformable in [Python Morphology Classes](../../Code_Hierarchy/Python.md#python-classes-for-representing-nerve-morphology-sample))). Required for samples with
     multiple fascicles.
 
       - Note that this is a distinct parameter from
         `"min_fascicle_separation"` in `mock_sample.json`, which
         controls the minimum distance between fascicles in the binary
         image mask inputs to the pipeline, which is later deformed to
-        fit in the cuff electrode using Deformable ([S13 Text](S13-Python-classes-for-representing-nerve-morphology-(Sample))).
+        fit in the cuff electrode using Deformable ([Python Morphology Classes](../../Code_Hierarchy/Python.md#python-classes-for-representing-nerve-morphology-sample))).
 
   - `"nerve"`: The value (Double, units: micrometer) is the minimum
     distance required between the boundaries of a fascicle and the nerve
-    (post-deformation, see Deformable in [S13 Text](S13-Python-classes-for-representing-nerve-morphology-(Sample))). Required if "nerve" in
+    (post-deformation, see Deformable in [Python Morphology Classes](../../Code_Hierarchy/Python.md#python-classes-for-representing-nerve-morphology-sample))). Required if "nerve" in
     ***Sample*** is "PRESENT".
 
 `"modes"`: 
@@ -141,7 +141,7 @@ project. Required.
     the program which segmented histology images to expect as inputs for
     fascicles. Required.
 
-      - As listed in Enums ([S6 Text](S6-Enums)), modes include 
+      - As listed in Enums ([Enums](../../Code_Hierarchy/Python.md#enums)), modes include 
 
         1.  `"INNERS"`: Program expects segmented images of only inner
             fascicle boundaries.
@@ -157,7 +157,7 @@ project. Required.
   - `"scale_input"`: The value (String) is the `"ScaleInputMode"`
     that tells the program which type of scale input to look for.
 
-      - As listed in Enums ([S6 Text](S6-Enums)), known `"ScaleInputModes"` include
+      - As listed in Enums ([Enums](../../Code_Hierarchy/Python.md#enums)), known `"ScaleInputModes"` include
 
         1.  `"MASK"`: The program will determine image scale from the user's scale bar mask image and the `scale_bar_length` parameter.
         2.  `"RATIO"`: The program will use the scale directly specified in `scale_ratio`. If using this option, a scale bar image need not be
@@ -167,7 +167,7 @@ project. Required.
     program if there is an outer nerve boundary (epineurium) segmented
     image to incorporate into the model. Required.
 
-      - As listed in Enums ([S6 Text](S6-Enums)), known modes include
+      - As listed in Enums ([Enums](../../Code_Hierarchy/Python.md#enums)), known modes include
 
         1.  `"PRESENT"`: Program expects a segmented image for a nerve
             (`n.tif`) to incorporate into the model. The value must be
@@ -185,7 +185,7 @@ project. Required.
     `"NOT_PRESENT"` then the `"DeformationMode"` (i.e., "deform"
     parameter) must be `"NONE"`. Required.
 
-      - As listed in Enums ([S6 Text](S6-Enums)), known modes include
+      - As listed in Enums ([Enums](../../Code_Hierarchy/Python.md#enums)), known modes include
 
         1.  `"NONE"`: The program does not deform the nerve when it is
             placed in the cuff electrode. In the pipeline’s current
@@ -206,7 +206,7 @@ project. Required.
     `"PerineuriumThicknessMode"` that tells the program which method to
     use to define perineurium thickness. Required.
 
-      - As listed in Enums ([S6 Text](S6-Enums)), known `"PerineuriumThicknessModes"` include
+      - As listed in Enums ([Enums](../../Code_Hierarchy/Python.md#enums)), known `"PerineuriumThicknessModes"` include
 
         1. `"MEASURED"`: The program determines the average thickness of the
           perineurium using the provided inner and outer boundaries (i.e.,
@@ -228,7 +228,7 @@ project. Required.
     (post-deformation) to use when "deform" is set to `"PHYSICS"`.
     Required.
 
-      - As listed in Enums ([S6 Text](S6-Enums)), known `"ReshapeNerveModes"` include
+      - As listed in Enums ([Enums](../../Code_Hierarchy/Python.md#enums)), known `"ReshapeNerveModes"` include
 
         1. `"CIRCLE"`: The program creates a circular nerve boundary
             with a preserved cross-sectional area (i.e., for multifascicular nerves/nerves that have epineurium).
@@ -238,7 +238,7 @@ project. Required.
     that tells the program how to interpret the "scale"->"shrinkage" parameter, which is provided as a decimal (i.e., 0.2 = 20%).
     Optional, but assumes the mode "LENGTH_FORWARDS if omitted, since this was the original behavior before this mode was added.
 
-      - As listed in Enums ([S6 Text](S6-Enums)), known `"ShrinkageModes"` include
+      - As listed in Enums ([Enums](../../Code_Hierarchy/Python.md#enums)), known `"ShrinkageModes"` include
 
         1. `"LENGTH_BACKWARDS"`: The value for "scale"->"shrinkage" refers to how much the length (e.g., radius, diameter, or perimeter)
            of the nerve cross section was reduced from the fresh tissue to the imaged tissue.
@@ -270,7 +270,7 @@ project. Required.
 <!-- end list -->
 `"morph_count"`: The value (Integer) can be used to set the number of
 intermediately deformed nerve traces between the `boundary_start` and
-`boundary_end` in Deformable ([S13 Text](S13-Python-classes-for-representing-nerve-morphology-(Sample))) if the `"DeformationMode"` is "PHYSCIS". An
+`boundary_end` in Deformable ([Python Morphology Classes](../../Code_Hierarchy/Python.md#python-classes-for-representing-nerve-morphology-sample))) if the `"DeformationMode"` is "PHYSCIS". An
 excessively large number for `morph_count` will slow down the deformation
 process, though a number that is too small could result in fascicles
 "escaping" from the nerve. Optional; if not specified default value is

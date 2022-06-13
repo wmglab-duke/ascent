@@ -21,7 +21,7 @@ parameter in ***Model*** ([S8 Text](S8-JSON-file-parameter-guide)).
 
 We provide a COMSOL file in `examples/parts/sandbox.mph` that contains our
 library of "Geometry Parts" (i.e., part primitives) for users to
-assemble into their own cuffs in the COMSOL GUI. See [S18 Text](S18-Creating-new-part-primitives) for instructions on how to add new part primitives. After a part primitive
+assemble into their own cuffs in the COMSOL GUI. See [Creating New Part Primitives](../Primitives_and_Cuffs/Creating_Primitives) for instructions on how to add new part primitives. After a part primitive
 is defined in the "Geometry Parts" node in the COMSOL GUI, under
 "Component 1", the user may secondary-click on the "Geometry 1" node -\>
 "Parts" and select a part primitive. Importantly, the order of

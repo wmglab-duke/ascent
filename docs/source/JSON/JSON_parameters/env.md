@@ -5,7 +5,7 @@ Named file: `config/system/env.json`
 
 ## Purpose
 The file contains key-value pairs for paths. The file can
-be automatically populated by running `env_setup.py` ([S2 Text](S2-Installation)). Note that we
+be automatically populated by running `env_setup.py` ([Installation](../../Getting_Started.md#installation)). Note that we
 have prepended all of the keys in this file with "ASCENT" because
 these key-value pairs are directly stored as environment variables,
 so the "ASCENT" key distinguishes these pairs from other paths that

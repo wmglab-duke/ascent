@@ -5,12 +5,12 @@ tissue and black pixels (‘0’) elsewhere) and must use Tagged Image File
 Format (i.e., `.tif`, or `.tiff`). All masks must be defined within the same
 field of view, be the same size, and be the same resolution. To convert
 between pixels of the input masks to dimensioned length (micrometers), the user must specify
-a `"ScaleInputMode"` in ***Sample*** ([S7](S7-JSON-configuration-files) and [S8](S8-JSON-file-parameter-guide) Text). If using the mask input mode, a mask for the scale bar (`s.tif`) of known length (oriented horizontally) must be provided (see "Scale Bar" in [Fig 2](https://doi.org/10.1371/journal.pcbi.1009285.g002)) and the length of the scale
-bar must be indicated in ***Sample*** ([S7](S7-JSON-configuration-files) and [S8](S8-JSON-file-parameter-guide) Text). If using the ratio input mode, the user explicitly specifies the micrometers/pixel of the input masks in ***Sample*** ([S7](S7-JSON-configuration-files) and [S8](S8-JSON-file-parameter-guide) Text), and no scale bar image is required.
+a `"ScaleInputMode"` in ***Sample*** ([JSON Configuration Files](../JSON/index)). If using the mask input mode, a mask for the scale bar (`s.tif`) of known length (oriented horizontally) must be provided (see "Scale Bar" in [Fig 2](https://doi.org/10.1371/journal.pcbi.1009285.g002)) and the length of the scale
+bar must be indicated in ***Sample*** ([JSON Configuration Files](../JSON/index)). If using the ratio input mode, the user explicitly specifies the micrometers/pixel of the input masks in ***Sample*** ([JSON Configuration Files](../JSON/index)), and no scale bar image is required.
 
 The user is required to set the `"MaskInputMode"` in ***Sample***
 (`"mask_input"`) to communicate the contents of the segmented histology
-files ([S7](S7-JSON-configuration-files) and [S8](S8-JSON-file-parameter-guide) Text). Ideally, segmented images of boundaries for both the "outers"
+files ([JSON Configuration Files](../JSON/index)). Ideally, segmented images of boundaries for both the "outers"
 (`o.tif`) and "inners" (`i.tif`) of the perineurium will be provided, either
 as two separate files (`o.tif` and `i.tif`) or combined in the same image
 (`c.tif`) (see "Inners", "Outers", and "Combined" in [Fig 2](https://doi.org/10.1371/journal.pcbi.1009285.g002)). However, if
@@ -28,7 +28,7 @@ fascicle that does not share its perineurium with any other inners; more
 accurate representation requires segmentation of the "outers" as well.
 
 The user is required to set the `"NerveMode"` in ***Sample*** ("nerve") to
-communicate the contents of the segmented histology files ([S7](S7-JSON-configuration-files) and [S8](S8-JSON-file-parameter-guide) Text). The outer
+communicate the contents of the segmented histology files ([JSON Configuration Files](../JSON/index)). The outer
 nerve boundary, if present, is defined with a separate mask (`n.tif`). In
 the case of a compound nerve with epineurium, the pipeline expects the
 outer boundary of the epineurium to be provided as the "nerve". In the
@@ -48,7 +48,7 @@ our cuffs correspond with the coordinate halfway along the arc length of
 the cuff inner diameter (i.e., the cuff will be rotated such that the sample center, cuff
 contact center, and centroid of the white portion of `a.tif` form a line) while the
 circular portion of a cuff’s diameter is centered at the origin (Note: this rotation process uses `"angle_to_contacts_deg"` and `"fixed_point"` in a "preset"
-cuff’s JSON file, see [S17](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives) and [S19](S19-Cuff-placement-on-nerve) Text). If `a.tif` is provided, other cuff rotation methods
+cuff’s JSON file, see [Creating Custom Cuffs](../Primitives_and_Cuffs/Custom_Cuffs) and [Cuff Placement on the Nerve](../Running_ASCENT/Info.md#cuff-placement-on-nerve)). If `a.tif` is provided, other cuff rotation methods
 (`"cuff_shift"` in ***Model***, which calculate `"pos_ang"`) are
 overridden.
 
@@ -80,7 +80,7 @@ naming convention in the `input/` directory.
 
 For an example of input files, see [Fig 2](https://doi.org/10.1371/journal.pcbi.1009285.g002). The user must properly set
 the `"MaskInputMode"` in ***Sample*** (`"mask_input"`) for their provided
-segmented image morphology files ([S7](S7-JSON-configuration-files) and [S8](S8-JSON-file-parameter-guide) Text).
+segmented image morphology files ([JSON Configuration Files](../JSON/index)).
 
 ## Control of medium surrounding nerve and cuff electrode
 The medium surrounding the nerve and cuff electrode (e.g., fat, skeletal
@@ -126,7 +126,7 @@ For "naïve" `CuffShiftModes` (i.e.,
 `"NAIVE_ROTATION_MIN_CIRCLE_BOUNDARY",
 "NAIVE_ROTATION_TRACE_BOUNDARY"`) the cuff is placed on the nerve
 with rotation according to the parameters used to instantiate the cuff
-from part primitives ([S16](S16-Library-of-part-primitives-for-electrode-contacts-and-cuffs), [S17](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives), and [S18](S18-Creating-new-part-primitives) Text). If the user would like to rotate the cuff from
+from part primitives ([Part Primitives and Custom Cuffs](../Primitives_and_Cuffs/index)). If the user would like to rotate the cuff from
 beyond this position, they may set the `"add_ang"` parameter in
 ***Model*** ([S8 Text](S8-JSON-file-parameter-guide)). For naïve `CuffShiftModes`, the cuff is shifted along the
 vector from (0,0) in the direction of the `"angle_to_contacts_deg"`
@@ -158,8 +158,8 @@ If the user would like to rotate the cuff from beyond this position, they may se
 `"add_ang"` parameter in ***Model*** ([S8 Text](S8-JSON-file-parameter-guide)). The user may override the
 default "AUTO" rotation of the cuff on the nerve by adding an
 orientation mask (`a.tif`) to align a certain surface of the nerve sample
-with the cuff’s center ([S11 Text](S11-Morphology-files)). This behavior depends on the
-cuff's `"fixed_point"` parameter ([S17 text](S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives)) The `"AUTO_ROTATION_MIN_CIRCLE_BOUNDARY"`
+with the cuff’s center (../Running_ASCENT/Info.md#morphology-Input-Files)). This behavior depends on the
+cuff's `"fixed_point"` parameter ([Creating Custom Cuffs](../Primitives_and_Cuffs/Custom_Cuffs)) The `"AUTO_ROTATION_MIN_CIRCLE_BOUNDARY"`
 `CuffShiftMode` moves the cuff toward the nerve until the nerve’s minimum
 radius enclosing circle is within the distance of the
 `"thk_medium_gap_internal"` parameter for the cuff.

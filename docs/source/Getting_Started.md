@@ -69,7 +69,7 @@ Note: All metadata required for the [tutorial run](#tutorial-run) are provided w
 
 2.  Transverse cross section of the nerve where the cuff is placed,
     stained to visualize the different tissue types (e.g., using
-    Masson’s trichrome), with a scale bar ([Fig 2](https://doi.org/10.1371/journal.pcbi.1009285.g002) and [S11 Text](S11-Morphology-files)) or known scale (micrometers/pixel). Different possible sources
+    Masson’s trichrome), with a scale bar ([Fig 2](https://doi.org/10.1371/journal.pcbi.1009285.g002) and Running_ASCENT/Info.md#morphology-Input-Files)) or known scale (micrometers/pixel). Different possible sources
     for defining the nerve sample morphology include:
 
     a.  For best specificity, the nerve would be sampled from the
@@ -83,7 +83,7 @@ Note: All metadata required for the [tutorial run](#tutorial-run) are provided w
     c.  If multiple samples from other animals are available, they could
         be used to generate a representative nerve model, knowing the
         range of morphological metrics across individuals using the
-        `scripts/mock_morphology_generator.py` script ([S12 Text](S12-Python-MockSample-class-for-creating-binary-masks-of-nerve-morphology)).
+        `scripts/mock_morphology_generator.py` script ([Mock Morphology](MockSample)).
 
     d.  Lastly, published data could be used.
 
@@ -186,9 +186,9 @@ use indices that are consistent with the indices of ***Sample***,
     must match "sample" parameter in ***Sample***) with binary masks of
     neural tissue boundaries using either:
 
-    a.  Segmented histology ([S11 Text](S11-Morphology-files) and [Fig 2](https://doi.org/10.1371/journal.pcbi.1009285.g002)), or
+    a.  Segmented histology (Running_ASCENT/Info.md#morphology-Input-Files) and [Fig 2](https://doi.org/10.1371/journal.pcbi.1009285.g002)), or
 
-    b.  The `mock_morphology_generator.py` script ([S12 Text](S12-Python-MockSample-class-for-creating-binary-masks-of-nerve-morphology)).
+    b.  The `mock_morphology_generator.py` script ([Mock Morphology](MockSample)).
 
        1.  Copy `mock_sample.json` from `config/templates/` to
             `config/user/mock_samples/` as `<mock_sample_index>.json`

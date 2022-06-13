@@ -131,7 +131,7 @@ are populated. Required.
   - `"mode"`: The value (String) is the `"PopulateMode"` that tells the
     program which method to use to populate the nerve. Required.
 
-      - As listed in Enums ([S6 Text](S6-Enums)), known `"PopulateModes"` include 
+      - As listed in Enums ([Enums](../../Code_Hierarchy/Python.md#enums)), known `"PopulateModes"` include 
 
           - `"EXPLICIT"`: Populates the nerve with elliptical inners that
             are defined explicitly by the user.

@@ -6,7 +6,7 @@ Named file: `config/system/mesh_dependent_model.json`
 ## Purpose
 This file is not to be changed unless a user adds new
 parameters to ***Model***. The use of this file happens behind the
-scenes. The file informs the `ModelSearcher` class ([S26 Text](S26-Java-utility-classes)) if two model
+scenes. The file informs the `ModelSearcher` class ([Java Utility Classes](../../Code_Hierarchy/Java.md#java-utility-classes)) if two model
 configurations constitute a "mesh match" (i.e., that the mesh from a
 previously solved and identical model can be recycled). Note that if
 you modify the structure of `model.json`, the pipeline expects this

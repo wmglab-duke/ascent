@@ -26,7 +26,7 @@ the coordinates of the input potentials.
 For simulations of block threshold, an intracellular test pulse is
 delivered at one end of the fiber to test if the cuff electrode (i.e.,
 placed between the intracellular stimulus and the site of detecting
-action potentials) is blocking action potentials ([S22 Text](S22-Simulation-protocols)). The intracellular
+action potentials) is blocking action potentials ([Simulation Protocols](../Running_ASCENT/Info.md#simulation-protocols)). The intracellular
 stimulation parameters are defined in ***Sim*** and are defined as
 parameters in NEURON within the ```launch.hoc``` file. The parameters in
 ***Sim*** control the pulse delay, pulse width, pulse repetition
@@ -81,7 +81,7 @@ activation and block thresholds, respectively.
 ###  FindThresh
 
 The procedure ```FindThresh``` performs a binary search for activation and
-block thresholds ([S22 Text](S22-Simulation-protocols)).
+block thresholds ([Simulation Protocols](../Running_ASCENT/Info.md#simulation-protocols)).
 
 ###  Save outputs to file
 

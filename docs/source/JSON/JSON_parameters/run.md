@@ -67,8 +67,8 @@ simulation configuration indices ("***Sim***"). Required.
 pipeline to search for mesh matches for recycling a previously generated
 FEM mesh if set to true. If this property is not specified, the default
 behavior of the pipeline is false, meaning that it will not search for
-and recycle a mesh match (see `ModelSearcher` ([S26 Text](S26-Java-utility-classes)) and
-`mesh_dependent_model.json` ([S7 Text](S7-JSON-configuration-files))). Optional.
+and recycle a mesh match (see `ModelSearcher` ([Java Utility Classes](../../Code_Hierarchy/Java.md#java-utility-classes)) and
+`mesh_dependent_model.json` ([JSON Overview](../../JSON/JSON_overview))). Optional.
 
 `"break_points"`: The value (Boolean) of each breakpoint results in the
 program terminating or continuing with the next ***Model*** index. In
@@ -96,7 +96,7 @@ keeping or deleting large COMSOL `*.mph` files for the `"debug_geom.mph"`,
 defined, the default behavior is true and the associated `*.mph` file is
 saved. If `"mesh.mph"` is saved, the file can later be used if another
 ***Model*** is a suitable "mesh match" and `"recycle_meshes"` is true
-(see `ModelSearcher` ([S26 Text](S26-Java-utility-classes)) and `mesh_dependent_model.json` ([S7 Text](S7-JSON-configuration-files))). If bases/ are saved, a
+(see `ModelSearcher` ([Java Utility Classes](../../Code_Hierarchy/Java.md#java-utility-classes)) and `mesh_dependent_model.json` ([JSON Overview](../../JSON/JSON_overview))). If bases/ are saved, a
 new ***Sim*** for a previously computed ***Sample*** and ***Model*** can
 be probed along new fibersets/ to create potentials/*.* Optional.
 
