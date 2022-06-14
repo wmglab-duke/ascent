@@ -9,6 +9,7 @@ The source code can be found on the following GitHub repository: https://github.
 import random
 import warnings
 from typing import List, Tuple
+import shutil
 
 from shapely.affinity import scale
 from shapely.geometry import LineString, Point
@@ -250,7 +251,18 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                                 points.append(point)
 
             elif xy_mode == FiberXYMode.EXPLICIT:
-
+                
+                explicit_index = self.search(Config.SIM, 'fibers','xy_parameters','explicit_fiberset_index',optional=True)
+                
+                if explicit_index is not None:
+                    explicit_source = os.path.join(sim_directory.split(os.sep)[0],os.sep,*sim_directory.split(os.sep)[1:-4],'explicit_fibersets','{}.txt'.format(explicit_index))
+                    explicit_dest = os.path.join(sim_directory,'explicit.txt')
+                    shutil.copyfile(explicit_source,explicit_dest)
+                else:
+                    print('\t\tWARNING: Explicit fiberset index not specified.'
+                          '\n\t\tProceeding with backwards compatible check for explicit.txt in:'
+                          '\n\t\t{}'.format(sim_directory))
+                    
                 if not os.path.exists(os.path.join(sim_directory, 'explicit.txt')):
                     self.throw(83)
 
@@ -369,7 +381,13 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                             (paranodal_length_1 / 2) + (node_length / 2)]
 
             # account for difference between last node z and half fiber length -> must shift extra distance
-            my_z_shift_to_center_in_fiber_range = half_model_length - sum(z_steps)
+            
+            if shift is None:
+                modshift = 0
+            else:
+                modshift = shift % delta_z
+            
+            my_z_shift_to_center_in_fiber_range = half_model_length - sum(z_steps) + modshift
 
             reverse_z_steps = z_steps.copy()
             reverse_z_steps.reverse()
@@ -394,8 +412,10 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             # get offset param - NOTE: raw value is a FRACTION of dz (explanation for multiplication by dz)
 
             offset = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value,'offset',optional=True)
-            
-            if offset is None: 
+            if offset is None:
+                warnings.warn('No offset specified. Proceeding with (original default functionality) of randomized offset. Suppress this warning by including the parameter "offset":"random" in fiber z_parameters.')
+                offset = 'random'
+            if offset == 'random': 
                 offset = 0
                 random_offset_value = dz * (random.random() - 0.5)
             else:
@@ -432,7 +452,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
             model_length = self.search(Config.MODEL, 'medium', 'proximal', 'length') if (
                     override_length is None) else override_length
-
+            
             if not 'min' in self.configs['sims']['fibers']['z_parameters'].keys() or \
                     not 'max' in self.configs['sims']['fibers']['z_parameters'].keys() or \
                     override_length is not None:
@@ -463,7 +483,12 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                            'longitudinally_centered',optional=True) is False:
                 print('WARNING: the sim>fibers>z_parameters>longitudinally_centered parameter is deprecated.\
                       \nFibers will be centered to the model.')
-
+                      
+            shift =  self.search(Config.SIM,
+                           'fibers',
+                           FiberZMode.parameters.value,
+                           'absolute_offset',optional=True)
+            
             half_model_length = model_length / 2
 
             assert model_length >= fiber_length, 'proximal length: ({}) < fiber length: ({})'.format(model_length,

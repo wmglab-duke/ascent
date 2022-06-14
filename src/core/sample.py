@@ -17,7 +17,6 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
-import warnings
 from scipy.ndimage.morphology import binary_fill_holes
 from shapely.geometry import LineString
 from skimage import morphology
@@ -184,7 +183,7 @@ class Sample(Exceptionable, Configurable, Saveable):
         # ADDITION: if only one slide present, check if names abide by <NAME>_0_0_<CODE>.tif format
         #           if not abiding, rename files so that they abide
         if len(self.map.slides) == 1:
-            print('Renaming input files to conform with map input interface where necessary.')
+            #print('Renaming input files to conform with map input interface where necessary.')
             source_dir = os.path.join(*self.map.slides[0].data()[3])
             source_files = os.listdir(source_dir)
             for mask_fname in [f.value for f in MaskFileNames if f.value in source_files]:
@@ -242,9 +241,8 @@ class Sample(Exceptionable, Configurable, Saveable):
 
             return self
 
-    def populate(self, deform_animate: bool = True) -> 'Sample':
+    def populate(self) -> 'Sample':
         """
-        :param deform_animate: boolean indicating whether to show nerve deformation
         :return:
         """
 
@@ -256,7 +254,6 @@ class Sample(Exceptionable, Configurable, Saveable):
         deform_ratio = None
         scale_input_mode = self.search_mode(ScaleInputMode, Config.SAMPLE, optional=True)
         plot = self.search(Config.SAMPLE, 'plot', optional=True)
-        plot_folder = self.search(Config.SAMPLE, 'plot_folder', optional=True)
         # For backwards compatibility, if scale mode is not specified assume a mask image is provided
         if scale_input_mode is None:
             scale_input_mode = ScaleInputMode.MASK
@@ -392,7 +389,9 @@ class Sample(Exceptionable, Configurable, Saveable):
                                                   cv2.CHAIN_APPROX_SIMPLE)
                     nerve = Nerve(Trace([point + [0] for point in contour[0][:, 0, :]],
                                         self.configs[Config.EXCEPTIONS.value]))
-
+                else:
+                    self.throw(138)
+                
             if len(fascicles) > 1 and nerve_mode != NerveMode.PRESENT:
                 self.throw(110)
 
@@ -458,17 +457,16 @@ class Sample(Exceptionable, Configurable, Saveable):
         # scale to microns
         self.scale(factor)
 
-        if plot == True:
-            plt.figure()
-            slide.plot(final=False, fix_aspect_ratio='True', axlabel=u"\u03bcm",
-                       title='Initial sample from morphology masks')
-            if plot_folder == True:
-                plt.savefig(plotpath + '/sample_initial')
-                plt.clf()
-                plt.close('all')
-            else:
-                plt.show()
-
+        plt.figure()
+        slide.plot(final=False, fix_aspect_ratio='True', axlabel=u"\u03bcm",
+                   title='Initial sample from morphology masks')
+        plt.savefig(plotpath + '/sample_initial')
+        if self.search(Config.RUN,"popup_plots",optional=True)==True:
+            plt.show()
+        else:
+            plt.clf()
+            plt.close('all')
+        
         # get smoothing params
         n_distance = self.search(Config.SAMPLE, 'smoothing', 'nerve_distance', optional=True)
         i_distance = self.search(Config.SAMPLE, 'smoothing', 'fascicle_distance', optional=True)
@@ -492,7 +490,7 @@ class Sample(Exceptionable, Configurable, Saveable):
 
         # repositioning!
         for i, slide in enumerate(self.slides):
-            print('\tslide {} of {}'.format(1 + i, len(self.slides)))
+            #print('\tslide {} of {}'.format(1 + i, len(self.slides)))
             # title = ''
 
             if nerve_mode == NerveMode.NOT_PRESENT and deform_mode is not DeformationMode.NONE:
@@ -501,7 +499,7 @@ class Sample(Exceptionable, Configurable, Saveable):
             partially_deformed_nerve = None
 
             if deform_mode == DeformationMode.PHYSICS:
-                print('\t\tsetting up physics')
+                #print('\tsetting up physics')
                 if 'morph_count' in self.search(Config.SAMPLE).keys():
                     morph_count = self.search(Config.SAMPLE, 'morph_count')
                 else:
@@ -509,7 +507,7 @@ class Sample(Exceptionable, Configurable, Saveable):
 
                 if 'deform_ratio' in self.search(Config.SAMPLE).keys():
                     deform_ratio = self.search(Config.SAMPLE, 'deform_ratio')
-                    print('\t\tdeform ratio set to {}'.format(deform_ratio))
+                    print('\tdeform ratio set to {}'.format(deform_ratio))
                 else:
                     self.throw(118)
 
@@ -517,23 +515,29 @@ class Sample(Exceptionable, Configurable, Saveable):
                 sep_fascicles = self.search(Config.SAMPLE, "boundary_separation", "fascicles")
                 sep_nerve = None
 
-                print('\t\tensuring minimum fascicle separation of {} um'.format(sep_fascicles))
+                print('\tensuring minimum fascicle separation of {} um'.format(sep_fascicles))
 
                 if 'nerve' in self.search(Config.SAMPLE, 'boundary_separation').keys():
                     sep_nerve = self.search(Config.SAMPLE, 'boundary_separation', 'nerve')
-                    print('\t\tensuring minimum nerve:fascicle separation of {} um'.format(sep_nerve))
+                    print('\tensuring minimum nerve:fascicle separation of {} um'.format(sep_nerve))
+                    sep_nerve = sep_nerve - sep_fascicles/2
                 
                 #scale nerve trace down by sep nerve, will be scaled back up later
                 pre_area = slide.nerve.area()
                 slide.nerve.offset(distance = -sep_nerve)
                 slide.nerve.scale(1)
                 slide.nerve.points = np.flip(slide.nerve.points,axis = 0) # set points to opencv orientation
-
                 
+                if self.configs[Config.CLI_ARGS.value].get('render_deform') == True or \
+                    self.search(Config.SAMPLE, 'render_deform',optional = True) == True:
+                    render_deform = True
+                else:
+                    render_deform = False
+                    
                 deformable = Deformable.from_slide(slide, ReshapeNerveMode.CIRCLE)
-
+                    
                 movements, rotations = deformable.deform(morph_count=morph_count,
-                                                         render=deform_animate,
+                                                         render=render_deform,
                                                          minimum_distance=sep_fascicles,
                                                          ratio=deform_ratio)
 
@@ -589,27 +593,22 @@ class Sample(Exceptionable, Configurable, Saveable):
 
                 # find intersection point with outer (interpolated)
                 slide.orientation_point = np.array(ray.intersection(outer.polygon().boundary))
+            
+            #ensure that nothing went wrong in slide processing
+            slide.validation()
 
         # scale with ratio = 1 (no scaling happens, but connects the ends of each trace to itself)
         self.scale(1)
 
-        # slide.plot(fix_aspect_ratio=True, title=title)
-
-        if plot == True:
-            plt.figure()
-            slide.plot(final=False, fix_aspect_ratio='True', axlabel=u"\u03bcm",
+        plt.figure()
+        slide.plot(final=False, fix_aspect_ratio='True', axlabel=u"\u03bcm",
                        title='Final sample after any user specified processing')
-            if plot_folder == True:
-                plt.savefig(plotpath + '/sample_final')
-                plt.clf()
-                plt.close()
-            else:
-                plt.show()
-
-            # plt.figure(2)
-            # slide.nerve.plot()
-            # plt.plot(*tuple(slide.nerve.points[slide.orientation_point_index][:2]), 'b*')
-            # plt.show()
+        plt.savefig(plotpath + '/sample_final')
+        if self.search(Config.RUN,"popup_plots",optional=True)==True:
+            plt.show()
+        else:
+            plt.clf()
+            plt.close('all')
 
         return self
 

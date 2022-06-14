@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import java.io.*;
 import java.util.Scanner;
 
+@SuppressWarnings({"unchecked","rawtypes","path"})
 public class JSONio {
 
     public static JSONObject read(String filepath) throws FileNotFoundException {

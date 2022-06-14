@@ -1,4 +1,5 @@
 {
+  "pseudonym": "beta model",
   "modes": {
     "use_ci": true,
     "cuff_shift": "MIN_CIRCLE_BOUNDARY",
@@ -28,8 +29,7 @@
   "cuff": {
     "preset": "Purdue.json",
     "rotate": {
-      "add_ang": 0,
-      "pos_ang": 175.61701522308522
+      "add_ang": 0
     },
     "shift": {
       "x": -30.824073742946183,
@@ -37,12 +37,9 @@
       "z": 0
     }
   },
-  "min_radius_enclosing_circle": 186.2556107855476,
   "mesh": {
-    "name": "COMSOL Multiphysics 5.4 (Build: 388)",
     "shape_order": 2,
     "proximal": {
-      "mesh_time": 13607.916931,
       "hcurve": 0.2,
       "hmin": 10,
       "hnarrow": 1,
@@ -54,7 +51,6 @@
       "hgrad": 2.2
     },
     "distal": {
-      "mesh_time": 854.48684,
       "hcurve": 0.2,
       "hmin": 10,
       "hnarrow": 1,
@@ -64,14 +60,6 @@
       },
       "hmax": 1600,
       "hgrad": 2.5
-    },
-    "stats": {
-      "volume": 9.77E11,
-      "min_quality": 0.1851,
-      "min_volume": 18.11,
-      "quality_measure": "vollength",
-      "number_elements": 332561,
-      "mean_quality": 0.6662
     }
   },
   "frequency": 1,
@@ -95,10 +83,6 @@
     "epineurium": "epineurium"
   },
   "solver": {
-    "sorder": "quadratic",
-    "name": "COMSOL Multiphysics 5.4 (Build: 388)"
-  },
-  "solution": {
-    "sol_time": 53634.154417
+    "sorder": "quadratic"
   }
 }

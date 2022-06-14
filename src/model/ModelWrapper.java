@@ -30,8 +30,9 @@ import java.util.regex.Pattern;
  * assigning physics, and extracting potentials. This class houses the "meaty" operations of actually interacting with
  * the model object when creating parts in the static class model.Parts.
  */
-public class ModelWrapper {
 
+@SuppressWarnings({"unchecked","rawtypes","path"})
+public class ModelWrapper {
 
     // UNION PSEUDONYM CONSTANTS
     public static final String ALL_NERVE_PARTS_UNION = "allNervePartsUnion";
@@ -331,6 +332,8 @@ public class ModelWrapper {
         String id = ve_im.next("interp");
         model.result().numerical().create(id, "Interp");
         model.result().numerical(id).set("expr", "V");
+        model.result().numerical(id).set("recover", "pprint");
+        model.result().numerical(id).set("matherr", "on");
         model.result().numerical(id).setInterpolationCoordinates(coordinates);
         double[][][] ve_pre = model.result().numerical(id).getData();
         int len = ve_pre[0][0].length; // number of coordinates
@@ -971,7 +974,7 @@ public class ModelWrapper {
      * Pre-built for-loop to iterate through all current sources in model (added in Part)
      * Can be super useful for quickly setting different currents and possibly sweeping currents
      */
-    public void loopCurrents(JSONObject modelData, String projectPath, String sample, String modelStr, Boolean skipMesh) throws IOException {
+    public void loopCurrents(JSONObject modelData, String projectPath, String sample, String modelStr, Boolean skipMesh, boolean pre_solve_break) throws IOException {
 
         long runSolStartTime = System.nanoTime();
         int index = 0;
@@ -1027,7 +1030,12 @@ public class ModelWrapper {
 
             boolean save = true;
             if (! new File(mphFile).exists()) {
-                model.sol("sol1").runAll();
+                if (!pre_solve_break) {
+                    model.sol("sol1").runAll();
+                    model.component("comp1").mesh("mesh1").clearMesh();
+                }
+                else {
+                    System.out.println("\tSkipped solving for basis " +key_on+" because encountered pre_solve breakpoint. Basis MPH will be saved with no solution.");                }
             } else {
                 save = false;
                 System.out.println("\tSkipping solving and saving for basis " + key_on + " because found existing file: " + mphFile);
@@ -1054,9 +1062,11 @@ public class ModelWrapper {
             index += 1;
         }
 
-        JSONObject solution = modelData.getJSONObject("solution");
+        JSONObject solution = new JSONObject();
         long estimatedRunSolTime = System.nanoTime() - runSolStartTime;
         solution.put("sol_time", estimatedRunSolTime/Math.pow(10,6)); // convert nanos to millis, this is for solving all contacts
+        String version = ModelUtil.getComsolVersion(); //The getComsolVersion method returns the current COMSOL Multiphysics
+        solution.put("name", version);
         modelData.put("solution", solution);
     }
 
@@ -1139,40 +1149,49 @@ public class ModelWrapper {
         try {
             ModelUtil.connect("localhost", 2036);
         } catch(FlException e) {
-            ModelUtil.connect("localhost", 2037);
+            System.out.println("Could not connect to COMSOL server on port 2036, trying on port 2037...");
+            try {
+                ModelUtil.connect("localhost", 2037);
+            } catch(FlException exc) {
+                System.out.println("Could not connect to COMSOL server on port 2037, trying without specifying a port...");
+                ModelUtil.connect();
+            }
         }
 
         TimeUnit.SECONDS.sleep(5);
         ModelUtil.initStandalone(false);
-//        ModelUtil.showProgress(null); // if you want to see COMSOL progress (as it makes all geometry, runs, etc.)
-
-        //checkout comsol license
-        if (cli_args.has("wait_for_license"));
-        {
-            if (!cli_args.isNull("wait_for_license")) {
-                long wait_hours = cli_args.getLong("wait_for_license");
-                System.out.println("Attempting to check out COMSOL license. System will wait up to " + String.valueOf(wait_hours) + " hours for an available license seat.");
-                boolean lic = false;
-                long start = System.currentTimeMillis();
-                long stop = wait_hours * 60 * 60 * 1000 + start;
-                while (System.currentTimeMillis() < stop) {
-                    lic = ModelUtil.checkoutLicense("COMSOL");
-                    if (lic == true) {
-                        long now = System.currentTimeMillis();
-                        double elapsed = (Long.valueOf(now).doubleValue()-Long.valueOf(start).doubleValue())/(60 * 60 * 1000);
-                        System.out.printf("COMSOL license seat obtained (took %.3f hours).%n", elapsed);
-                        break;
-                    } else {
-                        TimeUnit.SECONDS.sleep(600);
-                    }
-                }
-                if (lic == false) {
-                    System.out.println("A COMSOL license did not become available within the specified time window. Exiting...");
-                    System.exit(1);
-                }
-            }
+        
+        if (cli_args.has("comsol_progress") && cli_args.getBoolean("comsol_progress")) {
+            ModelUtil.showProgress(null); // if you want to see COMSOL progress (as it makes all geometry, runs, etc.)
         }
 
+        if (cli_args.has("comsol_progress_popup") && cli_args.getBoolean("comsol_progress_popup")) {
+            ModelUtil.showProgress(true); // if you want to see COMSOL progress (as it makes all geometry, runs, etc.)
+        }
+
+        //checkout comsol license
+        if (cli_args.has("wait_for_license") && !cli_args.isNull("wait_for_license")) {
+            long wait_hours = cli_args.getLong("wait_for_license");
+            System.out.println("Attempting to check out COMSOL license. System will wait up to " + String.valueOf(wait_hours) + " hours for an available license seat.");
+            boolean lic = false;
+            long start = System.currentTimeMillis();
+            long stop = wait_hours * 60 * 60 * 1000 + start;
+            while (System.currentTimeMillis() < stop) {
+                lic = ModelUtil.checkoutLicense("COMSOL");
+                if (lic == true) {
+                    long now = System.currentTimeMillis();
+                    double elapsed = (Long.valueOf(now).doubleValue()-Long.valueOf(start).doubleValue())/(60 * 60 * 1000);
+                    System.out.printf("COMSOL license seat obtained (took %.3f hours).%n", elapsed);
+                    break;
+                } else {
+                    TimeUnit.SECONDS.sleep(600);
+                }
+            }
+            if (lic == false) {
+                System.out.println("A COMSOL license did not become available within the specified time window. Exiting...");
+                System.exit(1);
+            }
+        }
 
         // Take projectPath input to ModelWrapper and assign to string.
         String projectPath = args[0];
@@ -1194,6 +1213,14 @@ public class ModelWrapper {
         }
         else if (run.has("break_points")) {
                 break_points = run.getJSONObject("break_points");
+        }
+
+        Boolean endo_only_solution = false;
+        if (cli_args.has("endo_only_solution") && cli_args.getBoolean("endo_only_solution")) {
+            endo_only_solution = true;
+        }
+        else if (run.has("endo_only_solution") && run.getBoolean("endo_only_solution")) {
+            endo_only_solution = true;
         }
 
         boolean nerve_only = false;
@@ -1294,6 +1321,15 @@ public class ModelWrapper {
                         e.printStackTrace();
                     }
 
+                    modelData.put("solution",JSONObject.NULL);
+
+                    try (FileWriter file = new FileWriter("../" + modelFile)) {
+                        String output = modelData.toString(2);
+                        file.write(output);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
                     // if optimizing
                     boolean recycle_meshes;
                     if (run.has("recycle_meshes") && !nerve_only && !cuff_only) {
@@ -1357,10 +1393,21 @@ public class ModelWrapper {
                         // Define ModelWrapper class instance for model and projectPath
                         mw = new ModelWrapper(model, projectPath);
 
+                        //Clear mesh stats
+                        modelData.getJSONObject("mesh").put("stats", JSONObject.NULL);
+
+                        try (FileWriter file = new FileWriter("../" + modelFile)) {
+                            String output = modelData.toString(2);
+                            file.write(output);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
                         // FEM MODEL GEOMETRY
                         // Set MEDIUM parameters
                         JSONObject distalMedium = modelData.getJSONObject("medium").getJSONObject("distal");
                         JSONObject proximalMedium = modelData.getJSONObject("medium").getJSONObject("proximal");
+                        JSONObject meshTimes = new JSONObject();
 
                         String mediumParamsLabel = "Medium Parameters";
                         ModelParamGroup mediumParams = model.param().group().create(mediumParamsLabel);
@@ -1513,6 +1560,8 @@ public class ModelWrapper {
                         }
 
                         if (!cuff_only) {
+                            model.nodeGroup().create(mw.im.next("grp","Contact Impedances"), "Physics", "ec");
+                            model.nodeGroup(mw.im.get("Contact Impedances")).label("Contact Impedances");
                             // there are no primitives/instances for nerve parts, just build them
                             mw.addNerve(sample, nerveParams, modelData);
                         }
@@ -1538,7 +1587,7 @@ public class ModelWrapper {
 
                         if (pre_geom_run) {
                             models_exit_status[model_index] = false;
-                            System.out.println("\tpre_geom_run is the first break point encountered, moving on with next model index\n");
+                            System.out.println("\tpre_geom_run is the first break point encountered, moving on with next model index");
                             continue;
                         }
 
@@ -1572,7 +1621,7 @@ public class ModelWrapper {
 
                         if (post_geom_run || nerve_only || cuff_only) {
                             models_exit_status[model_index] = false;
-                            System.out.println("\tpost_geom_run is the first break point encountered, moving on with next model index\n");
+                            System.out.println("\tpost_geom_run is the first break point encountered, moving on with next model index");
                             continue;
                         }
 
@@ -1656,7 +1705,7 @@ public class ModelWrapper {
 
                         if (pre_mesh_proximal) {
                             models_exit_status[model_index] = false;
-                            System.out.println("\tpre_mesh_proximal is the first break point encountered, moving on with next model index\n");
+                            System.out.println("\tpre_mesh_proximal is the first break point encountered, moving on with next model index");
                             continue;
                         }
 
@@ -1673,12 +1722,10 @@ public class ModelWrapper {
                          }
 
                         long estimatedProximalMeshTime = System.nanoTime() - proximalMeshStartTime;
-                        proximalMeshParams.put("mesh_time", estimatedProximalMeshTime / Math.pow(10, 6)); // convert nanos to millis
+                        meshTimes.put("proximal", estimatedProximalMeshTime / Math.pow(10, 6)); // convert nanos to millis
 
                         // put nerve to mesh, rest to mesh, mesh to modelData
                         JSONObject mesh = modelData.getJSONObject("mesh");
-                        mesh.put("proximal", proximalMeshParams);
-                        modelData.put("mesh", mesh);
 
                         TimeUnit.SECONDS.sleep(1);
 
@@ -1696,7 +1743,7 @@ public class ModelWrapper {
 
                         if (post_mesh_proximal) {
                             models_exit_status[model_index] = false;
-                            System.out.println("\tpost_mesh_proximal is the first break point encountered, moving on with next model index\n");
+                            System.out.println("\tpost_mesh_proximal is the first break point encountered, moving on with next model index");
                             continue;
                         }
 
@@ -1750,7 +1797,7 @@ public class ModelWrapper {
 
                             if (pre_mesh_distal) {
                                 models_exit_status[model_index] = false;
-                                System.out.println("\tpre_mesh_distal is the first break point encountered, moving on with next model index\n");
+                                System.out.println("\tpre_mesh_distal is the first break point encountered, moving on with next model index");
                                 continue;
                             }
 
@@ -1765,11 +1812,7 @@ public class ModelWrapper {
                                 continue;
                             }
                             long estimatedRestMeshTime = System.nanoTime() - distalMeshStartTime;
-                            distalMeshParams.put("mesh_time", estimatedRestMeshTime / Math.pow(10, 6)); // convert nanos to millis
-
-                            // put nerve to mesh, rest to mesh, mesh to modelData
-                            mesh.put("distal", distalMeshParams);
-                            modelData.put("mesh", mesh);
+                            meshTimes.put("distal", estimatedRestMeshTime / Math.pow(10, 6)); // convert nanos to millis
 
                             // Saved model post-mesh distal for debugging
                             try {
@@ -1792,7 +1835,7 @@ public class ModelWrapper {
 
                             if (post_mesh_distal) {
                                 models_exit_status[model_index] = false;
-                                System.out.println("\tpost_mesh_distal is the first break point encountered, moving on with next model index\n");
+                                System.out.println("\tpost_mesh_distal is the first break point encountered, moving on with next model index");
                                 continue;
                             }
                         }
@@ -1800,9 +1843,17 @@ public class ModelWrapper {
                         System.out.println("\tSaving mesh statistics.");
 
                         // MESH STATISTICS
-                        String quality_measure = modelData.getJSONObject("mesh").getJSONObject("stats").getString("quality_measure");
+                        String quality_measure;
+                        if (modelData.getJSONObject("mesh").has("quality_measure")) {
+                            quality_measure = modelData.getJSONObject("mesh").getString("quality_measure");
+                        }
+                        else {
+                            quality_measure = "vollength";
+                            System.out.println("\tNo quality measure for mesh, using default (vollength)");
+                        }
+
                         model.component("comp1").mesh("mesh1").stat().setQualityMeasure(quality_measure);
-                        // could use: skewness, maxangle, volcircum, vollength, condition, growth...
+                            // could use: skewness, maxangle, volcircum, vollength, condition, growth...
 
                         Integer number_elements = model.component("comp1").mesh("mesh1").getNumElem("all");
                         Double min_quality = model.component("comp1").mesh("mesh1").getMinQuality("all");
@@ -1810,17 +1861,25 @@ public class ModelWrapper {
                         Double min_volume = model.component("comp1").mesh("mesh1").getMinVolume("all");
                         Double volume = model.component("comp1").mesh("mesh1").getVolume("all");
 
-                        JSONObject meshStats = modelData.getJSONObject("mesh").getJSONObject("stats");
+                        JSONObject meshStats = new JSONObject();
+                        meshStats.put("mesh_times",meshTimes);
                         meshStats.put("number_elements", number_elements);
                         meshStats.put("min_quality", min_quality);
                         meshStats.put("mean_quality", mean_quality);
+                        meshStats.put("mean_quality", mean_quality);
                         meshStats.put("min_volume", min_volume);
                         meshStats.put("volume", volume);
-                        meshStats.put("quality_measure", quality_measure);
-
-                        mesh.put("proximal", proximalMeshParams);
+                        meshStats.put("quality_measure_used", quality_measure);
+                        meshStats.put("name", ModelUtil.getComsolVersion());
                         mesh.put("stats", meshStats);
                         modelData.put("mesh", mesh);
+
+                        try (FileWriter file = new FileWriter("../" + modelFile)) {
+                            String output = modelData.toString(2);
+                            file.write(output);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
 
                         System.out.println("\tDONE MESHING");
 
@@ -1958,16 +2017,11 @@ public class ModelWrapper {
 
                     if (post_material_assign) {
                         models_exit_status[model_index] = false;
-                        System.out.println("\tpost_material_assign is the first break point encountered, moving on with next model index\n");
+                        System.out.println("\tpost_material_assign is the first break point encountered, moving on with next model index");
                         continue;
                     }
 
                     // Solve
-                    JSONObject solver = modelData.getJSONObject("solver");
-                    String version = ModelUtil.getComsolVersion(); //The getComsolVersion method returns the current COMSOL Multiphysics
-                    solver.put("name", version);
-                    modelData.put("solver", solver);
-
                     model.study().create("std1");
                     model.study("std1").setGenConv(true);
                     model.study("std1").create("stat", "Stationary");
@@ -1980,6 +2034,10 @@ public class ModelWrapper {
                     model.study("std1").feature("stat").set("notsolnum", "1");
                     model.study("std1").feature("stat").set("listsolnum", 1);
                     model.study("std1").feature("stat").set("solnum", "1");
+                    if (endo_only_solution) {
+                        model.study("std1").feature("stat").set("usestoresel", "selection");
+                        model.study("std1").feature("stat").set("storesel", new String[]{"geom1_" + mw.im.get("endoUnionCsel") + "_dom"});
+                    }
 
                     model.sol("sol1").create("st1", "StudyStep");
                     model.sol("sol1").feature("st1").set("study", "std1");
@@ -1997,17 +2055,6 @@ public class ModelWrapper {
                     model.sol("sol1").feature("s1").feature().remove("fcDef");
                     model.sol("sol1").attach("std1");
 
-                    model.result().create("pg1", "PlotGroup3D");
-                    model.result("pg1").label("Electric Potential (ec)");
-                    model.result("pg1").set("frametype", "spatial");
-                    model.result("pg1").set("data", "dset1");
-                    model.result("pg1").feature().create("mslc1", "Multislice");
-                    model.result("pg1").feature("mslc1").set("colortable", "RainbowLight");
-                    model.result("pg1").feature("mslc1").set("data", "parent");
-
-                    model.result("pg1").run();
-                    model.result("pg1").set("data", "dset1");
-
                     // break point "post_mesh_distal"
                     boolean pre_loop_currents;
                     if (break_points.has("pre_loop_currents")) {
@@ -2018,11 +2065,25 @@ public class ModelWrapper {
 
                     if (pre_loop_currents) {
                         models_exit_status[model_index] = false;
-                        System.out.println("\tpre_loop_currents is the first break point encountered, moving on with next model index\n");
+                        System.out.println("\tpre_loop_currents is the first break point encountered, moving on with next model index");
                         continue;
                     }
 
-                    mw.loopCurrents(modelData, projectPath, sample, modelStr, skipMesh);
+                    // break point "post_mesh_distal"
+                    boolean pre_solve_break;
+                    if (break_points.has("pre_solve")) {
+                        pre_solve_break = break_points.getBoolean("pre_solve");
+                    } else {
+                        pre_solve_break = false;
+                    }
+
+                    mw.loopCurrents(modelData, projectPath, sample, modelStr, skipMesh, pre_solve_break);
+
+                    if (pre_solve_break) {
+                        models_exit_status[model_index] = false;
+                        System.out.println("\tpre_solve is the first break point encountered, moving on with next model index\n");
+                        continue;
+                    }
 
                     ModelUtil.remove(model.tag());
 

@@ -3,13 +3,8 @@
 See [Running the Pipeline](../Getting_Started.md#setting-up-a-run-of-ascent).
 
 ## Submitting NEURON jobs
-We provide scripts for the user to submit NEURON jobs in `src/neuron/`. It
-is suggested that the script ending in `".sh"` is used for Linux-based
-cluster contexts; on the other hand, if running locally, the environment
-setup will likely be more specific to the machine, and the script ending
-in `".py"` is the better choice. The `submit.sh` acts as a buffer for
-`submit.py` to set up the environment and load appropriate modules for job
-submission. The `submit.py` script takes the input of the ***Run***
+We provide scripts for the user to submit NEURON jobs in `src/neuron/`.
+The `submit.py` script takes the input of the ***Run***
 configuration and submits a NEURON call for each independent fiber
 within an `n_sim/`. These scripts are called using similar syntax as
 `pipeline.py`: `"./submit.<ext> <run indices>,"` where `<run
@@ -22,14 +17,12 @@ defined by `"ASCENT_NSIM_EXPORT_PATH"` in `env.json`.
 When using a high-performance computing cluster running SLURM:
 1. Set your default parameters, particularly your partition (can be found in
 `"config/system/slurm_params.json"`). The partition you set here (default is "common"
-) will apply to all `submit.py` runs. To override this on a per-run basis, pass
-the command line argument --partition. (e.g.
-`"python submit.py --partition my_partition <run indices>"`)
-For more information, see [Command-Line Arguments](command_line_args).
+) will apply to all `submit.py` runs.
 2. Optionally, set your `"submission_context"` to `"auto"`, and configure your `run.json` with the
 appropriate hostname prefix. (Only necessary if you plan to submit runs both locally and
 on a cluster, see [Run Parameters](../JSON/JSON_parameters/run).)
-
+3. Many parameters which `submit.py` sources from JSON configuration files can be overridden with command line arguments. For more information, see [Command-Line Arguments](command_line_args).
+4.
 ## Other Scripts
 We provide scripts to help users efficiently manage data created by ASCENT. Run all of these scripts from the directory
 to which you installed ASCENT (i.e., `"ASCENT_PROJECT_PATH"` as defined in `config/system/env.json`). For specific controls associated with each script, see [Command Line Arguments](command_line_args).
@@ -44,7 +37,7 @@ run this script from your `"ASCENT_PROJECT_PATH"`.
 `python run import_n_sims <list of run indices>`
 
 The script will load each listed Run configuration file from `config/user/runs/<run_index>.json` to determine for which
-Sample, Model(s), and Sim(s) to import the NEURON simulation data.
+Sample, Model(s), and Sim(s) to import the NEURON simulation data. This script will check for any missing thresholds and skip that import if any are found. Override this by passing the flag `--force`. To delete n_sim folders from your output directory after importing, pass the flag `--delete-nsims`. For more information, see [Command-Line Arguments](command_line_args).
 
 ### `scripts/clean_samples.py`
 If you would like to remove all contents for a single sample (i.e., `samples/<sample_index>/`) EXCEPT a list of files

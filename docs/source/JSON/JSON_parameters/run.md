@@ -15,6 +15,7 @@ To declare this entity in `config/user/runs/`, use the
 following syntax:
 ```
 {
+  "pseudonym": String,
   "submission_context": String,
   "sample": Integer, // note, only one value here!
   "models": [Integer, ...], // pipeline will create all pairwise combos of …
@@ -32,20 +33,26 @@ following syntax:
     "pre_loop_currents": Boolean // immediately before solving for bases
   },
   "models_exit_status": [Boolean, ...], // one entry for each Model
+  "endo_only_solution": Boolean,
   "keep": {
     "debug_geom": Boolean,
     "mesh": Boolean,
     "bases": Boolean
   },
+  "export_behavior": String,
   "partial_fem": {
     "cuff_only": Boolean,
     "nerve_only": Boolean
   },
   "local_avail_cpus": Integer,
+  "popup_plots": Boolean,
   "override_compiled_mods": Boolean
 }
 ```
 ## Properties
+
+`"pseudonym"`: This value (String) informs pipeline print statements, allowing
+users to better keep track of the purpose of each configuration file. Optional.
 
 `"submission_context"`: The value (String) of this property tells the
 system how to submit the n\_sim NEURON jobs based on the computational
@@ -80,6 +87,17 @@ default behavior is false (i.e., the pipeline continues beyond the
 breakpoint). Note: specifying a break point via command line arguments
 will override any break points set in your run config. Optional.
 
+`"endo_only_solution"`: The value (Boolean) determines what data the electric currents
+solution will save. Since fibers are sampled from the endoneurium, after the
+solution is completed, only the endoneurial Ve data is necessary to run fiber
+simulations. If `"endo_only_solution"` is `true`, then COMSOL will save ONLY
+the Ve data for the endoneurium. If `false`, COMSOL will save Ve data for the entire model.
+Recommended value is `true` unless you intend to generate plots or other analyses
+which require Ve data for geometry other than the endoneurium. If this key-value pair
+is not present, defaults to `false`. Note: this parameter only affects storage
+space after the solution has completed, and will not have any affect on memory
+usage or solution time.
+
 `"models_exit_status"`: The value (\[Boolean, ...\]) of this property
 indicates if Java successfully made the FEMs for the corresponding model
 indices ("models" property). The user does not need to include this
@@ -99,6 +117,14 @@ saved. If `"mesh.mph"` is saved, the file can later be used if another
 (see `ModelSearcher` ([Java Utility Classes](../../Code_Hierarchy/Java.md#java-utility-classes)) and `mesh_dependent_model.json` ([Mesh Dependent Model](../../JSON/JSON_parameters/mesh_dependent_model))). If bases/ are saved, a
 new ***Sim*** for a previously computed ***Sample*** and ***Model*** can
 be probed along new fibersets/ to create potentials/*.* Optional.
+
+`"export_behavior"`: The value (String) instructs the pipeline how to behave if
+an export n_sim directory (i.e., ASCENT_NSIM_EXPORT_PATH/n_sims/<directory>)
+already exists. There are three options: `"selective"` is the default behavior,
+output directories which already exist will be skipped, but any which do not exist
+will be generated, `"overwrite"` will remove the extant directory,
+and generate a new clean output directory in its place, `"error"` instructs the
+pipeline to exit if any export n_sim directory is found to already exist.
 
 `"partial_fem"`: The value (Boolean) of each property results in the
 program terminating after building the COMSOL FEM geometry for only the
@@ -123,36 +149,44 @@ defined.
 
 `"override_compiled_mods"`: The value (Boolean) indicates if the program will override previously compiled *.mod files (i.e. files defining channel mechanisms in NEURON) with each system call of submit.py. Optional, but if the key is omitted the program will not override previously compiled *.mod files.
 
+`“popup_plots”`: The value (Boolean) will instruct the pipeline to display plots
+(e.g. sample plot, fiberset plot, waveform plot) in a popup window. This is in addition
+to saving the plots in the relevant folders (i.e., the sample and sim folders).
+
 ## Example
 ```
 {
-  "submission_context": "cluster",
+  "pseudonym": "My example run",
+  "submission_context": “cluster”,
   "sample": 62,
   "models": [0],
   "sims": [99],
   "recycle_meshes": true,
   "break_points": {
-    "pre_java": false,
-    "pre_geom_run": false,
-    "post_geom_run": true,
-    "pre_mesh_proximal": false,
-    "post_mesh_proximal": false,
-    "pre_mesh_distal": false,
-    "post_mesh_distal": false,
-    "post_material_assign": false,  
-    "pre_loop_currents": false
+    "pre_java": false,
+    "pre_geom_run": false,
+    "post_geom_run": true,
+    "pre_mesh_proximal": false,
+    "post_mesh_proximal": false,
+    "pre_mesh_distal": false,
+    "post_mesh_distal": false,
+    "post_material_assign": false,
+    "pre_loop_currents": false
   },
+  "endo_only_solution":true,
   "models_exit_status": [true],
   "keep": {
-    "debug_geom": true,
-    "mesh": true,
+    "debug_geom": true,
+    "mesh": true,
     "bases": true
   },
   "partial_fem": {
     "cuff_only": false,
     "nerve_only": false
   },
+  "export_behavior": "selective",
   "local_avail_cpus": 3,
+  “popup_plots”: true,
   "override_compiled_mods": false
 }
 ```
