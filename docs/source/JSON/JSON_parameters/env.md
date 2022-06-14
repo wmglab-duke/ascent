@@ -50,8 +50,7 @@ pipeline will save NEURON simulation directories to submit.
 ```
 {
   "ASCENT_COMSOL_PATH": "/Applications/COMSOL55/Multiphysics ",
-  "ASCENT_JDK_PATH":
-  "/Library/Java/JavaVirtualMachines/jdk1.8.0_221.jdk/Contents/Home/bin/",
+  "ASCENT_JDK_PATH": "/Library/Java/JavaVirtualMachines/jdk1.8.0_221.jdk/Contents/Home/bin/",
   "ASCENT_PROJECT_PATH": "/Users/ericmusselman/Documents/ascent",
   "ASCENT_NSIM_EXPORT_PATH": "/Users/ericmusselman/Documents/ascent/submit"
 }
