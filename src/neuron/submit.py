@@ -170,7 +170,7 @@ def get_deltaz(fiber_model, diameter):
     return delta_z, neuron_flag
 
 
-def get_thresh_bounds(sim_dir: str, sim_name: str, inner_ind: int):
+def get_thresh_bounds(args, sim_dir: str, sim_name: str, inner_ind: int):
     top, bottom = None, None
 
     sample = sim_name.split('_')[0]
@@ -400,7 +400,7 @@ def cluster_submit(run_number: int, partition: str, args, mem: int=2000, array_l
                         continue
 
                     elif missing_total == 1:
-                        stimamp_top, stimamp_bottom = get_thresh_bounds(sim_dir, sim_name, inner_ind_solo)
+                        stimamp_top, stimamp_bottom = get_thresh_bounds(args, sim_dir, sim_name, inner_ind_solo)
                         start_path_solo = os.path.join(sim_path, 'start{}'.format('.sh' if OS == 'UNIX-LIKE' else '.bat'))
 
                         if inner_fiber_diam_key is not None:
@@ -493,7 +493,7 @@ def cluster_submit(run_number: int, partition: str, args, mem: int=2000, array_l
                                 inner_index_tally.append(inner_ind)
                                 fiber_index_tally.append(fiber_ind)
 
-                                stimamp_top, stimamp_bottom = get_thresh_bounds(sim_dir, sim_name, inner_ind)
+                                stimamp_top, stimamp_bottom = get_thresh_bounds(args, sim_dir, sim_name, inner_ind)
                                 if stimamp_top is not None and stimamp_bottom is not None:
                                     make_task(OS, start_path, sim_path, inner_ind, fiber_ind, stimamp_top, stimamp_bottom,
                                             diameter, deltaz, axonnodes)
@@ -634,7 +634,7 @@ def make_local_submission_list(run_number: int, args, summary_gen = False):
                         start_path = os.path.join(start_dir, '{}_{}_start{}'.format(inner_ind, fiber_ind,
                                                                                 '.sh' if OS == 'UNIX-LIKE'
                                                                                 else '.bat'))
-                        stimamp_top, stimamp_bottom = get_thresh_bounds(sim_dir, sim_name, inner_ind)
+                        stimamp_top, stimamp_bottom = get_thresh_bounds(args, sim_dir, sim_name, inner_ind)
                         if inner_fiber_diam_key is not None:
                             diameter = get_diameter(inner_fiber_diam_key, inner_ind, fiber_ind)
                         deltaz, neuron_flag = get_deltaz(fiber_model, diameter)
