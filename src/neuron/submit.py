@@ -803,7 +803,7 @@ def main():
         if not int(proceed)==1:
             quit()
         else:
-            print('Proceeding...')
+            print('Proceeding...\n')
 
     for sub_context, run_index in zip(submission_contexts, runs):
         try:
