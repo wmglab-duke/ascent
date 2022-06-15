@@ -524,13 +524,13 @@ their properties from JSON configuration files (e.g., `sample.json`,
 `model.json`, `sim.json`, `fiber_z.json`). The Configurable class takes three
 input parameters:
 
-#### `"SetupMode"` (from [Enums](../Code_Hierarchy/Python.md#enums),)
+#### SetupMode (from [Enums](../Code_Hierarchy/Python.md#enums))
 
 Either NEW or OLD which determines if Configurable loads a new JSON
 (from file) or uses data that has already been created in Python memory
 as a dictionary or list, respectively.
 
-#### ConfigKey (from [Enums](../Code_Hierarchy/Python.md#enums),)
+#### ConfigKey (from [Enums](../Code_Hierarchy/Python.md#enums))
 
 The ConfigKey indicates the choice of configuration data type and is
 also the name of the configuration JSON file (e.g., `sample.json`,
