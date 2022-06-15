@@ -281,7 +281,7 @@ weight<sub>2</sub> (for src 2 on)]]
 
 The value of potentials/ is applied to a model fiber in NEURON
 multiplied by the stimulation amplitude, which is either from a list of
-finite amplitudes or a binary search for thresholds ([S22 Text](S22-Simulation-protocols))
+finite amplitudes or a binary search for thresholds ([Simulation Protocols](../../Running_ASCENT/Info.md#simulation-protocols))
 
 ![f4]
 
@@ -294,7 +294,7 @@ length of the fiber). Required.
   - `“mode”`: The value (String) is the “FiberGeometry” mode that tells
     the program which fiber geometries to simulate in NEURON ([S21](S21-Implementation-of-NEURON-fiber-models) and [S32](S32-NEURON-Wrapper.hoc) Text). Required.
 
-      - As listed in Enums ([S6 Enums](S6-Enums)), known modes include
+      - As listed in [Enums](../../Code_Hierarchy/Python.md#enums)), known modes include
 
           - `“MRG_DISCRETE”` (published MRG fiber model)
 
@@ -388,7 +388,7 @@ length of the fiber). Required.
      program how to seed fiber locations inside each inner in the nerve
      cross section. Required.
 
-  - As listed in Enums ([S6 Enums](S6-Enums)), known modes include
+  - As listed in [Enums](../../Code_Hierarchy/Python.md#enums)), known modes include
 
       - `“CENTROID”`: Place one fiber at the centroid (i.e., from the
         best-fit ellipse of the inner) of each inner.
@@ -635,7 +635,7 @@ waveform parameters among the lists (i.e., the Cartesian product).
 
 `“intracellular_stim”`: The value (JSON Object) contains key-value pairs
 to define the settings of the monophasic pulse train of the
-intracellular stimulus ([S31](S31-NEURON-launch.hoc) and [S32](S32-NEURON-Wrapper.hoc) Text). Required.
+intracellular stimulus ([NEURON Scripts](../../Code_Hierarchy/NEURON)). Required.
 
   - `“times”`: The key-value pairs define the time durations
     characteristic of the intracellular stimulation. Required.
@@ -666,7 +666,7 @@ intracellular stimulus ([S31](S31-NEURON-launch.hoc) and [S32](S32-NEURON-Wrappe
 
 `“saving”`: The value (JSON Object) contains key-value pairs to define
 which state variables NEURON will save during its simulations and at
-which times/locations ([S31](S31-NEURON-launch.hoc) and [S32](S32-NEURON-Wrapper.hoc) Text). Required.
+which times/locations ([NEURON Scripts](../../Code_Hierarchy/NEURON)). Required.
 
   - `“space”`:
 
@@ -737,9 +737,9 @@ which times/locations ([S31](S31-NEURON-launch.hoc) and [S32](S32-NEURON-Wrapper
 
   - `“mode”`: The value (String) is the `“NeuronRunMode”` that tells the
     program to run activation thresholds, block thresholds, or a list of
-    extracellular stimulation amplitudes ([S31](S31-NEURON-launch.hoc) and [S32](S32-NEURON-Wrapper.hoc) Text). Required.
+    extracellular stimulation amplitudes ([NEURON Scripts](../../Code_Hierarchy/NEURON)). Required.
 
-      - As listed in Enums ([S6 Text](S6-Enums)), known `“NeuronRunModes”` include
+      - As listed in Enums ([Enums](../../Code_Hierarchy/Python.md#enums)), known `“NeuronRunModes”` include
 
           - `“ACTIVATION_THRESHOLDS”`
           - `“BLOCK_THRESHOLDS”`
@@ -787,7 +787,7 @@ which times/locations ([S31](S31-NEURON-launch.hoc) and [S32](S32-NEURON-Wrapper
 
   - `“bounds_search”`: the value (JSON Object) contains key-value pairs
     to define how to search for upper and lower bounds in binary search
-    algorithms ([S22 Text](S22-Simulation-protocols)). Required for threshold finding protocols (i.e.,
+    algorithms ([Simulation Protocols](../../Running_ASCENT/Info.md#simulation-protocols)). Required for threshold finding protocols (i.e.,
     `“ACTIVATION_THRESHOLDS”` and `“BLOCK_THRESHOLDS”`).
 
       - `“mode”`: the value (String) is the `“SearchAmplitudeIncrementMode”`
@@ -795,9 +795,9 @@ which times/locations ([S31](S31-NEURON-launch.hoc) and [S32](S32-NEURON-Wrapper
         bounds for the binary search; the bounds are adjusted
         iteratively until the initial upper bound (i.e., “top”)
         activates/blocks and until the initial lower bound does not
-        activate/block, before starting the binary search ([S22 Text](S22-Simulation-protocols)). Required.
+        activate/block, before starting the binary search ([Simulation Protocols](../../Running_ASCENT/Info.md#simulation-protocols)). Required.
 
-          - As listed in Enums ([S6 Text](S6-Enums)), known `“SearchAmplitudeIncrementModes”`
+          - As listed in Enums ([Enums](../../Code_Hierarchy/Python.md#enums)), known `“SearchAmplitudeIncrementModes”`
             include:
 
               - `“ABSOLUTE_INCREMENT”`: If the current upper bound does
@@ -852,13 +852,13 @@ which times/locations ([S31](S31-NEURON-launch.hoc) and [S32](S32-NEURON-Wrapper
 <!-- end list -->
 
   - `“termination_criteria”`: Required for threshold finding protocols
-    (i.e., `“ACTIVATION_THRESHOLDS”` and `“BLOCK_THRESHOLDS”`) ([S22 Text](S22-Simulation-protocols)).
+    (i.e., `“ACTIVATION_THRESHOLDS”` and `“BLOCK_THRESHOLDS”`) ([Simulation Protocols](../../Running_ASCENT/Info.md#simulation-protocols)).
 
       - `“mode”`: The value (String) is the `“TerminationCriteriaMode”` that
         tells the program when the upper and lower bound have converged
         on a solution of appropriate precision. Required.
 
-          - As listed in Enums ([S6 Text](S6-Enums)), known `“TerminationCriteriaModes”`
+          - As listed in Enums ([Enums](../../Code_Hierarchy/Python.md#enums)), known `“TerminationCriteriaModes”`
             include:
 
               - `“ABSOLUTE_DIFFERENCE”`: If the upper bound and lower
