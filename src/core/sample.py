@@ -299,7 +299,7 @@ class Sample(Exceptionable, Configurable, Saveable):
                                              'for file in *.tiff; do mv "$file" "${file%.tiff}.tif"; done'])
                 else:
                     proc = subprocess.Popen(['powershell.exe',
-                                             'Dir | Rename-Item –NewName { $_.name –replace “.tiff“,”.tif” }'])
+                                             'Dir | Rename-Item –NewName { $_.name –replace ".tiff",".tif" }'])
                 proc.wait()
 
             # if not exists(MaskFileNames.RAW):
