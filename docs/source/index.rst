@@ -13,63 +13,102 @@ Welcome to ASCENT's documentation!
 **Cite both the paper and the DOI for the release of the repository used for your work. We encourage you to clone the most recent commit of the repository.**
 
 * **Cite the paper:**
-    **Musselman ED**, **Cariello JE**, Grill WM, Pelot NA. ASCENT (Automated Simulations to Characterize Electrical Nerve Thresholds): A
-    Pipeline for Sample-Specific Computational Modeling of Electrical Stimulation of Peripheral Nerves. PLoS Comput Biol [Internet]. 2021;
-    Available from: https://doi.org/10.1371/journal.pcbi.1009285
 
+  .. details:: APA
+     :open:
+
+     **Musselman, E. D.**, **Cariello, J. E.**, Grill, W. M., & Pelot, N. A. (2021). ASCENT (Automated Simulations to Characterize Electrical Nerve Thresholds): A pipeline for sample-specific computational modeling of electrical stimulation of peripheral nerves. PLOS Computational Biology, 17(9), e1009285. https://doi.org/10.1371/journal.pcbi.1009285
+
+  .. details:: MLA
+
+      Musselman, Eric D., et al. "ASCENT (Automated Simulations to Characterize Electrical Nerve Thresholds): A Pipeline for Sample-Specific Computational Modeling of Electrical Stimulation of Peripheral Nerves." PLOS Computational Biology, vol. 17, no. 9, Sept. 2021, p. e1009285. PLoS Journals, https://doi.org/10.1371/journal.pcbi.1009285.
+
+  .. details:: BibTeX
+
+    .. code-block:: BibTeX
+
+        @article{Musselman2021,
+          doi = {10.1371/journal.pcbi.1009285},
+          url = {https://doi.org/10.1371/journal.pcbi.1009285},
+          year = {2021},
+          month = sep,
+          publisher = {Public Library of Science ({PLoS})},
+          volume = {17},
+          number = {9},
+          pages = {e1009285},
+          author = {Eric D. Musselman and Jake E. Cariello and Warren M. Grill and Nicole A. Pelot},
+          editor = {Dina Schneidman-Duhovny},
+          title = {{ASCENT} (Automated Simulations to Characterize Electrical Nerve Thresholds): A pipeline for sample-specific computational modeling of electrical stimulation of peripheral nerves},
+          journal = {{PLOS} Computational Biology}
+        }
 
 * **Cite the code (use the DOI for the version of code used):** |doi|
-    **Musselman ED**, **Cariello JE**, Grill WM, Pelot NA. ASCENT (Automated Simulations to Characterize Electrical Nerve Thresholds): A
-    Pipeline for Sample-Specific Computational Modeling of Electrical Stimulation of Peripheral Nerves. PLoS Comput Biol [Internet]. 2021,
-    DOI: 10.5281/zenodo.5500260
+
+  .. details:: APA
+     :open:
+
+     **Musselman, E. D.**, **Cariello, J. E.**, Grill, W. M., & Pelot, N. A. (2022). wmglab-duke/ascent: ASCENT v1.1.2 (v1.1.2) [Computer software]. Zenodo. https://doi.org/10.5281/ZENODO.6537277
+
+  .. details:: MLA
+
+      Musselman, Eric D., et al. Wmglab-Duke/Ascent: ASCENT v1.1.2. v1.1.2, Zenodo, 2022, doi:10.5281/ZENODO.6537277.
+
+  .. details:: BibTeX
+
+    .. code-block:: BibTeX
+
+        @misc{https://doi.org/10.5281/zenodo.6537277,
+          doi = {10.5281/ZENODO.6537277},
+          url = {https://zenodo.org/record/6537277},
+          author = {Musselman,  Eric D and Cariello,  Jake E and Grill,  Warren M and Pelot,  Nicole A},
+          title = {wmglab-duke/ascent: ASCENT v1.1.2},
+          publisher = {Zenodo},
+          year = {2022},
+          copyright = {MIT License}
+        }
 
 **ASCENT** is an open source platform for simulating peripheral nerve stimulation. To download the software, visit the `ASCENT GitHub repository <https://github.com/wmglab-duke/ascent>`_.
 
 .. image:: uploads/ascent_media_release_v2.png
 
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Basic ASCENT Usage
+
+   Getting_Started
+   Running_ASCENT/index
+   JSON/index
+   Methods_Template
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
-	
-   S1-Metadata-required-to-model-an-in-vivo-experiment-using-the-ASCENT-pipeline
-   S2-Installation
-   S3-ASCENT-data-hierarchy
-   S4-Your-first-run
-   Helper-scripts
-   command_line_args
-   S5-Template-for-methods-reporting
-   S6-Enums
-   S7-JSON-configuration-files
-   S8-JSON-file-parameter-guide
-   S9-Python-utility-classes
-   S10-Submitting-NEURON-jobs
-   S11-Morphology-files
-   S12-Python-MockSample-class-for-creating-binary-masks-of-nerve-morphology
-   S13-Python-classes-for-representing-nerve-morphology-(Sample)
-   S14-Creating-sample-specific-nerve-morphologies-in-COMSOL
-   S15-Micro-Leads-cuff-measurements
-   S16-Library-of-part-primitives-for-electrode-contacts-and-cuffs
-   S17-Creating-custom-preset-cuffs-from-instances-of-part-primitives
-   S18-Creating-new-part-primitives
-   S19-Cuff-placement-on-nerve
-   S20-Fiberset
-   S21-Implementation-of-NEURON-fiber-models
-   S22-Simulation-protocols
-   S23-ModelWrapper-class
-   S24-Making-geometries-in-COMSOL-(Part-class)
-   S25-Control-of-medium-surrounding-nerve-and-cuff-electrode
-   S26-Java-utility-classes
-   S27-Defining-and-assigning-materials-in-COMSOL
-   S28-Definition-of-perineurium
-   S29-Data-interchange-between-COMSOL-and-NEURON
-   S30-Python-simulation-class
-   S31-NEURON-launch.hoc
-   S32-NEURON-Wrapper.hoc
-   S33-Data-analysis-tools
-   S34-Convergence-analysis-example
-   S35-Sim4Life-validation
-   S36-Comparison-of-MRG-fit-to-Bucksot-2019
+   :caption: Advanced ASCENT Usage
+
+   MockSample
+   Primitives_and_Cuffs/index
+   Convergence_Example
    Troubleshooting-Guide
-   Paper-References
+
+.. toctree::
+   :maxdepth: 2
+   :caption: ASCENT Hierarchies
+
+   Code_Hierarchy/index
+   Data_Hierarchy
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Reference
+
+   Publications_Using_ASCENT
+   references
+   Validation
+
+.. toctree::
+   :maxdepth: 2
+   :caption: External Links
+
+   ASCENT Publication <https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1009285>
+   ASCENT on GitHub <https://github.com/wmglab-duke/ascent>
+   The Grill Lab <https://www.neuro.duke.edu/research/faculty-labs/grill-lab>
