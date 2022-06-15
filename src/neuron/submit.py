@@ -19,6 +19,7 @@ import warnings
 import pickle
 import argparse
 import pandas as pd
+import traceback
 
 #%%Set up parser and top level args
 class listAction(argparse.Action):
