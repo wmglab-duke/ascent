@@ -67,6 +67,18 @@ OS = 'UNIX-LIKE' if any([s in sys.platform for s in ['darwin', 'linux']]) else '
 
 #%% Set up utility functions
 
+class WarnOnlyOnce:
+    warnings = set()
+
+    @classmethod
+    def warn(cls,message):
+        # storing int == less memory then storing raw message
+        h = hash(message)
+        if h not in cls.warnings:
+            # do your warning
+            print(f"Warning: {message}")
+            cls.warnings.add(h)
+
 def printProgressBar(iteration, total, prefix='', suffix='', decimals=1, length=100, fill='█'):
     """
     Call in a loop to create terminal progress bar
@@ -159,7 +171,7 @@ def get_deltaz(fiber_model, diameter):
     return delta_z, neuron_flag
 
 
-def get_thresh_bounds(sim_dir: str, sim_name: str, inner_ind: int):
+def get_thresh_bounds(args, sim_dir: str, sim_name: str, inner_ind: int):
     top, bottom = None, None
 
     sample = sim_name.split('_')[0]
@@ -191,11 +203,19 @@ def get_thresh_bounds(sim_dir: str, sim_name: str, inner_ind: int):
 
                 if any(unused_protocol_key in sim_config['protocol']['bounds_search'].keys()
                        for unused_protocol_key in unused_protocol_keys):
-                    warnings.warn('WARNING: scout_sim is defined in Sim, so not using "top" or "bottom" '
+                    if args.verbose:
+                        warnings.warn('WARNING: scout_sim is defined in Sim, so not using "top" or "bottom" '
+                                  'which you also defined \n')
+                    else:
+                        WarnOnlyOnce.warn('WARNING: scout_sim is defined in Sim, so not using "top" or "bottom" '
                                   'which you also defined \n')
 
             else:
-                warnings.warn(f"No fiber threshold exists for scout sim: inner{inner_ind} fiber0, using standard top and bottom")
+                if args.verbose:
+                    warnings.warn(f"No fiber threshold exists for scout sim: inner{inner_ind} fiber0, using standard top and bottom")
+                else:
+                    WarnOnlyOnce.warn(f"Missing at least one scout threshold, using standard top and bottom. Rerun with --verbose flag for specific inner index.")
+
                 top = sim_config['protocol']['bounds_search']['top']
                 bottom = sim_config['protocol']['bounds_search']['bottom']
 
@@ -383,7 +403,7 @@ def cluster_submit(run_number: int, partition: str, args, mem: int=2000, array_l
                         continue
 
                     elif missing_total == 1:
-                        stimamp_top, stimamp_bottom = get_thresh_bounds(sim_dir, sim_name, inner_ind_solo)
+                        stimamp_top, stimamp_bottom = get_thresh_bounds(args, sim_dir, sim_name, inner_ind_solo)
                         start_path_solo = os.path.join(sim_path, 'start{}'.format('.sh' if OS == 'UNIX-LIKE' else '.bat'))
 
                         if inner_fiber_diam_key is not None:
@@ -415,7 +435,7 @@ def cluster_submit(run_number: int, partition: str, args, mem: int=2000, array_l
                             if args.verbose:
                                 print('========= SUBMITTING SOLO: {} ==========='.format(job_name))
 
-                            command = ' '.join([
+                            command = [
                                 'sbatch{}'.format(' ' +args.slurm_params if args.slurm_params is not None else ''),
                                 '--job-name={}'.format(job_name),
                                 '--output={}'.format(output_log),
@@ -424,8 +444,12 @@ def cluster_submit(run_number: int, partition: str, args, mem: int=2000, array_l
                                 '-p', partition,
                                 '-c', '1',
                                 start_path_solo
-                            ])
-                            exit_code = os.system(command)
+                                ]
+                            if not args.verbose:
+                                with open(os.devnull, 'wb') as devnull:
+                                    exit_code = subprocess.check_call(command, stdout=devnull)
+                            else:
+                                    exit_code = subprocess.check_call(command)
                             if exit_code!=0:
                                 sys.exit('Non-zero exit code during job submission. Exiting.')
 
@@ -472,7 +496,7 @@ def cluster_submit(run_number: int, partition: str, args, mem: int=2000, array_l
                                 inner_index_tally.append(inner_ind)
                                 fiber_index_tally.append(fiber_ind)
 
-                                stimamp_top, stimamp_bottom = get_thresh_bounds(sim_dir, sim_name, inner_ind)
+                                stimamp_top, stimamp_bottom = get_thresh_bounds(args, sim_dir, sim_name, inner_ind)
                                 if stimamp_top is not None and stimamp_bottom is not None:
                                     make_task(OS, 'cluster', start_path, sim_path, inner_ind, fiber_ind, stimamp_top, stimamp_bottom,
                                             diameter, deltaz, axonnodes)
@@ -502,11 +526,24 @@ def cluster_submit(run_number: int, partition: str, args, mem: int=2000, array_l
                                 # submit batch job for fiber
                                 job_name = f"{sim_name}_{sim_array_batch}"
 
-                                sp_string = args.slurm_params + ' ' if args.slurm_params is not None else ''
-                                exit_code = os.system(f"sbatch {sp_string}--job-name={job_name} --output={out_dir}%a.log "
-                                        f"--error={err_dir}%a.log --array={start}-{job_count - 1} "
-                                        f"--mem={mem} --cpus-per-task=1 "
-                                        f"--partition={partition} array_launch.slurm {start_path_base}")
+                                command = [
+                                    'sbatch{}'.format(' ' +args.slurm_params if args.slurm_params is not None else ''),
+                                    '--job-name={}'.format(job_name),
+                                    '--output={}%a.log'.format(out_dir),
+                                    '--error={}%a.log'.format(err_dir),
+                                    '--array={}-{}'.format(start,job_count - 1),
+                                    '--mem={}'.format(mem),
+                                    '--partition={}'.format(partition),
+                                    '--cpus-per-task=1',
+                                    'array_launch.slurm',
+                                    start_path_base
+                                    ]
+
+                                if not args.verbose:
+                                    with open(os.devnull, 'wb') as devnull:
+                                        exit_code = subprocess.check_call(command, stdout=devnull)
+                                else:
+                                        exit_code = subprocess.check_call(command)
                                 if exit_code!=0:
                                     sys.exit('Non-zero exit code during job array submission. Exiting.')
 
@@ -600,7 +637,7 @@ def make_local_submission_list(run_number: int, args, summary_gen = False):
                         start_path = os.path.join(start_dir, '{}_{}_start{}'.format(inner_ind, fiber_ind,
                                                                                 '.sh' if OS == 'UNIX-LIKE'
                                                                                 else '.bat'))
-                        stimamp_top, stimamp_bottom = get_thresh_bounds(sim_dir, sim_name, inner_ind)
+                        stimamp_top, stimamp_bottom = get_thresh_bounds(args, sim_dir, sim_name, inner_ind)
                         if inner_fiber_diam_key is not None:
                             diameter = get_diameter(inner_fiber_diam_key, inner_ind, fiber_ind)
                         deltaz, neuron_flag = get_deltaz(fiber_model, diameter)
@@ -769,7 +806,7 @@ def main():
         if not int(proceed)==1:
             quit()
         else:
-            print('Proceeding...')
+            print('Proceeding...\n')
 
     for sub_context, run_index in zip(submission_contexts, runs):
         try:
