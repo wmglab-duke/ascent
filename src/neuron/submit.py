@@ -693,6 +693,8 @@ def submit_run(sub_context, run_index, args):
             print(f"local_avail_cpus not defined in Run, so proceeding with cpu_count-1={cpus} CPUs")
 
         submit_list = make_local_submission_list(run_index, args)
+        if len(submit_list) == 0:
+            return
         with multiprocessing.Pool(cpus) as p:
             #open pool instance, set up progress bar, and iterate over each job
             total_iterations = len(submit_list)
