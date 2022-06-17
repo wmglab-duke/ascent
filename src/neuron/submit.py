@@ -305,7 +305,7 @@ def local_submit(my_local_args: dict):
     err_filename = my_local_args['error_log']
 
     with open(out_filename, "w+") as fo, open(err_filename, "w+") as fe:
-        p = subprocess.call(['bash', start] if OS == 'UNIX-LIKE' else [start], stdout=fo, stderr=fe)
+        p = subprocess.run(['bash', start] if OS == 'UNIX-LIKE' else [start], stdout=fo, stderr=fe)
 
 
 def cluster_submit(run_number: int, partition: str, args, mem: int=2000, array_length_max: int = 10):
@@ -447,9 +447,9 @@ def cluster_submit(run_number: int, partition: str, args, mem: int=2000, array_l
                                 ]
                             if not args.verbose:
                                 with open(os.devnull, 'wb') as devnull:
-                                    exit_code = subprocess.check_call(command, stdout=devnull)
+                                    exit_code = subprocess.run(command, stdout=devnull)
                             else:
-                                    exit_code = subprocess.check_call(command)
+                                    exit_code = subprocess.run(command)
                             if exit_code!=0:
                                 sys.exit('Non-zero exit code during job submission. Exiting.')
 
@@ -693,9 +693,14 @@ def submit_run(sub_context, run_index, args):
             print(f"local_avail_cpus not defined in Run, so proceeding with cpu_count-1={cpus} CPUs")
 
         submit_list = make_local_submission_list(run_index, args)
-        pool = multiprocessing.Pool(cpus)
-        pool.map(local_submit, submit_list)
-        import time
+        with multiprocessing.Pool(cpus) as p:
+            #open pool instance, set up progress bar, and iterate over each job
+            total_iterations = len(submit_list)
+            current_iteration = 0
+            printProgressBar(0, total_iterations,length=40,prefix='Run {}:'.format(run_index))
+            for i, _ in enumerate(p.imap_unordered(local_submit, submit_list, 1)):
+                current_iteration+=1
+                printProgressBar(current_iteration, total_iterations,length=40,prefix='Run {}:'.format(run_index))
 
     elif sub_context == 'cluster':
         #load slurm params
