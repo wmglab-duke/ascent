@@ -634,6 +634,21 @@ class Simulation(Exceptionable, Configurable, Saveable):
                         print('Missing threshold {}'.format(os.path.join(outdir,'thresh_'+file)))
                         allthresh=False
         return allthresh
+    
+    def amps_exist(sample: int, model: int, sim: int, sim_dir: str, source: str, amp_count: int):
+        #need to change to check for each amp
+        allthresh = True
+        for dirname in [f for f in os.listdir(source) if os.path.isdir(os.path.join(source, f))]:
+            this_sample, this_model, this_sim, product_index = tuple(dirname.split('_'))
+            if sample == int(this_sample) and model == int(this_model) and sim == int(this_sim):
+                nsim_dir = os.path.join(source,dirname)
+                outdir = os.path.join(nsim_dir,'data','outputs')
+                indir = os.path.join(nsim_dir,'data','inputs')
+                for file in [f for f in os.listdir(indir) if f.startswith('inner') and f.endswith('.dat')]:
+                    if not os.path.exists(os.path.join(outdir,'activation_'+file)):
+                        print('Missing threshold {}'.format(os.path.join(outdir,'thresh_'+file)))
+                        allthresh=False
+        return allthresh
 
     def potentials_exist(self, sim_dir: str) -> bool:
         """
