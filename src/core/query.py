@@ -1867,7 +1867,7 @@ class Query(Exceptionable, Configurable, Saveable):
                         outputs_path = os.path.join(n_sim_dir, 'data', 'outputs')
     
                         # path of the first inner, first fiber vm(t) data
-                        vm_t_path = os.path.join(outputs_path, 'ap_loctime_inner0_fiber0.dat')
+                        vm_t_path = os.path.join(outputs_path, 'ap_loctime_inner0_fiber0_amp0.dat')
     
                         # load vm(t) data (see path above)
                         # each row is a snapshot of the voltages at each node [mV]
