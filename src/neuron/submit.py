@@ -805,11 +805,13 @@ def main():
         print('Submitting the following runs (submission_context={}):'.format(submission_contexts[0]))
         print(df.to_string(index = False))
         print('Will result in running {} fiber simulations'.format(n_fibers))
+        if n_fibers==0:
+            sys.exit()
         proceed = input('\t Would you like to proceed?\n'
                     '\t\t 0 = NO\n'
                     '\t\t 1 = YES\n')
         if not int(proceed)==1:
-            quit()
+            sys.exit()
         else:
             print('Proceeding...\n')
 
