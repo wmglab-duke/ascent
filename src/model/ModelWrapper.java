@@ -388,7 +388,7 @@ public class ModelWrapper {
 
             // LOAD BASIS MPH MODEL
             String basis_dir = String.join("/", new String[]{
-                    bases_directory, bases_paths[basis_ind]
+                    bases_directory, basis_ind + ".mph"
             });
             File file = new File(basis_dir);
             while(!file.canWrite() || !file.canRead()) {
@@ -1358,8 +1358,8 @@ public class ModelWrapper {
                             System.out.println("\tIssue in mesh recycling logic. Rebuilding mesh.");
                             e.printStackTrace();
                         }
+                        System.out.println("\tEnd mesh recycling logic.");
                     }
-                    System.out.println("\tEnd mesh recycling logic.");
 
                     String mediumPrimitiveString = "Medium_Primitive";
                     String instanceLabelDistalMedium = DISTAL_MEDIUM;

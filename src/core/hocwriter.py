@@ -237,6 +237,8 @@ class HocWriter(Exceptionable, Configurable, Saveable):
 
             threshold: dict = self.search(Config.SIM, "protocol", "threshold")
             file_object.write("\nap_thresh = %0.0f\n" % self.search(Config.SIM, "protocol", "threshold", "value"))
+            if self.search(Config.SIM, "protocol", "threshold", "n_min_aps") != 1:
+                self.throw(142)
             file_object.write("N_minAPs  = %0.0f\n" % self.search(Config.SIM, "protocol", "threshold", "n_min_aps"))
 
             if 'ap_detect_location' not in threshold.keys():
