@@ -806,7 +806,7 @@ def main():
         print(df.to_string(index = False))
         print('Will result in running {} fiber simulations'.format(n_fibers))
         if n_fibers==0:
-            sys.exit()
+            sys.exit('Exiting...')
         proceed = input('\t Would you like to proceed?\n'
                     '\t\t 0 = NO\n'
                     '\t\t 1 = YES\n')
