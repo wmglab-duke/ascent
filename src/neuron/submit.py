@@ -804,7 +804,7 @@ def main():
                     '\t\t 0 = NO\n'
                     '\t\t 1 = YES\n')
         if not int(proceed)==1:
-            quit()
+            sys.exit()
         else:
             print('Proceeding...\n')
 
