@@ -106,10 +106,15 @@ class Slide(Exceptionable):
             if self.fascicles_outside_nerve():
                 debug_plot()
                 self.throw(12)
+                
+            if self.fascicles_too_small():
+                debug_plot()
+                self.throw(9001)
 
         else:
             if any([self.fascicle_fascicle_intersection(), self.fascicle_nerve_intersection(),
-                    self.fascicles_outside_nerve(), self.fascicles_too_close(tolerance)]):
+                    self.fascicles_outside_nerve(), self.fascicles_too_close(tolerance)],
+                   self.fascicles_too_small()):
                 if die:
                     debug_plot()
                     self.throw(13)
@@ -133,6 +138,17 @@ class Slide(Exceptionable):
             pairs = itertools.combinations(self.fascicles, 2)
             return any([first.min_distance(second) < tolerance for first, second in pairs]) or \
                    any([fascicle.min_distance(self.nerve) < tolerance for fascicle in self.fascicles])
+
+    def fascicles_too_small(self) -> bool:
+        """
+        :return: True if any fascicle has a trace with less than 3 points
+        """
+        check = []
+        for f in self.fascicles:
+            check.append(len(f.outer.points)<3)
+            check.extend([len(i.points) < 3 for i in f.inners])
+        return any(check)
+
 
     def fascicle_fascicle_intersection(self) -> bool:
         """
