@@ -45,7 +45,7 @@ def run(args):
                   'All arguments must be positive integers.'.format(argument))
             sys.exit()
 
-        print('\n\n########## STARTING RUN {} ##########\n\n'.format(argument))
+        print('\n########## STARTING RUN {} ##########\n'.format(argument))
 
         run_path = os.path.join('config', 'user', 'runs', '{}.json'.format(argument))
         if not os.path.exists(run_path):
