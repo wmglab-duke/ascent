@@ -89,7 +89,11 @@ class Slide(Exceptionable):
             plt.savefig(plotpath + '/sample_debug')
             plt.clf()
             plt.close()
-
+            
+        if self.fascicles_too_small():
+            debug_plot()
+            self.throw(9001)
+            
         if self.monofasc():
             debug_plot()
             return True
@@ -106,10 +110,6 @@ class Slide(Exceptionable):
             if self.fascicles_outside_nerve():
                 debug_plot()
                 self.throw(12)
-                
-            if self.fascicles_too_small():
-                debug_plot()
-                self.throw(9001)
 
         else:
             if any([self.fascicle_fascicle_intersection(), self.fascicle_nerve_intersection(),
