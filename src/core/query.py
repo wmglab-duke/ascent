@@ -9,6 +9,7 @@ The source code can be found on the following GitHub repository: https://github.
 import os
 import pickle
 import re
+import warnings
 from typing import Union, List, Tuple
 
 import numpy as np
@@ -303,6 +304,7 @@ class Query(Exceptionable, Configurable, Saveable):
     def threshold_data(self,
                                  sim_index: int = None,
                                  model_indices: List[int] = None,
+                                 ignore_missing=False,
                                  meanify=False):
         """
         :param meanify: return mean of thresholds for a given nsim along with stats
@@ -378,7 +380,13 @@ class Query(Exceptionable, Configurable, Saveable):
                                                        'outputs',
                                                        'thresh_inner{}_fiber{}.dat'.format(inner,
                                                                                            local_fiber_index))
-                            threshold = np.loadtxt(thresh_path)
+                            if ignore_missing:
+                                try:
+                                    threshold = np.loadtxt(thresh_path)
+                                except IOError:
+                                    warnings.warn('Missing threshold, but continuing.')
+                            else:
+                                threshold = np.loadtxt(thresh_path)
                             if threshold.size > 1:
                                 threshold = threshold[-1]
                             if meanify==True:
