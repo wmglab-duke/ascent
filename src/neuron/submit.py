@@ -694,15 +694,16 @@ def submit_run(sub_context, run_index, args):
             print(f"local_avail_cpus not defined in Run, so proceeding with cpu_count-1={cpus} CPUs")
 
         submit_list = make_local_submission_list(run_index, args)
+        if len(submit_list) == 0:
+            return
         with multiprocessing.Pool(cpus) as p:
-            #p.map(local_submit, submit_list)
+            #open pool instance, set up progress bar, and iterate over each job
             total_iterations = len(submit_list)
             current_iteration = 0
             printProgressBar(0, total_iterations,length=40,prefix='Run {}:'.format(run_index))
             for i, _ in enumerate(p.imap_unordered(local_submit, submit_list, 1)):
                 current_iteration+=1
                 printProgressBar(current_iteration, total_iterations,length=40,prefix='Run {}:'.format(run_index))
-        import time
 
     elif sub_context == 'cluster':
         #load slurm params
@@ -807,11 +808,13 @@ def main():
         print('Submitting the following runs (submission_context={}):'.format(submission_contexts[0]))
         print(df.to_string(index = False))
         print('Will result in running {} fiber simulations'.format(n_fibers))
+        if n_fibers==0:
+            sys.exit('Exiting...')
         proceed = input('\t Would you like to proceed?\n'
                     '\t\t 0 = NO\n'
                     '\t\t 1 = YES\n')
         if not int(proceed)==1:
-            quit()
+            sys.exit()
         else:
             print('Proceeding...\n')
 
