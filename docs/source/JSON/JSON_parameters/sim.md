@@ -207,11 +207,7 @@ following syntax:
       "mode": String,
       "top": Double,
       "bottom": Double,
-      "step": Double,
-      "scout": {
-        "model":Integer,
-        "sim": Integer
-      },
+      "step": Double
     },
     "termination_criteria": {
       "mode": "ABSOLUTE_DIFFERENCE",
@@ -821,7 +817,7 @@ which times/locations ([NEURON Scripts](../../Code_Hierarchy/NEURON)). Required.
         amplitude first tested in a binary search for thresholds.
         Required.
 
-      - `“step”`: the value (Double) is the incremental increase/decrease
+      - `“step”`: The value (Double) is the incremental increase/decrease
         of the upper/lower bound in the binary search. Required.
 
           - If `“ABSOLUTE_INCREMENT”`, the value (Double, unit: mA) is an
@@ -829,6 +825,10 @@ which times/locations ([NEURON Scripts](../../Code_Hierarchy/NEURON)). Required.
 
           - If `“PERCENT_INCREMENT”`, the value (Double, units: %) is a
             percentage (e.g., 10 is 10%).
+
+      - `"max_steps"`: The value (Integer) is the number iterations that will be used in search of a threshold.
+        If the program does not find search bounds which encapsulate threshold
+        (i.e., one bound activates and the other does not) within this number of iterations, the search protocol will exit.
 
       - `“scout”`: The value (JSONObject) is a set of key-value pairs specifying a previously run "scout"
         Sim for the same Sample. Use this feature to reduce CPU time required for many
