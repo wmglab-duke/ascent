@@ -30,6 +30,7 @@ load_file("SaveSpatialDist.hoc")
 objref Istim_suffix_tmp
 objref checknode_Ve_values_tmp
 objref Ap_rec_suffix_tmp
+objref checknode_SFAP_values_tmp
 
 proc Saving() {
 
@@ -38,6 +39,14 @@ proc Saving() {
 		SaveTimeCourse(fname_output_Vm_time, "Vm_node", checknode_values, "(mV)", savevec_Vm_time)
 	}
 
+	// ***** Save SFAP(t) 
+	if (flag_extracellular_rec == 1) {
+		if (SFAP_dt_downsample_factor != 1) {
+			execerror("SaveTimeCourse() currently assumes that SFAP_dt_downsample_factor is set to 1, so you cannot save SFAP unless SFAP_dt_downsample_factor is set to 1")
+		}
+		checknode_SFAP_values_tmp = new Vector(1,0)
+		SaveTimeCourse(fname_output_SFAP_time, "SFAP", checknode_SFAP_values_tmp, "(V)", SFAP)
+	}
 	
 	// ***** Save MRG gating param's vs time at checknode_values
 	if (saveflag_gating_time == 1) {
