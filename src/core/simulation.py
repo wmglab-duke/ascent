@@ -46,7 +46,9 @@ class Simulation(Exceptionable, Configurable, Saveable):
         self.fiberset_map_pairs: List[Tuple[List, List]] = []
         self.ss_fiberset_map_pairs: List[Tuple[List, List]] = []
         self.src_product = []
+        self.rec_product = []
         self.src_key = []
+        self.rec_key = []
         self.potentials_product = []
         self.master_product_indices = []  # order: potentials (active_src, fiberset), waveform
         self.ss_product = []  # order: (contact index, fiberset)
@@ -187,7 +189,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
         cuff_params = self.search(Config.MODEL, "cuff")
         stim = None
         rec = None
-        cuffs = []
         if len(cuff_params) > 1:
             # check that "active_srcs" and "active_recs" are both in Sim
             if not all(key in self.configs[Config.SIM.value].keys() for key in ['active_srcs', 'active_recs']):
@@ -196,12 +197,11 @@ class Simulation(Exceptionable, Configurable, Saveable):
             rec = True
             # cannot rely on 'default'
 
-            cuff_indices = []
+            model_cuff_indices = []
             for params in cuff_params:
-                cuffs.append(params['preset'])
-                cuff_indices.append(params['index'])
+                model_cuff_indices.append(params['index'])
 
-            if len(cuff_indices) != len(set(cuff_indices)):
+            if len(model_cuff_indices) != len(set(model_cuff_indices)):
                 self.throw(147)
 
         elif len(cuff_params) == 1:
@@ -216,41 +216,48 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
         if stim and not rec:
             # can rely on 'default'
-            cuff = cuff_params[0]['preset']
-            if cuff in self.configs[Config.SIM.value]["active_srcs"].keys():
+            src_cuff = cuff_params[0]['preset']
+            if src_cuff in self.configs[Config.SIM.value]["active_srcs"].keys():
                 active_srcs_list = self.search(Config.SIM, "active_srcs", cuff)
             else:
                 # otherwise, use the default weights (generally you don't want to rely on this as cuffs have different
                 # numbers of contacts)
                 active_srcs_list = self.search(Config.SIM, "active_srcs", "default")
                 print("\t\tWARNING: Attempting to use default value for active_srcs: {}".format(active_srcs_list))
+            active_recs_list = None
 
         elif rec and not stim:
-            cuff = cuff_params[0]['preset']  # self.search(Config.MODEL, "cuff", "preset")
-            if cuff in self.configs[Config.SIM.value]["active_recs"].keys():
+            rec_cuff = cuff_params[0]['preset']
+            if rec_cuff in self.configs[Config.SIM.value]["active_recs"].keys():
                 active_recs_list = self.search(Config.SIM, "active_recs", cuff)
             else:
                 # otherwise, use the default weights (generally you don't want to rely on this as cuffs have different
                 # numbers of contacts)
                 active_recs_list = self.search(Config.SIM, "active_recs", "default")
                 print("\t\tWARNING: Attempting to use default value for active_recs: {}".format(active_recs_list))
+            active_srcs_list = None
 
         else:  # rec and stim
-            if len(self.search(Config.SIM, "active_recs").keys()) > 2 or len(self.search(Config.SIM, "active_recs").keys()) > 2:
+            sim_cuff_indices = [self.search(Config.SIM, "active_recs", "cuff_index"), self.search(Config.SIM, "active_srcs", "cuff_index")]
+            if len(sim_cuff_indices) != len(set(sim_cuff_indices)):
+                self.throw(147)
+            if set(model_cuff_indices) != set(sim_cuff_indices):
+                self.throw(148)
+
+            src_cuff_index = self.search(Config.SIM, "active_srcs", "cuff_index")
+            rec_cuff_index = self.search(Config.SIM, "active_recs", "cuff_index")
+
+            src_cuff, rec_cuff = None, None
+            for params in cuff_params:
+                if params["index"] == src_cuff_index:
+                    src_cuff = params["preset"]
+                elif params["index"] == rec_cuff_index:
+                    rec_cuff = params["preset"]
+            if src_cuff is None or rec_cuff is None:
                 self.throw(146)
-            for cuff in cuffs:
 
-            # TODO: check that stim and rec cuff in
-            # TODO: validate that cuff indices in "cuff" match cuff indices in recs/srcs
-
-            if len(self.search(Config.SIM, "active_recs").keys()) > 2:
-                print('here')
-            else:
-                print('here')
-
-            # which cuff is stim and which cuff is rec?
-            # what is both stim and rec cuff are the same preset?
-
+            active_srcs_list = self.search(Config.SIM, "active_srcs", src_cuff)
+            active_recs_list = self.search(Config.SIM, "active_recs", rec_cuff)
 
         ss = self.search(Config.SIM, 'supersampled_bases', optional=True)
         if ss is not None and ss['use'] == True:
@@ -260,13 +267,13 @@ class Simulation(Exceptionable, Configurable, Saveable):
         #      (1) current conservation
         #      (2) unitary amounts solved for bases in COMSOL: if n_srcs > 1 then sum(abs) = 2, sum = 0
         #                                                      if n_srcs = 1 then = 1 (special case)
-        for active_srcs in active_srcs_list:
-            active_src_abs = [abs(src_weight) for src_weight in active_srcs]
+        for srcs in active_srcs_list + active_recs_list:
+            active_src_abs = [abs(src_weight) for src_weight in srcs]
             if not all(abs(i) <= 1 for i in active_src_abs):
                 self.throw(93)
 
-            if len(active_srcs) == 1:
-                if sum(active_srcs) not in [1, -1]:
+            if len(srcs) == 1:
+                if sum(srcs) not in [1, -1]:
                     self.throw(50)
             else:
                 # if sum(active_srcs) is not 0:
@@ -277,20 +284,25 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
         self.potentials_product = list(itertools.product(
             list(range(len(active_srcs_list))),
+            list(range(len(active_recs_list))),
             list(range(len(self.fiberset_product)))
         ))
 
         self.ss_product = list(itertools.product(
             list(range(len(active_srcs_list[0]))),
-            [0]))
+            list(range(len(active_recs_list[0]))),
+            [0]
+        ))
 
-        self.src_key = ['->'.join(['active_srcs', cuff])]
+        self.src_key = ['->'.join(['active_srcs', src_cuff])]
+        self.rec_key = ['->'.join(['active_srcs', rec_cuff])]
         self.src_product = active_srcs_list
+        self.rec_product = active_recs_list
 
         # loop over product
         output = [len(self.potentials_product)]
-        for active_src_select, fiberset_select in self.potentials_product:
-            output.append((active_src_select, fiberset_select))
+        for active_src_select, active_rec_select, fiberset_select in self.potentials_product:
+            output.append((active_src_select, active_rec_select, fiberset_select))
 
         # write to file
         key_file_dir = os.path.join(sim_directory, "potentials")

@@ -581,10 +581,14 @@
   },
   {
     "code": 146,
-    "text": "When doing extracellular stim and rec, need to leave no ambiguity to which cuff is stim vs rec."
+    "text": "Failed to pair Model's cuffs to recs and srcs weights"
   },
   {
     "code": 147,
-    "text": "Cannot have duplicate cuff indices."
+    "text": "Cannot have duplicate cuff indices - i.e., same cuff as stim and record"
+  },
+  {
+    "code": 148,
+    "text": "Pairs of stim and record indices cannot match between Model->cuffs->indices and Sim->active_srcs/recs->cuff_indices"
   }
 ]
