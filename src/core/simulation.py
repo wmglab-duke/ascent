@@ -184,21 +184,77 @@ class Simulation(Exceptionable, Configurable, Saveable):
         # index of line in output is s, write row containing of (r and p) to file
 
         # if active_srcs in sim config has key for the cuff in your model, use the list of contact weights
-        try:
-            cuff = self.search(Config.MODEL, "cuff", "preset")
-        except:
-            print("WARNING: Active sources not implemented for multiple cuffs, using default")
-            cuff="default"
-        if cuff in self.configs[Config.SIM.value]["active_srcs"].keys():
-            active_srcs_list = self.search(Config.SIM, "active_srcs", cuff)
-        else:
-            ss = self.search(Config.SIM, 'supersampled_bases',optional=True)
-            if ss is not None and ss['use']==True:
-                self.throw(130)
-            # otherwise, use the default weights (generally you don't want to rely on this as cuffs have different
-            # numbers of contacts
-            active_srcs_list = self.search(Config.SIM, "active_srcs", "default")
-            print("\t\tWARNING: Attempting to use default value for active_srcs: {}".format(active_srcs_list))
+        cuff_params = self.search(Config.MODEL, "cuff")
+        stim = None
+        rec = None
+        cuffs = []
+        if len(cuff_params) > 1:
+            # check that "active_srcs" and "active_recs" are both in Sim
+            if not all(key in self.configs[Config.SIM.value].keys() for key in ['active_srcs', 'active_recs']):
+                self.throw(144)
+            stim = True
+            rec = True
+            # cannot rely on 'default'
+
+            cuff_indices = []
+            for params in cuff_params:
+                cuffs.append(params['preset'])
+                cuff_indices.append(params['index'])
+
+            if len(cuff_indices) != len(set(cuff_indices)):
+                self.throw(147)
+
+        elif len(cuff_params) == 1:
+            if not [key in self.configs[Config.SIM.value].keys() for key in ['active_srcs', 'active_recs']].count(True) == 1:
+                self.throw(145)
+            if 'active_srcs' in self.configs[Config.SIM.value].keys():
+                stim = True
+                rec = False
+            if 'active_recs' in self.configs[Config.SIM.value].keys():
+                stim = False
+                rec = True
+
+        if stim and not rec:
+            # can rely on 'default'
+            cuff = cuff_params[0]['preset']
+            if cuff in self.configs[Config.SIM.value]["active_srcs"].keys():
+                active_srcs_list = self.search(Config.SIM, "active_srcs", cuff)
+            else:
+                # otherwise, use the default weights (generally you don't want to rely on this as cuffs have different
+                # numbers of contacts)
+                active_srcs_list = self.search(Config.SIM, "active_srcs", "default")
+                print("\t\tWARNING: Attempting to use default value for active_srcs: {}".format(active_srcs_list))
+
+        elif rec and not stim:
+            cuff = cuff_params[0]['preset']  # self.search(Config.MODEL, "cuff", "preset")
+            if cuff in self.configs[Config.SIM.value]["active_recs"].keys():
+                active_recs_list = self.search(Config.SIM, "active_recs", cuff)
+            else:
+                # otherwise, use the default weights (generally you don't want to rely on this as cuffs have different
+                # numbers of contacts)
+                active_recs_list = self.search(Config.SIM, "active_recs", "default")
+                print("\t\tWARNING: Attempting to use default value for active_recs: {}".format(active_recs_list))
+
+        else:  # rec and stim
+            if len(self.search(Config.SIM, "active_recs").keys()) > 2 or len(self.search(Config.SIM, "active_recs").keys()) > 2:
+                self.throw(146)
+            for cuff in cuffs:
+
+            # TODO: check that stim and rec cuff in
+            # TODO: validate that cuff indices in "cuff" match cuff indices in recs/srcs
+
+            if len(self.search(Config.SIM, "active_recs").keys()) > 2:
+                print('here')
+            else:
+                print('here')
+
+            # which cuff is stim and which cuff is rec?
+            # what is both stim and rec cuff are the same preset?
+
+
+        ss = self.search(Config.SIM, 'supersampled_bases', optional=True)
+        if ss is not None and ss['use'] == True:
+            self.throw(130)
 
         #  loop over the contact weights, make sure the the values obey two rules:
         #      (1) current conservation
