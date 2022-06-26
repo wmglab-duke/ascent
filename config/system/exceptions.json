@@ -570,5 +570,21 @@
   {
     "code": 143,
     "text": "Rotation cannot be defined in sample.json if using an orientation image input."
+  },
+  {
+    "code": 144,
+    "text": "Missing \"active_srcs\" or \"active_recs\" in Sim"
+  },
+  {
+    "code": 145,
+    "text": "One cuff in Model was given, but values given for both active_srcs and active_recs."
+  },
+  {
+    "code": 146,
+    "text": "When doing extracellular stim and rec, need to leave no ambiguity to which cuff is stim vs rec."
+  },
+  {
+    "code": 147,
+    "text": "Cannot have duplicate cuff indices."
   }
 ]
