@@ -460,7 +460,7 @@ public class ModelWrapper {
 
                 // pre-allocated array of doubles for products in file
                 // (2 columns by default for (active_src_select,fiberset_select)
-                int[][] prods = new int[n_products][2];
+                int[][] prods = new int[n_products][3];
                 int row_ind = 0;
 
                 // assign contents of key (fiberset x srcs) file to array
@@ -600,6 +600,9 @@ public class ModelWrapper {
             cuff = modelData.getJSONObject("cuff").getString("preset");
         }
 
+        // TODO
+        // figure out which bases are for srcs/recs and their orders...
+        // then loop over (1) lists of weights for srcs (as is normal) and (2) lists of weights for recs
 
         // COMBINE AND MAKE POTENTIALS FOR N_SIMS FROM BASES
         double[][][][] final_ve = new double[sims_list.length()][][][];
@@ -654,7 +657,7 @@ public class ModelWrapper {
 
                 // pre-allocated array of doubles for products in file
                 // (2 columns by default for (active_src_select,fiberset_select)
-                int[][] prods = new int[n_products][2];
+                int[][] prods = new int[n_products][3];
                 int row_ind = 0;
                 // assign contents of key (fiberset x srcs) file to array
                 String thisLine;
