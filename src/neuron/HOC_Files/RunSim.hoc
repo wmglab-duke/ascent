@@ -79,6 +79,12 @@ if (saveflag_end_ap_times==1) {
 proc RunSim() {local myamp
 	myamp = $1
 	
+	
+	// If recording extracellular signals, initialize a vector to store the SFAP
+	if (flag_extracellular_rec == 1) {
+		SFAP = new Vector(int(n_tsteps/SFAP_dt_downsample_factor)+1,0)
+	}
+	
 	if (flag_whichstim == 0) {
 		stimamp_extra = myamp
 	} else if (flag_whichstim == 1) {
@@ -152,6 +158,60 @@ proc RunSim() {local myamp
 		if (flag_extracellular_stim == 1 && saveflag_Ve == 1) {
 			savevec_Ve.o[0].x[t_ind] = s[checknode_Ve_values.x[0]].sec.e_extracellular(0.5)
 		}
+		
+		if (t_ind%SFAP_dt_downsample_factor==0) {
+			// Calculate the net extracellular current exiting each compartment, taking into account periaxonal current.
+			// For unmyelinated axons, which have no periaxonal current, the calculating reduces to simply outputing the default i_membrane through the compartment's membrane.
+			for seg_ind = 0, axontotal-1 {
+				node_length = 1e-4*s[seg_ind].sec.L // [cm]
+				node_diameter = 1e-4*s[seg_ind].sec.diam // [cm]
+				i_membrane_seg_i = PI*node_length*node_diameter*s[seg_ind].sec.i_membrane(0.5) // [mA]
+				/*NOTE: To manually compute i_membrane_seg_i (i.e. without the i_membrane variable from the extracellular mechanism), use the lines of code below.
+				Results should be *exactly* the same (at least <<1% discrepancy). (These lines work for non-node compartments. For nodal compartments, you need to
+				extract the gating parameters as well). dVm_dt is computed as the difference between the current membrane potential and a previous membrane potential 
+				(vmembrane_previous). Make sure it is for the correponding node.
+					im_cap = PI*node_length*node_diameter*s[seg_ind].sec.cm*(s[seg_ind].sec.v-vmembrane_previous)/dt // capacitive current through membrane due to dVm/dt [uA]
+					im_R = (s[seg_ind].sec.v-s[seg_ind].sec.e_pas)*(PI*(node_length*node_diameter*s[seg_ind].sec.g_pas)) // resistive current through membrane due to Vm [mA]
+					im_theoretical = im_cap*0.001 + im_R // [mA] this will be the same as the value for i_membrane
+				*/
+				if (fiber_type == 2) {
+					vext_node = s[seg_ind].sec.vext[0](0.5) // [mV]
+					node_xraxial = s[seg_ind].sec.xraxial[0] // [megaOhm/cm] 
+					// if there is a compartment to the left of the seg_ind, calculate the periaxonal current traveling between the two compartments
+					if (seg_ind>0) { 
+						vext_periaxonal_left = s[seg_ind-1].sec.vext[0](0.5) // [mV]
+						compartment_length_left = 1e-4*s[seg_ind-1].sec.L // [cm]
+						compartment_xraxial_left = s[seg_ind-1].sec.xraxial[0] // [megaOhm/cm]
+						R_periaxonal_left = 1e6*(node_xraxial*(node_length/2) + compartment_xraxial_left*(compartment_length_left/2)) // [Ohm]
+						periaxonal_current_from_left_to_node = (vext_periaxonal_left-vext_node)/R_periaxonal_left // [mA]
+					} else {
+						periaxonal_current_from_left_to_node = 0
+					}
+					
+					// if there is a compartment to the right of the seg_ind, calculate the periaxonal current traveling between the two compartments
+					if (seg_ind<(axontotal-1)) {
+						vext_periaxonal_right = s[seg_ind+1].sec.vext[0](0.5) // [mV]
+						compartment_length_right = 1e-4*s[seg_ind+1].sec.L // [cm]
+						compartment_xraxial_right = s[seg_ind+1].sec.xraxial[0] // [megaOhm/cm]
+						R_periaxonal_right = 1e6*(node_xraxial*(node_length/2) + compartment_xraxial_right*(compartment_length_right/2)) // [Ohm]
+						periaxonal_current_from_right_to_node = (vext_periaxonal_right-vext_node)/R_periaxonal_right // [mA]
+					} else {
+						periaxonal_current_from_right_to_node = 0
+					}
+
+					net_i_extracellular_seg_i = periaxonal_current_from_left_to_node + periaxonal_current_from_right_to_node + i_membrane_seg_i // [mA]
+					
+				} else { 
+					// for unmyelinated axons, the current through the membrane is all that is needed
+					net_i_extracellular_seg_i = i_membrane_seg_i // [mA]
+				}
+
+				// Store SFAP signal (in V) contributed by this latest time point and node location
+				// multiply VeSpace_rec_data by 1e-3 because it is mV per mA, so desired units is V per mA
+				SFAP.x[int(t_ind/SFAP_dt_downsample_factor)] = SFAP.x[int(t_ind/SFAP_dt_downsample_factor)] + 1e-3*VeSpace_rec_data.x[seg_ind] * net_i_extracellular_seg_i
+			}
+		}
+
 		fadvance()
 	}
 	
