@@ -31,7 +31,7 @@ pipeline_parser.add_argument('-w','--wait-for-license',type=float,help = "Wait t
 pipeline_parser.add_argument('-P','--partial-fem',choices = ["cuff_only","nerve_only"],help = "Only generate the specified geometry.")
 pipeline_parser.add_argument('-E','--export-behavior',choices = ["overwrite","error","selective"],help = "Behavior if n_sim export encounters extant data. Default is selective.")
 pipeline_parser.add_argument('-e','--endo-only-solution',action='store_true',help ="Store basis solutions for endoneurial geometry ONLY")
-pipeline_parser.add_argument('-r','--render_deform',action='store_true',help ="Pop-up window will render deformation operations")
+pipeline_parser.add_argument('-r','--render-deform',action='store_true',help ="Pop-up window will render deformation operations")
 pipeline_parser.add_argument('-S','--auto-submit',action='store_true',help="Automatically submit fibers after each run")
 prog_group = pipeline_parser.add_mutually_exclusive_group()
 prog_group.add_argument('-c','--comsol-progress',action='store_true',help ="Print COMSOL progress to stdout")
