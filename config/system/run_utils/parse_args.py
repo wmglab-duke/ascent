@@ -44,6 +44,7 @@ nsims_group = nsims_parser.add_mutually_exclusive_group()
 nsims_group.add_argument('-f','--force',action='store_true', help='Import n_sims even if all thresholds are not found')
 nsims_group.add_argument('-D','--delete-nsims',action='store_true', help='After importing delete n_sim folder from NSIM_EXPORT_PATH')
 cs_parser.add_argument('sample_indices', nargs = '+',type=int, help = 'Space separated sample indices to clean')
+ts_parser.add_argument('-R,--full-reset', action='store_true', help = 'Clear all files except sample.json and model.json')
 mmg_parser.add_argument('mock_sample_index',type=int, help = 'Mock Sample Index to generate')
 install_parser.add_argument('--no-conda',action='store_true', help = 'Skip conda portion of installation')
 
