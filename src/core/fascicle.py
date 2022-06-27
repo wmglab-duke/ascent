@@ -169,7 +169,7 @@ class Fascicle(Exceptionable):
             
         if color is not None:
             if not len(self.inners) == len(color):
-                self.throw(9001) #previously was 65?
+                self.throw(145)
         else:
             color = [None] *  len(self.inners)
             

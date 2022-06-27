@@ -92,7 +92,7 @@ class Slide(Exceptionable):
             
         if self.fascicles_too_small():
             debug_plot()
-            self.throw(9001)
+            self.throw(146)
             
         if self.monofasc():
             debug_plot()
