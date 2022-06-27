@@ -218,7 +218,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
             # can rely on 'default'
             src_cuff = cuff_params[0]['preset']
             if src_cuff in self.configs[Config.SIM.value]["active_srcs"].keys():
-                active_srcs_list = self.search(Config.SIM, "active_srcs", cuff)
+                active_srcs_list = self.search(Config.SIM, "active_srcs", src_cuff)
             else:
                 # otherwise, use the default weights (generally you don't want to rely on this as cuffs have different
                 # numbers of contacts)
@@ -229,7 +229,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
         elif rec and not stim:
             rec_cuff = cuff_params[0]['preset']
             if rec_cuff in self.configs[Config.SIM.value]["active_recs"].keys():
-                active_recs_list = self.search(Config.SIM, "active_recs", cuff)
+                active_recs_list = self.search(Config.SIM, "active_recs", rec_cuff)
             else:
                 # otherwise, use the default weights (generally you don't want to rely on this as cuffs have different
                 # numbers of contacts)
@@ -295,14 +295,14 @@ class Simulation(Exceptionable, Configurable, Saveable):
         ))
 
         self.src_key = ['->'.join(['active_srcs', src_cuff])]
-        self.rec_key = ['->'.join(['active_srcs', rec_cuff])]
+        self.rec_key = ['->'.join(['active_recs', rec_cuff])]
         self.src_product = active_srcs_list
         self.rec_product = active_recs_list
 
         # loop over product
         output = [len(self.potentials_product)]
-        for active_src_select, active_rec_select, fiberset_select in self.potentials_product:
-            output.append((active_src_select, active_rec_select, fiberset_select))
+        for active_src_select, _, fiberset_select in self.potentials_product:
+            output.append((active_src_select, fiberset_select))
 
         # write to file
         key_file_dir = os.path.join(sim_directory, "potentials")
@@ -318,6 +318,12 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 else:
                     f.write(str(row) + ' ')
                 f.write("\n")
+        #
+        # if rec:
+        #     rec_key_file_dir = os.path.join(sim_directory, "rec_bases")
+        #     rec_key_filepath = os.path.join(sim_directory, "rec_bases", "key.dat")
+        #     if not os.path.exists(rec_key_file_dir):
+        #         os.makedirs(rec_key_file_dir)
 
         s_s = range(int(output[0]))
         q_s = range(len(self.wave_product))
