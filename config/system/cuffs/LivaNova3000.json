@@ -5,10 +5,10 @@
       "type": "CuffFill_Primitive",
       "label": "LivaNova Cuff Fill 1",
       "def": {
-        "Radius": "r_cuff_in_LN+thk_cuff_LN+Thk_fill_LN3",
+        "Radius": "r_cuff_in_LN3+thk_cuff_LN3+Thk_fill_LN3",
         "Thk": "Thk_fill_LN3",
-        "L": "L_cuff_LN+w_cuff_LN+2*Thk_fill_LN3",
-        "Center": "(z_nerve/2)-(sep_elec_LN/2)",
+        "L": "L_cuff_LN3+w_cuff_LN3+2*Thk_fill_LN3",
+        "Center": "(z_nerve/2)-(sep_elec_LN3/2)",
         "x_shift": "0",
         "y_shift": "0"
       },
@@ -23,10 +23,10 @@
       "type": "CuffFill_Primitive",
       "label": "LivaNova Cuff Fill 2",
       "def": {
-        "Radius": "r_cuff_in_LN+thk_cuff_LN+Thk_fill_LN3",
+        "Radius": "r_cuff_in_LN3+thk_cuff_LN3+Thk_fill_LN3",
         "Thk": "Thk_fill_LN3",
-        "L": "L_cuff_LN+w_cuff_LN+2*Thk_fill_LN3",
-        "Center": "(z_nerve/2)+(sep_elec_LN/2)",
+        "L": "L_cuff_LN3+w_cuff_LN3+2*Thk_fill_LN3",
+        "Center": "(z_nerve/2)+(sep_elec_LN3/2)",
         "x_shift": "0",
         "y_shift": "0"
       },
@@ -41,7 +41,7 @@
       "type": "HelicalCuffnContact_Primitive",
       "label": "LivaNova CuffnContact 1",
       "def": {
-        "Center": "(z_nerve/2)-(sep_elec_LN/2)",
+        "Center": "(z_nerve/2)-(sep_elec_LN3/2)",
         "Corr": "corr_LN3",
         "rev_BD_insul": "rev_BD_insul_LN3",
         "rev_BD_cond": "rev_BD_cond_LN3"
@@ -61,7 +61,7 @@
       "type": "HelicalCuffnContact_Primitive",
       "label": "LivaNova CuffnContact 2",
       "def": {
-        "Center": "(z_nerve/2)+(sep_elec_LN/2)",
+        "Center": "(z_nerve/2)+(sep_elec_LN3/2)",
         "Corr": "corr_LN3",
         "rev_BD_insul": "rev_BD_insul_LN3",
         "rev_BD_cond": "rev_BD_cond_LN3"
@@ -122,7 +122,7 @@
     },
     {
       "name": "p_LN3",
-      "expression": "w_cuff_LN+S_LN3",
+      "expression": "w_cuff_LN3+S_LN3",
       "description": ""
     },
     {
@@ -132,7 +132,7 @@
     },
     {
       "name": "L_cuff_LN3",
-      "expression": "rev_cuff_LN*p_LN3",
+      "expression": "rev_cuff_LN3*p_LN3",
       "description": ""
     },
     {
@@ -162,7 +162,7 @@
     },
     {
       "name": "rev_cuff_LN3",
-      "expression": "2.5*((r_nerve+thk_medium_gap_internal_LN)<(ID_30220_LN/2))+((rev_BD_LN)*(sqrt((p_LN^2+pi^2*(ID_cuff_LN+thk_cuff_LN)^2)/(p_LN^2+pi^2*(r_nerve*2+2*thk_medium_gap_internal_LN+thk_cuff_LN)^2))))*((r_nerve+thk_medium_gap_internal_LN)>=(ID_30220_LN/2))",
+      "expression": "2.5*((r_nerve+thk_medium_gap_internal_LN3)<(ID_30220_LN3/2))+((rev_BD_LN3)*(sqrt((p_LN3^2+pi^2*(ID_cuff_LN3+thk_cuff_LN3)^2)/(p_LN3^2+pi^2*(r_nerve*2+2*thk_medium_gap_internal_LN3+thk_cuff_LN3)^2))))*((r_nerve+thk_medium_gap_internal_LN3)>=(ID_30220_LN3/2))",
       "description": ""
     },
     {
@@ -172,12 +172,12 @@
     },
     {
       "name": "r_cuff_in_LN3",
-      "expression": "max(r_nerve+thk_medium_gap_internal_LN,r_cuff_in_pre_LN)",
+      "expression": "max(r_nerve+thk_medium_gap_internal_LN3,r_cuff_in_pre_LN3)",
       "description": ""
     },
     {
       "name": "ID_cuff_LN3",
-      "expression": "ID_30220_LN*((r_nerve+thk_medium_gap_internal_LN)<(ID_30230_LN/2))+ID_30230_LN*((r_nerve+thk_medium_gap_internal_LN)>=(ID_30230_LN/2))",
+      "expression": "ID_30220_LN3*((r_nerve+thk_medium_gap_internal_LN3)<(ID_30230_LN3/2))+ID_30230_LN3*((r_nerve+thk_medium_gap_internal_LN3)>=(ID_30230_LN3/2))",
       "description": ""
     },
     {
@@ -202,7 +202,7 @@
     },
     {
       "name": "corr_LN3",
-      "expression": "360*(0.75 - rev_cuff_LN*(0.75/2.5) + (0.5/2.5)*(rev_BD_LN - rev_cuff_LN)) [deg]",
+      "expression": "360*(0.75 - rev_cuff_LN3*(0.75/2.5) + (0.5/2.5)*(rev_BD_LN3 - rev_cuff_LN3)) [deg]",
       "description": ""
     }
   ],

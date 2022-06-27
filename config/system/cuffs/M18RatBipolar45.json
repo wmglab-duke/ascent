@@ -5,9 +5,9 @@
       "type": "CuffFill_Primitive",
       "label": "M18RatBipolar45 Cuff Fill",
       "def": {
-        "Radius": "R_out_M+Thk_fill_MR452",
+        "Radius": "R_out_MR452+Thk_fill_MR452",
         "Thk": "Thk_fill_MR452",
-        "L": "L_M+2*Thk_fill_MR452",
+        "L": "L_MR452+2*Thk_fill_MR452",
         "Center": "z_nerve/2",
         "x_shift": "0",
         "y_shift": "0"
@@ -50,7 +50,7 @@
         "Ribbon_z": "L_elec_MR452",
         "R_in": "R_in_MR452",
         "Ribbon_recess": "Recess_MR452",
-        "Center": "(z_nerve/2)-(sep_elec_M/2)",
+        "Center": "(z_nerve/2)-(sep_elec_MR452/2)",
         "Ribbon_theta": "Theta_contact_MR452",
         "Rot_def": "Rot_def_contact_MR452"
       },
@@ -73,7 +73,7 @@
         "Ribbon_z": "L_elec_MR452",
         "R_in": "R_in_MR452",
         "Ribbon_recess": "Recess_MR452",
-        "Center": "(z_nerve/2)+(sep_elec_M/2)",
+        "Center": "(z_nerve/2)+(sep_elec_MR452/2)",
         "Ribbon_theta": "Theta_contact_MR452",
         "Rot_def": "Rot_def_contact_MR452"
       },
@@ -103,17 +103,17 @@
     },
     {
       "name": "Theta_MR452",
-      "expression": "percent_circ_cuff_M*360 [deg]",
+      "expression": "percent_circ_cuff_MR452*360 [deg]",
       "description": ""
     },
     {
       "name": "R_in_MR452",
-      "expression": "max(r_nerve+thk_medium_gap_internal_M,r_cuff_in_pre_M)",
+      "expression": "max(r_nerve+thk_MR452edium_gap_internal_MR452,r_cuff_in_pre_MR452)",
       "description": ""
     },
     {
       "name": "R_out_MR452",
-      "expression": "R_in_M+thk_cuff_MR452",
+      "expression": "R_in_MR452+thk_cuff_MR452",
       "description": ""
     },
     {
@@ -148,7 +148,7 @@
     },
     {
       "name": "percent_circ_cuff_MR452",
-      "expression": "percent_circ_cuff_pre_M*(r_cuff_in_pre_M/R_in_M)",
+      "expression": "percent_circ_cuff_pre_MR452*(r_cuff_in_pre_MR452/R_in_MR452)",
       "description": ""
     },
     {
@@ -167,7 +167,7 @@
       "description": ""
     },
     {
-      "name": "thk_medium_gap_internal_MR452",
+      "name": "thk_MR452edium_gap_internal_MR452",
       "expression": "10 [um]",
       "description": ""
     },
@@ -193,12 +193,12 @@
     },
     {
       "name": "Theta_contact_MR452",
-      "expression": "360*(w_elec_M/(pi*2*(R_in_M+Recess_M))) [deg]",
+      "expression": "360*(w_elec_MR452/(pi*2*(R_in_MR452+Recess_MR452))) [deg]",
       "description": ""
     },
     {
       "name": "w_elec_MR452",
-      "expression": "R_in_M*2*pi*(contact_wrap_M/360)",
+      "expression": "R_in_MR452*2*pi*(contact_wrap_MR452/360)",
       "description": ""
     },
     {
@@ -208,7 +208,7 @@
     },
     {
       "name": "Rot_def_contact_MR452",
-      "expression": "(Theta_M/2)-(Theta_contact_M/2)",
+      "expression": "(Theta_MR452/2)-(Theta_contact_MR452/2)",
       "description": ""
     },
     {
