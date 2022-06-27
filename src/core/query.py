@@ -1867,7 +1867,7 @@ class Query(Exceptionable, Configurable, Saveable):
                         outputs_path = os.path.join(n_sim_dir, 'data', 'outputs')
     
                         # path of the first inner, first fiber vm(t) data
-                        vm_t_path = os.path.join(outputs_path, 'ap_loctime_inner0_fiber0_amp0.dat')
+                        vm_t_path = os.path.join(outputs_path, 'ap_loctime_inner0_fiber0_amp{}.dat'.format(amp))
     
                         # load vm(t) data (see path above)
                         # each row is a snapshot of the voltages at each node [mV]
@@ -1883,7 +1883,11 @@ class Query(Exceptionable, Configurable, Saveable):
                         
                         # create message about AP time and location findings
                         message = f't: {time} ms, node: {node + 1} (of {len(aploc_data)+2})'
-                        print(f'\t\t\t\t{message}')
+                        if time != float('inf'):
+                            print(f'\t\t\t\t{message}')
+                        else:
+                            print('No action potential occurred.')
+                            continue
     
                         # plot the AP location with voltage trace
                         # create subplots

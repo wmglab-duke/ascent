@@ -91,7 +91,6 @@ class Slide(Exceptionable):
             plt.close()
 
         if self.monofasc():
-            debug_plot()
             return True
 
         if specific:
