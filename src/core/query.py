@@ -303,6 +303,7 @@ class Query(Exceptionable, Configurable, Saveable):
     def threshold_data(self,
                                  sim_indices: int = None,
                                  model_indices: List[int] = None,
+                                 ignore_missing=False,
                                  meanify=False):
         """
         :param meanify: return mean of thresholds for a given nsim along with stats
@@ -324,9 +325,9 @@ class Query(Exceptionable, Configurable, Saveable):
 
         if sim_indices is None:
             sim_indices = self.search(Config.CRITERIA, 'indices', 'sim')
-        
+
         alldat = []
-        
+
         # loop samples
         sample_results: dict
         for sample_results in self._result.get('samples', []):
@@ -344,7 +345,6 @@ class Query(Exceptionable, Configurable, Saveable):
                 print('\tmodel: {}'.format(model_index))
                 
                 for sim_index in sim_indices:
-                    # sim index is already set from input, so no need to loop
                     sim_object = self.get_object(Object.SIMULATION, [sample_index, model_index, sim_index])
     
                     # whether the comparison key is for 'fiber' or 'wave', the nsims will always be in order!
@@ -352,7 +352,7 @@ class Query(Exceptionable, Configurable, Saveable):
                     # indices as if they were the nsim indices
                     for nsim_index, (potentials_product_index, waveform_index) in enumerate(
                             sim_object.master_product_indices):
-                        
+    
                         # fetch outer->inner->fiber and out->inner maps
                         out_in_fib, out_in = sim_object.fiberset_map_pairs[nsim_index]
     
@@ -367,11 +367,11 @@ class Query(Exceptionable, Configurable, Saveable):
     
                         # fetch all thresholds
                         for inner in range(n_inners):
-                            
+    
                             outer = [index for index, inners in enumerate(out_in) if inner in inners][0]
-                                
+    
                             for local_fiber_index, _ in enumerate(out_in_fib[outer][out_in[outer].index(inner)]):
-                                
+    
                                 master_index = sim_object.indices_n_to_fib(nsim_index,inner,local_fiber_index)
     
                                 thresh_path = os.path.join(n_sim_dir,
@@ -379,7 +379,14 @@ class Query(Exceptionable, Configurable, Saveable):
                                                            'outputs',
                                                            'thresh_inner{}_fiber{}.dat'.format(inner,
                                                                                                local_fiber_index))
-                                threshold = np.loadtxt(thresh_path)
+                                if ignore_missing:
+                                    try:
+                                        threshold = np.loadtxt(thresh_path)
+                                    except IOError:
+                                        warnings.warn('Missing threshold, but continuing.')
+                                else:
+                                    threshold = np.loadtxt(thresh_path)
+    
                                 if threshold.size > 1:
                                     threshold = threshold[-1]
                                 if meanify==True:
@@ -395,7 +402,7 @@ class Query(Exceptionable, Configurable, Saveable):
                                         'index':master_index,
                                         'threshold':abs(threshold)
                                         })
-                        
+    
                         if meanify==True:
                             if len(thresholds)==0:
                                 alldat.append({
@@ -407,7 +414,7 @@ class Query(Exceptionable, Configurable, Saveable):
                                     })
                             else:
                                 thresholds: np.ndarray = np.array(thresholds)
-            
+    
                                 alldat.append({
                                     'sample':sample_results['index'],
                                     'model':  model_results['index'],
@@ -417,7 +424,7 @@ class Query(Exceptionable, Configurable, Saveable):
                                     'std':  np.std(thresholds, ddof=1),
                                     'sem':stats.sem(thresholds)
                                     })
-                        
+
         return pd.DataFrame(alldat)
 
     def heatmaps(self,
