@@ -41,5 +41,5 @@ and perineurium thickness. Required.
 
 <!-- end list -->
 
-  - See: `config/system/ci_peri_thickness.json` to see all built-in
+See: `config/system/ci_peri_thickness.json` to see all built-in
     `PerineuriumThicknessMode` relationships.

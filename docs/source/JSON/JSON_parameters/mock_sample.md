@@ -295,35 +295,11 @@ are populated. Required.
               - `"seed"`: The value (Integer) initiates the random number
                 generator. Required.
 
+
 ## Example
-```
-{
-  "global": {
-    "NAME": "Alien1-1"
-  },
-  scalebar_length": 1000,
-  "nerve": {
-    "a": 4400,
-    "b": 3600,
-    "rot": 0
-  },
-  "figure": {
-    "fig_margin": 1.2,
-    "fig_dpi": 1000
-  },
-  "populate": {
-    "mode": "UNIFORM",
-    "lower_fasc_diam": 400,
-    "upper_fasc_diam": 500,
-    "num_fascicle_attempt": 15,
-    "num_fascicle_placed": 15,
-    "lower_fasc_ecc": 0.5,
-    "upper_fasc_ecc": 0.7,
-    "max_attempt_iter": 100,
-    "min_fascicle_separation": 10,
-    "seed": 120
-  }
-}
+```{eval-rst}
+.. include:: ../../../../config/templates/mock_sample.json
+   :code: javascript
 ```
 
 [f1]: https://chart.apis.google.com/chart?cht=tx&chl=e=\sqrt{1-\frac{b^{2}}{a^{2}}}
