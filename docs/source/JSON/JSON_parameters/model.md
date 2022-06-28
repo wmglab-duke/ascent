@@ -353,8 +353,7 @@ meshing statistics (automatically calculated).
 
       - `“name”`: Mesher identity (String) which generated the mesh (i.e., COMSOL version)
 
-      - `“quality_measure_used”`: (String) (e.g., “skewness”, “maxangle”,
-        “volcircum”, “vollength”, “condition”, or “growth”)
+      - `“quality_measure_used”`: `"quality measure"` which was used to calculate mesh statistics. (String)
 
       - `“number_elements”`: (Integer)
 
