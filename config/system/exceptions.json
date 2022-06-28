@@ -590,5 +590,9 @@
   {
     "code": 148,
     "text": "Pairs of stim and record indices cannot match between Model->cuffs->indices and Sim->active_srcs/recs->cuff_indices"
+  },
+  {
+    "code": 149,
+    "text": "The length of the weights in Sim->active_srcs AND/OR Sim->active_recs is not consistent, and therefore cannot be correct"
   }
 ]

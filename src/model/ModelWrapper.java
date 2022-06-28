@@ -483,7 +483,7 @@ public class ModelWrapper {
 
                 // pre-allocated array of doubles for products in file
                 // (2 columns by default for (active_src_select,fiberset_select)
-                int[][] prods = new int[n_products][2];
+                int[][] prods = new int[n_products][3];
                 int row_ind = 0;
 
                 // assign contents of key (fiberset x srcs) file to array
@@ -1672,6 +1672,7 @@ public class ModelWrapper {
                                 allCuffSpec.put(cuffObject);
                             }
 
+                            Integer cuff_index;
                             for (int i = 0; i < allCuffSpec.length(); i++) {
                                 // Read cuff to build from model.json (cuff.preset) which links to JSON containing instantiations of parts
                                 JSONObject cuffSpec = allCuffSpec.getJSONObject(i);
@@ -1681,7 +1682,8 @@ public class ModelWrapper {
                                 mw.addCuffPartPrimitives(cuff);
 
                                 // add PART INSTANCES for cuff
-                                mw.addCuffPartInstances(cuff, modelData,i);
+                                cuff_index = cuffSpec.getInt("index");
+                                mw.addCuffPartInstances(cuff, modelData, cuff_index);
 
                                 //Set cuff conformation parameters
                                 String cuff_shift_unit = "[micrometer]";

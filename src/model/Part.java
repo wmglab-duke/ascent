@@ -2469,7 +2469,10 @@ class Part {
         partInstance.label(instanceLabel);
         partInstance.set("part", mw.im.get(pseudonym));
 
-        partInstance.set("displ", new String[]{name+"_"+index+"_cuff_shift_x", name+"_"+index+"_cuff_shift_y", name+"_"+index+"_cuff_shift_z"}); // moves cuff around the nerve
+        partInstance.set("displ", new String[]{
+                name+"_"+index+"_cuff_shift_x",
+                name+"_"+index+"_cuff_shift_y",
+                name+"_"+index+"_cuff_shift_z"}); // moves cuff around the nerve
         partInstance.set("rot", name+"_"+index+"_cuff_rot");
 
         JSONObject itemObject = instanceParams.getJSONObject("def");
@@ -2570,6 +2573,7 @@ class Part {
 
                 JSONObject src_ribbon = new JSONObject();
                 src_ribbon.put(instanceLabel, id);
+                src_ribbon.put("cuff_index", index);
                 mw.im.currentIDs.put(mw.im.present("pcs"), src_ribbon);
 
                 pf.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[2]) + "_pnt"); // SRC
@@ -2639,6 +2643,7 @@ class Part {
 
                 JSONObject src_wire = new JSONObject();
                 src_wire.put(instanceLabel, id);
+                src_wire.put("cuff_index", index);
                 mw.im.currentIDs.put(mw.im.present("pcs"), src_wire);
 
                 pf.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[2]) + "_pnt"); // SRC
@@ -2718,6 +2723,7 @@ class Part {
 
                 JSONObject src_circ = new JSONObject();
                 src_circ.put(instanceLabel, id);
+                src_circ.put("cuff_index", index);
                 mw.im.currentIDs.put(mw.im.present("pcs"), src_circ);
 
                 pf.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[4]) + "_pnt"); // SRC
@@ -2740,7 +2746,7 @@ class Part {
 
                 }
 
-                partInstance.set("rot", name+"_cuff_rot + corr_LN");
+                partInstance.set("rot", name+"_"+index+"_cuff_rot + corr_LN");
 
                 model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Center", (String) itemObject.get("Center"));
 
@@ -2761,6 +2767,7 @@ class Part {
 
                 JSONObject pc_src_heli = new JSONObject();
                 pc_src_heli.put(instanceLabel, id);
+                pc_src_heli.put("cuff_index", index);
                 mw.im.currentIDs.put(mw.im.present("pcs"), pc_src_heli);
 
                 pf.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[4]) + "_pnt"); // SRC
@@ -2785,7 +2792,7 @@ class Part {
 
                 }
 
-                partInstance.set("rot", name+"_cuff_rot + corr_LN");
+                partInstance.set("rot", name+"_"+index+"_cuff_rot + corr_LN");
 
                 model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Center", (String) itemObject.get("Center"));
 
@@ -2816,6 +2823,7 @@ class Part {
 
                 JSONObject src_heli = new JSONObject();
                 src_heli.put(instanceLabel, id);
+                src_heli.put("cuff_index", index);
                 mw.im.currentIDs.put(mw.im.present("pcs"), src_heli);
 
                 pf.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[4]) + "_pnt"); // SRC
@@ -2909,6 +2917,7 @@ class Part {
 
                 JSONObject src_rect = new JSONObject();
                 src_rect.put(instanceLabel, id);
+                src_rect.put("cuff_index", index);
                 mw.im.currentIDs.put(mw.im.present("pcs"), src_rect);
 
                 pf.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[16]) + "_pnt"); // SRC
@@ -2950,6 +2959,7 @@ class Part {
 
                 JSONObject src_u = new JSONObject();
                 src_u.put(instanceLabel, id);
+                src_u.put("cuff_index", index);
                 mw.im.currentIDs.put(mw.im.present("pcs"), src_u);
 
                 pf.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[2]) + "_pnt"); // SRC
@@ -3096,6 +3106,7 @@ class Part {
 
                 JSONObject src_ut = new JSONObject();
                 src_ut.put(instanceLabel, id);
+                src_ut.put("cuff_index", index);
                 mw.im.currentIDs.put(mw.im.present("pcs"), src_ut);
 
                 pf.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[4]) + "_pnt"); // SRC_FINAL
@@ -3137,6 +3148,7 @@ class Part {
 
                 JSONObject src_ac = new JSONObject();
                 src_ac.put(instanceLabel, id);
+                src_ac.put("cuff_index", index);
                 mw.im.currentIDs.put(mw.im.present("pcs"), src_ac);
 
                 pf.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[3]) + "_pnt"); // SRC_FINAL

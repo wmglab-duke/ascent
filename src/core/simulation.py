@@ -64,7 +64,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
                     # print('adding key {} to sub {}'.format(key, sub))
                     self.factors[path + '->' + key] = value
                 elif type(value) == list and len(value) <= 1:
-                    print("ERROR:",key,"is a list, but has length",len(value))
+                    print("ERROR:", key, "is a list, but has length", len(value))
                     self.throw(137)
                 elif type(value) == dict:
                     # print('recurse: {}'.format(value))
@@ -166,16 +166,16 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 .add(SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value]) \
                 .init_post_config() \
                 .generate() \
-                .write(WriteMode.DATA, os.path.join(directory, str(i))) \
+                .write(WriteMode.DATA, os.path.join(directory, str(i)))
 
-            path = sim_directory+'/plots/waveforms/{}.png'.format(i)
-            if not os.path.exists(sim_directory+'/plots/waveforms'):
-                os.makedirs(sim_directory+'/plots/waveforms')
-                
-            waveform.plot(final=True,path=path)
+            path = sim_directory + '/plots/waveforms/{}.png'.format(i)
+            if not os.path.exists(sim_directory + '/plots/waveforms'):
+                os.makedirs(sim_directory + '/plots/waveforms')
 
-            if self.search(Config.RUN,"popup_plots",optional=True)==True:
-                waveform.plot(final=True,path=None)
+            waveform.plot(final=True, path=path)
+
+            if self.search(Config.RUN, "popup_plots", optional=True):
+                waveform.plot(final=True, path=None)
 
             self.waveforms.append(waveform)
 
@@ -205,7 +205,8 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 self.throw(147)
 
         elif len(cuff_params) == 1:
-            if not [key in self.configs[Config.SIM.value].keys() for key in ['active_srcs', 'active_recs']].count(True) == 1:
+            if not [key in self.configs[Config.SIM.value].keys() for key in ['active_srcs', 'active_recs']].count(
+                    True) == 1:
                 self.throw(145)
             if 'active_srcs' in self.configs[Config.SIM.value].keys():
                 stim = True
@@ -238,7 +239,8 @@ class Simulation(Exceptionable, Configurable, Saveable):
             active_srcs_list = None
 
         else:  # rec and stim
-            sim_cuff_indices = [self.search(Config.SIM, "active_recs", "cuff_index"), self.search(Config.SIM, "active_srcs", "cuff_index")]
+            sim_cuff_indices = [self.search(Config.SIM, "active_recs", "cuff_index"),
+                                self.search(Config.SIM, "active_srcs", "cuff_index")]
             if len(sim_cuff_indices) != len(set(sim_cuff_indices)):
                 self.throw(147)
             if set(model_cuff_indices) != set(sim_cuff_indices):
@@ -258,6 +260,18 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
             active_srcs_list = self.search(Config.SIM, "active_srcs", src_cuff)
             active_recs_list = self.search(Config.SIM, "active_recs", rec_cuff)
+
+        if stim:
+            srcs_it = iter(active_srcs_list)
+            n_stim_bases = len(next(srcs_it))
+            if not all(len(l) == n_stim_bases for l in srcs_it):
+                self.throw(149)
+
+        if rec:
+            recs_it = iter(active_recs_list)
+            n_rec_bases = len(next(recs_it))
+            if not all(len(l) == n_rec_bases for l in recs_it):
+                self.throw(149)
 
         ss = self.search(Config.SIM, 'supersampled_bases', optional=True)
         if ss is not None and ss['use'] == True:
@@ -290,7 +304,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
         self.ss_product = list(itertools.product(
             list(range(len(active_srcs_list[0]))),
-            list(range(len(active_recs_list[0]))),
             [0]
         ))
 
@@ -301,8 +314,8 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
         # loop over product
         output = [len(self.potentials_product)]
-        for active_src_select, _, fiberset_select in self.potentials_product:
-            output.append((active_src_select, fiberset_select))
+        for active_src_select, active_rec_select, fiberset_select in self.potentials_product:
+            output.append((active_src_select, active_rec_select, fiberset_select))
 
         # write to file
         key_file_dir = os.path.join(sim_directory, "potentials")
@@ -318,12 +331,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 else:
                     f.write(str(row) + ' ')
                 f.write("\n")
-        #
-        # if rec:
-        #     rec_key_file_dir = os.path.join(sim_directory, "rec_bases")
-        #     rec_key_filepath = os.path.join(sim_directory, "rec_bases", "key.dat")
-        #     if not os.path.exists(rec_key_file_dir):
-        #         os.makedirs(rec_key_file_dir)
 
         s_s = range(int(output[0]))
         q_s = range(len(self.wave_product))
@@ -385,8 +392,9 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 shutil.copyfile(source_waveform_path, destination_waveform_path)
 
             # get source, waveform, and fiberset values for the corresponding neuron simulation t
-            active_src_ind, fiberset_ind = self.potentials_product[potentials_ind]
+            active_src_ind, active_rec_ind, fiberset_ind = self.potentials_product[potentials_ind]
             active_src_vals = [self.src_product[active_src_ind]]
+            active_rec_vals = [self.rec_product[active_src_ind]]
             wave_vals = self.wave_product[waveform_ind]
             fiberset_vals = self.fiberset_product[fiberset_ind]
 
@@ -397,6 +405,9 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
             sim_copy = self._copy_and_edit_config(self.configs[Config.SIM.value],
                                                   self.src_key, active_src_vals, copy_again=False)
+
+            sim_copy = self._copy_and_edit_config(sim_copy,
+                                                  self.rec_key, active_rec_vals, copy_again=False)
 
             sim_copy = self._copy_and_edit_config(sim_copy,
                                                   self.wave_key, wave_vals, copy_again=False)
@@ -436,10 +447,14 @@ class Simulation(Exceptionable, Configurable, Saveable):
             else:
                 supersampled_bases: dict = self.search(Config.SIM, 'supersampled_bases')
 
+            cap = False
+            if 'active_recs' in self.configs['sims'].keys() and 'active_srcs' in self.configs['sims'].keys():
+                cap = True
+
             potentials_directory = os.path.join(sim_dir, str(sim_num), 'potentials', str(p))
 
             # NOT SUPER SAMPLING - PROBED COMSOL AT /FIBERSETS --> /POTENTIALS
-            if supersampled_bases is None or supersampled_bases.get('use') is False:
+            if (supersampled_bases is None or supersampled_bases.get('use') is False) and not cap:
                 for root, dirs, files in os.walk(potentials_directory):
                     for file in files:
                         if re.match('[0-9]+\\.dat', file):
@@ -500,7 +515,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
                     for file in files:
                         if re.match('[0-9]+\\.dat', file):
 
-
                             for basis_ind in range(len(active_src_vals[0])):
 
                                 ss_bases_src_path = os.path.join(sim_dir,
@@ -557,9 +571,63 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
                             np.savetxt(os.path.join(nsim_inputs_directory, ss_filename),
                                        neuron_potentials_input,
-                                       fmt='%0.18f',header=str(len(neuron_potentials_input)),comments='')
+                                       fmt='%0.18f', header=str(len(neuron_potentials_input)), comments='')
                         elif file == 'diams.txt':
                             make_inner_fiber_diam_key(xy_mode, p, nsim_inputs_directory, potentials_directory, file)
+            elif cap:
+                fiberset_directory = os.path.join(sim_dir, str(sim_num), 'fibersets', str(p))
+
+                src_bases_indices = [None for _ in active_src_vals[0]]
+                rec_bases_indices = [None for _ in active_rec_vals[0]]
+
+                # ============= TODO =============
+                src_bases_indices = [0, 1]
+                rec_bases_indices = [2]
+                # ============= TODO =============
+
+                for root, dirs, files in os.walk(fiberset_directory):
+                    for file in files:
+                        if re.match('[0-9]+\\.dat', file):
+                            for indices, pre in zip([src_bases_indices, rec_bases_indices], ['', 'rec_']):
+                                bases = [None for x in indices]
+                                for bi, basis in enumerate(indices):
+
+                                    bases_path = os.path.join(sim_dir,
+                                                              str(sim_num),
+                                                              'fibersets_bases',
+                                                              str(basis),
+                                                              str(p))
+
+                                    if not os.path.exists(bases_path):
+                                        self.throw(81)  # TODO
+
+                                    if not os.path.exists(os.path.join(bases_path, file)):
+                                        self.throw(81)  # TODO
+                                    else:
+                                        bases[bi] = np.loadtxt(os.path.join(bases_path, file))[1:]
+
+                                q = int(file.split('.')[0])
+
+                                weighted_bases_vec = np.zeros(len(bases[0]))
+                                for src_ind, src_weight in enumerate(indices):
+                                    weighted_bases_vec += bases[src_ind] * src_weight
+
+                                # NOTE: if SL interp, writes files as inner0_fiber<q>.dat
+                                l: int
+                                k: int
+
+                                l, k = self.indices_fib_to_n(p, q)
+
+                                src_filename = '{}inner{}_fiber{}.dat'.format(pre, l, k)
+
+                                np.savetxt(os.path.join(nsim_inputs_directory, src_filename),
+                                           weighted_bases_vec,
+                                           fmt='%0.18f', header=str(len(weighted_bases_vec)), comments='')
+                        elif file == 'diams.txt':
+                            # make_inner_fiber_diam_key(xy_mode, p, nsim_inputs_directory, potentials_directory, file)
+                            pass
+                            # TODO
+
         return self
 
     def indices_fib_to_n(self, p, q) -> Tuple[int, int]:
@@ -631,25 +699,25 @@ class Simulation(Exceptionable, Configurable, Saveable):
         shutil.copy2(source, target_full)
 
     @staticmethod
-    def export_n_sims(sample: int, model: int, sim: int, sim_obj_dir: str, target: str, export_behavior = None):
+    def export_n_sims(sample: int, model: int, sim: int, sim_obj_dir: str, target: str, export_behavior=None):
 
         sim_dir = os.path.join(sim_obj_dir, str(sim), 'n_sims')
         sim_export_base = os.path.join(target, 'n_sims', '{}_{}_{}_'.format(sample, model, sim))
 
         for product_index in [f for f in os.listdir(sim_dir) if os.path.isdir(os.path.join(sim_dir, f))]:
             target = sim_export_base + product_index
-            
+
             if os.path.exists(target):
                 if export_behavior == ExportMode.OVERWRITE.value:
                     shutil.rmtree(target)
                 elif export_behavior == ExportMode.ERROR.value:
                     sys.exit('{} already exists, exiting...'.format(target))
-                elif export_behavior == ExportMode.SELECTIVE.value or export_behavior==None:
+                elif export_behavior == ExportMode.SELECTIVE.value or export_behavior == None:
                     print('\tSkipping n_sim export for {} because folder already exists.'.format(target))
                     continue
-                else: 
+                else:
                     sys.exit('Invalid export_behavior')
-                
+
             shutil.copytree(
                 os.path.join(sim_dir, product_index),
                 sim_export_base + product_index
@@ -663,8 +731,10 @@ class Simulation(Exceptionable, Configurable, Saveable):
             os.makedirs(target)
 
         # neuron files
-        try:du.copy_tree(os.path.join(os.environ[Env.PROJECT_PATH.value], 'src', 'neuron'), target)
-        except:pass
+        try:
+            du.copy_tree(os.path.join(os.environ[Env.PROJECT_PATH.value], 'src', 'neuron'), target)
+        except:
+            pass
 
         submit_target = os.path.join(target, 'submit.py')
         if os.path.isfile(submit_target):
@@ -685,7 +755,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
         shutil.copy2(os.path.join(os.environ[Env.PROJECT_PATH.value], 'config', 'system', 'slurm_params.json'), target)
 
     @staticmethod
-    def import_n_sims(sample: int, model: int, sim: int, sim_dir: str, source: str, delete: bool=False):
+    def import_n_sims(sample: int, model: int, sim: int, sim_dir: str, source: str, delete: bool = False):
         print(f'sample: {sample}, model: {model}, sim: {sim}, sim_dir: {sim_dir}, source: {source}')
 
         sim_dir = os.path.join(sim_dir, 'n_sims')
@@ -704,13 +774,13 @@ class Simulation(Exceptionable, Configurable, Saveable):
         for dirname in [f for f in os.listdir(source) if os.path.isdir(os.path.join(source, f))]:
             this_sample, this_model, this_sim, product_index = tuple(dirname.split('_'))
             if sample == int(this_sample) and model == int(this_model) and sim == int(this_sim):
-                nsim_dir = os.path.join(source,dirname)
-                outdir = os.path.join(nsim_dir,'data','outputs')
-                indir = os.path.join(nsim_dir,'data','inputs')
+                nsim_dir = os.path.join(source, dirname)
+                outdir = os.path.join(nsim_dir, 'data', 'outputs')
+                indir = os.path.join(nsim_dir, 'data', 'inputs')
                 for file in [f for f in os.listdir(indir) if f.startswith('inner') and f.endswith('.dat')]:
-                    if not os.path.exists(os.path.join(outdir,'thresh_'+file)):
-                        print('Missing threshold {}'.format(os.path.join(outdir,'thresh_'+file)))
-                        allthresh=False
+                    if not os.path.exists(os.path.join(outdir, 'thresh_' + file)):
+                        print('Missing threshold {}'.format(os.path.join(outdir, 'thresh_' + file)))
+                        allthresh = False
         return allthresh
 
     def potentials_exist(self, sim_dir: str) -> bool:
@@ -729,4 +799,15 @@ class Simulation(Exceptionable, Configurable, Saveable):
         """
         return all(
             os.path.exists(os.path.join(sim_dir, 'ss_bases', str(basis))) for basis, _ in self.ss_product
+        )
+
+    def bases_potentials_exist(self, sim_dir: str) -> bool:
+        """
+        Return bool deciding if potentials have already been written
+        :param sim_dir: directory of this simulation
+        :return: boolean!
+            """
+        n_bases = len(self.src_product[0]) + len(self.rec_product[0])
+        return all(
+            os.path.exists(os.path.join(sim_dir, 'fibersets_bases', str(basis))) for basis in range(n_bases)
         )
