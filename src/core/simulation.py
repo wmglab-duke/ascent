@@ -619,11 +619,8 @@ class Simulation(Exceptionable, Configurable, Saveable):
                                                               str(basis),
                                                               str(p))
 
-                                    if not os.path.exists(bases_path):
-                                        self.throw(81)  # TODO
-
                                     if not os.path.exists(os.path.join(bases_path, file)):
-                                        self.throw(81)  # TODO
+                                        self.throw(150)
                                     else:
                                         bases[bi] = np.loadtxt(os.path.join(bases_path, file))[1:]
 

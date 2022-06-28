@@ -594,5 +594,9 @@
   {
     "code": 149,
     "text": "The length of the weights in Sim->active_srcs AND/OR Sim->active_recs is not consistent, and therefore cannot be correct"
+  },
+  {
+    "code": 150,
+    "text": "Missing extracted bases (non-weighted) potentials for a fiber."
   }
 ]
