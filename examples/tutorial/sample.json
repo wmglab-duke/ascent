@@ -16,10 +16,12 @@
   },
   "modes": {
     "mask_input": "INNER_AND_OUTER_COMPILED",
+    "scale_input": "MASK",
     "nerve": "NOT_PRESENT",
     "deform": "NONE",
     "ci_perineurium_thickness": "MEASURED",
-    "reshape_nerve": "NONE"
+    "reshape_nerve": "NONE",
+    "shrinkage_definition": "LENGTH_FORWARDS"
   },
   "Morphology": null
 }

@@ -59,6 +59,7 @@ the following syntax:
   },
   "min_radius_enclosing_circle": Double,
   "mesh": {
+  "quality_measure": String,
   "shape_order": Integer,
     "proximal": {
       "type": {
@@ -84,7 +85,7 @@ the following syntax:
     },
     "stats": {
       "name": String,
-      "quality_measure": String,
+      "quality_measure_used": String,
       "number_elements": Double,
       "min_quality": Double,
       "mean_quality": Double,
@@ -318,8 +319,7 @@ meshing statistics (automatically calculated).
 
       - `“hcurve”`: Curvature factor (Double). We recommend 0.2. Required.
 
-      - `“hnarrow”`: Resolution of narrow regions (Double). We recommend
-        1. Required.
+      - `“hnarrow”`: Resolution of narrow regions (Double). We recommend 1. Required.
 
   - `“distal”`: Meshing parameters for the distal cylindrical domain (as
     defined in “medium”). Required if distal domain present (see
@@ -346,15 +346,14 @@ meshing statistics (automatically calculated).
 
       - `“hcurve”`: Curvature factor (Double). We recommend 0.2. Required.
 
-      - `“hnarrow”`: Resolution of narrow regions (Double). We recommend
-        1. Required.
+      - `“hnarrow”`: Resolution of narrow regions (Double). We recommend 1. Required.
 
   - `“stats”`: Meshing statistics. See COMSOL documentation for more
     details. Automatically populated.
 
       - `“name”`: Mesher identity (String) which generated the mesh (i.e., COMSOL version)
 
-      - `“quality_measure”`: (String) (e.g., “skewness”, “maxangle”,
+      - `“quality_measure_used”`: (String) (e.g., “skewness”, “maxangle”,
         “volcircum”, “vollength”, “condition”, or “growth”)
 
       - `“number_elements”`: (Integer)
