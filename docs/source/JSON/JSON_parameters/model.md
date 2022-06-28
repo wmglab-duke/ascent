@@ -416,7 +416,8 @@ record of FEM solver processes. Automatically populated.
   - `“name”`: Solver identity (String) used to solve electric currents (i.e., COMSOL version).
 
 ## Example
-````javascript
-```{include} ../../../../config/templates/model.json
+````
+```{include-literal} ../../../../config/templates/model.json
+:language: javascript
 ```
 ````
