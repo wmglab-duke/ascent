@@ -361,6 +361,16 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 pickle.dump(inner_fiber_diam_key, f)
                 f.close()
 
+        def json_load(config_path: str):
+            """
+            Loads in json data and returns to user, assuming it has already been validated.
+            :param config_path: the string path to load up
+            :return: json data (usually dict or list)
+            """
+            with open(config_path, "r") as h:
+                # print('load "{}" --> key "{}"'.format(config, key))
+                return json.load(h)
+
         # loop cartesian product
         # key_filepath = os.path.join(sim_dir, "potentials", "key.dat")  # s is line number
         # f = open(key_filepath, "r")
@@ -577,18 +587,29 @@ class Simulation(Exceptionable, Configurable, Saveable):
             elif cap:
                 fiberset_directory = os.path.join(sim_dir, str(sim_num), 'fibersets', str(p))
 
-                src_bases_indices = [None for _ in active_src_vals[0]]
-                rec_bases_indices = [None for _ in active_rec_vals[0]]
+                # what is the cuff index of the active_srcs in Sim?
+                src_cuff_index = sim_copy['active_srcs']['cuff_index']
+                # what is the cuff index of the active_recs in Sim?
+                rec_cuff_index = sim_copy['active_recs']['cuff_index']
 
-                # ============= TODO =============
-                src_bases_indices = [0, 1]
-                rec_bases_indices = [2]
-                # ============= TODO =============
+                # using the cuff indices in Sim, what are the bases files using the cuff_indexes saved in im.json?
+                im_config = json_load(os.path.join(os.path.split(sim_dir)[0], 'mesh', 'im.json'))
+
+                src_bases_indices = []
+                rec_bases_indices = []
+                currentIDs = im_config['currentIDs']
+                for id in currentIDs.keys():
+                    if currentIDs[id]['cuff_index'] == src_cuff_index:
+                        src_bases_indices.append(int(id)-1)
+                    elif currentIDs[id]['cuff_index'] == rec_cuff_index:
+                        rec_bases_indices.append(int(id)-1)
+                src_bases_indices.sort()
+                rec_bases_indices.sort()
 
                 for root, dirs, files in os.walk(fiberset_directory):
                     for file in files:
                         if re.match('[0-9]+\\.dat', file):
-                            for indices, pre in zip([src_bases_indices, rec_bases_indices], ['', 'rec_']):
+                            for indices, pre, weights in zip([src_bases_indices, rec_bases_indices], ['', 'rec_'], [active_src_vals, active_rec_vals]):
                                 bases = [None for x in indices]
                                 for bi, basis in enumerate(indices):
 
@@ -609,7 +630,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
                                 q = int(file.split('.')[0])
 
                                 weighted_bases_vec = np.zeros(len(bases[0]))
-                                for src_ind, src_weight in enumerate(indices):
+                                for src_ind, src_weight in enumerate(weights[0]):
                                     weighted_bases_vec += bases[src_ind] * src_weight
 
                                 # NOTE: if SL interp, writes files as inner0_fiber<q>.dat
