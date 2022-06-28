@@ -356,7 +356,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
                 inner_fiber_diam_key.append((inner, fiber, diam))
 
-            inner_fiber_diam_key_filename = os.path.join(nsim_inputs_directory, 'inner_fiber_diam_key.obj')
+            inner_fiber_diam_key_filename = os.path.join(my_nsim_inputs_directory, 'inner_fiber_diam_key.obj')
             with open(inner_fiber_diam_key_filename, 'wb') as f:
                 pickle.dump(inner_fiber_diam_key, f)
                 f.close()
@@ -642,7 +642,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
                                            weighted_bases_vec,
                                            fmt='%0.18f', header=str(len(weighted_bases_vec)), comments='')
                         elif file == 'diams.txt':
-                            # make_inner_fiber_diam_key(xy_mode, p, nsim_inputs_directory, potentials_directory, file)
+                            make_inner_fiber_diam_key(xy_mode, p, nsim_inputs_directory, fiberset_directory, file)
                             pass
                             # TODO
 
