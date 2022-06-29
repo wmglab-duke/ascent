@@ -207,11 +207,7 @@ following syntax:
       "mode": String,
       "top": Double,
       "bottom": Double,
-      "step": Double,
-      "scout": {
-        "model":Integer,
-        "sim": Integer
-      },
+      "step": Double
     },
     "termination_criteria": {
       "mode": "ABSOLUTE_DIFFERENCE",
@@ -821,7 +817,7 @@ which times/locations ([NEURON Scripts](../../Code_Hierarchy/NEURON)). Required.
         amplitude first tested in a binary search for thresholds.
         Required.
 
-      - `“step”`: the value (Double) is the incremental increase/decrease
+      - `“step”`: The value (Double) is the incremental increase/decrease
         of the upper/lower bound in the binary search. Required.
 
           - If `“ABSOLUTE_INCREMENT”`, the value (Double, unit: mA) is an
@@ -829,6 +825,10 @@ which times/locations ([NEURON Scripts](../../Code_Hierarchy/NEURON)). Required.
 
           - If `“PERCENT_INCREMENT”`, the value (Double, units: %) is a
             percentage (e.g., 10 is 10%).
+
+      - `"max_steps"`: The value (Integer) is the number iterations that will be used in search of a threshold.
+        If the program does not find search bounds which encapsulate threshold
+        (i.e., one bound activates and the other does not) within this number of iterations, the search protocol will exit.
 
       - `“scout”`: The value (JSONObject) is a set of key-value pairs specifying a previously run "scout"
         Sim for the same Sample. Use this feature to reduce CPU time required for many
@@ -980,105 +980,9 @@ section without loading COMSOL files into memory.
 <!-- end list -->
 
 ## Example
-```
-{
-  "pseudonym": "My example sim",
-  "n_dimensions": 3,
-  "active_srcs": {
-    "CorTec300.json": [[1, -1]]
-  },
-  "fibers": {
-    "mode": "MRG_DISCRETE",
-    "xy_trace_buffer": 5.0,
-    "z_parameters": {
-      "diameter": [1, 2, 5.7, 7.3, 8.7, 10],
-      "min": 0,
-      "max": 12500,
-      "full_nerve_length": False,
-      "offset": 0,
-      "absolute_offset": 0,
-      "seed": 123
-    },
-    "xy_parameters": {
-      "mode": "UNIFORM_DENSITY",
-      "top_down": true,
-      "minimum_number": 1, // top_down is true only
-      "target_density": 0.0005, // top_down is true only
-      "maximum_number": 100, // top_down is false only
-      "target_number": 50, // top_down is false only
-      "seed": 123
-    }
-  },
-  "waveform": {
-    "global": {
-      "dt": 0.001,
-      "on": 1,
-      "off": 49,
-      "stop": 50
-    },
-    "BIPHASIC_PULSE_TRAIN": {
-      "pulse_width": 0.1,
-      "inter_phase": 0,
-      "pulse_repetition_freq": 1,
-      "digits": 1
-    }
-  },
-  "intracellular_stim": {
-    "times": {
-      "pw": 0,
-      "IntraStim_PulseTrain_delay": 0,
-      "IntraStim_PulseTrain_dur": 0
-    },
-    "pulse_repetition_freq": 0,
-    "amp": 0,
-    "ind": 2
-  },
-  "saving": {
-    "space": {
-      "vm": false,
-      "gating": false,
-      "times": [0]
-    },
-    "time": {
-      "vm": false,
-      "gating": false,
-      "istim": false,
-      "locs": [0]
-    },
-    "ap_end_times": {
-      "loc_min": 0.1,
-      "loc_max": 0.9,
-      "threshold": -30
-    },
-    "runtimes": false
-  },
-  "protocol": {
-    "mode": "ACTIVATION_THRESHOLD",
-    "initSS": -200,
-    "dt_initSS": 10,
-    "threshold": {
-      "value": -30,
-      "n_min_aps": 1,
-      "ap_detect_location": 0.9
-    },
-    "bounds_search": {
-      "mode": "PERCENT_INCREMENT",
-      "top": -0.1,
-      "bottom": -0.01,
-      "step": 10
-    },
-    "termination_criteria": {
-      "mode": "PERCENT_DIFFERENCE",
-      "percent": 1
-    }
-  }
-  "supersampled_bases": {
-    "generate": true,
-    "use": true,
-    "dz": 1,
-    "source_sim": 1
-  }
-}
+```{eval-rst}
+.. include:: ../../../../config/templates/sim.json
+   :code: javascript
 ```
 
 [f2]: https://chart.apis.google.com/chart?cht=tx&chl=V_{e}=(amplitude)*potentials

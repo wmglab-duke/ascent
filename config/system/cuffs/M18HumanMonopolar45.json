@@ -1,14 +1,14 @@
 {
-  "code": "MH541",
+  "code": "MH451",
   "instances": [
     {
       "type": "CuffFill_Primitive",
       "label": "M18HumanMonopolar45 Cuff Fill",
       "def": {
-        "Radius": "R_out_M+Thk_fill_MH541",
-        "Thk": "Thk_fill_MH541",
-        "L": "L_M+2*Thk_fill_MH541",
-        "Center": "Center_MH541",
+        "Radius": "R_out_MH451+Thk_fill_MH451",
+        "Thk": "Thk_fill_MH451",
+        "L": "L_MH451+2*Thk_fill_MH451",
+        "Center": "Center_MH451",
         "x_shift": "0",
         "y_shift": "0"
       },
@@ -23,17 +23,17 @@
       "type": "TubeCuff_Primitive",
       "label": "M18HumanMonopolar45 Cuff",
       "def": {
-        "N_holes": "N_holes_MH541",
-        "Tube_theta": "Theta_MH541",
-        "Center": "Center_MH541",
-        "R_in": "R_in_MH541",
-        "R_out": "R_out_MH541",
-        "Tube_L": "L_MH541",
-        "Rot_def": "Rot_def_MH541",
-        "D_hole": "D_hole_MH541",
-        "Buffer_hole": "Buffer_hole_MH541",
-        "L_holecenter_cuffseam": "L_holecenter_cuffseam_MH541",
-        "Pitch_holecenter_holecenter": "Pitch_holecenter_holecenter_MH541"
+        "N_holes": "N_holes_MH451",
+        "Tube_theta": "Theta_MH451",
+        "Center": "Center_MH451",
+        "R_in": "R_in_MH451",
+        "R_out": "R_out_MH451",
+        "Tube_L": "L_MH451",
+        "Rot_def": "Rot_def_MH451",
+        "D_hole": "D_hole_MH451",
+        "Buffer_hole": "Buffer_hole_MH451",
+        "L_holecenter_cuffseam": "L_holecenter_cuffseam_MH451",
+        "Pitch_holecenter_holecenter": "Pitch_holecenter_holecenter_MH451"
       },
       "materials": [
         {
@@ -46,13 +46,13 @@
       "type": "RibbonContact_Primitive",
       "label": "M18HumanMonopolar45 Contact 1",
       "def": {
-        "Ribbon_thk": "Thk_elec_MH541",
-        "Ribbon_z": "L_elec_MH541",
-        "R_in": "R_in_MH541",
-        "Ribbon_recess": "Recess_MH541",
-        "Center": "Center_MH541",
-        "Ribbon_theta": "Theta_contact_MH541",
-        "Rot_def": "Rot_def_contact_MH541"
+        "Ribbon_thk": "Thk_elec_MH451",
+        "Ribbon_z": "L_elec_MH451",
+        "R_in": "R_in_MH451",
+        "Ribbon_recess": "Recess_MH451",
+        "Center": "Center_MH451",
+        "Ribbon_theta": "Theta_contact_MH451",
+        "Rot_def": "Rot_def_contact_MH451"
       },
       "materials": [
         {
@@ -69,127 +69,127 @@
 
   "params": [
     {
-      "name": "N_holes_MH541",
+      "name": "N_holes_MH451",
       "expression": "0",
       "description": ""
     },
     {
-      "name": "Theta_MH541",
-      "expression": "percent_circ_cuff_M*360 [deg]",
+      "name": "Theta_MH451",
+      "expression": "percent_circ_cuff_MH451*360 [deg]",
       "description": ""
     },
     {
-      "name": "Center_MH541",
+      "name": "Center_MH451",
       "expression": "z_nerve/2",
       "description": ""
     },
     {
-      "name": "R_in_MH541",
-      "expression": "max(r_nerve+thk_medium_gap_internal_M,r_cuff_in_pre_M)",
+      "name": "R_in_MH451",
+      "expression": "max(r_nerve+thk_medium_gap_internal_MH451,r_cuff_in_pre_MH451)",
       "description": ""
     },
     {
-      "name": "R_out_MH541",
-      "expression": "R_in_M+thk_cuff_MH541",
+      "name": "R_out_MH451",
+      "expression": "R_in_MH451+thk_cuff_MH451",
       "description": ""
     },
     {
-      "name": "L_MH541",
+      "name": "L_MH451",
       "expression": "3 [mm]",
       "description": ""
     },
     {
-      "name": "Rot_def_MH541",
+      "name": "Rot_def_MH451",
       "expression": "0",
       "description": ""
     },
     {
-      "name": "D_hole_MH541",
+      "name": "D_hole_MH451",
       "expression": "NaN",
       "description": ""
     },
     {
-      "name": "Buffer_hole_MH541",
+      "name": "Buffer_hole_MH451",
       "expression": "NaN",
       "description": ""
     },
     {
-      "name": "L_holecenter_cuffseam_MH541",
+      "name": "L_holecenter_cuffseam_MH451",
       "expression": "NaN",
       "description": ""
     },
     {
-      "name": "Pitch_holecenter_holecenter_MH541",
+      "name": "Pitch_holecenter_holecenter_MH451",
       "expression": "NaN",
       "description": ""
     },
     {
-      "name": "percent_circ_cuff_MH541",
-      "expression": "percent_circ_cuff_pre_M*(r_cuff_in_pre_M/R_in_M)",
+      "name": "percent_circ_cuff_MH451",
+      "expression": "percent_circ_cuff_pre_MH451*(r_cuff_in_pre_MH451/R_in_MH451)",
       "description": ""
     },
     {
-      "name": "percent_circ_cuff_pre_MH541",
+      "name": "percent_circ_cuff_pre_MH451",
       "expression": "1",
       "description": ""
     },
     {
-      "name": "z_nerve_MH541",
+      "name": "z_nerve_MH451",
       "expression": "20 [mm]",
       "description": ""
     },
     {
-      "name": "r_cuff_in_pre_MH541",
+      "name": "r_cuff_in_pre_MH451",
       "expression": "940 [um]",
       "description": ""
     },
     {
-      "name": "thk_medium_gap_internal_MH541",
+      "name": "thk_medium_gap_internal_MH451",
       "expression": "10 [um]",
       "description": ""
     },
     {
-      "name": "thk_cuff_MH541",
+      "name": "thk_cuff_MH451",
       "expression": ".5 [mm]",
       "description": ""
     },
     {
-      "name": "Recess_MH541",
+      "name": "Recess_MH451",
       "expression": "0 [mm]",
       "description": ""
     },
     {
-      "name": "Thk_elec_MH541",
+      "name": "Thk_elec_MH451",
       "expression": "0.05 [mm]",
       "description": ""
     },
     {
-      "name": "L_elec_MH541",
+      "name": "L_elec_MH451",
       "expression": ".25 [mm]",
       "description": ""
     },
     {
-      "name": "Theta_contact_MH541",
-      "expression": "360*(w_elec_M/(pi*2*(R_in_M+Recess_M))) [deg]",
+      "name": "Theta_contact_MH451",
+      "expression": "360*(w_elec_MH451/(pi*2*(R_in_MH451+Recess_MH451))) [deg]",
       "description": ""
     },
     {
-      "name": "w_elec_MH541",
-      "expression": "R_in_M*2*pi*(contact_wrap_M/360)",
+      "name": "w_elec_MH451",
+      "expression": "R_in_MH451*2*pi*(contact_wrap_MH451/360)",
       "description": ""
     },
     {
-      "name": "contact_wrap_MH541",
+      "name": "contact_wrap_MH451",
       "expression": "45",
       "description": ""
     },
     {
-      "name": "Rot_def_contact_MH541",
-      "expression": "(Theta_M/2)-(Theta_contact_M/2)",
+      "name": "Rot_def_contact_MH451",
+      "expression": "(Theta_MH451/2)-(Theta_contact_MH451/2)",
       "description": ""
     },
     {
-      "name": "Thk_fill_MH541",
+      "name": "Thk_fill_MH451",
       "expression": "100 [um]",
       "description": ""
     }

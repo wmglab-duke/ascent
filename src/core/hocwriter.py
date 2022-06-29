@@ -274,10 +274,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                 file_object.write("\nrel_thresh_resoln = %0.4f\n" % (res / 100))
             file_object.write("termination_flag = %0.0f // \n" % termination_flag)
 
-            if 'max_iter' not in protocol.keys():
-                max_iter: int = 100
-            else:
-                max_iter = self.search(Config.SIM, "protocol", "max_steps")
+            max_iter = self.search(Config.SIM, "protocol", "bounds_search").get("max_steps", 100)
             file_object.write("max_iter = %0.0f // \n" % max_iter)
 
             file_object.write("Namp = %0.0f\n" % 1)

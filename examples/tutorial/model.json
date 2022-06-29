@@ -32,12 +32,13 @@
       "add_ang": 0
     },
     "shift": {
-      "x": -30.824073742946183,
-      "y": 26.21756281938863,
+      "x": 0,
+      "y": 0,
       "z": 0
     }
   },
   "mesh": {
+    "quality_measure":"vollength",
     "shape_order": 2,
     "proximal": {
       "hcurve": 0.2,

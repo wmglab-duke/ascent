@@ -21,9 +21,8 @@ import argparse
 import pandas as pd
 import traceback
 
+
 # %%Set up parser and top level args
-
-
 class listAction(argparse.Action):
     def __call__(self, parser, args, values, option_string=None):
         run_path = 'runs'
@@ -50,26 +49,36 @@ class listAction(argparse.Action):
         sys.exit()
 
 
-parser = argparse.ArgumentParser(description='ASCENT: Automated Simulations to Characterize Electrical Nerve Thresholds')
+parser = argparse.ArgumentParser(
+    description='ASCENT: Automated Simulations to Characterize Electrical Nerve Thresholds')
 parser.add_argument('run_indices', type=int, nargs='*', help='Space separated indices to submit NEURON sims for')
 parser.add_argument('-p', '--partition', help='If submitting on a cluster, overrides slurm_params.json')
-parser.add_argument('-n', '--num-cpu', type=int, help='For local submission: set number of CPUs to use, overrides run.json')
-parser.add_argument('-m', '--job-mem', type=int, help='For cluster submission: set amount of RAM per job (in MB), overrides slurm_params.json')
-parser.add_argument('-j', '--num-jobs', type=int, help='For cluster submission: set number of jobs per array, overrides slurm_params.json')
-parser.add_argument('-l', '--list-runs', action=listAction, nargs=0, help='List info for available runs.z If supplying this argument, do not pass any run indices')
-parser.add_argument('-A', '--all-runs', action='store_true', help='Submit all runs in the present export folder. If supplying this argument, do not pass any run indices')
-parser.add_argument('-s', '--skip-summary', action='store_true', help='Begin submitting fibers without asking for confirmation')
-parser.add_argument('-S', '--slurm-params', type=str, help='For cluster submission: string for additional slurm parameters (enclose in quotes)')
+parser.add_argument('-n', '--num-cpu', type=int,
+                    help='For local submission: set number of CPUs to use, overrides run.json')
+parser.add_argument('-m', '--job-mem', type=int,
+                    help='For cluster submission: set amount of RAM per job (in MB), overrides slurm_params.json')
+parser.add_argument('-j', '--num-jobs', type=int,
+                    help='For cluster submission: set number of jobs per array, overrides slurm_params.json')
+parser.add_argument('-l', '--list-runs', action=listAction, nargs=0,
+                    help='List info for available runs.z If supplying this argument, do not pass any run indices')
+parser.add_argument('-A', '--all-runs', action='store_true',
+                    help='Submit all runs in the present export folder. If supplying this argument, do not pass any run indices')
+parser.add_argument('-s', '--skip-summary', action='store_true',
+                    help='Begin submitting fibers without asking for confirmation')
+parser.add_argument('-S', '--slurm-params', type=str,
+                    help='For cluster submission: string for additional slurm parameters (enclose in quotes)')
 submit_context_group = parser.add_mutually_exclusive_group()
-submit_context_group.add_argument('-L', '--local-submit', action='store_true', help='Set submission context to local, overrides run.json')
-submit_context_group.add_argument('-C', '--cluster-submit', action='store_true', help='Set submission context to cluster, overrides run.json')
+submit_context_group.add_argument('-L', '--local-submit', action='store_true',
+                                  help='Set submission context to local, overrides run.json')
+submit_context_group.add_argument('-C', '--cluster-submit', action='store_true',
+                                  help='Set submission context to cluster, overrides run.json')
 parser.add_argument('-v', '--verbose', action='store_true', help='Print detailed submission info')
 
 ALLOWED_SUBMISSION_CONTEXTS = ['cluster', 'local', 'auto']
 OS = 'UNIX-LIKE' if any([s in sys.platform for s in ['darwin', 'linux']]) else 'WINDOWS'
 
-# %% Set up utility functions
 
+# %% Set up utility functions
 
 class WarnOnlyOnce:
     warnings = set()
@@ -122,7 +131,7 @@ def ensure_dir(directory):
 
 
 def auto_compile(override: bool = False):
-    if (not os.path.exists(os.path.join('MOD_Files/x86_64')) and OS == 'UNIX-LIKE') or \
+    if (not os.path.exists(os.path.join('MOD_Files', 'x86_64', 'special')) and OS == 'UNIX-LIKE') or \
             (not os.path.exists(os.path.join('MOD_Files', 'nrnmech.dll')) and OS == 'WINDOWS') or override:
         print('compile')
         os.chdir(os.path.join('MOD_Files'))
@@ -220,9 +229,11 @@ def get_thresh_bounds(args, sim_dir: str, sim_name: str, inner_ind: int):
 
             else:
                 if args.verbose:
-                    warnings.warn(f"No fiber threshold exists for scout sim: inner{inner_ind} fiber0, using standard top and bottom")
+                    warnings.warn(
+                        f"No fiber threshold exists for scout sim: inner{inner_ind} fiber0, using standard top and bottom")
                 else:
-                    WarnOnlyOnce.warn(f"Missing at least one scout threshold, using standard top and bottom. Rerun with --verbose flag for specific inner index.")
+                    WarnOnlyOnce.warn(
+                        f"Missing at least one scout threshold, using standard top and bottom. Rerun with --verbose flag for specific inner index.")
 
                 top = sim_config['protocol']['bounds_search']['top']
                 bottom = sim_config['protocol']['bounds_search']['bottom']
@@ -318,7 +329,6 @@ def local_submit(my_local_args: dict):
 
 
 def cluster_submit(run_number: int, partition: str, args, mem: int = 2000, array_length_max: int = 10):
-
     # configuration is not empty
     assert array_length_max > 0, 'SLURM Job Array length is not > 0: array_length_max={}'.format(array_length_max)
 
@@ -351,7 +361,8 @@ def cluster_submit(run_number: int, partition: str, args, mem: int = 2000, array
                     else:
                         # print progress bar
                         total_iterations = len(samples) * len(models) * len(sims) * len(nsim_list)
-                        printProgressBar(current_iteration, total_iterations, length=40, prefix='Run {}:'.format(run_number))
+                        printProgressBar(current_iteration, total_iterations, length=40,
+                                         prefix='Run {}:'.format(run_number))
 
                     sim_path = os.path.join(sim_dir, sim_name)
                     fibers_path = os.path.abspath(os.path.join(sim_path, 'data', 'inputs'))
@@ -413,7 +424,8 @@ def cluster_submit(run_number: int, partition: str, args, mem: int = 2000, array
 
                     elif missing_total == 1:
                         stimamp_top, stimamp_bottom = get_thresh_bounds(args, sim_dir, sim_name, inner_ind_solo)
-                        start_path_solo = os.path.join(sim_path, 'start{}'.format('.sh' if OS == 'UNIX-LIKE' else '.bat'))
+                        start_path_solo = os.path.join(sim_path,
+                                                       'start{}'.format('.sh' if OS == 'UNIX-LIKE' else '.bat'))
 
                         if inner_fiber_diam_key is not None:
                             diameter = get_diameter(inner_fiber_diam_key, inner_ind, fiber_ind)
@@ -433,7 +445,8 @@ def cluster_submit(run_number: int, partition: str, args, mem: int = 2000, array
                             elif neuron_flag == 3:
                                 axonnodes = int(n_fiber_coords)
 
-                            make_task(OS, 'cluster', start_path_solo, sim_path, inner_ind_solo, fiber_ind_solo, stimamp_top, stimamp_bottom,
+                            make_task(OS, 'cluster', start_path_solo, sim_path, inner_ind_solo, fiber_ind_solo,
+                                      stimamp_top, stimamp_bottom,
                                       diameter, deltaz, axonnodes)
 
                             # submit batch job for fiber
@@ -507,7 +520,8 @@ def cluster_submit(run_number: int, partition: str, args, mem: int = 2000, array
 
                                 stimamp_top, stimamp_bottom = get_thresh_bounds(args, sim_dir, sim_name, inner_ind)
                                 if stimamp_top is not None and stimamp_bottom is not None:
-                                    make_task(OS, 'cluster', start_path, sim_path, inner_ind, fiber_ind, stimamp_top, stimamp_bottom,
+                                    make_task(OS, 'cluster', start_path, sim_path, inner_ind, fiber_ind, stimamp_top,
+                                              stimamp_bottom,
                                               diameter, deltaz, axonnodes)
                                     array_index += 1
                                     job_count += 1
@@ -518,17 +532,19 @@ def cluster_submit(run_number: int, partition: str, args, mem: int = 2000, array
 
                                 key_file = os.path.join(sim_path, 'out_err_key.txt')
 
-                                data[0].append([x for x in range(start, job_count)])  # note: last value is job_count - 1
+                                data[0].append(
+                                    [x for x in range(start, job_count)])  # note: last value is job_count - 1
                                 data[1].append(inner_index_tally)
                                 data[2].append(fiber_index_tally)
 
                                 key_arr = np.transpose(np.array([[x for xs in data[0] for x in xs],
-                                                                [y for ys in data[1] for y in ys],
-                                                                [z for zs in data[2] for z in zs]]))
+                                                                 [y for ys in data[1] for y in ys],
+                                                                 [z for zs in data[2] for z in zs]]))
 
                                 if fiber_file_ind == max_fibers_files_ind:
                                     with open(key_file, "ab") as f:
-                                        np.savetxt(f, key_arr, fmt='%d', header='job_n, inner, fiber', comments='', delimiter=", ")
+                                        np.savetxt(f, key_arr, fmt='%d', header='job_n, inner, fiber', comments='',
+                                                   delimiter=", ")
 
                                     data = [[], [], []]
 
@@ -659,7 +675,8 @@ def make_local_submission_list(run_number: int, args, summary_gen=False):
                         elif neuron_flag == 3:
                             axonnodes = int(n_fiber_coords)
 
-                        if not summary_gen: make_task(OS, 'local', start_path, sim_path, inner_ind, fiber_ind, stimamp_top, stimamp_bottom,
+                        if not summary_gen: make_task(OS, 'local', start_path, sim_path, inner_ind, fiber_ind,
+                                                      stimamp_top, stimamp_bottom,
                                                       diameter, deltaz, axonnodes)
 
                         # submit batch job for fiber
@@ -677,7 +694,6 @@ def make_local_submission_list(run_number: int, args, summary_gen=False):
 
 
 def submit_run(sub_context, run_index, args):
-
     if sub_context == 'local':
         filename = os.path.join('runs', run_index + '.json')
         run = load(filename)
@@ -727,11 +743,9 @@ def submit_run(sub_context, run_index, args):
     else:
         sys.exit('Invalid submission context: {}'.format(sub_context))
 
+
 # %% main
-
-
 def main():
-
     # validate inputs
     args = parser.parse_args()
 
@@ -834,7 +848,10 @@ def main():
             submit_run(sub_context, run_index, args)
         except Exception:
             traceback.print_exc()
-            print('WARNING: Error during submission of run {}. See traceback for more information.\n Proceeding to next run...'.format(run_index))
+            print(
+                'WARNING: Error during submission of run {}. See traceback for more information.\n Proceeding to next run...'.format(
+                    run_index))
+
 
 
 if __name__ == "__main__":  # Allows for the safe importing of the main module

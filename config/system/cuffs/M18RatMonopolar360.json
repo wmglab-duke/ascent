@@ -5,9 +5,9 @@
       "type": "CuffFill_Primitive",
       "label": "M18RatMonopolar360 Cuff Fill",
       "def": {
-        "Radius": "R_out_M+Thk_fill_MR3601",
+        "Radius": "R_out_MR3601+Thk_fill_MR3601",
         "Thk": "Thk_fill_MR3601",
-        "L": "L_M+2*Thk_fill_MR3601",
+        "L": "L_MR3601+2*Thk_fill_MR3601",
         "Center": "Center_MR3601",
         "x_shift": "0",
         "y_shift": "0"
@@ -75,7 +75,7 @@
     },
     {
       "name": "Theta_MR3601",
-      "expression": "percent_circ_cuff_M*360 [deg]",
+      "expression": "percent_circ_cuff_MR3601*360 [deg]",
       "description": ""
     },
     {
@@ -85,12 +85,12 @@
     },
     {
       "name": "R_in_MR3601",
-      "expression": "max(r_nerve+thk_medium_gap_internal_M,r_cuff_in_pre_M)",
+      "expression": "max(r_nerve+thk_medium_gap_internal_MR3601,r_cuff_in_pre_MR3601)",
       "description": ""
     },
     {
       "name": "R_out_MR3601",
-      "expression": "R_in_M+thk_cuff_MR3601",
+      "expression": "R_in_MR3601+thk_cuff_MR3601",
       "description": ""
     },
     {
@@ -125,7 +125,7 @@
     },
     {
       "name": "percent_circ_cuff_MR3601",
-      "expression": "percent_circ_cuff_pre_M*(r_cuff_in_pre_M/R_in_M)",
+      "expression": "percent_circ_cuff_pre_MR3601*(r_cuff_in_pre_MR3601/R_in_MR3601)",
       "description": ""
     },
     {
@@ -170,12 +170,12 @@
     },
     {
       "name": "Theta_contact_MR3601",
-      "expression": "360*(w_elec_M/(pi*2*(R_in_M+Recess_M))) [deg]",
+      "expression": "360*(w_elec_MR3601/(pi*2*(R_in_MR3601+Recess_MR3601))) [deg]",
       "description": ""
     },
     {
       "name": "w_elec_MR3601",
-      "expression": "R_in_M*2*pi*(contact_wrap_M/360)",
+      "expression": "R_in_MR3601*2*pi*(contact_wrap_MR3601/360)",
       "description": ""
     },
     {
@@ -185,7 +185,7 @@
     },
     {
       "name": "Rot_def_contact_MR3601",
-      "expression": "(Theta_M/2)-(Theta_contact_M/2)",
+      "expression": "(Theta_MR3601/2)-(Theta_contact_MR3601/2)",
       "description": ""
     },
     {
