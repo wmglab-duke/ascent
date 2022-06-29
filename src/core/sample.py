@@ -462,8 +462,8 @@ class Sample(Exceptionable, Configurable, Saveable):
         plt.figure()
         slide.plot(final=False, fix_aspect_ratio='True', axlabel=u"\u03bcm",
                    title='Initial sample from morphology masks')
-        plt.savefig(plotpath + '/sample_initial',dpi=400)
-        if self.search(Config.RUN,"popup_plots",optional=True)==True:
+        plt.savefig(plotpath + '/sample_initial', dpi=400)
+        if self.search(Config.RUN, "popup_plots", optional=True) == True:
             plt.show()
         else:
             plt.clf()
@@ -522,16 +522,16 @@ class Sample(Exceptionable, Configurable, Saveable):
                 if 'nerve' in self.search(Config.SAMPLE, 'boundary_separation').keys():
                     sep_nerve = self.search(Config.SAMPLE, 'boundary_separation', 'nerve')
                     print('\tensuring minimum nerve:fascicle separation of {} um'.format(sep_nerve))
-                    sep_nerve = sep_nerve - sep_fascicles/2
+                    sep_nerve = sep_nerve - sep_fascicles / 2
 
                 #scale nerve trace down by sep nerve, will be scaled back up later
                 pre_area = slide.nerve.area()
-                slide.nerve.offset(distance = -sep_nerve)
+                slide.nerve.offset(distance=-sep_nerve)
                 slide.nerve.scale(1)
-                slide.nerve.points = np.flip(slide.nerve.points,axis = 0) # set points to opencv orientation
+                slide.nerve.points = np.flip(slide.nerve.points, axis=0)  # set points to opencv orientation
 
                 if self.configs[Config.CLI_ARGS.value].get('render_deform') == True or \
-                    self.search(Config.SAMPLE, 'render_deform',optional = True) == True:
+                        self.search(Config.SAMPLE, 'render_deform', optional=True) == True:
                     render_deform = True
                     print('Sample deformation is set to render. Rendering...')
                 else:
@@ -574,8 +574,8 @@ class Sample(Exceptionable, Configurable, Saveable):
                 else:
                     slide.nerve = slide.reshaped_nerve(reshape_nerve_mode)
                 #deforms+offsets usually shrinks the area a bit, so reset back to the original area
-                if slide.nerve.area()<pre_area:
-                    slide.nerve.scale((pre_area/slide.nerve.area())**.5)
+                if slide.nerve.area() < pre_area:
+                    slide.nerve.scale((pre_area / slide.nerve.area())**.5)
                 else:
                     print('Note: nerve area before deformation was {}, post deformation is {}'.format(
                         pre_area, self.nerve.area()))
@@ -611,9 +611,9 @@ class Sample(Exceptionable, Configurable, Saveable):
 
         plt.figure()
         slide.plot(final=False, fix_aspect_ratio='True', axlabel=u"\u03bcm",
-                       title='Final sample after any user specified processing')
-        plt.savefig(plotpath + '/sample_final',dpi=400)
-        if self.search(Config.RUN,"popup_plots",optional=True)==True:
+                   title='Final sample after any user specified processing')
+        plt.savefig(plotpath + '/sample_final', dpi=400)
+        if self.search(Config.RUN, "popup_plots", optional=True) == True:
             plt.show()
         else:
             plt.clf()

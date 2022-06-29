@@ -63,9 +63,9 @@ class Deformable(Exceptionable):
         contents = [trace.deepcopy() for trace in self.contents]
 
         bounds = self.start.polygon().bounds
-        width = int(1 * (bounds[2]+bounds[0]))
-        height = int(1 * (bounds[3]+bounds[1]))
-        im_ratio=height/width
+        width = int(1 * (bounds[2] + bounds[0]))
+        height = int(1 * (bounds[3] + bounds[1]))
+        im_ratio = height / width
 
         # offset all the traces to provide for an effective minimum distance for original fascicles
         for trace in contents:
@@ -87,7 +87,7 @@ class Deformable(Exceptionable):
         # draw the deformation
         if render:
             #Initialize screen and surface which each frame will be drawn on
-            screen = pygame.display.set_mode((800, int(800*im_ratio)),HWSURFACE|DOUBLEBUF|RESIZABLE)
+            screen = pygame.display.set_mode((800, int(800 * im_ratio)), HWSURFACE | DOUBLEBUF | RESIZABLE)
             drawsurf = pygame.surface.Surface((width, height))
             #pygame debug draw options
             options = pymunk.pygame_util.DrawOptions(drawsurf)
@@ -160,7 +160,7 @@ class Deformable(Exceptionable):
                 drawsurf.fill(THECOLORS["white"])
                 space.debug_draw(options)
                 #resize surface and project on screen
-                screen.blit(pygame.transform.flip(pygame.transform.scale(drawsurf, (800,int(800*im_ratio))),False,True), (0, 0))
+                screen.blit(pygame.transform.flip(pygame.transform.scale(drawsurf, (800, int(800 * im_ratio))), False, True), (0, 0))
                 pygame.display.flip()
                 pygame.display.set_caption('nerve morph step {} of {}'.format(morph_index, len(morph_steps)))
 
@@ -236,9 +236,9 @@ class Deformable(Exceptionable):
             for i, point in enumerate(trace.points):
                 point += vectors[i] * ratio
             traces.append(trace)
-        if deform_ratio !=0:
+        if deform_ratio != 0:
             def_traces = traces[:int((deform_ratio if deform_ratio is not None else 1) * count)]
-        else: #still need fascicle sep physics with deform_ratio = 0, so pass starting trace only
+        else:  # still need fascicle sep physics with deform_ratio = 0, so pass starting trace only
             def_traces = [traces[0]]
         return def_traces
 
