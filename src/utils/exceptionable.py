@@ -56,14 +56,14 @@ class Exceptionable(Configurable):
         :param code: index of exception in json file (i.e. exceptions.json)
         :return: full message (with code and text)
         """
-        
+
         codelist = [x['code'] for x in self.configs[Config.EXCEPTIONS.value]]
-        
+
         # force to exception 0 if incorrect bounds
         if code not in codelist:
             code_ind = 0
         else:
-            code_ind = np.where(np.array(codelist)==code)[0][0]
+            code_ind = np.where(np.array(codelist) == code)[0][0]
 
         exception = self.configs[Config.EXCEPTIONS.value][code_ind]
         # note that the json purposefully has the redundant entry "code"

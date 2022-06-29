@@ -104,11 +104,12 @@ class MaskInputMode(ASCENTEnum):
     OUTERS = 1
     INNER_AND_OUTER_SEPARATE = 2
     INNER_AND_OUTER_COMPILED = 3
-    
+
+
 @unique
 class ScaleInputMode(ASCENTEnum):
     config = 'scale_input'
-    
+
     MASK = 0
     RATIO = 1
 
@@ -251,16 +252,19 @@ class WaveformMode(ASCENTEnum):
     BIPHASIC_PULSE_TRAIN = 3
     BIPHASIC_PULSE_TRAIN_Q_BALANCED_UNEVEN_PW = 4
     EXPLICIT = 5
-    
+
 # %% Simulation
+
+
 @unique
 class ExportMode(ASCENTEnum):
-    
+
     OVERWRITE = "overwrite"
     ERROR = "error"
     SELECTIVE = "selective"
 
 # %% NEURON Protocols
+
 
 @unique
 class NeuronRunMode(ASCENTEnum):

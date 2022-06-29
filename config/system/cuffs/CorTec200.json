@@ -50,7 +50,7 @@
         "Ribbon_z": "L_elec_CT200",
         "R_in": "R_in_CT200",
         "Ribbon_recess": "Recess_CT200",
-        "Center": "Center_CT+(Pitch_CT/2)",
+        "Center": "Center_CT200+(Pitch_CT200/2)",
         "Ribbon_theta": "Theta_contact_CT200",
         "Rot_def": "Rot_def_contact_CT200"
       },
@@ -69,7 +69,7 @@
         "Ribbon_z": "L_elec_CT200",
         "R_in": "R_in_CT200",
         "Ribbon_recess": "Recess_CT200",
-        "Center": "Center_CT-(Pitch_CT/2)",
+        "Center": "Center_CT200-(Pitch_CT200/2)",
         "Ribbon_theta": "Theta_contact_CT200",
         "Rot_def": "Rot_def_contact_CT200"
       },
@@ -90,7 +90,7 @@
     },
     {
       "name": "Theta_CT200",
-      "expression": "percent_circ_cuff_CT*360 [deg]",
+      "expression": "percent_circ_cuff_CT200*360 [deg]",
       "description": ""
     },
     {
@@ -100,12 +100,12 @@
     },
     {
       "name": "R_in_CT200",
-      "expression": "max(r_nerve+thk_medium_gap_internal_CT,r_cuff_in_pre_CT)",
+      "expression": "max(r_nerve+thk_medium_gap_internal_CT200,r_cuff_in_pre_CT200)",
       "description": ""
     },
     {
       "name": "R_out_CT200",
-      "expression": "R_in_CT+thk_cuff_CT200",
+      "expression": "R_in_CT200+thk_cuff_CT200",
       "description": ""
     },
     {
@@ -115,7 +115,7 @@
     },
     {
       "name": "Rot_def_CT200",
-      "expression": "-(theta_cuff_CT-theta_contact_CT)/2",
+      "expression": "-(theta_cuff_CT200-theta_contact_CT200)/2",
       "description": ""
     },
     {
@@ -140,7 +140,7 @@
     },
     {
       "name": "percent_circ_cuff_CT200",
-      "expression": "percent_circ_cuff_pre_CT*(r_cuff_in_pre_CT/R_in_CT)",
+      "expression": "percent_circ_cuff_pre_CT200*(r_cuff_in_pre_CT200/R_in_CT200)",
       "description": ""
     },
     {
@@ -175,12 +175,12 @@
     },
     {
       "name": "theta_contact_CT200",
-      "expression": "360*(B_CT/(2*pi*(R_in_CT+Recess_CT))) [deg]",
+      "expression": "360*(B_CT200/(2*pi*(R_in_CT200+Recess_CT200))) [deg]",
       "description": ""
     },
     {
       "name": "theta_cuff_CT200",
-      "expression": "percent_circ_cuff_CT*360 [deg]",
+      "expression": "percent_circ_cuff_CT200*360 [deg]",
       "description": ""
     },
     {
@@ -195,7 +195,7 @@
     },
     {
       "name": "Theta_contact_CT200",
-      "expression": "360*(B_CT/(2*pi*(R_in_CT+Recess_CT))) [deg]",
+      "expression": "360*(B_CT200/(2*pi*(R_in_CT200+Recess_CT200))) [deg]",
       "description": ""
     },
     {

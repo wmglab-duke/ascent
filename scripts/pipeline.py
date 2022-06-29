@@ -73,16 +73,16 @@ def run(args):
         end = time.time()
         elapsed = end - start
 
-        if args.auto_submit or runner.search(Config.RUN,'auto_submit_fibers', optional=True)==True:
+        if args.auto_submit or runner.search(Config.RUN, 'auto_submit_fibers', optional=True) == True:
             print('Auto submitting fibers for run {}'.format(argument))
-            #submit fibers before moving on to next run
+            # submit fibers before moving on to next run
             reset_dir = os.getcwd()
             export_path = runner.search(Config.ENV, Env.NSIM_EXPORT_PATH.value)
             os.chdir(export_path)
             with open(os.devnull, 'wb') as devnull:
-                #-s flag to skip summary
-                exit_code = subprocess.run(['python','submit.py', '-s',str(argument)], stdout=devnull, stderr=devnull)
-                if exit_code !=0: print('WARNING: Non-zero exit code during fiber submission. Continuing to next run...')
+                # -s flag to skip summary
+                exit_code = subprocess.run(['python', 'submit.py', '-s', str(argument)], stdout=devnull, stderr=devnull)
+                if exit_code != 0: print('WARNING: Non-zero exit code during fiber submission. Continuing to next run...')
             os.chdir(reset_dir)
 
         print('\nruntime: {} (hh:mm:ss)'.format(time.strftime('%H:%M:%S', time.gmtime(elapsed))))
