@@ -156,39 +156,7 @@ If submitting locally, the program will not continue to the next run until all f
 the next run will start after all batch NEURON jobs are submitted.
 
 ## Example
-```
-{
-  "pseudonym": "My example run",
-  "submission_context": “cluster”,
-  "sample": 62,
-  "models": [0],
-  "sims": [99],
-  "recycle_meshes": true,
-  "break_points": {
-    "pre_java": false,
-    "pre_geom_run": false,
-    "post_geom_run": true,
-    "pre_mesh_proximal": false,
-    "post_mesh_proximal": false,
-    "pre_mesh_distal": false,
-    "post_mesh_distal": false,
-    "post_material_assign": false,
-    "pre_loop_currents": false
-  },
-  "endo_only_solution":true,
-  "models_exit_status": [true],
-  "keep": {
-    "debug_geom": true,
-    "mesh": true,
-    "bases": true
-  },
-  "partial_fem": {
-    "cuff_only": false,
-    "nerve_only": false
-  },
-  "export_behavior": "selective",
-  "local_avail_cpus": 3,
-  “popup_plots”: true,
-  "auto_submit_fibers": false
-}
+```{eval-rst}
+.. include:: ../../../../config/templates/run.json
+   :code: javascript
 ```

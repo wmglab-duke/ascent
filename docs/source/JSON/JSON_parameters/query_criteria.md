@@ -65,25 +65,7 @@ Note: you can have BOTH lists of desired ***Sample***, ***Model***, and
 ***Sim*** indices AND search criteria in one `query_criteria.json`.
 
 ## Example
-```
-{
-  "partial_matches": true,
-  "include_downstream": true,
-  "sample": {
-    "sample": "Rat16-3"
-  },
-  "model": {
-    "medium": {
-      "proximal": {
-        "length": [1000, 2000]
-      }
-    }
-  },
-  "sim": null,
-  "indices": {
-    "sample": null,
-    "model": null,
-    "sim": null
-  }
-}
+```{eval-rst}
+.. include:: ../../../../config/templates/query_criteria.json
+   :code: javascript
 ```
