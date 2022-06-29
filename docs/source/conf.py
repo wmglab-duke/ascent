@@ -30,13 +30,13 @@ release = 'v1.1.2'
 # ones.
 
 extensions = ['myst_parser',
-            'sphinxarg.ext',
-            'sphinx.ext.intersphinx',
-            'sphinx.ext.autodoc',
-            'sphinxcontrib.bibtex',
-            'sphinxcontrib.details.directive',
-            'sphinx_copybutton',
-            'sphinx_rtd_dark_mode']
+              'sphinxarg.ext',
+              'sphinx.ext.intersphinx',
+              'sphinx.ext.autodoc',
+              'sphinxcontrib.bibtex',
+              'sphinxcontrib.details.directive',
+              'sphinx_copybutton',
+              'sphinx_rtd_dark_mode']
 
 source_suffix = {
     '.rst': 'restructuredtext',
@@ -46,7 +46,7 @@ source_suffix = {
 
 import mock
 
-MOCK_MODULES = ['numpy','pandas']
+MOCK_MODULES = ['numpy', 'pandas']
 
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = mock.Mock()
@@ -76,8 +76,8 @@ html_css_files = [
 ]
 html_show_copyright = True
 
-#no logo because doesn't look nice
-#html_logo="uploads/ascent_media_release_v2.png"
+# no logo because doesn't look nice
+# html_logo="uploads/ascent_media_release_v2.png"
 
 html_show_sphinx = False
 

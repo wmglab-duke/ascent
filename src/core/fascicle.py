@@ -31,24 +31,24 @@ class Fascicle(Exceptionable):
          option 1: an outer and any number of inners
          option 2: an inner, which is passed in as an outer argument, and scaled out to make a virtual outer
          option 3: ... tbd
-         
+
         :param outer_scale: how much the inner will be scaled to make a virtual outer
         :param exception_config: existing data already loaded form JSON (hence SetupMode.OLD)
         :param inners: list of inner Traces (i.e. endoneuriums)
         :param outer: single outer Trace (i.e. perineurium)
         """
-        
+
         # set up superclass
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
 
-        #intialize scale attribute
-        self.outer_scale = None        
+        # intialize scale attribute
+        self.outer_scale = None
 
         # initialize constituent traces
         self.inners: List[Trace] = inners
         self.outer: Trace = outer
 
-        if len(inners)>0: self.validate()
+        if len(inners) > 0: self.validate()
 
     def validate(self):
         """
@@ -64,7 +64,7 @@ class Fascicle(Exceptionable):
             plt.axes().set_aspect('equal')
             plt.show()
             self.throw(9)
-            
+
     def intersects(self, other: Union['Fascicle', Nerve]):
         """
         :param other: the other Fascicle or Nerve to check
@@ -223,14 +223,13 @@ class Fascicle(Exceptionable):
 
         # scale up outer trace
         self.outer.offset(fit=fit)
-        
-        #check for any bad traces
-        self.validate()
 
+        # check for any bad traces
+        self.validate()
 
     @staticmethod
     def to_list(inner_img_path: str, outer_img_path: str, exception_config,
-                         plot: bool = False, z: float = 0) -> List['Fascicle']:
+                plot: bool = False, z: float = 0) -> List['Fascicle']:
         """
         Generates list of fascicle objects from an inner and an outer image
         Example usage:
@@ -262,15 +261,15 @@ class Fascicle(Exceptionable):
             # build list of traces
             return [Trace([item + [z] for item in contour[:, 0, :]], exception_config) for contour in contours]
         if outer_img_path is None:
-            #inners only case, set each inner as an outer
+            # inners only case, set each inner as an outer
             outers = np.array(build_traces(inner_img_path))
-        else:    
+        else:
             # build traces list for inner and outer image paths
             inners, outers = (np.array(build_traces(path)) for path in (inner_img_path, outer_img_path))
-    
+
             # create empty list to hold the outer traces that inners correspond to
             inner_correspondence: List[int] = []
-    
+
             # iterate through all inner traces and assign outer index
             for inner in inners:
                 mask = [inner.within(outer) for outer in outers]
@@ -287,12 +286,12 @@ class Fascicle(Exceptionable):
             if outer_img_path is not None:
                 # get all the inner traces that correspond to this outer
                 inners_corresponding = inners[np.where(np.array(inner_correspondence) == index)]
-    
+
                 # add fascicle!
                 fascicles.append(Fascicle(exception_config, outer, inners_corresponding))
             else:
-                #inners only case
-                fascicles.append(Fascicle(exception_config, outer))   
+                # inners only case
+                fascicles.append(Fascicle(exception_config, outer))
             if plot:
                 fascicles[index].plot()
 
