@@ -90,11 +90,11 @@ class Slide(Exceptionable):
             plt.savefig(plotpath + '/sample_debug')
             plt.clf()
             plt.close()
-            
+
         if self.fascicles_too_small():
             debug_plot()
             self.throw(146)
-            
+
         if self.monofasc():
             return True
 
