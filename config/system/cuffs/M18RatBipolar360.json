@@ -108,7 +108,7 @@
     },
     {
       "name": "R_in_MR3602",
-      "expression": "max(r_nerve+thk_MR3602edium_gap_internal_MR3602,r_cuff_in_pre_MR3602)",
+      "expression": "max(r_nerve+thk_medium_gap_internal_MR3602,r_cuff_in_pre_MR3602)",
       "description": ""
     },
     {
@@ -167,7 +167,7 @@
       "description": ""
     },
     {
-      "name": "thk_MR3602edium_gap_internal_MR3602",
+      "name": "thk_medium_gap_internal_MR3602",
       "expression": "10 [um]",
       "description": ""
     },
