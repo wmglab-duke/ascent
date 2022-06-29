@@ -106,15 +106,14 @@ class Configurable:
                     raise Exception('\n\tcode:\t-5\n'
                                     '\ttext:\tValue {} not defined in {}\n'
                                     '\tsource:\tsrc.utils.Configurable.search'.format(
-                        ''.join([arg + '->' for arg in args[:-1]]) + args[-1], key))
-                    
+                                        ''.join([arg + '->' for arg in args[:-1]]) + args[-1], key))
 
         if isinstance(result, list):
             if len(result) < 1 and not optional:
                 raise Exception('\n\tcode:\t-6\n'
                                 '\ttext:\tValue for {} is empty in {}\n'
                                 '\tsource:\tsrc.utils.Configurable.search'.format(
-                    ''.join([arg + '->' for arg in args[:-1]]) + args[-1], key))
+                                    ''.join([arg + '->' for arg in args[:-1]]) + args[-1], key))
 
         return result
 
@@ -156,7 +155,7 @@ class Configurable:
         :return: the Enum version of the mode that is specified by the config
         """
 
-        return self.search_multi_mode(key=key, mode=mode, count=1,optional=optional)[0]
+        return self.search_multi_mode(key=key, mode=mode, count=1, optional=optional)[0]
 
     def search_multi_mode(self, key: Config, mode: Type[Enum] = None, modes: List[Type[Enum]] = None,
                           count: int = None, optional: bool = False) -> list:
@@ -180,7 +179,7 @@ class Configurable:
 
         for mode in modes:
 
-            modes_in_config = self.search(key, 'modes', mode.config.value,optional=optional)
+            modes_in_config = self.search(key, 'modes', mode.config.value, optional=optional)
 
             if not isinstance(modes_in_config, list):
                 modes_in_config = [modes_in_config]
@@ -189,14 +188,13 @@ class Configurable:
                              if str(option).split('.')[1] in modes_in_config]
 
         if count is not None:
-            if len(list_results)==0 and optional:
+            if len(list_results) == 0 and optional:
                 list_results = [None]
             elif len(list_results) != count:
                 raise Exception('\n\tcode:\t-3\n'
                                 '\ttext:\t{} matches found when {} were expected.\n'
                                 '\tsource:\tsrc.utils.Configurable.search_multi_mode'.format(len(list_results), count))
 
-    
         return list_results
 
     @staticmethod

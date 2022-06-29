@@ -12,6 +12,7 @@ import os
 import sys
 from src.utils import Exceptionable, SetupMode
 
+
 class Validatable(Exceptionable):
 
     def __init__(self):
@@ -24,7 +25,7 @@ class Validatable(Exceptionable):
         codematch = {}
         for cuff in [x for x in os.listdir(path) if x.endswith('.json')]:
             names.append(cuff)
-            with open(os.path.join(path,cuff),'r') as f:
+            with open(os.path.join(path, cuff), 'r') as f:
                 cuffcon = json.load(f)
                 codes.append(cuffcon['code'])
         repeatname = set([x for x in names if names.count(x) > 1])
@@ -35,7 +36,7 @@ class Validatable(Exceptionable):
         if len(repeatcode) > 0:
             print('Cuff config codes duplicated: {}'.format(repeatcode))
             self.throw(9001)
-    
+
     def validate_versions(self):
         if not (sys.version_info.major == 3 and sys.version_info.minor >= 7):
             print('You are running Python {}.{}, but 3.7 or later required'.format(sys.version_info.major,

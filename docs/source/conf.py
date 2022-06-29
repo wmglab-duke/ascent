@@ -29,7 +29,7 @@ release = 'v1.1.2'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 
-extensions = ['myst_parser','sphinxarg.ext','sphinx.ext.intersphinx','sphinx.ext.autodoc']
+extensions = ['myst_parser', 'sphinxarg.ext', 'sphinx.ext.intersphinx', 'sphinx.ext.autodoc']
 
 source_suffix = {
     '.rst': 'restructuredtext',
@@ -39,7 +39,7 @@ source_suffix = {
 
 import mock
 
-MOCK_MODULES = ['numpy','pandas']
+MOCK_MODULES = ['numpy', 'pandas']
 
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = mock.Mock()

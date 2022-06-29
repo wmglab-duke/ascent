@@ -62,7 +62,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
                     # print('adding key {} to sub {}'.format(key, sub))
                     self.factors[path + '->' + key] = value
                 elif type(value) == list and len(value) <= 1:
-                    print("ERROR:",key,"is a list, but has length",len(value))
+                    print("ERROR:", key, "is a list, but has length", len(value))
                     self.throw(137)
                 elif type(value) == dict:
                     # print('recurse: {}'.format(value))
@@ -166,14 +166,14 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 .generate() \
                 .write(WriteMode.DATA, os.path.join(directory, str(i))) \
 
-            path = sim_directory+'/plots/waveforms/{}.png'.format(i)
-            if not os.path.exists(sim_directory+'/plots/waveforms'):
-                os.makedirs(sim_directory+'/plots/waveforms')
-                
-            waveform.plot(final=True,path=path)
+            path = sim_directory + '/plots/waveforms/{}.png'.format(i)
+            if not os.path.exists(sim_directory + '/plots/waveforms'):
+                os.makedirs(sim_directory + '/plots/waveforms')
 
-            if self.search(Config.RUN,"popup_plots",optional=True)==True:
-                waveform.plot(final=True,path=None)
+            waveform.plot(final=True, path=path)
+
+            if self.search(Config.RUN, "popup_plots", optional=True) == True:
+                waveform.plot(final=True, path=None)
 
             self.waveforms.append(waveform)
 
@@ -188,12 +188,12 @@ class Simulation(Exceptionable, Configurable, Saveable):
             cuff = self.search(Config.MODEL, "cuff", "preset")
         except:
             print("WARNING: Active sources not implemented for multiple cuffs, using default")
-            cuff="default"
+            cuff = "default"
         if cuff in self.configs[Config.SIM.value]["active_srcs"].keys():
             active_srcs_list = self.search(Config.SIM, "active_srcs", cuff)
         else:
-            ss = self.search(Config.SIM, 'supersampled_bases',optional=True)
-            if ss is not None and ss['use']==True:
+            ss = self.search(Config.SIM, 'supersampled_bases', optional=True)
+            if ss is not None and ss['use'] == True:
                 self.throw(130)
             # otherwise, use the default weights (generally you don't want to rely on this as cuffs have different
             # numbers of contacts
@@ -426,7 +426,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
                     for file in files:
                         if re.match('[0-9]+\\.dat', file):
 
-
                             for basis_ind in range(len(active_src_vals[0])):
 
                                 ss_bases_src_path = os.path.join(sim_dir,
@@ -483,7 +482,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
                             np.savetxt(os.path.join(nsim_inputs_directory, ss_filename),
                                        neuron_potentials_input,
-                                       fmt='%0.18f',header=str(len(neuron_potentials_input)),comments='')
+                                       fmt='%0.18f', header=str(len(neuron_potentials_input)), comments='')
                         elif file == 'diams.txt':
                             make_inner_fiber_diam_key(xy_mode, p, nsim_inputs_directory, potentials_directory, file)
         return self
@@ -557,25 +556,25 @@ class Simulation(Exceptionable, Configurable, Saveable):
         shutil.copy2(source, target_full)
 
     @staticmethod
-    def export_n_sims(sample: int, model: int, sim: int, sim_obj_dir: str, target: str, export_behavior = None):
+    def export_n_sims(sample: int, model: int, sim: int, sim_obj_dir: str, target: str, export_behavior=None):
 
         sim_dir = os.path.join(sim_obj_dir, str(sim), 'n_sims')
         sim_export_base = os.path.join(target, 'n_sims', '{}_{}_{}_'.format(sample, model, sim))
 
         for product_index in [f for f in os.listdir(sim_dir) if os.path.isdir(os.path.join(sim_dir, f))]:
             target = sim_export_base + product_index
-            
+
             if os.path.exists(target):
                 if export_behavior == ExportMode.OVERWRITE.value:
                     shutil.rmtree(target)
                 elif export_behavior == ExportMode.ERROR.value:
                     sys.exit('{} already exists, exiting...'.format(target))
-                elif export_behavior == ExportMode.SELECTIVE.value or export_behavior==None:
+                elif export_behavior == ExportMode.SELECTIVE.value or export_behavior == None:
                     print('\tSkipping n_sim export for {} because folder already exists.'.format(target))
                     continue
-                else: 
+                else:
                     sys.exit('Invalid export_behavior')
-                
+
             shutil.copytree(
                 os.path.join(sim_dir, product_index),
                 sim_export_base + product_index
@@ -589,8 +588,8 @@ class Simulation(Exceptionable, Configurable, Saveable):
             os.makedirs(target)
 
         # neuron files
-        try:du.copy_tree(os.path.join(os.environ[Env.PROJECT_PATH.value], 'src', 'neuron'), target)
-        except:pass
+        try: du.copy_tree(os.path.join(os.environ[Env.PROJECT_PATH.value], 'src', 'neuron'), target)
+        except: pass
 
         submit_target = os.path.join(target, 'submit.py')
         if os.path.isfile(submit_target):
@@ -611,7 +610,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
         shutil.copy2(os.path.join(os.environ[Env.PROJECT_PATH.value], 'config', 'system', 'slurm_params.json'), target)
 
     @staticmethod
-    def import_n_sims(sample: int, model: int, sim: int, sim_dir: str, source: str, delete: bool=False):
+    def import_n_sims(sample: int, model: int, sim: int, sim_dir: str, source: str, delete: bool = False):
         print(f'sample: {sample}, model: {model}, sim: {sim}, sim_dir: {sim_dir}, source: {source}')
 
         sim_dir = os.path.join(sim_dir, 'n_sims')
@@ -630,13 +629,13 @@ class Simulation(Exceptionable, Configurable, Saveable):
         for dirname in [f for f in os.listdir(source) if os.path.isdir(os.path.join(source, f))]:
             this_sample, this_model, this_sim, product_index = tuple(dirname.split('_'))
             if sample == int(this_sample) and model == int(this_model) and sim == int(this_sim):
-                nsim_dir = os.path.join(source,dirname)
-                outdir = os.path.join(nsim_dir,'data','outputs')
-                indir = os.path.join(nsim_dir,'data','inputs')
+                nsim_dir = os.path.join(source, dirname)
+                outdir = os.path.join(nsim_dir, 'data', 'outputs')
+                indir = os.path.join(nsim_dir, 'data', 'inputs')
                 for file in [f for f in os.listdir(indir) if f.startswith('inner') and f.endswith('.dat')]:
-                    if not os.path.exists(os.path.join(outdir,'thresh_'+file)):
-                        print('Missing threshold {}'.format(os.path.join(outdir,'thresh_'+file)))
-                        allthresh=False
+                    if not os.path.exists(os.path.join(outdir, 'thresh_' + file)):
+                        print('Missing threshold {}'.format(os.path.join(outdir, 'thresh_' + file)))
+                        allthresh = False
         return allthresh
 
     def potentials_exist(self, sim_dir: str) -> bool:

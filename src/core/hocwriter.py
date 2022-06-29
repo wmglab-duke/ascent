@@ -221,7 +221,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                 [mode for mode in NeuronRunMode if str(mode).split('.')[-1] == protocol_mode_name][0]
         except:
             self.throw(135)
-            
+
         if protocol_mode != NeuronRunMode.FINITE_AMPLITUDES:
             find_thresh = 1
             if protocol_mode == NeuronRunMode.ACTIVATION_THRESHOLD:
@@ -247,7 +247,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
             if bounds_search_mode == SearchAmplitudeIncrementMode.PERCENT_INCREMENT:
                 increment_flag = SearchAmplitudeIncrementMode.PERCENT_INCREMENT.value
                 step: float = self.search(Config.SIM, "protocol", "bounds_search", "step")
-                file_object.write("\nrel_increment = %0.4f\n" % (step/100))
+                file_object.write("\nrel_increment = %0.4f\n" % (step / 100))
             elif bounds_search_mode == SearchAmplitudeIncrementMode.ABSOLUTE_INCREMENT:
                 increment_flag = SearchAmplitudeIncrementMode.ABSOLUTE_INCREMENT.value
                 step: float = self.search(Config.SIM, "protocol", "bounds_search", "step")
@@ -265,7 +265,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
             elif termination_criteria_mode == TerminationCriteriaMode.PERCENT_DIFFERENCE:
                 termination_flag = TerminationCriteriaMode.PERCENT_DIFFERENCE.value
                 res: float = self.search(Config.SIM, "protocol", "termination_criteria", "percent")
-                file_object.write("\nrel_thresh_resoln = %0.4f\n" % (res/100))
+                file_object.write("\nrel_thresh_resoln = %0.4f\n" % (res / 100))
             file_object.write("termination_flag = %0.0f // \n" % termination_flag)
 
             if 'max_iter' not in protocol.keys():

@@ -83,12 +83,12 @@ class Waveform(Exceptionable, Configurable, Saveable):
 
         # unpack global variables
         self.dt, \
-        self.on, \
-        self.off, \
-        self.stop = [global_parameters.get(key) for key in ['dt',
-                                                            'on',
-                                                            'off',
-                                                            'stop']]
+            self.on, \
+            self.off, \
+            self.stop = [global_parameters.get(key) for key in ['dt',
+                                                                'on',
+                                                                'off',
+                                                                'stop']]
 
         self.start = 0
 
@@ -424,9 +424,9 @@ class Waveform(Exceptionable, Configurable, Saveable):
         return self
 
     def plot(self, ax: plt.Axes = None, final: bool = False, path: str = None):
-        
+
         fig = plt.figure()
-        
+
         if ax is None:
             ax = plt.gca()
 
@@ -436,8 +436,8 @@ class Waveform(Exceptionable, Configurable, Saveable):
         ax.set_title('Waveform generated from user parameters in sim.json')
 
         if final:
-            if path is None: plt.show() 
-            else: 
+            if path is None: plt.show()
+            else:
                 plt.savefig(path, dpi=300)
                 fig.clear()
                 plt.close(fig)
