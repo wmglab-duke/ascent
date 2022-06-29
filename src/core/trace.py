@@ -93,7 +93,7 @@ class Trace(Exceptionable):
 
         if fit is not None:
             # find offset distance from factor and mean radius
-            distance: float = fit.get("a") * 2 * np.sqrt(self.area()/np.pi) + fit.get("b")
+            distance: float = fit.get("a") * 2 * np.sqrt(self.area() / np.pi) + fit.get("b")
         elif distance is None:
             self.throw(29)
 
@@ -105,26 +105,26 @@ class Trace(Exceptionable):
         # cleanup
         self.__update()
         pco.Clear()
-        
-    def smooth(self,distance,area_compensation=True):
+
+    def smooth(self, distance, area_compensation=True):
         """
         Smooths a contour using a dilation followed by erosion
         :param distance: amount to use for dilation and erosion, in whatever units the trace is using
         """
-        if distance<0: self.throw(111)
+        if distance < 0: self.throw(111)
         if distance == 0: return
         pre_area = self.area()
-        self.offset(fit = None,distance = distance)
-        self.offset(fit = None,distance = -distance)
-        if area_compensation==True:
-            #scale back to area of original trace
-            self.scale((pre_area/self.area())**.5)
-            if abs(pre_area-self.area())>1:
+        self.offset(fit=None, distance=distance)
+        self.offset(fit=None, distance=-distance)
+        if area_compensation == True:
+            # scale back to area of original trace
+            self.scale((pre_area / self.area())**.5)
+            if abs(pre_area - self.area()) > 1:
                 self.throw(128)
         else:
             self.scale(1)
-        self.points = np.flip(self.points,axis = 0) # set points to opencv orientation
-        
+        self.points = np.flip(self.points, axis=0)  # set points to opencv orientation
+
     def scale(self, factor: float = 1, center: Union[List[float], str] = 'centroid'):
         """
         :param factor: scaling factor to scale up by - multiple all points by a factor.
@@ -218,13 +218,13 @@ class Trace(Exceptionable):
             self.__polygon = Polygon([tuple(point) for point in self.points[:, :2]])
 
         return self.__polygon
-    
+
     def bounds(self):
         """
         :return: bounds of the trace object
-        """      
+        """
         return self.polygon().bounds
-    
+
     def random_points(self, count: int, buffer: float = 0, my_xy_seed: int = 123) -> List[Tuple[float]]:
         """
         :param my_xy_seed:
@@ -383,11 +383,11 @@ class Trace(Exceptionable):
 
         # find average radius of circle
         # casting to float is just so PyCharm stops yelling at me (I think it should already be a float64?)
-        r = float(np.sqrt(self.area()/np.pi)) - buffer
+        r = float(np.sqrt(self.area() / np.pi)) - buffer
 
         # return the associated ellipse object, after converting angle to degrees
         # also, PyCharm thinks that np.mean returns a ndarray, but it definitely isn't in this case
-        return self.__ellipse_object(u, v, 2*r, 2*r, angle * 2 * np.pi / 360)
+        return self.__ellipse_object(u, v, 2 * r, 2 * r, angle * 2 * np.pi / 360)
 
     def __ellipse_object(self, u: float, v: float, a: float, b: float, angle: float) -> 'Trace':
         """
@@ -422,7 +422,7 @@ class Trace(Exceptionable):
         return Trace(points, self.configs[Config.EXCEPTIONS.value])
 
     # %% output
-    def plot(self, plot_format: str = 'k-', color: Tuple[float, float, float, float] = None, ax: plt.Axes = None,linewidth=1):
+    def plot(self, plot_format: str = 'k-', color: Tuple[float, float, float, float] = None, ax: plt.Axes = None, linewidth=1):
         """
         :param ax:
         :param color:
@@ -559,7 +559,7 @@ class Trace(Exceptionable):
 
     def make_circle(self):
         # Convert to float and randomize order
-        shuffled = [(float(x), float(y)) for (x, y) in self.points[:,0:2]]
+        shuffled = [(float(x), float(y)) for (x, y) in self.points[:, 0:2]]
         random.shuffle(shuffled)
 
         # Progressively add points to circle or recompute circle
@@ -638,9 +638,9 @@ class Trace(Exceptionable):
         if d == 0.0:
             return None
         x = ox + ((ax * ax + ay * ay) * (by - cy) + (bx * bx + by * by) * (cy - ay) + (cx * cx + cy * cy) * (
-                ay - by)) / d
+            ay - by)) / d
         y = oy + ((ax * ax + ay * ay) * (cx - bx) + (bx * bx + by * by) * (ax - cx) + (cx * cx + cy * cy) * (
-                bx - ax)) / d
+            bx - ax)) / d
         ra = np.math.hypot(x - a[0], y - a[1])
         rb = np.math.hypot(x - b[0], y - b[1])
         rc = np.math.hypot(x - c[0], y - c[1])

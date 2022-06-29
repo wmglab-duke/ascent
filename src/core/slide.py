@@ -70,6 +70,7 @@ class Slide(Exceptionable):
             area_sum += area
 
         return (x_sum / area_sum), (y_sum / area_sum)
+
     def validation(self, specific: bool = True, die: bool = True, tolerance: float = None, plotpath=None) -> bool:
         """
         Checks to make sure nerve geometry is not overlapping itself
@@ -85,11 +86,15 @@ class Slide(Exceptionable):
                 return
             plt.figure()
             self.plot(final=False, fix_aspect_ratio='True', axlabel=u"\u03bcm",
-                       title='Debug sample which failed validation.')
+                      title='Debug sample which failed validation.')
             plt.savefig(plotpath + '/sample_debug')
             plt.clf()
             plt.close()
-
+            
+        if self.fascicles_too_small():
+            debug_plot()
+            self.throw(146)
+            
         if self.monofasc():
             return True
 
@@ -108,7 +113,8 @@ class Slide(Exceptionable):
 
         else:
             if any([self.fascicle_fascicle_intersection(), self.fascicle_nerve_intersection(),
-                    self.fascicles_outside_nerve(), self.fascicles_too_close(tolerance)]):
+                    self.fascicles_outside_nerve(), self.fascicles_too_close(tolerance)],
+                   self.fascicles_too_small()):
                 if die:
                     debug_plot()
                     self.throw(13)
@@ -131,7 +137,18 @@ class Slide(Exceptionable):
         else:
             pairs = itertools.combinations(self.fascicles, 2)
             return any([first.min_distance(second) < tolerance for first, second in pairs]) or \
-                   any([fascicle.min_distance(self.nerve) < tolerance for fascicle in self.fascicles])
+                any([fascicle.min_distance(self.nerve) < tolerance for fascicle in self.fascicles])
+
+    def fascicles_too_small(self) -> bool:
+        """
+        :return: True if any fascicle has a trace with less than 3 points
+        """
+        check = []
+        for f in self.fascicles:
+            check.append(len(f.outer.points)<3)
+            check.extend([len(i.points) < 3 for i in f.inners])
+        return any(check)
+
 
     def fascicle_fascicle_intersection(self) -> bool:
         """
@@ -238,7 +255,7 @@ class Slide(Exceptionable):
 
         # loop through constituents and plot each
         if not self.monofasc():
-            self.nerve.plot(plot_format='k-', ax=ax,linewidth=1.5)
+            self.nerve.plot(plot_format='k-', ax=ax, linewidth=1.5)
 
         out_to_in = []
         inner_ind = 0
@@ -302,12 +319,12 @@ class Slide(Exceptionable):
 
         if i_distance is None: self.throw(113)
         for trace in self.trace_list():
-            if isinstance(trace,Nerve):
+            if isinstance(trace, Nerve):
                 trace.smooth(n_distance)
             else:
                 trace.smooth(i_distance)
 
-    def generate_perineurium(self,fit: dict):
+    def generate_perineurium(self, fit: dict):
         for fascicle in self.fascicles:
             fascicle.perineurium_setup(fit=fit)
 
@@ -332,7 +349,7 @@ class Slide(Exceptionable):
         :return: check bounds of all traces and return outermost bounds
         """
         allbound = np.array([trace.bounds() for trace in self.trace_list() if trace is not None])
-        return (min(allbound[:,0]),min(allbound[:,1]),max(allbound[:,2]),max(allbound[:,3]))
+        return (min(allbound[:, 0]), min(allbound[:, 1]), max(allbound[:, 2]), max(allbound[:, 3]))
 
     def trace_list(self):
         """
@@ -398,66 +415,66 @@ class Slide(Exceptionable):
 
         os.chdir(start)
 
-    def saveimg(self, path: str,dims,separate:bool = False,colors = {'n':'red','i':'green','p':'blue'}, buffer = 0,nerve = True, outers = True,inners = True,outer_minus_inner = False,ids = []):
-        #comments coming soon to a method near you
+    def saveimg(self, path: str, dims, separate: bool = False, colors={'n': 'red', 'i': 'green', 'p': 'blue'}, buffer=0, nerve=True, outers=True, inners=True, outer_minus_inner=False, ids=[]):
+        # comments coming soon to a method near you
         def prep_points(points):
-            #adjusts plot points to dimensions and formats for PIL
-            points = (points-dim_min+buffer)[:,0:2].astype(int)
-            points = tuple(zip(points[:,0],points[:,1]))
+            # adjusts plot points to dimensions and formats for PIL
+            points = (points - dim_min + buffer)[:, 0:2].astype(int)
+            points = tuple(zip(points[:, 0], points[:, 1]))
             return points
         fnt = ImageFont.truetype("arial.ttf", 60)
         dim_min = [min(x) for x in dims]
         dim = [max(x) for x in dims]
-        imdim = [dim[0]+abs(dim_min[0])+buffer*2,dim[1]+abs(dim_min[1])+buffer*2]
+        imdim = [dim[0] + abs(dim_min[0]) + buffer * 2, dim[1] + abs(dim_min[1]) + buffer * 2]
         self.move_center
-        if not separate: #draw contours and ids if provided
-            img = Image.new('RGB',imdim)
+        if not separate:  # draw contours and ids if provided
+            img = Image.new('RGB', imdim)
             draw = ImageDraw.Draw(img)
             if nerve:
-                draw.polygon(prep_points(self.nerve.points[:,0:2]), fill = colors['n'])
+                draw.polygon(prep_points(self.nerve.points[:, 0:2]), fill=colors['n'])
             for fascicle in self.fascicles:
                 if outers:
-                    draw.polygon(prep_points(fascicle.outer.points[:,0:2]),fill = colors['p'])
+                    draw.polygon(prep_points(fascicle.outer.points[:, 0:2]), fill=colors['p'])
             for fascicle in self.fascicles:
                 for inner in fascicle.inners:
-                    draw.polygon(prep_points(inner.points[:,0:2]),fill = colors['i'])
+                    draw.polygon(prep_points(inner.points[:, 0:2]), fill=colors['i'])
             img = img.transpose(Image.FLIP_TOP_BOTTOM)
             iddraw = ImageDraw.Draw(img)
-            if len(ids)>0: #prints the fascicle ids
-                for i,row in ids.iterrows():
-                    location = (row['x']-dim_min[0]+buffer,img.height-row['y']+dim_min[1]-buffer)
-                    iddraw.text(location,str(int(row['id'])),font = fnt,fill='white')
+            if len(ids) > 0:  # prints the fascicle ids
+                for i, row in ids.iterrows():
+                    location = (row['x'] - dim_min[0] + buffer, img.height - row['y'] + dim_min[1] - buffer)
+                    iddraw.text(location, str(int(row['id'])), font=fnt, fill='white')
             img.save(path)
-        elif separate: #generate each image and save seperately
+        elif separate:  # generate each image and save seperately
             if nerve:
-                img = Image.new('1',imdim)
+                img = Image.new('1', imdim)
                 draw = ImageDraw.Draw(img)
-                draw.polygon(prep_points(self.nerve.points[:,0:2]), fill = 1)
+                draw.polygon(prep_points(self.nerve.points[:, 0:2]), fill=1)
                 img = img.transpose(Image.FLIP_TOP_BOTTOM)
                 img.save(path['n'])
             if outers:
-                imgp = Image.new('1',imdim)
+                imgp = Image.new('1', imdim)
                 draw = ImageDraw.Draw(imgp)
                 for fascicle in self.fascicles:
-                    draw.polygon(prep_points(fascicle.outer.points[:,0:2]),fill = 1)
+                    draw.polygon(prep_points(fascicle.outer.points[:, 0:2]), fill=1)
                     if outer_minus_inner:
                         for fascicle in self.fascicles:
                             for inner in fascicle.inners:
-                                draw.polygon(prep_points(inner.points[:,0:2]),fill = 0)
+                                draw.polygon(prep_points(inner.points[:, 0:2]), fill=0)
                 imgp = imgp.transpose(Image.FLIP_TOP_BOTTOM)
                 imgp.save(path['p'])
             if inners:
-                imgi = Image.new('1',imdim)
+                imgi = Image.new('1', imdim)
                 draw = ImageDraw.Draw(imgi)
                 for fascicle in self.fascicles:
                     for inner in fascicle.inners:
-                        draw.polygon(prep_points(inner.points[:,0:2]),fill = 1)
+                        draw.polygon(prep_points(inner.points[:, 0:2]), fill=1)
                 imgi = imgi.transpose(Image.FLIP_TOP_BOTTOM)
                 iddraw = ImageDraw.Draw(imgi)
-                if len(ids)>0: #prints the fascicle ids
-                    for i,row in ids.iterrows():
-                        location = (row['x']-dim_min[0]+buffer,img.height-row['y']+dim_min[1]-buffer)
-                        iddraw.text(location,str(int(row['id'])),font = fnt,fill=0)
+                if len(ids) > 0:  # prints the fascicle ids
+                    for i, row in ids.iterrows():
+                        location = (row['x'] - dim_min[0] + buffer, img.height - row['y'] + dim_min[1] - buffer)
+                        iddraw.text(location, str(int(row['id'])), font=fnt, fill=0)
                 imgi.save(path['i'])
 
     # %% DISCLAIMER: this is depreciated and not well documented
@@ -589,7 +606,7 @@ class Slide(Exceptionable):
             min_distance_length = LineString([min_dist_intersection_final[1].coords[0],
                                               min_dist_intersection_initial[1].coords[0]]).length
             min_distance_vector = np.array(min_dist_intersection_final[1].coords[0]) - \
-                                  np.array(min_dist_intersection_initial[1].coords[0])
+                np.array(min_dist_intersection_initial[1].coords[0])
             min_distance_vector *= 1
 
             # fascicle.shift(list(-min_distance_vector) + [0])

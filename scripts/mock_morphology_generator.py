@@ -17,7 +17,7 @@ from src.utils import *
 
 def run(args):
     start = time.time()
-    
+
     exceptions_file = os.path.join('config', 'system', 'exceptions.json')
 
     with open(exceptions_file, "r") as handle:

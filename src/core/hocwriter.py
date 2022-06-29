@@ -247,7 +247,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
             if bounds_search_mode == SearchAmplitudeIncrementMode.PERCENT_INCREMENT:
                 increment_flag = SearchAmplitudeIncrementMode.PERCENT_INCREMENT.value
                 step: float = self.search(Config.SIM, "protocol", "bounds_search", "step")
-                file_object.write("\nrel_increment = %0.4f\n" % (step/100))
+                file_object.write("\nrel_increment = %0.4f\n" % (step / 100))
             elif bounds_search_mode == SearchAmplitudeIncrementMode.ABSOLUTE_INCREMENT:
                 increment_flag = SearchAmplitudeIncrementMode.ABSOLUTE_INCREMENT.value
                 step: float = self.search(Config.SIM, "protocol", "bounds_search", "step")
@@ -265,10 +265,10 @@ class HocWriter(Exceptionable, Configurable, Saveable):
             elif termination_criteria_mode == TerminationCriteriaMode.PERCENT_DIFFERENCE:
                 termination_flag = TerminationCriteriaMode.PERCENT_DIFFERENCE.value
                 res: float = self.search(Config.SIM, "protocol", "termination_criteria", "percent")
-                file_object.write("\nrel_thresh_resoln = %0.4f\n" % (res/100))
+                file_object.write("\nrel_thresh_resoln = %0.4f\n" % (res / 100))
             file_object.write("termination_flag = %0.0f // \n" % termination_flag)
 
-            max_iter = self.search(Config.SIM, "protocol","bounds_search").get("max_steps",100)
+            max_iter = self.search(Config.SIM, "protocol", "bounds_search").get("max_steps", 100)
             file_object.write("max_iter = %0.0f // \n" % max_iter)
 
             file_object.write("Namp = %0.0f\n" % 1)

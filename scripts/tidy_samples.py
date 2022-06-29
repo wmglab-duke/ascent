@@ -19,17 +19,18 @@ INCLUDED_FILENAMES = [
     'logs',
     'start_'
 ]
-        
+
+
 def run(args):
-    
+
     proceed = input('All files with names containing any of the following strings:\n'
                     '\t{}\n'
                     'will be removed from the following sample directories:\n'
                     '\t{}\n'
                     '\n\t Would you like to proceed?\n'
                     '\t\t 0 = NO\n'
-                    '\t\t 1 = YES\n'.format(INCLUDED_FILENAMES,args.sample_indices))
-    if not int(proceed)==1:
+                    '\t\t 1 = YES\n'.format(INCLUDED_FILENAMES, args.sample_indices))
+    if not int(proceed) == 1:
         sys.exit()
     else:
         print('Proceeding...')
@@ -43,7 +44,6 @@ def run(args):
             sys.exit()
         else:
             print('Proceeding...')
-    
 
     for sample in args.sample_indices:
 
@@ -74,6 +74,7 @@ def run(args):
         # remove empty directories
         if args.verbose:
             print('\n\t- - - - - DIRECTORIES - - - -\n')
+
         def remove_empty_directories(directory: str):
 
             for path in os.listdir(directory):
@@ -95,4 +96,3 @@ def run(args):
 
         if args.verbose:
             print('\n\n')
-
