@@ -14,6 +14,7 @@ import pickle
 from typing import List
 
 # packages
+import warnings
 import json
 import base64
 import sys
@@ -66,7 +67,12 @@ class Runner(Exceptionable, Configurable):
             if os.path.exists(path):
                 if key not in config_source.keys():
                     config_source[key] = []
-                config_source[key] += [self.load(path)]
+                try:
+                    config_source[key] += [self.load(path)]
+                except:
+                    warnings.warn('Issue loading {} config: {}'.format(key, path))
+                    self.throw(144)
+
             else:
                 print('Missing {} config: {}'.format(key, path))
                 self.throw(37)
@@ -494,7 +500,7 @@ class Runner(Exceptionable, Configurable):
         # start comsol server
         subprocess.Popen(server_command, close_fds=True)
         # wait for server to start
-        time.sleep(10)
+        time.sleep(30)
         os.chdir('src')
         # compile java code
         exit_code = os.system(compile_command)

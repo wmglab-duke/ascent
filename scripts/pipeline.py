@@ -45,7 +45,7 @@ def run(args):
                   'All arguments must be positive integers.'.format(argument))
             sys.exit()
 
-        print('\n\n########## STARTING RUN {} ##########\n\n'.format(argument))
+        print('\n########## STARTING RUN {} ##########\n'.format(argument))
 
         run_path = os.path.join('config', 'user', 'runs', '{}.json'.format(argument))
         if not os.path.exists(run_path):
@@ -73,7 +73,7 @@ def run(args):
         end = time.time()
         elapsed = end - start
 
-        if args.auto_submit or runner.search(Config.RUN, 'auto_submit_fibers') == True:
+        if args.auto_submit or runner.search(Config.RUN, 'auto_submit_fibers', optional=True) == True:
             print('Auto submitting fibers for run {}'.format(argument))
             # submit fibers before moving on to next run
             reset_dir = os.getcwd()
@@ -81,7 +81,7 @@ def run(args):
             os.chdir(export_path)
             with open(os.devnull, 'wb') as devnull:
                 # -s flag to skip summary
-                exit_code = subprocess.check_call(['python', 'submit.py', '-s', str(argument)], stdout=devnull, stderr=devnull)
+                exit_code = subprocess.run(['python', 'submit.py', '-s', str(argument)], stdout=devnull, stderr=devnull)
                 if exit_code != 0: print('WARNING: Non-zero exit code during fiber submission. Continuing to next run...')
             os.chdir(reset_dir)
 

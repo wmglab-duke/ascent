@@ -299,7 +299,7 @@ class Sample(Exceptionable, Configurable, Saveable):
                                              'for file in *.tiff; do mv "$file" "${file%.tiff}.tif"; done'])
                 else:
                     proc = subprocess.Popen(['powershell.exe',
-                                             'Dir | Rename-Item –NewName { $_.name –replace “.tiff“,”.tif” }'])
+                                             'Dir | Rename-Item –NewName { $_.name –replace ".tiff",".tif" }'])
                 proc.wait()
 
             # if not exists(MaskFileNames.RAW):
@@ -402,7 +402,9 @@ class Sample(Exceptionable, Configurable, Saveable):
                                  nerve_mode,
                                  self.configs[Config.EXCEPTIONS.value],
                                  will_reposition=(deform_mode != DeformationMode.NONE))
-
+            
+            slide.validation()
+            
             # get orientation angle (used later to calculate pos_ang for model.json)
             if orientation_centroid is not None:
                 # logic updated 10/11/2021

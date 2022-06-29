@@ -29,7 +29,14 @@ release = 'v1.1.2'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 
-extensions = ['myst_parser', 'sphinxarg.ext', 'sphinx.ext.intersphinx', 'sphinx.ext.autodoc']
+extensions = ['myst_parser',
+              'sphinxarg.ext',
+              'sphinx.ext.intersphinx',
+              'sphinx.ext.autodoc',
+              'sphinxcontrib.bibtex',
+              'sphinxcontrib.details.directive',
+              'sphinx_copybutton',
+              'sphinx_rtd_dark_mode']
 
 source_suffix = {
     '.rst': 'restructuredtext',
@@ -59,7 +66,25 @@ exclude_patterns = []
 # a list of builtin themes.
 #
 html_theme = 'sphinx_rtd_theme'
+# These folders are copied to the documentation's HTML output
+html_static_path = ['_static']
 
+# These paths are either relative to html_static_path
+# or fully qualified paths (eg. https://...)
+html_css_files = [
+    'details.css',
+]
 html_show_copyright = True
 
+# no logo because doesn't look nice
+# html_logo="uploads/ascent_media_release_v2.png"
+
 html_show_sphinx = False
+
+myst_heading_anchors = 4
+
+bibtex_bibfiles = ['refs.bib']
+
+bibtex_reference_style = 'author_year'
+
+default_dark_mode = False

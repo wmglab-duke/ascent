@@ -73,7 +73,6 @@ of the file.
       },
       "local_avail_cpus": Integer,
       "popup_plots": Boolean,
-      "override_compiled_mods": Boolean,
       "auto_submit_fibers": true
     }
     ```
@@ -179,8 +178,6 @@ of the file.
     (e.g. sample plot, fiberset plot, waveform plot) in a popup window. This is in addition
     to saving the plots in the relevant folders (i.e., the sample and sim folders).
 
-    `“override_compiled_mods”`: The value (Boolean) indicates if the program will override previously compiled *.mod files (i.e. files defining channel mechanisms in NEURON) with each system call of submit.py. Optional, but if the key is omitted the program will not override previously compiled *.mod files.
-
     `"auto_submit_fibers"`: The value (Boolean), if true, will cause the program to automatically start fiber simulations after each run is completed.
     If submitting locally, the program will not continue to the next run until all fiber simulations are complete. If submitting via a computer cluster,
     the next run will start after all batch NEURON jobs are submitted.
@@ -219,7 +216,6 @@ of the file.
       "export_behavior": "selective",
       "local_avail_cpus": 3,
       “popup_plots”: true,
-      "override_compiled_mods": false,
       "auto_submit_fibers": false
     }
     ```
@@ -1712,8 +1708,9 @@ of the file.
 
     `“active_srcs”`: The value is a JSON Object containing key-value pairs of
     contact weightings for preset cuffs. Each value (`List[List[Double]]`)
-    is the contact weighting to use to make extracellular potentials inputs
-    to NEURON simulations. The values should not exceed +/-1 in magnitude,
+    is the contact weighting used to make extracellular potentials inputs
+    to NEURON simulations. The order of weights matches the order of parts 
+    containing point current sources. The values should not exceed +/-1 in magnitude,
     otherwise an error is thrown. For monopolar cuff electrodes, the value
     should be either +1 or -1. For cuff electrodes with more than one
     contact (2+), the sum of weightings should be +1, -1, or 0. If the
