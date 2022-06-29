@@ -524,7 +524,7 @@ class Sample(Exceptionable, Configurable, Saveable):
                     print('\tensuring minimum nerve:fascicle separation of {} um'.format(sep_nerve))
                     sep_nerve = sep_nerve - sep_fascicles / 2
 
-                #scale nerve trace down by sep nerve, will be scaled back up later
+                # scale nerve trace down by sep nerve, will be scaled back up later
                 pre_area = slide.nerve.area()
                 slide.nerve.offset(distance=-sep_nerve)
                 slide.nerve.scale(1)
@@ -573,7 +573,7 @@ class Sample(Exceptionable, Configurable, Saveable):
                     slide.nerve.offset(distance=sep_nerve)
                 else:
                     slide.nerve = slide.reshaped_nerve(reshape_nerve_mode)
-                #deforms+offsets usually shrinks the area a bit, so reset back to the original area
+                # deforms+offsets usually shrinks the area a bit, so reset back to the original area
                 if slide.nerve.area() < pre_area:
                     slide.nerve.scale((pre_area / slide.nerve.area())**.5)
                 else:
@@ -583,7 +583,7 @@ class Sample(Exceptionable, Configurable, Saveable):
             # shift slide about (0,0)
             slide.move_center(np.array([0, 0]))
 
-            #Rotate sample
+            # Rotate sample
             if sample_rotation is not None:
                 if slide.orientation_angle is not None:
                     self.throw(143)
@@ -603,7 +603,7 @@ class Sample(Exceptionable, Configurable, Saveable):
                 # find intersection point with outer (interpolated)
                 slide.orientation_point = np.array(ray.intersection(outer.polygon().boundary))
 
-            #ensure that nothing went wrong in slide processing
+            # ensure that nothing went wrong in slide processing
             slide.validation(plotpath=plotpath)
 
         # scale with ratio = 1 (no scaling happens, but connects the ends of each trace to itself)
@@ -678,7 +678,7 @@ class Sample(Exceptionable, Configurable, Saveable):
                 else:
                     self.throw(28)
 
-                #clear directory if it exists, then create
+                # clear directory if it exists, then create
                 if os.path.exists(directory_to_create):
                     try:
                         shutil.rmtree(directory_to_create)

@@ -86,10 +86,10 @@ class Deformable(Exceptionable):
 
         # draw the deformation
         if render:
-            #Initialize screen and surface which each frame will be drawn on
+            # Initialize screen and surface which each frame will be drawn on
             screen = pygame.display.set_mode((800, int(800 * im_ratio)), HWSURFACE | DOUBLEBUF | RESIZABLE)
             drawsurf = pygame.surface.Surface((width, height))
-            #pygame debug draw options
+            # pygame debug draw options
             options = pymunk.pygame_util.DrawOptions(drawsurf)
             options.shape_outline_color = (0, 0, 0, 255)
             options.shape_static_color = (0, 0, 0, 255)
@@ -156,10 +156,10 @@ class Deformable(Exceptionable):
 
             # draw screen
             if render:
-                #add white fill and draw objects on surface
+                # add white fill and draw objects on surface
                 drawsurf.fill(THECOLORS["white"])
                 space.debug_draw(options)
-                #resize surface and project on screen
+                # resize surface and project on screen
                 screen.blit(pygame.transform.flip(pygame.transform.scale(drawsurf, (800, int(800 * im_ratio))), False, True), (0, 0))
                 pygame.display.flip()
                 pygame.display.set_caption('nerve morph step {} of {}'.format(morph_index, len(morph_steps)))

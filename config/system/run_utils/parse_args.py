@@ -9,14 +9,14 @@ class versionAction(argparse.Action):
         sys.exit()
 
 
-#Set up parser and top level args
+# Set up parser and top level args
 parser = argparse.ArgumentParser(description='ASCENT: Automated Simulations to Characterize Electrical Nerve Thresholds')
 # parser.add_argument('-s','--silent',action='store_true', help = 'silence printing')
 parser.add_argument('-v', '--verbose', action='store_true', help='verbose printing')
 parser.add_argument('-V', '--version', action=versionAction, nargs=0, help='print version')
 parser.add_argument('-l', '--list', choices=['runs', 'samples', 'sims'], help='List all available indices for the specified option')
 
-#add subparsers
+# add subparsers
 subparsers = parser.add_subparsers(help='which script to run', dest='script')
 pipeline_parser = subparsers.add_parser('pipeline', help='main ASCENT pipeline')
 install_parser = subparsers.add_parser('install', help='install ASCENT')
@@ -26,7 +26,7 @@ nsims_parser = subparsers.add_parser('import_n_sims', help='Move NEURON outputs 
 mmg_parser = subparsers.add_parser('mock_morphology_generator', help='Generate mock morpology for an ASCENT run')
 ts_parser = subparsers.add_parser('tidy_samples', help='Remove specified files from Sample directories')
 
-#add subparser arguments
+# add subparser arguments
 pipeline_parser.add_argument('run_indices', type=int, nargs='+', help='Space separated indices to run the pipeline over')
 pipeline_parser.add_argument('-b', '--break-point', choices=["pre_geom_run", "post_geom_run", "pre_java", "post_mesh_distal", "pre_mesh_distal", "post_material_assign", "pre_loop_currents", "pre_mesh_proximal", "post_mesh_proximal", "pre_solve"], help='Point in pipeline to exit and continue to next run')
 pipeline_parser.add_argument('-w', '--wait-for-license', type=float, help="Wait the specified number of hours for a comsol license to become available.")
@@ -56,7 +56,7 @@ def parse():
         if hasattr(args, argstring) and getattr(args, argstring) != None and getattr(args, argstring) <= 0:
             sys.exit('Arguments for {} must be greater than 0'.format(argstring))
 
-    #parse arguments
+    # parse arguments
     args = parser.parse_args()
     g0(args, 'wait_for_license')
 

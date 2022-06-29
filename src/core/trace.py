@@ -117,7 +117,7 @@ class Trace(Exceptionable):
         self.offset(fit=None, distance=distance)
         self.offset(fit=None, distance=-distance)
         if area_compensation == True:
-            #scale back to area of original trace
+            # scale back to area of original trace
             self.scale((pre_area / self.area())**.5)
             if abs(pre_area - self.area()) > 1:
                 self.throw(128)

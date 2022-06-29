@@ -400,9 +400,9 @@ class Slide(Exceptionable):
         os.chdir(start)
 
     def saveimg(self, path: str, dims, separate: bool = False, colors={'n': 'red', 'i': 'green', 'p': 'blue'}, buffer=0, nerve=True, outers=True, inners=True, outer_minus_inner=False, ids=[]):
-        #comments coming soon to a method near you
+        # comments coming soon to a method near you
         def prep_points(points):
-            #adjusts plot points to dimensions and formats for PIL
+            # adjusts plot points to dimensions and formats for PIL
             points = (points - dim_min + buffer)[:, 0:2].astype(int)
             points = tuple(zip(points[:, 0], points[:, 1]))
             return points

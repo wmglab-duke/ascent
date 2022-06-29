@@ -29,7 +29,7 @@ def run(args):
     else:
         print('Great, proceeding with installation.\n')
 
-    #define and generate user directories
+    # define and generate user directories
     binpath = 'bin'
     defdirs = [
         binpath,

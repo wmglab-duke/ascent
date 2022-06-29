@@ -359,7 +359,7 @@ class Runner(Exceptionable, Configurable):
                     conditions = [models_exit_status is not None, len(models_exit_status) > model_index]
                     model_ran = models_exit_status[model_index] if all(conditions) else True
                     ss_use_notgen = []
-                    #check if all supersampled bases are "use" and not generating
+                    # check if all supersampled bases are "use" and not generating
                     for sim_index, sim_config in enumerate(all_configs['sims']):
                         if 'supersampled_bases' in simulation.configs['sims'].keys() and \
                                 simulation.configs['sims']['supersampled_bases']['use'] and not \
@@ -394,7 +394,7 @@ class Runner(Exceptionable, Configurable):
                             simulation: Simulation = load_obj(sim_obj_path)
                             simulation.build_n_sims(sim_dir, sim_num)
 
-                            #get export behavior
+                            # get export behavior
                             export_behavior = None
                             if self.configs[Config.CLI_ARGS.value].get('export_behavior') is not None:
                                 export_behavior = self.configs[Config.CLI_ARGS.value]['export_behavior']
@@ -402,7 +402,7 @@ class Runner(Exceptionable, Configurable):
                                 export_behavior = self.configs[Config.RUN.value]['export_behavior']
                             else:
                                 export_behavior = 'selective'
-                            #check to make sure we have a valid behavior
+                            # check to make sure we have a valid behavior
                             if not np.any([export_behavior == x.value for x in ExportMode]):
                                 self.throw(139)
 
@@ -445,7 +445,7 @@ class Runner(Exceptionable, Configurable):
 
         core_name = 'ModelWrapper'
 
-        #Encode command line args as jason string, then encode to base64 for passing to java
+        # Encode command line args as jason string, then encode to base64 for passing to java
         argstring = json.dumps(self.configs[Config.CLI_ARGS.value])
         argbytes = argstring.encode('ascii')
         argbase = base64.b64encode(argbytes)
@@ -485,16 +485,16 @@ class Runner(Exceptionable, Configurable):
                                                                                                  run_path,
                                                                                                  argfinal)
 
-        #start comsol server
+        # start comsol server
         subprocess.Popen(server_command, close_fds=True)
-        #wait for server to start
+        # wait for server to start
         time.sleep(30)
         os.chdir('src')
-        #compile java code
+        # compile java code
         exit_code = os.system(compile_command)
         if exit_code != 0:
             self.throw(140)
-        #run java code
+        # run java code
         exit_code = os.system(java_command)
         if exit_code != 0:
             self.throw(141)

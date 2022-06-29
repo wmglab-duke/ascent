@@ -76,8 +76,8 @@ html_css_files = [
 ]
 html_show_copyright = True
 
-#no logo because doesn't look nice
-#html_logo="uploads/ascent_media_release_v2.png"
+# no logo because doesn't look nice
+# html_logo="uploads/ascent_media_release_v2.png"
 
 html_show_sphinx = False
 

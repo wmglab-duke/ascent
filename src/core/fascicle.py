@@ -41,7 +41,7 @@ class Fascicle(Exceptionable):
         # set up superclass
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
 
-        #intialize scale attribute
+        # intialize scale attribute
         self.outer_scale = None
 
         # initialize constituent traces
@@ -224,7 +224,7 @@ class Fascicle(Exceptionable):
         # scale up outer trace
         self.outer.offset(fit=fit)
 
-        #check for any bad traces
+        # check for any bad traces
         self.validate()
 
     @staticmethod
@@ -261,7 +261,7 @@ class Fascicle(Exceptionable):
             # build list of traces
             return [Trace([item + [z] for item in contour[:, 0, :]], exception_config) for contour in contours]
         if outer_img_path is None:
-            #inners only case, set each inner as an outer
+            # inners only case, set each inner as an outer
             outers = np.array(build_traces(inner_img_path))
         else:
             # build traces list for inner and outer image paths
@@ -290,7 +290,7 @@ class Fascicle(Exceptionable):
                 # add fascicle!
                 fascicles.append(Fascicle(exception_config, outer, inners_corresponding))
             else:
-                #inners only case
+                # inners only case
                 fascicles.append(Fascicle(exception_config, outer))
             if plot:
                 fascicles[index].plot()
