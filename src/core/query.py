@@ -1803,3 +1803,144 @@ class Query(Exceptionable, Configurable, Saveable):
 
                             if plot:
                                 plt.show()
+
+    def ap_loctime(
+            self,
+            delta_V: float = 60,
+            rounding_precision: int = 5,
+            n_sim_filter: List[int] = None,
+            plot: bool = False,
+            plot_nodes_on_find: bool = False,
+            plot_compiled: bool = False,
+            absolute_voltage: bool = True,
+            n_sim_label_override: str = None,
+            model_labels: List[str] = None,
+            save: bool = False,
+            subplots=False,
+            nodes_only=False,
+            amp=0):
+
+        print(
+            f'Finding time and location of action potentials, which are defined as any voltage deflection of {delta_V} mV.')
+
+        if plot:
+            print(
+                'Note: Plotting is currently only defined for MRG axons in the SL branch; plotting for other axon models/locations may yield unexpected results.')
+
+        # loop samples
+        for sample_index, sample_results in [(s['index'], s) for s in self._result.get('samples')]:
+            print('sample: {}'.format(sample_index))
+
+            # sample_object: Sample = self.get_object(Object.SAMPLE, [sample_index])
+
+            # loop models
+            for model_index, model_results in [(m['index'], m) for m in sample_results.get('models')]:
+                print('\tmodel: {}'.format(model_index))
+
+                # loop sims
+                for sim_index in model_results.get('sims', []):
+                    print('\t\tsim: {}'.format(sim_index))
+
+                    sim_object = self.get_object(Object.SIMULATION, [sample_index, model_index, sim_index])
+
+                    if subplots == True:
+                        fig, axs = plt.subplots(ncols=len(sim_object.master_product_indices), nrows=2, sharey="row")
+
+                    # loop nsims
+                    for n_sim_index, (potentials_product_index, waveform_index) in enumerate(
+                            sim_object.master_product_indices):
+                        print('\t\t\tnsim: {}'.format(n_sim_index))
+
+                        active_src_index, fiberset_index = sim_object.potentials_product[potentials_product_index]
+
+                        # skip if not in existing n_sim filter
+                        if n_sim_filter is not None and n_sim_index not in n_sim_filter:
+                            print('\t\t\t\t(skip)')
+                            continue
+
+                        # directory of data for this (sample, model, sim)
+                        sim_dir = self.build_path(Object.SIMULATION, [sample_index, model_index, sim_index],
+                                                  just_directory=True)
+
+                        # directory for specific n_sim
+                        n_sim_dir = os.path.join(sim_dir, 'n_sims', str(n_sim_index))
+
+                        # directory of fiberset (i.e., points and potentials) associated with this n_sim
+                        fiberset_dir = os.path.join(sim_dir, 'fibersets', str(fiberset_index))
+
+                        # the simulation outputs for this n_sim
+                        outputs_path = os.path.join(n_sim_dir, 'data', 'outputs')
+
+                        # path of the first inner, first fiber vm(t) data
+                        vm_t_path = os.path.join(outputs_path, 'ap_loctime_inner0_fiber0_amp{}.dat'.format(amp))
+
+                        # load vm(t) data (see path above)
+                        # each row is a snapshot of the voltages at each node [mV]
+                        # the first column is the time [ms]
+                        # first row is holds column labels, so this is skipped (time, node0, node1, ...)
+                        aploc_data = np.loadtxt(vm_t_path, skiprows=0)
+
+                        aploc_data[np.where(aploc_data == 0)] = float('Inf')
+
+                        time = min(aploc_data)
+
+                        node = np.argmin(aploc_data)
+
+                        # create message about AP time and location findings
+                        message = f't: {time} ms, node: {node + 1} (of {len(aploc_data)+2})'
+                        if time != float('inf'):
+                            print(f'\t\t\t\t{message}')
+                        else:
+                            print('No action potential occurred.')
+                            continue
+
+                        # plot the AP location with voltage trace
+                        # create subplots
+                        if plot or save:
+                            if subplots != True:
+                                fig, axes = plt.subplots(1, 1)
+                                axes = [axes]
+                            else:
+                                axes = [axs[0][n_sim_index], axs[1][n_sim_index]]
+                            # load fiber coordinates
+                            fiber = np.loadtxt(os.path.join(fiberset_dir, '0.dat'), skiprows=1)
+                            nodefiber = fiber[0::11, :]
+
+                            # plot fiber coordinates in 2D
+                            if nodes_only != True:
+                                axes[0].plot(fiber[:, 0], fiber[:, 2], 'b.', label='fiber')
+                            else:
+                                axes[0].plot(nodefiber[:, 0], nodefiber[:, 2], 'b.', label='fiber')
+
+                            # plot AP location
+                            axes[0].plot(fiber[11 * node, 0], fiber[11 * node, 2], 'r*', markersize=10)
+
+                            # location display settings
+                            n_sim_label = f'n_sim: {n_sim_index}' if (
+                                n_sim_label_override is None) else n_sim_label_override
+                            model_label = '' if (model_labels is None) else f', {model_labels[model_index]}'
+                            axes[0].set_xlabel('x location, µm')
+
+                            axes[0].set_title(f'{n_sim_label}{model_label}')
+                            if subplots != True:
+                                axes[0].legend(['fiber', f'AP ({message})'])
+                            else:
+                                axes[0].legend(['fiber', 'AP'])
+
+                            # axes[0].set_aspect(1)
+                            plt.tight_layout()
+
+                            # voltages display settings
+                            if subplots != True or n_sim_index == 0:
+                                axes[0].set_ylabel('z location, µm')
+                            # axes[1].set_aspect(0.25)
+                            plt.tight_layout()
+
+                        # display
+                        if save:
+                            plt.savefig(
+                                f'out/analysis/ap_time_loc_{sample_index}_{model_index}_{sim_index}_{n_sim_index}.png',
+                                dpi=300)
+
+                        if plot:
+                            plt.show()

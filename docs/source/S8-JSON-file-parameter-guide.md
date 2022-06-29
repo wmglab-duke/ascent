@@ -1611,6 +1611,7 @@ of the file.
         "ind": Integer
       },
       "saving": {
+        "aploctime": Boolean,
         "space": {
           "vm": Boolean,
           "gating": Boolean,
@@ -2113,7 +2114,12 @@ of the file.
     `“saving”`: The value (JSON Object) contains key-value pairs to define
     which state variables NEURON will save during its simulations and at
     which times/locations ([S31](S31-NEURON-launch.hoc) and [S32](S32-NEURON-Wrapper.hoc) Text). Required.
-
+      - `“aploctime”`: The value (Boolean), if true, instructs the program to
+            save, for each fiber node, the last time that an action potential (defined
+            by the threshold value in your protocol) passed over that node. Times are
+            written in milliseconds from node 0 to node n (the last node). Note that
+            passive end nodes will always have a time of 0 (no action potential
+            detected.)
       - `“space”`:
 
           - `“vm”`: The value (Boolean), if true, tells the program to save
@@ -2416,6 +2422,7 @@ of the file.
         "ind": 2
       },
       "saving": {
+        "aploctime": false,
         "space": {
           "vm": false,
           "gating": false,

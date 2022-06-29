@@ -9,6 +9,7 @@ The source code can be found on the following GitHub repository: https://github.
 # builtins
 import itertools
 from typing import List
+import warnings
 
 # packages
 import numpy as np
@@ -195,6 +196,11 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         else:
             file_object.write("saveflag_runtime     = %0.0f\n" % int(self.search(Config.SIM, "saving", "runtimes") == True))
 
+        if 'aploctime' not in self.configs[Config.SIM.value]['saving'].keys():
+            file_object.write("saveflag_ap_loctime  = %0.0f\n" % 0)
+        else:
+            file_object.write("saveflag_ap_loctime  = %0.0f\n" % int(self.search(Config.SIM, "saving", "aploctime") == True))
+
         if 'end_ap_times' in self.configs[Config.SIM.value]['saving'].keys():
             loc_min = self.search(Config.SIM, "saving", "end_ap_times", "loc_min")
             loc_max = self.search(Config.SIM, "saving", "end_ap_times", "loc_max")
@@ -278,6 +284,16 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                 file_object.write("stimamp_values.x[%0.0f] = %0.4f\n" % (amp_ind, 0))
 
         elif protocol_mode == NeuronRunMode.FINITE_AMPLITUDES:
+            activation: dict = self.search(Config.SIM, "protocol", "activation", optional=True)
+            if activation is None:
+                warnings.warn('No activation parameters defined for FINITE_AMPLITUDES protocol, proceeding with default values')
+                ap_thresh = -30
+                ap_detect_location = 0.9
+            else:
+                ap_thresh = self.search(Config.SIM, "protocol", "activation", "value")
+                ap_detect_location = self.search(Config.SIM, "protocol", "activation", "ap_detect_location")
+            file_object.write("\nap_thresh = %0.0f\n" % ap_thresh)
+            file_object.write("ap_detect_location  = %0.2f\n" % ap_detect_location)
             find_thresh = 0
             block_thresh_flag = 0
             amps = self.search(Config.SIM, "protocol", "amplitudes")
@@ -286,7 +302,6 @@ class HocWriter(Exceptionable, Configurable, Saveable):
             file_object.write("Namp = %0.0f\n" % num_amps)
             file_object.write("objref stimamp_values\n")
             file_object.write("stimamp_values = new Vector(Namp,%0.0f)\n" % 0)
-            file_object.write("\nap_thresh = %0.0f\n" % 1000)  # arbitrarily high, not ever used
             for amp_ind in range(num_amps):
                 file_object.write("stimamp_values.x[%0.0f] = %0.4f\n" % (amp_ind, amps[amp_ind]))
 
