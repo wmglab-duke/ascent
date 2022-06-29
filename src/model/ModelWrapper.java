@@ -187,45 +187,48 @@ public class ModelWrapper {
     public boolean addCuffPartPrimitives(String name) {
         // extract data from json
         try {
-            JSONObject cuffData = JSONio.read(
-                    String.join("/", new String[]{this.root, "config", "system", "cuffs", name})
-            );
-
-            // get the id for the next "par" (i.e., parameters section), and give it a name from the JSON file name
-            String id = this.next("par", name);
-            model.param().group().create(id);
-            model.param(id).label(name.split("\\.")[0] + " Parameters");
-
-            // loop through all parameters in file, and set in parameters
-            for (Object item : (JSONArray) cuffData.get("params")) {
-                JSONObject itemObject = (JSONObject) item;
-                model.param(id).set(
-                        (String) itemObject.get("name"),
-                        (String) itemObject.get("expression"),
-                        (String) itemObject.get("description")
+            // Only add primitives if this is the first time for this cuff
+            if (!this.im.hasPseudonym(name)) {
+                JSONObject cuffData = JSONio.read(
+                        String.join("/", new String[]{this.root, "config", "system", "cuffs", name})
                 );
-            }
 
-            // for each required part primitive, create it (if not already existing)
-            for (Object item: (JSONArray) cuffData.get("instances")) {
-                JSONObject itemObject = (JSONObject) item;
-                String partPrimitiveName = (String) itemObject.get("type"); // quick cast to String
+                // get the id for the next "par" (i.e., parameters section), and give it a name from the JSON file name
+                String id = this.next("par", name);
+                model.param().group().create(id);
+                model.param(id).label(name.split("\\.")[0] + " Parameters");
 
-                // create the part primitive if it has not already been created
-                if (! this.im.hasPseudonym(partPrimitiveName)) {
-                    // get next available (TOP LEVEL) "part" id
-                    String partID = this.im.next("part", partPrimitiveName);
-                    try {
-                        // TRY to create the part primitive (catch error if no existing implementation)
-                        IdentifierManager partPrimitiveIM = Part.createCuffPartPrimitive(partID, partPrimitiveName, this);
+                // loop through all parameters in file, and set in parameters
+                for (Object item : (JSONArray) cuffData.get("params")) {
+                    JSONObject itemObject = (JSONObject) item;
+                    model.param(id).set(
+                            (String) itemObject.get("name"),
+                            (String) itemObject.get("expression"),
+                            (String) itemObject.get("description")
+                    );
+                }
 
-                        // add the returned id manager to the HashMap of IMs with the partName as its key
-                        this.partPrimitiveIMs.put(partPrimitiveName, partPrimitiveIM);
+                // for each required part primitive, create it (if not already existing)
+                for (Object item : (JSONArray) cuffData.get("instances")) {
+                    JSONObject itemObject = (JSONObject) item;
+                    String partPrimitiveName = (String) itemObject.get("type"); // quick cast to String
 
-                    } catch (IllegalArgumentException e) {
-                        e.printStackTrace();
-                        return false;
+                    // create the part primitive if it has not already been created
+                    if (!this.im.hasPseudonym(partPrimitiveName)) {
+                        // get next available (TOP LEVEL) "part" id
+                        String partID = this.im.next("part", partPrimitiveName);
+                        try {
+                            // TRY to create the part primitive (catch error if no existing implementation)
+                            IdentifierManager partPrimitiveIM = Part.createCuffPartPrimitive(partID, partPrimitiveName, this);
 
+                            // add the returned id manager to the HashMap of IMs with the partName as its key
+                            this.partPrimitiveIMs.put(partPrimitiveName, partPrimitiveIM);
+
+                        } catch (IllegalArgumentException e) {
+                            e.printStackTrace();
+                            return false;
+
+                        }
                     }
                 }
             }
@@ -243,7 +246,7 @@ public class ModelWrapper {
      * @param modelData
      * @return success indicator
      */
-    public boolean addCuffPartInstances(String name, JSONObject modelData) {
+    public boolean addCuffPartInstances(String name, JSONObject modelData,int index) {
         // extract data from json (name is something like Enteromedics.json)
         try {
             JSONObject cuffData = JSONio.read(
@@ -254,10 +257,12 @@ public class ModelWrapper {
             for (Object item: (JSONArray) cuffData.get("instances")) {
                 JSONObject itemObject = (JSONObject) item;
 
-                String instanceLabel = (String) itemObject.get("label");
+                // add cuff index to instance label
+                String instanceLabel = (String) itemObject.get("label")+"_"+index;
                 String instanceID = this.im.next("pi", instanceLabel);
                 String type = (String) itemObject.get("type");
-                Part.createCuffPartInstance(instanceID, instanceLabel, type , this, itemObject);
+                String cuffname = name.split("\\.")[0];
+                Part.createCuffPartInstance(instanceID, instanceLabel, type, this, itemObject, cuffname, index);
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -270,14 +275,16 @@ public class ModelWrapper {
      * Assign previously defined materials to domains in part instances
      * @param cuffData is loaded JSON data for a defined cuff
      */
-    public boolean addCuffPartMaterialAssignments(JSONObject cuffData) {
+    public boolean addCuffPartMaterialAssignments(JSONObject cuffData, int index) {
         // extract data from json, its name is something like Enteromedics.json
         // loop through all part instances
         for (Object item: (JSONArray) cuffData.get("instances")) {
             JSONObject itemObject = (JSONObject) item;
 
-            String instanceLabel = (String) itemObject.get("label");
+            //add cuff index to instance label
+            String instanceLabel = (String) itemObject.get("label")+"_"+index;
             String type = (String) itemObject.get("type");
+
             Part.addCuffPartMaterialAssignment(instanceLabel, type, this, itemObject);
         }
         return true;
@@ -581,7 +588,18 @@ public class ModelWrapper {
             ModelUtil.remove(basis.tag());
         }
 
-        String cuff = modelData.getJSONObject("cuff").getString("preset");
+        //Check if cuff is a json array (multiple cuffs) or a json object (single cuff)
+        String cuff="";
+        Object cuffObject = modelData.get("cuff");
+        if (cuffObject instanceof JSONArray) {
+            // It's an array
+            System.out.println("Potential extraction not implemented for multi-cuff. Exiting...");
+            System.exit(0);
+        } else if (cuffObject instanceof JSONObject) {
+            // It's an object
+            cuff = modelData.getJSONObject("cuff").getString("preset");
+        }
+
 
         // COMBINE AND MAKE POTENTIALS FOR N_SIMS FROM BASES
         double[][][][] final_ve = new double[sims_list.length()][][][];
@@ -1189,7 +1207,7 @@ public class ModelWrapper {
             }
             if (lic == false) {
                 System.out.println("A COMSOL license did not become available within the specified time window. Exiting...");
-                System.exit(1);
+                System.exit(0);
             }
         }
 
@@ -1323,7 +1341,7 @@ public class ModelWrapper {
 
                     modelData.put("solution",JSONObject.NULL);
 
-                    try (FileWriter file = new FileWriter("../" + modelFile)) {
+                    try (FileWriter file = new FileWriter(projectPath + "/" + modelFile)) {
                         String output = modelData.toString(2);
                         file.write(output);
                     } catch (IOException e) {
@@ -1337,6 +1355,13 @@ public class ModelWrapper {
                     } else {
                         recycle_meshes = false;
                     }
+
+                    //temp block to skip mesh match logic for multicuff
+                    if (modelData.get("cuff") instanceof JSONArray) {
+                        System.out.println("WARNING: Currently cannot recycle multi-cuff meshes due to mesh recycling logic not allowing arrays");
+                        recycle_meshes = false;
+                    }
+                    //end temp
 
                     if (recycle_meshes) {
                         System.out.println("\tEntering mesh recycling logic.");
@@ -1411,7 +1436,7 @@ public class ModelWrapper {
                         //Clear mesh stats
                         modelData.getJSONObject("mesh").put("stats", JSONObject.NULL);
 
-                        try (FileWriter file = new FileWriter("../" + modelFile)) {
+                        try (FileWriter file = new FileWriter(projectPath + "/" + modelFile)) {
                             String output = modelData.toString(2);
                             file.write(output);
                         } catch (IOException e) {
@@ -1546,32 +1571,52 @@ public class ModelWrapper {
                         }
 
                         if (!nerve_only) {
-                            // add PART PRIMITIVES for CUFF
-                            // Read cuff to build from model.json (cuff.preset) which links to JSON containing instantiations of parts
-                            JSONObject cuffObject = (JSONObject) modelData.get("cuff");
-                            String cuff = cuffObject.getString("preset");
-                            mw.addCuffPartPrimitives(cuff);
-
-                            // add PART INSTANCES for cuff
-                            mw.addCuffPartInstances(cuff, modelData);
 
                             // Set CUFF POSITIONING parameters
                             String cuffConformationParamsLabel = "Cuff Conformation Parameters";
                             ModelParamGroup cuffConformationParams = model.param().group().create(cuffConformationParamsLabel);
                             cuffConformationParams.label(cuffConformationParamsLabel);
 
-                            String cuff_shift_unit = "[micrometer]";
-                            String cuff_rot_unit = "[degree]";
-                            Double cuff_shift_x = modelData.getJSONObject("cuff").getJSONObject("shift").getDouble("x");
-                            Double cuff_shift_y = modelData.getJSONObject("cuff").getJSONObject("shift").getDouble("y");
-                            Double cuff_shift_z = modelData.getJSONObject("cuff").getJSONObject("shift").getDouble("z");
-                            Double cuff_rot_pos = modelData.getJSONObject("cuff").getJSONObject("rotate").getDouble("pos_ang");
-                            Double cuff_rot_add = modelData.getJSONObject("cuff").getJSONObject("rotate").getDouble("add_ang");
+                            //Check if there are multiple cuffs (array) or only a single cuff (json object)
+                            Object cuffObject = modelData.get("cuff");
+                            JSONArray allCuffSpec = null;
+                            if (cuffObject instanceof JSONArray) {
+                                // It's an array
+                                allCuffSpec = (JSONArray) cuffObject;
+                            } else if (cuffObject instanceof JSONObject) {
+                                // It's an object
+                                cuffObject = (JSONObject) cuffObject;
+                                allCuffSpec = new JSONArray();
+                                allCuffSpec.put(cuffObject);
+                            }
+                        
+                            for (int i = 0; i < allCuffSpec.length(); i++) {
+                                // Read cuff to build from model.json (cuff.preset) which links to JSON containing instantiations of parts
+                                JSONObject cuffSpec = allCuffSpec.getJSONObject(i);
 
-                            cuffConformationParams.set("cuff_shift_x", cuff_shift_x + " " + cuff_shift_unit);
-                            cuffConformationParams.set("cuff_shift_y", cuff_shift_y + " " + cuff_shift_unit);
-                            cuffConformationParams.set("cuff_shift_z", cuff_shift_z + " " + cuff_shift_unit);
-                            cuffConformationParams.set("cuff_rot", cuff_rot_pos + cuff_rot_add + " " + cuff_rot_unit);
+                                // add PART PRIMITIVES for CUFF
+                                String cuff = cuffSpec.getString("preset");
+                                mw.addCuffPartPrimitives(cuff);
+
+                                // add PART INSTANCES for cuff
+                                mw.addCuffPartInstances(cuff, modelData,i);
+
+                                //Set cuff conformation parameters
+                                String cuff_shift_unit = "[micrometer]";
+                                String cuff_rot_unit = "[degree]";
+                                Double cuff_shift_x = cuffSpec.getJSONObject("shift").getDouble("x");
+                                Double cuff_shift_y = cuffSpec.getJSONObject("shift").getDouble("y");
+                                Double cuff_shift_z = cuffSpec.getJSONObject("shift").getDouble("z");
+                                Double cuff_rot_pos = cuffSpec.getJSONObject("rotate").getDouble("pos_ang");
+                                Double cuff_rot_add = cuffSpec.getJSONObject("rotate").getDouble("add_ang");
+
+                                String cuffname = cuff.split("\\.")[0]+"_"+String.valueOf(i);
+
+                                cuffConformationParams.set(cuffname+"_cuff_shift_x", cuff_shift_x + " " + cuff_shift_unit);
+                                cuffConformationParams.set(cuffname+"_cuff_shift_y", cuff_shift_y + " " + cuff_shift_unit);
+                                cuffConformationParams.set(cuffname+"_cuff_shift_z", cuff_shift_z + " " + cuff_shift_unit);
+                                cuffConformationParams.set(cuffname+"_cuff_rot", cuff_rot_pos + cuff_rot_add + " " + cuff_rot_unit);
+                            }
                         }
 
                         if (!cuff_only) {
@@ -1880,7 +1925,7 @@ public class ModelWrapper {
                         mesh.put("stats", meshStats);
                         modelData.put("mesh", mesh);
 
-                        try (FileWriter file = new FileWriter("../" + modelFile)) {
+                        try (FileWriter file = new FileWriter(projectPath + "/" + modelFile)) {
                             String output = modelData.toString(2);
                             file.write(output);
                         } catch (IOException e) {
@@ -1941,23 +1986,6 @@ public class ModelWrapper {
                     }
                     mw.addMaterialDefinitions(bio_materials, modelData, materialParams);
 
-                    JSONObject cuffObject = (JSONObject) modelData.get("cuff");
-                    String cuff = cuffObject.getString("preset");
-
-                    JSONObject cuffData = JSONio.read(String.join("/",
-                            new String[]{mw.root, "config", "system", "cuffs", cuff}));
-
-                    ArrayList<String> cuff_materials = new ArrayList<>();
-                    // loop through all part instances
-                    for (Object item : (JSONArray) cuffData.get("instances")) {
-                        JSONObject itemObject = (JSONObject) item;
-                        for (Object function : itemObject.getJSONArray("materials")) {
-                            JSONObject functionObject = (JSONObject) function;
-                            cuff_materials.add(functionObject.getString("info"));
-                        }
-                    }
-                    mw.addMaterialDefinitions(cuff_materials, modelData, materialParams);
-
                     // Add material assignments (links)
                     // DOMAIN
                     JSONObject distalMedium = modelData.getJSONObject("medium").getJSONObject("distal");
@@ -1967,7 +1995,6 @@ public class ModelWrapper {
                         throw new IllegalArgumentException("IdentifierManager not created for name: " + mediumPrimitiveString);
                     String[] myLabels = myIM.labels; // may be null, but that is ok if not used
                     String selection = myLabels[0];
-
                     if (distalMedium.getBoolean("exist")) {
 
                         String linkLabel = String.join("/", new String[]{instanceLabelDistalMedium, selection, "medium"});
@@ -1984,8 +2011,41 @@ public class ModelWrapper {
                         mat.selection().named("geom1_" + mw.im.get(instanceLabelProximalMedium) + "_" + myIM.get(selection) + "_dom");
                     }
 
-                    // CUFF
-                    mw.addCuffPartMaterialAssignments(cuffData);
+                    // Check if multiple cuffs (array) or single cuff (json object)
+                    Object cuffObject = modelData.get("cuff");
+                    JSONArray allCuffSpec = null;
+                    if (cuffObject instanceof JSONArray) {
+                        // It's an array
+                        allCuffSpec = (JSONArray) cuffObject;
+                    } else if (cuffObject instanceof JSONObject) {
+                        // It's an object
+                        cuffObject = (JSONObject) cuffObject;
+                        allCuffSpec = new JSONArray();
+                        allCuffSpec.put(cuffObject);
+                    }
+
+                    //Loop through all cuffs
+                    for (int i = 0; i < allCuffSpec.length(); i++) {
+                        // Read cuff to build from model.json (cuff.preset) which links to JSON containing instantiations of parts
+                        JSONObject cuffSpec = allCuffSpec.getJSONObject(i);
+
+                        String cuff = cuffSpec.getString("preset");
+
+                        JSONObject cuffData = JSONio.read(String.join("/",
+                                new String[]{mw.root, "config", "system", "cuffs", cuff}));
+
+                        ArrayList<String> cuff_materials = new ArrayList<>();
+                        // loop through all part instances
+                        for (Object item : (JSONArray) cuffData.get("instances")) {
+                            JSONObject itemObject = (JSONObject) item;
+                            for (Object function : itemObject.getJSONArray("materials")) {
+                                JSONObject functionObject = (JSONObject) function;
+                                cuff_materials.add(functionObject.getString("info"));
+                            }
+                        }
+                        mw.addMaterialDefinitions(cuff_materials, modelData, materialParams);
+                        mw.addCuffPartMaterialAssignments(cuffData,i);
+                    }
 
                     // NERVE
                     // Add epineurium only if NerveMode == PRESENT
@@ -2106,7 +2166,7 @@ public class ModelWrapper {
                         System.out.println("\tSuccessfully solved for /bases, therefore deleted /mesh directory.");
                     }
 
-                    try (FileWriter file = new FileWriter("../" + modelFile)) {
+                    try (FileWriter file = new FileWriter(projectPath + "/" + modelFile)) {
                         String output = modelData.toString(2);
                         file.write(output);
                     } catch (IOException e) {

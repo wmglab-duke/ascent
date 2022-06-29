@@ -184,7 +184,11 @@ class Simulation(Exceptionable, Configurable, Saveable):
         # index of line in output is s, write row containing of (r and p) to file
 
         # if active_srcs in sim config has key for the cuff in your model, use the list of contact weights
-        cuff = self.search(Config.MODEL, "cuff", "preset")
+        try:
+            cuff = self.search(Config.MODEL, "cuff", "preset")
+        except:
+            print("WARNING: Active sources not implemented for multiple cuffs, using default")
+            cuff = "default"
         if cuff in self.configs[Config.SIM.value]["active_srcs"].keys():
             active_srcs_list = self.search(Config.SIM, "active_srcs", cuff)
         else:

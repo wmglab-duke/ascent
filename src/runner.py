@@ -35,7 +35,7 @@ except:
 # ascent
 from src.core import Sample, Simulation, Waveform
 from src.utils import Exceptionable, Configurable, SetupMode, Config, NerveMode, WriteMode, CuffShiftMode,  \
-    PerineuriumResistivityMode, TemplateOutput, Env, ReshapeNerveMode, ExportMode, DownSampleMode
+    PerineuriumResistivityMode, TemplateOutput, Env, ReshapeNerveMode, ExportMode, DownSampleMode, Validatable
 
 
 class Runner(Exceptionable, Configurable):
@@ -115,6 +115,14 @@ class Runner(Exceptionable, Configurable):
 
         return configs
 
+    def precheck(self):
+        # check cuff configs for uniqueness
+        VD = Validatable()
+        VD.validate_cuff_configs(os.path.join(os.getcwd(),
+                                              'config',
+                                              'system',
+                                              'cuffs'))
+
     def run(self, smart: bool = True):
         """
         :param smart: bool telling the program whether to reprocess the sample or not if it already exists as sample.obj
@@ -124,6 +132,10 @@ class Runner(Exceptionable, Configurable):
         #       possible addition of functionality for looping samples in start.py
 
         # load all json configs into memory
+
+        # run precheck
+        self.precheck()
+
         all_configs = self.load_configs()
 
         run_pseudonym = self.configs[Config.RUN.value].get('pseudonym')
@@ -500,32 +512,10 @@ class Runner(Exceptionable, Configurable):
             self.throw(141)
         os.chdir('..')
 
-    def compute_cuff_shift(self, model_config: dict, sample: Sample, sample_config: dict):
-        # NOTE: ASSUMES SINGLE SLIDE
-
-        # add temporary model configuration
-        self.add(SetupMode.OLD, Config.MODEL, model_config)
-        self.add(SetupMode.OLD, Config.SAMPLE, sample_config)
-
-        # fetch slide
-        slide = sample.slides[0]
-
-        # fetch nerve mode
-        nerve_mode: NerveMode = self.search_mode(NerveMode, Config.SAMPLE)
-
-        if nerve_mode == NerveMode.PRESENT:
-            if 'deform_ratio' not in self.configs[Config.SAMPLE.value].keys():
-                deform_ratio = 1
-            else:
-                deform_ratio = self.search(Config.SAMPLE, 'deform_ratio')
-            if deform_ratio > 1:
-                self.throw(109)
-        else:
-            deform_ratio = None
-
+    def cuffshiftcalc(self, cuff_dict, slide, deform_ratio, nerve_mode, sample_config, model_config):
         # fetch cuff config
         cuff_config: dict = self.load(
-            os.path.join(os.getcwd(), "config", "system", "cuffs", model_config['cuff']['preset'])
+            os.path.join(os.getcwd(), "config", "system", "cuffs", cuff_dict['preset'])
         )
 
         # fetch 1-2 letter code for cuff (ex: 'CT')
@@ -625,13 +615,8 @@ class Runner(Exceptionable, Configurable):
             ).real  # [um] (scaled from any arbitrary length unit)
             offset += coef * value
 
-        # remove sample config
-        self.remove(Config.SAMPLE)
-
         cuff_shift_mode: CuffShiftMode = self.search_mode(CuffShiftMode, Config.MODEL)
 
-        # remove (pop) temporary model configuration
-        model_config = self.remove(Config.MODEL)
         model_config['min_radius_enclosing_circle'] = r_bound
 
         if slide.orientation_angle is not None:
@@ -640,30 +625,30 @@ class Runner(Exceptionable, Configurable):
         if cuff_shift_mode == CuffShiftMode.AUTO_ROTATION_MIN_CIRCLE_BOUNDARY \
                 or cuff_shift_mode == CuffShiftMode.MIN_CIRCLE_BOUNDARY:  # for backwards compatibility
             if r_i > r_f:
-                model_config['cuff']['rotate']['pos_ang'] = theta_c - theta_f
-                model_config['cuff']['shift']['x'] = x - (r_i - offset - cuff_r_buffer - r_bound) * np.cos(
+                cuff_dict['rotate']['pos_ang'] = theta_c - theta_f
+                cuff_dict['shift']['x'] = x - (r_i - offset - cuff_r_buffer - r_bound) * np.cos(
                     theta_c * ((2 * np.pi) / 360))
-                model_config['cuff']['shift']['y'] = y - (r_i - offset - cuff_r_buffer - r_bound) * np.sin(
+                cuff_dict['shift']['y'] = y - (r_i - offset - cuff_r_buffer - r_bound) * np.sin(
                     theta_c * ((2 * np.pi) / 360))
 
             else:
-                model_config['cuff']['rotate']['pos_ang'] = theta_c - theta_f
+                cuff_dict['rotate']['pos_ang'] = theta_c - theta_f
 
                 # if nerve is present, use 0,0
                 if slide.nerve is not None and deform_ratio == 1:  # has nerve
-                    model_config['cuff']['shift']['x'] = 0
-                    model_config['cuff']['shift']['y'] = 0
+                    cuff_dict['shift']['x'] = 0
+                    cuff_dict['shift']['y'] = 0
                 else:
                     # else, use
-                    model_config['cuff']['shift']['x'] = x
-                    model_config['cuff']['shift']['y'] = y
+                    cuff_dict['shift']['x'] = x
+                    cuff_dict['shift']['y'] = y
 
         elif cuff_shift_mode == CuffShiftMode.AUTO_ROTATION_TRACE_BOUNDARY \
                 or cuff_shift_mode == CuffShiftMode.TRACE_BOUNDARY:  # for backwards compatibility
             if r_i < r_f:
-                model_config['cuff']['rotate']['pos_ang'] = theta_c - theta_f
-                model_config['cuff']['shift']['x'] = x
-                model_config['cuff']['shift']['y'] = y
+                cuff_dict['rotate']['pos_ang'] = theta_c - theta_f
+                cuff_dict['shift']['x'] = x
+                cuff_dict['shift']['y'] = y
             else:
                 id_boundary = Point(0, 0).buffer(r_i - offset)
                 n_boundary = Point(x, y).buffer(r_f)
@@ -689,24 +674,24 @@ class Runner(Exceptionable, Configurable):
                 center_x += x_step
                 center_y += y_step
 
-                model_config['cuff']['rotate']['pos_ang'] = (theta_c - theta_f)
-                model_config['cuff']['shift']['x'] = center_x
-                model_config['cuff']['shift']['y'] = center_y
+                cuff_dict['rotate']['pos_ang'] = (theta_c - theta_f)
+                cuff_dict['shift']['x'] = center_x
+                cuff_dict['shift']['y'] = center_y
 
         elif cuff_shift_mode == CuffShiftMode.NAIVE_ROTATION_TRACE_BOUNDARY:
             if slide.orientation_point is not None:
                 print('Warning: orientation tif image will be ignored because a NAIVE cuff shift mode was chosen.')
             if r_i < r_f:
-                model_config['cuff']['rotate']['pos_ang'] = 0
-                model_config['cuff']['shift']['x'] = x
-                model_config['cuff']['shift']['y'] = y
+                cuff_dict['rotate']['pos_ang'] = 0
+                cuff_dict['shift']['x'] = x
+                cuff_dict['shift']['y'] = y
             else:
                 id_boundary = Point(0, 0).buffer(r_i - offset)
                 n_boundary = Point(x, y).buffer(r_f)
 
                 if id_boundary.boundary.distance(n_boundary.boundary) < cuff_r_buffer:
                     nerve_copy.shift([x, y, 0])
-                    print("WARNING: NERVE CENTERED ABOUT MIN CIRCLE CENTER (BEFORE PLACEMENT) BECAUSE "
+                    print("WARNING: NERVE CENTERED ABOUT MIN CIRCLE CENTER (BEFORE PLACEMENT) BECAUlf. "
                           "CENTROID PLACEMENT VIOLATED REQUIRED CUFF BUFFER DISTANCE\n")
 
                 center_x = 0
@@ -725,38 +710,84 @@ class Runner(Exceptionable, Configurable):
                 center_x += x_step
                 center_y += y_step
 
-                model_config['cuff']['rotate']['pos_ang'] = 0
-                model_config['cuff']['shift']['x'] = center_x
-                model_config['cuff']['shift']['y'] = center_y
+                cuff_dict['rotate']['pos_ang'] = 0
+                cuff_dict['shift']['x'] = center_x
+                cuff_dict['shift']['y'] = center_y
 
         elif cuff_shift_mode == CuffShiftMode.NONE:
-            model_config['cuff']['rotate']['pos_ang'] = 0
-            model_config['cuff']['shift']['x'] = 0
-            model_config['cuff']['shift']['y'] = 0
+            cuff_dict['rotate']['pos_ang'] = 0
+            cuff_dict['shift']['x'] = 0
+            cuff_dict['shift']['y'] = 0
 
         elif cuff_shift_mode == CuffShiftMode.NAIVE_ROTATION_MIN_CIRCLE_BOUNDARY \
                 or cuff_shift_mode == CuffShiftMode.PURPLE:
             if slide.orientation_point is not None:
                 print('Warning: orientation tif image will be ignored because a NAIVE cuff shift mode was chosen.')
             if r_i > r_f:
-                model_config['cuff']['rotate']['pos_ang'] = 0
+                cuff_dict['rotate']['pos_ang'] = 0
 
-                model_config['cuff']['shift']['x'] = x - (r_i - offset - cuff_r_buffer - r_bound) * np.cos(
+                cuff_dict['shift']['x'] = x - (r_i - offset - cuff_r_buffer - r_bound) * np.cos(
                     theta_i * ((2 * np.pi) / 360))
-                model_config['cuff']['shift']['y'] = y - (r_i - offset - cuff_r_buffer - r_bound) * np.sin(
+                cuff_dict['shift']['y'] = y - (r_i - offset - cuff_r_buffer - r_bound) * np.sin(
                     theta_i * ((2 * np.pi) / 360))
 
             else:
-                model_config['cuff']['rotate']['pos_ang'] = 0
+                cuff_dict['rotate']['pos_ang'] = 0
 
                 # if nerve is present, use 0,0
                 if slide.nerve is not None and deform_ratio == 1:  # has nerve
-                    model_config['cuff']['shift']['x'] = 0
-                    model_config['cuff']['shift']['y'] = 0
+                    cuff_dict['shift']['x'] = 0
+                    cuff_dict['shift']['y'] = 0
                 else:
                     # else, use
-                    model_config['cuff']['shift']['x'] = x
-                    model_config['cuff']['shift']['y'] = y
+                    cuff_dict['shift']['x'] = x
+                    cuff_dict['shift']['y'] = y
+        return cuff_dict
+
+    def compute_cuff_shift(self, model_config: dict, sample: Sample, sample_config: dict):
+        # NOTE: ASSUMES SINGLE SLIDE
+
+        # add temporary model configuration
+        self.add(SetupMode.OLD, Config.MODEL, model_config)
+        self.add(SetupMode.OLD, Config.SAMPLE, sample_config)
+
+        # fetch slide
+        slide = sample.slides[0]
+
+        # fetch nerve mode
+        nerve_mode: NerveMode = self.search_mode(NerveMode, Config.SAMPLE)
+
+        if nerve_mode == NerveMode.PRESENT:
+            if 'deform_ratio' not in self.configs[Config.SAMPLE.value].keys():
+                deform_ratio = 1
+            else:
+                deform_ratio = self.search(Config.SAMPLE, 'deform_ratio')
+            if deform_ratio > 1:
+                self.throw(109)
+        else:
+            deform_ratio = None
+
+        cuff_data = self.search(Config.MODEL, "cuff")
+
+        if type(cuff_data) == dict:
+            cuff_data = [cuff_data]
+        cuff_dicts = []
+
+        for cuff_dict in cuff_data:
+            cuff_dict = self.cuffshiftcalc(cuff_dict,
+                                           slide,
+                                           deform_ratio,
+                                           nerve_mode,
+                                           sample_config,
+                                           model_config)
+            cuff_dicts.append(cuff_dict)
+
+        model_config['cuff'] = cuff_dicts
+        # remove sample config
+        self.remove(Config.SAMPLE)
+
+        # remove (pop) temporary model configuration
+        self.remove(Config.MODEL)
 
         return model_config
 

@@ -2461,7 +2461,7 @@ class Part {
      * @throws IllegalArgumentException if the primitive specified by pseudonym has not been created
      */
     public static void createCuffPartInstance(String instanceID, String instanceLabel, String pseudonym, ModelWrapper mw,
-                                              JSONObject instanceParams) throws IllegalArgumentException {
+                                              JSONObject instanceParams, String name, int index) throws IllegalArgumentException {
 
         Model model = mw.getModel();
 
@@ -2469,12 +2469,12 @@ class Part {
         partInstance.label(instanceLabel);
         partInstance.set("part", mw.im.get(pseudonym));
 
-        partInstance.set("displ", new String[]{"cuff_shift_x", "cuff_shift_y", "cuff_shift_z"}); // moves cuff around the nerve
-        partInstance.set("rot", "cuff_rot");
+        partInstance.set("displ", new String[]{name+"_"+index+"_cuff_shift_x", name+"_"+index+"_cuff_shift_y", name+"_"+index+"_cuff_shift_z"}); // moves cuff around the nerve
+        partInstance.set("rot", name+"_"+index+"_cuff_rot");
 
         JSONObject itemObject = instanceParams.getJSONObject("def");
         IdentifierManager myIM = mw.getPartPrimitiveIM(pseudonym);
-        if (myIM == null) throw new IllegalArgumentException("IdentfierManager not created for name: " + pseudonym);
+        if (myIM == null) throw new IllegalArgumentException("IdentifierManager not created for name: " + pseudonym);
 
         String[] myLabels = myIM.labels; // may be null, but that is ok if not used
 
@@ -2740,7 +2740,7 @@ class Part {
 
                 }
 
-                partInstance.set("rot", "cuff_rot + corr_LN");
+                partInstance.set("rot", name+"_cuff_rot + corr_LN");
 
                 model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Center", (String) itemObject.get("Center"));
 
@@ -2785,7 +2785,7 @@ class Part {
 
                 }
 
-                partInstance.set("rot", "cuff_rot + corr_LN");
+                partInstance.set("rot", name+"_cuff_rot + corr_LN");
 
                 model.component("comp1").geom("geom1").feature(instanceID).setEntry("inputexpr", "Center", (String) itemObject.get("Center"));
 
