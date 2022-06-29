@@ -12,7 +12,6 @@ from src.core import Simulation
 from src.utils import Configurable
 
 
-
 def run(args):
     env_path = os.path.join('config', 'system', 'env.json')
     assert os.path.isfile(env_path), 'Invalid env path: {}'.format(env_path)
@@ -32,16 +31,16 @@ def run(args):
 
         for model in models:
             for sim in sims:
-                sim_config: dict = Configurable.load(os.path.join(nsim_source, 'n_sims','_'.join([str(x) for x in [sample, model, sim, '0']]),'0.json'))
+                sim_config: dict = Configurable.load(os.path.join(nsim_source, 'n_sims', '_'.join([str(x) for x in [sample, model, sim, '0']]), '0.json'))
                 sim_dir = os.path.join('samples', str(sample), 'models', str(model), 'sims', str(sim))
                 if sim_config['protocol']['mode'] == 'FINITE_AMPLITUDES':
-                    check = Simulation.activations_exist(sample, model, sim, sim_dir, os.path.join(nsim_source, 'n_sims'),len(sim_config['protocol']['amplitudes']))
+                    check = Simulation.activations_exist(sample, model, sim, sim_dir, os.path.join(nsim_source, 'n_sims'), len(sim_config['protocol']['amplitudes']))
                 else:
                     check = Simulation.thresholds_exist(sample, model, sim, sim_dir, os.path.join(nsim_source, 'n_sims'))
-                if check==False:
-                    if args.force==True:
+                if check == False:
+                    if args.force == True:
                         print('Force argument passed, continuing with import')
                     else:
-                        print('At least one threshold or activation output was missing, skipping import for run {} sample {} model {} sim {}'.format(argument,sample,model,sim))
+                        print('At least one threshold or activation output was missing, skipping import for run {} sample {} model {} sim {}'.format(argument, sample, model, sim))
                         continue
-                Simulation.import_n_sims(sample, model, sim, sim_dir, os.path.join(nsim_source, 'n_sims'),delete = args.delete_nsims)
+                Simulation.import_n_sims(sample, model, sim, sim_dir, os.path.join(nsim_source, 'n_sims'), delete=args.delete_nsims)

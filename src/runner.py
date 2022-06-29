@@ -126,7 +126,7 @@ class Runner(Exceptionable, Configurable):
         all_configs = self.load_configs()
 
         run_pseudonym = self.configs[Config.RUN.value].get('pseudonym')
-        if run_pseudonym is not None: print('Run pseudonym:',run_pseudonym)
+        if run_pseudonym is not None: print('Run pseudonym:', run_pseudonym)
 
         def load_obj(path: str):
             """
@@ -193,7 +193,6 @@ class Runner(Exceptionable, Configurable):
                 model_pseudonym = model_config.get('pseudonym')
                 print('\tMODEL {}'.format(model_num),
                       '- {}'.format(model_pseudonym) if model_pseudonym is not None else '')
-
 
                 # use current model index to computer maximum cuff shift (radius) .. SAVES to file in method
                 model_config = self.compute_cuff_shift(model_config, sample, all_configs[Config.SAMPLE.value][0])
@@ -277,13 +276,12 @@ class Runner(Exceptionable, Configurable):
                             else:
                                 potentials_exist.append(simulation.potentials_exist(sim_obj_dir))
 
-
                         else:
                             if not os.path.exists(sim_obj_dir):
                                 os.makedirs(sim_obj_dir)
 
-                            if not os.path.exists(sim_obj_dir+'/plots'):
-                                os.makedirs(sim_obj_dir+'/plots')
+                            if not os.path.exists(sim_obj_dir + '/plots'):
+                                os.makedirs(sim_obj_dir + '/plots')
 
                             simulation: Simulation = Simulation(sample, self.configs[Config.EXCEPTIONS.value])
                             simulation \
@@ -331,9 +329,9 @@ class Runner(Exceptionable, Configurable):
                             else:
                                 potentials_exist.append(simulation.potentials_exist(sim_obj_dir))
 
-            if self.configs[Config.CLI_ARGS.value].get('break_point')=='pre_java' or \
+            if self.configs[Config.CLI_ARGS.value].get('break_point') == 'pre_java' or \
                     (('break_points' in self.configs[Config.RUN.value].keys()) and \
-                     self.search(Config.RUN, 'break_points').get('pre_java')==True):
+                     self.search(Config.RUN, 'break_points').get('pre_java') == True):
                 print('KILLING PRE JAVA')
                 return
 
@@ -360,11 +358,11 @@ class Runner(Exceptionable, Configurable):
                     conditions = [models_exit_status is not None, len(models_exit_status) > model_index]
                     model_ran = models_exit_status[model_index] if all(conditions) else True
                     ss_use_notgen = []
-                    #check if all supersampled bases are "use" and not generating
+                    # check if all supersampled bases are "use" and not generating
                     for sim_index, sim_config in enumerate(all_configs['sims']):
                         if 'supersampled_bases' in simulation.configs['sims'].keys() and \
-                        simulation.configs['sims']['supersampled_bases']['use'] and not \
-                            simulation.configs['sims']['supersampled_bases']['generate']:
+                                simulation.configs['sims']['supersampled_bases']['use'] and not \
+                                simulation.configs['sims']['supersampled_bases']['generate']:
                             ss_use_notgen.append(True)
                         else:
                             ss_use_notgen.append(False)
@@ -395,7 +393,7 @@ class Runner(Exceptionable, Configurable):
                             simulation: Simulation = load_obj(sim_obj_path)
                             simulation.build_n_sims(sim_dir, sim_num)
 
-                            #get export behavior
+                            # get export behavior
                             export_behavior = None
                             if self.configs[Config.CLI_ARGS.value].get('export_behavior') is not None:
                                 export_behavior = self.configs[Config.CLI_ARGS.value]['export_behavior']
@@ -403,7 +401,7 @@ class Runner(Exceptionable, Configurable):
                                 export_behavior = self.configs[Config.RUN.value]['export_behavior']
                             else:
                                 export_behavior = 'selective'
-                            #check to make sure we have a valid behavior
+                            # check to make sure we have a valid behavior
                             if not np.any([export_behavior == x.value for x in ExportMode]):
                                 self.throw(139)
 
@@ -414,7 +412,7 @@ class Runner(Exceptionable, Configurable):
                                 sim_num,
                                 sim_dir,
                                 os.environ[Env.NSIM_EXPORT_PATH.value],
-                                export_behavior = export_behavior
+                                export_behavior=export_behavior
                             )
 
                             # ensure run configuration is present
@@ -446,56 +444,56 @@ class Runner(Exceptionable, Configurable):
 
         core_name = 'ModelWrapper'
 
-        #Encode command line args as jason string, then encode to base64 for passing to java
+        # Encode command line args as jason string, then encode to base64 for passing to java
         argstring = json.dumps(self.configs[Config.CLI_ARGS.value])
         argbytes = argstring.encode('ascii')
         argbase = base64.b64encode(argbytes)
         argfinal = argbase.decode('ascii')
 
-        if sys.platform.startswith('win'): #windows
+        if sys.platform.startswith('win'):  # windows
             server_command = ['{}\\bin\\win64\\comsolmphserver.exe'.format(comsol_path)]
             compile_command = '""{}\\javac" '\
-                      '-cp "..\\bin\\json-20190722.jar";"{}\\plugins\\*" '\
-                      'model\\*.java -d ..\\bin"'.format(jdk_path,
-                                                         comsol_path)
+                '-cp "..\\bin\\json-20190722.jar";"{}\\plugins\\*" '\
+                'model\\*.java -d ..\\bin"'.format(jdk_path,
+                                                   comsol_path)
             java_command = '""{}\\java\\win64\\jre\\bin\\java" '\
-                      '-cp "{}\\plugins\\*";"..\\bin\\json-20190722.jar";"..\\bin" '\
-                      'model.{} "{}" "{}" "{}""'.format(comsol_path,
-                                                   comsol_path,
-                                                   core_name,
-                                                   project_path,
-                                                   run_path,
-                                                   argfinal)
+                '-cp "{}\\plugins\\*";"..\\bin\\json-20190722.jar";"..\\bin" '\
+                'model.{} "{}" "{}" "{}""'.format(comsol_path,
+                                                  comsol_path,
+                                                  core_name,
+                                                  project_path,
+                                                  run_path,
+                                                  argfinal)
         else:
             server_command = ['{}/bin/comsol'.format(comsol_path), 'server']
 
             compile_command = '{}/javac -classpath ../bin/json-20190722.jar:{}/plugins/* model/*.java -d ../bin'.format(jdk_path,
-                                                                                                          comsol_path)
+                                                                                                                        comsol_path)
             # https://stackoverflow.com/questions/219585/including-all-the-jars-in-a-directory-within-the-java-classpath
             if sys.platform.startswith('linux'):  # linux
-                java_comsol_path = comsol_path+'/java/glnxa64/jre/bin/java'
-            else: #mac
-                java_comsol_path = comsol_path+'/java/maci64/jre/Contents/Home/bin/java'
+                java_comsol_path = comsol_path + '/java/glnxa64/jre/bin/java'
+            else:  # mac
+                java_comsol_path = comsol_path + '/java/maci64/jre/Contents/Home/bin/java'
 
             java_command = '{} '\
-                      '-cp .:$(echo {}/plugins/*.jar | '\
-                      'tr \' \' \':\'):../bin/json-20190722.jar:../bin model.{} "{}" "{}" "{}"'.format(java_comsol_path,
-                                                                                                  comsol_path,
-                                                                                                  core_name,
-                                                                                                  project_path,
-                                                                                                  run_path,
-                                                                                                  argfinal)
+                '-cp .:$(echo {}/plugins/*.jar | '\
+                'tr \' \' \':\'):../bin/json-20190722.jar:../bin model.{} "{}" "{}" "{}"'.format(java_comsol_path,
+                                                                                                 comsol_path,
+                                                                                                 core_name,
+                                                                                                 project_path,
+                                                                                                 run_path,
+                                                                                                 argfinal)
 
-        #start comsol server
+        # start comsol server
         subprocess.Popen(server_command, close_fds=True)
-        #wait for server to start
+        # wait for server to start
         time.sleep(30)
         os.chdir('src')
-        #compile java code
+        # compile java code
         exit_code = os.system(compile_command)
         if exit_code != 0:
             self.throw(140)
-        #run java code
+        # run java code
         exit_code = os.system(java_command)
         if exit_code != 0:
             self.throw(141)
@@ -560,8 +558,8 @@ class Runner(Exceptionable, Configurable):
         # if poly fasc, use centroid of all fascicle as reference, not 0, 0
         # angle of centroid of nerve to center of minimum bounding circle
         reference_x = reference_y = 0.0
-        if not slide.monofasc() and not (round(slide.nerve.centroid()[0])==round(slide.nerve.centroid()[1])==0):
-            self.throw(123) #if the slide has nerve and is not centered at the nerve throw error
+        if not slide.monofasc() and not (round(slide.nerve.centroid()[0]) == round(slide.nerve.centroid()[1]) == 0):
+            self.throw(123)  # if the slide has nerve and is not centered at the nerve throw error
         if not slide.monofasc():
             reference_x, reference_y = slide.fascicle_centroid()
         theta_c = (np.arctan2(reference_y - y, reference_x - x) * (360 / (2 * np.pi))) % 360
@@ -608,7 +606,7 @@ class Runner(Exceptionable, Configurable):
                 if fixed_point is None:
                     self.throw(126)
                 if fixed_point == 'clockwise_end':
-                    theta_f = theta_i*(r_i/r_f)
+                    theta_f = theta_i * (r_i / r_f)
                 elif fixed_point == 'center':
                     theta_f = theta_i
             else:
@@ -641,17 +639,17 @@ class Runner(Exceptionable, Configurable):
         if cuff_shift_mode == CuffShiftMode.AUTO_ROTATION_MIN_CIRCLE_BOUNDARY \
                 or cuff_shift_mode == CuffShiftMode.MIN_CIRCLE_BOUNDARY:  # for backwards compatibility
             if r_i > r_f:
-                model_config['cuff']['rotate']['pos_ang'] = theta_c-theta_f
+                model_config['cuff']['rotate']['pos_ang'] = theta_c - theta_f
                 model_config['cuff']['shift']['x'] = x - (r_i - offset - cuff_r_buffer - r_bound) * np.cos(
                     theta_c * ((2 * np.pi) / 360))
                 model_config['cuff']['shift']['y'] = y - (r_i - offset - cuff_r_buffer - r_bound) * np.sin(
                     theta_c * ((2 * np.pi) / 360))
 
             else:
-                model_config['cuff']['rotate']['pos_ang'] = theta_c-theta_f
+                model_config['cuff']['rotate']['pos_ang'] = theta_c - theta_f
 
                 # if nerve is present, use 0,0
-                if slide.nerve is not None and deform_ratio==1:  # has nerve
+                if slide.nerve is not None and deform_ratio == 1:  # has nerve
                     model_config['cuff']['shift']['x'] = 0
                     model_config['cuff']['shift']['y'] = 0
                 else:
@@ -662,7 +660,7 @@ class Runner(Exceptionable, Configurable):
         elif cuff_shift_mode == CuffShiftMode.AUTO_ROTATION_TRACE_BOUNDARY \
                 or cuff_shift_mode == CuffShiftMode.TRACE_BOUNDARY:  # for backwards compatibility
             if r_i < r_f:
-                model_config['cuff']['rotate']['pos_ang'] = theta_c-theta_f
+                model_config['cuff']['rotate']['pos_ang'] = theta_c - theta_f
                 model_config['cuff']['shift']['x'] = x
                 model_config['cuff']['shift']['y'] = y
             else:
@@ -690,7 +688,7 @@ class Runner(Exceptionable, Configurable):
                 center_x += x_step
                 center_y += y_step
 
-                model_config['cuff']['rotate']['pos_ang'] = (theta_c-theta_f)
+                model_config['cuff']['rotate']['pos_ang'] = (theta_c - theta_f)
                 model_config['cuff']['shift']['x'] = center_x
                 model_config['cuff']['shift']['y'] = center_y
 
@@ -751,7 +749,7 @@ class Runner(Exceptionable, Configurable):
                 model_config['cuff']['rotate']['pos_ang'] = 0
 
                 # if nerve is present, use 0,0
-                if slide.nerve is not None and deform_ratio==1:  # has nerve
+                if slide.nerve is not None and deform_ratio == 1:  # has nerve
                     model_config['cuff']['shift']['x'] = 0
                     model_config['cuff']['shift']['y'] = 0
                 else:
