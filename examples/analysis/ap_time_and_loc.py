@@ -10,7 +10,6 @@ import os
 import sys
 
 sys.path.append(os.path.sep.join([os.getcwd(), '']))
-os.chdir('D:/ASCENT/fresh')
 import numpy as np
 
 import matplotlib.pyplot as plt
