@@ -582,5 +582,33 @@
   {
     "code": 146,
     "text": "A white area which results in a fascicle trace with <3 points was detected. Check your input mask for specks."
+  },
+  {
+    "code": 151,
+    "text": "Missing \"active_srcs\" or \"active_recs\" in Sim"
+  },
+  {
+    "code": 152,
+    "text": "One cuff in Model was given, but values given for both active_srcs and active_recs."
+  },
+  {
+    "code": 153,
+    "text": "Failed to pair Model's cuffs to recs and srcs weights"
+  },
+  {
+    "code": 147,
+    "text": "Cannot have duplicate cuff indices - i.e., same cuff as stim and record"
+  },
+  {
+    "code": 148,
+    "text": "Pairs of stim and record indices cannot match between Model->cuffs->indices and Sim->active_srcs/recs->cuff_indices"
+  },
+  {
+    "code": 149,
+    "text": "The length of the weights in Sim->active_srcs AND/OR Sim->active_recs is not consistent, and therefore cannot be correct"
+  },
+  {
+    "code": 150,
+    "text": "Missing extracted bases (non-weighted) potentials for a fiber."
   }
 ]
