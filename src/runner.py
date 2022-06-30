@@ -28,13 +28,14 @@ import traceback
 
 try:
     import pymunkoptions
+
     pymunkoptions.options["debug"] = False
 except:
     pass
 
 # ascent
 from src.core import Sample, Simulation, Waveform
-from src.utils import Exceptionable, Configurable, SetupMode, Config, NerveMode, WriteMode, CuffShiftMode,  \
+from src.utils import Exceptionable, Configurable, SetupMode, Config, NerveMode, WriteMode, CuffShiftMode, \
     PerineuriumResistivityMode, TemplateOutput, Env, ReshapeNerveMode, ExportMode, DownSampleMode, Validatable
 
 
@@ -146,7 +147,8 @@ class Runner(Exceptionable, Configurable):
             :param path: path to python obj file
             :return: obj file
             """
-            return pickle.load(open(path, 'rb')).add(SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value])
+            return pickle.load(open(path, 'rb')).add(SetupMode.OLD, Config.CLI_ARGS,
+                                                     self.configs[Config.CLI_ARGS.value])
 
         # ensure NEURON files exist in export location
         Simulation.export_neuron_files(os.environ[Env.NSIM_EXPORT_PATH.value])
@@ -255,7 +257,8 @@ class Runner(Exceptionable, Configurable):
 
                             simulation: Simulation = load_obj(sim_obj_file)
 
-                            if 'supersampled_bases' in simulation.configs['sims'].keys() and simulation.configs['sims']['supersampled_bases']['use']:
+                            if 'supersampled_bases' in simulation.configs['sims'].keys() and \
+                                    simulation.configs['sims']['supersampled_bases']['use']:
                                 source_sim_index = simulation.configs['sims']['supersampled_bases']['source_sim']
 
                                 source_sim_obj_dir = os.path.join(
@@ -286,6 +289,8 @@ class Runner(Exceptionable, Configurable):
                                 ss_bases_exist.append(
                                     simulation.ss_bases_exist(source_sim_obj_dir)
                                 )
+                            elif 'active_recs' in simulation.configs['sims'].keys():
+                                potentials_exist.append(simulation.bases_potentials_exist(sim_obj_dir))
                             else:
                                 potentials_exist.append(simulation.potentials_exist(sim_obj_dir))
 
@@ -308,7 +313,8 @@ class Runner(Exceptionable, Configurable):
                                 .validate_srcs(sim_obj_dir) \
                                 .save(sim_obj_file)
 
-                            if 'supersampled_bases' in simulation.configs['sims'].keys() and simulation.configs['sims']['supersampled_bases']['use']:
+                            if 'supersampled_bases' in simulation.configs['sims'].keys() and \
+                                    simulation.configs['sims']['supersampled_bases']['use']:
                                 source_sim_index = simulation.configs['sims']['supersampled_bases']['source_sim']
 
                                 source_sim_obj_dir = os.path.join(
@@ -339,6 +345,8 @@ class Runner(Exceptionable, Configurable):
                                 ss_bases_exist.append(
                                     simulation.ss_bases_exist(source_sim_obj_dir)
                                 )
+                            elif 'active_recs' in simulation.configs['sims'].keys():
+                                potentials_exist.append(simulation.bases_potentials_exist(sim_obj_dir))
                             else:
                                 potentials_exist.append(simulation.potentials_exist(sim_obj_dir))
 
@@ -465,37 +473,39 @@ class Runner(Exceptionable, Configurable):
 
         if sys.platform.startswith('win'):  # windows
             server_command = ['{}\\bin\\win64\\comsolmphserver.exe'.format(comsol_path)]
-            compile_command = '""{}\\javac" '\
-                '-cp "..\\bin\\json-20190722.jar";"{}\\plugins\\*" '\
-                'model\\*.java -d ..\\bin"'.format(jdk_path,
-                                                   comsol_path)
-            java_command = '""{}\\java\\win64\\jre\\bin\\java" '\
-                '-cp "{}\\plugins\\*";"..\\bin\\json-20190722.jar";"..\\bin" '\
-                'model.{} "{}" "{}" "{}""'.format(comsol_path,
-                                                  comsol_path,
-                                                  core_name,
-                                                  project_path,
-                                                  run_path,
-                                                  argfinal)
+            compile_command = '""{}\\javac" ' \
+                              '-cp "..\\bin\\json-20190722.jar";"{}\\plugins\\*" ' \
+                              'model\\*.java -d ..\\bin"'.format(jdk_path,
+                                                                 comsol_path)
+            java_command = '""{}\\java\\win64\\jre\\bin\\java" ' \
+                           '-cp "{}\\plugins\\*";"..\\bin\\json-20190722.jar";"..\\bin" ' \
+                           'model.{} "{}" "{}" "{}""'.format(comsol_path,
+                                                             comsol_path,
+                                                             core_name,
+                                                             project_path,
+                                                             run_path,
+                                                             argfinal)
         else:
             server_command = ['{}/bin/comsol'.format(comsol_path), 'server']
 
-            compile_command = '{}/javac -classpath ../bin/json-20190722.jar:{}/plugins/* model/*.java -d ../bin'.format(jdk_path,
-                                                                                                                        comsol_path)
+            compile_command = '{}/javac -classpath ../bin/json-20190722.jar:{}/plugins/* model/*.java -d ../bin'.format(
+                jdk_path,
+                comsol_path)
             # https://stackoverflow.com/questions/219585/including-all-the-jars-in-a-directory-within-the-java-classpath
             if sys.platform.startswith('linux'):  # linux
                 java_comsol_path = comsol_path + '/java/glnxa64/jre/bin/java'
             else:  # mac
                 java_comsol_path = comsol_path + '/java/maci64/jre/Contents/Home/bin/java'
 
-            java_command = '{} '\
-                '-cp .:$(echo {}/plugins/*.jar | '\
-                'tr \' \' \':\'):../bin/json-20190722.jar:../bin model.{} "{}" "{}" "{}"'.format(java_comsol_path,
-                                                                                                 comsol_path,
-                                                                                                 core_name,
-                                                                                                 project_path,
-                                                                                                 run_path,
-                                                                                                 argfinal)
+            java_command = '{} ' \
+                           '-cp .:$(echo {}/plugins/*.jar | ' \
+                           'tr \' \' \':\'):../bin/json-20190722.jar:../bin model.{} "{}" "{}" "{}"'.format(
+                java_comsol_path,
+                comsol_path,
+                core_name,
+                project_path,
+                run_path,
+                argfinal)
 
         # start comsol server
         subprocess.Popen(server_command, close_fds=True)
@@ -620,7 +630,8 @@ class Runner(Exceptionable, Configurable):
         model_config['min_radius_enclosing_circle'] = r_bound
 
         if slide.orientation_angle is not None:
-            theta_c = (slide.orientation_angle) * (360 / (2 * np.pi)) % 360  # overwrite theta_c, use our own orientation
+            theta_c = (slide.orientation_angle) * (
+                        360 / (2 * np.pi)) % 360  # overwrite theta_c, use our own orientation
 
         if cuff_shift_mode == CuffShiftMode.AUTO_ROTATION_MIN_CIRCLE_BOUNDARY \
                 or cuff_shift_mode == CuffShiftMode.MIN_CIRCLE_BOUNDARY:  # for backwards compatibility
