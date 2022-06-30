@@ -302,10 +302,10 @@ class Query(Exceptionable, Configurable, Saveable):
         return True
 
     def threshold_data(self,
-                                 sim_indices: int = None,
-                                 model_indices: List[int] = None,
-                                 ignore_missing=False,
-                                 meanify=False):
+                       sim_indices: int = None,
+                       model_indices: List[int] = None,
+                       ignore_missing=False,
+                       meanify=False):
         """
         :param meanify: return mean of thresholds for a given nsim along with stats
         :return:
@@ -373,7 +373,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
                             for local_fiber_index, _ in enumerate(out_in_fib[outer][out_in[outer].index(inner)]):
 
-                                master_index = sim_object.indices_n_to_fib(nsim_index,inner,local_fiber_index)
+                                master_index = sim_object.indices_n_to_fib(nsim_index, inner, local_fiber_index)
 
                                 thresh_path = os.path.join(n_sim_dir,
                                                            'data',
@@ -390,41 +390,41 @@ class Query(Exceptionable, Configurable, Saveable):
 
                                 if threshold.size > 1:
                                     threshold = threshold[-1]
-                                if meanify==True:
+                                if meanify == True:
                                     thresholds.append(abs(threshold))
                                 else:
                                     alldat.append({
-                                        'sample':sample_results['index'],
-                                        'model':  model_results['index'],
-                                        'sim':sim_index,
-                                        'nsim':nsim_index,
-                                        'inner':inner,
-                                        'fiber':local_fiber_index,
-                                        'index':master_index,
-                                        'threshold':abs(threshold)
-                                        })
-
-                        if meanify==True:
-                            if len(thresholds)==0:
-                                alldat.append({
-                                    'sample':sample_results['index'],
-                                    'model':  model_results['index'],
-                                    'sim':sim_index,
-                                    'nsim':nsim_index,
-                                    'mean' : np.nan,
+                                        'sample': sample_results['index'],
+                                        'model': model_results['index'],
+                                        'sim': sim_index,
+                                        'nsim': nsim_index,
+                                        'inner': inner,
+                                        'fiber': local_fiber_index,
+                                        'index': master_index,
+                                        'threshold': abs(threshold)
                                     })
+
+                        if meanify == True:
+                            if len(thresholds) == 0:
+                                alldat.append({
+                                    'sample': sample_results['index'],
+                                    'model': model_results['index'],
+                                    'sim': sim_index,
+                                    'nsim': nsim_index,
+                                    'mean': np.nan,
+                                })
                             else:
                                 thresholds: np.ndarray = np.array(thresholds)
 
                                 alldat.append({
-                                    'sample':sample_results['index'],
-                                    'model':  model_results['index'],
-                                    'sim':sim_index,
-                                    'nsim':nsim_index,
-                                    'mean' : np.mean(thresholds),
-                                    'std':  np.std(thresholds, ddof=1),
-                                    'sem':stats.sem(thresholds)
-                                    })
+                                    'sample': sample_results['index'],
+                                    'model': model_results['index'],
+                                    'sim': sim_index,
+                                    'nsim': nsim_index,
+                                    'mean': np.mean(thresholds),
+                                    'std': np.std(thresholds, ddof=1),
+                                    'sem': stats.sem(thresholds)
+                                })
 
         return pd.DataFrame(alldat)
 

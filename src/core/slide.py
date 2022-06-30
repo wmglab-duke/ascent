@@ -145,10 +145,9 @@ class Slide(Exceptionable):
         """
         check = []
         for f in self.fascicles:
-            check.append(len(f.outer.points)<3)
+            check.append(len(f.outer.points) < 3)
             check.extend([len(i.points) < 3 for i in f.inners])
         return any(check)
-
 
     def fascicle_fascicle_intersection(self) -> bool:
         """
