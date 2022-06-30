@@ -600,9 +600,9 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 currentIDs = im_config['currentIDs']
                 for id in currentIDs.keys():
                     if currentIDs[id]['cuff_index'] == src_cuff_index:
-                        src_bases_indices.append(int(id)-1)
+                        src_bases_indices.append(int(id) - 1)
                     elif currentIDs[id]['cuff_index'] == rec_cuff_index:
-                        rec_bases_indices.append(int(id)-1)
+                        rec_bases_indices.append(int(id) - 1)
                 src_bases_indices.sort()
                 rec_bases_indices.sort()
 

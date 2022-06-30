@@ -500,12 +500,12 @@ class Runner(Exceptionable, Configurable):
             java_command = '{} ' \
                            '-cp .:$(echo {}/plugins/*.jar | ' \
                            'tr \' \' \':\'):../bin/json-20190722.jar:../bin model.{} "{}" "{}" "{}"'.format(
-                java_comsol_path,
-                comsol_path,
-                core_name,
-                project_path,
-                run_path,
-                argfinal)
+                               java_comsol_path,
+                               comsol_path,
+                               core_name,
+                               project_path,
+                               run_path,
+                               argfinal)
 
         # start comsol server
         subprocess.Popen(server_command, close_fds=True)
@@ -631,7 +631,7 @@ class Runner(Exceptionable, Configurable):
 
         if slide.orientation_angle is not None:
             theta_c = (slide.orientation_angle) * (
-                        360 / (2 * np.pi)) % 360  # overwrite theta_c, use our own orientation
+                360 / (2 * np.pi)) % 360  # overwrite theta_c, use our own orientation
 
         if cuff_shift_mode == CuffShiftMode.AUTO_ROTATION_MIN_CIRCLE_BOUNDARY \
                 or cuff_shift_mode == CuffShiftMode.MIN_CIRCLE_BOUNDARY:  # for backwards compatibility
