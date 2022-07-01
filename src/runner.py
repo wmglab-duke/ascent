@@ -787,7 +787,7 @@ class Runner(Exceptionable, Configurable):
         else:
             self.throw(48)
 
-        dest_path: str = os.path.join(*all_configs[Config.SAMPLE.value][0]['samples_path'],
+        dest_path: str = os.path.join('samples',
                                       str(self.configs[Config.RUN.value]['sample']),
                                       'models',
                                       str(model_num),

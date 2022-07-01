@@ -17,9 +17,6 @@ To declare this entity in
   "pseudonym": String,
   "sex": String,
   "level": String,
-  "samples_path": [
-    String
-  ],
   "scale": {
     "scale_bar_length": Double,
     "scale_ratio": Double,
@@ -98,10 +95,6 @@ sample. Optional, for user records only.
 `“level”`: The value (String) of this property assigns the location of the
 nerve sample (e.g., cervical, abdominal, pudendal). Optional, for user
 records only.
-
-`“samples_path”`: The value (\[String, ...\]) is the path to the
-directory containing input morphology files for all samples for a given
-project. Required.
 
 `“scale”`
 
