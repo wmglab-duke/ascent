@@ -1145,22 +1145,10 @@ public class ModelWrapper {
         String decodedString = new String(decodedBytes);
         JSONObject cli_args = new JSONObject(decodedString);
 
-        // Start COMSOL Instance
-        try {
-            ModelUtil.connect("localhost", 2036);
-        } catch(FlException e) {
-            System.out.println("Could not connect to COMSOL server on port 2036, trying on port 2037...");
-            try {
-                ModelUtil.connect("localhost", 2037);
-            } catch(FlException exc) {
-                System.out.println("Could not connect to COMSOL server on port 2037, trying without specifying a port...");
-                ModelUtil.connect();
-            }
-        }
+        int waitMinutes = 5;
+        //connect to comsol server
+        ModelWrapper.serverConnect(waitMinutes);
 
-        TimeUnit.SECONDS.sleep(5);
-        ModelUtil.initStandalone(false);
-        
         if (cli_args.has("comsol_progress") && cli_args.getBoolean("comsol_progress")) {
             ModelUtil.showProgress(null); // if you want to see COMSOL progress (as it makes all geometry, runs, etc.)
         }
@@ -1171,26 +1159,8 @@ public class ModelWrapper {
 
         //checkout comsol license
         if (cli_args.has("wait_for_license") && !cli_args.isNull("wait_for_license")) {
-            long wait_hours = cli_args.getLong("wait_for_license");
-            System.out.println("Attempting to check out COMSOL license. System will wait up to " + String.valueOf(wait_hours) + " hours for an available license seat.");
-            boolean lic = false;
-            long start = System.currentTimeMillis();
-            long stop = wait_hours * 60 * 60 * 1000 + start;
-            while (System.currentTimeMillis() < stop) {
-                lic = ModelUtil.checkoutLicense("COMSOL");
-                if (lic == true) {
-                    long now = System.currentTimeMillis();
-                    double elapsed = (Long.valueOf(now).doubleValue()-Long.valueOf(start).doubleValue())/(60 * 60 * 1000);
-                    System.out.printf("COMSOL license seat obtained (took %.3f hours).%n", elapsed);
-                    break;
-                } else {
-                    TimeUnit.SECONDS.sleep(600);
-                }
-            }
-            if (lic == false) {
-                System.out.println("A COMSOL license did not become available within the specified time window. Exiting...");
-                System.exit(1);
-            }
+            long waitHours = cli_args.getLong("wait_for_license");
+            ModelWrapper.licenseCheckout(waitHours);
         }
 
         // Take projectPath input to ModelWrapper and assign to string.
@@ -2171,5 +2141,59 @@ public class ModelWrapper {
         }
 
         System.exit(0);
+    }
+
+    private static void licenseCheckout(long waitHours) throws InterruptedException {
+        System.out.println("Attempting to check out COMSOL license. System will wait up to " + String.valueOf(waitHours) + " hours for an available license seat.");
+        boolean lic = false;
+        long start = System.currentTimeMillis();
+        long stop = waitHours * 60 * 60 * 1000 + start;
+        while (System.currentTimeMillis() < stop) {
+            lic = ModelUtil.checkoutLicense("COMSOL");
+            if (lic == true) {
+                long now = System.currentTimeMillis();
+                double elapsed = (Long.valueOf(now).doubleValue()-Long.valueOf(start).doubleValue())/(60 * 60 * 1000);
+                System.out.printf("COMSOL license seat obtained (took %.3f hours).%n", elapsed);
+                break;
+            } else {
+                TimeUnit.SECONDS.sleep(600);
+            }
+        }
+        if (lic == false) {
+            System.out.println("A COMSOL license did not become available within the specified time window. Exiting...");
+            System.exit(0);
+        }
+
+    }
+
+    private static void serverConnect(int waitMinutes) throws InterruptedException {
+        // Try to connect to comsol server
+        long connectTime = waitMinutes * 60 * 1000 + System.currentTimeMillis();
+        while (true) {
+            try {
+                ModelUtil.connect("localhost", 2036);
+                break;
+            } catch(FlException e) {
+                System.out.println("Could not connect to COMSOL server on port 2036, trying on port 2037...");
+                try {
+                    ModelUtil.connect("localhost", 2037);
+                    break;
+                } catch(FlException exc) {
+                    System.out.println("Could not connect to COMSOL server on port 2037, trying without specifying a port...");
+                    try {
+                        ModelUtil.connect();
+                        break;
+                    } catch (Exception except) {
+                        if (System.currentTimeMillis() > connectTime) {
+                            except.printStackTrace();
+                            System.out.println("Could not connect to COMSOL server, exiting...");
+                            System.exit(1);
+                        }
+                        System.out.println("Could not connect to COMSOL server, trying again in 60 seconds...");
+                        TimeUnit.SECONDS.sleep(60);
+                    }
+                }
+            }
+        }
     }
 }
