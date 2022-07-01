@@ -2062,10 +2062,14 @@ public class ModelWrapper {
 
                     if (modelData.getJSONObject("solver").has("type")) {
                         solverType = modelData.getJSONObject("solver").getString("type");
-                        model.sol("sol1").feature("s1").feature("dDef").active(true);
+                        if (solverType.equals("direct")) {
+                            model.sol("sol1").feature("s1").feature("dDef").active(true);
+                        }
+                        else if (!solverType.equals("iterative"))
+                        System.out.println("Invalid solver type, proceeding with default (iterative).")
                     }
                     else {
-                        System.out.println("\tSolver type not specified, proceeding with default (iterative)."")
+                        System.out.println("\tSolver type not specified, proceeding with default (iterative).")
                     }
 
                     model.sol("sol1").attach("std1");         
