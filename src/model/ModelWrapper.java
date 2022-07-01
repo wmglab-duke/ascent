@@ -2059,7 +2059,16 @@ public class ModelWrapper {
                     model.sol("sol1").feature("s1").feature("i1").feature("mg1").set("prefun", "amg");
                     model.sol("sol1").feature("s1").feature("fc1").set("linsolver", "i1");
                     model.sol("sol1").feature("s1").feature().remove("fcDef");
-                    model.sol("sol1").attach("std1");
+
+                    if (modelData.getJSONObject("solver").has("type")) {
+                        solverType = modelData.getJSONObject("solver").getString("type");
+                        model.sol("sol1").feature("s1").feature("dDef").active(true);
+                    }
+                    else {
+                        System.out.println("\tSolver type not specified, proceeding with default (iterative)."")
+                    }
+
+                    model.sol("sol1").attach("std1");         
 
                     // break point "post_mesh_distal"
                     boolean pre_loop_currents;
