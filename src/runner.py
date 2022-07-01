@@ -491,11 +491,11 @@ class Runner(Exceptionable, Configurable):
         time.sleep(30)
         os.chdir('src')
         # compile java code
-        exit_code = subprocess.run(compile_command, shell=True)
+        exit_code = os.system(compile_command)
         if exit_code != 0:
             self.throw(140)
         # run java code
-        exit_code = subprocess.run(java_command, shell=True)
+        exit_code = os.system(java_command)
         if exit_code != 0:
             self.throw(141)
         os.chdir('..')
