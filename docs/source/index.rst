@@ -104,6 +104,7 @@ Welcome to ASCENT's documentation!
    Publications_Using_ASCENT
    references
    Validation
+   Changelog
 
 .. toctree::
    :maxdepth: 2
