@@ -36,7 +36,8 @@ extensions = ['myst_parser',
             'sphinxcontrib.bibtex',
             'sphinxcontrib.details.directive',
             'sphinx_copybutton',
-            'sphinx_rtd_dark_mode']
+            'sphinx_rtd_dark_mode',
+             'sphinx_github_changelog']
 
 source_suffix = {
     '.rst': 'restructuredtext',
@@ -88,3 +89,5 @@ bibtex_bibfiles = ['refs.bib']
 bibtex_reference_style = 'author_year'
 
 default_dark_mode = False
+
+sphinx_github_changelog_token = "..."
