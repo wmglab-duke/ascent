@@ -90,4 +90,4 @@ bibtex_reference_style = 'author_year'
 
 default_dark_mode = False
 
-sphinx_github_changelog_token = "..."
+sphinx_github_changelog_token = os.environ.get("SPHINX_GITHUB_CHANGELOG_TOKEN")
