@@ -1,5 +1,5 @@
-![License](https://img.shields.io/github/license/dmarshall-bing/ascent)
-[<img src="./config/system/images/sparc-logo-white_bwoutline.svg" alt="drawing" width="100"/>](https://reporter.nih.gov/project-details/9525478#description)
+![https://github.com/wmglab-duke/ascent/blob/master/LICENSE](https://img.shields.io/github/license/wmglab-duke/ascent) ![https://github.com/wmglab-duke/ascent/releases](https://img.shields.io/github/v/release/wmglab-duke/ascent) ![https://wmglab-duke-ascent.readthedocs.io/en/latest/](https://img.shields.io/readthedocs/wmglab-duke-ascent?logo=read-the-docs&logoColor=white)
+
 **User support: nikki.pelot@duke.edu**
 
 **Funding: NIH SPARC OT2 OD025340**
