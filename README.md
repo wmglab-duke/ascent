@@ -20,6 +20,8 @@
 
 **ASCENT** is an open source platform for simulating peripheral nerve stimulation. For more information, see the ASCENT documentation: [https://wmglab-duke-ascent.readthedocs.io/en/latest/](https://wmglab-duke-ascent.readthedocs.io/en/latest/)
 
+---
+
 The copyrights of this software are owned by Duke University. As such, two licenses to this software are offered:
 
 1. An open-source license under the MIT license for non-commercial use (See [LICENSE](LICENSE)).
