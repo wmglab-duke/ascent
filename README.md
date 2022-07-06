@@ -18,7 +18,7 @@
 
 The copyrights of this software are owned by Duke University. As such, two licenses to this software are offered:
 
-1. An open-source license under the MIT license for non-commercial use (See the LICENSE file).
+1. An open-source license under the MIT license for non-commercial use (See [LICENSE](LICENSE)).
 
 2. A custom license with Duke University, for commercial use or for use without the MIT license restrictions.
 
