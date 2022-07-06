@@ -1,3 +1,5 @@
+![License](https://img.shields.io/github/license/dmarshall-bing/ascent)
+[<img src="./config/system/images/sparc-logo-white_bwoutline.svg" alt="drawing" width="100"/>](https://reporter.nih.gov/project-details/9525478#description)
 **User support: nikki.pelot@duke.edu**
 
 **Funding: NIH SPARC OT2 OD025340**
