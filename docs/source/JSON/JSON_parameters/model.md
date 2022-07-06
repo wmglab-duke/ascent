@@ -416,7 +416,109 @@ record of FEM solver processes. Automatically populated.
   - `“name”`: Solver identity (String) used to solve electric currents (i.e., COMSOL version).
 
 ## Example
-```{eval-rst}
-.. include:: ../../../../config/templates/model.json
-   :code: javascript
+```
+{
+ "pseudonym": "My example model",
+ "modes": {
+   "rho_perineurium": "RHO_WEERASURIYA",
+   "cuff_shift": "AUTO_ROTATION_MIN_CIRCLE_BOUNDARY",
+   "fiber_z": "EXTRUSION",
+   "use_ci": true
+ },
+ "medium": {
+   "proximal": {
+     "distant_ground": false,
+     "length": 25000,
+     "radius": 3000
+   },
+   "distal": {
+     "exist": true,
+     "distant_ground": true,
+     "length": 25000,
+     "radius": 5000,
+     "shift": {
+       "x": 0,
+       "y": 0,
+       "z": 0
+     }
+   }
+ },
+ "inner_interp_tol": 0.01,
+ "outer_interp_tol": 0.01,
+ "nerve_interp_tol": 0.01,
+ "cuff": {
+   "preset": "CorTec300.json",
+   "rotate": {
+     "add_ang": 0,
+     "pos_ang": 143.1780701822382
+   },
+   "shift": {
+     "x": 13.596123436622277,
+     "y": 62.55712593704458,
+     "z": 0
+   }
+ },
+ "min_radius_enclosing_circle": 78.985163169824,
+ "mesh": {
+ "quality_measure":"vollength",
+ "shape_order": 2,
+   "proximal": {
+     "type": {
+       "im": "ftet",
+       "name": "FreeTet"
+     },
+     "hmax": 4000,
+     "hmin": 10,
+     "hgrad": 1.8,
+     "hcurve": 0.2,
+     "hnarrow": 1
+   },
+   "distal": {
+     "type": {
+       "im": "ftet",
+       "name": "FreeTet"
+     },
+     "hmax": 4000,
+     "hmin": 10,
+     "hgrad": 1.8,
+     "hcurve": 0.2,
+     "hnarrow": 1
+   },
+   "stats": {
+     "mesh_times": {
+       "distal": 555.2927,
+       "proximal": 6470.4786
+     },
+     "volume": 9.77E11,
+     "quality_measure_used": "vollength",
+     "min_quality": 0.1703,
+     "min_volume": 9.391,
+     "name": "COMSOL Multiphysics 5.6 (Build: 401)",
+     "number_elements": 180980,
+     "mean_quality": 0.6824
+ },
+ "frequency": 1, // in this example, no change in material properties
+ occurs
+ "temperature": 37,
+ "conductivities": {
+   "recess": "saline",
+   "medium": "muscle",
+   "fill": "saline",
+   "insulator": "silicone",
+   "conductor": "platinum",
+   "endoneurium": "endoneurium",
+   "perineurium": {
+     "label": "RHO_WEERASURIYA @ 1 Hz",
+     "value": "0.0008703220191470844"
+   },
+   "epineurium": "epineurium"
+ },
+ "solver": {
+   "sorder": "quadratic"
+ },
+ "solution": {
+   "name": "COMSOL Multiphysics 5.6 (Build: 401)",
+   "sol_time": 23801.7899
+ },
+}
 ```
