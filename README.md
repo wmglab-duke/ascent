@@ -1,4 +1,6 @@
-![https://github.com/wmglab-duke/ascent/blob/master/LICENSE](https://img.shields.io/github/license/wmglab-duke/ascent) ![https://github.com/wmglab-duke/ascent/releases](https://img.shields.io/github/v/release/wmglab-duke/ascent) ![https://wmglab-duke-ascent.readthedocs.io/en/latest/](https://img.shields.io/readthedocs/wmglab-duke-ascent?logo=read-the-docs&logoColor=white)
+[![License](https://img.shields.io/github/license/wmglab-duke/ascent)](https://github.com/wmglab-duke/ascent/blob/master/LICENSE) [![Releases](https://img.shields.io/github/v/release/wmglab-duke/ascent)](https://github.com/wmglab-duke/ascent/releases) [![Documentation](https://img.shields.io/readthedocs/wmglab-duke-ascent?logo=read-the-docs&logoColor=white)](https://wmglab-duke-ascent.readthedocs.io/en/latest/) [![DOI](https://zenodo.org/badge/379064819.svg)](https://zenodo.org/badge/latestdoi/379064819)
+
+
 
 **User support: nikki.pelot@duke.edu**
 
