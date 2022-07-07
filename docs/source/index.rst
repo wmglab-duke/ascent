@@ -113,3 +113,4 @@ Welcome to ASCENT's documentation!
    ASCENT Publication <https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1009285>
    ASCENT on GitHub <https://github.com/wmglab-duke/ascent>
    The Grill Lab <https://www.neuro.duke.edu/research/faculty-labs/grill-lab>
+   NIH SPARC <https://commonfund.nih.gov/sparc>
