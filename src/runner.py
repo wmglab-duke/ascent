@@ -452,7 +452,7 @@ class Runner(Exceptionable, Configurable):
         argfinal = argbase.decode('ascii')
 
         if sys.platform.startswith('win'):  # windows
-            server_command = ['{}\\bin\\win64\\comsolmphserver.exe'.format(comsol_path)]
+            server_command = ['{}\\bin\\win64\\comsolmphserver.exe -login auto'.format(comsol_path)]
             compile_command = '""{}\\javac" '\
                 '-cp "..\\bin\\json-20190722.jar";"{}\\plugins\\*" '\
                 'model\\*.java -d ..\\bin"'.format(jdk_path,
@@ -466,7 +466,7 @@ class Runner(Exceptionable, Configurable):
                                                   run_path,
                                                   argfinal)
         else:
-            server_command = ['{}/bin/comsol'.format(comsol_path), 'server']
+            server_command = ['{}/bin/comsol'.format(comsol_path), 'server', '-login', 'auto']
 
             compile_command = '{}/javac -classpath ../bin/json-20190722.jar:{}/plugins/* model/*.java -d ../bin'.format(jdk_path,
                                                                                                                         comsol_path)
