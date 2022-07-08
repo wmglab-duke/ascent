@@ -1,3 +1,10 @@
 pre-commit
 sphinx
 autopep8
+black
+flake8
+pylint
+mypy
+pytest
+isort
+sphinx-rtd-theme
