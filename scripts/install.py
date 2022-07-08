@@ -10,7 +10,6 @@ import os
 import sys
 import subprocess
 
-
 def run(args):
 
     def ensure_dir(directory):
