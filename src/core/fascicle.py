@@ -166,13 +166,13 @@ class Fascicle(Exceptionable):
 
         if outer_flag:
             self.outer.plot(ax=ax)
-            
+
         if color is not None:
             if not len(self.inners) == len(color):
                 self.throw(145)
         else:
-            color = [None] *  len(self.inners)
-            
+            color = [None] * len(self.inners)
+
         for i, (inner, c) in enumerate(zip(self.inners, color)):
             inner.plot(plot_format, color=c, ax=ax)
             if inner_index_start is not None:

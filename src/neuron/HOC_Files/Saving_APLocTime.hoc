@@ -1,0 +1,37 @@
+/*
+The copyrights of this software are owned by Duke University.
+Please refer to the LICENSE and README.md files for licensing instructions.
+The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
+*/
+
+/*
+Author: Eric Musselman
+Date created: May 3, 2022
+
+Description:
+- save AP initiation loc (node ind) and time (ms)
+
+Important notes:
+-
+
+Variables that must be defined in wrapper/params file:
+- min_ap_time_node_ind
+- min_ap_time
+- aploc_fname_output
+*/
+
+objref output_file_aploctime
+
+proc Saving_APLocTime() {
+	// Open file for writing
+	output_file_aploctime = new File()
+	output_file_aploctime.wopen(aploctime_fname_output)
+
+	// output APcount times for all nodes
+	for loc_node_ind=0, axonnodes-1 {
+		output_file_aploctime.printf("%f\n", apc[loc_node_ind].time) // time when last NoR AP was detected (i.e., time at the site of AP initiation)
+	}
+
+	// Close file
+	output_file_aploctime.close()
+}

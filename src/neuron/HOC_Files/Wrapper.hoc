@@ -65,7 +65,7 @@ if (fiber_type == 3) {
 } else if 	(fiber_type == 2 && flag_model_b_fiber==1) {		v_init = v_init_b_fiber			// [mV]
 }
 
-// ***************************************************************************	
+// ***************************************************************************
 // IntracellularStim.hoc
 objref stim
 
@@ -102,13 +102,13 @@ strdef VeSpace_fname
 load_file("ExtracellularStim_Space.hoc")
 
 // ***************************************************************************
-// Extracelluar recording 
+// Extracelluar recording
 strdef VeSpace_rec_fname
 objref SFAP
 strdef SFAP_fname
 
-// Set SFAP_dt_downsample_factor to an integer greater than or equal to 1; a 
-// value of 1 will save SFAP at every dt time step; a value of 2 will save 
+// Set SFAP_dt_downsample_factor to an integer greater than or equal to 1; a
+// value of 1 will save SFAP at every dt time step; a value of 2 will save
 // SFAP at every other dt time step; etc.
 SFAP_dt_downsample_factor = 1
 if (SFAP_dt_downsample_factor%1 != 0 || SFAP_dt_downsample_factor < 0) {
@@ -145,6 +145,8 @@ strdef fname_output_gating_m_space, fname_output_gating_h_space, fname_output_ga
 strdef Ve_fname_output, Istim_fname_output
 strdef runtime_fname_output
 strdef thresh_fname_output
+strdef activation_fname_output
+strdef aploctime_fname_output
 strdef stim_units
 strdef Ap_times_fname_output
 
@@ -156,6 +158,7 @@ if (flag_whichstim == 0) {
 
 load_file("Saving.hoc")
 load_file("Saving_Runtime.hoc")
+load_file("Saving_Activation.hoc")
 
 if (saveflag_end_ap_times==1) {
 	load_file("Saving_Ap_end_times.hoc")
@@ -164,6 +167,10 @@ if (saveflag_end_ap_times==1) {
 if (find_thresh == 1){
 	load_file("FindThresh.hoc")
 	load_file("Saving_Thresh.hoc")
+}
+
+if (saveflag_ap_loctime == 1){
+	load_file("Saving_APLocTime.hoc")
 }
 
 proc run_all(){local myinner, myfiber, myamp, amp_ind
@@ -198,12 +205,12 @@ proc run_all(){local myinner, myfiber, myamp, amp_ind
 			VeSpace_data = VeSpace_data.mul(1/Iapplied.x[0])
 		}
 	}
-	
+
 	// Read in Ve(x) for recording
 	if (flag_extracellular_rec == 1) {
 		sprint(VeSpace_rec_fname, "../%s/data/inputs/inner%d_fiber%d_extracellular_rec.dat",sim_path, myinner, myfiber)
 		VeSpace_extracellular_rec_read()
-		
+
 		// Convert to mV (required for e_extracellular)
 		VeSpace_rec_data = VeSpace_rec_data.mul(Ve_unitconv)
 	}
@@ -228,12 +235,13 @@ proc run_all(){local myinner, myfiber, myamp, amp_ind
 	sprint(fname_output_gating_mp_space, "../%s/data/outputs/gating_mp_space_inner%d_fiber%d_amp%d.dat", sim_path, myinner, myfiber, amp_ind)
 	sprint(fname_output_gating_s_space,  "../%s/data/outputs/gating_s_space_inner%d_fiber%d_amp%d.dat",  sim_path, myinner, myfiber, amp_ind)
 	sprint(Ap_times_fname_output,        "../%s/data/outputs/Aptimes_inner%d_fiber%d_amp%d.dat",         sim_path, myinner, myfiber, amp_ind)
+	sprint(aploctime_fname_output,       "../%s/data/outputs/ap_loctime_inner%d_fiber%d_amp%d.dat",      sim_path, myinner, myfiber, amp_ind)
+    sprint(runtime_fname_output,         "../%s/data/outputs/runtime_inner%d_fiber%d_amp%d.dat",         sim_path, myinner, myfiber, amp_ind)
 
 
 	if (find_thresh == 0) {
 		// Run sim
 		RunSim(myamp)
-
 		// Save data
 		Saving()
 
@@ -243,13 +251,17 @@ proc run_all(){local myinner, myfiber, myamp, amp_ind
 			sprint(runtime_fname_output, "../%s/data/outputs/runtime_inner%d_fiber%d_amp%d.dat", sim_path, myinner, myfiber, amp_ind)
 			Saving_Runtime()
 		}
-
+		print "N_APs = ", N_APs
+		sprint(activation_fname_output, "../%s/data/outputs/activation_inner%d_fiber%d_amp%d.dat", sim_path, myinner, myfiber, amp_ind)
+        Saving_Activation()
 
 	}   else if (find_thresh == 1){
 		// Run binary search for thresholds
 		FindThresh()
 		// Run sim once more with final thresh from FindThresh()
+		print "Running stimamp in final check for AP."
 		RunSim(stimamp)
+		print "N_APs = ", N_APs
 
 		// Save threshold value
 		sprint(thresh_fname_output, "../%s/data/outputs/thresh_inner%d_fiber%d.dat", sim_path, myinner, myfiber)
@@ -265,6 +277,20 @@ proc run_all(){local myinner, myfiber, myamp, amp_ind
 			Saving_Runtime()
 		}
 	}
+
+	// Save data
+	Saving()
+
+    if (saveflag_runtime == 1) {
+        // Save individual run time (for each simulation)
+        trun_individual = startsw() - trun_individual
+        Saving_Runtime()
+	}
+
+	if (saveflag_ap_loctime == 1) {
+		Saving_APLocTime()
+	}
+
 
 	if (saveflag_end_ap_times==1) {
 		Saving_Ap_end_times()
