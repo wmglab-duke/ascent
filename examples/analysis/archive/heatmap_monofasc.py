@@ -86,9 +86,9 @@ for sample_metadata in results.get('samples', []):
                         os.path.join(n_sim_dir, 'data', 'outputs', 'thresh_inner0_fiber{}.dat'.format(filename.split('.dat')[0]))
                     )[2]
 
-                    print((threshold - min_threshold)/(max_threshold - min_threshold))
+                    print((threshold - min_threshold) / (max_threshold - min_threshold))
 
-                    plt.plot(*coord, '*', color=colormap((threshold - min_threshold)/(max_threshold - min_threshold)))
+                    plt.plot(*coord, '*', color=colormap((threshold - min_threshold) / (max_threshold - min_threshold)))
 
                 plt.show()
 

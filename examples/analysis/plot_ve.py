@@ -18,7 +18,7 @@ base_n_sim = os.path.join('samples', str(sample), 'models', str(model), 'sims', 
 
 inner = 0
 fiber = 0
-n_sims = list(range(6)) #[0, 4, 8, 12, 16, 20]
+n_sims = list(range(6))  # [0, 4, 8, 12, 16, 20]
 pve1 = os.path.join(base_n_sim, str(n_sims[0]), 'data', 'inputs', 'inner{}_fiber{}.dat'.format(inner, fiber))
 dpve1 = np.loadtxt(pve1)
 plt.plot(dpve1[1:], 'r-', label='p1')

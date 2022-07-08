@@ -469,10 +469,10 @@ def cluster_submit(run_number: int, partition: str, args, mem: int = 2000, array
                             ]
                             if not args.verbose:
                                 with open(os.devnull, 'wb') as devnull:
-                                    exit_code = subprocess.run(command, stdout=devnull)
+                                    comp = subprocess.run(command, stdout=devnull)
                             else:
-                                exit_code = subprocess.run(command)
-                            if exit_code != 0:
+                                comp = subprocess.run(command)
+                            if comp.returncode != 0:
                                 sys.exit('Non-zero exit code during job submission. Exiting.')
 
                             # allow job to start before removing slurm file

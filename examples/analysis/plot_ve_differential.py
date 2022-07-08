@@ -22,7 +22,7 @@ n_sim = 0
 
 myelinated = True
 
-#%% Plot Ve graphs
+# %% Plot Ve graphs
 base_n_sim = os.path.join('samples', str(sample), 'models', str(model), 'sims', str(sim), 'n_sims')
 
 plt.figure()
@@ -34,14 +34,13 @@ plt.title('Ve')
 plt.show()
 
 plt.figure()
-der1 = [dpve1[i+1]-dpve1[i] for i in range(len(dpve1)-1)]
+der1 = [dpve1[i + 1] - dpve1[i] for i in range(len(dpve1) - 1)]
 plt.plot(der1[1:], 'r-', label='p1')
 plt.title('Ve 1st differential')
 plt.show()
 
 plt.figure()
-der2 = [der1[i+1]-der1[i] for i in range(len(der1)-1)]
+der2 = [der1[i + 1] - der1[i] for i in range(len(der1) - 1)]
 plt.plot(der2[1:], 'r-', label='p1')
 plt.title('Ve 2nd differential')
 plt.show()
-

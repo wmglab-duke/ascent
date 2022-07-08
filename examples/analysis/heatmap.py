@@ -30,7 +30,7 @@ q = Query({
     'indices': {
         'sample': [18],
         'model': [451],
-        'sim': [1,18]
+        'sim': [1, 18]
     }
 }).run()
 
@@ -39,20 +39,20 @@ colormap_bounds_override = None
 
 # builds heatmaps
 q.heatmaps(plot=False,
-            save_path='out/analysis',
-            plot_mode='fibers',
-        #    rows_override=6,
+           save_path='out/analysis',
+           plot_mode='fibers',
+           #    rows_override=6,
            colorbar_aspect=5,
            colormap_str='viridis',
            tick_count=4,
            reverse_colormap=True,
-        #    title_toggle=False,
-        #    track_colormap_bounds=True,
-        #    track_colormap_bounds_offset_ratio=0.0,
-        #    colomap_bounds_override=colormap_bounds_override,
-        #    subplot_title_toggle=False,
-            colorbar_text_size_override=30
-        #    tick_bounds=True
+           #    title_toggle=False,
+           #    track_colormap_bounds=True,
+           #    track_colormap_bounds_offset_ratio=0.0,
+           #    colomap_bounds_override=colormap_bounds_override,
+           #    subplot_title_toggle=False,
+           colorbar_text_size_override=30
+           #    tick_bounds=True
            )
 
 #
@@ -60,5 +60,5 @@ q.heatmaps(plot=False,
 #                 # also, look into adding documentation to Simulation (might be useful for above task too)
 
 # plt.show(block=True)
-#plt.close('all')
+# plt.close('all')
 # plt.tight_layout()
