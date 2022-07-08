@@ -41,11 +41,11 @@ autopep:
     - autopep8 --select=E1,E2,E3,E401,W1,W2,W3,E226,E24 --in-place --recursive .
 
 
-pylint:
-  stage: lint
-  script:
-    - pip install pylint
-    - pylint .
+#pylint:
+#  stage: lint
+#  script:
+#    - pip install pylint
+#    - pylint .
 
 pages:
   stage: docs
