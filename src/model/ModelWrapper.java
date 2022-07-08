@@ -2060,6 +2060,7 @@ public class ModelWrapper {
                     model.sol("sol1").feature("s1").feature("fc1").set("linsolver", "i1");
                     model.sol("sol1").feature("s1").feature().remove("fcDef");
 
+                    // check for solver type and select appropriate option
                     if (modelData.getJSONObject("solver").has("type")) {
                         String solverType = modelData.getJSONObject("solver").getString("type");
                         if (solverType.equals("direct")) {
