@@ -60,7 +60,7 @@ the following syntax:
   "min_radius_enclosing_circle": Double,
   "mesh": {
   "quality_measure": String,
-  "shape_order": Integer,
+  "shape_order": String,
     "proximal": {
       "type": {
         "im": String,
@@ -114,7 +114,8 @@ the following syntax:
     "epineurium": String
   },
   "solver": {
-    "sorder": String
+    "sorder": int,
+    "type": String
   },
   "solution": {
     "sol_time": Double,
@@ -290,8 +291,8 @@ meshing statistics (automatically calculated).
 
   - `“quality_measure”`: (String) COMSOL measure to use in calculating mesh quality stats. Options include skewness, maxangle, volcircum, vollength, condition, growth. Default is "vollength" if not specified.
 
-  - `“shape_order”`: Order of geometric shape functions (Integer) (e.g.,
-    quadratic = 2). Required.
+  - `“shape_order”`: Order of geometric shape functions (String) (e.g.,
+    quadratic). Required.
 
 <!-- end list -->
 
@@ -404,8 +405,10 @@ no recessed domain in the preset’s parameterized implementation.
 `“solver”`: The solver JSON Object contains key-value pairs to control the
 solver. Required.
 
-  - `“sorder”`: Order of solution shape functions (String) (e.g.,
-    quadratic). Required.
+  - `“sorder”`: Order of solution shape functions (int) (e.g.,
+    quadratic = 2). Required.
+
+  - `type`: (String) Solver to use. Options are "direct" or "iterative". Defaults to iterative if not provided, which uses less RAM but takes longer. Optional.
 
 `“solution”`: The solution JSON Object contains key-value pairs to keep
 record of FEM solver processes. Automatically populated.
