@@ -13,15 +13,16 @@ Error will be calculated for each model and sample with respect to the reference
 
 import os
 import sys
+
 import seaborn as sb
 
 sys.path.append(os.path.sep.join([os.getcwd(), '']))
 
-import numpy as np
-
 import matplotlib.pyplot as plt
-from src.core.query import Query
+import numpy as np
 import pandas as pd
+
+from src.core.query import Query
 
 samples = [1000, 10, 20]
 models = [0, 1, 2, 10, 11, 20, 21, 30]

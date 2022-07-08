@@ -7,8 +7,8 @@ The source code can be found on the following GitHub repository: https://github.
 """
 
 import os
-import sys
 import subprocess
+import sys
 
 
 def run(args):

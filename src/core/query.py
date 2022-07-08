@@ -10,18 +10,19 @@ import os
 import pickle
 import re
 import warnings
-from typing import Union, List, Tuple
+from typing import List, Tuple, Union
 
-import numpy as np
 import matplotlib.colorbar as cbar
 import matplotlib.colors as mplcolors
 import matplotlib.pyplot as plt
 import matplotlib.ticker as tick
-from scipy import stats as stats
+import numpy as np
 import pandas as pd
+from scipy import stats as stats
 
 from src.core import Sample, Simulation, Slide
-from src.utils import Exceptionable, Configurable, Saveable, SetupMode, Config, Object, FiberXYMode
+from src.utils import (Config, Configurable, Exceptionable, FiberXYMode,
+                       Object, Saveable, SetupMode)
 
 
 class Query(Exceptionable, Configurable, Saveable):

@@ -8,16 +8,15 @@ The source code can be found on the following GitHub repository: https://github.
 
 
 import itertools
+import os
 from typing import List
 
-
 import numpy as np
-import os
 
-
-from src.utils import (Config, Configurable, Exceptionable, FiberGeometry, FiberXYMode,
-                       MyelinationMode, NeuronRunMode, Saveable, SearchAmplitudeIncrementMode,
-                       SetupMode, TerminationCriteriaMode, WriteMode)
+from src.utils import (Config, Configurable, Exceptionable, FiberGeometry,
+                       FiberXYMode, MyelinationMode, NeuronRunMode, Saveable,
+                       SearchAmplitudeIncrementMode, SetupMode,
+                       TerminationCriteriaMode, WriteMode)
 
 
 class HocWriter(Exceptionable, Configurable, Saveable):

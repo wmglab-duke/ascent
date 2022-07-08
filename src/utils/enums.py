@@ -6,8 +6,8 @@ Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
-from enum import unique, Enum
 import os
+from enum import Enum, unique
 
 
 class ASCENTEnum(Enum):

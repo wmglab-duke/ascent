@@ -10,21 +10,20 @@ The source code can be found on the following GitHub repository: https://github.
 import os
 
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "1"
+import base64
+import json
 import pickle
+import subprocess
+import sys
+import time
+import traceback
+import warnings
+from copy import deepcopy
 from typing import List
 
-
-import warnings
-import json
-import base64
-import sys
 import numpy as np
-import time
-import subprocess
-from copy import deepcopy
 from quantiphy import Quantity
 from shapely.geometry import Point
-import traceback
 
 try:
     import pymunkoptions
@@ -34,8 +33,10 @@ except:
 
 
 from src.core import Sample, Simulation, Waveform
-from src.utils import Exceptionable, Configurable, SetupMode, Config, NerveMode, WriteMode, CuffShiftMode,  \
-    PerineuriumResistivityMode, TemplateOutput, Env, ReshapeNerveMode, ExportMode, DownSampleMode
+from src.utils import (Config, Configurable, CuffShiftMode, DownSampleMode,
+                       Env, Exceptionable, ExportMode, NerveMode,
+                       PerineuriumResistivityMode, ReshapeNerveMode, SetupMode,
+                       TemplateOutput, WriteMode)
 
 
 class Runner(Exceptionable, Configurable):

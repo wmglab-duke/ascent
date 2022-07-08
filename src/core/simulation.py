@@ -7,26 +7,27 @@ The source code can be found on the following GitHub repository: https://github.
 """
 
 import copy
+import distutils.dir_util as du
+import itertools
 import json
 import os
-from typing import Tuple, List
-import sys
-
-import itertools
-import shutil
-import distutils.dir_util as du
 import pickle
-import warnings
 import re
+import shutil
+import sys
+import warnings
+from typing import List, Tuple
 
 import numpy as np
 import scipy.interpolate as sci
 
-from .hocwriter import HocWriter
-from .fiberset import FiberSet
-from .waveform import Waveform
 from src.core import Sample
-from src.utils import Exceptionable, Configurable, Saveable, SetupMode, Config, WriteMode, FiberXYMode, Env, ExportMode
+from src.utils import (Config, Configurable, Env, Exceptionable, ExportMode,
+                       FiberXYMode, Saveable, SetupMode, WriteMode)
+
+from .fiberset import FiberSet
+from .hocwriter import HocWriter
+from .waveform import Waveform
 
 
 class Simulation(Exceptionable, Configurable, Saveable):

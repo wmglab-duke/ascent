@@ -5,24 +5,23 @@ The copyrights of this software are owned by Duke University.
 Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
-from PIL import Image, ImageDraw, ImageFont
-
 import itertools
 import os
-from typing import List, Union, Tuple
 import random
+from typing import List, Tuple, Union
 
-
-from shapely.geometry import LineString, Point
-from shapely.affinity import scale
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+from PIL import Image, ImageDraw, ImageFont
+from shapely.affinity import scale
+from shapely.geometry import LineString, Point
 
+from src.utils import (Exceptionable, NerveMode, ReshapeNerveMode, SetupMode,
+                       WriteMode)
 
 from .fascicle import Fascicle
 from .nerve import Nerve
 from .trace import Trace
-from src.utils import Exceptionable, NerveMode, SetupMode, ReshapeNerveMode, WriteMode
 
 
 class Slide(Exceptionable):

@@ -12,10 +12,11 @@ import sys
 root = os.path.abspath(os.path.join(*'../../'.split('/')))
 sys.path.append(root)
 
+import matplotlib.pyplot as plt
+
 from src.core import Sample
 from src.core.query import Query
 from src.utils import Object
-import matplotlib.pyplot as plt
 
 cwd = os.getcwd()
 os.chdir(root)

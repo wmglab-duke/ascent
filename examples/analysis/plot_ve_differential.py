@@ -10,8 +10,9 @@ Note: Run from repository root
 """
 
 import os
-import numpy as np
+
 import matplotlib.pyplot as plt
+import numpy as np
 
 sample = 1000
 model = 0

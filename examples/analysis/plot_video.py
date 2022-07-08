@@ -7,11 +7,12 @@ The source code can be found on the following GitHub repository: https://github.
 """
 
 import os
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
 import shutil
 import sys
+
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.animation import FuncAnimation
 
 samples = [200, 201, 205]
 models = [0]

@@ -8,13 +8,13 @@ The source code can be found on the following GitHub repository: https://github.
 
 
 import os
-import time
-import sys
 import subprocess
-
+import sys
+import time
 
 from src.runner import Runner
-from src.utils.enums import SetupMode, Config, Env
+from src.utils.enums import Config, Env, SetupMode
+
 from .env_setup import run as env_setup
 
 

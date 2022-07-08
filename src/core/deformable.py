@@ -9,18 +9,17 @@ The source code can be found on the following GitHub repository: https://github.
 #      builtin
 from typing import List, Tuple
 
-
-import pymunk.pygame_util
 import numpy as np
-from shapely.geometry import LineString, Point
 import pygame
-from pygame.locals import DOUBLEBUF, HWSURFACE, RESIZABLE
-from pygame.locals import KEYDOWN, K_ESCAPE, QUIT, K_SPACE
+import pymunk.pygame_util
 from pygame.colordict import THECOLORS
+from pygame.locals import (DOUBLEBUF, HWSURFACE, K_ESCAPE, K_SPACE, KEYDOWN,
+                           QUIT, RESIZABLE)
+from shapely.geometry import LineString, Point
 
 #               ascent
-from src.core import Trace, Slide
-from src.utils import Exceptionable, SetupMode, ReshapeNerveMode, Config
+from src.core import Slide, Trace
+from src.utils import Config, Exceptionable, ReshapeNerveMode, SetupMode
 
 
 class Deformable(Exceptionable):

@@ -6,23 +6,24 @@ Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
+import csv
+import os
 import random
+import shutil
 import warnings
 from typing import List, Tuple
-import shutil
 
-from shapely.affinity import scale
-from shapely.geometry import LineString, Point
-import csv
 import matplotlib.pyplot as plt
 import numpy as np
-import os
 import scipy.stats as stats
+from shapely.affinity import scale
+from shapely.geometry import LineString, Point
 
-
-from src.utils import (Config, Configurable, DiamDistMode, Exceptionable, FiberGeometry,
-                       FiberXYMode, FiberZMode, MyelinatedSamplingType, MyelinationMode, Saveable,
+from src.utils import (Config, Configurable, DiamDistMode, Exceptionable,
+                       FiberGeometry, FiberXYMode, FiberZMode,
+                       MyelinatedSamplingType, MyelinationMode, Saveable,
                        SetupMode, WriteMode)
+
 from .sample import Sample
 
 

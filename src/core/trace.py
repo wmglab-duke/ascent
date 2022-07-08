@@ -8,21 +8,20 @@ The source code can be found on the following GitHub repository: https://github.
 
 
 import random
-from typing import Tuple, Union, List
 from copy import deepcopy
+from typing import List, Tuple, Union
 
-
-import numpy as np
 import cv2
 import matplotlib.pyplot as plt
-from shapely.geometry import Polygon, Point
-from shapely.affinity import scale, rotate
-from shapely.ops import nearest_points
+import numpy as np
 import pyclipper
 import pymunk
+from shapely.affinity import rotate, scale
+from shapely.geometry import Point, Polygon
+from shapely.ops import nearest_points
 
-
-from src.utils import Exceptionable, DownSampleMode, Config, WriteMode, SetupMode
+from src.utils import (Config, DownSampleMode, Exceptionable, SetupMode,
+                       WriteMode)
 
 
 class Trace(Exceptionable):

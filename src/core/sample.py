@@ -10,22 +10,23 @@ The source code can be found on the following GitHub repository: https://github.
 import os
 import shutil
 import subprocess
+import sys
 from typing import List, Tuple, Union
-
 
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
-import sys
 from scipy.ndimage.morphology import binary_fill_holes
 from shapely.geometry import LineString
 from skimage import morphology
 
+from src.core import Fascicle, Map, Nerve, Slide, Trace
+from src.utils import (Config, Configurable, CuffInnerMode, DeformationMode,
+                       Exceptionable, MaskFileNames, MaskInputMode, NerveMode,
+                       PerineuriumThicknessMode, ReshapeNerveMode, Saveable,
+                       ScaleInputMode, SetupMode, ShrinkageMode, TemplateMode,
+                       TemplateOutput, WriteMode)
 
-from src.core import Slide, Map, Fascicle, Nerve, Trace
-from src.utils import Exceptionable, Configurable, Saveable, SetupMode, Config, MaskFileNames, NerveMode, \
-    MaskInputMode, ReshapeNerveMode, DeformationMode, PerineuriumThicknessMode, WriteMode, CuffInnerMode, \
-    TemplateOutput, TemplateMode, ScaleInputMode, ShrinkageMode
 from .deformable import Deformable
 
 

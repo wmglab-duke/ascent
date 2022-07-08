@@ -7,23 +7,22 @@ The source code can be found on the following GitHub repository: https://github.
 """
 
 
-import warnings
-from typing import List
-from io import BytesIO
-
-
-import scipy.stats as stats
-from shapely.geometry.point import Point
-import shapely.affinity
-import cv2
-import matplotlib.pyplot as plt
 import json
-import numpy as np
 import os
 import sys
+import warnings
+from io import BytesIO
+from typing import List
 
+import cv2
+import matplotlib.pyplot as plt
+import numpy as np
+import scipy.stats as stats
+import shapely.affinity
+from shapely.geometry.point import Point
 
-from src.utils import Config, Configurable, Exceptionable, PopulateMode, SetupMode
+from src.utils import (Config, Configurable, Exceptionable, PopulateMode,
+                       SetupMode)
 
 
 class MockSample(Exceptionable, Configurable):

@@ -7,9 +7,10 @@ The source code can be found on the following GitHub repository: https://github.
 """
 
 import os
+
 import matplotlib.pyplot as plt
-from matplotlib import cm
 import numpy as np
+from matplotlib import cm
 
 from src.core.query import Query
 from src.utils import Object

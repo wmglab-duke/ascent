@@ -8,8 +8,7 @@ The source code can be found on the following GitHub repository: https://github.
 
 
 import json
-from typing import Type, List, Union
-
+from typing import List, Type, Union
 
 from .enums import Config, Enum, SetupMode, os
 

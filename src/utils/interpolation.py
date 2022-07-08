@@ -6,8 +6,9 @@ Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
-import numpy as np
 import math
+
+import numpy as np
 
 """
 The following code is adapted from a public GitHub repository (information below). The original code was written in

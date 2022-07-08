@@ -6,14 +6,14 @@ Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
+import inspect
 # builtins
 import os
-import inspect
+
 import numpy as np
 
-
 from .configurable import Configurable
-from .enums import SetupMode, Config
+from .enums import Config, SetupMode
 
 """
 Description:

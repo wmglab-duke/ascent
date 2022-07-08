@@ -12,6 +12,7 @@
 #
 import os
 import sys
+
 sys.path.insert(0, os.path.abspath('../config/system/run_utils'))
 
 # -- Project information -----------------------------------------------------

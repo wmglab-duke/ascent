@@ -6,20 +6,21 @@ Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
+import argparse
+import json
 import multiprocessing
 import os
+import pickle
+import re
 import shutil
 import subprocess
 import sys
-import re
-import json
 import time
-import numpy as np
-import warnings
-import pickle
-import argparse
-import pandas as pd
 import traceback
+import warnings
+
+import numpy as np
+import pandas as pd
 
 
 # %%Set up parser and top level args

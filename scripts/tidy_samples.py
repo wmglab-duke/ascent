@@ -7,8 +7,8 @@ The source code can be found on the following GitHub repository: https://github.
 """
 
 import os
-from pathlib import Path
 import sys
+from pathlib import Path
 
 # these are the parts of files we want removed
 # NOTE: be careful with "out" -- added warning!

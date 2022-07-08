@@ -7,20 +7,18 @@ The source code can be found on the following GitHub repository: https://github.
 """
 
 
+import csv
+import math
 import os
+import sys
+import warnings
 
-
+import matplotlib.pyplot as plt
 import numpy as np
 import scipy.signal as sg
-import matplotlib.pyplot as plt
-import csv
-import warnings
-import sys
-import math
 
-
-from src.utils import Exceptionable, Configurable, Saveable
-from src.utils.enums import SetupMode, Config, WaveformMode, WriteMode
+from src.utils import Configurable, Exceptionable, Saveable
+from src.utils.enums import Config, SetupMode, WaveformMode, WriteMode
 
 
 def precision_and_scale(x):

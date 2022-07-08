@@ -6,17 +6,18 @@ Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
+import json
 import os
 import sys
-import json
 
 root = os.path.abspath(os.path.join(*'../../'.split('/')))
 sys.path.append(root)
 
+import matplotlib.pyplot as plt
+
 from src.core import Simulation
 from src.core.query import Query
 from src.utils import Object
-import matplotlib.pyplot as plt
 
 
 def load(config_path: str):

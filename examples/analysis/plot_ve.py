@@ -7,8 +7,9 @@ The source code can be found on the following GitHub repository: https://github.
 """
 
 import os
-import numpy as np
+
 import matplotlib.pyplot as plt
+import numpy as np
 
 sample = 3008
 model = 6
