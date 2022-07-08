@@ -135,7 +135,9 @@ def auto_compile(override: bool = False):
             (not os.path.exists(os.path.join('MOD_Files', 'nrnmech.dll')) and OS == 'WINDOWS') or override:
         print('compile')
         os.chdir(os.path.join('MOD_Files'))
-        subprocess.run(['nrnivmodl'])
+        exit_code = subprocess.call(['nrnivmodl'])
+        if exit_code != 0:
+            sys.exit("Error in compiling of NEURON files. Exiting...")
         os.chdir('..')
         compiled = True
     else:
