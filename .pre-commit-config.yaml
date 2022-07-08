@@ -6,11 +6,8 @@ repos:
     hooks:
     -   id: check-yaml
     -   id: check-added-large-files
--   repo: local
+-   repo: https://github.com/pre-commit/mirrors-autopep8
+    rev: v1.6.0
     hooks:
-      - id: isort
-        name: isort
-        stages: [commit]
-        language: system
-        entry: pipenv run isort
-        types: [python]
+    - id: autopep8
+      args: ["--select=E1,E2,E3,E401,W1,W2,W3,E226,E24", "--in-place", "--recursive", "."]
