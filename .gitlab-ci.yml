@@ -45,7 +45,7 @@ autopep:
   stage: format
   script:
     - pip install autopep8
-    - autopep8 --select=E1,E2,E3,E401,W1,W2,W3,E226,E24 --in-place --recursive .
+    - autopep8 --select=E1,E2,E3,E401,W1,W2,W3,E226,E24 --diff --recursive .
 
 
 #pylint:
