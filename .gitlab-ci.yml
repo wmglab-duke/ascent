@@ -47,16 +47,16 @@ autopep:
 #    - pip install pylint
 #    - pylint .
 
-pages:
-  stage: docs
-  script:
-    - pip install sphinx sphinx-rtd-theme
-    - pip install -r docs/rtd_requirements.txt
-    - cd docs
-    - make html
-    - mv build/html/ ../public/
-  artifacts:
-    paths:
-      - public
-  rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+#pages:
+#  stage: docs
+#  script:
+#    - pip install sphinx sphinx-rtd-theme
+#    - pip install -r docs/rtd_requirements.txt
+#    - cd docs
+#    - make html
+#    - mv build/html/ ../public/
+#  artifacts:
+#    paths:
+#      - public
+#  rules:
+#    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
