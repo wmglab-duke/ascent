@@ -6,19 +6,19 @@ Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 from PIL import Image, ImageDraw, ImageFont
-# builtins
+
 import itertools
 import os
 from typing import List, Union, Tuple
 import random
 
-# packages
+
 from shapely.geometry import LineString, Point
 from shapely.affinity import scale
 import numpy as np
 import matplotlib.pyplot as plt
 
-# ascent
+
 from .fascicle import Fascicle
 from .nerve import Nerve
 from .trace import Trace

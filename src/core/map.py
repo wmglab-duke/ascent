@@ -42,7 +42,7 @@ Description:
     clean_file_names (not system-independent)
 """
 
-# builtins
+
 import numpy as np
 import os
 import re
@@ -50,7 +50,7 @@ import json
 import warnings
 from typing import List
 
-# ascent
+
 from src.utils import Config, Configurable, Exceptionable, SetupMode
 
 

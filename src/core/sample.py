@@ -6,13 +6,13 @@ Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
-# builtins
+
 import os
 import shutil
 import subprocess
 from typing import List, Tuple, Union
 
-# packages
+
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
@@ -21,7 +21,7 @@ from scipy.ndimage.morphology import binary_fill_holes
 from shapely.geometry import LineString
 from skimage import morphology
 
-# ascent
+
 from src.core import Slide, Map, Fascicle, Nerve, Trace
 from src.utils import Exceptionable, Configurable, Saveable, SetupMode, Config, MaskFileNames, NerveMode, \
     MaskInputMode, ReshapeNerveMode, DeformationMode, PerineuriumThicknessMode, WriteMode, CuffInnerMode, \

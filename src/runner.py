@@ -6,14 +6,14 @@ Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
-# builtins
+
 import os
 
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "1"
 import pickle
 from typing import List
 
-# packages
+
 import warnings
 import json
 import base64
@@ -32,7 +32,7 @@ try:
 except:
     pass
 
-# ascent
+
 from src.core import Sample, Simulation, Waveform
 from src.utils import Exceptionable, Configurable, SetupMode, Config, NerveMode, WriteMode, CuffShiftMode,  \
     PerineuriumResistivityMode, TemplateOutput, Env, ReshapeNerveMode, ExportMode, DownSampleMode

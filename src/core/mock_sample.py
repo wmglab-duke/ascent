@@ -6,12 +6,12 @@ Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
-# builtins
+
 import warnings
 from typing import List
 from io import BytesIO
 
-# packages
+
 import scipy.stats as stats
 from shapely.geometry.point import Point
 import shapely.affinity
@@ -22,7 +22,7 @@ import numpy as np
 import os
 import sys
 
-# ascent
+
 from src.utils import Config, Configurable, Exceptionable, PopulateMode, SetupMode
 
 

@@ -6,13 +6,13 @@ Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
-# builtins
+
 import os
 import time
 import sys
 import subprocess
 
-# ascent
+
 from src.runner import Runner
 from src.utils.enums import SetupMode, Config, Env
 from .env_setup import run as env_setup

@@ -6,11 +6,11 @@ Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
-# builtins
+
 import json
 from typing import Type, List, Union
 
-# ascent
+
 from .enums import Config, Enum, SetupMode, os
 
 """

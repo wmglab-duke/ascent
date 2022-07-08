@@ -9,7 +9,7 @@ The source code can be found on the following GitHub repository: https://github.
 #      builtin
 from typing import List, Tuple
 
-# packages
+
 import pymunk.pygame_util
 import numpy as np
 from shapely.geometry import LineString, Point

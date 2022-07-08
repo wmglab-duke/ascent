@@ -6,18 +6,18 @@ Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
-# builtins
+
 import itertools
 from typing import List, Tuple, Union
 from copy import deepcopy
 import os
 
-# packages
+
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
 
-# ascent
+
 from .trace import Trace
 from .nerve import Nerve
 from src.utils import Exceptionable, SetupMode, WriteMode

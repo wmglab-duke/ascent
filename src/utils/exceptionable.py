@@ -11,7 +11,7 @@ import os
 import inspect
 import numpy as np
 
-# ascent
+
 from .configurable import Configurable
 from .enums import SetupMode, Config
 

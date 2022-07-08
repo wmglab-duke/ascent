@@ -19,7 +19,7 @@ import numpy as np
 import os
 import scipy.stats as stats
 
-# ascent
+
 from src.utils import (Config, Configurable, DiamDistMode, Exceptionable, FiberGeometry,
                        FiberXYMode, FiberZMode, MyelinatedSamplingType, MyelinationMode, Saveable,
                        SetupMode, WriteMode)

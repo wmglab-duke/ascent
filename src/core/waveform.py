@@ -6,10 +6,10 @@ Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
-# builtins
+
 import os
 
-# packages
+
 import numpy as np
 import scipy.signal as sg
 import matplotlib.pyplot as plt
@@ -18,7 +18,7 @@ import warnings
 import sys
 import math
 
-# ascent
+
 from src.utils import Exceptionable, Configurable, Saveable
 from src.utils.enums import SetupMode, Config, WaveformMode, WriteMode
 

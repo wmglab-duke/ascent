@@ -6,15 +6,15 @@ Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
-# builtins
+
 import itertools
 from typing import List
 
-# packages
+
 import numpy as np
 import os
 
-# ascent
+
 from src.utils import (Config, Configurable, Exceptionable, FiberGeometry, FiberXYMode,
                        MyelinationMode, NeuronRunMode, Saveable, SearchAmplitudeIncrementMode,
                        SetupMode, TerminationCriteriaMode, WriteMode)

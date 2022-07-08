@@ -6,12 +6,12 @@ Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
-# builtins
+
 import random
 from typing import Tuple, Union, List
 from copy import deepcopy
 
-# packages
+
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
@@ -21,7 +21,7 @@ from shapely.ops import nearest_points
 import pyclipper
 import pymunk
 
-# ascent
+
 from src.utils import Exceptionable, DownSampleMode, Config, WriteMode, SetupMode
 
 
