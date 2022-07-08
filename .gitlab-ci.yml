@@ -26,8 +26,7 @@ variables:
 # them in a virtualenv and cache it as well.
 
 stages:          # List of stages for jobs, and their order of execution
-  - format
-  - lint
+  - linting
   - docs
 
 cache:
@@ -42,11 +41,17 @@ before_script:
   - source venv/bin/activate
 
 autopep:
-  stage: format
+  stage: linting
+  script:
+    - pip install isort
+    - isort --check-only .
+
+autopep:
+  stage: linting
   script:
     - pip install autopep8
     - autopep8 --select=E1,E2,E3,E401,W1,W2,W3,E226,E24 --diff --recursive --exit-code config docs examples scripts src
-
+    
 
 #pylint:
 #  stage: lint
