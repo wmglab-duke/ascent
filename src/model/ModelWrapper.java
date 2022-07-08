@@ -911,7 +911,7 @@ public class ModelWrapper {
                         "CIRCLE (or NONE) is not yet implemented");
                 System.exit(0);
             }
-            
+
             if (nerveMode.equals("PRESENT")) {
                 if (deform_ratio == 1 && reshapenerveMode.equals("CIRCLE")) { //Use a circle otherwise
                     Part.createNervePartInstance("Epi_circle", 0,
@@ -1160,7 +1160,7 @@ public class ModelWrapper {
 
         TimeUnit.SECONDS.sleep(5);
         ModelUtil.initStandalone(false);
-        
+
         if (cli_args.has("comsol_progress") && cli_args.getBoolean("comsol_progress")) {
             ModelUtil.showProgress(null); // if you want to see COMSOL progress (as it makes all geometry, runs, etc.)
         }
@@ -2061,18 +2061,18 @@ public class ModelWrapper {
                     model.sol("sol1").feature("s1").feature().remove("fcDef");
 
                     if (modelData.getJSONObject("solver").has("type")) {
-                        solverType = modelData.getJSONObject("solver").getString("type");
+                        String solverType = modelData.getJSONObject("solver").getString("type");
                         if (solverType.equals("direct")) {
                             model.sol("sol1").feature("s1").feature("dDef").active(true);
                         }
                         else if (!solverType.equals("iterative"))
-                        System.out.println("Invalid solver type, proceeding with default (iterative).")
+                        System.out.println("Invalid solver type, proceeding with default (iterative).");
                     }
                     else {
-                        System.out.println("\tSolver type not specified, proceeding with default (iterative).")
+                        System.out.println("\tSolver type not specified, proceeding with default (iterative).");
                     }
 
-                    model.sol("sol1").attach("std1");         
+                    model.sol("sol1").attach("std1");
 
                     // break point "post_mesh_distal"
                     boolean pre_loop_currents;
