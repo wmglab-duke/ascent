@@ -9,9 +9,10 @@ image: python:latest
 
 workflow:
   rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-    - if: $CI_COMMIT_BRANCH =~ /release_v\d+.\d+.\d+/
+#    - if: $CI_COMMIT_BRANCH =~ /release_v\d+.\d+.\d+/
+    - if: $CI_COMMIT_REF_PROTECTED
 
 # Change pip's cache directory to be inside the project directory since we can
 # only cache local items.
