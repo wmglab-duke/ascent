@@ -17,6 +17,23 @@ import java.util.HashMap;
 
 @SuppressWarnings({"unchecked","rawtypes","path"})
 class Part {
+
+    public static void addPointCurrentSource(ModelWrapper mw, Model model,int index, String instanceLabel,String selLabel) {
+        String ribbon_pcsLabel = instanceLabel + " Current Source";
+        String id = mw.im.next("pcs", ribbon_pcsLabel);
+        PhysicsFeature pf = model.component("comp1").physics("ec").create(id, "PointCurrentSource", 0);
+
+        JSONObject src_ribbon = new JSONObject();
+        src_ribbon.put("name", instanceLabel);
+        src_ribbon.put("pcs", id);
+        src_ribbon.put("cuff_index", index);
+        mw.im.currentIDs.put(mw.im.present("pcs"), src_ribbon);
+
+        pf.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + selLabel + "_pnt"); // SRC
+        pf.set("Qjp", 0.000);
+        pf.label(ribbon_pcsLabel);
+    }
+
     /**
      * Create a defined part primitive. There is a finite number of choices, as seen below in the switch.
      * Fun fact: this method is nearly 1400 lines.
@@ -26,8 +43,6 @@ class Part {
      * @return the local IdentifierManager for THIS PART PRIMITIVE --> save when called in ModelWrapper
      * @throws IllegalArgumentException if an invalid pseudonym is passed in --> there is no such primitive to create
      */
-
-
     public static IdentifierManager createEnvironmentPartPrimitive(String id, String pseudonym, ModelWrapper mw) throws IllegalArgumentException {
         Model model = mw.getModel();
 
@@ -2567,18 +2582,7 @@ class Part {
                 partInstance.setEntry("selkeeppnt", instanceID + "_" + myIM.get(myLabels[4]) + ".pnt", "off"); // RECESS FINAL
 
                 // assign physics
-                String ribbon_pcsLabel = instanceLabel + " Current Source";
-                String id = mw.im.next("pcs", ribbon_pcsLabel);
-                PhysicsFeature pf = model.component("comp1").physics("ec").create(id, "PointCurrentSource", 0);
-
-                JSONObject src_ribbon = new JSONObject();
-                src_ribbon.put(instanceLabel, id);
-                src_ribbon.put("cuff_index", index);
-                mw.im.currentIDs.put(mw.im.present("pcs"), src_ribbon);
-
-                pf.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[2]) + "_pnt"); // SRC
-                pf.set("Qjp", 0.000);
-                pf.label(ribbon_pcsLabel);
+                Part.addPointCurrentSource(mw,model,index,instanceLabel,myIM.get(myLabels[2]));
 
                 break;
 
@@ -2637,18 +2641,7 @@ class Part {
                 partInstance.setEntry("selkeeppnt", instanceID + "_" + myIM.get(myLabels[2]) + ".pnt", "on"); // SRC
 
                 // assign physics
-                String wire_pcsLabel = instanceLabel + " Current Source";
-                id = mw.im.next("pcs", wire_pcsLabel);
-                pf = model.component("comp1").physics("ec").create(id, "PointCurrentSource", 0);
-
-                JSONObject src_wire = new JSONObject();
-                src_wire.put(instanceLabel, id);
-                src_wire.put("cuff_index", index);
-                mw.im.currentIDs.put(mw.im.present("pcs"), src_wire);
-
-                pf.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[2]) + "_pnt"); // SRC
-                pf.set("Qjp", 0.000);
-                pf.label(wire_pcsLabel);
+                Part.addPointCurrentSource(mw,model,index,instanceLabel,myIM.get(myLabels[2]));
 
                 break;
 
@@ -2717,18 +2710,7 @@ class Part {
                 partInstance.setEntry("selkeeppnt", instanceID + "_" + myIM.get(myLabels[13]) + ".pnt", "off"); // BASE PLANE (PRE ROTATION)
 
                 // assign physics
-                String circle_pcsLabel = instanceLabel + " Current Source";
-                id = mw.im.next("pcs", circle_pcsLabel);
-                pf = model.component("comp1").physics("ec").create(id, "PointCurrentSource", 0);
-
-                JSONObject src_circ = new JSONObject();
-                src_circ.put(instanceLabel, id);
-                src_circ.put("cuff_index", index);
-                mw.im.currentIDs.put(mw.im.present("pcs"), src_circ);
-
-                pf.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[4]) + "_pnt"); // SRC
-                pf.set("Qjp", 0.000);
-                pf.label(circle_pcsLabel);
+                Part.addPointCurrentSource(mw,model,index,instanceLabel,myIM.get(myLabels[4]));
 
                 break;
 
@@ -2761,18 +2743,7 @@ class Part {
                 partInstance.setEntry("selkeeppnt", instanceID + "_" + myIM.get(myLabels[6]) + ".pnt", "off"); // Conductorp2
 
                 // assign physics
-                String pc_helix_pcsLabel = instanceLabel + " Current Source";
-                id = mw.im.next("pcs", pc_helix_pcsLabel);
-                pf = model.component("comp1").physics("ec").create(id, "PointCurrentSource", 0);
-
-                JSONObject pc_src_heli = new JSONObject();
-                pc_src_heli.put(instanceLabel, id);
-                pc_src_heli.put("cuff_index", index);
-                mw.im.currentIDs.put(mw.im.present("pcs"), pc_src_heli);
-
-                pf.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[4]) + "_pnt"); // SRC
-                pf.set("Qjp", 0.000);
-                pf.label(pc_helix_pcsLabel);
+                Part.addPointCurrentSource(mw,model,index,instanceLabel,myIM.get(myLabels[4]));
 
                 break;
 
@@ -2817,18 +2788,7 @@ class Part {
                 partInstance.setEntry("selkeeppnt", instanceID + "_" + myIM.get(myLabels[10]) + ".pnt", "off"); // CUFF FINAL
 
                 // assign physics
-                String helix_pcsLabel = instanceLabel + " Current Source";
-                id = mw.im.next("pcs", helix_pcsLabel);
-                pf = model.component("comp1").physics("ec").create(id, "PointCurrentSource", 0);
-
-                JSONObject src_heli = new JSONObject();
-                src_heli.put(instanceLabel, id);
-                src_heli.put("cuff_index", index);
-                mw.im.currentIDs.put(mw.im.present("pcs"), src_heli);
-
-                pf.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[4]) + "_pnt"); // SRC
-                pf.set("Qjp", 0.000);
-                pf.label(helix_pcsLabel);
+                Part.addPointCurrentSource(mw,model,index,instanceLabel,myIM.get(myLabels[4]));
 
                 break;
 
@@ -2911,18 +2871,7 @@ class Part {
                 partInstance.setEntry("selkeepbnd", instanceID + "_" + myIM.get(myLabels[22]) + ".bnd", "off"); // INNER CUTTER
 
                 // assign physics
-                String square_pcsLabel = instanceLabel + " Current Source";
-                id = mw.im.next("pcs", square_pcsLabel);
-                pf = model.component("comp1").physics("ec").create(id, "PointCurrentSource", 0);
-
-                JSONObject src_rect = new JSONObject();
-                src_rect.put(instanceLabel, id);
-                src_rect.put("cuff_index", index);
-                mw.im.currentIDs.put(mw.im.present("pcs"), src_rect);
-
-                pf.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[16]) + "_pnt"); // SRC
-                pf.set("Qjp", 0.000);
-                pf.label(square_pcsLabel);
+                Part.addPointCurrentSource(mw,model,index,instanceLabel,myIM.get(myLabels[16]));
 
                 break;
 
@@ -2953,18 +2902,7 @@ class Part {
                 partInstance.setEntry("selkeeppnt", instanceID + "_" + myIM.get(myLabels[1]) + ".pnt", "off"); // CONTACT FINAL
 
                 // assign physics
-                String u_pcsLabel = instanceLabel + " Current Source";
-                id = mw.im.next("pcs", u_pcsLabel);
-                pf = model.component("comp1").physics("ec").create(id, "PointCurrentSource", 0);
-
-                JSONObject src_u = new JSONObject();
-                src_u.put(instanceLabel, id);
-                src_u.put("cuff_index", index);
-                mw.im.currentIDs.put(mw.im.present("pcs"), src_u);
-
-                pf.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[2]) + "_pnt"); // SRC
-                pf.set("Qjp", 0.000);
-                pf.label(u_pcsLabel);
+                Part.addPointCurrentSource(mw,model,index,instanceLabel,myIM.get(myLabels[2]));
 
                 break;
 
@@ -3100,18 +3038,7 @@ class Part {
 
 
                 // assign physics
-                String ut_pcsLabel = instanceLabel + " Current Source";
-                id = mw.im.next("pcs", ut_pcsLabel);
-                pf = model.component("comp1").physics("ec").create(id, "PointCurrentSource", 0);
-
-                JSONObject src_ut = new JSONObject();
-                src_ut.put(instanceLabel, id);
-                src_ut.put("cuff_index", index);
-                mw.im.currentIDs.put(mw.im.present("pcs"), src_ut);
-
-                pf.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[4]) + "_pnt"); // SRC_FINAL
-                pf.set("Qjp", 0.000);
-                pf.label(ut_pcsLabel);
+                Part.addPointCurrentSource(mw,model,index,instanceLabel,myIM.get(myLabels[4]));
 
                 break;
 
@@ -3142,19 +3069,7 @@ class Part {
 
 
                 // assign physics
-                String ac_pcsLabel = instanceLabel + " Current Source";
-                id = mw.im.next("pcs", ac_pcsLabel);
-                pf = model.component("comp1").physics("ec").create(id, "PointCurrentSource", 0);
-
-                JSONObject src_ac = new JSONObject();
-                src_ac.put(instanceLabel, id);
-                src_ac.put("cuff_index", index);
-                mw.im.currentIDs.put(mw.im.present("pcs"), src_ac);
-
-                pf.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[3]) + "_pnt"); // SRC_FINAL
-                pf.set("Qjp", 0.000);
-                pf.label(ac_pcsLabel);
-
+                Part.addPointCurrentSource(mw,model,index,instanceLabel,myIM.get(myLabels[3]));
 
                 break;
 
