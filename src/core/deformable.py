@@ -6,10 +6,10 @@ Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
-# builtin
+#      builtin
 from typing import List, Tuple
 
-# packages
+#packages
 import pymunk.pygame_util
 import numpy as np
 from shapely.geometry import LineString, Point
@@ -18,7 +18,7 @@ from pygame.locals import DOUBLEBUF, HWSURFACE, RESIZABLE
 from pygame.locals import KEYDOWN, K_ESCAPE, QUIT, K_SPACE
 from pygame.colordict import THECOLORS
 
-# ascent
+#               ascent
 from src.core import Trace, Slide
 from src.utils import Exceptionable, SetupMode, ReshapeNerveMode, Config
 
