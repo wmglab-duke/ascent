@@ -11,3 +11,37 @@ repos:
     hooks:
     - id: autopep8
       args: ["--select=E1,E2,E3,E401,W1,W2,W3,E226,E24", "--in-place", "--recursive", "."]
+
+repos:
+  - repo: local
+    hooks:
+      - id: isort
+        name: isort
+        stages: [commit]
+        language: system
+        entry: pipenv run isort
+        types: [python]
+
+      - id: autopep8
+        name: autopep8
+        stages: [commit]
+        language: system
+        entry: pipenv run autopep8 --select=E1,E2,E3,E401,W1,W2,W3,E226,E24 --in-place --recursive .
+        types: [python]
+        exclude: setup.py
+
+      - id: flake8
+        name: flake8
+        stages: [commit]
+        language: system
+        entry: pipenv run flake8
+        types: [python]
+        exclude: setup.py
+
+      - id: pylint
+        name: pylint
+        stages: [commit]
+        language: system
+        entry: pipenv run pylint
+        types: [python]
+        exclude: setup.py
