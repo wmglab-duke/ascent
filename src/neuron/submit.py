@@ -327,6 +327,7 @@ def local_submit(my_local_args: dict):
 
     with open(out_filename, "w+") as fo, open(err_filename, "w+") as fe:
         p = subprocess.run(['bash', start] if OS == 'UNIX-LIKE' else [start], stdout=fo, stderr=fe)
+        print(p)
 
 
 def cluster_submit(run_number: int, partition: str, args, mem: int = 2000, array_length_max: int = 10):
