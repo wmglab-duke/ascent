@@ -74,7 +74,8 @@ test_docs:
 build_pages:
   stage: deploy
   script:
-  - pip install -U sphinx
+  - pip install -U sphinx mock sphinx-rtd-theme
+  - pip install -Ur docs/requirements.txt
   - sphinx-build -b html docs/source public
   artifacts:
     paths:
