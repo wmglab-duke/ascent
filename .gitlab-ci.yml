@@ -64,7 +64,7 @@ test_docs:
   stage: test
   script:
   - pip install -U sphinx mock sphinx-rtd-theme
-  - pip install -Ur docs/requirements.txt
+  - pip install -Ur docs/rtd_requirements.txt
   - sphinx-build -b html docs/source public
   only:
   - branches
@@ -75,7 +75,7 @@ build_pages:
   stage: deploy
   script:
   - pip install -U sphinx mock sphinx-rtd-theme
-  - pip install -Ur docs/requirements.txt
+  - pip install -Ur docs/rtd_requirements.txt
   - sphinx-build -b html docs/source public
   artifacts:
     paths:
