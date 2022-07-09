@@ -60,7 +60,7 @@ autopep:
 #    - pip install pylint
 #    - pylint .
 
-test:
+test_docs:
   stage: test
   script:
   - pip install -U sphinx
@@ -71,7 +71,7 @@ test:
   except:
   - master
 
-pages:
+build_pages:
   stage: deploy
   script:
   - pip install -U sphinx
