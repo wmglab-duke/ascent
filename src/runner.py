@@ -7,11 +7,9 @@ The source code can be found on the following GitHub repository: https://github.
 """
 
 
-import os
-
-os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "1"
 import base64
 import json
+import os
 import pickle
 import subprocess
 import sys
@@ -25,18 +23,18 @@ import numpy as np
 from quantiphy import Quantity
 from shapely.geometry import Point
 
-try:
-    import pymunkoptions
-    pymunkoptions.options["debug"] = False
-except:
-    pass
-
-
 from src.core import Sample, Simulation, Waveform
 from src.utils import (Config, Configurable, CuffShiftMode, DownSampleMode,
                        Env, Exceptionable, ExportMode, NerveMode,
                        PerineuriumResistivityMode, ReshapeNerveMode, SetupMode,
                        TemplateOutput, WriteMode)
+
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "1"
+try:
+    import pymunkoptions
+    pymunkoptions.options["debug"] = False
+except:
+    pass
 
 
 class Runner(Exceptionable, Configurable):
