@@ -12,6 +12,8 @@ import sys
 
 from config.system.run_utils import parse_args, welcome
 
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "1"
+
 args = parse_args.parse()
 
 if args.script != 'install':
