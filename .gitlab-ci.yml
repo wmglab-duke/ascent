@@ -73,7 +73,7 @@ test_docs:
   except:
   - master
 
-build_pages:
+pages:
   stage: deploy
   script:
   - pip install -U sphinx mock sphinx-rtd-theme
