@@ -31,13 +31,14 @@ release = 'v1.1.2'
 # ones.
 
 extensions = ['myst_parser',
-              'sphinxarg.ext',
-              'sphinx.ext.intersphinx',
-              'sphinx.ext.autodoc',
-              'sphinxcontrib.bibtex',
-              'sphinxcontrib.details.directive',
-              'sphinx_copybutton',
-              'sphinx_rtd_dark_mode']
+            'sphinxarg.ext',
+            'sphinx.ext.intersphinx',
+            'sphinx.ext.autodoc',
+            'sphinxcontrib.bibtex',
+            'sphinxcontrib.details.directive',
+            'sphinx_copybutton',
+            'sphinx_rtd_dark_mode',
+             'sphinx_github_changelog']
 
 source_suffix = {
     '.rst': 'restructuredtext',
@@ -89,3 +90,5 @@ bibtex_bibfiles = ['refs.bib']
 bibtex_reference_style = 'author_year'
 
 default_dark_mode = False
+
+sphinx_github_changelog_token = os.environ.get("SPHINX_GITHUB_CHANGELOG_TOKEN")
