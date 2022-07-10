@@ -67,7 +67,7 @@ test_docs:
   script:
   - pip install -U sphinx mock sphinx-rtd-theme
   - pip install -Ur docs/rtd_requirements.txt
-  - cd docs/source; sphinx-build -b html . ../../public
+  - cd docs/source; sphinx-build -W -b html . ../../public
   only:
   - branches
   except:
@@ -78,7 +78,7 @@ build_pages:
   script:
   - pip install -U sphinx mock sphinx-rtd-theme
   - pip install -Ur docs/rtd_requirements.txt
-  - cd docs/source; sphinx-build -b html . ../../public
+  - cd docs/source; sphinx-build -W -b html . ../../public
   artifacts:
     paths:
     - public
