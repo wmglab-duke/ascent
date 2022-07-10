@@ -45,7 +45,7 @@ isort:
   stage: lint
   script:
     - pip install isort
-    - isort --check-only config docs examples scripts src
+    - isort --check-only --skip __init__.py config docs examples scripts src
 
 autopep:
   stage: lint
@@ -65,7 +65,7 @@ test_docs:
   script:
   - pip install -U sphinx mock sphinx-rtd-theme
   - pip install -Ur docs/rtd_requirements.txt
-  - sphinx-build -b html docs/source public
+  - cd docs/source; sphinx-build -b html . ../../public
   only:
   - branches
   except:
@@ -76,7 +76,7 @@ build_pages:
   script:
   - pip install -U sphinx mock sphinx-rtd-theme
   - pip install -Ur docs/rtd_requirements.txt
-  - sphinx-build -b html docs/source public
+  - cd docs/source; sphinx-build -b html . ../../public
   artifacts:
     paths:
     - public
