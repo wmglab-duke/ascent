@@ -61,8 +61,6 @@ test_docs:
   - pip install -U sphinx mock sphinx-rtd-theme
   - pip install -Ur docs/rtd_requirements.txt
   - cd docs/source; sphinx-build -W -b html . ../../public
-  only:
-  - branches
   except:
   - master
 
