@@ -13,7 +13,6 @@ workflow:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
       when: never
-#    - if: $CI_COMMIT_BRANCH =~ /release_v\d+.\d+.\d+/
     - if: $CI_COMMIT_REF_PROTECTED
 
 # Change pip's cache directory to be inside the project directory since we can
@@ -61,8 +60,6 @@ test_docs:
   - pip install -U sphinx mock sphinx-rtd-theme
   - pip install -Ur docs/rtd_requirements.txt
   - cd docs/source; sphinx-build -W -b html . ../../public
-  only:
-  - branches
   except:
   - master
 
