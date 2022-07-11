@@ -23,7 +23,6 @@ from .trace import Trace
 
 
 class Fascicle(Exceptionable):
-
     def __init__(self, exception_config, outer: Trace, inners: List[Trace] = [], outer_scale: dict = None):
         """
         Fascicle can be created with either:
@@ -47,7 +46,8 @@ class Fascicle(Exceptionable):
         self.inners: List[Trace] = inners
         self.outer: Trace = outer
 
-        if len(inners) > 0: self.validate()
+        if len(inners) > 0:
+            self.validate()
 
     def validate(self):
         """
@@ -151,8 +151,14 @@ class Fascicle(Exceptionable):
         else:  # must be Nerve
             return self.outer.angle_to(other)
 
-    def plot(self, plot_format: str = 'b-', color: Union[Tuple[float, float, float, float], List[Tuple[float, float, float, float]]] = None,
-             ax: plt.Axes = None, outer_flag=True, inner_index_start: int = None):
+    def plot(
+        self,
+        plot_format: str = 'b-',
+        color: Union[Tuple[float, float, float, float], List[Tuple[float, float, float, float]]] = None,
+        ax: plt.Axes = None,
+        outer_flag=True,
+        inner_index_start: int = None,
+    ):
         """
         :param outer_flag:
         :param inner_index_start:
@@ -215,7 +221,7 @@ class Fascicle(Exceptionable):
     def perineurium_setup(self, fit: dict):
         """
         Takes inners which were passed in as outers, and generates the perineurium
-        :param factor: a dictionary with the values describing a linear relationship 
+        :param factor: a dictionary with the values describing a linear relationship
         between fascicle size and perineurium thickness
         """
         self.outer_scale = fit
@@ -233,8 +239,9 @@ class Fascicle(Exceptionable):
         self.validate()
 
     @staticmethod
-    def to_list(inner_img_path: str, outer_img_path: str, exception_config,
-                plot: bool = False, z: float = 0) -> List['Fascicle']:
+    def to_list(
+        inner_img_path: str, outer_img_path: str, exception_config, plot: bool = False, z: float = 0
+    ) -> List['Fascicle']:
         """
         Generates list of fascicle objects from an inner and an outer image
         Example usage:
@@ -265,6 +272,7 @@ class Fascicle(Exceptionable):
 
             # build list of traces
             return [Trace([item + [z] for item in contour[:, 0, :]], exception_config) for contour in contours]
+
         if outer_img_path is None:
             # inners only case, set each inner as an outer
             outers = np.array(build_traces(inner_img_path))
@@ -338,18 +346,24 @@ class Fascicle(Exceptionable):
         os.chdir(start)
 
     def morphology_data(self):
-        inners = [{"area": inner.area(),
-                   "x": inner.ellipse()[0][0],
-                   "y": inner.ellipse()[0][1],
-                   "a": inner.ellipse()[1][0],
-                   "b": inner.ellipse()[1][1],
-                   "angle": inner.ellipse()[2]}
-                  for inner in self.inners]
-        outer = {"area": self.outer.area(),
-                 "x": self.outer.ellipse()[0][0],
-                 "y": self.outer.ellipse()[0][1],
-                 "a": self.outer.ellipse()[1][0],
-                 "b": self.outer.ellipse()[1][1],
-                 "angle": self.outer.ellipse()[2]}
+        inners = [
+            {
+                "area": inner.area(),
+                "x": inner.ellipse()[0][0],
+                "y": inner.ellipse()[0][1],
+                "a": inner.ellipse()[1][0],
+                "b": inner.ellipse()[1][1],
+                "angle": inner.ellipse()[2],
+            }
+            for inner in self.inners
+        ]
+        outer = {
+            "area": self.outer.area(),
+            "x": self.outer.ellipse()[0][0],
+            "y": self.outer.ellipse()[0][1],
+            "a": self.outer.ellipse()[1][0],
+            "b": self.outer.ellipse()[1][1],
+            "angle": self.outer.ellipse()[2],
+        }
 
         return {"outer": outer, "inners": inners}

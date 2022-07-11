@@ -39,7 +39,6 @@ Description:
 
 
 class Configurable:
-
     def __init__(self, mode: SetupMode = None, key: Config = None, config: Union[str, dict, list] = None):
         """
         :param mode: SetupMode, determines if loads new JSON or uses old data
@@ -95,24 +94,33 @@ class Configurable:
             elif isinstance(arg, int):
                 result = result[arg]
             else:
-                raise Exception('\n\tcode:\t-2\n'
-                                '\ttext:\tInvalid search parameter:\tTYPE: {}\tVALUE: {}\n'
-                                '\tsource:\tconfigurable.py'.format(type(arg), arg))
+                raise Exception(
+                    '\n\tcode:\t-2\n'
+                    '\ttext:\tInvalid search parameter:\tTYPE: {}\tVALUE: {}\n'
+                    '\tsource:\tconfigurable.py'.format(type(arg), arg)
+                )
 
             if result is None:
-                if optional: return result
+                if optional:
+                    return result
                 else:
-                    raise Exception('\n\tcode:\t-5\n'
-                                    '\ttext:\tValue {} not defined in {}\n'
-                                    '\tsource:\tsrc.utils.Configurable.search'.format(
-                                        ''.join([arg + '->' for arg in args[:-1]]) + args[-1], key))
+                    raise Exception(
+                        '\n\tcode:\t-5\n'
+                        '\ttext:\tValue {} not defined in {}\n'
+                        '\tsource:\tsrc.utils.Configurable.search'.format(
+                            ''.join([arg + '->' for arg in args[:-1]]) + args[-1], key
+                        )
+                    )
 
         if isinstance(result, list):
             if len(result) < 1 and not optional:
-                raise Exception('\n\tcode:\t-6\n'
-                                '\ttext:\tValue for {} is empty in {}\n'
-                                '\tsource:\tsrc.utils.Configurable.search'.format(
-                                    ''.join([arg + '->' for arg in args[:-1]]) + args[-1], key))
+                raise Exception(
+                    '\n\tcode:\t-6\n'
+                    '\ttext:\tValue for {} is empty in {}\n'
+                    '\tsource:\tsrc.utils.Configurable.search'.format(
+                        ''.join([arg + '->' for arg in args[:-1]]) + args[-1], key
+                    )
+                )
 
         return result
 
@@ -156,8 +164,14 @@ class Configurable:
 
         return self.search_multi_mode(key=key, mode=mode, count=1, optional=optional)[0]
 
-    def search_multi_mode(self, key: Config, mode: Type[Enum] = None, modes: List[Type[Enum]] = None,
-                          count: int = None, optional: bool = False) -> list:
+    def search_multi_mode(
+        self,
+        key: Config,
+        mode: Type[Enum] = None,
+        modes: List[Type[Enum]] = None,
+        count: int = None,
+        optional: bool = False,
+    ) -> list:
         """
         :param key: Config (choice of configurations from discrete enumeration)
         :param mode: Option for pipeline functionality (see Enums)
@@ -172,9 +186,11 @@ class Configurable:
             modes = [mode]
 
         if modes is None:
-            raise Exception('\n\tcode:\t-4\n'
-                            '\ttext:\tAt least one mode type must be provided.\n'
-                            '\tsource:\tsrc.utils.Configurable.search_multi_mode')
+            raise Exception(
+                '\n\tcode:\t-4\n'
+                '\ttext:\tAt least one mode type must be provided.\n'
+                '\tsource:\tsrc.utils.Configurable.search_multi_mode'
+            )
 
         for mode in modes:
 
@@ -183,16 +199,17 @@ class Configurable:
             if not isinstance(modes_in_config, list):
                 modes_in_config = [modes_in_config]
 
-            list_results += [option for option in mode
-                             if str(option).split('.')[1] in modes_in_config]
+            list_results += [option for option in mode if str(option).split('.')[1] in modes_in_config]
 
         if count is not None:
             if len(list_results) == 0 and optional:
                 list_results = [None]
             elif len(list_results) != count:
-                raise Exception('\n\tcode:\t-3\n'
-                                '\ttext:\t{} matches found when {} were expected.\n'
-                                '\tsource:\tsrc.utils.Configurable.search_multi_mode'.format(len(list_results), count))
+                raise Exception(
+                    '\n\tcode:\t-3\n'
+                    '\ttext:\t{} matches found when {} were expected.\n'
+                    '\tsource:\tsrc.utils.Configurable.search_multi_mode'.format(len(list_results), count)
+                )
 
         return list_results
 
@@ -204,6 +221,6 @@ class Configurable:
         """
         # if last 5 characters of file path are NOT '.json', raise an Exception
         if not config_path[-5:] == '.json':
-            raise Exception('\n\tcode:\t-1'
-                            '\ttext:\tFile path must end in .json\n'
-                            '\tsource:\tconfigurable.py or map.py')
+            raise Exception(
+                '\n\tcode:\t-1' '\ttext:\tFile path must end in .json\n' '\tsource:\tconfigurable.py or map.py'
+            )

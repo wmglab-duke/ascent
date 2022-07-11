@@ -12,7 +12,6 @@ from src.utils import Config
 
 
 class Nerve(Trace):
-
     def __init__(self, trace: Trace):
         Trace.__init__(self, trace.points, trace.configs[Config.EXCEPTIONS.value])
 

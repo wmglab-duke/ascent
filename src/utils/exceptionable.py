@@ -7,6 +7,7 @@ The source code can be found on the following GitHub repository: https://github.
 """
 
 import inspect
+
 # builtins
 import os
 
@@ -33,7 +34,6 @@ Description:
 
 
 class Exceptionable(Configurable):
-
     def __init__(self, mode: SetupMode, config=None):
         """
         :param mode: SetupMode, determines if Configurable loads new JSON or uses old data
@@ -68,8 +68,8 @@ class Exceptionable(Configurable):
         exception = self.configs[Config.EXCEPTIONS.value][code_ind]
         # note that the json purposefully has the redundant entry "code"
         # this is done for ease of use and organizational purposes
-        raise Exception('\n\tcode:\t{}\n'
-                        '\ttext:\t{}\n'
-                        '\tsource:\t{}'.format(exception.get('code'),
-                                               exception.get('text'),
-                                               inspect.stack()[1].filename))
+        raise Exception(
+            '\n\tcode:\t{}\n'
+            '\ttext:\t{}\n'
+            '\tsource:\t{}'.format(exception.get('code'), exception.get('text'), inspect.stack()[1].filename)
+        )

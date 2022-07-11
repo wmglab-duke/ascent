@@ -21,11 +21,25 @@ from shapely.geometry import LineString
 from skimage import morphology
 
 from src.core import Fascicle, Map, Nerve, Slide, Trace
-from src.utils import (Config, Configurable, CuffInnerMode, DeformationMode,
-                       Exceptionable, MaskFileNames, MaskInputMode, NerveMode,
-                       PerineuriumThicknessMode, ReshapeNerveMode, Saveable,
-                       ScaleInputMode, SetupMode, ShrinkageMode, TemplateMode,
-                       TemplateOutput, WriteMode)
+from src.utils import (
+    Config,
+    Configurable,
+    CuffInnerMode,
+    DeformationMode,
+    Exceptionable,
+    MaskFileNames,
+    MaskInputMode,
+    NerveMode,
+    PerineuriumThicknessMode,
+    ReshapeNerveMode,
+    Saveable,
+    ScaleInputMode,
+    SetupMode,
+    ShrinkageMode,
+    TemplateMode,
+    TemplateOutput,
+    WriteMode,
+)
 
 from .deformable import Deformable
 
@@ -59,9 +73,9 @@ class Sample(Exceptionable, Configurable, Saveable):
         self.morphology = dict()
 
         # Add JSON for perineurium thickness relationship with nerve morphology metrics -- used to calculate contact impedances if "use_ci" is True
-        self.add(SetupMode.NEW, Config.CI_PERINEURIUM_THICKNESS, os.path.join('config',
-                                                                              'system',
-                                                                              'ci_peri_thickness.json'))
+        self.add(
+            SetupMode.NEW, Config.CI_PERINEURIUM_THICKNESS, os.path.join('config', 'system', 'ci_peri_thickness.json')
+        )
 
     def init_map(self, map_mode: SetupMode) -> 'Sample':
         """
@@ -118,12 +132,14 @@ class Sample(Exceptionable, Configurable, Saveable):
         if self.search(Config.SAMPLE, 'image_preprocessing', 'fill_holes', optional=True) == True:
             if self.search_mode(MaskInputMode, Config.SAMPLE) == MaskInputMode.INNER_AND_OUTER_COMPILED:
                 print(
-                    'WARNING: Skipping fill holes since MaskInputMode is INNER_AND_OUTER_COMPILED. Change fill_holes to False to suppress this warning.')
+                    'WARNING: Skipping fill holes since MaskInputMode is INNER_AND_OUTER_COMPILED. Change fill_holes to False to suppress this warning.'
+                )
             else:
                 img = binary_fill_holes(img).astype(int) * 255
         removal_size = self.search(Config.SAMPLE, 'image_preprocessing', 'object_removal_area', optional=True)
         if removal_size:
-            if removal_size < 0: self.throw(119)
+            if removal_size < 0:
+                self.throw(119)
             img = morphology.remove_small_objects(img, removal_size)
         cv2.imwrite(path, img)
 
@@ -184,13 +200,13 @@ class Sample(Exceptionable, Configurable, Saveable):
         # ADDITION: if only one slide present, check if names abide by <NAME>_0_0_<CODE>.tif format
         #           if not abiding, rename files so that they abide
         if len(self.map.slides) == 1:
-            #print('Renaming input files to conform with map input interface where necessary.')
+            # print('Renaming input files to conform with map input interface where necessary.')
             source_dir = os.path.join(*self.map.slides[0].data()[3])
             source_files = os.listdir(source_dir)
             for mask_fname in [f.value for f in MaskFileNames if f.value in source_files]:
                 shutil.move(
                     os.path.join(source_dir, mask_fname),
-                    os.path.join(source_dir, '{}_0_0_{}'.format(sample, mask_fname))
+                    os.path.join(source_dir, '{}_0_0_{}'.format(sample, mask_fname)),
                 )
         else:
             self.throw(96)
@@ -210,12 +226,11 @@ class Sample(Exceptionable, Configurable, Saveable):
                 if scale_input_mode == ScaleInputMode.MASK:
                     # only try to copy scale image if it is being used
                     if (directory_part == str(sample_index)) and not scale_was_copied:
-                        scale_source_file = os.path.join(start_directory,
-                                                         *source_directory,
-                                                         '_'.join([sample,
-                                                                   cassette,
-                                                                   number,
-                                                                   MaskFileNames.SCALE_BAR.value]))
+                        scale_source_file = os.path.join(
+                            start_directory,
+                            *source_directory,
+                            '_'.join([sample, cassette, number, MaskFileNames.SCALE_BAR.value])
+                        )
                         if os.path.exists(scale_source_file):
                             shutil.copy2(scale_source_file, MaskFileNames.SCALE_BAR.value)
                         else:
@@ -225,9 +240,9 @@ class Sample(Exceptionable, Configurable, Saveable):
                         scale_was_copied = True
 
             for target_file in [item.value for item in MaskFileNames if item != MaskFileNames.SCALE_BAR]:
-                source_file = os.path.join(start_directory,
-                                           *source_directory,
-                                           '_'.join([sample, cassette, number, target_file]))
+                source_file = os.path.join(
+                    start_directory, *source_directory, '_'.join([sample, cassette, number, target_file])
+                )
                 if printing:
                     print('source: {}\ntarget: {}'.format(source_file, target_file))
                 if os.path.exists(source_file):
@@ -296,16 +311,16 @@ class Sample(Exceptionable, Configurable, Saveable):
             proc = None
             if any(fname.endswith('.tiff') for fname in os.listdir('.')):
                 if sys.platform.startswith('darwin') or sys.platform.startswith('linux'):
-                    proc = subprocess.Popen(['bash',
-                                             'for file in *.tiff; do mv "$file" "${file%.tiff}.tif"; done'])
+                    proc = subprocess.Popen(['bash', 'for file in *.tiff; do mv "$file" "${file%.tiff}.tif"; done'])
                 else:
-                    proc = subprocess.Popen(['powershell.exe',
-                                             'Dir | Rename-Item –NewName { $_.name –replace ".tiff",".tif" }'])
+                    proc = subprocess.Popen(
+                        ['powershell.exe', 'Dir | Rename-Item –NewName { $_.name –replace ".tiff",".tif" }']
+                    )
                 proc.wait()
 
             # if not exists(MaskFileNames.RAW):
-                # print('No raw tif found, but continuing. (Sample.populate)')
-                # self.throw(18)
+            # print('No raw tif found, but continuing. (Sample.populate)')
+            # self.throw(18)
 
             if exists(MaskFileNames.ORIENTATION):
 
@@ -314,15 +329,15 @@ class Sample(Exceptionable, Configurable, Saveable):
                 if len(img.shape) > 2 and img.shape[2] > 1:
                     img = img[:, :, 0]
 
-                contour, _ = cv2.findContours(img,
-                                              cv2.RETR_TREE,
-                                              cv2.CHAIN_APPROX_SIMPLE)
-                if len(contour) > 1: self.throw(124)
-                if len(contour) < 1: self.throw(125)
+                contour, _ = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+                if len(contour) > 1:
+                    self.throw(124)
+                if len(contour) < 1:
+                    self.throw(125)
                 trace = Trace([point + [0] for point in contour[0][:, 0, :]], self.configs[Config.EXCEPTIONS.value])
                 orientation_centroid = trace.centroid()
             # else:
-                # print('No orientation tif found, but continuing. (Sample.populate)')
+            # print('No orientation tif found, but continuing. (Sample.populate)')
 
             # preprocess binary masks
             mask_dims = []
@@ -331,13 +346,17 @@ class Sample(Exceptionable, Configurable, Saveable):
                 if exists(maskfile):
                     mask_dims.append(cv2.imread(getattr(maskfile, 'value')).shape)
                     self.im_preprocess(getattr(maskfile, 'value'))
-            if len(mask_dims) == 0: self.throw(121)
-            if not np.all(np.array(mask_dims) == mask_dims[0]): self.throw(122)
+            if len(mask_dims) == 0:
+                self.throw(121)
+            if not np.all(np.array(mask_dims) == mask_dims[0]):
+                self.throw(122)
             scalemask = getattr(MaskFileNames, "SCALE_BAR")
             if exists(scalemask):
                 mask_dims.append(cv2.imread(getattr(scalemask, 'value')).shape)
-                if not np.all(np.array(mask_dims) == mask_dims[0]): print(
-                    'WARNING: Scale bar mask has a different resolution than morphology masks. \nProgram will continue and assume that the scale bar mask microns/pixel ratio is correct.')
+                if not np.all(np.array(mask_dims) == mask_dims[0]):
+                    print(
+                        'WARNING: Scale bar mask has a different resolution than morphology masks. \nProgram will continue and assume that the scale bar mask microns/pixel ratio is correct.'
+                    )
             # fascicles list
             fascicles: List[Fascicle] = []
 
@@ -345,8 +364,9 @@ class Sample(Exceptionable, Configurable, Saveable):
             if mask_input_mode == MaskInputMode.INNERS:
 
                 if exists(MaskFileNames.INNERS):
-                    fascicles = Fascicle.to_list(MaskFileNames.INNERS.value, None,
-                                                 self.configs[Config.EXCEPTIONS.value])
+                    fascicles = Fascicle.to_list(
+                        MaskFileNames.INNERS.value, None, self.configs[Config.EXCEPTIONS.value]
+                    )
                 else:
                     self.throw(21)
 
@@ -357,9 +377,9 @@ class Sample(Exceptionable, Configurable, Saveable):
 
             elif mask_input_mode == MaskInputMode.INNER_AND_OUTER_SEPARATE:
                 if exists(MaskFileNames.INNERS) and exists(MaskFileNames.OUTERS):
-                    fascicles = Fascicle.to_list(MaskFileNames.INNERS.value,
-                                                 MaskFileNames.OUTERS.value,
-                                                 self.configs[Config.EXCEPTIONS.value])
+                    fascicles = Fascicle.to_list(
+                        MaskFileNames.INNERS.value, MaskFileNames.OUTERS.value, self.configs[Config.EXCEPTIONS.value]
+                    )
                 else:
                     self.throw(22)
 
@@ -387,22 +407,23 @@ class Sample(Exceptionable, Configurable, Saveable):
                     if len(img_nerve.shape) > 2 and img_nerve.shape[2] > 1:
                         img_nerve = img_nerve[:, :, 0]
 
-                    contour, _ = cv2.findContours(np.flipud(img_nerve),
-                                                  cv2.RETR_TREE,
-                                                  cv2.CHAIN_APPROX_SIMPLE)
-                    nerve = Nerve(Trace([point + [0] for point in contour[0][:, 0, :]],
-                                        self.configs[Config.EXCEPTIONS.value]))
+                    contour, _ = cv2.findContours(np.flipud(img_nerve), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+                    nerve = Nerve(
+                        Trace([point + [0] for point in contour[0][:, 0, :]], self.configs[Config.EXCEPTIONS.value])
+                    )
                 else:
                     self.throw(138)
 
             if len(fascicles) > 1 and nerve_mode != NerveMode.PRESENT:
                 self.throw(110)
 
-            slide: Slide = Slide(fascicles,
-                                 nerve,
-                                 nerve_mode,
-                                 self.configs[Config.EXCEPTIONS.value],
-                                 will_reposition=(deform_mode != DeformationMode.NONE))
+            slide: Slide = Slide(
+                fascicles,
+                nerve,
+                nerve_mode,
+                self.configs[Config.EXCEPTIONS.value],
+                will_reposition=(deform_mode != DeformationMode.NONE),
+            )
 
             slide.validation()
 
@@ -424,9 +445,11 @@ class Sample(Exceptionable, Configurable, Saveable):
             s_mode = self.search_mode(ShrinkageMode, Config.SAMPLE, optional=True)
             s_pre = self.search(Config.SAMPLE, "scale", "shrinkage")
             if s_mode is None:
-                print('WARNING: ShrinkageMode in Config.Sample is not defined or mode provided is not a known option. '
-                      'Proceeding with backwards compatible (i.e., original default functionality) of LENGTH_FORWARDS'
-                      ' shrinkage correction.\n')
+                print(
+                    'WARNING: ShrinkageMode in Config.Sample is not defined or mode provided is not a known option. '
+                    'Proceeding with backwards compatible (i.e., original default functionality) of LENGTH_FORWARDS'
+                    ' shrinkage correction.\n'
+                )
                 shrinkage_correction = 1 + s_pre
             else:
                 shrinkage_correction = None
@@ -463,8 +486,9 @@ class Sample(Exceptionable, Configurable, Saveable):
         self.scale(factor)
 
         plt.figure()
-        slide.plot(final=False, fix_aspect_ratio='True', axlabel=u"\u03bcm",
-                   title='Initial sample from morphology masks')
+        slide.plot(
+            final=False, fix_aspect_ratio='True', axlabel=u"\u03bcm", title='Initial sample from morphology masks'
+        )
         plt.savefig(plotpath + '/sample_initial', dpi=400)
         if self.search(Config.RUN, "popup_plots", optional=True) == True:
             plt.show()
@@ -484,18 +508,19 @@ class Sample(Exceptionable, Configurable, Saveable):
 
         # after scaling, if only inners were provided, generate outers
         if mask_input_mode == MaskInputMode.INNERS:
-            peri_thick_mode: PerineuriumThicknessMode = self.search_mode(PerineuriumThicknessMode,
-                                                                         Config.SAMPLE)
+            peri_thick_mode: PerineuriumThicknessMode = self.search_mode(PerineuriumThicknessMode, Config.SAMPLE)
 
-            perineurium_thk_info: dict = self.search(Config.CI_PERINEURIUM_THICKNESS,
-                                                     PerineuriumThicknessMode.parameters.value,
-                                                     str(peri_thick_mode).split('.')[-1])
+            perineurium_thk_info: dict = self.search(
+                Config.CI_PERINEURIUM_THICKNESS,
+                PerineuriumThicknessMode.parameters.value,
+                str(peri_thick_mode).split('.')[-1],
+            )
 
             self.generate_perineurium(perineurium_thk_info)
 
         # repositioning!
         for i, slide in enumerate(self.slides):
-            #print('\tslide {} of {}'.format(1 + i, len(self.slides)))
+            # print('\tslide {} of {}'.format(1 + i, len(self.slides)))
             # title = ''
 
             if nerve_mode == NerveMode.NOT_PRESENT and deform_mode is not DeformationMode.NONE:
@@ -504,7 +529,7 @@ class Sample(Exceptionable, Configurable, Saveable):
             partially_deformed_nerve = None
 
             if deform_mode == DeformationMode.PHYSICS:
-                #print('\tsetting up physics')
+                # print('\tsetting up physics')
                 if 'morph_count' in self.search(Config.SAMPLE).keys():
                     morph_count = self.search(Config.SAMPLE, 'morph_count')
                 else:
@@ -533,8 +558,10 @@ class Sample(Exceptionable, Configurable, Saveable):
                 slide.nerve.scale(1)
                 slide.nerve.points = np.flip(slide.nerve.points, axis=0)  # set points to opencv orientation
 
-                if self.configs[Config.CLI_ARGS.value].get('render_deform') == True or \
-                        self.search(Config.SAMPLE, 'render_deform', optional=True) == True:
+                if (
+                    self.configs[Config.CLI_ARGS.value].get('render_deform') == True
+                    or self.search(Config.SAMPLE, 'render_deform', optional=True) == True
+                ):
                     render_deform = True
                     print('Sample deformation is set to render. Rendering...')
                 else:
@@ -542,15 +569,13 @@ class Sample(Exceptionable, Configurable, Saveable):
 
                 deformable = Deformable.from_slide(slide, ReshapeNerveMode.CIRCLE)
 
-                movements, rotations = deformable.deform(morph_count=morph_count,
-                                                         render=render_deform,
-                                                         minimum_distance=sep_fascicles,
-                                                         ratio=deform_ratio)
+                movements, rotations = deformable.deform(
+                    morph_count=morph_count, render=render_deform, minimum_distance=sep_fascicles, ratio=deform_ratio
+                )
 
-                partially_deformed_nerve = Deformable.deform_steps(deformable.start,
-                                                                   deformable.end,
-                                                                   morph_count,
-                                                                   deform_ratio)[-1]
+                partially_deformed_nerve = Deformable.deform_steps(
+                    deformable.start, deformable.end, morph_count, deform_ratio
+                )[-1]
 
                 for move, angle, fascicle in zip(movements, rotations, slide.fascicles):
                     fascicle.shift(list(move) + [0])
@@ -565,7 +590,8 @@ class Sample(Exceptionable, Configurable, Saveable):
                     sep_nerve = self.search(Config.SAMPLE, 'boundary_separation', 'nerve')
                 if sep_nerve != 0:
                     warnings.warn(
-                        'NO DEFORMATION is happening! AND sep_nerve is not 0, sep_nerve = {}'.format(sep_nerve))
+                        'NO DEFORMATION is happening! AND sep_nerve is not 0, sep_nerve = {}'.format(sep_nerve)
+                    )
                 else:
                     warnings.warn('NO DEFORMATION is happening!')
 
@@ -578,10 +604,13 @@ class Sample(Exceptionable, Configurable, Saveable):
                     slide.nerve = slide.reshaped_nerve(reshape_nerve_mode)
                 # deforms+offsets usually shrinks the area a bit, so reset back to the original area
                 if slide.nerve.area() < pre_area:
-                    slide.nerve.scale((pre_area / slide.nerve.area())**.5)
+                    slide.nerve.scale((pre_area / slide.nerve.area()) ** 0.5)
                 else:
-                    print('Note: nerve area before deformation was {}, post deformation is {}'.format(
-                        pre_area, self.nerve.area()))
+                    print(
+                        'Note: nerve area before deformation was {}, post deformation is {}'.format(
+                            pre_area, self.nerve.area()
+                        )
+                    )
 
             # shift slide about (0,0)
             slide.move_center(np.array([0, 0]))
@@ -613,8 +642,12 @@ class Sample(Exceptionable, Configurable, Saveable):
         self.scale(1)
 
         plt.figure()
-        slide.plot(final=False, fix_aspect_ratio='True', axlabel=u"\u03bcm",
-                   title='Final sample after any user specified processing')
+        slide.plot(
+            final=False,
+            fix_aspect_ratio='True',
+            axlabel=u"\u03bcm",
+            title='Final sample after any user specified processing',
+        )
         plt.savefig(plotpath + '/sample_final', dpi=400)
         if self.search(Config.RUN, "popup_plots", optional=True) == True:
             plt.show()
@@ -639,7 +672,7 @@ class Sample(Exceptionable, Configurable, Saveable):
 
         mask = np.zeros((h + 2, w + 2), np.uint8)
 
-        cv2.floodFill(imgnew, mask, (0, 0), 0);
+        cv2.floodFill(imgnew, mask, (0, 0), 0)
 
         cv2.imwrite(i_out, imgnew)
 
@@ -648,15 +681,15 @@ class Sample(Exceptionable, Configurable, Saveable):
     def write(self, mode: WriteMode) -> 'Sample':
         """
         Write entire list of slides.
-         """
+        """
 
         # get starting point so able to go back
         start_directory: str = os.getcwd()
 
         # get path to sample slides
-        sample_path = os.path.join(self.path(Config.SAMPLE, 'samples_path'),
-                                   str(self.search(Config.RUN, 'sample')),
-                                   'slides')
+        sample_path = os.path.join(
+            self.path(Config.SAMPLE, 'samples_path'), str(self.search(Config.RUN, 'sample')), 'slides'
+        )
 
         # loop through the slide info (index i SHOULD correspond to slide in self.slides)
         for i, slide_info in enumerate(self.map.slides):
@@ -744,9 +777,9 @@ class Sample(Exceptionable, Configurable, Saveable):
 
         self.configs[Config.SAMPLE.value]["Morphology"] = morphology_input
 
-        sample_path = os.path.join(self.path(Config.SAMPLE, 'samples_path'),
-                                   str(self.search(Config.RUN, 'sample')),
-                                   'sample.json')
+        sample_path = os.path.join(
+            self.path(Config.SAMPLE, 'samples_path'), str(self.search(Config.RUN, 'sample')), 'sample.json'
+        )
 
         TemplateOutput.write(self.configs[Config.SAMPLE.value], sample_path)
 
