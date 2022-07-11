@@ -53,7 +53,7 @@ black:
   stage: lint
   script:
     - pip install black
-    - black -S config docs examples scripts src run
+    - black -S --check config docs examples scripts src run
 
 test_docs:
   stage: test
