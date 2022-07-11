@@ -6,8 +6,9 @@ Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
-import numpy as np
 import math
+
+import numpy as np
 
 """
 The following code is adapted from a public GitHub repository (information below). The original code was written in
@@ -255,11 +256,17 @@ def interparc(t, px, py, *args):
         for i in range(len(tbinset)):
             tbinset[i] = tbinset[i] - 1
 
-        s = divMAT(minusVector(t, replaceIndex(cumarc, tbinset)), replaceIndex(chordlen, tbinset))
+        s = divMAT(
+            minusVector(t, replaceIndex(cumarc, tbinset)),
+            replaceIndex(chordlen, tbinset),
+        )
 
         # Breakup the parts of pt
         repmat = np.transpose(np.reshape(np.vstack(np.tile(s, (1, ndim))[0]), (ndim, -1)))
-        sub = np.reshape(np.vstack(matSUB(replaceROW(pxy, tbinset, 1), replaceROW(pxy, tbinset, 0))), (-1, ndim))
+        sub = np.reshape(
+            np.vstack(matSUB(replaceROW(pxy, tbinset, 1), replaceROW(pxy, tbinset, 0))),
+            (-1, ndim),
+        )
         multi = np.reshape(np.vstack(matMULTI(sub, repmat)), (-1, ndim))
         pt = np.reshape(np.vstack(matADD(replaceROW(pxy, tbinset, 0), multi)), (-1, ndim))
         return pt
