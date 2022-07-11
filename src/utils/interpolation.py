@@ -262,17 +262,13 @@ def interparc(t, px, py, *args):
         )
 
         # Breakup the parts of pt
-        repmat = np.transpose(
-            np.reshape(np.vstack(np.tile(s, (1, ndim))[0]), (ndim, -1))
-        )
+        repmat = np.transpose(np.reshape(np.vstack(np.tile(s, (1, ndim))[0]), (ndim, -1)))
         sub = np.reshape(
             np.vstack(matSUB(replaceROW(pxy, tbinset, 1), replaceROW(pxy, tbinset, 0))),
             (-1, ndim),
         )
         multi = np.reshape(np.vstack(matMULTI(sub, repmat)), (-1, ndim))
-        pt = np.reshape(
-            np.vstack(matADD(replaceROW(pxy, tbinset, 0), multi)), (-1, ndim)
-        )
+        pt = np.reshape(np.vstack(matADD(replaceROW(pxy, tbinset, 0), multi)), (-1, ndim))
         return pt
 
 

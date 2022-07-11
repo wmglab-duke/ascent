@@ -145,9 +145,7 @@ class Configurable:
             items.append('')  # to force trailing slash with os.path.join
 
         if is_absolute:
-            items.insert(
-                0, os.path.abspath(os.sep)
-            )  # force leading slash and (if Windows) drive letter
+            items.insert(0, os.path.abspath(os.sep))  # force leading slash and (if Windows) drive letter
 
         return os.path.join(*items)  # splat list into comma-separated args
 
@@ -201,18 +199,12 @@ class Configurable:
 
         for mode in modes:
 
-            modes_in_config = self.search(
-                key, 'modes', mode.config.value, optional=optional
-            )
+            modes_in_config = self.search(key, 'modes', mode.config.value, optional=optional)
 
             if not isinstance(modes_in_config, list):
                 modes_in_config = [modes_in_config]
 
-            list_results += [
-                option
-                for option in mode
-                if str(option).split('.')[1] in modes_in_config
-            ]
+            list_results += [option for option in mode if str(option).split('.')[1] in modes_in_config]
 
         if count is not None:
             if len(list_results) == 0 and optional:
@@ -221,9 +213,7 @@ class Configurable:
                 raise Exception(
                     '\n\tcode:\t-3\n'
                     '\ttext:\t{} matches found when {} were expected.\n'
-                    '\tsource:\tsrc.utils.Configurable.search_multi_mode'.format(
-                        len(list_results), count
-                    )
+                    '\tsource:\tsrc.utils.Configurable.search_multi_mode'.format(len(list_results), count)
                 )
 
         return list_results
@@ -237,7 +227,5 @@ class Configurable:
         # if last 5 characters of file path are NOT '.json', raise an Exception
         if not config_path[-5:] == '.json':
             raise Exception(
-                '\n\tcode:\t-1'
-                '\ttext:\tFile path must end in .json\n'
-                '\tsource:\tconfigurable.py or map.py'
+                '\n\tcode:\t-1' '\ttext:\tFile path must end in .json\n' '\tsource:\tconfigurable.py or map.py'
             )

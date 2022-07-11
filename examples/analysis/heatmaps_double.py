@@ -62,10 +62,7 @@ def run_heatmaps(params):
         suptitle_override=params['title'],
     )
 
-    superbound = [
-        [min([x[0] for x in bounds]), max([x[1] for x in bounds])]
-        for i in range(len(bounds))
-    ]
+    superbound = [[min([x[0] for x in bounds]), max([x[1] for x in bounds])] for i in range(len(bounds))]
 
     q.heatmaps(
         plot=False,

@@ -16,9 +16,7 @@ parser = argparse.ArgumentParser(
 )
 # parser.add_argument('-s','--silent',action='store_true', help = 'silence printing')
 parser.add_argument('-v', '--verbose', action='store_true', help='verbose printing')
-parser.add_argument(
-    '-V', '--version', action=versionAction, nargs=0, help='print version'
-)
+parser.add_argument('-V', '--version', action=versionAction, nargs=0, help='print version')
 parser.add_argument(
     '-l',
     '--list',
@@ -35,15 +33,9 @@ cs_parser = subparsers.add_parser(
     'clean_samples',
     help='Remove all files except those specified from Sample directories',
 )
-nsims_parser = subparsers.add_parser(
-    'import_n_sims', help='Move NEURON outputs into ASCENT directories for analysis'
-)
-mmg_parser = subparsers.add_parser(
-    'mock_morphology_generator', help='Generate mock morpology for an ASCENT run'
-)
-ts_parser = subparsers.add_parser(
-    'tidy_samples', help='Remove specified files from Sample directories'
-)
+nsims_parser = subparsers.add_parser('import_n_sims', help='Move NEURON outputs into ASCENT directories for analysis')
+mmg_parser = subparsers.add_parser('mock_morphology_generator', help='Generate mock morpology for an ASCENT run')
+ts_parser = subparsers.add_parser('tidy_samples', help='Remove specified files from Sample directories')
 
 # add subparser arguments
 pipeline_parser.add_argument(
@@ -118,12 +110,8 @@ prog_group.add_argument(
     action='store_true',
     help="Show COMSOL progress in a pop-up window",
 )
-ts_parser.add_argument(
-    'sample_indices', nargs='+', type=int, help='Space separated sample indices to tidy'
-)
-nsims_parser.add_argument(
-    'run_indices', nargs='+', type=int, help='Space separated run indices to import'
-)
+ts_parser.add_argument('sample_indices', nargs='+', type=int, help='Space separated sample indices to tidy')
+nsims_parser.add_argument('run_indices', nargs='+', type=int, help='Space separated run indices to import')
 nsims_group = nsims_parser.add_mutually_exclusive_group()
 nsims_group.add_argument(
     '-f',
@@ -143,12 +131,8 @@ cs_parser.add_argument(
     type=int,
     help='Space separated sample indices to clean',
 )
-mmg_parser.add_argument(
-    'mock_sample_index', type=int, help='Mock Sample Index to generate'
-)
-install_parser.add_argument(
-    '--no-conda', action='store_true', help='Skip conda portion of installation'
-)
+mmg_parser.add_argument('mock_sample_index', type=int, help='Mock Sample Index to generate')
+install_parser.add_argument('--no-conda', action='store_true', help='Skip conda portion of installation')
 
 
 def parse():
@@ -156,11 +140,7 @@ def parse():
 
     def g0(args, argstring):
         """checks that argument is greater than 0"""
-        if (
-            hasattr(args, argstring)
-            and getattr(args, argstring) != None
-            and getattr(args, argstring) <= 0
-        ):
+        if hasattr(args, argstring) and getattr(args, argstring) != None and getattr(args, argstring) <= 0:
             sys.exit('Arguments for {} must be greater than 0'.format(argstring))
 
     # parse arguments

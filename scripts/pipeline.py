@@ -39,17 +39,11 @@ def run(args):
         try:
             int(argument)
         except ValueError:
-            print(
-                'Invalid type for argument: {}\n'
-                'All arguments must be positive integers.'.format(argument)
-            )
+            print('Invalid type for argument: {}\n' 'All arguments must be positive integers.'.format(argument))
             sys.exit()
 
         if int(argument) < 0:
-            print(
-                'Invalid sign for argument: {}\n'
-                'All arguments must be positive integers.'.format(argument)
-            )
+            print('Invalid sign for argument: {}\n' 'All arguments must be positive integers.'.format(argument))
             sys.exit()
 
         print('\n########## STARTING RUN {} ##########\n'.format(argument))
@@ -80,10 +74,7 @@ def run(args):
         end = time.time()
         elapsed = end - start
 
-        if (
-            args.auto_submit
-            or runner.search(Config.RUN, 'auto_submit_fibers', optional=True) == True
-        ):
+        if args.auto_submit or runner.search(Config.RUN, 'auto_submit_fibers', optional=True) == True:
             print('Auto submitting fibers for run {}'.format(argument))
             # submit fibers before moving on to next run
             reset_dir = os.getcwd()
@@ -97,16 +88,10 @@ def run(args):
                     stderr=devnull,
                 )
                 if comp.returncode != 0:
-                    print(
-                        'WARNING: Non-zero exit code during fiber submission. Continuing to next run...'
-                    )
+                    print('WARNING: Non-zero exit code during fiber submission. Continuing to next run...')
             os.chdir(reset_dir)
 
-        print(
-            '\nruntime: {} (hh:mm:ss)'.format(
-                time.strftime('%H:%M:%S', time.gmtime(elapsed))
-            )
-        )
+        print('\nruntime: {} (hh:mm:ss)'.format(time.strftime('%H:%M:%S', time.gmtime(elapsed))))
 
     # cleanup for console viewing/inspecting
     del start, end

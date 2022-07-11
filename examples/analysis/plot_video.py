@@ -80,9 +80,7 @@ for sample in samples:
                     return ln, time_text
 
                 # build and save animation
-                print(
-                    'WARNING: DO NOT ATTEMPT TO OPEN FILE UNTIL FRAME INDICES HAVE FINISHED PRINTING'
-                )
+                print('WARNING: DO NOT ATTEMPT TO OPEN FILE UNTIL FRAME INDICES HAVE FINISHED PRINTING')
                 ani = FuncAnimation(
                     fig,
                     update,

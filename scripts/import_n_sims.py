@@ -31,12 +31,8 @@ def run(args):
 
         for model in models:
             for sim in sims:
-                sim_dir = os.path.join(
-                    'samples', str(sample), 'models', str(model), 'sims', str(sim)
-                )
-                check = Simulation.thresholds_exist(
-                    sample, model, sim, sim_dir, os.path.join(nsim_source, 'n_sims')
-                )
+                sim_dir = os.path.join('samples', str(sample), 'models', str(model), 'sims', str(sim))
+                check = Simulation.thresholds_exist(sample, model, sim, sim_dir, os.path.join(nsim_source, 'n_sims'))
                 if check == False:
                     if args.force == True:
                         print('Force argument passed, continuing with import')

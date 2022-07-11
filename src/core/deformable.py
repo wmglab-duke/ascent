@@ -13,15 +13,7 @@ import numpy as np
 import pygame
 import pymunk.pygame_util
 from pygame.colordict import THECOLORS
-from pygame.locals import (
-    DOUBLEBUF,
-    HWSURFACE,
-    K_ESCAPE,
-    K_SPACE,
-    KEYDOWN,
-    QUIT,
-    RESIZABLE,
-)
+from pygame.locals import DOUBLEBUF, HWSURFACE, K_ESCAPE, K_SPACE, KEYDOWN, QUIT, RESIZABLE
 from shapely.geometry import LineString, Point
 
 #               ascent
@@ -93,18 +85,13 @@ class Deformable(Exceptionable):
 
         # referencing the deform_steps method below
         morph_steps = [
-            step.pymunk_segments(space)
-            for step in Deformable.deform_steps(
-                self.start, self.end, morph_count, ratio
-            )
+            step.pymunk_segments(space) for step in Deformable.deform_steps(self.start, self.end, morph_count, ratio)
         ]
 
         # draw the deformation
         if render:
             # Initialize screen and surface which each frame will be drawn on
-            screen = pygame.display.set_mode(
-                (800, int(800 * im_ratio)), HWSURFACE | DOUBLEBUF | RESIZABLE
-            )
+            screen = pygame.display.set_mode((800, int(800 * im_ratio)), HWSURFACE | DOUBLEBUF | RESIZABLE)
             drawsurf = pygame.surface.Surface((width, height))
             # pygame debug draw options
             options = pymunk.pygame_util.DrawOptions(drawsurf)
@@ -188,9 +175,7 @@ class Deformable(Exceptionable):
                     (0, 0),
                 )
                 pygame.display.flip()
-                pygame.display.set_caption(
-                    'nerve morph step {} of {}'.format(morph_index, len(morph_steps))
-                )
+                pygame.display.set_caption('nerve morph step {} of {}'.format(morph_index, len(morph_steps)))
 
             loop_count += 1
 
@@ -203,9 +188,7 @@ class Deformable(Exceptionable):
             end_rotations.append(body.angle)
 
         # return total movement vectors (dx, dy)
-        movements = [
-            tuple(end - start) for start, end in zip(start_positions, end_positions)
-        ]
+        movements = [tuple(end - start) for start, end in zip(start_positions, end_positions)]
         rotations = [end - start for start, end in zip(start_rotations, end_rotations)]
         return movements, rotations
 
@@ -223,30 +206,20 @@ class Deformable(Exceptionable):
 
         angle *= 2 * np.pi / 360  # converts to radians
 
-        ray = LineString(
-            [(x, y), (x + (2 * a * np.cos(angle)), y + (2 * a * np.sin(angle)))]
-        )
+        ray = LineString([(x, y), (x + (2 * a * np.cos(angle)), y + (2 * a * np.sin(angle)))])
 
         start_intersection = ray.intersection(start.polygon().boundary)
         end_intersection = ray.intersection(end.polygon().boundary)
 
-        start_distances = [
-            Point(point[:2]).distance(start_intersection) for point in start.points
-        ]
-        end_distances = [
-            Point(point[:2]).distance(end_intersection) for point in end.points
-        ]
+        start_distances = [Point(point[:2]).distance(start_intersection) for point in start.points]
+        end_distances = [Point(point[:2]).distance(end_intersection) for point in end.points]
 
         # Use point on major axis as the first point on old_nerve, find closest point on new_nerve
         # and assign as first point
 
         # Sweep CW assigning consecutive points
-        start_initial_index = np.where(
-            np.array(start_distances == np.min(start_distances))
-        )[0][0]
-        end_initial_index = np.where(np.array(end_distances == np.min(end_distances)))[
-            0
-        ][0]
+        start_initial_index = np.where(np.array(start_distances == np.min(start_distances)))[0][0]
+        end_initial_index = np.where(np.array(end_distances == np.min(end_distances)))[0][0]
 
         start_i = start_initial_index
         end_i = end_initial_index
@@ -282,17 +255,13 @@ class Deformable(Exceptionable):
                 point += vectors[i] * ratio
             traces.append(trace)
         if deform_ratio != 0:
-            def_traces = traces[
-                : int((deform_ratio if deform_ratio is not None else 1) * count)
-            ]
+            def_traces = traces[: int((deform_ratio if deform_ratio is not None else 1) * count)]
         else:  # still need fascicle sep physics with deform_ratio = 0, so pass starting trace only
             def_traces = [traces[0]]
         return def_traces
 
     @staticmethod
-    def from_slide(
-        slide: Slide, mode: ReshapeNerveMode, sep_nerve: float = None
-    ) -> 'Deformable':
+    def from_slide(slide: Slide, mode: ReshapeNerveMode, sep_nerve: float = None) -> 'Deformable':
         # method in slide will pull out each trace and add to a list of contents, go through traces and build polygons
 
         # exception configuration data
@@ -333,9 +302,7 @@ class Deformable(Exceptionable):
 
     # copied from https://stackoverflow.com/questions/3173320/text-progress-bar-in-the-console
     @staticmethod
-    def printProgressBar(
-        iteration, total, prefix='', suffix='', decimals=1, length=100, fill='█'
-    ):
+    def printProgressBar(iteration, total, prefix='', suffix='', decimals=1, length=100, fill='█'):
         """
         Call in a loop to create terminal progress bar
         @params:
@@ -347,9 +314,7 @@ class Deformable(Exceptionable):
             length      - Optional  : character length of bar (Int)
             fill        - Optional  : bar fill character (Str)
         """
-        percent = ("{0:." + str(decimals) + "f}").format(
-            100 * (iteration / float(total))
-        )
+        percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
         filledLength = int(length * iteration // total)
         bar = fill * filledLength + '-' * (length - filledLength)
         print('\r{} |{}| {}% {}'.format(prefix, bar, percent, suffix), end='')

@@ -45,25 +45,19 @@ model_results = []
 for model in models:
     fiber_results = []
     for fiber in fibers:
-        value = np.loadtxt(
-            '_'.join([n_sim_base, str(model), sim, str(fiber) + threshold])
-        ).tolist()
+        value = np.loadtxt('_'.join([n_sim_base, str(model), sim, str(fiber) + threshold])).tolist()
         fiber_results.append(value)
         if model == baseline_model:
             baseline_results.append(value)
     model_results.append(fiber_results)
 
 fig, axs = plt.subplots(4, 3)
-for i, (ax, model, radius, hmax, hmin) in enumerate(
-    zip(axs.flatten(), model_results, radii, hmaxes, hmins)
-):
+for i, (ax, model, radius, hmax, hmin) in enumerate(zip(axs.flatten(), model_results, radii, hmaxes, hmins)):
     print(f'MODEL {model}: {radius} {hmax} {hmin}')
     results = []
     for my_fiber, baseline_fiber in zip(model, baseline_results):
         results.append(round(100 * (my_fiber - baseline_fiber) / baseline_fiber, 2))
-    ax.set_title(
-        f'Radius: {radius}µm\nMax mesh element size: {hmax} µm, Min mesh element size: {hmin} µm'
-    )
+    ax.set_title(f'Radius: {radius}µm\nMax mesh element size: {hmax} µm, Min mesh element size: {hmin} µm')
     ax.title.set_size(7)
     if i != baseline_model:
         ax.bar(fibers, results, 0.5)

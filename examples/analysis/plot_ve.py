@@ -15,9 +15,7 @@ sample = 3008
 model = 6
 sim = 3001
 
-base_n_sim = os.path.join(
-    'samples', str(sample), 'models', str(model), 'sims', str(sim), 'n_sims'
-)
+base_n_sim = os.path.join('samples', str(sample), 'models', str(model), 'sims', str(sim), 'n_sims')
 
 inner = 0
 fiber = 0

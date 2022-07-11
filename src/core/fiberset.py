@@ -65,12 +65,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         )
 
     def init_post_config(self):
-        if any(
-            [
-                config.value not in self.configs.keys()
-                for config in (Config.MODEL, Config.SIM)
-            ]
-        ):
+        if any([config.value not in self.configs.keys() for config in (Config.MODEL, Config.SIM)]):
             self.throw(78)
         return self
 
@@ -80,9 +75,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         """
 
         xy_mode_name: str = self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode')
-        xy_mode: FiberXYMode = [
-            mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name
-        ][0]
+        xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
 
         fibers_xy = self._generate_xy(sim_directory)
         self.out_to_fib, self.out_to_in = self._generate_maps(fibers_xy)
@@ -147,9 +140,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
     def _generate_xy(self, sim_directory: str) -> np.ndarray:
         # get required parameters from configuration JSON (using inherited Configurable methods)
         xy_mode_name: str = self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode')
-        xy_mode: FiberXYMode = [
-            mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name
-        ][0]
+        xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
         xy_parameters: dict = self.search(Config.SIM, 'fibers', 'xy_parameters')
         my_xy_seed: int = xy_parameters.get('seed', 0)
 
@@ -176,47 +167,30 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                 # case top_down == true: fetch target density and cap minimum axons if too low
                 # case top_down == false: (i.e. bottom-up) find density from target number and smallest inner by area
                 #   also cap the number at a maximum!
-                top_down: bool = self.search(
-                    Config.SIM, 'fibers', 'xy_parameters', 'top_down'
-                )
+                top_down: bool = self.search(Config.SIM, 'fibers', 'xy_parameters', 'top_down')
 
                 if top_down:  # do top-down approach
                     # get required parameters
-                    target_density = self.search(
-                        Config.SIM, 'fibers', 'xy_parameters', 'target_density'
-                    )
-                    minimum_number = self.search(
-                        Config.SIM, 'fibers', 'xy_parameters', 'minimum_number'
-                    )
+                    target_density = self.search(Config.SIM, 'fibers', 'xy_parameters', 'target_density')
+                    minimum_number = self.search(Config.SIM, 'fibers', 'xy_parameters', 'minimum_number')
 
                     for fascicle in self.sample.slides[0].fascicles:
                         for inner in fascicle.inners:
                             fiber_count = target_density * inner.area()
                             if fiber_count < minimum_number:
                                 fiber_count = minimum_number
-                            for point in inner.random_points(
-                                fiber_count, buffer=buffer, my_xy_seed=my_xy_seed
-                            ):
+                            for point in inner.random_points(fiber_count, buffer=buffer, my_xy_seed=my_xy_seed):
                                 points.append(point)
                             my_xy_seed += 1
 
                 else:  # do bottom-up approach
                     # get required parameters
-                    target_number = self.search(
-                        Config.SIM, 'fibers', 'xy_parameters', 'target_number'
-                    )
-                    maximum_number = self.search(
-                        Config.SIM, 'fibers', 'xy_parameters', 'maximum_number'
-                    )
+                    target_number = self.search(Config.SIM, 'fibers', 'xy_parameters', 'target_number')
+                    maximum_number = self.search(Config.SIM, 'fibers', 'xy_parameters', 'maximum_number')
 
                     # calculate target density
                     min_area = np.amin(
-                        [
-                            [
-                                fascicle.smallest_trace().area()
-                                for fascicle in self.sample.slides[0].fascicles
-                            ]
-                        ]
+                        [[fascicle.smallest_trace().area() for fascicle in self.sample.slides[0].fascicles]]
                     )
                     target_density = float(target_number) / min_area
 
@@ -225,9 +199,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                             fiber_count = target_density * inner.area()
                             if fiber_count > maximum_number:
                                 fiber_count = maximum_number
-                            for point in inner.random_points(
-                                fiber_count, buffer=buffer, my_xy_seed=my_xy_seed
-                            ):
+                            for point in inner.random_points(fiber_count, buffer=buffer, my_xy_seed=my_xy_seed):
                                 points.append(point)
                             my_xy_seed += 1
 
@@ -236,29 +208,21 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
                 for fascicle in self.sample.slides[0].fascicles:
                     for inner in fascicle.inners:
-                        for point in inner.random_points(
-                            count, buffer=buffer, my_xy_seed=my_xy_seed
-                        ):
+                        for point in inner.random_points(count, buffer=buffer, my_xy_seed=my_xy_seed):
                             points.append(point)
                         my_xy_seed += 1
 
             elif xy_mode == FiberXYMode.WHEEL:
                 # get required parameters
-                spoke_count: int = self.search(
-                    Config.SIM, 'fibers', 'xy_parameters', 'spoke_count'
-                )
+                spoke_count: int = self.search(Config.SIM, 'fibers', 'xy_parameters', 'spoke_count')
                 point_count: int = self.search(
                     Config.SIM, 'fibers', 'xy_parameters', 'point_count_per_spoke'
                 )  # this number is PER SPOKE
-                find_centroid: bool = self.search(
-                    Config.SIM, 'fibers', 'xy_parameters', 'find_centroid'
-                )
+                find_centroid: bool = self.search(Config.SIM, 'fibers', 'xy_parameters', 'find_centroid')
                 angle_offset_is_in_degrees: bool = self.search(
                     Config.SIM, 'fibers', 'xy_parameters', 'angle_offset_is_in_degrees'
                 )
-                angle_offset: float = self.search(
-                    Config.SIM, 'fibers', 'xy_parameters', 'angle_offset'
-                )
+                angle_offset: float = self.search(Config.SIM, 'fibers', 'xy_parameters', 'angle_offset')
 
                 # convert angle offset to radians if necessary
                 if angle_offset_is_in_degrees:
@@ -271,10 +235,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                             points.append(inner.centroid())
 
                         # loop through spoke angles
-                        for spoke_angle in (
-                            np.linspace(0, 2 * np.pi, spoke_count + 1)[:-1]
-                            + angle_offset
-                        ):
+                        for spoke_angle in np.linspace(0, 2 * np.pi, spoke_count + 1)[:-1] + angle_offset:
                             # find the mean radius for a reference distance when "casting the spoke ray"
                             new_inner = inner.deepcopy()
                             new_inner.offset(None, -buffer)
@@ -288,20 +249,14 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                             ]
 
                             # build a vector starting from the centroid of the trace
-                            raw_spoke_vector = LineString(
-                                [new_inner.centroid(), tuple(raw_outer_point)]
-                            )
+                            raw_spoke_vector = LineString([new_inner.centroid(), tuple(raw_outer_point)])
 
                             # get that vector's intersection with the trace to find "trimmed" endpoint
-                            intersection_with_boundary = raw_spoke_vector.intersection(
-                                new_inner.polygon().boundary
-                            )
+                            intersection_with_boundary = raw_spoke_vector.intersection(new_inner.polygon().boundary)
 
                             # fix type of intersection with boundary
                             if not isinstance(intersection_with_boundary, Point):
-                                intersection_with_boundary = list(
-                                    intersection_with_boundary
-                                )[0]
+                                intersection_with_boundary = list(intersection_with_boundary)[0]
 
                             # build trimmed vector
                             trimmed_spoke_vector = LineString(
@@ -313,18 +268,12 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
                             # get scale vectors whose endpoints will be the desired points ([1:] to not include 0)
                             scaled_vectors: List[LineString] = [
-                                scale(
-                                    trimmed_spoke_vector,
-                                    *([factor] * 3),
-                                    origin=trimmed_spoke_vector.coords[0]
-                                )
+                                scale(trimmed_spoke_vector, *([factor] * 3), origin=trimmed_spoke_vector.coords[0])
                                 for factor in np.linspace(0, 1, point_count + 2)[1:-1]
                             ]
 
                             # loop through the end points of the vectors
-                            for point in [
-                                vector.coords[1] for vector in scaled_vectors
-                            ]:
+                            for point in [vector.coords[1] for vector in scaled_vectors]:
                                 points.append(point)
 
             elif xy_mode == FiberXYMode.EXPLICIT:
@@ -373,11 +322,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                             for inner in fascicle.inners
                         ]
                     ):
-                        print(
-                            "Explicit fiber coordinate: {} does not fall in an inner".format(
-                                fiber
-                            )
-                        )
+                        print("Explicit fiber coordinate: {} does not fall in an inner".format(fiber))
                         self.throw(71)
 
             if plot:
@@ -417,9 +362,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                 markersize=size,
             )
 
-    def _generate_z(
-        self, fibers_xy: np.ndarray, override_length=None, super_sample: bool = False
-    ) -> np.ndarray:
+    def _generate_z(self, fibers_xy: np.ndarray, override_length=None, super_sample: bool = False) -> np.ndarray:
 
         fibers = []
 
@@ -521,17 +464,13 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             else:
                 modshift = shift % delta_z
 
-            my_z_shift_to_center_in_fiber_range = (
-                half_model_length - sum(z_steps) + modshift
-            )
+            my_z_shift_to_center_in_fiber_range = half_model_length - sum(z_steps) + modshift
 
             reverse_z_steps = z_steps.copy()
             reverse_z_steps.reverse()
 
             # concat, cumsum, and other stuff to get final list of z points
-            my_zs = np.array(
-                list(np.cumsum(np.concatenate(([0], reverse_z_steps, z_steps))))
-            )
+            my_zs = np.array(list(np.cumsum(np.concatenate(([0], reverse_z_steps, z_steps)))))
 
             return my_zs, delta_z, my_z_shift_to_center_in_fiber_range
 
@@ -569,10 +508,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                     self.throw(99)
 
             # compute offset z coordinate
-            z_offset = [
-                my_z + offset + random_offset_value + additional_offset
-                for my_z in z_values
-            ]
+            z_offset = [my_z + offset + random_offset_value + additional_offset for my_z in z_values]
 
             # xy_mode_name: str = self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode')
             # xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
@@ -609,53 +545,31 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                 or not 'max' in self.configs['sims']['fibers']['z_parameters'].keys()
                 or override_length is not None
             ):
-                fiber_length = (
-                    model_length if override_length is None else override_length
-                )
+                fiber_length = model_length if override_length is None else override_length
                 self.configs['sims']['fibers'][FiberZMode.parameters.value]['min'] = 0
-                self.configs['sims']['fibers'][FiberZMode.parameters.value][
-                    'max'
-                ] = fiber_length
+                self.configs['sims']['fibers'][FiberZMode.parameters.value]['max'] = fiber_length
 
                 if (
                     override_length is None
-                    and self.configs['sims']['fibers']['z_parameters'].get(
-                        'full_nerve_length'
-                    )
-                    != True
+                    and self.configs['sims']['fibers']['z_parameters'].get('full_nerve_length') != True
                 ):
                     warnings.warn(
                         'Program assumed fiber length same as proximal length since "min" and "max" fiber '
                         'length not defined in Config.Sim "fibers" -> "z_parameters". Suppress this warning by adding "full_nerve_length = true" to your z_parameters.'
                     )
-                self.configs['sims']['fibers'][FiberZMode.parameters.value][
-                    'full_nerve_length'
-                ] = False
+                self.configs['sims']['fibers'][FiberZMode.parameters.value]['full_nerve_length'] = False
 
             else:
-                if (
-                    self.configs['sims']['fibers']['z_parameters'].get(
-                        'full_nerve_length'
-                    )
-                    == True
-                ):
+                if self.configs['sims']['fibers']['z_parameters'].get('full_nerve_length') == True:
                     self.throw(127)
 
-                min_fiber_z_limit = self.search(
-                    Config.SIM, 'fibers', FiberZMode.parameters.value, 'min'
-                )
-                max_fiber_z_limit = self.search(
-                    Config.SIM, 'fibers', FiberZMode.parameters.value, 'max'
-                )
+                min_fiber_z_limit = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'min')
+                max_fiber_z_limit = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'max')
 
                 if not max_fiber_z_limit > min_fiber_z_limit:
                     self.throw(105)
 
-                fiber_length = (
-                    (max_fiber_z_limit - min_fiber_z_limit)
-                    if override_length is None
-                    else override_length
-                )
+                fiber_length = (max_fiber_z_limit - min_fiber_z_limit) if override_length is None else override_length
 
             if (
                 self.search(
@@ -682,18 +596,14 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
             half_model_length = model_length / 2
 
-            assert (
-                model_length >= fiber_length
-            ), 'proximal length: ({}) < fiber length: ({})'.format(
+            assert model_length >= fiber_length, 'proximal length: ({}) < fiber length: ({})'.format(
                 model_length, fiber_length
             )
             fiber_geometry_mode_name: str = self.search(Config.SIM, 'fibers', 'mode')
 
             # use key from above to get myelination mode from fiber_z
             diams = []
-            diameter = self.search(
-                Config.SIM, 'fibers', FiberZMode.parameters.value, 'diameter'
-            )
+            diameter = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'diameter')
             diam_distribution: bool = True if type(diameter) is dict else False
 
             if super_sample:
@@ -706,9 +616,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                     'myelinated',
                 )
 
-                my_z_seed = self.search(
-                    Config.SIM, 'fibers', FiberZMode.parameters.value, 'seed'
-                )
+                my_z_seed = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'seed')
 
                 if diam_distribution:
                     sampling_mode = self.search(
@@ -717,9 +625,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                         fiber_geometry_mode_name,
                         'sampling',
                     )
-                    if myelinated and not (
-                        sampling_mode == MyelinatedSamplingType.INTERPOLATION.value
-                    ):
+                    if myelinated and not (sampling_mode == MyelinatedSamplingType.INTERPOLATION.value):
                         self.throw(104)
 
                     distribution_mode_name = self.search(
@@ -730,9 +636,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                         'mode',
                     )
                     distribution_mode: DiamDistMode = [
-                        mode
-                        for mode in DiamDistMode
-                        if str(mode).split('.')[-1] == distribution_mode_name
+                        mode for mode in DiamDistMode if str(mode).split('.')[-1] == distribution_mode_name
                     ][0]
                     # seed rng
                     my_diam_seed: int = self.search(
@@ -770,9 +674,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                         if lower_fiber_diam > upper_fiber_diam:
                             self.throw(101)
 
-                        fiber_diam_dist = stats.uniform(
-                            lower_fiber_diam, upper_fiber_diam - lower_fiber_diam
-                        )
+                        fiber_diam_dist = stats.uniform(lower_fiber_diam, upper_fiber_diam - lower_fiber_diam)
 
                     elif distribution_mode == DiamDistMode.TRUNCNORM:
 
@@ -798,12 +700,8 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                             'diameter',
                             'std',
                         )
-                        lower_fiber_diam = (
-                            mu_fiber_diam - n_std_fiber_diam_limit * std_fiber_diam
-                        )
-                        upper_fiber_diam = (
-                            mu_fiber_diam + n_std_fiber_diam_limit * std_fiber_diam
-                        )
+                        lower_fiber_diam = mu_fiber_diam - n_std_fiber_diam_limit * std_fiber_diam
+                        upper_fiber_diam = mu_fiber_diam + n_std_fiber_diam_limit * std_fiber_diam
 
                         # parameter checking
                         # positive values, order makes sense, etc
@@ -832,14 +730,8 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                         z_shift_to_center_in_fiber_range,
                     ) = generate_myel_fiber_zs(diam)
 
-                    fiber_pre = build_fiber_with_offset(
-                        zs, myelinated, delta_z, x, y, z_shift_to_center_in_fiber_range
-                    )
-                    if (
-                        np.amax(np.array(fiber_pre)[:, 2])
-                        - np.amin(np.array(fiber_pre)[:, 2])
-                        > fiber_length
-                    ):
+                    fiber_pre = build_fiber_with_offset(zs, myelinated, delta_z, x, y, z_shift_to_center_in_fiber_range)
+                    if np.amax(np.array(fiber_pre)[:, 2]) - np.amin(np.array(fiber_pre)[:, 2]) > fiber_length:
                         self.throw(119)
                     if diam_distribution:
                         fiber = {'diam': diam, 'fiber': fiber_pre}
@@ -849,10 +741,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
             else:  # UNMYELINATED
                 if super_sample:
-                    if (
-                        'dz'
-                        in self.configs[Config.SIM.value]['supersampled_bases'].keys()
-                    ):
+                    if 'dz' in self.configs[Config.SIM.value]['supersampled_bases'].keys():
                         delta_z = self.search(Config.SIM, 'supersampled_bases', 'dz')
                         my_z_seed = 123
                     else:
@@ -866,9 +755,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                         'delta_zs',
                     )
 
-                z_top_half = np.arange(
-                    model_length / 2, model_length + delta_z, delta_z
-                )
+                z_top_half = np.arange(model_length / 2, model_length + delta_z, delta_z)
                 z_bottom_half = -np.flip(z_top_half) + model_length
                 while z_top_half[-1] > model_length:
                     # trim top of top half
@@ -893,11 +780,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                         x,
                         y,
                     )
-                    if (
-                        np.amax(np.array(fiber_pre)[:, 2])
-                        - np.amin(np.array(fiber_pre)[:, 2])
-                        > fiber_length
-                    ):
+                    if np.amax(np.array(fiber_pre)[:, 2]) - np.amin(np.array(fiber_pre)[:, 2]) > fiber_length:
                         self.throw(119)
                     if diam_distribution:
                         fiber = {'diam': diam, 'fiber': fiber_pre}

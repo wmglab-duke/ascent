@@ -51,12 +51,7 @@ def run(args):
             if os.path.isdir(filepath):
                 continue
 
-            if not any(
-                [
-                    filepath.endswith(excluded_filename)
-                    for excluded_filename in EXCLUDED_FILENAMES
-                ]
-            ):
+            if not any([filepath.endswith(excluded_filename) for excluded_filename in EXCLUDED_FILENAMES]):
                 try:
                     os.remove(filepath)
                 except:
