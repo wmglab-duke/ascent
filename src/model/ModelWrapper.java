@@ -911,7 +911,7 @@ public class ModelWrapper {
                         "CIRCLE (or NONE) is not yet implemented");
                 System.exit(0);
             }
-            
+
             if (nerveMode.equals("PRESENT")) {
                 if (deform_ratio == 1 && reshapenerveMode.equals("CIRCLE")) { //Use a circle otherwise
                     Part.createNervePartInstance("Epi_circle", 0,
@@ -2029,6 +2029,20 @@ public class ModelWrapper {
                     model.sol("sol1").feature("s1").feature("i1").feature("mg1").set("prefun", "amg");
                     model.sol("sol1").feature("s1").feature("fc1").set("linsolver", "i1");
                     model.sol("sol1").feature("s1").feature().remove("fcDef");
+
+                    // check for solver type and select appropriate option
+                    if (modelData.getJSONObject("solver").has("type")) {
+                        String solverType = modelData.getJSONObject("solver").getString("type");
+                        if (solverType.equals("direct")) {
+                            model.sol("sol1").feature("s1").feature("dDef").active(true);
+                        }
+                        else if (!solverType.equals("iterative"))
+                        System.out.println("Invalid solver type, proceeding with default (iterative).");
+                    }
+                    else {
+                        System.out.println("\tSolver type not specified, proceeding with default (iterative).");
+                    }
+
                     model.sol("sol1").attach("std1");
 
                     // break point "post_mesh_distal"
