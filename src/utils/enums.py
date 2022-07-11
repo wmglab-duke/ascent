@@ -6,8 +6,8 @@ Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
-from enum import unique, Enum
 import os
+from enum import Enum, unique
 
 
 class ASCENTEnum(Enum):
@@ -16,6 +16,7 @@ class ASCENTEnum(Enum):
 
 
 # %% Core (backend) functionality
+
 
 @unique
 class SetupMode(ASCENTEnum):
@@ -61,15 +62,11 @@ class Env(ASCENTEnum):
     PROJECT_PATH = prefix + 'PROJECT_PATH'
     NSIM_EXPORT_PATH = prefix + 'NSIM_EXPORT_PATH'
 
-    vals = [
-        COMSOL_PATH,
-        JDK_PATH,
-        PROJECT_PATH,
-        NSIM_EXPORT_PATH
-    ]
+    vals = [COMSOL_PATH, JDK_PATH, PROJECT_PATH, NSIM_EXPORT_PATH]
 
 
 # %% Trace functionality
+
 
 @unique
 class DownSampleMode(ASCENTEnum):
@@ -86,6 +83,7 @@ class WriteMode(ASCENTEnum):
 
 
 # %% Higher-level Manager functionality
+
 
 @unique
 class ReshapeNerveMode(ASCENTEnum):
@@ -171,6 +169,7 @@ class DeformationMode(ASCENTEnum):
 
 # %% Fiber Position and Type
 
+
 @unique
 class FiberXYMode(ASCENTEnum):
     config = 'fiber_xy'
@@ -241,6 +240,7 @@ class UnmyelinatedFiberType(ASCENTEnum):
 
 # %% Waveforms
 
+
 @unique
 class WaveformMode(ASCENTEnum):
     config = 'waveform'
@@ -253,6 +253,7 @@ class WaveformMode(ASCENTEnum):
     BIPHASIC_PULSE_TRAIN_Q_BALANCED_UNEVEN_PW = 4
     EXPLICIT = 5
 
+
 # %% Simulation
 
 
@@ -262,6 +263,7 @@ class ExportMode(ASCENTEnum):
     OVERWRITE = "overwrite"
     ERROR = "error"
     SELECTIVE = "selective"
+
 
 # %% NEURON Protocols
 
@@ -293,6 +295,7 @@ class TerminationCriteriaMode(ASCENTEnum):
 
 # %% Perineurium Impedance
 
+
 @unique
 class PerineuriumThicknessMode(ASCENTEnum):
     config = 'ci_perineurium_thickness'
@@ -316,6 +319,7 @@ class PerineuriumResistivityMode(ASCENTEnum):
 
 
 # %% Cuffs
+
 
 @unique
 class CuffInnerMode(ASCENTEnum):
@@ -351,6 +355,7 @@ class CuffShiftMode(ASCENTEnum):
 
 
 # %% Templates
+
 
 @unique
 class TemplateMode(ASCENTEnum):
