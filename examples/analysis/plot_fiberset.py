@@ -24,11 +24,7 @@ os.chdir(root)
 criteria = {
     'partial_matches': True,
     'include_downstream': True,
-    'indices': {
-        'sample': [1016],
-        'model': [7],
-        'sim': [1042]
-    }
+    'indices': {'sample': [1016], 'model': [7], 'sim': [1042]},
 }
 
 
@@ -56,10 +52,7 @@ for fiberset_ind, fiberset in enumerate(sim.fibersets):
     plt.ylabel('\u03bcm')
     plt.show()
 
-    fname = '{}_{}_{}_{}'.format(str(sample_index),
-                                 str(model_index),
-                                 str(sim_index),
-                                 str(fiberset_ind))
+    fname = '{}_{}_{}_{}'.format(str(sample_index), str(model_index), str(sim_index), str(fiberset_ind))
     fmt = 'png'
 
     dest = os.path.join('data', 'tmp', 'fiberset')

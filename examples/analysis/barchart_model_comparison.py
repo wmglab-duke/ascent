@@ -51,15 +51,13 @@ plt.rcParams['figure.figsize'] = list(np.array([16.8, 10.14]) / 2)
 #     }
 # }).run()
 
-q = Query({
-    'partial_matches': False,
-    'include_downstream': True,
-    'indices': {
-        'sample': [3008],
-        'model': [0, 1, 2],
-        'sim': [3001]
+q = Query(
+    {
+        'partial_matches': False,
+        'include_downstream': True,
+        'indices': {'sample': [3008], 'model': [0, 1, 2], 'sim': [3001]},
     }
-}).run()
+).run()
 
 # builds heatmaps
 # q.barcharts_compare_models(logscale=False,

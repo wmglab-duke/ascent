@@ -41,15 +41,13 @@ data = []
 
 # %% Pull threshold data
 for sim in sims:
-    q = Query({
-        'partial_matches': False,
-        'include_downstream': True,
-        'indices': {
-            'sample': samples,
-            'model': models,
-            'sim': [sim]
+    q = Query(
+        {
+            'partial_matches': False,
+            'include_downstream': True,
+            'indices': {'sample': samples, 'model': models, 'sim': [sim]},
         }
-    }).run()
+    ).run()
 
     data.append(q.threshold_data())
 data = pd.concat(data)
@@ -59,11 +57,15 @@ data['error'] = np.nan
 for i in range(len(data)):
     row = data.iloc[i]
     est = float(row.threshold)
-    correct = float(data[(data["model"] == reference_model) &
-                         (data["sample"] == row["sample"]) &
-                         (data["index"] == row["index"]) &
-                         (data["sim"] == row['sim']) &
-                         (data["nsim"] == row['nsim'])]['threshold'])
+    correct = float(
+        data[
+            (data["model"] == reference_model)
+            & (data["sample"] == row["sample"])
+            & (data["index"] == row["index"])
+            & (data["sim"] == row['sim'])
+            & (data["nsim"] == row['nsim'])
+        ]['threshold']
+    )
     data.iloc[i, -1] = pe(correct, est)
 
 
@@ -77,10 +79,10 @@ g = sb.catplot(
     data=data,
     kind="strip",
     height=5,
-    aspect=.4,
-    linewidth=1
+    aspect=0.4,
+    linewidth=1,
 )
 
-plt.subplots_adjust(top=.88)
+plt.subplots_adjust(top=0.88)
 plt.suptitle('Convergence Error - Reference Model: {}'.format(reference_model))
 g.savefig('out/analysis/convergence.png', dpi=400)

@@ -11,6 +11,8 @@ workflow:
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
+      when: never
 #    - if: $CI_COMMIT_BRANCH =~ /release_v\d+.\d+.\d+/
     - if: $CI_COMMIT_REF_PROTECTED
 
@@ -26,8 +28,9 @@ variables:
 # them in a virtualenv and cache it as well.
 
 stages:          # List of stages for jobs, and their order of execution
-  - linting
-  - docs
+  - lint
+  - test
+  - deploy
 
 cache:
   paths:
@@ -41,13 +44,36 @@ before_script:
   - source venv/bin/activate
 
 isort:
-  stage: linting
+  stage: lint
   script:
     - pip install isort
     - isort --check-only --skip __init__.py config docs examples scripts src
 
 autopep:
-  stage: linting
+  stage: lint
   script:
     - pip install autopep8
     - autopep8 --select=E1,E2,E3,E401,W1,W2,W3,E226,E24 --diff --recursive --exit-code config docs examples scripts src
+
+test_docs:
+  stage: test
+  script:
+  - pip install -U sphinx mock sphinx-rtd-theme
+  - pip install -Ur docs/rtd_requirements.txt
+  - cd docs/source; sphinx-build -W -b html . ../../public
+  only:
+  - branches
+  except:
+  - master
+
+pages:
+  stage: deploy
+  script:
+  - pip install -U sphinx mock sphinx-rtd-theme
+  - pip install -Ur docs/rtd_requirements.txt
+  - cd docs/source; sphinx-build -W -b html . ../../public
+  artifacts:
+    paths:
+    - public
+  only:
+  - master

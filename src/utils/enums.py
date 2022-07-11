@@ -17,6 +17,7 @@ class ASCENTEnum(Enum):
 
 # %% Core (backend) functionality
 
+
 @unique
 class SetupMode(ASCENTEnum, Enum):
     NEW = 0
@@ -61,15 +62,11 @@ class Env(ASCENTEnum, Enum):
     PROJECT_PATH = prefix + 'PROJECT_PATH'
     NSIM_EXPORT_PATH = prefix + 'NSIM_EXPORT_PATH'
 
-    vals = [
-        COMSOL_PATH,
-        JDK_PATH,
-        PROJECT_PATH,
-        NSIM_EXPORT_PATH
-    ]
+    vals = [COMSOL_PATH, JDK_PATH, PROJECT_PATH, NSIM_EXPORT_PATH]
 
 
 # %% Trace functionality
+
 
 @unique
 class DownSampleMode(ASCENTEnum, Enum):
@@ -86,6 +83,7 @@ class WriteMode(ASCENTEnum, Enum):
 
 
 # %% Higher-level Manager functionality
+
 
 @unique
 class ReshapeNerveMode(ASCENTEnum, Enum):
@@ -171,6 +169,7 @@ class DeformationMode(ASCENTEnum, Enum):
 
 # %% Fiber Position and Type
 
+
 @unique
 class FiberXYMode(ASCENTEnum, Enum):
     config = 'fiber_xy'
@@ -241,6 +240,7 @@ class UnmyelinatedFiberType(ASCENTEnum, Enum):
 
 # %% Waveforms
 
+
 @unique
 class WaveformMode(ASCENTEnum, Enum):
     config = 'waveform'
@@ -253,6 +253,7 @@ class WaveformMode(ASCENTEnum, Enum):
     BIPHASIC_PULSE_TRAIN_Q_BALANCED_UNEVEN_PW = 4
     EXPLICIT = 5
 
+
 # %% Simulation
 
 
@@ -262,6 +263,7 @@ class ExportMode(ASCENTEnum, Enum):
     OVERWRITE = "overwrite"
     ERROR = "error"
     SELECTIVE = "selective"
+
 
 # %% NEURON Protocols
 
@@ -293,6 +295,7 @@ class TerminationCriteriaMode(ASCENTEnum, Enum):
 
 # %% Perineurium Impedance
 
+
 @unique
 class PerineuriumThicknessMode(ASCENTEnum, Enum):
     config = 'ci_perineurium_thickness'
@@ -316,6 +319,7 @@ class PerineuriumResistivityMode(ASCENTEnum, Enum):
 
 
 # %% Cuffs
+
 
 @unique
 class CuffInnerMode(ASCENTEnum, Enum):
@@ -351,6 +355,7 @@ class CuffShiftMode(ASCENTEnum, Enum):
 
 
 # %% Templates
+
 
 @unique
 class TemplateMode(ASCENTEnum, Enum):
