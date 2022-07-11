@@ -7,11 +7,9 @@ The source code can be found on the following GitHub repository: https://github.
 """
 
 
-import os
-
-os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "1"
 import base64
 import json
+import os
 import pickle
 import subprocess
 import sys
@@ -25,6 +23,7 @@ import numpy as np
 from quantiphy import Quantity
 from shapely.geometry import Point
 
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "1"
 try:
     import pymunkoptions
 
@@ -530,7 +529,6 @@ class Runner(Exceptionable, Configurable):
         # start comsol server
         subprocess.Popen(server_command, close_fds=True)
         # wait for server to start
-        time.sleep(30)
         os.chdir('src')
         # compile java code
         exit_code = os.system(compile_command)
@@ -852,11 +850,7 @@ class Runner(Exceptionable, Configurable):
             self.throw(48)
 
         dest_path: str = os.path.join(
-            *all_configs[Config.SAMPLE.value][0]['samples_path'],
-            str(self.configs[Config.RUN.value]['sample']),
-            'models',
-            str(model_num),
-            'model.json'
+            'samples', str(self.configs[Config.RUN.value]['sample']), 'models', str(model_num), 'model.json'
         )
 
         TemplateOutput.write(model_config, dest_path)
