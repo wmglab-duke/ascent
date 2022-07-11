@@ -18,4 +18,4 @@ repos:
     rev: 22.6.0
     hooks:
       - id: black
-        args: ["-S", ".", "run"]
+        args: [".", "run"]
