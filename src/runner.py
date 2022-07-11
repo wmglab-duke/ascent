@@ -851,11 +851,7 @@ class Runner(Exceptionable, Configurable):
             self.throw(48)
 
         dest_path: str = os.path.join(
-            *all_configs[Config.SAMPLE.value][0]['samples_path'],
-            str(self.configs[Config.RUN.value]['sample']),
-            'models',
-            str(model_num),
-            'model.json'
+            'samples', str(self.configs[Config.RUN.value]['sample']), 'models', str(model_num), 'model.json'
         )
 
         TemplateOutput.write(model_config, dest_path)

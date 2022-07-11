@@ -198,9 +198,6 @@ class Sample(Exceptionable, Configurable, Saveable):
         # get starting point so able to go back
         start_directory: str = os.getcwd()
 
-        # go to samples root
-        samples_path = self.path(Config.SAMPLE, 'samples_path')
-
         # get sample NAME
         sample: str = self.search(Config.SAMPLE, 'sample')
 
@@ -225,14 +222,7 @@ class Sample(Exceptionable, Configurable, Saveable):
             cassette, number = (str(item) for item in (cassette, number))
 
             scale_was_copied = False
-            for directory_part in (
-                samples_path,
-                str(sample_index),
-                'slides',
-                cassette,
-                number,
-                'masks',
-            ):
+            for directory_part in 'samples', str(sample_index), 'slides', cassette, number, 'masks':
 
                 if not os.path.exists(directory_part):
                     os.makedirs(directory_part)
@@ -744,11 +734,7 @@ class Sample(Exceptionable, Configurable, Saveable):
         start_directory: str = os.getcwd()
 
         # get path to sample slides
-        sample_path = os.path.join(
-            self.path(Config.SAMPLE, 'samples_path'),
-            str(self.search(Config.RUN, 'sample')),
-            'slides',
-        )
+        sample_path = os.path.join('samples', str(self.search(Config.RUN, 'sample')), 'slides')
 
         # loop through the slide info (index i SHOULD correspond to slide in self.slides)
         for i, slide_info in enumerate(self.map.slides):
@@ -836,11 +822,7 @@ class Sample(Exceptionable, Configurable, Saveable):
 
         self.configs[Config.SAMPLE.value]["Morphology"] = morphology_input
 
-        sample_path = os.path.join(
-            self.path(Config.SAMPLE, 'samples_path'),
-            str(self.search(Config.RUN, 'sample')),
-            'sample.json',
-        )
+        sample_path = os.path.join('samples', str(self.search(Config.RUN, 'sample')), 'sample.json')
 
         TemplateOutput.write(self.configs[Config.SAMPLE.value], sample_path)
 

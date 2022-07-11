@@ -3,9 +3,6 @@
   "pseudonym":"template sample",
   "sex": "M",
   "level": "Cervical",
-  "samples_path": [
-    "samples"
-  ],
   "scale": {
     "scale_bar_length": 500,
     "scale_ratio": 12.5,
