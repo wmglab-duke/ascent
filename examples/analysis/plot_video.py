@@ -54,7 +54,11 @@ for sample in samples:
                 #                   skiprows=1)[:, 1:]
 
                 data = np.loadtxt(
-                    os.path.join(data_path, 'Vm_time_inner{}_fiber{}_amp{}.dat'.format(inner, fiber, amp)), skiprows=1
+                    os.path.join(
+                        data_path,
+                        'Vm_time_inner{}_fiber{}_amp{}.dat'.format(inner, fiber, amp),
+                    ),
+                    skiprows=1,
                 )[:, 0:]
 
                 # initialize plot
@@ -76,7 +80,9 @@ for sample in samples:
                     return ln, time_text
 
                 # build and save animation
-                print('WARNING: DO NOT ATTEMPT TO OPEN FILE UNTIL FRAME INDICES HAVE FINISHED PRINTING')
+                print(
+                    'WARNING: DO NOT ATTEMPT TO OPEN FILE UNTIL FRAME INDICES HAVE FINISHED PRINTING'
+                )
                 ani = FuncAnimation(
                     fig,
                     update,

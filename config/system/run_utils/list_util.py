@@ -29,7 +29,11 @@ def run(mode):
         df = pd.DataFrame(data)
         df.RUN = df.RUN.astype(int)
         df = df.sort_values('RUN')
-        print('Run indices available (defined by user .json files in {}):\n'.format(run_path))
+        print(
+            'Run indices available (defined by user .json files in {}):\n'.format(
+                run_path
+            )
+        )
         print(df.to_string(index=False))
 
     elif mode == 'samples':
@@ -63,7 +67,11 @@ def run(mode):
         df = pd.DataFrame(data)
         df.SAMPLE = df.SAMPLE.astype(int)
         df = df.sort_values('SAMPLE')
-        print('Sample indices available (defined by user folders in {}):\n'.format(run_path))
+        print(
+            'Sample indices available (defined by user folders in {}):\n'.format(
+                run_path
+            )
+        )
         print(df.to_string(index=False))
 
     elif mode == 'sims':
@@ -90,5 +98,9 @@ def run(mode):
         df = pd.DataFrame(data)
         df.SIM = df.SIM.astype(int)
         df = df.sort_values('SIM')
-        print('Sim indices available (defined by user .json files in {}):\n'.format(run_path))
+        print(
+            'Sim indices available (defined by user .json files in {}):\n'.format(
+                run_path
+            )
+        )
         print(df.to_string(index=False))

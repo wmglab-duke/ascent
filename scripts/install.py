@@ -19,9 +19,15 @@ def run(args):
     sys.argv = args
 
     if sys.version_info[0] < 3:
-        raise Exception('Installation must be run using Python 3.\nTry \'./run install\' or \'python3 run install\'.\n')
+        raise Exception(
+            'Installation must be run using Python 3.\nTry \'./run install\' or \'python3 run install\'.\n'
+        )
 
-    reply = input('Have you navigated to the root of the ASCENT repository? [y/N] ').lower().strip()
+    reply = (
+        input('Have you navigated to the root of the ASCENT repository? [y/N] ')
+        .lower()
+        .strip()
+    )
     if reply[0] != 'y':
         print('Please do so and re-run.\n')
         sys.exit()
@@ -30,7 +36,14 @@ def run(args):
 
     # define and generate user directories
     binpath = 'bin'
-    defdirs = [binpath, 'samples', 'input', 'config/user', 'config/user/runs', 'config/user/sims']
+    defdirs = [
+        binpath,
+        'samples',
+        'input',
+        'config/user',
+        'config/user/runs',
+        'config/user/sims',
+    ]
 
     for path in defdirs:
         ensure_dir(path)
@@ -41,7 +54,15 @@ def run(args):
         retrieve = True
         target = os.path.join(binpath, jar.split('/')[-1])
         if os.path.exists(target):
-            reply = input('{} already found! download again and overwrite? [y/N] '.format(target)).lower().strip()
+            reply = (
+                input(
+                    '{} already found! download again and overwrite? [y/N] '.format(
+                        target
+                    )
+                )
+                .lower()
+                .strip()
+            )
             if reply[0] != 'y':
                 print('Not overwriting.\n')
                 retrieve = False
@@ -58,7 +79,9 @@ def run(args):
                     '[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12\n'.encode()
                 )
                 p.stdin.write('$source = \'{}\'\n'.format(jar).encode())
-                p.stdin.write('$destination = \'{}\'\n'.format(os.path.abspath(target)).encode())
+                p.stdin.write(
+                    '$destination = \'{}\'\n'.format(os.path.abspath(target)).encode()
+                )
                 p.stdin.write('curl $source -OutFile $destination'.encode())
                 p.stdin.close()
 
@@ -70,10 +93,14 @@ def run(args):
 
         if sys.platform.startswith('darwin') or sys.platform.startswith('linux'):
             proc = subprocess.Popen(
-                "source config/system/installation/install.sh -i", shell=True, executable="/bin/bash"
+                "source config/system/installation/install.sh -i",
+                shell=True,
+                executable="/bin/bash",
             )
         else:
-            proc = subprocess.Popen(['powershell.exe', '.\\config\\system\\installation\\install.ps1'])
+            proc = subprocess.Popen(
+                ['powershell.exe', '.\\config\\system\\installation\\install.ps1']
+            )
 
         proc.wait()
     print('Installation complete!\n')

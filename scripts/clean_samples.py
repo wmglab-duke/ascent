@@ -10,7 +10,14 @@ import os
 import sys
 from pathlib import Path
 
-EXCLUDED_FILENAMES = ['.mph', 'im.json', 'Primitive.json', 'sample.json', 'model.json', 'explicit.txt']
+EXCLUDED_FILENAMES = [
+    '.mph',
+    'im.json',
+    'Primitive.json',
+    'sample.json',
+    'model.json',
+    'explicit.txt',
+]
 
 
 def run(args):
@@ -44,7 +51,12 @@ def run(args):
             if os.path.isdir(filepath):
                 continue
 
-            if not any([filepath.endswith(excluded_filename) for excluded_filename in EXCLUDED_FILENAMES]):
+            if not any(
+                [
+                    filepath.endswith(excluded_filename)
+                    for excluded_filename in EXCLUDED_FILENAMES
+                ]
+            ):
                 try:
                     os.remove(filepath)
                 except:

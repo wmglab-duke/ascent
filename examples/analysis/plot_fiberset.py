@@ -38,7 +38,9 @@ model_index = results['samples'][0]['models'][0]['index']
 sim_index = results['samples'][0]['models'][0]['sims'][0]
 
 sample: Sample = q.get_object(Object.SAMPLE, [results['samples'][0]['index']])
-sim: Simulation = q.get_object(Object.SIMULATION, [sample_index, model_index, sim_index])
+sim: Simulation = q.get_object(
+    Object.SIMULATION, [sample_index, model_index, sim_index]
+)
 
 for fiberset_ind, fiberset in enumerate(sim.fibersets):
     slide = sample.slides[0]
@@ -52,7 +54,9 @@ for fiberset_ind, fiberset in enumerate(sim.fibersets):
     plt.ylabel('\u03bcm')
     plt.show()
 
-    fname = '{}_{}_{}_{}'.format(str(sample_index), str(model_index), str(sim_index), str(fiberset_ind))
+    fname = '{}_{}_{}_{}'.format(
+        str(sample_index), str(model_index), str(sim_index), str(fiberset_ind)
+    )
     fmt = 'png'
 
     dest = os.path.join('data', 'tmp', 'fiberset')

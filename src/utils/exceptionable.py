@@ -43,7 +43,12 @@ class Exceptionable(Configurable):
         if mode == SetupMode.OLD:
             Configurable.__init__(self, mode, Config.EXCEPTIONS, config)
         else:  # mode == SetupMode.NEW
-            Configurable.__init__(self, mode, Config.EXCEPTIONS, os.path.join('config', 'system', 'exceptions.json'))
+            Configurable.__init__(
+                self,
+                mode,
+                Config.EXCEPTIONS,
+                os.path.join('config', 'system', 'exceptions.json'),
+            )
 
     def throw(self, code):
         """
@@ -71,5 +76,9 @@ class Exceptionable(Configurable):
         raise Exception(
             '\n\tcode:\t{}\n'
             '\ttext:\t{}\n'
-            '\tsource:\t{}'.format(exception.get('code'), exception.get('text'), inspect.stack()[1].filename)
+            '\tsource:\t{}'.format(
+                exception.get('code'),
+                exception.get('text'),
+                inspect.stack()[1].filename,
+            )
         )

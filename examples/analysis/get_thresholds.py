@@ -30,7 +30,11 @@ dats = []
 
 # %% run query search
 q = Query(
-    {'partial_matches': False, 'include_downstream': True, 'indices': {'sample': samples, 'model': models, 'sim': sims}}
+    {
+        'partial_matches': False,
+        'include_downstream': True,
+        'indices': {'sample': samples, 'model': models, 'sim': sims},
+    }
 ).run()
 
 # %% obtain thresholds

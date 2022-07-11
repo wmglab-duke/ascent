@@ -25,7 +25,11 @@ from src.core.query import Query
 
 # initialize and run Querys
 q = Query(
-    {'partial_matches': True, 'include_downstream': True, 'indices': {'sample': [18], 'model': [451], 'sim': [1, 18]}}
+    {
+        'partial_matches': True,
+        'include_downstream': True,
+        'indices': {'sample': [18], 'model': [451], 'sim': [1, 18]},
+    }
 ).run()
 
 # NOTE: these values were copied from the output of heatmaps(), setting the track_colormap_bounds flag True

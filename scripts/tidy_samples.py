@@ -59,7 +59,12 @@ def run(args):
             if os.path.isdir(filepath):
                 continue
 
-            if any([included_filename in filepath for included_filename in INCLUDED_FILENAMES]):
+            if any(
+                [
+                    included_filename in filepath
+                    for included_filename in INCLUDED_FILENAMES
+                ]
+            ):
                 try:
                     os.remove(filepath)
                 except:

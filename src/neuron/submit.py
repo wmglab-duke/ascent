@@ -49,7 +49,11 @@ class listAction(argparse.Action):
         df = pd.DataFrame(data)
         df.RUN = df.RUN.astype(int)
         df = df.sort_values('RUN')
-        print('Run indices available (defined by user .json files in {}):\n'.format(run_path))
+        print(
+            'Run indices available (defined by user .json files in {}):\n'.format(
+                run_path
+            )
+        )
         print(df.to_string(index=False))
         sys.exit()
 
@@ -57,10 +61,20 @@ class listAction(argparse.Action):
 parser = argparse.ArgumentParser(
     description='ASCENT: Automated Simulations to Characterize Electrical Nerve Thresholds'
 )
-parser.add_argument('run_indices', type=int, nargs='*', help='Space separated indices to submit NEURON sims for')
-parser.add_argument('-p', '--partition', help='If submitting on a cluster, overrides slurm_params.json')
 parser.add_argument(
-    '-n', '--num-cpu', type=int, help='For local submission: set number of CPUs to use, overrides run.json'
+    'run_indices',
+    type=int,
+    nargs='*',
+    help='Space separated indices to submit NEURON sims for',
+)
+parser.add_argument(
+    '-p', '--partition', help='If submitting on a cluster, overrides slurm_params.json'
+)
+parser.add_argument(
+    '-n',
+    '--num-cpu',
+    type=int,
+    help='For local submission: set number of CPUs to use, overrides run.json',
 )
 parser.add_argument(
     '-m',
@@ -88,7 +102,10 @@ parser.add_argument(
     help='Submit all runs in the present export folder. If supplying this argument, do not pass any run indices',
 )
 parser.add_argument(
-    '-s', '--skip-summary', action='store_true', help='Begin submitting fibers without asking for confirmation'
+    '-s',
+    '--skip-summary',
+    action='store_true',
+    help='Begin submitting fibers without asking for confirmation',
 )
 parser.add_argument(
     '-S',
@@ -98,12 +115,20 @@ parser.add_argument(
 )
 submit_context_group = parser.add_mutually_exclusive_group()
 submit_context_group.add_argument(
-    '-L', '--local-submit', action='store_true', help='Set submission context to local, overrides run.json'
+    '-L',
+    '--local-submit',
+    action='store_true',
+    help='Set submission context to local, overrides run.json',
 )
 submit_context_group.add_argument(
-    '-C', '--cluster-submit', action='store_true', help='Set submission context to cluster, overrides run.json'
+    '-C',
+    '--cluster-submit',
+    action='store_true',
+    help='Set submission context to cluster, overrides run.json',
 )
-parser.add_argument('-v', '--verbose', action='store_true', help='Print detailed submission info')
+parser.add_argument(
+    '-v', '--verbose', action='store_true', help='Print detailed submission info'
+)
 
 ALLOWED_SUBMISSION_CONTEXTS = ['cluster', 'local', 'auto']
 OS = 'UNIX-LIKE' if any([s in sys.platform for s in ['darwin', 'linux']]) else 'WINDOWS'
@@ -125,7 +150,9 @@ class WarnOnlyOnce:
             cls.warnings.add(h)
 
 
-def printProgressBar(iteration, total, prefix='', suffix='', decimals=1, length=100, fill='█'):
+def printProgressBar(
+    iteration, total, prefix='', suffix='', decimals=1, length=100, fill='█'
+):
     """
     Call in a loop to create terminal progress bar
     @params:
@@ -164,8 +191,14 @@ def ensure_dir(directory):
 
 def auto_compile(override: bool = False):
     if (
-        (not os.path.exists(os.path.join('MOD_Files', 'x86_64', 'special')) and OS == 'UNIX-LIKE')
-        or (not os.path.exists(os.path.join('MOD_Files', 'nrnmech.dll')) and OS == 'WINDOWS')
+        (
+            not os.path.exists(os.path.join('MOD_Files', 'x86_64', 'special'))
+            and OS == 'UNIX-LIKE'
+        )
+        or (
+            not os.path.exists(os.path.join('MOD_Files', 'nrnmech.dll'))
+            and OS == 'WINDOWS'
+        )
         or override
     ):
         print('compile')
@@ -198,14 +231,16 @@ def get_deltaz(fiber_model, diameter):
 
     if fiber_model_info.get("geom_determination_method") == 0:
         diameters, delta_zs, paranodal_length_2s = (
-            fiber_model_info[key] for key in ('diameters', 'delta_zs', 'paranodal_length_2s')
+            fiber_model_info[key]
+            for key in ('diameters', 'delta_zs', 'paranodal_length_2s')
         )
         diameter_index = diameters.index(diameter)
         delta_z = delta_zs[diameter_index]
 
     elif fiber_model_info.get("geom_determination_method") == 1:
         paranodal_length_2_str, delta_z_str, inter_length_str = (
-            fiber_model_info[key] for key in ('paranodal_length_2', 'delta_z', 'inter_length')
+            fiber_model_info[key]
+            for key in ('paranodal_length_2', 'delta_z', 'inter_length')
         )
 
         if diameter >= 5.643:
@@ -229,15 +264,24 @@ def get_thresh_bounds(args, sim_dir: str, sim_name: str, inner_ind: int):
 
     sim_config = load(os.path.join(sim_dir, sim_name, '{}.json'.format(n_sim)))
 
-    if sim_config['protocol']['mode'] == 'ACTIVATION_THRESHOLD' or sim_config['protocol']['mode'] == 'BLOCK_THRESHOLD':
+    if (
+        sim_config['protocol']['mode'] == 'ACTIVATION_THRESHOLD'
+        or sim_config['protocol']['mode'] == 'BLOCK_THRESHOLD'
+    ):
         if 'scout' in sim_config['protocol']['bounds_search'].keys():
             # load in threshold from scout_sim (example use: run centroid first, then any other xy-mode after)
             scout = sim_config['protocol']['bounds_search']['scout']
             scout_sim_dir = os.path.join('n_sims')
-            scout_sim_name = '{}_{}_{}_{}'.format(sample, scout['model'], scout['sim'], n_sim)
+            scout_sim_name = '{}_{}_{}_{}'.format(
+                sample, scout['model'], scout['sim'], n_sim
+            )
             scout_sim_path = os.path.join(scout_sim_dir, scout_sim_name)
-            scout_output_path = os.path.abspath(os.path.join(scout_sim_path, 'data', 'outputs'))
-            scout_thresh_path = os.path.join(scout_output_path, 'thresh_inner{}_fiber{}.dat'.format(inner_ind, 0))
+            scout_output_path = os.path.abspath(
+                os.path.join(scout_sim_path, 'data', 'outputs')
+            )
+            scout_thresh_path = os.path.join(
+                scout_output_path, 'thresh_inner{}_fiber{}.dat'.format(inner_ind, 0)
+            )
 
             if os.path.exists(scout_thresh_path):
                 stimamp = np.loadtxt(scout_thresh_path)
@@ -252,7 +296,8 @@ def get_thresh_bounds(args, sim_dir: str, sim_name: str, inner_ind: int):
                 unused_protocol_keys = ['top', 'bottom']
 
                 if any(
-                    unused_protocol_key in sim_config['protocol']['bounds_search'].keys()
+                    unused_protocol_key
+                    in sim_config['protocol']['bounds_search'].keys()
                     for unused_protocol_key in unused_protocol_keys
                 ):
                     if args.verbose:
@@ -349,7 +394,15 @@ def make_task(
                 '-c \"saveflag_runtime=0\" '  # for backwards compatible, overwritten in launch.hoc if 1
                 '-c \"saveflag_ap_loctime=0\" '  # for backwards compatible, overwritten in launch.hoc if 1
                 '-c \"load_file(\\\"launch.hoc\\\")\" blank.hoc\n'.format(
-                    os.getcwd(), sim_path_win, inner, fiber, top, bottom, diam, deltaz, axonnodes
+                    os.getcwd(),
+                    sim_path_win,
+                    inner,
+                    fiber,
+                    top,
+                    bottom,
+                    diam,
+                    deltaz,
+                    axonnodes,
                 )
             ]
 
@@ -366,13 +419,19 @@ def local_submit(my_local_args: dict):
     err_filename = my_local_args['error_log']
 
     with open(out_filename, "w+") as fo, open(err_filename, "w+") as fe:
-        p = subprocess.run(['bash', start] if OS == 'UNIX-LIKE' else [start], stdout=fo, stderr=fe)
+        p = subprocess.run(
+            ['bash', start] if OS == 'UNIX-LIKE' else [start], stdout=fo, stderr=fe
+        )
         print(p)
 
 
-def cluster_submit(run_number: int, partition: str, args, mem: int = 2000, array_length_max: int = 10):
+def cluster_submit(
+    run_number: int, partition: str, args, mem: int = 2000, array_length_max: int = 10
+):
     # configuration is not empty
-    assert array_length_max > 0, 'SLURM Job Array length is not > 0: array_length_max={}'.format(array_length_max)
+    assert (
+        array_length_max > 0
+    ), 'SLURM Job Array length is not > 0: array_length_max={}'.format(array_length_max)
 
     # build configuration filename
     filename: str = os.path.join('runs', run_number + '.json')
@@ -395,33 +454,56 @@ def cluster_submit(run_number: int, partition: str, args, mem: int = 2000, array
             for sim in sims:
                 sim_dir = os.path.join('n_sims')
                 sim_name_base = '{}_{}_{}_'.format(sample, model, sim)
-                nsim_list = [x for x in os.listdir(sim_dir) if x.startswith(sim_name_base)]
+                nsim_list = [
+                    x for x in os.listdir(sim_dir) if x.startswith(sim_name_base)
+                ]
                 for sim_name in nsim_list:
                     current_iteration += 1
                     if args.verbose:
-                        print('\n\n################ {} ################\n\n'.format(sim_name))
+                        print(
+                            '\n\n################ {} ################\n\n'.format(
+                                sim_name
+                            )
+                        )
                     else:
                         # print progress bar
-                        total_iterations = len(samples) * len(models) * len(sims) * len(nsim_list)
+                        total_iterations = (
+                            len(samples) * len(models) * len(sims) * len(nsim_list)
+                        )
                         printProgressBar(
-                            current_iteration, total_iterations, length=40, prefix='Run {}:'.format(run_number)
+                            current_iteration,
+                            total_iterations,
+                            length=40,
+                            prefix='Run {}:'.format(run_number),
                         )
 
                     sim_path = os.path.join(sim_dir, sim_name)
-                    fibers_path = os.path.abspath(os.path.join(sim_path, 'data', 'inputs'))
-                    output_path = os.path.abspath(os.path.join(sim_path, 'data', 'outputs'))
+                    fibers_path = os.path.abspath(
+                        os.path.join(sim_path, 'data', 'inputs')
+                    )
+                    output_path = os.path.abspath(
+                        os.path.join(sim_path, 'data', 'outputs')
+                    )
                     start_dir = os.path.join(sim_path, 'start_scripts')
                     start_path_base = os.path.join(start_dir, 'start_')
 
                     n_sim = sim_name.split('_')[3]
-                    sim_config = load(os.path.join(sim_dir, sim_name, '{}.json'.format(n_sim)))
+                    sim_config = load(
+                        os.path.join(sim_dir, sim_name, '{}.json'.format(n_sim))
+                    )
 
                     fiber_model = sim_config['fibers']['mode']
 
                     # ensure log directories exist
                     out_dir = os.path.join(sim_path, 'logs', 'out', '')
                     err_dir = os.path.join(sim_path, 'logs', 'err', '')
-                    for cur_dir in [fibers_path, output_path, out_dir, err_dir, start_dir]:
+                    for cur_dir in [
+                        fibers_path,
+                        output_path,
+                        out_dir,
+                        err_dir,
+                        start_dir,
+                    ]:
                         ensure_dir(cur_dir)
 
                     # ensure blank.hoc exists
@@ -429,7 +511,11 @@ def cluster_submit(run_number: int, partition: str, args, mem: int = 2000, array
                     if not os.path.exists(blank_path):
                         open(blank_path, 'w').close()
 
-                    fibers_files = [x for x in os.listdir(fibers_path) if re.match('inner[0-9]+_fiber[0-9]+\\.dat', x)]
+                    fibers_files = [
+                        x
+                        for x in os.listdir(fibers_path)
+                        if re.match('inner[0-9]+_fiber[0-9]+\\.dat', x)
+                    ]
                     max_fibers_files_ind = len(fibers_files) - 1
 
                     start_paths_list = []
@@ -438,7 +524,9 @@ def cluster_submit(run_number: int, partition: str, args, mem: int = 2000, array
                     fiber_index_tally = []
                     missing_total = 0
 
-                    inner_fiber_diam_key_file = os.path.join(fibers_path, 'inner_fiber_diam_key.obj')
+                    inner_fiber_diam_key_file = os.path.join(
+                        fibers_path, 'inner_fiber_diam_key.obj'
+                    )
                     inner_fiber_diam_key = None
                     if os.path.exists(inner_fiber_diam_key_file):
                         with open(inner_fiber_diam_key_file, 'rb') as f:
@@ -453,7 +541,9 @@ def cluster_submit(run_number: int, partition: str, args, mem: int = 2000, array
                         inner_ind = int(inner_name.split('inner')[-1])
                         fiber_ind = int(fiber_name.split('fiber')[-1])
 
-                        thresh_path = os.path.join(output_path, f"thresh_inner{inner_ind}_fiber{fiber_ind}.dat")
+                        thresh_path = os.path.join(
+                            output_path, f"thresh_inner{inner_ind}_fiber{fiber_ind}.dat"
+                        )
                         if os.path.exists(thresh_path):
                             continue
                         else:
@@ -466,13 +556,18 @@ def cluster_submit(run_number: int, partition: str, args, mem: int = 2000, array
                         continue
 
                     elif missing_total == 1:
-                        stimamp_top, stimamp_bottom = get_thresh_bounds(args, sim_dir, sim_name, inner_ind_solo)
+                        stimamp_top, stimamp_bottom = get_thresh_bounds(
+                            args, sim_dir, sim_name, inner_ind_solo
+                        )
                         start_path_solo = os.path.join(
-                            sim_path, 'start{}'.format('.sh' if OS == 'UNIX-LIKE' else '.bat')
+                            sim_path,
+                            'start{}'.format('.sh' if OS == 'UNIX-LIKE' else '.bat'),
                         )
 
                         if inner_fiber_diam_key is not None:
-                            diameter = get_diameter(inner_fiber_diam_key, inner_ind, fiber_ind)
+                            diameter = get_diameter(
+                                inner_fiber_diam_key, inner_ind, fiber_ind
+                            )
 
                         deltaz, neuron_flag = get_deltaz(fiber_model, diameter)
 
@@ -480,7 +575,10 @@ def cluster_submit(run_number: int, partition: str, args, mem: int = 2000, array
 
                             # get the axonnodes from data/inputs/inner{}_fiber{}.dat top line
                             fiber_ve_path = os.path.join(
-                                fibers_path, 'inner{}_fiber{}.dat'.format(inner_ind_solo, fiber_ind_solo)
+                                fibers_path,
+                                'inner{}_fiber{}.dat'.format(
+                                    inner_ind_solo, fiber_ind_solo
+                                ),
                             )
                             fiber_ve = np.loadtxt(fiber_ve_path)
                             n_fiber_coords = int(fiber_ve[0])
@@ -506,14 +604,26 @@ def cluster_submit(run_number: int, partition: str, args, mem: int = 2000, array
 
                             # submit batch job for fiber
                             job_name = '{}_{}'.format(sim_name, master_fiber_name_solo)
-                            output_log = os.path.join(out_dir, '{}{}'.format(master_fiber_name_solo, '.log'))
-                            error_log = os.path.join(err_dir, '{}{}'.format(master_fiber_name_solo, '.log'))
+                            output_log = os.path.join(
+                                out_dir, '{}{}'.format(master_fiber_name_solo, '.log')
+                            )
+                            error_log = os.path.join(
+                                err_dir, '{}{}'.format(master_fiber_name_solo, '.log')
+                            )
 
                             if args.verbose:
-                                print('========= SUBMITTING SOLO: {} ==========='.format(job_name))
+                                print(
+                                    '========= SUBMITTING SOLO: {} ==========='.format(
+                                        job_name
+                                    )
+                                )
 
                             command = [
-                                'sbatch{}'.format(' ' + args.slurm_params if args.slurm_params is not None else ''),
+                                'sbatch{}'.format(
+                                    ' ' + args.slurm_params
+                                    if args.slurm_params is not None
+                                    else ''
+                                ),
                                 '--job-name={}'.format(job_name),
                                 '--output={}'.format(output_log),
                                 '--error={}'.format(error_log),
@@ -530,16 +640,22 @@ def cluster_submit(run_number: int, partition: str, args, mem: int = 2000, array
                             else:
                                 comp = subprocess.run(command)
                             if comp.returncode != 0:
-                                sys.exit('Non-zero exit code during job submission. Exiting.')
+                                sys.exit(
+                                    'Non-zero exit code during job submission. Exiting.'
+                                )
 
                             # allow job to start before removing slurm file
                             time.sleep(1.0)
                         else:
-                            sys.exit('Top and bottom bounds not defined for threshold search. Exiting.')
+                            sys.exit(
+                                'Top and bottom bounds not defined for threshold search. Exiting.'
+                            )
 
                     else:
                         if args.verbose:
-                            print('================= ARRAY SUBMITTING ====================')
+                            print(
+                                '================= ARRAY SUBMITTING ===================='
+                            )
                         array_index = 0
                         for fiber_file_ind, fiber_filename in enumerate(fibers_files):
                             master_fiber_name = str(fiber_filename.split('.')[0])
@@ -547,19 +663,27 @@ def cluster_submit(run_number: int, partition: str, args, mem: int = 2000, array
                             inner_ind = int(inner_name.split('inner')[-1])
                             fiber_ind = int(fiber_name.split('fiber')[-1])
 
-                            thresh_path = os.path.join(output_path, f"thresh_inner{inner_ind}_fiber{fiber_ind}.dat")
+                            thresh_path = os.path.join(
+                                output_path,
+                                f"thresh_inner{inner_ind}_fiber{fiber_ind}.dat",
+                            )
                             if not os.path.exists(thresh_path):
                                 if args.verbose:
-                                    print(f"RUNNING inner ({inner_ind}) fiber ({fiber_ind})  -->  {thresh_path}")
+                                    print(
+                                        f"RUNNING inner ({inner_ind}) fiber ({fiber_ind})  -->  {thresh_path}"
+                                    )
                                 # time.sleep(1)
 
                                 if inner_fiber_diam_key is not None:
-                                    diameter = get_diameter(inner_fiber_diam_key, inner_ind, fiber_ind)
+                                    diameter = get_diameter(
+                                        inner_fiber_diam_key, inner_ind, fiber_ind
+                                    )
                                 deltaz, neuron_flag = get_deltaz(fiber_model, diameter)
 
                                 # get the axonnodes from data/inputs/inner{}_fiber{}.dat top line
                                 fiber_ve_path = os.path.join(
-                                    fibers_path, 'inner{}_fiber{}.dat'.format(inner_ind, fiber_ind)
+                                    fibers_path,
+                                    'inner{}_fiber{}.dat'.format(inner_ind, fiber_ind),
                                 )
                                 fiber_ve = np.loadtxt(fiber_ve_path)
                                 n_fiber_coords = int(fiber_ve[0])
@@ -570,15 +694,22 @@ def cluster_submit(run_number: int, partition: str, args, mem: int = 2000, array
                                     axonnodes = int(n_fiber_coords)
 
                                 start_path = '{}{}{}'.format(
-                                    start_path_base, job_count, '.sh' if OS == 'UNIX-LIKE' else '.bat'
+                                    start_path_base,
+                                    job_count,
+                                    '.sh' if OS == 'UNIX-LIKE' else '.bat',
                                 )
                                 start_paths_list.append(start_path)
 
                                 inner_index_tally.append(inner_ind)
                                 fiber_index_tally.append(fiber_ind)
 
-                                stimamp_top, stimamp_bottom = get_thresh_bounds(args, sim_dir, sim_name, inner_ind)
-                                if stimamp_top is not None and stimamp_bottom is not None:
+                                stimamp_top, stimamp_bottom = get_thresh_bounds(
+                                    args, sim_dir, sim_name, inner_ind
+                                )
+                                if (
+                                    stimamp_top is not None
+                                    and stimamp_bottom is not None
+                                ):
                                     make_task(
                                         OS,
                                         'cluster',
@@ -595,7 +726,10 @@ def cluster_submit(run_number: int, partition: str, args, mem: int = 2000, array
                                     array_index += 1
                                     job_count += 1
 
-                            if array_index == array_length_max or fiber_file_ind == max_fibers_files_ind:
+                            if (
+                                array_index == array_length_max
+                                or fiber_file_ind == max_fibers_files_ind
+                            ):
                                 # output key, since we lose this in array method
                                 start = job_count - len(start_paths_list)
 
@@ -634,7 +768,11 @@ def cluster_submit(run_number: int, partition: str, args, mem: int = 2000, array
                                 job_name = f"{sim_name}_{sim_array_batch}"
 
                                 command = [
-                                    'sbatch{}'.format(' ' + args.slurm_params if args.slurm_params is not None else ''),
+                                    'sbatch{}'.format(
+                                        ' ' + args.slurm_params
+                                        if args.slurm_params is not None
+                                        else ''
+                                    ),
                                     '--job-name={}'.format(job_name),
                                     '--output={}%a.log'.format(out_dir),
                                     '--error={}%a.log'.format(err_dir),
@@ -648,11 +786,15 @@ def cluster_submit(run_number: int, partition: str, args, mem: int = 2000, array
 
                                 if not args.verbose:
                                     with open(os.devnull, 'wb') as devnull:
-                                        exit_code = subprocess.check_call(command, stdout=devnull)
+                                        exit_code = subprocess.check_call(
+                                            command, stdout=devnull
+                                        )
                                 else:
                                     exit_code = subprocess.check_call(command)
                                 if exit_code != 0:
-                                    sys.exit('Non-zero exit code during job array submission. Exiting.')
+                                    sys.exit(
+                                        'Non-zero exit code during job array submission. Exiting.'
+                                    )
 
                                 # allow job to start before removing slurm file
                                 time.sleep(1.0)
@@ -691,18 +833,32 @@ def make_local_submission_list(run_number: int, args, summary_gen=False):
 
                 for sim_name in [x for x in os.listdir(sim_dir) if sim_name_base in x]:
                     if not summary_gen and args.verbose:
-                        print('\n\n################ {} ################\n\n'.format(sim_name))
+                        print(
+                            '\n\n################ {} ################\n\n'.format(
+                                sim_name
+                            )
+                        )
 
                     sim_path = os.path.join(sim_dir, sim_name)
-                    fibers_path = os.path.abspath(os.path.join(sim_path, 'data', 'inputs'))
-                    output_path = os.path.abspath(os.path.join(sim_path, 'data', 'outputs'))
+                    fibers_path = os.path.abspath(
+                        os.path.join(sim_path, 'data', 'inputs')
+                    )
+                    output_path = os.path.abspath(
+                        os.path.join(sim_path, 'data', 'outputs')
+                    )
                     start_dir = os.path.join(sim_path, "start_scripts")
 
                     out_dir = os.path.abspath(os.path.join(sim_path, 'logs', 'out'))
                     err_dir = os.path.abspath(os.path.join(sim_path, 'logs', 'err'))
 
                     # ensure necessary directories exist
-                    for cur_dir in [fibers_path, output_path, out_dir, err_dir, start_dir]:
+                    for cur_dir in [
+                        fibers_path,
+                        output_path,
+                        out_dir,
+                        err_dir,
+                        start_dir,
+                    ]:
                         ensure_dir(cur_dir)
 
                     # ensure blank.hoc exists
@@ -716,7 +872,9 @@ def make_local_submission_list(run_number: int, args, summary_gen=False):
                     fiber_model = sim_config['fibers']['mode']
 
                     # load the inner x fiber -> diam key saved in the n_sim folder
-                    inner_fiber_diam_key_file = os.path.join(fibers_path, 'inner_fiber_diam_key.obj')
+                    inner_fiber_diam_key_file = os.path.join(
+                        fibers_path, 'inner_fiber_diam_key.obj'
+                    )
                     inner_fiber_diam_key = None
                     if os.path.exists(inner_fiber_diam_key_file):
                         with open(inner_fiber_diam_key_file, 'rb') as f:
@@ -726,7 +884,9 @@ def make_local_submission_list(run_number: int, args, summary_gen=False):
                         diameter = sim_config['fibers']['z_parameters']['diameter']
 
                     for fiber_filename in [
-                        x for x in os.listdir(fibers_path) if re.match('inner[0-9]+_fiber[' '0-9]+\\.dat', x)
+                        x
+                        for x in os.listdir(fibers_path)
+                        if re.match('inner[0-9]+_fiber[' '0-9]+\\.dat', x)
                     ]:
                         master_fiber_name = str(fiber_filename.split('.')[0])
                         inner_name, fiber_name = tuple(master_fiber_name.split('_'))
@@ -734,7 +894,8 @@ def make_local_submission_list(run_number: int, args, summary_gen=False):
                         fiber_ind = int(fiber_name.split('fiber')[-1])
 
                         thresh_path = os.path.join(
-                            output_path, 'thresh_inner{}_fiber{}.dat'.format(inner_ind, fiber_ind)
+                            output_path,
+                            'thresh_inner{}_fiber{}.dat'.format(inner_ind, fiber_ind),
                         )
                         if os.path.exists(thresh_path):
                             if not summary_gen and args.verbose:
@@ -748,13 +909,24 @@ def make_local_submission_list(run_number: int, args, summary_gen=False):
                         # local
                         start_path = os.path.join(
                             start_dir,
-                            '{}_{}_start{}'.format(inner_ind, fiber_ind, '.sh' if OS == 'UNIX-LIKE' else '.bat'),
+                            '{}_{}_start{}'.format(
+                                inner_ind,
+                                fiber_ind,
+                                '.sh' if OS == 'UNIX-LIKE' else '.bat',
+                            ),
                         )
-                        stimamp_top, stimamp_bottom = get_thresh_bounds(args, sim_dir, sim_name, inner_ind)
+                        stimamp_top, stimamp_bottom = get_thresh_bounds(
+                            args, sim_dir, sim_name, inner_ind
+                        )
                         if inner_fiber_diam_key is not None:
-                            diameter = get_diameter(inner_fiber_diam_key, inner_ind, fiber_ind)
+                            diameter = get_diameter(
+                                inner_fiber_diam_key, inner_ind, fiber_ind
+                            )
                         deltaz, neuron_flag = get_deltaz(fiber_model, diameter)
-                        fiber_ve_path = os.path.join(fibers_path, 'inner{}_fiber{}.dat'.format(inner_ind, fiber_ind))
+                        fiber_ve_path = os.path.join(
+                            fibers_path,
+                            'inner{}_fiber{}.dat'.format(inner_ind, fiber_ind),
+                        )
                         fiber_ve = np.loadtxt(fiber_ve_path)
                         n_fiber_coords = int(fiber_ve[0])
 
@@ -779,13 +951,23 @@ def make_local_submission_list(run_number: int, args, summary_gen=False):
                             )
 
                         # submit batch job for fiber
-                        output_log = os.path.join(out_dir, '{}{}'.format(master_fiber_name, '.log'))
-                        error_log = os.path.join(err_dir, '{}{}'.format(master_fiber_name, '.log'))
+                        output_log = os.path.join(
+                            out_dir, '{}{}'.format(master_fiber_name, '.log')
+                        )
+                        error_log = os.path.join(
+                            err_dir, '{}{}'.format(master_fiber_name, '.log')
+                        )
 
                         local_args = dict.fromkeys(local_run_keys, [])
-                        local_args['start'] = os.path.join('start_scripts', start_path.split(os.path.sep)[-1])
-                        local_args['output_log'] = os.path.join('logs', 'out', output_log.split(os.path.sep)[-1])
-                        local_args['error_log'] = os.path.join('logs', 'err', error_log.split(os.path.sep)[-1])
+                        local_args['start'] = os.path.join(
+                            'start_scripts', start_path.split(os.path.sep)[-1]
+                        )
+                        local_args['output_log'] = os.path.join(
+                            'logs', 'out', output_log.split(os.path.sep)[-1]
+                        )
+                        local_args['error_log'] = os.path.join(
+                            'logs', 'err', error_log.split(os.path.sep)[-1]
+                        )
                         local_args['sim_path'] = os.path.abspath(sim_path)
                         local_args_list.append(local_args.copy())
 
@@ -803,19 +985,27 @@ def submit_run(sub_context, run_index, args):
             if cpus > multiprocessing.cpu_count() - 1:
                 raise ValueError('num_cpu argument is more than cpu_count-1 CPUs')
 
-            print(f"Submitting Run {run_index} locally to {cpus} CPUs (defined by num_cpu argument)")
+            print(
+                f"Submitting Run {run_index} locally to {cpus} CPUs (defined by num_cpu argument)"
+            )
 
         elif 'local_avail_cpus' in run:
             cpus = run.get('local_avail_cpus')
 
             if cpus > multiprocessing.cpu_count() - 1:
-                raise ValueError('local_avail_cpus in Run asking for more than cpu_count-1 CPUs')
+                raise ValueError(
+                    'local_avail_cpus in Run asking for more than cpu_count-1 CPUs'
+                )
 
-            print(f"Submitting Run {run_index} locally to {cpus} CPUs (defined by local_avail_cpus in Run)")
+            print(
+                f"Submitting Run {run_index} locally to {cpus} CPUs (defined by local_avail_cpus in Run)"
+            )
 
         else:
             cpus = multiprocessing.cpu_count() - 1
-            print(f"local_avail_cpus not defined in Run, so proceeding with cpu_count-1={cpus} CPUs")
+            print(
+                f"local_avail_cpus not defined in Run, so proceeding with cpu_count-1={cpus} CPUs"
+            )
 
         submit_list = make_local_submission_list(run_index, args)
         if len(submit_list) == 0:
@@ -824,18 +1014,29 @@ def submit_run(sub_context, run_index, args):
             # open pool instance, set up progress bar, and iterate over each job
             total_iterations = len(submit_list)
             current_iteration = 0
-            printProgressBar(0, total_iterations, length=40, prefix='Run {}:'.format(run_index))
+            printProgressBar(
+                0, total_iterations, length=40, prefix='Run {}:'.format(run_index)
+            )
             for i, _ in enumerate(p.imap_unordered(local_submit, submit_list, 1)):
                 current_iteration += 1
-                printProgressBar(current_iteration, total_iterations, length=40, prefix='Run {}:'.format(run_index))
+                printProgressBar(
+                    current_iteration,
+                    total_iterations,
+                    length=40,
+                    prefix='Run {}:'.format(run_index),
+                )
 
     elif sub_context == 'cluster':
         # load slurm params
         slurm_params = load(os.path.join('config', 'system', 'slurm_params.json'))
 
         # assign params for array submission
-        partition = slurm_params['partition'] if args.partition is None else args.partition
-        njobs = slurm_params['jobs_per_array'] if args.num_jobs is None else args.num_jobs
+        partition = (
+            slurm_params['partition'] if args.partition is None else args.partition
+        )
+        njobs = (
+            slurm_params['jobs_per_array'] if args.num_jobs is None else args.num_jobs
+        )
         mem = slurm_params['memory_per_fiber'] if args.job_mem is None else args.job_mem
 
         cluster_submit(run_index, partition, args, array_length_max=njobs, mem=mem)
@@ -851,7 +1052,11 @@ def main():
     if args.all_runs == True:
         if len(args.run_indices) > 0:
             sys.exit('Error: Cannot use -A/--run-all argument and pass run indices.')
-        args.run_indices = [int(os.path.splitext(file)[0]) for file in os.listdir('runs') if file.endswith('.json')]
+        args.run_indices = [
+            int(os.path.splitext(file)[0])
+            for file in os.listdir('runs')
+            if file.endswith('.json')
+        ]
     if len(args.run_indices) == 0:
         sys.exit("Error: No run indices to use.")
 
@@ -871,27 +1076,33 @@ def main():
 
         run_number = str(run_number)
         # run number is numeric
-        assert re.search('[0-9]+', run_number), 'Encountered non-number run number argument: {}'.format(run_number)
+        assert re.search(
+            '[0-9]+', run_number
+        ), 'Encountered non-number run number argument: {}'.format(run_number)
 
         # build configuration filename
         filename = os.path.join('runs', run_number + '.json')
         runs.append(run_number)
 
         # configuration file exists
-        assert os.path.exists(filename), 'Run configuration not found: {}'.format(run_number)
+        assert os.path.exists(filename), 'Run configuration not found: {}'.format(
+            run_number
+        )
 
         # load in configuration data
         run = load(filename)
 
         # configuration is not empty
-        assert len(run.items()) > 0, 'Encountered empty run configuration: {}'.format(filename)
+        assert len(run.items()) > 0, 'Encountered empty run configuration: {}'.format(
+            filename
+        )
 
         submission_context = run.get('submission_context', 'cluster')
 
         # submission context is valid
-        assert submission_context in ALLOWED_SUBMISSION_CONTEXTS, 'Invalid submission context: {}'.format(
-            submission_context
-        )
+        assert (
+            submission_context in ALLOWED_SUBMISSION_CONTEXTS
+        ), 'Invalid submission context: {}'.format(submission_context)
 
         # check for auto submission context
         if submission_context == 'auto':
@@ -912,15 +1123,26 @@ def main():
             'Skipping summary generation, submitting fibers...'
         else:
             print('Generating run list for run {}'.format(run_number))
-            summary.append(make_local_submission_list(run_number, args, summary_gen=True))
-            rundata.append({'RUN': run_number, 'SAMPLE': run['sample'], 'MODELS': run['models'], 'SIMS': run['sims']})
+            summary.append(
+                make_local_submission_list(run_number, args, summary_gen=True)
+            )
+            rundata.append(
+                {
+                    'RUN': run_number,
+                    'SAMPLE': run['sample'],
+                    'MODELS': run['models'],
+                    'SIMS': run['sims'],
+                }
+            )
     # check that all submission contexts are the same
     if args.local_submit == True:
         submission_contexts = ['local' for i in submission_contexts]
     if args.cluster_submit == True:
         submission_contexts = ['cluster' for i in submission_contexts]
     if not np.all([x == submission_contexts[0] for x in submission_contexts]):
-        sys.exit('Runs with different submission contexts cannot be submitted at the same time')
+        sys.exit(
+            'Runs with different submission contexts cannot be submitted at the same time'
+        )
     if not args.skip_summary:
         # format run data
         n_fibers = sum([len(x) for x in summary])
@@ -928,12 +1150,18 @@ def main():
         df.RUN = df.RUN.astype(int)
         df = df.sort_values('RUN')
         # print out and check that the user is happy
-        print('Submitting the following runs (submission_context={}):'.format(submission_contexts[0]))
+        print(
+            'Submitting the following runs (submission_context={}):'.format(
+                submission_contexts[0]
+            )
+        )
         print(df.to_string(index=False))
         print('Will result in running {} fiber simulations'.format(n_fibers))
         if n_fibers == 0:
             sys.exit('Exiting...')
-        proceed = input('\t Would you like to proceed?\n' '\t\t 0 = NO\n' '\t\t 1 = YES\n')
+        proceed = input(
+            '\t Would you like to proceed?\n' '\t\t 0 = NO\n' '\t\t 1 = YES\n'
+        )
         if not int(proceed) == 1:
             sys.exit()
         else:

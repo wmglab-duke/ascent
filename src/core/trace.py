@@ -68,7 +68,9 @@ class Trace(Exceptionable):
         if self.points is None:
             self.points = points
         else:
-            self.points = np.append(self.points, points, axis=0)  # axis = 0 to append rows
+            self.points = np.append(
+                self.points, points, axis=0
+            )  # axis = 0 to append rows
 
         # required for mutating method
         self.__update()
@@ -91,14 +93,18 @@ class Trace(Exceptionable):
 
         if fit is not None:
             # find offset distance from factor and mean radius
-            distance: float = fit.get("a") * 2 * np.sqrt(self.area() / np.pi) + fit.get("b")
+            distance: float = fit.get("a") * 2 * np.sqrt(self.area() / np.pi) + fit.get(
+                "b"
+            )
         elif distance is None:
             self.throw(29)
 
         # set new points of offset
         self.points = None
         newpoints = pco.Execute(distance)
-        self.append([point + [0] for point in newpoints[np.argmax([len(l) for l in newpoints])]])
+        self.append(
+            [point + [0] for point in newpoints[np.argmax([len(l) for l in newpoints])]]
+        )
 
         # cleanup
         self.__update()
@@ -156,10 +162,14 @@ class Trace(Exceptionable):
             if center not in ['centroid', 'center']:
                 self.throw(17)
 
-        rotated_polygon: Polygon = rotate(self.polygon(), angle, origin=center, use_radians=True)
+        rotated_polygon: Polygon = rotate(
+            self.polygon(), angle, origin=center, use_radians=True
+        )
 
         self.points = None
-        self.append([list(coord[:2]) + [0] for coord in rotated_polygon.boundary.coords])
+        self.append(
+            [list(coord[:2]) + [0] for coord in rotated_polygon.boundary.coords]
+        )
         self.__update()
 
     def shift(self, vector):
@@ -225,7 +235,9 @@ class Trace(Exceptionable):
         """
         return self.polygon().bounds
 
-    def random_points(self, count: int, buffer: float = 0, my_xy_seed: int = 123) -> List[Tuple[float]]:
+    def random_points(
+        self, count: int, buffer: float = 0, my_xy_seed: int = 123
+    ) -> List[Tuple[float]]:
         """
         :param my_xy_seed:
         :param buffer:
@@ -233,7 +245,9 @@ class Trace(Exceptionable):
         :return: list of tuples (x,y) that are within the trace (polygon)
         """
         trace_to_compare = self.deepcopy()
-        trace_to_compare.offset(None, 1)  # seems to improve reliability to expand 1 um, and then shrink back first
+        trace_to_compare.offset(
+            None, 1
+        )  # seems to improve reliability to expand 1 um, and then shrink back first
         trace_to_compare.offset(None, -1)
         trace_to_compare.offset(None, -buffer)
 
@@ -245,7 +259,8 @@ class Trace(Exceptionable):
         while len(points) < count:
 
             coordinate = tuple(
-                (random.random() * (ceiling - floor)) + floor for floor, ceiling in ((min_x, max_x), (min_y, max_y))
+                (random.random() * (ceiling - floor)) + floor
+                for floor, ceiling in ((min_x, max_x), (min_y, max_y))
             )
 
             if Point(coordinate).within(trace_to_compare.polygon()):
@@ -294,7 +309,9 @@ class Trace(Exceptionable):
         """
         return self.polygon().area
 
-    def min_distance(self, other: 'Trace', return_points: bool = False) -> Union[float, tuple]:
+    def min_distance(
+        self, other: 'Trace', return_points: bool = False
+    ) -> Union[float, tuple]:
         """
         :param return_points: boolean for whether the closest points will be returned
         :param other: Trace to find distance to
@@ -315,7 +332,9 @@ class Trace(Exceptionable):
         """
         return self.polygon().boundary.hausdorff_distance(other.polygon().boundary)
 
-    def centroid_distance(self, other: 'Trace', return_points: bool = False) -> Union[float, tuple]:
+    def centroid_distance(
+        self, other: 'Trace', return_points: bool = False
+    ) -> Union[float, tuple]:
         """
         :param return_points: boolean for whether the closest points will be returned
         :param other: Trace to find distance to
@@ -390,7 +409,9 @@ class Trace(Exceptionable):
         # also, PyCharm thinks that np.mean returns a ndarray, but it definitely isn't in this case
         return self.__ellipse_object(u, v, 2 * r, 2 * r, angle * 2 * np.pi / 360)
 
-    def __ellipse_object(self, u: float, v: float, a: float, b: float, angle: float) -> 'Trace':
+    def __ellipse_object(
+        self, u: float, v: float, a: float, b: float, angle: float
+    ) -> 'Trace':
         """
         :param u: x value of center
         :param v: y value of center
@@ -411,7 +432,9 @@ class Trace(Exceptionable):
         (x, y) = (a * np.cos(t), b * np.sin(t))
 
         # create rotation matrix
-        rot_mat = np.array([[np.cos(angle), -np.sin(angle)], [np.sin(angle), np.cos(angle)]])
+        rot_mat = np.array(
+            [[np.cos(angle), -np.sin(angle)], [np.sin(angle), np.cos(angle)]]
+        )
 
         # apply rotation and shift to centroid
         points = (rot_mat @ np.array([x, y])).T + [u, v]
@@ -423,7 +446,11 @@ class Trace(Exceptionable):
 
     # %% output
     def plot(
-        self, plot_format: str = 'k-', color: Tuple[float, float, float, float] = None, ax: plt.Axes = None, linewidth=1
+        self,
+        plot_format: str = 'k-',
+        color: Tuple[float, float, float, float] = None,
+        ax: plt.Axes = None,
+        linewidth=1,
     ):
         """
         :param ax:
@@ -470,7 +497,11 @@ class Trace(Exceptionable):
                     # write coordinates
                     f.write('%% Coordinates\n')
                     for i in range(count):
-                        f.write('{}\t{}\t{}\n'.format(self.points[i, 0], self.points[i, 1], self.points[i, 2]))
+                        f.write(
+                            '{}\t{}\t{}\n'.format(
+                                self.points[i, 0], self.points[i, 1], self.points[i, 2]
+                            )
+                        )
 
                     # write elements (corresponding to their coordinates)
                     f.write('%% Elements\n')
@@ -518,7 +549,9 @@ class Trace(Exceptionable):
         body = pymunk.Body(mass, inertia)
         body.position = self.centroid()  # position is tracked from trace centroid
         shape = pymunk.Poly(body, vertices, radius=radius)
-        shape.density = 0.01  # all fascicles have same density so this value does not matter
+        shape.density = (
+            0.01  # all fascicles have same density so this value does not matter
+        )
         shape.friction = 0.5
         shape.elasticity = 0.0  # they absorb all energy, i.e. they do not bounce
         return body, shape
@@ -538,7 +571,14 @@ class Trace(Exceptionable):
         for first, second in zip(points[:-1], points[1:]):
             if np.array_equiv(first[:2], second[:2]):
                 pass
-            segments.append(pymunk.Segment(space.static_body, first[:2].tolist(), second[:2].tolist(), radius=1.0))
+            segments.append(
+                pymunk.Segment(
+                    space.static_body,
+                    first[:2].tolist(),
+                    second[:2].tolist(),
+                    radius=1.0,
+                )
+            )
         return segments
 
         # %% METHODS ADAPTED FROM: https://www.nayuki.io/res/smallest-enclosing-circle/smallestenclosingcircle-test.py
@@ -639,11 +679,21 @@ class Trace(Exceptionable):
             return None
         x = (
             ox
-            + ((ax * ax + ay * ay) * (by - cy) + (bx * bx + by * by) * (cy - ay) + (cx * cx + cy * cy) * (ay - by)) / d
+            + (
+                (ax * ax + ay * ay) * (by - cy)
+                + (bx * bx + by * by) * (cy - ay)
+                + (cx * cx + cy * cy) * (ay - by)
+            )
+            / d
         )
         y = (
             oy
-            + ((ax * ax + ay * ay) * (cx - bx) + (bx * bx + by * by) * (ax - cx) + (cx * cx + cy * cy) * (bx - ax)) / d
+            + (
+                (ax * ax + ay * ay) * (cx - bx)
+                + (bx * bx + by * by) * (ax - cx)
+                + (cx * cx + cy * cy) * (bx - ax)
+            )
+            / d
         )
         ra = np.math.hypot(x - a[0], y - a[1])
         rb = np.math.hypot(x - b[0], y - b[1])
@@ -652,7 +702,11 @@ class Trace(Exceptionable):
 
     def is_in_circle(self, c, p):
         _MULTIPLICATIVE_EPSILON = 1 + 1e-14
-        return c is not None and np.math.hypot(p[0] - c[0], p[1] - c[1]) <= c[2] * _MULTIPLICATIVE_EPSILON
+        return (
+            c is not None
+            and np.math.hypot(p[0] - c[0], p[1] - c[1])
+            <= c[2] * _MULTIPLICATIVE_EPSILON
+        )
 
     # Returns twice the signed area of the triangle defined by (x0, y0), (x1, y1), (x2, y2).
     def _cross_product(self, x0, y0, x1, y1, x2, y2):
@@ -674,7 +728,9 @@ class Trace(Exceptionable):
             for j in range(i + 1, len(self.points)):
                 q = self.points[j]
                 c = self._make_diameter(p, q)
-                if (result is None or c[2] < result[2]) and all(self.is_in_circle(c, r) for r in self.points):
+                if (result is None or c[2] < result[2]) and all(
+                    self.is_in_circle(c, r) for r in self.points
+                ):
                     result = c
         if result is not None:
             return result  # This optimization is not mathematically proven

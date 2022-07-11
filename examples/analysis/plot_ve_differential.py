@@ -24,10 +24,14 @@ n_sim = 0
 myelinated = True
 
 # %% Plot Ve graphs
-base_n_sim = os.path.join('samples', str(sample), 'models', str(model), 'sims', str(sim), 'n_sims')
+base_n_sim = os.path.join(
+    'samples', str(sample), 'models', str(model), 'sims', str(sim), 'n_sims'
+)
 
 plt.figure()
-pve1 = os.path.join(base_n_sim, str(n_sim), 'data', 'inputs', 'inner{}_fiber{}.dat'.format(inner, fiber))
+pve1 = os.path.join(
+    base_n_sim, str(n_sim), 'data', 'inputs', 'inner{}_fiber{}.dat'.format(inner, fiber)
+)
 dpve1 = np.loadtxt(pve1)
 if myelinated:
     dpve1 = [dpve1[i] for i in range(len(dpve1)) if i % 11 == 0]

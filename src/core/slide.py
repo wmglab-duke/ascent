@@ -74,7 +74,13 @@ class Slide(Exceptionable):
 
         return (x_sum / area_sum), (y_sum / area_sum)
 
-    def validation(self, specific: bool = True, die: bool = True, tolerance: float = None, plotpath=None) -> bool:
+    def validation(
+        self,
+        specific: bool = True,
+        die: bool = True,
+        tolerance: float = None,
+        plotpath=None,
+    ) -> bool:
         """
         Checks to make sure nerve geometry is not overlapping itself
         :param specific: if you want to know what made it fail first
@@ -89,7 +95,10 @@ class Slide(Exceptionable):
                 return
             plt.figure()
             self.plot(
-                final=False, fix_aspect_ratio='True', axlabel=u"\u03bcm", title='Debug sample which failed validation.'
+                final=False,
+                fix_aspect_ratio='True',
+                axlabel=u"\u03bcm",
+                title='Debug sample which failed validation.',
             )
             plt.savefig(plotpath + '/sample_debug')
             plt.clf()
@@ -146,8 +155,13 @@ class Slide(Exceptionable):
             return False
         else:
             pairs = itertools.combinations(self.fascicles, 2)
-            return any([first.min_distance(second) < tolerance for first, second in pairs]) or any(
-                [fascicle.min_distance(self.nerve) < tolerance for fascicle in self.fascicles]
+            return any(
+                [first.min_distance(second) < tolerance for first, second in pairs]
+            ) or any(
+                [
+                    fascicle.min_distance(self.nerve) < tolerance
+                    for fascicle in self.fascicles
+                ]
             )
 
     def fascicles_too_small(self) -> bool:
@@ -189,7 +203,9 @@ class Slide(Exceptionable):
         if self.monofasc():
             self.throw(44)
 
-        return any([not fascicle.within_nerve(self.nerve) for fascicle in self.fascicles])
+        return any(
+            [not fascicle.within_nerve(self.nerve) for fascicle in self.fascicles]
+        )
 
     def move_center(self, point: np.ndarray):
         """
@@ -361,8 +377,15 @@ class Slide(Exceptionable):
         """
         :return: check bounds of all traces and return outermost bounds
         """
-        allbound = np.array([trace.bounds() for trace in self.trace_list() if trace is not None])
-        return (min(allbound[:, 0]), min(allbound[:, 1]), max(allbound[:, 2]), max(allbound[:, 3]))
+        allbound = np.array(
+            [trace.bounds() for trace in self.trace_list() if trace is not None]
+        )
+        return (
+            min(allbound[:, 0]),
+            min(allbound[:, 1]),
+            max(allbound[:, 2]),
+            max(allbound[:, 3]),
+        )
 
     def trace_list(self):
         """
@@ -451,7 +474,10 @@ class Slide(Exceptionable):
         fnt = ImageFont.truetype("arial.ttf", 60)
         dim_min = [min(x) for x in dims]
         dim = [max(x) for x in dims]
-        imdim = [dim[0] + abs(dim_min[0]) + buffer * 2, dim[1] + abs(dim_min[1]) + buffer * 2]
+        imdim = [
+            dim[0] + abs(dim_min[0]) + buffer * 2,
+            dim[1] + abs(dim_min[1]) + buffer * 2,
+        ]
         self.move_center
         if not separate:  # draw contours and ids if provided
             img = Image.new('RGB', imdim)
@@ -460,7 +486,9 @@ class Slide(Exceptionable):
                 draw.polygon(prep_points(self.nerve.points[:, 0:2]), fill=colors['n'])
             for fascicle in self.fascicles:
                 if outers:
-                    draw.polygon(prep_points(fascicle.outer.points[:, 0:2]), fill=colors['p'])
+                    draw.polygon(
+                        prep_points(fascicle.outer.points[:, 0:2]), fill=colors['p']
+                    )
             for fascicle in self.fascicles:
                 for inner in fascicle.inners:
                     draw.polygon(prep_points(inner.points[:, 0:2]), fill=colors['i'])
@@ -468,7 +496,10 @@ class Slide(Exceptionable):
             iddraw = ImageDraw.Draw(img)
             if len(ids) > 0:  # prints the fascicle ids
                 for i, row in ids.iterrows():
-                    location = (row['x'] - dim_min[0] + buffer, img.height - row['y'] + dim_min[1] - buffer)
+                    location = (
+                        row['x'] - dim_min[0] + buffer,
+                        img.height - row['y'] + dim_min[1] - buffer,
+                    )
                     iddraw.text(location, str(int(row['id'])), font=fnt, fill='white')
             img.save(path)
         elif separate:  # generate each image and save seperately
@@ -499,12 +530,17 @@ class Slide(Exceptionable):
                 iddraw = ImageDraw.Draw(imgi)
                 if len(ids) > 0:  # prints the fascicle ids
                     for i, row in ids.iterrows():
-                        location = (row['x'] - dim_min[0] + buffer, img.height - row['y'] + dim_min[1] - buffer)
+                        location = (
+                            row['x'] - dim_min[0] + buffer,
+                            img.height - row['y'] + dim_min[1] - buffer,
+                        )
                         iddraw.text(location, str(int(row['id'])), font=fnt, fill=0)
                 imgi.save(path['i'])
 
     # %% DISCLAIMER: this is depreciated and not well documented
-    def reposition_fascicles(self, new_nerve: Nerve, minimum_distance: float = 10, seed: int = None):
+    def reposition_fascicles(
+        self, new_nerve: Nerve, minimum_distance: float = 10, seed: int = None
+    ):
         """
         :param new_nerve: Nerve conte
         :param minimum_distance:
@@ -529,7 +565,9 @@ class Slide(Exceptionable):
             r = len(pool) if r is None else r
             return tuple(random.sample(pool, r))
 
-        def jitter(first: Fascicle, second: Union[Fascicle, Nerve], rotation: bool = False):
+        def jitter(
+            first: Fascicle, second: Union[Fascicle, Nerve], rotation: bool = False
+        ):
             """
             :param rotation: whether or not to randomly rotate
             :param first:
@@ -556,7 +594,12 @@ class Slide(Exceptionable):
 
                 # if the second elements is a Fascicle, and this fascicle is within the other, grow step size
                 # this helps fascicles that were moved into others move out quickly
-                if isinstance(second, Fascicle) and [f.outer.within(h.outer) for h in (first, second) if h is not f][0]:
+                if (
+                    isinstance(second, Fascicle)
+                    and [
+                        f.outer.within(h.outer) for h in (first, second) if h is not f
+                    ][0]
+                ):
                     step_scale *= -20
 
                 # find random step magnitude and build a step vector from that
@@ -590,7 +633,9 @@ class Slide(Exceptionable):
             a = 3
             exterior_scale_factor = a * (r_mean / r_fasc)
             exterior_line: LineString = scale(
-                r_fascicle_initial, *([exterior_scale_factor] * 3), origin=new_nerve_centroid
+                r_fascicle_initial,
+                *([exterior_scale_factor] * 3),
+                origin=new_nerve_centroid
             )
 
             # plt.plot(*new_nerve_centroid, 'go')
@@ -612,27 +657,45 @@ class Slide(Exceptionable):
 
             # get radial vector to FIRST coordinate intersection of old nerve trace
             if isinstance(old_intersection, Point):  # simple Point geometry
-                r_old_nerve = LineString([new_nerve_centroid, old_intersection.coords[0]])
+                r_old_nerve = LineString(
+                    [new_nerve_centroid, old_intersection.coords[0]]
+                )
             else:  # more complex geometry (MULTIPOINT)
-                r_old_nerve = LineString([new_nerve_centroid, list(old_intersection)[0].coords[0]])
+                r_old_nerve = LineString(
+                    [new_nerve_centroid, list(old_intersection)[0].coords[0]]
+                )
 
             fascicle_scale_factor = (r_new_nerve.length / r_old_nerve.length) * 0.8
 
-            r_fascicle_final = scale(r_fascicle_initial, *([fascicle_scale_factor] * 3), origin=new_nerve_centroid)
+            r_fascicle_final = scale(
+                r_fascicle_initial,
+                *([fascicle_scale_factor] * 3),
+                origin=new_nerve_centroid
+            )
 
-            shift = list(np.array(r_fascicle_final.coords[1]) - np.array(r_fascicle_initial.coords[1])) + [0]
+            shift = list(
+                np.array(r_fascicle_final.coords[1])
+                - np.array(r_fascicle_initial.coords[1])
+            ) + [0]
             fascicle.shift(shift)
             # fascicle.plot('r-')
 
             # attempt to move in direction of closest boundary
-            _, min_dist_intersection_initial = fascicle.centroid_distance(self.nerve, return_points=True)
-            _, min_dist_intersection_final = fascicle.centroid_distance(new_nerve, return_points=True)
-            min_distance_length = LineString(
-                [min_dist_intersection_final[1].coords[0], min_dist_intersection_initial[1].coords[0]]
-            ).length
-            min_distance_vector = np.array(min_dist_intersection_final[1].coords[0]) - np.array(
-                min_dist_intersection_initial[1].coords[0]
+            _, min_dist_intersection_initial = fascicle.centroid_distance(
+                self.nerve, return_points=True
             )
+            _, min_dist_intersection_final = fascicle.centroid_distance(
+                new_nerve, return_points=True
+            )
+            min_distance_length = LineString(
+                [
+                    min_dist_intersection_final[1].coords[0],
+                    min_dist_intersection_initial[1].coords[0],
+                ]
+            ).length
+            min_distance_vector = np.array(
+                min_dist_intersection_final[1].coords[0]
+            ) - np.array(min_dist_intersection_initial[1].coords[0])
             min_distance_vector *= 1
 
             # fascicle.shift(list(-min_distance_vector) + [0])
@@ -658,7 +721,9 @@ class Slide(Exceptionable):
                 while fascicle.min_distance(self.nerve) < minimum_distance:
                     jitter(fascicle, self.nerve)
 
-                for other_fascicle in random_permutation(filter(lambda item: item is not fascicle, self.fascicles)):
+                for other_fascicle in random_permutation(
+                    filter(lambda item: item is not fascicle, self.fascicles)
+                ):
                     while any(
                         [
                             fascicle.min_distance(other_fascicle) < minimum_distance,

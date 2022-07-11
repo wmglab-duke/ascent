@@ -48,7 +48,9 @@ sample_index = results['samples'][0]['index']
 model_index = results['samples'][0]['models'][0]['index']
 sim_index = results['samples'][0]['models'][0]['sims'][0]
 
-sim: Simulation = q.get_object(Object.SIMULATION, [sample_index, model_index, sim_index])
+sim: Simulation = q.get_object(
+    Object.SIMULATION, [sample_index, model_index, sim_index]
+)
 
 for waveform_ind, waveform in enumerate(sim.waveforms):
     fig, ax = plt.subplots(1, 1)
@@ -57,7 +59,9 @@ for waveform_ind, waveform in enumerate(sim.waveforms):
     plt.ylabel('Amplitude (unscaled)')
     plt.show()
 
-    fname = '{}_{}_{}_{}'.format(str(sample_index), str(model_index), str(sim_index), str(waveform_ind))
+    fname = '{}_{}_{}_{}'.format(
+        str(sample_index), str(model_index), str(sim_index), str(waveform_ind)
+    )
     fmt = 'png'
 
     dest = os.path.join('data', 'tmp', 'waveforms')

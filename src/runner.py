@@ -103,13 +103,19 @@ class Runner(Exceptionable, Configurable):
         validate_and_add(configs, 'sample', sample_path)
 
         model_paths = [
-            os.path.join(os.getcwd(), 'samples', str(sample), 'models', str(model), 'model.json') for model in models
+            os.path.join(
+                os.getcwd(), 'samples', str(sample), 'models', str(model), 'model.json'
+            )
+            for model in models
         ]
 
         for model_path in model_paths:
             validate_and_add(configs, 'models', model_path)
 
-        sim_paths = [os.path.join(os.getcwd(), 'config', 'user', 'sims', '{}.json'.format(sim)) for sim in sims]
+        sim_paths = [
+            os.path.join(os.getcwd(), 'config', 'user', 'sims', '{}.json'.format(sim))
+            for sim in sims
+        ]
         for sim_path in sim_paths:
             validate_and_add(configs, 'sims', sim_path)
 
@@ -141,7 +147,9 @@ class Runner(Exceptionable, Configurable):
 
         # ensure NEURON files exist in export location
         Simulation.export_neuron_files(os.environ[Env.NSIM_EXPORT_PATH.value])
-        Simulation.export_system_config_files(os.path.join(os.environ[Env.NSIM_EXPORT_PATH.value], 'config', 'system'))
+        Simulation.export_system_config_files(
+            os.path.join(os.environ[Env.NSIM_EXPORT_PATH.value], 'config', 'system')
+        )
 
         if (
             'break_points' in self.configs[Config.RUN.value].keys()
@@ -160,7 +168,9 @@ class Runner(Exceptionable, Configurable):
 
         sample_num = self.configs[Config.RUN.value]['sample']
 
-        sample_file = os.path.join(os.getcwd(), 'samples', str(sample_num), 'sample.obj')
+        sample_file = os.path.join(
+            os.getcwd(), 'samples', str(sample_num), 'sample.obj'
+        )
 
         sample_pseudonym = all_configs[Config.SAMPLE.value][0].get('pseudonym')
 
@@ -171,16 +181,22 @@ class Runner(Exceptionable, Configurable):
 
         # instantiate sample
         if smart and os.path.exists(sample_file):
-            print('Found existing sample {} ({})'.format(self.configs[Config.RUN.value]['sample'], sample_file))
+            print(
+                'Found existing sample {} ({})'.format(
+                    self.configs[Config.RUN.value]['sample'], sample_file
+                )
+            )
             sample = load_obj(sample_file)
         else:
             # init slide manager
             sample = Sample(self.configs[Config.EXCEPTIONS.value])
             # run processes with slide manager (see class for details)
 
-            sample.add(SetupMode.OLD, Config.SAMPLE, all_configs[Config.SAMPLE.value][0]).add(
-                SetupMode.OLD, Config.RUN, self.configs[Config.RUN.value]
-            ).add(SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value]).init_map(
+            sample.add(
+                SetupMode.OLD, Config.SAMPLE, all_configs[Config.SAMPLE.value][0]
+            ).add(SetupMode.OLD, Config.RUN, self.configs[Config.RUN.value]).add(
+                SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value]
+            ).init_map(
                 SetupMode.OLD
             ).build_file_structure().populate().write(
                 WriteMode.SECTIONWISE2D
@@ -197,14 +213,23 @@ class Runner(Exceptionable, Configurable):
                 model_pseudonym = model_config.get('pseudonym')
                 print(
                     '\tMODEL {}'.format(model_num),
-                    '- {}'.format(model_pseudonym) if model_pseudonym is not None else '',
+                    '- {}'.format(model_pseudonym)
+                    if model_pseudonym is not None
+                    else '',
                 )
 
                 # use current model index to computer maximum cuff shift (radius) .. SAVES to file in method
-                model_config = self.compute_cuff_shift(model_config, sample, all_configs[Config.SAMPLE.value][0])
+                model_config = self.compute_cuff_shift(
+                    model_config, sample, all_configs[Config.SAMPLE.value][0]
+                )
 
                 model_config_file_name = os.path.join(
-                    os.getcwd(), 'samples', str(sample_num), 'models', str(model_num), 'model.json'
+                    os.getcwd(),
+                    'samples',
+                    str(sample_num),
+                    'models',
+                    str(model_num),
+                    'model.json',
                 )
 
                 # write edited model config in place
@@ -219,12 +244,22 @@ class Runner(Exceptionable, Configurable):
                         sim_num = self.configs[Config.RUN.value]['sims'][sim_index]
                         sim_pseudonym = sim_config.get('pseudonym')
                         print(
-                            '\t\tSIM {}'.format(self.configs[Config.RUN.value]['sims'][sim_index]),
-                            '- {}'.format(sim_pseudonym) if sim_pseudonym is not None else '',
+                            '\t\tSIM {}'.format(
+                                self.configs[Config.RUN.value]['sims'][sim_index]
+                            ),
+                            '- {}'.format(sim_pseudonym)
+                            if sim_pseudonym is not None
+                            else '',
                         )
 
                         sim_obj_dir = os.path.join(
-                            os.getcwd(), 'samples', str(sample_num), 'models', str(model_num), 'sims', str(sim_num)
+                            os.getcwd(),
+                            'samples',
+                            str(sample_num),
+                            'models',
+                            str(model_num),
+                            'sims',
+                            str(sim_num),
                         )
 
                         sim_obj_file = os.path.join(sim_obj_dir, 'sim.obj')
@@ -233,17 +268,23 @@ class Runner(Exceptionable, Configurable):
                         if smart and os.path.exists(sim_obj_file):
                             print(
                                 '\t    Found existing sim object for sim {} ({})'.format(
-                                    self.configs[Config.RUN.value]['sims'][sim_index], sim_obj_file
+                                    self.configs[Config.RUN.value]['sims'][sim_index],
+                                    sim_obj_file,
                                 )
                             )
 
                             simulation: Simulation = load_obj(sim_obj_file)
 
                             if (
-                                'supersampled_bases' in simulation.configs['sims'].keys()
-                                and simulation.configs['sims']['supersampled_bases']['use']
+                                'supersampled_bases'
+                                in simulation.configs['sims'].keys()
+                                and simulation.configs['sims']['supersampled_bases'][
+                                    'use'
+                                ]
                             ):
-                                source_sim_index = simulation.configs['sims']['supersampled_bases']['source_sim']
+                                source_sim_index = simulation.configs['sims'][
+                                    'supersampled_bases'
+                                ]['source_sim']
 
                                 source_sim_obj_dir = os.path.join(
                                     os.getcwd(),
@@ -257,7 +298,9 @@ class Runner(Exceptionable, Configurable):
 
                                 # do Sim.fibers.xy_parameters match between Sim and source_sim?
                                 try:
-                                    source_sim: simulation = load_obj(os.path.join(source_sim_obj_dir, 'sim.obj'))
+                                    source_sim: simulation = load_obj(
+                                        os.path.join(source_sim_obj_dir, 'sim.obj')
+                                    )
                                     print(
                                         '\t    Found existing source sim {} for supersampled bases ({})'.format(
                                             source_sim_index, source_sim_obj_dir
@@ -267,15 +310,23 @@ class Runner(Exceptionable, Configurable):
                                     traceback.print_exc()
                                     self.throw(129)
 
-                                source_xy_dict: dict = source_sim.configs['sims']['fibers']['xy_parameters']
-                                xy_dict: dict = simulation.configs['sims']['fibers']['xy_parameters']
+                                source_xy_dict: dict = source_sim.configs['sims'][
+                                    'fibers'
+                                ]['xy_parameters']
+                                xy_dict: dict = simulation.configs['sims']['fibers'][
+                                    'xy_parameters'
+                                ]
 
                                 if not source_xy_dict == xy_dict:
                                     self.throw(82)
 
-                                ss_bases_exist.append(simulation.ss_bases_exist(source_sim_obj_dir))
+                                ss_bases_exist.append(
+                                    simulation.ss_bases_exist(source_sim_obj_dir)
+                                )
                             else:
-                                potentials_exist.append(simulation.potentials_exist(sim_obj_dir))
+                                potentials_exist.append(
+                                    simulation.potentials_exist(sim_obj_dir)
+                                )
 
                         else:
                             if not os.path.exists(sim_obj_dir):
@@ -284,11 +335,19 @@ class Runner(Exceptionable, Configurable):
                             if not os.path.exists(sim_obj_dir + '/plots'):
                                 os.makedirs(sim_obj_dir + '/plots')
 
-                            simulation: Simulation = Simulation(sample, self.configs[Config.EXCEPTIONS.value])
-                            simulation.add(SetupMode.OLD, Config.MODEL, model_config).add(
-                                SetupMode.OLD, Config.SIM, sim_config
-                            ).add(SetupMode.OLD, Config.RUN, self.configs[Config.RUN.value]).add(
-                                SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value]
+                            simulation: Simulation = Simulation(
+                                sample, self.configs[Config.EXCEPTIONS.value]
+                            )
+                            simulation.add(
+                                SetupMode.OLD, Config.MODEL, model_config
+                            ).add(SetupMode.OLD, Config.SIM, sim_config).add(
+                                SetupMode.OLD,
+                                Config.RUN,
+                                self.configs[Config.RUN.value],
+                            ).add(
+                                SetupMode.OLD,
+                                Config.CLI_ARGS,
+                                self.configs[Config.CLI_ARGS.value],
                             ).resolve_factors().write_waveforms(
                                 sim_obj_dir
                             ).write_fibers(
@@ -300,10 +359,15 @@ class Runner(Exceptionable, Configurable):
                             )
 
                             if (
-                                'supersampled_bases' in simulation.configs['sims'].keys()
-                                and simulation.configs['sims']['supersampled_bases']['use']
+                                'supersampled_bases'
+                                in simulation.configs['sims'].keys()
+                                and simulation.configs['sims']['supersampled_bases'][
+                                    'use'
+                                ]
                             ):
-                                source_sim_index = simulation.configs['sims']['supersampled_bases']['source_sim']
+                                source_sim_index = simulation.configs['sims'][
+                                    'supersampled_bases'
+                                ]['source_sim']
 
                                 source_sim_obj_dir = os.path.join(
                                     os.getcwd(),
@@ -317,7 +381,9 @@ class Runner(Exceptionable, Configurable):
 
                                 # do Sim.fibers.xy_parameters match between Sim and source_sim?
                                 try:
-                                    source_sim: simulation = load_obj(os.path.join(source_sim_obj_dir, 'sim.obj'))
+                                    source_sim: simulation = load_obj(
+                                        os.path.join(source_sim_obj_dir, 'sim.obj')
+                                    )
                                     print(
                                         '\t    Found existing source sim {} for supersampled bases ({})'.format(
                                             source_sim_index, source_sim_obj_dir
@@ -327,15 +393,23 @@ class Runner(Exceptionable, Configurable):
                                     traceback.print_exc()
                                     self.throw(129)
 
-                                source_xy_dict: dict = source_sim.configs['sims']['fibers']['xy_parameters']
-                                xy_dict: dict = simulation.configs['sims']['fibers']['xy_parameters']
+                                source_xy_dict: dict = source_sim.configs['sims'][
+                                    'fibers'
+                                ]['xy_parameters']
+                                xy_dict: dict = simulation.configs['sims']['fibers'][
+                                    'xy_parameters'
+                                ]
 
                                 if not source_xy_dict == xy_dict:
                                     self.throw(82)
 
-                                ss_bases_exist.append(simulation.ss_bases_exist(source_sim_obj_dir))
+                                ss_bases_exist.append(
+                                    simulation.ss_bases_exist(source_sim_obj_dir)
+                                )
                             else:
-                                potentials_exist.append(simulation.potentials_exist(sim_obj_dir))
+                                potentials_exist.append(
+                                    simulation.potentials_exist(sim_obj_dir)
+                                )
 
             if self.configs[Config.CLI_ARGS.value].get('break_point') == 'pre_java' or (
                 ('break_points' in self.configs[Config.RUN.value].keys())
@@ -353,26 +427,39 @@ class Runner(Exceptionable, Configurable):
                     self.handoff(self.number)
                     print('\nTO PYTHON\n')
                 else:
-                    print('\nSKIPPING JAVA - all required extracted potentials already exist\n')
+                    print(
+                        '\nSKIPPING JAVA - all required extracted potentials already exist\n'
+                    )
 
                 self.remove(Config.RUN)
-                run_path = os.path.join('config', 'user', 'runs', '{}.json'.format(self.number))
+                run_path = os.path.join(
+                    'config', 'user', 'runs', '{}.json'.format(self.number)
+                )
                 self.add(SetupMode.NEW, Config.RUN, run_path)
 
                 #  continue by using simulation objects
                 models_exit_status = self.search(Config.RUN, "models_exit_status")
 
-                for model_index, model_config in enumerate(all_configs[Config.MODEL.value]):
+                for model_index, model_config in enumerate(
+                    all_configs[Config.MODEL.value]
+                ):
                     model_num = self.configs[Config.RUN.value]['models'][model_index]
-                    conditions = [models_exit_status is not None, len(models_exit_status) > model_index]
-                    model_ran = models_exit_status[model_index] if all(conditions) else True
+                    conditions = [
+                        models_exit_status is not None,
+                        len(models_exit_status) > model_index,
+                    ]
+                    model_ran = (
+                        models_exit_status[model_index] if all(conditions) else True
+                    )
                     ss_use_notgen = []
                     # check if all supersampled bases are "use" and not generating
                     for sim_index, sim_config in enumerate(all_configs['sims']):
                         if (
                             'supersampled_bases' in simulation.configs['sims'].keys()
                             and simulation.configs['sims']['supersampled_bases']['use']
-                            and not simulation.configs['sims']['supersampled_bases']['generate']
+                            and not simulation.configs['sims']['supersampled_bases'][
+                                'generate'
+                            ]
                         ):
                             ss_use_notgen.append(True)
                         else:
@@ -406,14 +493,28 @@ class Runner(Exceptionable, Configurable):
 
                             # get export behavior
                             export_behavior = None
-                            if self.configs[Config.CLI_ARGS.value].get('export_behavior') is not None:
-                                export_behavior = self.configs[Config.CLI_ARGS.value]['export_behavior']
-                            elif self.configs[Config.RUN.value].get('export_behavior') is not None:
-                                export_behavior = self.configs[Config.RUN.value]['export_behavior']
+                            if (
+                                self.configs[Config.CLI_ARGS.value].get(
+                                    'export_behavior'
+                                )
+                                is not None
+                            ):
+                                export_behavior = self.configs[Config.CLI_ARGS.value][
+                                    'export_behavior'
+                                ]
+                            elif (
+                                self.configs[Config.RUN.value].get('export_behavior')
+                                is not None
+                            ):
+                                export_behavior = self.configs[Config.RUN.value][
+                                    'export_behavior'
+                                ]
                             else:
                                 export_behavior = 'selective'
                             # check to make sure we have a valid behavior
-                            if not np.any([export_behavior == x.value for x in ExportMode]):
+                            if not np.any(
+                                [export_behavior == x.value for x in ExportMode]
+                            ):
                                 self.throw(139)
 
                             # export simulations
@@ -428,7 +529,9 @@ class Runner(Exceptionable, Configurable):
 
                             # ensure run configuration is present
                             Simulation.export_run(
-                                self.number, os.environ[Env.PROJECT_PATH.value], os.environ[Env.NSIM_EXPORT_PATH.value]
+                                self.number,
+                                os.environ[Env.PROJECT_PATH.value],
+                                os.environ[Env.NSIM_EXPORT_PATH.value],
                             )
 
                         print(
@@ -441,20 +544,26 @@ class Runner(Exceptionable, Configurable):
                         print(
                             '\nDid not create NEURON simulations for Sims associated with: \n'
                             '\t Model Index: {} \n'
-                            'since COMSOL failed to create required potentials. \n'.format(model_num)
+                            'since COMSOL failed to create required potentials. \n'.format(
+                                model_num
+                            )
                         )
 
             elif 'models' in all_configs.keys() and 'sims' not in all_configs.keys():
                 # Model Configs Provided, but not Sim Configs
                 print('\nTO JAVA\n')
                 self.handoff(self.number)
-                print('\nNEURON Simulations NOT created since no Sim indices indicated in Config.SIM\n')
+                print(
+                    '\nNEURON Simulations NOT created since no Sim indices indicated in Config.SIM\n'
+                )
 
     def handoff(self, run_number: int):
         comsol_path = os.environ[Env.COMSOL_PATH.value]
         jdk_path = os.environ[Env.JDK_PATH.value]
         project_path = os.environ[Env.PROJECT_PATH.value]
-        run_path = os.path.join(project_path, 'config', 'user', 'runs', '{}.json'.format(run_number))
+        run_path = os.path.join(
+            project_path, 'config', 'user', 'runs', '{}.json'.format(run_number)
+        )
 
         core_name = 'ModelWrapper'
 
@@ -474,7 +583,14 @@ class Runner(Exceptionable, Configurable):
             java_command = (
                 '""{}\\java\\win64\\jre\\bin\\java" '
                 '-cp "{}\\plugins\\*";"..\\bin\\json-20190722.jar";"..\\bin" '
-                'model.{} "{}" "{}" "{}""'.format(comsol_path, comsol_path, core_name, project_path, run_path, argfinal)
+                'model.{} "{}" "{}" "{}""'.format(
+                    comsol_path,
+                    comsol_path,
+                    core_name,
+                    project_path,
+                    run_path,
+                    argfinal,
+                )
             )
         else:
             server_command = ['{}/bin/comsol'.format(comsol_path), 'server']
@@ -486,13 +602,20 @@ class Runner(Exceptionable, Configurable):
             if sys.platform.startswith('linux'):  # linux
                 java_comsol_path = comsol_path + '/java/glnxa64/jre/bin/java'
             else:  # mac
-                java_comsol_path = comsol_path + '/java/maci64/jre/Contents/Home/bin/java'
+                java_comsol_path = (
+                    comsol_path + '/java/maci64/jre/Contents/Home/bin/java'
+                )
 
             java_command = (
                 '{} '
                 '-cp .:$(echo {}/plugins/*.jar | '
                 'tr \' \' \':\'):../bin/json-20190722.jar:../bin model.{} "{}" "{}" "{}"'.format(
-                    java_comsol_path, comsol_path, core_name, project_path, run_path, argfinal
+                    java_comsol_path,
+                    comsol_path,
+                    core_name,
+                    project_path,
+                    run_path,
+                    argfinal,
                 )
             )
 
@@ -511,7 +634,9 @@ class Runner(Exceptionable, Configurable):
             self.throw(141)
         os.chdir('..')
 
-    def compute_cuff_shift(self, model_config: dict, sample: Sample, sample_config: dict):
+    def compute_cuff_shift(
+        self, model_config: dict, sample: Sample, sample_config: dict
+    ):
         # NOTE: ASSUMES SINGLE SLIDE
 
         # add temporary model configuration
@@ -536,7 +661,9 @@ class Runner(Exceptionable, Configurable):
 
         # fetch cuff config
         cuff_config: dict = self.load(
-            os.path.join(os.getcwd(), "config", "system", "cuffs", model_config['cuff']['preset'])
+            os.path.join(
+                os.getcwd(), "config", "system", "cuffs", model_config['cuff']['preset']
+            )
         )
 
         # fetch 1-2 letter code for cuff (ex: 'CT')
@@ -551,14 +678,24 @@ class Runner(Exceptionable, Configurable):
 
         # calculate value of radius buffer in micrometers (ex: 76.2)
         cuff_r_buffer: float = Quantity(
-            Quantity(cuff_r_buffer_str.translate(cuff_r_buffer_str.maketrans('', '', ' []')), scale='m'), scale='um'
+            Quantity(
+                cuff_r_buffer_str.translate(cuff_r_buffer_str.maketrans('', '', ' []')),
+                scale='m',
+            ),
+            scale='um',
         ).real  # [um] (scaled from any arbitrary length unit)
 
         # get center and radius of nerve's min_bound circle
-        nerve_copy = deepcopy(slide.nerve if nerve_mode == NerveMode.PRESENT else slide.fascicles[0].outer)
+        nerve_copy = deepcopy(
+            slide.nerve if nerve_mode == NerveMode.PRESENT else slide.fascicles[0].outer
+        )
 
         # Get the boundary and center information for computing cuff shift
-        if self.search_mode(ReshapeNerveMode, Config.SAMPLE) and not slide.monofasc() and deform_ratio == 1:
+        if (
+            self.search_mode(ReshapeNerveMode, Config.SAMPLE)
+            and not slide.monofasc()
+            and deform_ratio == 1
+        ):
             x, y = 0, 0
             r_bound = np.sqrt(sample_config['Morphology']['Nerve']['area'] / np.pi)
         else:
@@ -569,11 +706,17 @@ class Runner(Exceptionable, Configurable):
         # if poly fasc, use centroid of all fascicle as reference, not 0, 0
         # angle of centroid of nerve to center of minimum bounding circle
         reference_x = reference_y = 0.0
-        if not slide.monofasc() and not (round(slide.nerve.centroid()[0]) == round(slide.nerve.centroid()[1]) == 0):
-            self.throw(123)  # if the slide has nerve and is not centered at the nerve throw error
+        if not slide.monofasc() and not (
+            round(slide.nerve.centroid()[0]) == round(slide.nerve.centroid()[1]) == 0
+        ):
+            self.throw(
+                123
+            )  # if the slide has nerve and is not centered at the nerve throw error
         if not slide.monofasc():
             reference_x, reference_y = slide.fascicle_centroid()
-        theta_c = (np.arctan2(reference_y - y, reference_x - x) * (360 / (2 * np.pi))) % 360
+        theta_c = (
+            np.arctan2(reference_y - y, reference_x - x) * (360 / (2 * np.pi))
+        ) % 360
 
         # calculate final necessary radius by adding buffer
         r_f = r_bound + cuff_r_buffer
@@ -587,10 +730,15 @@ class Runner(Exceptionable, Configurable):
         # check radius iff not expandable
         if not expandable:
             r_i_str: str = [
-                item["expression"] for item in cuff_config["params"] if item["name"] == '_'.join(['R_in', cuff_code])
+                item["expression"]
+                for item in cuff_config["params"]
+                if item["name"] == '_'.join(['R_in', cuff_code])
             ][0]
             r_i: float = Quantity(
-                Quantity(r_i_str.translate(r_i_str.maketrans('', '', ' []')), scale='m'), scale='um'
+                Quantity(
+                    r_i_str.translate(r_i_str.maketrans('', '', ' []')), scale='m'
+                ),
+                scale='um',
             ).real  # [um] (scaled from any arbitrary length unit)
 
             if not r_f <= r_i:
@@ -605,7 +753,10 @@ class Runner(Exceptionable, Configurable):
                 if item["name"] == '_'.join(['r_cuff_in_pre', cuff_code])
             ][0]
             r_i: float = Quantity(
-                Quantity(r_i_str.translate(r_i_str.maketrans('', '', ' []')), scale='m'), scale='um'
+                Quantity(
+                    r_i_str.translate(r_i_str.maketrans('', '', ' []')), scale='m'
+                ),
+                scale='um',
             ).real  # [um] (scaled from any arbitrary length unit)
 
             if r_i < r_f:
@@ -621,9 +772,16 @@ class Runner(Exceptionable, Configurable):
 
         offset = 0
         for key, coef in cuff_config["offset"].items():
-            value_str = [item["expression"] for item in cuff_config["params"] if item['name'] == key][0]
+            value_str = [
+                item["expression"]
+                for item in cuff_config["params"]
+                if item['name'] == key
+            ][0]
             value: float = Quantity(
-                Quantity(value_str.translate(value_str.maketrans('', '', ' []')), scale='m'), scale='um'
+                Quantity(
+                    value_str.translate(value_str.maketrans('', '', ' []')), scale='m'
+                ),
+                scale='um',
             ).real  # [um] (scaled from any arbitrary length unit)
             offset += coef * value
 
@@ -647,12 +805,12 @@ class Runner(Exceptionable, Configurable):
         ):  # for backwards compatibility
             if r_i > r_f:
                 model_config['cuff']['rotate']['pos_ang'] = theta_c - theta_f
-                model_config['cuff']['shift']['x'] = x - (r_i - offset - cuff_r_buffer - r_bound) * np.cos(
-                    theta_c * ((2 * np.pi) / 360)
-                )
-                model_config['cuff']['shift']['y'] = y - (r_i - offset - cuff_r_buffer - r_bound) * np.sin(
-                    theta_c * ((2 * np.pi) / 360)
-                )
+                model_config['cuff']['shift']['x'] = x - (
+                    r_i - offset - cuff_r_buffer - r_bound
+                ) * np.cos(theta_c * ((2 * np.pi) / 360))
+                model_config['cuff']['shift']['y'] = y - (
+                    r_i - offset - cuff_r_buffer - r_bound
+                ) * np.sin(theta_c * ((2 * np.pi) / 360))
 
             else:
                 model_config['cuff']['rotate']['pos_ang'] = theta_c - theta_f
@@ -692,7 +850,10 @@ class Runner(Exceptionable, Configurable):
                 y_step = step * np.sin(-theta_c + np.pi)  # STEP VECTOR X-COMPONENT
 
                 # shift nerve within cuff until one step within the minimum separation from cuff
-                while nerve_copy.polygon().boundary.distance(id_boundary.boundary) >= cuff_r_buffer:
+                while (
+                    nerve_copy.polygon().boundary.distance(id_boundary.boundary)
+                    >= cuff_r_buffer
+                ):
                     nerve_copy.shift([x_step, y_step, 0])
                     center_x -= x_step
                     center_y -= y_step
@@ -707,7 +868,9 @@ class Runner(Exceptionable, Configurable):
 
         elif cuff_shift_mode == CuffShiftMode.NAIVE_ROTATION_TRACE_BOUNDARY:
             if slide.orientation_point is not None:
-                print('Warning: orientation tif image will be ignored because a NAIVE cuff shift mode was chosen.')
+                print(
+                    'Warning: orientation tif image will be ignored because a NAIVE cuff shift mode was chosen.'
+                )
             if r_i < r_f:
                 model_config['cuff']['rotate']['pos_ang'] = 0
                 model_config['cuff']['shift']['x'] = x
@@ -730,7 +893,10 @@ class Runner(Exceptionable, Configurable):
                 y_step = step * np.sin(-theta_c + np.pi)  # STEP VECTOR X-COMPONENT
 
                 # shift nerve within cuff until one step within the minimum separation from cuff
-                while nerve_copy.polygon().boundary.distance(id_boundary.boundary) >= cuff_r_buffer:
+                while (
+                    nerve_copy.polygon().boundary.distance(id_boundary.boundary)
+                    >= cuff_r_buffer
+                ):
                     nerve_copy.shift([x_step, y_step, 0])
                     center_x -= x_step
                     center_y -= y_step
@@ -753,16 +919,18 @@ class Runner(Exceptionable, Configurable):
             or cuff_shift_mode == CuffShiftMode.PURPLE
         ):
             if slide.orientation_point is not None:
-                print('Warning: orientation tif image will be ignored because a NAIVE cuff shift mode was chosen.')
+                print(
+                    'Warning: orientation tif image will be ignored because a NAIVE cuff shift mode was chosen.'
+                )
             if r_i > r_f:
                 model_config['cuff']['rotate']['pos_ang'] = 0
 
-                model_config['cuff']['shift']['x'] = x - (r_i - offset - cuff_r_buffer - r_bound) * np.cos(
-                    theta_i * ((2 * np.pi) / 360)
-                )
-                model_config['cuff']['shift']['y'] = y - (r_i - offset - cuff_r_buffer - r_bound) * np.sin(
-                    theta_i * ((2 * np.pi) / 360)
-                )
+                model_config['cuff']['shift']['x'] = x - (
+                    r_i - offset - cuff_r_buffer - r_bound
+                ) * np.cos(theta_i * ((2 * np.pi) / 360))
+                model_config['cuff']['shift']['y'] = y - (
+                    r_i - offset - cuff_r_buffer - r_bound
+                ) * np.sin(theta_i * ((2 * np.pi) / 360))
 
             else:
                 model_config['cuff']['rotate']['pos_ang'] = 0
@@ -798,7 +966,11 @@ class Runner(Exceptionable, Configurable):
             freq_double = model_config.get('frequency')
             rho_double = waveform.rho_weerasuriya(freq_double)
             sigma_double = 1 / rho_double
-            tmp = {'value': str(sigma_double), 'label': 'RHO_WEERASURIYA @ %d Hz' % freq_double, 'unit': '[S/m]'}
+            tmp = {
+                'value': str(sigma_double),
+                'label': 'RHO_WEERASURIYA @ %d Hz' % freq_double,
+                'unit': '[S/m]',
+            }
             model_config['conductivities']['perineurium'] = tmp
 
         elif (
@@ -831,5 +1003,8 @@ class Runner(Exceptionable, Configurable):
     def model_parameter_checking(self, all_configs):
         for _, model_config in enumerate(all_configs[Config.MODEL.value]):
             distal_exists = model_config['medium']['distal']['exist']
-            if distal_exists and model_config['medium']['proximal']['distant_ground'] == True:
+            if (
+                distal_exists
+                and model_config['medium']['proximal']['distant_ground'] == True
+            ):
                 self.throw(107)

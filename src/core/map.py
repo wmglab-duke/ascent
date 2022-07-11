@@ -136,7 +136,11 @@ class Map(Exceptionable, Configurable):
         :param number: number within that cassette (should narrow search to 1 slide)
         :return: the Slide object (note that the list is being indexed into at the end: [0])
         """
-        result = list(filter(lambda s: (s.cassette == cassette) and (s.number == number), self.slides))
+        result = list(
+            filter(
+                lambda s: (s.cassette == cassette) and (s.number == number), self.slides
+            )
+        )
         return result[0] if len(result) != 0 else None
 
     def write(self):
@@ -163,7 +167,12 @@ class Map(Exceptionable, Configurable):
     def json_to_list(self) -> list:
         data = self.load(self.source_path)
         return [
-            SlideInfo(item.get('cassette'), item.get('number'), item.get('position'), item.get('directory'))
+            SlideInfo(
+                item.get('cassette'),
+                item.get('number'),
+                item.get('position'),
+                item.get('directory'),
+            )
             for item in data
         ]
 
@@ -190,8 +199,12 @@ class Map(Exceptionable, Configurable):
                 for prefix in prefixes:
                     if re.match(prefix, file) is not None:
                         # remove leading code (separated by '_') and any extra '_'
-                        new_file = '_'.join([f for f in file.split('_')[1:] if f is not ''])
-                        os.rename('{}/{}'.format(root, file), '{}/{}'.format(root, new_file))
+                        new_file = '_'.join(
+                            [f for f in file.split('_')[1:] if f is not '']
+                        )
+                        os.rename(
+                            '{}/{}'.format(root, file), '{}/{}'.format(root, new_file)
+                        )
 
                 for key in remove_keys:
                     if re.search(key, file) is not None:
@@ -229,4 +242,6 @@ class Reference:
         return distance / float(self.abs_distance)
 
     def __repr__(self):
-        return '\tstart pos:\t{}\n\tend pos:\t{}\n\tabs dist:\t{}\n\n'.format(self.start, self.end, self.abs_distance)
+        return '\tstart pos:\t{}\n\tend pos:\t{}\n\tabs dist:\t{}\n\n'.format(
+            self.start, self.end, self.abs_distance
+        )

@@ -23,7 +23,13 @@ from .trace import Trace
 
 
 class Fascicle(Exceptionable):
-    def __init__(self, exception_config, outer: Trace, inners: List[Trace] = [], outer_scale: dict = None):
+    def __init__(
+        self,
+        exception_config,
+        outer: Trace,
+        inners: List[Trace] = [],
+        outer_scale: dict = None,
+    ):
         """
         Fascicle can be created with either:
          option 1: an outer and any number of inners
@@ -74,7 +80,9 @@ class Fascicle(Exceptionable):
         else:  # other must be a Nerve
             return self.outer.intersects(other)
 
-    def min_distance(self, other: Union['Fascicle', Nerve], return_points: bool = False) -> Union[float, tuple]:
+    def min_distance(
+        self, other: Union['Fascicle', Nerve], return_points: bool = False
+    ) -> Union[float, tuple]:
         """
         :param return_points:
         :param other: other Fascicle or Nerve to check
@@ -85,14 +93,18 @@ class Fascicle(Exceptionable):
         else:  # other must be a Nerve
             return self.outer.min_distance(other, return_points=return_points)
 
-    def centroid_distance(self, other: Union['Fascicle', Nerve], return_points: bool = False):
+    def centroid_distance(
+        self, other: Union['Fascicle', Nerve], return_points: bool = False
+    ):
         """
         :param return_points:
         :param other: other Fascicle or Nerve to check
         :return: minimum straight-line distance between self and other
         """
         if isinstance(other, Fascicle):
-            return self.outer.centroid_distance(other.outer, return_points=return_points)
+            return self.outer.centroid_distance(
+                other.outer, return_points=return_points
+            )
         else:  # other must be a Nerve
             return self.outer.centroid_distance(other, return_points=return_points)
 
@@ -154,7 +166,9 @@ class Fascicle(Exceptionable):
     def plot(
         self,
         plot_format: str = 'b-',
-        color: Union[Tuple[float, float, float, float], List[Tuple[float, float, float, float]]] = None,
+        color: Union[
+            Tuple[float, float, float, float], List[Tuple[float, float, float, float]]
+        ] = None,
         ax: plt.Axes = None,
         outer_flag=True,
         inner_index_start: int = None,
@@ -181,7 +195,12 @@ class Fascicle(Exceptionable):
         for i, (inner, c) in enumerate(zip(self.inners, color)):
             inner.plot(plot_format, color=c, ax=ax)
             if inner_index_start is not None:
-                ax.text(*inner.centroid(), s=str(i + inner_index_start), ha='center', va='center')
+                ax.text(
+                    *inner.centroid(),
+                    s=str(i + inner_index_start),
+                    ha='center',
+                    va='center'
+                )
 
     def deepcopy(self):
         """
@@ -240,7 +259,11 @@ class Fascicle(Exceptionable):
 
     @staticmethod
     def to_list(
-        inner_img_path: str, outer_img_path: str, exception_config, plot: bool = False, z: float = 0
+        inner_img_path: str,
+        outer_img_path: str,
+        exception_config,
+        plot: bool = False,
+        z: float = 0,
     ) -> List['Fascicle']:
         """
         Generates list of fascicle objects from an inner and an outer image
@@ -271,14 +294,20 @@ class Fascicle(Exceptionable):
             contours, _ = cv2.findContours(img, *params)
 
             # build list of traces
-            return [Trace([item + [z] for item in contour[:, 0, :]], exception_config) for contour in contours]
+            return [
+                Trace([item + [z] for item in contour[:, 0, :]], exception_config)
+                for contour in contours
+            ]
 
         if outer_img_path is None:
             # inners only case, set each inner as an outer
             outers = np.array(build_traces(inner_img_path))
         else:
             # build traces list for inner and outer image paths
-            inners, outers = (np.array(build_traces(path)) for path in (inner_img_path, outer_img_path))
+            inners, outers = (
+                np.array(build_traces(path))
+                for path in (inner_img_path, outer_img_path)
+            )
 
             # create empty list to hold the outer traces that inners correspond to
             inner_correspondence: List[int] = []
@@ -298,10 +327,14 @@ class Fascicle(Exceptionable):
         for index, outer in enumerate(outers):
             if outer_img_path is not None:
                 # get all the inner traces that correspond to this outer
-                inners_corresponding = inners[np.where(np.array(inner_correspondence) == index)]
+                inners_corresponding = inners[
+                    np.where(np.array(inner_correspondence) == index)
+                ]
 
                 # add fascicle!
-                fascicles.append(Fascicle(exception_config, outer, inners_corresponding))
+                fascicles.append(
+                    Fascicle(exception_config, outer, inners_corresponding)
+                )
             else:
                 # inners only case
                 fascicles.append(Fascicle(exception_config, outer))
