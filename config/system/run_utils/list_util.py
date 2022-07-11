@@ -17,11 +17,15 @@ def run(mode):
                     print('WARNING: Could not load {}'.format(j))
                     print(e)
                     continue
-                data.append({'RUN': os.path.splitext(j)[0],
-                             'PSEUDONYM': rundata.get('pseudonym'),
-                             'SAMPLE': rundata['sample'],
-                             'MODELS': rundata['models'],
-                             'SIMS': rundata['sims']})
+                data.append(
+                    {
+                        'RUN': os.path.splitext(j)[0],
+                        'PSEUDONYM': rundata.get('pseudonym'),
+                        'SAMPLE': rundata['sample'],
+                        'MODELS': rundata['models'],
+                        'SIMS': rundata['sims'],
+                    }
+                )
         df = pd.DataFrame(data)
         df.RUN = df.RUN.astype(int)
         df = df.sort_values('RUN')
@@ -31,7 +35,12 @@ def run(mode):
     elif mode == 'samples':
         run_path = os.path.join('samples')
         samples = [file for file in os.listdir(run_path) if not file.startswith('.')]
-        sample_jsons = [os.path.join(run_path, x, 'sample.json') if os.path.isfile(os.path.join(run_path, x, 'sample.json')) else print('WARNING: sample {} has no json file'.format(x)) for x in samples]
+        sample_jsons = [
+            os.path.join(run_path, x, 'sample.json')
+            if os.path.isfile(os.path.join(run_path, x, 'sample.json'))
+            else print('WARNING: sample {} has no json file'.format(x))
+            for x in samples
+        ]
         sample_jsons = [x for x in sample_jsons if x is not None]
         data = []
         for j in sample_jsons:
@@ -42,11 +51,15 @@ def run(mode):
                     print('WARNING: Could not load {}'.format(j))
                     print(e)
                     continue
-                data.append({'SAMPLE': j.split(os.sep)[1],
-                             'PSEUDONYM': sampledata.get('pseudonym'),
-                             'INPUT': sampledata['sample'],
-                             'NERVEMODE': sampledata['modes'].get('nerve'),
-                             'MASKINPUTMODE': sampledata['modes'].get('mask_input')})
+                data.append(
+                    {
+                        'SAMPLE': j.split(os.sep)[1],
+                        'PSEUDONYM': sampledata.get('pseudonym'),
+                        'INPUT': sampledata['sample'],
+                        'NERVEMODE': sampledata['modes'].get('nerve'),
+                        'MASKINPUTMODE': sampledata['modes'].get('mask_input'),
+                    }
+                )
         df = pd.DataFrame(data)
         df.SAMPLE = df.SAMPLE.astype(int)
         df = df.sort_values('SAMPLE')
@@ -65,11 +78,15 @@ def run(mode):
                     print('WARNING: Could not load {}'.format(j))
                     print(e)
                     continue
-                data.append({'SIM': os.path.splitext(j)[0],
-                             'PSEUDONYM': simdata.get('pseudonym'),
-                             'FIBERMODE': simdata['fibers'].get('mode'),
-                             'PROTOCOL': simdata['protocol'].get('mode'),
-                             'XYMODE': simdata['fibers']['xy_parameters'].get('mode')})
+                data.append(
+                    {
+                        'SIM': os.path.splitext(j)[0],
+                        'PSEUDONYM': simdata.get('pseudonym'),
+                        'FIBERMODE': simdata['fibers'].get('mode'),
+                        'PROTOCOL': simdata['protocol'].get('mode'),
+                        'XYMODE': simdata['fibers']['xy_parameters'].get('mode'),
+                    }
+                )
         df = pd.DataFrame(data)
         df.SIM = df.SIM.astype(int)
         df = df.sort_values('SIM')

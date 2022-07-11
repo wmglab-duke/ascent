@@ -37,6 +37,12 @@ def run(args):
                     if args.force == True:
                         print('Force argument passed, continuing with import')
                     else:
-                        print('At least one threshold was missing, skipping import for run {} sample {} model {} sim {}'.format(argument, sample, model, sim))
+                        print(
+                            'At least one threshold was missing, skipping import for run {} sample {} model {} sim {}'.format(
+                                argument, sample, model, sim
+                            )
+                        )
                         continue
-                Simulation.import_n_sims(sample, model, sim, sim_dir, os.path.join(nsim_source, 'n_sims'), delete=args.delete_nsims)
+                Simulation.import_n_sims(
+                    sample, model, sim, sim_dir, os.path.join(nsim_source, 'n_sims'), delete=args.delete_nsims
+                )

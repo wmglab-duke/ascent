@@ -12,7 +12,6 @@ import sys
 
 
 def run(args):
-
     def ensure_dir(directory):
         if not os.path.exists(directory):
             os.makedirs(directory)
@@ -31,13 +30,7 @@ def run(args):
 
     # define and generate user directories
     binpath = 'bin'
-    defdirs = [
-        binpath,
-        'samples',
-        'input',
-        'config/user',
-        'config/user/runs',
-        'config/user/sims']
+    defdirs = [binpath, 'samples', 'input', 'config/user', 'config/user/runs', 'config/user/sims']
 
     for path in defdirs:
         ensure_dir(path)
@@ -62,7 +55,8 @@ def run(args):
             else:
                 p = subprocess.Popen("powershell.exe", stdin=subprocess.PIPE)
                 p.stdin.write(
-                    '[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12\n'.encode())
+                    '[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12\n'.encode()
+                )
                 p.stdin.write('$source = \'{}\'\n'.format(jar).encode())
                 p.stdin.write('$destination = \'{}\'\n'.format(os.path.abspath(target)).encode())
                 p.stdin.write('curl $source -OutFile $destination'.encode())
@@ -75,7 +69,9 @@ def run(args):
         proc = None
 
         if sys.platform.startswith('darwin') or sys.platform.startswith('linux'):
-            proc = subprocess.Popen("source config/system/installation/install.sh -i", shell=True, executable="/bin/bash")
+            proc = subprocess.Popen(
+                "source config/system/installation/install.sh -i", shell=True, executable="/bin/bash"
+            )
         else:
             proc = subprocess.Popen(['powershell.exe', '.\\config\\system\\installation\\install.ps1'])
 
