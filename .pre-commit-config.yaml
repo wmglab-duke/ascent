@@ -13,9 +13,9 @@ repos:
     hooks:
       - id: isort
         name: isort (python)
-        args: ["--skip", "__init__.py"]
--   repo: https://github.com/pre-commit/mirrors-autopep8
-    rev: v1.6.0
+        args: ["--skip", "__init__.py", ".", "run"]
+-   repo: https://github.com/psf/black
+    rev: stable
     hooks:
-    - id: autopep8
-      args: ["--select=E1,E2,E3,E401,W1,W2,W3,E226,E24", "--in-place", "--recursive", "."]
+      - id: black
+        args: ["-S", ".", "run"]
