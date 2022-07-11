@@ -30,15 +30,17 @@ release = 'v1.1.2'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 
-extensions = ['myst_parser',
-              'sphinxarg.ext',
-              'sphinx.ext.intersphinx',
-              'sphinx.ext.autodoc',
-              'sphinxcontrib.bibtex',
-              'sphinxcontrib.details.directive',
-              'sphinx_copybutton',
-              'sphinx_rtd_dark_mode',
-              'sphinx_github_changelog']
+extensions = [
+    'myst_parser',
+    'sphinxarg.ext',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.autodoc',
+    'sphinxcontrib.bibtex',
+    'sphinxcontrib.details.directive',
+    'sphinx_copybutton',
+    'sphinx_rtd_dark_mode',
+    'sphinx_github_changelog',
+]
 
 source_suffix = {
     '.rst': 'restructuredtext',
