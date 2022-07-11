@@ -11,7 +11,7 @@ The source code can be found on the following GitHub repository: https://github.
 
 # RUN THIS FROM REPOSITORY ROOT
 
-#%% imports
+# %% imports
 import os
 import sys
 
@@ -19,8 +19,8 @@ sys.path.append(os.path.sep.join([os.getcwd(), '']))
 
 from src.core.query import Query
 
-#%% metadata
-samples = [670,672]
+# %% metadata
+samples = [670, 672]
 
 models = [0]
 
@@ -28,18 +28,14 @@ sims = [33]
 
 dats = []
 
-#%% run query search
-q = Query({
-    'partial_matches': False,
-    'include_downstream': True,
-    'indices': {
-        'sample': samples,
-        'model': models,
-        'sim': sims
+# %% run query search
+q = Query(
+    {
+        'partial_matches': False,
+        'include_downstream': True,
+        'indices': {'sample': samples, 'model': models, 'sim': sims},
     }
-}).run()
+).run()
 
-#%% obtain thresholds
-data = q.threshold_data(
-    meanify=False,
-    ignore_missing=False)
+# %% obtain thresholds
+data = q.threshold_data(meanify=False, ignore_missing=False)
