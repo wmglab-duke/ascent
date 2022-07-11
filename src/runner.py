@@ -7,11 +7,9 @@ The source code can be found on the following GitHub repository: https://github.
 """
 
 
-import os
-
-os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "1"
 import base64
 import json
+import os
 import pickle
 import subprocess
 import sys
@@ -25,6 +23,7 @@ import numpy as np
 from quantiphy import Quantity
 from shapely.geometry import Point
 
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "1"
 try:
     import pymunkoptions
 
