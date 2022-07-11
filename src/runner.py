@@ -47,12 +47,8 @@ class Runner(Exceptionable, Configurable):
         # initialize Exceptionable super class
         Exceptionable.__init__(self, SetupMode.NEW)
 
-        #        this corresponds to the run index (as file name in config/user/runs/<run_index>.json
+        # this corresponds to the run index (as file name in config/user/runs/<run_index>.json
         self.number = number
-
-
-#       wrong
-
 
     def load_configs(self) -> dict:
         """
