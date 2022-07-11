@@ -23,6 +23,7 @@ import numpy as np
 from quantiphy import Quantity
 from shapely.geometry import Point
 
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "1"
 try:
     import pymunkoptions
 
@@ -47,14 +48,6 @@ from src.utils import (
     TemplateOutput,
     WriteMode,
 )
-
-os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "1"
-try:
-    import pymunkoptions
-
-    pymunkoptions.options["debug"] = False
-except:
-    pass
 
 
 class Runner(Exceptionable, Configurable):
