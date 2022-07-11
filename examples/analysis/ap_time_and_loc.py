@@ -11,23 +11,21 @@ import sys
 
 sys.path.append(os.path.sep.join([os.getcwd(), '']))
 
+import matplotlib.pyplot as plt
 import numpy as np
 
-import matplotlib.pyplot as plt
 from src.core.query import Query
 
 # set default fig size
 plt.rcParams['figure.figsize'] = list(np.array([16.8, 10.14 * 2]) / 2)
 
-q = Query({
-    'partial_matches': False,
-    'include_downstream': True,
-    'indices': {
-        'sample': [3008],
-        'model': [0, 1, 2, 11],
-        'sim': [3001]
+q = Query(
+    {
+        'partial_matches': False,
+        'include_downstream': True,
+        'indices': {'sample': [3008], 'model': [0, 1, 2, 11], 'sim': [3001]},
     }
-}).run()
+).run()
 
 q.ap_time_and_location(
     delta_V=60,
@@ -42,4 +40,5 @@ q.ap_time_and_location(
     # n_sim_filter=[0, 1, 2],
     save=True,
     subplots=True,
-    nodes_only=True)
+    nodes_only=True,
+)

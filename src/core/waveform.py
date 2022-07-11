@@ -6,21 +6,19 @@ Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
-# builtins
-import os
 
-# packages
+import csv
+import math
+import os
+import sys
+import warnings
+
+import matplotlib.pyplot as plt
 import numpy as np
 import scipy.signal as sg
-import matplotlib.pyplot as plt
-import csv
-import warnings
-import sys
-import math
 
-# ascent
-from src.utils import Exceptionable, Configurable, Saveable
-from src.utils.enums import SetupMode, Config, WaveformMode, WriteMode
+from src.utils import Configurable, Exceptionable, Saveable
+from src.utils.enums import Config, SetupMode, WaveformMode, WriteMode
 
 
 def precision_and_scale(x):
@@ -56,12 +54,7 @@ class Waveform(Exceptionable, Configurable, Saveable):
         Exceptionable.__init__(self, SetupMode.OLD, exceptions_config)
 
         # init instance variables
-        self.mode = \
-            self.dt = \
-            self.start = \
-            self.on = \
-            self.off = \
-            self.stop = None
+        self.mode = self.dt = self.start = self.on = self.off = self.stop = None
 
         self.wave: np.ndarray = None
         self.mode_str = None
@@ -72,23 +65,18 @@ class Waveform(Exceptionable, Configurable, Saveable):
             self.throw(72)
 
         # get mode
-        self.mode_str = [key for key in self.search(Config.SIM, 'waveform').keys()
-                         if key != 'global' and key != 'plot'][0]
+        self.mode_str = [
+            key for key in self.search(Config.SIM, 'waveform').keys() if key != 'global' and key != 'plot'
+        ][0]
         self.mode = [mode for mode in WaveformMode if str(mode).split('.')[-1] == self.mode_str][0]
 
         # get global vars data
-        global_parameters: dict = self.search(Config.SIM,
-                                              WaveformMode.config.value,
-                                              WaveformMode.global_parameters.value)
+        global_parameters: dict = self.search(
+            Config.SIM, WaveformMode.config.value, WaveformMode.global_parameters.value
+        )
 
         # unpack global variables
-        self.dt, \
-            self.on, \
-            self.off, \
-            self.stop = [global_parameters.get(key) for key in ['dt',
-                                                                'on',
-                                                                'off',
-                                                                'stop']]
+        self.dt, self.on, self.off, self.stop = [global_parameters.get(key) for key in ['dt', 'on', 'off', 'stop']]
 
         self.start = 0
 
@@ -123,7 +111,12 @@ class Waveform(Exceptionable, Configurable, Saveable):
                 self.throw(47)
 
             self.load(materials_path)
-            peri_conductivity = self.search(Config.MATERIALS, 'conductivities', 'weerasuriya_perineurium_DC', 'value')
+            peri_conductivity = self.search(
+                Config.MATERIALS,
+                'conductivities',
+                'weerasuriya_perineurium_DC',
+                'value',
+            )
             rho = 1 / eval(peri_conductivity)  # [S/m] -> [ohm-m]
 
         else:  # stimulation at higher frequency for block
@@ -135,34 +128,34 @@ class Waveform(Exceptionable, Configurable, Saveable):
             # C in uF/cm^2
             r1a = np.mean([385, 493])
             r2a = np.mean([1271, 2168])
-            c1a = np.mean([0.081, 0.075]) * 10 ** -6  # [uF/cm^2 -> F/cm^2]
-            c2a = np.mean([2.71, 5.12]) * 10 ** -6  # [uF/cm^2 -> F/cm^2]
+            c1a = np.mean([0.081, 0.075]) * 10**-6  # [uF/cm^2 -> F/cm^2]
+            c2a = np.mean([2.71, 5.12]) * 10**-6  # [uF/cm^2 -> F/cm^2]
 
             r1b = np.mean([108, 155])
             r2b = np.mean([277, 338])
-            c1b = np.mean([43.7, 202]) * 10 ** -6  # [uF/cm^2 -> F/cm^2]
-            c2b = np.mean([0.088, 0.083]) * 10 ** -6  # [uF/cm^2 -> F/cm^2]
+            c1b = np.mean([43.7, 202]) * 10**-6  # [uF/cm^2 -> F/cm^2]
+            c2b = np.mean([0.088, 0.083]) * 10**-6  # [uF/cm^2 -> F/cm^2]
 
             r1c = np.mean([1053, 1587])
             r2c = np.mean([385, 493])
-            c1c = np.mean([0.106, 0.104]) * 10 ** -6  # [uF/cm^2 -> F/cm^2]
-            c2c = np.mean([2.79, 5.19]) * 10 ** -6  # [uF/cm^2 -> F/cm^2]
+            c1c = np.mean([0.106, 0.104]) * 10**-6  # [uF/cm^2 -> F/cm^2]
+            c2c = np.mean([2.79, 5.19]) * 10**-6  # [uF/cm^2 -> F/cm^2]
 
             r1d = np.mean([87, 102])
             r2d = np.mean([298, 390])
-            c1d = np.mean([45.2, 201]) * 10 ** -6  # [uF/cm^2 -> F/cm^2]
-            c2d = np.mean([0.081, 0.075]) * 10 ** -6  # [uF/cm^2 -> F/cm^2]
+            c1d = np.mean([45.2, 201]) * 10**-6  # [uF/cm^2 -> F/cm^2]
+            c2d = np.mean([0.081, 0.075]) * 10**-6  # [uF/cm^2 -> F/cm^2]
 
             # Model A: Z = R1 // 1/(jwC1) // [R2 + 1/jwC2]
             za = (1 / r1a + 1j * w * c1a + 1 / (r2a + 1 / (1j * w * c2a))) ** (-1)
             za_mag = abs(za)
-            za_mag = za_mag / 100 ** 2  # [ohm-cm^2 -> ohm-m^2]
+            za_mag = za_mag / 100**2  # [ohm-cm^2 -> ohm-m^2]
             # sigmas_mag = 1 / za_mag  # [S/m^2]
 
             # Model B: Z = [R1 // 1/(jwC1)] + [R2 // 1/(jwC2)]
             zb = (1 / r1b + 1j * w * c1b) ** (-1) + (1 / r2b + 1j * w * c2b) ** (-1)
             zb_mag = abs(zb)
-            zb_mag = zb_mag / 100 ** 2  # [ohm-cm^2 -> ohm-m^2]
+            zb_mag = zb_mag / 100**2  # [ohm-cm^2 -> ohm-m^2]
             # sigmas_mag = 1 / zb_mag  # [S/m^2]
 
             # Model C: Z = R2 // [ 1/(jwC2) + [R1 // 1/(jwC1)] ]
@@ -170,7 +163,7 @@ class Waveform(Exceptionable, Configurable, Saveable):
             tmp = 1 / (1j * w * c2c) + tmp  # Right-hand branch: [ 1/(jwC2) + [R1 // 1/(jwC1)] ]
             zc = (1 / r2c + 1 / tmp) ** (-1)
             zc_mag = abs(zc)
-            zc_mag = zc_mag / 100 ** 2  # [ohm-cm^2 -> ohm-m^2]
+            zc_mag = zc_mag / 100**2  # [ohm-cm^2 -> ohm-m^2]
             # sigmas_mag = 1 / zc_mag  # [S/m^2]
 
             # Model D: Z = (1/(jwC2)) // [ R2 + [R1 // 1/(jwC1)] ]
@@ -178,7 +171,7 @@ class Waveform(Exceptionable, Configurable, Saveable):
             tmp = r2d + tmp  # Right-hand branch: [ R2 + [R1 // 1/(jwC1)] ]
             zd = (1j * w * c2d + 1 / tmp) ** (-1)
             zd_mag = abs(zd)
-            zd_mag = zd_mag / 100 ** 2  # [ohm-cm^2 -> ohm-m^2]
+            zd_mag = zd_mag / 100**2  # [ohm-cm^2 -> ohm-m^2]
             # sigmas_mag = 1 / zd_mag  # [S/m^2]
 
             # Mean of models A & B
@@ -202,7 +195,12 @@ class Waveform(Exceptionable, Configurable, Saveable):
         """
 
         # helper function to pad the start and end of signal with zeroes
-        def pad(input_wave: np.ndarray, time_step: float, start_to_on: float, off_to_stop: float) -> np.ndarray:
+        def pad(
+            input_wave: np.ndarray,
+            time_step: float,
+            start_to_on: float,
+            off_to_stop: float,
+        ) -> np.ndarray:
             """
             :param input_wave: wave (1d np.ndarray) to pad
             :param time_step: effective dt
@@ -211,9 +209,11 @@ class Waveform(Exceptionable, Configurable, Saveable):
             :return: the padded wave (1d np.ndarray)
             """
             return np.concatenate(
-                ([0] * (round(start_to_on / time_step) - 1),
-                 input_wave,
-                 [0] * (round(off_to_stop / time_step) - 1))
+                (
+                    [0] * (round(start_to_on / time_step) - 1),
+                    input_wave,
+                    [0] * (round(off_to_stop / time_step) - 1),
+                )
             )
 
         # time values to be used for all waves
@@ -283,23 +283,26 @@ class Waveform(Exceptionable, Configurable, Saveable):
 
             positive_wave = np.clip(
                 sg.square(2 * np.pi * frequency * t_signal, duty=(pw - self.dt) * frequency),
-                0, 1
+                0,
+                1,
             )
             negative_wave = np.clip(
-                -sg.square(2 * np.pi * frequency * t_signal[:-round((pw + inter_phase) / self.dt)],
-                           duty=(pw - self.dt) * frequency),
-                -1, 0
+                -sg.square(
+                    2 * np.pi * frequency * t_signal[: -round((pw + inter_phase) / self.dt)],
+                    duty=(pw - self.dt) * frequency,
+                ),
+                -1,
+                0,
             )
 
-            padded_positive = pad(positive_wave,
-                                  self.dt,
-                                  self.on - self.start,
-                                  self.stop - self.off)
+            padded_positive = pad(positive_wave, self.dt, self.on - self.start, self.stop - self.off)
 
-            padded_negative = pad(negative_wave,
-                                  self.dt,
-                                  self.on - self.start + pw + inter_phase,
-                                  self.stop - self.off)
+            padded_negative = pad(
+                negative_wave,
+                self.dt,
+                self.on - self.start + pw + inter_phase,
+                self.stop - self.off,
+            )
 
             wave = padded_positive + padded_negative
             self.wave = wave
@@ -331,23 +334,26 @@ class Waveform(Exceptionable, Configurable, Saveable):
 
             positive_wave = np.clip(
                 sg.square(2 * np.pi * frequency * t_signal, duty=(pw1 - self.dt) * frequency),
-                0, 1
+                0,
+                1,
             )
             negative_wave = np.clip(
-                -sg.square(2 * np.pi * frequency * t_signal[:-round((pw1 + inter_phase) / self.dt)],
-                           duty=(pw2 - self.dt) * frequency),
-                -1, 0
+                -sg.square(
+                    2 * np.pi * frequency * t_signal[: -round((pw1 + inter_phase) / self.dt)],
+                    duty=(pw2 - self.dt) * frequency,
+                ),
+                -1,
+                0,
             )
 
-            padded_positive = pad(positive_wave,
-                                  self.dt,
-                                  self.on - self.start,
-                                  self.stop - self.off)
+            padded_positive = pad(positive_wave, self.dt, self.on - self.start, self.stop - self.off)
 
-            padded_negative = pad(negative_wave,
-                                  self.dt,
-                                  self.on - self.start + pw1 + inter_phase,
-                                  self.stop - self.off)
+            padded_negative = pad(
+                negative_wave,
+                self.dt,
+                self.on - self.start + pw1 + inter_phase,
+                self.stop - self.off,
+            )
 
             # q-balanced
             amp1 = 1
@@ -357,11 +363,12 @@ class Waveform(Exceptionable, Configurable, Saveable):
             self.wave = wave
 
         elif self.mode == WaveformMode.EXPLICIT:
-            path_to_wave = os.path.join('config', 'user', 'waveforms',
-                                        '{}.dat'.format(str(self.search(Config.SIM,
-                                                                        'waveform',
-                                                                        WaveformMode.EXPLICIT.name,
-                                                                        'index'))))
+            path_to_wave = os.path.join(
+                'config',
+                'user',
+                'waveforms',
+                '{}.dat'.format(str(self.search(Config.SIM, 'waveform', WaveformMode.EXPLICIT.name, 'index'))),
+            )
 
             # read in wave from file
             explicit_wave = []
@@ -375,17 +382,25 @@ class Waveform(Exceptionable, Configurable, Saveable):
             dt_atol = self.search(Config.SIM, 'waveform', WaveformMode.EXPLICIT.name, 'dt_atol')
 
             if not np.isclose(dt_explicit, self.dt, atol=dt_atol):
-                warning_str = '\n Timestep provided: {} (first line in waveform file in config/user/waveforms/{}.dat' \
-                              ') \n does not match "dt" in "global" Sim parameters for time discretization in ' \
-                              'NEURON: {} \n based on set "dt_atol" parameter in Sim: {}. \n Altering your input ' \
-                              'waveform to fit NEURON time ' \
-                              'discretization.'.format(dt_explicit,
-                                                       str(self.search(Config.SIM,
-                                                                       'waveform',
-                                                                       WaveformMode.EXPLICIT.name,
-                                                                       'index')),
-                                                       self.dt,
-                                                       dt_atol)
+                warning_str = (
+                    '\n Timestep provided: {} (first line in waveform file in config/user/waveforms/{}.dat'
+                    ') \n does not match "dt" in "global" Sim parameters for time discretization in '
+                    'NEURON: {} \n based on set "dt_atol" parameter in Sim: {}. \n Altering your input '
+                    'waveform to fit NEURON time '
+                    'discretization.'.format(
+                        dt_explicit,
+                        str(
+                            self.search(
+                                Config.SIM,
+                                'waveform',
+                                WaveformMode.EXPLICIT.name,
+                                'index',
+                            )
+                        ),
+                        self.dt,
+                        dt_atol,
+                    )
+                )
                 warnings.warn(warning_str)
 
                 period_explicit = dt_explicit * len(explicit_wave)
@@ -415,7 +430,12 @@ class Waveform(Exceptionable, Configurable, Saveable):
             self.wave = signal
 
             # pad with zeros for: time before on, time after off
-            padded = pad(signal, self.dt, self.on - self.start, self.stop - (self.on + self.dt * len(signal)))
+            padded = pad(
+                signal,
+                self.dt,
+                self.on - self.start,
+                self.stop - (self.on + self.dt * len(signal)),
+            )
             self.wave = padded
 
         else:
@@ -436,7 +456,8 @@ class Waveform(Exceptionable, Configurable, Saveable):
         ax.set_title('Waveform generated from user parameters in sim.json')
 
         if final:
-            if path is None: plt.show()
+            if path is None:
+                plt.show()
             else:
                 plt.savefig(path, dpi=300)
                 fig.clear()
