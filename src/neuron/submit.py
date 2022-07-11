@@ -731,7 +731,7 @@ def make_local_submission_list(run_number: int, args, summary_gen=False):
                 sim_dir = os.path.join('n_sims')
                 sim_name_base = '{}_{}_{}_'.format(sample, model, sim)
 
-                for sim_name in [x for x in os.listdir(sim_dir) if sim_name_base in x]:
+                for sim_name in [x for x in os.listdir(sim_dir) if x.startwith(sim_name_base)]:
                     if not summary_gen and args.verbose:
                         print('\n\n################ {} ################\n\n'.format(sim_name))
 
