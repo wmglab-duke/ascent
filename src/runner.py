@@ -529,7 +529,6 @@ class Runner(Exceptionable, Configurable):
         # start comsol server
         subprocess.Popen(server_command, close_fds=True)
         # wait for server to start
-        time.sleep(30)
         os.chdir('src')
         # compile java code
         exit_code = os.system(compile_command)
