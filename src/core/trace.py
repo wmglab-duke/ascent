@@ -6,23 +6,21 @@ Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
-# builtins
-import random
-from typing import Tuple, Union, List
-from copy import deepcopy
 
-# packages
-import numpy as np
+import random
+from copy import deepcopy
+from typing import List, Tuple, Union
+
 import cv2
 import matplotlib.pyplot as plt
-from shapely.geometry import Polygon, Point
-from shapely.affinity import scale, rotate
-from shapely.ops import nearest_points
+import numpy as np
 import pyclipper
 import pymunk
+from shapely.affinity import rotate, scale
+from shapely.geometry import Point, Polygon
+from shapely.ops import nearest_points
 
-# ascent
-from src.utils import Exceptionable, DownSampleMode, Config, WriteMode, SetupMode
+from src.utils import Config, DownSampleMode, Exceptionable, SetupMode, WriteMode
 
 
 class Trace(Exceptionable):
@@ -111,14 +109,16 @@ class Trace(Exceptionable):
         Smooths a contour using a dilation followed by erosion
         :param distance: amount to use for dilation and erosion, in whatever units the trace is using
         """
-        if distance < 0: self.throw(111)
-        if distance == 0: return
+        if distance < 0:
+            self.throw(111)
+        if distance == 0:
+            return
         pre_area = self.area()
         self.offset(fit=None, distance=distance)
         self.offset(fit=None, distance=-distance)
         if area_compensation == True:
             # scale back to area of original trace
-            self.scale((pre_area / self.area())**.5)
+            self.scale((pre_area / self.area()) ** 0.5)
             if abs(pre_area - self.area()) > 1:
                 self.throw(128)
         else:
@@ -244,8 +244,9 @@ class Trace(Exceptionable):
 
         while len(points) < count:
 
-            coordinate = tuple((random.random() * (ceiling - floor)) + floor
-                               for floor, ceiling in ((min_x, max_x), (min_y, max_y)))
+            coordinate = tuple(
+                (random.random() * (ceiling - floor)) + floor for floor, ceiling in ((min_x, max_x), (min_y, max_y))
+            )
 
             if Point(coordinate).within(trace_to_compare.polygon()):
                 # print('coord:{}, {}'.format(coordinate[0], coordinate[1]))
@@ -410,8 +411,7 @@ class Trace(Exceptionable):
         (x, y) = (a * np.cos(t), b * np.sin(t))
 
         # create rotation matrix
-        rot_mat = np.array([[np.cos(angle), -np.sin(angle)],
-                            [np.sin(angle), np.cos(angle)]])
+        rot_mat = np.array([[np.cos(angle), -np.sin(angle)], [np.sin(angle), np.cos(angle)]])
 
         # apply rotation and shift to centroid
         points = (rot_mat @ np.array([x, y])).T + [u, v]
@@ -422,7 +422,13 @@ class Trace(Exceptionable):
         return Trace(points, self.configs[Config.EXCEPTIONS.value])
 
     # %% output
-    def plot(self, plot_format: str = 'k-', color: Tuple[float, float, float, float] = None, ax: plt.Axes = None, linewidth=1):
+    def plot(
+        self,
+        plot_format: str = 'k-',
+        color: Tuple[float, float, float, float] = None,
+        ax: plt.Axes = None,
+        linewidth=1,
+    ):
         """
         :param ax:
         :param color:
@@ -468,9 +474,7 @@ class Trace(Exceptionable):
                     # write coordinates
                     f.write('%% Coordinates\n')
                     for i in range(count):
-                        f.write('{}\t{}\t{}\n'.format(self.points[i, 0],
-                                                      self.points[i, 1],
-                                                      self.points[i, 2]))
+                        f.write('{}\t{}\t{}\n'.format(self.points[i, 0], self.points[i, 1], self.points[i, 2]))
 
                     # write elements (corresponding to their coordinates)
                     f.write('%% Elements\n')
@@ -485,8 +489,7 @@ class Trace(Exceptionable):
                     # write coordinates
                     f.write('%% Coordinates\n')
                     for i in range(count):
-                        f.write('{}\t{}\n'.format(self.points[i, 0],
-                                                  self.points[i, 1]))
+                        f.write('{}\t{}\n'.format(self.points[i, 0], self.points[i, 1]))
 
                 else:
                     self.throw(4)
@@ -539,10 +542,14 @@ class Trace(Exceptionable):
         for first, second in zip(points[:-1], points[1:]):
             if np.array_equiv(first[:2], second[:2]):
                 pass
-            segments.append(pymunk.Segment(space.static_body,
-                                           first[:2].tolist(),
-                                           second[:2].tolist(),
-                                           radius=1.0))
+            segments.append(
+                pymunk.Segment(
+                    space.static_body,
+                    first[:2].tolist(),
+                    second[:2].tolist(),
+                    radius=1.0,
+                )
+            )
         return segments
 
         # %% METHODS ADAPTED FROM: https://www.nayuki.io/res/smallest-enclosing-circle/smallestenclosingcircle-test.py
@@ -599,12 +606,16 @@ class Trace(Exceptionable):
             if c is None:
                 continue
             elif cross > 0.0 and (
-                    left is None or self._cross_product(px, py, qx, qy, c[0], c[1]) >
-                    self._cross_product(px, py, qx, qy, left[0], left[1])):
+                left is None
+                or self._cross_product(px, py, qx, qy, c[0], c[1])
+                > self._cross_product(px, py, qx, qy, left[0], left[1])
+            ):
                 left = c
             elif cross < 0.0 and (
-                    right is None or self._cross_product(px, py, qx, qy, c[0], c[1]) <
-                    self._cross_product(px, py, qx, qy, right[0], right[1])):
+                right is None
+                or self._cross_product(px, py, qx, qy, c[0], c[1])
+                < self._cross_product(px, py, qx, qy, right[0], right[1])
+            ):
                 right = c
 
         # Select which circle to return
@@ -637,10 +648,14 @@ class Trace(Exceptionable):
         d = (ax * (by - cy) + bx * (cy - ay) + cx * (ay - by)) * 2.0
         if d == 0.0:
             return None
-        x = ox + ((ax * ax + ay * ay) * (by - cy) + (bx * bx + by * by) * (cy - ay) + (cx * cx + cy * cy) * (
-            ay - by)) / d
-        y = oy + ((ax * ax + ay * ay) * (cx - bx) + (bx * bx + by * by) * (ax - cx) + (cx * cx + cy * cy) * (
-            bx - ax)) / d
+        x = (
+            ox
+            + ((ax * ax + ay * ay) * (by - cy) + (bx * bx + by * by) * (cy - ay) + (cx * cx + cy * cy) * (ay - by)) / d
+        )
+        y = (
+            oy
+            + ((ax * ax + ay * ay) * (cx - bx) + (bx * bx + by * by) * (ax - cx) + (cx * cx + cy * cy) * (bx - ax)) / d
+        )
         ra = np.math.hypot(x - a[0], y - a[1])
         rb = np.math.hypot(x - b[0], y - b[1])
         rc = np.math.hypot(x - c[0], y - c[1])
@@ -670,8 +685,7 @@ class Trace(Exceptionable):
             for j in range(i + 1, len(self.points)):
                 q = self.points[j]
                 c = self._make_diameter(p, q)
-                if (result is None or c[2] < result[2]) and \
-                        all(self.is_in_circle(c, r) for r in self.points):
+                if (result is None or c[2] < result[2]) and all(self.is_in_circle(c, r) for r in self.points):
                     result = c
         if result is not None:
             return result  # This optimization is not mathematically proven
@@ -684,8 +698,11 @@ class Trace(Exceptionable):
                 for k in range(j + 1, len(self.points)):
                     r = self.points[k]
                     c = self._make_circumcircle(p, q, r)
-                    if c is not None and (result is None or c[2] < result[2]) and \
-                            all(self.is_in_circle(c, s) for s in self.points):
+                    if (
+                        c is not None
+                        and (result is None or c[2] < result[2])
+                        and all(self.is_in_circle(c, s) for s in self.points)
+                    ):
                         result = c
 
         if result is None:

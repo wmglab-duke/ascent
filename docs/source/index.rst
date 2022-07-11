@@ -1,8 +1,3 @@
-.. ASCENT documentation master file, created by
-   sphinx-quickstart on Fri Sep 17 12:12:45 2021.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 .. |doi| image:: https://zenodo.org/badge/379064819.svg
    :target: https://zenodo.org/badge/latestdoi/379064819
 
@@ -104,6 +99,7 @@ Welcome to ASCENT's documentation!
    Publications_Using_ASCENT
    references
    Validation
+   Changelog
 
 .. toctree::
    :maxdepth: 2
@@ -112,3 +108,4 @@ Welcome to ASCENT's documentation!
    ASCENT Publication <https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1009285>
    ASCENT on GitHub <https://github.com/wmglab-duke/ascent>
    The Grill Lab <https://www.neuro.duke.edu/research/faculty-labs/grill-lab>
+   NIH SPARC <https://commonfund.nih.gov/sparc>
