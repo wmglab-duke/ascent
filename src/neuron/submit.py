@@ -392,7 +392,6 @@ def local_submit(my_local_args: dict):
 
     with open(out_filename, "w+") as fo, open(err_filename, "w+") as fe:
         p = subprocess.run(['bash', start] if OS == 'UNIX-LIKE' else [start], stdout=fo, stderr=fe)
-        print(p)
 
 
 def cluster_submit(run_number: int, partition: str, args, mem: int = 2000, array_length_max: int = 10):
@@ -731,7 +730,7 @@ def make_local_submission_list(run_number: int, args, summary_gen=False):
                 sim_dir = os.path.join('n_sims')
                 sim_name_base = '{}_{}_{}_'.format(sample, model, sim)
 
-                for sim_name in [x for x in os.listdir(sim_dir) if x.startwith(sim_name_base)]:
+                for sim_name in [x for x in os.listdir(sim_dir) if x.startswith(sim_name_base)]:
                     if not summary_gen and args.verbose:
                         print('\n\n################ {} ################\n\n'.format(sim_name))
 

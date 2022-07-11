@@ -23,15 +23,6 @@ import numpy as np
 from quantiphy import Quantity
 from shapely.geometry import Point
 
-os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "1"
-try:
-    import pymunkoptions
-
-    pymunkoptions.options["debug"] = False
-except:
-    pass
-
-
 from src.core import Sample, Simulation, Waveform
 from src.utils import (
     Config,
@@ -529,6 +520,7 @@ class Runner(Exceptionable, Configurable):
         # start comsol server
         subprocess.Popen(server_command, close_fds=True)
         # wait for server to start
+        time.sleep(10)
         os.chdir('src')
         # compile java code
         exit_code = os.system(compile_command)
