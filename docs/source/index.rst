@@ -1,8 +1,3 @@
-.. ASCENT documentation master file, created by
-   sphinx-quickstart on Fri Sep 17 12:12:45 2021.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 .. |doi| image:: https://zenodo.org/badge/379064819.svg
    :target: https://zenodo.org/badge/latestdoi/379064819
 
