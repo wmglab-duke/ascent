@@ -20,15 +20,7 @@ root = os.path.abspath(os.path.join(*'../../'.split('/')))
 
 os.chdir(root)
 
-criteria = {
-    'partial_matches': True,
-    'include_downstream': True,
-    'indices': {
-        'sample': [3],
-        'model': [0],
-        'sim': [0]
-    }
-}
+criteria = {'partial_matches': True, 'include_downstream': True, 'indices': {'sample': [3], 'model': [0], 'sim': [0]}}
 
 
 q = Query(criteria)
@@ -58,7 +50,9 @@ for sample_metadata in results.get('samples', []):
                 plt.figure(n)
 
                 title = ''
-                for fib_key_name, fib_key_value in zip(sim_object.fiberset_key, sim_object.fiberset_product[fiberset_index]):
+                for fib_key_name, fib_key_value in zip(
+                    sim_object.fiberset_key, sim_object.fiberset_product[fiberset_index]
+                ):
                     title = '{} {}={}'.format(title, fib_key_name, fib_key_value)
 
                 for wave_key_name, wave_key_value in zip(sim_object.wave_key, sim_object.wave_product[waveform_index]):
@@ -70,12 +64,19 @@ for sample_metadata in results.get('samples', []):
 
                 n_fibers = len(sim_object.fibersets[fiberset_index].fibers)
 
-                missing_fibers = [i for i in range(n_fibers)
-                                  if not os.path.exists(os.path.join(n_sim_dir, 'data', 'outputs', 'thresh_inner0_fiber{}.dat'.format(i)))]
+                missing_fibers = [
+                    i
+                    for i in range(n_fibers)
+                    if not os.path.exists(
+                        os.path.join(n_sim_dir, 'data', 'outputs', 'thresh_inner0_fiber{}.dat'.format(i))
+                    )
+                ]
 
-                thresholds = [np.loadtxt(
-                    os.path.join(n_sim_dir, 'data', 'outputs', 'thresh_inner0_fiber{}.dat'.format(i))
-                )[2] for i in range(n_fibers) if i not in missing_fibers]
+                thresholds = [
+                    np.loadtxt(os.path.join(n_sim_dir, 'data', 'outputs', 'thresh_inner0_fiber{}.dat'.format(i)))[2]
+                    for i in range(n_fibers)
+                    if i not in missing_fibers
+                ]
 
                 max_threshold = max(thresholds)
                 min_threshold = min(thresholds)
@@ -84,7 +85,9 @@ for sample_metadata in results.get('samples', []):
                     coord = np.loadtxt(os.path.join(fiberset_dir, filename), skiprows=1)[0][:2]
 
                     threshold = np.loadtxt(
-                        os.path.join(n_sim_dir, 'data', 'outputs', 'thresh_inner0_fiber{}.dat'.format(filename.split('.dat')[0]))
+                        os.path.join(
+                            n_sim_dir, 'data', 'outputs', 'thresh_inner0_fiber{}.dat'.format(filename.split('.dat')[0])
+                        )
                     )[2]
 
                     print((threshold - min_threshold) / (max_threshold - min_threshold))

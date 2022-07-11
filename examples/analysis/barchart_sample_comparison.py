@@ -70,18 +70,16 @@ plt.rcParams['figure.figsize'] = list(np.array([16.8, 10.14]) / 2)
 #         'sim': [3]
 #     }
 # }).run()
-#axC = qC.barcharts_compare_samples(merge_bars=True, calculation='i50')
+# axC = qC.barcharts_compare_samples(merge_bars=True, calculation='i50')
 
 # _-Madison Pig
-qMonoPolar = Query({
-    'partial_matches': True,
-    'include_downstream': True,
-    'indices': {
-        'sample': [80],  # add 71, 74
-        'model': [0],
-        'sim': [10]
+qMonoPolar = Query(
+    {
+        'partial_matches': True,
+        'include_downstream': True,
+        'indices': {'sample': [80], 'model': [0], 'sim': [10]},  # add 71, 74
     }
-}).run()
+).run()
 
 axMonoPolar = qMonoPolar.barcharts_compare_samples(save_path='out/analysis')
 

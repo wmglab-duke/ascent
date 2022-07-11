@@ -26,7 +26,9 @@ plt.plot(dpve1[1:], 'r-', label='p1')
 
 fiberset = 0
 fiber = inner
-base_fiberset = os.path.join('samples', str(sample), 'models', str(model), 'sims', str(sim), 'potentials', str(fiberset))
+base_fiberset = os.path.join(
+    'samples', str(sample), 'models', str(model), 'sims', str(sim), 'potentials', str(fiberset)
+)
 fve1 = os.path.join(base_fiberset, '{}.dat'.format(fiber))
 dfve1 = np.loadtxt(fve1)
 plt.plot(dfve1[1:], 'g--', label='f1')

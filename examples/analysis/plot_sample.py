@@ -24,11 +24,7 @@ os.chdir(root)
 criteria = {
     'partial_matches': True,
     'include_downstream': False,
-    'indices': {
-        'sample': [88],
-        'model': None,
-        'sim': None
-    }
+    'indices': {'sample': [88], 'model': None, 'sim': None},
 }
 
 

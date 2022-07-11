@@ -29,17 +29,9 @@ sims = [33]
 dats = []
 
 # %% run query search
-q = Query({
-    'partial_matches': False,
-    'include_downstream': True,
-    'indices': {
-        'sample': samples,
-        'model': models,
-        'sim': sims
-    }
-}).run()
+q = Query(
+    {'partial_matches': False, 'include_downstream': True, 'indices': {'sample': samples, 'model': models, 'sim': sims}}
+).run()
 
 # %% obtain thresholds
-data = q.threshold_data(
-    meanify=False,
-    ignore_missing=False)
+data = q.threshold_data(meanify=False, ignore_missing=False)
