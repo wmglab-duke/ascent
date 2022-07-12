@@ -72,7 +72,8 @@ class Sample(Exceptionable, Configurable, Saveable):
         # Set instance variable morphology
         self.morphology = dict()
 
-        # Add JSON for perineurium thickness relationship with nerve morphology metrics -- used to calculate contact impedances if "use_ci" is True
+        # Add JSON for perineurium thickness relationship with nerve morphology metrics
+        # used to calculate contact impedances if "use_ci" is True
         self.add(
             SetupMode.NEW,
             Config.CI_PERINEURIUM_THICKNESS,
@@ -131,10 +132,11 @@ class Sample(Exceptionable, Configurable, Saveable):
         """
         img = cv2.imread(path, -1)
 
-        if self.search(Config.SAMPLE, 'image_preprocessing', 'fill_holes', optional=True) == True:
+        if self.search(Config.SAMPLE, 'image_preprocessing', 'fill_holes', optional=True) is True:
             if self.search_mode(MaskInputMode, Config.SAMPLE) == MaskInputMode.INNER_AND_OUTER_COMPILED:
                 print(
-                    'WARNING: Skipping fill holes since MaskInputMode is INNER_AND_OUTER_COMPILED. Change fill_holes to False to suppress this warning.'
+                    'WARNING: Skipping fill holes since MaskInputMode is INNER_AND_OUTER_COMPILED. '
+                    'Change fill_holes to False to suppress this warning.'
                 )
             else:
                 img = binary_fill_holes(img).astype(int) * 255
@@ -280,7 +282,6 @@ class Sample(Exceptionable, Configurable, Saveable):
         deform_mode = self.search_mode(DeformationMode, Config.SAMPLE)
         deform_ratio = None
         scale_input_mode = self.search_mode(ScaleInputMode, Config.SAMPLE, optional=True)
-        plot = self.search(Config.SAMPLE, 'plot', optional=True)
         sample_rotation = self.search(Config.SAMPLE, "rotation", optional=True)
 
         # For backwards compatibility, if scale mode is not specified assume a mask image is provided
@@ -377,7 +378,8 @@ class Sample(Exceptionable, Configurable, Saveable):
                 mask_dims.append(cv2.imread(getattr(scalemask, 'value')).shape)
                 if not np.all(np.array(mask_dims) == mask_dims[0]):
                     print(
-                        'WARNING: Scale bar mask has a different resolution than morphology masks. \nProgram will continue and assume that the scale bar mask microns/pixel ratio is correct.'
+                        'WARNING: Scale bar mask has a different resolution than morphology masks. \n'
+                        'Program will continue and assume that the scale bar mask microns/pixel ratio is correct.'
                     )
             # fascicles list
             fascicles: List[Fascicle] = []
@@ -526,7 +528,7 @@ class Sample(Exceptionable, Configurable, Saveable):
             title='Initial sample from morphology masks',
         )
         plt.savefig(plotpath + '/sample_initial', dpi=400)
-        if self.search(Config.RUN, "popup_plots", optional=True) == True:
+        if self.search(Config.RUN, "popup_plots", optional=True) is True:
             plt.show()
         else:
             plt.clf()
@@ -536,7 +538,7 @@ class Sample(Exceptionable, Configurable, Saveable):
         n_distance = self.search(Config.SAMPLE, 'smoothing', 'nerve_distance', optional=True)
         i_distance = self.search(Config.SAMPLE, 'smoothing', 'fascicle_distance', optional=True)
         # smooth traces
-        if not (n_distance == i_distance == None):
+        if not (n_distance == i_distance is None):
             if nerve_mode == NerveMode.PRESENT and n_distance is None:
                 self.throw(112)
             else:
@@ -595,8 +597,8 @@ class Sample(Exceptionable, Configurable, Saveable):
                 slide.nerve.points = np.flip(slide.nerve.points, axis=0)  # set points to opencv orientation
 
                 if (
-                    self.configs[Config.CLI_ARGS.value].get('render_deform') == True
-                    or self.search(Config.SAMPLE, 'render_deform', optional=True) == True
+                    self.configs[Config.CLI_ARGS.value].get('render_deform') is True
+                    or self.search(Config.SAMPLE, 'render_deform', optional=True) is True
                 ):
                     render_deform = True
                     print('Sample deformation is set to render. Rendering...')
@@ -696,7 +698,7 @@ class Sample(Exceptionable, Configurable, Saveable):
             title='Final sample after any user specified processing',
         )
         plt.savefig(plotpath + '/sample_final', dpi=400)
-        if self.search(Config.RUN, "popup_plots", optional=True) == True:
+        if self.search(Config.RUN, "popup_plots", optional=True) is True:
             plt.show()
         else:
             plt.clf()

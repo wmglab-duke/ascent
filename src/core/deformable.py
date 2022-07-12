@@ -78,7 +78,7 @@ class Deformable(Exceptionable):
 
         # initialize drawing vars, regardless of whether or not actually rendering
         # these have been moved below (if render...)
-        drawing_screen = options = display_dimensions = None
+        options = None
 
         # initialize the physics space (gravity is 0)
         space = pymunk.Space()
