@@ -1,5 +1,6 @@
 autopep8
 flake8
+flake8-eradicate
 pylint
 sphinx
 sphinx-rtd-theme

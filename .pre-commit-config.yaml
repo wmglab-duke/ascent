@@ -18,3 +18,9 @@ repos:
     hooks:
       - id: black
         args: [".", "run"]
+#note add in more files to flake8 as they get cleaned up, also eventually remove the ignored warnings
+-   repo: https://github.com/pycqa/flake8
+    rev: 4.0.1
+    hooks:
+      - id: flake8
+        args: ["src/core/simulation.py", "src/core/fiberset.py"]

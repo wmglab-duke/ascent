@@ -74,9 +74,6 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         :return:
         """
 
-        xy_mode_name: str = self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode')
-        xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
-
         fibers_xy = self._generate_xy(sim_directory)
         self.out_to_fib, self.out_to_in = self._generate_maps(fibers_xy)
         self.fibers = self._generate_z(fibers_xy, super_sample=super_sample)
@@ -163,8 +160,8 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                 # DENSITY UNIT: axons / um^2
 
                 # this determines whether the density should be determined top-down or bottom-up
-                # case top_down == true: fetch target density and cap minimum axons if too low
-                # case top_down == false: (i.e. bottom-up) find density from target number and smallest inner by area
+                # case top_down is True: fetch target density and cap minimum axons if too low
+                # case top_down is False: (i.e. bottom-up) find density from target number and smallest inner by area
                 #   also cap the number at a maximum!
                 top_down: bool = self.search(Config.SIM, 'fibers', 'xy_parameters', 'top_down')
 
@@ -333,7 +330,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             )
             for point in points:
                 plt.plot(point[0], point[1], 'r.', markersize=1)
-            if self.search(Config.RUN, 'popup_plots', optional=True) == False:
+            if self.search(Config.RUN, 'popup_plots', optional=True) is False:
                 plt.savefig(sim_directory + '/plots/fibers_xy.png', dpi=300)
                 fig.clear
                 plt.close(fig)
@@ -493,7 +490,8 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             )
             if offset is None:
                 warnings.warn(
-                    'No offset specified. Proceeding with (original default functionality) of randomized offset. Suppress this warning by including the parameter "offset":"random" in fiber z_parameters.'
+                    'No offset specified. Proceeding with (original default functionality) of randomized offset. '
+                    'Suppress this warning by including the parameter "offset":"random" in fiber z_parameters.'
                 )
                 offset = 'random'
             if offset == 'random':
@@ -507,11 +505,6 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
             # compute offset z coordinate
             z_offset = [my_z + offset + random_offset_value + additional_offset for my_z in z_values]
-
-            # xy_mode_name: str = self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode')
-            # xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
-
-            # only clip if NOT an SL fiber
 
             z_offset = clip(
                 z_offset,
@@ -539,8 +532,8 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             )
 
             if (
-                not 'min' in self.configs['sims']['fibers']['z_parameters'].keys()
-                or not 'max' in self.configs['sims']['fibers']['z_parameters'].keys()
+                'min' not in self.configs['sims']['fibers']['z_parameters'].keys()
+                or 'max' not in self.configs['sims']['fibers']['z_parameters'].keys()
                 or override_length is not None
             ):
                 fiber_length = model_length if override_length is None else override_length
@@ -549,16 +542,17 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
                 if (
                     override_length is None
-                    and self.configs['sims']['fibers']['z_parameters'].get('full_nerve_length') != True
+                    and self.configs['sims']['fibers']['z_parameters'].get('full_nerve_length') is not True
                 ):
                     warnings.warn(
                         'Program assumed fiber length same as proximal length since "min" and "max" fiber '
-                        'length not defined in Config.Sim "fibers" -> "z_parameters". Suppress this warning by adding "full_nerve_length = true" to your z_parameters.'
+                        'length not defined in Config.Sim "fibers" -> "z_parameters". '
+                        'Suppress this warning by adding "full_nerve_length = true" to your z_parameters.'
                     )
                 self.configs['sims']['fibers'][FiberZMode.parameters.value]['full_nerve_length'] = False
 
             else:
-                if self.configs['sims']['fibers']['z_parameters'].get('full_nerve_length') == True:
+                if self.configs['sims']['fibers']['z_parameters'].get('full_nerve_length') is True:
                     self.throw(127)
 
                 min_fiber_z_limit = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'min')
