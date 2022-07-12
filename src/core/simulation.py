@@ -58,13 +58,11 @@ class Simulation(Exceptionable, Configurable, Saveable):
         def search(dictionary, path):
             for key, value in dictionary.items():
                 if type(value) == list and len(value) > 1:
-                    # print('adding key {} to sub {}'.format(key, sub))
                     self.factors[path + '->' + key] = value
                 elif type(value) == list and len(value) <= 1:
                     print("ERROR:", key, "is a list, but has length", len(value))
                     self.throw(137)
                 elif type(value) == dict:
-                    # print('recurse: {}'.format(value))
                     search(value, path + '->' + key)
 
         for flag in ['fibers', 'waveform', 'supersampled_bases']:
@@ -173,7 +171,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
             waveform.plot(final=True, path=path)
 
-            if self.search(Config.RUN, "popup_plots", optional=True) == True:
+            if self.search(Config.RUN, "popup_plots", optional=True) is True:
                 waveform.plot(final=True, path=None)
 
             self.waveforms.append(waveform)
@@ -190,7 +188,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
             active_srcs_list = self.search(Config.SIM, "active_srcs", cuff)
         else:
             ss = self.search(Config.SIM, 'supersampled_bases', optional=True)
-            if ss is not None and ss['use'] == True:
+            if ss is not None and ss['use'] is True:
                 self.throw(130)
             # otherwise, use the default weights (generally you don't want to rely on this as cuffs have different
             # numbers of contacts
@@ -210,10 +208,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 if sum(active_srcs) not in [1, -1]:
                     self.throw(50)
             else:
-                # if sum(active_srcs) is not 0:
-                #     self.throw(49)
-                # if sum(active_src_abs) is not 2:
-                #     self.throw(50)
                 pass
 
         self.potentials_product = list(
@@ -276,16 +270,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 pickle.dump(inner_fiber_diam_key, f)
                 f.close()
 
-        # loop cartesian product
-        # key_filepath = os.path.join(sim_dir, "potentials", "key.dat")  # s is line number
-        # f = open(key_filepath, "r")
-        # contents = f.read()
-        # s_s = range(int(contents[0]))
-        # q_s = range(len(self.wave_product))
-        #
-        # prods = list(itertools.product(s_s, q_s))
-        # self.master_product_indices = prods
-
         n_inners = 0
         for fascicle in self.sample.morphology['Fascicles']:
             n_inners += len(fascicle["inners"])
@@ -320,10 +304,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
             fiberset_vals = self.fiberset_product[fiberset_ind]
 
             # pair down simulation config to no lists of parameters (corresponding to the neuron simulation index t)
-            # print('active_src_ind: {}'.format(str(active_src_ind)))
-            # print('src_key: {}'.format(str(self.src_key)))
-            # print('active_src_vals: {}'.format(str(active_src_vals)))
-
             sim_copy = self._copy_and_edit_config(
                 self.configs[Config.SIM.value],
                 self.src_key,
@@ -531,7 +511,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
                             return a, b, c
 
         out_fib, out_in = self.fiberset_map_pairs[p]
-        # out_fib[0][0] = [n for n in range(100)]
         i, j, k = search(out_fib, q)
         return out_in[i][j], k
 
@@ -604,7 +583,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
                     shutil.rmtree(target)
                 elif export_behavior == ExportMode.ERROR.value:
                     sys.exit('{} already exists, exiting...'.format(target))
-                elif export_behavior == ExportMode.SELECTIVE.value or export_behavior == None:
+                elif export_behavior == ExportMode.SELECTIVE.value or export_behavior is None:
                     print('\tSkipping n_sim export for {} because folder already exists.'.format(target))
                     continue
                 else:
