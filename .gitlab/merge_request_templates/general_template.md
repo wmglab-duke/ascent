@@ -9,8 +9,8 @@
 
 ## Checklist before requesting a review
 - [ ] I have performed a self-review of my code
-- [ ] I have ensured my code follows style formatting requirements [link to wiki](link) (ignore/remove line for now) 
+- [ ] I have ensured my code follows style formatting requirements [link to wiki](link) (ignore/remove line for now)
 - [ ] I have commented my code thoroughly, particularly in hard-to-understand areas
 - [ ] I have added a label and reviewer to this merge request
 - [ ] I have made all relevant changes to the documentation
-- [ ] I have tested the code and it works as expected (if n/a remove this line) 
+- [ ] I have tested the code and it works as expected (if n/a remove this line)
