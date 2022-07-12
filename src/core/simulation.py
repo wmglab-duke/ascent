@@ -102,8 +102,12 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
             fiberset = FiberSet(self.sample, self.configs[Config.EXCEPTIONS.value])
             fiberset.add(SetupMode.OLD, Config.SIM, sim_copy).add(
-                SetupMode.OLD, Config.MODEL, self.configs[Config.MODEL.value]
-            ).add(SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value]).generate(sim_directory).write(
+                SetupMode.OLD, Config.RUN, self.configs[Config.RUN.value]
+            ).add(SetupMode.OLD, Config.MODEL, self.configs[Config.MODEL.value]).add(
+                SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value]
+            ).generate(
+                sim_directory
+            ).write(
                 WriteMode.DATA, fiberset_directory
             )
 
@@ -127,8 +131,10 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
             fiberset = FiberSet(self.sample, self.configs[Config.EXCEPTIONS.value])
             fiberset.add(SetupMode.OLD, Config.SIM, self.configs[Config.SIM.value]).add(
-                SetupMode.OLD, Config.MODEL, self.configs[Config.MODEL.value]
-            ).add(SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value]).generate(
+                SetupMode.OLD, Config.RUN, self.configs[Config.RUN.value]
+            ).add(SetupMode.OLD, Config.MODEL, self.configs[Config.MODEL.value]).add(
+                SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value]
+            ).generate(
                 sim_directory, super_sample=generate_ss_bases
             ).write(
                 WriteMode.DATA, ss_fibercoords_directory
