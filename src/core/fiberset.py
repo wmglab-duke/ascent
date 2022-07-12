@@ -149,7 +149,6 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
         # small behavioral parameters
         buffer: float = self.search(Config.SIM, 'fibers', 'xy_trace_buffer')
-        plot: bool = self.search(Config.SIM, 'fibers', 'plot')
 
         # perform implemented mode
         if self.search_mode(FiberZMode, Config.MODEL) == FiberZMode.EXTRUSION:
@@ -325,22 +324,21 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                         print("Explicit fiber coordinate: {} does not fall in an inner".format(fiber))
                         self.throw(71)
 
-            if plot:
-                fig = plt.figure()
-                self.sample.slides[0].plot(
-                    final=False,
-                    fix_aspect_ratio='True',
-                    axlabel=u"\u03bcm",
-                    title='Fiber locations for nerve model',
-                )
-                for point in points:
-                    plt.plot(point[0], point[1], 'r.', markersize=1)
-                if self.search(Config.SIM, 'plot_folder', optional=True) == True:
-                    plt.savefig(sim_directory + '/plots/fibers_xy.png', dpi=300)
-                    fig.clear
-                    plt.close(fig)
-                else:
-                    plt.show()
+            fig = plt.figure()
+            self.sample.slides[0].plot(
+                final=False,
+                fix_aspect_ratio='True',
+                axlabel=u"\u03bcm",
+                title='Fiber locations for nerve model',
+            )
+            for point in points:
+                plt.plot(point[0], point[1], 'r.', markersize=1)
+            if self.search(Config.RUN, 'popup_plots', optional=True) == False:
+                plt.savefig(sim_directory + '/plots/fibers_xy.png', dpi=300)
+                fig.clear
+                plt.close(fig)
+            else:
+                plt.show()
         else:
             self.throw(30)
 
