@@ -74,7 +74,7 @@ def run(args):
         end = time.time()
         elapsed = end - start
 
-        if args.auto_submit or runner.search(Config.RUN, 'auto_submit_fibers', optional=True) == True:
+        if args.auto_submit or runner.search(Config.RUN, 'auto_submit_fibers', optional=True) is True:
             print('Auto submitting fibers for run {}'.format(argument))
             # submit fibers before moving on to next run
             reset_dir = os.getcwd()
@@ -91,7 +91,7 @@ def run(args):
                     print('WARNING: Non-zero exit code during fiber submission. Continuing to next run...')
             os.chdir(reset_dir)
 
-        print('\n Run {} runtime: {} (hh:mm:ss)'.format(argument, time.strftime('%H:%M:%S', time.gmtime(elapsed))))
+        print('\nRun {} runtime: {} (hh:mm:ss)'.format(argument, time.strftime('%H:%M:%S', time.gmtime(elapsed))))
 
     # cleanup for console viewing/inspecting
     del start, end
