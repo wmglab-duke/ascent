@@ -54,13 +54,6 @@ black:
     - pip install black
     - black --check config docs examples scripts src run
 
-#while in the process of adding more files remember to keep this up to date with pre-commit config
-flake8:
-  stage: lint
-  script:
-    - pip install flake8
-    - flake8 src/core/simulation.py src/core/fiberset.py
-
 test_docs:
   stage: test
   script:
