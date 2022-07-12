@@ -4,9 +4,7 @@
 The copyrights of this software are owned by Duke University.
 Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
-"""
 
-"""
 Description:
 
     OVERVIEW
@@ -195,7 +193,7 @@ class Map(Exceptionable, Configurable):
                 for prefix in prefixes:
                     if re.match(prefix, file) is not None:
                         # remove leading code (separated by '_') and any extra '_'
-                        new_file = '_'.join([f for f in file.split('_')[1:] if f is not ''])
+                        new_file = '_'.join([f for f in file.split('_')[1:] if f != ''])
                         os.rename('{}/{}'.format(root, file), '{}/{}'.format(root, new_file))
 
                 for key in remove_keys:

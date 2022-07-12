@@ -130,7 +130,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         xy_mode_name: str = self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode')
         xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
         large_end_nodes = False if not xy_mode == FiberXYMode.SL_PSEUDO_INTERP else True
-        file_object.write("large_end_nodes      = %0.0f\n" % int(large_end_nodes == True))
+        file_object.write("large_end_nodes      = %0.0f\n" % int(large_end_nodes is True))
 
         if fiber_model_info.get("neuron_flag") == 3:
             channels = fiber_model_info.get("channels_type")
@@ -208,27 +208,27 @@ class HocWriter(Exceptionable, Configurable, Saveable):
             # saving: dict = self.search(Config.SIM, "saving")
 
         file_object.write(
-            "saveflag_Vm_time      = %0.0f\n" % int(self.search(Config.SIM, "saving", "time", "vm") == True)
+            "saveflag_Vm_time      = %0.0f\n" % int(self.search(Config.SIM, "saving", "time", "vm") is True)
         )
         file_object.write(
-            "saveflag_gating_time  = %0.0f\n" % int(self.search(Config.SIM, "saving", "time", "gating") == True)
+            "saveflag_gating_time  = %0.0f\n" % int(self.search(Config.SIM, "saving", "time", "gating") is True)
         )
         file_object.write(
-            "saveflag_Vm_space     = %0.0f\n" % int(self.search(Config.SIM, "saving", "space", "vm") == True)
+            "saveflag_Vm_space     = %0.0f\n" % int(self.search(Config.SIM, "saving", "space", "vm") is True)
         )
         file_object.write(
-            "saveflag_gating_space = %0.0f\n" % int(self.search(Config.SIM, "saving", "space", "gating") == True)
+            "saveflag_gating_space = %0.0f\n" % int(self.search(Config.SIM, "saving", "space", "gating") is True)
         )
         file_object.write("saveflag_Ve           = %0.0f\n" % int(False))
         file_object.write(
-            "saveflag_Istim        = %0.0f\n" % int(self.search(Config.SIM, "saving", "time", "istim") == True)
+            "saveflag_Istim        = %0.0f\n" % int(self.search(Config.SIM, "saving", "time", "istim") is True)
         )
 
         if 'runtimes' not in self.configs[Config.SIM.value]['saving'].keys():
             file_object.write("saveflag_runtime     = %0.0f\n" % 0)
         else:
             file_object.write(
-                "saveflag_runtime     = %0.0f\n" % int(self.search(Config.SIM, "saving", "runtimes") == True)
+                "saveflag_runtime     = %0.0f\n" % int(self.search(Config.SIM, "saving", "runtimes") is True)
             )
 
         if 'end_ap_times' in self.configs[Config.SIM.value]['saving'].keys():
@@ -254,8 +254,6 @@ class HocWriter(Exceptionable, Configurable, Saveable):
             )
 
         file_object.write("\n//***************** Protocol Parameters *********\n")
-
-        protocol: dict = self.search(Config.SIM, "protocol")
 
         protocol_mode_name: str = self.search(Config.SIM, 'protocol', 'mode')
         try:

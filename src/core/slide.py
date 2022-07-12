@@ -650,12 +650,6 @@ class Slide(Exceptionable):
             # attempt to move in direction of closest boundary
             _, min_dist_intersection_initial = fascicle.centroid_distance(self.nerve, return_points=True)
             _, min_dist_intersection_final = fascicle.centroid_distance(new_nerve, return_points=True)
-            min_distance_length = LineString(
-                [
-                    min_dist_intersection_final[1].coords[0],
-                    min_dist_intersection_initial[1].coords[0],
-                ]
-            ).length
             min_distance_vector = np.array(min_dist_intersection_final[1].coords[0]) - np.array(
                 min_dist_intersection_initial[1].coords[0]
             )
