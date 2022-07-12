@@ -412,7 +412,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
                                 if threshold.size > 1:
                                     threshold = threshold[-1]
-                                if meanify == True:
+                                if meanify is True:
                                     thresholds.append(abs(threshold))
                                 else:
                                     alldat.append(
@@ -428,7 +428,7 @@ class Query(Exceptionable, Configurable, Saveable):
                                         }
                                     )
 
-                        if meanify == True:
+                        if meanify is True:
                             if len(thresholds) == 0:
                                 alldat.append(
                                     {
@@ -493,9 +493,12 @@ class Query(Exceptionable, Configurable, Saveable):
         """
         Generate activation thresholds heatmaps
 
-        Each plot represents a single 1-dimensional simulation, with each subplot representing a single value from the
-        parameter that is being iterated over. For instace, a sim with many different fiber diamaters will have each subplot
-        represent a single fiber diameter. In a future release, multidimensional sims will be accounted for; this may
+        Each plot represents a single 1-dimensional simulation,
+        with each subplot representing a single value from the
+        parameter that is being iterated over.
+        For instace, a sim with many different fiber diamaters will have each subplot
+        represent a single fiber diameter.
+        In a future release, multidimensional sims will be accounted for; this may
         illicit changing the underlying data structure.
 
         Args:
@@ -504,7 +507,8 @@ class Query(Exceptionable, Configurable, Saveable):
                 'average': each inner is filled with the color corresponding to the average of its fiber thresholds
                 'individual': each fiber is plotted individually with its corresponding color.
                 Defaults to 'average'.
-            save_path (str, optional): Path to which plots are saved as PNG files. If None, will not save. Defaults to None.
+            save_path (str, optional): Path to which plots are saved as PNG files.
+                If None, will not save. Defaults to None.
             plot_outers (bool, optional): Draw outer perineurium trace. Defaults to False.
             rows_override (int, optional):
                 Force number of rows; this number <= number of items in sim dimension (i.e., fiber diameters).
@@ -514,12 +518,14 @@ class Query(Exceptionable, Configurable, Saveable):
                 'figure': one colorbar for the entire figure (i.e., all colors are on same scale).
                 Defaults to 'subplot'.
             colormap_str (str, optional): Matplotlib colormap theme. Defaults to 'coolwarm'.
-            colorbar_text_size_override (int, optional): Override system default for colorbar text size. Defaults to None.
+            colorbar_text_size_override (int, optional): Override system default for colorbar text size.
+                Defaults to None.
             reverse_colormap (bool, optional): Invert direction of colormap. Defaults to True.
             colorbar_aspect (int, optional): Override system default for color aspect ratio. Defaults to None.
             colomap_bounds_override (List[List[Tuple[float, float]]], optional):
                 List (an item per sim/figure), where each item is a list of tuples (bounds for each subplot).
-                These bounds may be generated as output by toggling the `track_colormap_bounds` parameter.  Defaults to None.
+                These bounds may be generated as output by toggling the `track_colormap_bounds` parameter.
+                    Defaults to None.
             track_colormap_bounds (bool, optional): Output colormap bounds in format described above. Defaults to False.
             track_colormap_bounds_offset_ratio (float, optional):
                 Step bound extremes towards mean by ratio. This can be helpful when a few fascicle have thresholds that
@@ -530,10 +536,12 @@ class Query(Exceptionable, Configurable, Saveable):
             title_toggle (bool, optional): Plot title. Defaults to True.
             subplot_title_toggle (bool, optional): Plot subplot title. Defaults to True.
             tick_count (int, optional): Colorbar tick count. Defaults to 2.
-            tick_bounds (bool, optional): Ticks only at min and max of colorbar (override tick_count). Defaults to False.
+            tick_bounds (bool, optional): Ticks only at min and max of colorbar (override tick_count).
+                Defaults to False.
             show_orientation_point (bool, optional):
-                If an orientation mask was used, plot the direction as a dot outside of the nerve trace. Defaults to True.
-                        :param subthresh_color:
+                If an orientation mask was used, plot the direction as a dot outside of the nerve trace.
+                    Defaults to True.
+            :param subthresh_color:
             :param suprathresh_color:
             :param cutoff_thresh:
             :param show_orientation_point:
@@ -1817,13 +1825,9 @@ class Query(Exceptionable, Configurable, Saveable):
     ):
 
         print(
-            f'Finding time and location of action potentials, which are defined as any voltage deflection of {delta_V} mV.'
+            'Finding time and location of action potentials, '
+            f'which are defined as any voltage deflection of {delta_V} mV.'
         )
-
-        if plot:
-            print(
-                'Note: Plotting is currently only defined for MRG axons in the SL branch; plotting for other axon models/locations may yield unexpected results.'
-            )
 
         # loop samples
         for sample_index, sample_results in [(s['index'], s) for s in self._result.get('samples')]:
@@ -1841,7 +1845,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
                     sim_object = self.get_object(Object.SIMULATION, [sample_index, model_index, sim_index])
 
-                    if subplots == True:
+                    if subplots is True:
                         fig, axs = plt.subplots(
                             ncols=len(sim_object.master_product_indices),
                             nrows=2,
@@ -1890,7 +1894,8 @@ class Query(Exceptionable, Configurable, Saveable):
                         # first row is holds column labels, so this is skipped (time, node0, node1, ...)
                         vm_t_data = np.loadtxt(vm_t_path, skiprows=1)
 
-                        # find V-nought be averaging voltage of all nodes at first timestep (assuming no stimulation at time=0)
+                        # find V-nought be averaging voltage of all nodes at first timestep
+                        # (assuming no stimulation at time=0)
                         V_o = np.mean(vm_t_data[0, 1:])
                         # if using absolute voltage, set an absolute delta V (i.e., -30mV)
                         if absolute_voltage:
@@ -1936,7 +1941,7 @@ class Query(Exceptionable, Configurable, Saveable):
                             # plot the AP location with voltage trace
                             # create subplots
                             if plot or save:
-                                if subplots != True:
+                                if subplots is not True:
                                     fig, axes = plt.subplots(2, 1)
                                 else:
                                     axes = [axs[0][n_sim_index], axs[1][n_sim_index]]
@@ -1945,7 +1950,7 @@ class Query(Exceptionable, Configurable, Saveable):
                                 nodefiber = fiber[0::11, :]
 
                                 # plot fiber coordinates in 2D
-                                if nodes_only != True:
+                                if nodes_only is not True:
                                     axes[0].plot(fiber[:, 0], fiber[:, 2], 'b.', label='fiber')
                                 else:
                                     axes[0].plot(
@@ -1971,7 +1976,7 @@ class Query(Exceptionable, Configurable, Saveable):
                                 axes[0].set_xlabel('x location, µm')
 
                                 axes[0].set_title(f'{n_sim_label}{model_label}')
-                                if subplots != True:
+                                if subplots is not True:
                                     axes[0].legend(['fiber', f'AP ({message})'])
                                 else:
                                     axes[0].legend(['fiber', 'AP'])
@@ -1984,7 +1989,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
                                 # voltages display settings
                                 axes[1].set_xlabel('node')
-                                if subplots != True or n_sim_index == 0:
+                                if subplots is not True or n_sim_index == 0:
                                     axes[1].set_ylabel('voltage (mV)')
                                     axes[0].set_ylabel('z location, µm')
                                 # axes[1].set_aspect(0.25)
@@ -1993,7 +1998,8 @@ class Query(Exceptionable, Configurable, Saveable):
                             # display
                             if save:
                                 plt.savefig(
-                                    f'out/analysis/ap_time_loc_{sample_index}_{model_index}_{sim_index}_{n_sim_index}.png',
+                                    'out/analysis/ap_time_loc_'
+                                    f'{sample_index}_{model_index}_{sim_index}_{n_sim_index}.png',
                                     dpi=300,
                                 )
 

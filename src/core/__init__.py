@@ -18,3 +18,19 @@ from src.core.simulation import Simulation
 from src.core.waveform import Waveform
 from src.core.fiberset import FiberSet
 from src.core.hocwriter import HocWriter
+
+__all__ = [
+    'Map',
+    'SlideInfo',
+    'Trace',
+    'Slide',
+    'Fascicle',
+    'Nerve',
+    'Sample',
+    'MockSample',
+    'Deformable',
+    'Simulation',
+    'Waveform',
+    'FiberSet',
+    'HocWriter',
+]
