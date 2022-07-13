@@ -59,7 +59,7 @@ flake8:
   stage: lint
   script:
     - pip install flake8
-    - flake8 src/core
+    - flake8 src
 
 test_docs:
   stage: test
