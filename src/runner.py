@@ -7,11 +7,9 @@ The source code can be found on the following GitHub repository: https://github.
 """
 
 
-import os
-
-os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "1"
 import base64
 import json
+import os
 import pickle
 import subprocess
 import sys
@@ -25,20 +23,11 @@ import numpy as np
 from quantiphy import Quantity
 from shapely.geometry import Point
 
-try:
-    import pymunkoptions
-
-    pymunkoptions.options["debug"] = False
-except:
-    pass
-
-
 from src.core import Sample, Simulation, Waveform
 from src.utils import (
     Config,
     Configurable,
     CuffShiftMode,
-    DownSampleMode,
     Env,
     Exceptionable,
     ExportMode,
@@ -115,29 +104,20 @@ class Runner(Exceptionable, Configurable):
 
         return configs
 
-    def run(self, smart: bool = True):
+    def load_obj(self, path: str):
         """
-        :param smart: bool telling the program whether to reprocess the sample or not if it already exists as sample.obj
-        :return: nothing to memory, spits out all pipeline related data to file
+        :param path: path to python obj file
+        :return: obj file
         """
-        # NOTE: single sample per Runner, so no looping of samples
-        #       possible addition of functionality for looping samples in start.py
+        return pickle.load(open(path, 'rb')).add(SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value])
 
+    def setup_run(self):
         # load all json configs into memory
         all_configs = self.load_configs()
 
         run_pseudonym = self.configs[Config.RUN.value].get('pseudonym')
         if run_pseudonym is not None:
             print('Run pseudonym:', run_pseudonym)
-
-        def load_obj(path: str):
-            """
-            :param path: path to python obj file
-            :return: obj file
-            """
-            return pickle.load(open(path, 'rb')).add(
-                SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value]
-            )
 
         # ensure NEURON files exist in export location
         Simulation.export_neuron_files(os.environ[Env.NSIM_EXPORT_PATH.value])
@@ -155,8 +135,9 @@ class Runner(Exceptionable, Configurable):
         ):
             self.throw(80)
 
-        potentials_exist: List[bool] = []  # if all of these are true, skip Java
-        ss_bases_exist: List[bool] = []  # if all of these are true, skip Java
+        return all_configs
+
+    def generate_sample(self, all_configs, smart=True):
 
         sample_num = self.configs[Config.RUN.value]['sample']
 
@@ -172,7 +153,7 @@ class Runner(Exceptionable, Configurable):
         # instantiate sample
         if smart and os.path.exists(sample_file):
             print('Found existing sample {} ({})'.format(self.configs[Config.RUN.value]['sample'], sample_file))
-            sample = load_obj(sample_file)
+            sample = self.load_obj(sample_file)
         else:
             # init slide manager
             sample = Sample(self.configs[Config.EXCEPTIONS.value])
@@ -188,172 +169,189 @@ class Runner(Exceptionable, Configurable):
                 os.path.join(sample_file)
             )
 
+        return sample, sample_num
+
+    def prep_model(self, all_configs, model_index, model_config, sample, sample_num):
+        model_num = self.configs[Config.RUN.value]['models'][model_index]
+        model_pseudonym = model_config.get('pseudonym')
+        print('\tMODEL {}'.format(model_num), '- {}'.format(model_pseudonym) if model_pseudonym is not None else '')
+
+        # use current model index to computer maximum cuff shift (radius) .. SAVES to file in method
+        model_config = self.compute_cuff_shift(model_config, sample, all_configs[Config.SAMPLE.value][0])
+
+        model_config_file_name = os.path.join(
+            os.getcwd(), 'samples', str(sample_num), 'models', str(model_num), 'model.json'
+        )
+
+        # write edited model config in place
+        TemplateOutput.write(model_config, model_config_file_name)
+
+        # use current model index to compute electrical parameters ... SAVES to file in method
+        self.compute_electrical_parameters(all_configs, model_index)
+
+        return model_num
+
+    def sim_setup(self, sim_index, sim_config, sample_num, model_num, smart, sample, model_config):
+        sim_num = self.configs[Config.RUN.value]['sims'][sim_index]
+        sim_pseudonym = sim_config.get('pseudonym')
+        print(
+            '\t\tSIM {}'.format(self.configs[Config.RUN.value]['sims'][sim_index]),
+            '- {}'.format(sim_pseudonym) if sim_pseudonym is not None else '',
+        )
+
+        sim_obj_dir = os.path.join(
+            os.getcwd(), 'samples', str(sample_num), 'models', str(model_num), 'sims', str(sim_num)
+        )
+
+        sim_obj_file = os.path.join(sim_obj_dir, 'sim.obj')
+
+        # init fiber manager
+        if smart and os.path.exists(sim_obj_file):
+            print(
+                '\t    Found existing sim object for sim {} ({})'.format(
+                    self.configs[Config.RUN.value]['sims'][sim_index], sim_obj_file
+                )
+            )
+
+            simulation: Simulation = self.load_obj(sim_obj_file)
+
+        else:
+            if not os.path.exists(sim_obj_dir):
+                os.makedirs(sim_obj_dir)
+
+            if not os.path.exists(sim_obj_dir + '/plots'):
+                os.makedirs(sim_obj_dir + '/plots')
+
+            simulation: Simulation = Simulation(sample, self.configs[Config.EXCEPTIONS.value])
+            simulation.add(SetupMode.OLD, Config.MODEL, model_config).add(SetupMode.OLD, Config.SIM, sim_config).add(
+                SetupMode.OLD, Config.RUN, self.configs[Config.RUN.value]
+            ).add(
+                SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value]
+            ).resolve_factors().write_waveforms(
+                sim_obj_dir
+            ).write_fibers(
+                sim_obj_dir
+            ).validate_srcs(
+                sim_obj_dir
+            ).save(
+                sim_obj_file
+            )
+        return simulation, sim_obj_dir
+
+    def validate_supersample(self, simulation, sample_num, model_num):
+        source_sim_index = simulation.configs['sims']['supersampled_bases']['source_sim']
+
+        source_sim_obj_dir = os.path.join(
+            os.getcwd(), 'samples', str(sample_num), 'models', str(model_num), 'sims', str(source_sim_index)
+        )
+
+        # do Sim.fibers.xy_parameters match between Sim and source_sim?
+        try:
+            source_sim: simulation = self.load_obj(os.path.join(source_sim_obj_dir, 'sim.obj'))
+            print(
+                '\t    Found existing source sim {} for supersampled bases ({})'.format(
+                    source_sim_index, source_sim_obj_dir
+                )
+            )
+        except FileNotFoundError:
+            traceback.print_exc()
+            self.throw(129)
+
+        source_xy_dict: dict = source_sim.configs['sims']['fibers']['xy_parameters']
+        xy_dict: dict = simulation.configs['sims']['fibers']['xy_parameters']
+
+        if not source_xy_dict == xy_dict:
+            self.throw(82)
+        return source_sim_obj_dir
+
+    def generate_nsims(self, sim_index, model_num, sample_num):
+        sim_num = self.configs[Config.RUN.value]['sims'][sim_index]
+        sim_obj_path = os.path.join(
+            os.getcwd(),
+            'samples',
+            str(self.configs[Config.RUN.value]['sample']),
+            'models',
+            str(model_num),
+            'sims',
+            str(sim_num),
+            'sim.obj',
+        )
+
+        sim_dir = os.path.join(
+            os.getcwd(), 'samples', str(self.configs[Config.RUN.value]['sample']), 'models', str(model_num), 'sims'
+        )
+
+        # load up correct simulation and build required sims
+        simulation: Simulation = self.load_obj(sim_obj_path)
+        simulation.build_n_sims(sim_dir, sim_num)
+
+        # get export behavior
+        export_behavior = None
+        if self.configs[Config.CLI_ARGS.value].get('export_behavior') is not None:
+            export_behavior = self.configs[Config.CLI_ARGS.value]['export_behavior']
+        elif self.configs[Config.RUN.value].get('export_behavior') is not None:
+            export_behavior = self.configs[Config.RUN.value]['export_behavior']
+        else:
+            export_behavior = 'selective'
+        # check to make sure we have a valid behavior
+        if not np.any([export_behavior == x.value for x in ExportMode]):
+            self.throw(139)
+
+        # export simulations
+        Simulation.export_n_sims(
+            sample_num,
+            model_num,
+            sim_num,
+            sim_dir,
+            os.environ[Env.NSIM_EXPORT_PATH.value],
+            export_behavior=export_behavior,
+        )
+
+        # ensure run configuration is present
+        Simulation.export_run(self.number, os.environ[Env.PROJECT_PATH.value], os.environ[Env.NSIM_EXPORT_PATH.value])
+
+    def run(self, smart: bool = True):
+        """
+        :param smart: bool telling the program whether to reprocess the sample or not if it already exists as sample.obj
+        :return: nothing to memory, spits out all pipeline related data to file
+        """
+        # NOTE: single sample per Runner, so no looping of samples
+        #       possible addition of functionality for looping samples in start.py
+
+        # TODO: change all configs to use self.configs
+        all_configs = self.setup_run()
+
+        self.potentials_exist: List[bool] = []  # if all of these are true, skip Java
+        self.ss_bases_exist: List[bool] = []  # if all of these are true, skip Java
+
+        sample, sample_num = self.generate_sample(all_configs, smart=smart)
+
         # iterate through models
         if 'models' not in all_configs.keys():
             print('NO MODELS TO MAKE IN Config.RUN - killing process')
         else:
             for model_index, model_config in enumerate(all_configs[Config.MODEL.value]):
-                model_num = self.configs[Config.RUN.value]['models'][model_index]
-                model_pseudonym = model_config.get('pseudonym')
-                print(
-                    '\tMODEL {}'.format(model_num),
-                    '- {}'.format(model_pseudonym) if model_pseudonym is not None else '',
-                )
-
-                # use current model index to computer maximum cuff shift (radius) .. SAVES to file in method
-                model_config = self.compute_cuff_shift(model_config, sample, all_configs[Config.SAMPLE.value][0])
-
-                model_config_file_name = os.path.join(
-                    os.getcwd(),
-                    'samples',
-                    str(sample_num),
-                    'models',
-                    str(model_num),
-                    'model.json',
-                )
-
-                # write edited model config in place
-                TemplateOutput.write(model_config, model_config_file_name)
-
-                # use current model index to compute electrical parameters ... SAVES to file in method
-                self.compute_electrical_parameters(all_configs, model_index)
-
-                # iterate through simulations
-                if 'sims' in all_configs.keys():
+                # loop through each model
+                model_num = self.prep_model(all_configs, model_index, model_config, sample, sample_num)
+                if 'sims' in all_configs.keys():  # TODO remote
+                    # iterate through simulations
                     for sim_index, sim_config in enumerate(all_configs['sims']):
-                        sim_num = self.configs[Config.RUN.value]['sims'][sim_index]
-                        sim_pseudonym = sim_config.get('pseudonym')
-                        print(
-                            '\t\tSIM {}'.format(self.configs[Config.RUN.value]['sims'][sim_index]),
-                            '- {}'.format(sim_pseudonym) if sim_pseudonym is not None else '',
+                        # generate simulation object
+                        simulation, sim_obj_dir = self.sim_setup(
+                            sim_index, sim_config, sample_num, model_num, smart, sample, model_config
                         )
-
-                        sim_obj_dir = os.path.join(
-                            os.getcwd(),
-                            'samples',
-                            str(sample_num),
-                            'models',
-                            str(model_num),
-                            'sims',
-                            str(sim_num),
-                        )
-
-                        sim_obj_file = os.path.join(sim_obj_dir, 'sim.obj')
-
-                        # init fiber manager
-                        if smart and os.path.exists(sim_obj_file):
-                            print(
-                                '\t    Found existing sim object for sim {} ({})'.format(
-                                    self.configs[Config.RUN.value]['sims'][sim_index],
-                                    sim_obj_file,
-                                )
-                            )
-
-                            simulation: Simulation = load_obj(sim_obj_file)
-
-                            if (
-                                'supersampled_bases' in simulation.configs['sims'].keys()
-                                and simulation.configs['sims']['supersampled_bases']['use']
-                            ):
-                                source_sim_index = simulation.configs['sims']['supersampled_bases']['source_sim']
-
-                                source_sim_obj_dir = os.path.join(
-                                    os.getcwd(),
-                                    'samples',
-                                    str(sample_num),
-                                    'models',
-                                    str(model_num),
-                                    'sims',
-                                    str(source_sim_index),
-                                )
-
-                                # do Sim.fibers.xy_parameters match between Sim and source_sim?
-                                try:
-                                    source_sim: simulation = load_obj(os.path.join(source_sim_obj_dir, 'sim.obj'))
-                                    print(
-                                        '\t    Found existing source sim {} for supersampled bases ({})'.format(
-                                            source_sim_index, source_sim_obj_dir
-                                        )
-                                    )
-                                except FileNotFoundError:
-                                    traceback.print_exc()
-                                    self.throw(129)
-
-                                source_xy_dict: dict = source_sim.configs['sims']['fibers']['xy_parameters']
-                                xy_dict: dict = simulation.configs['sims']['fibers']['xy_parameters']
-
-                                if not source_xy_dict == xy_dict:
-                                    self.throw(82)
-
-                                ss_bases_exist.append(simulation.ss_bases_exist(source_sim_obj_dir))
-                            else:
-                                potentials_exist.append(simulation.potentials_exist(sim_obj_dir))
-
+                        if (
+                            'supersampled_bases' in simulation.configs['sims'].keys()
+                            and simulation.configs['sims']['supersampled_bases']['use']
+                        ):
+                            source_sim_obj_dir = self.validate_supersample(simulation, sample_num, model_num)
+                            self.ss_bases_exist.append(simulation.ss_bases_exist(source_sim_obj_dir))
                         else:
-                            if not os.path.exists(sim_obj_dir):
-                                os.makedirs(sim_obj_dir)
-
-                            if not os.path.exists(sim_obj_dir + '/plots'):
-                                os.makedirs(sim_obj_dir + '/plots')
-
-                            simulation: Simulation = Simulation(sample, self.configs[Config.EXCEPTIONS.value])
-                            simulation.add(SetupMode.OLD, Config.MODEL, model_config).add(
-                                SetupMode.OLD, Config.SIM, sim_config
-                            ).add(SetupMode.OLD, Config.RUN, self.configs[Config.RUN.value],).add(
-                                SetupMode.OLD,
-                                Config.CLI_ARGS,
-                                self.configs[Config.CLI_ARGS.value],
-                            ).resolve_factors().write_waveforms(
-                                sim_obj_dir
-                            ).write_fibers(
-                                sim_obj_dir
-                            ).validate_srcs(
-                                sim_obj_dir
-                            ).save(
-                                sim_obj_file
-                            )
-
-                            if (
-                                'supersampled_bases' in simulation.configs['sims'].keys()
-                                and simulation.configs['sims']['supersampled_bases']['use']
-                            ):
-                                source_sim_index = simulation.configs['sims']['supersampled_bases']['source_sim']
-
-                                source_sim_obj_dir = os.path.join(
-                                    os.getcwd(),
-                                    'samples',
-                                    str(sample_num),
-                                    'models',
-                                    str(model_num),
-                                    'sims',
-                                    str(source_sim_index),
-                                )
-
-                                # do Sim.fibers.xy_parameters match between Sim and source_sim?
-                                try:
-                                    source_sim: simulation = load_obj(os.path.join(source_sim_obj_dir, 'sim.obj'))
-                                    print(
-                                        '\t    Found existing source sim {} for supersampled bases ({})'.format(
-                                            source_sim_index, source_sim_obj_dir
-                                        )
-                                    )
-                                except FileNotFoundError:
-                                    traceback.print_exc()
-                                    self.throw(129)
-
-                                source_xy_dict: dict = source_sim.configs['sims']['fibers']['xy_parameters']
-                                xy_dict: dict = simulation.configs['sims']['fibers']['xy_parameters']
-
-                                if not source_xy_dict == xy_dict:
-                                    self.throw(82)
-
-                                ss_bases_exist.append(simulation.ss_bases_exist(source_sim_obj_dir))
-                            else:
-                                potentials_exist.append(simulation.potentials_exist(sim_obj_dir))
+                            self.potentials_exist.append(simulation.potentials_exist(sim_obj_dir))
 
             if self.configs[Config.CLI_ARGS.value].get('break_point') == 'pre_java' or (
                 ('break_points' in self.configs[Config.RUN.value].keys())
-                and self.search(Config.RUN, 'break_points').get('pre_java') == True
+                and self.search(Config.RUN, 'break_points').get('pre_java') is True
             ):
                 print('KILLING PRE JAVA')
                 return
@@ -362,7 +360,7 @@ class Runner(Exceptionable, Configurable):
             if 'models' in all_configs.keys() and 'sims' in all_configs.keys():
                 self.model_parameter_checking(all_configs)
                 # only transition to java if necessary (there are potentials that do not exist)
-                if not all(potentials_exist) or not all(ss_bases_exist):
+                if not all(self.potentials_exist) or not all(self.ss_bases_exist):
                     print('\nTO JAVA\n')
                     self.handoff(self.number)
                     print('\nTO PYTHON\n')
@@ -394,62 +392,10 @@ class Runner(Exceptionable, Configurable):
                             ss_use_notgen.append(True)
                         else:
                             ss_use_notgen.append(False)
-                    if model_ran or np.all(ss_use_notgen):
+                    if model_ran or np.all(ss_use_notgen):  # TODO This needs to be reworked
                         for sim_index, sim_config in enumerate(all_configs['sims']):
-                            sim_num = self.configs[Config.RUN.value]['sims'][sim_index]
-                            sim_obj_path = os.path.join(
-                                os.getcwd(),
-                                'samples',
-                                str(self.configs[Config.RUN.value]['sample']),
-                                'models',
-                                str(model_num),
-                                'sims',
-                                str(sim_num),
-                                'sim.obj',
-                            )
-
-                            sim_dir = os.path.join(
-                                os.getcwd(),
-                                'samples',
-                                str(self.configs[Config.RUN.value]['sample']),
-                                'models',
-                                str(model_num),
-                                'sims',
-                            )
-
-                            # load up correct simulation and build required sims
-                            simulation: Simulation = load_obj(sim_obj_path)
-                            simulation.build_n_sims(sim_dir, sim_num)
-
-                            # get export behavior
-                            export_behavior = None
-                            if self.configs[Config.CLI_ARGS.value].get('export_behavior') is not None:
-                                export_behavior = self.configs[Config.CLI_ARGS.value]['export_behavior']
-                            elif self.configs[Config.RUN.value].get('export_behavior') is not None:
-                                export_behavior = self.configs[Config.RUN.value]['export_behavior']
-                            else:
-                                export_behavior = 'selective'
-                            # check to make sure we have a valid behavior
-                            if not np.any([export_behavior == x.value for x in ExportMode]):
-                                self.throw(139)
-
-                            # export simulations
-                            Simulation.export_n_sims(
-                                sample_num,
-                                model_num,
-                                sim_num,
-                                sim_dir,
-                                os.environ[Env.NSIM_EXPORT_PATH.value],
-                                export_behavior=export_behavior,
-                            )
-
-                            # ensure run configuration is present
-                            Simulation.export_run(
-                                self.number,
-                                os.environ[Env.PROJECT_PATH.value],
-                                os.environ[Env.NSIM_EXPORT_PATH.value],
-                            )
-
+                            # generate output neuron sims
+                            self.generate_nsims(sim_index, model_num, sample_num)
                         print(
                             'Model {} data exported to appropriate folders in {}'.format(
                                 model_num, os.environ[Env.NSIM_EXPORT_PATH.value]
@@ -469,13 +415,11 @@ class Runner(Exceptionable, Configurable):
                 self.handoff(self.number)
                 print('\nNEURON Simulations NOT created since no Sim indices indicated in Config.SIM\n')
 
-    def handoff(self, run_number: int):
+    def handoff(self, run_number: int, class_name='ModelWrapper'):
         comsol_path = os.environ[Env.COMSOL_PATH.value]
         jdk_path = os.environ[Env.JDK_PATH.value]
         project_path = os.environ[Env.PROJECT_PATH.value]
         run_path = os.path.join(project_path, 'config', 'user', 'runs', '{}.json'.format(run_number))
-
-        core_name = 'ModelWrapper'
 
         # Encode command line args as jason string, then encode to base64 for passing to java
         argstring = json.dumps(self.configs[Config.CLI_ARGS.value])
@@ -493,7 +437,14 @@ class Runner(Exceptionable, Configurable):
             java_command = (
                 '""{}\\java\\win64\\jre\\bin\\java" '
                 '-cp "{}\\plugins\\*";"..\\bin\\json-20190722.jar";"..\\bin" '
-                'model.{} "{}" "{}" "{}""'.format(comsol_path, comsol_path, core_name, project_path, run_path, argfinal)
+                'model.{} "{}" "{}" "{}""'.format(
+                    comsol_path,
+                    comsol_path,
+                    class_name,
+                    project_path,
+                    run_path,
+                    argfinal,
+                )
             )
         else:
             server_command = ['{}/bin/comsol'.format(comsol_path), 'server', '-login', 'auto']
@@ -513,7 +464,7 @@ class Runner(Exceptionable, Configurable):
                 'tr \' \' \':\'):../bin/json-20190722.jar:../bin model.{} "{}" "{}" "{}"'.format(
                     java_comsol_path,
                     comsol_path,
-                    core_name,
+                    class_name,
                     project_path,
                     run_path,
                     argfinal,
@@ -523,7 +474,7 @@ class Runner(Exceptionable, Configurable):
         # start comsol server
         subprocess.Popen(server_command, close_fds=True)
         # wait for server to start
-        time.sleep(30)
+        time.sleep(10)
         os.chdir('src')
         # compile java code
         exit_code = os.system(compile_command)
@@ -845,11 +796,7 @@ class Runner(Exceptionable, Configurable):
             self.throw(48)
 
         dest_path: str = os.path.join(
-            *all_configs[Config.SAMPLE.value][0]['samples_path'],
-            str(self.configs[Config.RUN.value]['sample']),
-            'models',
-            str(model_num),
-            'model.json'
+            'samples', str(self.configs[Config.RUN.value]['sample']), 'models', str(model_num), 'model.json'
         )
 
         TemplateOutput.write(model_config, dest_path)
@@ -866,5 +813,5 @@ class Runner(Exceptionable, Configurable):
     def model_parameter_checking(self, all_configs):
         for _, model_config in enumerate(all_configs[Config.MODEL.value]):
             distal_exists = model_config['medium']['distal']['exist']
-            if distal_exists and model_config['medium']['proximal']['distant_ground'] == True:
+            if distal_exists and model_config['medium']['proximal']['distant_ground'] is True:
                 self.throw(107)

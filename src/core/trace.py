@@ -32,7 +32,8 @@ class Trace(Exceptionable):
     def __init__(self, points, exception_config):
         """
         :param points: nx3 list expected to be a loop. If a non-loop is given, then the functionality is not defined.
-        :param exception_config: data passed from a higher object for exceptions.json, hence why it inherits exceptionable.
+        :param exception_config: data passed from a higher object for exceptions.json,
+            hence why it inherits exceptionable.
         """
 
         # These are private instance variables that are returned by getter
@@ -116,7 +117,7 @@ class Trace(Exceptionable):
         pre_area = self.area()
         self.offset(fit=None, distance=distance)
         self.offset(fit=None, distance=-distance)
-        if area_compensation == True:
+        if area_compensation is True:
             # scale back to area of original trace
             self.scale((pre_area / self.area()) ** 0.5)
             if abs(pre_area - self.area()) > 1:

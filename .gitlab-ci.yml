@@ -46,13 +46,20 @@ isort:
   stage: lint
   script:
     - pip install isort
-    - isort --check-only --skip __init__.py config docs examples scripts src run
+    - isort --check-only config docs examples scripts src run
 
 black:
   stage: lint
   script:
     - pip install black
-    - black -S --check config docs examples scripts src run
+    - black --check config docs examples scripts src run
+
+#while in the process of adding more files remember to add done files
+flake8:
+  stage: lint
+  script:
+    - pip install flake8
+    - flake8 src/core
 
 test_docs:
   stage: test
@@ -74,4 +81,3 @@ pages:
     - public
   only:
   - master
-

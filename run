@@ -13,6 +13,12 @@ import sys
 from config.system.run_utils import parse_args, welcome
 
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "1"
+try:
+    import pymunkoptions
+
+    pymunkoptions.options["debug"] = False
+except:
+    pass
 
 args = parse_args.parse()
 
