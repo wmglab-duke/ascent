@@ -58,7 +58,7 @@ black:
 flake8:
   stage: lint
   script:
-    - pip install flake8
+    - pip install flake8 flake8-eradicate
     - flake8 src
 
 test_docs:
