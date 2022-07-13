@@ -47,7 +47,8 @@ class Configurable:
     ):
         """
         :param mode: SetupMode, determines if loads new JSON or uses old data
-        :param key: Config (choice of configurations from discrete enumeration); choice of SAMPLE, MODEL, SIM (these are the big ones), EXCEPTIONS, or any other added configs
+        :param key: Config (choice of configurations from discrete enumeration); 
+            choice of SAMPLE, MODEL, SIM (these are the big ones), EXCEPTIONS, or any other added configs
         :param config: if mode is NEW, this is file path str, else (mode is OLD) this is already loaded config data
         """
         # if self.configs does not already exist (i.e. this is first Configurable call), create it
