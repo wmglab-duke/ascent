@@ -55,10 +55,11 @@ black:
     - black --check config docs examples scripts src run
 
 #while in the process of adding more files remember to add done files
+#also add  flake8-eradicate at some point
 flake8:
   stage: lint
   script:
-    - pip install flake8 flake8-eradicate
+    - pip install flake8
     - flake8 src
 
 test_docs:
