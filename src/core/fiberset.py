@@ -330,8 +330,8 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             )
             for point in points:
                 plt.plot(point[0], point[1], 'r.', markersize=1)
+            plt.savefig(sim_directory + '/plots/fibers_xy.png', dpi=300)
             if self.search(Config.RUN, 'popup_plots', optional=True) is False:
-                plt.savefig(sim_directory + '/plots/fibers_xy.png', dpi=300)
                 fig.clear
                 plt.close(fig)
             else:
