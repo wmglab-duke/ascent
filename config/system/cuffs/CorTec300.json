@@ -89,143 +89,140 @@
       ]
     }
   ],
-
   "params": [
     {
       "name": "N_holes_CT300",
       "expression": "0",
-      "description": ""
+      "description": "Can have the value of 1 or 2. Adds conical shaped holes in TubeCuff. If 1 hole, centered longitudinally in cuff. If 2, evenly spaced by Pitch_holecenter_holecenter about longitudinal center of cuff"
     },
     {
       "name": "Theta_CT300",
       "expression": "percent_circ_cuff_CT300*360 [deg]",
-      "description": ""
+      "description": "Angular coverage of cuff"
     },
     {
       "name": "Center_CT300",
       "expression": "z_nerve/2",
-      "description": ""
+      "description": "Z-position of cuff center"
     },
     {
       "name": "R_in_CT300",
       "expression": "max(r_nerve+thk_medium_gap_internal_CT300,r_cuff_in_pre_CT300)",
-      "description": ""
+      "description": "Cuff inner diameter"
     },
     {
       "name": "R_out_CT300",
       "expression": "R_in_CT300+thk_cuff_CT300",
-      "description": ""
+      "description": "Cuff outer diameter"
     },
     {
       "name": "L_CT300",
       "expression": "2 [mm]",
-      "description": ""
+      "description": "Length of cuff"
     },
     {
       "name": "Rot_def_CT300",
       "expression": "-(theta_cuff_CT300-theta_contact_CT300)/2",
-      "description": ""
+      "description": "Rotates TubeCuff CCW by angle"
     },
     {
       "name": "D_hole_CT300",
       "expression": "NaN",
-      "description": ""
+      "description": "Diameter of holes in TubeCuff at the surface of the inner diameter"
     },
     {
       "name": "Buffer_hole_CT300",
       "expression": "NaN",
-      "description": ""
+      "description": "Used so that the cone used to cut hole in the cuff extends half this distance from the inner and outer edge of the part"
     },
     {
       "name": "L_holecenter_cuffseam_CT300",
       "expression": "NaN",
-      "description": ""
+      "description": "Distance from edge of the cuff seam to the center of the holes"
     },
     {
       "name": "Pitch_holecenter_holecenter_CT300",
       "expression": "NaN",
-      "description": ""
+      "description": "Distance between cuff holes, pitch from center to center along the length of the cuff"
     },
     {
       "name": "percent_circ_cuff_CT300",
       "expression": "percent_circ_cuff_pre_CT300*(r_cuff_in_pre_CT300/R_in_CT300)",
-      "description": ""
+      "description": "Wrap of the cuff (as compared to 360 degree wrap for continuous insulation) after expansion to accommodate the nerve"
     },
     {
       "name": "thk_medium_gap_internal_CT300",
       "expression": "10 [um]",
-      "description": ""
+      "description": "Gap between cuff and nerve"
     },
     {
       "name": "r_cuff_in_pre_CT300",
       "expression": "150 [um]",
-      "description": ""
+      "description": "Cuff resting inner diameter"
     },
     {
       "name": "Recess_CT300",
       "expression": "0 [um]",
-      "description": ""
+      "description": "Depth of fill material into the cuff before the contact. This is used to create an associated recess/fill domain with a contact."
     },
     {
       "name": "Thk_elec_CT300",
       "expression": "0.025 [mm]",
-      "description": ""
+      "description": "Thickness of contact"
     },
     {
       "name": "B_CT300",
       "expression": "0.6 [mm]",
-      "description": ""
+      "description": "Arc length of contact around the cuff"
     },
     {
       "name": "percent_circ_cuff_pre_CT300",
       "expression": "1",
-      "description": ""
+      "description": "Wrap of the cuff (as compared to 360 degree wrap for continuous insulation) before expansion to accommodate the nerve"
     },
     {
       "name": "theta_contact_CT300",
       "expression": "360*(B_CT300/(2*pi*(R_in_CT300+Recess_CT300))) [deg]",
-      "description": ""
+      "description": "Angular coverage of contact"
     },
     {
       "name": "theta_cuff_CT300",
       "expression": "percent_circ_cuff_CT300*360 [deg]",
-      "description": ""
+      "description": "Angular coverage of cuff"
     },
     {
       "name": "thk_cuff_CT300",
       "expression": "0.65 [mm]",
-      "description": ""
+      "description": "Cuff thickness"
     },
     {
       "name": "L_elec_CT300",
       "expression": "0.3 [mm]",
-      "description": ""
+      "description": "Z-length of contact"
     },
     {
       "name": "Theta_contact_CT300",
       "expression": "360*(B_CT300/(2*pi*(R_in_CT300+Recess_CT300))) [deg]",
-      "description": ""
+      "description": "Angular coverage of contact"
     },
     {
       "name": "Rot_def_contact_CT300",
       "expression": "0",
-      "description": ""
+      "description": "Rotation/orientation of ribbon contact. CWW. Contact is oriented with CW edge at 0 deg (3 o'clock) and extends CCW."
     },
     {
       "name": "Pitch_CT300",
       "expression": "1.5 [mm]",
-      "description": ""
+      "description": "z-distance between contacts"
     },
     {
       "name": "Thk_fill_CT300",
       "expression": "100 [um]",
-      "description": ""
+      "description": "Distance fill extends beyond cuff boundary"
     }
   ],
-
   "expandable": true,
-  "fixed_point" : "clockwise_end",
+  "fixed_point": "clockwise_end",
   "angle_to_contacts_deg": 114.56,
-  "offset": {
-  }
+  "offset": {}
 }

@@ -5,23 +5,25 @@ The copyrights of this software are owned by Duke University.
 Please refer to the LICENSE.txt and README.txt files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 
-Use this script to run a convergence study. 
+Use this script to run a convergence study.
 Error will be calculated for each model and sample with respect to the reference model
+
+RUN THIS FROM REPOSITORY ROOT
 """
 
-# RUN THIS FROM REPOSITORY ROOT
 
 import os
 import sys
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 import seaborn as sb
+
+from src.core.query import Query
 
 sys.path.append(os.path.sep.join([os.getcwd(), '']))
 
-import numpy as np
-
-import matplotlib.pyplot as plt
-from src.core.query import Query
-import pandas as pd
 
 samples = [1000, 10, 20]
 models = [0, 1, 2, 10, 11, 20, 21, 30]
@@ -40,15 +42,13 @@ data = []
 
 # %% Pull threshold data
 for sim in sims:
-    q = Query({
-        'partial_matches': False,
-        'include_downstream': True,
-        'indices': {
-            'sample': samples,
-            'model': models,
-            'sim': [sim]
+    q = Query(
+        {
+            'partial_matches': False,
+            'include_downstream': True,
+            'indices': {'sample': samples, 'model': models, 'sim': [sim]},
         }
-    }).run()
+    ).run()
 
     data.append(q.threshold_data())
 data = pd.concat(data)
@@ -58,11 +58,15 @@ data['error'] = np.nan
 for i in range(len(data)):
     row = data.iloc[i]
     est = float(row.threshold)
-    correct = float(data[(data["model"] == reference_model) &
-                         (data["sample"] == row["sample"]) &
-                         (data["index"] == row["index"]) &
-                         (data["sim"] == row['sim']) &
-                         (data["nsim"] == row['nsim'])]['threshold'])
+    correct = float(
+        data[
+            (data["model"] == reference_model)
+            & (data["sample"] == row["sample"])
+            & (data["index"] == row["index"])
+            & (data["sim"] == row['sim'])
+            & (data["nsim"] == row['nsim'])
+        ]['threshold']
+    )
     data.iloc[i, -1] = pe(correct, est)
 
 
@@ -76,10 +80,10 @@ g = sb.catplot(
     data=data,
     kind="strip",
     height=5,
-    aspect=.4,
-    linewidth=1
+    aspect=0.4,
+    linewidth=1,
 )
 
-plt.subplots_adjust(top=.88)
+plt.subplots_adjust(top=0.88)
 plt.suptitle('Convergence Error - Reference Model: {}'.format(reference_model))
 g.savefig('out/analysis/convergence.png', dpi=400)

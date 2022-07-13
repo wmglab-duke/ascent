@@ -6,17 +6,18 @@ Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
+import json
 import os
 import sys
-import json
 
 root = os.path.abspath(os.path.join(*'../../'.split('/')))
 sys.path.append(root)
 
+import matplotlib.pyplot as plt
+
 from src.core import Simulation
 from src.core.query import Query
 from src.utils import Object
-import matplotlib.pyplot as plt
 
 
 def load(config_path: str):
@@ -35,11 +36,7 @@ os.chdir(root)
 criteria = {
     'partial_matches': True,
     'include_downstream': True,
-    'indices': {
-        'sample': [1000],
-        'model': [0],
-        'sim': [1000]
-    }
+    'indices': {'sample': [1000], 'model': [0], 'sim': [1000]},
 }
 
 q = Query(criteria)
@@ -60,10 +57,7 @@ for waveform_ind, waveform in enumerate(sim.waveforms):
     plt.ylabel('Amplitude (unscaled)')
     plt.show()
 
-    fname = '{}_{}_{}_{}'.format(str(sample_index),
-                                 str(model_index),
-                                 str(sim_index),
-                                 str(waveform_ind))
+    fname = '{}_{}_{}_{}'.format(str(sample_index), str(model_index), str(sim_index), str(waveform_ind))
     fmt = 'png'
 
     dest = os.path.join('data', 'tmp', 'waveforms')

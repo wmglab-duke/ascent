@@ -10,8 +10,9 @@ Note: Run from repository root
 """
 
 import os
-import numpy as np
+
 import matplotlib.pyplot as plt
+import numpy as np
 
 sample = 1000
 model = 0
@@ -28,7 +29,8 @@ base_n_sim = os.path.join('samples', str(sample), 'models', str(model), 'sims', 
 plt.figure()
 pve1 = os.path.join(base_n_sim, str(n_sim), 'data', 'inputs', 'inner{}_fiber{}.dat'.format(inner, fiber))
 dpve1 = np.loadtxt(pve1)
-if myelinated: dpve1 = [dpve1[i] for i in range(len(dpve1)) if i % 11 == 0]
+if myelinated:
+    dpve1 = [dpve1[i] for i in range(len(dpve1)) if i % 11 == 0]
 plt.plot(dpve1[1:], 'r-', label='p1')
 plt.title('Ve')
 plt.show()

@@ -7,11 +7,11 @@ The source code can be found on the following GitHub repository: https://github.
 """
 
 import os
-import sys
 import subprocess
+import sys
+
 
 def run(args):
-
     def ensure_dir(directory):
         if not os.path.exists(directory):
             os.makedirs(directory)
@@ -36,7 +36,8 @@ def run(args):
         'input',
         'config/user',
         'config/user/runs',
-        'config/user/sims']
+        'config/user/sims',
+    ]
 
     for path in defdirs:
         ensure_dir(path)
@@ -61,7 +62,8 @@ def run(args):
             else:
                 with subprocess.Popen("powershell.exe", stdin=subprocess.PIPE) as p:
                     p.stdin.write(
-                        '[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12\n'.encode())
+                        '[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12\n'.encode()
+                    )
                     p.stdin.write('$source = \'{}\'\n'.format(jar).encode())
                     p.stdin.write('$destination = \'{}\'\n'.format(os.path.abspath(target)).encode())
                     p.stdin.write('curl $source -OutFile $destination'.encode())
@@ -71,7 +73,7 @@ def run(args):
         print('Skipping conda portion of installation\n')
     else:
         if sys.platform.startswith('darwin') or sys.platform.startswith('linux'):
-            subprocess.check_call(["source", "config/system/installation/install.sh", "-i", executable="/bin/bash")
+            subprocess.check_call(["source", "config/system/installation/install.sh", "-i"], executable="/bin/bash")
         else:
             subprocess.check_call(['powershell.exe', '.\\config\\system\\installation\\install.ps1'])
     print('Installation complete!\n')
