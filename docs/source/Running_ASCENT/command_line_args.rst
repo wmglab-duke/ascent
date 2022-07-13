@@ -5,7 +5,7 @@ run
 ---
 
 .. argparse::
-   :filename: ../../src/runtools/parse_args.py
+   :filename: ../../config/system/run_utils/parse_args.py
    :func: parser
    :prog: run
 
