@@ -10,7 +10,7 @@ import importlib
 import os
 import sys
 
-from config.system.run_utils import parse_args, welcome
+from src.runtools import list_util, parse_args, welcome
 
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "1"
 try:
@@ -38,6 +38,4 @@ if args.script is not None:
     importlib.import_module('scripts.' + args.script).run(args)
 else:
     if args.list is not None:
-        from config.system.run_utils import list_util
-
         list_util.run(args.list)
