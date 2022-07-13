@@ -10,4 +10,5 @@ ignore = E203, W503,
 
 max-line-length = 120
 max-complexity = 18
+#note T is for mypy, so does nothing now
 select = B,C,E,F,W,T4
