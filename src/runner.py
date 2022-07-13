@@ -415,13 +415,11 @@ class Runner(Exceptionable, Configurable):
                 self.handoff(self.number)
                 print('\nNEURON Simulations NOT created since no Sim indices indicated in Config.SIM\n')
 
-    def handoff(self, run_number: int):
+    def handoff(self, run_number: int, class_name='ModelWrapper'):
         comsol_path = os.environ[Env.COMSOL_PATH.value]
         jdk_path = os.environ[Env.JDK_PATH.value]
         project_path = os.environ[Env.PROJECT_PATH.value]
         run_path = os.path.join(project_path, 'config', 'user', 'runs', '{}.json'.format(run_number))
-
-        core_name = 'ModelWrapper'
 
         # Encode command line args as jason string, then encode to base64 for passing to java
         argstring = json.dumps(self.configs[Config.CLI_ARGS.value])
@@ -442,7 +440,7 @@ class Runner(Exceptionable, Configurable):
                 'model.{} "{}" "{}" "{}""'.format(
                     comsol_path,
                     comsol_path,
-                    core_name,
+                    class_name,
                     project_path,
                     run_path,
                     argfinal,
@@ -466,7 +464,7 @@ class Runner(Exceptionable, Configurable):
                 'tr \' \' \':\'):../bin/json-20190722.jar:../bin model.{} "{}" "{}" "{}"'.format(
                     java_comsol_path,
                     comsol_path,
-                    core_name,
+                    class_name,
                     project_path,
                     run_path,
                     argfinal,
