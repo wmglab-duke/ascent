@@ -9,6 +9,9 @@ repos:
     -   id: requirements-txt-fixer
     -   id: end-of-file-fixer
     -   id: trailing-whitespace
+    -   id: check-json
+    -   id: check-merge-conflict
+    -   id: check-toml
 -   repo: https://github.com/pycqa/isort
     rev: 5.10.1
     hooks:
