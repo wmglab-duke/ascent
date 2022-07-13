@@ -6,7 +6,7 @@ If you use ASCENT, ask for it to be added to our list of [Publications Utilizing
 
 The following guidelines are to help users adhere to FAIR principles when using ASCENT and thereby enable model reproducibility and reduce duplication of efforts {cite:p}`Wilkinson2016`. With published modeling studies using ASCENT, we ask that   users provide all code and input files required to reproduce their work.
 
-To streamline dissemination of work, upon acceptance of a manuscript to a journal, we encourage users to either make their fork/branch of the ASCENT repository publicly available, or to make a "Merge Request" to the ASCENT GitHub repository (i.e., if your developments would be of general interest to ASCENT users) so that we can review and incorporate your changes to our public repository.
+To streamline dissemination of work, upon acceptance of a manuscript to a journal, we encourage users to either make their fork/branch of the ASCENT repository publicly available, or to make a "Pull Request" to the [ASCENT GitHub repository](https://github.com/wmglab-duke/ascent) (i.e., if your developments would be of general interest to ASCENT users) so that we can review and incorporate your changes to our public repository.
 
 ## Configuration files
 Provide the JSON configuration files used as inputs to ASCENT.
