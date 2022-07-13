@@ -58,31 +58,22 @@ def run(args):
         if retrieve:
             print('Downloading {} to {}'.format(jar, target))
             if sys.platform.startswith('darwin') or sys.platform.startswith('linux'):
-                subprocess.Popen(['wget', '-q', '-O', target, jar]).wait()
+                subprocess.run(['wget', '-q', '-O', target, jar])
             else:
-                p = subprocess.Popen("powershell.exe", stdin=subprocess.PIPE)
-                p.stdin.write(
-                    '[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12\n'.encode()
-                )
-                p.stdin.write('$source = \'{}\'\n'.format(jar).encode())
-                p.stdin.write('$destination = \'{}\'\n'.format(os.path.abspath(target)).encode())
-                p.stdin.write('curl $source -OutFile $destination'.encode())
-                p.stdin.close()
+                with subprocess.Popen("powershell.exe", stdin=subprocess.PIPE) as p:
+                    p.stdin.write(
+                        '[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12\n'.encode()
+                    )
+                    p.stdin.write('$source = \'{}\'\n'.format(jar).encode())
+                    p.stdin.write('$destination = \'{}\'\n'.format(os.path.abspath(target)).encode())
+                    p.stdin.write('curl $source -OutFile $destination'.encode())
 
     # run system-specific installation
     if args.no_conda:
         print('Skipping conda portion of installation\n')
     else:
-        proc = None
-
         if sys.platform.startswith('darwin') or sys.platform.startswith('linux'):
-            proc = subprocess.Popen(
-                "source config/system/installation/install.sh -i",
-                shell=True,
-                executable="/bin/bash",
-            )
+            subprocess.check_call(["source", "config/system/installation/install.sh", "-i"], executable="/bin/bash")
         else:
-            proc = subprocess.Popen(['powershell.exe', '.\\config\\system\\installation\\install.ps1'])
-
-        proc.wait()
+            subprocess.check_call(['powershell.exe', '.\\config\\system\\installation\\install.ps1'])
     print('Installation complete!\n')

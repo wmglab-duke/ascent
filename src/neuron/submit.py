@@ -187,7 +187,9 @@ def auto_compile(override: bool = False):
     ):
         print('compile')
         os.chdir(os.path.join('MOD_Files'))
-        subprocess.run(['nrnivmodl'], shell=True)
+        exit_code = subprocess.call(['nrnivmodl'])
+        if exit_code != 0:
+            sys.exit("Error in compiling of NEURON files. Exiting...")
         os.chdir('..')
         compiled = True
     else:
