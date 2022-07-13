@@ -1,3 +1,8 @@
+import os
+import sys
+
+import mock
+
 # Configuration file for the Sphinx documentation builder.
 #
 # This file only contains a selection of the most common options. For a full
@@ -10,10 +15,6 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-import os
-import sys
-
-sys.path.insert(0, os.path.abspath('../config/system/run_utils'))
 
 # -- Project information -----------------------------------------------------
 
@@ -22,7 +23,7 @@ copyright = '2021, Duke University'
 author = 'Musselman ED, Cariello JE, Grill WM, Pelot NA.'
 
 # The full version, including alpha/beta/rc tags
-release = 'v1.1.2'
+release = 'dev'
 
 # -- General configuration ---------------------------------------------------
 
@@ -47,8 +48,6 @@ source_suffix = {
     '.txt': 'restructuredtext',
     '.md': 'markdown',
 }
-
-import mock
 
 MOCK_MODULES = ['numpy', 'pandas']
 
@@ -84,6 +83,8 @@ html_show_copyright = True
 # html_logo="uploads/ascent_media_release_v2.png"
 
 html_show_sphinx = False
+
+# -- Options for extensions -------------------------------------------------
 
 myst_heading_anchors = 4
 
