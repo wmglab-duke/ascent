@@ -286,11 +286,13 @@ def get_thresh_bounds(args, sim_dir: str, sim_name: str, inner_ind: int):
             else:
                 if args.verbose:
                     warnings.warn(
-                        f"No fiber threshold exists for scout sim: inner{inner_ind} fiber0, using standard top and bottom"
+                        f"No fiber threshold exists for scout sim: "
+                        f"inner{inner_ind} fiber0, using standard top and bottom"
                     )
                 else:
                     WarnOnlyOnce.warn(
-                        f"Missing at least one scout threshold, using standard top and bottom. Rerun with --verbose flag for specific inner index."
+                        "Missing at least one scout threshold, using standard top and bottom. "
+                        "Rerun with --verbose flag for specific inner index."
                     )
 
                 top = sim_config['protocol']['bounds_search']['top']
@@ -341,7 +343,7 @@ def make_task(
                     sim_p, inner, fiber, top, bottom, diam, deltaz, axonnodes
                 ),
             ]
-            if sub_con is not 'cluster':
+            if sub_con != 'cluster':
                 lines.remove('cd \"{}\"\n'.format(sim_p))
 
             # copy special files ahead of time to avoid 'text file busy error'
@@ -383,6 +385,11 @@ def make_task(
 
 
 def local_submit(my_local_args: dict):
+    """
+    Method is used to submit jobs locally, has historically been NEURON jobs
+    :param my_local_args:
+    :return:
+    """
     sim_path = my_local_args['sim_path']
     os.chdir(sim_path)
 
@@ -391,7 +398,7 @@ def local_submit(my_local_args: dict):
     err_filename = my_local_args['error_log']
 
     with open(out_filename, "w+") as fo, open(err_filename, "w+") as fe:
-        p = subprocess.run(['bash', start] if OS == 'UNIX-LIKE' else [start], stdout=fo, stderr=fe)
+        subprocess.run(['bash', start] if OS == 'UNIX-LIKE' else [start], stdout=fo, stderr=fe)
 
 
 def cluster_submit(run_number: int, partition: str, args, mem: int = 2000, array_length_max: int = 10):
@@ -908,7 +915,7 @@ def main():
     # validate inputs
     args = parser.parse_args()
 
-    if args.all_runs == True:
+    if args.all_runs is True:
         if len(args.run_indices) > 0:
             sys.exit('Error: Cannot use -A/--run-all argument and pass run indices.')
         args.run_indices = [int(os.path.splitext(file)[0]) for file in os.listdir('runs') if file.endswith('.json')]
@@ -921,8 +928,7 @@ def main():
     auto_compile_flags = []
 
     # compile MOD files if they have not yet been compiled
-    compiled: bool = False
-    compiled = auto_compile()
+    auto_compile()
 
     summary = []
     rundata = []
@@ -982,9 +988,9 @@ def main():
                 }
             )
     # check that all submission contexts are the same
-    if args.local_submit == True:
+    if args.local_submit is True:
         submission_contexts = ['local' for i in submission_contexts]
-    if args.cluster_submit == True:
+    if args.cluster_submit is True:
         submission_contexts = ['cluster' for i in submission_contexts]
     if not np.all([x == submission_contexts[0] for x in submission_contexts]):
         sys.exit('Runs with different submission contexts cannot be submitted at the same time')
@@ -1012,9 +1018,9 @@ def main():
         except Exception:
             traceback.print_exc()
             print(
-                'WARNING: Error during submission of run {}. See traceback for more information.\n Proceeding to next run...'.format(
-                    run_index
-                )
+                f'WARNING: Error during submission of run {run_index}. '
+                'See traceback for more information.\n '
+                'Proceeding to next run...'
             )
 
 
