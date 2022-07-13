@@ -8,6 +8,7 @@ conda create -n ascent python=3.7 pip setuptools wheel shapely
 eval "$(conda shell.bash hook)"
 conda activate ascent
 $CONDA_ENVPY -m pip install -r requirements.txt
+conda install -c conda-forge ffmpeg
 
 echo
 # create shortcut
