@@ -4,24 +4,31 @@ repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v3.2.0
     hooks:
+# checking for syntax
     -   id: check-yaml
-    -   id: check-added-large-files
+    -   id: check-toml
+    -   id: check-json
+# simple formatting
     -   id: requirements-txt-fixer
     -   id: end-of-file-fixer
     -   id: trailing-whitespace
-    -   id: check-json
+    -   id: check-added-large-files
+# checks for unresolved merge conflicts
     -   id: check-merge-conflict
-    -   id: check-toml
+# sort python imports
 -   repo: https://github.com/pycqa/isort
     rev: 5.10.1
     hooks:
       - id: isort
+# format python code
 -   repo: https://github.com/psf/black
     rev: 22.6.0
     hooks:
       - id: black
+# lint python code
 -   repo: https://github.com/pycqa/flake8
     rev: 4.0.1
     hooks:
       - id: flake8
-        additional_dependencies: [flake8-eradicate]
+        # check for dead code
+        additional_dependencies: [flake8-eradicate, flake8-bugbear]

@@ -206,7 +206,6 @@ class Sample(Exceptionable, Configurable, Saveable):
         # ADDITION: if only one slide present, check if names abide by <NAME>_0_0_<CODE>.tif format
         #           if not abiding, rename files so that they abide
         if len(self.map.slides) == 1:
-            # print('Renaming input files to conform with map input interface where necessary.')
             source_dir = os.path.join(*self.map.slides[0].data()[3])
             source_files = os.listdir(source_dir)
             for mask_fname in [f.value for f in MaskFileNames if f.value in source_files]:
@@ -338,10 +337,6 @@ class Sample(Exceptionable, Configurable, Saveable):
                     )
                 proc.wait()
 
-            # if not exists(MaskFileNames.RAW):
-            # print('No raw tif found, but continuing. (Sample.populate)')
-            # self.throw(18)
-
             if exists(MaskFileNames.ORIENTATION):
 
                 img = np.flipud(cv2.imread(MaskFileNames.ORIENTATION.value, -1))
@@ -359,23 +354,21 @@ class Sample(Exceptionable, Configurable, Saveable):
                     self.configs[Config.EXCEPTIONS.value],
                 )
                 orientation_centroid = trace.centroid()
-            # else:
-            # print('No orientation tif found, but continuing. (Sample.populate)')
 
             # preprocess binary masks
             mask_dims = []
             for mask in ["COMPILED", "INNERS", "OUTERS", "NERVE", "ORIENTATION"]:
                 maskfile = getattr(MaskFileNames, mask)
                 if exists(maskfile):
-                    mask_dims.append(cv2.imread(getattr(maskfile, 'value')).shape)
-                    self.im_preprocess(getattr(maskfile, 'value'))
+                    mask_dims.append(cv2.imread(maskfile.value).shape)
+                    self.im_preprocess(maskfile.value)
             if len(mask_dims) == 0:
                 self.throw(121)
             if not np.all(np.array(mask_dims) == mask_dims[0]):
                 self.throw(122)
-            scalemask = getattr(MaskFileNames, "SCALE_BAR")
+            scalemask = MaskFileNames.SCALE_BAR
             if exists(scalemask):
-                mask_dims.append(cv2.imread(getattr(scalemask, 'value')).shape)
+                mask_dims.append(cv2.imread(scalemask.value).shape)
                 if not np.all(np.array(mask_dims) == mask_dims[0]):
                     print(
                         'WARNING: Scale bar mask has a different resolution than morphology masks. \n'
@@ -557,17 +550,13 @@ class Sample(Exceptionable, Configurable, Saveable):
             self.generate_perineurium(perineurium_thk_info)
 
         # repositioning!
-        for i, slide in enumerate(self.slides):
-            # print('\tslide {} of {}'.format(1 + i, len(self.slides)))
-            # title = ''
-
+        for slide in self.slides:
             if nerve_mode == NerveMode.NOT_PRESENT and deform_mode is not DeformationMode.NONE:
                 self.throw(40)
 
             partially_deformed_nerve = None
 
             if deform_mode == DeformationMode.PHYSICS:
-                # print('\tsetting up physics')
                 if 'morph_count' in self.search(Config.SAMPLE).keys():
                     morph_count = self.search(Config.SAMPLE, 'morph_count')
                 else:
@@ -579,7 +568,6 @@ class Sample(Exceptionable, Configurable, Saveable):
                 else:
                     self.throw(118)
 
-                # title = 'morph count: {}'.format(morph_count)
                 sep_fascicles = self.search(Config.SAMPLE, "boundary_separation", "fascicles")
                 sep_nerve = None
 
@@ -765,11 +753,11 @@ class Sample(Exceptionable, Configurable, Saveable):
                 if os.path.exists(directory_to_create):
                     try:
                         shutil.rmtree(directory_to_create)
-                    except:
+                    except Exception:
                         pass
                 try:
                     os.makedirs(directory_to_create)
-                except:
+                except Exception:
                     pass
 
                 os.chdir(directory_to_create)
