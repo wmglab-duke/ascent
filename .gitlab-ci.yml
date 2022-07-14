@@ -5,6 +5,7 @@
 
 # Official language image. Look for the different tagged releases at:
 # https://hub.docker.com/r/library/python/tags/
+
 default:
   image: python:latest
 
@@ -73,6 +74,8 @@ test_docs:
   - master
 
 compile_java:
+  before_script:
+    - java --version
   stage: deploy
   image: openjdk:8-jdk
   script: javac src/model/*.java
