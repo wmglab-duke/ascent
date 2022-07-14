@@ -1,7 +1,7 @@
 myst-parser==0.15.2
 sphinx-argparse
+sphinx-copybutton
+sphinx-github-changelog
+sphinx-rtd-dark-mode
 sphinxcontrib-bibtex
 sphinxcontrib-details-directive
-sphinx-copybutton
-sphinx-rtd-dark-mode
-sphinx-github-changelog
