@@ -75,7 +75,7 @@ test_docs:
 
 compile_java:
   before_script:
-    - java --version
+    - java -version
   stage: deploy
   image: openjdk:8-jdk
   script: javac src/model/*.java
