@@ -71,8 +71,8 @@ test_docs:
   except:
   - master
 
-compile-java:
-  stage: build
+compile_java:
+  stage: deploy
   image: openjdk:8-jdk
   script: javac src/model/*.java
   artifacts:
