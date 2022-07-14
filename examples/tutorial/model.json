@@ -38,7 +38,7 @@
     }
   },
   "mesh": {
-    "quality_measure":"vollength",
+    "quality_measure": "vollength",
     "shape_order": "quadratic",
     "proximal": {
       "hcurve": 0.2,

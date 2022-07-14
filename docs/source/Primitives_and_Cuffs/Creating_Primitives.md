@@ -1,4 +1,5 @@
 # Creating new part primitives
+
 Though we provide a library of part primitives to assemble
 representations of many cuff electrodes as shown in
 `examples/parts/sandbox.mph`, users may find it necessary to add their own
@@ -81,24 +82,23 @@ simplest and most contained "primitive" – in reality it is just a
 cylinder contributed to the "MEDIUM" cumulative selection), add your
 lines to `Part.createCuffPartPrimitive()`.
 
-  - Add a "case" in the switch-case (e.g., case `"TubeCuff_Primitive"`).
-    Within this case-block, all operations for the new primitive will be
-    added.
+- Add a "case" in the switch-case (e.g., case `"TubeCuff_Primitive"`).
+  Within this case-block, all operations for the new primitive will be
+  added.
 
-  - For each line in your code (copied from the exported `*.java` file)
-    that begin with
-    `"model.geom.("part<#>").inputParam().set("<my_parameter>",
-    "<default_value>")`, at the top of your new case-block, add the
-    following line to set the "Input Parameters" you established in the
-    COMSOL GUI:
+- For each line in your code (copied from the exported `*.java` file)
+  that begin with
+  `"model.geom.("part<#>").inputParam().set("<my_parameter>", "<default_value>")`, at the top of your new case-block, add the
+  following line to set the "Input Parameters" you established in the
+  COMSOL GUI:
 
-      - `mp.set("<my_parameter>", "<default_value>")`
+  - `mp.set("<my_parameter>", "<default_value>")`
 
-  - Still looking at `Part.createEnvironmentPartPrimitive()` as an
-    example, now create your list of "selections" in "im.labels" which
-    are the lines that follow after the "Input Parameters" are defined.
-    Then add the for loop that loops over the `im.labels [String, …]`
-    adding them to COMSOL’s selections. These lines will look like:
+- Still looking at `Part.createEnvironmentPartPrimitive()` as an
+  example, now create your list of "selections" in "im.labels" which
+  are the lines that follow after the "Input Parameters" are defined.
+  Then add the for loop that loops over the `im.labels [String, …]`
+  adding them to COMSOL’s selections. These lines will look like:
 
 ```
 im.labels = new String[] {
@@ -115,26 +115,26 @@ model.geom(id).selection().create(im.next("csel", cselLabel),
 }
 ```
 
-  - The lines that follow the Cumulative Selection labeling add the
-    geometry features of the COMSOL part which COMSOL has also
-    conveniently exported for you in the `*.java` file. See [Java Utility Classes](../Code_Hierarchy/Java.md#java-utility-classes) for an explanation of our Java
-    `IdentifierManager` utility class that we created to abstract away from COMSOL’s
-    indexing system to improve code readability. Our `"IdentifierManager"`
-    class enables the user to access previously defined selection tags
-    by an informative label programmatically.
-    `Part.createEnvironmentPartPrimitive()` and
-    `Part.createCuffPartPrimitive()` are also great working examples of
-    how we use the COMSOL plugin in an IDE to clean up the code (e.g.,
-    creating a COMSOL "GeomFeature" to shorten the length of each line).
+- The lines that follow the Cumulative Selection labeling add the
+  geometry features of the COMSOL part which COMSOL has also
+  conveniently exported for you in the `*.java` file. See [Java Utility Classes](../Code_Hierarchy/Java.md#java-utility-classes) for an explanation of our Java
+  `IdentifierManager` utility class that we created to abstract away from COMSOL’s
+  indexing system to improve code readability. Our `"IdentifierManager"`
+  class enables the user to access previously defined selection tags
+  by an informative label programmatically.
+  `Part.createEnvironmentPartPrimitive()` and
+  `Part.createCuffPartPrimitive()` are also great working examples of
+  how we use the COMSOL plugin in an IDE to clean up the code (e.g.,
+  creating a COMSOL "GeomFeature" to shorten the length of each line).
 
-  - End the case for your new part primitive with a `"break;"` (this is
-    very important\!)
+- End the case for your new part primitive with a `"break;"` (this is
+  very important\!)
 
 7\. Add the operations for your part primitive to the
 `Part.createCuffPartInstance()` method (`src/model/Part.java`).
 
-  - Create a `List[String]` containing the "Input Parameters" you
-    established in the COMSOL GUI. These lines will look like:
+- Create a `List[String]` containing the "Input Parameters" you
+  established in the COMSOL GUI. These lines will look like:
 
 ```
 String[] myPrimitiveParameters = {
@@ -144,8 +144,8 @@ String[] myPrimitiveParameters = {
 }
 ```
 
-  - Add a for loop that adds all the "Input Parameters" to the part
-    instance. These lines will look like:
+- Add a for loop that adds all the "Input Parameters" to the part
+  instance. These lines will look like:
 
 ```
 for (String param : myPrimitiveParameters) {
@@ -153,11 +153,11 @@ partInstance.setEntry("inputexpr", param, (String) itemObject.get(param));
 }
 ```
 
-  - Our primitives have an additional (optional) section for selection
-    imports. Each defined selection used in your geometry operations
-    will be visible in the "Contribute to" drop-down menu unless you
-    toggle each selection "off". An example of how to "clean up" your
-    selections imported is shown below:
+- Our primitives have an additional (optional) section for selection
+  imports. Each defined selection used in your geometry operations
+  will be visible in the "Contribute to" drop-down menu unless you
+  toggle each selection "off". An example of how to "clean up" your
+  selections imported is shown below:
 
 // imports
 
@@ -167,23 +167,20 @@ partInstance.setEntry("inputexpr", param, (String) itemObject.get(param));
 // to selectively import the DOMAIN for whatever selection index 0 is in
 myLabels (defined in `im.labels` in
 // `createCuffPartPrimitive()`). To exclude, "off" instead of "on".
-`partInstance.setEntry("selkeepdom", instanceID + "_" +
-myIM.get(myLabels[0] + ".dom", "on"));`
+`partInstance.setEntry("selkeepdom", instanceID + "_" + myIM.get(myLabels[0] + ".dom", "on"));`
 
 // to selectively import the BOUNDARY for whatever selection index 0 is
 in myLabels (defined in `im.labels`
 // in `createCuffPartPrimitive()`). To exclude, "off" instead of "on".
-`partInstance.setEntry("selkeepbnd", instanceID + "_" +
-myIM.get(myLabels[0] + ".bnd", "on"));`
+`partInstance.setEntry("selkeepbnd", instanceID + "_" + myIM.get(myLabels[0] + ".bnd", "on"));`
 
 // to selectively import the POINT for whatever selection index 0 is in
 myLabels (defined in `im.labels`
 // in `createCuffPartPrimitive()`). To exclude, "off" instead of "on".
-`partInstance.setEntry("selkeeppnt", instanceID + "_" +
-myIM.get(myLabels[0] + ".pnt", "on"));`
+`partInstance.setEntry("selkeeppnt", instanceID + "_" + myIM.get(myLabels[0] + ".pnt", "on"));`
 
-  - End the case for your new part instance with a "break;" (this is
-    very important\!)
+- End the case for your new part instance with a "break;" (this is
+  very important\!)
 
 8\. (Step is optional but recommended). Add your new part to
 `examples/parts/sandbox.mph`. Simply save your `sandbox.mph` file as a

@@ -1,5 +1,5 @@
 {
-  "pseudonym":"template_run",
+  "pseudonym": "template_run",
   "submission_context": "local",
   "sample": 62,
   "models": [0],
@@ -17,7 +17,7 @@
     "pre_loop_currents": false
   },
   "models_exit_status": [true],
-  "endo_only_solution":true,
+  "endo_only_solution": true,
   "keep": {
     "debug_geom": true,
     "mesh": true,

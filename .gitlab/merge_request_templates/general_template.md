@@ -2,12 +2,15 @@
 <!--- Provide a general summary of the MR in the Title above -->
 
 ## Describe your changes
+
 <!--- What did you change, add, or remove? -->
 
 ## Issue ticket number and link
+
 <!--- If resolving an issue, provide it here. Paste the link and gitlab will automatically add the issue number -->
 
 ## Checklist before requesting a review
+
 - [ ] I have performed a self-review of my code
 - [ ] I have ensured my code follows style formatting requirements [link to wiki](link) (ignore/remove line for now)
 - [ ] I have commented my code thoroughly, particularly in hard-to-understand areas

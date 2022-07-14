@@ -1,14 +1,16 @@
 # Information on ASCENT controls
+
 ## Morphology Input Files
+
 Each mask must be binary (i.e., white pixels (‘1’) for the segmented
 tissue and black pixels (‘0’) elsewhere) and must use Tagged Image File
 Format (i.e., `.tif`, or `.tiff`). All masks must be defined within the same
 field of view, be the same size, and be the same resolution. To convert
 between pixels of the input masks to dimensioned length (micrometers), the user must specify
-a `"ScaleInputMode"` in ***Sample*** ([JSON Configuration Files](../JSON/index)). If using the mask input mode, a mask for the scale bar (`s.tif`) of known length (oriented horizontally) must be provided (see "Scale Bar" in [Fig 2](https://doi.org/10.1371/journal.pcbi.1009285.g002)) and the length of the scale
-bar must be indicated in ***Sample*** ([JSON Configuration Files](../JSON/index)). If using the ratio input mode, the user explicitly specifies the micrometers/pixel of the input masks in ***Sample*** ([JSON Configuration Files](../JSON/index)), and no scale bar image is required.
+a `"ScaleInputMode"` in **_Sample_** ([JSON Configuration Files](../JSON/index)). If using the mask input mode, a mask for the scale bar (`s.tif`) of known length (oriented horizontally) must be provided (see "Scale Bar" in [Fig 2](https://doi.org/10.1371/journal.pcbi.1009285.g002)) and the length of the scale
+bar must be indicated in **_Sample_** ([JSON Configuration Files](../JSON/index)). If using the ratio input mode, the user explicitly specifies the micrometers/pixel of the input masks in **_Sample_** ([JSON Configuration Files](../JSON/index)), and no scale bar image is required.
 
-The user is required to set the `"MaskInputMode"` in ***Sample***
+The user is required to set the `"MaskInputMode"` in **_Sample_**
 (`"mask_input"`) to communicate the contents of the segmented histology
 files ([JSON Configuration Files](../JSON/index)). Ideally, segmented images of boundaries for both the "outers"
 (`o.tif`) and "inners" (`i.tif`) of the perineurium will be provided, either
@@ -16,7 +18,7 @@ as two separate files (`o.tif` and `i.tif`) or combined in the same image
 (`c.tif`) (see "Inners", "Outers", and "Combined" in [Fig 2](https://doi.org/10.1371/journal.pcbi.1009285.g002)). However, if
 only inners are provided—which identify the outer edge of the
 endoneurium—a surrounding perineurium thickness is defined by the
-`"PerineuriumThicknessMode"` in ***Sample***
+`"PerineuriumThicknessMode"` in **_Sample_**
 (`"ci_perineurium_thickness"`); the thickness is user-defined,
 relating perineurium thickness to features of the inners (e.g., their
 diameter). It should be noted that defining nerve morphology with only
@@ -27,7 +29,7 @@ each inner trace will be assumed to represent a single independent
 fascicle that does not share its perineurium with any other inners; more
 accurate representation requires segmentation of the "outers" as well.
 
-The user is required to set the `"NerveMode"` in ***Sample*** ("nerve") to
+The user is required to set the `"NerveMode"` in **_Sample_** ("nerve") to
 communicate the contents of the segmented histology files ([JSON Configuration Files](../JSON/index)). The outer
 nerve boundary, if present, is defined with a separate mask (`n.tif`). In
 the case of a compound nerve with epineurium, the pipeline expects the
@@ -41,7 +43,7 @@ that would be within the cuff is present in the sample histology.
 Lastly, an "orientation" mask (`a.tif`) can be optionally defined. This
 mask should be all black except for a small portion that is white,
 representing the position to which the cuff must be rotated. The angle
-is measured *relative to the centroid of the nerve/singular fascicle*,
+is measured _relative to the centroid of the nerve/singular fascicle_,
 so this image should be constructed while referencing `n.tif` (or, if
 monofascicular, `i.tif`, `o.tif`, or `c.tif`). By default, the 0º position of
 our cuffs correspond with the coordinate halfway along the arc length of
@@ -49,40 +51,41 @@ the cuff inner diameter (i.e., the cuff will be rotated such that the sample cen
 contact center, and centroid of the white portion of `a.tif` form a line) while the
 circular portion of a cuff’s diameter is centered at the origin (Note: this rotation process uses `"angle_to_contacts_deg"` and `"fixed_point"` in a "preset"
 cuff’s JSON file, see [Creating Custom Cuffs](../Primitives_and_Cuffs/Custom_Cuffs) and [Cuff Placement on the Nerve](../Running_ASCENT/Info.md#cuff-placement-on-nerve)). If `a.tif` is provided, other cuff rotation methods
-(`"cuff_shift"` in ***Model***, which calculate `"pos_ang"`) are
+(`"cuff_shift"` in **_Model_**, which calculate `"pos_ang"`) are
 overridden.
 
 The user must provide segmented image morphology files, either from
 histology or the `mock_morphology_generator.py` script, with a specific
 naming convention in the `input/` directory.
 
-  - Raw RGB image, to be available for convenience and used for data
-    visualization: `r.tif` (optional).
+- Raw RGB image, to be available for convenience and used for data
+  visualization: `r.tif` (optional).
 
-  - Combined (i.e., inners and outers): `c.tif`.
+- Combined (i.e., inners and outers): `c.tif`.
 
-  - Inners: `i.tif`
+- Inners: `i.tif`
 
-      - An "inner" is the internal boundary of the perineurium that
-        forms the boundary between the perineurium and the endoneurium.
+  - An "inner" is the internal boundary of the perineurium that
+    forms the boundary between the perineurium and the endoneurium.
 
-  - Outers: `o.tif`
+- Outers: `o.tif`
 
-      - An "outer" is the external boundary of the perineurium that
-        forms the boundary between the perineurium and the epineurium or
-        extraneural medium.
+  - An "outer" is the external boundary of the perineurium that
+    forms the boundary between the perineurium and the epineurium or
+    extraneural medium.
 
-  - Scale bar: `s.tif` (scale bar oriented horizontally, required unless scale input mode is set to ratio).
+- Scale bar: `s.tif` (scale bar oriented horizontally, required unless scale input mode is set to ratio).
 
-  - Nerve: `n.tif` (optional for monofascicular nerves).
+- Nerve: `n.tif` (optional for monofascicular nerves).
 
-  - Orientation: `a.tif` (optional).
+- Orientation: `a.tif` (optional).
 
 For an example of input files, see [Fig 2](https://doi.org/10.1371/journal.pcbi.1009285.g002). The user must properly set
-the `"MaskInputMode"` in ***Sample*** (`"mask_input"`) for their provided
+the `"MaskInputMode"` in **_Sample_** (`"mask_input"`) for their provided
 segmented image morphology files ([JSON Configuration Files](../JSON/index)).
 
 ## Control of medium surrounding nerve and cuff electrode
+
 The medium surrounding the nerve and cuff electrode (e.g., fat, skeletal
 muscle) must contain a "proximal" domain, which runs the full length of
 the nerve, and may optionally include a "distal" domain. The
@@ -96,6 +99,7 @@ is shown below in Figure A. For details on how to define the
 Figure A. The user must define a "proximal" domain, and may optionally define a "distal" domain for independent assignment of meshing parameters for the site of stimulation from the rest of the FEM. The "proximal" domain runs the full length of the nerve and is anchored at (0,0,0). The distal domain’s radius and length may be independently assigned, and the entire distal domain may be shifted ("shift": (x, y, z)). Having a proximal domain that is overly voluminous can significantly decrease COMSOL meshing efficiency and even, rarely, cause errors. At all costs, avoid having a proximal or distal domain whose boundary intersects with a geometry (other than the nerve ends, which are by definition at the longitudinal boundaries of the proximal domain) or the boundary of other geometries (e.g., the cuff-nerve boundary); this will likely create a meshing error.
 
 ## Cuff placement on nerve
+
 This section provides an overview of how the cuff is placed on the
 nerve. The `compute_cuff_shift()` method within Runner (`src/runner.py`)
 determines the cuff’s rotation around the nerve and translation in the
@@ -107,28 +111,27 @@ convention, shifted such that the centroid of the nerve is at the origin
 is provided, inner or outer best-fit ellipse centroid for monofascicular
 nerves without nerve trace). Importantly, the nerve sample cross section
 is never moved from or rotated around the origin in COMSOL. By
-maintaining consistent nerve location across all ***Model’s*** for a
-***Sample,*** the coordinates in `fibersets/` are correct for any
+maintaining consistent nerve location across all **_Model’s_** for a
+**_Sample,_** the coordinates in `fibersets/` are correct for any
 orientation of a cuff on the nerve.
 
 ASCENT has different `CuffShiftModes` (i.e., `"cuff_shift"` parameter in
-***Model***) that control the translation of the cuff (i.e., "shift"
-JSON Object in ***Model***) and default rotation around the nerve (i.e.,
-`"pos_ang"` in ***Model***). Runner’s `compute_cuff_shift()` method is
+**_Model_**) that control the translation of the cuff (i.e., "shift"
+JSON Object in **_Model_**) and default rotation around the nerve (i.e.,
+`"pos_ang"` in **_Model_**). Runner’s `compute_cuff_shift()` method is
 easily expandable for users to add their own `CuffShiftModes` to control
 cuff placement on the nerve.
 
 The rotation and translation of the cuff are populated
 automatically by the `compute_cuff_shift()` method based on sample morphology, parameterization of the "preset" cuff, and the `CuffShiftMode`, and are defined in the "cuff" JSON
-Object ("shift" and "rotate") in ***Model***.
+Object ("shift" and "rotate") in **_Model_**.
 
 For "naïve" `CuffShiftModes` (i.e.,
-`"NAIVE_ROTATION_MIN_CIRCLE_BOUNDARY",
-"NAIVE_ROTATION_TRACE_BOUNDARY"`) the cuff is placed on the nerve
+`"NAIVE_ROTATION_MIN_CIRCLE_BOUNDARY", "NAIVE_ROTATION_TRACE_BOUNDARY"`) the cuff is placed on the nerve
 with rotation according to the parameters used to instantiate the cuff
 from part primitives ([Part Primitives and Custom Cuffs](../Primitives_and_Cuffs/index)). If the user would like to rotate the cuff from
 beyond this position, they may set the `"add_ang"` parameter in
-***Model*** ([Model Parameters](../JSON/JSON_parameters/model)). For naïve `CuffShiftModes`, the cuff is shifted along the
+**_Model_** ([Model Parameters](../JSON/JSON_parameters/model)). For naïve `CuffShiftModes`, the cuff is shifted along the
 vector from (0,0) in the direction of the `"angle_to_contacts_deg"`
 parameter in the "preset" JSON file.
 `"NAIVE_ROTATION_MIN_CIRCLE_BOUNDARY"` `CuffShiftMode` moves the cuff
@@ -142,20 +145,19 @@ is within the distance of the `"thk_medium_gap_internal"` parameter for
 the cuff. Note: orientation masks (`a.tif`) are ignored when using these modes.
 
 For "automatic" `CuffShiftModes` (i.e.,
-`"AUTO_ROTATION_MIN_CIRCLE_BOUNDARY",
-"AUTO_ROTATION_TRACE_BOUNDARY"`) the cuff is rotated around the
+`"AUTO_ROTATION_MIN_CIRCLE_BOUNDARY", "AUTO_ROTATION_TRACE_BOUNDARY"`) the cuff is rotated around the
 nerve based on the size and position of the nerve’s fascicle(s) before
 the cuff is moved toward the nerve sample (Figure A). The point at
 the intersection of the vector from (0,0) in the direction of the
 `"angle_to_contacts_deg"` parameter in the "preset" JSON file with
 the cuff (i.e., cuff’s "center" in following text) is rotated to meet a specific location of the nerve/monofascicle’s
 surface. Specifically, the center of the cuff is rotated around the
-nerve to make (0,0), the center of the cuff, and ***Sample’s***
+nerve to make (0,0), the center of the cuff, and **_Sample’s_**
 `"fascicle_centroid"` (computed with Slide’s `fascicle_centroid()`
 method, which calculates the area and centroid of each inner and then
 averages the inners’ centroids weighted by each inner’s area) colinear.
 If the user would like to rotate the cuff from beyond this position, they may set the
-`"add_ang"` parameter in ***Model*** ([Model Parameters](../JSON/JSON_parameters/model)). The user may override the
+`"add_ang"` parameter in **_Model_** ([Model Parameters](../JSON/JSON_parameters/model)). The user may override the
 default "AUTO" rotation of the cuff on the nerve by adding an
 orientation mask (`a.tif`) to align a certain surface of the nerve sample
 with the cuff’s center (../Running_ASCENT/Info.md#morphology-Input-Files)). This behavior depends on the
@@ -172,14 +174,14 @@ the cuff.
 
 ![Inline image](../uploads/01a27546f96467d15bdf091a13ff5f28/Picture22.jpg)
 
-Figure A. Demonstration of cuff placement on a multifascicular nerve (top) and a monofascicular nerve without epineurium (bottom) with the same "preset" cuff (Purdue.json) for three different cuff rotations using the "AUTO_ROTATION_TRACE_BOUNDARY" CuffShiftMode. The cuff rotations are different in the top and bottom rows since the point on the surface of the nerve sample closest to the most endoneurium is unique to each sample (black arrows). Additional angles of rotation were applied to the cuff directly using the "add_ang" parameter in the ***Model’s*** "cuff" JSON Object (red arrows).
+Figure A. Demonstration of cuff placement on a multifascicular nerve (top) and a monofascicular nerve without epineurium (bottom) with the same "preset" cuff (Purdue.json) for three different cuff rotations using the "AUTO*ROTATION_TRACE_BOUNDARY" CuffShiftMode. The cuff rotations are different in the top and bottom rows since the point on the surface of the nerve sample closest to the most endoneurium is unique to each sample (black arrows). Additional angles of rotation were applied to the cuff directly using the "add_ang" parameter in the \*\*\_Model’s*\*\* "cuff" JSON Object (red arrows).
 
 The default z-position of each part along the nerve is defined in the
 "preset" cuff JSON file by the expression assigned to the part
 instance’s "Center" parameter (referenced to z = 0 at one end of the
 model’s proximal cylindrical domain). However, if the user would like to
 move the entire "preset" cuff along the length of the nerve, in the
-"cuff" JSON Object within ***Model***, the user may change the "z"
+"cuff" JSON Object within **_Model_**, the user may change the "z"
 parameter.
 
 Since some cuffs can open in response to a nerve diameter larger
@@ -216,7 +218,6 @@ This JSON Object in `Purdue.json` will instruct the system to maintain
 added separation between the internal surface of the cuff and the nerve
 of:
 
-
 The div element has its own alignment attribute, align.
 
 <div align="center">
@@ -234,7 +235,7 @@ by the current amplitude in `RunSim.hoc` to either simulate fiber thresholds of
 activation or block with a binary search algorithm, or response to set
 amplitudes.
 
-###  Binary search
+### Binary search
 
 In searching for activation thresholds (i.e., the minimum stimulation
 amplitude required to generate a propagating action potential) or block
@@ -253,16 +254,16 @@ the new upper bound. At each iteration of this process, half of the
 remaining amplitude range is removed. The process is continued until the
 termination criteria is satisfied (e.g., some threshold resolution
 tolerance is achieved). The average performance of a binary search
-algorithm is Ο(log(*n*)) where n is the number of
+algorithm is Ο(log(_n_)) where n is the number of
 elements in the search array (i.e., linearly spaced range of
 amplitudes).
 
 In the pipeline, the binary search protocol parameters (i.e., activation
 or block criteria, threshold criteria, method for searching for starting
 upper- and lower bounds, or termination criteria) are contained in the
-"protocol" JSON Object within ***Sim*** ([Sim Parameters](../JSON/JSON_parameters/sim)).
+"protocol" JSON Object within **_Sim_** ([Sim Parameters](../JSON/JSON_parameters/sim)).
 
-###  Activation threshold protocol
+### Activation threshold protocol
 
 The pipeline has a NEURON simulation protocol for determining thresholds
 of activation of nerve fibers in response to extracellular stimulation.
@@ -273,10 +274,10 @@ the threshold amplitude. Current amplitudes are determined to be above
 threshold if the stimulation results in at least `n_AP` propagating
 action potentials detected at 75% of the fiber’s length (note: location
 can be specified by user with `"ap_detect_location"` parameter in
-***Sim***) ([Sim Parameters](../JSON/JSON_parameters/sim)). The parameters for control over the activation threshold
-protocol are found in ***Sim*** within the "protocol" JSON Object ([Sim Parameters](../JSON/JSON_parameters/sim)).
+**_Sim_**) ([Sim Parameters](../JSON/JSON_parameters/sim)). The parameters for control over the activation threshold
+protocol are found in **_Sim_** within the "protocol" JSON Object ([Sim Parameters](../JSON/JSON_parameters/sim)).
 
-###  Block threshold protocol
+### Block threshold protocol
 
 The pipeline has a NEURON simulation protocol for determining block
 thresholds for nerve fibers in response to extracellular stimulation.
@@ -286,28 +287,28 @@ The simulation protocol for determining block thresholds starts by
 delivering the blocking waveform through the cuff. After a user-defined
 delay during the stimulation onset period, the protocol delivers a test
 pulse (or a train of pulses if the user chooses) where the user placed
-it (see "ind" parameter in ***Sim*** within the `"intracellular_stim"`
+it (see "ind" parameter in **_Sim_** within the `"intracellular_stim"`
 JSON Object ([Sim Parameters](../JSON/JSON_parameters/sim))), near the proximal end. The code checks for action
 potentials near the distal end of the fiber (see `"ap_detect_location"`
-parameter in ***Sim*** within the "threshold" JSON Object ([Sim Parameters](../JSON/JSON_parameters/sim))). If at least
+parameter in **_Sim_** within the "threshold" JSON Object ([Sim Parameters](../JSON/JSON_parameters/sim))). If at least
 one action potential is detected, then transmission of the test pulse
 occurred (i.e., the stimulation amplitude is below block threshold).
 However, the absence of an action potential indicates block (i.e., the
 stimulation amplitude is above block threshold). The pipeline uses a
 binary search algorithm to converge on the threshold amplitude. The
 parameters for control over the block threshold protocol are found in
-***Sim*** within the "protocol" JSON Object ([Sim Parameters](../JSON/JSON_parameters/sim)).
+**_Sim_** within the "protocol" JSON Object ([Sim Parameters](../JSON/JSON_parameters/sim)).
 
 The user must be careful in setting the initial upper and lower bounds
 of the binary search for block thresholds. Especially for small diameter
 myelinated fibers, users must be aware of and check for re-excitation
 using a stimulation amplitude sweep {cite:p}`Pelot2017`.
 
-###  Response to set amplitudes
+### Response to set amplitudes
 
 Alternatively, users may simulate the response of nerve fibers in
 response to extracellular stimulation for a user-specified set of
-amplitudes. The "protocol" JSON Object within ***Sim*** contains the set
+amplitudes. The "protocol" JSON Object within **_Sim_** contains the set
 of amplitudes that the user would like to simulate ([Sim Parameters](../JSON/JSON_parameters/sim)).
 
 ## Implementation of NEURON fiber models
@@ -317,15 +318,15 @@ of amplitudes that the user would like to simulate ([Sim Parameters](../JSON/JSO
 The `CreateAxon_Myel.hoc` file is loaded in `Wrapper.hoc` if the user
 chooses either `"MRG_DISCRETE"` or `"MRG_INTERPOLATION"`. The length of
 each section in NEURON varies depending on both the diameter and the
-"FiberGeometry" mode chosen in ***Sim***.
+"FiberGeometry" mode chosen in **_Sim_**.
 
 #### MRG discrete diameter (as previously published)
 
-The "FiberGeometry" mode `"MRG_DISCRETE"` in ***Sim*** instructs the
+The "FiberGeometry" mode `"MRG_DISCRETE"` in **_Sim_** instructs the
 program to simulate a double cable structure for mammalian myelinated
 fibers {cite:p}`McIntyre2004,McIntyre2002`. In the pipeline, we refer to this model as
 `"MRG_DISCRETE"` since the model’s geometric parameters were originally
-published for a *discrete* list of fiber diameters: 1, 2, 5.7, 7.3, 8.7,
+published for a _discrete_ list of fiber diameters: 1, 2, 5.7, 7.3, 8.7,
 10, 11.5, 12.8, 14.0, 15.0, and 16.0 μm. Since the MRG fiber model has
 distinct geometric dimensions for each fiber diameter, the parameters
 are stored in `config/system/fiber_z.json` as lists in the
@@ -336,10 +337,10 @@ probe `potentials/` from COMSOL) for MRG fibers.
 
 #### MRG interpolated diameters
 
-The `"FiberGeometry"` mode `"MRG_INTERPOLATION"` in ***Sim*** instructs the
+The `"FiberGeometry"` mode `"MRG_INTERPOLATION"` in **_Sim_** instructs the
 program to simulate a double cable structure for mammalian myelinated
 fibers for any diameter fiber between 2 and 16 µm (throws an error if
-not in this range) by using an *interpolation* over the originally
+not in this range) by using an _interpolation_ over the originally
 published fiber geometries {cite:p}`McIntyre2004,McIntyre2002`. In the pipeline, we refer to
 this model as `"MRG_INTERPOLATION"` since it enables the user to simulate
 any fiber diameter between the originally published diameters.
@@ -388,7 +389,7 @@ Materials are defined in the COMSOL "Materials" node for each material
 cuff "insulator", contact "conductor", contact "recess", and cuff
 "fill") and nerve domain (i.e., endoneurium, perineurium,
 epineurium). Material properties for each function are assigned in
-***Model*’s** "conductivities" JSON Object by either referencing
+**_Model_’s** "conductivities" JSON Object by either referencing
 materials in the default materials library
 (`config/system/materials.json`) by name, or with explicit definitions
 of a materials name and conductivity as a JSON Object ([Material Parameters](../JSON/JSON_parameters/materials)).
@@ -401,7 +402,7 @@ are listed in Table A. To accommodate automation of
 frequency-dependent material properties (for a single frequency, i.e.,
 sinusoid), parameters for material conductivity that are dependent on
 the stimulation frequency are calculated in Runner’s
-`compute_electrical_parameters()` method and saved to ***Model*** before
+`compute_electrical_parameters()` method and saved to **_Model_** before
 the handoff() method is called. Our pipeline supports calculation of the
 frequency-dependent conductivity of the perineurium based on
 measurements from the frog sciatic nerve {cite:p}`Weerasuriya1984` using the
@@ -411,28 +412,28 @@ epineurium, perineurium, endoneurium).
 
 Table A. Default material conductivities.
 
-| **Material**  | **Conductivity**             | **References**         |
-| ------------- | ---------------------------- | ---------------------- |
-| silicone      | 10^-12 \[S/m\]               | {cite:p}`Callister2011-iv`                 |
-| platinum      | 9.43 ⨉ 10^6 \[S/m\]          | {cite:p}`De_Podesta1997-jq`                   |
-| endoneurium   | {1/6, 1/6, 1/1.75} \[S/m\]   | {cite:p}`RanckJr1965,Pelot2018`         |
-| epineurium    | 1/6.3 \[S/m\]                | {cite:p}`stolinski_structure_1995,Grill1994,Pelot2017`     |
-| muscle        | {0.086, 0.086, 0.35} \[S/m\] | {cite:p}`Gielen1984`            |
-| fat           | 1/30 \[S/m\]                 | {cite:p}`Geddes1967`               |
-| encapsulation | 1/6.3 \[S/m\]                | {cite:p}`Grill1994`                   |
-| saline        | 1.76 \[S/m\]                 | {cite:p}`Horch2017-nm`                  |
-| perineurium   | 1/1149 \[S/m\]               | {cite:p}`Weerasuriya1984,Pelot2018`             |
+| **Material**  | **Conductivity**             | **References**                                         |
+| ------------- | ---------------------------- | ------------------------------------------------------ |
+| silicone      | 10^-12 \[S/m\]               | {cite:p}`Callister2011-iv`                             |
+| platinum      | 9.43 ⨉ 10^6 \[S/m\]          | {cite:p}`De_Podesta1997-jq`                            |
+| endoneurium   | {1/6, 1/6, 1/1.75} \[S/m\]   | {cite:p}`RanckJr1965,Pelot2018`                        |
+| epineurium    | 1/6.3 \[S/m\]                | {cite:p}`stolinski_structure_1995,Grill1994,Pelot2017` |
+| muscle        | {0.086, 0.086, 0.35} \[S/m\] | {cite:p}`Gielen1984`                                   |
+| fat           | 1/30 \[S/m\]                 | {cite:p}`Geddes1967`                                   |
+| encapsulation | 1/6.3 \[S/m\]                | {cite:p}`Grill1994`                                    |
+| saline        | 1.76 \[S/m\]                 | {cite:p}`Horch2017-nm`                                 |
+| perineurium   | 1/1149 \[S/m\]               | {cite:p}`Weerasuriya1984,Pelot2018`                    |
 
 ### Definition of perineurium
 
 The perineurium is a thin highly resistive layer of connective tissue
 and has a profound impact on thresholds of activation and block. Our
 previous modeling work demonstrates that representing the perineurium
-with a thin layer approximation (Rm = rho\*peri\_thk), rather than as a
+with a thin layer approximation (Rm = rho\*peri*thk), rather than as a
 thinly meshed domain, reduces mesh complexity and is a reasonable
 approximation {cite:p}`Pelot2018`. Therefore, perineurium can be modeled with a thin
 layer approximation (except with "peanut" fascicles; see an example in
-[Fig 2](https://doi.org/10.1371/journal.pcbi.1009285.g002)), termed "contact impedance" in COMSOL (if ***Model’s***
+[Fig 2](https://doi.org/10.1371/journal.pcbi.1009285.g002)), termed "contact impedance" in COMSOL (if \*\*\_Model’s*\*\*
 `"use_ci"` parameter is true ([Model Parameters](../JSON/JSON_parameters/model))), which relates the normal component of
 the current density through the surface
 ![f5] to the drop in electric
@@ -450,26 +451,25 @@ Our previously published work quantified the relationship between fascicle diame
 Table A. Previously published relationships between fascicle diameter and
 perineurium thickness.
 
-| **Species** | **peri\_thk:** ***f*(species, d<sub>fasc</sub>)** | **References** |
-| ----------- | ------------------------------------------------------------ | -------------- |
-| Rat         | peri\_thk = 0.01292\*d<sub>fasc</sub> + 1.367 \[um\]         | {cite:p}`Pelot2020`         |
-| Pig         | peri\_thk = 0.02547\*d<sub>fasc</sub> + 3.440 \[um\]         | {cite:p}`Pelot2020`         |
-| Human       | peri\_thk = 0.03702\*d<sub>fasc</sub> + 10.50 \[um\]         | {cite:p}`Pelot2020`         |
+| **Species** | **peri_thk:** **_f_(species, d<sub>fasc</sub>)**    | **References**      |
+| ----------- | --------------------------------------------------- | ------------------- |
+| Rat         | peri_thk = 0.01292\*d<sub>fasc</sub> + 1.367 \[um\] | {cite:p}`Pelot2020` |
+| Pig         | peri_thk = 0.02547\*d<sub>fasc</sub> + 3.440 \[um\] | {cite:p}`Pelot2020` |
+| Human       | peri_thk = 0.03702\*d<sub>fasc</sub> + 10.50 \[um\] | {cite:p}`Pelot2020` |
 
-
-The "rho\_perineurium" parameter in ***Model*** can take either of two
+The "rho*perineurium" parameter in \*\*\_Model*\*\* can take either of two
 modes:
 
-  - "RHO\_WEERASURIYA": The perineurium conductivity value changes with the frequency of electrical stimulation (for
-    a single value, not a spectrum, defined in ***Model*** as
-    "frequency") and temperature (using a Q10 adjustment, defined in
-    ***Model*** as "temperature") based on measurements of frog sciatic
-    perineurium {cite:p}`Pelot2018,Weerasuriya1984`. The equation is defined in
-    `src/core/Waveform.py` in the `rho_weerasuriya()` method.
+- "RHO\*WEERASURIYA": The perineurium conductivity value changes with the frequency of electrical stimulation (for
+  a single value, not a spectrum, defined in \*\*\_Model**\* as
+  "frequency") and temperature (using a Q10 adjustment, defined in
+  **_Model_\*\* as "temperature") based on measurements of frog sciatic
+  perineurium {cite:p}`Pelot2018,Weerasuriya1984`. The equation is defined in
+  `src/core/Waveform.py` in the `rho_weerasuriya()` method.
 
-  - "MANUAL": Conductivity value assigned to the perineurium is as
-    explicitly defined in either `materials.json` or ***Model*** without
-    any corrections for temperature or frequency.
+- "MANUAL": Conductivity value assigned to the perineurium is as
+  explicitly defined in either `materials.json` or **_Model_** without
+  any corrections for temperature or frequency.
 
 [f1]: https://chart.apis.google.com/chart?cht=tx&chl=\vec{n}\cdot\vec{J_{1}}=\frac{1}{\rho_{s}}(V_{1}-V_{2})
 [f2]: https://chart.apis.google.com/chart?cht=tx&chl=\rho_{s}=\frac{d_{s}}{\sigma_{s}}

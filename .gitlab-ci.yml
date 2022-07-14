@@ -28,7 +28,7 @@ variables:
 # If you want to also cache the installed packages, you have to install
 # them in a virtualenv and cache it as well.
 
-stages:          # List of stages for jobs, and their order of execution
+stages: # List of stages for jobs, and their order of execution
   - lint
   - test
   - deploy
@@ -39,7 +39,7 @@ cache:
     - venv/
 
 before_script:
-  - python --version  # For debugging
+  - python --version # For debugging
   - pip install virtualenv
   - virtualenv venv
   - source venv/bin/activate
@@ -67,11 +67,11 @@ flake8:
 test_docs:
   stage: test
   script:
-  - pip install -U sphinx mock sphinx-rtd-theme
-  - pip install -Ur docs/rtd_requirements.txt
-  - cd docs/source; sphinx-build -W -b html . ../../public
+    - pip install -U sphinx mock sphinx-rtd-theme
+    - pip install -Ur docs/rtd_requirements.txt
+    - cd docs/source; sphinx-build -W -b html . ../../public
   except:
-  - master
+    - master
 
 #compile_java:
 #  before_script:
@@ -88,11 +88,11 @@ test_docs:
 pages:
   stage: deploy
   script:
-  - pip install -U sphinx mock sphinx-rtd-theme
-  - pip install -Ur docs/rtd_requirements.txt
-  - cd docs/source; sphinx-build -W -b html . ../../public
+    - pip install -U sphinx mock sphinx-rtd-theme
+    - pip install -Ur docs/rtd_requirements.txt
+    - cd docs/source; sphinx-build -W -b html . ../../public
   artifacts:
     paths:
-    - public
+      - public
   only:
-  - master
+    - master
