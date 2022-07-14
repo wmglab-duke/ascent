@@ -78,7 +78,10 @@ compile_java:
     - java -version
   stage: deploy
   image: openjdk:8-jdk
-  script: javac src/model/*.java
+  script:
+  - mkdir bin
+  - wget -q -O bin/json-20190722.jar https://repo1.maven.org/maven2/org/json/json/20190722/json-20190722.jar
+  - javac -cp bin/json-20190722.jar src/model/*.java
   artifacts:
     untracked: true
 
