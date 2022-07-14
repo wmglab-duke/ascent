@@ -12,9 +12,4 @@ from .exceptionable import Exceptionable
 from .saveable import Saveable
 from .template_output import TemplateOutput
 
-__all__ = [
-    'Configurable',
-    'Exceptionable',
-    'TemplateOutput',
-    'Saveable'
-]
+__all__ = ['Configurable', 'Exceptionable', 'TemplateOutput', 'Saveable']

@@ -47,7 +47,7 @@ class Configurable:
     ):
         """
         :param mode: SetupMode, determines if loads new JSON or uses old data
-        :param key: Config (choice of configurations from discrete enumeration); 
+        :param key: Config (choice of configurations from discrete enumeration);
             choice of SAMPLE, MODEL, SIM (these are the big ones), EXCEPTIONS, or any other added configs
         :param config: if mode is NEW, this is file path str, else (mode is OLD) this is already loaded config data
         """
@@ -158,7 +158,6 @@ class Configurable:
         :return: json data (dict or list)
         """
         with open(config_path, "r") as handle:
-            # print('load "{}" --> key "{}"'.format(config, key))
             return json.load(handle)
 
     def search_mode(self, mode: Type[Enum], key: Config, optional: bool = False):

@@ -7,7 +7,9 @@ ignore = E203, W503,
     E741,
     #E722 is bare except, less important but should still be fixed
     E722
-
+per-file-ignores =
+    # imported but unused and star imports
+    __init__.py: F401, F403
 max-line-length = 120
 max-complexity = 18
 #note T is for mypy, so does nothing now
