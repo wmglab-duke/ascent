@@ -12,7 +12,7 @@ Description:
 - Generalized procedure to save time courses to file
 
 Important notes:
-- 
+-
 
 Variables that must be defined in wrapper/params file:
 None.

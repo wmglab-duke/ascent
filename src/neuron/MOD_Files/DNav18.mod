@@ -15,9 +15,9 @@ UNITS {
 }
 
 PARAMETER {
-	gbar = 0 (S/cm2) : =220e-9/(100e-12*1e8) (S/cm2) : 220(nS)/100(um)^2       
+	gbar = 0 (S/cm2) : =220e-9/(100e-12*1e8) (S/cm2) : 220(nS)/100(um)^2
 	kvot_qt
-        celsiusT	
+        celsiusT
 	shift_act = 0 (mV)
 	shift_inact =0 (mV)
 }
@@ -42,7 +42,7 @@ ASSIGNED {
 STATE { m h s u }
 
 BREAKPOINT {
-	SOLVE states METHOD cnexp	
+	SOLVE states METHOD cnexp
 	g = gbar * m^3* h * s * u
 	ina = g * (v-ena)
 }
@@ -54,7 +54,7 @@ INITIAL {
         h=hinf
         s=sinf
         u=uinf
-    	
+
 
 }
 
@@ -67,18 +67,18 @@ DERIVATIVE states {
 }
 
 FUNCTION rates(Vm (mV)) {
-        
+
         am= 2.85-(2.839)/(1+exp((Vm-1.159)/13.95))
         bm= (7.6205)/(1+exp((Vm+46.463)/8.8289))
 	tau_m = 1/(am+bm)
 	minf = am/(am+bm)
-        
-        hinf= 1/(1+exp((Vm+32.2)/4))  
+
+        hinf= 1/(1+exp((Vm+32.2)/4))
         tau_h=(1.218+42.043*exp(-((Vm+38.1)^2)/(2*15.19^2)))
-	
-	tau_s = 1/(alphas(Vm) + betas(Vm))			
-        sinf = 1/(1 + exp((Vm + 45)/8(mV)))	 	
- 	tau_u = 1/(alphau(Vm) + betau(Vm))	
+
+	tau_s = 1/(alphas(Vm) + betas(Vm))
+        sinf = 1/(1 + exp((Vm + 45)/8(mV)))
+ 	tau_u = 1/(alphau(Vm) + betau(Vm))
 	uinf = 1/(1 + exp((Vm + 51)/8(mV)))
 
 
@@ -91,7 +91,7 @@ FUNCTION rates(Vm (mV)) {
 
 
 FUNCTION alphas(Vm (mV)) (/ms) {
-	alphas=	0.001(/ms)*5.4203/(1 + exp((Vm + 79.816)/16.269(mV)))	
+	alphas=	0.001(/ms)*5.4203/(1 + exp((Vm + 79.816)/16.269(mV)))
 }
 
 FUNCTION alphau(Vm (mV)) (/ms) {
@@ -105,6 +105,3 @@ FUNCTION betas(Vm (mV)) (/ms) {
 FUNCTION betau(Vm (mV)) (/ms) {
 	betau= 0.0002(/ms)*1.9952/(1 + exp(-(Vm + 30.963)/14.792(mV)))
 }
-
-
-

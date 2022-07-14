@@ -12,7 +12,7 @@ Description:
 - Save thresh to file (in mA)
 
 Important notes:
-- 
+-
 
 Variables that must be defined in wrapper/params file:
 - thresh
@@ -25,10 +25,10 @@ proc Saving_Thresh() {
 	// Open file for writing
 	output_file_thresh = new File()
 	output_file_thresh.wopen(thresh_fname_output)
-	
+
 	// Print output to file
 	output_file_thresh.printf("%f\n", stimamp) // where stimamp is the threshold found in FindThresh(), units mA for extracellular & nA for intracellular
-	
+
 	// Close file
 	output_file_thresh.close()
 }

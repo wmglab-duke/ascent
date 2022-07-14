@@ -36,4 +36,3 @@ proc IntraStim_PulseTrain() {
 		stim.amp	= IntraStim_PulseTrain_amp
 	}
 }
-

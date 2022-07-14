@@ -13,7 +13,7 @@ proc CreateAxon_CFiber() {
 
     fiber = new cFiberBuilder(fiberD,len,c_fiber_model_type,celsius,deltaz,0,0,passive_end_nodes)
 
-    
+
 	for i = 0, axonnodes-1 {
 		s[i] = fiber.section[i]
 	}
