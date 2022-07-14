@@ -17,10 +17,11 @@ try:
     import pymunkoptions
 
     pymunkoptions.options["debug"] = False
-except:
+except Exception:
     pass
 
 args = parse_args.parse()
+
 
 if args.script != 'install':
     env = os.environ.get('CONDA_PREFIX')
