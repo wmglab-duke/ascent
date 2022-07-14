@@ -1,6 +1,6 @@
 {
   "n_dimensions": "osparc",
-  "plot_folder" : true,
+  "plot_folder": true,
   "active_srcs": {
     "default": [[-1, 1]],
     "M18HumanBipolar45.json": [[-1, 1]],
@@ -20,7 +20,7 @@
       "diameter": "osparc",
       "full_nerve_length": true,
       "offset": 0,
-      "seed": 123,
+      "seed": 123
     },
     "xy_parameters": {
       "mode": "CENTROID"

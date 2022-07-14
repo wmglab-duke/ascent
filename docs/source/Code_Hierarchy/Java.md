@@ -1,7 +1,9 @@
 # Java Classes
+
 ## ModelWrapper Class
-The `ModelWrapper` class in Java takes inputs of the ASCENT_PROJECT_PATH
-(`env.json`, [JSON Configuration Files](../JSON/index)) and a list of ***Run*** paths. `ModelWrapper` contains a COMSOL
+
+The `ModelWrapper` class in Java takes inputs of the ASCENT*PROJECT_PATH
+(`env.json`, [JSON Configuration Files](../JSON/index)) and a list of \*\*\_Run*\*\* paths. `ModelWrapper` contains a COMSOL
 "model" object, model source directory (String), model destination
 directory (String), an `"IdentifierManager"` ([Java Utility Classes](../Code_Hierarchy/Java.md#java-utility-classes)), and `HashMaps` with key-value
 pairs linking COMSOL domains to unions of domains. `ModelWrapper` has
@@ -12,21 +14,21 @@ mutator methods for changing an instance’s root String (`setRoot()`) and
 default saving destination String (`setDest()`).
 
 `ModelWrapper’s` `main()` method starts an instance of COMSOL and loads
-***Run***, ***Sample***, ***Model***, and ***Sim*** configurations as
+**_Run_**, **_Sample_**, **_Model_**, and **_Sim_** configurations as
 JSON Objects into memory. We developed Java class `JSONio` ([Java Utility Classes](../Code_Hierarchy/Java.md#java-utility-classes)) for reading and
 writing JSON Objects to file.
 
-Since each ***Run*** contains a list of ***Model*** and ***Sim***
-configurations for a single ***Sample*** (note: `n_sims/` are created for
-all combinations of ***Model*** and ***Sim*** for the ***Sample*** in a
-***Run***), `ModelWrapper` iterates over ***Model*** configurations (e.g.,
+Since each **_Run_** contains a list of **_Model_** and **_Sim_**
+configurations for a single **_Sample_** (note: `n_sims/` are created for
+all combinations of **_Model_** and **_Sim_** for the **_Sample_** in a
+**_Run_**), `ModelWrapper` iterates over **_Model_** configurations (e.g.,
 different cuff electrodes or material assignments) to define the FEM
 geometry, mesh, assign boundary conditions and physics, and solve. The
 resulting FEM potentials are obtained for 1 mA applied to one of the
 electrode contacts while the electric potential on the other contacts is
 floating (i.e., condition of continuity); this is repeated for each
 contact to define the "bases" of the solution space {cite:p}`Pelot2018current`. For each
-***Sim***, the program then creates a superposition of the "bases" for
+**_Sim_**, the program then creates a superposition of the "bases" for
 extracellular potentials at the coordinates defined in `fibersets/` and
 `ss_coords/` (i.e., the coordinates along the length of the nerve used to
 "super-sample" potentials for later creating potentials/ without the
@@ -34,17 +36,17 @@ need for COMSOL). We wrote the code such that the program will
 continue with creating potentials/, `ss_bases/` (i.e., the potentials
 along the length of the nerve corresponding 1:1 to the coordinates saved
 in `ss_coords/`, which are added together according to the contact
-weighting defined by `"active_srcs"` in *Sim* to create potentials/ for
+weighting defined by `"active_srcs"` in _Sim_ to create potentials/ for
 specific fiber models), and NEURON simulations for any remaining
-***Model*** indices even if the processes for a single ***Model***
-fails. For each ***Model***, the program appends a Boolean to
-`"models_exit_status"` in ***Run*** (true if successful, false if not
+**_Model_** indices even if the processes for a single **_Model_**
+fails. For each **_Model_**, the program appends a Boolean to
+`"models_exit_status"` in **_Run_** (true if successful, false if not
 successful).
 
-###  ModelWrapper.addNerve()
+### ModelWrapper.addNerve()
 
 The `addNerve()` method adds the nerve components to the COMSOL "model"
-object using Java. If the `"NerveMode"` in ***Sample*** ("nerve") is
+object using Java. If the `"NerveMode"` in **_Sample_** ("nerve") is
 "PRESENT" ([Sample Parameters](../JSON/JSON_parameters/sample)) the program creates a part instance of epineurium using the
 `createNervePartInstance()` method in Part (`src/model/Part.java`). The
 `addNerve()` method then searches through all directories
@@ -54,14 +56,15 @@ fascicle directories is then passed to the `createNervePartInstance()`
 method in Part which adds fascicles to the COMSOL "model" object.
 
 ### ModelWrapper.extractAllPotentials()
+
 The user is unlikely to interface directly with ModelWrapper’s
 `extractAllPotentials()` method in Java as it operates behind the scenes.
 The method takes input arguments for the project path and a run path.
-Using the run path, the method loads ***Run***, and constructs lists of
-***Model*** and ***Sim*** for which it will call `extractPotentials()` for
-each fiberset. COMSOL is expecting a (3 ⨉ *n*)
+Using the run path, the method loads **_Run_**, and constructs lists of
+**_Model_** and **_Sim_** for which it will call `extractPotentials()` for
+each fiberset. COMSOL is expecting a (3 ⨉ _n_)
 matrix of coordinates (Double[3][n]), defining the
-(x,y,z)-coordinates for each of *n* points.
+(x,y,z)-coordinates for each of _n_ points.
 
 The Java COMSOL API methods `setInterpolationCoordinates()` and `getData()`
 for a model object are fast compared to the time for a machine to load a
@@ -69,7 +72,7 @@ COMSOL "model" object to memory from file. Therefore, the
 `extractAllPotentials()` method is intentionally configured to minimize
 the number of times a "basis" COMSOL "model" object is loaded into
 memory. We accomplish this by looping in the following order:
-***Model***, bases, ***Sims***, fibersets (i.e., groups of fibers with
+**_Model_**, bases, **_Sims_**, fibersets (i.e., groups of fibers with
 identical geometry/channels, but different (x,y)-locations and/or
 longitudinal offsets), then fibers. With this approach, we load each
 COMSOL "model" object only once (i.e., \*.mph members of bases/). Within
@@ -81,7 +84,6 @@ their contact weights and writes them to file within potentials/ (or
 ss_bases/), which mirrors fibersets/ (or ss_coords/) in
 contents.
 
-
 ### ModelWrapper.addMaterialDefinitions()
 
 The user is unlikely to interface directly with the
@@ -89,7 +91,7 @@ The user is unlikely to interface directly with the
 scenes. The method takes an input of a list of strings containing the
 material functions (i.e., endoneurium, perineurium, epineurium, cuff
 "fill", cuff "insulator", contact "conductor", and contact "recess"),
-***Model***, and a COMSOL `ModelParamGroup` for containing the material
+**_Model_**, and a COMSOL `ModelParamGroup` for containing the material
 properties as a COMSOL "Parameters Group" under COMSOL’s "Global
 Definitions". The method then loops over all material functions, creates
 a new material if it does not yet exist as `"mat<#>"` using Part’s
@@ -112,7 +114,7 @@ part instance to a defined material.
 The user is unlikely to interface directly with the
 `addCuffMaterialAssignments()` method in Java as it operates behind the
 scenes. The method loops through all part instances in the cuff
-configuration file, which is linked to ***Model*** by a string of its
+configuration file, which is linked to **_Model_** by a string of its
 file name under the "preset" key, and calls the
 `addCuffMaterialAssignment()` method for each part instance. As described
 in `addCuffPartMaterialAssignment()` above, a material is connected to the
@@ -126,7 +128,8 @@ outermost domains first, knowing that domains nested in space within
 them will overwrite earlier domain assignments).
 
 ## Making geometries in COMSOL (Part class)
-###  Part.createEnvironmentPartPrimitive()
+
+### Part.createEnvironmentPartPrimitive()
 
 The `createEnvironmentPartPrimitive()` method in Java
 (`src/model/Part.java`) creates a "part" within the "Geometry Parts" node
@@ -144,7 +147,7 @@ conditions are assigned in the `createEnvironmentPartInstance()` method.
 Furthermore, if the operations of a part primitive are modified, the
 indexing of the `csel<#>` labels are automatically handled.
 
-###  Part.createCuffPartPrimitive()
+### Part.createCuffPartPrimitive()
 
 The `createCuffPartPrimitive()` method in Java (`src/model/Part.java`) is
 analogous to `createEnvironmentPartPrimitive()`, except that it contains
@@ -157,11 +160,11 @@ fill (e.g., saline, mineral oil), and specific interactions of a cuff
 insulator and electrode contact (e.g., LivaNova-inspired helical coil)
 ([ASCENT Part Primitives](../Primitives_and_Cuffs/Cuff_Primitives)).
 
-###  Part Instances
+### Part Instances
 
 Part instances are a COMSOL Geometry Feature (`"pi<#>"`) in the
 "Geometry" node based on user-defined input parameters stored in
-***Model*** and default parameters for "preset" cuffs. A part instance
+**_Model_** and default parameters for "preset" cuffs. A part instance
 is an instantiation of a part primitive previously defined in the COMSOL
 "model" object and will take specific form based on its input
 parameters.
@@ -175,8 +178,8 @@ to building the surrounding medium. The method takes inputs, with data
 types and examples in parentheses: `instanceID` (String: `"pi<#>"`),
 `instanceLabel` (String: "medium"), `mediumPrimitiveString` (String: Key for
 the medium part stored in the `identifierManager`), an instance of
-`ModelWrapper`, and ***Model*** as a JSON Object. Within the "medium" JSON
-Object in ***Model***, the parameters required to instantiate the
+`ModelWrapper`, and **_Model_** as a JSON Object. Within the "medium" JSON
+Object in **_Model_**, the parameters required to instantiate the
 environment part primitive are defined.
 
 #### Part.createCuffPartInstance()
@@ -187,8 +190,7 @@ geometries. We decided to separate these methods since all products of
 `createCuffPartInstance()` will be displaced and rotated by the same cuff
 shift (x,y,z) and rotation values.
 
-
-####  Part.createNervePartInstance()
+#### Part.createNervePartInstance()
 
 The `createNervePartInstance()` method in Part (`src/model/Part.java`)
 creates three-dimensional representations of the nerve sample including
@@ -198,16 +200,14 @@ and contributes them to COMSOL selections (lists of indices for domains,
 surfaces, boundaries, or points), which are necessary to later assign
 physics properties.
 
-
-
 ##### Fascicles
 
 ASCENT uses CAD [sectionwise](https://www.comsol.com/fileformats)
- files (i.e., ASCII with `.txt`
+files (i.e., ASCII with `.txt`
 extension containing column vectors for x- and y-coordinates) created by
 the Python Sample class to define fascicle tissue boundaries in COMSOL.
 
-We provide the `"use_ci"` mode in ***Model*** ([Model Parameters](../JSON/JSON_parameters/model)) to model the perineurium
+We provide the `"use_ci"` mode in **_Model_** ([Model Parameters](../JSON/JSON_parameters/model)) to model the perineurium
 using COMSOL’s contact impedance boundary condition for fascicles with
 only one inner (i.e., endoneurium) domain for each outer (i.e.,
 perineurium) domain ([Perineurium Properties](../Running_ASCENT/Info.md#definition-of-perineurium)). If `"use_ci"` mode is true, the perineurium for all
@@ -220,7 +220,7 @@ performs a directory dive on the output CAD files
 `samples/<sample_index>/slides/<#>/<#>/sectionwise2d/fascicles/<outer,inners>/`
 from the Sample class in Python to create a fascicle for
 each outer. Depending on the number of corresponding inners for each
-outer saved in the file structure and the `"use_ci"` mode in ***Model***,
+outer saved in the file structure and the `"use_ci"` mode in **_Model_**,
 the program either represents the perineurium in COMSOL as a surface
 with contact impedance (FascicleCI: Fascicles with one inner per outer
 and if `"use_ci"` mode is true) or with a three-dimensional meshed domain
@@ -232,48 +232,47 @@ parameter is false).
 The `createNervePartInstance()` method in Part (`src/model/Part.java`)
 contains the operations required to represent epineurium in COMSOL. The
 epineurium cross section is represented one of two ways:
--  If `deform_ratio`
-    in ***Sample*** is set to 1 and `"DeformationMode"` is not `"NONE"`,
-    the nerve shape matches the `"ReshapeNerveMode"` from ***Sample***
-    (e.g., `"CIRCLE"`). ([Sample Parameters](../JSON/JSON_parameters/sample)).
-    An epineurium boundary is then created from this shape.
 
--  Otherwise, the coordinate data contained in
-    `samples/<sample_index>/slides/<#>/<#>/sectionwise2d/nerve/0/0.txt`
-    is used to create a epineurium boundary.
+- If `deform_ratio`
+  in **_Sample_** is set to 1 and `"DeformationMode"` is not `"NONE"`,
+  the nerve shape matches the `"ReshapeNerveMode"` from **_Sample_**
+  (e.g., `"CIRCLE"`). ([Sample Parameters](../JSON/JSON_parameters/sample)).
+  An epineurium boundary is then created from this shape.
+
+- Otherwise, the coordinate data contained in
+  `samples/<sample_index>/slides/<#>/<#>/sectionwise2d/nerve/0/0.txt`
+  is used to create a epineurium boundary.
 
 The epineurium boundary is then extruded into the third dimension. This
-is only performed if the `"NerveMode"` (i.e., "nerve") in ***Sample*** is
+is only performed if the `"NerveMode"` (i.e., "nerve") in **_Sample_** is
 `"PRESENT"` and `n.tif` is provided ([Sample Parameters](../JSON/JSON_parameters/sample)).
 
-
-###  Part.defineMaterial()
+### Part.defineMaterial()
 
 The user is unlikely to interface directly with the `defineMaterial()`
 method in Java as it operates behind the scenes to add a new material to
 the COMSOL "Materials" node under "Global Definitions". The method takes
 inputs of the material’s identifier in COMSOL (e.g., "mat1"), function
-(e.g., cuff "fill"), ***Model***, a library of predefined materials
+(e.g., cuff "fill"), **_Model_**, a library of predefined materials
 (e.g., `materials.json`), a ModelWrapper instance, and the COMSOL
 ModelParamGroup for material conductivities. The `defineMaterial()` method
-uses materials present in ***Model’s*** "conductivities" JSON Object to
+uses materials present in **_Model’s_** "conductivities" JSON Object to
 assign to each material function in the COMSOL model (e.g., insulator,
 conductor, fill, endoneurium, perineurium, epineurium, or medium). The
-material value for a function key in ***Model*** is either a string for
+material value for a function key in **_Model_** is either a string for
 a pre-defined material in `materials.json`, or a JSON Object (containing
 unit, label, and value) for a custom material. Assigning material
 conductivities to material functions in this manner enables control for
 a user to reference a pre-defined material or explicitly link a custom
 material to a COMSOL model. In either the case of a predefined material
-in `materials.json` or custom material in ***Model***, if the material is
+in `materials.json` or custom material in **_Model_**, if the material is
 anisotropic, the material value is assigned a string "anisotropic" which
 tells the program to look for independent `"sigma_x"`, `"sigma_y"`, and
 `"sigma_z"` values in the material JSON Object.
 
-
 ## Java utility classes
 
-###  IdentifierManager
+### IdentifierManager
 
 In working with highly customized COMSOL FEMs, we found it convenient to
 abstract away from the underlying COMSOL indexing to improve code
@@ -287,7 +286,7 @@ We use `IdentifierManagers` to name and keep track of identifier labels
 within a `PartPrimitive`. `IdentifierManagers` assigning tags for products
 of individual operations to a unique "pseudonym" in
 [HashMaps](https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html)
- as
+as
 a key-value pair. Additionally, we assign resulting selections
 (`"csel<#>"`) to meaningful unique pseudonyms to later assign to
 meshes, materials, or boundary conditions.
@@ -317,7 +316,7 @@ updating model materials and physics. Therefore, we developed
 saves an `IdentifierManager` to a JSON file and loads an `IdentifierManager`
 into Java from a JSON Object, respectively.
 
-###  JSONio
+### JSONio
 
 `JSONio` is a convenient Java class used for reading and writing JSON
 Objects to file. The `read()` method takes an input String containing the
@@ -325,18 +324,18 @@ file path to read and returns a JSON Object to memory. The `write()`
 method takes an input String containing the file path for the saving
 destination and a JSON Object containing the data to write to file.
 
-###  ModelSearcher
+### ModelSearcher
 
 The `ModelSearcher` class in Java is used to look for previously created
 FEM meshed geometries that can be repurposed. For example, if
-***Model*** configurations differ only in their material properties or
-boundary conditions and the previous ***Model’s*** \*.mph file with the
+**_Model_** configurations differ only in their material properties or
+boundary conditions and the previous **_Model’s_** \*.mph file with the
 mesh (i.e., `mesh.mph`) was saved, then it is redundant to build and mesh
-the same model geometry for a new ***Model*** configuration. The methods
+the same model geometry for a new **_Model_** configuration. The methods
 of the `ModelSearcher` class can save enormous amounts of computation time
-in parameter sweeps of ***Model*** if the mesh can be recycled. The user
+in parameter sweeps of **_Model_** if the mesh can be recycled. The user
 is unlikely to interface directly with this method as it operates behind
-the scenes, but if the user adds new parameter values to ***Model***,
+the scenes, but if the user adds new parameter values to **_Model_**,
 then the user must also add those values to
 `config/templates/mesh_dependent_model.json` to indicate whether the
 added parameter value needs to match between FEMs to recycle the mesh
@@ -344,27 +343,27 @@ added parameter value needs to match between FEMs to recycle the mesh
 parameters need to match, but changes in material properties or boundary
 conditions do not, since they do not change the FEM geometry.
 
-Specifically, this class compares ***Model*** configurations to
+Specifically, this class compares **_Model_** configurations to
 determine if their parameters are compatible to repurpose the geometry
 and mesh from a previously generated COMSOL model using the `meshMatch()`
 method. The `meshMatch()` method takes the inputs of a reference JSON
 (i.e., `config/templates/mesh_dependent_model.json`, see [Mesh Dependent Model](../JSON/JSON_parameters/mesh_dependent_model)) containing
 conditions for compatibility and a JSON Object for each of two
-***Model*** configurations to compare. The parameter keys correspond
-one-to-one in ***Model*** and `mesh_dependent_model.json`. However, in
+**_Model_** configurations to compare. The parameter keys correspond
+one-to-one in **_Model_** and `mesh_dependent_model.json`. However, in
 `mesh_dependent_model.json`, rather than numerical or categorical values
 for each parameter key, the keys’ values are a Boolean indicating if the
-values between two ***Model*** configurations must be identical to
-define a "mesh match". For two ***Model*** configurations to be a match,
+values between two **_Model_** configurations must be identical to
+define a "mesh match". For two **_Model_** configurations to be a match,
 all parameters assigned with the Boolean true in
-`mesh_dependent_model.json` must be identical. ***Model***
+`mesh_dependent_model.json` must be identical. **_Model_**
 configurations that differ only in values for parameters that are
 assigned the Boolean false are considered a mesh match and do not
 require that the geometry be re-meshed.
 
 In the class’s `searchMeshMatch()` method, the program looks through all
-***Model*** configurations under a given ***Sample*** and applies the
-`meshMatch()` method. If a ***Model*** match is found, `searchMeshMatch`
+**_Model_** configurations under a given **_Sample_** and applies the
+`meshMatch()` method. If a **_Model_** match is found, `searchMeshMatch`
 returns a Match class, which is analogous to the `ModelWrapper` class,
-using the path of the matching ***Model*** with the `fromMeshPath()`
+using the path of the matching **_Model_** with the `fromMeshPath()`
 method.

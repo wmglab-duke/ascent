@@ -8,56 +8,56 @@ provide a traceable history of the parameters used to generate data.
 For each JSON file, we provide a brief overview, a statement of where
 the file must be placed in the directory structure, and a description of
 its contents. For a detailed description of each JSON file (i.e., which parameters are required or optional, known value data types, and known values), see [JSON Parameters](../JSON/JSON_parameters/index). Though JSON does not allow comments, users may want to add
-notes to a JSON file (e.g., to remember what a ***Sample***,
-***Model***, or ***Sim*** file was used to accomplish). The user can
+notes to a JSON file (e.g., to remember what a **_Sample_**,
+**_Model_**, or **_Sim_** file was used to accomplish). The user can
 simply add a key to the JSON file that is not in use (e.g., "notes") and
 provide a value (`String`) with a message.
 
-##  User configuration files
+## User configuration files
 
 ### run.json
 
 The `run.json` file is passed to `pipeline.py` to instruct the program
-which ***Sample***, ***Model(s)***, and ***Sim(s)*** to run. All
+which **_Sample_**, **_Model(s)_**, and **_Sim(s)_** to run. All
 `run.json` files are stored in the `config/user/runs/` directory.
-Since each ***Sample***, ***Model***, and ***Sim*** is indexed, their
+Since each **_Sample_**, **_Model_**, and **_Sim_** is indexed, their
 indices are used as the identifying values in `run.json`.
 Additionally, the file contains break points that enable the user to
 terminate the pipeline at intermediate processes, flags for user control
 over which COMSOL files are saved, flags to selectively build a
 `"debug_geom.mph"` file of just the nerve or cuff electrode, and flags
 to recycle previous meshes where appropriate. Lastly, the `run.json`
-file reports which ***Model*** indices were generated successfully in
+file reports which **_Model_** indices were generated successfully in
 COMSOL and indicates if the user is submitting the NEURON jobs to a
 SLURM cluster or locally.
 
 ### sample.json
 
-An example ***Sample*** configuration file is stored in
+An example **_Sample_** configuration file is stored in
 `config/templates/` for users to reference when defining their own
 input nerve morphology from histology or from the mock nerve morphology
 generator [Mock Morphology](../MockSample). A user’s `sample.json` file is saved in the
 `samples/<sample_index>/` directory. The file contains information
 about the sample’s properties and how to process the nerve morphology
 before placing the nerve in a cuff electrode. The pipeline’s processes
-informed by ***Sample*** output the Python object `sample.obj`.
+informed by **_Sample_** output the Python object `sample.obj`.
 
-The information in ***Sample*** must parallel how the sample morphology
+The information in **_Sample_** must parallel how the sample morphology
 binary images are saved on the user’s machine (sample name, path to the
 sample). The user must
-define the `"mask_input"` parameter in ***Sample*** to indicate which set
-of input masks will be used. ***Sample*** also contains parameters that
+define the `"mask_input"` parameter in **_Sample_** to indicate which set
+of input masks will be used. **_Sample_** also contains parameters that
 determine how the morphology is processed before being represented in
 the FEM such as shrinkage correction ("shrinkage"), required minimum
 fascicle separation (`"boundary_separation"`), presence of epineurium
 ("nerve"), perineurium thickness (`"ci_perineurium_thickness"`),
 deformation method ("deform"), reshaped nerve profile
 (`"reshape_nerve"`), and parameters for specifying CAD geometry input
-file formats for nerve morphology ("write"). ***Sample*** also contains
+file formats for nerve morphology ("write"). **_Sample_** also contains
 information about the mask scaling (i.e.
 `"scale_bar_length"` if supplying a binary image of a scale bar or, if no scale bar image, `"scale_ratio"`).
 
-The value of the `"ci_perineurium_thickness"` in ***Sample*** refers to a
+The value of the `"ci_perineurium_thickness"` in **_Sample_** refers to a
 JSON Object in `config/system/ci_peri_thickness.json` that contains
 coefficients for linear relationships between inner diameter and
 perineurium thickness (i.e., thk<sub>peri,inner</sub> =
@@ -69,9 +69,9 @@ relationships for human, pig, and rat vagus nerve perineurium thickness
 `"RAT_VN_INHOUSE_200601"`) {cite:p}`Pelot2020`. As additional vagus nerve
 morphometry data become available, users may define perineurium
 thickness with new models by adding the coefficients to this JSON
-file.***
+file.\*\*\*
 
-### mock\_sample.json
+### mock_sample.json
 
 The `mock_sample.json` file, which is stored in the file structure in
 `config/user/mock_samples/<mock_sample_index>/`, is used to
@@ -107,11 +107,11 @@ conditions are not met, the program throws an error.
 
 ### model.json
 
-An example ***Model*** configuration file is stored in
+An example **_Model_** configuration file is stored in
 `config/templates/` for users to reference when creating their own
 FEMs. As such, `model.json`, which is stored in the file structure in
 `samples/<sample_index>/models/<model_index>/`, contains
-information to define an FEM uniquely. ***Model*** defines the cuff
+information to define an FEM uniquely. **_Model_** defines the cuff
 electrode geometry and positioning, the simulated environment (e.g.,
 surrounding medium dimensions, material properties (including
 temperature and frequency factors of material conductivity), and
@@ -121,24 +121,24 @@ measures).
 
 ### sim.json
 
-An example ***Sim*** configuration file is stored in
+An example **_Sim_** configuration file is stored in
 `config/templates/` for users to reference when creating their own
 simulations of fiber responses to stimulation for a sample in a FEM. All
 simulation configuration files are stored in the `config/user/sims/`
-directory. ***Sim*** defines fiber types, fiber locations in the FEM,
+directory. **_Sim_** defines fiber types, fiber locations in the FEM,
 fiber length, extracellular (e.g., pulse repetition frequency) and
 intracellular stimulation, and input parameters to NEURON (e.g.,
 parameters to be saved in the output, binary search algorithm bounds and
-resolution). Since users may want to sweep parameters at the ***Sim***
+resolution). Since users may want to sweep parameters at the **_Sim_**
 configuration level (e.g., fiber types, fiber locations, waveforms), a
-pared down copy of ***Sim*** that contains a single value for each
+pared down copy of **_Sim_** that contains a single value for each
 parameter (rather than a list) is saved within the corresponding
 `n_sims/` directory ([Sim Parameters](../JSON/JSON_parameters/sim)). These pared down files are provided for convenience,
 so that the user can inspect which parameters were used in a single
 NEURON simulation, and they do not hold any other function within the
 pipeline.
 
-### query\_criteria.json
+### query_criteria.json
 
 In data analysis, summary, and plotting, the user needs to inform the
 program which output data are of interest. The `query_criteria.json`
@@ -152,67 +152,68 @@ user must manually pass in the path of either the
 `query_criteria.json`-like file or the hard-coded criteria as a
 Python dictionary. An instance of the Query class contains the
 "criteria" and an empty `_result`, which is populated by Query’s
-`run()` method with found indices of ***Sample***, ***Model***, and
-***Sim*** that match the criteria given.
+`run()` method with found indices of **_Sample_**, **_Model_**, and
+**_Sim_** that match the criteria given.
 
 Query’s `run()` method loops through all provided indices (i.e.,
-***Sample***, ***Model***, ***Sim***) in the query criteria, and calls
+**_Sample_**, **_Model_**, **_Sim_**) in the query criteria, and calls
 `_match()` when a possible match is found. Note that the presence of an
 underscore in the `_match()` method name indicates that it is for
 internal use only (not to be called by external files). The `_match()`
 method compares its two inputs, (1) `query_criteria.json` and (2)
-either ***Sample*** (i.e., `sample.json`), ***Model*** (i.e.,
-`model.json`), or ***Sim*** (`sim.json`); the two JSON files are
+either **_Sample_** (i.e., `sample.json`), **_Model_** (i.e.,
+`model.json`), or **_Sim_** (`sim.json`); the two JSON files are
 loaded into memory as Python dictionaries. The method returns a Boolean
 indicating if the input configuration file satisfies the restricted
 parameter values defined in `query_criteria.json`. The user may
-explicitly specify the indices of the ***Sample***, ***Model***, and ***Sim***
+explicitly specify the indices of the **_Sample_**, **_Model_**, and **_Sim_**
 configuration files of interest simultaneously with restricted criteria
 for specific parameter values. The indices added will be returned in
-addition to matches found from the search criteria in the ***Sample***,
-***Model***, and ***Sim*** criteria JSON Objects.
+addition to matches found from the search criteria in the **_Sample_**,
+**_Model_**, and **_Sim_** criteria JSON Objects.
 
 The `query_criteria.json` file contains JSON Objects for each of the
-***Sample***, ***Model***, and ***Sim*** configuration files. Within each JSON
+**_Sample_**, **_Model_**, and **_Sim_** configuration files. Within each JSON
 Object, parameter keys can be added with a desired value that must be
 matched in a query result. If the parameter of interest is found nested
 within a JSON Object structure or list in the configuration file, the
 same hierarchy must be replicated in the `query_criteria.json` file.
 
 The `query_criteria.json` parameter `"partial_matches"` is a Boolean
-indicating whether the search should return indices of ***Sample***,
-***Model***, and ***Sim*** configuration files that are a partial match, i.e.,
+indicating whether the search should return indices of **_Sample_**,
+**_Model_**, and **_Sim_** configuration files that are a partial match, i.e.,
 the parameters in `query_criteria.json` are satisfied by a subset of
 parameters listed in the found JSON configuration.
 
 The `query_criteria.json` parameter `"include_downstream"` is a
 Boolean indicating whether the search should return indices of
-downstream (***Sample***\>***Model***\>***Sim***) configurations that
+downstream (**_Sample_**\>**_Model_**\>**_Sim_**) configurations that
 exist if match criteria are not provided for them. For example, if only
-criteria for a ***Sample*** and ***Model*** are provided, Query will
-return the indices of ***Sample*** and ***Model*** that match the
-criteria. In addition, the indices of the ***Sims*** downstream of the
+criteria for a **_Sample_** and **_Model_** are provided, Query will
+return the indices of **_Sample_** and **_Model_** that match the
+criteria. In addition, the indices of the **_Sims_** downstream of the
 matches are included in the result if `"include_downstream"` is true
-(since the user did not specify criteria for ***Sim***). Otherwise, if
-`"include_downstream"` is false, no ***Sim*** indices are returned.
+(since the user did not specify criteria for **_Sim_**). Otherwise, if
+`"include_downstream"` is false, no **_Sim_** indices are returned.
 
-##  System configuration files
+## System configuration files
+
 Note: system configuration files are located in `config/system/`.
 
 ### env.json
 
 The `env.json` file stores the file paths for:
 
-  - COMSOL
+- COMSOL
 
-  - Java JDK
+- Java JDK
 
-  - The project path (i.e., the path to the root of the ASCENT pipeline)
+- The project path (i.e., the path to the root of the ASCENT pipeline)
 
-  - Destination directory for NEURON simulations to run (this could be
-    the directory from which the user calls NEURON, or an intermediate
-    directory from which the user will move the files to a computer
-    cluster)
+- Destination directory for NEURON simulations to run (this could be
+  the directory from which the user calls NEURON, or an intermediate
+  directory from which the user will move the files to a computer
+  cluster)
 
 When the pipeline is run, the key-value pairs are stored as environment
 variables so that they are globally accessible.
@@ -234,9 +235,9 @@ The `materials.json` file contains default values for material
 properties that can be assigned to each type of neural tissue, each
 electrode material, the extraneural medium, and the medium between the
 nerve and inner cuff surface. The materials are referenced by using
-their labels in the "conductivities" JSON Object of ***Model***.
+their labels in the "conductivities" JSON Object of **_Model_**.
 
-### fiber\_z.json
+### fiber_z.json
 
 The `fiber_z.json` file defines z-coordinates to be sampled along the
 length of the FEM for different fiber types to be simulated in NEURON.
@@ -248,31 +249,31 @@ defined as a mathematical relationship in the form of a string to be
 evaluated in Python. Additionally, the file contains instructions (e.g.,
 flags) that corresponds to fiber-type specific operations in NEURON.
 
-### ci\_perineurium\_thickness.json
+### ci_perineurium_thickness.json
 
 In the case of fascicles with exactly one inner perineurium trace for
 each outer perineurium trace, to reduce the required computational
 resources, the pipeline can represent the perineurium using a thin layer
-approximation in COMSOL ([Perineurium Properties](../Running_ASCENT/Info.md#definition-of-perineurium)). Specifically, if ***Model’s*** `"use_ci"`
+approximation in COMSOL ([Perineurium Properties](../Running_ASCENT/Info.md#definition-of-perineurium)). Specifically, if **_Model’s_** `"use_ci"`
 parameter is true, the perineurium is modeled as a surface with a sheet
 resistance (termed "contact impedance" in COMSOL) defined by the product
 of the resistivity and thickness. The thickness is calculated as half of
 the difference between the effective circular diameters of the outer and
 inner perineurium traces. If each fascicle is only defined by a single
 trace (rather than inner and outer perineurium traces), the user chooses
-from a list of modes in ***Sample*** for assigning a perineurium
+from a list of modes in **_Sample_** for assigning a perineurium
 thickness (e.g., 3% of fascicle diameter {cite:p}`Grinberg2008`,
-`"ci_perineurium_thickness"` parameter in ***Sample***).
+`"ci_perineurium_thickness"` parameter in **_Sample_**).
 
-### mesh\_dependent\_model.json
+### mesh_dependent_model.json
 
 Since meshing can take substantial time and RAM, if the FEM has the same
 geometry and mesh parameters as a previous model, this JSON file allows
 the mesh to be reused if the `mesh.mph` file is saved. In
-`mesh_dependent_model.json`, the keys match those found in ***Model***,
+`mesh_dependent_model.json`, the keys match those found in **_Model_**,
 however, instead of containing parameter values, each key’s value is a
 Boolean indicating true if the parameter value must match between two
-***Model*** configurations to recycle a mesh, or false if a different
+**_Model_** configurations to recycle a mesh, or false if a different
 parameter value would not prohibit a mesh be reused. The
 `mesh_dependent_model.json` file is used by our `ModelSearcher` Java
-utility class  ([Java Utility Classes](../Code_Hierarchy/Java.md#java-utility-classes)).
+utility class ([Java Utility Classes](../Code_Hierarchy/Java.md#java-utility-classes)).

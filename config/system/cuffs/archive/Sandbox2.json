@@ -41,8 +41,7 @@
       "type": "ArleContact_Primitive"
     }
   ],
-  "params": [
-  ],
+  "params": [],
 
   "expandable": true,
   "angle_to_contacts_deg": 144,
@@ -50,5 +49,5 @@
     "sep_wire_P": 1,
     "r_wire_P": 2
   },
-  "fixed_point":"clockwise_end"
+  "fixed_point": "clockwise_end"
 }

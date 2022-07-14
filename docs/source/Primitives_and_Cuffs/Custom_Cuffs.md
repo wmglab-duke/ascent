@@ -1,4 +1,5 @@
 # Creating custom preset cuffs from instances of part primitives
+
 The operations by which cuffs are added to the COMSOL "model" object are
 contained in the Java Part class (`src/model/Part.java`). A complete cuff
 design is defined by a JSON file (e.g., `Purdue.json`) stored in
@@ -17,7 +18,7 @@ use our "preset" cuffs as a guide in constructing their own custom
 cuffs, which require a unique file name. Once a cuff is defined as a
 "preset" in `config/system/cuffs/` as its own JSON file, the user may
 choose to place the cuff on a nerve in COMSOL using the "preset"
-parameter in ***Model*** ([Model Parameters](../JSON/JSON_parameters/model)).
+parameter in **_Model_** ([Model Parameters](../JSON/JSON_parameters/model)).
 
 We provide a COMSOL file in `examples/parts/sandbox.mph` that contains our
 library of "Geometry Parts" (i.e., part primitives) for users to
@@ -105,8 +106,7 @@ distance
 ```
 
 "code": The value `(String)` is a unique identifier for the parameters
-that are needed to define this cuff. All parameters in the `"params"
-[Object, …]` will need to end with the characters of this code preceded
+that are needed to define this cuff. All parameters in the `"params" [Object, …]` will need to end with the characters of this code preceded
 by `"_"` (e.g., "code" = "Pitt", the "pitch" parameter for the separation
 between contacts would be `"pitch_Pitt"`).
 
@@ -114,44 +114,44 @@ between contacts would be `"pitch_Pitt"`).
 instance needed to represent the cuff. Within each part instance JSON
 Object, the user must define:
 
-  - `"type"`: The value (String) defines which known primitive to
-    instantiate, which matches the switch-case in BOTH
-    `Part.createCuffPartPrimitive()` AND `Part.createCuffPartInstance()` in
-    Java (`src/model/Part.java`) behind the scenes.
+- `"type"`: The value (String) defines which known primitive to
+  instantiate, which matches the switch-case in BOTH
+  `Part.createCuffPartPrimitive()` AND `Part.createCuffPartInstance()` in
+  Java (`src/model/Part.java`) behind the scenes.
 
-  - `"label"`: The value (String) defines the label that will show up in
-    the COMSOL file to annotate the instance of the part primitive in
-    the construction of your COMSOL FEM.
+- `"label"`: The value (String) defines the label that will show up in
+  the COMSOL file to annotate the instance of the part primitive in
+  the construction of your COMSOL FEM.
 
-  - `"def"`: The value (Object) contains all parameters required to
-    instantiate the chosen part primitive. The key-value pairs will
-    match the values entered in the COMSOL GUI for a part (i.e.,
-    "Settings" -\> "Input Parameters" panel) in
-    `examples/parts/sandbox.mph`.
+- `"def"`: The value (Object) contains all parameters required to
+  instantiate the chosen part primitive. The key-value pairs will
+  match the values entered in the COMSOL GUI for a part (i.e.,
+  "Settings" -\> "Input Parameters" panel) in
+  `examples/parts/sandbox.mph`.
 
-      - Key-value pairs in this JSON Object will vary depending on the
-        part primitive as defined in "type". For each parameter key, the
-        value is a String containing a mathematical expression (of
-        parameters) for COMSOL to evaluate.
+  - Key-value pairs in this JSON Object will vary depending on the
+    part primitive as defined in "type". For each parameter key, the
+    value is a String containing a mathematical expression (of
+    parameters) for COMSOL to evaluate.
 
-  - `"materials"`: List of JSON Objects for each material assignment in a
-    part instance (*usually* this is just one material; contacts with
-    recessed domains will have one material for the conductor and one
-    material for the recessed domain as the part instance will create
-    two separate domains with independent selections)
+- `"materials"`: List of JSON Objects for each material assignment in a
+  part instance (_usually_ this is just one material; contacts with
+  recessed domains will have one material for the conductor and one
+  material for the recessed domain as the part instance will create
+  two separate domains with independent selections)
 
-      - `"info"`: The value (String) is the function of the domain in the
-        FEM (i.e., "medium", cuff "fill", cuff "insulator", contact
-        "conductor", and contact "recess") that is used to assign
-        material properties to a selected domain. The value will match a
-        key in the "conductivities" JSON Object in ***Model***.
+  - `"info"`: The value (String) is the function of the domain in the
+    FEM (i.e., "medium", cuff "fill", cuff "insulator", contact
+    "conductor", and contact "recess") that is used to assign
+    material properties to a selected domain. The value will match a
+    key in the "conductivities" JSON Object in **_Model_**.
 
-      - `"label_index"`: The value (Integer) corresponds to the index of
-        the selection for the domain (in `im.labels`, defined
-        independently for each primitive case in
-        `Part.createCuffPartPrimitive()` – see code in
-        `src/model/Part.java`) to be assigned to the material function.
-        Note that `im.labels` are indexed starting at 0.
+  - `"label_index"`: The value (Integer) corresponds to the index of
+    the selection for the domain (in `im.labels`, defined
+    independently for each primitive case in
+    `Part.createCuffPartPrimitive()` – see code in
+    `src/model/Part.java`) to be assigned to the material function.
+    Note that `im.labels` are indexed starting at 0.
 
 `"params"`: The value is a list of JSON Objects, one for each parameter
 used to define parameterizations of part primitives in COMSOL’s Global
@@ -160,22 +160,22 @@ format of the dialogue boxes in each "Parameters" group (i.e., "Name",
 "Expression", "Description") where the parameters are populated in the
 COMSOL GUI:
 
-  - `"name"`: The value (String) is the name of the parameter.
+- `"name"`: The value (String) is the name of the parameter.
 
-  - `"expression"`: The value (String) is the expression/constant with
-    units that COMSOL will evaluate. Therefore, if the value is a
-    constant, units wrapped in "\[\]" are required (e.g., "5 \[um\]").
-    If the value is an expression relating other parameters (that
-    already are dimensioned with units) with known mathematical
-    expressions (e.g., multiply `"*"`, divide `"/"`, add `"+"`, subtract `"-"`,
-    exponent `"^"`, trigonometric formulas: `"sin()"`, `"cos()"`, `"tan()"`,
-    `"asin()"`, `"acos()"`, `"atan()"`), do not add units after the
-    expression.
+- `"expression"`: The value (String) is the expression/constant with
+  units that COMSOL will evaluate. Therefore, if the value is a
+  constant, units wrapped in "\[\]" are required (e.g., "5 \[um\]").
+  If the value is an expression relating other parameters (that
+  already are dimensioned with units) with known mathematical
+  expressions (e.g., multiply `"*"`, divide `"/"`, add `"+"`, subtract `"-"`,
+  exponent `"^"`, trigonometric formulas: `"sin()"`, `"cos()"`, `"tan()"`,
+  `"asin()"`, `"acos()"`, `"atan()"`), do not add units after the
+  expression.
 
-  - `"description"`: The value (String) can be empty (i.e., "") or may
-    contain a description of the parameter such as a reference to the
-    source (e.g., published patent/schematics) or a note to your future
-    self.
+- `"description"`: The value (String) can be empty (i.e., "") or may
+  contain a description of the parameter such as a reference to the
+  source (e.g., published patent/schematics) or a note to your future
+  self.
 
 `"expandable"`: The value (Boolean) tells the system whether to expect the
 implementation of the cuff in COMSOL to be able to expand beyond the
@@ -191,9 +191,10 @@ regarding how the cuff is generated. This parameter is descriptive only, indicat
 how the cuff is parameterized based on the part primitives.
 This parameter is to inform the cuff shift algorithm on how
 it should account for cuff expansion. Currently two options are implemented:
+
 1. `"center"`: In this case, the center of the contact always remains at the same angle when expanding.
 2. `"clockwise_end"`: In this case, the clockwise end of either the cuff, or the contact
-(both will work correctly) remains fixed. Note, this option assumes that the fixed point for the clockwise end is at theta = 0.
+   (both will work correctly) remains fixed. Note, this option assumes that the fixed point for the clockwise end is at theta = 0.
 
 `"angle_to_contacts_deg"`: The value (Double, units: degrees) defines
 the angle to the contact point of the nerve on the inside of the cuff of

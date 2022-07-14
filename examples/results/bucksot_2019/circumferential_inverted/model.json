@@ -5,7 +5,7 @@
     "fiber_z": "EXTRUSION",
     "rho_perineurium": "MANUAL"
   },
-  "solution": {"sol_time": 1955894.707416},
+  "solution": { "sol_time": 1955894.707416 },
   "temperature": 37,
   "medium": {
     "distal": {
@@ -63,7 +63,7 @@
       "hgrad": 2
     },
     "stats": {
-      "volume": 1.411E13,
+      "volume": 1.411e13,
       "min_quality": 0.2159,
       "min_volume": 282,
       "quality_measure": "vollength",

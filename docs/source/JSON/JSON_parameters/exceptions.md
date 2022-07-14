@@ -3,14 +3,17 @@
 Named file: `config/system/exceptions.json`
 
 ## Purpose
+
 The file contains a list of JSON Objects, one for each
 documented pipeline exception. Note that this file is a single large
 Array, so it is wrapped in square brackets, as opposed to all other
 JSON files, which are wrapped in curly braces.
 
 ## Syntax 
+
 To declare this entity in `config/system/env.json`, use the
 following syntax:
+
 ```
 [
   {
@@ -20,6 +23,7 @@ following syntax:
   ...
 ]
 ```
+
 ## Properties
 
 `"code"`: The value (Integer) is an identifier that enables easy reference
@@ -37,4 +41,4 @@ pipeline failed.
 See: `config/system/exceptions.json`
 
 Note: The user should not need to change this file unless adding new
-    exceptions to ASCENT.
+exceptions to ASCENT.
