@@ -8,11 +8,11 @@ The source code can be found on the following GitHub repository: https://github.
 
 
 import json
+import os
 import time
 
-# access
 from src.core import MockSample
-from src.utils import *
+from src.utils import Config, SetupMode, TemplateOutput
 
 
 def run(args):

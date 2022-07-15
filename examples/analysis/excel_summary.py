@@ -11,9 +11,9 @@ The source code can be found on the following GitHub repository: https://github.
 import os
 import sys
 
-sys.path.append(os.path.sep.join([os.getcwd(), '']))
-
 from src.core.query import Query
+
+sys.path.append(os.path.sep.join([os.getcwd(), '']))
 
 # initialize and run Querys
 q = Query(

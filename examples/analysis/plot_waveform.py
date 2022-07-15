@@ -10,14 +10,14 @@ import json
 import os
 import sys
 
-root = os.path.abspath(os.path.join(*'../../'.split('/')))
-sys.path.append(root)
-
 import matplotlib.pyplot as plt
 
 from src.core import Simulation
 from src.core.query import Query
 from src.utils import Object
+
+root = os.path.abspath(os.path.join('..', '..'))
+sys.path.append(root)
 
 
 def load(config_path: str):
