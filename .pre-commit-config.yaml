@@ -31,7 +31,7 @@ repos:
     hooks:
       - id: flake8
         # check for dead code
-        additional_dependencies: [flake8-eradicate, flake8-bugbear, flake8-simplify]
+        additional_dependencies: [flake8-eradicate, flake8-bugbear, flake8-simplify, flake8-builtins]
   # format markdown, yaml, json
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: v2.7.1
