@@ -7,43 +7,41 @@ The source code can be found on the following GitHub repository: https://github.
 """
 
 import os
-from pathlib import Path
 import sys
+from pathlib import Path
 
 # these are the parts of files we want removed
 # NOTE: be careful with "out" -- added warning!
-INCLUDED_FILENAMES = [
-    'runtime',
-    'blank',
-    'special',
-    'logs',
-    'start_'
-]
-        
+INCLUDED_FILENAMES = ['runtime', 'blank', 'special', 'logs', 'start_']
+
+
 def run(args):
-    
-    proceed = input('All files with names containing any of the following strings:\n'
-                    '\t{}\n'
-                    'will be removed from the following sample directories:\n'
-                    '\t{}\n'
-                    '\n\t Would you like to proceed?\n'
-                    '\t\t 0 = NO\n'
-                    '\t\t 1 = YES\n'.format(INCLUDED_FILENAMES,args.sample_indices))
-    if not int(proceed)==1:
+
+    proceed = input(
+        'All files with names containing any of the following strings:\n'
+        '\t{}\n'
+        'will be removed from the following sample directories:\n'
+        '\t{}\n'
+        '\n\t Would you like to proceed?\n'
+        '\t\t 0 = NO\n'
+        '\t\t 1 = YES\n'.format(INCLUDED_FILENAMES, args.sample_indices)
+    )
+    if not int(proceed) == 1:
         sys.exit()
     else:
         print('Proceeding...')
 
     if 'out' in INCLUDED_FILENAMES:
-        proceed = input('You included \'out\' in INCLUDED_FILENAMES (i.e., files to remove). '
-                        '\n\t Are you sure you would you like to proceed?\n'
-                        '\t\t 0 = NO\n'
-                        '\t\t 1 = YES\n')
+        proceed = input(
+            'You included \'out\' in INCLUDED_FILENAMES (i.e., files to remove). '
+            '\n\t Are you sure you would you like to proceed?\n'
+            '\t\t 0 = NO\n'
+            '\t\t 1 = YES\n'
+        )
         if not int(proceed):
             sys.exit()
         else:
             print('Proceeding...')
-    
 
     for sample in args.sample_indices:
 
@@ -62,8 +60,10 @@ def run(args):
                 continue
 
             if any([included_filename in filepath for included_filename in INCLUDED_FILENAMES]):
-                try: os.remove(filepath)
-                except: print('Could not remove {}'.format(filepath))
+                try:
+                    os.remove(filepath)
+                except:
+                    print('Could not remove {}'.format(filepath))
                 if args.verbose:
                     print(f'\tREMOVE FILE: {filepath}')
 
@@ -74,6 +74,7 @@ def run(args):
         # remove empty directories
         if args.verbose:
             print('\n\t- - - - - DIRECTORIES - - - -\n')
+
         def remove_empty_directories(directory: str):
 
             for path in os.listdir(directory):
@@ -82,8 +83,10 @@ def run(args):
                     remove_empty_directories(subdirectory)
 
             if os.path.isdir(directory) and len(os.listdir(directory)) == 0:
-                try: os.rmdir(directory)
-                except: print('Could not remove {}'.format(directory))
+                try:
+                    os.rmdir(directory)
+                except:
+                    print('Could not remove {}'.format(directory))
                 if args.verbose:
                     print(f'\tREMOVE DIR: {directory}')
 
@@ -95,4 +98,3 @@ def run(args):
 
         if args.verbose:
             print('\n\n')
-

@@ -12,6 +12,7 @@
 #
 import os
 import sys
+
 sys.path.insert(0, os.path.abspath('../config/system/run_utils'))
 
 # -- Project information -----------------------------------------------------
@@ -21,7 +22,7 @@ copyright = '2021, Duke University'
 author = 'Musselman ED, Cariello JE, Grill WM, Pelot NA.'
 
 # The full version, including alpha/beta/rc tags
-release = 'v1.1.2'
+release = 'v1.1.3'
 
 # -- General configuration ---------------------------------------------------
 
@@ -29,15 +30,17 @@ release = 'v1.1.2'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 
-extensions = ['myst_parser',
-            'sphinxarg.ext',
-            'sphinx.ext.intersphinx',
-            'sphinx.ext.autodoc',
-            'sphinxcontrib.bibtex',
-            'sphinxcontrib.details.directive',
-            'sphinx_copybutton',
-            'sphinx_rtd_dark_mode',
-             'sphinx_github_changelog']
+extensions = [
+    'myst_parser',
+    'sphinxarg.ext',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.autodoc',
+    'sphinxcontrib.bibtex',
+    'sphinxcontrib.details.directive',
+    'sphinx_copybutton',
+    'sphinx_rtd_dark_mode',
+    'sphinx_github_changelog',
+]
 
 source_suffix = {
     '.rst': 'restructuredtext',
@@ -47,7 +50,7 @@ source_suffix = {
 
 import mock
 
-MOCK_MODULES = ['numpy','pandas']
+MOCK_MODULES = ['numpy', 'pandas']
 
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = mock.Mock()
@@ -77,8 +80,8 @@ html_css_files = [
 ]
 html_show_copyright = True
 
-#no logo because doesn't look nice
-#html_logo="uploads/ascent_media_release_v2.png"
+# no logo because doesn't look nice
+# html_logo="uploads/ascent_media_release_v2.png"
 
 html_show_sphinx = False
 

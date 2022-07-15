@@ -17,9 +17,6 @@ To declare this entity in
   "pseudonym": String,
   "sex": String,
   "level": String,
-  "samples_path": [
-    String
-  ],
   "scale": {
     "scale_bar_length": Double,
     "scale_ratio": Double,
@@ -86,7 +83,7 @@ To declare this entity in
 
 `“sample”`: The value (String) of this property sets the sample
 name/identifier (e.g., “Rat1-1”) to relate to bookkeeping for input
-morphology files ([S3 Text Figure A](../../Data_Hierarchy)). The value must match the directory name in
+morphology files ([Data Hierarchy Figure A](../../Data_Hierarchy)). The value must match the directory name in
 `input/<NAME>/` that contains the input morphology files. Required.
 
 `"pseudonym"`: This value (String) informs pipeline print statements, allowing
@@ -98,10 +95,6 @@ sample. Optional, for user records only.
 `“level”`: The value (String) of this property assigns the location of the
 nerve sample (e.g., cervical, abdominal, pudendal). Optional, for user
 records only.
-
-`“samples_path”`: The value (\[String, ...\]) is the path to the
-directory containing input morphology files for all samples for a given
-project. Required.
 
 `“scale”`
 
@@ -313,66 +306,11 @@ manually set these values. Automatically populated. The values `a` and `b` are
 the full width and height of the ellipse major and minor axes, respectively
 (i.e., analogous to diameter rather than radius of a circle).
 
-## Example 
-```
-{
-  "sample": "Rat16-3", // monofascicular nerve without epineurium
-  "pseudonym": "My example sample",
-  "sex": "M",
-  "level": "Cervical",
-  "samples_path": [
-    "samples"
-  ],
-  "scale": {
-    "scale_bar_length": 500,
-    "scale_ratio": 12.5,
-    "shrinkage": 0.2
-  },
-  "modes": {
-    "mask_input": "INNER_AND_OUTER_COMPILED",
-    "nerve": "NOT_PRESENT",
-    "deform": "NONE",
-    "ci_perineurium_thickness": "MEASURED",
-    "reshape_nerve": "NONE",
-    "scale_input": "MASK"
-  },
-  "smoothing": {
-    "nerve_distance": 0,
-    "fascicle_distance": 0
-  },
-  "image_preprocessing": {
-    "fill_holes": true,
-    "object_removal_area": 10
-  },
-  "morph_count": 36,
-  "deform_ratio": 1,
-  "plot": true,
-  "plot_folder": true,
-  "render_deform": false,
-  "Morphology": {
-    "Nerve": null,
-    "Fascicles": [
-      {
-        "outer": {
-          "area": 3822.2482582148805,
-          "x": 0.9345049858093262,
-          "y": 0.547715425491333,
-          "a": 53.227294921875,
-          "b": 95.37359619140625,
-          "angle": 12.440727233886719
-        },
-        "inners": [
-          {
-            "area": 3569.204913019861,
-            "x": 1.0080997943878174,
-            "y": 0.5349266529083252,
-            "a": 51.09575653076172,
-            "b": 93.090087890625,
-            "angle": 12.47867107391357
-          }
-        ]
-      }
-    ]
-  }
-}
+`"rotation"`: The value (Double) instructs the pipeline to rotate the nerve about its centroid by the specified amount (units = Degrees).
+This parameter may NOT be used if providing an orientation tif image (See [Morphology Input Files](../../Running_ASCENT/Info.md#morphology-input-files)).
+
+## Example
+```{eval-rst}
+.. include:: ../../../../config/templates/sample.json
+   :code: javascript
 ```

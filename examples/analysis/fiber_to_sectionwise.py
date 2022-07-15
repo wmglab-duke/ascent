@@ -6,14 +6,16 @@ Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
-import sys
 import os
 import re
+import sys
 
 import numpy as np
 
-usage: str = 'USAGE: ./fiber_to_sectionwise.py <[xyz]*> <source_path.dat> <target_path.txt>\n' \
-             'notes: (1) xyz expr. is regex (2) must type ".dat" and ".txt" -- these are convention)'
+usage: str = (
+    'USAGE: ./fiber_to_sectionwise.py <[xyz]*> <source_path.dat> <target_path.txt>\n'
+    'notes: (1) xyz expr. is regex (2) must type ".dat" and ".txt" -- these are convention)'
+)
 
 if len(sys.argv) != 4:
     print('Invalid argument count: {}\n{}'.format(len(sys.argv), usage))

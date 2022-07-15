@@ -388,7 +388,7 @@ public class ModelWrapper {
 
             // LOAD BASIS MPH MODEL
             String basis_dir = String.join("/", new String[]{
-                    bases_directory, bases_paths[basis_ind]
+                    bases_directory, basis_ind + ".mph"
             });
             File file = new File(basis_dir);
             while(!file.canWrite() || !file.canRead()) {
@@ -911,7 +911,7 @@ public class ModelWrapper {
                         "CIRCLE (or NONE) is not yet implemented");
                 System.exit(0);
             }
-            
+
             if (nerveMode.equals("PRESENT")) {
                 if (deform_ratio == 1 && reshapenerveMode.equals("CIRCLE")) { //Use a circle otherwise
                     Part.createNervePartInstance("Epi_circle", 0,
@@ -1145,22 +1145,10 @@ public class ModelWrapper {
         String decodedString = new String(decodedBytes);
         JSONObject cli_args = new JSONObject(decodedString);
 
-        // Start COMSOL Instance
-        try {
-            ModelUtil.connect("localhost", 2036);
-        } catch(FlException e) {
-            System.out.println("Could not connect to COMSOL server on port 2036, trying on port 2037...");
-            try {
-                ModelUtil.connect("localhost", 2037);
-            } catch(FlException exc) {
-                System.out.println("Could not connect to COMSOL server on port 2037, trying without specifying a port...");
-                ModelUtil.connect();
-            }
-        }
+        int waitMinutes = 5;
+        //connect to comsol server
+        ModelWrapper.serverConnect(waitMinutes);
 
-        TimeUnit.SECONDS.sleep(5);
-        ModelUtil.initStandalone(false);
-        
         if (cli_args.has("comsol_progress") && cli_args.getBoolean("comsol_progress")) {
             ModelUtil.showProgress(null); // if you want to see COMSOL progress (as it makes all geometry, runs, etc.)
         }
@@ -1171,26 +1159,8 @@ public class ModelWrapper {
 
         //checkout comsol license
         if (cli_args.has("wait_for_license") && !cli_args.isNull("wait_for_license")) {
-            long wait_hours = cli_args.getLong("wait_for_license");
-            System.out.println("Attempting to check out COMSOL license. System will wait up to " + String.valueOf(wait_hours) + " hours for an available license seat.");
-            boolean lic = false;
-            long start = System.currentTimeMillis();
-            long stop = wait_hours * 60 * 60 * 1000 + start;
-            while (System.currentTimeMillis() < stop) {
-                lic = ModelUtil.checkoutLicense("COMSOL");
-                if (lic == true) {
-                    long now = System.currentTimeMillis();
-                    double elapsed = (Long.valueOf(now).doubleValue()-Long.valueOf(start).doubleValue())/(60 * 60 * 1000);
-                    System.out.printf("COMSOL license seat obtained (took %.3f hours).%n", elapsed);
-                    break;
-                } else {
-                    TimeUnit.SECONDS.sleep(600);
-                }
-            }
-            if (lic == false) {
-                System.out.println("A COMSOL license did not become available within the specified time window. Exiting...");
-                System.exit(1);
-            }
+            long waitHours = cli_args.getLong("wait_for_license");
+            ModelWrapper.licenseCheckout(waitHours);
         }
 
         // Take projectPath input to ModelWrapper and assign to string.
@@ -1358,8 +1328,8 @@ public class ModelWrapper {
                             System.out.println("\tIssue in mesh recycling logic. Rebuilding mesh.");
                             e.printStackTrace();
                         }
+                        System.out.println("\tEnd mesh recycling logic.");
                     }
-                    System.out.println("\tEnd mesh recycling logic.");
 
                     String mediumPrimitiveString = "Medium_Primitive";
                     String instanceLabelDistalMedium = DISTAL_MEDIUM;
@@ -1380,15 +1350,30 @@ public class ModelWrapper {
                         model.component().create("comp1", true);
                         // Add 3D geom to component node 1
                         model.component("comp1").geom().create("geom1", 3);
-                        // geometry shape order
-                        String sorder = modelData.getJSONObject("solver").getString("sorder");
-                        model.component("comp1").sorder(sorder);
                         // Set default length units to micron
                         model.component("comp1").geom("geom1").lengthUnit("\u00b5m");
                         // Add materials node to component node 1
                         model.component("comp1").physics().create("ec", "ConductiveMedia", "geom1");
                         // and mesh node to component node 1
                         model.component("comp1").mesh().create("mesh1");
+                        //set geometry order
+                        String geometry_order;
+                        try {
+                            geometry_order = modelData.getJSONObject("mesh").getString("shape_order");
+                        } catch (Exception e) {
+                            System.out.println("\tWARNING: Invalid geometry shape order, or geometry shape order not specified. Proceeding with default order of quadratic");
+                            geometry_order = "quadratic";
+                        }
+                        model.component("comp1").sorder(geometry_order);
+                        //set solution order
+                        int solution_order;
+                        try {
+                            solution_order = modelData.getJSONObject("solver").getInt("sorder");
+                        } catch (Exception e) {
+                            System.out.println("\tWARNING: Invalid solution shape order, or solution shape order not specified. Proceeding with default order of 2 (quadratic)");
+                            solution_order = 2;
+                        }
+                        model.component("comp1").physics("ec").prop("ShapeProperty").set("order_electricpotential", solution_order);
 
                         // Define ModelWrapper class instance for model and projectPath
                         mw = new ModelWrapper(model, projectPath);
@@ -1641,15 +1626,6 @@ public class ModelWrapper {
                             boolean success = ppimPathFile.mkdirs();
                             assert success;
                         }
-
-                        int shape_order;
-                        if (modelData.getJSONObject("mesh").has("shape_order")) {
-                            shape_order = modelData.getJSONObject("mesh").getInt("shape_order");
-                        } else {
-                            shape_order = modelData.getJSONObject("solver").getInt("shape_order"); // bkwds compatible
-                        }
-
-                        model.component("comp1").physics("ec").prop("ShapeProperty").set("order_electricpotential", shape_order);
 
                         // define MESH for PROXIMAL
                         // swept: name (Sweep) and im (swe), facemethod (tri)
@@ -2053,6 +2029,20 @@ public class ModelWrapper {
                     model.sol("sol1").feature("s1").feature("i1").feature("mg1").set("prefun", "amg");
                     model.sol("sol1").feature("s1").feature("fc1").set("linsolver", "i1");
                     model.sol("sol1").feature("s1").feature().remove("fcDef");
+
+                    // check for solver type and select appropriate option
+                    if (modelData.getJSONObject("solver").has("type")) {
+                        String solverType = modelData.getJSONObject("solver").getString("type");
+                        if (solverType.equals("direct")) {
+                            model.sol("sol1").feature("s1").feature("dDef").active(true);
+                        }
+                        else if (!solverType.equals("iterative"))
+                        System.out.println("Invalid solver type, proceeding with default (iterative).");
+                    }
+                    else {
+                        System.out.println("\tSolver type not specified, proceeding with default (iterative).");
+                    }
+
                     model.sol("sol1").attach("std1");
 
                     // break point "post_mesh_distal"
@@ -2165,5 +2155,59 @@ public class ModelWrapper {
         }
 
         System.exit(0);
+    }
+
+    private static void licenseCheckout(long waitHours) throws InterruptedException {
+        System.out.println("Attempting to check out COMSOL license. System will wait up to " + String.valueOf(waitHours) + " hours for an available license seat.");
+        boolean lic = false;
+        long start = System.currentTimeMillis();
+        long stop = waitHours * 60 * 60 * 1000 + start;
+        while (System.currentTimeMillis() < stop) {
+            lic = ModelUtil.checkoutLicense("COMSOL");
+            if (lic == true) {
+                long now = System.currentTimeMillis();
+                double elapsed = (Long.valueOf(now).doubleValue()-Long.valueOf(start).doubleValue())/(60 * 60 * 1000);
+                System.out.printf("COMSOL license seat obtained (took %.3f hours).%n", elapsed);
+                break;
+            } else {
+                TimeUnit.SECONDS.sleep(600);
+            }
+        }
+        if (lic == false) {
+            System.out.println("A COMSOL license did not become available within the specified time window. Exiting...");
+            System.exit(0);
+        }
+
+    }
+
+    private static void serverConnect(int waitMinutes) throws InterruptedException {
+        // Try to connect to comsol server
+        long connectTime = waitMinutes * 60 * 1000 + System.currentTimeMillis();
+        while (true) {
+            try {
+                ModelUtil.connect("localhost", 2036);
+                break;
+            } catch(FlException e) {
+                System.out.println("Could not connect to COMSOL server on port 2036, trying on port 2037...");
+                try {
+                    ModelUtil.connect("localhost", 2037);
+                    break;
+                } catch(FlException exc) {
+                    System.out.println("Could not connect to COMSOL server on port 2037, trying without specifying a port...");
+                    try {
+                        ModelUtil.connect();
+                        break;
+                    } catch (Exception except) {
+                        if (System.currentTimeMillis() > connectTime) {
+                            except.printStackTrace();
+                            System.out.println("Could not connect to COMSOL server, exiting...");
+                            System.exit(1);
+                        }
+                        System.out.println("Could not connect to COMSOL server, trying again in 60 seconds...");
+                        TimeUnit.SECONDS.sleep(60);
+                    }
+                }
+            }
+        }
     }
 }

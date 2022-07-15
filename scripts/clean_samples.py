@@ -16,30 +16,32 @@ EXCLUDED_FILENAMES = [
     'Primitive.json',
     'sample.json',
     'model.json',
-    'explicit.txt'
+    'explicit.txt',
 ]
 
 
 def run(args):
-    
-    proceed = input('All files EXCEPT those whose names end with the following strings:\n'
-                    '\t{}\n'
-                    'will be removed from the following sample directories:\n'
-                    '\t{}\n'
-                    '\n\t Would you like to proceed?\n'
-                    '\t\t 0 = NO\n'
-                    '\t\t 1 = YES\n'.format(EXCLUDED_FILENAMES,args.sample_indices))
-    if not int(proceed)==1:
+
+    proceed = input(
+        'All files EXCEPT those whose names end with the following strings:\n'
+        '\t{}\n'
+        'will be removed from the following sample directories:\n'
+        '\t{}\n'
+        '\n\t Would you like to proceed?\n'
+        '\t\t 0 = NO\n'
+        '\t\t 1 = YES\n'.format(EXCLUDED_FILENAMES, args.sample_indices)
+    )
+    if not int(proceed) == 1:
         sys.exit()
     else:
         print('Proceeding...')
-    
+
     for sample in args.sample_indices:
-        
+
         if args.verbose:
             print(f'Sample: {sample}')
         sample_path = Path(os.path.join('samples', f'{sample}'))
-        
+
         # remove files
         if args.verbose:
             print('\n\t- - - - - - FILES - - - - - -\n')
@@ -50,8 +52,10 @@ def run(args):
                 continue
 
             if not any([filepath.endswith(excluded_filename) for excluded_filename in EXCLUDED_FILENAMES]):
-                try: os.remove(filepath)
-                except: print('Could not remove {}'.format(filepath))
+                try:
+                    os.remove(filepath)
+                except:
+                    print('Could not remove {}'.format(filepath))
                 if args.verbose:
                     print(f'\tREMOVE FILE: {filepath}')
 
@@ -71,8 +75,10 @@ def run(args):
                     remove_empty_directories(subdirectory)
 
             if os.path.isdir(directory) and len(os.listdir(directory)) == 0:
-                try: os.rmdir(directory)
-                except: print('Could not remove {}'.format(directory))
+                try:
+                    os.rmdir(directory)
+                except:
+                    print('Could not remove {}'.format(directory))
                 if args.verbose:
                     print(f'\tREMOVE DIR: {directory}')
 
@@ -81,6 +87,6 @@ def run(args):
                     print(f'\tKEEP DIR: {directory}')
 
         remove_empty_directories(str(sample_path.absolute()))
-    
+
         if args.verbose:
             print('\n\n')

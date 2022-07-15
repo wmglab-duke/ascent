@@ -8,10 +8,11 @@ The source code can be found on the following GitHub repository: https://github.
 
 import json
 import os
+
 from src.utils.enums import Env
 
 
-def run(args, env_path = os.path.join('config', 'system', 'env.json')):
+def run(args, env_path=os.path.join('config', 'system', 'env.json')):
     print('Start environment path variables setup.')
 
     result = {}
@@ -19,7 +20,7 @@ def run(args, env_path = os.path.join('config', 'system', 'env.json')):
         while True:
             value = input('Enter path for {}: '.format(key))
 
-            if os.path.exists(value) or key=='ASCENT_NSIM_EXPORT_PATH':
+            if os.path.exists(value) or key == 'ASCENT_NSIM_EXPORT_PATH':
                 result[key] = value
                 break
             else:

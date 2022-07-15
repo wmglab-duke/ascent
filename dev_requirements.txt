@@ -1,0 +1,9 @@
+autopep8
+flake8
+pylint
+sphinx
+sphinx-rtd-theme
+black
+mypy
+pytest
+pre-commit

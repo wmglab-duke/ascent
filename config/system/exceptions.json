@@ -554,5 +554,33 @@
   {
     "code": 139,
     "text": "Invalid export behavior defined in run.json"
+  },
+  {
+    "code": 140,
+    "text": "Java compiler (javac) encountered an error during compilation operations."
+  },
+  {
+    "code": 141,
+    "text": "Encountered an error during handoff to java."
+  },
+  {
+    "code": 142,
+    "text": "Currently SIM configuration only supports protocol>threshold>n_min_aps = 1"
+  },
+  {
+    "code": 143,
+    "text": "Rotation cannot be defined in sample.json if using an orientation image input."
+  },
+  {
+    "code": 144,
+    "text": "Issue during loading of JSON file, see warning above for the specific file."
+  },
+  {
+    "code": 145,
+    "text": "Length of fascicle colors list must match number of fascicle inners."
+  },
+  {
+    "code": 146,
+    "text": "A white area which results in a fascicle trace with <3 points was detected. Check your input mask for specks."
   }
 ]

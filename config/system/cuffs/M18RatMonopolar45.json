@@ -1,14 +1,14 @@
 {
-  "code": "M",
+  "code": "MR451",
   "instances": [
     {
       "type": "CuffFill_Primitive",
       "label": "M18RatMonopolar45 Cuff Fill",
       "def": {
-        "Radius": "R_out_M+Thk_fill_M",
-        "Thk": "Thk_fill_M",
-        "L": "L_M+2*Thk_fill_M",
-        "Center": "Center_M",
+        "Radius": "R_out_MR451+Thk_fill_MR451",
+        "Thk": "Thk_fill_MR451",
+        "L": "L_MR451+2*Thk_fill_MR451",
+        "Center": "Center_MR451",
         "x_shift": "0",
         "y_shift": "0"
       },
@@ -23,17 +23,17 @@
       "type": "TubeCuff_Primitive",
       "label": "M18RatMonopolar45 Cuff",
       "def": {
-        "N_holes": "N_holes_M",
-        "Tube_theta": "Theta_M",
-        "Center": "Center_M",
-        "R_in": "R_in_M",
-        "R_out": "R_out_M",
-        "Tube_L": "L_M",
-        "Rot_def": "Rot_def_M",
-        "D_hole": "D_hole_M",
-        "Buffer_hole": "Buffer_hole_M",
-        "L_holecenter_cuffseam": "L_holecenter_cuffseam_M",
-        "Pitch_holecenter_holecenter": "Pitch_holecenter_holecenter_M"
+        "N_holes": "N_holes_MR451",
+        "Tube_theta": "Theta_MR451",
+        "Center": "Center_MR451",
+        "R_in": "R_in_MR451",
+        "R_out": "R_out_MR451",
+        "Tube_L": "L_MR451",
+        "Rot_def": "Rot_def_MR451",
+        "D_hole": "D_hole_MR451",
+        "Buffer_hole": "Buffer_hole_MR451",
+        "L_holecenter_cuffseam": "L_holecenter_cuffseam_MR451",
+        "Pitch_holecenter_holecenter": "Pitch_holecenter_holecenter_MR451"
       },
       "materials": [
         {
@@ -46,13 +46,13 @@
       "type": "RibbonContact_Primitive",
       "label": "M18RatMonopolar45 Contact 1",
       "def": {
-        "Ribbon_thk": "Thk_elec_M",
-        "Ribbon_z": "L_elec_M",
-        "R_in": "R_in_M",
-        "Ribbon_recess": "Recess_M",
-        "Center": "Center_M",
-        "Ribbon_theta": "Theta_contact_M",
-        "Rot_def": "Rot_def_contact_M"
+        "Ribbon_thk": "Thk_elec_MR451",
+        "Ribbon_z": "L_elec_MR451",
+        "R_in": "R_in_MR451",
+        "Ribbon_recess": "Recess_MR451",
+        "Center": "Center_MR451",
+        "Ribbon_theta": "Theta_contact_MR451",
+        "Rot_def": "Rot_def_contact_MR451"
       },
       "materials": [
         {
@@ -69,127 +69,127 @@
 
   "params": [
     {
-      "name": "N_holes_M",
+      "name": "N_holes_MR451",
       "expression": "0",
       "description": ""
     },
     {
-      "name": "Theta_M",
-      "expression": "percent_circ_cuff_M*360 [deg]",
+      "name": "Theta_MR451",
+      "expression": "percent_circ_cuff_MR451*360 [deg]",
       "description": ""
     },
     {
-      "name": "Center_M",
+      "name": "Center_MR451",
       "expression": "z_nerve/2",
       "description": ""
     },
     {
-      "name": "R_in_M",
-      "expression": "max(r_nerve+thk_medium_gap_internal_M,r_cuff_in_pre_M)",
+      "name": "R_in_MR451",
+      "expression": "max(r_nerve+thk_medium_gap_internal_MR451,r_cuff_in_pre_MR451)",
       "description": ""
     },
     {
-      "name": "R_out_M",
-      "expression": "R_in_M+thk_cuff_M",
+      "name": "R_out_MR451",
+      "expression": "R_in_MR451+thk_cuff_MR451",
       "description": ""
     },
     {
-      "name": "L_M",
+      "name": "L_MR451",
       "expression": "1.5 [mm]",
       "description": ""
     },
     {
-      "name": "Rot_def_M",
+      "name": "Rot_def_MR451",
       "expression": "0",
       "description": ""
     },
     {
-      "name": "D_hole_M",
+      "name": "D_hole_MR451",
       "expression": "NaN",
       "description": ""
     },
     {
-      "name": "Buffer_hole_M",
+      "name": "Buffer_hole_MR451",
       "expression": "NaN",
       "description": ""
     },
     {
-      "name": "L_holecenter_cuffseam_M",
+      "name": "L_holecenter_cuffseam_MR451",
       "expression": "NaN",
       "description": ""
     },
     {
-      "name": "Pitch_holecenter_holecenter_M",
+      "name": "Pitch_holecenter_holecenter_MR451",
       "expression": "NaN",
       "description": ""
     },
     {
-      "name": "percent_circ_cuff_M",
-      "expression": "percent_circ_cuff_pre_M*(r_cuff_in_pre_M/R_in_M)",
+      "name": "percent_circ_cuff_MR451",
+      "expression": "percent_circ_cuff_pre_MR451*(r_cuff_in_pre_MR451/R_in_MR451)",
       "description": ""
     },
     {
-      "name": "percent_circ_cuff_pre_M",
+      "name": "percent_circ_cuff_pre_MR451",
       "expression": "1",
       "description": ""
     },
     {
-      "name": "z_nerve_M",
+      "name": "z_nerve_MR451",
       "expression": "20 [mm]",
       "description": ""
     },
     {
-      "name": "r_cuff_in_pre_M",
+      "name": "r_cuff_in_pre_MR451",
       "expression": "209 [um]",
       "description": ""
     },
     {
-      "name": "thk_medium_gap_internal_M",
+      "name": "thk_medium_gap_internal_MR451",
       "expression": "10 [um]",
       "description": ""
     },
     {
-      "name": "thk_cuff_M",
+      "name": "thk_cuff_MR451",
       "expression": ".25 [mm]",
       "description": ""
     },
     {
-      "name": "Recess_M",
+      "name": "Recess_MR451",
       "expression": "0 [mm]",
       "description": ""
     },
     {
-      "name": "Thk_elec_M",
+      "name": "Thk_elec_MR451",
       "expression": "0.05 [mm]",
       "description": ""
     },
     {
-      "name": "L_elec_M",
+      "name": "L_elec_MR451",
       "expression": ".25 [mm]",
       "description": ""
     },
     {
-      "name": "Theta_contact_M",
-      "expression": "360*(w_elec_M/(pi*2*(R_in_M+Recess_M))) [deg]",
+      "name": "Theta_contact_MR451",
+      "expression": "360*(w_elec_MR451/(pi*2*(R_in_MR451+Recess_MR451))) [deg]",
       "description": ""
     },
     {
-      "name": "w_elec_M",
-      "expression": "R_in_M*2*pi*(contact_wrap_M/360)",
+      "name": "w_elec_MR451",
+      "expression": "R_in_MR451*2*pi*(contact_wrap_MR451/360)",
       "description": ""
     },
     {
-      "name": "contact_wrap_M",
+      "name": "contact_wrap_MR451",
       "expression": "45",
       "description": ""
     },
     {
-      "name": "Rot_def_contact_M",
-      "expression": "(Theta_M/2)-(Theta_contact_M/2)",
+      "name": "Rot_def_contact_MR451",
+      "expression": "(Theta_MR451/2)-(Theta_contact_MR451/2)",
       "description": ""
     },
     {
-      "name": "Thk_fill_M",
+      "name": "Thk_fill_MR451",
       "expression": "100 [um]",
       "description": ""
     }

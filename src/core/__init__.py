@@ -1,5 +1,5 @@
 #!/usr/bin/env python3.7
-
+# isort: skip_file
 """
 The copyrights of this software are owned by Duke University.
 Please refer to the LICENSE and README.md files for licensing instructions.

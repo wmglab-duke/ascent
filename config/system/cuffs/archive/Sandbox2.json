@@ -1,0 +1,54 @@
+{
+  "code": "SB",
+  "instances": [
+    {
+      "type": "CuffFill_Primitive"
+    },
+    {
+      "type": "TubeCuff_Primitive"
+    },
+    {
+      "type": "WireContact_Primitive"
+    },
+    {
+      "type": "CircleContact_Primitive"
+    },
+    {
+      "type": "RectangleContact_Primitive"
+    },
+    {
+      "type": "RibbonContact_Primitive"
+    },
+    {
+      "type": "uContact_Primitive"
+    },
+    {
+      "type": "uCuff_Primitive"
+    },
+    {
+      "type": "uCuffTrap_Primitive"
+    },
+    {
+      "type": "uContactTrap_Primitive"
+    },
+    {
+      "type": "TubeCuffSweep_Primitive"
+    },
+    {
+      "type": "uCuffFill_Primitive"
+    },
+    {
+      "type": "ArleContact_Primitive"
+    }
+  ],
+  "params": [
+  ],
+
+  "expandable": true,
+  "angle_to_contacts_deg": 144,
+  "offset": {
+    "sep_wire_P": 1,
+    "r_wire_P": 2
+  },
+  "fixed_point":"clockwise_end"
+}

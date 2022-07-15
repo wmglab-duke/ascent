@@ -6,20 +6,31 @@ Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
-import sys
-import os
 import importlib
+import os
+import sys
+
 from config.system.run_utils import parse_args, welcome
+
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "1"
+try:
+    import pymunkoptions
+
+    pymunkoptions.options["debug"] = False
+except:
+    pass
 
 args = parse_args.parse()
 
-if args.script!='install':
+if args.script != 'install':
     env = os.environ.get('CONDA_PREFIX')
-    if env is not None and os.path.split(env)[-1]!='ascent':
-        sys.exit('''
+    if env is not None and os.path.split(env)[-1] != 'ascent':
+        sys.exit(
+            '''
             ASCENT must be run in the "ascent" environment.
             If you have not installed ascent yet, please do so (python run install).
-            Otherwise, please activate the "ascent" environment (conda activate ascent) before running.''')
+            Otherwise, please activate the "ascent" environment (conda activate ascent) before running.'''
+        )
 
 welcome.welcome()
 
@@ -28,4 +39,5 @@ if args.script is not None:
 else:
     if args.list is not None:
         from config.system.run_utils import list_util
+
         list_util.run(args.list)

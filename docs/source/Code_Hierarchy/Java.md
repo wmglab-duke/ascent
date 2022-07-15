@@ -368,27 +368,3 @@ In the class’s `searchMeshMatch()` method, the program looks through all
 returns a Match class, which is analogous to the `ModelWrapper` class,
 using the path of the matching ***Model*** with the `fromMeshPath()`
 method.
-
-
-### Part.defineMaterial()
-
-The user is unlikely to interface directly with the `defineMaterial()`
-method in Java as it operates behind the scenes to add a new material to
-the COMSOL "Materials" node under "Global Definitions". The method takes
-inputs of the material’s identifier in COMSOL (e.g., "mat1"), function
-(e.g., cuff "fill"), ***Model***, a library of predefined materials
-(e.g., `materials.json`), a ModelWrapper instance, and the COMSOL
-ModelParamGroup for material conductivities. The `defineMaterial()` method
-uses materials present in ***Model’s*** "conductivities" JSON Object to
-assign to each material function in the COMSOL model (e.g., insulator,
-conductor, fill, endoneurium, perineurium, epineurium, or medium). The
-material value for a function key in ***Model*** is either a string for
-a pre-defined material in `materials.json`, or a JSON Object (containing
-unit, label, and value) for a custom material. Assigning material
-conductivities to material functions in this manner enables control for
-a user to reference a pre-defined material or explicitly link a custom
-material to a COMSOL model. In either the case of a predefined material
-in `materials.json` or custom material in ***Model***, if the material is
-anisotropic, the material value is assigned a string "anisotropic" which
-tells the program to look for independent `"sigma_x"`, `"sigma_y"`, and
-`"sigma_z"` values in the material JSON Object.

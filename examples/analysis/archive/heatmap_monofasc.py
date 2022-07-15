@@ -7,9 +7,10 @@ The source code can be found on the following GitHub repository: https://github.
 """
 
 import os
+
 import matplotlib.pyplot as plt
-from matplotlib import cm
 import numpy as np
+from matplotlib import cm
 
 from src.core.query import Query
 from src.utils import Object
@@ -22,11 +23,7 @@ os.chdir(root)
 criteria = {
     'partial_matches': True,
     'include_downstream': True,
-    'indices': {
-        'sample': [3],
-        'model': [0],
-        'sim': [0]
-    }
+    'indices': {'sample': [3], 'model': [0], 'sim': [0]},
 }
 
 
@@ -50,14 +47,20 @@ for sample_metadata in results.get('samples', []):
             for n, (potentials_product_index, waveform_index) in enumerate(sim_object.master_product_indices):
                 active_src_index, fiberset_index = sim_object.potentials_product[potentials_product_index]
 
-                sim_dir = q.build_path(Object.SIMULATION, [sample_index, model_index, sim_index], just_directory=True)
+                sim_dir = q.build_path(
+                    Object.SIMULATION,
+                    [sample_index, model_index, sim_index],
+                    just_directory=True,
+                )
                 n_sim_dir = os.path.join(sim_dir, 'n_sims', str(n))
                 fiberset_dir = os.path.join(sim_dir, 'fibersets', str(fiberset_index))
 
                 plt.figure(n)
 
                 title = ''
-                for fib_key_name, fib_key_value in zip(sim_object.fiberset_key, sim_object.fiberset_product[fiberset_index]):
+                for fib_key_name, fib_key_value in zip(
+                    sim_object.fiberset_key, sim_object.fiberset_product[fiberset_index]
+                ):
                     title = '{} {}={}'.format(title, fib_key_name, fib_key_value)
 
                 for wave_key_name, wave_key_value in zip(sim_object.wave_key, sim_object.wave_product[waveform_index]):
@@ -69,12 +72,31 @@ for sample_metadata in results.get('samples', []):
 
                 n_fibers = len(sim_object.fibersets[fiberset_index].fibers)
 
-                missing_fibers = [i for i in range(n_fibers)
-                                  if not os.path.exists(os.path.join(n_sim_dir, 'data', 'outputs', 'thresh_inner0_fiber{}.dat'.format(i)))]
+                missing_fibers = [
+                    i
+                    for i in range(n_fibers)
+                    if not os.path.exists(
+                        os.path.join(
+                            n_sim_dir,
+                            'data',
+                            'outputs',
+                            'thresh_inner0_fiber{}.dat'.format(i),
+                        )
+                    )
+                ]
 
-                thresholds = [np.loadtxt(
-                    os.path.join(n_sim_dir, 'data', 'outputs', 'thresh_inner0_fiber{}.dat'.format(i))
-                )[2] for i in range(n_fibers) if i not in missing_fibers]
+                thresholds = [
+                    np.loadtxt(
+                        os.path.join(
+                            n_sim_dir,
+                            'data',
+                            'outputs',
+                            'thresh_inner0_fiber{}.dat'.format(i),
+                        )
+                    )[2]
+                    for i in range(n_fibers)
+                    if i not in missing_fibers
+                ]
 
                 max_threshold = max(thresholds)
                 min_threshold = min(thresholds)
@@ -83,12 +105,17 @@ for sample_metadata in results.get('samples', []):
                     coord = np.loadtxt(os.path.join(fiberset_dir, filename), skiprows=1)[0][:2]
 
                     threshold = np.loadtxt(
-                        os.path.join(n_sim_dir, 'data', 'outputs', 'thresh_inner0_fiber{}.dat'.format(filename.split('.dat')[0]))
+                        os.path.join(
+                            n_sim_dir,
+                            'data',
+                            'outputs',
+                            'thresh_inner0_fiber{}.dat'.format(filename.split('.dat')[0]),
+                        )
                     )[2]
 
-                    print((threshold - min_threshold)/(max_threshold - min_threshold))
+                    print((threshold - min_threshold) / (max_threshold - min_threshold))
 
-                    plt.plot(*coord, '*', color=colormap((threshold - min_threshold)/(max_threshold - min_threshold)))
+                    plt.plot(*coord, '*', color=colormap((threshold - min_threshold) / (max_threshold - min_threshold)))
 
                 plt.show()
 

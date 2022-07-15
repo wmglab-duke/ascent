@@ -196,7 +196,8 @@ matches are included in the result if `"include_downstream"` is true
 (since the user did not specify criteria for ***Sim***). Otherwise, if
 `"include_downstream"` is false, no ***Sim*** indices are returned.
 
-##  config/system/
+##  System configuration files
+Note: system configuration files are located in `config/system/`.
 
 ### env.json
 

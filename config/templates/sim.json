@@ -1,5 +1,5 @@
 {
-  "pseudonym":"template_sim",
+  "pseudonym":"template sim",
   "n_dimensions": 1,
   "active_srcs": {
     "CorTec300.json": [[1, -1]],

@@ -122,13 +122,10 @@ Note: All metadata required for the [tutorial run](#tutorial-run) are provided w
 
 ## Tutorial Run
 
-We sent the pipeline code, manuscript, and the following task to beta
-testers (both within our lab at Duke and externally). Following this
-task and verifying the threshold value is a suitable way to familiarize
-yourself with the ASCENT code and documentation.
+Following the instructions below task and verify the threshold value to familiarize yourself with the ASCENT code and documentation.
 
 We provide segmented histology of a rat cervical vagus nerve
-(`examples/beta_task/`). Use the provided histology and configurations files to simulate activation thresholds in
+(`examples/tutorial/`). Use the provided histology and configurations files to simulate activation thresholds in
 response to a charge balanced, biphasic pulse (PW1 = 100 μs, interphase
 gap of 100 μs, PW2 = 400 μs) using Purdue’s bipolar cuff design.
 
@@ -168,7 +165,7 @@ Check: Threshold for inner0\_fiber0 (`thresh_inner0_fiber0.dat`) should
 be -0.027402 mA
 
 We provided ***Sample***, ***Model***, and ***Sim*** JSON files for the
-solution in `examples/beta_task/`. Use the steps below in order to set up this tutorial run.
+solution in `examples/tutorial/`. Use the steps below in order to set up this tutorial run.
 
 ## Setting up a run of ASCENT
 

@@ -70,26 +70,8 @@ evaluates as expression).
 
 <!-- end list -->
 
-  - See: `config/system/materials.json` to see all built-in material
-    definitions, which the user may add to.
-
-```
-{
-  "conductivities": {
-    "endoneurium": {
-      "value": "anisotropic",
-      "sigma_x": "1/6",
-      "sigma_y": "1/6",
-      "sigma_z": "1/1.75",
-      "unit": "[S/m]"
-    },
-    "epineurium": {
-      "value": "1/6.3",
-      "unit": "[S/m]"
-    }
-  }
-}
-```
+See: `config/system/materials.json` to see all built-in material
+  definitions, which the user may add to.
 
 Note: Perineurium can be represented in the pipeline as either a meshed
 domain with a finite thickness or as a thin layer approximation, but the

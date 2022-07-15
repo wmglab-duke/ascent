@@ -6,9 +6,10 @@ Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
-from matplotlib import pyplot as plt
-import numpy as np
 import os
+
+import numpy as np
+from matplotlib import pyplot as plt
 
 print(os.getcwd())
 
@@ -20,7 +21,20 @@ threshold = '/data/outputs/thresh_inner0_fiber0.dat'
 
 baseline_model = 10
 
-radii = [7500, 7500, 7500, 10000, 10000, 10000, 12500, 12500, 12500, 15000, 15000, 15000]
+radii = [
+    7500,
+    7500,
+    7500,
+    10000,
+    10000,
+    10000,
+    12500,
+    12500,
+    12500,
+    15000,
+    15000,
+    15000,
+]
 hmaxes = [800, 1600, 3200] * 4
 hmins = [5, 10, 20] * 4
 diams = ['1', '2', '5.7', '7.3', '8.7', '10']
@@ -53,7 +67,14 @@ for i, (ax, model, radius, hmax, hmin) in enumerate(zip(axs.flatten(), model_res
     else:
         ax.set_xticks([])
         ax.set_yticks([])
-        ax.text(0.5, 0.5, 'BASELINE', horizontalAlignment='center', verticalAlignment='center', fontsize=15)
+        ax.text(
+            0.5,
+            0.5,
+            'BASELINE',
+            horizontalAlignment='center',
+            verticalAlignment='center',
+            fontsize=15,
+        )
 plt.suptitle('SL Activation Threshold Percent Error from \"Baseline\" Model')
 plt.subplots_adjust(hspace=0.75)
 plt.show()

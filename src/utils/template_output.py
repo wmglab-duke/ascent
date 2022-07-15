@@ -14,7 +14,6 @@ from .enums import TemplateMode
 
 
 class TemplateOutput:
-
     @staticmethod
     def read(mode: TemplateMode) -> Union[list, dict]:
         path = os.path.join(TemplateMode.path.value, mode.value)

@@ -46,7 +46,7 @@ following syntax:
   },
   "local_avail_cpus": Integer,
   "popup_plots": Boolean,
-  "override_compiled_mods": Boolean
+  "auto_submit_fibers": Boolean
 }
 ```
 ## Properties
@@ -147,46 +147,16 @@ machine to perform other processes. Optional, but if using submitting
 locally, the program will take all CPUs except 1 if this value is not
 defined.
 
-`"override_compiled_mods"`: The value (Boolean) indicates if the program will override previously compiled *.mod files (i.e. files defining channel mechanisms in NEURON) with each system call of submit.py. Optional, but if the key is omitted the program will not override previously compiled *.mod files.
-
 `“popup_plots”`: The value (Boolean) will instruct the pipeline to display plots
 (e.g. sample plot, fiberset plot, waveform plot) in a popup window. This is in addition
 to saving the plots in the relevant folders (i.e., the sample and sim folders).
 
+`"auto_submit_fibers"`: The value (Boolean), if true, will cause the program to automatically start fiber simulations after each run is completed.
+If submitting locally, the program will not continue to the next run until all fiber simulations are complete. If submitting via a computer cluster,
+the next run will start after all batch NEURON jobs are submitted.
+
 ## Example
-```
-{
-  "pseudonym": "My example run",
-  "submission_context": “cluster”,
-  "sample": 62,
-  "models": [0],
-  "sims": [99],
-  "recycle_meshes": true,
-  "break_points": {
-    "pre_java": false,
-    "pre_geom_run": false,
-    "post_geom_run": true,
-    "pre_mesh_proximal": false,
-    "post_mesh_proximal": false,
-    "pre_mesh_distal": false,
-    "post_mesh_distal": false,
-    "post_material_assign": false,
-    "pre_loop_currents": false
-  },
-  "endo_only_solution":true,
-  "models_exit_status": [true],
-  "keep": {
-    "debug_geom": true,
-    "mesh": true,
-    "bases": true
-  },
-  "partial_fem": {
-    "cuff_only": false,
-    "nerve_only": false
-  },
-  "export_behavior": "selective",
-  "local_avail_cpus": 3,
-  “popup_plots”: true,
-  "override_compiled_mods": false
-}
+```{eval-rst}
+.. include:: ../../../../config/templates/run.json
+   :code: javascript
 ```
