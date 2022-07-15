@@ -32,9 +32,21 @@ repos:
       - id: flake8
         # check for dead code
         additional_dependencies: [flake8-eradicate, flake8-bugbear]
-  # lint markdown, yaml, json, and others
+  # format markdown, yaml, json
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: v2.7.1
     hooks:
       - id: prettier
         exclude_types: [python]
+        args: ["--print-width", "100"]
+  # format java. Seperate from the above for different tab width
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v2.7.1
+    hooks:
+      - id: prettier
+        name: prettier-java
+        types: [java]
+        additional_dependencies:
+          - prettier
+          - prettier-plugin-java
+        args: ["--tab-width", "4", "--print-width", "100"]
