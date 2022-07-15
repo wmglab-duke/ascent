@@ -33,14 +33,13 @@ def run(args):
             for sim in sims:
                 sim_dir = os.path.join('samples', str(sample), 'models', str(model), 'sims', str(sim))
                 check = Simulation.thresholds_exist(sample, model, sim, sim_dir, os.path.join(nsim_source, 'n_sims'))
-                if check == False:
-                    if args.force == True:
+                if check is False:
+                    if args.force is True:
                         print('Force argument passed, continuing with import')
                     else:
                         print(
-                            'At least one threshold was missing, skipping import for run {} sample {} model {} sim {}'.format(
-                                argument, sample, model, sim
-                            )
+                            'At least one threshold was missing,'
+                            ' skipping import for run {} sample {} model {} sim {}'.format(argument, sample, model, sim)
                         )
                         continue
                 Simulation.import_n_sims(
