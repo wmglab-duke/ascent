@@ -34,7 +34,7 @@ proc CreateAxon_Myel() {
 	} else if (node_channels == 1) {
 		e_pas_Vrest = -57
 	}
-	
+
 	// Geometrical parameters [um]
 	paranodes1  = 2*(axonnodes-1)  		// MYSA paranodes
 	paranodes2  = 2*(axonnodes-1)  		// FLUT paranodes
@@ -101,20 +101,20 @@ proc CreateAxon_Myel() {
 
 	// Create axon
 	create node[axonnodes], MYSA[paranodes1], FLUT[paranodes2], STIN[axoninter]
-	
+
 	// s is a pointer to all the elements of the neuron (i.e. dendrites, soma, axon)
 	// s[i] = new SectionRef()
 	//  - keeps a pointer reference to a given section
 	objref s[axontotal]
 
 	for i=0,axonnodes-1 {
-		node[i] {					
+		node[i] {
 			s[i*11]	= new SectionRef()
 			nseg	= 1
 			diam	= nodeD
 			L		= nodelength
 			Ra		= rhoa/10000
-			
+
 			// Passive end nodes
 			if ((i == 0 || i == axonnodes-1) && (passive_end_nodes == 1)) {
 				//print "i for passive: ", i
@@ -123,8 +123,8 @@ proc CreateAxon_Myel() {
 				g_pas = 0.0001
 				e_pas = -70
 				insert extracellular
-				xg      = mygm/(nl*2) 
-				xc      = mycm/(nl*2) 
+				xg      = mygm/(nl*2)
+				xc      = mycm/(nl*2)
 			} else {
 				if (node_channels == 0) {
 					cm		= 2
@@ -132,7 +132,7 @@ proc CreateAxon_Myel() {
 				} else if (node_channels == 1) {
 					// cm = 1.326291192				// [uF/cm^2] specific membrane capacitance (Schild 1994, C-type)
 					cm = 1.149452367				// [uF/cm^2] specific membrane capacitance (Schild 1994, A-type)
-					
+
 					F = 96500								// [C/mole] Faraday's Constant from Schild 1994
 					R = 8314								// [J/(kg*mole*K)] Gas Constant from Schild 1994
 
@@ -146,37 +146,37 @@ proc CreateAxon_Myel() {
 					insert cat
 					insert kds
 					insert kca
-					
+
 					insert caextscale
 					insert caintscale
 					insert CaPump
 					insert NaCaPump
 					insert NaKpumpSchild
-					
+
 					L_caintscale = L
 					nseg_caintscale = nseg
 					L_caextscale = L
 					nseg_caextscale = nseg
-					
+
 					// Ionic concentrations
 					cao0_ca_ion = 2.0							    // [mM] Initial Cao Concentration
 					cai0_ca_ion = .000117						    // [mM] Initial Cai Concentrations
-					
+
 					ko      = 5.4									// [mM] External K Concentration
 					ki      = 145.0									// [mM] Internal K Concentration
 					kstyle  = ion_style("k_ion",1,2,0,0,0) 		    // Allows ek to be calculated manually
 					ek      = ((R*(celsius+273.15))/F)*log(ko/ki)	// Manual Calculation of ek in order to use Schild F and R values
-					
+
 					nao     = 154.0									// [mM] External Na Concentration
 					nai     = 8.9									// [mM] Internal Na Concentration
 					nastyle = ion_style("na_ion",1,2,0,0,0) 		// Allows ena to be calculated manually
 					ena     = ((R*(celsius+273.15))/F)*log(nao/nai)	// Manual Calculation of ena in order to use Schild F and R values
-					
-					
+
+
 					// Conductances and voltage shift values for A-type (ion channel mod file defaults are for C-type) -- see Schild 1994
 					// [S/cm^2] This block sets the conductance and shift values to their A-Fiber values, per Schild 1994
 					gbar_naf     = 3//0.072503919 	// NOTE: Does not conduct with original Schild 1994 value of 0.072503919; does not conduct at 0.5, but does at 1; increased to MRG value of 3
-					shiftnaf_naf = 0			// [mV] 
+					shiftnaf_naf = 0			// [mV]
 					gbar_nas     = 3.53678E-07
 					shiftnas_nas = 0
 					gbar_kd      = 0.000194523
@@ -192,15 +192,15 @@ proc CreateAxon_Myel() {
 					shiftcan_cat = 0
 					gbna_leak    = 1.14945E-05
 				}
-				
-				insert extracellular xraxial=Rpn0 
+
+				insert extracellular xraxial=Rpn0
 				xg=1e10 // short circuit
 				xc=0    // short circuit
 			}
-			
+
 		}
 	}
-	
+
 	for i=0, paranodes1-1 {
 		MYSA[i] {
 			if ((i%2) == 0) {
@@ -216,12 +216,12 @@ proc CreateAxon_Myel() {
 			Ra		= rhoa*(1/(paraD1/fiberD)^2)/10000
 			cm		= 2*paraD1/fiberD
 			insert pas
-			g_pas	= 0.001*paraD1/fiberD		
+			g_pas	= 0.001*paraD1/fiberD
 			e_pas	= e_pas_Vrest//-80//v_init
 			insert extracellular xraxial=Rpn1 xg=mygm/(nl*2) xc=mycm/(nl*2)
 		}
 	}
-	
+
 	for i=0, paranodes2-1 {
 		FLUT[i] {
 			if ((i%2) == 0) {
@@ -237,12 +237,12 @@ proc CreateAxon_Myel() {
 			Ra		= rhoa*(1/(paraD2/fiberD)^2)/10000
 			cm		= 2*paraD2/fiberD
 			insert pas
-			g_pas	= 0.0001*paraD2/fiberD		
+			g_pas	= 0.0001*paraD2/fiberD
 			e_pas	= e_pas_Vrest//-80//v_init
 			insert extracellular xraxial=Rpn2 xg=mygm/(nl*2) xc=mycm/(nl*2)
 		}
 	}
-	
+
 	for i=0, axoninter-1 {
 		STIN[i]{
 			if ((i%6) == 5) {
@@ -263,7 +263,7 @@ proc CreateAxon_Myel() {
 			} else if ((i%6) == 0) {
 				s[(((i+6)/6)*11)-8] = new SectionRef()
 				//print (((i+6)/6)*11)-8
-			} 
+			}
 			nseg	= 1
 			diam	= fiberD
 			L		= interlength
@@ -275,7 +275,7 @@ proc CreateAxon_Myel() {
 			insert extracellular xraxial=Rpx xg=mygm/(nl*2) xc=mycm/(nl*2)
 		}
 	}
-	
+
 	for i=0, axonnodes-2 {
 		connect MYSA[2*i](0), node[i](1)
 		connect FLUT[2*i](0), MYSA[2*i](1)
@@ -283,10 +283,10 @@ proc CreateAxon_Myel() {
 		connect STIN[6*i+1](0), STIN[6*i](1)
 		connect STIN[6*i+2](0), STIN[6*i+1](1)
 		connect STIN[6*i+3](0), STIN[6*i+2](1)
-		connect STIN[6*i+4](0), STIN[6*i+3](1)	
-		connect STIN[6*i+5](0), STIN[6*i+4](1)	
+		connect STIN[6*i+4](0), STIN[6*i+3](1)
+		connect STIN[6*i+5](0), STIN[6*i+4](1)
 		connect FLUT[2*i+1](0), STIN[6*i+5](1)
 		connect MYSA[2*i+1](0), FLUT[2*i+1](1)
-		connect node[i+1](0), MYSA[2*i+1](1)	
+		connect node[i+1](0), MYSA[2*i+1](1)
 	}
 }

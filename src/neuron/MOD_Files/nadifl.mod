@@ -53,4 +53,3 @@ KINETIC conc {
    ~ nai << (-ina/(FARADAY)*PI*diam*(1e4))
    ~ ki << (-ik/(FARADAY)*PI*diam*(1e4))
 }
-

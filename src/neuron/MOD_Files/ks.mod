@@ -1,6 +1,6 @@
 : This is mainly the 7.3 channel.
 : It is an inactivation potassium current
-: The inactivation long time constant is based on the article Passmore 2003. 
+: The inactivation long time constant is based on the article Passmore 2003.
 : The steady state inactivation and short time constant is from Maingret 2008 (which is based on Passmore 2003)
 : To plot the model run kv73_passmore_delmas.m
 
@@ -40,7 +40,7 @@ STATE { ns nf }
 
 BREAKPOINT {
 	SOLVE states METHOD cnexp
-	g = gbar * (1/4*ns+nf*3/4) 
+	g = gbar * (1/4*ns+nf*3/4)
 	ik = g * (v-ek)
 }
 

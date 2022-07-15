@@ -22,14 +22,14 @@ proc global_parameters(){
 	Length = nsegments*dz
   }
 
-proc build(){ 
+proc build(){
   objref section[nsegments]
   section_coord = new Vector(nsegments,0)
   create node[nsegments]
- 
+
   sl = new SectionList()
   for i=0,nsegments-1{
-		node[i]{ 		
+		node[i]{
 			ii = i
 			section[i] = new SectionRef()
 			sl.append(section[i])
@@ -40,7 +40,7 @@ proc build(){
 			if (passive) {
 				if(i==0 || i==(nsegments-1)){
 
-					
+
 					insert pas
 					g_pas = 0.0001
 					if(type==1){
@@ -59,7 +59,7 @@ proc build(){
 					insert extracellular
 	 				xg = 1e10 // short circuit, no myelin
 					xc = 0    // short circuit, no myelin
-					
+
 					Ra = 1e10 // this forces current passive membrane and not into cable
 				}
 
@@ -74,7 +74,7 @@ proc build(){
 				gkdrbar_borgkdr = .04		    // density of K channels
 				ek = -90	  		            // K equilibrium potential
 
-				insert pas			            // insert leak channels	
+				insert pas			            // insert leak channels
 				g_pas = 1/10000			        // set Rm = 10000 ohms-cm2
 				Ra = 100			            // intracellular resistance
 				v=-60
@@ -99,16 +99,16 @@ proc build(){
 				insert kna
 				gbar_kna 	= 0.00042
 				insert naoi
-				theta_naoi	= 0.029	    
+				theta_naoi	= 0.029
 				insert koi
-				theta_koi	= 0.029	    
-	
+				theta_koi	= 0.029
+
 				insert leak
-				insert extrapump	
-	
+				insert extrapump
+
 				Ra 		= 35.5
 				cm 		= 1
-	
+
 				celsiusT_ks 	= temp
 				celsiusT_kf 	= temp
 				celsiusT_h 	= temp
@@ -116,7 +116,7 @@ proc build(){
 				celsiusT_nav1p8 = temp
 				celsiusT_nav1p9 = temp
 				celsiusT_nakpump = temp
-				celsiusT_kdr 	= temp   
+				celsiusT_kdr 	= temp
 				v=-55
 			}else if(type == 3){ // Rattay and Aberham Fiber
 				insert RattayAberham// Model adjusted for a resting potential of -70mV instead of 0
@@ -154,12 +154,12 @@ proc build(){
 				ki          = 145.0									  // [mM] Internal K Concentration
 				kstyle      = ion_style("k_ion",1,2,0,0,0) 		      // Allows ek to be calculated manually
 				ek          = ((R*(celsius+273.15))/F)*log(ko/ki)	  // Manual Calculation of ek in order to use Schild F and R values
-			
+
 				nao         = 154.0								      // [mM] External Na Concentration
 				nai         = 8.9								      // [mM] Internal Na Concentration
 				nastyle     = ion_style("na_ion",1,2,0,0,0) 		  // Allows ena to be calculated manually
 				ena         = ((R*(celsius+273.15))/F)*log(nao/nai)	  // Manual Calculation of ena in order to use Schild F and R values
-				if (conductances97){				
+				if (conductances97){
 					gbar_naf97mean = 0.022434928 		                  // [S/cm^2] This block sets the conductance to the conductances in Schild 1997
 					gbar_nas97mean = 0.022434928
 					gbar_kd        = 0.001956534
@@ -181,12 +181,12 @@ proc build(){
 			xc = 0    // short circuit
 		}
 		}
-		
+
 	}
 	for i=0, nsegments-2 {
-		connect node[i](1), node[i+1](0)	
-	} 
-	
+		connect node[i](1), node[i+1](0)
+	}
+
 }
 
 proc init(){
@@ -207,7 +207,7 @@ proc init(){
   if (numarg()>6) {conductances97 = $7}
   if (numarg()>7) {passive        = $8}
   celsius = temp
-  global_parameters() 
+  global_parameters()
   build()
 }
 

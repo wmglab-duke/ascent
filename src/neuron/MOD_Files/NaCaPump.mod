@@ -1,6 +1,6 @@
 : Author: David Catherall
 : Created: November 2016
-: NaCaPump is the Sodium-Calcium Exchanger in Schild 1994 
+: NaCaPump is the Sodium-Calcium Exchanger in Schild 1994
 :  Adapted from Leo Medina's implementation from Lindblad et al Am J Physiol 1996 275:H1666
 
 : Original model has been modified to assume constant nai
@@ -36,7 +36,7 @@
 
 : Defines variables which will be used or calculated throughout the simulation which may not be constant. Also included NEURON provided variables, like v, celsius, and ina
 	ASSIGNED {
-		
+
 		:NEURON provided Variables
 		celsius (degC)
 		v (mV)
@@ -46,14 +46,14 @@
 		ina (mA/cm2)
 		nao (mM)
 		nai (mM)
-		
+
 		:Model Specific Variabl
 		inca (mA/cm2)
 		S
 		DFin (mM4)
 		DFout (mM4)
 		temp (degC)
-		KNaCa (mA/cm2/mM4) 
+		KNaCa (mA/cm2/mM4)
 	}
 
 : This block iterates the variable calculations and uses those calculations to calculate currents
@@ -62,18 +62,18 @@
 		temp = celsius +273.15
 
 		S=1.0+DNaCa*(cai*nao*nao*nao+cao*nai*nai*nai)
-		
+
 		DFin=nai*nai*nai*cao*exp(((r-2)*gamma*v*F)/((1000)*R*temp))
-		
+
 		DFout=nao*nao*nao*cai*exp(((r-2)*(gamma-1)*v*F)/((1000)*R*temp))
 
 		inca=KNaCa*((DFin-DFout)/S)
-		
-		
+
+
 		ina = 3*inca
 		ica = -2*inca
 	}
-	
+
 :Initialize KNaCa, as it is temperature dependent
 	INITIAL {
 		KNaCa = KNaCa22*Q10NaCa^((Q10TempA-celsius)/Q10TempB)

@@ -21,8 +21,8 @@ PARAMETER {
   cabath = 2 (mM)
   fhspace = 2 (um)
 }
-ASSIGNED { 
-  ica (mA/cm2) 
+ASSIGNED {
+  ica (mA/cm2)
   Vol_peri (cm3)
   A_peri (um2)
   SA 			(cm2)

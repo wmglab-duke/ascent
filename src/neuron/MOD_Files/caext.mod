@@ -46,10 +46,10 @@
 	COMMENT
 	  This equation has been changed from the original Schild 1994 equation. The second term of the cao
 	  equation was given in Schild 1994 as:
-	  
+
 	  (cao - cabath)/txfer
-	  
-	  In this form, any difference between cao and cabath tends to drive cao away from cabath, which 
+
+	  In this form, any difference between cao and cabath tends to drive cao away from cabath, which
 	  doesn't make physiological sense, and creates an unstable system. Eventually, cao blows up,
 	  changing the equilibrium of the system and skewing results.
 	ENDCOMMENT

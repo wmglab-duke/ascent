@@ -46,7 +46,7 @@ PARAMETER {
 	  A_bh9 = 0.13496 (/ms) : 0.53984  in Baker '05   : A for beta h
 	  B_bh9 = 10.27853 (mV) : 0.27853  in Baker '05
 	  C_bh9 = -9.09334 (mV) : -9.0933  in Baker '05
-	  
+
 	  slow_inact = 1 (1) : to turn on ultra slow inactivation
 
         kvot_qt
@@ -140,12 +140,3 @@ FUNCTION rates(Vm (mV)) (/ms) {
         tau_s=tau_s*kvot_qt
 
 }
-
-
-
-
-
-
-
-
-

@@ -22,8 +22,8 @@ PARAMETER {
   kbath = 2.6 (mM)
   fhspace = 2 (um)
 }
-ASSIGNED { 
-  ik (mA/cm2) 
+ASSIGNED {
+  ik (mA/cm2)
   Vol_peri (cm3)
   A_peri (um2)
   SA 			(cm2)

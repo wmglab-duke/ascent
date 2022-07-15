@@ -3,7 +3,7 @@ TITLE Motor Axon Node channels
 : 2/02
 : Cameron C. McIntyre
 :
-: Fast Na+, Persistant Na+, Slow K+, and Leakage currents 
+: Fast Na+, Persistant Na+, Slow K+, and Leakage currents
 : responsible for nodal action potential
 : Iterative equations H-H notation rest = -80 mV
 :
@@ -206,7 +206,7 @@ FUNCTION vtrap8(x) {
 	}else if (x > 150){
 		vtrap8 = 0.0032594
 	}else{
-		vtrap8 = (ahA*(-(x+ahB))) / (1 - Exp((x+ahB)/ahC)) 
+		vtrap8 = (ahA*(-(x+ahB))) / (1 - Exp((x+ahB)/ahC))
 	}
 }
 
@@ -214,7 +214,7 @@ FUNCTION vtrap9(x) {
 	if (x < -150){
 		vtrap9 = 0.0014054
 	}else{
-		vtrap9 = bhA / (1 + Exp(-(x+bhB)/bhC)) 
+		vtrap9 = bhA / (1 + Exp(-(x+bhB)/bhC))
 	}
 }
 
@@ -222,7 +222,7 @@ FUNCTION vtrap10(x) {
 	if (x < -150){ :<-150 because asC is negative
 		vtrap10 = 3.3484e-05
 	}else{
-		vtrap10 = asA / (Exp((x-vtraub+asB)/asC) + 1) 
+		vtrap10 = asA / (Exp((x-vtraub+asB)/asC) + 1)
 	}
 }
 

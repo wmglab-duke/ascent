@@ -1,4 +1,4 @@
-TITLE nahh 
+TITLE nahh
 : From Traub & Miles "Neuronal networks of the hippocampus" (1991)
 : Cummins et al. (2007), Sheets et al. (2007)
 
@@ -43,7 +43,7 @@ BREAKPOINT {
 	ina = gnabar*m*m*m*h*(v - ena)
 }
 
-DERIVATIVE states {	
+DERIVATIVE states {
 	mhn(v*1(/mV))
 	m' = (inf[0] - m)/tau[0]
 	h' = (inf[1] - h)/tau[1]
@@ -82,12 +82,11 @@ FUNCTION expM1(x,y) {
 	}
 }
 
-PROCEDURE mhn(v) {LOCAL a, b 
+PROCEDURE mhn(v) {LOCAL a, b
 	FROM i=0 TO 1 {
-		a = alp(v,i)  
+		a = alp(v,i)
 		b=bet(v,i)
 		tau[i] = 1/(a + b)
 		inf[i] = a/(a + b)
 	}
 }
-

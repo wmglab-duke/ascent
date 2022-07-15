@@ -28,14 +28,14 @@ objref VeTime_file, VeTime_data
 proc VeTime_read() {
 	VeTime_file = new File()
 	VeTime_file.ropen(VeTime_fname)
-	
+
 	// Read in dt & tstop used to generate the time course in Matlab
 	// Make sure they match the values being used in NEURON
 	dt_tmp = new Vector(1)
 	dt_tmp.scanf(VeTime_file,1)
 	tstop_tmp = new Vector(1)
 	tstop_tmp.scanf(VeTime_file,1)
-	
+
 	// Error checking
 	if (dt_tmp.x[0] != dt) {
 		execerror("Need dt_tmp from VeTime file to match dt used in NEURON.")
@@ -43,11 +43,11 @@ proc VeTime_read() {
 	if (tstop_tmp.x[0] != tstop) {
 		execerror("Need tstop_tmp from VeTime file to match tstop used in NEURON.")
 	}
-	
+
 	// Read in Ve(t)
 	VeTime_data = new Vector(n_tsteps)
 	VeTime_data.scanf(VeTime_file,n_tsteps)
-	
+
 	// Close file
 	VeTime_file.close()
 }

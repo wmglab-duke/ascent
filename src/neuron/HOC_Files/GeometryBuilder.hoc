@@ -17,7 +17,7 @@ proc init(){
     //
     n = numarg()
     if (n>1){
-        // Fiber D to Axon D option. 
+        // Fiber D to Axon D option.
         // 0: Fazan 1997 Proximal, 1: Fazan 1997 Distal
         // 2: Berthold 1983, 3: Friede 1967, 4: Combined Fazan P, Fazan D & Friede
         fiberDtoAxonD = $2
@@ -50,7 +50,7 @@ proc init(){
     }
 
     nodeD = 0.321 * axonD + 0.37
-    
+
 
     if(axonDtoNL == 0){
         nl = int(17.4 * axonD + -1.74)

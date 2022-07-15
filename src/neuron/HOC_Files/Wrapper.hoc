@@ -65,7 +65,7 @@ if (fiber_type == 3) {
 } else if 	(fiber_type == 2 && flag_model_b_fiber==1) {		v_init = v_init_b_fiber			// [mV]
 }
 
-// ***************************************************************************	
+// ***************************************************************************
 // IntracellularStim.hoc
 objref stim
 
