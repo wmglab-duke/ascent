@@ -161,6 +161,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         file_object.write("strdef VeTime_fname\n")
         file_object.write("VeTime_fname            = \"%s\"\n" % "data/inputs/waveform.dat")
         file_object.write("flag_extracellular_stim = %0.0f // Set to zero for off; one for on \n" % 1)
+        file_object.write("flag_extracellular_rec = %0.0f // Set to zero for off; one for on \n" % 1)
         file_object.write("flag_whichstim = %0.0f // Set to zero for off; one for on \n" % 0)
 
         file_object.write("\n//***************** Recording ********************\n")

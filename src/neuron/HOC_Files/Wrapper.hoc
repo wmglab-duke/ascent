@@ -99,11 +99,11 @@ load_file("ExtracellularStim_Time.hoc")
 // ***************************************************************************
 // ExtracellularStim_Space.hoc
 strdef VeSpace_fname
+strdef VeSpace_rec_fname // Since this variable is used in a proc of ExtracellularStim_Space, it must be declared before that script is loaded, otherwise there will be a runtime error stating that VeSpace_rec_fname (even though that proc is not actually used until later in the code)
 load_file("ExtracellularStim_Space.hoc")
 
 // ***************************************************************************
 // Extracelluar recording
-strdef VeSpace_rec_fname
 objref SFAP
 strdef SFAP_fname
 
@@ -208,7 +208,7 @@ proc run_all(){local myinner, myfiber, myamp, amp_ind
 
 	// Read in Ve(x) for recording
 	if (flag_extracellular_rec == 1) {
-		sprint(VeSpace_rec_fname, "../%s/data/inputs/inner%d_fiber%d_extracellular_rec.dat",sim_path, myinner, myfiber)
+		sprint(VeSpace_rec_fname, "../%s/data/inputs/rec_inner%d_fiber%d.dat",sim_path, myinner, myfiber)
 		VeSpace_extracellular_rec_read()
 
 		// Convert to mV (required for e_extracellular)
@@ -242,15 +242,8 @@ proc run_all(){local myinner, myfiber, myamp, amp_ind
 	if (find_thresh == 0) {
 		// Run sim
 		RunSim(myamp)
-		// Save data
-		Saving()
-
-		if (saveflag_runtime == 1) {
-			// Save individual run time (for each simulation)
-			trun_individual = startsw() - trun_individual
-			sprint(runtime_fname_output, "../%s/data/outputs/runtime_inner%d_fiber%d_amp%d.dat", sim_path, myinner, myfiber, amp_ind)
-			Saving_Runtime()
-		}
+		
+		// Save N_APs
 		print "N_APs = ", N_APs
 		sprint(activation_fname_output, "../%s/data/outputs/activation_inner%d_fiber%d_amp%d.dat", sim_path, myinner, myfiber, amp_ind)
         Saving_Activation()
@@ -267,15 +260,6 @@ proc run_all(){local myinner, myfiber, myamp, amp_ind
 		sprint(thresh_fname_output, "../%s/data/outputs/thresh_inner%d_fiber%d.dat", sim_path, myinner, myfiber)
 		Saving_Thresh()
 
-		// Save data
-		Saving()
-
-		if (saveflag_runtime == 1) {
-			// Save individual run time (for each simulation)
-			trun_individual = startsw() - trun_individual
-			sprint(runtime_fname_output, "../%s/data/outputs/runtime_inner%d_fiber%d_amp%d.dat", sim_path, myinner, myfiber, amp_ind)
-			Saving_Runtime()
-		}
 	}
 
 	// Save data

@@ -18,7 +18,7 @@ Variables that must be defined in wrapper/params file:
 None.
 */
 
-strdef myfname, mycolprefix, mycolunits
+strdef myfname, mycolprefix, mycolunits, output_format_str
 objref output_file
 
 proc SaveTimeCourse() {localobj mydata, mycolsuffix_vec
@@ -27,6 +27,11 @@ proc SaveTimeCourse() {localobj mydata, mycolsuffix_vec
 	mycolsuffix_vec = $o3
 	mycolunits = $s4
 	mydata = $o5
+	if (numarg()>=6) {
+		output_format_str = $s6 // set to "%e " to have output be printed in scientific notation; otherwise, set to "%f " to have output printed in floating point format with fixed precision
+	} else {
+		output_format_str = "%f " // by default, print data in floating point format with fixed precision
+	}
 
 	output_file = new File()
 	output_file.wopen(myfname)
@@ -40,9 +45,9 @@ proc SaveTimeCourse() {localobj mydata, mycolsuffix_vec
 
 	// Time stamp & associated data for each row
 	for t_ind = 0, n_tsteps-1 {
-		output_file.printf("%f ", t_ind*dt)
+		output_file.printf("%f ", t_ind*dt) // save timestamp as floating point numbers with fixed precision
 		for col_ind = 0, mycolsuffix_vec.size()-1 {
-			output_file.printf("%f ", mydata.o[col_ind].x[t_ind])
+			output_file.printf(output_format_str, mydata.o[col_ind].x[t_ind])
 		}
 		output_file.printf("\n")
 	}

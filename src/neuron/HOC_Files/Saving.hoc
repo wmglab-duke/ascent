@@ -45,7 +45,7 @@ proc Saving() {
 			execerror("SaveTimeCourse() currently assumes that SFAP_dt_downsample_factor is set to 1, so you cannot save SFAP unless SFAP_dt_downsample_factor is set to 1")
 		}
 		checknode_SFAP_values_tmp = new Vector(1,0)
-		SaveTimeCourse(fname_output_SFAP_time, "SFAP", checknode_SFAP_values_tmp, "(V)", SFAP)
+		SaveTimeCourse(fname_output_SFAP_time, "SFAP", checknode_SFAP_values_tmp, "(uV)", SFAP, "%e ")
 	}
 	
 	// ***** Save MRG gating param's vs time at checknode_values

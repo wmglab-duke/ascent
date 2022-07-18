@@ -81,7 +81,8 @@ proc RunSim() {local myamp
 	myamp = $1
 	// If recording extracellular signals, initialize a vector to store the SFAP
 	if (flag_extracellular_rec == 1) {
-		SFAP = new Vector(int(n_tsteps/SFAP_dt_downsample_factor)+1,0)
+		SFAP = new O1d(1)
+		SFAP.o[0] = new Vector(int(n_tsteps/SFAP_dt_downsample_factor)+1,0)
 	}
 	if (flag_whichstim == 0) {
 		stimamp_extra = myamp
@@ -205,8 +206,8 @@ proc RunSim() {local myamp
 				}
 
 				// Store SFAP signal (in V) contributed by this latest time point and node location
-				// multiply VeSpace_rec_data by 1e-3 because it is mV per mA, so desired units is V per mA
-				SFAP.x[int(t_ind/SFAP_dt_downsample_factor)] = SFAP.x[int(t_ind/SFAP_dt_downsample_factor)] + 1e-3*VeSpace_rec_data.x[seg_ind] * net_i_extracellular_seg_i
+				// multiply VeSpace_rec_data by 1e3 because it is mV per mA by default, so desired units is uV per mA
+				SFAP.o[0].x[int(t_ind/SFAP_dt_downsample_factor)] = SFAP.o[0].x[int(t_ind/SFAP_dt_downsample_factor)] + 1e3*VeSpace_rec_data.x[seg_ind] * net_i_extracellular_seg_i
 			}
 		}
 
