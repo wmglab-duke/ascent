@@ -83,7 +83,6 @@ compile_java:
   - mkdir bin
   - wget -q -O bin/json-20190722.jar https://repo1.maven.org/maven2/org/json/json/20190722/json-20190722.jar
   - wget -qO- --header "PRIVATE-TOKEN:glpat-guEHxHZjSUV8DzzUvpVf" "https://gitlab.oit.duke.edu/api/v4/projects/27633/repository/archive" | tar -xvz --strip-components 1 -C bin
-
   - javac -cp bin/* src/model/*.java
   artifacts:
     untracked: true
