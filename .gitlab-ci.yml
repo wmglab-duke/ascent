@@ -73,17 +73,18 @@ test_docs:
   except:
     - master
 
-#compile_java:
-#  before_script:
-#    - java -version
-#  stage: deploy
-#  image: openjdk:8-jdk
-#  script:
-#  - mkdir bin
-#  - wget -q -O bin/json-20190722.jar https://repo1.maven.org/maven2/org/json/json/20190722/json-20190722.jar
-#  - javac -cp bin/json-20190722.jar src/model/*.java
-#  artifacts:
-#    untracked: true
+compile_java:
+  before_script:
+    - java -version
+  stage: deploy
+  image: openjdk:8-jdk
+  script:
+  - mkdir bin
+  - wget -q -O bin/json-20190722.jar https://repo1.maven.org/maven2/org/json/json/20190722/json-20190722.jar
+  - wget --header "PRIVATE-TOKEN: ${COMSOL_JARS_TOKEN}" https://gitlab.oit.duke.edu/dpm42/comsol_jars/*/raw?ref=master bin
+  - javac -cp bin/json-20190722.jar src/model/*.java
+  artifacts:
+    untracked: true
 
 pages:
   stage: deploy
