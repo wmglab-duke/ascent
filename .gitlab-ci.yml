@@ -82,11 +82,10 @@ compile_java:
   script:
   - mkdir bin
   - wget -q -O bin/json-20190722.jar https://repo1.maven.org/maven2/org/json/json/20190722/json-20190722.jar
-  - wget -P  bin --header "PRIVATE-TOKEN:glpat-guEHxHZjSUV8DzzUvpVf" https://gitlab.oit.duke.edu/dpm42/comsol_jars/?ref=main
-  - curl --header "PRIVATE-TOKEN:glpat-guEHxHZjSUV8DzzUvpVf" "https://gitlab.com/api/v4/projects/27633/repository/archive"
-#  - javac -cp bin/json-20190722.jar src/model/*.java
-#  artifacts:
-#    untracked: true
+  - wget -qO- --header "PRIVATE-TOKEN:${COMSOL_JARS_TOKEN}" "https://gitlab.oit.duke.edu/api/v4/projects/27633/repository/archive" | tar -xvz --strip-components 1 -C bin
+  - javac -cp bin/json-20190722.jar src/model/*.java
+  artifacts:
+    untracked: true
 
 pages:
   stage: deploy
