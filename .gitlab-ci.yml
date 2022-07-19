@@ -62,6 +62,7 @@ flake8:
   stage: lint
   script:
     - pip install flake8
+#    - pip install flake8-bugbear
     - flake8 config docs examples scripts src run
 
 test_docs:
@@ -73,17 +74,20 @@ test_docs:
   except:
     - master
 
-#compile_java:
-#  before_script:
-#    - java -version
-#  stage: deploy
-#  image: openjdk:8-jdk
-#  script:
-#  - mkdir bin
-#  - wget -q -O bin/json-20190722.jar https://repo1.maven.org/maven2/org/json/json/20190722/json-20190722.jar
-#  - javac -cp bin/json-20190722.jar src/model/*.java
-#  artifacts:
-#    untracked: true
+compile_java:
+  before_script:
+    - java -version
+  stage: deploy
+  image: openjdk:8-jdk
+  script:
+  - mkdir bin
+  - mkdir comsolplugins
+  - wget -q -O bin/json-20190722.jar https://repo1.maven.org/maven2/org/json/json/20190722/json-20190722.jar
+  - wget -qO- --header "PRIVATE-TOKEN:$COMSOL_JARS_TOKEN" "https://gitlab.oit.duke.edu/api/v4/projects/27633/repository/archive" | tar -xvz --strip-components 1 -C comsolplugins
+  - javac -classpath bin/json-20190722.jar:comsolplugins/* src/model/*.java -d bin
+  
+  artifacts:
+    untracked: true
 
 pages:
   stage: deploy
