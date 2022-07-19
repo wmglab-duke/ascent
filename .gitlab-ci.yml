@@ -81,7 +81,7 @@ compile_java:
   script:
   - mkdir bin
   - wget -q -O bin/json-20190722.jar https://repo1.maven.org/maven2/org/json/json/20190722/json-20190722.jar
-  - wget --header "PRIVATE-TOKEN:${COMSOL_JARS_TOKEN}" https://gitlab.oit.duke.edu/dpm42/comsol_jars/*/raw?ref=main bin
+  - wget --header "PRIVATE-TOKEN:${COMSOL_JARS_TOKEN}" -r --no-parent https://gitlab.oit.duke.edu/dpm42/comsol_jars/raw?ref=main bin
   - javac -cp bin/json-20190722.jar src/model/*.java
   artifacts:
     untracked: true
