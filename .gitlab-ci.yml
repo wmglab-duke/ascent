@@ -86,7 +86,7 @@ test_docs:
 compile_java:
   before_script:
     - java -version
-  stage: deploy
+  stage: test
   image: openjdk:8-jdk
   script:
   - mkdir bin
