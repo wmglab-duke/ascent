@@ -62,8 +62,17 @@ flake8:
   stage: lint
   script:
     - pip install flake8
-#    - pip install flake8-bugbear
     - flake8 config docs examples scripts src run
+
+#more aggressive flake8
+flake8_merge_requests:
+  stage: lint
+  script:
+    - pip install flake8
+    - pip install flake8-bugbear flake8-simplify flake8-builtins flake8-eradicate
+    - flake8 config docs examples scripts src run
+  only:
+    - merge_requests
 
 test_docs:
   stage: test
@@ -77,7 +86,7 @@ test_docs:
 compile_java:
   before_script:
     - java -version
-  stage: deploy
+  stage: test
   image: openjdk:8-jdk
   script:
   - mkdir bin
