@@ -65,7 +65,7 @@ flake8:
 dev_check:
   stage: lint
   script:
-    - ! grep "self.throw(9001)" -r .
+    - grep "self.throw(9002)" -r .
 
 test_docs:
   stage: test
