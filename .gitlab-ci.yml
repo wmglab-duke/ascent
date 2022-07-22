@@ -65,7 +65,7 @@ flake8:
 dev_check:
   stage: lint
   script:
-    - '! grep -er "self.throw(144)" .
+    - ! grep -er "self.throw(144)" .
 
 test_docs:
   stage: test
