@@ -1,5 +1,6 @@
 # Creating Mock Morphology
-MockSample is a Python class that manages the *data* and contains all
+
+MockSample is a Python class that manages the _data_ and contains all
 operations to create binary masks of mock nerve morphology (i.e., nerve:
 `n.tif`, inners: `i.tif`, and scale bar: `s.tif`) to use as inputs to the
 pipeline.
@@ -7,12 +8,11 @@ pipeline.
 The user defines the parameter values in
 `config/user/mock_samples/<mock_sample_index>.json` (with a template
 provided in `config/templates/mock_sample.json`). The mock sample
-morphology is then created using the JSON file by executing `"python run
-mock_morphology_generator <mock_sample_index>"` at the project
+morphology is then created using the JSON file by executing `"python run mock_morphology_generator <mock_sample_index>"` at the project
 root. The mock morphology generator uses the MockSample Python class to
 create binary images of the nerve, inner perineurium traces (fascicles),
 and the scale bar in `input/<NAME>/` (NAME is analogous to the
-"sample" parameter in ***Sample***, following the standard naming
+"sample" parameter in **_Sample_**, following the standard naming
 convention ([JSON Configuration Files](JSON/index))), which allow the pipeline to function as if binary
 images of segmented histology were provided. The
 `<mock_sample_index>.json` file and the resulting segmented nerve

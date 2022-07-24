@@ -1,6 +1,6 @@
 : Author: David Catherall
 : Created: January 2018
-: Naf is the fast, TTX-sensitive current in Schild 1994 
+: Naf is the fast, TTX-sensitive current in Schild 1994
 
 : Neuron Block creates mechanism
 	NEURON {
@@ -24,27 +24,27 @@
 		Q10nafh=1.50				: h Q10 Scale Factor
 		Q10TempA = 22	(degC)		: Used to shift tau values based on temperature with equation : tau(T1)=tau(Q10TempA)*Q10^((Q10TempA-T1)/Q10TempB)
 		Q10TempB = 10	(degC)
-		
-		
+
+
 		: naf_m Variables
-		
+
 			: Steady State Variables
 			V0p5m=-31.62 (mV)	:As defined by Schild 1994, zinf=1.0/(1.0+exp((V0p5z-V)/S0p5z)
 			S0p5m=6.98 (mV)
-			
+
 			: Tau Variables
 			A_taum=1.15	(ms)	:As defined by Schild 1994, tauz=A_tauz*exp(-B^2(V-Vpz)^2)+C
 			B_taum=0.06	(/mV)
 			C_taum=0.21	(ms)
 			Vpm=-40.0		(mV)
-		
-		
+
+
 		: naf_h Variables
-		
+
 			: Steady State Variables
 				V0p5h=-65.99 (mV)
 				S0p5h=-5.97 (mV)
-			
+
 			: Tau Variables
 				A_tauh=18.0	(ms)
 				B_tauh=0.043	(/mV)
@@ -54,25 +54,25 @@
 
 : Defines variables which will be used or calculated throughout the simulation which may not be constant. Also included NEURON provided variables, like v, celsius, and ina
 	ASSIGNED {
-		
+
 		:NEURON provided Variables
-		 v	(mV) 
+		 v	(mV)
 		 celsius (degC)
 		 ina	(mA/cm2)
 		 ena	(mV)
-		 
+
 		 :Model Specific Variables
 		 g	(S/cm2)
 		 tau_h	(ms)
 		 tau_m	(ms)
 		 minf
 		 hinf
-		 
-			 
+
+
 	}
 
 : Defines state variables which will be calculated by numerical integration
-	STATE { m h } 
+	STATE { m h }
 
 : This block iterates the state variable calculations and uses those calculations to calculate currents
 	BREAKPOINT {
@@ -85,7 +85,7 @@
 	INITIAL {
 		rates(v) : set tau_m, tau_h, hinf, minf
 		: assume that equilibrium has been reached
-		
+
 
 		m = minf
 		h = hinf
@@ -100,7 +100,7 @@
 
 
 : Any other functions go here
-	
+
 	:rates is a function which calculates the current values for tau and steady state equations based on voltage.
 		FUNCTION rates(Vm (mV)) (/ms) {
 			 tau_m = A_taum*exp(-(B_taum)^2*(Vm-Vpm)^2)+C_taum
@@ -109,9 +109,7 @@
 			 tau_h = A_tauh*exp(-(B_tauh)^2*(Vm-Vph)^2)+C_tauh
 				 hinf = 1.0/(1.0+exp((V0p5h-Vm)/S0p5h))
 
-			
+
 				tau_m=tau_m*Q10nafm^((Q10TempA-celsius)/Q10TempB)
 				tau_h=tau_h*Q10nafh^((Q10TempA-celsius)/Q10TempB)
 		}
-
-		

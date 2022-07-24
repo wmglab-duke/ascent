@@ -3,16 +3,19 @@
 Named file: `config/user/runs/<run_index>.json`
 
 ## Purpose
+
 Instructs the pipeline on which input data and user-defined
 parameters to use in a single program "run", where one "run"
-configuration serves a single ***Sample*** and a list of
-***Model(s)*** and ***Sims(s)***. Enables operational control
+configuration serves a single **_Sample_** and a list of
+**_Model(s)_** and **_Sims(s)_**. Enables operational control
 (breakpoints, which FEM files to save/discard). Keeps track of
 successful/failed FEMs in Java.
 
 ## Syntax
+
 To declare this entity in `config/user/runs/`, use the
 following syntax:
+
 ```
 {
   "pseudonym": String,
@@ -49,26 +52,27 @@ following syntax:
   "auto_submit_fibers": Boolean
 }
 ```
+
 ## Properties
 
 `"pseudonym"`: This value (String) informs pipeline print statements, allowing
 users to better keep track of the purpose of each configuration file. Optional.
 
 `"submission_context"`: The value (String) of this property tells the
-system how to submit the n\_sim NEURON jobs based on the computational
+system how to submit the n_sim NEURON jobs based on the computational
 resources available. Value can be "cluster", "local", or "auto" (if "auto", "hostname_prefix" is required). Required.
 
 `"hostname_prefix"`: This value (String) tells the program what prefix to look out for in the "HOSTNAME" environment variable. If the "HOSTNAME" begins with the "hostname prefix", submission context is set to cluster, otherwise it is set to local (does not change the value in the configuration file). Example: if your high performance computing cluster hostname always begins with ourclust, e.g. ourclust-node-15, ourclust-login-20, etc., you would set the value of this variable to "ourclust." If the "HOSTNAME" environment variable is not present, the program defaults to "local." Required if "submission_context" is "auto", otherwise Optional.
 
 `"sample"`: The value (Integer) of this property sets the sample
-configuration index ("***Sample***"). Note that this is only ever one
-value. To loop ***Samples***, create a ***Run*** for each. Required.
+configuration index ("**_Sample_**"). Note that this is only ever one
+value. To loop **_Samples_**, create a **_Run_** for each. Required.
 
 `"models"`: The value (\[Integer, ...\]) of this property sets the model
-configuration indices ("***Model***"). Required.
+configuration indices ("**_Model_**"). Required.
 
 `"sims"`:  The value (\[Integer, ...\]) of this property sets the
-simulation configuration indices ("***Sim***"). Required.
+simulation configuration indices ("**_Sim_**"). Required.
 
 `"recycle_meshes"`: The value (Boolean) of this property instructs the
 pipeline to search for mesh matches for recycling a previously generated
@@ -78,7 +82,7 @@ and recycle a mesh match (see `ModelSearcher` ([Java Utility Classes](../../Code
 `mesh_dependent_model.json` ([Mesh Dependent Model](../../JSON/JSON_parameters/mesh_dependent_model))). Optional.
 
 `"break_points"`: The value (Boolean) of each breakpoint results in the
-program terminating or continuing with the next ***Model*** index. In
+program terminating or continuing with the next **_Model_** index. In
 Runner, the program checks that at most one breakpoint is true and
 throws an exception otherwise. The breakpoint locations enable the user
 to run only up to certain steps of the pipeline, which can be
@@ -104,19 +108,19 @@ indices ("models" property). The user does not need to include this
 property before performing a run of the pipeline, as it is automatically
 added in Java (COMSOL FEM processes) and is then used to inform Python
 operations for making NEURON simulations. The value will contain one
-value for each ***Model*** listed in "models". If a ***Model*** fails,
+value for each **_Model_** listed in "models". If a **_Model_** fails,
 the pipeline will skip it and proceed to the next one. Automatically
 added.
 
 `"keep"`: The value (Boolean) of each property results in the program
 keeping or deleting large COMSOL `*.mph` files for the `"debug_geom.mph"`,
-`"mesh.mph"` and bases/ for a given ***Model***. If a keep property is not
+`"mesh.mph"` and bases/ for a given **_Model_**. If a keep property is not
 defined, the default behavior is true and the associated `*.mph` file is
 saved. If `"mesh.mph"` is saved, the file can later be used if another
-***Model*** is a suitable "mesh match" and `"recycle_meshes"` is true
+**_Model_** is a suitable "mesh match" and `"recycle_meshes"` is true
 (see `ModelSearcher` ([Java Utility Classes](../../Code_Hierarchy/Java.md#java-utility-classes)) and `mesh_dependent_model.json` ([Mesh Dependent Model](../../JSON/JSON_parameters/mesh_dependent_model))). If bases/ are saved, a
-new ***Sim*** for a previously computed ***Sample*** and ***Model*** can
-be probed along new fibersets/ to create potentials/*.* Optional.
+new **_Sim_** for a previously computed **_Sample_** and **_Model_** can
+be probed along new fibersets/ to create potentials/_._ Optional.
 
 `"export_behavior"`: The value (String) instructs the pipeline how to behave if
 an export n_sim directory (i.e., ASCENT_NSIM_EXPORT_PATH/n_sims/<directory>)
@@ -156,39 +160,8 @@ If submitting locally, the program will not continue to the next run until all f
 the next run will start after all batch NEURON jobs are submitted.
 
 ## Example
-```
-{
-  "pseudonym": "My example run",
-  "submission_context": “cluster”,
-  "sample": 62,
-  "models": [0],
-  "sims": [99],
-  "recycle_meshes": true,
-  "break_points": {
-    "pre_java": false,
-    "pre_geom_run": false,
-    "post_geom_run": true,
-    "pre_mesh_proximal": false,
-    "post_mesh_proximal": false,
-    "pre_mesh_distal": false,
-    "post_mesh_distal": false,
-    "post_material_assign": false,
-    "pre_loop_currents": false
-  },
-  "endo_only_solution":true,
-  "models_exit_status": [true],
-  "keep": {
-    "debug_geom": true,
-    "mesh": true,
-    "bases": true
-  },
-  "partial_fem": {
-    "cuff_only": false,
-    "nerve_only": false
-  },
-  "export_behavior": "selective",
-  "local_avail_cpus": 3,
-  “popup_plots”: true,
-  "auto_submit_fibers": false
-}
+
+```{eval-rst}
+.. include:: ../../../../config/templates/run.json
+   :code: javascript
 ```

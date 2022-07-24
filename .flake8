@@ -1,0 +1,18 @@
+[flake8]
+#first row of ignore is to make black happy
+ignore = E203, W503,
+    #C901 is functions too complex, eventually we should refactor functions to be less complex (more granular)
+    C901,
+    #E741 is ambiguous variable names, eventually should fix these variable names
+    E741,
+    #E722 is bare except, less important but should still be fixed
+    E722,
+    #
+    SIM105
+per-file-ignores =
+    # imported but unused and star imports
+    __init__.py: F401, F403
+max-line-length = 120
+max-complexity = 18
+#note T is for mypy, so does nothing now
+select = B,C,E,F,W,T4,SIM,RST,D

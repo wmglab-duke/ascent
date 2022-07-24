@@ -24,7 +24,7 @@
 	PARAMETER {
 		gbna=1.85681E-05 (S/cm2) <0, 1e9>
 		gbca=3.00626E-06 (S/cm2) <0, 1e9>
-		
+
 		R=8.314 (joule/degC): Gas Constant
 		z=2 : Charge of Ca ion
 		ecaoffset=78.7 (mV)
@@ -41,17 +41,17 @@
 		celsius (degC)
 		cai(mM)
 		cao (mM)
-		
+
 		:Model Specific Variables
 		ecaleak	(mV)
 	}
 
 : This block iterates the variable calculations and uses those calculations to calculate currents
-	BREAKPOINT { 
-		
+	BREAKPOINT {
+
 		: Equation for eca given in Schild 1994
-		ecaleak=(1000)*(R*(celsius+273.15)/z/F*log(cao/cai))-ecaoffset 
-		
-		ina = gbna*(v - ena) 
-		ica = gbca*(v - ecaleak) 
+		ecaleak=(1000)*(R*(celsius+273.15)/z/F*log(cao/cai))-ecaoffset
+
+		ina = gbna*(v - ena)
+		ica = gbca*(v - ecaleak)
 	}

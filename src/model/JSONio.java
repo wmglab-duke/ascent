@@ -6,12 +6,11 @@ The source code can be found on the following GitHub repository: https://github.
 
 package model;
 
-import org.json.JSONObject;
-
 import java.io.*;
 import java.util.Scanner;
+import org.json.JSONObject;
 
-@SuppressWarnings({"unchecked","rawtypes","path"})
+@SuppressWarnings({ "unchecked", "rawtypes", "path" })
 public class JSONio {
 
     public static JSONObject read(String filepath) throws FileNotFoundException {
@@ -33,5 +32,4 @@ public class JSONio {
         }
         return true;
     }
-
 }

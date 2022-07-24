@@ -19,7 +19,7 @@
 	  (mM)    = (millimolar)
 	}
 
-: Defines variables which will have a constant value throughout any given simulation 
+: Defines variables which will have a constant value throughout any given simulation
 	PARAMETER {
 	  a = 15e-4 (cm)  			: radius of cell
 	  ku = 100 (/mM/ms) 		: rate constant for calcium buffer binding
@@ -37,11 +37,11 @@
 	}
 
 : Defines variables which will be used or calculated throughout the simulation which may not be constant. Also included NEURON provided variables, like v, celsius, and ica
-	ASSIGNED { 
-		
+	ASSIGNED {
+
 		:NEURON provided Variables
 		ica  (mA/cm2)
-		
+
 		:Model Specific Variables
 		diffOc (/ms)
 
@@ -51,7 +51,7 @@
 : Defines state variables which will be calculated by numerical integration
 	STATE { cai  (mM) Oc } :Oc is the fraction of Calmodulin binding sites that are occupied
 
-: This block iterates the state variable calculations and uses those calculations to calculate currents	
+: This block iterates the state variable calculations and uses those calculations to calculate currents
 	BREAKPOINT { SOLVE state METHOD derivimplicit }
 
 : Intializes State Variables

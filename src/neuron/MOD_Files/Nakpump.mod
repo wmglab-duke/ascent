@@ -20,8 +20,8 @@ NEURON {
 
 UNITS {
         (molar) = (1/liter)                     : moles do not appear in units
-        (mM)    = (millimolar)             	
-	
+        (mM)    = (millimolar)
+
 	(uA) = (microamp)
 	(mA) = (milliamp)
 	(mV) = (millivolt)
@@ -39,7 +39,7 @@ PARAMETER {
 	b1 = 1  	(mM)
 :	b1 = 0.5  	(mM) :testing for disp
 	:b2 = 30  	(mM)
-	
+
 	kvotqt
 
 }
@@ -57,7 +57,7 @@ ASSIGNED {
 
 STATE {
 	inapump  (mA/cm2)
-	ikpump (mA/cm2)	
+	ikpump (mA/cm2)
 
 }
 
@@ -78,9 +78,7 @@ BREAKPOINT {
 	ikpump = ikpump*kvotqt
 	inapump = -1.5*ikpump
 
-	ina = inapump		
-	ik = ikpump		
+	ina = inapump
+	ik = ikpump
 
 }
-
-

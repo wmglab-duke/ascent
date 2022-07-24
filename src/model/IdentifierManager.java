@@ -6,11 +6,10 @@ The source code can be found on the following GitHub repository: https://github.
 
 package model;
 
+import java.util.*;
 import org.json.JSONObject;
 
-import java.util.*;
-
-@SuppressWarnings({"unchecked","rawtypes","path"})
+@SuppressWarnings({ "unchecked", "rawtypes", "path" })
 public class IdentifierManager {
 
     private HashMap<String, Integer> identifierStates = new HashMap<>();
@@ -71,11 +70,13 @@ public class IdentifierManager {
         // get next key using base method
         String id = this.next(key);
         // put into map as key, value pair
-        if (! identifierPseudonyms.containsKey(pseudonym)) {
+        if (!identifierPseudonyms.containsKey(pseudonym)) {
             identifierPseudonyms.put(pseudonym, id);
             return id; // pseudonym was NOT already in use!
         }
-        System.out.println("WARNING: Attempted to use extant identifier manager pseudonym: "+pseudonym);
+        System.out.println(
+            "WARNING: Attempted to use extant identifier manager pseudonym: " + pseudonym
+        );
         return null; // pseudonym was already in use!
     }
 
@@ -97,7 +98,7 @@ public class IdentifierManager {
      */
     public int count() {
         int result = 0;
-        for (String key: this.identifierStates.keySet()) {
+        for (String key : this.identifierStates.keySet()) {
             result += this.identifierStates.get(key);
         }
         return result;

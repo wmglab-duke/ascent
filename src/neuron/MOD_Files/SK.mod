@@ -71,4 +71,3 @@ FUNCTION alphaq(x (mM)) (/ms) {
 FUNCTION betaq(x (mM)) (/ms) {
 	betaq = exp1(0.006,60.4,35,x^3)
 }
-

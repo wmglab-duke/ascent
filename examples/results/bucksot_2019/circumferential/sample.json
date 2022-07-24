@@ -3,9 +3,7 @@
   "sex": "Z",
   "species": "rabbit",
   "level": "Sciatic",
-  "samples_path": [
-    "samples"
-  ],
+  "samples_path": ["samples"],
   "scale": {
     "scale_bar_length": 1000,
     "shrinkage": 0

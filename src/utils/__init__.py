@@ -6,9 +6,10 @@ Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
-from .enums import *
 from .configurable import Configurable
+from .enums import *
 from .exceptionable import Exceptionable
 from .saveable import Saveable
 from .template_output import TemplateOutput
-from .interpolation import *
+
+__all__ = ['Configurable', 'Exceptionable', 'TemplateOutput', 'Saveable']

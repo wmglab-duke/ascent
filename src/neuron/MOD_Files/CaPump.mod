@@ -16,13 +16,13 @@
 		(mV) = (millivolt)
 		(molar) = (1/liter)
 		(mM) = (millimolar)
-		
+
 	}
 
 : Defines variables which will have a constant value throughout any given simulation run
 	PARAMETER {
-		ICaPmax22 = 0.000859437(mA/cm2) <0,1e6> 
-		KmCa = .0005 (mM)    <0,1e6> 
+		ICaPmax22 = 0.000859437(mA/cm2) <0,1e6>
+		KmCa = .0005 (mM)    <0,1e6>
 		Q10CaP = 2.30
 		Q10TempA = 22	(degC)		: Used to shift ICaPmax value based on temperature with equation : tau(T1)=tau(Q10TempA)*Q10^((Q10TempA-T1)/Q10TempB)
 		Q10TempB = 10	(degC)
@@ -36,7 +36,7 @@
 		v (mV)
 		cai (mM)
 		ica (mA/cm2)
-		
+
 		:Model Specific Variables
 		icap (mA/cm2)
 		ICaPmax (mA/cm2)
@@ -44,9 +44,9 @@
 
 : This block iterates the variable calculations and uses those calculations to calculate currents
 	BREAKPOINT {
-		
-		icap = ICaPmax*(cai/(cai+KmCa)) 
-		
+
+		icap = ICaPmax*(cai/(cai+KmCa))
+
 		ica=icap
 	}
 

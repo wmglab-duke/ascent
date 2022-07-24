@@ -79,130 +79,128 @@
       ]
     }
   ],
-
   "params": [
     {
       "name": "N_holes_P",
       "expression": "0",
-      "description": ""
+      "description": "Can have the value of 1 or 2. Adds conical shaped holes in TubeCuff. If 1 hole, centered longitudinally in cuff. If 2, evenly spaced by Pitch_holecenter_holecenter about longitudinal center of cuff"
     },
     {
       "name": "Theta_P",
       "expression": "percent_circ_cuff_P*360 [deg]",
-      "description": ""
+      "description": "Angular coverage of cuff"
     },
     {
       "name": "Center_P",
       "expression": "z_nerve/2",
-      "description": ""
+      "description": "Z-position of cuff center"
     },
     {
       "name": "R_in_P",
       "expression": "max(r_nerve+thk_medium_gap_internal_P+2*r_wire_P+sep_wire_P,r_cuff_in_pre_P)",
-      "description": ""
+      "description": "Cuff inner diameter"
     },
     {
       "name": "R_out_P",
       "expression": "R_in_P+thk_cuff_P",
-      "description": ""
+      "description": "Cuff outer diameter"
     },
     {
       "name": "L_P",
       "expression": "3.5 [mm]",
-      "description": ""
+      "description": "Length of cuff"
     },
     {
       "name": "Rot_def_P",
       "expression": "-((theta_cuff_P-theta_wire_P)/2)",
-      "description": ""
+      "description": "Rotates TubeCuff CCW by angle"
     },
     {
       "name": "D_hole_P",
       "expression": "NaN",
-      "description": ""
+      "description": "Diameter of holes in TubeCuff at the surface of the inner diameter"
     },
     {
       "name": "Buffer_hole_P",
       "expression": "NaN",
-      "description": ""
+      "description": "Used so that the cone used to cut hole in the cuff extends half this distance from the inner and outer edge of the part"
     },
     {
       "name": "L_holecenter_cuffseam_P",
       "expression": "NaN",
-      "description": ""
+      "description": "Distance from edge of the cuff seam to the center of the holes"
     },
     {
       "name": "Pitch_holecenter_holecenter_P",
       "expression": "NaN",
-      "description": ""
+      "description": "Distance between cuff holes, pitch from center to center along the length of the cuff"
     },
     {
       "name": "percent_circ_cuff_P",
       "expression": "percent_circ_cuff_pre_P*(r_cuff_in_pre_P/R_in_P)",
-      "description": ""
+      "description": "Wrap of the cuff (as compared to 360 degree wrap for continuous insulation) after expansion to accommodate the nerve"
     },
     {
       "name": "percent_circ_cuff_pre_P",
       "expression": "1",
-      "description": ""
+      "description": "Wrap of the cuff (as compared to 360 degree wrap for continuous insulation) before expansion to accommodate the nerve"
     },
     {
       "name": "r_cuff_in_pre_P",
       "expression": "317.5 [um]",
-      "description": ""
+      "description": "Cuff resting inner diameter"
     },
     {
       "name": "thk_medium_gap_internal_P",
       "expression": "10 [um]",
-      "description": ""
+      "description": "Gap between cuff and nerve"
     },
     {
       "name": "r_wire_P",
       "expression": "37.5 [um]",
-      "description": ""
+      "description": "Half the gauge of WireContact"
     },
     {
       "name": "sep_wire_P",
       "expression": "10 [um]",
-      "description": ""
+      "description": "z-distance between contacts"
     },
     {
       "name": "thk_cuff_P",
       "expression": "0.279 [mm]",
-      "description": ""
+      "description": "Cuff thickness"
     },
     {
       "name": "theta_cuff_P",
       "expression": "percent_circ_cuff_P*360 [deg]",
-      "description": ""
+      "description": "Angular coverage of cuff"
     },
     {
       "name": "theta_wire_P",
       "expression": "percent_circ_wire_P*360 [deg]",
-      "description": ""
+      "description": "Angular coverage of contact"
     },
     {
       "name": "percent_circ_wire_pre_P",
       "expression": "0.8",
-      "description": ""
+      "description": "Wrap around angle of WireContact (where 1 is 100%, 0.8 is 80%, ...) before nerve expansion."
     },
     {
       "name": "percent_circ_wire_P",
       "expression": "percent_circ_wire_pre_P*((r_cuff_in_pre_P-sep_wire_P-2*r_wire_P)/(R_in_P-sep_wire_P-2*r_wire_P))",
-      "description": ""
+      "description": "Wrap around angle of WireContact (where 1 is 100%, 0.8 is 80%, ...) after nerve expansion."
     },
     {
       "name": "Pitch_P",
       "expression": "1.5 [mm]",
-      "description": ""
+      "description": "z-distance between contacts"
     },
     {
       "name": "Thk_fill_P",
       "expression": "100 [um]",
-      "description": ""
+      "description": "Distance fill extends beyond cuff boundary"
     }
   ],
-
   "expandable": true,
   "fixed_point": "clockwise_end",
   "angle_to_contacts_deg": 144,

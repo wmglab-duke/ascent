@@ -5,7 +5,7 @@
     "fiber_z": "EXTRUSION",
     "rho_perineurium": "RHO_WEERASURIYA"
   },
-  "solution": {"sol_time": 389146.504312},
+  "solution": { "sol_time": 389146.504312 },
   "temperature": 37,
   "medium": {
     "distal": {
@@ -67,7 +67,7 @@
       "hgrad": 2
     },
     "stats": {
-      "volume": 8.817E12,
+      "volume": 8.817e12,
       "min_quality": 0.03216,
       "min_volume": 338.6,
       "quality_measure": "vollength",

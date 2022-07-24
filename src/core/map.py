@@ -4,9 +4,7 @@
 The copyrights of this software are owned by Duke University.
 Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
-"""
 
-"""
 Description:
 
     OVERVIEW
@@ -42,15 +40,15 @@ Description:
     clean_file_names (not system-independent)
 """
 
-# builtins
-import numpy as np
+
+import json
 import os
 import re
-import json
 import warnings
 from typing import List
 
-# ascent
+import numpy as np
+
 from src.utils import Config, Configurable, Exceptionable, SetupMode
 
 
@@ -149,21 +147,28 @@ class Map(Exceptionable, Configurable):
     def list_to_json(self) -> str:
         result = []
         for slide in self.slides:
-            result.append({
-                "cassette": int(slide.cassette),
-                "number": slide.number,
-                "position": slide.position,
-                "directory": slide.directory[:-1].split(os.sep)
-            })
+            result.append(
+                {
+                    "cassette": int(slide.cassette),
+                    "number": slide.number,
+                    "position": slide.position,
+                    "directory": slide.directory[:-1].split(os.sep),
+                }
+            )
 
         return json.dumps(result, indent=2)
 
     def json_to_list(self) -> list:
         data = self.load(self.source_path)
-        return [SlideInfo(item.get('cassette'),
-                          item.get('number'),
-                          item.get('position'),
-                          item.get('directory')) for item in data]
+        return [
+            SlideInfo(
+                item.get('cassette'),
+                item.get('number'),
+                item.get('position'),
+                item.get('directory'),
+            )
+            for item in data
+        ]
 
     # %% utility
     @staticmethod
@@ -188,9 +193,8 @@ class Map(Exceptionable, Configurable):
                 for prefix in prefixes:
                     if re.match(prefix, file) is not None:
                         # remove leading code (separated by '_') and any extra '_'
-                        new_file = '_'.join([f for f in file.split('_')[1:] if f is not ''])
-                        os.rename('{}/{}'.format(root, file),
-                                  '{}/{}'.format(root, new_file))
+                        new_file = '_'.join([f for f in file.split('_')[1:] if f != ''])
+                        os.rename('{}/{}'.format(root, file), '{}/{}'.format(root, new_file))
 
                 for key in remove_keys:
                     if re.search(key, file) is not None:
@@ -210,10 +214,9 @@ class SlideInfo:
         return self.cassette, self.number, self.position, self.directory
 
     def __repr__(self):
-        return 'cas:\t{}\nnum:\t{}\npos:\t{}\ndir:\t{}'.format(self.cassette,
-                                                               self.number,
-                                                               self.position,
-                                                               self.directory)
+        return 'cas:\t{}\nnum:\t{}\npos:\t{}\ndir:\t{}'.format(
+            self.cassette, self.number, self.position, self.directory
+        )
 
 
 # quick class to keep track of a reference distance for resizing (i.e. space between electrodes)
@@ -229,6 +232,4 @@ class Reference:
         return distance / float(self.abs_distance)
 
     def __repr__(self):
-        return '\tstart pos:\t{}\n\tend pos:\t{}\n\tabs dist:\t{}\n\n'.format(self.start,
-                                                                              self.end,
-                                                                              self.abs_distance)
+        return '\tstart pos:\t{}\n\tend pos:\t{}\n\tabs dist:\t{}\n\n'.format(self.start, self.end, self.abs_distance)

@@ -147,157 +147,149 @@
       ]
     }
   ],
-
   "params": [
     {
       "name": "N_holes_Pitt",
       "expression": "0",
-      "description": ""
+      "description": "Can have the value of 1 or 2. Adds conical shaped holes in TubeCuff. If 1 hole, centered longitudinally in cuff. If 2, evenly spaced by Pitch_holecenter_holecenter about longitudinal center of cuff"
     },
     {
       "name": "Theta_Pitt",
       "expression": "percent_circ_cuff_Pitt*360 [deg]",
-      "description": ""
+      "description": "Angular coverage of cuff"
     },
     {
       "name": "Center_Pitt",
       "expression": "z_nerve/2",
-      "description": ""
+      "description": "Z-position of cuff center"
     },
     {
       "name": "R_in_Pitt",
       "expression": "0.5 [mm]",
-      "description": "Could also be 0.6 or 0.7 mm, since the contacts are defined by angle not length this is only param that needs to be changed to use larger cuff"
+      "description": "Cuff inner diameter"
     },
     {
       "name": "R_out_Pitt",
       "expression": "R_in_Pitt+thk_cuff_Pitt",
-      "description": ""
+      "description": "Cuff outer diameter"
     },
     {
       "name": "L_Pitt",
       "expression": "4.1917 [mm]",
-      "description": ""
+      "description": "Length of cuff"
     },
     {
       "name": "percent_circ_cuff_pre_Pitt",
       "expression": "1",
-      "description": ""
+      "description": "Wrap of the cuff (as compared to 360 degree wrap for continuous insulation) before expansion to accommodate the nerve"
     },
     {
       "name": "percent_circ_cuff_Pitt",
       "expression": "1",
-      "description": ""
+      "description": "Wrap of the cuff (as compared to 360 degree wrap for continuous insulation) after expansion to accommodate the nerve"
     },
     {
       "name": "Rot_def_Pitt",
       "expression": "0",
-      "description": ""
+      "description": "Rotates TubeCuff CCW by angle"
     },
     {
       "name": "D_hole_Pitt",
       "expression": "NaN",
-      "description": ""
+      "description": "Diameter of holes in TubeCuff at the surface of the inner diameter"
     },
     {
       "name": "Buffer_hole_Pitt",
       "expression": "NaN",
-      "description": ""
+      "description": "Used so that the cone used to cut hole in the cuff extends half this distance from the inner and outer edge of the part"
     },
     {
       "name": "L_holecenter_cuffseam_Pitt",
       "expression": "NaN",
-      "description": ""
+      "description": "Distance from edge of the cuff seam to the center of the holes"
     },
     {
       "name": "Pitch_holecenter_holecenter_Pitt",
       "expression": "NaN",
-      "description": ""
+      "description": "Distance between cuff holes, pitch from center to center along the length of the cuff"
     },
     {
       "name": "w_contact_Pitt",
       "expression": "0.475 [mm]",
-      "description": ""
+      "description": "Contact width"
     },
     {
       "name": "z_contact_Pitt",
       "expression": "0.475 [mm]",
-      "description": ""
+      "description": "Z-length of contact"
     },
     {
       "name": "fillet_contact_Pitt",
       "expression": "0.1 [mm]",
-      "description": ""
+      "description": "Fillet for RectangleContact corners"
     },
     {
       "name": "L_cuff_Pitt",
       "expression": "4.1917 [mm]",
-      "description": ""
+      "description": "Length of cuff"
     },
     {
       "name": "thk_contact_Pitt",
       "expression": "0.018 [mm]",
-      "description": ""
+      "description": "Thickness of contact"
     },
     {
       "name": "recess_Pitt",
       "expression": "100 [um]",
-      "description": ""
+      "description": "Depth of fill material into the cuff before the contact. This is used to create an associated recess/fill domain with a contact."
     },
     {
       "name": "thk_cuff_Pitt",
       "expression": "0.275 [mm]",
-      "description": ""
-    },
-    {
-      "name": "zw_rot_Pitt",
-      "expression": "0 [deg]",
-      "description": ""
+      "description": "Cuff thickness"
     },
     {
       "name": "theta_pos_contact1_Pitt",
       "expression": "(45+22.5) [deg]",
-      "description": ""
+      "description": "Rotational position of contact 1 in Pitt.json"
     },
     {
       "name": "theta_pos_contact2_Pitt",
       "expression": "(0+22.5) [deg]",
-      "description": ""
+      "description": "Rotational position of contact 2 in Pitt.json"
     },
     {
       "name": "theta_pos_contact3_Pitt",
       "expression": "(135+22.5) [deg]",
-      "description": ""
+      "description": "Rotational position of contact 3 in Pitt.json"
     },
     {
       "name": "theta_pos_contact4_Pitt",
       "expression": "(90+22.5) [deg]",
-      "description": ""
+      "description": "Rotational position of contact 4 in Pitt.json"
     },
     {
       "name": "pitch_Pitt",
       "expression": "(1.025+0.475) [mm]",
-      "description": ""
+      "description": "z-distance between contacts"
     },
     {
       "name": "Thk_fill_Pitt",
       "expression": "100 [um]",
-      "description": ""
+      "description": "Distance fill extends beyond cuff boundary"
     },
     {
       "name": "thk_medium_gap_internal_Pitt",
       "expression": "10 [um]",
-      "description": ""
+      "description": "Gap between cuff and nerve"
     },
     {
       "name": "Rect_def_Pitt",
       "expression": "1",
-      "description": ""
+      "description": "1 to preserve surface area, 2 to preserve shape of contact to the dimensions provided"
     }
   ],
-
   "expandable": false,
   "angle_to_contacts_deg": 90,
-  "offset": {
-  }
+  "offset": {}
 }

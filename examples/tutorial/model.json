@@ -1,5 +1,5 @@
 {
-  "pseudonym": "beta model",
+  "pseudonym": "tutorial model",
   "modes": {
     "use_ci": true,
     "cuff_shift": "MIN_CIRCLE_BOUNDARY",
@@ -32,13 +32,14 @@
       "add_ang": 0
     },
     "shift": {
-      "x": -30.824073742946183,
-      "y": 26.21756281938863,
+      "x": 0,
+      "y": 0,
       "z": 0
     }
   },
   "mesh": {
-    "shape_order": 2,
+    "quality_measure": "vollength",
+    "shape_order": "quadratic",
     "proximal": {
       "hcurve": 0.2,
       "hmin": 10,
@@ -83,6 +84,7 @@
     "epineurium": "epineurium"
   },
   "solver": {
-    "sorder": "quadratic"
+    "sorder": 2,
+    "type": "iterative"
   }
 }

@@ -6,18 +6,18 @@ Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
-# builtins
+
 import json
+import os
 import time
 
-# access
 from src.core import MockSample
-from src.utils import *
+from src.utils import Config, SetupMode, TemplateOutput
 
 
 def run(args):
     start = time.time()
-    
+
     exceptions_file = os.path.join('config', 'system', 'exceptions.json')
 
     with open(exceptions_file, "r") as handle:
@@ -26,10 +26,7 @@ def run(args):
     # load mock sample configuration
     mock_config = os.path.join('config', 'user', 'mock_samples', '{}.json'.format(args.mock_sample_index))
     mock_sample = MockSample(exceptions_config)
-    mock_sample.add(SetupMode.NEW, Config.MOCK_SAMPLE, mock_config) \
-        .make_nerve() \
-        .make_fascicles() \
-        .make_masks()
+    mock_sample.add(SetupMode.NEW, Config.MOCK_SAMPLE, mock_config).make_nerve().make_fascicles().make_masks()
 
     TemplateOutput.write(mock_sample.configs['mock_sample'], mock_config)
 

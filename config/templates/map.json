@@ -3,11 +3,6 @@
     "cassette": 0,
     "number": 0,
     "position": 0,
-    "directory": [
-      "data",
-      "input",
-      "samples",
-      "SAMPLE_NAME"
-    ]
+    "directory": ["data", "input", "samples", "SAMPLE_NAME"]
   }
 ]

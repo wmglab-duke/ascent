@@ -1,5 +1,5 @@
 {
-  "pseudonym": "beta sim",
+  "pseudonym": "tutorial sim",
   "n_dimensions": 0,
   "active_srcs": {
     "Purdue.json": [[1, -1]],
@@ -85,11 +85,5 @@
       "mode": "PERCENT_DIFFERENCE",
       "percent": 1
     }
-  },
-  "supersampled_bases": {
-    "generate": false,
-    "use": false,
-    "dz": 0,
-    "source_sim": 0
   }
 }

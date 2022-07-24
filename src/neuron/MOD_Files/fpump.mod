@@ -1,7 +1,7 @@
 
 TITLE PUMP
 : Sodium potassium pump -- Canavier, 1999
-: 
+:
 
 UNITS {
 	(molar) = (1/liter)
@@ -9,16 +9,16 @@ UNITS {
 	(mV) =	(millivolt)
         (uS) = (micromho)
 	(mA) =	(milliamp)
-	(mM) =	(millimolar)   
+	(mM) =	(millimolar)
 }
 
 INDEPENDENT {v FROM -100 TO 50 WITH 50 (mV)}
 
 
 NEURON {
-   SUFFIX pump	
+   SUFFIX pump
    USEION na READ nai WRITE ina
-   USEION k WRITE ik 
+   USEION k WRITE ik
    RANGE pumpbar, km, n, inapump, ikpump, kpumpleak, napumpleak : electroneutral sodium accumulation
 }
 
@@ -27,15 +27,15 @@ NEURON {
 PARAMETER {
 	  dt (ms)
     km0 = 1   (mM)
-    kout = 5    (mM)   
+    kout = 5    (mM)
     km1 = 6.7   (mM)
     km2 = 67.6	(mM)
-   pumpbar = 0.04   (mA/cm2)  
-   napumpleak = 0 (mA/cm2) 
-   kpumpleak = 0 (mA/cm2) 
+   pumpbar = 0.04   (mA/cm2)
+   napumpleak = 0 (mA/cm2)
+   kpumpleak = 0 (mA/cm2)
    nai (mM)
    n = 1.5
-   celsius = 35 (degC)    
+   celsius = 35 (degC)
 }
 
 
@@ -56,7 +56,7 @@ ikpump = ik
 
 kpumpleak = ik
 napumpleak = ina
-	
+
 
 }
 
@@ -68,4 +68,3 @@ ik = (-2.0*inapump) - kpumpleak
 ikpump = ik
 
 }
-
