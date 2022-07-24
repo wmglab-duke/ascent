@@ -16,7 +16,8 @@ INCLUDED_FILENAMES = ['runtime', 'blank', 'special', 'logs', 'start_']
 
 
 def run(args):
-
+    if args.filename:
+        INCLUDED_FILENAMES = [args.filename]
     proceed = input(
         'All files with names containing any of the following strings:\n'
         '\t{}\n'
@@ -26,7 +27,7 @@ def run(args):
         '\t\t 0 = NO\n'
         '\t\t 1 = YES\n'.format(INCLUDED_FILENAMES, args.sample_indices)
     )
-    if not int(proceed) == 1:
+    if int(proceed) != 1:
         sys.exit()
     else:
         print('Proceeding...')
@@ -38,10 +39,29 @@ def run(args):
             '\t\t 0 = NO\n'
             '\t\t 1 = YES\n'
         )
-        if not int(proceed):
+        if int(proceed) != 1:
             sys.exit()
         else:
             print('Proceeding...')
+
+    def remove_empty_directories(directory: str):
+
+        for path in os.listdir(directory):
+            subdirectory = os.path.join(directory, path)
+            if os.path.isdir(subdirectory):
+                remove_empty_directories(subdirectory)
+
+        if os.path.isdir(directory) and len(os.listdir(directory)) == 0:
+            try:
+                os.rmdir(directory)
+            except Exception:
+                print('Could not remove {}'.format(directory))
+            if args.verbose:
+                print(f'\tREMOVE DIR: {directory}')
+
+        else:
+            if args.verbose:
+                print(f'\tKEEP DIR: {directory}')
 
     for sample in args.sample_indices:
 
@@ -62,7 +82,7 @@ def run(args):
             if any([included_filename in filepath for included_filename in INCLUDED_FILENAMES]):
                 try:
                     os.remove(filepath)
-                except:
+                except Exception:
                     print('Could not remove {}'.format(filepath))
                 if args.verbose:
                     print(f'\tREMOVE FILE: {filepath}')
@@ -74,25 +94,6 @@ def run(args):
         # remove empty directories
         if args.verbose:
             print('\n\t- - - - - DIRECTORIES - - - -\n')
-
-        def remove_empty_directories(directory: str):
-
-            for path in os.listdir(directory):
-                subdirectory = os.path.join(directory, path)
-                if os.path.isdir(subdirectory):
-                    remove_empty_directories(subdirectory)
-
-            if os.path.isdir(directory) and len(os.listdir(directory)) == 0:
-                try:
-                    os.rmdir(directory)
-                except:
-                    print('Could not remove {}'.format(directory))
-                if args.verbose:
-                    print(f'\tREMOVE DIR: {directory}')
-
-            else:
-                if args.verbose:
-                    print(f'\tKEEP DIR: {directory}')
 
         remove_empty_directories(str(sample_path.absolute()))
 
