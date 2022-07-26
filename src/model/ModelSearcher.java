@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.Objects;
 import org.json.JSONObject;
 
-@SuppressWarnings({ "unchecked", "rawtypes", "path" })
+@SuppressWarnings({ "FieldMayBeFinal", "unchecked", "path" })
 public class ModelSearcher {
 
     private Path root;
@@ -28,15 +28,12 @@ public class ModelSearcher {
         this.setRoot(root);
     }
 
-    public boolean setRoot(String root) {
+    public void setRoot(String root) {
         this.root = Paths.get(root);
 
         if (!Files.exists(this.root)) {
             this.root = null;
-            return false;
         }
-
-        return true;
     }
 
     public String getRoot() {
@@ -49,15 +46,12 @@ public class ModelSearcher {
      * @param reference
      * @return
      */
-    public ModelSearcher.Match searchMeshMatch(
-        JSONObject query,
-        JSONObject reference,
-        String queryPath
-    ) throws IOException {
+    public ModelSearcher.Match searchMeshMatch(JSONObject query, JSONObject reference)
+        throws IOException {
         //        System.out.println("queryPath = " + queryPath);
 
         for (Path file : Files.walk(this.root).toArray(Path[]::new)) {
-            String[] fileParts = null;
+            String[] fileParts;
             String os = System.getProperty("os.name").toLowerCase(); // https://www.techiedelight.com/determine-operating-system-and-its-version-java/
             if (os.contains("win")) {
                 // if windows
@@ -145,20 +139,17 @@ public class ModelSearcher {
 
     public static class Match {
 
-        private JSONObject modelConfig;
         private Model mph;
         private IdentifierManager im;
         private String path;
         private HashMap<String, IdentifierManager> partPrimitiveIMs;
 
         public Match(
-            JSONObject modelConfig,
             Model mph,
             IdentifierManager im,
             HashMap<String, IdentifierManager> partPrimitiveIMs,
             String path
         ) {
-            this.modelConfig = modelConfig;
             this.mph = mph;
             this.im = im;
             this.partPrimitiveIMs = partPrimitiveIMs;
@@ -172,7 +163,6 @@ public class ModelSearcher {
          */
         public static Match fromMeshPath(String path) {
             try {
-                JSONObject modelConfig = JSONio.read(path + "/model.json");
                 Model mph = ModelUtil.loadCopy(
                     ModelUtil.uniquetag("Model"),
                     path + "/mesh/mesh.mph"
@@ -188,21 +178,15 @@ public class ModelSearcher {
                     //                    System.out.println("file path = " + ppimPath.toString() + "/" + filename);
                     ppims.put(
                         fileParts[0],
-                        IdentifierManager.fromJSONObject(
-                            JSONio.read(ppimPath.toString() + "/" + filename)
-                        )
+                        IdentifierManager.fromJSONObject(JSONio.read(ppimPath + "/" + filename))
                     );
                 }
 
-                return new Match(modelConfig, mph, im, ppims, path);
+                return new Match(mph, im, ppims, path);
             } catch (IOException e) {
                 e.printStackTrace();
                 return null;
             }
-        }
-
-        public JSONObject getModelConfig() {
-            return modelConfig;
         }
 
         public Model getMph() {

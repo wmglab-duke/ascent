@@ -7,14 +7,12 @@ The source code can be found on the following GitHub repository: https://github.
 package model;
 
 import com.comsol.model.*;
-import com.comsol.model.featuredata.GeomFeatureFeatureData;
 import com.comsol.model.physics.PhysicsFeature;
-import com.comsol.nativemph.geom.Geom;
 import java.util.HashMap;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-@SuppressWarnings({ "unchecked", "rawtypes", "path" })
+@SuppressWarnings({ "path" })
 class Part {
 
     /**
@@ -5320,6 +5318,7 @@ class Part {
             sigma = (JSONObject) material_assignment;
             materialDescription = "custom: " + sigma.getString("label");
         }
+        assert sigma != null;
         String entry = sigma.getString("value");
         String unit = sigma.getString("unit");
 

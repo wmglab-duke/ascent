@@ -9,7 +9,7 @@ package model;
 import java.util.*;
 import org.json.JSONObject;
 
-@SuppressWarnings({ "unchecked", "rawtypes", "path" })
+@SuppressWarnings({ "unchecked", "path" })
 public class IdentifierManager {
 
     private HashMap<String, Integer> identifierStates = new HashMap<>();

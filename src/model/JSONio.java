@@ -10,15 +10,11 @@ import java.io.*;
 import java.util.Scanner;
 import org.json.JSONObject;
 
-@SuppressWarnings({ "unchecked", "rawtypes", "path" })
+@SuppressWarnings({ "path" })
 public class JSONio {
 
     public static JSONObject read(String filepath) throws FileNotFoundException {
-        try {
-            return new JSONObject(new Scanner(new File(filepath)).useDelimiter("\\A").next());
-        } catch (FileNotFoundException e) {
-            throw e;
-        }
+        return new JSONObject(new Scanner(new File(filepath)).useDelimiter("\\A").next());
     }
 
     public static boolean write(String filepath, JSONObject data) {
