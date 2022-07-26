@@ -18,6 +18,17 @@
     - Solutions:
         - Increase inner_interp_tol and/or outer_interp_tol in  sample.json (depending on whether the Issue exists for outers or inners)
         - If your mask is very pixelated, increase smoothing>fascicle distance in sample.json
+    - Issue: The pipeline solves one basis, then errors.
+    - Solution: In COMSOL, disable automatic saving of recovery files.
+
+## COMSOL Issues
+- Issue: fiber xy-location(s) fall outside of the solution, which results in error while extracting potentials.  
+    -Error log:  
+        - `Exception: com.comsol.util.exceptions.FlException: Internal numerical error`  
+        - `Messages: Internal error in numerical routines.`  
+    -Output log:  
+        - `Intel MKL Error: Parameter 7 was incorrect on entry to DGELS.`  
+- Solution: Increase parameter in Sim -> "fibers" -> "xy_trace_buffer". Note: this is assuming that "endo_only_solution" in Run config is true. 
 
 ## NEURON Issues
 - Issue: Compiling NEURON files with `python submit.py` results in an error, `mpicc: command not found`

@@ -1,11 +1,8 @@
 {
   "sample": "Rat16-3",
-  "pseudonym":"template_sample",
+  "pseudonym":"template sample",
   "sex": "M",
   "level": "Cervical",
-  "samples_path": [
-    "samples"
-  ],
   "scale": {
     "scale_bar_length": 500,
     "scale_ratio": 12.5,
@@ -34,8 +31,6 @@
   },
   "morph_count": 36,
   "deform_ratio": 1,
-  "plot" : true,
-  "plot_folder" : true,
   "render_deform": false,
   "Morphology": null
 }

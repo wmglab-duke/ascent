@@ -1,14 +1,14 @@
 {
-  "code": "CT",
+  "code": "CT200",
   "instances": [
     {
       "type": "CuffFill_Primitive",
       "label": "CorTec Cuff Fill",
       "def": {
-        "Radius": "R_in_CT",
-        "Thk": "Thk_fill_CT",
-        "L": "L_CT",
-        "Center": "Center_CT",
+        "Radius": "R_in_CT200",
+        "Thk": "Thk_fill_CT200",
+        "L": "L_CT200",
+        "Center": "Center_CT200",
         "x_shift": "0",
         "y_shift": "0"
       },
@@ -23,17 +23,17 @@
       "type": "TubeCuff_Primitive",
       "label": "CorTec Cuff",
       "def": {
-        "N_holes": "N_holes_CT",
-        "Tube_theta": "Theta_CT",
-        "Center": "Center_CT",
-        "R_in": "R_in_CT",
-        "R_out": "R_out_CT",
-        "Tube_L": "L_CT",
-        "Rot_def": "Rot_def_CT",
-        "D_hole": "D_hole_CT",
-        "Buffer_hole": "Buffer_hole_CT",
-        "L_holecenter_cuffseam": "L_holecenter_cuffseam_CT",
-        "Pitch_holecenter_holecenter": "Pitch_holecenter_holecenter_CT"
+        "N_holes": "N_holes_CT200",
+        "Tube_theta": "Theta_CT200",
+        "Center": "Center_CT200",
+        "R_in": "R_in_CT200",
+        "R_out": "R_out_CT200",
+        "Tube_L": "L_CT200",
+        "Rot_def": "Rot_def_CT200",
+        "D_hole": "D_hole_CT200",
+        "Buffer_hole": "Buffer_hole_CT200",
+        "L_holecenter_cuffseam": "L_holecenter_cuffseam_CT200",
+        "Pitch_holecenter_holecenter": "Pitch_holecenter_holecenter_CT200"
       },
       "materials": [
         {
@@ -46,13 +46,13 @@
       "type": "RibbonContact_Primitive",
       "label": "CorTec Contact 1",
       "def": {
-        "Ribbon_thk": "Thk_elec_CT",
-        "Ribbon_z": "L_elec_CT",
-        "R_in": "R_in_CT",
-        "Ribbon_recess": "Recess_CT",
-        "Center": "Center_CT+(Pitch_CT/2)",
-        "Ribbon_theta": "Theta_contact_CT",
-        "Rot_def": "Rot_def_contact_CT"
+        "Ribbon_thk": "Thk_elec_CT200",
+        "Ribbon_z": "L_elec_CT200",
+        "R_in": "R_in_CT200",
+        "Ribbon_recess": "Recess_CT200",
+        "Center": "Center_CT200+(Pitch_CT200/2)",
+        "Ribbon_theta": "Theta_contact_CT200",
+        "Rot_def": "Rot_def_contact_CT200"
       },
       "materials": [
         {
@@ -65,13 +65,13 @@
       "type": "RibbonContact_Primitive",
       "label": "CorTec Contact 2",
       "def": {
-        "Ribbon_thk": "Thk_elec_CT",
-        "Ribbon_z": "L_elec_CT",
-        "R_in": "R_in_CT",
-        "Ribbon_recess": "Recess_CT",
-        "Center": "Center_CT-(Pitch_CT/2)",
-        "Ribbon_theta": "Theta_contact_CT",
-        "Rot_def": "Rot_def_contact_CT"
+        "Ribbon_thk": "Thk_elec_CT200",
+        "Ribbon_z": "L_elec_CT200",
+        "R_in": "R_in_CT200",
+        "Ribbon_recess": "Recess_CT200",
+        "Center": "Center_CT200-(Pitch_CT200/2)",
+        "Ribbon_theta": "Theta_contact_CT200",
+        "Rot_def": "Rot_def_contact_CT200"
       },
       "materials": [
         {
@@ -84,132 +84,132 @@
 
   "params": [
     {
-      "name": "N_holes_CT",
+      "name": "N_holes_CT200",
       "expression": "0",
       "description": ""
     },
     {
-      "name": "Theta_CT",
-      "expression": "percent_circ_cuff_CT*360 [deg]",
+      "name": "Theta_CT200",
+      "expression": "percent_circ_cuff_CT200*360 [deg]",
       "description": ""
     },
     {
-      "name": "Center_CT",
+      "name": "Center_CT200",
       "expression": "z_nerve/2",
       "description": ""
     },
     {
-      "name": "R_in_CT",
-      "expression": "max(r_nerve+thk_medium_gap_internal_CT,r_cuff_in_pre_CT)",
+      "name": "R_in_CT200",
+      "expression": "max(r_nerve+thk_medium_gap_internal_CT200,r_cuff_in_pre_CT200)",
       "description": ""
     },
     {
-      "name": "R_out_CT",
-      "expression": "R_in_CT+thk_cuff_CT",
+      "name": "R_out_CT200",
+      "expression": "R_in_CT200+thk_cuff_CT200",
       "description": ""
     },
     {
-      "name": "L_CT",
+      "name": "L_CT200",
       "expression": "2 [mm]",
       "description": ""
     },
     {
-      "name": "Rot_def_CT",
-      "expression": "-(theta_cuff_CT-theta_contact_CT)/2",
+      "name": "Rot_def_CT200",
+      "expression": "-(theta_cuff_CT200-theta_contact_CT200)/2",
       "description": ""
     },
     {
-      "name": "D_hole_CT",
+      "name": "D_hole_CT200",
       "expression": "NaN",
       "description": ""
     },
     {
-      "name": "Buffer_hole_CT",
+      "name": "Buffer_hole_CT200",
       "expression": "NaN",
       "description": ""
     },
     {
-      "name": "L_holecenter_cuffseam_CT",
+      "name": "L_holecenter_cuffseam_CT200",
       "expression": "NaN",
       "description": ""
     },
     {
-      "name": "Pitch_holecenter_holecenter_CT",
+      "name": "Pitch_holecenter_holecenter_CT200",
       "expression": "NaN",
       "description": ""
     },
     {
-      "name": "percent_circ_cuff_CT",
-      "expression": "percent_circ_cuff_pre_CT*(r_cuff_in_pre_CT/R_in_CT)",
+      "name": "percent_circ_cuff_CT200",
+      "expression": "percent_circ_cuff_pre_CT200*(r_cuff_in_pre_CT200/R_in_CT200)",
       "description": ""
     },
     {
-      "name": "thk_medium_gap_internal_CT",
+      "name": "thk_medium_gap_internal_CT200",
       "expression": "10 [um]",
       "description": ""
     },
     {
-      "name": "r_cuff_in_pre_CT",
+      "name": "r_cuff_in_pre_CT200",
       "expression": "100 [um]",
       "description": ""
     },
     {
-      "name": "Recess_CT",
+      "name": "Recess_CT200",
       "expression": "0 [um]",
       "description": ""
     },
     {
-      "name": "Thk_elec_CT",
+      "name": "Thk_elec_CT200",
       "expression": "0.025 [mm]",
       "description": ""
     },
     {
-      "name": "B_CT",
+      "name": "B_CT200",
       "expression": "0.6 [mm]",
       "description": ""
     },
     {
-      "name": "percent_circ_cuff_pre_CT",
+      "name": "percent_circ_cuff_pre_CT200",
       "expression": "1",
       "description": ""
     },
     {
-      "name": "theta_contact_CT",
-      "expression": "360*(B_CT/(2*pi*(R_in_CT+Recess_CT))) [deg]",
+      "name": "theta_contact_CT200",
+      "expression": "360*(B_CT200/(2*pi*(R_in_CT200+Recess_CT200))) [deg]",
       "description": ""
     },
     {
-      "name": "theta_cuff_CT",
-      "expression": "percent_circ_cuff_CT*360 [deg]",
+      "name": "theta_cuff_CT200",
+      "expression": "percent_circ_cuff_CT200*360 [deg]",
       "description": ""
     },
     {
-      "name": "thk_cuff_CT",
+      "name": "thk_cuff_CT200",
       "expression": "0.65 [mm]",
       "description": ""
     },
     {
-      "name": "L_elec_CT",
+      "name": "L_elec_CT200",
       "expression": "0.3 [mm]",
       "description": ""
     },
     {
-      "name": "Theta_contact_CT",
-      "expression": "360*(B_CT/(2*pi*(R_in_CT+Recess_CT))) [deg]",
+      "name": "Theta_contact_CT200",
+      "expression": "360*(B_CT200/(2*pi*(R_in_CT200+Recess_CT200))) [deg]",
       "description": ""
     },
     {
-      "name": "Rot_def_contact_CT",
+      "name": "Rot_def_contact_CT200",
       "expression": "0",
       "description": ""
     },
     {
-      "name": "Pitch_CT",
+      "name": "Pitch_CT200",
       "expression": "1.5 [mm]",
       "description": ""
     },
     {
-      "name": "Thk_fill_CT",
+      "name": "Thk_fill_CT200",
       "expression": "100 [um]",
       "description": ""
     }
