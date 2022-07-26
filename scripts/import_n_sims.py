@@ -31,14 +31,29 @@ def run(args):
 
         for model in models:
             for sim in sims:
+                sim_config: dict = Configurable.load(
+                    os.path.join(nsim_source, 'n_sims', '_'.join([str(x) for x in [sample, model, sim, '0']]), '0.json')
+                )
                 sim_dir = os.path.join('samples', str(sample), 'models', str(model), 'sims', str(sim))
-                check = Simulation.thresholds_exist(sample, model, sim, sim_dir, os.path.join(nsim_source, 'n_sims'))
+                if sim_config['protocol']['mode'] == 'FINITE_AMPLITUDES':
+                    check = Simulation.activations_exist(
+                        sample,
+                        model,
+                        sim,
+                        sim_dir,
+                        os.path.join(nsim_source, 'n_sims'),
+                        len(sim_config['protocol']['amplitudes']),
+                    )
+                else:
+                    check = Simulation.thresholds_exist(
+                        sample, model, sim, sim_dir, os.path.join(nsim_source, 'n_sims')
+                    )
                 if check is False:
                     if args.force is True:
                         print('Force argument passed, continuing with import')
                     else:
                         print(
-                            'At least one threshold was missing,'
+                            'At least one threshold (or activation log if running FINITE AMPLITUDES) was missing,'
                             ' skipping import for run {} sample {} model {} sim {}'.format(argument, sample, model, sim)
                         )
                         continue

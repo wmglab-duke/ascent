@@ -126,6 +126,7 @@ proc FindThresh() {//local key
 			print "Done searching! stimamp: ", stimamp, "mA for extracellular and nA for intracellular (check flag_whichstim)"
 
 			RunSim(stimamp)
+			print "N_APs = ", N_APs
 
 			break
 		} else if (N_APs >= 1) {				// found an AP
