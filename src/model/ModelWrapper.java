@@ -1332,13 +1332,7 @@ public class ModelWrapper {
         }
 
         JSONArray models_list = run.getJSONArray("models"); // get array of COMSOL models
-        JSONObject break_points = new JSONObject();
-        if (cli_args.has("break_point") && !cli_args.isNull("break_point")) {
-            break_points.put(cli_args.getString("break_point"), true);
-        } else if (run.has("break_points")) {
-            break_points = run.getJSONObject("break_points");
-        }
-
+        String break_point = cli_args.getString("break_point");
         Boolean endo_only_solution = false;
         if (cli_args.has("endo_only_solution") && cli_args.getBoolean("endo_only_solution")) {
             endo_only_solution = true;
@@ -1879,14 +1873,7 @@ public class ModelWrapper {
                         }
 
                         // break point "pre_geom_run"
-                        boolean pre_geom_run;
-                        if (break_points.has("pre_geom_run")) {
-                            pre_geom_run = break_points.getBoolean("pre_geom_run");
-                        } else {
-                            pre_geom_run = false;
-                        }
-
-                        if (pre_geom_run) {
+                        if (break_point.equals("pre_geom_run")) {
                             models_exit_status[model_index] = false;
                             System.out.println(
                                 "\tpre_geom_run is the first break point encountered, moving on with next model index"
@@ -1919,14 +1906,7 @@ public class ModelWrapper {
                         }
 
                         // break point "post_geom_run"
-                        boolean post_geom_run;
-                        if (break_points.has("post_geom_run")) {
-                            post_geom_run = break_points.getBoolean("post_geom_run");
-                        } else {
-                            post_geom_run = false;
-                        }
-
-                        if (post_geom_run || nerve_only || cuff_only) {
+                        if (break_point.equals("post_geom_run") || nerve_only || cuff_only) {
                             models_exit_status[model_index] = false;
                             System.out.println(
                                 "\tpost_geom_run is the first break point encountered, moving on with next model index"
@@ -2031,14 +2011,7 @@ public class ModelWrapper {
                         }
 
                         // break point "pre_mesh_proximal"
-                        boolean pre_mesh_proximal;
-                        if (break_points.has("pre_mesh_proximal")) {
-                            pre_mesh_proximal = break_points.getBoolean("pre_mesh_proximal");
-                        } else {
-                            pre_mesh_proximal = false;
-                        }
-
-                        if (pre_mesh_proximal) {
+                        if (break_point.equals("pre_mesh_proximal")) {
                             models_exit_status[model_index] = false;
                             System.out.println(
                                 "\tpre_mesh_proximal is the first break point encountered, moving on with next model index"
@@ -2077,14 +2050,7 @@ public class ModelWrapper {
                         TimeUnit.SECONDS.sleep(5);
 
                         // break point "post_mesh_proximal"
-                        boolean post_mesh_proximal;
-                        if (break_points.has("post_mesh_proximal")) {
-                            post_mesh_proximal = break_points.getBoolean("post_mesh_proximal");
-                        } else {
-                            post_mesh_proximal = false;
-                        }
-
-                        if (post_mesh_proximal) {
+                        if (break_point.equals("post_mesh_proximal")) {
                             models_exit_status[model_index] = false;
                             System.out.println(
                                 "\tpost_mesh_proximal is the first break point encountered, moving on with next model index"
@@ -2154,14 +2120,7 @@ public class ModelWrapper {
                             }
 
                             // break point "pre_mesh_distal"
-                            boolean pre_mesh_distal;
-                            if (break_points.has("pre_mesh_distal")) {
-                                pre_mesh_distal = break_points.getBoolean("pre_mesh_distal");
-                            } else {
-                                pre_mesh_distal = false;
-                            }
-
-                            if (pre_mesh_distal) {
+                            if (break_point.equals("pre_mesh_distal")) {
                                 models_exit_status[model_index] = false;
                                 System.out.println(
                                     "\tpre_mesh_distal is the first break point encountered, moving on with next model index"
@@ -2206,14 +2165,7 @@ public class ModelWrapper {
                             }
 
                             // break point "post_mesh_distal"
-                            boolean post_mesh_distal;
-                            if (break_points.has("post_mesh_distal")) {
-                                post_mesh_distal = break_points.getBoolean("post_mesh_distal");
-                            } else {
-                                post_mesh_distal = false;
-                            }
-
-                            if (post_mesh_distal) {
+                            if (break_point.equals("post_mesh_distal")) {
                                 models_exit_status[model_index] = false;
                                 System.out.println(
                                     "\tpost_mesh_distal is the first break point encountered, moving on with next model index"
@@ -2479,14 +2431,7 @@ public class ModelWrapper {
                     fascicleMatLink.set("link", mw.im.get("endoneurium"));
 
                     // break point "post_mesh_distal"
-                    boolean post_material_assign;
-                    if (break_points.has("post_material_assign")) {
-                        post_material_assign = break_points.getBoolean("post_material_assign");
-                    } else {
-                        post_material_assign = false;
-                    }
-
-                    if (post_material_assign) {
+                    if (break_point.equals("post_material_assign")) {
                         models_exit_status[model_index] = false;
                         System.out.println(
                             "\tpost_material_assign is the first break point encountered, moving on with next model index"
@@ -2555,14 +2500,7 @@ public class ModelWrapper {
                     model.sol("sol1").attach("std1");
 
                     // break point "post_mesh_distal"
-                    boolean pre_loop_currents;
-                    if (break_points.has("pre_loop_currents")) {
-                        pre_loop_currents = break_points.getBoolean("pre_loop_currents");
-                    } else {
-                        pre_loop_currents = false;
-                    }
-
-                    if (pre_loop_currents) {
+                    if (break_point.equals("pre_loop_currents")) {
                         models_exit_status[model_index] = false;
                         System.out.println(
                             "\tpre_loop_currents is the first break point encountered, moving on with next model index"
@@ -2572,8 +2510,8 @@ public class ModelWrapper {
 
                     // break point "post_mesh_distal"
                     boolean pre_solve_break;
-                    if (break_points.has("pre_solve")) {
-                        pre_solve_break = break_points.getBoolean("pre_solve");
+                    if (break_point.equals("pre_solve")) {
+                        pre_solve_break = true;
                     } else {
                         pre_solve_break = false;
                     }

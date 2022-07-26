@@ -5,17 +5,6 @@
   "models": [0],
   "sims": [99],
   "recycle_meshes": true,
-  "break_points": {
-    "pre_java": false,
-    "pre_geom_run": false,
-    "post_geom_run": false,
-    "pre_mesh_proximal": false,
-    "post_mesh_proximal": false,
-    "pre_mesh_distal": false,
-    "post_mesh_distal": false,
-    "post_material_assign": false,
-    "pre_loop_currents": false
-  },
   "models_exit_status": [true],
   "endo_only_solution": true,
   "keep": {
