@@ -23,6 +23,7 @@ from src.core import Fascicle, Map, Nerve, Slide, Trace
 from src.utils import (
     Config,
     Configurable,
+    ContourMode,
     CuffInnerMode,
     DeformationMode,
     Exceptionable,
@@ -288,6 +289,7 @@ class Sample(Exceptionable, Configurable, Saveable):
         nerve_mode = self.search_mode(NerveMode, Config.SAMPLE)
         reshape_nerve_mode = self.search_mode(ReshapeNerveMode, Config.SAMPLE)
         deform_mode = self.search_mode(DeformationMode, Config.SAMPLE)
+        self.contour_mode = self.search_mode(ContourMode, Config.SAMPLE)
         deform_ratio = None
         scale_input_mode = self.search_mode(ScaleInputMode, Config.SAMPLE, optional=True)
         sample_rotation = self.search(Config.SAMPLE, "rotation", optional=True)
@@ -295,6 +297,9 @@ class Sample(Exceptionable, Configurable, Saveable):
         # For backwards compatibility, if scale mode is not specified assume a mask image is provided
         if scale_input_mode is None:
             scale_input_mode = ScaleInputMode.MASK
+
+        if self.contour_mode is None:
+            self.contour_mode = ContourMode.SIMPLE
 
         def exists(mask_file_name: MaskFileNames):
             return os.path.exists(mask_file_name.value)
@@ -333,8 +338,7 @@ class Sample(Exceptionable, Configurable, Saveable):
 
                 if len(img.shape) > 2 and img.shape[2] > 1:
                     img = img[:, :, 0]
-
-                contour, _ = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+                contour, _ = cv2.findContours(img, cv2.RETR_TREE, self.contour_mode.value)
                 if len(contour) > 1:
                     self.throw(124)
                 if len(contour) < 1:
@@ -372,9 +376,7 @@ class Sample(Exceptionable, Configurable, Saveable):
 
                 if exists(MaskFileNames.INNERS):
                     fascicles = Fascicle.to_list(
-                        MaskFileNames.INNERS.value,
-                        None,
-                        self.configs[Config.EXCEPTIONS.value],
+                        MaskFileNames.INNERS.value, None, self.configs[Config.EXCEPTIONS.value], self.contour_mode.value
                     )
                 else:
                     self.throw(21)
@@ -390,6 +392,7 @@ class Sample(Exceptionable, Configurable, Saveable):
                         MaskFileNames.INNERS.value,
                         MaskFileNames.OUTERS.value,
                         self.configs[Config.EXCEPTIONS.value],
+                        self.contour_mode.value,
                     )
                 else:
                     self.throw(22)
@@ -401,7 +404,9 @@ class Sample(Exceptionable, Configurable, Saveable):
                     o_image = os.path.split(MaskFileNames.COMPILED.value)[0] + 'o_from_c.tif'
                     self.io_from_compiled(MaskFileNames.COMPILED.value, i_image, o_image)
                     # then get fascicles
-                    fascicles = Fascicle.to_list(i_image, o_image, self.configs[Config.EXCEPTIONS.value])
+                    fascicles = Fascicle.to_list(
+                        i_image, o_image, self.configs[Config.EXCEPTIONS.value], self.contour_mode.value
+                    )
                 else:
                     self.throw(23)
 
@@ -418,7 +423,7 @@ class Sample(Exceptionable, Configurable, Saveable):
                     if len(img_nerve.shape) > 2 and img_nerve.shape[2] > 1:
                         img_nerve = img_nerve[:, :, 0]
 
-                    contour, _ = cv2.findContours(np.flipud(img_nerve), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+                    contour, _ = cv2.findContours(np.flipud(img_nerve), cv2.RETR_TREE, self.contour_mode.value)
                     nerve = Nerve(
                         Trace(
                             [point + [0] for point in contour[0][:, 0, :]],

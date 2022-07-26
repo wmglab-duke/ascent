@@ -9,6 +9,8 @@ The source code can be found on the following GitHub repository: https://github.
 import os
 from enum import Enum, unique
 
+import cv2
+
 
 class ASCENTEnum(Enum):
     def __eq__(self, other):
@@ -165,6 +167,14 @@ class DeformationMode(ASCENTEnum, Enum):
     NONE = None
     JITTER = 0
     PHYSICS = 1
+
+
+@unique
+class ContourMode(ASCENTEnum, Enum):
+    config = 'contour_approximation'
+
+    NONE = cv2.CHAIN_APPROX_NONE
+    SIMPLE = cv2.CHAIN_APPROX_SIMPLE
 
 
 # %% Fiber Position and Type
