@@ -22,17 +22,12 @@ First, these software packages must be manually installed:
   - Once COMSOL is installed, alter 'File System Access' permissions via File → Preferences → Security → Methods and Java Libraries → File System Access → All Files.
   - [https://www.comsol.com/product-download](https://www.comsol.com/product-download)
 - [NEURON 7.6](https://neuron.yale.edu/ftp/neuron/versions/v7.6/) (newer versions have been released, but compatibility has yet to be confirmed; choose appropriate installer depending on operating system; install auxiliary software as prompted by NEURON installer)
-  - [https://neuron.yale.edu/ftp/neuron/versions/v7.6/](https://neuron.yale.edu/ftp/neuron/versions/v7.6/)
-  - If having issues with the NEURON installation, try running the compatibility troubleshooter.
+  - Depending on your operating system, some additional dependencies may be required. 
+    - MacOS: Follow the (macOS NEURON dependency)[https://www.neuron.yale.edu/neuron/download/compilestd_osx] instructions (Step 1 ONLY)
+    - Linux: Follow the (Linux NEURON dependency)[https://www.neuron.yale.edu/neuron/download/compile_linux] instructions (Under "Install dependencies")
+  - Note: if having issues with the NEURON installation, try running the compatibility troubleshooter.
 
 In this stage of development, all programs/commands are run from a command line environment on both MacOS/Linux and Windows operating systems (Bash terminal for MacOS/Linux, Powershell for Windows). For users less familiar with this environment and for the quickest setup, it is suggested that the user install the package management system [Miniconda](https://docs.conda.io/en/latest/miniconda.html) or [Anaconda](https://www.anaconda.com/products/individual) (if using MacOS, choose .pkg for ease of use).
-
-Note that compiling NEURON files (when submitting sims) requires that the following packages be installed and on your path (Mac and Linux ONLY):
-
-- openmpi-2.0.0
-- libreadlines.so.6
-
-If using MacOS to run local NEURON simulations, it may be necessary to install the Xcode Command Line Tools via `xcode-select --install`, as well as [Xquartz](https://www.xquartz.org/releases/XQuartz-2.7.11.html).
 
 Users may also download a text editor or integrated development environment (IDE) of their choosing to view/edit code (e.g., [Atom](https://atom.io/), [Visual Studio Code](https://code.visualstudio.com/), [IntelliJ IDEA](https://www.jetbrains.com/idea/download/)). For Java code, full autocomplete functionality requires adding both the path to the COMSOL installation ending in `plugins` as well as the path `<ASCENT_PATH>/bin/json-20190722.jar` to the list of available libraries (usually from within the IDE’s project settings).
 
