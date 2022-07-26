@@ -62,7 +62,7 @@ repos:
     rev: v0.9.7
     hooks:
       - id: pymarkdown
-        args: ["-d", "md013", "scan", "README.md"]
+        args: ["-d", "md013,md034,md033,md036", "scan", "README.md"]
   # check config files
   - repo: https://github.com/python-jsonschema/check-jsonschema
     rev: 0.17.1
