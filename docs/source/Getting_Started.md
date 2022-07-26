@@ -4,28 +4,22 @@
 
 ### Installing commercial software
 
-It is _highly_ recommended that you use a distribution of Anaconda/Miniconda with ASCENT. However, advanced users who wish to use another Python distribution may.
+In ASCENT, all programs/commands are run from a command line environment (Bash terminal for MacOS/Linux, Powershell for Windows). It is _highly_ recommended that you install the package management system [Miniconda](https://docs.conda.io/en/latest/miniconda.html) or [Anaconda](https://www.anaconda.com/products/individual) (if using MacOS, choose .pkg for ease of use). However, advanced users who wish to use another Python distribution may.
 
 First, these software packages must be manually installed:
-
-- [Miniconda](https://docs.conda.io/en/latest/miniconda.html)/[Anaconda](https://www.anaconda.com/products/individual) We recommend that you install Miniconda (Miniconda is a stripped down version of Anaconda; Anaconda is optional for intermediate users). If you alread have an existing installation, there is no need to reinstall.
+- [Miniconda](https://docs.conda.io/en/latest/miniconda.html)/[Anaconda](https://www.anaconda.com/products/individual) We recommend that you install Miniconda (Miniconda is a stripped down version of Anaconda; Anaconda is optional for intermediate users). If you already have an existing installation, there is no need to reinstall.
   - Recommended: Select add to path
   - Recommended: Select "Install for individual user"
-  - https://docs.conda.io/en/latest/miniconda.html
-  - https://www.anaconda.com/products/individual
 - [Java SE Development Kit 8 (1.8)](https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html) (need to register for a free account)
-  - [https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html](https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html)
   - If your COMSOL version is 6.0 or greater, you may instead install [Java 11](https://www.oracle.com/java/technologies/downloads/#java11).
 - [COMSOL 5.4 or newer](https://www.comsol.com/product-download) (requires purchase of license; only based package needed, which includes the COMSOL Java API)
   - Once COMSOL is installed, alter 'File System Access' permissions via File → Preferences → Security → Methods and Java Libraries → File System Access → All Files.
-  - [https://www.comsol.com/product-download](https://www.comsol.com/product-download)
 - [NEURON 7.6](https://neuron.yale.edu/ftp/neuron/versions/v7.6/) (newer versions have been released, but compatibility has yet to be confirmed; choose appropriate installer depending on operating system; install auxiliary software as prompted by NEURON installer)
   - Depending on your operating system, some additional dependencies may be required. 
     - MacOS: Follow the (macOS NEURON dependency)[https://www.neuron.yale.edu/neuron/download/compilestd_osx] instructions (Step 1 ONLY)
     - Linux: Follow the (Linux NEURON dependency)[https://www.neuron.yale.edu/neuron/download/compile_linux] instructions (Under "Install dependencies")
+  - NEURON must be in your PATH in order to run simulations. Either choose the add to path option during installation, or on Linux, you can add to your bash profile: `export PATH=<path/to/neuron/>:$PATH`. Note: The NEURON path should end with `bin`.
   - Note: if having issues with the NEURON installation, try running the compatibility troubleshooter.
-
-In this stage of development, all programs/commands are run from a command line environment on both MacOS/Linux and Windows operating systems (Bash terminal for MacOS/Linux, Powershell for Windows). For users less familiar with this environment and for the quickest setup, it is suggested that the user install the package management system [Miniconda](https://docs.conda.io/en/latest/miniconda.html) or [Anaconda](https://www.anaconda.com/products/individual) (if using MacOS, choose .pkg for ease of use).
 
 Users may also download a text editor or integrated development environment (IDE) of their choosing to view/edit code (e.g., [Atom](https://atom.io/), [Visual Studio Code](https://code.visualstudio.com/), [IntelliJ IDEA](https://www.jetbrains.com/idea/download/)). For Java code, full autocomplete functionality requires adding both the path to the COMSOL installation ending in `plugins` as well as the path `<ASCENT_PATH>/bin/json-20190722.jar` to the list of available libraries (usually from within the IDE’s project settings).
 
