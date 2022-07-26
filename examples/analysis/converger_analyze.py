@@ -6,7 +6,7 @@ Please refer to the LICENSE.txt and README.txt files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 
 Use this script to run a convergence study.
-Error will be calculated for each model and sample with respect to the reference model
+Threshold error will be calculated for each model and sample with respect to the reference model.
 
 RUN THIS FROM REPOSITORY ROOT
 """
