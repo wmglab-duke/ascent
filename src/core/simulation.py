@@ -673,6 +673,23 @@ class Simulation(Exceptionable, Configurable, Saveable):
                         allthresh = False
         return allthresh
 
+    def activations_exist(sample: int, model: int, sim: int, sim_dir: str, source: str, n_amps: int):
+
+        allamp = True
+        for dirname in [f for f in os.listdir(source) if os.path.isdir(os.path.join(source, f))]:
+            this_sample, this_model, this_sim, product_index = tuple(dirname.split('_'))
+            if sample == int(this_sample) and model == int(this_model) and sim == int(this_sim):
+                nsim_dir = os.path.join(source, dirname)
+                outdir = os.path.join(nsim_dir, 'data', 'outputs')
+                indir = os.path.join(nsim_dir, 'data', 'inputs')
+                for file in [f for f in os.listdir(indir) if f.startswith('inner') and f.endswith('.dat')]:
+                    for amp in range(n_amps):
+                        target = os.path.join(outdir, 'activation_' + file.replace('.dat', '_amp{}.dat'.format(amp)))
+                        if not os.path.exists(target):
+                            print('Missing finite amp {}'.format(target))
+                            allamp = False
+        return allamp
+
     def potentials_exist(self, sim_dir: str) -> bool:
         """
         Return bool deciding if potentials have already been written

@@ -18,7 +18,7 @@ threshold-finding protocol ([Simulation Protocols](../../Running_ASCENT/Info.md#
 To declare this entity in `config/user/sims/`, use the
 following syntax:
 
-```
+```javascript
 {
   "pseudonym": String,
   "n_dimensions": Integer,
@@ -168,6 +168,7 @@ following syntax:
     "ind": Integer
   },
   "saving": {
+    "aploctime": Boolean,
     "space": {
       "vm": Boolean,
       "gating": Boolean,
@@ -192,7 +193,11 @@ following syntax:
     "mode": "FINITE_AMPLITUDES",
     "initSS": Double,
     "dt_initSS": Double,
-    "amplitudes": [Double, Double, ...]
+    "amplitudes": [Double, Double, ...],
+    "threshold": {
+      "value": Double,
+      "ap_detect_location": Double
+    }
   },
 
   // EXAMPLE PROTOCOL for ACTIVATION\_THRESHOLD
@@ -668,6 +673,13 @@ intracellular stimulus ([NEURON Scripts](../../Code_Hierarchy/NEURON)). Required
 which state variables NEURON will save during its simulations and at
 which times/locations ([NEURON Scripts](../../Code_Hierarchy/NEURON)). Required.
 
+- `“aploctime”`: The value (Boolean), if true, instructs the program to
+  save, for each fiber node, the last time that an action potential (defined
+  by the threshold value in your protocol) passed over that node. Times are
+  written in milliseconds from node 0 to node n (the last node). Note that
+  passive end nodes will always have a time of 0 (no action potential
+  detected.)
+
 - `“space”`:
 
   - `“vm”`: The value (Boolean), if true, tells the program to save
@@ -762,19 +774,20 @@ which times/locations ([NEURON Scripts](../../Code_Hierarchy/NEURON)). Required.
 - `“threshold”`: The JSON Object contains key-value pairs to define what
   constitutes threshold being achieved. Required for threshold finding
   protocols (i.e., `“ACTIVATION_THRESHOLDS”` and `“BLOCK_THRESHOLDS”`)
-  only.
+  only. Optional for `"FINITE_AMPLITUDES"` protocol. (In this case, defines the
+  threshold for checking if an amplitude activates the fiber being simulated.)
 
   - `“value”`: The value (Double, units: mV) is the transmembrane
     potential that must be crossed with a rising edge for the NEURON
     code to count an action potential. Required for threshold
     finding protocols (i.e., `“ACTIVATION_THRESHOLDS”` and
-    `“BLOCK_THRESHOLDS”`) only.
+    `“BLOCK_THRESHOLDS”`) only. Optional for `"FINITE_AMPLITUDES"` protocol.
 
   - `“n_min_aps”`: The value (Integer) is the number of action
     potentials that must be detected for the amplitude to be
     considered above threshold. Required for threshold finding
     protocols (i.e., `“ACTIVATION_THRESHOLDS”` and
-    `“BLOCK_THRESHOLDS”`) only.
+    `“BLOCK_THRESHOLDS”`) only. Ignored for `"FINITE_AMPLITUDES"` protocol
 
   - `“ap_detect_location”`: The value (Double) is the location
     (range 0 to 1, i.e., 0.9 is 90% of the fiber length in the
@@ -784,7 +797,7 @@ which times/locations ([NEURON Scripts](../../Code_Hierarchy/NEURON)). Required.
     end nodes, the user should not try to detect action potentials
     at either end of the fiber. Required for threshold finding
     protocols (i.e., `“ACTIVATION_THRESHOLDS”` and
-    `“BLOCK_THRESHOLDS”`) only.
+    `“BLOCK_THRESHOLDS”`) only. Optional for `"FINITE_AMPLITUDES"` protocol.
 
 - `“bounds_search”`: the value (JSON Object) contains key-value pairs
   to define how to search for upper and lower bounds in binary search

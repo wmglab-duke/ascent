@@ -17,7 +17,7 @@ To declare this entity in
 `samples/<sample_index>/models/<model_index>/model.json`, use
 the following syntax:
 
-```
+```javascript
 {
   "pseudonym": String,
   "modes": {
@@ -419,8 +419,6 @@ record of FEM solver processes. Automatically populated.
 - `“sol_time”`: (Double) Time (in milliseconds) elapsed in solving electric currents.
 
 - `“name”`: Solver identity (String) used to solve electric currents (i.e., COMSOL version).
-
-## Example
 
 ## Example
 

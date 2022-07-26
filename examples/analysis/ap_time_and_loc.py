@@ -32,7 +32,7 @@ q = Query(
 
 q.ap_time_and_location(
     delta_V=60,
-    plot=False,
+    plot=True,
     absolute_voltage=False,
     save=True,
     subplots=True,
