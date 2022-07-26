@@ -88,7 +88,7 @@ class Trace(Exceptionable):
         tuple_points = tuple([tuple(point[:2]) for point in self.points])
 
         # add points to clipper
-        pco.AddPath(tuple_points, pyclipper.JT_SQUARE, pyclipper.ET_CLOSEDPOLYGON)
+        pco.AddPath(tuple_points, pyclipper.JT_ROUND, pyclipper.ET_CLOSEDPOLYGON)
 
         if fit is not None:
             # find offset distance from factor and mean radius
@@ -99,6 +99,8 @@ class Trace(Exceptionable):
         # set new points of offset
         self.points = None
         newpoints = pco.Execute(distance)
+        # ensure closed loop
+        newpoints.append(newpoints[0])
         self.append([point + [0] for point in newpoints[np.argmax([len(l) for l in newpoints])]])
 
         # cleanup
@@ -250,7 +252,6 @@ class Trace(Exceptionable):
             )
 
             if Point(coordinate).within(trace_to_compare.polygon()):
-                # print('coord:{}, {}'.format(coordinate[0], coordinate[1]))
                 points.append(coordinate)
 
         return points
@@ -461,12 +462,10 @@ class Trace(Exceptionable):
         :return: string full path including extension that was written to
         """
         # add extension
-        # path += mode.value
         path += WriteMode.file_endings.value[mode.value]
 
         try:
             # open in write mode; "+" indicates to create file if not found
-            # print('writing to: {}'.format(path))
             with open(path, 'w+') as f:
                 count = self.count()
 
@@ -514,7 +513,6 @@ class Trace(Exceptionable):
         """
         copy = self.deepcopy()
         copy.shift(-np.array(list(copy.centroid()) + [0]))
-        # copy.down_sample(DownSampleMode.KEEP, 1)
 
         mass = 1
         radius = 1
@@ -534,7 +532,6 @@ class Trace(Exceptionable):
         :return: returns a list of static line segments that cannot be moved
         """
         copy = self.deepcopy()
-        # copy.down_sample(DownSampleMode.KEEP, 1)
 
         points = np.vstack((copy.points, copy.points[0]))
 
