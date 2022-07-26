@@ -19,7 +19,6 @@ following syntax:
 ```javascript
 {
   "pseudonym": String,
-  "submission_context": String,
   "sample": Integer, // note, only one value here!
   "models": [Integer, ...], // pipeline will create all pairwise combos of …
   "sims": [Integer, ...], // … models and sims
@@ -46,12 +45,6 @@ following syntax:
 
 `"pseudonym"`: This value (String) informs pipeline print statements, allowing
 users to better keep track of the purpose of each configuration file. Optional.
-
-`"submission_context"`: The value (String) of this property tells the
-system how to submit the n_sim NEURON jobs based on the computational
-resources available. Value can be "cluster", "local", or "auto" (if "auto", "hostname_prefix" is required). Required.
-
-`"hostname_prefix"`: This value (String) tells the program what prefix to look out for in the "HOSTNAME" environment variable. If the "HOSTNAME" begins with the "hostname prefix", submission context is set to cluster, otherwise it is set to local (does not change the value in the configuration file). Example: if your high performance computing cluster hostname always begins with ourclust, e.g. ourclust-node-15, ourclust-login-20, etc., you would set the value of this variable to "ourclust." If the "HOSTNAME" environment variable is not present, the program defaults to "local." Required if "submission_context" is "auto", otherwise Optional.
 
 `"sample"`: The value (Integer) of this property sets the sample
 configuration index ("**_Sample_**"). Note that this is only ever one
@@ -124,7 +117,7 @@ For more information see [Command Line Args](../../Running_ASCENT/command_line_a
 Overriden if the `"partial_fem"` command line argument is used. Optional.
 
 `"local_avail_cpus"`: The value (Integer) sets the number of CPUs that
-the program will take if the `"submission_context"` is "local". We check
+the program will take if you are running submit.py on a local computer. We check
 that the user is not asking for more than one less that the number of
 CPUs of their machine, such that at least one CPU is left for the
 machine to perform other processes. Optional, but if using submitting
