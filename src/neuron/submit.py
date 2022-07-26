@@ -107,6 +107,12 @@ parser.add_argument(
     type=str,
     help='For cluster submission: string for additional slurm parameters (enclose in quotes)',
 )
+parser.add_argument(
+    '-c',
+    '--force-recompile',
+    action='store_true',
+    help='Force submit.py to recompile NEURON files',
+)
 submit_context_group = parser.add_mutually_exclusive_group()
 submit_context_group.add_argument(
     '-L',
@@ -120,11 +126,10 @@ submit_context_group.add_argument(
     action='store_true',
     help='Set submission context to cluster, overrides run.json',
 )
+
 parser.add_argument('-v', '--verbose', action='store_true', help='Print detailed submission info')
 
-ALLOWED_SUBMISSION_CONTEXTS = ['cluster', 'local', 'auto']
 OS = 'UNIX-LIKE' if any([s in sys.platform for s in ['darwin', 'linux']]) else 'WINDOWS'
-
 
 # %% Set up utility functions
 
@@ -170,7 +175,6 @@ def load(config_path: str):
     :return: json data (usually dict or list)
     """
     with open(config_path, "r") as handle:
-        # print('load "{}" --> key "{}"'.format(config, key))
         return json.load(handle)
 
 
@@ -249,7 +253,7 @@ def get_thresh_bounds(args, sim_dir: str, sim_name: str, inner_ind: int):
     sim_config = load(os.path.join(sim_dir, sim_name, '{}.json'.format(n_sim)))
 
     if sim_config['protocol']['mode'] == 'ACTIVATION_THRESHOLD' or sim_config['protocol']['mode'] == 'BLOCK_THRESHOLD':
-        if 'scout' in sim_config['protocol']['bounds_search'].keys():
+        if 'scout' in sim_config['protocol']['bounds_search']:
             # load in threshold from scout_sim (example use: run centroid first, then any other xy-mode after)
             scout = sim_config['protocol']['bounds_search']['scout']
             scout_sim_dir = os.path.join('n_sims')
@@ -271,7 +275,7 @@ def get_thresh_bounds(args, sim_dir: str, sim_name: str, inner_ind: int):
                 unused_protocol_keys = ['top', 'bottom']
 
                 if any(
-                    unused_protocol_key in sim_config['protocol']['bounds_search'].keys()
+                    unused_protocol_key in sim_config['protocol']['bounds_search']
                     for unused_protocol_key in unused_protocol_keys
                 ):
                     if args.verbose:
@@ -345,6 +349,7 @@ def make_task(
                     sim_p, inner, fiber, top, bottom, diam, deltaz, axonnodes
                 ),
             ]
+
             if sub_con != 'cluster':
                 lines.remove('cd \"{}\"\n'.format(sim_p))
 
@@ -489,7 +494,7 @@ def cluster_submit(run_number: int, partition: str, args, mem: int = 2000, array
                     else:
                         diameter = sim_config['fibers']['z_parameters']['diameter']
 
-                    for fiber_file_ind, fiber_filename in enumerate(fibers_files):
+                    for fiber_filename in fibers_files:
                         master_fiber_name = str(fiber_filename.split('.')[0])
                         inner_name, fiber_name = tuple(master_fiber_name.split('_'))
                         inner_ind = int(inner_name.split('inner')[-1])
@@ -598,7 +603,6 @@ def cluster_submit(run_number: int, partition: str, args, mem: int = 2000, array
                             if not os.path.exists(thresh_path):
                                 if args.verbose:
                                     print(f"RUNNING inner ({inner_ind}) fiber ({fiber_ind})  -->  {thresh_path}")
-                                # time.sleep(1)
 
                                 if inner_fiber_diam_key is not None:
                                     diameter = get_diameter(inner_fiber_diam_key, inner_ind, fiber_ind)
@@ -887,12 +891,10 @@ def submit_run(sub_context, run_index, args):
         with multiprocessing.Pool(cpus) as p:
             # open pool instance, set up progress bar, and iterate over each job
             total_iterations = len(submit_list)
-            current_iteration = 0
             printProgressBar(0, total_iterations, length=40, prefix='Run {}:'.format(run_index))
             for i, _ in enumerate(p.imap_unordered(local_submit, submit_list, 1)):
-                current_iteration += 1
                 printProgressBar(
-                    current_iteration,
+                    i,
                     total_iterations,
                     length=40,
                     prefix='Run {}:'.format(run_index),
@@ -926,14 +928,20 @@ def main():
 
     run_inds = args.run_indices
     runs = []
-    submission_contexts = []
-    auto_compile_flags = []
 
     # compile MOD files if they have not yet been compiled
-    auto_compile()
+    auto_compile(args.force_recompile)
 
     summary = []
     rundata = []
+
+    # check for submission context
+    if args.cluster_submit:
+        submission_context = 'cluster'
+    elif args.local_submit:
+        submission_context = 'local'
+    else:
+        submission_context = 'cluster' if shutil.which('sbatch') is not None else 'local'
 
     for run_number in run_inds:
 
@@ -954,27 +962,6 @@ def main():
         # configuration is not empty
         assert len(run.items()) > 0, 'Encountered empty run configuration: {}'.format(filename)
 
-        submission_context = run.get('submission_context', 'cluster')
-
-        # submission context is valid
-        assert submission_context in ALLOWED_SUBMISSION_CONTEXTS, 'Invalid submission context: {}'.format(
-            submission_context
-        )
-
-        # check for auto submission context
-        if submission_context == 'auto':
-            host = os.environ.get("HOSTNAME")
-            prefix = run.get('hostname_prefix')
-            if host is not None and host.startswith(prefix):
-                submission_context = 'cluster'
-            else:
-                submission_context = 'local'
-
-        submission_contexts.append(submission_context)
-
-        auto_compile_flag = run.get('override_compiled_mods', False)
-        auto_compile_flags.append(auto_compile_flag)
-
         # get list of fibers to run
         if args.skip_summary:
             'Skipping summary generation, submitting fibers...'
@@ -990,12 +977,6 @@ def main():
                 }
             )
     # check that all submission contexts are the same
-    if args.local_submit is True:
-        submission_contexts = ['local' for i in submission_contexts]
-    if args.cluster_submit is True:
-        submission_contexts = ['cluster' for i in submission_contexts]
-    if not np.all([x == submission_contexts[0] for x in submission_contexts]):
-        sys.exit('Runs with different submission contexts cannot be submitted at the same time')
     if not args.skip_summary:
         # format run data
         n_fibers = sum([len(x) for x in summary])
@@ -1003,20 +984,20 @@ def main():
         df.RUN = df.RUN.astype(int)
         df = df.sort_values('RUN')
         # print out and check that the user is happy
-        print('Submitting the following runs (submission_context={}):'.format(submission_contexts[0]))
+        print('Submitting the following runs (submission_context={}):'.format(submission_context))
         print(df.to_string(index=False))
         print('Will result in running {} fiber simulations'.format(n_fibers))
         if n_fibers == 0:
             sys.exit('Exiting...')
         proceed = input('\t Would you like to proceed?\n' '\t\t 0 = NO\n' '\t\t 1 = YES\n')
-        if not int(proceed) == 1:
+        if int(proceed) != 1:
             sys.exit()
         else:
             print('Proceeding...\n')
 
-    for sub_context, run_index in zip(submission_contexts, runs):
+    for run_index in runs:
         try:
-            submit_run(sub_context, run_index, args)
+            submit_run(submission_context, run_index, args)
         except Exception:
             traceback.print_exc()
             print(
