@@ -31,15 +31,32 @@ Saving/loading the file to/from memory is likely to reorder the contents
 of the file.
 
 .. toctree::
+   :maxdepth: 1
+   :caption: Standard User Configuration Files
 
-    run
-    sample
-    model
-    sim
-    mock_sample
-    query_criteria
-    env
-    exceptions
-    materials
-    ci_peri_thickness
-    mesh_dependent_model
+   run
+   sample
+   model
+   sim
+
+Special Use Configuration Files
+##################################
+
+.. toctree::
+   :maxdepth: 1
+
+   mock_sample
+   query_criteria
+
+
+System Configuration Files
+##################################
+
+.. toctree::
+   :maxdepth: 1
+
+   env
+   exceptions
+   materials
+   ci_peri_thickness
+   mesh_dependent_model
