@@ -87,7 +87,7 @@ class Sample(Exceptionable, Configurable, Saveable):
         NOTE: the Config.SAMPLE json must have been externally added.
         :param map_mode: should be old for now, but keeping as parameter in case needed in future
         """
-        if Config.SAMPLE.value not in self.configs.keys():
+        if Config.SAMPLE.value not in self.configs:
             self.throw(38)
 
         # Make a slide map
@@ -209,6 +209,8 @@ class Sample(Exceptionable, Configurable, Saveable):
         #           if not abiding, rename files so that they abide
         if len(self.map.slides) == 1:
             source_dir = os.path.join(*self.map.slides[0].data()[3])
+            if not os.path.exists(source_dir) or len(os.listdir(source_dir)) == 0:
+                self.throw(148)
             # convert any TIFF to TIF
             [os.rename(x, os.path.splitext(x)[0] + '.tif') for x in os.listdir(source_dir)]
             source_files = os.listdir(source_dir)
