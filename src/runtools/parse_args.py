@@ -14,9 +14,8 @@ class versionAction(argparse.Action):
 parser = argparse.ArgumentParser(
     description='ASCENT: Automated Simulations to Characterize Electrical Nerve Thresholds'
 )
-# parser.add_argument('-s','--silent',action='store_true', help = 'silence printing')
 parser.add_argument('-v', '--verbose', action='store_true', help='verbose printing')
-parser.add_argument('-V', '--version', action=versionAction, nargs=0, help='print version')
+parser.add_argument('--version', action=versionAction, nargs=0, help='print version')
 parser.add_argument(
     '-l',
     '--list',
@@ -24,20 +23,11 @@ parser.add_argument(
     help='List all available indices for the specified option',
 )
 
-# add subparsers
+# add subparsers for each script
 subparsers = parser.add_subparsers(help='which script to run', dest='script')
-pipeline_parser = subparsers.add_parser('pipeline', help='main ASCENT pipeline')
-install_parser = subparsers.add_parser('install', help='install ASCENT')
-env_parser = subparsers.add_parser('env_setup', help='Set ASCENT environment variables')
-cs_parser = subparsers.add_parser(
-    'clean_samples',
-    help='Remove all files except those specified from Sample directories',
-)
-nsims_parser = subparsers.add_parser('import_n_sims', help='Move NEURON outputs into ASCENT directories for analysis')
-mmg_parser = subparsers.add_parser('mock_morphology_generator', help='Generate mock morpology for an ASCENT run')
-ts_parser = subparsers.add_parser('tidy_samples', help='Remove specified files from Sample directories')
 
-# add subparser arguments
+# add parser for pipeline
+pipeline_parser = subparsers.add_parser('pipeline', help='main ASCENT pipeline')
 pipeline_parser.add_argument(
     'run_indices',
     type=int,
@@ -110,7 +100,13 @@ prog_group.add_argument(
     action='store_true',
     help="Show COMSOL progress in a pop-up window",
 )
+# add parser for tidy samples
+ts_parser = subparsers.add_parser('tidy_samples', help='Remove specified files from Sample directories')
 ts_parser.add_argument('sample_indices', nargs='+', type=int, help='Space separated sample indices to tidy')
+ts_parser.add_argument('-f', '--filename', type=str, help='Filename to clear')
+
+# add parser for import n sims
+nsims_parser = subparsers.add_parser('import_n_sims', help='Move NEURON outputs into ASCENT directories for analysis')
 nsims_parser.add_argument('run_indices', nargs='+', type=int, help='Space separated run indices to import')
 nsims_group = nsims_parser.add_mutually_exclusive_group()
 nsims_group.add_argument(
@@ -125,14 +121,32 @@ nsims_group.add_argument(
     action='store_true',
     help='After importing delete n_sim folder from NSIM_EXPORT_PATH',
 )
+
+# add clean samples parser
+cs_parser = subparsers.add_parser(
+    'clean_samples',
+    help='Remove all files except those specified from Sample directories',
+)
+cs_parser.add_argument(
+    '-R', '--full-reset', action='store_true', help='Clear all files except sample.json and model.json'
+)
 cs_parser.add_argument(
     'sample_indices',
     nargs='+',
     type=int,
     help='Space separated sample indices to clean',
 )
+
+# add mock sample parser
+mmg_parser = subparsers.add_parser('mock_morphology_generator', help='Generate mock morpology for an ASCENT run')
 mmg_parser.add_argument('mock_sample_index', type=int, help='Mock Sample Index to generate')
+
+# Parser for install.py
+install_parser = subparsers.add_parser('install', help='install ASCENT')
 install_parser.add_argument('--no-conda', action='store_true', help='Skip conda portion of installation')
+
+# parser for env setup
+env_parser = subparsers.add_parser('env_setup', help='Set ASCENT environment variables')
 
 
 def parse():
