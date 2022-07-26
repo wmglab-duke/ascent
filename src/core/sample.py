@@ -391,7 +391,7 @@ class Sample(Exceptionable, Configurable, Saveable):
 
             elif mask_input_mode == MaskInputMode.OUTERS:
                 # fascicles = Fascicle.outer_to_list(MaskFileNames.OUTERS.value,
-                #                                    self.configs[Config.EXCEPTIONS.value])
+                # self.configs[Config.EXCEPTIONS.value])
                 self.throw(20)
 
             elif mask_input_mode == MaskInputMode.INNER_AND_OUTER_SEPARATE:
