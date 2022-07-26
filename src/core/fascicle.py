@@ -253,6 +253,7 @@ class Fascicle(Exceptionable):
         inner_img_path: str,
         outer_img_path: str,
         exception_config,
+        contour_mode,
         plot: bool = False,
         z: float = 0,
     ) -> List['Fascicle']:
@@ -273,7 +274,7 @@ class Fascicle(Exceptionable):
 
         def build_traces(path: str) -> List[Trace]:
             # default findContours params
-            params = [cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE]
+            params = [cv2.RETR_TREE, contour_mode]
             # default findContours params
 
             img = np.flipud(cv2.imread(path, -1))

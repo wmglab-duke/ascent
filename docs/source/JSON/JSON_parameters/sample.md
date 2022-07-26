@@ -14,7 +14,7 @@ in the FEM (**_Sample_**) ([Creating Nerve Morphology in COMSOL](../../Code_Hier
 To declare this entity in
 `samples/<sample_index>/sample.json`, use the following syntax:
 
-```
+```javascript
 {
   "sample": String,
   "pseudonym": String,
@@ -36,7 +36,8 @@ To declare this entity in
     "deform": String,
     "ci_perineurium_thickness": String,
     "reshape_nerve": String,
-    "shrinkage_definition": String
+    "shrinkage_definition": String,
+    "contour_approximation": String,
   },
   "smoothing": {
     "nerve_distance": Double,
@@ -144,25 +145,25 @@ records only.
 
   - As listed in Enums ([Enums](../../Code_Hierarchy/Python.md#enums)), modes include
 
-    1.  `“INNERS”`: Program expects segmented images of only inner
-        fascicle boundaries.
+    1. `“INNERS”`: Program expects segmented images of only inner
+       fascicle boundaries.
 
-    2.  `“INNER_AND_OUTER_SEPARATE”`: Program expects segmented
-        image of inners in one file and segmented image of outers in
-        another file.
+    2. `“INNER_AND_OUTER_SEPARATE”`: Program expects segmented
+       image of inners in one file and segmented image of outers in
+       another file.
 
-    3.  `“INNER_AND_OUTER_COMPILED”`: Program expects a single
-        segmented image containing boundaries of both inners and
-        outers.
+    3. `“INNER_AND_OUTER_COMPILED”`: Program expects a single
+       segmented image containing boundaries of both inners and
+       outers.
 
 - `“scale_input”`: The value (String) is the `“ScaleInputMode”`
   that tells the program which type of scale input to look for.
 
   - As listed in Enums ([Enums](../../Code_Hierarchy/Python.md#enums)), known `“ScaleInputModes”` include
 
-    1.  `“MASK”`: The program will determine image scale from the user's scale bar mask image and the `scale_bar_length` parameter.
-    2.  `“RATIO”`: The program will use the scale directly specified in `scale_ratio`. If using this option, a scale bar image need not be
-        provided.
+    1. `“MASK”`: The program will determine image scale from the user's scale bar mask image and the `scale_bar_length` parameter.
+    2. `“RATIO”`: The program will use the scale directly specified in `scale_ratio`. If using this option, a scale bar image need not be
+       provided.
 
 - `“nerve”`: The value (String) is the `“NerveMode”` that tells the
   program if there is an outer nerve boundary (epineurium) segmented
@@ -170,15 +171,15 @@ records only.
 
   - As listed in Enums ([Enums](../../Code_Hierarchy/Python.md#enums)), known modes include
 
-    1.  `“PRESENT”`: Program expects a segmented image for a nerve
-        (`n.tif`) to incorporate into the model. The value must be
-        PRESENT if multifascicular nerve, but can also be PRESENT
-        if monofascicular.
+    1. `“PRESENT”`: Program expects a segmented image for a nerve
+       (`n.tif`) to incorporate into the model. The value must be
+       PRESENT if multifascicular nerve, but can also be PRESENT
+       if monofascicular.
 
-    2.  `“NOT_PRESENT”`: Program does not try to incorporate a
-        nerve boundary into the model. The value cannot be
-        `NOT_PRESENT` if multifascicular nerve, but can be
-        `NOT_PRESENT` if monofascicular.
+    2. `“NOT_PRESENT”`: Program does not try to incorporate a
+       nerve boundary into the model. The value cannot be
+       `NOT_PRESENT` if multifascicular nerve, but can be
+       `NOT_PRESENT` if monofascicular.
 
 - `“deform”`: The value (String) is the `“DeformationMode”` that tells the
   program which method to use to deform the nerve within the cuff. If
@@ -188,19 +189,19 @@ records only.
 
   - As listed in Enums ([Enums](../../Code_Hierarchy/Python.md#enums)), known modes include
 
-    1.  `“NONE”`: The program does not deform the nerve when it is
-        placed in the cuff electrode. In the pipeline’s current
-        implementation, this should be the value for all nerve
-        samples without epineurium (i.e., `“NOT_PRESENT”` for
-        “nerve”).
+    1. `“NONE”`: The program does not deform the nerve when it is
+       placed in the cuff electrode. In the pipeline’s current
+       implementation, this should be the value for all nerve
+       samples without epineurium (i.e., `“NOT_PRESENT”` for
+       “nerve”).
 
-    2.  `“PHYSICS”`: The program uses a physics-based deformation of
-        the nerve to the final inner profile of the nerve cuff,
-        morphing from the original trace towards a circular trace.
-        In the pipeline’s current implementation, this is the
-        only `“DeformationMode”` for deforming compound nerve
-        samples. See `“deform_ratio”` below; if `deform_ratio = 0`,
-        then the original nerve trace is used and if `deform_ratio = 1`, then the nerve trace will be made circular.
+    2. `“PHYSICS”`: The program uses a physics-based deformation of
+       the nerve to the final inner profile of the nerve cuff,
+       morphing from the original trace towards a circular trace.
+       In the pipeline’s current implementation, this is the
+       only `“DeformationMode”` for deforming compound nerve
+       samples. See `“deform_ratio”` below; if `deform_ratio = 0`,
+       then the original nerve trace is used and if `deform_ratio = 1`, then the nerve trace will be made circular.
 
 - `“ci_perineurium_thickness”`: The value (String) is the
   `“PerineuriumThicknessMode”` that tells the program which method to
@@ -252,6 +253,15 @@ records only.
     4. `“AREA_FORWARDS”`: The value for "scale"->"shrinkage" refers to how much the area
        of the nerve cross section increases from the imaged tissue to the fresh tissue.
        - Formula: A_post = A_original / (1+shrinkage)
+
+- `“contour_approximation”`: The value (String) is the `“ContourMode”`
+  that tells the program which method to use for approximating contours derived from
+  input morphology masks. See the [OpenCV Contour Documentation](https://docs.opencv.org/4.x/d4/d73/tutorial_py_contours_begin.html) for more information on how these modes function.
+
+  - As listed in Enums ([Enums](../../Code_Hierarchy/Python.md#enums)), known `“ContourModes”` include:
+
+    1. `“SIMPLE”`: Contours are generated using cv2.CHAIN_APPROX_SIMPLE.
+    2. `“NONE”`: Contours are generated using cv2.CHAIN_APPROX_NONE.
 
 `“smoothing”`: Smoothing is applied via a dilating the nerve/fascicle boundary by a specified distance value and then shrinking it by that same value.
 
