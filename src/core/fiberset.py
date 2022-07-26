@@ -18,6 +18,7 @@ import numpy as np
 import scipy.stats as stats
 from shapely.affinity import scale
 from shapely.geometry import LineString, Point
+from shapely.ops import unary_union
 
 from src.utils import (
     Config,
@@ -77,6 +78,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         fibers_xy = self._generate_xy(sim_directory)
         self.out_to_fib, self.out_to_in = self._generate_maps(fibers_xy)
         self.fibers = self._generate_z(fibers_xy, super_sample=super_sample)
+        self.validate()
 
         return self
 
@@ -307,7 +309,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                     next(f)
                     reader = csv.reader(f, delimiter=" ")
                     for row in reader:
-                        points.append(tuple([float(row[0]), float(row[1])]))
+                        points.append(tuple(float(row[0]), float(row[1])))
 
                 # check that all fibers are within exactly one inner
                 for fiber in points:
@@ -596,7 +598,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             # use key from above to get myelination mode from fiber_z
             diams = []
             diameter = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'diameter')
-            diam_distribution: bool = True if type(diameter) is dict else False
+            diam_distribution: bool = type(diameter) is dict
 
             if super_sample:
                 myelinated = False
@@ -617,7 +619,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                         fiber_geometry_mode_name,
                         'sampling',
                     )
-                    if myelinated and not (sampling_mode == MyelinatedSamplingType.INTERPOLATION.value):
+                    if myelinated and sampling_mode != MyelinatedSamplingType.INTERPOLATION.value:
                         self.throw(104)
 
                     distribution_mode_name = self.search(
@@ -733,7 +735,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
             else:  # UNMYELINATED
                 if super_sample:
-                    if 'dz' in self.configs[Config.SIM.value]['supersampled_bases'].keys():
+                    if 'dz' in self.configs[Config.SIM.value]['supersampled_bases']:
                         delta_z = self.search(Config.SIM, 'supersampled_bases', 'dz')
                         my_z_seed = 123
                     else:
@@ -784,3 +786,14 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             self.throw(31)
 
         return fibers
+
+    def validate(self):
+        """Check to ensure fiberset is valid"""
+        # check that all fibers are inside inners, accounting for trace buffer
+        buffer: float = self.search(Config.SIM, 'fibers', 'xy_trace_buffer')
+        all_inners = [inner.deepcopy() for fascicle in self.sample.slides[0].fascicles for inner in fascicle.inners]
+        [inner.offset(distance=-buffer) for inner in all_inners]
+        allpoly = unary_union([inner.polygon() for inner in all_inners])
+        if not np.all([Point(fiber).within(allpoly) for fiber in self.fibers]):
+            self.throw(147)
+        # add other checks below
