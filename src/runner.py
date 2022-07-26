@@ -123,11 +123,8 @@ class Runner(Exceptionable, Configurable):
         Simulation.export_neuron_files(os.environ[Env.NSIM_EXPORT_PATH.value])
         Simulation.export_system_config_files(os.path.join(os.environ[Env.NSIM_EXPORT_PATH.value], 'config', 'system'))
 
-        if (
-            'break_points' in self.configs[Config.RUN.value].keys()
-            and sum(self.search(Config.RUN, 'break_points').values()) > 1
-        ):
-            self.throw(76)
+        if 'break_points' in self.configs[Config.RUN.value].keys():
+            warnings.warn("Specifying break points in run.json is deprecated, and has no effect.")
 
         if (
             'partial_fem' in self.configs[Config.RUN.value].keys()

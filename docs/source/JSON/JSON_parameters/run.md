@@ -16,7 +16,7 @@ successful/failed FEMs in Java.
 To declare this entity in `config/user/runs/`, use the
 following syntax:
 
-```
+```javascript
 {
   "pseudonym": String,
   "submission_context": String,
@@ -24,17 +24,6 @@ following syntax:
   "models": [Integer, ...], // pipeline will create all pairwise combos of …
   "sims": [Integer, ...], // … models and sims
   "recycle_meshes": Boolean,
-  "break_points": {
-    "pre_java": Boolean, // before Runner’s handoff() method to Java/COMSOL
-    "pre_geom_run": Boolean, // immediately before geometry operations
-    "post_geom_run": Boolean, // immediately after geometry operations
-    "pre_mesh_proximal": Boolean, // immediately before mesh prox operations
-    "post_mesh_proximal": Boolean, // immediately post mesh prox operations
-    "pre_mesh_distal": Boolean, // immediately before mesh dist operations
-    "post_mesh_distal": Boolean, // immediately post mesh dist operations
-    "post_material_assign": Boolean, // immediately post assigning materials
-    "pre_loop_currents": Boolean // immediately before solving for bases
-  },
   "models_exit_status": [Boolean, ...], // one entry for each Model
   "endo_only_solution": Boolean,
   "keep": {
@@ -80,16 +69,6 @@ FEM mesh if set to true. If this property is not specified, the default
 behavior of the pipeline is false, meaning that it will not search for
 and recycle a mesh match (see `ModelSearcher` ([Java Utility Classes](../../Code_Hierarchy/Java.md#java-utility-classes)) and
 `mesh_dependent_model.json` ([Mesh Dependent Model](../../JSON/JSON_parameters/mesh_dependent_model))). Optional.
-
-`"break_points"`: The value (Boolean) of each breakpoint results in the
-program terminating or continuing with the next **_Model_** index. In
-Runner, the program checks that at most one breakpoint is true and
-throws an exception otherwise. The breakpoint locations enable the user
-to run only up to certain steps of the pipeline, which can be
-particularly useful for debugging. If a breakpoint is not defined, the
-default behavior is false (i.e., the pipeline continues beyond the
-breakpoint). Note: specifying a break point via command line arguments
-will override any break points set in your run config. Optional.
 
 `"endo_only_solution"`: The value (Boolean) determines what data the electric currents
 solution will save. Since fibers are sampled from the endoneurium, after the
@@ -139,9 +118,10 @@ is treated as false, meaning that the `"debug_geom.mph"` file will
 contain the nerve and cuff electrode. An error is thrown if the user may
 set both values for `"cuff_only"` and `"nerve_only"` to true. To build the
 geometry of both the cuff and the nerve, but not proceed with meshing or
-solving the FEM, the user should set the value for `"post_geom_run"`
-under `"break_points"` to true. Overriden
-if the `"partial_fem"` command line argument is used. Optional.
+solving the FEM, the user should use the `"post_geom_run"`
+break point. (e.g. `python run pipeline --break-point post_geom_run <run_indices>`.
+For more information see [Command Line Args](../../Running_ASCENT/command_line_args).
+Overriden if the `"partial_fem"` command line argument is used. Optional.
 
 `"local_avail_cpus"`: The value (Integer) sets the number of CPUs that
 the program will take if the `"submission_context"` is "local". We check
