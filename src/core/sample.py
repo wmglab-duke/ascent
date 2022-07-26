@@ -1,6 +1,7 @@
 #!/usr/bin/env python3.7
 
-"""
+"""Defines the Sample class.
+
 The copyrights of this software are owned by Duke University.
 Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
@@ -9,9 +10,7 @@ The source code can be found on the following GitHub repository: https://github.
 
 import os
 import shutil
-import subprocess
-import sys
-from typing import List, Tuple, Union
+from typing import List, Optional, Tuple
 
 import cv2
 import matplotlib.pyplot as plt
@@ -45,18 +44,20 @@ from .deformable import Deformable
 
 
 class Sample(Exceptionable, Configurable, Saveable):
-    """
+    """Instantiate Sample, a collection of Slides.
+
     Required (Config.) JSON's:
         SAMPLE
         RUN
     """
 
     def __init__(self, exception_config: list):
-        """
+        """Initialize Sample.
+
         :param master_config: preloaded configuration data for master
         :param exception_config: preloaded configuration data for exceptions
         :param map_mode: setup mode. If you want to build a new map from a directory, then NEW. Otherwise, or if for
-        a single slide, OLD.
+            a single slide, OLD.
         """
 
         # Initializes superclasses
@@ -70,7 +71,7 @@ class Sample(Exceptionable, Configurable, Saveable):
         self.map = None
 
         # Set instance variable morphology
-        self.morphology = dict()
+        self.morphology = {}
 
         # Add JSON for perineurium thickness relationship with nerve morphology metrics
         # used to calculate contact impedances if "use_ci" is True
@@ -81,8 +82,9 @@ class Sample(Exceptionable, Configurable, Saveable):
         )
 
     def init_map(self, map_mode: SetupMode) -> 'Sample':
-        """
-        Initialize the map. NOTE: the Config.SAMPLE json must have been externally added.
+        """Initialize the map.
+
+        NOTE: the Config.SAMPLE json must have been externally added.
         :param map_mode: should be old for now, but keeping as parameter in case needed in future
         """
         if Config.SAMPLE.value not in self.configs.keys():
@@ -96,8 +98,8 @@ class Sample(Exceptionable, Configurable, Saveable):
         return self
 
     def scale(self, factor) -> 'Sample':
-        """
-        Scale all slides to the correct unit.
+        """Scale all slides to the correct unit.
+
         :param factor: factor by which to scale the image (1=no change)
         """
         for slide in self.slides:
@@ -106,8 +108,8 @@ class Sample(Exceptionable, Configurable, Saveable):
         return self
 
     def smooth(self, n_distance, i_distance) -> 'Sample':
-        """
-        Smooth traces for all slides
+        """Smooth traces for all slides.
+
         :param n_distance: distance to inflate and deflate the nerve trace
         :param i_distance: distance to inflate and deflate the fascicle traces
         """
@@ -126,8 +128,8 @@ class Sample(Exceptionable, Configurable, Saveable):
         return self
 
     def im_preprocess(self, path):
-        """
-        Performs cleaning operations on the input image
+        """Performs cleaning operations on the input image.
+
         :param path: path to image which will be processed
         """
         img = cv2.imread(path, -1)
@@ -207,6 +209,8 @@ class Sample(Exceptionable, Configurable, Saveable):
         #           if not abiding, rename files so that they abide
         if len(self.map.slides) == 1:
             source_dir = os.path.join(*self.map.slides[0].data()[3])
+            # convert any TIFF to TIF
+            [os.rename(x, os.path.splitext(x)[0] + '.tif') for x in os.listdir(source_dir)]
             source_files = os.listdir(source_dir)
             for mask_fname in [f.value for f in MaskFileNames if f.value in source_files]:
                 shutil.move(
@@ -228,28 +232,32 @@ class Sample(Exceptionable, Configurable, Saveable):
                 if not os.path.exists(directory_part):
                     os.makedirs(directory_part)
                 os.chdir(directory_part)
-                if scale_input_mode == ScaleInputMode.MASK:
-                    # only try to copy scale image if it is being used
-                    if (directory_part == str(sample_index)) and not scale_was_copied:
-                        scale_source_file = os.path.join(
-                            start_directory,
-                            *source_directory,
-                            '_'.join(
-                                [
-                                    sample,
-                                    cassette,
-                                    number,
-                                    MaskFileNames.SCALE_BAR.value,
-                                ]
-                            )
-                        )
-                        if os.path.exists(scale_source_file):
-                            shutil.copy2(scale_source_file, MaskFileNames.SCALE_BAR.value)
-                        else:
-                            print('ERROR: scale_source_file: {} not found'.format(scale_source_file))
-                            self.throw(98)
+                # only try to copy scale image if it is being used
 
-                        scale_was_copied = True
+                if (
+                    scale_input_mode == ScaleInputMode.MASK
+                    and (directory_part == str(sample_index))
+                    and not scale_was_copied
+                ):
+                    scale_source_file = os.path.join(
+                        start_directory,
+                        *source_directory,
+                        '_'.join(
+                            [
+                                sample,
+                                cassette,
+                                number,
+                                MaskFileNames.SCALE_BAR.value,
+                            ]
+                        )
+                    )
+                    if os.path.exists(scale_source_file):
+                        shutil.copy2(scale_source_file, MaskFileNames.SCALE_BAR.value)
+                    else:
+                        print('ERROR: scale_source_file: {} not found'.format(scale_source_file))
+                        self.throw(98)
+
+                    scale_was_copied = True
 
             for target_file in [item.value for item in MaskFileNames if item != MaskFileNames.SCALE_BAR]:
                 source_file = os.path.join(
@@ -270,7 +278,8 @@ class Sample(Exceptionable, Configurable, Saveable):
             return self
 
     def populate(self) -> 'Sample':
-        """
+        """Main method which processes a Sample.
+
         :return:
         """
 
@@ -310,32 +319,13 @@ class Sample(Exceptionable, Configurable, Saveable):
 
         for slide_info in self.map.slides:
 
-            orientation_centroid: Union[Tuple[float, float], None] = None
+            orientation_centroid: Optional[Tuple[float, float]] = None
 
             # unpack data and force cast to string
             cassette, number, position, _ = slide_info.data()
             cassette, number = (str(item) for item in (cassette, number))
 
             os.chdir(os.path.join('samples', str(sample), 'slides', cassette, number, 'masks'))
-
-            # convert any TIFF to TIF
-            proc = None
-            if any(fname.endswith('.tiff') for fname in os.listdir('.')):
-                if sys.platform.startswith('darwin') or sys.platform.startswith('linux'):
-                    proc = subprocess.Popen(
-                        [
-                            'bash',
-                            'for file in *.tiff; do mv "$file" "${file%.tiff}.tif"; done',
-                        ]
-                    )
-                else:
-                    proc = subprocess.Popen(
-                        [
-                            'powershell.exe',
-                            'Dir | Rename-Item –NewName { $_.name –replace ".tiff",".tif" }',
-                        ]
-                    )
-                proc.wait()
 
             if exists(MaskFileNames.ORIENTATION):
 
@@ -557,12 +547,12 @@ class Sample(Exceptionable, Configurable, Saveable):
             partially_deformed_nerve = None
 
             if deform_mode == DeformationMode.PHYSICS:
-                if 'morph_count' in self.search(Config.SAMPLE).keys():
+                if 'morph_count' in self.search(Config.SAMPLE):
                     morph_count = self.search(Config.SAMPLE, 'morph_count')
                 else:
                     morph_count = 100
 
-                if 'deform_ratio' in self.search(Config.SAMPLE).keys():
+                if 'deform_ratio' in self.search(Config.SAMPLE):
                     deform_ratio = self.search(Config.SAMPLE, 'deform_ratio')
                     print('\tdeform ratio set to {}'.format(deform_ratio))
                 else:
@@ -573,7 +563,7 @@ class Sample(Exceptionable, Configurable, Saveable):
 
                 print('\tensuring minimum fascicle separation of {} um'.format(sep_fascicles))
 
-                if 'nerve' in self.search(Config.SAMPLE, 'boundary_separation').keys():
+                if 'nerve' in self.search(Config.SAMPLE, 'boundary_separation'):
                     sep_nerve = self.search(Config.SAMPLE, 'boundary_separation', 'nerve')
                     print('\tensuring minimum nerve:fascicle separation of {} um'.format(sep_nerve))
                     sep_nerve = sep_nerve - sep_fascicles / 2
@@ -615,7 +605,7 @@ class Sample(Exceptionable, Configurable, Saveable):
             else:  # must be DeformationMode.NONE
                 import warnings
 
-                if 'nerve' in self.search(Config.SAMPLE, 'boundary_separation').keys():
+                if 'nerve' in self.search(Config.SAMPLE, 'boundary_separation'):
                     sep_nerve = self.search(Config.SAMPLE, 'boundary_separation', 'nerve')
                 if sep_nerve != 0:
                     warnings.warn(
@@ -716,9 +706,7 @@ class Sample(Exceptionable, Configurable, Saveable):
         cv2.imwrite(o_out, compiled + imgnew)
 
     def write(self, mode: WriteMode) -> 'Sample':
-        """
-        Write entire list of slides.
-        """
+        """Write entire list of slides."""
 
         # get starting point so able to go back
         start_directory: str = os.getcwd()
