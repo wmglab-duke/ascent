@@ -128,22 +128,27 @@ class Sample(Exceptionable, Configurable, Saveable):
         """
         Performs cleaning operations on the input image
         :param path: path to image which will be processed
+        Important that at the very least image is converted to uint8
         """
-        img = cv2.imread(path, -1)
+        img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
+        if len(np.unique(img)) != 2:
+            self.throw(150)
 
-        if self.search(Config.SAMPLE, 'image_preprocessing', 'fill_holes', optional=True) == True:
+        if self.search(Config.SAMPLE, 'image_preprocessing', 'fill_holes', optional=True) is True:
             if self.search_mode(MaskInputMode, Config.SAMPLE) == MaskInputMode.INNER_AND_OUTER_COMPILED:
                 print(
-                    'WARNING: Skipping fill holes since MaskInputMode is INNER_AND_OUTER_COMPILED. Change fill_holes to False to suppress this warning.'
+                    'WARNING: Skipping fill holes since MaskInputMode is INNER_AND_OUTER_COMPILED. '
+                    'Change fill_holes to False to suppress this warning.'
                 )
             else:
-                img = binary_fill_holes(img).astype(int) * 255
+                img = binary_fill_holes(img).astype(int)
         removal_size = self.search(Config.SAMPLE, 'image_preprocessing', 'object_removal_area', optional=True)
         if removal_size:
             if removal_size < 0:
-                self.throw(119)
+                self.throw(120)
             img = morphology.remove_small_objects(img, removal_size)
-        cv2.imwrite(path, img)
+        imgout = (255 * (img / np.amax(img))).astype(np.uint8)
+        cv2.imwrite(path, imgout)
 
     def get_factor(
         self,
