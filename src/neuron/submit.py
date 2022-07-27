@@ -500,9 +500,6 @@ def cluster_submit(run_number: int, partition: str, args, mem: int = 2000, array
                         inner_ind = int(inner_name.split('inner')[-1])
                         fiber_ind = int(fiber_name.split('fiber')[-1])
 
-                        if sim_config['protocol']:
-                            pass
-
                         if sim_config['protocol']['mode'] == 'FINITE_AMPLITUDES':
                             n_amp = len(sim_config['protocol']['amplitudes'])
                             search_path = os.path.join(
@@ -609,9 +606,6 @@ def cluster_submit(run_number: int, partition: str, args, mem: int = 2000, array
                             inner_name, fiber_name = tuple(master_fiber_name.split('_'))
                             inner_ind = int(inner_name.split('inner')[-1])
                             fiber_ind = int(fiber_name.split('fiber')[-1])
-
-                            if sim_config['protocol']:
-                                pass
 
                             if sim_config['protocol']['mode'] == 'FINITE_AMPLITUDES':
                                 n_amp = len(sim_config['protocol']['amplitudes'])
@@ -819,31 +813,23 @@ def make_local_submission_list(run_number: int, args, summary_gen=False):
                         fiber_ind = int(fiber_name.split('fiber')[-1])
                         if sim_config['protocol']['mode'] == 'FINITE_AMPLITUDES':
                             n_amp = len(sim_config['protocol']['amplitudes'])
-                            activation_path = os.path.join(
+                            search_path = os.path.join(
                                 output_path,
                                 'activation_inner{}_fiber{}_amp{}.dat'.format(inner_ind, fiber_ind, n_amp - 1),
                             )
-                            if os.path.exists(activation_path):
-                                if not summary_gen and args.verbose:
-                                    print(
-                                        'Found {} -->\t\tskipping inner ({}) fiber ({})'.format(
-                                            activation_path, inner_ind, fiber_ind
-                                        )
-                                    )
-                                continue
                         else:
-                            thresh_path = os.path.join(
+                            search_path = os.path.join(
                                 output_path,
                                 'thresh_inner{}_fiber{}.dat'.format(inner_ind, fiber_ind),
                             )
-                            if os.path.exists(thresh_path):
-                                if not summary_gen and args.verbose:
-                                    print(
-                                        'Found {} -->\t\tskipping inner ({}) fiber ({})'.format(
-                                            thresh_path, inner_ind, fiber_ind
-                                        )
+                        if os.path.exists(search_path):
+                            if not summary_gen and args.verbose:
+                                print(
+                                    'Found {} -->\t\tskipping inner ({}) fiber ({})'.format(
+                                        search_path, inner_ind, fiber_ind
                                     )
-                                continue
+                                )
+                            continue
 
                         # local
                         start_path = os.path.join(
