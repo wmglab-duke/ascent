@@ -217,7 +217,7 @@ class Sample(Exceptionable, Configurable, Saveable):
             if not os.path.exists(source_dir) or len(os.listdir(source_dir)) == 0:
                 self.throw(148)
             # convert any TIFF to TIF
-            [os.rename(x, os.path.splitext(x)[0] + '.tif') for x in os.listdir(source_dir)]
+            [os.rename(x, os.path.splitext(x)[0] + '.tif') for x in os.listdir(source_dir) if x.endswith('.tiff')]
             source_files = os.listdir(source_dir)
             for mask_fname in [f.value for f in MaskFileNames if f.value in source_files]:
                 shutil.move(
