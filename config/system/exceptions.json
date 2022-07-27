@@ -594,5 +594,9 @@
   {
     "code": 149,
     "text": "Tried to generate perineurium, but fascicle already has an outer and at least one inner."
+  },
+  {
+    "code": 150,
+    "text": "Image provided is not binary"
   }
 ]
