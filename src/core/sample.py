@@ -139,6 +139,7 @@ class Sample(Configurable, Saveable):
         :raises ValueError: if object removal area is negative
         :raises MaskError: if the mask is not binary
         :param path: path to image which will be processed
+        Important that at the very least image is converted to uint8
         """
         img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
         if len(np.unique(img)) != 2:
