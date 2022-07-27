@@ -582,5 +582,9 @@
   {
     "code": 146,
     "text": "A white area which results in a fascicle trace with <3 points was detected. Check your input mask for specks."
+  },
+  {
+    "code": 150,
+    "text": "Image provided is not binary"
   }
 ]
