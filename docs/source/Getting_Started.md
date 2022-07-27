@@ -12,7 +12,7 @@ First, these software packages must be manually installed:
   - Recommended: Select "Install for individual user"
 - [Java SE Development Kit 8 (1.8)](https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html) (need to register for a free account)
   - If your COMSOL version is 6.0 or greater, you may instead install [Java 11](https://www.oracle.com/java/technologies/downloads/#java11).
-- [COMSOL 5.4 or newer](https://www.comsol.com/product-download) (requires purchase of license; only based package needed, which includes the COMSOL Java API)
+- [COMSOL Multiphysics 5.4 or newer](https://www.comsol.com/product-download) (requires purchase of license; only based package needed, which includes the COMSOL Java API)
   - Once COMSOL is installed, alter 'File System Access' permissions via File → Preferences → Security → Methods and Java Libraries → File System Access → All Files.
 - [NEURON 7.6](https://neuron.yale.edu/ftp/neuron/versions/v7.6/) (newer versions have been released, but compatibility has yet to be confirmed; choose appropriate installer depending on operating system; install auxiliary software as prompted by NEURON installer)
   - Depending on your operating system, some additional dependencies may be required. 
