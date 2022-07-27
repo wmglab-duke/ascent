@@ -919,7 +919,7 @@ def submit_run(sub_context, run_index, args):
             printProgressBar(0, total_iterations, length=40, prefix='Run {}:'.format(run_index))
             for i, _ in enumerate(p.imap_unordered(local_submit, submit_list, 1)):
                 printProgressBar(
-                    i,
+                    i + 1,
                     total_iterations,
                     length=40,
                     prefix='Run {}:'.format(run_index),
