@@ -122,8 +122,7 @@ class Waveform(Exceptionable, Configurable, Saveable):
         else:  # stimulation at higher frequency for block
             w = 2 * np.pi * f
 
-            # Parameter values from Tables II & III
-            # [TableII, TableIII]
+            # Parameter values from Tables II & III [TableII, TableIII]
             # R in ohm*cm^2
             # C in uF/cm^2
             r1a = np.mean([385, 493])
@@ -150,13 +149,13 @@ class Waveform(Exceptionable, Configurable, Saveable):
             za = (1 / r1a + 1j * w * c1a + 1 / (r2a + 1 / (1j * w * c2a))) ** (-1)
             za_mag = abs(za)
             za_mag = za_mag / 100**2  # [ohm-cm^2 -> ohm-m^2]
-            # sigmas_mag = 1 / za_mag  # [S/m^2]
+            # The equation: sigmas_mag = 1 / za_mag  # [S/m^2]
 
             # Model B: Z = [R1 // 1/(jwC1)] + [R2 // 1/(jwC2)]
             zb = (1 / r1b + 1j * w * c1b) ** (-1) + (1 / r2b + 1j * w * c2b) ** (-1)
             zb_mag = abs(zb)
             zb_mag = zb_mag / 100**2  # [ohm-cm^2 -> ohm-m^2]
-            # sigmas_mag = 1 / zb_mag  # [S/m^2]
+            # The equation: sigmas_mag = 1 / zb_mag  # [S/m^2]
 
             # Model C: Z = R2 // [ 1/(jwC2) + [R1 // 1/(jwC1)] ]
             tmp = (1 / r1c + 1j * w * c1c) ** (-1)  # [R1 // 1/(jwC1)]
@@ -164,7 +163,7 @@ class Waveform(Exceptionable, Configurable, Saveable):
             zc = (1 / r2c + 1 / tmp) ** (-1)
             zc_mag = abs(zc)
             zc_mag = zc_mag / 100**2  # [ohm-cm^2 -> ohm-m^2]
-            # sigmas_mag = 1 / zc_mag  # [S/m^2]
+            # The equation: sigmas_mag = 1 / zc_mag  # [S/m^2]
 
             # Model D: Z = (1/(jwC2)) // [ R2 + [R1 // 1/(jwC1)] ]
             tmp = (1 / r1d + 1j * w * c1d) ** (-1)  # [R1 // 1/(jwC1)]
@@ -172,7 +171,7 @@ class Waveform(Exceptionable, Configurable, Saveable):
             zd = (1j * w * c2d + 1 / tmp) ** (-1)
             zd_mag = abs(zd)
             zd_mag = zd_mag / 100**2  # [ohm-cm^2 -> ohm-m^2]
-            # sigmas_mag = 1 / zd_mag  # [S/m^2]
+            # The equation: sigmas_mag = 1 / zd_mag  # [S/m^2]
 
             # Mean of models A & B
             # Discussion indicates that models A & B are more likely candidates
@@ -408,11 +407,6 @@ class Waveform(Exceptionable, Configurable, Saveable):
 
                 # need to convert input explicit waveform to 'global' time discretization as used by NEURON
                 signal = sg.resample(explicit_wave, n_samples_resampled)
-
-                # plt.plot(np.linspace(0, self.dt*len(explicit_wave), len(explicit_wave)), explicit_wave, 'go-',
-                #          np.linspace(0, dt_resampled*len(wave), len(wave)), wave, '.-', 10)
-                # plt.legend(['explicit_wave', 'wave'], loc='best')
-                # plt.show()
 
             else:
                 signal = explicit_wave

@@ -16,7 +16,7 @@ from src.core.query import Query
 from src.utils import Object
 
 cwd = os.getcwd()
-root = os.path.abspath(os.path.join(*'../../'.split('/')))
+root = os.path.abspath(os.path.join('../../'))
 
 os.chdir(root)
 

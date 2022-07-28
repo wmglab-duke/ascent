@@ -37,7 +37,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
         Configurable.__init__(self)
 
         self.sample = sample
-        self.factors = dict()
+        self.factors = {}
         self.wave_product = []
         self.wave_key = []
         self.fiberset_product = []
@@ -53,7 +53,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
     def resolve_factors(self) -> 'Simulation':
 
         if len(self.factors.items()) > 0:
-            self.factors = dict()
+            self.factors = {}
 
         def search(dictionary, path):
             for key, value in dictionary.items():
@@ -66,7 +66,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
                     search(value, path + '->' + key)
 
         for flag in ['fibers', 'waveform', 'supersampled_bases']:
-            if flag in self.configs[Config.SIM.value].keys():
+            if flag in self.configs[Config.SIM.value]:
                 search(self.configs[Config.SIM.value][flag], flag)
 
         if len(self.factors.items()) != self.search(Config.SIM, "n_dimensions"):
@@ -112,7 +112,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
             self.fiberset_map_pairs.append((fiberset.out_to_fib, fiberset.out_to_in))
             self.fibersets.append(fiberset)
 
-        if 'supersampled_bases' not in self.configs[Config.SIM.value].keys():
+        if 'supersampled_bases' not in self.configs[Config.SIM.value]:
             generate_ss_bases = False
         else:
             generate_ss_bases: bool = self.search(Config.SIM, 'supersampled_bases', 'generate')
@@ -184,7 +184,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
         # if active_srcs in sim config has key for the cuff in your model, use the list of contact weights
         cuff = self.search(Config.MODEL, "cuff", "preset")
-        if cuff in self.configs[Config.SIM.value]["active_srcs"].keys():
+        if cuff in self.configs[Config.SIM.value]["active_srcs"]:
             active_srcs_list = self.search(Config.SIM, "active_srcs", cuff)
         else:
             ss = self.search(Config.SIM, 'supersampled_bases', optional=True)
@@ -253,7 +253,8 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
     def build_n_sims(self, sim_dir, sim_num) -> 'Simulation':
         def load(path: str):
-            return pickle.load(open(path, 'rb'))
+            with open(path, 'rb') as f:
+                return pickle.load(f)
 
         def make_inner_fiber_diam_key(my_xy_mode, my_p, my_nsim_inputs_directory, my_potentials_directory, my_file):
             inner_fiber_diam_key = []
@@ -347,7 +348,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
             xy_mode_name: str = self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode')
             xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
 
-            if 'supersampled_bases' not in self.configs[Config.SIM.value].keys():
+            if 'supersampled_bases' not in self.configs[Config.SIM.value]:
                 supersampled_bases = None
             else:
                 supersampled_bases: dict = self.search(Config.SIM, 'supersampled_bases')
@@ -356,7 +357,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
             # NOT SUPER SAMPLING - PROBED COMSOL AT /FIBERSETS --> /POTENTIALS
             if supersampled_bases is None or supersampled_bases.get('use') is False:
-                for root, dirs, files in os.walk(potentials_directory):
+                for _, _, files in os.walk(potentials_directory):
                     for file in files:
                         if re.match('[0-9]+\\.dat', file):
                             q = int(file.split('.')[0])
@@ -416,15 +417,15 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
                 source_dz = source_simulation.configs['sims']['supersampled_bases']['dz']
 
-                if 'dz' in supersampled_bases.keys():
+                if 'dz' in supersampled_bases:
                     if supersampled_bases.get('dz') != source_dz:
                         self.throw(79)
-                elif 'dz' not in supersampled_bases.keys():
+                elif 'dz' not in supersampled_bases:
                     warnings.warn(
                         'dz not provided in Sim, so will accept dz={} specified in source Sim'.format(source_dz)
                     )
 
-                for root, dirs, files in os.walk(fiberset_directory):
+                for root, _dirs, files in os.walk(fiberset_directory):
                     for file in files:
                         if re.match('[0-9]+\\.dat', file):
 
@@ -604,7 +605,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 os.path.join(os.environ[Env.PROJECT_PATH.value], 'src', 'neuron'),
                 target,
             )
-        except:
+        except Exception:
             pass
 
         submit_target = os.path.join(target, 'submit.py')

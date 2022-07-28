@@ -188,7 +188,7 @@ class Map(Exceptionable, Configurable):
 
         remove_keys = ['.dxf']
 
-        for root, dirs, files in os.walk(dir_to_parse):
+        for root, _, files in os.walk(dir_to_parse):
             for file in files:
                 for prefix in prefixes:
                     if re.match(prefix, file) is not None:

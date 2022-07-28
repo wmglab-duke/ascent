@@ -11,8 +11,10 @@ import os
 
 from src.utils.enums import Env
 
+default_env = os.path.join('config', 'system', 'env.json')
 
-def run(args, env_path=os.path.join('config', 'system', 'env.json')):
+
+def run(args, env_path=default_env):
     print('Start environment path variables setup.')
 
     result = {}

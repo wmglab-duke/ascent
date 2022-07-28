@@ -188,7 +188,7 @@ class MockSample(Exceptionable, Configurable):
                 # be consistent with the ellipse parameters in Sample. Would you like to proceed? y/n
 
             # check that the loaded fascicles are far enough apart from each other and the nerve
-            for fasc_ind, fascicle in enumerate(fascs_explicit):
+            for fasc_ind in range(len(fascs_explicit)):
                 p = (fasc_centroid_xs[fasc_ind], fasc_centroid_ys[fasc_ind])
                 ellipse = (
                     p,
@@ -408,12 +408,6 @@ class MockSample(Exceptionable, Configurable):
                 )
 
             self.configs['mock_sample'][PopulateMode.parameters.value]['num_fascicle_placed'] = len(self.fascicles)
-
-            # N = stats.norm(loc=mu_fasc, scale=std_fasc)
-            # fig, ax = plt.subplots(2, sharex=True)
-            # ax[0].hist(X.rvs(10000), density=True)
-            # ax[1].hist(N.rvs(10000), density=True)
-            # plt.show
 
         return self
 
