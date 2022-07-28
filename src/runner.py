@@ -66,11 +66,11 @@ class Runner(Exceptionable, Configurable):
             """
             self.validate_path(path)
             if os.path.exists(path):
-                if key not in config_source.keys():
+                if key not in config_source:
                     config_source[key] = []
                 try:
                     config_source[key] += [self.load(path)]
-                except:
+                except Exception:
                     warnings.warn('Issue loading {} config: {}'.format(key, path))
                     self.throw(144)
 
@@ -78,7 +78,7 @@ class Runner(Exceptionable, Configurable):
                 print('Missing {} config: {}'.format(key, path))
                 self.throw(37)
 
-        configs = dict()
+        configs = {}
 
         sample = self.search(Config.RUN, 'sample')
 
@@ -109,7 +109,10 @@ class Runner(Exceptionable, Configurable):
         :param path: path to python obj file
         :return: obj file
         """
-        return pickle.load(open(path, 'rb')).add(SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value])
+        with open(path, 'rb') as o:
+            object = pickle.load(o)
+        object.add(SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value])
+        return object
 
     def setup_run(self):
         # load all json configs into memory
@@ -123,13 +126,10 @@ class Runner(Exceptionable, Configurable):
         Simulation.export_neuron_files(os.environ[Env.NSIM_EXPORT_PATH.value])
         Simulation.export_system_config_files(os.path.join(os.environ[Env.NSIM_EXPORT_PATH.value], 'config', 'system'))
 
-        if 'break_points' in self.configs[Config.RUN.value].keys():
+        if 'break_points' in self.configs[Config.RUN.value]:
             warnings.warn("Specifying break points in run.json is deprecated, and has no effect.")
 
-        if (
-            'partial_fem' in self.configs[Config.RUN.value].keys()
-            and sum(self.search(Config.RUN, 'partial_fem').values()) > 1
-        ):
+        if 'partial_fem' in self.configs[Config.RUN.value] and sum(self.search(Config.RUN, 'partial_fem').values()) > 1:
             self.throw(80)
 
         return all_configs
@@ -257,7 +257,7 @@ class Runner(Exceptionable, Configurable):
         source_xy_dict: dict = source_sim.configs['sims']['fibers']['xy_parameters']
         xy_dict: dict = simulation.configs['sims']['fibers']['xy_parameters']
 
-        if not source_xy_dict == xy_dict:
+        if source_xy_dict != xy_dict:
             self.throw(82)
         return source_sim_obj_dir
 
@@ -324,13 +324,13 @@ class Runner(Exceptionable, Configurable):
         sample, sample_num = self.generate_sample(all_configs, smart=smart)
 
         # iterate through models
-        if 'models' not in all_configs.keys():
+        if 'models' not in all_configs:
             print('NO MODELS TO MAKE IN Config.RUN - killing process')
         else:
             for model_index, model_config in enumerate(all_configs[Config.MODEL.value]):
                 # loop through each model
                 model_num = self.prep_model(all_configs, model_index, model_config, sample, sample_num)
-                if 'sims' in all_configs.keys():  # TODO remote
+                if 'sims' in all_configs:  # TODO remote
                     # iterate through simulations
                     for sim_index, sim_config in enumerate(all_configs['sims']):
                         # generate simulation object
@@ -338,7 +338,7 @@ class Runner(Exceptionable, Configurable):
                             sim_index, sim_config, sample_num, model_num, smart, sample, model_config
                         )
                         if (
-                            'supersampled_bases' in simulation.configs['sims'].keys()
+                            'supersampled_bases' in simulation.configs['sims']
                             and simulation.configs['sims']['supersampled_bases']['use']
                         ):
                             source_sim_obj_dir = self.validate_supersample(simulation, sample_num, model_num)
@@ -347,14 +347,14 @@ class Runner(Exceptionable, Configurable):
                             self.potentials_exist.append(simulation.potentials_exist(sim_obj_dir))
 
             if self.configs[Config.CLI_ARGS.value].get('break_point') == 'pre_java' or (
-                ('break_points' in self.configs[Config.RUN.value].keys())
+                ('break_points' in self.configs[Config.RUN.value])
                 and self.search(Config.RUN, 'break_points').get('pre_java') is True
             ):
                 print('KILLING PRE JAVA')
                 return
 
             # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials if necessary
-            if 'models' in all_configs.keys() and 'sims' in all_configs.keys():
+            if 'models' in all_configs and 'sims' in all_configs:
                 self.model_parameter_checking(all_configs)
                 # only transition to java if necessary (there are potentials that do not exist)
                 if not all(self.potentials_exist) or not all(self.ss_bases_exist):
@@ -371,7 +371,7 @@ class Runner(Exceptionable, Configurable):
                 #  continue by using simulation objects
                 models_exit_status = self.search(Config.RUN, "models_exit_status")
 
-                for model_index, model_config in enumerate(all_configs[Config.MODEL.value]):
+                for model_index, _model_config in enumerate(all_configs[Config.MODEL.value]):
                     model_num = self.configs[Config.RUN.value]['models'][model_index]
                     conditions = [
                         models_exit_status is not None,
@@ -380,17 +380,17 @@ class Runner(Exceptionable, Configurable):
                     model_ran = models_exit_status[model_index] if all(conditions) else True
                     ss_use_notgen = []
                     # check if all supersampled bases are "use" and not generating
-                    for sim_index, sim_config in enumerate(all_configs['sims']):
+                    for sim_config in all_configs['sims']:
                         if (
-                            'supersampled_bases' in simulation.configs['sims'].keys()
-                            and simulation.configs['sims']['supersampled_bases']['use']
-                            and not simulation.configs['sims']['supersampled_bases']['generate']
+                            'supersampled_bases' in sim_config
+                            and sim_config['supersampled_bases']['use']
+                            and not sim_config['supersampled_bases']['generate']
                         ):
                             ss_use_notgen.append(True)
                         else:
                             ss_use_notgen.append(False)
                     if model_ran or np.all(ss_use_notgen):  # TODO This needs to be reworked
-                        for sim_index, sim_config in enumerate(all_configs['sims']):
+                        for sim_index, _sim_config in enumerate(all_configs['sims']):
                             # generate output neuron sims
                             self.generate_nsims(sim_index, model_num, sample_num)
                         print(
@@ -406,7 +406,7 @@ class Runner(Exceptionable, Configurable):
                             'since COMSOL failed to create required potentials. \n'.format(model_num)
                         )
 
-            elif 'models' in all_configs.keys() and 'sims' not in all_configs.keys():
+            elif 'models' in all_configs and 'sims' not in all_configs:
                 # Model Configs Provided, but not Sim Configs
                 print('\nTO JAVA\n')
                 self.handoff(self.number)
@@ -497,7 +497,7 @@ class Runner(Exceptionable, Configurable):
         nerve_mode: NerveMode = self.search_mode(NerveMode, Config.SAMPLE)
 
         if nerve_mode == NerveMode.PRESENT:
-            if 'deform_ratio' not in self.configs[Config.SAMPLE.value].keys():
+            if 'deform_ratio' not in self.configs[Config.SAMPLE.value]:
                 deform_ratio = 1
             else:
                 deform_ratio = self.search(Config.SAMPLE, 'deform_ratio')
@@ -799,7 +799,7 @@ class Runner(Exceptionable, Configurable):
         TemplateOutput.write(model_config, dest_path)
 
     def populate_env_vars(self):
-        if Config.ENV.value not in self.configs.keys():
+        if Config.ENV.value not in self.configs:
             self.throw(75)
 
         for key in Env.vals.value:

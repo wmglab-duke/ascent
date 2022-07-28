@@ -118,7 +118,7 @@ class Deformable(Exceptionable):
 
         def step_physics(space: pymunk.Space, count: int):
             dt = 1.0 / 60.0
-            for x in range(count):
+            for _ in range(count):
                 space.step(dt)
 
         running = True
@@ -131,15 +131,12 @@ class Deformable(Exceptionable):
             # if the loop count is divisible by the index step, update morph
             if render:
                 for event in pygame.event.get():
-                    if event.type == QUIT:
-                        running = False
-                    elif event.type == KEYDOWN and event.key == K_ESCAPE:
+                    if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
                         running = False
                     elif event.type == KEYDOWN and event.key == K_SPACE:
                         pass
 
             if loop_count % morph_index_step == 0:
-                # print('PRINT PRINT PRINT')
                 morph_index += 1
                 Deformable.printProgressBar(
                     morph_index,
@@ -148,7 +145,6 @@ class Deformable(Exceptionable):
                     suffix='complete',
                     length=50,
                 )
-                # print('\tmorph step {} of {}'.format(morph_index, len(morph_steps)))
 
                 if morph_index == len(morph_steps):
                     running = False
@@ -272,17 +268,6 @@ class Deformable(Exceptionable):
         height = int(1.5 * (bounds[3] - bounds[1])) / 2
 
         slide.move_center(np.array([1.5 * width, 1.5 * height]))
-
-        # settle the inners
-        # for fascicle in slide.fascicles:
-        #     inners = [inner.deepcopy() for inner in fascicle]
-        #     def_tmp = Deformable(exception_config_data, fascicle.outer, fascicle.outer, inners)
-        #     movements, rotations = def_tmp.deform(morph_count=36,
-        #                                           render=False,
-        #                                           minimum_distance=10)
-        #     for move, angle, inner in zip(movements, rotations, fascicle.inners):
-        #         inner.shift(list(move) + [0])
-        #         inner.rotate(angle)
 
         # get start boundary
         boundary_start = slide.nerve.deepcopy()

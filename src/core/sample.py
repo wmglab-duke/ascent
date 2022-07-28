@@ -611,8 +611,6 @@ class Sample(Exceptionable, Configurable, Saveable):
                     fascicle.shift(list(move) + [0])
                     fascicle.rotate(angle)
 
-            elif deform_mode == DeformationMode.JITTER:
-                slide.reposition_fascicles(slide.reshaped_nerve(reshape_nerve_mode), 10)
             else:  # must be DeformationMode.NONE
                 import warnings
 

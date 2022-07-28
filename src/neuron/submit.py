@@ -474,7 +474,8 @@ def cluster_submit(run_number: int, partition: str, args, mem: int = 2000, array
                     # ensure blank.hoc exists
                     blank_path = os.path.join(sim_path, 'blank.hoc')
                     if not os.path.exists(blank_path):
-                        open(blank_path, 'w').close()
+                        with open(blank_path, 'w') as f:
+                            pass
 
                     fibers_files = [x for x in os.listdir(fibers_path) if re.match('inner[0-9]+_fiber[0-9]+\\.dat', x)]
                     max_fibers_files_ind = len(fibers_files) - 1
@@ -674,9 +675,7 @@ def cluster_submit(run_number: int, partition: str, args, mem: int = 2000, array
 
                                 key_file = os.path.join(sim_path, 'out_err_key.txt')
 
-                                data[0].append(
-                                    [x for x in range(start, job_count)]
-                                )  # note: last value is job_count - 1
+                                data[0].append(list(range(start, job_count)))  # note: last value is job_count - 1
                                 data[1].append(inner_index_tally)
                                 data[2].append(fiber_index_tally)
 
@@ -787,7 +786,8 @@ def make_local_submission_list(run_number: int, args, summary_gen=False):
                     # ensure blank.hoc exists
                     blank_path = os.path.join(sim_path, 'blank.hoc')
                     if not os.path.exists(blank_path):
-                        open(blank_path, 'w').close()
+                        with open(blank_path, 'w') as f:
+                            pass
 
                     # load JSON file with binary search amplitudes
                     n_sim = sim_name.split('_')[-1]

@@ -53,7 +53,7 @@ class Configurable:
         """
         # if self.configs does not already exist (i.e. this is first Configurable call), create it
         if not hasattr(self, 'configs'):
-            self.configs = dict()
+            self.configs = {}
 
         if len([item for item in [mode, key, config] if item is None]) == 0:
             self.add(mode, key, config)
@@ -118,15 +118,14 @@ class Configurable:
                         )
                     )
 
-        if isinstance(result, list):
-            if len(result) < 1 and not optional:
-                raise Exception(
-                    '\n\tcode:\t-6\n'
-                    '\ttext:\tValue for {} is empty in {}\n'
-                    '\tsource:\tsrc.utils.Configurable.search'.format(
-                        ''.join([arg + '->' for arg in args[:-1]]) + args[-1], key
-                    )
+        if isinstance(result, list) and len(result) < 1 and not optional:
+            raise Exception(
+                '\n\tcode:\t-6\n'
+                '\ttext:\tValue for {} is empty in {}\n'
+                '\tsource:\tsrc.utils.Configurable.search'.format(
+                    ''.join([arg + '->' for arg in args[:-1]]) + args[-1], key
                 )
+            )
 
         return result
 
