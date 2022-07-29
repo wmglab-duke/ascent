@@ -64,9 +64,9 @@ flake8:
 
 #Here should check that no self.throw(9001) is in repo
 #dev_check:
-#  stage: lint
-#  script:
-#    - grep "self.throw(9001)" -r .
+  stage: lint
+  script:
+    - grep "self.throw(9001)" -r .
 
 test_docs:
   stage: test
