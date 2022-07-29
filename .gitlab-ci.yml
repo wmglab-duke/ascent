@@ -63,7 +63,7 @@ flake8:
     - flake8 config docs examples scripts src run
 
 #Here should check that no self.throw(9001) is in repo
-#dev_check:
+dev_check:
   stage: lint
   script:
     - grep "self.throw(9001)" -r .
