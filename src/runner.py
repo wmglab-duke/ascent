@@ -586,7 +586,7 @@ class Runner(Exceptionable, Configurable):
         cuff_shift_mode: CuffShiftMode = self.search_mode(CuffShiftMode, Config.MODEL)
 
         if cuff_shift_mode not in CuffShiftMode:
-            self.throw(9001)
+            self.throw(154)
 
         # remove (pop) temporary model configuration
         model_config = self.remove(Config.MODEL)

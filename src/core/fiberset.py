@@ -151,7 +151,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
             # error if an invalid mode is selected
             if xy_mode not in FiberXYMode:
-                self.throw(9001)
+                self.throw(151)
 
             if xy_mode == FiberXYMode.CENTROID:
                 points = self.generate_centroid_points()

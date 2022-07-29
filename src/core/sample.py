@@ -365,7 +365,7 @@ class Sample(Exceptionable, Configurable, Saveable):
 
         # assign fascicle mask files
         if mask_input_mode not in MaskInputMode:
-            self.throw(9001)  # need to remove outers mode and error code 20, check all error codes
+            self.throw(152)  # need to remove outers mode and error code 20, check all error codes
 
         if mask_input_mode == MaskInputMode.INNER_AND_OUTER_COMPILED:
             if self.mask_exists(MaskFileNames.COMPILED):
@@ -616,7 +616,7 @@ class Sample(Exceptionable, Configurable, Saveable):
                     )
                 )
         else:
-            self.throw(9001)
+            self.throw(153)
 
         # shift slide about (0,0)
         slide.move_center(np.array([0, 0]))

@@ -598,5 +598,21 @@
   {
     "code": 150,
     "text": "Image provided is not binary"
+  },
+  {
+    "code": 151,
+    "text": "Invalid FiberXYMode in Sim."
+  },
+  {
+    "code": 152,
+    "text": "Invalid MaskInputMode in Sample."
+  },
+  {
+    "code": 153,
+    "text": "Invalid DeformationMode in Sample."
+  },
+  {
+    "code": 154,
+    "text": "Invalid CuffShiftMode in Model."
   }
 ]
