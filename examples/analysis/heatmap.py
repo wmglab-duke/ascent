@@ -10,12 +10,6 @@ Generate a heatmap of activation thresholds.
 
 # RUN THIS FROM REPOSITORY ROOT
 
-# ASSUMPTIONS: (old, moved to Query.heatmaps)
-#   1) 1:1 inner:outer for all fascicles
-#   2) Single slide for each sample (0_0)
-#   3) Single fiber per inner
-# TODO: Change above assumptions in later iteration? (highest priority is probably assumption 3)
-
 import os
 import sys
 
@@ -32,9 +26,6 @@ q = Query(
         'indices': {'sample': [18], 'model': [451], 'sim': [1, 18]},
     }
 ).run()
-
-# NOTE: these values were copied from the output of heatmaps(), setting the track_colormap_bounds flag True
-colormap_bounds_override = None
 
 # builds heatmaps
 q.heatmaps(

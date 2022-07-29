@@ -278,7 +278,7 @@ class Slide(Exceptionable):
         inner_ind = 0
         for i, fascicle in enumerate(self.fascicles):
             out_to_in.append([])
-            for _ in fascicle.inners:
+            for _inner in fascicle.inners:
                 out_to_in[i].append(inner_ind)
                 inner_ind += 1
 

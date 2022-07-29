@@ -14,7 +14,7 @@ JSON files, which are wrapped in curly braces.
 To declare this entity in `config/system/env.json`, use the
 following syntax:
 
-```
+```javascript
 [
   {
     "code": Integer,

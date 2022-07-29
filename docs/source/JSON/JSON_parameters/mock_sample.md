@@ -19,31 +19,31 @@ Note: Eccentricity (e) is defined as a function of the major (a-) and minor
 
 ![f1]
 
-```
+```javascript
 {
   "global": {
-    "NAME": String
-  },
-  "scalebar_length": Double,
-  "nerve": {
-    "a": Double,
-    "b": Double,
-    "rot": Double
-  },
-  "figure": {
-    "fig_margin": Double,
-    "fig_dpi": Integer
-  },
+    "NAME": String
+  },
+  "scalebar_length": Double,
+  "nerve": {
+    "a": Double,
+    "b": Double,
+    "rot": Double
+  },
+  "figure": {
+    "fig_margin": Double,
+    "fig_dpi": Integer
+  },
 
   // EXAMPLE POPULATE Parameters for EXPLICIT
   "populate": {
-    "mode": "EXPLICIT",
-    "min_fascicle_separation": 5,
-    "Fascicles": [
-      {
-        "centroid_x": Double,
-        "centroid_y": Double,
-        "a": Double,
+    "mode": "EXPLICIT",
+    "min_fascicle_separation": 5,
+    "Fascicles": [
+      {
+        "centroid_x": Double,
+        "centroid_y": Double,
+        "a": Double,
         "b": Double,
         "rot": Double
       },

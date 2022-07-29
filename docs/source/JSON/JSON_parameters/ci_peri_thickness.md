@@ -15,7 +15,7 @@ perineurium with a thin layer approximation ([Creating Nerve Morphology in COMSO
 
 ## Syntax
 
-```
+```javascript
 {
   "ci_perineurium_thickness_parameters": {
     "GRINBERG_2008": {

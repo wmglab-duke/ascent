@@ -28,14 +28,9 @@ following syntax:
   "keep": {
     "debug_geom": Boolean,
     "mesh": Boolean,
-    "bases": Boolean
+    "bases": Boolean
   },
   "export_behavior": String,
-  "partial_fem": {
-    "cuff_only": Boolean,
-    "nerve_only": Boolean
-  },
-  "local_avail_cpus": Integer,
   "popup_plots": Boolean,
   "auto_submit_fibers": Boolean
 }
@@ -101,28 +96,6 @@ output directories which already exist will be skipped, but any which do not exi
 will be generated, `"overwrite"` will remove the extant directory,
 and generate a new clean output directory in its place, `"error"` instructs the
 pipeline to exit if any export n_sim directory is found to already exist.
-
-`"partial_fem"`: The value (Boolean) of each property results in the
-program terminating after building the COMSOL FEM geometry for only the
-cuff (`"cuff_only"`) or only the nerve (`"nerve_only"`). The program
-terminates after the `"debug_geom.mph"` file is created. If the
-`"partial_fem"` JSON Object is not included, the value of each Boolean
-is treated as false, meaning that the `"debug_geom.mph"` file will
-contain the nerve and cuff electrode. An error is thrown if the user may
-set both values for `"cuff_only"` and `"nerve_only"` to true. To build the
-geometry of both the cuff and the nerve, but not proceed with meshing or
-solving the FEM, the user should use the `"post_geom_run"`
-break point. (e.g. `python run pipeline --break-point post_geom_run <run_indices>`.
-For more information see [Command Line Args](../../Running_ASCENT/command_line_args).
-Overriden if the `"partial_fem"` command line argument is used. Optional.
-
-`"local_avail_cpus"`: The value (Integer) sets the number of CPUs that
-the program will take if you are running submit.py on a local computer. We check
-that the user is not asking for more than one less that the number of
-CPUs of their machine, such that at least one CPU is left for the
-machine to perform other processes. Optional, but if using submitting
-locally, the program will take all CPUs except 1 if this value is not
-defined.
 
 `“popup_plots”`: The value (Boolean) will instruct the pipeline to display plots
 (e.g. sample plot, fiberset plot, waveform plot) in a popup window. This is in addition

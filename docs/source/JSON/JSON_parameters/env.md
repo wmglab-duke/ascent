@@ -16,7 +16,7 @@ may be present on your computer.
 To declare this entity in `config/system/env.json`, use the
 following syntax:
 
-```
+```javascript
 {
   "ASCENT_COMSOL_PATH": String,
   "ASCENT_JDK_PATH": String,
@@ -42,7 +42,7 @@ pipeline will save NEURON simulation directories to submit.
 
 Windows:
 
-```
+```javascript
 {
   "ASCENT_COMSOL_PATH": "C:\\Program Files\\COMSOL\\COMSOL55\\Multiphysics",
   "ASCENT_JDK_PATH": "C:\\Program Files\\Java\\jdk1.8.0_221\\bin",
@@ -53,7 +53,7 @@ Windows:
 
 MacOS
 
-```
+```javascript
 {
   "ASCENT_COMSOL_PATH": "/Applications/COMSOL55/Multiphysics ",
   "ASCENT_JDK_PATH": "/Library/Java/JavaVirtualMachines/jdk1.8.0_221.jdk/Contents/Home/bin/",

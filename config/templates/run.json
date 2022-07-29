@@ -11,11 +11,6 @@
     "mesh": true,
     "bases": true
   },
-  "partial_fem": {
-    "cuff_only": false,
-    "nerve_only": false
-  },
-  "local_avail_cpus": 3,
   "popup_plots": false,
   "export_behavior": "selective"
 }
