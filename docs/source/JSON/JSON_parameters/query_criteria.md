@@ -12,21 +12,21 @@ or **_Sim_** fit the user’s restricted parameter values ([Python Morphology Cl
 
 ## Syntax
 
-```
+```javascript
 {
-  "partial_matches": Boolean,
-  "include_downstream": Boolean,
-  "sample": { // can be empty, null, or omitted
-  },
-  "model": { // can be empty, null, or omitted
-  },
-  "sim": { // can be empty, null, or omitted
-  },
-  "indices": {
-    "sample": null, Integer, or [Integer, ...],
-    "model": null, Integer, or [Integer, ...],
-    "sim": null, Integer, or [Integer, ...]
-  }
+  "partial_matches": Boolean,
+  "include_downstream": Boolean,
+  "sample": { // can be empty, null, or omitted
+  },
+  "model": { // can be empty, null, or omitted
+  },
+  "sim": { // can be empty, null, or omitted
+  },
+  "indices": {
+    "sample": null, Integer, or [Integer, ...],
+    "model": null, Integer, or [Integer, ...],
+    "sim": null, Integer, or [Integer, ...]
+  }
 }
 ```
 

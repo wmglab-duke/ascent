@@ -12,7 +12,7 @@ pipeline for use in the 3D FEM.
 To declare this entity in `config/system/materials.json`, use
 the following syntax:
 
-```
+```javascript
 {
   "conductivities": {
     "endoneurium": { // example syntax for anisotropic medium

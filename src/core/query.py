@@ -1689,7 +1689,6 @@ class Query(Exceptionable, Configurable, Saveable):
                         waveform_index,
                     ) in enumerate(sim_object.master_product_indices):
                         nsim_dir = os.path.join(sim_dir, 'n_sims', str(nsim_index))
-                        # TODO: address active_src_index?
                         (
                             active_src_index,
                             fiberset_index,

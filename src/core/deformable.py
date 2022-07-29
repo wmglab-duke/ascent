@@ -6,14 +6,14 @@ Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
-#      builtin
+import sys
 from typing import List, Tuple
 
 import numpy as np
 import pygame
 import pymunk.pygame_util
 from pygame.colordict import THECOLORS
-from pygame.locals import DOUBLEBUF, HWSURFACE, K_ESCAPE, K_SPACE, KEYDOWN, QUIT, RESIZABLE
+from pygame.locals import DOUBLEBUF, HWSURFACE, K_ESCAPE, KEYDOWN, QUIT, RESIZABLE
 from shapely.geometry import LineString, Point
 
 #               ascent
@@ -46,6 +46,74 @@ class Deformable(Exceptionable):
         self.end = boundary_end
         self.contents = contents
 
+        # init vector of start and end positions
+        self.start_positions: List[np.ndarray] = []
+        self.start_rotations: List[float] = []
+        self.end_positions: List[np.ndarray] = []
+        self.end_rotations: List[float] = []
+
+    def setup_pygame_render(self):
+        bounds = self.start.polygon().bounds
+        width = int(1 * (bounds[2] + bounds[0]))
+        height = int(1 * (bounds[3] + bounds[1]))
+        im_ratio = height / width
+
+        # Initialize screen and surface which each frame will be drawn on
+        screen = pygame.display.set_mode((800, int(800 * im_ratio)), HWSURFACE | DOUBLEBUF | RESIZABLE)
+        drawsurf = pygame.surface.Surface((width, height))
+        # pygame debug draw options
+        options = pymunk.pygame_util.DrawOptions(drawsurf)
+        options.shape_outline_color = (0, 0, 0, 255)
+        options.shape_static_color = (0, 0, 0, 255)
+
+        return options, drawsurf, screen, im_ratio
+
+    def draw_pygame(self, drawsurf, space, options, screen, im_ratio, morph_index, morph_steps):
+        for event in pygame.event.get():
+            if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
+                sys.exit()
+
+        # add white fill and draw objects on surface
+        drawsurf.fill(THECOLORS["white"])
+        space.debug_draw(options)
+        # resize surface and project on screen
+        screen.blit(
+            pygame.transform.flip(
+                pygame.transform.scale(drawsurf, (800, int(800 * im_ratio))),
+                False,
+                True,
+            ),
+            (0, 0),
+        )
+        pygame.display.flip()
+        pygame.display.set_caption('nerve morph step {} of {}'.format(morph_index, len(morph_steps)))
+
+    def deform_initialize(self, minimum_distance, morph_count, ratio):
+        """Set up the necessary variables for deformation."""
+        contents = [trace.deepcopy() for trace in self.contents]
+
+        # offset all the traces to provide for an effective minimum distance for original fascicles
+        for trace in contents:
+            trace.offset(distance=minimum_distance / 2.0)
+
+        # initialize the physics space (gravity is 0)
+        space = pymunk.Space()
+
+        # referencing the deform_steps method below
+        morph_steps = [
+            step.pymunk_segments(space) for step in Deformable.deform_steps(self.start, self.end, morph_count, ratio)
+        ]
+
+        # add fascicles bodies to space
+        fascicles = [trace.pymunk_poly() for trace in contents]
+        for body, shape in fascicles:
+            shape.elasticity = 0.0
+            space.add(body, shape)
+            self.start_positions.append(np.array(body.position))
+            self.start_rotations.append(body.angle)
+
+        return morph_steps, space, fascicles
+
     def deform(
         self,
         morph_count: int = 100,
@@ -65,52 +133,8 @@ class Deformable(Exceptionable):
         """
 
         # copy the "contents" so multiple deformations are possible
-        contents = [trace.deepcopy() for trace in self.contents]
 
-        bounds = self.start.polygon().bounds
-        width = int(1 * (bounds[2] + bounds[0]))
-        height = int(1 * (bounds[3] + bounds[1]))
-        im_ratio = height / width
-
-        # offset all the traces to provide for an effective minimum distance for original fascicles
-        for trace in contents:
-            trace.offset(distance=minimum_distance / 2.0)
-
-        # initialize drawing vars, regardless of whether or not actually rendering
-        # these have been moved below (if render...)
-        options = None
-
-        # initialize the physics space (gravity is 0)
-        space = pymunk.Space()
-
-        # referencing the deform_steps method below
-        morph_steps = [
-            step.pymunk_segments(space) for step in Deformable.deform_steps(self.start, self.end, morph_count, ratio)
-        ]
-
-        # draw the deformation
-        if render:
-            # Initialize screen and surface which each frame will be drawn on
-            screen = pygame.display.set_mode((800, int(800 * im_ratio)), HWSURFACE | DOUBLEBUF | RESIZABLE)
-            drawsurf = pygame.surface.Surface((width, height))
-            # pygame debug draw options
-            options = pymunk.pygame_util.DrawOptions(drawsurf)
-            options.shape_outline_color = (0, 0, 0, 255)
-            options.shape_static_color = (0, 0, 0, 255)
-
-        # init vector of start positions
-        start_positions: List[np.ndarray] = []
-        start_rotations: List[float] = []
-
-        # add fascicles bodies to space
-        fascicles = [trace.pymunk_poly() for trace in contents]
-        for body, shape in fascicles:
-            shape.elasticity = 0.0
-            space.add(body, shape)
-            start_positions.append(np.array(body.position))
-            start_rotations.append(body.angle)
-
-        def add_boundary():
+        def add_boundary(space, morph_step):
             for seg in morph_step:
                 seg.elasticity = 0.0
                 seg.group = 1
@@ -121,71 +145,48 @@ class Deformable(Exceptionable):
             for _ in range(count):
                 space.step(dt)
 
-        running = True
-        loop_count = morph_index_step
-        morph_index = 0
-        morph_step = morph_steps[morph_index]
-        add_boundary()
+        # setup
+        morph_steps, space, fascicles = self.deform_initialize(minimum_distance, morph_count, ratio)
 
-        while running:
+        # draw the deformation
+        if render:
+            options, drawsurf, screen, im_ratio = self.setup_pygame_render()
+
+        # MORPHING LOOP
+        for morph_index, morph_step in enumerate(morph_steps):
             # if the loop count is divisible by the index step, update morph
-            if render:
-                for event in pygame.event.get():
-                    if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
-                        running = False
-                    elif event.type == KEYDOWN and event.key == K_SPACE:
-                        pass
+            Deformable.printProgressBar(
+                morph_index,
+                len(morph_steps),
+                prefix='\t\tdeforming',
+                suffix='complete',
+                length=50,
+            )
 
-            if loop_count % morph_index_step == 0:
-                morph_index += 1
-                Deformable.printProgressBar(
-                    morph_index,
-                    len(morph_steps),
-                    prefix='\t\tdeforming',
-                    suffix='complete',
-                    length=50,
-                )
-
-                if morph_index == len(morph_steps):
-                    running = False
-                else:
-                    space.remove(*morph_step)
-                    morph_step = morph_steps[morph_index]
-                    add_boundary()
+            # add new nerve trace
+            add_boundary(space, morph_step)
 
             # update physics
-            step_physics(space, 3)
+            for _ in range(morph_index_step):
+                step_physics(space, 3)
 
             # draw screen
             if render:
-                # add white fill and draw objects on surface
-                drawsurf.fill(THECOLORS["white"])
-                space.debug_draw(options)
-                # resize surface and project on screen
-                screen.blit(
-                    pygame.transform.flip(
-                        pygame.transform.scale(drawsurf, (800, int(800 * im_ratio))),
-                        False,
-                        True,
-                    ),
-                    (0, 0),
-                )
-                pygame.display.flip()
-                pygame.display.set_caption('nerve morph step {} of {}'.format(morph_index, len(morph_steps)))
+                self.draw_pygame(drawsurf, space, options, screen, im_ratio, morph_index, morph_steps)
 
-            loop_count += 1
+            # don't remove if this is the last morph step for later stepping of physics
+            if morph_index != len(morph_steps) - 1:
+                space.remove(*morph_step)
 
         step_physics(space, 500)
         # get end positions
-        end_positions: List[np.ndarray] = []
-        end_rotations: List[float] = []
         for body, _ in fascicles:
-            end_positions.append(np.array(body.position))
-            end_rotations.append(body.angle)
+            self.end_positions.append(np.array(body.position))
+            self.end_rotations.append(body.angle)
 
         # return total movement vectors (dx, dy)
-        movements = [tuple(end - start) for start, end in zip(start_positions, end_positions)]
-        rotations = [end - start for start, end in zip(start_rotations, end_rotations)]
+        movements = [tuple(end - start) for start, end in zip(self.start_positions, self.end_positions)]
+        rotations = [end - start for start, end in zip(self.start_rotations, self.end_rotations)]
         return movements, rotations
 
     @staticmethod

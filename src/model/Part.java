@@ -73,7 +73,6 @@ class Part {
     }
 
     /**
-     * TODO
      */
     public static void createEnvironmentPartInstance(
         String instanceID,
@@ -5149,7 +5148,7 @@ class Part {
                 epineuriumXs
                     .geom()
                     .feature("e1")
-                    .set("semiaxes", new String[] { "r_nerve", "r_nerve" }); // TODO make these 'nerve_a' and 'nerve_b'
+                    .set("semiaxes", new String[] { "r_nerve", "r_nerve" });
 
                 String epiLabel = "Make Epineurium";
                 GeomFeature epi = model
@@ -5277,11 +5276,10 @@ class Part {
     /**
      * Create a material!
      * @param materialID the material COMSOL id (unique) --> use mw.im.next in call (mat#)
-     * @param function the "pseudonym" for that material, matching the name in master.json TODO
      * @param modelData JSON data from master.json
-     * @param materialsData TODO insert description
+     * @param materialsData
      * @param mw the ModelWrapper to act upon
-     * @param materialParams TODO insert description
+     * @param materialParams
      */
     public static void defineMaterial(
         String materialID,
