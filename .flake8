@@ -14,5 +14,5 @@ per-file-ignores =
     __init__.py: F401, F403
 max-line-length = 120
 max-complexity = 18
-#note T is for mypy, so does nothing now
-select = B,C,E,F,W,T4,SIM,RST,D
+#note T4 is for mypy, so does nothing now
+select = B,C,E,F,W,T4,SIM,RST,D,T1
