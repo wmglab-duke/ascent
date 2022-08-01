@@ -1,7 +1,7 @@
 ffmpeg
 matplotlib==3.2.*
 numpy==1.16.*
-opencv-python
+opencv-python==4.5.*
 openpyxl==3.0.*
 pandas==0.25.*
 pillow==5.2
