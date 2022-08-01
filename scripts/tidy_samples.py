@@ -16,6 +16,7 @@ INCLUDED_FILENAMES = ['runtime', 'blank', 'special', 'logs', 'start_']
 
 
 def run(args):
+    global INCLUDED_FILENAMES
     if args.filename:
         INCLUDED_FILENAMES = [args.filename]
     proceed = input(
