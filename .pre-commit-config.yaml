@@ -56,7 +56,7 @@ repos:
           - flake8-builtins
           - flake8-comprehensions
           - flake8-fixme
-  #           - flake8-docstrings
+          - flake8-docstrings
   #           - flake8-rst-docstrings
   #           - darglint
   
