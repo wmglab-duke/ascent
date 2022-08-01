@@ -21,6 +21,7 @@ EXCLUDED_FILENAMES = [
 
 
 def run(args):
+    global EXCLUDED_FILENAMES
     if args.full_reset:
         EXCLUDED_FILENAMES = ['sample.json', 'model.json']
     proceed = input(
