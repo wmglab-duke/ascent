@@ -274,7 +274,7 @@ class Fascicle(Exceptionable):
 
         def build_traces(path: str) -> List[Trace]:
             # default findContours params
-            params = [cv2.RETR_TREE, contour_mode]
+            params = [cv2.RETR_TREE, contour_mode.value]
             # default findContours params
 
             img = np.flipud(cv2.imread(path, -1))

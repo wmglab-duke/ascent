@@ -313,7 +313,7 @@ class Sample(Exceptionable, Configurable, Saveable):
         if len(img.shape) > 2 and img.shape[2] > 1:
             img = img[:, :, 0]
 
-        contour, _ = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        contour, _ = cv2.findContours(img, cv2.RETR_TREE, self.contour_mode.value)
         if len(contour) > 1:
             self.throw(124)
         if len(contour) < 1:
@@ -400,7 +400,7 @@ class Sample(Exceptionable, Configurable, Saveable):
         if len(img_nerve.shape) > 2 and img_nerve.shape[2] > 1:
             img_nerve = img_nerve[:, :, 0]
 
-        contour, _ = cv2.findContours(np.flipud(img_nerve), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        contour, _ = cv2.findContours(np.flipud(img_nerve), cv2.RETR_TREE, self.contour_mode.value)
         nerve = Nerve(
             Trace(
                 [point + [0] for point in contour[0][:, 0, :]],
