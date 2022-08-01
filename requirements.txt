@@ -7,7 +7,7 @@ pandas==0.25.*
 pillow==5.2
 pip
 pyclipper==1.1.*
-pygame==1.9.*
+pygame==2.1.*
 pymunk==5.6.*
 quantiphy
 scikit-image
