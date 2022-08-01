@@ -32,7 +32,9 @@ def run(args):
             for model in models:
                 for sim in sims:
                     sim_config: dict = Configurable.load(
-                        os.path.join(nsim_source, 'n_sims', '_'.join([str(x) for x in [sample, model, sim, '0']]), '0.json')
+                        os.path.join(
+                            nsim_source, 'n_sims', '_'.join([str(x) for x in [sample, model, sim, '0']]), '0.json'
+                        )
                     )
                     sim_dir = os.path.join('samples', str(sample), 'models', str(model), 'sims', str(sim))
                     if sim_config['protocol']['mode'] == 'FINITE_AMPLITUDES':
@@ -54,7 +56,9 @@ def run(args):
                         else:
                             print(
                                 'At least one threshold (or activation log if running FINITE AMPLITUDES) was missing,'
-                                ' skipping import for run {} sample {} model {} sim {}'.format(argument, sample, model, sim)
+                                ' skipping import for run {} sample {} model {} sim {}'.format(
+                                    argument, sample, model, sim
+                                )
                             )
                             continue
                     Simulation.import_n_sims(
