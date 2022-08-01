@@ -388,7 +388,7 @@ class Sample(Exceptionable, Configurable, Saveable):
                 outer_mask = None
 
         # generate fascicle objects from masks
-        fascicles = Fascicle.to_list(inner_mask, outer_mask, self.configs[Config.EXCEPTIONS.value])
+        fascicles = Fascicle.to_list(inner_mask, outer_mask, self.configs[Config.EXCEPTIONS.value], self.contour_mode)
         return fascicles
 
     def get_epineurium_from_mask(self):
