@@ -448,8 +448,9 @@ def submit_fibers(submission_context, submission_data):
     :param submission_data: the dictionary of data for fiber submission
     """
     # configuration is not empty
-    runcount = 0
+    ran_fibers = 0
     sim_dir = os.path.join('n_sims')
+    n_fibers = sum(len(v) for v in submission_data.values())
 
     for sim_name, runfibers in submission_data.items():
         if args.verbose:
@@ -462,11 +463,9 @@ def submit_fibers(submission_context, submission_data):
         if submission_context == 'cluster':
 
             cluster_submit(runfibers, sim_name, sim_path, start_path_base)
-            runcount += 1
+            ran_fibers += len(runfibers)
             if not args.verbose:
-                print_progress_bar(
-                    runcount, len(submission_data), length=40, prefix='Current n_sim {}:'.format(sim_name)
-                )
+                print_progress_bar(ran_fibers, n_fibers, length=40, prefix=f'Fibers submitted: {ran_fibers}/{n_fibers}')
         else:
 
             if args.num_cpu is not None:
@@ -495,7 +494,7 @@ def submit_fibers(submission_context, submission_data):
                             i + 1,
                             len(runfibers),
                             length=40,
-                            prefix='n_sim {}:'.format(sim_name),
+                            prefix='Sample {}, Model {}, Sim {}, n_sim {}:'.format(*sim_name.split('_')),
                         )
             os.chdir("../..")
 
