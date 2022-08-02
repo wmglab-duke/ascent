@@ -339,6 +339,7 @@ def get_thresh_bounds(sim_dir: str, sim_name: str, inner_ind: int):
 
 
 def make_task(
+    sub_con: str,
     my_os: str,
     start_p: str,
     sim_p: str,
@@ -366,6 +367,7 @@ def make_task(
         if my_os == 'UNIX-LIKE':
             lines = [
                 '#!/bin/bash\n',
+                'cd \"{}\"\n'.format(sim_p),
                 'chmod a+rwx special\n',
                 './special -nobanner '
                 '-c \"strdef sim_path\" '
@@ -383,6 +385,8 @@ def make_task(
                     sim_p, inner, fiber, top, bottom, diam, deltaz, axonnodes
                 ),
             ]
+            if sub_con is not 'cluster':
+                lines.remove('cd \"{}\"\n'.format(sim_p))
 
             # copy special files ahead of time to avoid 'text file busy error'
             if not os.path.exists('special'):
@@ -550,7 +554,7 @@ def cluster_submit(runfibers, sim_name, sim_path, start_path_base):
         time.sleep(1.0)
 
 
-def make_fiber_tasks(submission_list):
+def make_fiber_tasks(submission_list, submission_context):
     """Create all shell scripts for fiber submission tasks.
     :param submission_list: the list of fibers to be submitted
     """
@@ -626,6 +630,7 @@ def make_fiber_tasks(submission_list):
             stimamp_top, stimamp_bottom = get_thresh_bounds(sim_dir, sim_name, inner_ind)
             if stimamp_top is not None and stimamp_bottom is not None:
                 make_task(
+                    submission_context,
                     OS,
                     start_path,
                     sim_path,
@@ -815,7 +820,7 @@ def main():
     n_fibers = sum([len(x) for x in submission_list.values()])
     confirm_submission(n_fibers, rundata, submission_context)
     # make shell scripts for fiber submission
-    make_fiber_tasks(submission_list)
+    make_fiber_tasks(submission_list, submission_context)
     # submit fibers
     submit_fibers(submission_context, submission_list)
 
