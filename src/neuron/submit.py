@@ -385,7 +385,7 @@ def make_task(
                     sim_p, inner, fiber, top, bottom, diam, deltaz, axonnodes
                 ),
             ]
-            if sub_con is not 'cluster':
+            if sub_con != 'cluster':
                 lines.remove('cd \"{}\"\n'.format(sim_p))
 
             # copy special files ahead of time to avoid 'text file busy error'
