@@ -17,15 +17,13 @@ public class JSONio {
         return new JSONObject(new Scanner(new File(filepath)).useDelimiter("\\A").next());
     }
 
-    public static boolean write(String filepath, JSONObject data) {
+    public static void write(String filepath, JSONObject data) {
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(filepath));
             writer.write(data.toString());
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
-            return false;
         }
-        return true;
     }
 }

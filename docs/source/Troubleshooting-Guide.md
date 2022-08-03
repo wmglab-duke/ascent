@@ -26,7 +26,7 @@
 
 ## COMSOL Issues
 
-- Issue: fiber xy-location(s) fall outside of the solution, which results in error while extracting potentials.
+- Issue: fiber xy-location(s) fall outside the solution, which results in error while extracting potentials.
   -Error log: - `Exception: com.comsol.util.exceptions.FlException: Internal numerical error` - `Messages: Internal error in numerical routines.`
   -Output log: - `Intel MKL Error: Parameter 7 was incorrect on entry to DGELS.`
 - Solution: Increase parameter in Sim -> "fibers" -> "xy_trace_buffer". Note: this is assuming that "endo_only_solution" in Run config is true.

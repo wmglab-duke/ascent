@@ -6,7 +6,7 @@ Named file: `config/system/env.json`
 
 The file contains key-value pairs for paths. The file can
 be automatically populated by running `env_setup.py` ([Installation](../../Getting_Started.md#installation)). Note that we
-have prepended all of the keys in this file with "ASCENT" because
+have prepended all the keys in this file with "ASCENT" because
 these key-value pairs are directly stored as environment variables,
 so the "ASCENT" key distinguishes these pairs from other paths that
 may be present on your computer.

@@ -231,7 +231,7 @@ parameter is false).
 
 The `createNervePartInstance()` method in Part (`src/model/Part.java`)
 contains the operations required to represent epineurium in COMSOL. The
-epineurium cross section is represented one of two ways:
+epineurium cross-section is represented one of two ways:
 
 - If `deform_ratio`
   in **_Sample_** is set to 1 and `"DeformationMode"` is not `"NONE"`,
@@ -241,7 +241,7 @@ epineurium cross section is represented one of two ways:
 
 - Otherwise, the coordinate data contained in
   `samples/<sample_index>/slides/<#>/<#>/sectionwise2d/nerve/0/0.txt`
-  is used to create a epineurium boundary.
+  is used to create an epineurium boundary.
 
 The epineurium boundary is then extruded into the third dimension. This
 is only performed if the `"NerveMode"` (i.e., "nerve") in **_Sample_** is
