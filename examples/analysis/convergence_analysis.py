@@ -85,5 +85,5 @@ g = sb.catplot(
 )
 
 plt.subplots_adjust(top=0.88)
-plt.suptitle(f'Convergence Error - Reference Model: {reference_model}')
+plt.suptitle('Convergence Error - Reference Model: {}'.format(reference_model))
 g.savefig('out/analysis/convergence.png', dpi=400)

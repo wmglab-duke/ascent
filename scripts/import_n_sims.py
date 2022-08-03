@@ -14,13 +14,13 @@ from src.utils import Configurable
 
 def run(args):
     env_path = os.path.join('config', 'system', 'env.json')
-    assert os.path.isfile(env_path), f'Invalid env path: {env_path}'
+    assert os.path.isfile(env_path), 'Invalid env path: {}'.format(env_path)
 
     for argument in args.run_indices:
-        print(f'run {argument}')
+        print('run {}'.format(argument))
 
-        run_path = os.path.join('config', 'user', 'runs', f'{argument}.json')
-        assert os.path.isfile(run_path), f'Invalid run path: {run_path}'
+        run_path = os.path.join('config', 'user', 'runs', '{}.json'.format(argument))
+        assert os.path.isfile(run_path), 'Invalid run path: {}'.format(run_path)
 
         run: dict = Configurable.load(run_path)
         nsim_source: str = Configurable.load(env_path).get('ASCENT_NSIM_EXPORT_PATH')

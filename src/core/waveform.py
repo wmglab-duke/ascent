@@ -27,14 +27,14 @@ def precision_and_scale(x):
     int_part = int(abs(x))
     magnitude = 1 if int_part == 0 else int(math.log10(int_part)) + 1
     if magnitude >= max_digits:
-        return (magnitude, 0)
+        return magnitude, 0
     frac_part = abs(x) - int_part
     multiplier = 10 ** (max_digits - magnitude)
     frac_digits = multiplier + int(multiplier * frac_part + 0.5)
     while frac_digits % 10 == 0:
         frac_digits /= 10
     scale = int(math.log10(frac_digits))
-    return (magnitude + scale, scale)
+    return magnitude + scale, scale
 
 
 class Waveform(Exceptionable, Configurable, Saveable):
@@ -225,217 +225,206 @@ class Waveform(Exceptionable, Configurable, Saveable):
 
         if self.mode == WaveformMode.MONOPHASIC_PULSE_TRAIN:
 
-            pw = self.search(Config.SIM, *path_to_specific_parameters, 'pulse_width')
-
-            if self.dt > pw:
-                self.throw(84)
-
-            # ensure pulse fits in period
-            if pw > 1.0 / frequency:
-                self.throw(35)
-
-            wave = sg.square(2 * np.pi * frequency * t_signal, duty=(pw - self.dt) * frequency)
-            clipped = np.clip(wave, 0, 1)
-            padded = pad(clipped, self.dt, self.on - self.start, self.stop - self.off)
-            wave = padded
-            self.wave = wave
+            generated_wave = self.generate_monophasic(frequency, pad, path_to_specific_parameters, t_signal)
 
         elif self.mode == WaveformMode.SINUSOID:
-            if self.dt > 1.0 / frequency:
-                self.throw(85)
-
-            wave = np.sin(2 * np.pi * frequency * t_signal)
-            padded = pad(wave, self.dt, self.on - self.start, self.stop - self.off)
-            wave = padded
-            self.wave = wave
+            generated_wave = self.generate_sinusoid(frequency, pad, t_signal)
 
         elif self.mode == WaveformMode.BIPHASIC_FULL_DUTY:
 
-            if self.dt > 1.0 / frequency:
-                self.throw(86)
-
-            wave = sg.square(2 * np.pi * frequency * t_signal)
-            padded = pad(wave, self.dt, self.on - self.start, self.stop - self.off)
-            wave = padded
-            self.wave = wave
+            generated_wave = self.generate_biphasic_fullduty(frequency, pad, t_signal)
 
         elif self.mode == WaveformMode.BIPHASIC_PULSE_TRAIN:
 
-            pw = self.search(Config.SIM, *path_to_specific_parameters, 'pulse_width')
-
-            if self.dt > pw:
-                self.throw(87)
-
-            # ensure fits within period
-            if 2 * pw > 1.0 / frequency:
-                self.throw(35)
-
-            # loop on inter phase
-            inter_phase = self.search(Config.SIM, *path_to_specific_parameters, 'inter_phase')
-
-            if self.dt > inter_phase != 0:
-                self.throw(88)
-
-            # ensures fits within period
-            if (2 * pw) + inter_phase > 1.0 / frequency:
-                self.throw(36)
-
-            positive_wave = np.clip(
-                sg.square(2 * np.pi * frequency * t_signal, duty=(pw - self.dt) * frequency),
-                0,
-                1,
-            )
-            negative_wave = np.clip(
-                -sg.square(
-                    2 * np.pi * frequency * t_signal[: -round((pw + inter_phase) / self.dt)],
-                    duty=(pw - self.dt) * frequency,
-                ),
-                -1,
-                0,
-            )
-
-            padded_positive = pad(positive_wave, self.dt, self.on - self.start, self.stop - self.off)
-
-            padded_negative = pad(
-                negative_wave,
-                self.dt,
-                self.on - self.start + pw + inter_phase,
-                self.stop - self.off,
-            )
-
-            wave = padded_positive + padded_negative
-            self.wave = wave
+            generated_wave = self.generate_biphasic_basic(frequency, pad, path_to_specific_parameters, t_signal)
 
         elif self.mode == WaveformMode.BIPHASIC_PULSE_TRAIN_Q_BALANCED_UNEVEN_PW:
 
-            pw1 = self.search(Config.SIM, *path_to_specific_parameters, 'pulse_width_1')
-            pw2 = self.search(Config.SIM, *path_to_specific_parameters, 'pulse_width_2')
-
-            if self.dt > pw1:
-                self.throw(89)
-
-            if self.dt > pw2:
-                self.throw(90)
-
-            # ensure fits within period
-            if (pw1 + pw2) > 1.0 / frequency:
-                self.throw(35)
-
-            # loop on inter phase
-            inter_phase = self.search(Config.SIM, *path_to_specific_parameters, 'inter_phase')
-
-            if self.dt > inter_phase != 0:
-                self.throw(91)
-
-            # ensures fits within period
-            if (pw1 + pw2) + inter_phase > 1.0 / frequency:
-                self.throw(36)
-
-            positive_wave = np.clip(
-                sg.square(2 * np.pi * frequency * t_signal, duty=(pw1 - self.dt) * frequency),
-                0,
-                1,
-            )
-            negative_wave = np.clip(
-                -sg.square(
-                    2 * np.pi * frequency * t_signal[: -round((pw1 + inter_phase) / self.dt)],
-                    duty=(pw2 - self.dt) * frequency,
-                ),
-                -1,
-                0,
-            )
-
-            padded_positive = pad(positive_wave, self.dt, self.on - self.start, self.stop - self.off)
-
-            padded_negative = pad(
-                negative_wave,
-                self.dt,
-                self.on - self.start + pw1 + inter_phase,
-                self.stop - self.off,
-            )
-
-            # q-balanced
-            amp1 = 1
-            amp2 = (pw1 * amp1) / pw2
-
-            wave = padded_positive + amp2 * padded_negative
-            self.wave = wave
+            generated_wave = self.generate_biphasic_uneven(frequency, pad, path_to_specific_parameters, t_signal)
 
         elif self.mode == WaveformMode.EXPLICIT:
-            path_to_wave = os.path.join(
-                'config',
-                'user',
-                'waveforms',
-                f"{str(self.search(Config.SIM, 'waveform', WaveformMode.EXPLICIT.name, 'index'))}.dat",
-            )
-
-            # read in wave from file
-            explicit_wave = []
-            with open(os.path.join(path_to_wave)) as f:
-                reader = csv.reader(f)
-                for row in reader:
-                    explicit_wave.append(float(row[0]))
-
-            # first element in file is dt of recorded/explicit signal provided to the program
-            dt_explicit = explicit_wave.pop(0)
-            dt_atol = self.search(Config.SIM, 'waveform', WaveformMode.EXPLICIT.name, 'dt_atol')
-
-            if not np.isclose(dt_explicit, self.dt, atol=dt_atol):
-                warning_str = (
-                    '\n Timestep provided: {} (first line in waveform file in config/user/waveforms/{}.dat'
-                    ') \n does not match "dt" in "global" Sim parameters for time discretization in '
-                    'NEURON: {} \n based on set "dt_atol" parameter in Sim: {}. \n Altering your input '
-                    'waveform to fit NEURON time '
-                    'discretization.'.format(
-                        dt_explicit,
-                        str(
-                            self.search(
-                                Config.SIM,
-                                'waveform',
-                                WaveformMode.EXPLICIT.name,
-                                'index',
-                            )
-                        ),
-                        self.dt,
-                        dt_atol,
-                    )
-                )
-                warnings.warn(warning_str)
-
-                period_explicit = dt_explicit * len(explicit_wave)
-                n_samples_resampled = round(period_explicit / self.dt)
-
-                # need to convert input explicit waveform to 'global' time discretization as used by NEURON
-                signal = sg.resample(explicit_wave, n_samples_resampled)
-
-            else:
-                signal = explicit_wave
-
-            # repeats?
-            repeats = self.search(Config.SIM, 'waveform', WaveformMode.EXPLICIT.name, 'period_repeats')
-            if type(repeats) is not int:
-                self.throw(73)
-            if repeats > 1:
-                signal = np.tile(signal, repeats)
-            # if number of repeats cannot fit in off-on interval, error
-            if self.dt * len(signal) > (self.off - self.on):
-                self.throw(74)
-
-            self.wave = signal
-
-            # pad with zeros for: time before on, time after off
-            padded = pad(
-                signal,
-                self.dt,
-                self.on - self.start,
-                self.stop - (self.on + self.dt * len(signal)),
-            )
-            self.wave = padded
+            generated_wave = self.generate_explicit(pad)
 
         else:
             self.throw(34)
 
+        self.wave = generated_wave
+
         return self
+
+    def generate_biphasic_uneven(self, frequency, pad, path_to_specific_parameters, t_signal):
+        pw1 = self.search(Config.SIM, *path_to_specific_parameters, 'pulse_width_1')
+        pw2 = self.search(Config.SIM, *path_to_specific_parameters, 'pulse_width_2')
+        if self.dt > pw1:
+            self.throw(89)
+        if self.dt > pw2:
+            self.throw(90)
+        # ensure fits within period
+        if (pw1 + pw2) > 1.0 / frequency:
+            self.throw(35)
+        # loop on inter phase
+        inter_phase = self.search(Config.SIM, *path_to_specific_parameters, 'inter_phase')
+        if self.dt > inter_phase != 0:
+            self.throw(91)
+        # ensures fits within period
+        if (pw1 + pw2) + inter_phase > 1.0 / frequency:
+            self.throw(36)
+        positive_wave = np.clip(
+            sg.square(2 * np.pi * frequency * t_signal, duty=(pw1 - self.dt) * frequency),
+            0,
+            1,
+        )
+        negative_wave = np.clip(
+            -sg.square(
+                2 * np.pi * frequency * t_signal[: -round((pw1 + inter_phase) / self.dt)],
+                duty=(pw2 - self.dt) * frequency,
+            ),
+            -1,
+            0,
+        )
+        padded_positive = pad(positive_wave, self.dt, self.on - self.start, self.stop - self.off)
+        padded_negative = pad(
+            negative_wave,
+            self.dt,
+            self.on - self.start + pw1 + inter_phase,
+            self.stop - self.off,
+        )
+        # q-balanced
+        amp1 = 1
+        amp2 = (pw1 * amp1) / pw2
+        wave = padded_positive + amp2 * padded_negative
+        return wave
+
+    def generate_monophasic(self, frequency, pad, path_to_specific_parameters, t_signal):
+        pw = self.search(Config.SIM, *path_to_specific_parameters, 'pulse_width')
+        if self.dt > pw:
+            self.throw(84)
+        # ensure pulse fits in period
+        if pw > 1.0 / frequency:
+            self.throw(35)
+        wave = sg.square(2 * np.pi * frequency * t_signal, duty=(pw - self.dt) * frequency)
+        clipped = np.clip(wave, 0, 1)
+        padded = pad(clipped, self.dt, self.on - self.start, self.stop - self.off)
+        wave = padded
+        return wave
+
+    def generate_sinusoid(self, frequency, pad, t_signal):
+        if self.dt > 1.0 / frequency:
+            self.throw(85)
+        wave = np.sin(2 * np.pi * frequency * t_signal)
+        padded = pad(wave, self.dt, self.on - self.start, self.stop - self.off)
+        wave = padded
+        return wave
+
+    def generate_biphasic_fullduty(self, frequency, pad, t_signal):
+        if self.dt > 1.0 / frequency:
+            self.throw(86)
+        wave = sg.square(2 * np.pi * frequency * t_signal)
+        padded = pad(wave, self.dt, self.on - self.start, self.stop - self.off)
+        wave = padded
+        return wave
+
+    def generate_biphasic_basic(self, frequency, pad, path_to_specific_parameters, t_signal):
+        pw = self.search(Config.SIM, *path_to_specific_parameters, 'pulse_width')
+        if self.dt > pw:
+            self.throw(87)
+        # ensure fits within period
+        if 2 * pw > 1.0 / frequency:
+            self.throw(35)
+        # loop on inter phase
+        inter_phase = self.search(Config.SIM, *path_to_specific_parameters, 'inter_phase')
+        if self.dt > inter_phase != 0:
+            self.throw(88)
+        # ensures fits within period
+        if (2 * pw) + inter_phase > 1.0 / frequency:
+            self.throw(36)
+        positive_wave = np.clip(
+            sg.square(2 * np.pi * frequency * t_signal, duty=(pw - self.dt) * frequency),
+            0,
+            1,
+        )
+        negative_wave = np.clip(
+            -sg.square(
+                2 * np.pi * frequency * t_signal[: -round((pw + inter_phase) / self.dt)],
+                duty=(pw - self.dt) * frequency,
+            ),
+            -1,
+            0,
+        )
+        padded_positive = pad(positive_wave, self.dt, self.on - self.start, self.stop - self.off)
+        padded_negative = pad(
+            negative_wave,
+            self.dt,
+            self.on - self.start + pw + inter_phase,
+            self.stop - self.off,
+        )
+        wave = padded_positive + padded_negative
+        return wave
+
+    def generate_explicit(self, pad):
+        path_to_wave = os.path.join(
+            'config',
+            'user',
+            'waveforms',
+            f"{str(self.search(Config.SIM, 'waveform', WaveformMode.EXPLICIT.name, 'index'))}.dat",
+        )
+        # read in wave from file
+        explicit_wave = []
+        with open(os.path.join(path_to_wave)) as f:
+            reader = csv.reader(f)
+            for row in reader:
+                explicit_wave.append(float(row[0]))
+        # first element in file is dt of recorded/explicit signal provided to the program
+        dt_explicit = explicit_wave.pop(0)
+        dt_atol = self.search(Config.SIM, 'waveform', WaveformMode.EXPLICIT.name, 'dt_atol')
+        if not np.isclose(dt_explicit, self.dt, atol=dt_atol):
+            warning_str = (
+                '\n Timestep provided: {} (first line in waveform file in config/user/waveforms/{}.dat'
+                ') \n does not match "dt" in "global" Sim parameters for time discretization in '
+                'NEURON: {} \n based on set "dt_atol" parameter in Sim: {}. \n Altering your input '
+                'waveform to fit NEURON time '
+                'discretization.'.format(
+                    dt_explicit,
+                    str(
+                        self.search(
+                            Config.SIM,
+                            'waveform',
+                            WaveformMode.EXPLICIT.name,
+                            'index',
+                        )
+                    ),
+                    self.dt,
+                    dt_atol,
+                )
+            )
+            warnings.warn(warning_str)
+
+            period_explicit = dt_explicit * len(explicit_wave)
+            n_samples_resampled = round(period_explicit / self.dt)
+
+            # need to convert input explicit waveform to 'global' time discretization as used by NEURON
+            signal = sg.resample(explicit_wave, n_samples_resampled)
+
+        else:
+            signal = explicit_wave
+        # repeats?
+        repeats = self.search(Config.SIM, 'waveform', WaveformMode.EXPLICIT.name, 'period_repeats')
+        if type(repeats) is not int:
+            self.throw(73)
+        if repeats > 1:
+            signal = np.tile(signal, repeats)
+        # if number of repeats cannot fit in off-on interval, error
+        if self.dt * len(signal) > (self.off - self.on):
+            self.throw(74)
+        # pad with zeros for: time before on, time after off
+        padded = pad(
+            signal,
+            self.dt,
+            self.on - self.start,
+            self.stop - (self.on + self.dt * len(signal)),
+        )
+        wave = padded
+        return wave
 
     def plot(self, ax: plt.Axes = None, final: bool = False, path: str = None):
 

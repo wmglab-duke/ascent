@@ -310,7 +310,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                 os.sep,
                 *sim_directory.split(os.sep)[1:-4],
                 'explicit_fibersets',
-                f'{explicit_index}.txt',
+                '{}.txt'.format(explicit_index)
             )
             explicit_dest = os.path.join(sim_directory, 'explicit.txt')
             shutil.copyfile(explicit_source, explicit_dest)
@@ -336,7 +336,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                     for inner in fascicle.inners
                 ]
             ):
-                print(f"Explicit fiber coordinate: {fiber} does not fall in an inner")
+                print("Explicit fiber coordinate: {} does not fall in an inner".format(fiber))
                 self.throw(71)
         return points
 
@@ -804,7 +804,9 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                 'WARNING: the sim>fibers>z_parameters>longitudinally_centered parameter is deprecated.\
                   \nFibers will be centered to the model.'
             )
-        assert model_length >= fiber_length, f'proximal length: ({model_length}) < fiber length: ({fiber_length})'
+        assert model_length >= fiber_length, 'proximal length: ({}) < fiber length: ({})'.format(
+            model_length, fiber_length
+        )
         return fiber_length, model_length
 
     def validate(self):

@@ -237,21 +237,21 @@ records only.
 
 - `“shrinkage_definition”`: The value (String) is the `“ShrinkageMode”`
   that tells the program how to interpret the "scale"->"shrinkage" parameter, which is provided as a decimal (i.e., 0.2 = 20%).
-  Optional, but assumes the mode "LENGTH_FORWARDS if omitted, since this was the original behavior before this mode was added.
+  Optional, but assumes the mode "`LENGTH_FORWARDS`" if omitted, since this was the original behavior before this mode was added.
 
   - As listed in Enums ([Enums](../../Code_Hierarchy/Python.md#enums)), known `“ShrinkageModes”` include
 
     1. `“LENGTH_BACKWARDS”`: The value for "scale"->"shrinkage" refers to how much the length (e.g., radius, diameter, or perimeter)
-       of the nerve cross section was reduced from the fresh tissue to the imaged tissue.
+       of the nerve cross-section was reduced from the fresh tissue to the imaged tissue.
        - Formula: r_post = r_original \* (1-shrinkage)
     2. `“LENGTH_FORWARDS”`: The value for "scale"->"shrinkage" refers to how much the length (e.g., radius, diameter, or perimeter)
-       of the nerve cross section increases from the imaged tissue to the fresh tissue.
+       of the nerve cross-section increases from the imaged tissue to the fresh tissue.
        - Formula: r_post = r_original / (1+shrinkage)
     3. `“AREA_BACKWARDS”`: The value for "scale"->"shrinkage" refers to how much the area
-       of the nerve cross section was reduced from the fresh tissue to the imaged tissue.
+       of the nerve cross-section was reduced from the fresh tissue to the imaged tissue.
        - Formula: A_post = A_original \* (1-shrinkage)
     4. `“AREA_FORWARDS”`: The value for "scale"->"shrinkage" refers to how much the area
-       of the nerve cross section increases from the imaged tissue to the fresh tissue.
+       of the nerve cross-section increases from the imaged tissue to the fresh tissue.
        - Formula: A_post = A_original / (1+shrinkage)
 
 - `“contour_approximation”`: The value (String) is the `“ContourMode”`
@@ -281,7 +281,7 @@ records only.
 
 `“morph_count”`: The value (Integer) can be used to set the number of
 intermediately deformed nerve traces between the `boundary_start` and
-`boundary_end` in Deformable ([Python Morphology Classes](../../Code_Hierarchy/Python.md#python-classes-for-representing-nerve-morphology-sample))) if the `“DeformationMode”` is “PHYSCIS”. An
+`boundary_end` in Deformable ([Python Morphology Classes](../../Code_Hierarchy/Python.md#python-classes-for-representing-nerve-morphology-sample)) if the `“DeformationMode”` is “PHYSCIS”. An
 excessively large number for `morph_count` will slow down the deformation
 process, though a number that is too small could result in fascicles
 “escaping” from the nerve. Optional; if not specified default value is 36.
@@ -305,7 +305,7 @@ if false, no plots are generated
 If true, plots are generated in the folder samples/<sample_index>/plots, if
 false, plots will pop up in a window.
 
-`"render_deform"`: The value (Boolean) if true, causes the pipeline to generated
+`"render_deform"`: The value (Boolean) if true, causes the pipeline to generate
 a popup window and display a video of sample deformation as it occurs.
 
 `“Morphology”`: This JSON Object is used to store information about the

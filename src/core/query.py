@@ -27,7 +27,6 @@ class Query(Exceptionable, Configurable, Saveable):
 
     def __init__(self, criteria: Union[str, dict]):
         """Set up Query object.
-
         :param criteria: dictionary of search criteria
         """
         # set up superclasses
@@ -83,10 +82,9 @@ class Query(Exceptionable, Configurable, Saveable):
 
         # loop samples
         for sample in os.listdir(samples_dir):
+
             # skip this sample if applicable
-            if sample.startswith('.'):
-                continue
-            if sample_indices is not None and int(sample) not in sample_indices:
+            if sample.startswith('.') or (sample_indices is not None and int(sample) not in sample_indices):
                 continue
 
             # if applicable, check against sample criteria
@@ -118,9 +116,7 @@ class Query(Exceptionable, Configurable, Saveable):
             # loop models
             for model in os.listdir(models_dir):
                 # if there are filter indices for models, use them
-                if model.startswith('.'):
-                    continue
-                if model_indices is not None and int(model) not in model_indices:
+                if model.startswith('.') or (model_indices is not None and int(model) not in model_indices):
                     continue
 
                 # if applicable, check against model criteria
@@ -145,9 +141,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
                 # loop sims
                 for sim in os.listdir(sims_dir):
-                    if sim.startswith('.'):
-                        continue
-                    if sim_indices is not None and int(sim) not in sim_indices:
+                    if sim.startswith('.') or (sim_indices is not None and int(sim) not in sim_indices):
                         continue
 
                     # if applicable, check against model criteria

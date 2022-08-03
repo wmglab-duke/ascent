@@ -474,22 +474,22 @@ class Trace(Exceptionable):
                     # write coordinates
                     f.write('%% Coordinates\n')
                     for i in range(count):
-                        f.write(f'{self.points[i, 0]}\t{self.points[i, 1]}\t{self.points[i, 2]}\n')
+                        f.write('{}\t{}\t{}\n'.format(self.points[i, 0], self.points[i, 1], self.points[i, 2]))
 
                     # write elements (corresponding to their coordinates)
                     f.write('%% Elements\n')
                     for i in range(count):
                         # if not last point, attach to next point
                         if i < count - 1:
-                            f.write(f'{i + 1}\t{i + 2}\n')
+                            f.write('{}\t{}\n'.format(i + 1, i + 2))
                         else:  # attach to first point (closed loop)
-                            f.write(f'{i + 1}\t{1}\n')
+                            f.write('{}\t{}\n'.format(i + 1, 1))
 
                 elif mode == WriteMode.SECTIONWISE2D:
                     # write coordinates
                     f.write('%% Coordinates\n')
                     for i in range(count):
-                        f.write(f'{self.points[i, 0]}\t{self.points[i, 1]}\n')
+                        f.write('{}\t{}\n'.format(self.points[i, 0], self.points[i, 1]))
 
                 else:
                     self.throw(4)

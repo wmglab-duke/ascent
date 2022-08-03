@@ -21,7 +21,11 @@ from .env_setup import run as env_setup
 def run(args):
     # test
     if not (sys.version_info.major == 3 and sys.version_info.minor >= 7):
-        print(f'You are running Python {sys.version_info.major}.{sys.version_info.minor}, but 3.7 or later required')
+        print(
+            'You are running Python {}.{}, but 3.7 or later required'.format(
+                sys.version_info.major, sys.version_info.minor
+            )
+        )
         sys.exit()
 
     # create bin/ directory for storing compiled Java files if it does not yet exist
@@ -35,23 +39,23 @@ def run(args):
         try:
             int(argument)
         except ValueError:
-            print(f'Invalid type for argument: {argument}\nAll arguments must be positive integers.')
+            print('Invalid type for argument: {}\n' 'All arguments must be positive integers.'.format(argument))
             sys.exit()
 
         if int(argument) < 0:
-            print(f'Invalid sign for argument: {argument}\nAll arguments must be positive integers.')
+            print('Invalid sign for argument: {}\n' 'All arguments must be positive integers.'.format(argument))
             sys.exit()
 
-        print(f'\n########## STARTING RUN {argument} ##########\n')
+        print('\n########## STARTING RUN {} ##########\n'.format(argument))
 
-        run_path = os.path.join('config', 'user', 'runs', f'{argument}.json')
+        run_path = os.path.join('config', 'user', 'runs', '{}.json'.format(argument))
         if not os.path.exists(run_path):
-            print(f'Invalid run configuration path: {run_path}')
+            print('Invalid run configuration path: {}'.format(run_path))
             sys.exit()
 
         env_path = os.path.join('config', 'system', 'env.json')
         if not os.path.exists(env_path):
-            print(f'Missing env configuration file: {env_path}')
+            print('Missing env configuration file: {}'.format(env_path))
             env_setup(env_path)
 
         # initialize Runner (loads in parameters)
@@ -71,7 +75,7 @@ def run(args):
         elapsed = end - start
 
         if args.auto_submit or runner.search(Config.RUN, 'auto_submit_fibers', optional=True) is True:
-            print(f'Auto submitting fibers for run {argument}')
+            print('Auto submitting fibers for run {}'.format(argument))
             # submit fibers before moving on to next run
             reset_dir = os.getcwd()
             export_path = runner.search(Config.ENV, Env.NSIM_EXPORT_PATH.value)
@@ -87,7 +91,7 @@ def run(args):
                     print('WARNING: Non-zero exit code during fiber submission. Continuing to next run...')
             os.chdir(reset_dir)
 
-        print(f"\nRun {argument} runtime: {time.strftime('%H:%M:%S', time.gmtime(elapsed))} (hh:mm:ss)")
+        print('\nRun {} runtime: {} (hh:mm:ss)'.format(argument, time.strftime('%H:%M:%S', time.gmtime(elapsed))))
 
     # cleanup for console viewing/inspecting
     del start, end

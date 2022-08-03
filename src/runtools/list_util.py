@@ -14,7 +14,7 @@ def run(mode):
                 try:
                     rundata = json.load(f)
                 except Exception as e:
-                    print(f'WARNING: Could not load {j}')
+                    print('WARNING: Could not load {}'.format(j))
                     print(e)
                     continue
                 data.append(
@@ -29,7 +29,7 @@ def run(mode):
         df = pd.DataFrame(data)
         df.RUN = df.RUN.astype(int)
         df = df.sort_values('RUN')
-        print(f'Run indices available (defined by user .json files in {run_path}):\n')
+        print('Run indices available (defined by user .json files in {}):\n'.format(run_path))
         print(df.to_string(index=False))
 
     elif mode == 'samples':
@@ -38,7 +38,7 @@ def run(mode):
         sample_jsons = [
             os.path.join(run_path, x, 'sample.json')
             if os.path.isfile(os.path.join(run_path, x, 'sample.json'))
-            else print(f'WARNING: sample {x} has no json file')
+            else print('WARNING: sample {} has no json file'.format(x))
             for x in samples
         ]
         sample_jsons = [x for x in sample_jsons if x is not None]
@@ -48,7 +48,7 @@ def run(mode):
                 try:
                     sampledata = json.load(f)
                 except Exception as e:
-                    print(f'WARNING: Could not load {j}')
+                    print('WARNING: Could not load {}'.format(j))
                     print(e)
                     continue
                 data.append(
@@ -63,7 +63,7 @@ def run(mode):
         df = pd.DataFrame(data)
         df.SAMPLE = df.SAMPLE.astype(int)
         df = df.sort_values('SAMPLE')
-        print(f'Sample indices available (defined by user folders in {run_path}):\n')
+        print('Sample indices available (defined by user folders in {}):\n'.format(run_path))
         print(df.to_string(index=False))
 
     elif mode == 'sims':
@@ -75,7 +75,7 @@ def run(mode):
                 try:
                     simdata = json.load(f)
                 except Exception as e:
-                    print(f'WARNING: Could not load {j}')
+                    print('WARNING: Could not load {}'.format(j))
                     print(e)
                     continue
                 data.append(
@@ -90,5 +90,5 @@ def run(mode):
         df = pd.DataFrame(data)
         df.SIM = df.SIM.astype(int)
         df = df.sort_values('SIM')
-        print(f'Sim indices available (defined by user .json files in {run_path}):\n')
+        print('Sim indices available (defined by user .json files in {}):\n'.format(run_path))
         print(df.to_string(index=False))

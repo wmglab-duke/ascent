@@ -194,11 +194,11 @@ class Map(Exceptionable, Configurable):
                     if re.match(prefix, file) is not None:
                         # remove leading code (separated by '_') and any extra '_'
                         new_file = '_'.join([f for f in file.split('_')[1:] if f != ''])
-                        os.rename(f'{root}/{file}', f'{root}/{new_file}')
+                        os.rename('{}/{}'.format(root, file), '{}/{}'.format(root, new_file))
 
                 for key in remove_keys:
                     if re.search(key, file) is not None:
-                        os.remove(f'{root}/{file}')
+                        os.remove('{}/{}'.format(root, file))
 
 
 # %% helper classes... self.map will be stored as a list of Slide objects
@@ -214,7 +214,9 @@ class SlideInfo:
         return self.cassette, self.number, self.position, self.directory
 
     def __repr__(self):
-        return f'cas:\t{self.cassette}\nnum:\t{self.number}\npos:\t{self.position}\ndir:\t{self.directory}'
+        return 'cas:\t{}\nnum:\t{}\npos:\t{}\ndir:\t{}'.format(
+            self.cassette, self.number, self.position, self.directory
+        )
 
 
 # quick class to keep track of a reference distance for resizing (i.e. space between electrodes)
@@ -230,4 +232,4 @@ class Reference:
         return distance / float(self.abs_distance)
 
     def __repr__(self):
-        return f'\tstart pos:\t{self.start}\n\tend pos:\t{self.end}\n\tabs dist:\t{self.abs_distance}\n\n'
+        return '\tstart pos:\t{}\n\tend pos:\t{}\n\tabs dist:\t{}\n\n'.format(self.start, self.end, self.abs_distance)

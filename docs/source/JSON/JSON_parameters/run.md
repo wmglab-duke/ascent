@@ -66,7 +66,7 @@ the Ve data for the endoneurium. If `false`, COMSOL will save Ve data for the en
 Recommended value is `true` unless you intend to generate plots or other analyses
 which require Ve data for geometry other than the endoneurium. If this key-value pair
 is not present, defaults to `false`. Note: this parameter only affects storage
-space after the solution has completed, and will not have any affect on memory
+space after the solution has completed, and will not have any effect on memory
 usage or solution time.
 
 `"models_exit_status"`: The value (\[Boolean, ...\]) of this property

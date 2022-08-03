@@ -24,7 +24,7 @@ def run(args):
         exceptions_config: dict = json.load(handle)
 
     # load mock sample configuration
-    mock_config = os.path.join('config', 'user', 'mock_samples', f'{args.mock_sample_index}.json')
+    mock_config = os.path.join('config', 'user', 'mock_samples', '{}.json'.format(args.mock_sample_index))
     mock_sample = MockSample(exceptions_config)
     mock_sample.add(SetupMode.NEW, Config.MOCK_SAMPLE, mock_config).make_nerve().make_fascicles().make_masks()
 
@@ -32,7 +32,7 @@ def run(args):
 
     # END timer
     end = time.time()
-    print(f'\nruntime: {end - start}')
+    print('\nruntime: {}'.format(end - start))
 
     # cleanup for console viewing/inspecting
     del start, end

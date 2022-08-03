@@ -48,7 +48,7 @@ def run(args):
         retrieve = True
         target = os.path.join(binpath, jar.split('/')[-1])
         if os.path.exists(target):
-            reply = input(f'{target} already found! download again and overwrite? [y/N] ').lower().strip()
+            reply = input('{} already found! download again and overwrite? [y/N] '.format(target)).lower().strip()
             if reply[0] != 'y':
                 print('Not overwriting.\n')
                 retrieve = False
@@ -56,7 +56,7 @@ def run(args):
                 print('Overwriting.\n')
 
         if retrieve:
-            print(f'Downloading {jar} to {target}')
+            print('Downloading {} to {}'.format(jar, target))
             if sys.platform.startswith('darwin') or sys.platform.startswith('linux'):
                 subprocess.run(['curl', '-o', target, jar])
             else:
@@ -64,8 +64,8 @@ def run(args):
                     p.stdin.write(
                         '[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12\n'.encode()
                     )
-                    p.stdin.write(f'$source = \'{jar}\'\n'.encode())
-                    p.stdin.write(f'$destination = \'{os.path.abspath(target)}\'\n'.encode())
+                    p.stdin.write('$source = \'{}\'\n'.format(jar).encode())
+                    p.stdin.write('$destination = \'{}\'\n'.format(os.path.abspath(target)).encode())
                     p.stdin.write('curl $source -OutFile $destination'.encode())
 
     # run system-specific installation

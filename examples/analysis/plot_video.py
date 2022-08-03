@@ -70,7 +70,7 @@ for sample in samples:
                 data = np.loadtxt(
                     os.path.join(
                         data_path,
-                        f'Vm_time_inner{inner}_fiber{fiber}_amp{amp}.dat',
+                        'Vm_time_inner{}_fiber{}_amp{}.dat'.format(inner, fiber, amp),
                     ),
                     skiprows=1,
                 )[:, 0:]

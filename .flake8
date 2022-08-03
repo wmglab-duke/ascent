@@ -3,13 +3,14 @@
 ignore = E203, W503,
     #C901 is functions too complex, eventually we should refactor functions to be less complex (more granular)
     C901,
-    #E741 is ambiguous variable names, eventually should fix these variable names
-    E741,
     #SIM105 has a problem with except Exception
     SIM105
 per-file-ignores =
     # imported but unused and star imports
     __init__.py: F401, F403
+    # ignore function complexity in plotter for now, but this should be addressed.
+    # note this should also be enabled in gitlab CI eventually
+    plotter.py: C901
 max-line-length = 120
 max-complexity = 18
 #note T4 is for mypy, so does nothing now
