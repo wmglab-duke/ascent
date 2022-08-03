@@ -4,7 +4,7 @@
 The copyrights of this software are owned by Duke University.
 Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
-1"""
+"""
 
 import argparse
 import json
@@ -506,8 +506,8 @@ def cluster_submit(runfibers, sim_name, sim_path, start_path_base):
     :param start_path_base: the string prefix for all start scripts
     """
     slurm_params = load(os.path.join('config', 'system', 'slurm_params.json'))
-    out_dir = os.path.abspath(os.path.join(sim_path, 'logs', 'out', ''))
-    err_dir = os.path.abspath(os.path.join(sim_path, 'logs', 'err', ''))
+    out_dir = os.path.abspath(os.path.join(sim_path, 'logs', 'out', '%a.log'))
+    err_dir = os.path.abspath(os.path.join(sim_path, 'logs', 'err', '%a.log'))
     # assign params for array submission
     partition = slurm_params['partition'] if args.partition is None else args.partition
     njobs = slurm_params['jobs_per_array'] if args.num_jobs is None else args.num_jobs
@@ -529,8 +529,8 @@ def cluster_submit(runfibers, sim_name, sim_path, start_path_base):
             'sbatch',
             *([args.slurm_params] if args.slurm_params else []),
             f'--job-name={sim_name}',
-            f'--output={out_dir}%a.log',
-            f'--error={err_dir}%a.log',
+            f'--output={out_dir}',
+            f'--error={err_dir}',
             f"--array={','.join([str(x) for x in array_indices])}",
             f'--mem={mem}',
             f'--partition={partition}',
