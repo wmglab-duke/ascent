@@ -27,7 +27,7 @@ import org.json.JSONObject;
  * the model object when creating parts in the static class model. Parts.
  */
 
-@SuppressWarnings({ "FieldMayBeFinal", "rawtypes", "path" })
+@SuppressWarnings({ "FieldMayBeFinal", "path" })
 public class ModelWrapper {
 
     // UNION PSEUDONYM CONSTANTS
@@ -1047,7 +1047,8 @@ public class ModelWrapper {
         String sample,
         String modelStr,
         Boolean skipMesh,
-        boolean pre_solve_break
+        boolean pre_solve_break,
+        boolean[] basesValid
     ) {
         long runSolStartTime = System.nanoTime();
         int index = 0;
@@ -1097,10 +1098,13 @@ public class ModelWrapper {
                 }
             );
 
+            //if no bases are valid, must resolve all, even if file exists
+            boolean resolveAll = !anyTrue(basesValid);
+
             System.out.println("\tSolving electric currents for " + key_on + ".");
 
             boolean save = true;
-            if (!new File(mphFile).exists()) {
+            if (!new File(mphFile).exists() || resolveAll) {
                 if (!pre_solve_break) {
                     model.sol("sol1").runAll();
                     model.component("comp1").mesh("mesh1").clearMesh();
@@ -1161,7 +1165,7 @@ public class ModelWrapper {
     }
 
     /**
-     * Add string id for COMSOL element to the listed unions (which have not be "created" in COMSOL yet)
+     * Add string id for COMSOL element to the listed unions (which have not been "created" in COMSOL yet)
      * @param contributor the string id to add (use actual id, not pseudonym)
      * @param unions which unions to add it to  (use static pseudonym constants at top of class)
      */
@@ -1231,7 +1235,7 @@ public class ModelWrapper {
         JSONObject cli_args = getCLI(args);
 
         //connect to comsol server
-        ModelWrapper.serverConnect(5);
+        ModelWrapper.serverConnect();
 
         setShowProgress(cli_args);
 
@@ -1260,7 +1264,7 @@ public class ModelWrapper {
         if (!cli_args.isNull("break_point")) {
             break_point = cli_args.getString("break_point");
         }
-        Boolean endo_only_solution = false;
+        boolean endo_only_solution = false;
         if (cli_args.has("endo_only_solution") && cli_args.getBoolean("endo_only_solution")) {
             endo_only_solution = true;
         } else if (run.has("endo_only_solution") && run.getBoolean("endo_only_solution")) {
@@ -1329,7 +1333,7 @@ public class ModelWrapper {
 
                 // if bases directory does not yet exist, make it. If it exists, check that the bases are valid
                 File basesPathFile = new File(bases_directory);
-                boolean basesValid = areBasesValid(
+                boolean[] basesValid = areBasesValid(
                     projectPath,
                     sample,
                     modelStr,
@@ -1338,13 +1342,7 @@ public class ModelWrapper {
                 );
 
                 String modelFile;
-                if (
-                    (!basesPathFile.exists()) ||
-                    (basesPathFile.list().length < 1) ||
-                    (!basesValid) ||
-                    nerve_only ||
-                    cuff_only
-                ) {
+                if ((!allTrue(basesValid)) || nerve_only || cuff_only) {
                     // Load MODEL configuration data
                     modelFile =
                         String.join(
@@ -2047,7 +2045,8 @@ public class ModelWrapper {
                         sample,
                         modelStr,
                         skipMesh,
-                        pre_solve_break
+                        pre_solve_break,
+                        basesValid
                     );
 
                     if (pre_solve_break) {
@@ -2180,8 +2179,7 @@ public class ModelWrapper {
         //Load CLI args
         byte[] decodedBytes = Base64.getDecoder().decode(args[2]);
         String decodedString = new String(decodedBytes);
-        JSONObject cli_args = new JSONObject(decodedString);
-        return cli_args;
+        return new JSONObject(decodedString);
     }
 
     private static void saveMeshStats(
@@ -2405,14 +2403,15 @@ public class ModelWrapper {
         }
     }
 
-    private static boolean areBasesValid(
+    //Check if bases are valid and return a boolean array specifying the bases which need to be resolved
+    private static boolean[] areBasesValid(
         String projectPath,
         String sample,
         String modelStr,
         String bases_directory,
         File basesPathFile
     ) {
-        boolean basesValid = true;
+        boolean[] basesValid;
         if (basesPathFile.exists()) {
             String imFile = String.join(
                 "/",
@@ -2428,20 +2427,21 @@ public class ModelWrapper {
             );
             try {
                 JSONObject imdata = JSONio.read(imFile);
+                basesValid = new boolean[imdata.getJSONObject("currentIDs").length()];
                 for (int cu = 0; cu < imdata.getJSONObject("currentIDs").length(); cu++) {
                     File basisFile = new File(bases_directory + "/" + cu + ".mph");
                     if (!basisFile.exists()) {
-                        basesValid = false;
+                        basesValid[cu] = false;
                     }
                 }
             } catch (FileNotFoundException e) {
                 System.out.println(
-                    "\tCould not validate bases because no identifier manager record exists (mesh/im.json)."
+                    "\tCould not validate bases because no identifier manager record exists (mesh/im.json). Resolving all bases."
                 );
-                basesValid = false;
+                basesValid = new boolean[] { false };
             }
         } else {
-            basesValid = false;
+            basesValid = new boolean[] { false };
         }
         return basesValid;
     }
@@ -2625,9 +2625,9 @@ public class ModelWrapper {
         }
     }
 
-    private static void serverConnect(int waitMinutes) throws InterruptedException {
-        // Try to connect to comsol server
-        long connectTime = (long) waitMinutes * 60 * 1000 + System.currentTimeMillis();
+    private static void serverConnect() throws InterruptedException {
+        // Try to connect to comsol server (5 minutes)
+        long connectTime = (long) 5 * 60 * 1000 + System.currentTimeMillis();
         while (true) {
             try {
                 ModelUtil.connect("localhost", 2036);
@@ -2660,5 +2660,15 @@ public class ModelWrapper {
                 }
             }
         }
+    }
+
+    public static boolean allTrue(boolean[] array) {
+        for (boolean b : array) if (!b) return false;
+        return true;
+    }
+
+    public static boolean anyTrue(boolean[] array) {
+        for (boolean b : array) if (b) return true;
+        return false;
     }
 }
