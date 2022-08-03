@@ -56,7 +56,7 @@ evaluates as expression).
       - `"sigma_y"`: The value (String) is the conductivity in the
         y-direction (unit: S/m)
 
-      - `"sigma\_z"`:  The value (String) is the conductivity in the
+      - `"sigma_z"`:  The value (String) is the conductivity in the
         z-direction (unit: S/m)
 
   - `"unit"`: The unit of the associated conductivity in square brackets
