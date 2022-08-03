@@ -33,7 +33,7 @@ class listAction(argparse.Action):
                 try:
                     rundata = json.load(f)
                 except Exception as e:
-                    print('WARNING: Could not load {}'.format(j))
+                    print(f'WARNING: Could not load {j}')
                     print(e)
                     continue
                 data.append(
@@ -48,7 +48,7 @@ class listAction(argparse.Action):
         df = pd.DataFrame(data)
         df.RUN = df.RUN.astype(int)
         df = df.sort_values('RUN')
-        print('Run indices available (defined by user .json files in {}):\n'.format(run_path))
+        print(f'Run indices available (defined by user .json files in {run_path}):\n')
         print(df.to_string(index=False))
         sys.exit()
 
@@ -162,7 +162,7 @@ def print_progress_bar(iteration, total, prefix='', suffix='', decimals=1, lengt
     percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
     filled_length = int(length * iteration // total)
     bar = fill * filled_length + '-' * (length - filled_length)
-    print('\r{} |{}| {}% {}'.format(prefix, bar, percent, suffix), end='')
+    print(f'\r{prefix} |{bar}| {percent}% {suffix}', end='')
     # Print New Line on Complete
     if iteration == total:
         print()
@@ -274,17 +274,17 @@ def get_thresh_bounds(sim_dir: str, sim_name: str, inner_ind: int):
     sample = sim_name.split('_')[0]
     n_sim = sim_name.split('_')[3]
 
-    sim_config = load(os.path.join(sim_dir, sim_name, '{}.json'.format(n_sim)))
+    sim_config = load(os.path.join(sim_dir, sim_name, f'{n_sim}.json'))
 
     if sim_config['protocol']['mode'] == 'ACTIVATION_THRESHOLD' or sim_config['protocol']['mode'] == 'BLOCK_THRESHOLD':
         if 'scout' in sim_config['protocol']['bounds_search']:
             # load in threshold from scout_sim (example use: run centroid first, then any other xy-mode after)
             scout = sim_config['protocol']['bounds_search']['scout']
             scout_sim_dir = os.path.join('n_sims')
-            scout_sim_name = '{}_{}_{}_{}'.format(sample, scout['model'], scout['sim'], n_sim)
+            scout_sim_name = f"{sample}_{scout['model']}_{scout['sim']}_{n_sim}"
             scout_sim_path = os.path.join(scout_sim_dir, scout_sim_name)
             scout_output_path = os.path.abspath(os.path.join(scout_sim_path, 'data', 'outputs'))
-            scout_thresh_path = os.path.join(scout_output_path, 'thresh_inner{}_fiber{}.dat'.format(inner_ind, 0))
+            scout_thresh_path = os.path.join(scout_output_path, f'thresh_inner{inner_ind}_fiber{0}.dat')
 
             if os.path.exists(scout_thresh_path):
                 stimamp = np.loadtxt(scout_thresh_path)
@@ -367,7 +367,7 @@ def make_task(
         if my_os == 'UNIX-LIKE':
             lines = [
                 '#!/bin/bash\n',
-                'cd \"{}\"\n'.format(sim_p),
+                f'cd "{sim_p}\"\n',
                 'chmod a+rwx special\n',
                 './special -nobanner '
                 '-c \"strdef sim_path\" '
@@ -386,7 +386,7 @@ def make_task(
                 ),
             ]
             if sub_con != 'cluster':
-                lines.remove('cd \"{}\"\n'.format(sim_p))
+                lines.remove(f'cd "{sim_p}\"\n')
 
             # copy special files ahead of time to avoid 'text file busy error'
             if not os.path.exists('special'):
@@ -453,7 +453,7 @@ def submit_fibers(submission_context, submission_data):
 
     for sim_name, runfibers in submission_data.items():
         if args.verbose:
-            print('\n\n################ {} ################\n\n'.format(sim_name))
+            print(f'\n\n################ {sim_name} ################\n\n')
 
         sim_path = os.path.join(sim_dir, sim_name)
         start_dir = os.path.join(sim_path, 'start_scripts')
@@ -464,9 +464,7 @@ def submit_fibers(submission_context, submission_data):
             cluster_submit(runfibers, sim_name, sim_path, start_path_base)
             runcount += 1
             if not args.verbose:
-                print_progress_bar(
-                    runcount, len(submission_data), length=40, prefix='Current n_sim {}:'.format(sim_name)
-                )
+                print_progress_bar(runcount, len(submission_data), length=40, prefix=f'Current n_sim {sim_name}:')
         else:
 
             if args.num_cpu is not None:
@@ -487,7 +485,7 @@ def submit_fibers(submission_context, submission_data):
                 for x in runfibers:
                     x['verbose'] = args.verbose
                 if not args.verbose:
-                    print_progress_bar(0, len(runfibers), length=40, prefix='n_sim {}:'.format(sim_name))
+                    print_progress_bar(0, len(runfibers), length=40, prefix=f'n_sim {sim_name}:')
                 # open pool instance, set up progress bar, and iterate over each job
                 for i, _ in enumerate(p.imap_unordered(local_submit, runfibers, 1)):
                     if not args.verbose:
@@ -495,7 +493,7 @@ def submit_fibers(submission_context, submission_data):
                             i + 1,
                             len(runfibers),
                             length=40,
-                            prefix='n_sim {}:'.format(sim_name),
+                            prefix=f'n_sim {sim_name}:',
                         )
             os.chdir("../..")
 
@@ -530,12 +528,12 @@ def cluster_submit(runfibers, sim_name, sim_path, start_path_base):
         command = [
             'sbatch',
             *([args.slurm_params] if args.slurm_params else []),
-            '--job-name={}'.format(sim_name),
-            '--output={}%a.log'.format(out_dir),
-            '--error={}%a.log'.format(err_dir),
-            '--array={}'.format(','.join([str(x) for x in array_indices])),
-            '--mem={}'.format(mem),
-            '--partition={}'.format(partition),
+            f'--job-name={sim_name}',
+            f'--output={out_dir}%a.log',
+            f'--error={err_dir}%a.log',
+            f"--array={','.join([str(x) for x in array_indices])}",
+            f'--mem={mem}',
+            f'--partition={partition}',
             '--cpus-per-task=1',
             'array_launch.slurm',
             start_path_base,
@@ -588,7 +586,7 @@ def make_fiber_tasks(submission_list, submission_context):
 
         # load JSON file with binary search amplitudes
         n_sim = sim_name.split('_')[-1]
-        sim_config = load(os.path.join(sim_path, '{}.json'.format(n_sim)))
+        sim_config = load(os.path.join(sim_path, f'{n_sim}.json'))
         fiber_model = sim_config['fibers']['mode']
 
         # load the inner x fiber -> diam key saved in the n_sim folder
@@ -611,7 +609,7 @@ def make_fiber_tasks(submission_list, submission_context):
             # get the axonnodes from data/inputs/inner{}_fiber{}.dat top line
             fiber_ve_path = os.path.join(
                 fibers_path,
-                'inner{}_fiber{}.dat'.format(inner_ind, fiber_ind),
+                f'inner{inner_ind}_fiber{fiber_ind}.dat',
             )
             fiber_ve = np.loadtxt(fiber_ve_path)
             n_fiber_coords = int(fiber_ve[0])
@@ -621,11 +619,7 @@ def make_fiber_tasks(submission_list, submission_context):
             elif neuron_flag == 3:
                 axonnodes = int(n_fiber_coords)
 
-            start_path = '{}{}{}'.format(
-                start_path_base,
-                fiber_data["job_number"],
-                '.sh' if OS == 'UNIX-LIKE' else '.bat',
-            )
+            start_path = f"{start_path_base}{fiber_data['job_number']}{'.sh' if OS == 'UNIX-LIKE' else '.bat'}"
 
             stimamp_top, stimamp_bottom = get_thresh_bounds(sim_dir, sim_name, inner_ind)
             if stimamp_top is not None and stimamp_bottom is not None:
@@ -666,7 +660,7 @@ def make_run_sub_list(run_number: int):
         for model in models:
             for sim in sims:
                 sim_dir = os.path.join('n_sims')
-                sim_name_base = '{}_{}_{}_'.format(sample, model, sim)
+                sim_name_base = f'{sample}_{model}_{sim}_'
                 nsim_list = [x for x in os.listdir(sim_dir) if x.startswith(sim_name_base)]
                 for sim_name in nsim_list:
                     submit_list[sim_name] = []
@@ -676,7 +670,7 @@ def make_run_sub_list(run_number: int):
                     output_path = os.path.abspath(os.path.join(sim_path, 'data', 'outputs'))
 
                     n_sim = sim_name.split('_')[-1]
-                    sim_config = load(os.path.join(sim_path, '{}.json'.format(n_sim)))
+                    sim_config = load(os.path.join(sim_path, f'{n_sim}.json'))
 
                     fibers_files = [x for x in os.listdir(fibers_path) if re.match('inner[0-9]+_fiber[0-9]+\\.dat', x)]
 
@@ -690,7 +684,7 @@ def make_run_sub_list(run_number: int):
                             n_amp = len(sim_config['protocol']['amplitudes'])
                             search_path = os.path.join(
                                 output_path,
-                                'activation_inner{}_fiber{}_amp{}.dat'.format(inner_ind, fiber_ind, n_amp - 1),
+                                f'activation_inner{inner_ind}_fiber{fiber_ind}_amp{n_amp - 1}.dat',
                             )
                         else:
                             search_path = os.path.join(
@@ -700,11 +694,7 @@ def make_run_sub_list(run_number: int):
 
                         if os.path.exists(search_path):
                             if args.verbose:
-                                print(
-                                    'Found {} -->\t\tskipping inner ({}) fiber ({})'.format(
-                                        search_path, inner_ind, fiber_ind
-                                    )
-                                )
+                                print(f'Found {search_path} -->\t\tskipping inner ({inner_ind}) fiber ({fiber_ind})')
                                 time.sleep(1)
                             continue
 
@@ -729,16 +719,16 @@ def confirm_submission(n_fibers, rundata, submission_context):
         df.RUN = df.RUN.astype(int)
         df = df.sort_values('RUN')
         # print out and check that the user is happy
-        print('Submitting the following runs (submission_context={}):'.format(submission_context))
+        print(f'Submitting the following runs (submission_context={submission_context}):')
         print(df.to_string(index=False))
-        print('Will result in running {} fiber simulations'.format(n_fibers))
+        print(f'Will result in running {n_fibers} fiber simulations')
         proceed = input('\t Would you like to proceed?\n' '\t\t 0 = NO\n' '\t\t 1 = YES\n')
         if int(proceed) != 1:
             sys.exit()
         else:
             print('Proceeding...\n')
     else:
-        print('Skipping summary, submitting {} fibers...'.format(n_fibers))
+        print(f'Skipping summary, submitting {n_fibers} fibers...')
 
 
 def get_submission_list(run_inds):
@@ -754,22 +744,22 @@ def get_submission_list(run_inds):
         filename = os.path.join('runs', f'{run_number}.json')
 
         # configuration file exists
-        assert os.path.exists(filename), 'Run configuration not found: {}'.format(run_number)
+        assert os.path.exists(filename), f'Run configuration not found: {run_number}'
 
         # load in configuration data
         run = load(filename)
 
         # configuration is not empty
-        assert len(run.items()) > 0, 'Encountered empty run configuration: {}'.format(filename)
+        assert len(run.items()) > 0, f'Encountered empty run configuration: {filename}'
 
-        print('Generating run list for run {}'.format(run_number))
+        print(f'Generating run list for run {run_number}')
         # sleep to make it not too fast
         time.sleep(1)
         # get list of fibers to run
         submission_addition = make_run_sub_list(run_number)
         # check for duplicate nsims
         if any([x in submission_list for x in submission_addition.keys()]):
-            warnings.warn('Duplicate nsims found in run {}. Continuing'.format(run_number))
+            warnings.warn(f'Duplicate nsims found in run {run_number}. Continuing')
         submission_list.update(submission_addition)
         rundata.append(
             {

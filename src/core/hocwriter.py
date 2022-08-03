@@ -72,22 +72,22 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         write_mode = WriteMode.HOC
         file_path = os.path.join(
             self.dest_dir,
-            "launch{}".format(WriteMode.file_endings.value[write_mode.value]),
+            f"launch{WriteMode.file_endings.value[write_mode.value]}",
         )
         with open(file_path, "w") as file_object:
 
             # ENVIRONMENT
             file_object.write("\n//***************** Environment *****************\n")
-            file_object.write("celsius   = %0.0f // [degC]\n" % self.search(Config.MODEL, "temperature"))
+            file_object.write(f"celsius   = {self.search(Config.MODEL, 'temperature'):0.0f} // [degC]\n")
 
             # TIME PARAMETERS
             file_object.write("\n//***************** Global Time ******************\n")
 
-            file_object.write("dt        = %0.3f // [ms]\n" % self.search(Config.SIM, "waveform", "global", "dt"))
-            file_object.write("tstop     = %0.0f // [ms]\n" % self.search(Config.SIM, "waveform", "global", "stop"))
-            file_object.write("n_tsteps  = %0.0f // [unitless]\n" % n_tsteps)
-            file_object.write("t_initSS  = %0.0f // [ms]\n" % self.search(Config.SIM, "protocol", "initSS"))
-            file_object.write("dt_initSS = %0.0f // [ms]\n" % self.search(Config.SIM, "protocol", "dt_initSS"))
+            file_object.write(f"dt        = {self.search(Config.SIM, 'waveform', 'global', 'dt'):0.3f} // [ms]\n")
+            file_object.write(f"tstop     = {self.search(Config.SIM, 'waveform', 'global', 'stop'):0.0f} // [ms]\n")
+            file_object.write(f"n_tsteps  = {n_tsteps:0.0f} // [unitless]\n")
+            file_object.write(f"t_initSS  = {self.search(Config.SIM, 'protocol', 'initSS'):0.0f} // [ms]\n")
+            file_object.write(f"dt_initSS = {self.search(Config.SIM, 'protocol', 'dt_initSS'):0.0f} // [ms]\n")
 
             # FIBER PARAMETERS
             file_object.write("\n//***************** Fiber Parameters *************\n")
@@ -128,7 +128,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
             )
 
             # Flag to change the end 2 nodes (either end) to 5 mm for SL only in NEURON
-            file_object.write("large_end_nodes      = %0.0f\n" % int(0))
+            file_object.write(f"large_end_nodes      = {int(0):0.0f}\n")
 
             if fiber_model_info.get("neuron_flag") == 3:
                 channels = fiber_model_info.get("channels_type")
@@ -179,7 +179,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                 % self.search(Config.SIM, "intracellular_stim", "pulse_repetition_freq")
             )
             file_object.write(
-                "IntraStim_PulseTrain_amp      = %0.4f // [nA]\n" % self.search(Config.SIM, "intracellular_stim", "amp")
+                f"IntraStim_PulseTrain_amp      = {self.search(Config.SIM, 'intracellular_stim', 'amp'):0.4f} // [nA]\n"
             )
             file_object.write(
                 "IntraStim_PulseTrain_ind      = %0.0f "
@@ -189,7 +189,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
 
             file_object.write("\n//***************** Extracellular Stim ***********\n")
             file_object.write("strdef VeTime_fname\n")
-            file_object.write("VeTime_fname            = \"%s\"\n" % "data/inputs/waveform.dat")
+            file_object.write(f"VeTime_fname            = \"{'data/inputs/waveform.dat'}\"\n")
             file_object.write("flag_extracellular_stim = %0.0f // Set to zero for off; one for on \n" % 1)
             file_object.write("flag_whichstim = %0.0f // Set to zero for off; one for on \n" % 0)
 
@@ -204,34 +204,34 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                 pass
 
             file_object.write(
-                "saveflag_Vm_time      = %0.0f\n" % int(self.search(Config.SIM, "saving", "time", "vm") is True)
+                f"saveflag_Vm_time      = {int(self.search(Config.SIM, 'saving', 'time', 'vm') is True):0.0f}\n"
             )
             file_object.write(
-                "saveflag_gating_time  = %0.0f\n" % int(self.search(Config.SIM, "saving", "time", "gating") is True)
+                f"saveflag_gating_time  = {int(self.search(Config.SIM, 'saving', 'time', 'gating') is True):0.0f}\n"
             )
             file_object.write(
-                "saveflag_Vm_space     = %0.0f\n" % int(self.search(Config.SIM, "saving", "space", "vm") is True)
+                f"saveflag_Vm_space     = {int(self.search(Config.SIM, 'saving', 'space', 'vm') is True):0.0f}\n"
             )
             file_object.write(
-                "saveflag_gating_space = %0.0f\n" % int(self.search(Config.SIM, "saving", "space", "gating") is True)
+                f"saveflag_gating_space = {int(self.search(Config.SIM, 'saving', 'space', 'gating') is True):0.0f}\n"
             )
-            file_object.write("saveflag_Ve           = %0.0f\n" % int(False))
+            file_object.write(f"saveflag_Ve           = {int(False):0.0f}\n")
             file_object.write(
-                "saveflag_Istim        = %0.0f\n" % int(self.search(Config.SIM, "saving", "time", "istim") is True)
+                f"saveflag_Istim        = {int(self.search(Config.SIM, 'saving', 'time', 'istim') is True):0.0f}\n"
             )
 
             if 'runtimes' not in self.configs[Config.SIM.value]['saving']:
                 file_object.write("saveflag_runtime     = %0.0f\n" % 0)
             else:
                 file_object.write(
-                    "saveflag_runtime     = %0.0f\n" % int(self.search(Config.SIM, "saving", "runtimes") is True)
+                    f"saveflag_runtime     = {int(self.search(Config.SIM, 'saving', 'runtimes') is True):0.0f}\n"
                 )
 
             if 'aploctime' not in self.configs[Config.SIM.value]['saving']:
                 file_object.write("saveflag_ap_loctime  = %0.0f\n" % 0)
             else:
                 file_object.write(
-                    "saveflag_ap_loctime  = %0.0f\n" % int(self.search(Config.SIM, "saving", "aploctime") is True)
+                    f"saveflag_ap_loctime  = {int(self.search(Config.SIM, 'saving', 'aploctime') is True):0.0f}\n"
                 )
 
             if 'end_ap_times' in self.configs[Config.SIM.value]['saving']:
@@ -250,10 +250,10 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                 file_object.write(
                     "saveflag_end_ap_times = %0.0f\n\n" % 1
                 )  # if Sim has "ap_end_times" defined, then we are recording them
-                file_object.write("loc_min_end_ap        = %0.2f\n" % loc_min)
-                file_object.write("loc_max_end_ap        = %0.2f\n" % loc_max)
+                file_object.write(f"loc_min_end_ap        = {loc_min:0.2f}\n")
+                file_object.write(f"loc_max_end_ap        = {loc_max:0.2f}\n")
                 file_object.write(
-                    "ap_end_thresh         = %0.0f\n" % self.search(Config.SIM, "saving", "end_ap_times", "threshold")
+                    f"ap_end_thresh         = {self.search(Config.SIM, 'saving', 'end_ap_times', 'threshold'):0.0f}\n"
                 )
 
             file_object.write("\n//***************** Protocol Parameters *********\n")
@@ -274,10 +274,10 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                     block_thresh_flag = NeuronRunMode.BLOCK_THRESHOLD.value
 
                 threshold: dict = self.search(Config.SIM, "protocol", "threshold")
-                file_object.write("\nap_thresh = %0.0f\n" % self.search(Config.SIM, "protocol", "threshold", "value"))
+                file_object.write(f"\nap_thresh = {self.search(Config.SIM, 'protocol', 'threshold', 'value'):0.0f}\n")
                 if self.search(Config.SIM, "protocol", "threshold", "n_min_aps") != 1:
                     self.throw(142)
-                file_object.write("N_minAPs  = %0.0f\n" % self.search(Config.SIM, "protocol", "threshold", "n_min_aps"))
+                file_object.write(f"N_minAPs  = {self.search(Config.SIM, 'protocol', 'threshold', 'n_min_aps'):0.0f}\n")
 
                 if 'ap_detect_location' not in threshold:
                     file_object.write("ap_detect_location  = 0.9\n")
@@ -294,12 +294,12 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                 if bounds_search_mode == SearchAmplitudeIncrementMode.PERCENT_INCREMENT:
                     increment_flag = SearchAmplitudeIncrementMode.PERCENT_INCREMENT.value
                     step: float = self.search(Config.SIM, "protocol", "bounds_search", "step")
-                    file_object.write("\nrel_increment = %0.4f\n" % (step / 100))
+                    file_object.write(f"\nrel_increment = {step / 100:0.4f}\n")
                 elif bounds_search_mode == SearchAmplitudeIncrementMode.ABSOLUTE_INCREMENT:
                     increment_flag = SearchAmplitudeIncrementMode.ABSOLUTE_INCREMENT.value
                     step: float = self.search(Config.SIM, "protocol", "bounds_search", "step")
-                    file_object.write("\nabs_increment = %0.4f\n" % step)
-                file_object.write("increment_flag = %0.0f // \n" % increment_flag)
+                    file_object.write(f"\nabs_increment = {step:0.4f}\n")
+                file_object.write(f"increment_flag = {increment_flag:0.0f} // \n")
 
                 termination_criteria_mode_name: str = self.search(
                     Config.SIM, "protocol", "termination_criteria", "mode"
@@ -312,21 +312,21 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                 if termination_criteria_mode == TerminationCriteriaMode.ABSOLUTE_DIFFERENCE:
                     termination_flag = TerminationCriteriaMode.ABSOLUTE_DIFFERENCE.value
                     res: float = self.search(Config.SIM, "protocol", "termination_criteria", "tolerance")
-                    file_object.write("\nabs_thresh_resoln = %0.4f\n" % res)
+                    file_object.write(f"\nabs_thresh_resoln = {res:0.4f}\n")
                 elif termination_criteria_mode == TerminationCriteriaMode.PERCENT_DIFFERENCE:
                     termination_flag = TerminationCriteriaMode.PERCENT_DIFFERENCE.value
                     res: float = self.search(Config.SIM, "protocol", "termination_criteria", "percent")
-                    file_object.write("\nrel_thresh_resoln = %0.4f\n" % (res / 100))
-                file_object.write("termination_flag = %0.0f // \n" % termination_flag)
+                    file_object.write(f"\nrel_thresh_resoln = {res / 100:0.4f}\n")
+                file_object.write(f"termination_flag = {termination_flag:0.0f} // \n")
 
                 max_iter = self.search(Config.SIM, "protocol", "bounds_search").get("max_steps", 100)
-                file_object.write("max_iter = %0.0f // \n" % max_iter)
+                file_object.write(f"max_iter = {max_iter:0.0f} // \n")
 
                 file_object.write("Namp = %0.0f\n" % 1)
                 file_object.write("objref stimamp_values\n")
                 file_object.write("stimamp_values = new Vector(Namp,%0.0f)\n" % 0)
                 for amp_ind in range(1):
-                    file_object.write("stimamp_values.x[%0.0f] = %0.4f\n" % (amp_ind, 0))
+                    file_object.write(f"stimamp_values.x[{amp_ind:0.0f}] = {0:0.4f}\n")
 
             elif protocol_mode == NeuronRunMode.FINITE_AMPLITUDES:
                 activation: dict = self.search(Config.SIM, "protocol", "threshold", optional=True)
@@ -340,18 +340,18 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                 else:
                     ap_thresh = self.search(Config.SIM, "protocol", "threshold", "value")
                     ap_detect_location = self.search(Config.SIM, "protocol", "threshold", "ap_detect_location")
-                file_object.write("\nap_thresh = %0.0f\n" % ap_thresh)
-                file_object.write("ap_detect_location  = %0.2f\n" % ap_detect_location)
+                file_object.write(f"\nap_thresh = {ap_thresh:0.0f}\n")
+                file_object.write(f"ap_detect_location  = {ap_detect_location:0.2f}\n")
                 find_thresh = 0
                 block_thresh_flag = 0
                 amps = self.search(Config.SIM, "protocol", "amplitudes")
                 num_amps = len(amps)
                 file_object.write("\n//***************** Batching Parameters **********\n")
-                file_object.write("Namp = %0.0f\n" % num_amps)
+                file_object.write(f"Namp = {num_amps:0.0f}\n")
                 file_object.write("objref stimamp_values\n")
                 file_object.write("stimamp_values = new Vector(Namp,%0.0f)\n" % 0)
                 for amp_ind in range(num_amps):
-                    file_object.write("stimamp_values.x[%0.0f] = %0.4f\n" % (amp_ind, amps[amp_ind]))
+                    file_object.write(f"stimamp_values.x[{amp_ind:0.0f}] = {amps[amp_ind]:0.4f}\n")
 
             file_object.write(
                 "\nfind_thresh = %0.0f "
@@ -369,7 +369,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
             # Time points to record Vm and gating params vs x
             checktimes = self.search(Config.SIM, "saving", "space", "times")
             n_checktimes = len(checktimes)
-            file_object.write("Nchecktimes = %0.0f \n" % n_checktimes)
+            file_object.write(f"Nchecktimes = {n_checktimes:0.0f} \n")
 
             file_object.write("objref checktime_values_ms, checktime_values\n")
             file_object.write("checktime_values_ms = new Vector(Nchecktimes,0)\n")
@@ -377,14 +377,14 @@ class HocWriter(Exceptionable, Configurable, Saveable):
 
             file_object.write("// Check times in milliseconds\n")
             for time_ind in range(n_checktimes):
-                file_object.write("checktime_values_ms.x[{}] = {} \n".format(time_ind, checktimes[time_ind]))
+                file_object.write(f"checktime_values_ms.x[{time_ind}] = {checktimes[time_ind]} \n")
 
             checknodes = self.search(Config.SIM, "saving", "time", "locs")
             if checknodes == 'all':
                 file_object.write("\nNchecknodes = axonnodes\n")
             else:
                 n_checknodes = len(checknodes)
-                file_object.write("\nNchecknodes = %0.0f\n" % n_checknodes)
+                file_object.write(f"\nNchecknodes = {n_checknodes:0.0f}\n")
 
             file_object.write("objref checknode_values\n")
             file_object.write("checknode_values = new Vector(Nchecknodes,0)\n")
@@ -397,7 +397,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
             if checknodes != 'all':
                 for node_ind in range(n_checknodes):
                     file_object.write(
-                        "\tchecknode_values.x[{}] = int(axon_length*{}/deltaz)\n".format(node_ind, checknodes[node_ind])
+                        f"\tchecknode_values.x[{node_ind}] = int(axon_length*{checknodes[node_ind]}/deltaz)\n"
                     )
             file_object.write("}\n")
 

@@ -49,7 +49,7 @@ def run(args):
             try:
                 os.rmdir(directory)
             except Exception:
-                print('Could not remove {}'.format(directory))
+                print(f'Could not remove {directory}')
             if args.verbose:
                 print(f'\tREMOVE DIR: {directory}')
 
@@ -76,7 +76,7 @@ def run(args):
                 try:
                     os.remove(filepath)
                 except Exception:
-                    print('Could not remove {}'.format(filepath))
+                    print(f'Could not remove {filepath}')
                 if args.verbose:
                     print(f'\tREMOVE FILE: {filepath}')
 

@@ -61,10 +61,10 @@ for sample_metadata in results.get('samples', []):
                 for fib_key_name, fib_key_value in zip(
                     sim_object.fiberset_key, sim_object.fiberset_product[fiberset_index]
                 ):
-                    title = '{} {}={}'.format(title, fib_key_name, fib_key_value)
+                    title = f'{title} {fib_key_name}={fib_key_value}'
 
                 for wave_key_name, wave_key_value in zip(sim_object.wave_key, sim_object.wave_product[waveform_index]):
-                    title = '{} {}={}'.format(title, wave_key_name, wave_key_value)
+                    title = f'{title} {wave_key_name}={wave_key_value}'
 
                 sample_object.slides[0].plot(final=False, title=title)
 
@@ -80,7 +80,7 @@ for sample_metadata in results.get('samples', []):
                             n_sim_dir,
                             'data',
                             'outputs',
-                            'thresh_inner0_fiber{}.dat'.format(i),
+                            f'thresh_inner0_fiber{i}.dat',
                         )
                     )
                 ]
@@ -91,7 +91,7 @@ for sample_metadata in results.get('samples', []):
                             n_sim_dir,
                             'data',
                             'outputs',
-                            'thresh_inner0_fiber{}.dat'.format(i),
+                            f'thresh_inner0_fiber{i}.dat',
                         )
                     )[2]
                     for i in range(n_fibers)
@@ -109,7 +109,7 @@ for sample_metadata in results.get('samples', []):
                             n_sim_dir,
                             'data',
                             'outputs',
-                            'thresh_inner0_fiber{}.dat'.format(filename.split('.dat')[0]),
+                            f"thresh_inner0_fiber{filename.split('.dat')[0]}.dat",
                         )
                     )[2]
 

@@ -86,7 +86,7 @@ class Deformable(Exceptionable):
             (0, 0),
         )
         pygame.display.flip()
-        pygame.display.set_caption('nerve morph step {} of {}'.format(morph_index, len(morph_steps)))
+        pygame.display.set_caption(f'nerve morph step {morph_index} of {len(morph_steps)}')
 
     def deform_initialize(self, minimum_distance, morph_count, ratio):
         """Set up the necessary variables for deformation."""
@@ -303,7 +303,7 @@ class Deformable(Exceptionable):
         percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
         filledLength = int(length * iteration // total)
         bar = fill * filledLength + '-' * (length - filledLength)
-        print('\r{} |{}| {}% {}'.format(prefix, bar, percent, suffix), end='')
+        print(f'\r{prefix} |{bar}| {percent}% {suffix}', end='')
         # Print New Line on Complete
         if iteration == total:
             print()

@@ -108,9 +108,7 @@ def run_heatmaps(params):
         cbar_ax.set_title(r'mA', fontsize=50)
     else:
         cbar_ax.set_title(u'\u03bcA', fontsize=50)
-    dest = '{}{}{}_{}_{}_shared_cbar.png'.format(
-        params['outpath'], os.sep, params['sample'], params['model'], params['sim']
-    )
+    dest = f"{params['outpath']}{os.sep}{params['sample']}_{params['model']}_{params['sim']}_shared_cbar.png"
     fig.savefig(dest, dpi=500)
 
 

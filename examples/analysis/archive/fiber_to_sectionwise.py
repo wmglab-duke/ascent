@@ -20,7 +20,7 @@ usage: str = (
 )
 
 if len(sys.argv) != 4:
-    print('Invalid argument count: {}\n{}'.format(len(sys.argv), usage))
+    print(f'Invalid argument count: {len(sys.argv)}\n{usage}')
     sys.exit()
 
 options: str = sys.argv[1]
@@ -29,16 +29,16 @@ target: str = sys.argv[3]
 target_dir, _ = os.path.split(target)
 
 if not re.match('[xyz]*', options):
-    print('Invalid output options: {}\n{}'.format(options, usage))
+    print(f'Invalid output options: {options}\n{usage}')
     sys.exit()
 
 if len(options) not in [1, 2, 3]:
-    print('Invalid output options length: {}\n{}'.format(len(options), usage))
+    print(f'Invalid output options length: {len(options)}\n{usage}')
     sys.exit()
 
 for name, value in zip(['source', 'target directory'], [source, target_dir]):
     if not os.path.exists(value):
-        print('Invalid path for {}: {}\n{}'.format(name, value, usage))
+        print(f'Invalid path for {name}: {value}\n{usage}')
         sys.exit()
 
 data: np.ndarray = np.loadtxt(source, skiprows=1)
@@ -58,8 +58,8 @@ with open(target, 'w+') as handle:
                 addition = str(data[i][1])
             if char == 'z':
                 addition = str(data[i][2])
-            line = '{}\t{}'.format(line, addition)
+            line = f'{line}\t{addition}'
 
-        handle.write('{}\n'.format(line[1:]))
+        handle.write(f'{line[1:]}\n')
 
-print('Sectionwise file written to: {}'.format(target))
+print(f'Sectionwise file written to: {target}')

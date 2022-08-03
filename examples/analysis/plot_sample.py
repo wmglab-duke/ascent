@@ -52,6 +52,6 @@ dest = os.path.join('data', 'tmp', 'samples')
 if not os.path.exists(dest):
     os.mkdir(dest)
 
-fig.savefig(os.path.join(dest, '{}.{}'.format(fname, fmt)), format=fmt, dpi=1200)
+fig.savefig(os.path.join(dest, f'{fname}.{fmt}'), format=fmt, dpi=1200)
 
 os.chdir(cwd)

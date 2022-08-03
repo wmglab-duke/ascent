@@ -366,7 +366,7 @@ class Waveform(Exceptionable, Configurable, Saveable):
                 'config',
                 'user',
                 'waveforms',
-                '{}.dat'.format(str(self.search(Config.SIM, 'waveform', WaveformMode.EXPLICIT.name, 'index'))),
+                f"{str(self.search(Config.SIM, 'waveform', WaveformMode.EXPLICIT.name, 'index'))}.dat",
             )
 
             # read in wave from file

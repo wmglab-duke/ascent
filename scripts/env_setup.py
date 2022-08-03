@@ -20,7 +20,7 @@ def run(args, env_path=default_env):
     result = {}
     for key in Env.vals.value:
         while True:
-            value = input('Enter path for {}: '.format(key))
+            value = input(f'Enter path for {key}: ')
 
             if os.path.exists(value) or key == 'ASCENT_NSIM_EXPORT_PATH':
                 result[key] = value

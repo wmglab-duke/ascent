@@ -281,16 +281,14 @@ class MockSample(Exceptionable, Configurable):
             if upper_fasc_ecc >= 1:
                 upper_fasc_ecc = 0.99
                 upper_fasc_ecc_warning = (
-                    "Eccentricity only defined in range (0,1], "
-                    "overwrote upper_fasc_ecc, now = {}".format(upper_fasc_ecc)
+                    f"Eccentricity only defined in range (0,1], overwrote upper_fasc_ecc, now = {upper_fasc_ecc}"
                 )
                 warnings.warn(upper_fasc_ecc_warning)
 
             if lower_fasc_ecc < 0:
                 lower_fasc_ecc = 0
                 lower_fasc_ecc_warning = (
-                    "Eccentricity only defined in range (0,1], "
-                    "overwrote lower_fasc_ecc, now = {}".format(lower_fasc_ecc)
+                    f"Eccentricity only defined in range (0,1], overwrote lower_fasc_ecc, now = {lower_fasc_ecc}"
                 )
                 warnings.warn(lower_fasc_ecc_warning)
 

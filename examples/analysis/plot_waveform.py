@@ -59,13 +59,13 @@ for waveform_ind, waveform in enumerate(sim.waveforms):
     plt.ylabel('Amplitude (unscaled)')
     plt.show()
 
-    fname = '{}_{}_{}_{}'.format(str(sample_index), str(model_index), str(sim_index), str(waveform_ind))
+    fname = f'{str(sample_index)}_{str(model_index)}_{str(sim_index)}_{str(waveform_ind)}'
     fmt = 'png'
 
     dest = os.path.join('data', 'tmp', 'waveforms')
     if not os.path.exists(dest):
         os.mkdir(dest)
 
-    fig.savefig(os.path.join(dest, '{}.{}'.format(fname, fmt)), format=fmt, dpi=1200)
+    fig.savefig(os.path.join(dest, f'{fname}.{fmt}'), format=fmt, dpi=1200)
 
 os.chdir(cwd)
