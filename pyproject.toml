@@ -17,3 +17,6 @@ ignore_directives = [
     "changelog",
     "bibliography",
 ]
+
+[tool.flynt]
+line-length = 120

@@ -50,6 +50,12 @@ isort:
     - pip install isort
     - isort --check-only config docs examples scripts src run
 
+flynt:
+  stage: lint
+  script:
+    - pip install flynt
+    - flynt --fail-on-change config docs examples scripts src run
+
 black:
   stage: lint
   script:
