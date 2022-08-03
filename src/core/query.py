@@ -210,7 +210,7 @@ class Query(Exceptionable, Configurable, Saveable):
         elif mode == Config.MODEL:
             result = os.path.join('samples', str(indices[0]), 'models', str(indices[1]), 'model.json')
         elif mode == Config.SIM:
-            result = os.path.join('config', 'user', 'sims', '{}.json'.format(indices[0]))
+            result = os.path.join('config', 'user', 'sims', f'{indices[0]}.json')
         elif mode == Object.SAMPLE:
             result = os.path.join('samples', str(indices[0]), 'sample.obj')
         elif mode == Object.SIMULATION:
@@ -224,7 +224,7 @@ class Query(Exceptionable, Configurable, Saveable):
                 'sim.obj',
             )
         else:
-            print('INVALID MODE: {}'.format(type(mode)))
+            print(f'INVALID MODE: {type(mode)}')
             self.throw(55)
 
         if just_directory:
@@ -239,7 +239,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
             # ensure key is valid in data
             if key not in data:
-                print('ERRONEOUS KEY: {}'.format(key))
+                print(f'ERRONEOUS KEY: {key}')
                 self.throw(54)
 
             # corresponding values
@@ -318,13 +318,13 @@ class Query(Exceptionable, Configurable, Saveable):
             slide: Slide = sample_object.slides[0]
             n_inners = sum(len(fasc.inners) for fasc in slide.fascicles)
 
-            print('sample: {}'.format(sample_index))
+            print(f'sample: {sample_index}')
 
             # loop models
             for model_results in sample_results.get('models', []):
                 model_index = model_results['index']
 
-                print('\tmodel: {}'.format(model_index))
+                print(f'\tmodel: {model_index}')
 
                 for sim_index in sim_indices:
                     sim_object = self.get_object(Object.SIMULATION, [sample_index, model_index, sim_index])
@@ -360,7 +360,7 @@ class Query(Exceptionable, Configurable, Saveable):
                                     n_sim_dir,
                                     'data',
                                     'outputs',
-                                    'thresh_inner{}_fiber{}.dat'.format(inner, local_fiber_index),
+                                    f'thresh_inner{inner}_fiber{local_fiber_index}.dat',
                                 )
                                 if ignore_missing:
                                     try:
@@ -455,7 +455,7 @@ class Query(Exceptionable, Configurable, Saveable):
             self.add(SetupMode.OLD, Config.SAMPLE, sample_config)
 
             if console_output:
-                print('sample: {}'.format(sample_index))
+                print(f'sample: {sample_index}')
 
             # MODEL
             model_results: dict
@@ -466,7 +466,7 @@ class Query(Exceptionable, Configurable, Saveable):
                 self.add(SetupMode.OLD, Config.MODEL, model_config)
 
                 if console_output:
-                    print('\tmodel: {}'.format(model_index))
+                    print(f'\tmodel: {model_index}')
 
                 # SIM
                 for sim_index in model_results.get('sims', []):
@@ -481,7 +481,7 @@ class Query(Exceptionable, Configurable, Saveable):
                     )
 
                     if console_output:
-                        print('\t\tsim: {}'.format(sim_index))
+                        print(f'\t\tsim: {sim_index}')
 
                     # init sheet if necessary
                     if str(sim_index) not in sims.keys():
@@ -546,7 +546,7 @@ class Query(Exceptionable, Configurable, Saveable):
                         model_parts = [model_index, *values[1]]
                         sim_parts = [sim_index, *values[2]]
                         row = [
-                            '{}_{}_{}_{}'.format(sample_index, model_index, sim_index, nsim_index),
+                            f'{sample_index}_{model_index}_{sim_index}_{nsim_index}',
                             *(sample_parts if individual_indices else sample_parts[1:]),
                             *(model_parts if individual_indices else model_parts[1:]),
                             *(sim_parts if individual_indices else sim_parts[1:]),
@@ -577,7 +577,7 @@ class Query(Exceptionable, Configurable, Saveable):
         # build Excel file, with one sim per sheet
         writer = pd.ExcelWriter(filepath)
         for sim_index, sheet_data in sims.items():
-            sheet_name = 'Sim {}'.format(sim_index)
+            sheet_name = f'Sim {sim_index}'
             pd.DataFrame(sheet_data).to_excel(writer, sheet_name=sheet_name, header=False, index=False)
             if column_width is not None:
                 writer.sheets[sheet_name].set_column(0, 256, column_width)

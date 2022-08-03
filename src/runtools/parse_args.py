@@ -6,7 +6,7 @@ class versionAction(argparse.Action):
     def __call__(self, parser, args, values, option_string=None):
         from config.system import _version
 
-        print('ASCENT version {}'.format(_version.__version__))
+        print(f'ASCENT version {_version.__version__}')
         sys.exit()
 
 
@@ -155,7 +155,7 @@ def parse():
     def g0(args, argstring):
         """checks that argument is greater than 0"""
         if hasattr(args, argstring) and getattr(args, argstring) is not None and getattr(args, argstring) <= 0:
-            sys.exit('Arguments for {} must be greater than 0'.format(argstring))
+            sys.exit(f'Arguments for {argstring} must be greater than 0')
 
     # parse arguments
     args = parser.parse_args()

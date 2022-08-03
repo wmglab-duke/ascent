@@ -20,6 +20,11 @@ repos:
     rev: 5.10.1
     hooks:
       - id: isort
+  # format f strings
+  - repo: https://github.com/ikamensh/flynt/
+    rev: "0.76"
+    hooks:
+      - id: flynt
   # format python code
   - repo: https://github.com/psf/black
     rev: 22.6.0
@@ -56,6 +61,7 @@ repos:
           - flake8-builtins
           - flake8-comprehensions
           - flake8-fixme
+          - flake8-use-fstring
   #          - flake8-docstrings
   #          - flake8-rst-docstrings
   #          - darglint

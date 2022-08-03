@@ -174,14 +174,14 @@ def heatmaps(
 
         # offset for consecutive samples with colormap bounds override
 
-        print('sample: {}'.format(sample_index))
+        print(f'sample: {sample_index}')
 
         # loop models
         model_results: dict
         for model_results in sample_results.get('models', []):
             model_index = model_results['index']
 
-            print('\tmodel: {}'.format(model_index))
+            print(f'\tmodel: {model_index}')
 
             # calculate orientation point location (i.e., contact location)
             orientation_point = None
@@ -209,7 +209,7 @@ def heatmaps(
                     if sim_index == tracking_sim_index and len(colormap_bounds_tracking) == 0:
                         colormap_bounds_tracking = [(1e10, 0)] * len(sim_object.master_product_indices)
 
-                print('\t\tsim: {}'.format(sim_index))
+                print(f'\t\tsim: {sim_index}')
 
                 # init figure with subplots
                 master_product_count = len(sim_object.master_product_indices)
@@ -249,7 +249,7 @@ def heatmaps(
                                     n_sim_dir,
                                     'data',
                                     'outputs',
-                                    'thresh_inner{}_fiber0.dat'.format(i),
+                                    f'thresh_inner{i}_fiber0.dat',
                                 )
                                 if os.path.exists(thresh_path):
                                     threshold = abs(np.loadtxt(thresh_path))
@@ -257,12 +257,12 @@ def heatmaps(
                                         threshold = threshold[-1]
                                     if threshold > 500:
                                         missing_indices.append(i)
-                                        print('TOO BIG: {}'.format(thresh_path))
+                                        print(f'TOO BIG: {thresh_path}')
                                     else:
                                         thresholds.append(threshold)
                                 else:
                                     missing_indices.append(i)
-                                    print('MISSING: {}'.format(thresh_path))
+                                    print(f'MISSING: {thresh_path}')
                             else:
                                 thresholds.append(np.nan)
 
@@ -274,7 +274,7 @@ def heatmaps(
                                     n_sim_dir,
                                     'data',
                                     'outputs',
-                                    'thresh_inner{}_fiber{}.dat'.format(inner_ind, fiber_ind),
+                                    f'thresh_inner{inner_ind}_fiber{fiber_ind}.dat',
                                 )
                                 if os.path.exists(thresh_path):
                                     threshold = abs(np.loadtxt(thresh_path))
@@ -283,7 +283,7 @@ def heatmaps(
                                     thresholds.append(threshold)
                                 else:
                                     missing_indices.append((inner_ind, fiber_ind))
-                                    print('MISSING: {}'.format(thresh_path))
+                                    print(f'MISSING: {thresh_path}')
                             else:
                                 for _ in range(len(sim_object.fibersets[0].out_to_fib[inner_ind][0])):
                                     thresholds.append(np.nan)
@@ -369,14 +369,14 @@ def heatmaps(
                         if alltitle:
 
                             if fib_key_name == 'fibers->z_parameters->diameter':
-                                title = u'{} Fiber Diameter: {} \u03bcm'.format(title, fib_key_value)
+                                title = f'{title} Fiber Diameter: {fib_key_value} μm'
                             else:
                                 # default title
-                                title = '{} {}:{}'.format(title, fib_key_name, fib_key_value)
+                                title = f'{title} {fib_key_name}:{fib_key_value}'
                             title += '\n'
                         elif waveform_index == 0:
                             ax.set_ylabel(
-                                '{}'.format(fib_key_value),
+                                f'{fib_key_value}',
                                 fontsize=35,
                                 rotation=0,
                                 labelpad=20,
@@ -387,11 +387,11 @@ def heatmaps(
                     ):
                         if alltitle:
                             if wave_key_name == 'waveform->BIPHASIC_PULSE_TRAIN->pulse_width':
-                                title = '{} Pulse Width: {} ms'.format(title, wave_key_value)
+                                title = f'{title} Pulse Width: {wave_key_value} ms'
                             else:
-                                title = '{} {}:{}'.format(title, wave_key_name, wave_key_value)
+                                title = f'{title} {wave_key_name}:{wave_key_value}'
                         elif potentials_product_index == max([x[0] for x in sim_object.master_product_indices]):
-                            ax.set_xlabel('{}'.format(wave_key_value), fontsize=35, rotation=0)
+                            ax.set_xlabel(f'{wave_key_value}', fontsize=35, rotation=0)
                     ax.spines['left'].set_visible(False)
                     ax.spines['top'].set_visible(False)
                     ax.spines['right'].set_visible(False)
@@ -503,7 +503,7 @@ def heatmaps(
                 if save_path is not None:
                     if not os.path.exists(save_path):
                         os.makedirs(save_path)
-                    dest = '{}{}{}_{}_{}.png'.format(save_path, os.sep, sample_index, model_index, sim_index)
+                    dest = f'{save_path}{os.sep}{sample_index}_{model_index}_{sim_index}.png'
                     figure.savefig(dest, dpi=300)
 
                 # plot figure
@@ -513,7 +513,7 @@ def heatmaps(
         if track_colormap_bounds:
             print('BOUNDS:\n[')
             for bounds in colormap_bounds_tracking:
-                print('\t{},'.format(bounds))
+                print(f'\t{bounds},')
             print(']')
 
     return figure, axes, colormap_bounds_tracking
@@ -542,15 +542,15 @@ def ap_loctime(
 
     # loop samples
     for sample_index, sample_results in [(s['index'], s) for s in query_object._result.get('samples')]:
-        print('sample: {}'.format(sample_index))
+        print(f'sample: {sample_index}')
 
         # loop models
         for model_index, model_results in [(m['index'], m) for m in sample_results.get('models')]:
-            print('\tmodel: {}'.format(model_index))
+            print(f'\tmodel: {model_index}')
 
             # loop sims
             for sim_index in model_results.get('sims', []):
-                print('\t\tsim: {}'.format(sim_index))
+                print(f'\t\tsim: {sim_index}')
 
                 sim_object = query_object.get_object(Object.SIMULATION, [sample_index, model_index, sim_index])
 
@@ -561,7 +561,7 @@ def ap_loctime(
                 for n_sim_index, (potentials_product_index, _waveform_index) in enumerate(
                     sim_object.master_product_indices
                 ):
-                    print('\t\t\tnsim: {}'.format(n_sim_index))
+                    print(f'\t\t\tnsim: {n_sim_index}')
 
                     active_src_index, fiberset_index = sim_object.potentials_product[potentials_product_index]
 
@@ -585,7 +585,7 @@ def ap_loctime(
                     outputs_path = os.path.join(n_sim_dir, 'data', 'outputs')
 
                     # path of the first inner, first fiber vm(t) data
-                    vm_t_path = os.path.join(outputs_path, 'ap_loctime_inner0_fiber0_amp{}.dat'.format(amp))
+                    vm_t_path = os.path.join(outputs_path, f'ap_loctime_inner0_fiber0_amp{amp}.dat')
 
                     # load vm(t) data (see path above)
                     # each row is a snapshot of the voltages at each node [mV]
