@@ -898,7 +898,7 @@ public class ModelWrapper {
                     "samples",
                     sample,
                     "slides",
-                    "0", // these 0's are temporary (for 3d models will need to change)
+                    "0",
                     "0",
                     "sectionwise2d",
                     "fascicles",
@@ -912,7 +912,7 @@ public class ModelWrapper {
                     "samples",
                     sample,
                     "slides",
-                    "0", // these 0's are temporary (for 3d models will need to change)
+                    "0",
                     "0",
                     "sectionwise2d",
                     "nerve",

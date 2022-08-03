@@ -181,7 +181,6 @@ class Sample(Exceptionable, Configurable, Saveable):
             elif row_of_column_maxes.ndim == 1:  # masks from mock morphology, 1 bit
                 indices = np.where(row_of_column_maxes[:] == max(row_of_column_maxes[:]))[0]
             else:
-                # may need to expand here in future?
                 self.throw(97)
 
             # find the length of the scale bar by finding total range of "max white" indices
@@ -365,7 +364,7 @@ class Sample(Exceptionable, Configurable, Saveable):
 
         # assign fascicle mask files
         if mask_input_mode not in MaskInputMode:
-            self.throw(152)  # need to remove outers mode and error code 20, check all error codes
+            self.throw(152)
 
         if mask_input_mode == MaskInputMode.INNER_AND_OUTER_COMPILED:
             if self.mask_exists(MaskFileNames.COMPILED):
