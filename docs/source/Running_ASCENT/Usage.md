@@ -131,7 +131,7 @@ In `examples/analysis/` we provide a script, `plot_video.py`, that creates
 an animation of saved state variables as a function of space and time
 (e.g., transmembrane potentials, MRG gating parameters). The user can
 plot `n_sim` data saved in a `data/output/` folder by referencing indices
-for **_Sample_**, **_Model_**, **_Sim_**, inner, fiber, and `n\_sim`. The
+for **_Sample_**, **_Model_**, **_Sim_**, inner, fiber, and `n_sim`. The
 user may save the animation as either a `*.mp4` or `*.gif` file to the
 `data/output/` folder.
 

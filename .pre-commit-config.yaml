@@ -35,7 +35,7 @@ repos:
     rev: v2.7.1
     hooks:
       - id: prettier
-        exclude_types: [python]
+        exclude_types: [python, markdown]
         args: ["--print-width", "100"]
   # format java. Seperate from the above for different tab width
   - repo: https://github.com/pre-commit/mirrors-prettier

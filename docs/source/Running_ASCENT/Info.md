@@ -174,7 +174,7 @@ the cuff.
 
 ![Inline image](../uploads/01a27546f96467d15bdf091a13ff5f28/Picture22.jpg)
 
-Figure A. Demonstration of cuff placement on a multifascicular nerve (top) and a monofascicular nerve without epineurium (bottom) with the same "preset" cuff (Purdue.json) for three different cuff rotations using the "AUTO*ROTATION_TRACE_BOUNDARY" CuffShiftMode. The cuff rotations are different in the top and bottom rows since the point on the surface of the nerve sample closest to the most endoneurium is unique to each sample (black arrows). Additional angles of rotation were applied to the cuff directly using the "add_ang" parameter in the \*\*\_Model’s*\*\* "cuff" JSON Object (red arrows).
+Figure A. Demonstration of cuff placement on a multifascicular nerve (top) and a monofascicular nerve without epineurium (bottom) with the same "preset" cuff (Purdue.json) for three different cuff rotations using the `"AUTO_ROTATION_TRACE_BOUNDARY"` CuffShiftMode. The cuff rotations are different in the top and bottom rows since the point on the surface of the nerve sample closest to the most endoneurium is unique to each sample (black arrows). Additional angles of rotation were applied to the cuff directly using the "add_ang" parameter in the **_Model’s_** "cuff" JSON Object (red arrows).
 
 The default z-position of each part along the nerve is defined in the
 "preset" cuff JSON file by the expression assigned to the part
@@ -407,7 +407,7 @@ the handoff() method is called. Our pipeline supports calculation of the
 frequency-dependent conductivity of the perineurium based on
 measurements from the frog sciatic nerve {cite:p}`Weerasuriya1984` using the
 `rho_weerasuriya()` method in the Python Waveform class. See [Fig. 2](https://doi.org/10.1371/journal.pcbi.1009285.g002) for
-identification of tissue types in a compound nerve cross section (i.e.,
+identification of tissue types in a compound nerve cross-section (i.e.,
 epineurium, perineurium, endoneurium).
 
 Table A. Default material conductivities.
@@ -429,11 +429,11 @@ Table A. Default material conductivities.
 The perineurium is a thin highly resistive layer of connective tissue
 and has a profound impact on thresholds of activation and block. Our
 previous modeling work demonstrates that representing the perineurium
-with a thin layer approximation (Rm = rho\*peri*thk), rather than as a
+with a thin layer approximation (Rm = rho_peri_thk), rather than as a
 thinly meshed domain, reduces mesh complexity and is a reasonable
 approximation {cite:p}`Pelot2018`. Therefore, perineurium can be modeled with a thin
 layer approximation (except with "peanut" fascicles; see an example in
-[Fig 2](https://doi.org/10.1371/journal.pcbi.1009285.g002)), termed "contact impedance" in COMSOL (if \*\*\_Model’s*\*\*
+[Fig 2](https://doi.org/10.1371/journal.pcbi.1009285.g002)), termed "contact impedance" in COMSOL (if **_Model’s_**
 `"use_ci"` parameter is true ([Model Parameters](../JSON/JSON_parameters/model))), which relates the normal component of
 the current density through the surface
 ![f5] to the drop in electric
@@ -453,14 +453,14 @@ perineurium thickness.
 
 | **Species** | **peri_thk:** **_f_(species, d<sub>fasc</sub>)**    | **References**      |
 | ----------- | --------------------------------------------------- | ------------------- |
-| Rat         | peri_thk = 0.01292\*d<sub>fasc</sub> + 1.367 \[um\] | {cite:p}`Pelot2020` |
-| Pig         | peri_thk = 0.02547\*d<sub>fasc</sub> + 3.440 \[um\] | {cite:p}`Pelot2020` |
-| Human       | peri_thk = 0.03702\*d<sub>fasc</sub> + 10.50 \[um\] | {cite:p}`Pelot2020` |
+| Rat         | peri_thk = 0.01292*d<sub>fasc</sub> + 1.367 \[um\] | {cite:p}`Pelot2020` |
+| Pig         | peri_thk = 0.02547*d<sub>fasc</sub> + 3.440 \[um\] | {cite:p}`Pelot2020` |
+| Human       | peri_thk = 0.03702*d<sub>fasc</sub> + 10.50 \[um\] | {cite:p}`Pelot2020` |
 
-The "rho*perineurium" parameter in \*\*\_Model*\*\* can take either of two
+The "rho_perineurium" parameter in **_Model_** can take either of two
 modes:
 
-- "RHO\*WEERASURIYA": The perineurium conductivity value changes with the frequency of electrical stimulation (for
+- "RHO_WEERASURIYA": The perineurium conductivity value changes with the frequency of electrical stimulation (for
   a single value, not a spectrum, defined in **_Model_** as
   "frequency") and temperature (using a Q10 adjustment, defined in
   **_Model_** as "temperature") based on measurements of frog sciatic

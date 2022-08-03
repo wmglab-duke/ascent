@@ -200,7 +200,7 @@ following syntax:
     }
   },
 
-  // EXAMPLE PROTOCOL for ACTIVATION\_THRESHOLD
+  // EXAMPLE PROTOCOL for ACTIVATION_THRESHOLD
   "protocol": {
     "mode": "ACTIVATION_THRESHOLD", //String
     "initSS": Double,

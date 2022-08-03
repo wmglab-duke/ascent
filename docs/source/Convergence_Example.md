@@ -1,6 +1,6 @@
 # Convergence Analysis Example
 
-\*Note: The following convergence analysis was performed for a rat
+*Note: The following convergence analysis was performed for a rat
 cervical vagus nerve and is provided as an illustrative example.
 
 The outer boundaries of the model (assigned to electrical ground) were
@@ -47,6 +47,6 @@ A conservative estimate for the largest myelinated fiber diameter found
 in the cervical level of a rat vagus nerve is 10 µm {cite:p}`LicursideAlcntara2008`. The largest
 diameter nerve fiber native to this region is of interest in our
 convergence studies because it will have the fewest number of nodes per
-unit length (based on INL=100\*D). We found that the FEM length needed
+unit length (based on INL=100*D). We found that the FEM length needed
 to be longer for 10 µm diameter myelinated fibers (12.5 mm) than 2 µm
 diameter myelinated fibers (6.25 mm).

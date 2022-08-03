@@ -61,7 +61,7 @@ The value of the `"ci_perineurium_thickness"` in **_Sample_** refers to a
 JSON Object in `config/system/ci_peri_thickness.json` that contains
 coefficients for linear relationships between inner diameter and
 perineurium thickness (i.e., thk<sub>peri,inner</sub> =
-a\*(diameter<sub>inner</sub>) + b). In `ci_peri_thickness.json`, we
+a*(diameter<sub>inner</sub>) + b). In `ci_peri_thickness.json`, we
 provided a `"PerineuriumThicknessMode"` named `"GRINBERG_2008"`, which
 defines perineurium thickness as 3% of inner diameter {cite:p}`Grinberg2008`, and
 relationships for human, pig, and rat vagus nerve perineurium thickness
@@ -69,7 +69,7 @@ relationships for human, pig, and rat vagus nerve perineurium thickness
 `"RAT_VN_INHOUSE_200601"`) {cite:p}`Pelot2020`. As additional vagus nerve
 morphometry data become available, users may define perineurium
 thickness with new models by adding the coefficients to this JSON
-file.\*\*\*
+file._**
 
 ### mock_sample.json
 

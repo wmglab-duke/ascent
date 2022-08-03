@@ -2,8 +2,8 @@
 
 ## ModelWrapper Class
 
-The `ModelWrapper` class in Java takes inputs of the ASCENT*PROJECT_PATH
-(`env.json`, [JSON Configuration Files](../JSON/index)) and a list of \*\*\_Run*\*\* paths. `ModelWrapper` contains a COMSOL
+The `ModelWrapper` class in Java takes inputs of the `ASCENT_PROJECT_PATH`
+(`env.json`, [JSON Configuration Files](../JSON/index)) and a list of **_Run_** paths. `ModelWrapper` contains a COMSOL
 "model" object, model source directory (String), model destination
 directory (String), an `"IdentifierManager"` ([Java Utility Classes](../Code_Hierarchy/Java.md#java-utility-classes)), and `HashMaps` with key-value
 pairs linking COMSOL domains to unions of domains. `ModelWrapper` has
@@ -75,7 +75,7 @@ memory. We accomplish this by looping in the following order:
 **_Model_**, bases, **_Sims_**, fibersets (i.e., groups of fibers with
 identical geometry/channels, but different (x,y)-locations and/or
 longitudinal offsets), then fibers. With this approach, we load each
-COMSOL "model" object only once (i.e., \*.mph members of bases/). Within
+COMSOL "model" object only once (i.e., *.mph members of bases/). Within
 the loop, the `extractPotentials()` method constructs the bases
 (double\[basis index\]\[sim index\]\[fiberset index\]\[fiber index\])
 for each model (units: Volts). With the bases in memory, the program
@@ -329,7 +329,7 @@ destination and a JSON Object containing the data to write to file.
 The `ModelSearcher` class in Java is used to look for previously created
 FEM meshed geometries that can be repurposed. For example, if
 **_Model_** configurations differ only in their material properties or
-boundary conditions and the previous **_Model’s_** \*.mph file with the
+boundary conditions and the previous **_Model’s_** *.mph file with the
 mesh (i.e., `mesh.mph`) was saved, then it is redundant to build and mesh
 the same model geometry for a new **_Model_** configuration. The methods
 of the `ModelSearcher` class can save enormous amounts of computation time
