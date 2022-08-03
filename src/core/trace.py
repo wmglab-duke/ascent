@@ -101,7 +101,7 @@ class Trace(Exceptionable):
         newpoints = pco.Execute(distance)
         # ensure closed loop
         newpoints.append(newpoints[0])
-        self.append([point + [0] for point in newpoints[np.argmax([len(l) for l in newpoints])]])
+        self.append([point + [0] for point in newpoints[np.argmax([len(point) for point in newpoints])]])
 
         # cleanup
         self.__update()

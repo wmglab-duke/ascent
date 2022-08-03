@@ -5277,9 +5277,7 @@ class Part {
      * Create a material!
      * @param materialID the material COMSOL id (unique) --> use mw.im.next in call (mat#)
      * @param modelData JSON data from master.json
-     * @param materialsData
      * @param mw the ModelWrapper to act upon
-     * @param materialParams
      */
     public static void defineMaterial(
         String materialID,

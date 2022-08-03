@@ -36,15 +36,8 @@ public class ModelSearcher {
         }
     }
 
-    public String getRoot() {
-        return root.toString();
-    }
-
     /**
      *
-     * @param query
-     * @param reference
-     * @return
      */
     public ModelSearcher.Match searchMeshMatch(JSONObject query, JSONObject reference)
         throws IOException {
@@ -95,10 +88,6 @@ public class ModelSearcher {
 
     /**
      *
-     * @param reference
-     * @param query1
-     * @param query2
-     * @return
      */
     public static boolean meshMatch(JSONObject reference, JSONObject query1, JSONObject query2) {
         Map<String, Object> rMap = reference.toMap();
@@ -158,8 +147,6 @@ public class ModelSearcher {
 
         /**
          *
-         * @param path
-         * @return
          */
         public static Match fromMeshPath(String path) {
             try {
@@ -195,10 +182,6 @@ public class ModelSearcher {
 
         public IdentifierManager getIdm() {
             return im;
-        }
-
-        public String getPath() {
-            return path;
         }
 
         public HashMap<String, IdentifierManager> getPartPrimitiveIMs() {
