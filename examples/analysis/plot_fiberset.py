@@ -54,13 +54,13 @@ for fiberset_ind, fiberset in enumerate(sim.fibersets):
     plt.ylabel('\u03bcm')
     plt.show()
 
-    fname = '{}_{}_{}_{}'.format(str(sample_index), str(model_index), str(sim_index), str(fiberset_ind))
+    fname = f'{str(sample_index)}_{str(model_index)}_{str(sim_index)}_{str(fiberset_ind)}'
     fmt = 'png'
 
     dest = os.path.join('data', 'tmp', 'fiberset')
     if not os.path.exists(dest):
         os.mkdir(dest)
 
-    fig.savefig(os.path.join(dest, '{}.{}'.format(fname, fmt)), format=fmt, dpi=1200)
+    fig.savefig(os.path.join(dest, f'{fname}.{fmt}'), format=fmt, dpi=1200)
 
 os.chdir(cwd)

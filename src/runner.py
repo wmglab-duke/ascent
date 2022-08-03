@@ -74,11 +74,11 @@ class Runner(Exceptionable, Configurable):
                 try:
                     config_source[key] += [self.load(path)]
                 except Exception:
-                    warnings.warn('Issue loading {} config: {}'.format(key, path))
+                    warnings.warn(f'Issue loading {key} config: {path}')
                     self.throw(144)
 
             else:
-                print('Missing {} config: {}'.format(key, path))
+                print(f'Missing {key} config: {path}')
                 self.throw(37)
 
         configs = {}
@@ -101,7 +101,7 @@ class Runner(Exceptionable, Configurable):
         for model_path in model_paths:
             validate_and_add(configs, 'models', model_path)
 
-        sim_paths = [os.path.join(os.getcwd(), 'config', 'user', 'sims', '{}.json'.format(sim)) for sim in sims]
+        sim_paths = [os.path.join(os.getcwd(), 'config', 'user', 'sims', f'{sim}.json') for sim in sims]
         for sim_path in sim_paths:
             validate_and_add(configs, 'sims', sim_path)
 
@@ -151,13 +151,13 @@ class Runner(Exceptionable, Configurable):
         sample_pseudonym = all_configs[Config.SAMPLE.value][0].get('pseudonym')
 
         print(
-            'SAMPLE {}'.format(self.configs[Config.RUN.value]['sample']),
-            '- {}'.format(sample_pseudonym) if sample_pseudonym is not None else '',
+            f"SAMPLE {self.configs[Config.RUN.value]['sample']}",
+            f'- {sample_pseudonym}' if sample_pseudonym is not None else '',
         )
 
         # instantiate sample
         if smart and os.path.exists(sample_file):
-            print('Found existing sample {} ({})'.format(self.configs[Config.RUN.value]['sample'], sample_file))
+            print(f"Found existing sample {self.configs[Config.RUN.value]['sample']} ({sample_file})")
             sample = self.load_obj(sample_file)
         else:
             # init slide manager
@@ -187,7 +187,7 @@ class Runner(Exceptionable, Configurable):
         """
         model_num = self.configs[Config.RUN.value]['models'][model_index]
         model_pseudonym = model_config.get('pseudonym')
-        print('\tMODEL {}'.format(model_num), '- {}'.format(model_pseudonym) if model_pseudonym is not None else '')
+        print(f'\tMODEL {model_num}', f'- {model_pseudonym}' if model_pseudonym is not None else '')
 
         # use current model index to computer maximum cuff shift (radius) .. SAVES to file in method
         model_config = self.compute_cuff_shift(model_config, sample, all_configs[Config.SAMPLE.value][0])
@@ -218,8 +218,8 @@ class Runner(Exceptionable, Configurable):
         sim_num = self.configs[Config.RUN.value]['sims'][sim_index]
         sim_pseudonym = sim_config.get('pseudonym')
         print(
-            '\t\tSIM {}'.format(self.configs[Config.RUN.value]['sims'][sim_index]),
-            '- {}'.format(sim_pseudonym) if sim_pseudonym is not None else '',
+            f"\t\tSIM {self.configs[Config.RUN.value]['sims'][sim_index]}",
+            f'- {sim_pseudonym}' if sim_pseudonym is not None else '',
         )
 
         sim_obj_dir = os.path.join(
@@ -277,11 +277,7 @@ class Runner(Exceptionable, Configurable):
         # do Sim.fibers.xy_parameters match between Sim and source_sim?
         try:
             source_sim: simulation = self.load_obj(os.path.join(source_sim_obj_dir, 'sim.obj'))
-            print(
-                '\t    Found existing source sim {} for supersampled bases ({})'.format(
-                    source_sim_index, source_sim_obj_dir
-                )
-            )
+            print(f'\t    Found existing source sim {source_sim_index} for supersampled bases ({source_sim_obj_dir})')
         except FileNotFoundError:
             traceback.print_exc()
             self.throw(129)
@@ -402,7 +398,7 @@ class Runner(Exceptionable, Configurable):
                     print('\nSKIPPING JAVA - all required extracted potentials already exist\n')
 
                 self.remove(Config.RUN)
-                run_path = os.path.join('config', 'user', 'runs', '{}.json'.format(self.number))
+                run_path = os.path.join('config', 'user', 'runs', f'{self.number}.json')
                 self.add(SetupMode.NEW, Config.RUN, run_path)
 
                 #  continue by using simulation objects
@@ -458,7 +454,7 @@ class Runner(Exceptionable, Configurable):
         comsol_path = os.environ[Env.COMSOL_PATH.value]
         jdk_path = os.environ[Env.JDK_PATH.value]
         project_path = os.environ[Env.PROJECT_PATH.value]
-        run_path = os.path.join(project_path, 'config', 'user', 'runs', '{}.json'.format(run_number))
+        run_path = os.path.join(project_path, 'config', 'user', 'runs', f'{run_number}.json')
 
         # Encode command line args as jason string, then encode to base64 for passing to java
         argstring = json.dumps(self.configs[Config.CLI_ARGS.value])
@@ -467,7 +463,7 @@ class Runner(Exceptionable, Configurable):
         argfinal = argbase.decode('ascii')
 
         if sys.platform.startswith('win'):  # windows
-            server_command = ['{}\\bin\\win64\\comsolmphserver.exe'.format(comsol_path), '-login', 'auto']
+            server_command = [f'{comsol_path}\\bin\\win64\\comsolmphserver.exe', '-login', 'auto']
             compile_command = (
                 '""{}\\javac" '
                 '-cp "..\\bin\\json-20190722.jar";"{}\\plugins\\*" '
@@ -486,7 +482,7 @@ class Runner(Exceptionable, Configurable):
                 )
             )
         else:
-            server_command = ['{}/bin/comsol'.format(comsol_path), 'mphserver', '-login', 'auto']
+            server_command = [f'{comsol_path}/bin/comsol', 'mphserver', '-login', 'auto']
 
             compile_command = '{}/javac -classpath ../bin/json-20190722.jar:{}/plugins/* model/*.java -d ../bin'.format(
                 jdk_path, comsol_path

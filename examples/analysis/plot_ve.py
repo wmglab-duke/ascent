@@ -27,7 +27,7 @@ pve1 = os.path.join(
     str(n_sims[0]),
     'data',
     'inputs',
-    'inner{}_fiber{}.dat'.format(inner, fiber),
+    f'inner{inner}_fiber{fiber}.dat',
 )
 dpve1 = np.loadtxt(pve1)
 plt.plot(dpve1[1:], 'r-', label='p1')
@@ -44,7 +44,7 @@ base_fiberset = os.path.join(
     'potentials',
     str(fiberset),
 )
-fve1 = os.path.join(base_fiberset, '{}.dat'.format(fiber))
+fve1 = os.path.join(base_fiberset, f'{fiber}.dat')
 dfve1 = np.loadtxt(fve1)
 plt.plot(dfve1[1:], 'g--', label='f1')
 plt.legend()
