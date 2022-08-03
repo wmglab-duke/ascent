@@ -9,28 +9,22 @@ Generate a heatmap of activation thresholds.
 """
 
 # RUN THIS FROM REPOSITORY ROOT
-
-import os
-import sys
-
+from src.core.plotter import heatmaps
 from src.core.query import Query
-
-sys.path.append(os.path.sep.join([os.getcwd(), '']))
-
 
 # initialize and run Querys
 q = Query(
     {
         'partial_matches': True,
         'include_downstream': True,
-        'indices': {'sample': [18], 'model': [451], 'sim': [1, 18]},
+        'indices': {'sample': [0], 'model': [0], 'sim': [0]},
     }
 ).run()
 
 # builds heatmaps
-q.heatmaps(
+fig, axes, colormap_bounds = heatmaps(
+    q,
     plot=False,
-    save_path='out/analysis',
     plot_mode='fibers',
     colorbar_aspect=5,
     colormap_str='viridis',
@@ -38,3 +32,4 @@ q.heatmaps(
     reverse_colormap=True,
     colorbar_text_size_override=30,
 )
+fig.savefig('heatmap.png', dpi=400, bbox_inches='tight')

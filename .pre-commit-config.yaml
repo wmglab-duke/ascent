@@ -56,10 +56,10 @@ repos:
           - flake8-builtins
           - flake8-comprehensions
           - flake8-fixme
-          - flake8-docstrings
-  #           - flake8-rst-docstrings
-  #           - darglint
-  
+  #          - flake8-docstrings
+  #          - flake8-rst-docstrings
+  #          - darglint
+
   # lint markdown
   - repo: https://github.com/jackdewinter/pymarkdown
     rev: v0.9.7

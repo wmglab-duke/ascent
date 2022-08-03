@@ -18,6 +18,7 @@ from src.core.simulation import Simulation
 from src.core.waveform import Waveform
 from src.core.fiberset import FiberSet
 from src.core.hocwriter import HocWriter
+from src.core.query import Query
 
 __all__ = [
     'Map',
@@ -33,4 +34,5 @@ __all__ = [
     'Waveform',
     'FiberSet',
     'HocWriter',
+    'Query',
 ]
