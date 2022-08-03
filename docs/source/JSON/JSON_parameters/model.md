@@ -259,8 +259,8 @@ for each cuff preset. Required.
   `config/system/cuffs/<filename>.json` ([Fig 3A](https://doi.org/10.1371/journal.pcbi.1009285.g003) and [Creating Custom Cuffs](../../Primitives_and_Cuffs/Custom_Cuffs)). Required.
 
 - `“rotate”`: Contains two keys: `“pos_ang”` (automatically populated
-  based on “CuffShiftMode”, i.e., “cuff*shift” parameter in
-  \*\*\_Model*\*\*) and `“add_ang”` (optionally set by user to rotate cuff
+  based on “CuffShiftMode”, i.e., `“cuff_shift”` parameter in
+  **_Model_**) and `“add_ang”` (optionally set by user to rotate cuff
   by an additional angle) ([Cuff Placement on the Nerve](../../Running_ASCENT/Info.md#cuff-placement-on-nerve)).
 
   - `“pos_ang”` (Double, units: degrees) is calculated by the

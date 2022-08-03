@@ -37,11 +37,11 @@ support modifier methods (e.g., for performing transformations):
   clockwise).
 
 - `shift()`: performs a 2D translational shift to Trace (in the
-  (x,y)-plane, i.e., the sample cross section).
+  (x,y)-plane, i.e., the sample cross-section).
 
 - `offset()`: Offsets Trace’s boundary by a discrete distance from the
   existing Trace boundary (non-affine transformation in the
-  (x,y)-plane, i.e., the sample cross section).
+  (x,y)-plane, i.e., the sample cross-section).
 
 - `pymunk_poly()`: Uses _Pymunk_ to create a body with mass and inertia
   for a given Trace boundary (used in `deform()`, the fascicle
@@ -374,11 +374,11 @@ The user is unlikely to interface directly with Simulation’s
 `resolve_factors()` method as it operates behind the scenes. The method
 searches through **_Sim_** for lists of parameters within the "fibers"
 and "waveform" JSON Objects until the indicated number of dimensions
-("n\*dimensions" parameter in \*\*\_Sim**\*, which is a handshake to
+("n_dimensions" parameter in **_Sim_**, which is a handshake to
 prevent erroneous generation of NEURON simulations) has been reached.
 The parameters over which the user has indicated to sweep in **_Sim_**
 are saved to the Simulation class as a dictionary named "factors" with
-the path to each parameter in **_Sim_\*\*.
+the path to each parameter in **_Sim_**.
 
 The required parameters to define each type of waveform are in [Sim Parameters](../JSON/JSON_parameters/sim). The Python Waveform class is configured with **_Sim_**, which contains
 all parameters that define the Waveform. Since FEMs may have
@@ -529,7 +529,7 @@ The ConfigKey indicates the choice of configuration data type and is
 also the name of the configuration JSON file (e.g., `sample.json`,
 `model.json`, `sim.json`, `run.json`, `env.json`).
 
-#### Config:
+#### Config
 
 The Config input to Configurable can take one of three data types. If
 `"SetupMode"` is "OLD", the value can be a dictionary or list of already
@@ -537,7 +537,7 @@ loaded configuration data. If `"SetupMode"` is "NEW", the value must be a
 string of the file path to the configuration file to be loaded into
 memory.
 
-#### Example use of Configurable:
+#### Example use of Configurable
 
 When the Sample class is instantiated in Runner, it inherits
 functionality from Configurable (see Sample constructor

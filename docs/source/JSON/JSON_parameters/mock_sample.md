@@ -119,7 +119,7 @@ Required.
 - `"fig_margin"`: The value (Double, \>1 otherwise an error is thrown)
   sets the x- and y-limits of the binary masks generated. The limits
   are set relative to the maximum nerve ellipse axis dimension (+/-
-  `fig_margin`\*max(`a`, `b`) in both x- and y-directions).
+  `fig_margin`*max(`a`, `b`) in both x- and y-directions).
   Required.
 
 - `"fig_dpi"`: The value (Integer) is the "dots per inch" resolution of

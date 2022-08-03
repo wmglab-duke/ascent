@@ -33,9 +33,9 @@ perineurium with a thin layer approximation ([Creating Nerve Morphology in COMSO
 pairs defining the relationship between fascicle diameter (micrometers)
 and perineurium thickness. Required.
 
-- `"a"`: Value (Double, units: µm/µm) as in thickness = a\*x + b
+- `"a"`: Value (Double, units: µm/µm) as in thickness = a*x + b
 
-- `"b"`: Value (Double, units: µm) as in thickness = a\*x + b
+- `"b"`: Value (Double, units: µm) as in thickness = a*x + b
 
 <!-- end list -->
 
