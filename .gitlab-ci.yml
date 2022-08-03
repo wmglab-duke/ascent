@@ -73,8 +73,6 @@ dev_check:
   stage: lint
   script:
     - ( ! grep "self.throw(9001)" --include \*.py -r . )
-  only:
-    - master
 
 test_docs:
   stage: test
