@@ -202,7 +202,7 @@ are populated. Required.
 
       - `"num_fascicle_placed"`: The value (Integer) is the
         number of successfully placed fascicles in the nerve
-        cross section. Automatically populated.
+        cross-section. Automatically populated.
 
         - If `"num_fascicle_attempt"` does not equal
           `"num_fascicle_placed"`, a warning is printed to the
@@ -263,7 +263,7 @@ are populated. Required.
 
       - `"num_fascicle_placed"`: The value (Integer) is the
         number of successfully placed fascicles in the nerve
-        cross section. Automatically populated.
+        cross-section. Automatically populated.
 
         - If `"num_fascicle_attempt"` does not equal
           `"num_fascicle_placed"`, a warning is printed to the

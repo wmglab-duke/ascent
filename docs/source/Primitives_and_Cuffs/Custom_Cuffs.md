@@ -34,7 +34,7 @@ material assignment. For example, if a user is modeling a cuff
 containing an embedded contact electrode (i.e., the contact surface is
 flush with the insulator’s inner surface) and the entire cuff is bathed
 in saline (i.e., surgical pocket), the user would (1) add the part
-primitive for the saline cuff "fill" since it is the outer-most domain,
+primitive for the saline cuff "fill" since it is the outermost domain,
 (2) add the cuff "insulator" which would override its volume within the
 saline, and (3) add the contact "conductor" which would override the
 cuff insulator domain within the contact conductor. The order of
@@ -190,7 +190,7 @@ when expanding. Note that these are not behaviors, this option will change nothi
 regarding how the cuff is generated. This parameter is descriptive only, indicating
 how the cuff is parameterized based on the part primitives.
 This parameter is to inform the cuff shift algorithm on how
-it should account for cuff expansion. Currently two options are implemented:
+it should account for cuff expansion. Currently, two options are implemented:
 
 1. `"center"`: In this case, the center of the contact always remains at the same angle when expanding.
 2. `"clockwise_end"`: In this case, the clockwise end of either the cuff, or the contact

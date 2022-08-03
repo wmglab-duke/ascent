@@ -109,7 +109,7 @@ nerve tissue boundaries saved in
 convention, shifted such that the centroid of the nerve is at the origin
 (0,0) (i.e., nerve centroid from best-fit ellipse if nerve trace (`n.tif`)
 is provided, inner or outer best-fit ellipse centroid for monofascicular
-nerves without nerve trace). Importantly, the nerve sample cross section
+nerves without nerve trace). Importantly, the nerve sample cross-section
 is never moved from or rotated around the origin in COMSOL. By
 maintaining consistent nerve location across all **_Model’s_** for a
 **_Sample,_** the coordinates in `fibersets/` are correct for any
@@ -206,7 +206,7 @@ the cuff configuration file. For each key in "offset", the value is the
 multiplicative coefficient for the parameter key to include in a sum of
 all key-value products. For example, in `Purdue.json`:
 
-```
+```javascript
 "offset": {
   "sep_wire_P": 1, // separation between outer boundary of wire contact and internal
                  // surface of insulator
@@ -461,9 +461,9 @@ The "rho*perineurium" parameter in \*\*\_Model*\*\* can take either of two
 modes:
 
 - "RHO\*WEERASURIYA": The perineurium conductivity value changes with the frequency of electrical stimulation (for
-  a single value, not a spectrum, defined in \*\*\_Model**\* as
+  a single value, not a spectrum, defined in **_Model_** as
   "frequency") and temperature (using a Q10 adjustment, defined in
-  **_Model_\*\* as "temperature") based on measurements of frog sciatic
+  **_Model_** as "temperature") based on measurements of frog sciatic
   perineurium {cite:p}`Pelot2018,Weerasuriya1984`. The equation is defined in
   `src/core/Waveform.py` in the `rho_weerasuriya()` method.
 

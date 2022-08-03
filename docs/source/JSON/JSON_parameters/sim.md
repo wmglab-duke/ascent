@@ -298,7 +298,7 @@ length of the fiber). Required.
 - `“mode”`: The value (String) is the “FiberGeometry” mode that tells
   the program which fiber geometries to simulate in NEURON ([NEURON Fiber Models](../../Running_ASCENT/Info.md#implementation-of-neuron-fiber-models)). Required.
 
-  - As listed in [Enums](../../Code_Hierarchy/Python.md#enums)), known modes include
+  - As listed in [Enums](../../Code_Hierarchy/Python.md#enums), known modes include
 
     - `“MRG_DISCRETE”` (published MRG fiber model)
 
@@ -386,14 +386,14 @@ length of the fiber). Required.
 
 - `“xy_parameters”`: The value is a JSON Object containing key-value
   pairs to instruct the system in seeding fiber locations at which to
-  sample potentials inside inners in the nerve cross section ([Fig 3B](https://doi.org/10.1371/journal.pcbi.1009285.g003)). Include only _one_ version of this block in your `sim.json`
+  sample potentials inside inners in the nerve cross-section ([Fig 3B](https://doi.org/10.1371/journal.pcbi.1009285.g003)). Include only _one_ version of this block in your `sim.json`
   file. Required.
 
   `“mode”`: The value (String) is the `“FiberXYMode”` that tells the
   program how to seed fiber locations inside each inner in the nerve
-  cross section. Required.
+  cross-section. Required.
 
-- As listed in [Enums](../../Code_Hierarchy/Python.md#enums)), known modes include
+- As listed in [Enums](../../Code_Hierarchy/Python.md#enums), known modes include
 
   - `“CENTROID”`: Place one fiber at the centroid (i.e., from the
     best-fit ellipse of the inner) of each inner.
@@ -909,8 +909,7 @@ files. Control of `“supersampled_bases”` belongs in **_Sim_** because the
 (x,y)-fiber locations in the nerve are determined by **_Sim_**. The
 potentials are sampled densely along the length of the nerve at
 (x,y)-fiber locations once so that in a future pipeline run different
-fiber types can be simulated at the same location in the nerve cross
-section without loading COMSOL files into memory.
+fiber types can be simulated at the same location in the nerve cross-section without loading COMSOL files into memory.
 
 - `“generate”`: The value (Boolean) indicates if the program will create
   super-sampled fiber coordinates and super-sampled bases (i.e.,
@@ -973,8 +972,7 @@ files. Control of `"supersampled_bases"` belongs in **_Sim_** because the
 (x,y)-fiber locations in the nerve are determined by **_Sim_**. The
 potentials are sampled densely along the length of the nerve at
 (x,y)-fiber locations once so that in a future pipeline run different
-fiber types can be simulated at the same location in the nerve cross
-section without loading COMSOL files into memory.
+fiber types can be simulated at the same location in the nerve cross-section without loading COMSOL files into memory.
 
 - `"generate"`: The value (Boolean) indicates if the program will create
   super-sampled fiber coordinates and super-sampled bases (i.e.,

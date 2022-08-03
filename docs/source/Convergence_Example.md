@@ -15,7 +15,7 @@ maintain consistent meshing in the area of interest despite a change in
 geometry of the outer boundary of the model, the proximal region of the
 model surrounding the nerve and electrode (i.e., "proximal", which is
 the full length of the nerve) was assigned its own mesh entirely
-independent from the outer boundary region (i.e., "distal").
+independent of the outer boundary region (i.e., "distal").
 
 ![Inline image](uploads/99665495c70d91756ac80b8d9ee13a35/Picture14.jpg)
 
