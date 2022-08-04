@@ -1097,10 +1097,10 @@ public class ModelWrapper {
                     index + ".mph",
                 }
             );
-
+            System.out.println(mphFile);
             //if no bases are valid, must resolve all, even if file exists
             boolean resolveAll = !anyTrue(basesValid);
-
+            System.out.println(resolveAll);
             System.out.println("\tSolving electric currents for " + key_on + ".");
 
             boolean save = true;
@@ -2432,6 +2432,8 @@ public class ModelWrapper {
                     File basisFile = new File(bases_directory + "/" + cu + ".mph");
                     if (!basisFile.exists()) {
                         basesValid[cu] = false;
+                    } else {
+                        basesValid[cu] = true;
                     }
                 }
             } catch (FileNotFoundException e) {
