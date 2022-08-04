@@ -625,9 +625,11 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             diameter = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'diameter')
             diam_distribution: bool = type(diameter) is dict
 
-            diams, my_z_seed, myelinated = self.calculate_fiber_diams(
+            diams, myelinated = self.calculate_fiber_diams(
                 diam_distribution, diams, fiber_geometry_mode_name, fibers_xy, super_sample
             )
+
+            my_z_seed = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'seed')
 
             if myelinated and not super_sample:  # MYELINATED
                 fibers = generate_z_myelinated(diams)
@@ -650,8 +652,6 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                 fiber_geometry_mode_name,
                 'myelinated',
             )
-
-            my_z_seed = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'seed')
 
             if diam_distribution:
                 sampling_mode = self.search(
@@ -753,7 +753,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                     )
 
                 diams = fiber_diam_dist.rvs(len(fibers_xy))
-        return diams, my_z_seed, myelinated
+        return diams, myelinated
 
     def calculate_fiber_length_params(self, override_length):
         model_length = (
