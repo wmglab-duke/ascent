@@ -292,7 +292,7 @@ class Sample(Exceptionable, Configurable, Saveable):
         self.deform_ratio = None
         self.scale_input_mode = self.search_mode(ScaleInputMode, Config.SAMPLE, optional=True)
         self.sample_rotation = self.search(Config.SAMPLE, "rotation", optional=True)
-        self.contour_mode = self.search_mode(ContourMode, Config.SAMPLE)
+        self.contour_mode = self.search_mode(ContourMode, Config.SAMPLE, optional=True)
 
         # For backwards compatibility, if scale mode is not specified assume a mask image is provided
         if self.scale_input_mode is None:
