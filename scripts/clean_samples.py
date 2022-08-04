@@ -24,7 +24,7 @@ def remove_empty_directories(directory: str, verbose):
     for path in os.listdir(directory):
         subdirectory = os.path.join(directory, path)
         if os.path.isdir(subdirectory):
-            remove_empty_directories(subdirectory)
+            remove_empty_directories(subdirectory, verbose)
 
     if os.path.isdir(directory) and len(os.listdir(directory)) == 0:
         try:
