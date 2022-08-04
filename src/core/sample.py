@@ -701,6 +701,10 @@ class Sample(Exceptionable, Configurable, Saveable):
             for slide in self.slides:
                 self.deform_slide(slide)
         for slide in self.slides:
+
+            # shift slide about (0,0)
+            slide.move_center(np.array([0, 0]))
+
             # Rotate sample
             if self.sample_rotation is not None:
                 if slide.orientation_angle is not None:
