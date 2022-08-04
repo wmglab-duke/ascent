@@ -133,7 +133,8 @@ class Runner(Exceptionable, Configurable):
         Simulation.export_system_config_files(os.path.join(os.environ[Env.NSIM_EXPORT_PATH.value], 'config', 'system'))
 
         for deprecated_key in ['break_points', 'local_avail_cpus', 'submission_context', 'partial_fem']:
-            warnings.warn(f"Specifying {deprecated_key} in run.json is deprecated, and has no effect.")
+            if deprecated_key in self.configs[Config.RUN.value]:
+                warnings.warn(f"Specifying {deprecated_key} in run.json is deprecated, and has no effect.")
 
         return all_configs
 
@@ -230,11 +231,7 @@ class Runner(Exceptionable, Configurable):
 
         # init fiber manager
         if smart and os.path.exists(sim_obj_file):
-            print(
-                '\t    Found existing sim object for sim {} ({})'.format(
-                    self.configs[Config.RUN.value]['sims'][sim_index], sim_obj_file
-                )
-            )
+            print(f'\t    Found existing sim object for sim {sim_index} ({sim_obj_file})')
 
             simulation: Simulation = self.load_obj(sim_obj_file)
 
@@ -427,16 +424,15 @@ class Runner(Exceptionable, Configurable):
                             # generate output neuron sims
                             self.generate_nsims(sim_index, model_num, sample_num)
                         print(
-                            'Model {} data exported to appropriate folders in {}'.format(
-                                model_num, os.environ[Env.NSIM_EXPORT_PATH.value]
-                            )
+                            f'Model {model_num} data exported to appropriate '
+                            f'folders in {os.environ[Env.NSIM_EXPORT_PATH.value]}'
                         )
 
                     elif not models_exit_status[model_index]:
                         print(
-                            '\nDid not create NEURON simulations for Sims associated with: \n'
-                            '\t Model Index: {} \n'
-                            'since COMSOL failed to create required potentials. \n'.format(model_num)
+                            f'\nDid not create NEURON simulations for Sims associated with: \n'
+                            f'\t Model Index: {model_num} \n'
+                            f'since COMSOL failed to create required potentials. \n'
                         )
 
             elif 'models' in all_configs and 'sims' not in all_configs:
@@ -465,27 +461,21 @@ class Runner(Exceptionable, Configurable):
         if sys.platform.startswith('win'):  # windows
             server_command = [f'{comsol_path}\\bin\\win64\\comsolmphserver.exe', '-login', 'auto']
             compile_command = (
-                '""{}\\javac" '
-                '-cp "..\\bin\\json-20190722.jar";"{}\\plugins\\*" '
-                'model\\*.java -d ..\\bin"'.format(jdk_path, comsol_path)
+                f'""{jdk_path}\\javac" '
+                f'-cp "..\\bin\\json-20190722.jar";"{comsol_path}\\plugins\\*" '
+                f'model\\*.java -d ..\\bin"'
             )
             java_command = (
-                '""{}\\java\\win64\\jre\\bin\\java" '
-                '-cp "{}\\plugins\\*";"..\\bin\\json-20190722.jar";"..\\bin" '
-                'model.{} "{}" "{}" "{}""'.format(
-                    comsol_path,
-                    comsol_path,
-                    class_name,
-                    project_path,
-                    run_path,
-                    argfinal,
-                )
+                f'""{comsol_path}\\java\\win64\\jre\\bin\\java" '
+                f'-cp "{comsol_path}\\plugins\\*";"..\\bin\\json-20190722.jar";"..\\bin" '
+                f'model.{class_name} "{project_path}" "{run_path}" "{argfinal}""'
             )
         else:
             server_command = [f'{comsol_path}/bin/comsol', 'mphserver', '-login', 'auto']
 
-            compile_command = '{}/javac -classpath ../bin/json-20190722.jar:{}/plugins/* model/*.java -d ../bin'.format(
-                jdk_path, comsol_path
+            compile_command = (
+                f'{jdk_path}/javac -classpath ../bin/json-20190722.jar:'
+                f'{comsol_path}/plugins/* model/*.java -d ../bin'
             )
             # https://stackoverflow.com/questions/219585/including-all-the-jars-in-a-directory-within-the-java-classpath
             if sys.platform.startswith('linux'):  # linux
@@ -494,16 +484,10 @@ class Runner(Exceptionable, Configurable):
                 java_comsol_path = comsol_path + '/java/maci64/jre/Contents/Home/bin/java'
 
             java_command = (
-                '{} '
-                '-cp .:$(echo {}/plugins/*.jar | '
-                'tr \' \' \':\'):../bin/json-20190722.jar:../bin model.{} "{}" "{}" "{}"'.format(
-                    java_comsol_path,
-                    comsol_path,
-                    class_name,
-                    project_path,
-                    run_path,
-                    argfinal,
-                )
+                f'{java_comsol_path} '
+                f'-cp .:$(echo {comsol_path}/plugins/*.jar | '
+                f'tr \' \' \':\'):../bin/json-20190722.jar:'
+                f'../bin model.{class_name} "{project_path}" "{run_path}" "{argfinal}"'
             )
 
         # start comsol server
@@ -777,7 +761,7 @@ class Runner(Exceptionable, Configurable):
             sigma_double = 1 / rho_double
             tmp = {
                 'value': str(sigma_double),
-                'label': 'RHO_WEERASURIYA @ %d Hz' % freq_double,
+                'label': f'RHO_WEERASURIYA @ {freq_double} Hz',
                 'unit': '[S/m]',
             }
             model_config['conductivities']['perineurium'] = tmp
