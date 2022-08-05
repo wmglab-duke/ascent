@@ -455,7 +455,9 @@ def submit_fibers(submission_context, submission_data):
     for sim_name, runfibers in submission_data.items():
         if args.verbose:
             print(f'\n\n################ {sim_name} ################\n\n')
-
+        #skip if no fibers to run for this nsim
+        if len(runfibers) == 0:
+            continue
         sim_path = os.path.join(sim_dir, sim_name)
         start_dir = os.path.join(sim_path, 'start_scripts')
         start_path_base = os.path.join(start_dir, 'start_')
