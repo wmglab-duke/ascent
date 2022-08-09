@@ -318,7 +318,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             print(
                 '\t\tWARNING: Explicit fiberset index not specified.'
                 '\n\t\tProceeding with backwards compatible check for explicit.txt in:'
-                '\n\t\t{}'.format(sim_directory)
+                f'\n\t\t{sim_directory}'
             )
         if not os.path.exists(os.path.join(sim_directory, 'explicit.txt')):
             self.throw(83)
@@ -348,8 +348,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             axlabel=u"\u03bcm",
             title='Fiber locations for nerve model',
         )
-        for point in points:
-            plt.plot(point[0], point[1], 'r.', markersize=1)
+        plt.scatter(list(zip(*points))[0], list(zip(*points))[1], 'r.', s=10)
         plt.savefig(sim_directory + '/plots/fibers_xy.png', dpi=300)
         if self.search(Config.RUN, 'popup_plots', optional=True) is False:
             fig.clear
@@ -361,16 +360,19 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         self,
         ax: plt.Axes = None,
         fiber_colors: List[Tuple[float, float, float, float]] = None,
-        size=10,
+        size=20,
+        scatter_kws: dict = None,
     ):
-
+        if fiber_colors is None:
+            fiber_colors = ['red'] * len(self.fibers)
         for fiber_ind, fiber in enumerate(self.fibers):
-            ax.plot(
+            ax.scatter(
                 fiber[0][0],
                 fiber[0][1],
                 color=fiber_colors[fiber_ind],
                 marker='o',
-                markersize=size,
+                s=size,
+                **{} if scatter_kws is None else scatter_kws,
             )
 
     def _generate_z(self, fibers_xy: np.ndarray, override_length=None, super_sample: bool = False) -> np.ndarray:

@@ -246,6 +246,7 @@ class Slide(Exceptionable):
         inner_index_labels: bool = False,
         show_axis: bool = True,
         axlabel: str = None,
+        line_kws=None,
     ):
         """
         Quick util for plotting the nerve and fascicles
@@ -272,7 +273,7 @@ class Slide(Exceptionable):
 
         # loop through constituents and plot each
         if not self.monofasc():
-            self.nerve.plot(plot_format='k-', ax=ax, linewidth=1.5)
+            self.nerve.plot(plot_format='k-', ax=ax, linewidth=1.5, line_kws=line_kws)
 
         out_to_in = []
         inner_ind = 0
@@ -300,6 +301,7 @@ class Slide(Exceptionable):
                 ax=ax,
                 outer_flag=outers_flag,
                 inner_index_start=inner_index if inner_index_labels else None,
+                line_kws=line_kws,
             )
             inner_index += len(fascicle.inners)
 

@@ -6,10 +6,10 @@ Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 
 Generate a plot of fiber coordinates overlaid with a plot of the sample.
+RUN THIS FROM REPOSITORY ROOT
 """
 
 import os
-import sys
 
 import matplotlib.pyplot as plt
 
@@ -17,16 +17,10 @@ from src.core import Sample, Simulation
 from src.core.query import Query
 from src.utils import Object
 
-root = os.path.abspath(os.path.join('..', '..'))
-sys.path.append(root)
-
-cwd = os.getcwd()
-os.chdir(root)
-
 criteria = {
     'partial_matches': True,
     'include_downstream': True,
-    'indices': {'sample': [1016], 'model': [7], 'sim': [1042]},
+    'indices': {'sample': [0], 'model': [0], 'sim': [0]},
 }
 
 
@@ -46,9 +40,7 @@ for fiberset_ind, fiberset in enumerate(sim.fibersets):
     slide = sample.slides[0]
     fig, ax = plt.subplots(1, 1)
     slide.plot(fix_aspect_ratio=True, final=False, ax=ax)
-
-    for fiber in fiberset.fibers:
-        plt.plot(fiber[0][0], fiber[0][1], 'r*', markersize=0.1)
+    fiberset.plot(ax=ax)
 
     plt.xlabel('\u03bcm')
     plt.ylabel('\u03bcm')
@@ -62,5 +54,3 @@ for fiberset_ind, fiberset in enumerate(sim.fibersets):
         os.mkdir(dest)
 
     fig.savefig(os.path.join(dest, f'{fname}.{fmt}'), format=fmt, dpi=1200)
-
-os.chdir(cwd)

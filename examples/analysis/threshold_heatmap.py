@@ -6,13 +6,16 @@ Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 
 Generate a heatmap of activation thresholds.
+Note: if more than one heatmap is desired, you must use a Seaborn FacetGrid.
+RUN THIS FROM REPOSITORY ROOT
 """
 
-# RUN THIS FROM REPOSITORY ROOT
+import matplotlib.pyplot as plt
+
 from src.core.plotter import heatmaps
 from src.core.query import Query
 
-# initialize and run Querys
+# Initialize and run Querys
 q = Query(
     {
         'partial_matches': True,
@@ -21,15 +24,6 @@ q = Query(
     }
 ).run()
 
-# builds heatmaps
-fig, axes, colormap_bounds = heatmaps(
-    q,
-    plot=False,
-    plot_mode='fibers',
-    colorbar_aspect=5,
-    colormap_str='viridis',
-    tick_count=4,
-    reverse_colormap=True,
-    colorbar_text_size_override=30,
-)
-fig.savefig('heatmap.png', dpi=400, bbox_inches='tight')
+# Build heatmap
+heatmaps(data=q.threshold_data(), cuff_orientation=True)
+plt.title('Activation threshold heatmap')

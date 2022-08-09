@@ -17,7 +17,6 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.ndimage.morphology import binary_fill_holes
-from shapely.geometry import LineString
 from skimage import morphology
 
 from src.core import Fascicle, Map, Nerve, Slide, Trace
@@ -617,30 +616,6 @@ class Sample(Exceptionable, Configurable, Saveable):
         slide.move_center(np.array([0, 0]))
         return slide
 
-    def add_orientation_point(self, slide):
-        """Add orientation point from orientation angle.
-        :param slide: Slide object
-        """
-        # choose outer (based on if nerve is present)
-        outer = slide.nerve if (slide.nerve is not None) else slide.fascicles[0].outer
-
-        length = outer.mean_radius() * 10
-
-        o_pt = (
-            np.array(
-                [
-                    np.cos(slide.orientation_angle),
-                    np.sin(slide.orientation_angle),
-                ]
-            )
-            * length
-        )
-
-        ray = LineString([outer.centroid(), o_pt])
-
-        # find intersection point with outer (interpolated)
-        slide.orientation_point = np.array(ray.intersection(outer.polygon().boundary))
-
     def populate(self) -> 'Sample':
         """Main function for populating a sample."""
 
@@ -710,10 +685,6 @@ class Sample(Exceptionable, Configurable, Saveable):
                 if slide.orientation_angle is not None:
                     self.throw(143)
                 slide.rotate(np.radians(self.sample_rotation))
-
-            if slide.orientation_angle is not None:
-                # Generate orientation point so src/core/query.py is happy
-                self.add_orientation_point(slide)
 
         # ensure that nothing went wrong in slide processing
         slide.validation(plotpath=plotpath)
