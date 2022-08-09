@@ -371,19 +371,17 @@ def make_task(
                 'chmod a+rwx special\n',
                 './special -nobanner '
                 '-c \"strdef sim_path\" '
-                '-c \"sim_path=\\\"{}\\\"\" '
-                '-c \"inner_ind={}\" '
-                '-c \"fiber_ind={}\" '
-                '-c \"stimamp_top={}\" '
-                '-c \"stimamp_bottom={}\" '
-                '-c \"fiberD={:.1f}\" '
-                '-c \"deltaz={:.4f}\" '
-                '-c \"axonnodes={}\" '
+                f'-c \"sim_path=\\\"{sim_p}\\\"\" '
+                f'-c \"inner_ind={inner}\" '
+                f'-c \"fiber_ind={fiber}\" '
+                f'-c \"stimamp_top={top}\" '
+                f'-c \"stimamp_bottom={bottom}\" '
+                f'-c \"fiberD={diam:.1f}\" '
+                f'-c \"deltaz={deltaz:.4f}\" '
+                f'-c \"axonnodes={axonnodes}\" '
                 '-c \"saveflag_end_ap_times=0\" '  # for backwards compatible, overwritten in launch.hoc if 1
                 '-c \"saveflag_runtime=0\" '  # for backwards compatible, overwritten in launch.hoc if 1
-                '-c \"load_file(\\\"launch.hoc\\\")\" blank.hoc\n'.format(
-                    sim_p, inner, fiber, top, bottom, diam, deltaz, axonnodes
-                ),
+                '-c \"load_file(\\\"launch.hoc\\\")\" blank.hoc\n',
             ]
             if sub_con != 'cluster':
                 lines.remove(f'cd "{sim_p}\"\n')
@@ -396,30 +394,20 @@ def make_task(
             sim_path_win = os.path.join(*sim_p.split(os.pathsep)).replace('\\', '\\\\')
             lines = [
                 'nrniv -nobanner '
-                '-dll \"{}/MOD_Files/nrnmech.dll\" '
+                f'-dll \"{os.getcwd()}/MOD_Files/nrnmech.dll\" '
                 '-c \"strdef sim_path\" '
-                '-c \"sim_path=\\\"{}\"\" '
-                '-c \"inner_ind={}\" '
-                '-c \"fiber_ind={}\" '
-                '-c \"stimamp_top={}\" '
-                '-c \"stimamp_bottom={}\" '
-                '-c \"fiberD={}\" '
-                '-c \"deltaz={:.4f}\" '
-                '-c \"axonnodes={}\" '
+                f'-c \"sim_path=\\\"{sim_path_win}\"\" '
+                f'-c \"inner_ind={inner}\" '
+                f'-c \"fiber_ind={fiber}\" '
+                f'-c \"stimamp_top={top}\" '
+                f'-c \"stimamp_bottom={bottom}\" '
+                f'-c \"fiberD={diam:.1f}\" '
+                f'-c \"deltaz={deltaz:.4f}\" '
+                f'-c \"axonnodes={axonnodes}\" '
                 '-c \"saveflag_end_ap_times=0\" '  # for backwards compatible, overwritten in launch.hoc if 1
                 '-c \"saveflag_runtime=0\" '  # for backwards compatible, overwritten in launch.hoc if 1
                 '-c \"saveflag_ap_loctime=0\" '  # for backwards compatible, overwritten in launch.hoc if 1
-                '-c \"load_file(\\\"launch.hoc\\\")\" blank.hoc\n'.format(
-                    os.getcwd(),
-                    sim_path_win,
-                    inner,
-                    fiber,
-                    top,
-                    bottom,
-                    diam,
-                    deltaz,
-                    axonnodes,
-                )
+                '-c \"load_file(\\\"launch.hoc\\\")\" blank.hoc\n'
             ]
 
         handle.writelines(lines)
@@ -455,7 +443,7 @@ def submit_fibers(submission_context, submission_data):
     for sim_name, runfibers in submission_data.items():
         if args.verbose:
             print(f'\n\n################ {sim_name} ################\n\n')
-        #skip if no fibers to run for this nsim
+        # skip if no fibers to run for this nsim
         if len(runfibers) == 0:
             continue
         sim_path = os.path.join(sim_dir, sim_name)
@@ -488,7 +476,12 @@ def submit_fibers(submission_context, submission_data):
                 for x in runfibers:
                     x['verbose'] = args.verbose
                 if not args.verbose:
-                    print_progress_bar(0, len(runfibers), length=40, prefix='Sample {}, Model {}, Sim {}, n_sim {}:'.format(*sim_name.split('_')))
+                    print_progress_bar(
+                        0,
+                        len(runfibers),
+                        length=40,
+                        prefix='Sample {}, Model {}, Sim {}, n_sim {}:'.format(*sim_name.split('_')),  # noqa FS002
+                    )
                 # open pool instance, set up progress bar, and iterate over each job
                 for i, _ in enumerate(p.imap_unordered(local_submit, runfibers, 1)):
                     if not args.verbose:
@@ -496,7 +489,7 @@ def submit_fibers(submission_context, submission_data):
                             i + 1,
                             len(runfibers),
                             length=40,
-                            prefix='Sample {}, Model {}, Sim {}, n_sim {}:'.format(*sim_name.split('_')),
+                            prefix='Sample {}, Model {}, Sim {}, n_sim {}:'.format(*sim_name.split('_')),  # noqa FS002
                         )
             os.chdir("../..")
 
