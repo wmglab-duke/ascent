@@ -148,7 +148,7 @@ class Sample(Exceptionable, Configurable, Saveable):
         if removal_size:
             if removal_size < 0:
                 self.throw(120)
-            img = morphology.remove_small_objects(img, removal_size)
+            img = morphology.remove_small_objects(img.astype(bool), removal_size)
         imgout = (255 * (img / np.amax(img))).astype(np.uint8)
         cv2.imwrite(path, imgout)
 
