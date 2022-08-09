@@ -114,6 +114,7 @@ class _HeatmapPlotter:
         self.color = color
         self.cbar_kws = cbar_kws if cbar_kws is not None else {}
         self.scatter_kws = scatter_kws if scatter_kws is not None else {}
+        self.scatter_kws.setdefault('s', 100)
         self.line_kws = line_kws if line_kws is not None else {}
         self.max_thresh, self.min_thresh = max(data.threshold), min(data.threshold)
         self.cuff_orientation = cuff_orientation
@@ -157,7 +158,8 @@ class _HeatmapPlotter:
             line_kws=self.line_kws,
         )
         if np.any([bool(x) for x in self.fiber_colors]):
-            self.sim.fibersets[0].plot(ax=ax, fiber_colors=self.fiber_colors, size=100, scatter_kws=self.scatter_kws)
+            self.scatter_kws['c'] = self.fiber_colors
+            self.sim.fibersets[0].plot(ax=ax, scatter_kws=self.scatter_kws)
 
     def create_cmap(self):
         """Create color map and mappable for assigning colorbar and ticks."""
