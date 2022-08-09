@@ -79,6 +79,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         self.out_to_fib, self.out_to_in = self._generate_maps(fibers_xy)
         self.fibers = self._generate_z(fibers_xy, super_sample=super_sample)
         self.validate()
+        self.plot_fibers_on_sample(sim_directory)
 
         return self
 
@@ -167,7 +168,6 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
             elif xy_mode == FiberXYMode.EXPLICIT:
                 points = self.load_explicit_coords(sim_directory)
-            self.plot_points_on_sample(points, sim_directory)
         else:
             self.throw(30)
 
@@ -340,7 +340,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                 self.throw(71)
         return points
 
-    def plot_points_on_sample(self, points, sim_directory):
+    def plot_fibers_on_sample(self, sim_directory):
         fig = plt.figure()
         self.sample.slides[0].plot(
             final=False,
@@ -348,7 +348,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             axlabel=u"\u03bcm",
             title='Fiber locations for nerve model',
         )
-        plt.scatter(list(zip(*points))[0], list(zip(*points))[1], 'r.', s=10)
+        self.plot()
         plt.savefig(sim_directory + '/plots/fibers_xy.png', dpi=300)
         if self.search(Config.RUN, 'popup_plots', optional=True) is False:
             fig.clear
@@ -359,21 +359,21 @@ class FiberSet(Exceptionable, Configurable, Saveable):
     def plot(
         self,
         ax: plt.Axes = None,
-        fiber_colors: List[Tuple[float, float, float, float]] = None,
-        size=20,
         scatter_kws: dict = None,
     ):
-        if fiber_colors is None:
-            fiber_colors = ['red'] * len(self.fibers)
-        for fiber_ind, fiber in enumerate(self.fibers):
-            ax.scatter(
-                fiber[0][0],
-                fiber[0][1],
-                color=fiber_colors[fiber_ind],
-                marker='o',
-                s=size,
-                **{} if scatter_kws is None else scatter_kws,
-            )
+        if ax is None:
+            ax = plt.gca()
+        if scatter_kws is None:
+            scatter_kws = {}
+        scatter_kws.setdefault('c', 'red')
+        scatter_kws.setdefault('s', 20)
+        scatter_kws.setdefault('marker', 'o')
+        x, y = self.xy_points(split_xy=True)
+        ax.scatter(
+            x,
+            y,
+            **scatter_kws,
+        )
 
     def _generate_z(self, fibers_xy: np.ndarray, override_length=None, super_sample: bool = False) -> np.ndarray:
         def clip(values: list, start, end, myel: bool, is_points: bool = False) -> list:
@@ -819,3 +819,10 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         if not np.all([Point(fiber).within(allpoly) for fiber in self.fibers]):
             self.throw(147)
         # add other checks below
+
+    def xy_points(self, split_xy=False):
+        points = [(f[0][0], f[0][1]) for f in self.fibers]
+        if split_xy:
+            return list(zip(*points))[0], list(zip(*points))[1]
+        else:
+            return points
