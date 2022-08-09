@@ -332,7 +332,14 @@ class Query(Exceptionable, Configurable, Saveable):
                     # whether the comparison key is for 'fiber' or 'wave', the nsims will always be in order!
                     # this realization allows us to simply loop through the factors in sim.factors[key] and treat the
                     # indices as if they were the nsim indices
-                    for nsim_index in range(len(sim_object.master_product_indices)):
+                    for nsim_index, (
+                        potentials_product_index,
+                        waveform_index,
+                    ) in enumerate(sim_object.master_product_indices):
+                        (
+                            active_src_index,
+                            fiberset_index,
+                        ) = sim_object.potentials_product[potentials_product_index]
                         # fetch outer->inner->fiber and out->inner maps
                         out_in_fib, out_in = sim_object.fiberset_map_pairs[nsim_index]
 
@@ -366,6 +373,7 @@ class Query(Exceptionable, Configurable, Saveable):
                                     try:
                                         threshold = np.loadtxt(thresh_path)
                                     except IOError:
+                                        threshold = np.nan
                                         warnings.warn('Missing threshold, but continuing.')
                                 else:
                                     threshold = np.loadtxt(thresh_path)
@@ -384,6 +392,9 @@ class Query(Exceptionable, Configurable, Saveable):
                                             'inner': inner,
                                             'fiber': local_fiber_index,
                                             'index': master_index,
+                                            'fiberset_index': fiberset_index,
+                                            'waveform_index': waveform_index,
+                                            'active_src_index': active_src_index,
                                             'threshold': abs(threshold),
                                         }
                                     )
@@ -396,6 +407,9 @@ class Query(Exceptionable, Configurable, Saveable):
                                         'model': model_results['index'],
                                         'sim': sim_index,
                                         'nsim': nsim_index,
+                                        'fiberset_index': fiberset_index,
+                                        'waveform_index': waveform_index,
+                                        'active_src_index': active_src_index,
                                         'mean': np.nan,
                                     }
                                 )
@@ -408,6 +422,9 @@ class Query(Exceptionable, Configurable, Saveable):
                                         'model': model_results['index'],
                                         'sim': sim_index,
                                         'nsim': nsim_index,
+                                        'fiberset_index': fiberset_index,
+                                        'waveform_index': waveform_index,
+                                        'active_src_index': active_src_index,
                                         'mean': np.mean(thresholds),
                                         'std': np.std(thresholds, ddof=1),
                                         'sem': stats.sem(thresholds),

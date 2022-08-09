@@ -9,9 +9,9 @@ Generate dose-response curves (% fibers activated as a function of stimulation a
 
 For more controls over how the plotting occurs, see the seaborn documentation on ecdfplot:
 https://seaborn.pydata.org/generated/seaborn.ecdfplot.html#seaborn.ecdfplot
+RUN THIS FROM REPOSITORY ROOT
 """
 
-# RUN THIS FROM REPOSITORY ROOT
 import matplotlib.pyplot as plt
 import seaborn as sb
 

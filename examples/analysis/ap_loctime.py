@@ -7,6 +7,7 @@ The source code can be found on the following GitHub repository: https://github.
 
 Plots the time and location where an action potential occurred.
 Requires that the user set saving aploctime to true in sim.json.
+RUN THIS FROM REPOSITORY ROOT
 """
 
 import os
@@ -27,4 +28,4 @@ q = Query(
     {'partial_matches': False, 'include_downstream': True, 'indices': {'sample': [0], 'model': [0], 'sim': [0]}}
 ).run()
 
-ap_loctime(q, plot=False, absolute_voltage=False, save=True, nodes_only=True, amp=0)
+ap_loctime(q, plot=False, save=True, nodes_only=True, amp=0)

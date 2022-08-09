@@ -6,6 +6,7 @@ Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 
 Plot the Ve across a fiber length.
+RUN THIS FROM REPOSITORY ROOT
 """
 
 import os

@@ -430,6 +430,7 @@ class Trace(Exceptionable):
         color: Tuple[float, float, float, float] = None,
         ax: plt.Axes = None,
         linewidth=1,
+        line_kws: dict = None,
     ):
         """
         :param ax:
@@ -446,7 +447,7 @@ class Trace(Exceptionable):
         if color is not None:
             ax.fill(points[:, 0], points[:, 1], color=color)
 
-        ax.plot(points[:, 0], points[:, 1], plot_format, linewidth=linewidth)
+        ax.plot(points[:, 0], points[:, 1], plot_format, linewidth=linewidth, **{} if line_kws is None else line_kws)
 
     def plot_centroid(self, plot_format: str = 'k*'):
         """

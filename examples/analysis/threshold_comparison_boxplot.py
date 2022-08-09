@@ -9,15 +9,15 @@ Compare thresholds across models using a boxplot.
 
 For more controls over how the plotting occurs, see the seaborn documentation on barplot:
 https://seaborn.pydata.org/generated/seaborn.boxplot.html
+RUN THIS FROM REPOSITORY ROOT
 """
 
-# RUN THIS FROM REPOSITORY ROOT
 import matplotlib.pyplot as plt
-import seaborn as sb
+import seaborn as sns
 
 from src.core.query import Query
 
-sb.set_theme()
+sns.set_theme()
 
 q = Query(
     {
@@ -28,6 +28,6 @@ q = Query(
 ).run()
 
 data = q.threshold_data()
-g = sb.boxplot(data=data, x='model', y='threshold')
+g = sns.boxplot(data=data, x='model', y='threshold')
 plt.title('Threshold boxplot comparison')
 plt.savefig('threshold_comparison_boxplot.png', dpi=400, bbox_inches='tight')
