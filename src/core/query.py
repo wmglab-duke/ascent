@@ -318,13 +318,9 @@ class Query(Exceptionable, Configurable, Saveable):
             slide: Slide = sample_object.slides[0]
             n_inners = sum(len(fasc.inners) for fasc in slide.fascicles)
 
-            print(f'sample: {sample_index}')
-
             # loop models
             for model_results in sample_results.get('models', []):
                 model_index = model_results['index']
-
-                print(f'\tmodel: {model_index}')
 
                 for sim_index in sim_indices:
                     sim_object = self.get_object(Object.SIMULATION, [sample_index, model_index, sim_index])
