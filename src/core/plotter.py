@@ -24,9 +24,11 @@ def heatmaps(
 ):
     """Create heatmap for a single axis using the _HeatmapPlotter class.
 
-    Use seaborn FacetGrid to create multiple heatmaps, using the FaceGrid.map method.
+    To create a single heatmap, call the class directly
+    Use a seaborn FacetGrid to create multiple heatmaps in one figure, using the FaceGrid.map method.
     Note that data cannot be aggregated across n_sims
     (e.g., each call of heatmaps must recieve only one threshold per fiber).
+
     :param facetdata: Recieves data from FacetGrid if using to plot an array.
     :param data: DataFrame to plot, used if manually passing data.
     :param ax: Axis to plot on.
@@ -46,6 +48,13 @@ def heatmaps(
 
 
 class _HeatmapPlotter:
+    """Class used to contruct heatmap plots.
+
+    This class should not be called directly by the user. Rather, the
+    user should call the heatmaps() function, which will pass any
+    keyword arguments to this class's constructor.
+    """
+
     def __init__(
         self,
         data,
@@ -71,14 +80,15 @@ class _HeatmapPlotter:
         :param data: DataFrame containing data to plot.
         :param mode: Plotting mode. There are multiple options:
 
-            * 'fibers': Plot a point for each fiber, using a heatmap of thresholds for color.
-            * 'fibers_on_off': Plot a point for each fiber. If the fiber threshold is above cutoff_thresh,
-                suprethresh_color is used. Otherwise, subthresh_color is used.
-            * 'inners': Plot each inner as filled in, using a heatmap of thresholds for color.
-                The mean threshold for that inner is used,
-                thus if only one fiber is present per inner, that threshold is used.
-            * 'inners_on_off': Plot each inner as filled in. If the mean inner threshold is above cutoff_thresh,
-                suprethresh_color is used. Otherwise, subthresh_color is used.
+            * ``'fibers'``: Plot a point for each fiber, using a heatmap of thresholds for color.
+            * ``'fibers_on_off'``: Plot a point for each fiber. If the fiber threshold is above cutoff_thresh,
+              suprathresh_color is used. Otherwise, subthresh_color is used.
+            * ``'inners'``: Plot each inner as filled in, using a heatmap of thresholds for color.
+              The mean threshold for that inner is used,
+              thus if only one fiber is present per inner, that threshold is used.
+            * ``'inners_on_off'``: Plot each inner as filled in. If the mean inner threshold is above cutoff_thresh,
+              suprathresh_color is used. Otherwise, subthresh_color is used.
+
         :param sample_object: Sample object to use for plotting.
         :param sim_object: Simulation object to use for plotting.
         :param missing_color: Color to use for missing data.

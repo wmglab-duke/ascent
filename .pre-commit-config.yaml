@@ -31,10 +31,12 @@ repos:
     hooks:
       - id: black
   - repo: https://github.com/PyCQA/docformatter
-    rev: v1.4
+    rev: v1.5
     hooks:
       - id: docformatter
-        args: ["--in-place"]
+        additional_dependencies:
+          - docformatter[tomli]
+        args: ["--in-place", "--config", "./pyproject.toml"]
   # format markdown, yaml, json
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: v2.7.1
