@@ -67,7 +67,7 @@ repos:
           - flake8-comprehensions
           - flake8-use-fstring
           - flake8-docstrings
-  #          - flake8-rst-docstrings
+          - flake8-rst-docstrings
   #          - darglint
 
   # lint markdown
