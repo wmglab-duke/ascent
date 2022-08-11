@@ -366,7 +366,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         if scatter_kws is None:
             scatter_kws = {}
         scatter_kws.setdefault('c', 'red')
-        scatter_kws.setdefault('s', 20)
+        scatter_kws.setdefault('s', 10)
         scatter_kws.setdefault('marker', 'o')
         x, y = self.xy_points(split_xy=True)
         ax.scatter(
