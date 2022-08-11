@@ -18,7 +18,7 @@ First, these software packages must be manually installed:
 - [NEURON 7.6](https://neuron.yale.edu/ftp/neuron/versions/v7.6/) (newer versions have been released, but compatibility has yet to be confirmed; choose appropriate installer depending on operating system; install auxiliary software as prompted by NEURON installer)
   - Depending on your operating system, some additional dependencies may be required.
     - MacOS: Follow the [macOS NEURON dependency](https://www.neuron.yale.edu/neuron/download/compilestd_osx) instructions (Step 1 ONLY)
-    - Linux: Follow the [(]Linux NEURON dependency](https://www.neuron.yale.edu/neuron/download/compile_linux) instructions (Under "Install dependencies")
+    - Linux: Follow the [Linux NEURON dependency](<https://www.neuron.yale.edu/neuron/download/compile_linux>) instructions (Under "Install dependencies")
   - NEURON must be in your PATH in order to run simulations. Either choose the add to path option during installation, or on Linux, you can add to your bash profile: `export PATH=<path/to/neuron/>:$PATH`. Note: The NEURON path should end with `bin`.
   - Note: if having issues with the NEURON installation, try running the compatibility troubleshooter.
 

@@ -221,7 +221,7 @@ of:
 The div element has its own alignment attribute, align.
 
 <div align="center">
-(1) * <i>sep_wire_P</i> + (2) * <i>r_wire_P</i>
+(1) *<i>sep_wire_P</i> + (2)* <i>r_wire_P</i>
 </div>
 
 ## Simulation Protocols

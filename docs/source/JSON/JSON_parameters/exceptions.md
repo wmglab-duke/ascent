@@ -9,7 +9,7 @@ documented pipeline exception. Note that this file is a single large
 Array, so it is wrapped in square brackets, as opposed to all other
 JSON files, which are wrapped in curly braces.
 
-## Syntax 
+## Syntax
 
 To declare this entity in `config/system/env.json`, use the
 following syntax:

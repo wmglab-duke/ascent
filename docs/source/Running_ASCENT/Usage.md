@@ -54,7 +54,7 @@ Run this script from your `"ASCENT_PROJECT_PATH"`. Files to keep are specified w
 
 If you would like to remove ONLY CERTAIN FILES for a single sample (i.e., `samples/<sample_index>/`), use this script.
 This script is useful for removing logs, runtimes, special,
-and _.bat or _.sh scripts. Run this script from your `"ASCENT_PROJECT_PATH"`. Files to remove are specified within the python script.
+and _.bat or_.sh scripts. Run this script from your `"ASCENT_PROJECT_PATH"`. Files to remove are specified within the python script.
 
 `python run tidy_samples <list of sample indices>`
 
@@ -64,15 +64,15 @@ and _.bat or _.sh scripts. Run this script from your `"ASCENT_PROJECT_PATH"`. Fi
 
 The general usage of Query is as follows:
 
-1.  In the context of a Python script, the user specifies the search
+1. In the context of a Python script, the user specifies the search
     criteria (think of these as "keywords" that filter your data) in the
     form of a JSON configuration file (see `query_criteria.json` in [Query Parameters](../JSON/JSON_parameters/query_criteria)).
 
-2.  These search criteria are used to construct a Query object, and the
+2. These search criteria are used to construct a Query object, and the
     search for matching **_Sample_**, **_Model_**, and **_Sim_**
     configurations is performed using the method `run()`.
 
-3.  The search results are in the form of a hierarchy of **_Sample_**,
+3. The search results are in the form of a hierarchy of **_Sample_**,
     **_Model_**, and **_Sim_** indices, which can be accessed using the
     `summary()` method.
 

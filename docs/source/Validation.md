@@ -105,7 +105,7 @@ multifascicular dummy nerve, and human cervical vagus nerve.
 <tr class="odd">
 <td align="center"style="vertical-align:middle" >Perineurium (sides of each fascicle)</td>
 <td align="center"style="vertical-align:middle" ><p>Modeled as contact impedance</p>
-<p>1149 Ω-m * 0.03 * d<sub>fasc</sub>[m]</p></td>
+<p>1149 Ω-m *0.03* d<sub>fasc</sub>[m]</p></td>
 </tr>
 <tr class="even">
 <td align="center"style="vertical-align:middle" >Ground (all outer boundaries of the model)</td>
