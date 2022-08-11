@@ -1,7 +1,7 @@
 #!/usr/bin/env python3.7
 
-"""
-The copyrights of this software are owned by Duke University.
+"""The copyrights of this software are owned by Duke University.
+
 Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
@@ -27,6 +27,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
     def __init__(self, criteria: Union[str, dict]):
         """Set up Query object.
+
         :param criteria: dictionary of search criteria
         """
         # set up superclasses
@@ -179,21 +180,22 @@ class Query(Exceptionable, Configurable, Saveable):
         return self._result
 
     def get_config(self, mode: Config, indices: List[int]) -> dict:
-        """ """
+        """"""
         return self.load(self.build_path(mode, indices))
 
-    def get_object(self, mode: Object, indices: List[int]) -> Union[Sample, Simulation]:
-        """ """
-        with open(self.build_path(mode, indices), 'rb') as obj:
+    @staticmethod
+    def get_object(mode: Object, indices: List[int]) -> Union[Sample, Simulation]:
+        """"""
+        with open(Query.build_path(mode, indices), 'rb') as obj:
             return pickle.load(obj)
 
+    @staticmethod
     def build_path(
-        self,
         mode: Union[Config, Object],
         indices: List[int] = None,
         just_directory: bool = False,
     ) -> str:
-        """ """
+        """"""
 
         result = str()
 
@@ -225,7 +227,7 @@ class Query(Exceptionable, Configurable, Saveable):
             )
         else:
             print(f'INVALID MODE: {type(mode)}')
-            self.throw(55)
+            Exceptionable(SetupMode.NEW).throw(55)
 
         if just_directory:
             result = os.path.join(*result.split(os.sep)[:-1])
@@ -233,7 +235,7 @@ class Query(Exceptionable, Configurable, Saveable):
         return result
 
     def _match(self, criteria: dict, data: dict) -> bool:
-        """ """
+        """"""
 
         for key in criteria.keys():
 
@@ -290,7 +292,7 @@ class Query(Exceptionable, Configurable, Saveable):
         :param model_indices: list of model indices to include in the threshold data.
         :param ignore_missing: if True, missing threshold data will not cause an error.
         :param meanify: if True, the threshold data will be returned as a mean of each nsim.
-        :return pandas DataFrame of thresholds.
+        :return: pandas DataFrame of thresholds.
         """
         # quick helper class for storing data values
         class DataPoint:

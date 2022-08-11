@@ -1,9 +1,8 @@
 """Defines plotting functions used for analyzing data."""
 import json
 import os
-import pickle
 import warnings
-from typing import List, Union
+from typing import List
 
 import matplotlib.colorbar as cbar
 import matplotlib.colors as mplcolors
@@ -12,7 +11,7 @@ import matplotlib.ticker as tick
 import numpy as np
 import pandas as pd
 
-from src.core import Query, Sample, Simulation
+from src.core import Query
 from src.utils import Config, Object
 
 
@@ -260,9 +259,9 @@ class _HeatmapPlotter:
     def get_objects(self):
         """Get sample and sim objects for plotting."""
         if self.sample is None:
-            self.sample = _get_object(Object.SAMPLE, [self.sample_index])
+            self.sample = Query.get_object(Object.SAMPLE, [self.sample_index])
         if self.sim is None:
-            self.sim = _get_object(Object.SIMULATION, [self.sample_index, self.model_index, self.sim_index])
+            self.sim = Query.get_object(Object.SIMULATION, [self.sample_index, self.model_index, self.sim_index])
 
     def validate(self, data):
         """Check that data is valid for plotting.
@@ -291,7 +290,7 @@ class _HeatmapPlotter:
         # get orientation angle from slide
         theta = self.sample.slides[0].orientation_angle if self.sample.slides[0].orientation_angle is not None else 0
         # load add_ang from model.json cofiguration file
-        with open(_build_path(Config.MODEL, [self.sample_index, self.model_index])) as f:
+        with open(Query.build_path(Config.MODEL, [self.sample_index, self.model_index])) as f:
             model_config = json.load(f)
         # add any cuff rotation
         theta += np.deg2rad(model_config.get('cuff').get('rotate').get('add_ang'))
@@ -438,55 +437,3 @@ def ap_loctime(
 
                     if plot:
                         plt.show()
-
-
-def _get_object(mode: Object, indices: List[int]) -> Union[Sample, Simulation]:
-    """Load pickled python object from file.
-
-    :param mode: Mode of object to load.
-    :param indices: Indices of object to load.
-    :return: Object of specified mode and indices.
-    """
-    with open(_build_path(mode, indices), 'rb') as obj:
-        return pickle.load(obj)
-
-
-def _build_path(
-    mode: Union[Config, Object],
-    indices: List[int] = None,
-) -> str:
-    """Build path to pickled python object.
-
-    :param mode: Mode of object to load.
-    :param indices: Indices of object to load.
-    :return: Path to pickled python object.
-    """
-    result = str()
-
-    if indices is None:
-        indices = [
-            0,
-            0,
-            0,
-        ]  # dummy values... will be stripped from path later bc just_directory is set to True
-
-    if mode == Config.SAMPLE:
-        result = os.path.join('samples', str(indices[0]), 'sample.json')
-    elif mode == Config.MODEL:
-        result = os.path.join('samples', str(indices[0]), 'models', str(indices[1]), 'model.json')
-    elif mode == Config.SIM:
-        result = os.path.join('config', 'user', 'sims', f'{indices[0]}.json')
-    elif mode == Object.SAMPLE:
-        result = os.path.join('samples', str(indices[0]), 'sample.obj')
-    elif mode == Object.SIMULATION:
-        result = os.path.join(
-            'samples',
-            str(indices[0]),
-            'models',
-            str(indices[1]),
-            'sims',
-            str(indices[2]),
-            'sim.obj',
-        )
-
-    return result
