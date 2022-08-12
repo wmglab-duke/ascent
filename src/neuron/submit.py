@@ -722,7 +722,7 @@ def confirm_submission(n_fibers, rundata, submission_context):
         if int(proceed) != 1:
             sys.exit()
         else:
-            print('Proceeding...\n')
+            print('Proceeding...')
     else:
         print(f'Skipping summary, submitting {n_fibers} fibers...')
 
@@ -806,8 +806,10 @@ def main():
     n_fibers = sum([len(x) for x in submission_list.values()])
     confirm_submission(n_fibers, rundata, submission_context)
     # make shell scripts for fiber submission
+    print('Performing setup for fiber submission...')
     make_fiber_tasks(submission_list, submission_context)
     # submit fibers
+    print('Submitting...')
     submit_fibers(submission_context, submission_list)
 
 
