@@ -1,9 +1,11 @@
 #!/usr/bin/env python3.7
 
-"""
-The copyrights of this software are owned by Duke University.
-Please refer to the LICENSE and README.md files for licensing instructions.
-The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
+"""Defines Fascicle class.
+
+The copyrights of this software are owned by Duke University. Please
+refer to the LICENSE and README.md files for licensing instructions. The
+source code can be found on the following GitHub repository:
+https://github.com/wmglab-duke/ascent
 """
 
 
@@ -30,11 +32,9 @@ class Fascicle(Exceptionable):
         inners: List[Trace] = None,
         outer_scale: dict = None,
     ):
-        """
-        Fascicle can be created with either:
-         option 1: an outer and any number of inners
-         option 2: an inner, which is passed in as an outer argument, and scaled out to make a virtual outer
-         option 3: ... tbd
+        """Fascicle can be created with either: option 1: an outer and any
+        number of inners option 2: an inner, which is passed in as an outer
+        argument, and scaled out to make a virtual outer option 3: ... tbd.
 
         :param outer_scale: how much the inner will be scaled to make a virtual outer
         :param exception_config: existing data already loaded form JSON (hence SetupMode.OLD)
@@ -56,9 +56,7 @@ class Fascicle(Exceptionable):
             self.validate()
 
     def validate(self):
-        """
-        Performs checks on traces
-        """
+        """Performs checks on traces."""
         # ensure all inner Traces are actually inside outer Trace
         if any([not inner.within(self.outer) for inner in self.inners]):
             self.throw(8)
@@ -226,8 +224,9 @@ class Fascicle(Exceptionable):
         return np.array(self.all_traces())[np.where(areas == np.min(areas))][0]
 
     def perineurium_setup(self, fit: dict):
-        """
-        Takes inners which were passed in as outers, and generates the perineurium
+        """Takes inners which were passed in as outers, and generates the
+        perineurium.
+
         :param factor: a dictionary with the values describing a linear relationship
         between fascicle size and perineurium thickness
         """

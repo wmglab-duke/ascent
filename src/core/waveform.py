@@ -1,9 +1,11 @@
 #!/usr/bin/env python3.7
 
-"""
-The copyrights of this software are owned by Duke University.
-Please refer to the LICENSE and README.md files for licensing instructions.
-The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
+"""Defines Waveform class.
+
+The copyrights of this software are owned by Duke University. Please
+refer to the LICENSE and README.md files for licensing instructions. The
+source code can be found on the following GitHub repository:
+https://github.com/wmglab-duke/ascent
 """
 
 
@@ -21,28 +23,8 @@ from src.utils import Configurable, Exceptionable, Saveable
 from src.utils.enums import Config, SetupMode, WaveformMode, WriteMode
 
 
-def precision_and_scale(x):
-    # https://stackoverflow.com/questions/3018758/determine-precision-and-scale-of-particular-number-in-python
-    max_digits = sys.float_info.dig
-    int_part = int(abs(x))
-    magnitude = 1 if int_part == 0 else int(math.log10(int_part)) + 1
-    if magnitude >= max_digits:
-        return magnitude, 0
-    frac_part = abs(x) - int_part
-    multiplier = 10 ** (max_digits - magnitude)
-    frac_digits = multiplier + int(multiplier * frac_part + 0.5)
-    while frac_digits % 10 == 0:
-        frac_digits /= 10
-    scale = int(math.log10(frac_digits))
-    return magnitude + scale, scale
-
-
 class Waveform(Exceptionable, Configurable, Saveable):
-    """
-    Required (Config.) JSON's:
-        MODEL
-        SIM
-    """
+    """Required (Config.) JSON's: MODEL SIM."""
 
     def __init__(self, exceptions_config: list):
         """
@@ -85,17 +67,18 @@ class Waveform(Exceptionable, Configurable, Saveable):
         return self
 
     def validate_times(self):
-        """
-        Checks to make sure that the waveform T_ON < T_START < T_OFF < T_STOP
-        """
+        """Checks to make sure that the waveform T_ON < T_START < T_OFF <
+        T_STOP."""
 
         time_params = [self.start, self.on, self.off, self.stop]
         if sorted(time_params) != time_params:
             self.throw(32)
 
     def rho_weerasuriya(self, f=None):
-        """
-        Calculation of perineurium impedance using results from Weerasuriya 1984 (frog). Weerasuriya discussion
+        """Calculation of perineurium impedance using results from Weerasuriya
+        1984 (frog).
+
+        Weerasuriya discussion
         indicates that Models A & B are better candidates than Models C & D, so we only consider the former pair.
         :return: rho [ohm-m].
         """
@@ -470,3 +453,19 @@ class Waveform(Exceptionable, Configurable, Saveable):
         f.close()
 
         return self
+
+
+def precision_and_scale(x):
+    # https://stackoverflow.com/questions/3018758/determine-precision-and-scale-of-particular-number-in-python
+    max_digits = sys.float_info.dig
+    int_part = int(abs(x))
+    magnitude = 1 if int_part == 0 else int(math.log10(int_part)) + 1
+    if magnitude >= max_digits:
+        return magnitude, 0
+    frac_part = abs(x) - int_part
+    multiplier = 10 ** (max_digits - magnitude)
+    frac_digits = multiplier + int(multiplier * frac_part + 0.5)
+    while frac_digits % 10 == 0:
+        frac_digits /= 10
+    scale = int(math.log10(frac_digits))
+    return magnitude + scale, scale

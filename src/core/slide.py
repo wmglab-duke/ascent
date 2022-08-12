@@ -1,9 +1,11 @@
 #!/usr/bin/env python3.7
 
-"""
+"""Defines Slide class.
+
 The copyrights of this software are owned by Duke University.
-Please refer to the LICENSE and README.md files for licensing instructions.
-The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
+Please refer to the LICENSE and README.md files for licensing
+instructions. The source code can be found on the following GitHub
+repository: https://github.com/wmglab-duke/ascent
 """
 import itertools
 import os
@@ -77,8 +79,8 @@ class Slide(Exceptionable):
         tolerance: float = None,
         plotpath=None,
     ) -> bool:
-        """
-        Checks to make sure nerve geometry is not overlapping itself
+        """Checks to make sure nerve geometry is not overlapping itself.
+
         :param specific: if you want to know what made it fail first
         :param die: if non-specific, decides whether or not to throw an error if it fails
         :param tolerance: minimum separation distance for unit you are currently in
@@ -127,8 +129,8 @@ class Slide(Exceptionable):
                     self.fascicle_nerve_intersection(),
                     self.fascicles_outside_nerve(),
                     self.fascicles_too_close(tolerance),
+                    self.fascicles_too_small(),
                 ],
-                self.fascicles_too_small(),
             ):
                 if die:
                     debug_plot()
@@ -248,8 +250,8 @@ class Slide(Exceptionable):
         axlabel: str = None,
         line_kws=None,
     ):
-        """
-        Quick util for plotting the nerve and fascicles
+        """Quick util for plotting the nerve and fascicles.
+
         :param show_axis:
         :param inner_index_labels:
         :param outers_flag:
@@ -331,10 +333,11 @@ class Slide(Exceptionable):
             fascicle.scale(factor, center)
 
     def smooth_traces(self, n_distance, i_distance):
-        """
-        Smooth traces for the slide
+        """Smooth traces for the slide.
+
         :param n_distance: distance to inflate and deflate the nerve trace
-        :param i_distance: distance to inflate and deflate the fascicle traces"""
+        :param i_distance: distance to inflate and deflate the fascicle traces
+        """
 
         if i_distance is None:
             self.throw(113)

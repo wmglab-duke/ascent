@@ -1,9 +1,11 @@
 #!/usr/bin/env python3.7
 
-"""
+"""Defines Simulation class.
+
 The copyrights of this software are owned by Duke University.
-Please refer to the LICENSE and README.md files for licensing instructions.
-The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
+Please refer to the LICENSE and README.md files for licensing
+instructions. The source code can be found on the following GitHub
+repository: https://github.com/wmglab-duke/ascent
 """
 
 import copy
@@ -22,7 +24,7 @@ import numpy as np
 import scipy.interpolate as sci
 
 from src.core import Sample
-from src.utils import Config, Configurable, Env, Exceptionable, ExportMode, FiberXYMode, Saveable, SetupMode, WriteMode
+from src.utils import Config, Configurable, Env, Exceptionable, ExportMode, Saveable, SetupMode, WriteMode
 
 from .fiberset import FiberSet
 from .hocwriter import HocWriter
@@ -50,12 +52,20 @@ class Simulation(Exceptionable, Configurable, Saveable):
         self.master_product_indices = []  # order: potentials (active_src, fiberset), waveform
         self.ss_product = []  # order: (contact index, fiberset)
 
-    def load(self, path: str):
+    def load(self, path: str) -> 'Simulation':
+        """Load a pickled object from a file.
+
+        :param path: path to object file
+        :return: loaded object
+        """
         with open(path, 'rb') as f:
             return pickle.load(f)
 
     def resolve_factors(self) -> 'Simulation':
+        """Validate any parameters being looped over.
 
+        :return: self
+        """
         if len(self.factors.items()) > 0:
             self.factors = {}
 
@@ -79,6 +89,11 @@ class Simulation(Exceptionable, Configurable, Saveable):
         return self
 
     def write_fibers(self, sim_directory: str) -> 'Simulation':
+        """Write the fibers to .dat files.
+
+        :param sim_directory: Path to simulation directory
+        :return: self
+        """
         # loop PARAMS in here, but loop HISTOLOGY in FiberSet object
 
         fibersets_directory = os.path.join(sim_directory, 'fibersets')
@@ -148,6 +163,11 @@ class Simulation(Exceptionable, Configurable, Saveable):
         return self
 
     def write_waveforms(self, sim_directory: str) -> 'Simulation':
+        """Write the waveforms to .dat files.
+
+        :param sim_directory: Path to simulation directory
+        :return: self
+        """
         directory = os.path.join(sim_directory, 'waveforms')
         if not os.path.exists(directory):
             os.makedirs(directory)
@@ -183,6 +203,11 @@ class Simulation(Exceptionable, Configurable, Saveable):
         return self
 
     def validate_srcs(self, sim_directory) -> 'Simulation':
+        """Validate the active_srcs in the simulation config.
+
+        :param sim_directory: Path to simulation directory
+        :return: self
+        """
         # potentials key (s) = (r x p)
         # index of line in output is s, write row containing of (r and p) to file
 
@@ -255,6 +280,13 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
     ############################
     def n_sim_setup(self, sim_dir, sim_num, potentials_ind, waveform_ind, t):
+        """Set up the variables for a particular n_sim.
+
+        :param sim_dir: Path to simulation directory
+        :param sim_num: Simulation number
+        :param potentials_ind: Index of potentials in potentials_product
+        :param waveform_ind: Index of waveform in wave_product
+        """
         # build file structure sim/#/n_sims/t/data/(inputs and outputs)
         self._build_file_structure(os.path.join(sim_dir, str(sim_num)), t)
         nsim_inputs_directory = os.path.join(sim_dir, str(sim_num), 'n_sims', str(t), 'data', 'inputs')
@@ -315,8 +347,12 @@ class Simulation(Exceptionable, Configurable, Saveable):
         ).add(SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value]).build_hoc(n_tsteps)
         return nsim_inputs_directory, fiberset_ind, active_src_vals
 
-    def validate_ss_dz(self, supersampled_bases, sim_dir, sim_num, active_src_vals):
+    def validate_ss_dz(self, supersampled_bases, sim_dir):
+        """Validate the supersampled dz values.
 
+        :param supersampled_bases: List of supersampled bases
+        :param sim_dir: Path to simulation directory
+        """
         source_sim = supersampled_bases.get('source_sim')
 
         # check that dz in source_sim matches the dz (if provided) in current sim
@@ -345,9 +381,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
         :return:
         """
 
-        def make_inner_fiber_diam_key(
-            my_xy_mode, my_fiberset_ind, my_nsim_inputs_directory, my_potentials_directory, my_file
-        ):
+        def make_inner_fiber_diam_key(my_fiberset_ind, my_potentials_directory, my_file):
             inner_fiber_diam_key = []
             diams = np.loadtxt(os.path.join(my_potentials_directory, my_file))
             for fiber_ind in range(len(diams)):
@@ -381,10 +415,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
             inner_list = []
             fiber_list = []
 
-            # fetch xy mode to check for override necessity
-            xy_mode_name: str = self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode')
-            xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
-
             supersampled_bases: dict = self.search(Config.SIM, 'supersampled_bases', optional=True)
             do_supersample: bool = supersampled_bases is not None and supersampled_bases.get('use') is True
 
@@ -406,7 +436,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
                         if do_supersample:
                             # SUPER SAMPLING - PROBED COMSOL AT SS_COORDS --> /SS_BASES
-                            self.validate_ss_dz(supersampled_bases, sim_dir, sim_num, active_src_vals)
+                            self.validate_ss_dz(supersampled_bases, sim_dir)
                             source_sim = supersampled_bases.get('source_sim')
                             ss_bases = [None for _ in active_src_vals[0]]
 
@@ -444,20 +474,27 @@ class Simulation(Exceptionable, Configurable, Saveable):
                             )
                     elif file == 'diams.txt':
                         make_inner_fiber_diam_key(
-                            xy_mode,
                             fiberset_ind,
-                            nsim_inputs_directory,
                             potentials_directory,
                             file,
                         )
         return self
 
     def get_ss_bases(self, active_src_vals, file, sim_dir, source_sim, ss_bases):
+        """Get the supersampled bases for the given simulation.
+
+        :param active_src_vals:
+        :param file:
+        :param sim_dir:
+        :param source_sim:
+        :param ss_bases:
+        :return:
+        """
+        ss_fiberset_path = os.path.join(sim_dir, str(source_sim), 'ss_coords')
+
         for basis_ind in range(len(active_src_vals[0])):
 
             ss_bases_src_path = os.path.join(sim_dir, str(source_sim), 'ss_bases', str(basis_ind))
-
-            ss_fiberset_path = os.path.join(sim_dir, str(source_sim), 'ss_coords')
 
             if not os.path.exists(ss_bases_src_path):
                 self.throw(81)
@@ -466,9 +503,19 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 self.throw(81)
             else:
                 ss_bases[basis_ind] = np.loadtxt(os.path.join(ss_bases_src_path, file))[1:]
+
         return ss_fiberset_path, ss_bases
 
     def weight_potentials(self, active_src_vals, file, root, ss_bases, ss_fiberset_path):
+        """
+
+        :param active_src_vals:
+        :param file:
+        :param root:
+        :param ss_bases:
+        :param ss_fiberset_path:
+        :return:
+        """
         ss_weighted_bases_vec = np.zeros(len(ss_bases[0]))
         for src_ind, src_weight in enumerate(active_src_vals[0]):
             ss_weighted_bases_vec += ss_bases[src_ind] * src_weight
@@ -496,6 +543,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
     def indices_fib_to_n(self, fiberset_ind, fiber_ind) -> Tuple[int, int]:
         """Get inner and fiber indices from fiber index and fiberset_index.
+
         :param fiberset_ind: fiberset index
         :param fiber_ind: fiber index within fiberset
         :return: (l, k) as in "inner<l>_fiber<k>.dat" for NEURON sim
@@ -514,6 +562,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
     def indices_n_to_fib(self, fiberset_index, inner_index, local_fiber_index) -> Tuple[int, int]:
         """Get fiber index from inner and local fiber indices.
+
         :param fiberset_index: fiberset index
         :param inner_index: inner index
         :param local_fiber_index: local fiber index
@@ -532,6 +581,11 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
     @staticmethod
     def _build_file_structure(sim_obj_dir, t):
+        """Build the file structure for a given simulation.
+
+        :param sim_obj_dir: simulation object directory
+        :param t: n_sim index
+        """
         sim_dir = os.path.join(sim_obj_dir, "n_sims", str(t))
 
         if not os.path.exists(sim_dir):
@@ -540,7 +594,14 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 os.makedirs(os.path.join(sim_dir, "data", subfolder_name))
 
     def _copy_and_edit_config(self, config, key, set, copy_again=True):
+        """
 
+        :param config:
+        :param key:
+        :param set:
+        :param copy_again:
+        :return:
+        """
         cp = config
         if copy_again:
             cp = copy.deepcopy(config)
@@ -555,6 +616,13 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
     @staticmethod
     def export_run(num: int, project_root: str, target: str, overwrite: bool = True):
+        """
+
+        :param num:
+        :param project_root:
+        :param target:
+        :param overwrite:
+        """
         target_dir = os.path.join(target, 'runs')
         target_full = os.path.join(target_dir, str(num) + '.json')
         if overwrite and os.path.exists(target_full):
@@ -576,7 +644,15 @@ class Simulation(Exceptionable, Configurable, Saveable):
         target: str,
         export_behavior=None,
     ):
+        """
 
+        :param sample:
+        :param model:
+        :param sim:
+        :param sim_obj_dir:
+        :param target:
+        :param export_behavior:
+        """
         sim_dir = os.path.join(sim_obj_dir, str(sim), 'n_sims')
         sim_export_base = os.path.join(target, 'n_sims', f'{sample}_{model}_{sim}_')
 
@@ -598,7 +674,10 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
     @staticmethod
     def export_neuron_files(target: str):
+        """
 
+        :param target:
+        """
         # make NSIM_EXPORT_PATH (defined in Env.json) directory if it does not yet exist
         if not os.path.exists(target):
             os.makedirs(target)
@@ -621,7 +700,10 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
     @staticmethod
     def export_system_config_files(target: str):
+        """
 
+        :param target:
+        """
         # make NSIM_EXPORT_PATH (defined in Env.json) directory if it does not yet exist
         if not os.path.exists(target):
             os.makedirs(target)
@@ -650,6 +732,15 @@ class Simulation(Exceptionable, Configurable, Saveable):
         source: str,
         delete: bool = False,
     ):
+        """
+
+        :param sample:
+        :param model:
+        :param sim:
+        :param sim_dir:
+        :param source:
+        :param delete:
+        """
         print(f'sample: {sample}, model: {model}, sim: {sim}, sim_dir: {sim_dir}, source: {source}')
 
         sim_dir = os.path.join(sim_dir, 'n_sims')
@@ -663,8 +754,16 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 if delete:
                     shutil.rmtree(os.path.join(source, dirname))
 
-    def thresholds_exist(sample: int, model: int, sim: int, sim_dir: str, source: str):
+    @staticmethod
+    def thresholds_exist(sample: int, model: int, sim: int, source: str):
+        """Checks if thresholds exist for a given sample, model, and sim.
 
+        :param sample:
+        :param model:
+        :param sim:
+        :param source:
+        :return:
+        """
         allthresh = True
         for dirname in [f for f in os.listdir(source) if os.path.isdir(os.path.join(source, f))]:
             this_sample, this_model, this_sim, product_index = tuple(dirname.split('_'))
@@ -678,8 +777,17 @@ class Simulation(Exceptionable, Configurable, Saveable):
                         allthresh = False
         return allthresh
 
-    def activations_exist(sample: int, model: int, sim: int, sim_dir: str, source: str, n_amps: int):
+    @staticmethod
+    def activations_exist(sample: int, model: int, sim: int, source: str, n_amps: int):
+        """Check if activation logs exist for a given sample, model, and sim.
 
+        :param sample:
+        :param model:
+        :param sim:
+        :param source:
+        :param n_amps:
+        :return:
+        """
         allamp = True
         for dirname in [f for f in os.listdir(source) if os.path.isdir(os.path.join(source, f))]:
             this_sample, this_model, this_sim, product_index = tuple(dirname.split('_'))
@@ -696,16 +804,16 @@ class Simulation(Exceptionable, Configurable, Saveable):
         return allamp
 
     def potentials_exist(self, sim_dir: str) -> bool:
-        """
-        Return bool deciding if potentials have already been written
+        """Return bool deciding if potentials have already been written.
+
         :param sim_dir: directory of this simulation
         :return: boolean!
         """
         return all(os.path.exists(os.path.join(sim_dir, 'potentials', str(p))) for p, _ in self.master_product_indices)
 
     def ss_bases_exist(self, sim_dir: str) -> bool:
-        """
-        Return bool deciding if potentials have already been written
+        """Return bool deciding if potentials have already been written.
+
         :param sim_dir: directory of this simulation
         :return: boolean!
         """
