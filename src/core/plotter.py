@@ -89,8 +89,8 @@ class _HeatmapPlotter:
             * ``'inners_on_off'``: Plot each inner as filled in. If the mean inner threshold is above cutoff_thresh,
               suprathresh_color is used. Otherwise, subthresh_color is used.
 
-        :param sample_object: Sample object to use for plotting.
-        :param sim_object: Simulation object to use for plotting.
+        :param sample_object: Sample object to use for plotting. Automatically loaded if not provided.
+        :param sim_object: Simulation object to use for plotting. Automatically loaded if not provided.
         :param missing_color: Color to use for missing data.
         :param suprathresh_color: Color to use for suprathresh data.
         :param subthresh_color: Color to use for subthresh data.
