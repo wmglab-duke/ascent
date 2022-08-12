@@ -1,9 +1,11 @@
 #!/usr/bin/env python3.7
 
-"""
+"""Defines Deformable class.
+
 The copyrights of this software are owned by Duke University.
-Please refer to the LICENSE and README.md files for licensing instructions.
-The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
+Please refer to the LICENSE and README.md files for licensing
+instructions. The source code can be found on the following GitHub
+repository: https://github.com/wmglab-duke/ascent
 """
 
 import sys
@@ -155,7 +157,7 @@ class Deformable(Exceptionable):
         # MORPHING LOOP
         for morph_index, morph_step in enumerate(morph_steps):
             # if the loop count is divisible by the index step, update morph
-            Deformable.printProgressBar(
+            Deformable.print_progress_bar(
                 morph_index,
                 len(morph_steps),
                 prefix='\t\tdeforming',
@@ -195,7 +197,6 @@ class Deformable(Exceptionable):
         end: Trace,
         count: int = 2,
         deform_ratio: float = 1.0,
-        slide: Slide = None,
     ) -> List[Trace]:
 
         # Find point along old_nerve that is closest to major axis of best fit ellipse
@@ -286,20 +287,9 @@ class Deformable(Exceptionable):
         # return new object
         return Deformable(exception_config_data, boundary_start, boundary_end, contents)
 
-    # copied from https://stackoverflow.com/questions/3173320/text-progress-bar-in-the-console
     @staticmethod
-    def printProgressBar(iteration, total, prefix='', suffix='', decimals=1, length=100, fill='█'):
-        """
-        Call in a loop to create terminal progress bar
-        @params:
-            iteration   - Required  : current iteration (Int)
-            total       - Required  : total iterations (Int)
-            prefix      - Optional  : prefix string (Str)
-            suffix      - Optional  : suffix string (Str)
-            decimals    - Optional  : positive number of decimals in percent complete (Int)
-            length      - Optional  : character length of bar (Int)
-            fill        - Optional  : bar fill character (Str)
-        """
+    def print_progress_bar(iteration, total, prefix='', suffix='', decimals=1, length=100, fill='█'):
+        """Call in a loop to create terminal progress bar."""
         percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
         filledLength = int(length * iteration // total)
         bar = fill * filledLength + '-' * (length - filledLength)

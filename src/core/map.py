@@ -1,6 +1,7 @@
 #!/usr/bin/env python3.7
 
-"""
+"""Defines Map class.
+
 The copyrights of this software are owned by Duke University.
 Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
@@ -53,10 +54,7 @@ from src.utils import Config, Configurable, Exceptionable, SetupMode
 
 
 class Map(Exceptionable, Configurable):
-    """
-    Required (Config.) JSON's
-        SAMPLE
-    """
+    """Required (Config.) JSON's SAMPLE."""
 
     def __init__(self, exception_config):
         """
@@ -128,8 +126,9 @@ class Map(Exceptionable, Configurable):
             self.throw(136)
 
     def find(self, cassette: str, number: int) -> 'SlideInfo':
-        """
-        Returns first slide that matches search parameters (there should only be one, though).
+        """Returns first slide that matches search parameters (there should
+        only be one, though).
+
         :param cassette: cassette to narrow search
         :param number: number within that cassette (should narrow search to 1 slide)
         :return: the Slide object (note that the list is being indexed into at the end: [0])
@@ -173,12 +172,12 @@ class Map(Exceptionable, Configurable):
     # %% utility
     @staticmethod
     def clean_file_names():
-        """
-        Jake Cariello
-        July 24, 2019
-        Utility method for cleaning file names.
-        It is not dynamic or system-independent at the time because it is a specific thing that I required.
-        If it becomes clear that this is required for core functionality, I will rewrite the method.
+        """Jake Cariello July 24, 2019 Utility method for cleaning file names.
+
+        It is not dynamic or system-independent at the time because it
+        is a specific thing that I required. If it becomes clear that
+        this is required for core functionality, I will rewrite the
+        method.
         """
         warnings.warn('METHOD clean_file_names IS NOT SYSTEM-INDEPENDENT!')
 

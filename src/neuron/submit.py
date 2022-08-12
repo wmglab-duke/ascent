@@ -1,9 +1,11 @@
 #!/usr/bin/env python3.7
 
-"""
+"""Submits NEURON fiber simulations.
+
 The copyrights of this software are owned by Duke University.
-Please refer to the LICENSE and README.md files for licensing instructions.
-The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
+Please refer to the LICENSE and README.md files for licensing
+instructions. The source code can be found on the following GitHub
+repository: https://github.com/wmglab-duke/ascent
 """
 
 import argparse
@@ -148,8 +150,8 @@ class WarnOnlyOnce:
 
 
 def print_progress_bar(iteration, total, prefix='', suffix='', decimals=1, length=100, fill='█'):
-    """Print or update a progress bar in the terminal.
-    Call in a loop to create a terminal progress bar.
+    """Print or update a progress bar in the terminal. Call in a loop to create
+    a terminal progress bar.
 
     :param iteration: The current iteration (current/total)
     :param total: The total number of iterations
@@ -169,7 +171,9 @@ def print_progress_bar(iteration, total, prefix='', suffix='', decimals=1, lengt
 
 
 def load(config_path: str):
-    """Loads in json data and returns to user, assuming it has already been validated.
+    """Loads in json data and returns to user, assuming it has already been
+    validated.
+
     :param config_path: the string path to load up
     :return: json data (usually dict or list)
     """
@@ -179,6 +183,7 @@ def load(config_path: str):
 
 def ensure_dir(directory):
     """Ensure that a directory exists. If it does not, create it.
+
     :param directory: the string path to the directory
     """
     if not os.path.exists(directory):
@@ -187,6 +192,7 @@ def ensure_dir(directory):
 
 def auto_compile(override: bool = False):
     """Compile NEURON files if they have not been compiled yet.
+
     :param override: if True, compile regardless of whether the files have already been compiled
     :return: True if ran compilation, False if not
     """
@@ -211,6 +217,7 @@ def auto_compile(override: bool = False):
 
 def get_diameter(my_inner_fiber_diam_key, my_inner_ind, my_fiber_ind):
     """Get the diameter of the fiber from the inner fiber diameter key.
+
     :param my_inner_fiber_diam_key: the key for the fiber diameters
     :param my_inner_ind: the index of the inner
     :param my_fiber_ind: the index of the fiber within the inner
@@ -230,6 +237,7 @@ def get_diameter(my_inner_fiber_diam_key, my_inner_ind, my_fiber_ind):
 
 def get_deltaz(fiber_model, diameter):
     """Get the deltaz (node spacing) for a given fiber model and diameter.
+
     :param fiber_model: the string name of the fiber model
     :param diameter: the diameter of the fiber in microns
     :return: the deltaz for this fiber, the neuron flag for the fiber model
@@ -264,6 +272,7 @@ def get_deltaz(fiber_model, diameter):
 
 def get_thresh_bounds(sim_dir: str, sim_name: str, inner_ind: int):
     """Get threshold bounds (upper and lower) for this simulation.
+
     :param sim_dir: the string path to the simulation directory
     :param sim_name: the string name of the n_sim
     :param inner_ind: the index of the inner this fiber is in
@@ -352,6 +361,7 @@ def make_task(
     axonnodes: int,
 ):
     """Create shell script used to run a fiber simulation.
+
     :param my_os: the string name of the operating system
     :param start_p: the string path to the start_dir
     :param sim_p: the string path to the sim_dir
@@ -416,6 +426,7 @@ def make_task(
 
 def local_submit(fiber_data: dict):
     """Submit a fiber simulation to the local machine.
+
     :param fiber_data: the dictionary of fiber data for suvbmission
     """
     a = fiber_data["job_number"]
@@ -432,6 +443,7 @@ def local_submit(fiber_data: dict):
 
 def submit_fibers(submission_context, submission_data):
     """Submit fiber simulations, either locally or to a cluster.
+
     :param submission_context: the string name of the submission_context
     :param submission_data: the dictionary of data for fiber submission
     """
@@ -495,7 +507,9 @@ def submit_fibers(submission_context, submission_data):
 
 
 def cluster_submit(runfibers, sim_name, sim_path, start_path_base):
-    """Submit fiber simulations on a slurm-based high performance computer cluster.
+    """Submit fiber simulations on a slurm-based high performance computer
+    cluster.
+
     :param runfibers: the list of fiber data for submission
     :param sim_name: the string name of the n_sim
     :param sim_path: the string path to the simulation
@@ -550,6 +564,7 @@ def cluster_submit(runfibers, sim_name, sim_path, start_path_base):
 
 def make_fiber_tasks(submission_list, submission_context):
     """Create all shell scripts for fiber submission tasks.
+
     :param submission_list: the list of fibers to be submitted
     """
     # assign appropriate configuration data
@@ -577,7 +592,7 @@ def make_fiber_tasks(submission_list, submission_context):
         # ensure blank.hoc exists
         blank_path = os.path.join(sim_path, 'blank.hoc')
         if not os.path.exists(blank_path):
-            with open(blank_path, 'w') as f:
+            with open(blank_path, 'w'):
                 pass
 
         # load JSON file with binary search amplitudes
@@ -635,7 +650,9 @@ def make_fiber_tasks(submission_list, submission_context):
 
 
 def make_run_sub_list(run_number: int):
-    """Create a list of all fiber simulations to be run. Skips fiber sims with existing output.
+    """Create a list of all fiber simulations to be run. Skips fiber sims with
+    existing output.
+
     :param run_number: the number of the run
     :return: a dict of all fiber simulations to be run
     """
@@ -703,6 +720,7 @@ def make_run_sub_list(run_number: int):
 
 def confirm_submission(n_fibers, rundata, submission_context):
     """Confirm that the user wants to submit the simulations.
+
     :param n_fibers: the number of fibers to be run
     :param rundata: the run data (JSON config)
     :param submission_context: the submission context (e.g. cluster or local)
@@ -729,6 +747,7 @@ def confirm_submission(n_fibers, rundata, submission_context):
 
 def get_submission_list(run_inds):
     """Get the list of simulations to be submitte for all runs.
+
     :param run_inds: the list of run indices
     :return: summary of runs, a list of all simulations to be submitted
     """
@@ -770,6 +789,7 @@ def get_submission_list(run_inds):
 
 def pre_submit_setup():
     """Setup for submitting simulations.
+
     :return: the list of runs to be submitted, submission_context
     """
     # validate inputs

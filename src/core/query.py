@@ -1,9 +1,11 @@
 #!/usr/bin/env python3.7
 
-"""The copyrights of this software are owned by Duke University.
+"""Defines Query class.
 
-Please refer to the LICENSE and README.md files for licensing instructions.
-The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
+The copyrights of this software are owned by Duke University.
+Please refer to the LICENSE and README.md files for licensing
+instructions. The source code can be found on the following GitHub
+repository: https://github.com/wmglab-duke/ascent
 """
 
 import os
@@ -295,10 +297,6 @@ class Query(Exceptionable, Configurable, Saveable):
         :return: pandas DataFrame of thresholds.
         """
         # quick helper class for storing data values
-        class DataPoint:
-            def __init__(self, value: float, error: float = None):
-                self.value = value
-                self.error = error
 
         # validation
         if self._result is None:

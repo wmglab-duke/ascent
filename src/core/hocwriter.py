@@ -1,9 +1,11 @@
 #!/usr/bin/env python3.7
 
-"""
-The copyrights of this software are owned by Duke University.
-Please refer to the LICENSE and README.md files for licensing instructions.
-The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
+"""Defines HOCWriter class.
+
+The copyrights of this software are owned by Duke University. Please
+refer to the LICENSE and README.md files for licensing instructions. The
+source code can be found on the following GitHub repository:
+https://github.com/wmglab-duke/ascent
 """
 
 
@@ -50,6 +52,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
 
     def build_hoc(self, n_tsteps):
         """Writes file launch.hoc for launching NEURON simulations.
+
         :param n_tsteps: Number of time steps in simulation.
         :return: None
         """
