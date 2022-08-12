@@ -132,7 +132,8 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                 "1:Sundt Model "
                 "2:Tigerholm model "
                 "3:Rattay model "
-                "4:Schild model "
+                "4:Schild97 model "
+                "5:Schild94 model "
                 "for c fiber built from cFiberBuilder.hoc\n".format(channels)
             )
             file_object.write("len                           = axonnodes*deltaz\n")
