@@ -1,4 +1,10 @@
-"""Defines plotting functions used for analyzing data."""
+"""Defines plotting functions used for analyzing data.
+
+The copyrights of this software are owned by Duke University. Please
+refer to the LICENSE and README.md files for licensing instructions. The
+source code can be found on the following GitHub repository:
+https://github.com/wmglab-duke/ascent
+"""
 import json
 import os
 import warnings
@@ -88,8 +94,8 @@ class _HeatmapPlotter:
             * ``'inners_on_off'``: Plot each inner as filled in. If the mean inner threshold is above cutoff_thresh,
               suprathresh_color is used. Otherwise, subthresh_color is used.
 
-        :param sample_object: Sample object to use for plotting.
-        :param sim_object: Simulation object to use for plotting.
+        :param sample_object: Sample object to use for plotting. Automatically loaded if not provided.
+        :param sim_object: Simulation object to use for plotting. Automatically loaded if not provided.
         :param missing_color: Color to use for missing data.
         :param suprathresh_color: Color to use for suprathresh data.
         :param subthresh_color: Color to use for subthresh data.
@@ -153,7 +159,8 @@ class _HeatmapPlotter:
         return ax
 
     def plot_inners_fibers(self, ax):
-        """Plot inners and fibers using the colors determined in determine_colors().
+        """Plot inners and fibers using the colors determined in
+        determine_colors().
 
         :param ax: axis to plot on
         """
@@ -294,7 +301,7 @@ class _HeatmapPlotter:
             model_config = json.load(f)
         # add any cuff rotation
         theta += np.deg2rad(model_config.get('cuff').get('rotate').get('add_ang'))
-        plt.scatter(r * 1.2 * np.cos(theta), r * 1.2 * np.sin(theta), 300, 'red', 'o')
+        ax.scatter(r * 1.2 * np.cos(theta), r * 1.2 * np.sin(theta), 300, 'red', 'o')
 
 
 def ap_loctime(

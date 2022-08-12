@@ -1,9 +1,11 @@
 #!/usr/bin/env python3.7
 
-"""
-The copyrights of this software are owned by Duke University.
-Please refer to the LICENSE and README.md files for licensing instructions.
-The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
+"""Defines HOCWriter class.
+
+The copyrights of this software are owned by Duke University. Please
+refer to the LICENSE and README.md files for licensing instructions. The
+source code can be found on the following GitHub repository:
+https://github.com/wmglab-duke/ascent
 """
 
 
@@ -50,6 +52,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
 
     def build_hoc(self, n_tsteps):
         """Writes file launch.hoc for launching NEURON simulations.
+
         :param n_tsteps: Number of time steps in simulation.
         :return: None
         """
@@ -132,7 +135,8 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                 "1:Sundt Model "
                 "2:Tigerholm model "
                 "3:Rattay model "
-                "4:Schild model "
+                "4:Schild97 model "
+                "5:Schild94 model "
                 "for c fiber built from cFiberBuilder.hoc\n".format(channels)
             )
             file_object.write("len                           = axonnodes*deltaz\n")

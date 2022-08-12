@@ -1,9 +1,11 @@
 #!/usr/bin/env python3.7
 
-"""
+"""Defines Trace class.
+
 The copyrights of this software are owned by Duke University.
-Please refer to the LICENSE and README.md files for licensing instructions.
-The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
+Please refer to the LICENSE and README.md files for licensing
+instructions. The source code can be found on the following GitHub
+repository: https://github.com/wmglab-duke/ascent
 """
 
 
@@ -24,9 +26,10 @@ from src.utils import Config, DownSampleMode, Exceptionable, SetupMode, WriteMod
 
 
 class Trace(Exceptionable):
-    """
-    Core object for manipulating points/traces of nerve sections. Trace is the fundamental building block for nerve
-    geometries (fascicles, nerve, endoneurium, perineurium)
+    """Core object for manipulating points/traces of nerve sections.
+
+    Trace is the fundamental building block for nerve geometries
+    (fascicles, nerve, endoneurium, perineurium)
     """
 
     def __init__(self, points, exception_config):
@@ -75,8 +78,8 @@ class Trace(Exceptionable):
         self.__update()
 
     def offset(self, fit: dict = None, distance: float = None):
-        """
-        NOT AN AFFINE TRANSFORMATION
+        """NOT AN AFFINE TRANSFORMATION.
+
         :param fit: used to scale up by a factor if you are offsetting the boundary by a linear fit
         :param distance: used to scale by a discrete distance
         """
@@ -108,8 +111,8 @@ class Trace(Exceptionable):
         pco.Clear()
 
     def smooth(self, distance, area_compensation=True):
-        """
-        Smooths a contour using a dilation followed by erosion
+        """Smooths a contour using a dilation followed by erosion.
+
         :param distance: amount to use for dilation and erosion, in whatever units the trace is using
         """
         if distance < 0:
@@ -183,9 +186,10 @@ class Trace(Exceptionable):
         self.__update()
 
     def down_sample(self, mode: DownSampleMode, step: int):
-        """
-        Simple down sample method to remove points at even intervals.
-        Will start indices on "step-th" element (i.e. if step is 4, first selected element at index 3)
+        """Simple down sample method to remove points at even intervals. Will
+        start indices on "step-th" element (i.e. if step is 4, first selected
+        element at index 3)
+
         :param mode: decide whether to KEEP only the points on steps, or REMOVE only those points
         :param step: spacing between each selected point (both keep and remove)
         """
@@ -334,10 +338,8 @@ class Trace(Exceptionable):
 
     # %% contour-dependent (cv2)
     def contour(self) -> np.ndarray:
-        """
-        Builds a "fake" contour so that cv2 can analyze it (independent of the image)
-        Use for to_circle and to_ellipse
-        """
+        """Builds a "fake" contour so that cv2 can analyze it (independent of
+        the image) Use for to_circle and to_ellipse."""
         if self.__contour is None:
             # check points all have same z-value (MAY BE CHANGED?)
             if len(set(self.__int_points[:, 2])) != 1:
@@ -456,8 +458,8 @@ class Trace(Exceptionable):
         plt.plot(*self.centroid(), plot_format)
 
     def write(self, mode: WriteMode, path: str):
-        """
-        Write Trace data (points, elements, etc.) to file
+        """Write Trace data (points, elements, etc.) to file.
+
         :param mode: choice of write implementations - sectionwise file for COMSOL
         :param path: string path with file name of file WITHOUT extension (it is derived from mode)
         :return: string full path including extension that was written to
@@ -667,47 +669,6 @@ class Trace(Exceptionable):
     # Returns twice the signed area of the triangle defined by (x0, y0), (x1, y1), (x2, y2).
     def _cross_product(self, x0, y0, x1, y1, x2, y2):
         return (x1 - x0) * (y2 - y0) - (y1 - y0) * (x2 - x0)
-
-    def smallest_enclosing_circle_naive(self) -> Tuple[float, float, float]:
-        # Returns the smallest enclosing circle in O(n^4) time using the naive algorithm.
-
-        # Degenerate cases
-        if len(self.points) == 0:
-            return None
-        elif len(self.points) == 1:
-            return self.points[0][0], self.points[0][1], 0
-
-        # Try all unique pairs
-        result = None
-        for i in range(len(self.points)):
-            p = self.points[i]
-            for j in range(i + 1, len(self.points)):
-                q = self.points[j]
-                c = self._make_diameter(p, q)
-                if (result is None or c[2] < result[2]) and all(self.is_in_circle(c, r) for r in self.points):
-                    result = c
-        if result is not None:
-            return result  # This optimization is not mathematically proven
-
-        # Try all unique triples
-        for i in range(len(self.points)):
-            p = self.points[i]
-            for j in range(i + 1, len(self.points)):
-                q = self.points[j]
-                for k in range(j + 1, len(self.points)):
-                    r = self.points[k]
-                    c = self._make_circumcircle(p, q, r)
-                    if (
-                        c is not None
-                        and (result is None or c[2] < result[2])
-                        and all(self.is_in_circle(c, s) for s in self.points)
-                    ):
-                        result = c
-
-        if result is None:
-            raise AssertionError()
-
-        return result
 
     # %% private utility methods
     def __update(self):
