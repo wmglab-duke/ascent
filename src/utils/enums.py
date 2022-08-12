@@ -243,7 +243,8 @@ class UnmyelinatedFiberType(ASCENTEnum, Enum):
     SUNDT = 0
     TIGERHOLM = 1
     RATTAY = 2
-    SCHILD = 3
+    SCHILD97 = 3
+    SCHILD9 = 4
 
 
 # %% Waveforms
