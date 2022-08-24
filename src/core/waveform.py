@@ -27,10 +27,7 @@ class Waveform(Exceptionable, Configurable, Saveable):
     """Required (Config.) JSON's: MODEL SIM."""
 
     def __init__(self, exceptions_config: list):
-        """
-        :param exceptions_config: preloaded exceptions.json data
-        """
-
+        """:param exceptions_config: preloaded exceptions.json data."""
         # set up superclasses
         Configurable.__init__(self)
         Exceptionable.__init__(self, SetupMode.OLD, exceptions_config)
@@ -42,7 +39,7 @@ class Waveform(Exceptionable, Configurable, Saveable):
         self.mode_str = None
 
     def init_post_config(self):
-
+        """Initialize instance variables after configuration is loaded."""
         if any([config.value not in self.configs.keys() for config in (Config.MODEL, Config.SIM)]):
             self.throw(72)
 
@@ -67,22 +64,18 @@ class Waveform(Exceptionable, Configurable, Saveable):
         return self
 
     def validate_times(self):
-        """Checks to make sure that the waveform T_ON < T_START < T_OFF <
-        T_STOP."""
-
+        """Check to make sure that the waveform T_ON < T_START < T_OFF < T_STOP."""
         time_params = [self.start, self.on, self.off, self.stop]
         if sorted(time_params) != time_params:
             self.throw(32)
 
     def rho_weerasuriya(self, f=None):
-        """Calculation of perineurium impedance using results from Weerasuriya
-        1984 (frog).
+        """Calculate of perineurium impedance using results from Weerasuriya 1984 (frog).
 
-        Weerasuriya discussion
-        indicates that Models A & B are better candidates than Models C & D, so we only consider the former pair.
+        Weerasuriya discussion indicates that Models A & B are better candidates than Models C & D, so we only
+        consider the former pair.
         :return: rho [ohm-m].
         """
-
         temp = self.search(Config.MODEL, "temperature")  # [degC] 37 for mammalian
 
         # f is in [Hz]
@@ -172,10 +165,7 @@ class Waveform(Exceptionable, Configurable, Saveable):
         return rho  # [ohm-m]
 
     def generate(self):
-        """
-        :return: list of 1d ndarrays, waveforms as specified by configuration
-        """
-
+        """:return: list of 1d ndarrays, waveforms as specified by configuration."""
         # helper function to pad the start and end of signal with zeroes
         def pad(
             input_wave: np.ndarray,
@@ -183,7 +173,8 @@ class Waveform(Exceptionable, Configurable, Saveable):
             start_to_on: float,
             off_to_stop: float,
         ) -> np.ndarray:
-            """
+            """Pad the start and end of signal with zeroes.
+
             :param input_wave: wave (1d np.ndarray) to pad
             :param time_step: effective dt
             :param start_to_on: beginning pad length
@@ -236,6 +227,14 @@ class Waveform(Exceptionable, Configurable, Saveable):
         return self
 
     def generate_biphasic_uneven(self, frequency, pad, path_to_specific_parameters, t_signal):
+        """Generate a biphasic pulse train with uneven pulse widths.
+
+        :param frequency:
+        :param pad:
+        :param path_to_specific_parameters:
+        :param t_signal:
+        :return:
+        """
         pw1 = self.search(Config.SIM, *path_to_specific_parameters, 'pulse_width_1')
         pw2 = self.search(Config.SIM, *path_to_specific_parameters, 'pulse_width_2')
         if self.dt > pw1:
@@ -267,10 +266,7 @@ class Waveform(Exceptionable, Configurable, Saveable):
         )
         padded_positive = pad(positive_wave, self.dt, self.on - self.start, self.stop - self.off)
         padded_negative = pad(
-            negative_wave,
-            self.dt,
-            self.on - self.start + pw1 + inter_phase,
-            self.stop - self.off,
+            negative_wave, self.dt, self.on - self.start + pw1 + inter_phase - self.dt, self.stop - self.off + self.dt
         )
         # q-balanced
         amp1 = 1
@@ -279,6 +275,14 @@ class Waveform(Exceptionable, Configurable, Saveable):
         return wave
 
     def generate_monophasic(self, frequency, pad, path_to_specific_parameters, t_signal):
+        """Generate a monophasic pulse train.
+
+        :param frequency:
+        :param pad:
+        :param path_to_specific_parameters:
+        :param t_signal:
+        :return:
+        """
         pw = self.search(Config.SIM, *path_to_specific_parameters, 'pulse_width')
         if self.dt > pw:
             self.throw(84)
@@ -292,6 +296,13 @@ class Waveform(Exceptionable, Configurable, Saveable):
         return wave
 
     def generate_sinusoid(self, frequency, pad, t_signal):
+        """Generate a sinusoid.
+
+        :param frequency:
+        :param pad:
+        :param t_signal:
+        :return:
+        """
         if self.dt > 1.0 / frequency:
             self.throw(85)
         wave = np.sin(2 * np.pi * frequency * t_signal)
@@ -300,6 +311,13 @@ class Waveform(Exceptionable, Configurable, Saveable):
         return wave
 
     def generate_biphasic_fullduty(self, frequency, pad, t_signal):
+        """Generate a biphasic pulse train with full duty cycle.
+
+        :param frequency:
+        :param pad:
+        :param t_signal:
+        :return:
+        """
         if self.dt > 1.0 / frequency:
             self.throw(86)
         wave = sg.square(2 * np.pi * frequency * t_signal)
@@ -308,6 +326,7 @@ class Waveform(Exceptionable, Configurable, Saveable):
         return wave
 
     def generate_biphasic_basic(self, frequency, pad, path_to_specific_parameters, t_signal):
+        """Generate a biphasic pulse train with basic parameters."""
         pw = self.search(Config.SIM, *path_to_specific_parameters, 'pulse_width')
         if self.dt > pw:
             self.throw(87)
@@ -336,15 +355,13 @@ class Waveform(Exceptionable, Configurable, Saveable):
         )
         padded_positive = pad(positive_wave, self.dt, self.on - self.start, self.stop - self.off)
         padded_negative = pad(
-            negative_wave,
-            self.dt,
-            self.on - self.start + pw + inter_phase,
-            self.stop - self.off,
+            negative_wave, self.dt, self.on - self.start + pw + inter_phase - self.dt, self.stop - self.off + self.dt
         )
         wave = padded_positive + padded_negative
         return wave
 
     def generate_explicit(self, pad):
+        """Generate an explicit waveform."""
         path_to_wave = os.path.join(
             'config',
             'user',
@@ -361,24 +378,19 @@ class Waveform(Exceptionable, Configurable, Saveable):
         dt_explicit = explicit_wave.pop(0)
         dt_atol = self.search(Config.SIM, 'waveform', WaveformMode.EXPLICIT.name, 'dt_atol')
         if not np.isclose(dt_explicit, self.dt, atol=dt_atol):
+            waveform_index = self.search(
+                Config.SIM,
+                'waveform',
+                WaveformMode.EXPLICIT.name,
+                'index',
+            )
             warning_str = (
-                '\n Timestep provided: {} (first line in waveform file in config/user/waveforms/{}.dat'
-                ') \n does not match "dt" in "global" Sim parameters for time discretization in '
-                'NEURON: {} \n based on set "dt_atol" parameter in Sim: {}. \n Altering your input '
+                f'\n Timestep provided: {dt_explicit} (first line in waveform file in '
+                f'config/user/waveforms/{waveform_index}.dat) \n does not match "dt" in "global" '
+                f'Sim parameters for time discretization in '
+                f'NEURON: {self.dt} \n based on set "dt_atol" parameter in Sim: {dt_atol}. \n Altering your input '
                 'waveform to fit NEURON time '
-                'discretization.'.format(
-                    dt_explicit,
-                    str(
-                        self.search(
-                            Config.SIM,
-                            'waveform',
-                            WaveformMode.EXPLICIT.name,
-                            'index',
-                        )
-                    ),
-                    self.dt,
-                    dt_atol,
-                )
+                'discretization.'
             )
             warnings.warn(warning_str)
 
@@ -410,7 +422,13 @@ class Waveform(Exceptionable, Configurable, Saveable):
         return wave
 
     def plot(self, ax: plt.Axes = None, final: bool = False, path: str = None):
+        """Plot the waveform.
 
+        :param ax:
+        :param final:
+        :param path:
+        :return:
+        """
         fig = plt.figure()
 
         if ax is None:
@@ -430,7 +448,8 @@ class Waveform(Exceptionable, Configurable, Saveable):
                 plt.close(fig)
 
     def write(self, mode: WriteMode, path: str):
-        """
+        """Write the waveform to a file.
+
         :param mode: usually DATA
         :param path:
         :return:
@@ -456,6 +475,11 @@ class Waveform(Exceptionable, Configurable, Saveable):
 
 
 def precision_and_scale(x):
+    """Return the number of digits and the scale of the number.
+
+    :param x:
+    :return:
+    """
     # https://stackoverflow.com/questions/3018758/determine-precision-and-scale-of-particular-number-in-python
     max_digits = sys.float_info.dig
     int_part = int(abs(x))
