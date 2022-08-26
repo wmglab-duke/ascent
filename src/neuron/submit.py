@@ -26,7 +26,7 @@ import pandas as pd
 
 # %%Set up parser and top level args
 class listAction(argparse.Action):
-    def __call__(self, parser, values, option_string=None):
+    def __call__(self, parser, values, option_string=None, **kwargs):
         run_path = 'runs'
         jsons = [file for file in os.listdir(run_path) if file.endswith('.json')]
         data = []

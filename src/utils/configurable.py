@@ -1,7 +1,7 @@
 #!/usr/bin/env python3.7
 
-"""
-The copyrights of this software are owned by Duke University.
+"""The copyrights of this software are owned by Duke University.
+
 Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
@@ -39,13 +39,16 @@ Description:
 
 
 class Configurable:
+    """Handles loading and writing of JSON config files."""
+
     def __init__(
         self,
         mode: SetupMode = None,
         key: Config = None,
         config: Union[str, dict, list] = None,
     ):
-        """
+        """Initilize the configurable class.
+
         :param mode: SetupMode, determines if loads new JSON or uses old data
         :param key: Config (choice of configurations from discrete enumeration);
             choice of SAMPLE, MODEL, SIM (these are the big ones), EXCEPTIONS, or any other added configs
@@ -59,13 +62,13 @@ class Configurable:
             self.add(mode, key, config)
 
     def add(self, mode: SetupMode, key: Config, config: Union[str, dict]):
-        """
+        """Add a config to self.configs.
+
         :param mode: OLD (data already loaded in the form of a dict) or NEW (data is in a file, loading from path)
         :param key: Config (choice of configurations from discrete enumeration)
         :param config: in case of OLD mode (this is THE dict), in case of NEW mode (this is the path in form of string)
         :return: the dict
         """
-
         # either load up new data or used old, passed in data
         if mode == SetupMode.NEW:
             self.validate_path(config)
@@ -77,16 +80,16 @@ class Configurable:
         return self
 
     def remove(self, key: Config) -> dict:
-        """
+        """Remove a config from self.configs.
+
         :param key: Config (choice of configurations from discrete enumeration)
         :return: configs with the passed in key dict removed. If the key did not exist, None is returned.
-        https://stackoverflow.com/questions/1990802/in-python-what-does-dict-popa-b-mean
         """
         return self.configs.pop(key.value, None)
 
     def search(self, key: Config, *args, optional: bool = False):
-        """
-        Get an item using "path" of args in the json config.
+        """Get an item using "path" of args in the json config.
+
         :param optional: true if the value can have empty value (i.e., []), default to NOT optional
         :param key: Config (choice of configurations from discrete enumeration)
         :param args: list "path" to item within json (str or int)
@@ -102,8 +105,8 @@ class Configurable:
             else:
                 raise Exception(
                     '\n\tcode:\t-2\n'
-                    '\ttext:\tInvalid search parameter:\tTYPE: {}\tVALUE: {}\n'
-                    '\tsource:\tconfigurable.py'.format(type(arg), arg)
+                    f'\ttext:\tInvalid search parameter:\tTYPE: {type(arg)}\tVALUE: {arg}\n'
+                    '\tsource:\tconfigurable.py'
                 )
 
             if result is None:
@@ -112,27 +115,24 @@ class Configurable:
                 else:
                     raise Exception(
                         '\n\tcode:\t-5\n'
-                        '\ttext:\tValue {} not defined in {}\n'
-                        '\tsource:\tsrc.utils.Configurable.search'.format(
-                            ''.join([arg + '->' for arg in args[:-1]]) + args[-1], key
-                        )
+                        f'\ttext:\tValue {"".join([arg + "->" for arg in args[:-1]]) + args[-1]} not defined in {key}\n'
+                        '\tsource:\tsrc.utils.Configurable.search'
                     )
 
         if isinstance(result, list) and len(result) < 1 and not optional:
             raise Exception(
                 '\n\tcode:\t-6\n'
-                '\ttext:\tValue for {} is empty in {}\n'
-                '\tsource:\tsrc.utils.Configurable.search'.format(
-                    ''.join([arg + '->' for arg in args[:-1]]) + args[-1], key
-                )
+                f'\ttext:\tValue for {"".join([arg + "->" for arg in args[:-1]]) + args[-1]} is empty in {key}\n'
+                '\tsource:\tsrc.utils.Configurable.search'
             )
 
         return result
 
     def path(self, key: Config, *args, is_dir: bool = False, is_absolute: bool = False):
-        """
-        Build a path for an item specified in same style as self.search().
+        """Build a path for an item specified in same style as self.search().
+
         Expects the item returned by self.search(key, *args) to be a list.
+
         :param is_absolute: flag to make the path absolute
         :param is_dir: if true, will add trailing slash (system nonspecific) to path
         :param key: Config (choice of configurations from discrete enumeration)
@@ -151,8 +151,8 @@ class Configurable:
 
     @staticmethod
     def load(config_path: str):
-        """
-        Loads in json data and returns to user, assuming it has already been validated.
+        """Loads in json data and returns to user, assuming it has already been validated.
+
         :param config_path: the string path to load
         :return: json data (dict or list)
         """
@@ -160,12 +160,14 @@ class Configurable:
             return json.load(handle)
 
     def search_mode(self, mode: Type[Enum], key: Config, optional: bool = False):
-        """
+        """Search for a single mode.
+
         :param mode: an Enum mode that is being searched. it MUST have variable config, which is the name
                      to search for in the X.json file
+        :param key: Config type to look in
+        :param optional: if False, will raise an exception if the mode is not found
         :return: the Enum version of the mode that is specified by the config
         """
-
         return self.search_multi_mode(key=key, mode=mode, count=1, optional=optional)[0]
 
     def search_multi_mode(
@@ -176,14 +178,15 @@ class Configurable:
         count: int = None,
         optional: bool = False,
     ) -> list:
-        """
-        :param key: Config (choice of configurations from discrete enumeration)
-        :param mode: Option for pipeline functionality (see Enums)
-        :param modes:
-        :param count:
-        :return:
-        """
+        """Search for multiple modes.
 
+        :param key: Config (choice of configurations from discrete enumeration)
+        :param mode: mode to search for
+        :param modes: modes to search for
+        :param count: count of results
+        :param optional: if false, error on missing mode
+        :return: list of modes found
+        """
         list_results = []
 
         if mode is not None:
@@ -211,15 +214,16 @@ class Configurable:
             elif len(list_results) != count:
                 raise Exception(
                     '\n\tcode:\t-3\n'
-                    '\ttext:\t{} matches found when {} were expected.\n'
-                    '\tsource:\tsrc.utils.Configurable.search_multi_mode'.format(len(list_results), count)
+                    f'\ttext:\t{len(list_results)} matches found when {count} were expected.\n'
+                    '\tsource:\tsrc.utils.Configurable.search_multi_mode'
                 )
 
         return list_results
 
     @staticmethod
     def validate_path(config_path: str):
-        """
+        """Validate the config file path.
+
         :param config_path: path to config we will load, this makes sure it is a JSON
         :return:
         """

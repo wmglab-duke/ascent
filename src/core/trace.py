@@ -384,7 +384,7 @@ class Trace(Exceptionable):
         sets as circle radius)
         """
         # ((centroid), (axes), angle) ... note angle is in degrees
-        ((u, v), (a, b), angle) = self.ellipse()
+        ((u, v), (_, _), angle) = self.ellipse()
 
         # find average radius of circle
         # casting to float is just so PyCharm stops yelling at me (I think it should already be a float64?)

@@ -159,8 +159,7 @@ class _HeatmapPlotter:
         return ax
 
     def plot_inners_fibers(self, ax):
-        """Plot inners and fibers using the colors determined in
-        determine_colors().
+        """Plot inners and fibers using the colors determined in determine_colors().
 
         :param ax: axis to plot on
         """

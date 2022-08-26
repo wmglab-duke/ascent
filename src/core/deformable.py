@@ -1,6 +1,6 @@
 #!/usr/bin/env python3.7
 
-"""Defines Deformable class.
+"""Defines the Deformable class.
 
 The copyrights of this software are owned by Duke University.
 Please refer to the LICENSE and README.md files for licensing
@@ -24,6 +24,8 @@ from src.utils import Config, Exceptionable, ReshapeNerveMode, SetupMode
 
 
 class Deformable(Exceptionable):
+    """Deforms a nerve cross section."""
+
     def __init__(
         self,
         exception_config: list,
@@ -31,15 +33,14 @@ class Deformable(Exceptionable):
         boundary_end: Trace,
         contents: List[Trace],
     ):
-        """
+        """Initialize the class.
+
         :param exception_config: pre-loaded data
         :param boundary_start: original start trace
         :param boundary_end: end trace
         :param contents: list of traces assumed to be within boundary start, not required to be within boundary end.
-        Assumed boundary end will be able to hold all contents.
-
+           Assumes boundary end will be able to hold all contents.
         """
-
         # init superclass
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
 
@@ -55,6 +56,7 @@ class Deformable(Exceptionable):
         self.end_rotations: List[float] = []
 
     def setup_pygame_render(self):
+        """Initialize the debug render mediated by pygame."""
         bounds = self.start.polygon().bounds
         width = int(1 * (bounds[2] + bounds[0]))
         height = int(1 * (bounds[3] + bounds[1]))
@@ -71,6 +73,16 @@ class Deformable(Exceptionable):
         return options, drawsurf, screen, im_ratio
 
     def draw_pygame(self, drawsurf, space, options, screen, im_ratio, morph_index, morph_steps):
+        """Draws the current morphology state onto the pygame render surface.
+
+        :param drawsurf: pygame surface to draw on
+        :param space: pymunk space to draw from
+        :param options: pygame draw options
+        :param screen: pygame screen to draw on
+        :param im_ratio: image ratio
+        :param morph_index: current morph index
+        :param morph_steps: list of morph steps
+        """
         for event in pygame.event.get():
             if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
                 sys.exit()
@@ -91,7 +103,12 @@ class Deformable(Exceptionable):
         pygame.display.set_caption(f'nerve morph step {morph_index} of {len(morph_steps)}')
 
     def deform_initialize(self, minimum_distance, morph_count, ratio):
-        """Set up the necessary variables for deformation."""
+        """Set up the necessary variables for deformation.
+
+        :param minimum_distance: minimum distance between fascicles.
+        :param morph_count: number of morph steps to use.
+        :param ratio: deform ratio.
+        """
         contents = [trace.deepcopy() for trace in self.contents]
 
         # offset all the traces to provide for an effective minimum distance for original fascicles
@@ -124,16 +141,16 @@ class Deformable(Exceptionable):
         minimum_distance: float = 0.0,
         ratio: float = None,
     ) -> Tuple[List[tuple], List[float]]:
-        """
-        :param ratio:
+        """Run the main deformation algorithm.
+
         :param morph_count: number of incremental traces including the start and end of boundary
         :param morph_index_step: steps between loops of updating outer boundary, i.e. 1 is every loop,
-        2 is every other loop...
+           2 is every other loop...
         :param render: True if you care to see it happen... makes this method WAY slower
         :param minimum_distance: separation between original inputs
+        :param ratio: deform ratio
         :return: tuple of a list of total movement vectors and total angle rotated for each fascicle
         """
-
         # copy the "contents" so multiple deformations are possible
 
         def add_boundary(space, morph_step):
@@ -198,7 +215,14 @@ class Deformable(Exceptionable):
         count: int = 2,
         deform_ratio: float = 1.0,
     ) -> List[Trace]:
+        """Calculate morph steps between two traces.
 
+        :param start: start trace
+        :param end: end trace
+        :param count: number of morph steps
+        :param deform_ratio: deform ratio
+        :return: list of morph steps
+        """
         # Find point along old_nerve that is closest to major axis of best fit ellipse
         (x, y), (a, b), angle = start.ellipse()  # returns degrees
 
@@ -260,6 +284,12 @@ class Deformable(Exceptionable):
 
     @staticmethod
     def from_slide(slide: Slide, mode: ReshapeNerveMode, sep_nerve: float = None) -> 'Deformable':
+        """Create a Deformable object from a Slide object.
+
+        :param slide: Slide object
+        :param mode: ReshapeNerveMode enum
+        :param sep_nerve: separation between nerve and fascicles
+        """
         # method in slide will pull out each trace and add to a list of contents, go through traces and build polygons
 
         # exception configuration data
@@ -289,7 +319,16 @@ class Deformable(Exceptionable):
 
     @staticmethod
     def print_progress_bar(iteration, total, prefix='', suffix='', decimals=1, length=100, fill='█'):
-        """Call in a loop to create terminal progress bar."""
+        """Create and update a terminal progress bar.
+
+        :param iteration: current iteration
+        :param total: total iterations
+        :param prefix: prefix string
+        :param suffix: suffix string
+        :param decimals: number of decimals in percent complete
+        :param length: character length of bar
+        :param fill: bar fill character
+        """
         percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
         filledLength = int(length * iteration // total)
         bar = fill * filledLength + '-' * (length - filledLength)

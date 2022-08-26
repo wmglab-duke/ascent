@@ -593,12 +593,12 @@ class Simulation(Exceptionable, Configurable, Saveable):
             for subfolder_name in subfolder_names:
                 os.makedirs(os.path.join(sim_dir, "data", subfolder_name))
 
-    def _copy_and_edit_config(self, config, key, set, copy_again=True):
+    def _copy_and_edit_config(self, config, key, setval, copy_again=True):
         """
 
         :param config:
         :param key:
-        :param set:
+        :param setval:
         :param copy_again:
         :return:
         """
@@ -606,7 +606,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
         if copy_again:
             cp = copy.deepcopy(config)
 
-        for path, value in zip(key, list(set)):
+        for path, value in zip(key, list(setval)):
             path_parts = path.split('->')
             pointer = cp
             for path_part in path_parts[:-1]:

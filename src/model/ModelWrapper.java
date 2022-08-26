@@ -814,7 +814,6 @@ public class ModelWrapper {
         }
     }
 
-    // https://stackoverflow.com/questions/15449711/transpose-double-matrix-with-a-java-function
     public static double[][] transposeMatrix(double[][] m) {
         // pre-allocated array of doubles for transposed matrix
         double[][] temp = new double[m[0].length][m.length];
@@ -1216,7 +1215,6 @@ public class ModelWrapper {
         }
     }
 
-    // https://stackoverflow.com/a/29175213/11980021
     static boolean deleteDir(File file) {
         File[] contents = file.listFiles();
         if (contents != null) {

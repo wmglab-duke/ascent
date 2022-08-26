@@ -1,9 +1,8 @@
 #!/usr/bin/env python3.7
 
-"""
-The copyrights of this software are owned by Duke University.
+"""The copyrights of this software are owned by Duke University.
 Please refer to the LICENSE and README.md files for licensing instructions.
-The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
+The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent.
 
 Generate heatmaps of activation thresholds, using Seaborn's FacetGrid.
 RUN THIS FROM REPOSITORY ROOT
@@ -34,6 +33,7 @@ g = sns.FacetGrid(fdata, row='model', col='nsim', sharex=False, sharey=False)
 g.map(heatmaps, *fdata.columns, **heatmap_kws)
 
 # Title and clear axis labels
+plt.subplots_adjust(top=0.9)
 plt.suptitle('Grid of activation threshold heatmaps')
 for ax in g.axes.ravel():
     ax.set_xlabel('')
