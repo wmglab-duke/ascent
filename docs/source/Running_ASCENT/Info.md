@@ -393,7 +393,7 @@ epineurium). Material properties for each function are assigned in
 materials in the default materials library
 (`config/system/materials.json`) by name, or with explicit definitions
 of a materials name and conductivity as a JSON Object ([Material Parameters](../JSON/JSON_parameters/materials)).
-See [link](link to ModelWrapper.addMaterialDefinitions()) for code one how this happens.
+See [Add Material Definitions](../Code_Hierarchy/Java.md#modelwrapperaddmaterialdefinitions) for code one how this happens.
 
 ### Adding and assigning default material properties
 

@@ -302,9 +302,6 @@ class Query(Exceptionable, Configurable, Saveable):
         if self._result is None:
             self.throw(66)
 
-        if model_indices is None:
-            model_indices = self.search(Config.CRITERIA, 'indices', 'model')
-
         if sim_indices is None:
             sim_indices = self.search(Config.CRITERIA, 'indices', 'sim')
 

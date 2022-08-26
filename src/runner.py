@@ -1,7 +1,7 @@
 #!/usr/bin/env python3.7
 
-"""
-The copyrights of this software are owned by Duke University.
+"""The copyrights of this software are owned by Duke University.
+
 Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
@@ -53,6 +53,8 @@ class Runner(Exceptionable, Configurable):
         Exceptionable.__init__(self, SetupMode.NEW)
 
         # this corresponds to the run index (as file name in config/user/runs/<run_index>.json
+        self.ss_bases_exist = None
+        self.potentials_exist = None
         self.number = number
 
     def load_configs(self) -> dict:
@@ -61,7 +63,8 @@ class Runner(Exceptionable, Configurable):
         """
 
         def validate_and_add(config_source: dict, key: str, path: str):
-            """Validate and add config to class
+            """Validate and add config to class.
+
             :param config_source: all configs, to which we add new ones
             :param key: the key of the dict in Configs
             :param path: path to the JSON file of the config
@@ -108,14 +111,15 @@ class Runner(Exceptionable, Configurable):
         return configs
 
     def load_obj(self, path: str):
-        """Load object from file
+        """Load object from file.
+
         :param path: path to python obj file
         :return: obj file
         """
         with open(path, 'rb') as o:
-            object = pickle.load(o)
-        object.add(SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value])
-        return object
+            obj = pickle.load(o)
+        obj.add(SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value])
+        return obj
 
     def setup_run(self):
         """perform all setup steps for a run
@@ -140,6 +144,7 @@ class Runner(Exceptionable, Configurable):
 
     def generate_sample(self, all_configs, smart=True):
         """Generate the sample object for this run.
+
         :param all_configs: all configs for this run
         :param smart: if True, reuse objects from previous runs
         :return: (sample object, sample number)
@@ -178,7 +183,8 @@ class Runner(Exceptionable, Configurable):
         return sample, sample_num
 
     def prep_model(self, all_configs, model_index, model_config, sample, sample_num):
-        """Prepare model prior to handoff to Java
+        """Prepare model prior to handoff to Java.
+
         :param all_configs: all configs for this run
         :param model_index: index of model
         :param model_config: config for this model
@@ -206,7 +212,8 @@ class Runner(Exceptionable, Configurable):
         return model_num
 
     def sim_setup(self, sim_index, sim_config, sample_num, model_num, smart, sample, model_config):
-        """Create simulation object and prepare for generation of NEURON sims
+        """Create simulation object and prepare for generation of NEURON sims.
+
         :param sim_index: index of sim
         :param sim_config: config for this sim
         :param sample_num: sample number
@@ -259,7 +266,8 @@ class Runner(Exceptionable, Configurable):
         return simulation, sim_obj_dir
 
     def validate_supersample(self, simulation, sample_num, model_num):
-        """Validate supersampling parameters
+        """Validate supersampling parameters.
+
         :param simulation: simulation object
         :param sample_num: sample number
         :param model_num: model number
@@ -287,7 +295,8 @@ class Runner(Exceptionable, Configurable):
         return source_sim_obj_dir
 
     def generate_nsims(self, sim_index, model_num, sample_num):
-        """Generate NEURON simulations
+        """Generate NEURON simulations.
+
         :param sim_index: index of sim
         :param model_num: model number
         :param sample_num: sample number
@@ -314,7 +323,6 @@ class Runner(Exceptionable, Configurable):
         simulation.build_n_sims(sim_dir, sim_num)
 
         # get export behavior
-        export_behavior = None
         if self.configs[Config.CLI_ARGS.value].get('export_behavior') is not None:
             export_behavior = self.configs[Config.CLI_ARGS.value]['export_behavior']
         elif self.configs[Config.RUN.value].get('export_behavior') is not None:
@@ -340,6 +348,7 @@ class Runner(Exceptionable, Configurable):
 
     def run(self, smart: bool = True):
         """Main function to run the pipeline.
+
         :param smart: bool telling the program whether to reprocess the sample or not if it already exists as sample.obj
         :return: nothing to memory, spits out all pipeline related data to file
         """
@@ -443,6 +452,7 @@ class Runner(Exceptionable, Configurable):
 
     def handoff(self, run_number: int, class_name='ModelWrapper'):
         """Handoff to Java.
+
         :param run_number: int, run number
         :param class_name: str, class name of Java class to run
         :return: None
@@ -477,7 +487,6 @@ class Runner(Exceptionable, Configurable):
                 f'{jdk_path}/javac -classpath ../bin/json-20190722.jar:'
                 f'{comsol_path}/plugins/* model/*.java -d ../bin'
             )
-            # https://stackoverflow.com/questions/219585/including-all-the-jars-in-a-directory-within-the-java-classpath
             if sys.platform.startswith('linux'):  # linux
                 java_comsol_path = comsol_path + '/java/glnxa64/jre/bin/java'
             else:  # mac
@@ -507,6 +516,7 @@ class Runner(Exceptionable, Configurable):
 
     def compute_cuff_shift(self, model_config: dict, sample: Sample, sample_config: dict):
         """Compute the Cuff Shift for a given model.
+
         :param model_config: dict, model config
         :param sample: Sample, sample object
         :param sample_config: dict, sample config
@@ -569,9 +579,7 @@ class Runner(Exceptionable, Configurable):
         model_config = self.remove(Config.MODEL)
         model_config['min_radius_enclosing_circle'] = r_bound
         if slide.orientation_angle is not None:
-            theta_c = (
-                (slide.orientation_angle) * (360 / (2 * np.pi)) % 360
-            )  # overwrite theta_c, use our own orientation
+            theta_c = slide.orientation_angle * (360 / (2 * np.pi)) % 360  # overwrite theta_c, use our own orientation
 
         # check if a naive mode was chosen
         naive = cuff_shift_mode in [
@@ -736,6 +744,7 @@ class Runner(Exceptionable, Configurable):
 
     def compute_electrical_parameters(self, all_configs, model_index):
         """Compute electrical parameters for a given model.
+
         :param all_configs: all configs for this run
         :param model_index: index of the model to compute parameters for
         :return: None, writes output to file
@@ -782,6 +791,7 @@ class Runner(Exceptionable, Configurable):
 
     def populate_env_vars(self):
         """Get environment variables from config file.
+
         :return: None
         """
         if Config.ENV.value not in self.configs:
@@ -794,6 +804,7 @@ class Runner(Exceptionable, Configurable):
 
     def model_parameter_checking(self, all_configs):
         """Check model parameters for validity.
+
         :param all_configs: all configs for this run
         :return: None
         """

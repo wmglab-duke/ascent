@@ -1,9 +1,19 @@
+"""Parse command line arguments.
+
+The copyrights of this software are owned by Duke University.
+Please refer to the LICENSE and README.md files for licensing instructions.
+The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
+"""
+
 import argparse
 import sys
 
 
 class versionAction(argparse.Action):
+    """Used for version command line arg."""
+
     def __call__(self, parser, args, values, option_string=None):
+        """Print version and exit."""
         from config.system import _version
 
         print(f'ASCENT version {_version.__version__}')
@@ -150,10 +160,18 @@ env_parser = subparsers.add_parser('env_setup', help='Set ASCENT environment var
 
 
 def parse():
-    """parse all args"""
+    """Parse all args.
+
+    :returns: args
+    :rtype: Namespace
+    """
 
     def g0(args, argstring):
-        """checks that argument is greater than 0"""
+        """Checks that argument is greater than 0.
+
+        :param args: args object.
+        :param argstring: string of argument to check.
+        """
         if hasattr(args, argstring) and getattr(args, argstring) is not None and getattr(args, argstring) <= 0:
             sys.exit(f'Arguments for {argstring} must be greater than 0')
 

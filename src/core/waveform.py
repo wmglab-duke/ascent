@@ -480,7 +480,6 @@ def precision_and_scale(x):
     :param x:
     :return:
     """
-    # https://stackoverflow.com/questions/3018758/determine-precision-and-scale-of-particular-number-in-python
     max_digits = sys.float_info.dig
     int_part = int(abs(x))
     magnitude = 1 if int_part == 0 else int(math.log10(int_part)) + 1

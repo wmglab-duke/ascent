@@ -30,13 +30,11 @@ class Fascicle(Exceptionable):
         exception_config,
         outer: Trace,
         inners: List[Trace] = None,
-        outer_scale: dict = None,
     ):
         """Fascicle can be created with either: option 1: an outer and any
         number of inners option 2: an inner, which is passed in as an outer
         argument, and scaled out to make a virtual outer option 3: ... tbd.
 
-        :param outer_scale: how much the inner will be scaled to make a virtual outer
         :param exception_config: existing data already loaded form JSON (hence SetupMode.OLD)
         :param inners: list of inner Traces (i.e. endoneuriums)
         :param outer: single outer Trace (i.e. perineurium)

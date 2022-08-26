@@ -65,6 +65,8 @@ class Sample(Exceptionable, Configurable, Saveable):
         Configurable.__init__(self)
 
         # Initialize slides
+        self.nerve_mode = None
+        self.mask_input_mode = None
         self.slides: List[Slide] = []
 
         # Set instance variable map
@@ -364,7 +366,6 @@ class Sample(Exceptionable, Configurable, Saveable):
 
         :param mask_input_mode: MaskInputMode
         """
-        fascicles: List[Fascicle] = []
 
         # assign fascicle mask files
         if mask_input_mode not in MaskInputMode:

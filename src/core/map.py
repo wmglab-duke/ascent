@@ -66,6 +66,12 @@ class Map(Exceptionable, Configurable):
         # set up super classes
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
         Configurable.__init__(self)
+        self.slides = None
+        self.output_path = None
+        self.source_path = None
+        self.mode = None
+        self.sample = None
+        self.data_root = None
 
     def init_post_config(self, mode: SetupMode = SetupMode.NEW):
 
@@ -108,12 +114,12 @@ class Map(Exceptionable, Configurable):
             self.source_path = os.path.join('input', self.sample, 'map.json')
 
             # load/edit map template
-            map = self.load(os.path.join('config', 'templates', 'map.json'))
-            map[0]['directory'] = self.source_path.split(os.sep)[:-1]
+            mapper = self.load(os.path.join('config', 'templates', 'map.json'))
+            mapper[0]['directory'] = self.source_path.split(os.sep)[:-1]
 
             # write synthetic map
             with open(os.path.join(self.source_path), "w") as handle:
-                handle.write(json.dumps(map, indent=2))
+                handle.write(json.dumps(mapper, indent=2))
 
             # historical?
             self.output_path = self.source_path
