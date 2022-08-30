@@ -534,7 +534,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
             for ss_fiberset_file_line in ss_fiberset_file_lines:
                 ss_fiber_coords = np.append(
                     ss_fiber_coords,
-                    float(ss_fiberset_file_line.split(' ')[-2]),
+                    float(ss_fiberset_file_line.split(' ')[2]),
                 )
         # create interpolation from super_coords and super_bases
         f = sci.interp1d(ss_fiber_coords, ss_weighted_bases_vec)
