@@ -1,13 +1,14 @@
+"""Configuration file for the Sphinx documentation builder.
+
+This file only contains a selection of the most common options.
+For a full list see the documentation:
+https://www.sphinx-doc.org/en/master/usage/configuration.html
+"""
+
 import os
 import sys
 
 import mock
-
-# Configuration file for the Sphinx documentation builder.
-#
-# This file only contains a selection of the most common options. For a full
-# list see the documentation:
-# https://www.sphinx-doc.org/en/master/usage/configuration.html
 
 # -- Path setup --------------------------------------------------------------
 
@@ -19,7 +20,7 @@ import mock
 # -- Project information -----------------------------------------------------
 
 project = 'ASCENT'
-copyright = '2021, Duke University'
+copyright_info = '2021, Duke University'
 author = 'Musselman ED, Cariello JE, Grill WM, Pelot NA.'
 
 # The full version, including alpha/beta/rc tags

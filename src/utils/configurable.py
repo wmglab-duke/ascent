@@ -1,7 +1,8 @@
 #!/usr/bin/env python3.7
 
-"""The copyrights of this software are owned by Duke University.
+"""Defines the Configurable class.
 
+The copyrights of this software are owned by Duke University.
 Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
@@ -12,34 +13,15 @@ from typing import List, Type, Union
 
 from .enums import Config, Enum, SetupMode, os
 
-"""
-Description:
-
-    OVERVIEW
-    Meant to be inherited for configurable functionality. Expandable and allows for quick src to configuration file
-    data (in addition to path building method). It is important to note that this class has BUILT IN exceptions that it
-    throws (-1 and below) because it is inherently unable to inherit from Exceptionable, which, in turn, is configured.
-
-    INITIALIZER
-    See docstring in __init__.
-
-    PROPERTIES
-    configs (dict, with the top-level keys being values from the ConfigKeys, which is an Enum)
-
-    METHODS
-    add
-    remove
-    search
-    path
-    load
-    search_mode
-    search_multi_mode
-    validate_path (ensures that it ends with .json)
-"""
-
 
 class Configurable:
-    """Handles loading and writing of JSON config files."""
+    """Handles loading and writing of JSON config files.
+
+    Meant to be inherited for configurable functionality.
+    Expandable and allows for quick src to configuration file data (in addition to path building method).
+    It is important to note that this class has BUILT IN exceptions that it throws (-1 and below)
+    because it is inherently unable to inherit from Exceptionable, which, in turn, is configured.
+    """
 
     def __init__(
         self,
@@ -95,7 +77,6 @@ class Configurable:
         :param args: list "path" to item within json (str or int)
         :return: final specified item
         """
-
         result = self.configs[key.value]
         for arg in args:
             if isinstance(arg, str):
@@ -131,7 +112,7 @@ class Configurable:
     def path(self, key: Config, *args, is_dir: bool = False, is_absolute: bool = False):
         """Build a path for an item specified in same style as self.search().
 
-        Expects the item returned by self.search(key, *args) to be a list.
+        Expects the item returned by ``self.search(key, *args)`` to be a list.
 
         :param is_absolute: flag to make the path absolute
         :param is_dir: if true, will add trailing slash (system nonspecific) to path
@@ -151,7 +132,7 @@ class Configurable:
 
     @staticmethod
     def load(config_path: str):
-        """Loads in json data and returns to user, assuming it has already been validated.
+        """Load in json data and returns to user, assuming it has already been validated.
 
         :param config_path: the string path to load
         :return: json data (dict or list)

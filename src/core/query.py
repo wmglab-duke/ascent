@@ -182,12 +182,12 @@ class Query(Exceptionable, Configurable, Saveable):
         return self._result
 
     def get_config(self, mode: Config, indices: List[int]) -> dict:
-        """"""
+        """Load config file for given mode and indices."""
         return self.load(self.build_path(mode, indices))
 
     @staticmethod
     def get_object(mode: Object, indices: List[int]) -> Union[Sample, Simulation]:
-        """"""
+        """Load pickled object for given mode and indices."""
         with open(Query.build_path(mode, indices), 'rb') as obj:
             return pickle.load(obj)
 
@@ -197,8 +197,7 @@ class Query(Exceptionable, Configurable, Saveable):
         indices: List[int] = None,
         just_directory: bool = False,
     ) -> str:
-        """"""
-
+        """Build path to config or object file for given mode and indices."""
         result = str()
 
         if indices is None:
@@ -237,7 +236,6 @@ class Query(Exceptionable, Configurable, Saveable):
         return result
 
     def _match(self, criteria: dict, data: dict) -> bool:
-        """"""
 
         for key in criteria.keys():
 
@@ -426,7 +424,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
         return pd.DataFrame(alldat)
 
-    def excel_output(
+    def excel_output(  # noqa: C901
         self,
         filepath: str,
         sample_keys=None,

@@ -18,8 +18,6 @@ class ASCENTEnum(Enum):
 
 
 # %% Core (backend) functionality
-
-
 @unique
 class SetupMode(ASCENTEnum, Enum):
     NEW = 0

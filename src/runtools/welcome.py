@@ -9,6 +9,7 @@ The source code can be found on the following GitHub repository: https://github.
 
 
 def welcome():
+    """Print welcome message for ASCENT software."""
     print(
         """
 Funding for development of this software provided by NIH SPARC OT2 OD025340\n

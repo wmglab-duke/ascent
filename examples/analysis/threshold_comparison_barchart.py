@@ -1,10 +1,10 @@
 #!/usr/bin/env python3.7
 
-"""The copyrights of this software are owned by Duke University.
+"""Compare thresholds across models using a barchart.
+
+The copyrights of this software are owned by Duke University.
 Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent.
-
-Compare thresholds across models using a barchart.
 
 For more controls over how the plotting occurs, see the seaborn documentation on barplot:
 https://seaborn.pydata.org/generated/seaborn.barplot.html

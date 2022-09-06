@@ -26,7 +26,10 @@ import pandas as pd
 
 # %%Set up parser and top level args
 class listAction(argparse.Action):
+    """Custom action for argparse to list run info."""
+
     def __call__(self, parser, values, option_string=None, **kwargs):
+        """Print run info and exit."""
         run_path = 'runs'
         jsons = [file for file in os.listdir(run_path) if file.endswith('.json')]
         data = []
@@ -137,10 +140,13 @@ OS = 'UNIX-LIKE' if any([s in sys.platform for s in ['darwin', 'linux']]) else '
 
 
 class WarnOnlyOnce:
+    """Warn only once per instance."""
+
     warnings = set()
 
     @classmethod
     def warn(cls, message):
+        """Print warning message if first call."""
         # storing int == less memory then storing raw message
         h = hash(message)
         if h not in cls.warnings:
@@ -150,8 +156,10 @@ class WarnOnlyOnce:
 
 
 def print_progress_bar(iteration, total, prefix='', suffix='', decimals=1, length=100, fill='█'):
-    """Print or update a progress bar in the terminal. Call in a loop to create
-    a terminal progress bar.
+    """Print or update a progress bar in the terminal.
+
+    Call in a loop to create a terminal progress bar.
+    Information such as the prefix and suffix can be changed with each call.
 
     :param iteration: The current iteration (current/total)
     :param total: The total number of iterations
@@ -171,8 +179,7 @@ def print_progress_bar(iteration, total, prefix='', suffix='', decimals=1, lengt
 
 
 def load(config_path: str):
-    """Loads in json data and returns to user, assuming it has already been
-    validated.
+    """Load in json data and returns to user, assuming it has already been validated.
 
     :param config_path: the string path to load up
     :return: json data (usually dict or list)
@@ -507,8 +514,7 @@ def submit_fibers(submission_context, submission_data):
 
 
 def cluster_submit(runfibers, sim_name, sim_path, start_path_base):
-    """Submit fiber simulations on a slurm-based high performance computer
-    cluster.
+    """Submit fiber simulations on a slurm-based high performance computing cluster.
 
     :param runfibers: the list of fiber data for submission
     :param sim_name: the string name of the n_sim
@@ -650,8 +656,7 @@ def make_fiber_tasks(submission_list, submission_context):
 
 
 def make_run_sub_list(run_number: int):
-    """Create a list of all fiber simulations to be run. Skips fiber sims with
-    existing output.
+    """Create a list of all fiber simulations to be run. Skips fiber sims with existing output.
 
     :param run_number: the number of the run
     :return: a dict of all fiber simulations to be run
@@ -788,7 +793,7 @@ def get_submission_list(run_inds):
 
 
 def pre_submit_setup():
-    """Setup for submitting simulations.
+    """Perform setup for submitting simulations.
 
     :return: the list of runs to be submitted, submission_context
     """
@@ -817,7 +822,7 @@ def pre_submit_setup():
 
 # main
 def main():
-    """Main function."""
+    """Prepare fiber submissions and run NEURON sims."""
     # pre submit setup
     run_inds, submission_context = pre_submit_setup()
     # get list of simulations to be submitted

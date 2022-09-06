@@ -1,11 +1,12 @@
 #!/usr/bin/env python3.7
 
-"""The copyrights of this software are owned by Duke University.
+"""Plots the time and location where an action potential occurred.
+
+The copyrights of this software are owned by Duke University.
 Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent.
 
-Plots the time and location where an action potential occurred.
-Requires that the user set saving aploctime to true in sim.json.
+This script requires that the user set saving aploctime to true in sim.json.
 RUN THIS FROM REPOSITORY ROOT
 """
 

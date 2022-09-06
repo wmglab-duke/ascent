@@ -59,12 +59,15 @@ class Sample(Exceptionable, Configurable, Saveable):
         :param map_mode: setup mode. If you want to build a new map from a directory, then NEW. Otherwise, or if for
             a single slide, OLD.
         """
-
         # Initializes superclasses
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
         Configurable.__init__(self)
 
         # Initialize slides
+        self.sample_rotation = None
+        self.deform_ratio = None
+        self.deform_mode = None
+        self.reshape_nerve_mode = None
         self.nerve_mode = None
         self.mask_input_mode = None
         self.slides: List[Slide] = []
@@ -85,7 +88,9 @@ class Sample(Exceptionable, Configurable, Saveable):
 
     def init_map(self, map_mode: SetupMode) -> 'Sample':
         """Initialize the map.
+
         NOTE: the Config.SAMPLE json must have been externally added.
+
         :param map_mode: should be old for now, but keeping as parameter in case needed in future
         """
         if Config.SAMPLE.value not in self.configs:
@@ -120,7 +125,7 @@ class Sample(Exceptionable, Configurable, Saveable):
         return self
 
     def generate_perineurium(self, fit: dict) -> 'Sample':
-        """Adds perineurium to inners.
+        """Add perineurium to inners.
 
         :param fit: dictionary of perineurium fit parameters
         """
@@ -130,8 +135,7 @@ class Sample(Exceptionable, Configurable, Saveable):
         return self
 
     def im_preprocess(self, path):
-        """Performs cleaning operations on the input image, and converts to
-        uint8.
+        """Perform cleaning operations on the input image, and convert to uint8.
 
         :param path: path to image which will be processed
         """
@@ -161,13 +165,12 @@ class Sample(Exceptionable, Configurable, Saveable):
         scale_bar_length: float,
         scale_bar_is_literal: bool,
     ) -> 'Sample':
-        """Returns scaling factor (micrometers per pixel).
+        """Return scaling factor (micrometers per pixel).
 
         :param scale_bar_mask_path: path to binary mask with white straight (horizontal) scale bar
         :param scale_bar_length: length (in global units as determined by config/user) of the scale bar
         :param scale_bar_is_literal: if True, then scale_bar_length is the factor, otherwise calculate from image
         """
-
         if scale_bar_is_literal:
             # use explicitly specified um/px scale instead of drawing from a scale bar image
             factor = scale_bar_length
@@ -293,7 +296,6 @@ class Sample(Exceptionable, Configurable, Saveable):
         self.nerve_mode = self.search_mode(NerveMode, Config.SAMPLE)
         self.reshape_nerve_mode = self.search_mode(ReshapeNerveMode, Config.SAMPLE)
         self.deform_mode = self.search_mode(DeformationMode, Config.SAMPLE)
-        self.deform_ratio = None
         self.scale_input_mode = self.search_mode(ScaleInputMode, Config.SAMPLE, optional=True)
         self.sample_rotation = self.search(Config.SAMPLE, "rotation", optional=True)
         self.contour_mode = self.search_mode(ContourMode, Config.SAMPLE, optional=True)
@@ -305,10 +307,11 @@ class Sample(Exceptionable, Configurable, Saveable):
             self.contour_mode = ContourMode.SIMPLE
 
     def mask_exists(self, mask_file_name: MaskFileNames):
+        """Check if a mask exists (.tif file)."""
         return os.path.exists(mask_file_name.value)
 
     def calculate_orientation(self, slide):
-        """calculate orientation angle from a.tif.
+        """Calculate orientation angle from a.tif.
 
         :param slide: Slide object
         """
@@ -366,7 +369,6 @@ class Sample(Exceptionable, Configurable, Saveable):
 
         :param mask_input_mode: MaskInputMode
         """
-
         # assign fascicle mask files
         if mask_input_mode not in MaskInputMode:
             self.throw(152)
@@ -463,7 +465,7 @@ class Sample(Exceptionable, Configurable, Saveable):
         return slide
 
     def correct_shrinkage(self, slide):
-        """apply shrinkage correction to slide."""
+        """Apply shrinkage correction to slide."""
         # shrinkage correction
         s_mode = self.search_mode(ShrinkageMode, Config.SAMPLE, optional=True)
         s_pre = self.search(Config.SAMPLE, "scale", "shrinkage")
@@ -495,7 +497,7 @@ class Sample(Exceptionable, Configurable, Saveable):
         return slide
 
     def apply_scaling(self):
-        """scales from pixels to microns."""
+        """Scales from pixels to microns."""
         # create scale bar path
         if self.scale_input_mode == ScaleInputMode.MASK:
             scale_path = os.path.join('samples', str(self.index), MaskFileNames.SCALE_BAR.value)
@@ -625,7 +627,7 @@ class Sample(Exceptionable, Configurable, Saveable):
         return slide
 
     def populate(self) -> 'Sample':
-        """Main function for populating a sample."""
+        """Populate a sample with trace objects using input images."""
 
         def populate_plotter(slide, title: str, filename: str):
             plt.figure()
@@ -730,7 +732,6 @@ class Sample(Exceptionable, Configurable, Saveable):
 
         :param mode: WriteMode
         """
-
         # get starting point so able to go back
         start_directory: str = os.getcwd()
 
@@ -783,7 +784,6 @@ class Sample(Exceptionable, Configurable, Saveable):
 
     def make_electrode_input(self) -> 'Sample':
         """Generate electrode input for the sample."""
-
         # load template for electrode input
         electrode_input: dict = TemplateOutput.read(TemplateMode.ELECTRODE_INPUT)
 
@@ -812,7 +812,6 @@ class Sample(Exceptionable, Configurable, Saveable):
 
     def output_morphology_data(self) -> 'Sample':
         """Output morhodology data for the sample to sample.json."""
-
         nerve_mode = self.search_mode(NerveMode, Config.SAMPLE)
 
         fascicles = [fascicle.morphology_data() for fascicle in self.slides[0].fascicles]

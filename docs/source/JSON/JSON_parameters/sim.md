@@ -38,7 +38,7 @@ following syntax:
       // distribution) which is only compatible for "MRG_INTERPOLATION" myelinated or
       // unmyelinated fiber types)
       "diameter":{
-        "mode": "TRUNCHNORM",
+        "mode": "TRUNCNORM",
         "mu": Double,
         "std": Double,
         "n_std_limit": Double,

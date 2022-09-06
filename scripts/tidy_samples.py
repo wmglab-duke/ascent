@@ -18,6 +18,7 @@ INCLUDED_FILENAMES = ['runtime', 'blank', 'special', 'logs', 'start_']
 
 
 def remove_empty_directories(directory: str, verbose):
+    """Remove empty directories from a given directory."""
     for path in os.listdir(directory):
         subdirectory = os.path.join(directory, path)
         if os.path.isdir(subdirectory):
@@ -37,17 +38,18 @@ def remove_empty_directories(directory: str, verbose):
 
 
 def run(args):
+    """Run the script."""
     global INCLUDED_FILENAMES
     if args.filename:
         INCLUDED_FILENAMES = [args.filename]
     proceed = input(
         'All files with names containing any of the following strings:\n'
-        '\t{}\n'
+        f'\t{INCLUDED_FILENAMES}\n'
         'will be removed from the following sample directories:\n'
-        '\t{}\n'
+        f'\t{args.sample_indices}\n'
         '\n\t Would you like to proceed?\n'
         '\t\t 0 = NO\n'
-        '\t\t 1 = YES\n'.format(INCLUDED_FILENAMES, args.sample_indices)
+        '\t\t 1 = YES\n'
     )
     if int(proceed) != 1:
         sys.exit()

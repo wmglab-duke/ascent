@@ -41,13 +41,14 @@ from .sample import Sample
 
 
 class FiberSet(Exceptionable, Configurable, Saveable):
-    """Required (Config.) JSON's: MODEL SIM."""
+    """Class methods for generating fiber coordinates to use in NEURON simulations."""
 
     def __init__(self, sample: Sample, exceptions_config: list):
-        """
-        :param exceptions_config: preloaded exceptions.json data
-        """
+        """Initialize the FiberSet class.
 
+        :param sample: The sample to be used for the nerve model.
+        :param exceptions_config: The exceptions config.
+        """
         # set up superclasses
         Configurable.__init__(self)
         Exceptionable.__init__(self, SetupMode.OLD, exceptions_config)
@@ -64,15 +65,18 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         )
 
     def init_post_config(self):
+        """Make sure Model and Simulation are configured."""
         if any([config.value not in self.configs.keys() for config in (Config.MODEL, Config.SIM)]):
             self.throw(78)
         return self
 
     def generate(self, sim_directory: str, super_sample: bool = False):
-        """
+        """Create xy coordinates for the fibers, map them to the fascicles, create z coordinates, and validate them.
+
+        :param sim_directory: The directory to save the simulation files to.
+        :param super_sample: Whether to generate a super sample.
         :return:
         """
-
         fibers_xy = self._generate_xy(sim_directory)
         self.out_to_fib, self.out_to_in = self._generate_maps(fibers_xy)
         self.fibers = self._generate_z(fibers_xy, super_sample=super_sample)
@@ -82,12 +86,11 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         return self
 
     def write(self, mode: WriteMode, path: str):
-        """
-        :param mode:
-        :param path:
-        :return:
-        """
+        """Write the fiberset to file.
 
+        :param mode: Type of file to write to.
+        :param path: Path to the file to write to.
+        """
         diams = []
         for i, fiber_pre in enumerate(self.fibers if self.fibers is not None else []):
 
@@ -118,6 +121,11 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         return self
 
     def _generate_maps(self, fibers_xy) -> Tuple[List, List]:
+        """Generate the out-to-fascicle and out-to-inner maps.
+
+        :param fibers_xy: xy coordinates of the fibers
+        :return: mapping from fiber index to outer index and from outer index to inner index
+        """
         out_to_fib = []
         out_to_in = []
 
@@ -136,6 +144,10 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         return out_to_fib, out_to_in
 
     def _generate_xy(self, sim_directory: str) -> np.ndarray:
+        """Generate the xy coordinates of the fibers.
+
+        :param sim_directory: The directory of the simulation.
+        """
         # get required parameters from configuration JSON (using inherited Configurable methods)
         xy_mode_name: str = self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode')
         xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
@@ -172,6 +184,10 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         return points
 
     def generate_centroid_points(self):
+        """Create the xy coordinates of the fibers using the centroid of the fascicles.
+
+        :return: xy coordinates of the fibers
+        """
         points: List[Tuple[float]] = []
         for fascicle in self.sample.slides[0].fascicles:
             for inner in fascicle.inners:
@@ -180,6 +196,12 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         return points
 
     def generate_uniform_density_points(self, buffer, my_xy_seed):
+        """Create the xy coordinates of the fibers using a uniform density.
+
+        :param buffer: Buffer required between the fibers and the fascicles.
+        :param my_xy_seed: Seed for the random number generator.
+        :return: The xy coordinates of the fibers.
+        """
         # DENSITY UNIT: axons / um^2
         # this determines whether the density should be determined top-down or bottom-up
         # case top_down is True: fetch target density and cap minimum axons if too low
@@ -221,6 +243,12 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         return points
 
     def generate_uniform_count_points(self, buffer, my_xy_seed):
+        """Create the xy coordinates of the fibers using a uniform count.
+
+        :param buffer: Buffer required between the fibers and the fascicles.
+        :param my_xy_seed: Seed for the random number generator.
+        :return: The xy coordinates of the fibers.
+        """
         points: List[Tuple[float]] = []
         count: int = self.search(Config.SIM, 'fibers', 'xy_parameters', 'count')
         for fascicle in self.sample.slides[0].fascicles:
@@ -231,6 +259,11 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         return points
 
     def generate_wheel_points(self, buffer):
+        """Create the xy coordinates of the fibers using a wheel.
+
+        :param buffer: Buffer required between the fibers and the fascicles.
+        :return: The xy coordinates of the fibers.
+        """
         points: List[Tuple[float]] = []
         # get required parameters
         spoke_count: int = self.search(Config.SIM, 'fibers', 'xy_parameters', 'spoke_count')
@@ -295,6 +328,11 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         return points
 
     def load_explicit_coords(self, sim_directory):
+        """Load the xy coordinates of the fibers from an explicit file.
+
+        :param sim_directory: The directory of the simulation.
+        :return: The xy coordinates of the fibers.
+        """
         explicit_index = self.search(
             Config.SIM,
             'fibers',
@@ -338,7 +376,12 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                 self.throw(71)
         return points
 
-    def plot_fibers_on_sample(self, sim_directory):
+    def plot_points_on_sample(self, points, sim_directory):
+        """Plot the xy coordinates of the fibers on the sample.
+
+        :param points: The xy coordinates of the fibers.
+        :param sim_directory: The directory of the simulation.
+        """
         fig = plt.figure()
         self.sample.slides[0].plot(
             final=False,
@@ -358,6 +401,11 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         ax: plt.Axes = None,
         scatter_kws: dict = None,
     ):
+        """Plot the xy coordinates of the fibers.
+
+        :param ax: The axis to plot on. If None, use the current axis.
+        :param scatter_kws: The matplotlib keyword arguments for the scatter plot.
+        """
         if ax is None:
             ax = plt.gca()
         if scatter_kws is None:
@@ -372,7 +420,17 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             **scatter_kws,
         )
 
-    def _generate_z(self, fibers_xy: np.ndarray, override_length=None, super_sample: bool = False) -> np.ndarray:
+    def _generate_z(  # noqa: C901
+        self, fibers_xy: np.ndarray, override_length=None, super_sample: bool = False
+    ) -> np.ndarray:
+        """Generate the z coordinates of the fibers.
+
+        :param fibers_xy: The xy coordinates of the fibers.
+        :param override_length: The length of the fibers (forced).
+        :param super_sample: Whether to use supersampling.
+        :return: The z coordinates of the fibers.
+        """
+
         def clip(values: list, start, end, myel: bool, is_points: bool = False) -> list:
 
             step = 1
@@ -390,6 +448,12 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             return values
 
         def generate_myel_fiber_zs(diameter):
+            """Generate the z coordinates of the fibers for a myelinated nerve.
+
+            :param diameter: The diameter of the myelinated nerve.
+            :return: The z coordinates of the fibers.
+            """
+
             def _build_z(inter_length, node_length, paranodal_length_1, paranodal_length_2, delta_z):
                 z_steps: List = []
                 while (sum(z_steps) - model_length / 2) < 1:
@@ -490,7 +554,16 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             my_y: float,
             additional_offset: float = 0,
         ):
+            """Build a fiber with an offset.
 
+            :param z_values: The z values of the fiber.
+            :param myel: Whether the fiber is myelinated.
+            :param dz: The delta z of the fiber.
+            :param my_x: The x coordinate of the fiber.
+            :param my_y: The y coordinate of the fiber.
+            :param additional_offset: The additional offset of the fiber.
+            :return: The fiber.
+            """
             random_offset_value = 0
             # get offset param - NOTE: raw value is a FRACTION of dz (explanation for multiplication by dz)
 
@@ -531,6 +604,11 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             return my_fiber
 
         def generate_z_unmyel(mydiams):
+            """Generate the z values for an unmyelinated fiber.
+
+            :param mydiams: The diameters of the fiber.
+            :return: The z values of the fiber.
+            """
             fibers = []
             if super_sample:
                 if 'dz' in self.configs[Config.SIM.value]['supersampled_bases']:
@@ -581,6 +659,11 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             return fibers
 
         def generate_z_myelinated(mydiams):
+            """Generate the z values for a myelinated fiber.
+
+            :param mydiams: The diameters of the fiber.
+            :return: The z values of the fiber.
+            """
             fibers = []
             random.seed(my_z_seed)
             if len(mydiams) == 0:
@@ -641,7 +724,17 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
         return fibers
 
-    def calculate_fiber_diams(self, diam_distribution, diams, fiber_geometry_mode_name, fibers_xy, super_sample):
+    def calculate_fiber_diams(self, diameter, diams, fiber_geometry_mode_name, fibers_xy, super_sample):
+        """Calculate the diameters of the fibers.
+
+        :param diameter: The diameter of the fiber.
+        :param fiber_geometry_mode_name: The name of the fiber geometry mode.
+        :param fibers_xy: The xy coordinates of the fibers.
+        :param super_sample: Whether or not to super sample the fibers.
+        :return: The diameters of the fibers.
+        """
+        diam_distribution: bool = type(diameter) is dict
+
         if super_sample:
             myelinated = False
         else:
@@ -755,6 +848,11 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         return diams, myelinated
 
     def calculate_fiber_length_params(self, override_length):
+        """Calculate the fiber length parameters.
+
+        :param override_length: Whether or not to override the length.
+        :return: The fiber length parameters.
+        """
         model_length = (
             self.search(Config.MODEL, 'medium', 'proximal', 'length') if (override_length is None) else override_length
         )
@@ -818,6 +916,11 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         # add other checks below
 
     def xy_points(self, split_xy=False):
+        """Get the xy points of the fibers.
+
+        :param split_xy: Whether or not to split the xy points into separate arrays.
+        :return: The xy points of the fibers.
+        """
         points = [(f[0][0], f[0][1]) for f in self.fibers]
         if split_xy:
             return list(zip(*points))[0], list(zip(*points))[1]
