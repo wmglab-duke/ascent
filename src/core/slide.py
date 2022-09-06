@@ -22,6 +22,12 @@ from .trace import Trace
 
 
 class Slide(Exceptionable):
+    """The Slide class is used to represent a slide of fascicles and nerves.
+
+    The fascicles and nerve boundary are represented
+       with Trace and Nerve objects, respectively.
+    """
+
     def __init__(
         self,
         fascicles: List[Fascicle],
@@ -30,15 +36,15 @@ class Slide(Exceptionable):
         exception_config: list,
         will_reposition: bool = False,
     ):
-        """
+        """Initialize a Slide object.
+
         :param fascicles: List of fascicles
         :param nerve: Nerve (effectively is a Trace)
         :param nerve_mode: from Enums, indicates if the nerve exists or not (PRESENT, NOT_PRESENT)
         :param exception_config: pre-loaded configuration data
         :param will_reposition: boolean flag that tells the initializer whether or not it should be validating the
-        geometries - if it will be reposition then this is not a concern
+           geometries - if it will be reposition then this is not a concern
         """
-
         # init superclasses
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
 
@@ -57,9 +63,11 @@ class Slide(Exceptionable):
         self.orientation_angle: Optional[float] = None
 
     def monofasc(self) -> bool:
+        """Check if slide is monofascicular."""
         return self.nerve_mode == NerveMode.NOT_PRESENT and len(self.fascicles) == 1
 
     def fascicle_centroid(self) -> Tuple[float, float]:
+        """Calculate the centroid of all fascicles."""
         area_sum = x_sum = y_sum = 0.0
 
         for fascicle in self.fascicles:
@@ -79,7 +87,7 @@ class Slide(Exceptionable):
         tolerance: float = None,
         plotpath=None,
     ) -> bool:
-        """Checks to make sure nerve geometry is not overlapping itself.
+        """Check to make sure nerve geometry is not overlapping itself.
 
         :param specific: if you want to know what made it fail first
         :param die: if non-specific, decides whether or not to throw an error if it fails
@@ -141,11 +149,11 @@ class Slide(Exceptionable):
                 return True
 
     def fascicles_too_close(self, tolerance: float = None) -> bool:
-        """
+        """Check to see if any fascicles are too close to each other.
+
         :param tolerance: Minimum separation distance
         :return: Boolean for True for fascicles too close as defined by tolerance
         """
-
         if self.monofasc():
             self.throw(41)
 
@@ -158,7 +166,8 @@ class Slide(Exceptionable):
             )
 
     def fascicles_too_small(self) -> bool:
-        """
+        """Check to see if any fascicles are too small.
+
         :return: True if any fascicle has a trace with less than 3 points
         """
         check = []
@@ -168,10 +177,10 @@ class Slide(Exceptionable):
         return any(check)
 
     def fascicle_fascicle_intersection(self) -> bool:
-        """
+        """Check to see if any fascicles intersect each other.
+
         :return: True if any fascicle intersects another fascicle, otherwise False
         """
-
         if self.monofasc():
             self.throw(42)
 
@@ -179,30 +188,30 @@ class Slide(Exceptionable):
         return any([first.intersects(second) for first, second in pairs])
 
     def fascicle_nerve_intersection(self) -> bool:
-        """
+        """Check for intersection between the fascicles and nerve.
+
         :return: True if any fascicle intersects the nerve, otherwise False
         """
-
         if self.monofasc():
             self.throw(43)
 
         return any([fascicle.intersects(self.nerve) for fascicle in self.fascicles])
 
     def fascicles_outside_nerve(self) -> bool:
-        """
+        """Check if any fascicle is outside the nerve.
+
         :return: True if any fascicle lies outside the nerve, otherwise False
         """
-
         if self.monofasc():
             self.throw(44)
 
         return any([not fascicle.within_nerve(self.nerve) for fascicle in self.fascicles])
 
     def move_center(self, point: np.ndarray):
-        """
+        """Shifts the center of the slide to the given point.
+
         :param point: the point of the new slide center
         """
-
         if self.monofasc():
             # get shift from nerve centroid and point argument
             shift = list(point - np.array(self.fascicles[0].centroid())) + [0]
@@ -217,13 +226,13 @@ class Slide(Exceptionable):
             fascicle.shift(shift)
 
     def reshaped_nerve(self, mode: ReshapeNerveMode, buffer: float = 0.0) -> Nerve:
-        """
+        """Get a nerve trace equal to the area of the current nerve trace.
+
         :param buffer:
         :param mode: Final form of reshaped nerve, either circle or ellipse
         :return: a copy of the nerve with reshaped nerve boundary, preserves point count which is SUPER critical for
-        fascicle repositioning
+           fascicle repositioning
         """
-
         if self.monofasc():
             self.throw(45)
 
@@ -262,7 +271,6 @@ class Slide(Exceptionable):
         :param inner_format: optional format for inner traces of fascicles
         :param fix_aspect_ratio: optional, if True, will set equal aspect ratio
         """
-
         if ax is None:
             ax = plt.gca()
 
@@ -319,10 +327,10 @@ class Slide(Exceptionable):
             plt.show()
 
     def scale(self, factor: float):
-        """
+        """Scale the nerve and fascicles by a factor.
+
         :param factor: scale factor, only knows how to scale around its own centroid
         """
-
         if self.monofasc():
             center = list(self.fascicles[0].centroid())
         else:
@@ -338,7 +346,6 @@ class Slide(Exceptionable):
         :param n_distance: distance to inflate and deflate the nerve trace
         :param i_distance: distance to inflate and deflate the fascicle traces
         """
-
         if i_distance is None:
             self.throw(113)
         for trace in self.trace_list():
@@ -348,14 +355,19 @@ class Slide(Exceptionable):
                 trace.smooth(i_distance)
 
     def generate_perineurium(self, fit: dict):
+        """Generate perineurium for all fascicles in the slide.
+
+        :param fit: dictionary of fit parameters
+           (Linear fit for perineurium thickness based on fascicle area)
+        """
         for fascicle in self.fascicles:
             fascicle.perineurium_setup(fit=fit)
 
     def rotate(self, angle: float):
-        """
-        :param angle: angle in radians, only knows how to rotate around its own centroid
-        """
+        """Rotate the slide around its centroid.
 
+        :param angle: angle in radians
+        """
         if self.monofasc():
             center = list(self.fascicles[0].centroid())
         else:
@@ -368,7 +380,8 @@ class Slide(Exceptionable):
         self.validation()
 
     def bounds(self):
-        """
+        """Get the bounding box for the slide.
+
         :return: check bounds of all traces and return outermost bounds
         """
         allbound = np.array([trace.bounds() for trace in self.trace_list() if trace is not None])
@@ -380,8 +393,9 @@ class Slide(Exceptionable):
         )
 
     def trace_list(self):
-        """
-        :return: list of all traces in the slide
+        """Get a list of all traces in the slide.
+
+        :return: list of trace objects
         """
         if self.monofasc():
             trace_list = [f.outer for f in self.fascicles]
@@ -390,11 +404,11 @@ class Slide(Exceptionable):
         return trace_list
 
     def write(self, mode: WriteMode, path: str):
-        """
+        """Write all traces to files for import into COMSOL.
+
         :param mode: Sectionwise for now... could be other types in the future (STL, DXF)
         :param path: root path of slide
         """
-
         start = os.getcwd()
 
         if not os.path.exists(path):

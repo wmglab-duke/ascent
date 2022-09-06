@@ -12,6 +12,10 @@ import pandas as pd
 
 
 def run(mode):
+    """List json information.
+
+    :param mode: str, 'samples', 'runs', or 'models'
+    """
     if mode == 'runs':
         run_path = os.path.join('config', 'user', 'runs')
         jsons = [file for file in os.listdir(run_path) if file.endswith('.json')]

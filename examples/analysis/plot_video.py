@@ -1,11 +1,12 @@
 #!/usr/bin/env python3.7
 
-"""The copyrights of this software are owned by Duke University.
+"""Plot a video over time of Ve over the length of a fiber.
+
+The copyrights of this software are owned by Duke University.
 Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent.
 
-Plot a video over time of Ve over the length of a fiber.
-This requires that you have saved Vm at all locs (under time).
+This script requires that you have saved Vm at all locs (under time).
 RUN THIS FROM REPOSITORY ROOT
 """
 
@@ -30,6 +31,7 @@ outpath = 'out/analysis/videos'
 
 # define initializer function for animation
 def init():
+    """Initialize the animation."""
     flat_data = data.flatten()
     ax.set_ylim(np.min(flat_data), np.max(flat_data))
     return (ln,)
@@ -37,6 +39,7 @@ def init():
 
 # define update function for each frame of animation
 def update(frame):
+    """Update the animation."""
     time_text.set_text('time: ' + str(data[frame][0]))
     ln.set_data(np.arange(0, len(data[0]) - 1), data[frame][1:])
     return ln, time_text

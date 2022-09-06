@@ -1,12 +1,12 @@
 #!/usr/bin/env python3.7
 
-"""The copyrights of this software are owned by Duke University.
+"""Use this script to run a convergence study.
+
+The copyrights of this software are owned by Duke University.
 Please refer to the LICENSE.txt and README.txt files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent.
 
-Use this script to run a convergence study.
 Threshold error will be calculated for each model and sample with respect to the reference model.
-
 RUN THIS FROM REPOSITORY ROOT
 """
 
@@ -31,6 +31,7 @@ reference_model = 0
 
 
 def pe(correct, est):
+    """Calculate the percent error."""
     return 100 * abs(est - correct) / correct
 
 

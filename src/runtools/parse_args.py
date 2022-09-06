@@ -167,7 +167,7 @@ def parse():
     """
 
     def g0(args, argstring):
-        """Checks that argument is greater than 0.
+        """Check that an argument is greater than 0.
 
         :param args: args object.
         :param argstring: string of argument to check.

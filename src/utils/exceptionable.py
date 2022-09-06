@@ -1,7 +1,8 @@
 #!/usr/bin/env python3.7
 
-"""The copyrights of this software are owned by Duke University.
+"""Defines the Exceptionable Class.
 
+The copyrights of this software are owned by Duke University.
 Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
@@ -16,30 +17,16 @@ import numpy as np
 from .configurable import Configurable
 from .enums import Config, SetupMode
 
-"""
-Description:
-
-    OVERVIEW
-    Centralized way to organize and "throw" exceptions.
-
-    INITIALIZER
-    See docstring of __init__.
-
-    PROPERTIES
-    none, but creates key/value in configs (inherited form Configurable) that pertains to exception data
-
-    METHODS
-    throw
-"""
-
 
 class Exceptionable(Configurable):
+    """Used to handle exceptions in ASCENT code."""
+
     def __init__(self, mode: SetupMode, config=None):
-        """
+        """Initialize the Exceptionable class instance.
+
         :param mode: SetupMode, determines if Configurable loads new JSON or uses old data
         :param config: if SetupMode.OLD, this is the data. if SetupMode.NEW, this is str path to JSON
         """
-
         if mode == SetupMode.OLD:
             Configurable.__init__(self, mode, Config.EXCEPTIONS, config)
         else:  # mode == SetupMode.NEW
@@ -60,7 +47,6 @@ class Exceptionable(Configurable):
         :param code: index of exception in json file (i.e. exceptions.json)
         :return: full message (with code and text)
         """
-
         codelist = [x['code'] for x in self.configs[Config.EXCEPTIONS.value]]
 
         # force to exception 0 if incorrect bounds
@@ -73,11 +59,7 @@ class Exceptionable(Configurable):
         # note that the json purposefully has the redundant entry "code"
         # this is done for ease of use and organizational purposes
         raise Exception(
-            '\n\tcode:\t{}\n'
-            '\ttext:\t{}\n'
-            '\tsource:\t{}'.format(
-                exception.get('code'),
-                exception.get('text'),
-                inspect.stack()[1].filename,
-            )
+            f'\n\tcode:\t{exception.get("code")}\n'
+            f'\ttext:\t{exception.get("text")}\n'
+            f'\tsource:\t{inspect.stack()[1].filename}'
         )

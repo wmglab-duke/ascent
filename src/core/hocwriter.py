@@ -32,8 +32,15 @@ from src.utils import (
 
 
 class HocWriter(Exceptionable, Configurable, Saveable):
-    def __init__(self, source_dir, dest_dir, exception_config):
+    """Make launch.hoc file for each simulation run."""
 
+    def __init__(self, source_dir, dest_dir, exception_config):
+        """Initialize HocWriter.
+
+        :param source_dir: Path to source directory.
+        :param dest_dir: Path to destination directory.
+        :param exception_config: Exception configuration.
+        """
         # Initializes superclasses
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
         Configurable.__init__(self)
@@ -48,22 +55,21 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         )
 
     def define_sim_indices(self, args: List[List[np.array]]):
+        """Define simulation indices."""
         return itertools.product(args)
 
     def build_hoc(self, n_tsteps):
-        """Writes file launch.hoc for launching NEURON simulations.
+        """Write file launch.hoc for launching NEURON simulations.
 
         :param n_tsteps: Number of time steps in simulation.
         :return: None
         """
-
         write_mode = WriteMode.HOC
         file_path = os.path.join(
             self.dest_dir,
             f"launch{WriteMode.file_endings.value[write_mode.value]}",
         )
         with open(file_path, "w") as file_object:
-
             self.write_base_parameters(file_object, n_tsteps)
 
             fiber_model_info = self.write_fiber_parameters(file_object)
@@ -82,6 +88,12 @@ class HocWriter(Exceptionable, Configurable, Saveable):
             file_object.write("\nload_file(\"../../HOC_Files/Wrapper.hoc\")\n")
 
     def write_base_parameters(self, file_object, n_tsteps):
+        """Write base parameters to launch.hoc.
+
+        :param file_object: File object to write to.
+        :param n_tsteps: Number of time steps in simulation.
+        :return:
+        """
         # ENVIRONMENT
         file_object.write("\n//***************** Environment *****************\n")
         file_object.write(f"celsius   = {self.search(Config.MODEL, 'temperature'):0.0f} // [degC]\n")
@@ -94,6 +106,11 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         file_object.write(f"dt_initSS = {self.search(Config.SIM, 'protocol', 'dt_initSS'):0.0f} // [ms]\n")
 
     def write_fiber_parameters(self, file_object):
+        """Write fiber parameters to launch.hoc.
+
+        :param file_object: File object to write to.
+        :return:
+        """
         # FIBER PARAMETERS
         file_object.write("\n//***************** Fiber Parameters *************\n")
         fiber_model = self.search(Config.SIM, "fibers", "mode")
@@ -101,60 +118,66 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         # if myelinated
         if fiber_model_info.get("neuron_flag") == 2 and fiber_model != FiberGeometry.B_FIBER.value:
             file_object.write(
-                "geometry_determination_method = %0.0f "
-                "// geometry_determination_method = 0 for preset fiber diameters; "
-                "geometry_determination_method = 1 for MRG-based geometry interpolation; "
-                "geometry_determination_method = 2 for GeometryBuilder fits from SPARC Y2Q1\n"
-                % fiber_model_info.get("geom_determination_method")
+                f"geometry_determination_method = {fiber_model_info.get('geom_determination_method'):0.0f} "
+                f"// geometry_determination_method = 0 for preset fiber diameters; "
+                f"geometry_determination_method = 1 for MRG-based geometry interpolation; "
+                f"geometry_determination_method = 2 for GeometryBuilder fits from SPARC Y2Q1\n"
             )
-            file_object.write("flag_model_b_fiber = %0.0f\n" % 0)
+            file_object.write(f"flag_model_b_fiber = {0}\n")
         if fiber_model_info.get("neuron_flag") == 2 and fiber_model == FiberGeometry.B_FIBER.value:
             file_object.write(
-                "geometry_determination_method = %0.0f "
+                f"geometry_determination_method = {fiber_model_info.get('geom_determination_method')} "
                 "// geometry_determination_method = 0 for preset fiber diameters; "
                 "geometry_determination_method = 1 for MRG-based geometry interpolation; "
                 "geometry_determination_method = 2 for GeometryBuilder fits from SPARC Y2Q1\n"
-                % fiber_model_info.get("geom_determination_method")
             )
-            file_object.write("flag_model_b_fiber = %0.0f\n" % 1)
+            file_object.write(f"flag_model_b_fiber = {1}\n")
         file_object.write(
-            "fiber_type = %0.0f "
+            f"fiber_type = {fiber_model_info.get('neuron_flag')} "
             "// fiber_type = 1 for unmyelinated; fiber_type = 2 for myelinated; "
-            "fiber_type = 3 for c fiber built from cFiberBuilder.hoc\n" % fiber_model_info.get("neuron_flag")
+            "fiber_type = 3 for c fiber built from cFiberBuilder.hoc\n"
         )
         file_object.write(
-            "node_channels = %0.0f "
-            "// node_channels = 0 for MRG; node_channels = 1 for Schild 1994\n" % fiber_model_info.get("node_channels")
+            f"node_channels = {fiber_model_info.get('node_channels')} "
+            "// node_channels = 0 for MRG; node_channels = 1 for Schild 1994\n"
         )
-        # Flag to change the end 2 nodes (either end) to 5 mm for SL only in NEURON
-        file_object.write(f"large_end_nodes      = {int(0):0.0f}\n")
+        # Flag to change the end 2 nodes (either end) to 5 mm
+        file_object.write(f"large_end_nodes      = {0}\n")
         if fiber_model_info.get("neuron_flag") == 3:
             channels = fiber_model_info.get("channels_type")
             file_object.write(
-                "c_fiber_model_type            = {} // type: "
+                f"c_fiber_model_type            = {channels} // type: "
                 "1:Sundt Model "
                 "2:Tigerholm model "
                 "3:Rattay model "
-                "4:Schild97 model "
-                "5:Schild94 model "
-                "for c fiber built from cFiberBuilder.hoc\n".format(channels)
+                "4:Schild model "
+                "for c fiber built from cFiberBuilder.hoc\n"
             )
             file_object.write("len                           = axonnodes*deltaz\n")
         file_object.write(
-            "passive_end_nodes = %0.0f "
+            f"passive_end_nodes = {fiber_model_info.get('passive_end_nodes')} "
             "// passive_end_nodes = 1 to make both end nodes passive; 0 otherwise\n"
-            % fiber_model_info.get("passive_end_nodes")
         )
         return fiber_model_info
 
     def write_extracellular_stim(self, file_object):
+        """Write extracellular stimulation parameters to launch.hoc.
+
+        :param file_object: File object to write to.
+        :return:
+        """
         file_object.write("\n//***************** Extracellular Stim ***********\n")
         file_object.write("strdef VeTime_fname\n")
         file_object.write(f"VeTime_fname            = \"{'data/inputs/waveform.dat'}\"\n")
-        file_object.write("flag_extracellular_stim = %0.0f // Set to zero for off; one for on \n" % 1)
-        file_object.write("flag_whichstim = %0.0f // Set to zero for off; one for on \n" % 0)
+        file_object.write(f"flag_extracellular_stim = {1} // Set to zero for off; one for on \n")
+        file_object.write(f"flag_whichstim = {0} // Set to zero for off; one for on \n")
 
     def write_classification_checkpoints(self, file_object):
+        """Write classification checkpoints to launch.hoc.
+
+        :param file_object: File object to write to.
+        :return:
+        """
         file_object.write("\n//***************** Classification Checkpoints ***\n")
         # Time points to record Vm and gating params vs x
         checktimes = self.search(Config.SIM, "saving", "space", "times")
@@ -187,6 +210,11 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                 )
 
     def write_protocol(self, file_object):
+        """Write protocol to launch.hoc.
+
+        :param file_object: File object to write to.
+        :return:
+        """
         file_object.write("\n//***************** Protocol Parameters *********\n")
         protocol_mode_name: str = self.search(Config.SIM, 'protocol', 'mode')
         try:
@@ -212,8 +240,8 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                 file_object.write("ap_detect_location  = 0.9\n")
             else:
                 file_object.write(
-                    "ap_detect_location  = %0.2f\n"
-                    % self.search(Config.SIM, "protocol", "threshold", "ap_detect_location")
+                    f"ap_detect_location  = "
+                    f"{self.search(Config.SIM, 'protocol', 'threshold', 'ap_detect_location'):.2f}\n"
                 )
 
             bounds_search_mode_name: str = self.search(Config.SIM, "protocol", "bounds_search", "mode")
@@ -247,9 +275,9 @@ class HocWriter(Exceptionable, Configurable, Saveable):
             max_iter = self.search(Config.SIM, "protocol", "bounds_search").get("max_steps", 100)
             file_object.write(f"max_iter = {max_iter:0.0f} // \n")
 
-            file_object.write("Namp = %0.0f\n" % 1)
+            file_object.write(f"Namp = {1}\n")
             file_object.write("objref stimamp_values\n")
-            file_object.write("stimamp_values = new Vector(Namp,%0.0f)\n" % 0)
+            file_object.write(f"stimamp_values = new Vector(Namp,{0})\n")
             for amp_ind in range(1):
                 file_object.write(f"stimamp_values.x[{amp_ind:0.0f}] = {0:0.4f}\n")
 
@@ -274,21 +302,27 @@ class HocWriter(Exceptionable, Configurable, Saveable):
             file_object.write("\n//***************** Batching Parameters **********\n")
             file_object.write(f"Namp = {num_amps:0.0f}\n")
             file_object.write("objref stimamp_values\n")
-            file_object.write("stimamp_values = new Vector(Namp,%0.0f)\n" % 0)
+            file_object.write(f"stimamp_values = new Vector(Namp,{0})\n")
             for amp_ind in range(num_amps):
                 file_object.write(f"stimamp_values.x[{amp_ind:0.0f}] = {amps[amp_ind]:0.4f}\n")
         file_object.write(
-            "\nfind_thresh = %0.0f "
+            f"\nfind_thresh = {find_thresh} "
             "// find_thresh = 0 if not doing threshold search; "
-            "find_thresh = 1 if looking for threshold\n" % find_thresh
+            "find_thresh = 1 if looking for threshold\n"
         )
         file_object.write(
-            "find_block_thresh = %0.0f "
+            f"find_block_thresh = {block_thresh_flag} "
             "// If find_thresh==1, can also set find_block_thresh = 1 "
-            "to find block thresholds instead of activation threshold\n" % block_thresh_flag
+            "to find block thresholds instead of activation threshold\n"
         )
 
     def write_saving(self, fiber_model_info, file_object):
+        """Write the saving section of the hoc file.
+
+        :param fiber_model_info: Dictionary containing information about the fiber model.
+        :param file_object:  File object to write to.
+        :return: None
+        """
         file_object.write("\n//***************** Recording ********************\n")
         if 'saving' not in self.configs[Config.SIM.value]:
             self.configs[Config.SIM.value]['saving'] = {
@@ -315,16 +349,16 @@ class HocWriter(Exceptionable, Configurable, Saveable):
             f"saveflag_Istim        = {int(self.search(Config.SIM, 'saving', 'time', 'istim') is True):0.0f}\n"
         )
         if 'runtimes' not in self.configs[Config.SIM.value]['saving']:
-            file_object.write("saveflag_runtime     = %0.0f\n" % 0)
+            file_object.write(f"saveflag_runtime      = {0}\n")
         else:
             file_object.write(
-                f"saveflag_runtime     = {int(self.search(Config.SIM, 'saving', 'runtimes') is True):0.0f}\n"
+                f"saveflag_runtime      = {int(self.search(Config.SIM, 'saving', 'runtimes') is True):0.0f}\n"
             )
         if 'aploctime' not in self.configs[Config.SIM.value]['saving']:
-            file_object.write("saveflag_ap_loctime  = %0.0f\n" % 0)
+            file_object.write(f"saveflag_ap_loctime   = {0}\n")
         else:
             file_object.write(
-                f"saveflag_ap_loctime  = {int(self.search(Config.SIM, 'saving', 'aploctime') is True):0.0f}\n"
+                f"saveflag_ap_loctime   = {int(self.search(Config.SIM, 'saving', 'aploctime') is True):0.0f}\n"
             )
         if 'end_ap_times' in self.configs[Config.SIM.value]['saving']:
             loc_min = self.search(Config.SIM, "saving", "end_ap_times", "loc_min")
@@ -340,7 +374,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
                 self.throw(116)
 
             file_object.write(
-                "saveflag_end_ap_times = %0.0f\n\n" % 1
+                f"saveflag_end_ap_times = {1}\n\n"
             )  # if Sim has "ap_end_times" defined, then we are recording them
             file_object.write(f"loc_min_end_ap        = {loc_min:0.2f}\n")
             file_object.write(f"loc_max_end_ap        = {loc_max:0.2f}\n")
@@ -349,39 +383,37 @@ class HocWriter(Exceptionable, Configurable, Saveable):
             )
 
     def write_intracellular_stim(self, file_object):
+        """Write the intracellular stimulation section of the hoc file.
+
+        :param file_object: File object to write to.
+        :return: None
+        """
         file_object.write("\n//***************** Intracellular Stim ***********\n")
         # use for keys only, get params with self.search() for error throwing if missing them
         intracellular_stim: dict = self.search(Config.SIM, "intracellular_stim")
         file_object.write(
-            "IntraStim_PulseTrain_delay    = "
-            "%0.2f // [ms]\n" % self.search(Config.SIM, "intracellular_stim", "times", "IntraStim_PulseTrain_delay")
+            f"IntraStim_PulseTrain_delay    = "
+            f"{self.search(Config.SIM, 'intracellular_stim', 'times', 'IntraStim_PulseTrain_delay'):.2f} // [ms]\n"
         )
         file_object.write(
-            "IntraStim_PulseTrain_pw       = %0.2f // [ms]\n"
-            % self.search(Config.SIM, "intracellular_stim", "times", "pw")
+            f"IntraStim_PulseTrain_pw       = "
+            f"{self.search(Config.SIM, 'intracellular_stim', 'times', 'pw'):.2f} // [ms]\n"
         )
         if "IntraStim_PulseTrain_dur" in intracellular_stim.get("times").values():
             file_object.write(
-                "IntraStim_PulseTrain_traindur = "
-                "%0.2f // [ms]\n"
-                % self.search(
-                    Config.SIM,
-                    "intracellular_stim",
-                    "times",
-                    "IntraStim_PulseTrain_dur",
-                )
+                f"IntraStim_PulseTrain_traindur = "
+                f"{self.search(Config.SIM, 'intracellular_stim', 'times', 'IntraStim_PulseTrain_dur'):.2f} // [ms]\n"
             )
         else:
             file_object.write("IntraStim_PulseTrain_traindur = tstop - IntraStim_PulseTrain_delay // [ms]\n")
         file_object.write(
-            "IntraStim_PulseTrain_freq     = %0.2f // [Hz]\n"
-            % self.search(Config.SIM, "intracellular_stim", "pulse_repetition_freq")
+            f"IntraStim_PulseTrain_freq     = "
+            f"{self.search(Config.SIM, 'intracellular_stim', 'pulse_repetition_freq'):.2f} // [Hz]\n"
         )
         file_object.write(
-            f"IntraStim_PulseTrain_amp      = {self.search(Config.SIM, 'intracellular_stim', 'amp'):0.4f} // [nA]\n"
+            f"IntraStim_PulseTrain_amp      = " f"{self.search(Config.SIM, 'intracellular_stim', 'amp'):0.4f} // [nA]\n"
         )
         file_object.write(
-            "IntraStim_PulseTrain_ind      = %0.0f "
-            "// Index of node where intracellular stim is placed [unitless]\n"
-            % self.search(Config.SIM, "intracellular_stim", "ind")
+            f"IntraStim_PulseTrain_ind      = {self.search(Config.SIM, 'intracellular_stim', 'ind'):0.0f} "
+            f"// Index of node where intracellular stim is placed [unitless]\n"
         )

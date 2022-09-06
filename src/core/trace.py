@@ -33,12 +33,12 @@ class Trace(Exceptionable):
     """
 
     def __init__(self, points, exception_config):
-        """
-        :param points: nx3 list expected to be a loop. If a non-loop is given, then the functionality is not defined.
+        """Initialize a Trace object.
+
+        :param points: nx3 iterable of points [x, y, z].
         :param exception_config: data passed from a higher object for exceptions.json,
             hence why it inherits exceptionable.
         """
-
         # These are private instance variables that are returned by getter
         self.__contour = None
         self.__polygon = None
@@ -58,7 +58,8 @@ class Trace(Exceptionable):
 
     # %% public, MUTATING methods
     def append(self, points):
-        """
+        """Append points to the end of the trace.
+
         :param points: nx3 ndarray, where each row is a point [x, y, z]
         """
         # make sure points is multidimensional ndarray (only applicable if a single point is passed in)
@@ -78,12 +79,13 @@ class Trace(Exceptionable):
         self.__update()
 
     def offset(self, fit: dict = None, distance: float = None):
-        """NOT AN AFFINE TRANSFORMATION.
+        """Offsets the trace by a given distance.
 
-        :param fit: used to scale up by a factor if you are offsetting the boundary by a linear fit
+        This will shrink or expand the trace, similar to a morphological dilate or erode.
+        Note: this is not an affine transformation.
+        :param fit: dictionary of parameters for a linear fit of distance to offset based off area.
         :param distance: used to scale by a discrete distance
         """
-
         # create clipper offset object
         pco = pyclipper.PyclipperOffset()
 
@@ -111,9 +113,10 @@ class Trace(Exceptionable):
         pco.Clear()
 
     def smooth(self, distance, area_compensation=True):
-        """Smooths a contour using a dilation followed by erosion.
+        """Smooth a contour using a dilation followed by erosion.
 
         :param distance: amount to use for dilation and erosion, in whatever units the trace is using
+        :param area_compensation: if True, after smoothing, scale each trace to match its original area
         """
         if distance < 0:
             self.throw(111)
@@ -132,12 +135,12 @@ class Trace(Exceptionable):
         self.points = np.flip(self.points, axis=0)  # set points to opencv orientation
 
     def scale(self, factor: float = 1, center: Union[List[float], str] = 'centroid'):
-        """
-        :param factor: scaling factor to scale up by - multiple all points by a factor.
-        [X 0 0; 0 Y 0; 0 0 Z]
+        """Scales the trace by a given factor.
+
+        :param factor: scaling factor to scale up by - multiply all points by a factor.
+           [X 0 0; 0 Y 0; 0 0 Z]
         :param center: string "centroid", string "center" or a point [x,y]
         """
-
         if isinstance(center, list):
             center = tuple(center)
         else:
@@ -151,11 +154,11 @@ class Trace(Exceptionable):
         self.__update()
 
     def rotate(self, angle: float, center: Union[List[float], str] = 'centroid'):
-        """
+        """Rotate the trace by a given angle.
+
         :param angle: rotates trace by radians CCW
         :param center: string "centroid", string "center" or a point [x,y]
         """
-
         if isinstance(center, list):
             center = tuple(center)
         else:
@@ -169,11 +172,10 @@ class Trace(Exceptionable):
         self.__update()
 
     def shift(self, vector):
-        """
-        :param vector: 1-dim vector with 3 elements... shape is (3,)
-        Moves trace [x,y] in any direction (x,y,z) could be np.ndarray/list/tuple
-        """
+        """Shift the trace by a vector.
 
+        :param vector: 1-dim vector with 3 elements... shape is (3,)
+        """
         # must be 3 item vector
         if np.shape(vector) != (3,):
             self.throw(3)
@@ -186,14 +188,14 @@ class Trace(Exceptionable):
         self.__update()
 
     def down_sample(self, mode: DownSampleMode, step: int):
-        """Simple down sample method to remove points at even intervals. Will
-        start indices on "step-th" element (i.e. if step is 4, first selected
-        element at index 3)
+        """Down sample trace by removing points at even intervals.
+
+        Will start indices on "step-th" element
+           (i.e. if step is 4, first selected element at index 3)
 
         :param mode: decide whether to KEEP only the points on steps, or REMOVE only those points
         :param step: spacing between each selected point (both keep and remove)
         """
-
         ii = list(range(step - 1, self.count(), step))
 
         if mode == DownSampleMode.KEEP:
@@ -208,14 +210,16 @@ class Trace(Exceptionable):
 
     # %% public, NON-MUTATING methods
     def count(self) -> int:
-        """
+        """Get the number of points in the trace.
+
         :return: number of rows in self.points (i.e. number of points)
         """
         return np.shape(self.points)[0]
 
     # %% dependent on shapely.geometry.Polygon (ALL 2D GEOMETRY)
     def polygon(self) -> Polygon:
-        """
+        """Generate a shapely Polygon object from the trace.
+
         :return: shape of polygon as a shapely.geometry.Polygon (ALL 2D geometry)
         """
         if self.__polygon is None:
@@ -227,15 +231,17 @@ class Trace(Exceptionable):
         return self.__polygon
 
     def bounds(self):
-        """
+        """Calculate the bounding box of the trace.
+
         :return: bounds of the trace object
         """
         return self.polygon().bounds
 
     def random_points(self, count: int, buffer: float = 0, my_xy_seed: int = 123) -> List[Tuple[float]]:
-        """
-        :param my_xy_seed:
-        :param buffer:
+        """Get random points within the trace.
+
+        :param my_xy_seed: seed for random number generator
+        :param buffer: minimum distance from the edge of the trace
         :param count: number of points to find
         :return: list of tuples (x,y) that are within the trace (polygon)
         """
@@ -261,21 +267,24 @@ class Trace(Exceptionable):
         return points
 
     def within(self, outer: 'Trace') -> bool:
-        """
+        """Check if the trace is within another trace.
+
         :param outer: other Trace to check
         :return: True if within other Trace, else False
         """
         return self.polygon().within(outer.polygon())
 
     def intersects(self, other: 'Trace') -> bool:
-        """
+        """Check if the trace intersects another trace.
+
         :param other: other Trace to check
         :return: True if intersecting, else False
         """
         return self.polygon().boundary.intersects(other.polygon().boundary)
 
     def centroid(self) -> Tuple[float, float]:
-        """
+        """Get the centroid of the trace.
+
         :return: ellipse centroid as tuple: center --> (x, y)
         """
         if self.__centroid is None:
@@ -284,7 +293,8 @@ class Trace(Exceptionable):
         return self.__centroid
 
     def angle_to(self, other: 'Trace'):
-        """
+        """Calculate the angle between the centroid of the trace and another trace.
+
         :param other: type Trace
         :return: returns the CCW angle to the other trace based on self and other's centroids
         """
@@ -292,21 +302,23 @@ class Trace(Exceptionable):
 
     @staticmethod
     def angle(first, second):
+        """Calculate an angle between two points."""
         return np.arctan2(second[1] - first[1], second[0] - first[0])
 
     def area(self) -> float:
-        """
+        """Get the area of the Trace.
+
         :return: area of Trace
         """
         return self.polygon().area
 
     def min_distance(self, other: 'Trace', return_points: bool = False) -> Union[float, tuple]:
-        """
+        """Find the minimum distance between this trace and another trace.
+
         :param return_points: boolean for whether the closest points will be returned
         :param other: Trace to find distance to
         :return: float minimum distance and the points if indicated
         """
-
         distance = self.polygon().boundary.distance(other.polygon().boundary)
 
         if not return_points:
@@ -315,14 +327,16 @@ class Trace(Exceptionable):
             return distance, nearest_points(self.polygon(), other.polygon())
 
     def max_distance(self, other: 'Trace') -> float:
-        """
+        """Find the maximum distance between this trace and another trace.
+
         :param other: Trace to find distance to
         :return: float maximum distance
         """
         return self.polygon().boundary.hausdorff_distance(other.polygon().boundary)
 
     def centroid_distance(self, other: 'Trace', return_points: bool = False) -> Union[float, tuple]:
-        """
+        """Find the distance between the centroids of this trace and another trace.
+
         :param return_points: boolean for whether the closest points will be returned
         :param other: Trace to find distance to
         :return: float maximum distance and the points if indicated
@@ -338,8 +352,11 @@ class Trace(Exceptionable):
 
     # %% contour-dependent (cv2)
     def contour(self) -> np.ndarray:
-        """Builds a "fake" contour so that cv2 can analyze it (independent of
-        the image) Use for to_circle and to_ellipse."""
+        """Return a contour based off the Trace.
+
+        Builds a "fake" contour so that cv2 can analyze it (independent of
+           the image) Use for to_circle and to_ellipse.
+        """
         if self.__contour is None:
             # check points all have same z-value (MAY BE CHANGED?)
             if len(set(self.__int_points[:, 2])) != 1:
@@ -355,21 +372,24 @@ class Trace(Exceptionable):
         return self.__contour
 
     def ellipse(self):
-        """
+        """Generate a best-fit ellipse from the trace.
+
         NOTE: this uses 2-D contour (ignores z-coordinate)
         :return: ellipse specs as 2-D tuple: (center, axes) --> ((x, y), (a, b), angle)
         """
         return cv2.fitEllipse(self.contour())
 
     def mean_radius(self) -> float:
-        """
+        """Calculate the mean radius of the trace.
+
         :return: the mean radius of the best-fit ellipse
         """
         ((_, _), (a, b), _) = cv2.fitEllipse(self.contour())
         return float(np.mean([item / 2 for item in (a, b)], axis=0))
 
     def to_ellipse(self):
-        """
+        """Get a best fit ellipse from the trace.
+
         :return: returns ellipse object methods for best-fit ellipse
         """
         # ((centroid), (axes), angle) ... note angle is in degrees
@@ -379,9 +399,10 @@ class Trace(Exceptionable):
         return self.__ellipse_object(u, v, a, b, angle * 2 * np.pi / 360)
 
     def to_circle(self, buffer: float = 0.0):
-        """
+        """Get a best-fit circle for the Trace.
+
         :return: returns ellipse object methods for best-fit circle (averages axes of best fit ellipse and
-        sets as circle radius)
+           sets as circle radius)
         """
         # ((centroid), (axes), angle) ... note angle is in degrees
         ((u, v), (_, _), angle) = self.ellipse()
@@ -434,12 +455,12 @@ class Trace(Exceptionable):
         linewidth=1,
         line_kws: dict = None,
     ):
-        """
+        """Plot the trace.
+
         :param ax:
         :param color:
         :param plot_format: the plt.plot format spec (see matplotlib docs)
         """
-
         if ax is None:
             ax = plt.gca()
 
@@ -452,7 +473,8 @@ class Trace(Exceptionable):
         ax.plot(points[:, 0], points[:, 1], plot_format, linewidth=linewidth, **{} if line_kws is None else line_kws)
 
     def plot_centroid(self, plot_format: str = 'k*'):
-        """
+        """Plot the centroid of the trace.
+
         :param plot_format: the plt.plot format spec (see matplotlib docs)
         """
         plt.plot(*self.centroid(), plot_format)
@@ -505,13 +527,18 @@ class Trace(Exceptionable):
         return path
 
     def deepcopy(self) -> 'Trace':
-        """
+        """Deep copy of Trace object.
+
+        Deep copies ensure that the new object is not a reference to the old object;
+            changes to the new object will not affect the old object.
+
         :return: creates a new place in memory for the Trace. See: https://docs.python.org/2/library/copy.html
         """
         return deepcopy(self)
 
     def pymunk_poly(self) -> Tuple[pymunk.Body, pymunk.Poly]:
-        """
+        """Generate pymunk Body and Poly objects for the Trace.
+
         :return: a body and polygon shape, rigid polygon
         """
         copy = self.deepcopy()
@@ -530,7 +557,8 @@ class Trace(Exceptionable):
         return body, shape
 
     def pymunk_segments(self, space: pymunk.Space) -> List[pymunk.Segment]:
-        """
+        """Generate list of pymunk segment objects comprising a trace.
+
         :param space:
         :return: returns a list of static line segments that cannot be moved
         """
@@ -553,19 +581,20 @@ class Trace(Exceptionable):
             )
         return segments
 
-        # %% METHODS ADAPTED FROM: https://www.nayuki.io/res/smallest-enclosing-circle/smallestenclosingcircle-test.py
+    # %% METHODS ADAPTED FROM: https://www.nayuki.io/res/smallest-enclosing-circle/smallestenclosingcircle-test.py
 
-        # Data conventions: A point is a pair of floats (x, y).
-        # A circle is a triple of floats (center x, center y, radius).
+    # Data conventions: A point is a pair of floats (x, y).
+    # A circle is a triple of floats (center x, center y, radius).
 
-        # Returns the smallest circle that encloses all the given points. Runs in expected O(n) time, randomized.
-        # Input: A sequence of pairs of floats or ints, e.g. [(0,5), (3.1,-2.7)].
-        # Output: A triple of floats representing a circle.
-        # Note: If 0 points are given, None is returned. If 1 point is given, a circle of radius 0 is returned.
-        #
-        # Initially: No boundary points known
+    # Returns the smallest circle that encloses all the given points. Runs in expected O(n) time, randomized.
+    # Input: A sequence of pairs of floats or ints, e.g. [(0,5), (3.1,-2.7)].
+    # Output: A triple of floats representing a circle.
+    # Note: If 0 points are given, None is returned. If 1 point is given, a circle of radius 0 is returned.
+    #
+    # Initially: No boundary points known
 
     def make_circle(self):
+        """Find the minimum bounding circle of the trace."""
         # Convert to float and randomize order
         shuffled = [(float(x), float(y)) for (x, y) in self.points[:, 0:2]]
         random.shuffle(shuffled)
@@ -578,7 +607,7 @@ class Trace(Exceptionable):
         return c
 
     # One boundary point known
-    def _make_circle_one_point(self, points, p):
+    def _make_circle_one_point(self, points, p):  # noqa: D102
         c = (p[0], p[1], 0.0)
         for (i, q) in enumerate(points):
             if not self.is_in_circle(c, q):
@@ -589,7 +618,7 @@ class Trace(Exceptionable):
         return c
 
     # Two boundary points known
-    def _make_circle_two_points(self, points, p, q):
+    def _make_circle_two_points(self, points, p, q):  # noqa: D102
         circ = self._make_diameter(p, q)
         left = None
         right = None
@@ -629,14 +658,16 @@ class Trace(Exceptionable):
         else:
             return left if (left[2] <= right[2]) else right
 
-    def _make_diameter(self, a, b):
+    @staticmethod
+    def _make_diameter(a, b):  # noqa: D102
         cx = (a[0] + b[0]) / 2.0
         cy = (a[1] + b[1]) / 2.0
         r0 = np.math.hypot(cx - a[0], cy - a[1])
         r1 = np.math.hypot(cx - b[0], cy - b[1])
         return cx, cy, max(r0, r1)
 
-    def _make_circumcircle(self, a, b, c):
+    @staticmethod
+    def _make_circumcircle(a, b, c):  # noqa: D102
         # Mathematical algorithm from Wikipedia: Circumscribed circle
         ox = (min(a[0], b[0], c[0]) + max(a[0], b[0], c[0])) / 2.0
         oy = (min(a[1], b[1], c[1]) + max(a[1], b[1], c[1])) / 2.0
@@ -662,12 +693,14 @@ class Trace(Exceptionable):
         rc = np.math.hypot(x - c[0], y - c[1])
         return x, y, max(ra, rb, rc)
 
-    def is_in_circle(self, c, p):
+    @staticmethod
+    def is_in_circle(c, p):  # noqa: D102
         _MULTIPLICATIVE_EPSILON = 1 + 1e-14
         return c is not None and np.math.hypot(p[0] - c[0], p[1] - c[1]) <= c[2] * _MULTIPLICATIVE_EPSILON
 
     # Returns twice the signed area of the triangle defined by (x0, y0), (x1, y1), (x2, y2).
-    def _cross_product(self, x0, y0, x1, y1, x2, y2):
+    @staticmethod
+    def _cross_product(x0, y0, x1, y1, x2, y2):  # noqa: D102
         return (x1 - x0) * (y2 - y0) - (y1 - y0) * (x2 - x0)
 
     # %% private utility methods

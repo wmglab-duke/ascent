@@ -1,7 +1,6 @@
 #!/usr/bin/env python3.7
 
-"""Imports n_sims from the ASCENT n_sims export directory to the ASCENT
-simulation data directory.
+"""Imports n_sims from the ASCENT n_sims export directory to the ASCENT simulation data directory.
 
 The copyrights of this software are owned by Duke University.
 Please refer to the LICENSE and README.md files for licensing
@@ -16,6 +15,7 @@ from src.utils import Configurable
 
 
 def run(args):
+    """Run the import."""
     env_path = os.path.join('config', 'system', 'env.json')
     assert os.path.isfile(env_path), f'Invalid env path: {env_path}'
 
@@ -56,9 +56,7 @@ def run(args):
                         else:
                             print(
                                 'At least one threshold (or activation log if running FINITE AMPLITUDES) was missing,'
-                                ' skipping import for run {} sample {} model {} sim {}'.format(
-                                    argument, sample, model, sim
-                                )
+                                f' skipping import for run {argument} sample {sample} model {model} sim {sim}'
                             )
                             continue
                     Simulation.import_n_sims(

@@ -6,7 +6,6 @@ Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
-
 import base64
 import json
 import os
@@ -41,11 +40,13 @@ from src.utils import (
 
 
 class Runner(Exceptionable, Configurable):
-    def __init__(self, number: int):
-        """
-        :param number: the number of the run
-        """
+    """Control flow of the pipeline."""
 
+    def __init__(self, number: int):
+        """Initialize Runner class.
+
+        :param number: number of this run
+        """
         # initialize Configurable super class
         Configurable.__init__(self)
 
@@ -58,7 +59,8 @@ class Runner(Exceptionable, Configurable):
         self.number = number
 
     def load_configs(self) -> dict:
-        """Load all configuration files into class
+        """Load all configuration files into class.
+
         :return: dictionary of all configs (Sample, Model(s), Sims(s))
         """
 
@@ -122,7 +124,8 @@ class Runner(Exceptionable, Configurable):
         return obj
 
     def setup_run(self):
-        """perform all setup steps for a run
+        """Perform all setup steps for a run.
+
         :return: Dictionary of all configs
         """
         # load all json configs into memory
@@ -149,7 +152,6 @@ class Runner(Exceptionable, Configurable):
         :param smart: if True, reuse objects from previous runs
         :return: (sample object, sample number)
         """
-
         sample_num = self.configs[Config.RUN.value]['sample']
 
         sample_file = os.path.join(os.getcwd(), 'samples', str(sample_num), 'sample.obj')
@@ -347,7 +349,7 @@ class Runner(Exceptionable, Configurable):
         Simulation.export_run(self.number, os.environ[Env.PROJECT_PATH.value], os.environ[Env.NSIM_EXPORT_PATH.value])
 
     def run(self, smart: bool = True):
-        """Main function to run the pipeline.
+        """Run the pipeline.
 
         :param smart: bool telling the program whether to reprocess the sample or not if it already exists as sample.obj
         :return: nothing to memory, spits out all pipeline related data to file
@@ -523,7 +525,6 @@ class Runner(Exceptionable, Configurable):
         :return: model_config: dict, model config
         """
         # NOTE: ASSUMES SINGLE SLIDE
-
         # add temporary model configuration
         self.add(SetupMode.OLD, Config.MODEL, model_config)
         self.add(SetupMode.OLD, Config.SAMPLE, sample_config)
@@ -655,6 +656,15 @@ class Runner(Exceptionable, Configurable):
         return model_config
 
     def get_cuff_shift_parameters(self, cuff_config, deform_ratio, nerve_copy, sample_config, slide):
+        """Calculate parameters for cuff shift.
+
+        :param cuff_config: cuff configuration
+        :param deform_ratio: deform ratio
+        :param nerve_copy: copied nerve object
+        :param sample_config: sample configuration
+        :param slide: slide object to shift cuff around
+        :return: (cuff code, cuff r buffer, expandable, offset, r_bound, r_f, theta_c, theta_i, x, y)
+        """
         # fetch 1-2 letter code for cuff (ex: 'CT')
         cuff_code: str = cuff_config['code']
         # fetch radius buffer string (ex: '0.003 [in]')
@@ -704,6 +714,15 @@ class Runner(Exceptionable, Configurable):
         return cuff_code, cuff_r_buffer, expandable, offset, r_bound, r_f, theta_c, theta_i, x, y
 
     def check_cuff_expansion_radius(self, cuff_code, cuff_config, expandable, r_f, theta_i):
+        """Check the cuff expansion radius.
+
+        :param cuff_code: str, cuff code
+        :param cuff_config: dict, cuff config
+        :param expandable: bool, cuff expandable
+        :param r_f: float, final radius
+        :param theta_i: float, initial angle
+        :return:
+        """
         # check radius iff not expandable
         if not expandable:
             r_i_str: str = [
@@ -740,6 +759,7 @@ class Runner(Exceptionable, Configurable):
                     theta_f = theta_i
             else:
                 theta_f = theta_i
+
         return r_i, theta_f
 
     def compute_electrical_parameters(self, all_configs, model_index):
@@ -749,7 +769,6 @@ class Runner(Exceptionable, Configurable):
         :param model_index: index of the model to compute parameters for
         :return: None, writes output to file
         """
-
         # fetch current model config using the index
         model_config = all_configs[Config.MODEL.value][model_index]
         model_num = self.configs[Config.RUN.value]['models'][model_index]
