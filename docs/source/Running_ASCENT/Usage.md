@@ -54,7 +54,7 @@ Run this script from your `"ASCENT_PROJECT_PATH"`. Files to keep are specified w
 
 If you would like to remove ONLY CERTAIN FILES for a single sample (i.e., `samples/<sample_index>/`), use this script.
 This script is useful for removing logs, runtimes, special,
-and _.bat or_.sh scripts. Run this script from your `"ASCENT_PROJECT_PATH"`. Files to remove are specified within the python script.
+and \_.bat or \_.sh scripts. Run this script from your `"ASCENT_PROJECT_PATH"`. Files to remove are specified within the python script.
 
 `python run tidy_samples <list of sample indices>`
 
@@ -100,7 +100,8 @@ of the pipeline searching for configurations (i.e., **_Sample_**,
 `run()` has been called, the results can be fetched using the `summary()`
 accessor method. In addition, the user may pass in a file path to
 `excel_output()` to generate an Excel sheet summarizing the Query
-results.
+results. Finally, use the `threshold_data()` method to return a DataFrame
+of thresholds with identifying information.
 
 Query also has methods for accessing configurations and Python objects
 within the `samples/` directory based on a list of **_Sample_**,
@@ -111,12 +112,7 @@ dictionary or saved Python object (using the Pickle package),
 respectively, for a list of configuration indices. These tools allow for
 convenient looping through the data associated with search criteria.
 
-In addition, we have included a few data analysis methods in the Query
-class: `heatmaps()`, `barcharts_compare_models()`, and
-`barcharts_compare_samples()`. Since individual use cases for data
-analysis can differ greatly, these methods are not considered "core"
-functionality and can instead be treated as examples for how one might
-use the Query class. Example uses of these Query
+Example uses of these Query
 convenience methods are included in `examples/analysis/`.
 
 - `plot_sample.py`
@@ -124,6 +120,11 @@ convenience methods are included in `examples/analysis/`.
 - `plot_fiberset.py`
 
 - `plot_waveform.py`
+
+### Specialized ASCENT plots
+
+See [Plotter Module](plotter.rst) for more info; example uses of this module
+are provided in `examples/analysis`.
 
 ### Video generation for NEURON state variables
 
