@@ -16,6 +16,7 @@ ignore_directives = [
     "argparse",
     "changelog",
     "bibliography",
+    "automodule"
 ]
 
 [tool.flynt]
