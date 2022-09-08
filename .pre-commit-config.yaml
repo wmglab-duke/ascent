@@ -60,7 +60,6 @@ repos:
     rev: 4.0.1
     hooks:
       - id: flake8
-        # check for dead code
         additional_dependencies:
           - flake8-eradicate
           - flake8-bugbear
@@ -71,7 +70,7 @@ repos:
           - flake8-docstrings
           - flake8-rst-docstrings
           - pep8-naming
-  #          - darglint
+          - darglint
   # format and lint markdown
   - repo: https://github.com/igorshubovych/markdownlint-cli
     rev: v0.32.1
