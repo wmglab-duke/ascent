@@ -70,6 +70,7 @@ repos:
           - flake8-use-fstring
           - flake8-docstrings
           - flake8-rst-docstrings
+          - pep8-naming
   #          - darglint
   # format and lint markdown
   - repo: https://github.com/igorshubovych/markdownlint-cli
