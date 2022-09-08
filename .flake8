@@ -11,4 +11,4 @@ docstring-style: SPHINX
 max-line-length = 120
 max-complexity = 18
 #note T4 is for mypy, so does nothing now
-select = B,C,E,F,W,T4,SIM,RST,D,T1,FS,DAR
+select = B,C,E,F,W,T4,SIM,RST,D,T1,FS,DAR,N
