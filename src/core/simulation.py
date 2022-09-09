@@ -28,6 +28,7 @@ from src.utils import Config, Configurable, Env, Exceptionable, ExportMode, Save
 
 from .fiberset import FiberSet
 from .waveform import Waveform
+from .hocwriter import HocWriter
 
 
 class Simulation(Exceptionable, Configurable, Saveable):
