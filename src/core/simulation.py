@@ -297,6 +297,74 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
         return self
 
+    def n_sim_setup(self, sim_dir, sim_num, potentials_ind, waveform_ind, t):
+            """Set up the variables for a particular n_sim.
+    
+            :param sim_dir: Path to simulation directory
+            :param sim_num: Simulation number
+            :param potentials_ind: Index of potentials in potentials_product
+            :param waveform_ind: Index of waveform in wave_product
+            """
+            # build file structure sim/#/n_sims/t/data/(inputs and outputs)
+            self._build_file_structure(os.path.join(sim_dir, str(sim_num)), t)
+            nsim_inputs_directory = os.path.join(sim_dir, str(sim_num), 'n_sims', str(t), 'data', 'inputs')
+    
+            if not os.path.exists(nsim_inputs_directory):
+                os.makedirs(nsim_inputs_directory)
+    
+            # copy corresponding waveform to sim/#/n_sims/t/data/inputs
+            source_waveform_path = os.path.join(sim_dir, str(sim_num), "waveforms", f"{waveform_ind}.dat")
+            destination_waveform_path = os.path.join(
+                sim_dir,
+                str(sim_num),
+                "n_sims",
+                str(t),
+                "data",
+                "inputs",
+                "waveform.dat",
+            )
+            if not os.path.isfile(destination_waveform_path):
+                shutil.copyfile(source_waveform_path, destination_waveform_path)
+    
+            # get source, waveform, and fiberset values for the corresponding neuron simulation t
+            active_src_ind, fiberset_ind = self.potentials_product[potentials_ind]
+            active_src_vals = [self.src_product[active_src_ind]]
+            wave_vals = self.wave_product[waveform_ind]
+            fiberset_vals = self.fiberset_product[fiberset_ind]
+    
+            # pair down simulation config to no lists of parameters (corresponding to the neuron simulation index t)
+            sim_copy = self._copy_and_edit_config(
+                self.configs[Config.SIM.value],
+                self.src_key,
+                active_src_vals,
+                copy_again=False,
+            )
+    
+            sim_copy = self._copy_and_edit_config(sim_copy, self.wave_key, wave_vals, copy_again=False)
+    
+            sim_copy = self._copy_and_edit_config(sim_copy, self.fiberset_key, fiberset_vals, copy_again=False)
+    
+            # save the paired down simulation config to its corresponding neuron simulation t folder
+            with open(
+                os.path.join(sim_dir, str(sim_num), "n_sims", str(t), f"{t}.json"),
+                "w",
+            ) as handle:
+                handle.write(json.dumps(sim_copy, indent=2))
+    
+            n_tsteps = len(self.waveforms[waveform_ind].wave)
+    
+            # add config and write launch.hoc
+            n_sim_dir = os.path.join(sim_dir, str(sim_num), "n_sims", str(t))
+            hocwriter = HocWriter(
+                os.path.join(sim_dir, str(sim_num)),
+                n_sim_dir,
+                self.configs[Config.EXCEPTIONS.value],
+            )
+            hocwriter.add(SetupMode.OLD, Config.MODEL, self.configs[Config.MODEL.value]).add(
+                SetupMode.OLD, Config.SIM, sim_copy
+            ).add(SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value]).build_hoc(n_tsteps)
+            return nsim_inputs_directory, fiberset_ind, active_src_vals
+
     def validate_ss_dz(self, supersampled_bases, sim_dir):
         """Validate the ss_dz in the simulation. Make sure that the parent SS dz is the same as this one.
 
@@ -332,11 +400,10 @@ class Simulation(Exceptionable, Configurable, Saveable):
         :return: self
         """
 
-        def make_inner_fiber_diam_key(my_fiberset_ind, my_nsim_inputs_directory, my_potentials_directory, my_file):
+        def make_inner_fiber_diam_key(my_fiberset_ind, my_potentials_directory, my_file):
             """Make the key for the inner-fiber-diameter key file.
 
             :param my_fiberset_ind: index of the fiberset we are building the key for
-            :param my_nsim_inputs_directory: directory of the nsim inputs
             :param my_potentials_directory: directory of the potentials
             :param my_file: file we are making
             """
