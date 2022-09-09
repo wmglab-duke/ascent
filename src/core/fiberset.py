@@ -81,7 +81,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         self.out_to_fib, self.out_to_in = self._generate_maps(fibers_xy)
         self.fibers = self._generate_z(fibers_xy, super_sample=super_sample)
         self.validate()
-        self.plot_fibers_on_sample(sim_directory)
+        self.plot_fibers_on_sample(fibers_xy, sim_directory)
 
         return self
 
