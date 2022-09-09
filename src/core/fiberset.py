@@ -376,7 +376,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
                 self.throw(71)
         return points
 
-    def plot_points_on_sample(self, points, sim_directory):
+    def plot_fibers_on_sample(self, points, sim_directory):
         """Plot the xy coordinates of the fibers on the sample.
 
         :param points: The xy coordinates of the fibers.
