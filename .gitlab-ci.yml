@@ -48,31 +48,40 @@ isort:
   stage: lint
   script:
     - pip install isort
-    - isort --check-only config docs examples scripts src run
-
-flynt:
-  stage: lint
-  script:
-    - pip install flynt
-    - flynt --fail-on-change config docs examples scripts src run
+    - isort --check-only config docs examples scripts src run tests
 
 black:
   stage: lint
   script:
     - pip install black
-    - black --check config docs examples scripts src run
+    - black --check config docs examples scripts src run tests
 
 flake8:
   stage: lint
   script:
-    - pip install flake8 flake8-eradicate flake8-simplify flake8-bugbear flake8-builtins flake8-comprehensions flake8-fixme
-    - flake8 config docs examples scripts src run
+    - pip install flake8 flake8-eradicate flake8-simplify flake8-bugbear flake8-builtins flake8-comprehensions
+    - flake8 config docs examples scripts src run tests
 
 #Here should check that no self.throw(9001) is in repo, the error code 9001 is used for development
 dev_check:
   stage: lint
   script:
     - ( ! grep "self.throw(9001)" --include \*.py -r . )
+    - pip install flake8 flake8-fixme
+    - flake8 --select=T100,T101,T102 config docs examples scripts src run tests
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event' && '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+#Run tests
+pytest:
+  stage: test
+  script:
+    - pip install -r requirements.txt
+    - pip install pytest pytest-cov
+    - apt-get update && apt-get -y install libgl1
+    - pytest --cov=src/ tests/
+    - coverage xml
 
 test_docs:
   stage: test
@@ -94,7 +103,6 @@ compile_java:
     - wget -q -O bin/json-20190722.jar https://repo1.maven.org/maven2/org/json/json/20190722/json-20190722.jar
     - wget -qO- --header "PRIVATE-TOKEN:$COMSOL_JARS_TOKEN" "https://gitlab.oit.duke.edu/api/v4/projects/27633/repository/archive" | tar -xvz --strip-components 1 -C comsolplugins
     - javac -classpath bin/json-20190722.jar:comsolplugins/* src/model/*.java -d bin
-
   artifacts:
     untracked: true
 
