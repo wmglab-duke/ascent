@@ -137,8 +137,7 @@ class Trace(Exceptionable):
     def scale(self, factor: float = 1, center: Union[List[float], str] = 'centroid'):
         """Scales the trace by a given factor.
 
-        :param factor: scaling factor to scale up by - multiply all points by a factor.
-           [X 0 0; 0 Y 0; 0 0 Z]
+        :param factor: scaling factor to scale up by - multiply all points by a factor; [X 0 0; 0 Y 0; 0 0 Z]
         :param center: string "centroid", string "center" or a point [x,y]
         """
         if isinstance(center, list):
@@ -302,7 +301,12 @@ class Trace(Exceptionable):
 
     @staticmethod
     def angle(first, second):
-        """Calculate an angle between two points."""
+        """Calculate an angle between two points.
+
+        :param first: first point
+        :param second: second point
+        :return: angle in radians
+        """
         return np.arctan2(second[1] - first[1], second[0] - first[0])
 
     def area(self) -> float:
@@ -312,19 +316,15 @@ class Trace(Exceptionable):
         """
         return self.polygon().area
 
-    def min_distance(self, other: 'Trace', return_points: bool = False) -> Union[float, tuple]:
+    def min_distance(self, other: 'Trace') -> Union[float, tuple]:
         """Find the minimum distance between this trace and another trace.
 
-        :param return_points: boolean for whether the closest points will be returned
         :param other: Trace to find distance to
         :return: float minimum distance and the points if indicated
         """
         distance = self.polygon().boundary.distance(other.polygon().boundary)
 
-        if not return_points:
-            return distance
-        else:
-            return distance, nearest_points(self.polygon(), other.polygon())
+        return distance, nearest_points(self.polygon(), other.polygon())
 
     def max_distance(self, other: 'Trace') -> float:
         """Find the maximum distance between this trace and another trace.
@@ -334,10 +334,9 @@ class Trace(Exceptionable):
         """
         return self.polygon().boundary.hausdorff_distance(other.polygon().boundary)
 
-    def centroid_distance(self, other: 'Trace', return_points: bool = False) -> Union[float, tuple]:
+    def centroid_distance(self, other: 'Trace') -> Union[float, tuple]:
         """Find the distance between the centroids of this trace and another trace.
 
-        :param return_points: boolean for whether the closest points will be returned
         :param other: Trace to find distance to
         :return: float maximum distance and the points if indicated
         """
@@ -345,17 +344,14 @@ class Trace(Exceptionable):
 
         distance = self_c.distance(other.polygon().boundary)
 
-        if not return_points:
-            return distance
-        else:
-            return distance, nearest_points(self_c, other.polygon().boundary)
+        return distance, nearest_points(self_c, other.polygon().boundary)
 
     # %% contour-dependent (cv2)
     def contour(self) -> np.ndarray:
         """Return a contour based off the Trace.
 
-        Builds a "fake" contour so that cv2 can analyze it (independent of
-           the image) Use for to_circle and to_ellipse.
+        Builds a "fake" contour so that cv2 can analyze it (independent of the image). Use for to_circle and to_ellipse.
+        :return: contour as np.ndarray
         """
         if self.__contour is None:
             # check points all have same z-value (MAY BE CHANGED?)
@@ -399,10 +395,10 @@ class Trace(Exceptionable):
         return self.__ellipse_object(u, v, a, b, angle * 2 * np.pi / 360)
 
     def to_circle(self, buffer: float = 0.0):
-        """Get a best-fit circle for the Trace.
+        """Get best fit circle from the trace.
 
-        :return: returns ellipse object methods for best-fit circle (averages axes of best fit ellipse and
-           sets as circle radius)
+        :param buffer: buffer to add to the circle
+        :return: returns circle object for best-fit circle
         """
         # ((centroid), (axes), angle) ... note angle is in degrees
         ((u, v), (_, _), angle) = self.ellipse()
@@ -416,15 +412,14 @@ class Trace(Exceptionable):
         return self.__ellipse_object(u, v, 2 * r, 2 * r, angle * 2 * np.pi / 360)
 
     def __ellipse_object(self, u: float, v: float, a: float, b: float, angle: float) -> 'Trace':
-        """
+        """Create an ellipse object from the given parameters.
+
         :param u: x value of center
         :param v: y value of center
         :param a: first (minor) axis, twice the "radius"
         :param b: second (major) axis, twice the "radius"
         :param angle: clockwise angle to rotate in radians
         :return: a new Trace object with the points of the best-fit ellipse (point count is preserved)
-
-        This one is for all you Matlab fanpeople
         """
         # get t values for parameterized ellipse and preserve number of points
         t = np.linspace(0, 2 * np.pi, self.count())
@@ -457,8 +452,10 @@ class Trace(Exceptionable):
     ):
         """Plot the trace.
 
-        :param ax:
-        :param color:
+        :param line_kws: Additional keyword arguments to matplotlib.pyplot.plot
+        :param linewidth: Width of the line
+        :param ax: Axes to plot on
+        :param color: Color to fill the trace with, if None, no fill
         :param plot_format: the plt.plot format spec (see matplotlib docs)
         """
         if ax is None:
@@ -559,7 +556,7 @@ class Trace(Exceptionable):
     def pymunk_segments(self, space: pymunk.Space) -> List[pymunk.Segment]:
         """Generate list of pymunk segment objects comprising a trace.
 
-        :param space:
+        :param space: pymunk space to add segments to
         :return: returns a list of static line segments that cannot be moved
         """
         copy = self.deepcopy()
@@ -594,7 +591,11 @@ class Trace(Exceptionable):
     # Initially: No boundary points known
 
     def make_circle(self):
-        """Find the minimum bounding circle of the trace."""
+        """Return the smallest circle that encloses all the given points.
+
+        Runs in expected O(n) time, randomized.
+        :return: A triple of floats representing a circle.
+        """
         # Convert to float and randomize order
         shuffled = [(float(x), float(y)) for (x, y) in self.points[:, 0:2]]
         random.shuffle(shuffled)
@@ -606,8 +607,13 @@ class Trace(Exceptionable):
                 c = self._make_circle_one_point(shuffled[: i + 1], p)
         return c
 
-    # One boundary point known
     def _make_circle_one_point(self, points, p):  # noqa: D102
+        """Return the smallest circle that encloses all the given points.
+
+        :param points: list of points
+        :param p: point for which to center circle
+        :return: circle enclosing all points centered on p
+        """
         c = (p[0], p[1], 0.0)
         for (i, q) in enumerate(points):
             if not self.is_in_circle(c, q):
@@ -619,6 +625,13 @@ class Trace(Exceptionable):
 
     # Two boundary points known
     def _make_circle_two_points(self, points, p, q):  # noqa: D102
+        """Return the smallest circle that encloses all the given points.
+
+        :param points: list of points
+        :param p: point for which to center circle
+        :param q: point for which to center circle
+        :return: circle enclosing all points centered on p and q
+        """
         circ = self._make_diameter(p, q)
         left = None
         right = None
@@ -660,6 +673,12 @@ class Trace(Exceptionable):
 
     @staticmethod
     def _make_diameter(a, b):  # noqa: D102
+        """Return a circle that is tangent to both a and b.
+
+        :param a: point for which to center circle
+        :param b: point for which to center circle
+        :return: circle enclosing all points centered on a and b
+        """
         cx = (a[0] + b[0]) / 2.0
         cy = (a[1] + b[1]) / 2.0
         r0 = np.math.hypot(cx - a[0], cy - a[1])
@@ -668,6 +687,13 @@ class Trace(Exceptionable):
 
     @staticmethod
     def _make_circumcircle(a, b, c):  # noqa: D102
+        """Use mathematical algorithm from Wikipedia: Circumscribed circle.
+
+        :param a: point a
+        :param b: point b
+        :param c: point c
+        :return: circumcircle
+        """
         # Mathematical algorithm from Wikipedia: Circumscribed circle
         ox = (min(a[0], b[0], c[0]) + max(a[0], b[0], c[0])) / 2.0
         oy = (min(a[1], b[1], c[1]) + max(a[1], b[1], c[1])) / 2.0
@@ -695,16 +721,32 @@ class Trace(Exceptionable):
 
     @staticmethod
     def is_in_circle(c, p):  # noqa: D102
-        _MULTIPLICATIVE_EPSILON = 1 + 1e-14
-        return c is not None and np.math.hypot(p[0] - c[0], p[1] - c[1]) <= c[2] * _MULTIPLICATIVE_EPSILON
+        """Return True if point p is in circle c.
 
-    # Returns twice the signed area of the triangle defined by (x0, y0), (x1, y1), (x2, y2).
+        :param c: circle
+        :param p: point
+        :return: True if point is in circle
+        """
+        multiplicative_epsilon = 1 + 1e-14
+        return c is not None and np.math.hypot(p[0] - c[0], p[1] - c[1]) <= c[2] * multiplicative_epsilon
+
     @staticmethod
     def _cross_product(x0, y0, x1, y1, x2, y2):  # noqa: D102
+        """Return twice the signed area of the triangle defined by (x0, y0), (x1, y1), (x2, y2).
+
+        :param x0: x coordinate of point 0
+        :param y0: y coordinate of point 0
+        :param x1: x coordinate of point 1
+        :param y1: y coordinate of point 1
+        :param x2: x coordinate of point 2
+        :param y2: y coordinate of point 2
+        :return: twice the signed area of the triangle defined by (x0, y0), (x1, y1), (x2, y2)
+        """
         return (x1 - x0) * (y2 - y0) - (y1 - y0) * (x2 - x0)
 
     # %% private utility methods
     def __update(self):
+        """Update the internal data structures."""
         self.__int_points = self.__int32(self.points)
         self.__contour = None
         self.__polygon = None
@@ -712,4 +754,9 @@ class Trace(Exceptionable):
 
     @staticmethod
     def __int32(points: np.ndarray):
+        """Convert points to int32.
+
+        :param points: points to convert
+        :return: points converted to int32
+        """
         return np.array(np.round(points), dtype=np.int32)

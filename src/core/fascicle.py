@@ -84,34 +84,32 @@ class Fascicle(Exceptionable):
         else:  # other must be a Nerve
             return self.outer.intersects(other)
 
-    def min_distance(self, other: Union['Fascicle', Nerve], return_points: bool = False) -> Union[float, tuple]:
+    def min_distance(self, other: Union['Fascicle', Nerve]) -> Union[float, tuple]:
         """Calculate the minimum distance between the fascicle and another fascicle or nerve boundary.
 
-        :param return_points:
         :param other: other Fascicle or Nerve to check
         :return: minimum straight-line distance between self and other
         """
         if isinstance(other, Fascicle):
-            return self.outer.min_distance(other.outer, return_points=return_points)
+            return self.outer.min_distance(other.outer)
         else:  # other must be a Nerve
-            return self.outer.min_distance(other, return_points=return_points)
+            return self.outer.min_distance(other)
 
-    def centroid_distance(self, other: Union['Fascicle', Nerve], return_points: bool = False):
+    def centroid_distance(self, other: Union['Fascicle', Nerve]):
         """Calculate the distance between this fascicle's centroid and another centroid.
 
-        :param return_points:
         :param other: other Fascicle or Nerve to check
         :return: minimum straight-line distance between self and other
         """
         if isinstance(other, Fascicle):
-            return self.outer.centroid_distance(other.outer, return_points=return_points)
+            return self.outer.centroid_distance(other.outer)
         else:  # other must be a Nerve
-            return self.outer.centroid_distance(other, return_points=return_points)
+            return self.outer.centroid_distance(other)
 
     def within_nerve(self, nerve: Nerve) -> bool:
         """Check if the fascicle is within the nerve boundary.
 
-        :param nerve:
+        :param nerve: Nerve object to check
         :return: returns boolean, true if fascicle is within the nerve, false if fascicle is not in the nerve
         """
         return self.outer.within(nerve)
@@ -120,7 +118,6 @@ class Fascicle(Exceptionable):
         """Apply a vector shift to all constituent traces.
 
         :param vector: shift to apply to all Traces in the fascicle
-        :return:
         """
         for trace in self.all_traces():
             trace.shift(vector)
@@ -182,12 +179,12 @@ class Fascicle(Exceptionable):
     ):
         """Plot the fascicle.
 
-        :param line_kws: keyword arguments to pass to matplotlib.pyplot.plot
-        :param outer_flag: whether to plot the outer trace
-        :param inner_index_start:
-        :param ax: axes to plot on
-        :param color:
-        :param plot_format: outers automatically black, plot_format only affects inners
+        :param plot_format: format string for matplotlib plot
+        :param color: color for plot
+        :param ax: matplotlib axes object
+        :param outer_flag: plot outer trace
+        :param inner_index_start: index of first inner trace to plot
+        :param line_kws: keyword arguments for matplotlib plot
         """
         if ax is None:
             ax = plt.gca()
@@ -252,7 +249,7 @@ class Fascicle(Exceptionable):
         """Take inners which were passed in as outers, and generate the perineurium.
 
         :param fit: a dictionary with the values describing a linear relationship
-           between fascicle size and perineurium thickness
+            between fascicle size and perineurium thickness
         """
         self.outer_scale = fit
         # check that outer scale is provided
@@ -278,22 +275,16 @@ class Fascicle(Exceptionable):
         outer_img_path: str,
         exception_config,
         contour_mode,
-        plot: bool = False,
         z: float = 0,
     ) -> List['Fascicle']:
-        """Generate a list of fascicle objects from an inner and an (optional) outer image.
+        """Convert a set of inner and outer images to a list of fascicles.
 
-        Example usage:
-        fascicles = Fascicle.to_list(my_inner_image_path, my_outer_image_path, ... )
-
-        if outer_img_path is None, returns a list of fascicles with inners only (inners stored as an outer)
-
-        :param z:
-        :param outer_img_path:
-        :param inner_img_path:
-        :param exception_config:
-        :param plot: boolean
-        :return: list of Fascicles derived from the image(s)
+        :param inner_img_path: path to inner image
+        :param outer_img_path: path to outer image
+        :param exception_config: dictionary of exception configurations
+        :param contour_mode: contour mode for cv2.findContours
+        :param z: z coordinate of the fascicle
+        :return: list of fascicles
         """
 
         def build_traces(path: str) -> List[Trace]:
@@ -330,9 +321,6 @@ class Fascicle(Exceptionable):
         # create empty list to hold fascicles
         fascicles: List[Fascicle] = []
 
-        if plot:
-            plt.axes().set_aspect('equal', 'datalim')
-
         # iterate through each outer and build fascicles
         for index, outer in enumerate(outers):
             if outer_img_path is not None:
@@ -344,11 +332,6 @@ class Fascicle(Exceptionable):
             else:
                 # inners only case
                 fascicles.append(Fascicle(exception_config, outer))
-            if plot:
-                fascicles[index].plot()
-
-        if plot:
-            plt.show()
 
         return fascicles
 
@@ -385,7 +368,10 @@ class Fascicle(Exceptionable):
         os.chdir(start)
 
     def morphology_data(self):
-        """Get the morphology data for the fascicle."""
+        """Get the morphology data for the fascicle.
+
+        :return: a dictionary with the morphology data
+        """
         inners = [
             {
                 "area": inner.area(),

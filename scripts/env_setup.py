@@ -16,7 +16,10 @@ default_env = os.path.join('config', 'system', 'env.json')
 
 
 def run(env_path=default_env):
-    """Set up environment variables."""
+    """Set up environment variables.
+
+    :param env_path: path to environment configuration file
+    """
     print('Start environment path variables setup.')
 
     result = {}

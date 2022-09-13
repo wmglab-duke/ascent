@@ -15,7 +15,10 @@ from src.utils import Configurable
 
 
 def run(args):
-    """Run the import."""
+    """Run the import.
+
+    :param args: command line arguments
+    """
     env_path = os.path.join('config', 'system', 'env.json')
     assert os.path.isfile(env_path), f'Invalid env path: {env_path}'
 

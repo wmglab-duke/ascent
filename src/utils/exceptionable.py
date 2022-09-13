@@ -41,11 +41,13 @@ class Exceptionable(Configurable):
         """Use this to throw an exception.
 
         example:
+        .. code-block:: python
+
             if FATAL_CONDITION:
                 self.throw(CODE)
 
         :param code: index of exception in json file (i.e. exceptions.json)
-        :return: full message (with code and text)
+        :raises Exception: with message from exceptions.json
         """
         codelist = [x['code'] for x in self.configs[Config.EXCEPTIONS.value]]
 

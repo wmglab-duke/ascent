@@ -21,7 +21,10 @@ from .env_setup import run as env_setup
 
 
 def run(args):
-    """Run the pipeline for a given run configuration."""
+    """Run the pipeline.
+
+    :param args: The command line arguments.
+    """
     # test
     if not (sys.version_info.major == 3 and sys.version_info.minor >= 7):
         print(f'You are running Python {sys.version_info.major}.{sys.version_info.minor}, but 3.7 or later required')

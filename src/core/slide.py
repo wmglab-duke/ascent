@@ -43,7 +43,7 @@ class Slide(Exceptionable):
         :param nerve_mode: from Enums, indicates if the nerve exists or not (PRESENT, NOT_PRESENT)
         :param exception_config: pre-loaded configuration data
         :param will_reposition: boolean flag that tells the initializer whether or not it should be validating the
-           geometries - if it will be reposition then this is not a concern
+            geometries - if it will be reposition then this is not a concern
         """
         # init superclasses
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
@@ -63,11 +63,17 @@ class Slide(Exceptionable):
         self.orientation_angle: Optional[float] = None
 
     def monofasc(self) -> bool:
-        """Check if slide is monofascicular."""
+        """Check if slide is monofascicular.
+
+        :return: True if there is only one fascicle
+        """
         return self.nerve_mode == NerveMode.NOT_PRESENT and len(self.fascicles) == 1
 
     def fascicle_centroid(self) -> Tuple[float, float]:
-        """Calculate the centroid of all fascicles."""
+        """Calculate the centroid of all fascicles.
+
+        :return: Tuple of x and y coordinates of centroid
+        """
         area_sum = x_sum = y_sum = 0.0
 
         for fascicle in self.fascicles:
@@ -92,6 +98,7 @@ class Slide(Exceptionable):
         :param specific: if you want to know what made it fail first
         :param die: if non-specific, decides whether or not to throw an error if it fails
         :param tolerance: minimum separation distance for unit you are currently in
+        :param plotpath: path to save plot to
         :return: Boolean for True (no intersection) or False (issues with geometry overlap)
         """
 
@@ -228,10 +235,10 @@ class Slide(Exceptionable):
     def reshaped_nerve(self, mode: ReshapeNerveMode, buffer: float = 0.0) -> Nerve:
         """Get a nerve trace equal to the area of the current nerve trace.
 
-        :param buffer:
+        :param buffer: buffer distance to subtract from nerve trace radius (microns)
         :param mode: Final form of reshaped nerve, either circle or ellipse
         :return: a copy of the nerve with reshaped nerve boundary, preserves point count which is SUPER critical for
-           fascicle repositioning
+            fascicle repositioning
         """
         if self.monofasc():
             self.throw(45)
@@ -261,11 +268,14 @@ class Slide(Exceptionable):
     ):
         """Quick util for plotting the nerve and fascicles.
 
-        :param show_axis:
-        :param inner_index_labels:
-        :param outers_flag:
-        :param fascicle_colors:
-        :param ax:
+        :param line_kws: Additional keyword arguments to pass to matplotlib.pyplot.plot
+        :param axlabel: label for x and y axes
+        :param show_axis: If False, hide the axis
+        :param inner_index_labels: whether to label the inner traces with their index
+        :param outers_flag: whether to plot the outers of the fascicles
+        :param fascicle_colors: List of colors for fascicle fill, ig None, no fill. Colors must be
+            of a form accepted by matplotlib
+        :param ax: axis to plot on
         :param title: optional string title for plot
         :param final: optional, if False, will not show or add title (if comparisons are being overlayed)
         :param inner_format: optional format for inner traces of fascicles
@@ -358,7 +368,7 @@ class Slide(Exceptionable):
         """Generate perineurium for all fascicles in the slide.
 
         :param fit: dictionary of fit parameters
-           (Linear fit for perineurium thickness based on fascicle area)
+            (Linear fit for perineurium thickness based on fascicle area)
         """
         for fascicle in self.fascicles:
             fascicle.perineurium_setup(fit=fit)

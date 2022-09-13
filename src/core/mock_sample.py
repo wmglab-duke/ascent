@@ -27,12 +27,17 @@ from src.utils import Config, Configurable, Exceptionable, PopulateMode, SetupMo
 
 
 class MockSample(Exceptionable, Configurable):
+    """Use MockSample class to generate a synthetic nerve morphology inputs to ASCENT.
+
+    (i.e., binary image masks of epineurium (n.tif), perineurium (c.tif), and endoneurium (i.tif),
+    and scalebar (s.tif)).
+    """
+
     def __init__(self, exception_config: dict):
-        """
+        """Create a MockSample object.
 
-        :param exception_config:
+        :param exception_config: The exception configuration.
         """
-
         # Initializes superclasses
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
         Configurable.__init__(self)
@@ -43,6 +48,11 @@ class MockSample(Exceptionable, Configurable):
     # https://gis.stackexchange.com/questions/6412/generate-points-that-lie-inside-polygon
     @staticmethod
     def get_random_point_in_polygon(poly):
+        """Get a random point inside a polygon.
+
+        :param poly: The polygon.
+        :return: A random point inside the polygon.
+        """
         minx, miny, maxx, maxy = poly.bounds
         while True:
             p = Point(np.random.uniform(minx, maxx), np.random.uniform(miny, maxy))
@@ -51,6 +61,11 @@ class MockSample(Exceptionable, Configurable):
 
     @staticmethod
     def gen_ellipse(ell):
+        """Generate an ellipse shapely object.
+
+        :param ell: tuple of (center, (a, b), angle); a is the major diameter of the ellipse, b is the minor diameter
+        :return: The ellipse shapely object.
+        """
         ell_obj = shapely.geometry.Point(ell[0]).buffer(1)
         ell_obj = shapely.affinity.scale(ell_obj, ell[1][0], ell[1][1], 0, ell[0])
         ell_obj = shapely.affinity.rotate(ell_obj, ell[2], origin='center', use_radians=False)
@@ -58,6 +73,12 @@ class MockSample(Exceptionable, Configurable):
 
     @staticmethod
     def binary_mask_canvas(margin: float, size: float):
+        """Create a binary mask canvas.
+
+        :param margin: The margin around the edges of the canvas, scaled to the size of the canvas.
+        :param size: The size of the canvas in microns.
+        :return: The binary mask canvas.
+        """
         plt.style.use('dark_background')
         fig = plt.figure()
         ax = fig.add_subplot(111)
@@ -69,17 +90,35 @@ class MockSample(Exceptionable, Configurable):
 
     @staticmethod
     def add_ellipse_binary_mask(fig: plt.Figure, ell: shapely.geometry.polygon):
+        """Add an ellipse to a binary mask.
+
+        :param fig: The binary mask figure.
+        :param ell: The ellipse being added to the binary mask.
+        :return: The binary mask figure with the ellipse added.
+        """
         ell_x, ell_y = ell.exterior.xy
         fig.axes[0].fill(ell_x, ell_y, 'w')
         return fig
 
     @staticmethod
     def add_scalebar_binary_mask(fig: plt.Figure, slength: int):
+        """Add a scalebar to a binary mask.
+
+        :param fig: The binary mask figure.
+        :param slength: The length of the scalebar in microns.
+        :return: The binary mask figure with the scalebar added.
+        """
         fig.axes[0].plot([-slength / 2, slength / 2], [0, 0], '-w')
         return fig
 
     @staticmethod
     def write_binary_mask(fig: plt.Figure, dest: str, dpi: int):
+        """Write a binary mask to a file.
+
+        :param fig: The binary mask figure.
+        :param dest: The destination file.
+        :param dpi: The resolution of the binary mask.
+        """
         # https://inneka.com/ml/opencv/how-to-read-image-from-in-memory-buffer-stringio-or-from-url-with-opencv-python-library/
         def create_opencv_image_from_stringio(img_stream, cv2_img_flag=0):
             img_stream.seek(0)
@@ -95,6 +134,10 @@ class MockSample(Exceptionable, Configurable):
         plt.show()
 
     def make_nerve(self):
+        """Make the nerve.
+
+        :return: self
+        """
         # DEFINE NERVE
         # 1st elem = center point (x,y) coordinates
         # 2nd elem = the two semi-axis values (along x, along y)
@@ -127,11 +170,10 @@ class MockSample(Exceptionable, Configurable):
         return self
 
     def make_fascicles(self):
-        """
+        """Make the fascicles based on input parameters.
 
-        :return:
+        :return: self
         """
-
         populate_mode_name: str = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value, 'mode')
         populate_mode: PopulateMode = [mode for mode in PopulateMode if str(mode).split('.')[-1] == populate_mode_name][
             0
@@ -156,6 +198,10 @@ class MockSample(Exceptionable, Configurable):
         return self
 
     def make_truncnorm_fascicles(self, min_fascicle_separation):
+        """Make fascicles using a truncated normal distribution.
+
+        :param min_fascicle_separation: The minimum separation between fascicles [microns].
+        """
         # choose fascicle area [um^2]: A = pi*(d/2)**2
         mu_fasc_diam: float = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value, 'mu_fasc_diam')
         std_fasc_diam: float = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value, 'std_fasc_diam')
@@ -218,6 +264,10 @@ class MockSample(Exceptionable, Configurable):
         )
 
     def make_uniform_fascicles(self, min_fascicle_separation):
+        """Make fascicles using a uniform distribution.
+
+        :param min_fascicle_separation: The minimum separation between fascicles [microns].
+        """
         max_attempt_iter = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value, 'max_attempt_iter')
         # choose fascicle area [um^2]: A = pi*(d/2)**2
         lower_fasc_diam: float = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value, 'lower_fasc_diam')
@@ -253,6 +303,14 @@ class MockSample(Exceptionable, Configurable):
     def make_fascicle_dimensions_orientations(
         self, fasc_diam_dist, fasc_ecc_dist, max_attempt_iter, min_fascicle_separation, num_fascicle_attempt
     ):
+        """Make fascicle dimensions and orientations.
+
+        :param fasc_diam_dist: The distribution of fascicle diameters.
+        :param fasc_ecc_dist: The distribution of fascicle eccentricities.
+        :param max_attempt_iter: The maximum number of attempts to place fascicles.
+        :param min_fascicle_separation: The minimum separation between fascicles [microns].
+        :param num_fascicle_attempt: The number of fascicles to attempt to place.
+        """
         # BASED ON CHOSEN DISTRIBUTION, MAKE FASCICLE DIMENSIONS AND ORIENTATIONS
         fasc_diams = np.sort(fasc_diam_dist.rvs(num_fascicle_attempt))[::-1].T
         fasc_areas = np.pi * (fasc_diams / 2) ** 2
@@ -305,6 +363,10 @@ class MockSample(Exceptionable, Configurable):
         self.configs['mock_sample'][PopulateMode.parameters.value]['num_fascicle_placed'] = len(self.fascicles)
 
     def make_explicit_fascicles(self, min_fascicle_separation):
+        """Make fascicles explicitly using the fascicle coordinates in the config file.
+
+        :param min_fascicle_separation: The minimum separation between fascicles [microns].
+        """
         fascs_explicit = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value, "Fascicles")
         fasc_centroid_xs = [0] * len(fascs_explicit)
         fasc_centroid_ys = [0] * len(fascs_explicit)
@@ -372,6 +434,10 @@ class MockSample(Exceptionable, Configurable):
             self.throw(64)
 
     def make_masks(self):
+        """Make the masks for the fascicles and nerve.
+
+        :return: self
+        """
         project_path = os.getcwd()
         sample_str = self.search(Config.MOCK_SAMPLE, 'global', 'NAME')
         sample_dir = os.path.join(project_path, 'input', sample_str)

@@ -31,7 +31,12 @@ reference_model = 0
 
 
 def pe(correct, est):
-    """Calculate the percent error."""
+    """Calculate the percent error.
+
+    :param correct: correct value
+    :param est: estimated value
+    :return: percent error
+    """
     return 100 * abs(est - correct) / correct
 
 

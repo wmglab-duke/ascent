@@ -23,7 +23,11 @@ EXCLUDED_FILENAMES = [
 
 
 def remove_empty_directories(directory: str, verbose):
-    """Remove empty directories from a given directory."""
+    """Remove empty directories from a given directory.
+
+    :param directory: directory to remove empty directories from
+    :param verbose: whether to print out information about directory removal
+    """
     for path in os.listdir(directory):
         subdirectory = os.path.join(directory, path)
         if os.path.isdir(subdirectory):
@@ -43,7 +47,10 @@ def remove_empty_directories(directory: str, verbose):
 
 
 def run(args):
-    """Remove files except those specified from samples directories."""
+    """Remove files except those specified from samples directories.
+
+    :param args: command line arguments
+    """
     global EXCLUDED_FILENAMES
     if args.full_reset:
         EXCLUDED_FILENAMES = ['sample.json', 'model.json']

@@ -18,6 +18,10 @@ from src.utils import Config, SetupMode, TemplateOutput
 
 
 def run(args):
+    """Generate a mock sample morphology.
+
+    :param args: The command line arguments.
+    """
     start = time.time()
 
     exceptions_file = os.path.join('config', 'system', 'exceptions.json')

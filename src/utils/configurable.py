@@ -7,7 +7,6 @@ Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
-
 import json
 from typing import List, Type, Union
 
@@ -75,37 +74,28 @@ class Configurable:
         :param optional: true if the value can have empty value (i.e., []), default to NOT optional
         :param key: Config (choice of configurations from discrete enumeration)
         :param args: list "path" to item within json (str or int)
+        :raises TypeError: If the search parameter is not of type str or int
+        :raises KeyError: If the key is not found in the config
+        :raises IndexError: If a list value has length of 0
         :return: final specified item
         """
         result = self.configs[key.value]
         for arg in args:
-            if isinstance(arg, str):
+            if isinstance(arg, (str, int)):
                 result = result.get(arg)
-            elif isinstance(arg, int):
-                result = result[arg]
             else:
-                raise Exception(
-                    '\n\tcode:\t-2\n'
-                    f'\ttext:\tInvalid search parameter:\tTYPE: {type(arg)}\tVALUE: {arg}\n'
-                    '\tsource:\tconfigurable.py'
-                )
+                raise TypeError(f'Invalid search parameter type:\tTYPE: {type(arg)}\tVALUE: {arg}\n')
 
             if result is None:
                 if optional:
                     return result
                 else:
-                    raise Exception(
-                        '\n\tcode:\t-5\n'
-                        f'\ttext:\tValue {"".join([arg + "->" for arg in args[:-1]]) + args[-1]} not defined in {key}\n'
-                        '\tsource:\tsrc.utils.Configurable.search'
+                    raise KeyError(
+                        f'Value {"".join([arg + "->" for arg in args[:-1]]) + args[-1]} not defined in {key}'
                     )
 
         if isinstance(result, list) and len(result) < 1 and not optional:
-            raise Exception(
-                '\n\tcode:\t-6\n'
-                f'\ttext:\tValue for {"".join([arg + "->" for arg in args[:-1]]) + args[-1]} is empty in {key}\n'
-                '\tsource:\tsrc.utils.Configurable.search'
-            )
+            raise IndexError(f'Value {"".join([arg + "->" for arg in args[:-1]]) + args[-1]} is empty in {key}')
 
         return result
 
@@ -166,6 +156,8 @@ class Configurable:
         :param modes: modes to search for
         :param count: count of results
         :param optional: if false, error on missing mode
+        :raises ValueError: no mode or modes specified
+        :raises IndexError: count does not match the number of results found
         :return: list of modes found
         """
         list_results = []
@@ -174,11 +166,7 @@ class Configurable:
             modes = [mode]
 
         if modes is None:
-            raise Exception(
-                '\n\tcode:\t-4\n'
-                '\ttext:\tAt least one mode type must be provided.\n'
-                '\tsource:\tsrc.utils.Configurable.search_multi_mode'
-            )
+            raise ValueError('At least one mode type must be provided.')
 
         for mode in modes:
 
@@ -193,11 +181,7 @@ class Configurable:
             if len(list_results) == 0 and optional:
                 list_results = [None]
             elif len(list_results) != count:
-                raise Exception(
-                    '\n\tcode:\t-3\n'
-                    f'\ttext:\t{len(list_results)} matches found when {count} were expected.\n'
-                    '\tsource:\tsrc.utils.Configurable.search_multi_mode'
-                )
+                raise IndexError(f'{len(list_results)} matches found when {count} were expected.\n')
 
         return list_results
 
@@ -206,10 +190,8 @@ class Configurable:
         """Validate the config file path.
 
         :param config_path: path to config we will load, this makes sure it is a JSON
-        :return:
+        :raises ValueError: if the path is not a JSON file
         """
         # if last 5 characters of file path are NOT '.json', raise an Exception
         if not config_path[-5:] == '.json':
-            raise Exception(
-                '\n\tcode:\t-1' '\ttext:\tFile path must end in .json\n' '\tsource:\tconfigurable.py or map.py'
-            )
+            raise ValueError(f'File path {config_path} does not end in .json')

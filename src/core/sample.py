@@ -8,7 +8,6 @@ source code can be found on the following GitHub repository:
 https://github.com/wmglab-duke/ascent
 """
 
-
 import os
 import shutil
 import warnings
@@ -25,7 +24,6 @@ from src.utils import (
     Config,
     Configurable,
     ContourMode,
-    CuffInnerMode,
     DeformationMode,
     Exceptionable,
     MaskFileNames,
@@ -37,7 +35,6 @@ from src.utils import (
     ScaleInputMode,
     SetupMode,
     ShrinkageMode,
-    TemplateMode,
     TemplateOutput,
     WriteMode,
 )
@@ -54,10 +51,7 @@ class Sample(Exceptionable, Configurable, Saveable):
     def __init__(self, exception_config: list):
         """Initialize Sample.
 
-        :param master_config: preloaded configuration data for master
         :param exception_config: preloaded configuration data for exceptions
-        :param map_mode: setup mode. If you want to build a new map from a directory, then NEW. Otherwise, or if for
-            a single slide, OLD.
         """
         # Initializes superclasses
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
@@ -92,6 +86,7 @@ class Sample(Exceptionable, Configurable, Saveable):
         NOTE: the Config.SAMPLE json must have been externally added.
 
         :param map_mode: should be old for now, but keeping as parameter in case needed in future
+        :return: self
         """
         if Config.SAMPLE.value not in self.configs:
             self.throw(38)
@@ -107,6 +102,7 @@ class Sample(Exceptionable, Configurable, Saveable):
         """Scale all slides to the correct unit.
 
         :param factor: factor by which to scale the image (1=no change)
+        :return: self
         """
         for slide in self.slides:
             slide.scale(factor)
@@ -118,6 +114,7 @@ class Sample(Exceptionable, Configurable, Saveable):
 
         :param n_distance: distance to inflate and deflate the nerve trace
         :param i_distance: distance to inflate and deflate the fascicle traces
+        :return: self
         """
         for slide in self.slides:
             slide.smooth_traces(n_distance, i_distance)
@@ -128,6 +125,7 @@ class Sample(Exceptionable, Configurable, Saveable):
         """Add perineurium to inners.
 
         :param fit: dictionary of perineurium fit parameters
+        :return: self
         """
         for slide in self.slides:
             slide.generate_perineurium(fit)
@@ -165,11 +163,12 @@ class Sample(Exceptionable, Configurable, Saveable):
         scale_bar_length: float,
         scale_bar_is_literal: bool,
     ) -> 'Sample':
-        """Return scaling factor (micrometers per pixel).
+        """Get scaling factor (micrometers per pixel).
 
         :param scale_bar_mask_path: path to binary mask with white straight (horizontal) scale bar
         :param scale_bar_length: length (in global units as determined by config/user) of the scale bar
         :param scale_bar_is_literal: if True, then scale_bar_length is the factor, otherwise calculate from image
+        :return: scaling factor
         """
         if scale_bar_is_literal:
             # use explicitly specified um/px scale instead of drawing from a scale bar image
@@ -201,6 +200,7 @@ class Sample(Exceptionable, Configurable, Saveable):
         """Build the file structure for morphology inputs.
 
         :param printing: bool, gives user console output
+        :return: self
         """
         scale_input_mode = self.search_mode(ScaleInputMode, Config.SAMPLE, optional=True)
         # For backwards compatibility, if scale mode is not specified assume a mask image is provided
@@ -307,13 +307,18 @@ class Sample(Exceptionable, Configurable, Saveable):
             self.contour_mode = ContourMode.SIMPLE
 
     def mask_exists(self, mask_file_name: MaskFileNames):
-        """Check if a mask exists (.tif file)."""
+        """Check if a mask exists (.tif file).
+
+        :param mask_file_name: MaskFileNames, name of mask file
+        :return: bool, True if mask exists
+        """
         return os.path.exists(mask_file_name.value)
 
     def calculate_orientation(self, slide):
         """Calculate orientation angle from a.tif.
 
         :param slide: Slide object
+        :return: Slide object
         """
         img = np.flipud(cv2.imread(MaskFileNames.ORIENTATION.value, -1))
 
@@ -368,6 +373,7 @@ class Sample(Exceptionable, Configurable, Saveable):
         """Generate fascicle traces from input masks.
 
         :param mask_input_mode: MaskInputMode
+        :return: list of fascicles
         """
         # assign fascicle mask files
         if mask_input_mode not in MaskInputMode:
@@ -398,7 +404,10 @@ class Sample(Exceptionable, Configurable, Saveable):
         return fascicles
 
     def get_epineurium_from_mask(self):
-        """Generate epineurium trace from mask."""
+        """Generate epineurium trace from mask.
+
+        :return: Nerve object
+        """
         if not self.mask_exists(MaskFileNames.NERVE):
             self.throw(138)
         img_nerve = cv2.imread(MaskFileNames.NERVE.value, -1)
@@ -465,7 +474,11 @@ class Sample(Exceptionable, Configurable, Saveable):
         return slide
 
     def correct_shrinkage(self, slide):
-        """Apply shrinkage correction to slide."""
+        """Apply shrinkage correction to slide.
+
+        :param slide: Slide
+        :return: Slide
+        """
         # shrinkage correction
         s_mode = self.search_mode(ShrinkageMode, Config.SAMPLE, optional=True)
         s_pre = self.search(Config.SAMPLE, "scale", "shrinkage")
@@ -627,7 +640,10 @@ class Sample(Exceptionable, Configurable, Saveable):
         return slide
 
     def populate(self) -> 'Sample':
-        """Populate a sample with trace objects using input images."""
+        """Populate a sample with trace objects using input images.
+
+        :return: Sample object
+        """
 
         def populate_plotter(slide, title: str, filename: str):
             plt.figure()
@@ -731,6 +747,7 @@ class Sample(Exceptionable, Configurable, Saveable):
         """Write entire list of slides.
 
         :param mode: WriteMode
+        :return: self
         """
         # get starting point so able to go back
         start_directory: str = os.getcwd()
@@ -782,36 +799,11 @@ class Sample(Exceptionable, Configurable, Saveable):
 
         return self
 
-    def make_electrode_input(self) -> 'Sample':
-        """Generate electrode input for the sample."""
-        # load template for electrode input
-        electrode_input: dict = TemplateOutput.read(TemplateMode.ELECTRODE_INPUT)
-
-        for cuff_inner_mode in CuffInnerMode:
-
-            string_mode = str(cuff_inner_mode).split('.')[1]
-
-            if cuff_inner_mode == CuffInnerMode.CIRCLE:
-
-                (minx, miny, maxx, maxy) = self.slides[0].nerve.polygon().bounds
-                electrode_input[string_mode]['r'] = max([(maxx - minx) / 2, (maxy - miny) / 2])
-
-            elif cuff_inner_mode == CuffInnerMode.BOUNDING_BOX:
-
-                (minx, miny, maxx, maxy) = self.slides[0].nerve.polygon().bounds
-                electrode_input[string_mode]['x'] = maxx - minx
-                electrode_input[string_mode]['y'] = maxy - miny
-
-            else:
-                pass
-
-        # write template for electrode input
-        TemplateOutput.write(electrode_input, TemplateMode.ELECTRODE_INPUT)
-
-        return self
-
     def output_morphology_data(self) -> 'Sample':
-        """Output morhodology data for the sample to sample.json."""
+        """Output morhodology data for the sample to sample.json.
+
+        :return: self
+        """
         nerve_mode = self.search_mode(NerveMode, Config.SAMPLE)
 
         fascicles = [fascicle.morphology_data() for fascicle in self.slides[0].fascicles]

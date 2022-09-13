@@ -39,7 +39,10 @@ class Waveform(Exceptionable, Configurable, Saveable):
         self.mode_str = None
 
     def init_post_config(self):
-        """Initialize instance variables after configuration is loaded."""
+        """Initialize instance variables after configuration is loaded.
+
+        :return: self
+        """
         if any([config.value not in self.configs.keys() for config in (Config.MODEL, Config.SIM)]):
             self.throw(72)
 
@@ -74,6 +77,8 @@ class Waveform(Exceptionable, Configurable, Saveable):
 
         Weerasuriya discussion indicates that Models A & B are better candidates than Models C & D, so we only
         consider the former pair.
+
+        :param f: frequency (Hz)
         :return: rho [ohm-m].
         """
         temp = self.search(Config.MODEL, "temperature")  # [degC] 37 for mammalian
@@ -229,11 +234,11 @@ class Waveform(Exceptionable, Configurable, Saveable):
     def generate_biphasic_uneven(self, frequency, pad, path_to_specific_parameters, t_signal):
         """Generate a biphasic pulse train with uneven pulse widths.
 
-        :param frequency:
-        :param pad:
-        :param path_to_specific_parameters:
-        :param t_signal:
-        :return:
+        :param frequency: frequency of the pulse train [Hz]
+        :param pad: helper function to pad the start and end of signal with zeroes
+        :param path_to_specific_parameters: path to the specific parameters for this waveform in Sim config
+        :param t_signal: time values to be used for all waves
+        :return: generated waveform
         """
         pw1 = self.search(Config.SIM, *path_to_specific_parameters, 'pulse_width_1')
         pw2 = self.search(Config.SIM, *path_to_specific_parameters, 'pulse_width_2')
@@ -282,11 +287,11 @@ class Waveform(Exceptionable, Configurable, Saveable):
     def generate_monophasic(self, frequency, pad, path_to_specific_parameters, t_signal):
         """Generate a monophasic pulse train.
 
-        :param frequency:
-        :param pad:
-        :param path_to_specific_parameters:
-        :param t_signal:
-        :return:
+        :param frequency: frequency of the pulse train [Hz]
+        :param pad: helper function to pad the start and end of signal with zeroes
+        :param path_to_specific_parameters: path to the specific parameters for this waveform in Sim config
+        :param t_signal: time values to be used for all waves
+        :return: generated waveform
         """
         pw = self.search(Config.SIM, *path_to_specific_parameters, 'pulse_width')
         if self.dt > pw:
@@ -303,10 +308,10 @@ class Waveform(Exceptionable, Configurable, Saveable):
     def generate_sinusoid(self, frequency, pad, t_signal):
         """Generate a sinusoid.
 
-        :param frequency:
-        :param pad:
-        :param t_signal:
-        :return:
+        :param frequency: frequency of the sinusoid [Hz]
+        :param pad: helper function to pad the start and end of signal with zeroes
+        :param t_signal: time values to be used for all waves
+        :return: generated waveform
         """
         if self.dt > 1.0 / frequency:
             self.throw(85)
@@ -318,10 +323,10 @@ class Waveform(Exceptionable, Configurable, Saveable):
     def generate_biphasic_fullduty(self, frequency, pad, t_signal):
         """Generate a biphasic pulse train with full duty cycle.
 
-        :param frequency:
-        :param pad:
-        :param t_signal:
-        :return:
+        :param frequency: frequency of the pulse train [Hz]
+        :param pad: helper function to pad the start and end of signal with zeroes
+        :param t_signal: time values to be used for all waves
+        :return: generated waveform
         """
         if self.dt > 1.0 / frequency:
             self.throw(86)
@@ -331,7 +336,14 @@ class Waveform(Exceptionable, Configurable, Saveable):
         return wave
 
     def generate_biphasic_basic(self, frequency, pad, path_to_specific_parameters, t_signal):
-        """Generate a biphasic pulse train with basic parameters."""
+        """Generate a biphasic pulse train with basic parameters.
+
+        :param frequency: frequency of the pulse train [Hz]
+        :param pad: helper function to pad the start and end of signal with zeroes
+        :param path_to_specific_parameters: path to the specific parameters for this waveform in Sim config
+        :param t_signal: time values to be used for all waves
+        :return: generated waveform
+        """
         pw = self.search(Config.SIM, *path_to_specific_parameters, 'pulse_width')
         if self.dt > pw:
             self.throw(87)
@@ -366,7 +378,11 @@ class Waveform(Exceptionable, Configurable, Saveable):
         return wave
 
     def generate_explicit(self, pad):
-        """Generate an explicit waveform."""
+        """Generate an explicit waveform.
+
+        :param pad: helper function to pad the start and end of signal with zeroes
+        :return: generated waveform
+        """
         path_to_wave = os.path.join(
             'config',
             'user',
@@ -426,20 +442,20 @@ class Waveform(Exceptionable, Configurable, Saveable):
         wave = padded
         return wave
 
-    def plot(self, ax: plt.Axes = None, final: bool = False, path: str = None):
+    def plot(self, ax: plt.Axes = None, final: bool = False, path: str = None, plt_kwargs: dict = None):
         """Plot the waveform.
 
-        :param ax:
-        :param final:
-        :param path:
-        :return:
+        :param ax: axes to plot on
+        :param final: Whether to display/save the plot
+        :param path: Path to save the plot if final is True
+        :param plt_kwargs: Keyword arguments to pass to matplotlib.pyplot.plot
         """
         fig = plt.figure()
 
         if ax is None:
             ax = plt.gca()
 
-        ax.plot(np.linspace(self.start, self.dt * len(self.wave), len(self.wave)), self.wave)
+        ax.plot(np.linspace(self.start, self.dt * len(self.wave), len(self.wave)), self.wave, **plt_kwargs)
         ax.set_ylabel('Normalized magnitude')
         ax.set_xlabel('Time step')
         ax.set_title('Waveform generated from user parameters in sim.json')
@@ -449,15 +465,14 @@ class Waveform(Exceptionable, Configurable, Saveable):
                 plt.show()
             else:
                 plt.savefig(path, dpi=300)
-                fig.clear()
                 plt.close(fig)
 
     def write(self, mode: WriteMode, path: str):
         """Write the waveform to a file.
 
         :param mode: usually DATA
-        :param path:
-        :return:
+        :param path: path to write to
+        :return: self
         """
         path_to_specific_parameters = ['waveform', self.mode_str]
         digits = self.search(Config.SIM, *path_to_specific_parameters, 'digits')
@@ -482,8 +497,8 @@ class Waveform(Exceptionable, Configurable, Saveable):
 def precision_and_scale(x):
     """Return the number of digits and the scale of the number.
 
-    :param x:
-    :return:
+    :param x: number
+    :return: number of digits, scale
     """
     max_digits = sys.float_info.dig
     int_part = int(abs(x))

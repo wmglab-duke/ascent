@@ -65,7 +65,10 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         )
 
     def init_post_config(self):
-        """Make sure Model and Simulation are configured."""
+        """Make sure Model and Simulation are configured.
+
+        :return: self
+        """
         if any([config.value not in self.configs.keys() for config in (Config.MODEL, Config.SIM)]):
             self.throw(78)
         return self
@@ -75,7 +78,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
         :param sim_directory: The directory to save the simulation files to.
         :param super_sample: Whether to generate a super sample.
-        :return:
+        :return: self
         """
         fibers_xy = self._generate_xy(sim_directory)
         self.out_to_fib, self.out_to_in = self._generate_maps(fibers_xy)
@@ -90,6 +93,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
         :param mode: Type of file to write to.
         :param path: Path to the file to write to.
+        :return: self
         """
         diams = []
         for i, fiber_pre in enumerate(self.fibers if self.fibers is not None else []):
@@ -147,6 +151,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         """Generate the xy coordinates of the fibers.
 
         :param sim_directory: The directory of the simulation.
+        :return: xy coordinates of the fibers
         """
         # get required parameters from configuration JSON (using inherited Configurable methods)
         xy_mode_name: str = self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode')
@@ -703,12 +708,11 @@ class FiberSet(Exceptionable, Configurable, Saveable):
             fiber_geometry_mode_name: str = self.search(Config.SIM, 'fibers', 'mode')
 
             # use key from above to get myelination mode from fiber_z
-            diams = []
             diameter = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'diameter')
             diam_distribution: bool = type(diameter) is dict
 
             diams, myelinated = self.calculate_fiber_diams(
-                diam_distribution, diams, fiber_geometry_mode_name, fibers_xy, super_sample
+                diam_distribution, fiber_geometry_mode_name, fibers_xy, super_sample
             )
 
             my_z_seed = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'seed')
@@ -724,7 +728,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
         return fibers
 
-    def calculate_fiber_diams(self, diameter, diams, fiber_geometry_mode_name, fibers_xy, super_sample):
+    def calculate_fiber_diams(self, diameter, fiber_geometry_mode_name, fibers_xy, super_sample):
         """Calculate the diameters of the fibers.
 
         :param diameter: The diameter of the fiber.
@@ -737,6 +741,7 @@ class FiberSet(Exceptionable, Configurable, Saveable):
 
         if super_sample:
             myelinated = False
+            diams = []
         else:
             myelinated: bool = self.search(
                 Config.FIBER_Z,

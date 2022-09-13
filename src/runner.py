@@ -70,7 +70,6 @@ class Runner(Exceptionable, Configurable):
             :param config_source: all configs, to which we add new ones
             :param key: the key of the dict in Configs
             :param path: path to the JSON file of the config
-            :return: updated dict of all configs
             """
             self.validate_path(path)
             if os.path.exists(path):
@@ -302,7 +301,6 @@ class Runner(Exceptionable, Configurable):
         :param sim_index: index of sim
         :param model_num: model number
         :param sample_num: sample number
-        :return: None
         """
         sim_num = self.configs[Config.RUN.value]['sims'][sim_index]
         sim_obj_path = os.path.join(
@@ -457,7 +455,6 @@ class Runner(Exceptionable, Configurable):
 
         :param run_number: int, run number
         :param class_name: str, class name of Java class to run
-        :return: None
         """
         comsol_path = os.environ[Env.COMSOL_PATH.value]
         jdk_path = os.environ[Env.JDK_PATH.value]
@@ -720,8 +717,8 @@ class Runner(Exceptionable, Configurable):
         :param cuff_config: dict, cuff config
         :param expandable: bool, cuff expandable
         :param r_f: float, final radius
-        :param theta_i: float, initial angle
-        :return:
+        :param theta_i: float, initial angle of cuff pre expansion
+        :return: r_i: float, cuff radius pre expansion; theta_f: float, cuff wrap angle used in FEM
         """
         # check radius iff not expandable
         if not expandable:
@@ -765,9 +762,10 @@ class Runner(Exceptionable, Configurable):
     def compute_electrical_parameters(self, all_configs, model_index):
         """Compute electrical parameters for a given model.
 
+        Writes output to config file.
+
         :param all_configs: all configs for this run
         :param model_index: index of the model to compute parameters for
-        :return: None, writes output to file
         """
         # fetch current model config using the index
         model_config = all_configs[Config.MODEL.value][model_index]
@@ -809,10 +807,7 @@ class Runner(Exceptionable, Configurable):
         TemplateOutput.write(model_config, dest_path)
 
     def populate_env_vars(self):
-        """Get environment variables from config file.
-
-        :return: None
-        """
+        """Get environment variables from config file."""
         if Config.ENV.value not in self.configs:
             self.throw(75)
 
@@ -825,7 +820,6 @@ class Runner(Exceptionable, Configurable):
         """Check model parameters for validity.
 
         :param all_configs: all configs for this run
-        :return: None
         """
         for _, model_config in enumerate(all_configs[Config.MODEL.value]):
             distal_exists = model_config['medium']['distal']['exist']
