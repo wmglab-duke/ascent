@@ -17,7 +17,7 @@ from typing import List
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.ndimage.morphology import binary_fill_holes
+from scipy.ndimage import binary_fill_holes
 from skimage import morphology
 
 from src.core import Fascicle, Map, Nerve, Slide, Trace
