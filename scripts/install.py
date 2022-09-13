@@ -14,17 +14,14 @@ import sys
 
 
 def run(args):
-    """Install ASCENT."""
+    """Install ASCENT.
 
-    def ensure_dir(directory):
-        """Ensure a directory exists."""
-        if not os.path.exists(directory):
-            os.makedirs(directory)
-
+    :param args: command line arguments
+    """
     sys.argv = args
 
     if sys.version_info[0] < 3:
-        raise Exception('Installation must be run using Python 3.\nTry \'./run install\' or \'python3 run install\'.\n')
+        sys.exit('Installation must be run using Python 3.\nTry \'./run install\' or \'python3 run install\'.\n')
 
     reply = input('Have you navigated to the root of the ASCENT repository? [y/N] ').lower().strip()
     if reply[0] != 'y':
@@ -45,7 +42,7 @@ def run(args):
     ]
 
     for path in defdirs:
-        ensure_dir(path)
+        os.makedirs(path, exist_ok=True)
 
     # download required JAR(s)
     jars = ['https://repo1.maven.org/maven2/org/json/json/20190722/json-20190722.jar']

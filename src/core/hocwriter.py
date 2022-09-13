@@ -55,14 +55,17 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         )
 
     def define_sim_indices(self, args: List[List[np.array]]):
-        """Define simulation indices."""
+        """Define simulation indices.
+
+        :param args: List of lists of arrays of simulation indices.
+        :return: List of all simulation indices (flattened).
+        """
         return itertools.product(args)
 
     def build_hoc(self, n_tsteps):
         """Write file launch.hoc for launching NEURON simulations.
 
         :param n_tsteps: Number of time steps in simulation.
-        :return: None
         """
         write_mode = WriteMode.HOC
         file_path = os.path.join(
@@ -92,7 +95,6 @@ class HocWriter(Exceptionable, Configurable, Saveable):
 
         :param file_object: File object to write to.
         :param n_tsteps: Number of time steps in simulation.
-        :return:
         """
         # ENVIRONMENT
         file_object.write("\n//***************** Environment *****************\n")
@@ -109,7 +111,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         """Write fiber parameters to launch.hoc.
 
         :param file_object: File object to write to.
-        :return:
+        :return: Fiber model information.
         """
         # FIBER PARAMETERS
         file_object.write("\n//***************** Fiber Parameters *************\n")
@@ -164,7 +166,6 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         """Write extracellular stimulation parameters to launch.hoc.
 
         :param file_object: File object to write to.
-        :return:
         """
         file_object.write("\n//***************** Extracellular Stim ***********\n")
         file_object.write("strdef VeTime_fname\n")
@@ -176,7 +177,6 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         """Write classification checkpoints to launch.hoc.
 
         :param file_object: File object to write to.
-        :return:
         """
         file_object.write("\n//***************** Classification Checkpoints ***\n")
         # Time points to record Vm and gating params vs x
@@ -213,7 +213,6 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         """Write protocol to launch.hoc.
 
         :param file_object: File object to write to.
-        :return:
         """
         file_object.write("\n//***************** Protocol Parameters *********\n")
         protocol_mode_name: str = self.search(Config.SIM, 'protocol', 'mode')
@@ -321,7 +320,6 @@ class HocWriter(Exceptionable, Configurable, Saveable):
 
         :param fiber_model_info: Dictionary containing information about the fiber model.
         :param file_object:  File object to write to.
-        :return: None
         """
         file_object.write("\n//***************** Recording ********************\n")
         if 'saving' not in self.configs[Config.SIM.value]:
@@ -386,7 +384,6 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         """Write the intracellular stimulation section of the hoc file.
 
         :param file_object: File object to write to.
-        :return: None
         """
         file_object.write("\n//***************** Intracellular Stim ***********\n")
         # use for keys only, get params with self.search() for error throwing if missing them

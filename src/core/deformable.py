@@ -39,7 +39,7 @@ class Deformable(Exceptionable):
         :param boundary_start: original start trace
         :param boundary_end: end trace
         :param contents: list of traces assumed to be within boundary start, not required to be within boundary end.
-           Assumes boundary end will be able to hold all contents.
+            Assumes boundary end will be able to hold all contents.
         """
         # init superclass
         Exceptionable.__init__(self, SetupMode.OLD, exception_config)
@@ -56,7 +56,10 @@ class Deformable(Exceptionable):
         self.end_rotations: List[float] = []
 
     def setup_pygame_render(self):
-        """Initialize the debug render mediated by pygame."""
+        """Initialize the debug render mediated by pygame.
+
+        :return: pygame surface, pymunk space, pygame draw options, pygame screen, image ratio
+        """
         bounds = self.start.polygon().bounds
         width = int(1 * (bounds[2] + bounds[0]))
         height = int(1 * (bounds[3] + bounds[1]))
@@ -108,6 +111,7 @@ class Deformable(Exceptionable):
         :param minimum_distance: minimum distance between fascicles.
         :param morph_count: number of morph steps to use.
         :param ratio: deform ratio.
+        :return: morph steps (list of pymunk segments), pymunk space, fascicle polygons
         """
         contents = [trace.deepcopy() for trace in self.contents]
 
@@ -145,7 +149,7 @@ class Deformable(Exceptionable):
 
         :param morph_count: number of incremental traces including the start and end of boundary
         :param morph_index_step: steps between loops of updating outer boundary, i.e. 1 is every loop,
-           2 is every other loop...
+            2 is every other loop...
         :param render: True if you care to see it happen... makes this method WAY slower
         :param minimum_distance: separation between original inputs
         :param ratio: deform ratio
@@ -289,6 +293,7 @@ class Deformable(Exceptionable):
         :param slide: Slide object
         :param mode: ReshapeNerveMode enum
         :param sep_nerve: separation between nerve and fascicles
+        :return: Deformable object
         """
         # method in slide will pull out each trace and add to a list of contents, go through traces and build polygons
 
@@ -330,8 +335,8 @@ class Deformable(Exceptionable):
         :param fill: bar fill character
         """
         percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
-        filledLength = int(length * iteration // total)
-        bar = fill * filledLength + '-' * (length - filledLength)
+        filled_length = int(length * iteration // total)
+        bar = fill * filled_length + '-' * (length - filled_length)
         print(f'\r{prefix} |{bar}| {percent}% {suffix}', end='')
         # Print New Line on Complete
         if iteration == total:

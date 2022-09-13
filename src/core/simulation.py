@@ -304,6 +304,8 @@ class Simulation(Exceptionable, Configurable, Saveable):
         :param sim_num: Simulation number
         :param potentials_ind: Index of potentials in potentials_product
         :param waveform_ind: Index of waveform in wave_product
+        :param t: Time
+        :return: nsims_dir, fiberset_ind, active_srcs
         """
         # build file structure sim/#/n_sims/t/data/(inputs and outputs)
         self._build_file_structure(os.path.join(sim_dir, str(sim_num)), t)
@@ -370,7 +372,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
         :param supersampled_bases: information about the supersampled bases from Sim
         :param sim_dir: directory of the source simulation with previously supersampled bases
-        :return: self
         """
         source_sim = supersampled_bases.get('source_sim')
 
@@ -508,12 +509,12 @@ class Simulation(Exceptionable, Configurable, Saveable):
     def get_ss_bases(self, active_src_vals, file, sim_dir, source_sim, ss_bases):
         """Get the supersampled bases for the given simulation.
 
-        :param active_src_vals:
-        :param file:
-        :param sim_dir:
-        :param source_sim:
-        :param ss_bases:
-        :return:
+        :param active_src_vals: active source values (weights)
+        :param file: file we are getting the supersampled bases from
+        :param sim_dir: directory of simulations
+        :param source_sim: source simulation index where the supersampled bases are from
+        :param ss_bases: supersampled bases values
+        :return: the path to the supersampled bases coordinates, ss_bases
         """
         ss_fiberset_path = os.path.join(sim_dir, str(source_sim), 'ss_coords')
 
@@ -534,12 +535,12 @@ class Simulation(Exceptionable, Configurable, Saveable):
     def weight_potentials(self, active_src_vals, file, root, ss_bases, ss_fiberset_path):
         """Calculate the sum of weighted bases.
 
-        :param active_src_vals:
-        :param file:
-        :param root:
-        :param ss_bases:
-        :param ss_fiberset_path:
-        :return:
+        :param active_src_vals: active source values (weights)
+        :param file: file we are getting the supersampled coordinates from
+        :param root: root directory where the file containging the supersampled coordinates is located
+        :param ss_bases: supersampled bases values
+        :param ss_fiberset_path: path to the supersampled coordinates
+        :return: the weighted sum of the bases for use in the neuron simulation
         """
         ss_weighted_bases_vec = np.zeros(len(ss_bases[0]))
         for src_ind, src_weight in enumerate(active_src_vals[0]):
@@ -608,9 +609,8 @@ class Simulation(Exceptionable, Configurable, Saveable):
     def _build_file_structure(sim_obj_dir, t):
         """Build the file structure for the simulation.
 
-        :param sim_obj_dir:
+        :param sim_obj_dir: simulation object directory for sim in question
         :param t: master production index
-        :return: None
         """
         sim_dir = os.path.join(sim_obj_dir, "n_sims", str(t))
 
@@ -624,7 +624,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
         :param config: config file to copy
         :param key: key to edit/reduce
-        :param param_list: list of parameters to set
+        :param setval: list of parameters to set
         :param copy_again: make deep copy of config file
         :return: new (reduced) config file
         """
@@ -648,7 +648,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
         :param project_root: project root
         :param target:  target directory
         :param overwrite: overwrite existing run config if it exists
-        :return: None
         """
         target_dir = os.path.join(target, 'runs')
         target_full = os.path.join(target_dir, str(num) + '.json')
@@ -679,7 +678,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
         :param sim_obj_dir: Simulation object directory
         :param target: Target directory
         :param export_behavior: If the directory exists, what to do (i.e., override or error or skip
-        :return: None
         """
         sim_dir = os.path.join(sim_obj_dir, str(sim), 'n_sims')
         sim_export_base = os.path.join(target, 'n_sims', f'{sample}_{model}_{sim}_')
@@ -705,7 +703,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
         """Export the neuron files to the target directory.
 
         :param target: Target directory
-        :return: None
         """
         # make NSIM_EXPORT_PATH (defined in Env.json) directory if it does not yet exist
         if not os.path.exists(target):
@@ -732,7 +729,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
         """Export the system config files to the target directory.
 
         :param target: Target directory
-        :return: None
         """
         # make NSIM_EXPORT_PATH (defined in Env.json) directory if it does not yet exist
         if not os.path.exists(target):
@@ -770,7 +766,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
         :param sim_dir: Simulation directory
         :param source: Source directory (where n_sims are located)
         :param delete: Delete n_sims from source directory after import
-        :return: None
         """
         print(f'sample: {sample}, model: {model}, sim: {sim}, sim_dir: {sim_dir}, source: {source}')
 
@@ -792,7 +787,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
         :param sample: Sample index
         :param model: Model index
         :param sim: Sim index
-        :param sim_dir: Simulation directory
         :param source: Source directory (where n_sims are located)
         :return: True if thresholds exist, False otherwise
         """

@@ -50,7 +50,7 @@ class Query(Exceptionable, Configurable, Saveable):
     def run(self):
         """Build query result using criteria.
 
-        :return: result as a dict
+        :return: self
         """
         # initialize empty result
         result = {}
@@ -175,19 +175,34 @@ class Query(Exceptionable, Configurable, Saveable):
         return self
 
     def summary(self) -> dict:
-        """Return result of self.run()."""
+        """Return result of self.run().
+
+        :return: result as a dict
+        """
         if self._result is None:
             self.throw(53)
 
         return self._result
 
     def get_config(self, mode: Config, indices: List[int]) -> dict:
-        """Load config file for given mode and indices."""
+        """Load .json config file for given mode and indices.
+
+        :param mode: Config enum (e.g. Config.SAMPLE)
+        :param indices: list of indices (e.g. [0, 1, 2]). These are sample, model, and sim indices, respectively.
+            For a sample, pass only one index. For a model, pass two indices. For a sim, pass three indices.
+        :return: config file as a dict
+        """
         return self.load(self.build_path(mode, indices))
 
     @staticmethod
     def get_object(mode: Object, indices: List[int]) -> Union[Sample, Simulation]:
-        """Load pickled object for given mode and indices."""
+        """Load pickled object for given mode and indices.
+
+        :param mode: mode of object (e.g. Object.SAMPLE)
+        :param indices: indices of object (e.g. [0, 0, 0]). These are the sample, model, and sim indices, respectively.
+            For a sample, pass only [sample_index]. For a model, pass [sample_index, model_index].
+        :return: object
+        """
         with open(Query.build_path(mode, indices), 'rb') as obj:
             return pickle.load(obj)
 
@@ -197,7 +212,14 @@ class Query(Exceptionable, Configurable, Saveable):
         indices: List[int] = None,
         just_directory: bool = False,
     ) -> str:
-        """Build path to config or object file for given mode and indices."""
+        """Build path to config or object file for given mode and indices.
+
+        :param mode: from Config or Object enum (e.g. Config.SAMPLE)
+        :param indices: list of indices (e.g. [0, 1, 2]). These are sample, model, and sim indices, respectively.
+            For just a sample or model, pass [0] or [0, 1], respectively.
+        :param just_directory: if True, return path to directory containing file, not the path to the file itself
+        :return: path
+        """
         result = str()
 
         if indices is None:
@@ -439,15 +461,14 @@ class Query(Exceptionable, Configurable, Saveable):
 
         NOTE: for all key lists, the values themselves are lists, functioning as a JSON pointer.
 
-        :param: filepath (str): output filepath
-        :param: sample_keys (list, optional): Sample keys to output. Defaults to [].
-        :param: model_keys (list, optional): Model keys to output. Defaults to [].
-        :param: sim_keys (list, optional): Sim keys to output. Defaults to [].
-        :param: individual_indices (bool, optional): Include column for each index. Defaults tp True.
-        :param: config_paths (bool, optional): Include column for each config path. Defaults to True.
-        :param: column_width (int, optional): Column width for Excel document. Defaults to None (system default).
-        :param: console_output (bool, optional): Print progress to console. Defaults to False.
-        :return: None
+        :param: filepath: output filepath
+        :param: sample_keys: Sample keys to output. Defaults to [].
+        :param: model_keys: Model keys to output. Defaults to [].
+        :param: sim_keys: Sim keys to output. Defaults to [].
+        :param: individual_indices: Include column for each index. Defaults tp True.
+        :param: config_paths: Include column for each config path. Defaults to True.
+        :param: column_width: Column width for Excel document. Defaults to None (system default).
+        :param: console_output: Print progress to console. Defaults to False.
         """
         sims: dict = {}
         sample_keys: List[list] = sample_keys if sample_keys else []
