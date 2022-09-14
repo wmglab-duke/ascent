@@ -67,8 +67,8 @@ dev_check:
   stage: lint
   script:
     - ( ! grep "self.throw(9001)" --include \*.py -r . )
-    - pip install flake8 flake8-fixme
-    - flake8 --select=T100,T101,T102 config docs examples scripts src run tests
+    - pip install flake8 flake8-fixme flake8-docstrings flake8-rst-docstrings darglint
+    - flake8 --select=T100,T101,T102,D,DAR,RST config docs examples scripts src run tests
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event' && '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
