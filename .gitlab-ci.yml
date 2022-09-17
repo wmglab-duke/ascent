@@ -60,7 +60,7 @@ flake8:
   stage: lint
   script:
     - pip install flake8 flake8-eradicate flake8-simplify flake8-bugbear flake8-builtins flake8-comprehensions
-    - flake8 config docs examples scripts src run tests
+    - flake8 --extend-ignore=T100,T101,T102 config docs examples scripts src run tests
 
 docstring_check:
   stage: lint
