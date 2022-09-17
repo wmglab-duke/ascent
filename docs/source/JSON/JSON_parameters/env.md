@@ -40,24 +40,24 @@ pipeline will save NEURON simulation directories to submit.
 
 <!-- end list -->
 
-Windows:
+````{tab} macOS
+  ```javascript
+  {
+    "ASCENT_COMSOL_PATH": "/Applications/COMSOL55/Multiphysics ",
+    "ASCENT_JDK_PATH": "/Library/Java/JavaVirtualMachines/jdk1.8.0_221.jdk/Contents/Home/bin/",
+    "ASCENT_PROJECT_PATH": "/Users/ericmusselman/Documents/ascent",
+    "ASCENT_NSIM_EXPORT_PATH": "/Users/ericmusselman/Documents/ascent/submit"
+  }
+  ```
+````
 
-```javascript
-{
-  "ASCENT_COMSOL_PATH": "C:\\Program Files\\COMSOL\\COMSOL55\\Multiphysics",
-  "ASCENT_JDK_PATH": "C:\\Program Files\\Java\\jdk1.8.0_221\\bin",
-  "ASCENT_PROJECT_PATH": "D:\\Documents\\ascent",
-  "ASCENT_NSIM_EXPORT_PATH": "D:\\Documents\\ascent\\submit"
-}
-```
-
-MacOS
-
-```javascript
-{
-  "ASCENT_COMSOL_PATH": "/Applications/COMSOL55/Multiphysics ",
-  "ASCENT_JDK_PATH": "/Library/Java/JavaVirtualMachines/jdk1.8.0_221.jdk/Contents/Home/bin/",
-  "ASCENT_PROJECT_PATH": "/Users/ericmusselman/Documents/ascent",
-  "ASCENT_NSIM_EXPORT_PATH": "/Users/ericmusselman/Documents/ascent/submit"
-}
-```
+````{tab} Windows
+  ```javascript
+  {
+    "ASCENT_COMSOL_PATH": "C:\\Program Files\\COMSOL\\COMSOL55\\Multiphysics",
+    "ASCENT_JDK_PATH": "C:\\Program Files\\Java\\jdk1.8.0_221\\bin",
+    "ASCENT_PROJECT_PATH": "D:\\Documents\\ascent",
+    "ASCENT_NSIM_EXPORT_PATH": "D:\\Documents\\ascent\\submit"
+  }
+  ```
+````
