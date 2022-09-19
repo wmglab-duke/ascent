@@ -454,6 +454,8 @@ class Waveform(Exceptionable, Configurable, Saveable):
 
         if ax is None:
             ax = plt.gca()
+        if plt_kwargs is None:
+            plt_kwargs = {}
 
         ax.plot(np.linspace(self.start, self.dt * len(self.wave), len(self.wave)), self.wave, **plt_kwargs)
         ax.set_ylabel('Normalized magnitude')
