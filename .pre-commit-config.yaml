@@ -80,7 +80,7 @@ repos:
         args: ["--disable", "md013,md034,md033,md036"]
   # check config files
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.18.2
+    rev: 0.18.3
     hooks:
       - id: check-gitlab-ci
       - id: check-readthedocs
