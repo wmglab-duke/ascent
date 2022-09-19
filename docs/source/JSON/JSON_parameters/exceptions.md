@@ -40,5 +40,6 @@ pipeline failed.
 
 See: `config/system/exceptions.json`
 
-Note: The user should not need to change this file unless adding new
-exceptions to ASCENT.
+```{note}
+The user should not need to change this file unless adding new exceptions to ASCENT.
+```

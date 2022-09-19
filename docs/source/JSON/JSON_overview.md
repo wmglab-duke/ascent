@@ -13,9 +13,17 @@ notes to a JSON file (e.g., to remember what a **_Sample_**,
 simply add a key to the JSON file that is not in use (e.g., "notes") and
 provide a value (`String`) with a message.
 
+```{note}
+Example configuration files are provided in the `config/templates/` directory.
+```
+
 ## User configuration files
 
 ### run.json
+
+```{figure} ../uploads/run.png
+Overview of the run.json file
+```
 
 The `run.json` file is passed to `pipeline.py` to instruct the program
 which **_Sample_**, **_Model(s)_**, and **_Sim(s)_** to run. All
@@ -33,10 +41,14 @@ SLURM cluster or locally.
 
 ### sample.json
 
+```{figure} ../uploads/sample.png
+Overview of the sample.json file
+```
+
 An example **_Sample_** configuration file is stored in
 `config/templates/` for users to reference when defining their own
 input nerve morphology from histology or from the mock nerve morphology
-generator [Mock Morphology](../MockSample). A user’s `sample.json` file is saved in the
+generator ([Mock Morphology](../MockSample)). A user’s `sample.json` file is saved in the
 `samples/<sample_index>/` directory. The file contains information
 about the sample’s properties and how to process the nerve morphology
 before placing the nerve in a cuff electrode. The pipeline’s processes
@@ -71,6 +83,49 @@ morphometry data become available, users may define perineurium
 thickness with new models by adding the coefficients to this JSON
 file._**
 
+### model.json
+
+```{figure} ../uploads/model.png
+Overview of the model.json file
+```
+
+An example **_Model_** configuration file is stored in
+`config/templates/` for users to reference when creating their own
+FEMs. As such, `model.json`, which is stored in the file structure in
+`samples/<sample_index>/models/<model_index>/`, contains
+information to define an FEM uniquely. **_Model_** defines the cuff
+electrode geometry and positioning, the simulated environment (e.g.,
+surrounding medium dimensions, material properties (including
+temperature and frequency factors of material conductivity), and
+physics), the meshing parameters (i.e., how the volume is discretized),
+and output statistics (e.g., time required to mesh, mesh element quality
+measures).
+
+### sim.json
+
+```{figure} ../uploads/sim.png
+Overview of the sim.json file
+```
+
+An example **_Sim_** configuration file is stored in
+`config/templates/` for users to reference when creating their own
+simulations of fiber responses to stimulation for a sample in a FEM. All
+simulation configuration files are stored in the `config/user/sims/`
+directory. **_Sim_** defines fiber types, fiber locations in the FEM,
+fiber length, extracellular (e.g., pulse repetition frequency) and
+intracellular stimulation, and input parameters to NEURON (e.g.,
+parameters to be saved in the output, binary search algorithm bounds and
+resolution). Since users may want to sweep parameters at the **_Sim_**
+configuration level (e.g., fiber types, fiber locations, waveforms), a
+pared down copy of **_Sim_** that contains a single value for each
+parameter (rather than a list) is saved within the corresponding
+`n_sims/` directory ([Sim Parameters](../JSON/JSON_parameters/sim)). These pared down files are provided for convenience,
+so that the user can inspect which parameters were used in a single
+NEURON simulation, and they do not hold any other function within the
+pipeline.
+
+## Special use configuration files
+
 ### mock_sample.json
 
 The `mock_sample.json` file, which is stored in the file structure in
@@ -104,39 +159,6 @@ elliptical fascicles of user-defined sizes, locations, and rotations.
 The program validates that the defined fascicle ellipses are at least
 `"min_fascicle_separation"` distance apart; otherwise, if the
 conditions are not met, the program throws an error.
-
-### model.json
-
-An example **_Model_** configuration file is stored in
-`config/templates/` for users to reference when creating their own
-FEMs. As such, `model.json`, which is stored in the file structure in
-`samples/<sample_index>/models/<model_index>/`, contains
-information to define an FEM uniquely. **_Model_** defines the cuff
-electrode geometry and positioning, the simulated environment (e.g.,
-surrounding medium dimensions, material properties (including
-temperature and frequency factors of material conductivity), and
-physics), the meshing parameters (i.e., how the volume is discretized),
-and output statistics (e.g., time required to mesh, mesh element quality
-measures).
-
-### sim.json
-
-An example **_Sim_** configuration file is stored in
-`config/templates/` for users to reference when creating their own
-simulations of fiber responses to stimulation for a sample in a FEM. All
-simulation configuration files are stored in the `config/user/sims/`
-directory. **_Sim_** defines fiber types, fiber locations in the FEM,
-fiber length, extracellular (e.g., pulse repetition frequency) and
-intracellular stimulation, and input parameters to NEURON (e.g.,
-parameters to be saved in the output, binary search algorithm bounds and
-resolution). Since users may want to sweep parameters at the **_Sim_**
-configuration level (e.g., fiber types, fiber locations, waveforms), a
-pared down copy of **_Sim_** that contains a single value for each
-parameter (rather than a list) is saved within the corresponding
-`n_sims/` directory ([Sim Parameters](../JSON/JSON_parameters/sim)). These pared down files are provided for convenience,
-so that the user can inspect which parameters were used in a single
-NEURON simulation, and they do not hold any other function within the
-pipeline.
 
 ### query_criteria.json
 

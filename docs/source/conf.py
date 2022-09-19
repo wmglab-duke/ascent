@@ -45,6 +45,7 @@ extensions = [
     'sphinx_github_changelog',
     'sphinx_inline_tabs',
     'sphinx.ext.autodoc',
+    'sphinx_inline_tabs',
 ]
 
 source_suffix = {

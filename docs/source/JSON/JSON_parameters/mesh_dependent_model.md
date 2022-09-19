@@ -44,6 +44,8 @@ See: `model.json`
 
 See: `config/system/mesh_dependent_model.json`
 
-- Note: The user should not need to change this file unless adding new
-  parameters to **_Model_** for expanded/modified pipeline
-  functionality.
+```{note}
+The user should not need to change this file unless adding new
+parameters to **_Model_** for expanded/modified pipeline
+functionality.
+```

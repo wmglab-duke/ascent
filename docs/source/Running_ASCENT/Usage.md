@@ -2,7 +2,15 @@
 
 ## Running the ASCENT Pipeline
 
-See [Running the Pipeline](../Getting_Started.md#setting-up-a-run-of-ascent).
+See [Running the Pipeline](../Getting_Started.md#setting-up-a-run-of-ascent) for instructions on how to run ASCENT.
+The first three stages of ASCENT are invoked by the command `python run pipeline`.
+This performs the necessary operations to prepare simulations of nerve stimulation.
+The [final stage](#submitting-neuron-jobs) of ASCENT is invoked by the command `python submit.py`, which runs the simulations.
+After the simulations are run, the [Query Class](#data-analysis-tools) can be used to obtain the resultant data,
+and the [Plotter Module](plotter.rst) can be used to visualize the results.
+```{figure} ../uploads/pipeline_stages.png
+The stages of the ASCENT pipeline.
+```
 
 ## Submitting NEURON jobs
 

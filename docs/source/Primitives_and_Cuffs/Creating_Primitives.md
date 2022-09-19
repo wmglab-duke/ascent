@@ -9,13 +9,17 @@ creating a new part primitive.
 
 The COMSOL GUI has a "Geometry Parts" node under the "Global
 Definitions". The pipeline adds part primitives—i.e., the geometry of
-different pieces of cuff electrodes (e.g., contacts ([ASCENT Part Primitives](Cuff_Primitives) Figure A),
-insulators ([ASCENT Part Primitives](Cuff_Primitives) Figure B), cuff fill (e.g., encapsulation tissue,
+different pieces of cuff electrodes (e.g., contacts,
+insulators, cuff fill (e.g., encapsulation tissue,
 mineral oil, saline), or medium (e.g., surrounding muscle, fat)—as
 "parts" under "Geometry Parts". Their resulting volumes (domains),
 surfaces, and points (used for point current sources) are added to the
 list of "cumulative selections" which are later used to assign
 appropriate mesh settings, material properties, and boundary conditions.
+
+```{note}
+For more information on specific primitives, see [ASCENT Part Primitives](Cuff_Primitives)
+```
 
 1\. Create and label your part. Open up `examples/parts/sandbox.mph`,
 secondary-click on "Geometry Parts", choose "3D Part". Give your part an

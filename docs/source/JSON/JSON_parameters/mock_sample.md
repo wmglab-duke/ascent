@@ -14,10 +14,10 @@ preparation for 3D representation of the nerve in the FEM.
 To declare this entity in
 config/user/<mock_sample_index>.json, use the following syntax:
 
-Note: Eccentricity (e) is defined as a function of the major (a-) and minor
-(b-) axes as follows:
-
+```{note}
+Eccentricity (e) is defined as a function of the major (a-) and minor (b-) axes as follows:
 ![f1]
+```
 
 ```javascript
 {

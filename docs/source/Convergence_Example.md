@@ -1,11 +1,13 @@
 # Convergence Analysis Example
 
-*Note: The following convergence analysis was performed for a rat
+```{note}
+The following convergence analysis was performed for a rat
 cervical vagus nerve and is provided as an illustrative example.
+```
 
 The outer boundaries of the model (assigned to electrical ground) were
 initially set to dimensions that are known to be excessively large in
-both length (100 mm) and radius (20 mm) (Figure A). For testing of
+both length (100 mm) and radius (20 mm) (See image below). For testing of
 convergence of the model length and diameter, we carefully controlled
 the mesh parameters such that any changes in the threshold to excite
 model nerve fibers positioned in the finite element model are attributed
@@ -17,9 +19,9 @@ model surrounding the nerve and electrode (i.e., "proximal", which is
 the full length of the nerve) was assigned its own mesh entirely
 independent of the outer boundary region (i.e., "distal").
 
-![Inline image](uploads/99665495c70d91756ac80b8d9ee13a35/Picture14.jpg)
-
-Figure A. Convergence of FEM model dimensions and mesh density for 2 and 10 μm myelinated MRG fibers modeled in a rat cervical vagus nerve.
+```{figure} uploads/99665495c70d91756ac80b8d9ee13a35/Picture14.jpg
+Convergence of FEM model dimensions and mesh density for 2 and 10 μm myelinated MRG fibers modeled in a rat cervical vagus nerve.
+```
 
 For different model sizes and mesh densities, we determined excitation
 thresholds for 100 randomly placed 2 µm diameter myelinated model axons
