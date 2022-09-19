@@ -738,118 +738,115 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         :return: The diameters of the fibers.
         """
         diam_distribution: bool = type(diameter) is dict
+        diams = []
 
-        if super_sample:
-            myelinated = False
-            diams = []
-        else:
-            myelinated: bool = self.search(
+        myelinated = False if super_sample else self.search(
                 Config.FIBER_Z,
                 MyelinationMode.parameters.value,
                 fiber_geometry_mode_name,
                 'myelinated',
             )
 
-            if diam_distribution:
-                sampling_mode = self.search(
-                    Config.FIBER_Z,
-                    MyelinationMode.parameters.value,
-                    fiber_geometry_mode_name,
-                    'sampling',
-                )
-                if myelinated and (sampling_mode != MyelinatedSamplingType.INTERPOLATION.value):
-                    self.throw(104)
+        if diam_distribution and not super_sample:
+            sampling_mode = self.search(
+                Config.FIBER_Z,
+                MyelinationMode.parameters.value,
+                fiber_geometry_mode_name,
+                'sampling',
+            )
+            if myelinated and (sampling_mode != MyelinatedSamplingType.INTERPOLATION.value):
+                self.throw(104)
 
-                distribution_mode_name = self.search(
+            distribution_mode_name = self.search(
+                Config.SIM,
+                'fibers',
+                FiberZMode.parameters.value,
+                'diameter',
+                'mode',
+            )
+            distribution_mode: DiamDistMode = [
+                mode for mode in DiamDistMode if str(mode).split('.')[-1] == distribution_mode_name
+            ][0]
+            # seed rng
+            my_diam_seed: int = self.search(
+                Config.SIM,
+                'fibers',
+                FiberZMode.parameters.value,
+                'diameter',
+                'seed',
+            )
+            np.random.seed(my_diam_seed)
+
+            fiber_diam_dist = None
+            if distribution_mode == DiamDistMode.UNIFORM:
+
+                # load parameters
+                lower_fiber_diam: float = self.search(
                     Config.SIM,
                     'fibers',
                     FiberZMode.parameters.value,
                     'diameter',
-                    'mode',
+                    'lower',
                 )
-                distribution_mode: DiamDistMode = [
-                    mode for mode in DiamDistMode if str(mode).split('.')[-1] == distribution_mode_name
-                ][0]
-                # seed rng
-                my_diam_seed: int = self.search(
+                upper_fiber_diam: float = self.search(
                     Config.SIM,
                     'fibers',
                     FiberZMode.parameters.value,
                     'diameter',
-                    'seed',
+                    'upper',
                 )
-                np.random.seed(my_diam_seed)
 
-                fiber_diam_dist = None
-                if distribution_mode == DiamDistMode.UNIFORM:
+                # parameter checking
+                # positive values, order makes sense, etc
+                if lower_fiber_diam < 0:
+                    self.throw(100)
+                if lower_fiber_diam > upper_fiber_diam:
+                    self.throw(101)
 
-                    # load parameters
-                    lower_fiber_diam: float = self.search(
-                        Config.SIM,
-                        'fibers',
-                        FiberZMode.parameters.value,
-                        'diameter',
-                        'lower',
-                    )
-                    upper_fiber_diam: float = self.search(
-                        Config.SIM,
-                        'fibers',
-                        FiberZMode.parameters.value,
-                        'diameter',
-                        'upper',
-                    )
+                fiber_diam_dist = stats.uniform(lower_fiber_diam, upper_fiber_diam - lower_fiber_diam)
 
-                    # parameter checking
-                    # positive values, order makes sense, etc
-                    if lower_fiber_diam < 0:
-                        self.throw(100)
-                    if lower_fiber_diam > upper_fiber_diam:
-                        self.throw(101)
+            elif distribution_mode == DiamDistMode.TRUNCNORM:
 
-                    fiber_diam_dist = stats.uniform(lower_fiber_diam, upper_fiber_diam - lower_fiber_diam)
+                # load parameters
+                n_std_fiber_diam_limit: float = self.search(
+                    Config.SIM,
+                    'fibers',
+                    FiberZMode.parameters.value,
+                    'diameter',
+                    'n_std_limit',
+                )
+                mu_fiber_diam: float = self.search(
+                    Config.SIM,
+                    'fibers',
+                    FiberZMode.parameters.value,
+                    'diameter',
+                    'mu',
+                )
+                std_fiber_diam: float = self.search(
+                    Config.SIM,
+                    'fibers',
+                    FiberZMode.parameters.value,
+                    'diameter',
+                    'std',
+                )
+                lower_fiber_diam = mu_fiber_diam - n_std_fiber_diam_limit * std_fiber_diam
+                upper_fiber_diam = mu_fiber_diam + n_std_fiber_diam_limit * std_fiber_diam
 
-                elif distribution_mode == DiamDistMode.TRUNCNORM:
+                # parameter checking
+                # positive values, order makes sense, etc
+                if n_std_fiber_diam_limit == 0 and std_fiber_diam != 0:
+                    self.throw(102)
+                if lower_fiber_diam < 0:
+                    self.throw(103)
 
-                    # load parameters
-                    n_std_fiber_diam_limit: float = self.search(
-                        Config.SIM,
-                        'fibers',
-                        FiberZMode.parameters.value,
-                        'diameter',
-                        'n_std_limit',
-                    )
-                    mu_fiber_diam: float = self.search(
-                        Config.SIM,
-                        'fibers',
-                        FiberZMode.parameters.value,
-                        'diameter',
-                        'mu',
-                    )
-                    std_fiber_diam: float = self.search(
-                        Config.SIM,
-                        'fibers',
-                        FiberZMode.parameters.value,
-                        'diameter',
-                        'std',
-                    )
-                    lower_fiber_diam = mu_fiber_diam - n_std_fiber_diam_limit * std_fiber_diam
-                    upper_fiber_diam = mu_fiber_diam + n_std_fiber_diam_limit * std_fiber_diam
+                fiber_diam_dist = stats.truncnorm(
+                    (lower_fiber_diam - mu_fiber_diam) / std_fiber_diam,
+                    (upper_fiber_diam - mu_fiber_diam) / std_fiber_diam,
+                    loc=mu_fiber_diam,
+                    scale=std_fiber_diam,
+                )
 
-                    # parameter checking
-                    # positive values, order makes sense, etc
-                    if n_std_fiber_diam_limit == 0 and std_fiber_diam != 0:
-                        self.throw(102)
-                    if lower_fiber_diam < 0:
-                        self.throw(103)
-
-                    fiber_diam_dist = stats.truncnorm(
-                        (lower_fiber_diam - mu_fiber_diam) / std_fiber_diam,
-                        (upper_fiber_diam - mu_fiber_diam) / std_fiber_diam,
-                        loc=mu_fiber_diam,
-                        scale=std_fiber_diam,
-                    )
-
-                diams = fiber_diam_dist.rvs(len(fibers_xy))
+            diams = fiber_diam_dist.rvs(len(fibers_xy))
         return diams, myelinated
 
     def calculate_fiber_length_params(self, override_length):
