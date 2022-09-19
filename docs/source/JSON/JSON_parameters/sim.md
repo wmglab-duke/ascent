@@ -505,7 +505,8 @@ following JSON Objects containing “WaveformMode”-specific parameters.
 The user can only loop parameters for one type of waveform in a
 **_Sim_**.
 
-Note: the “digits” parameter for the following “WaveformModes” sets the
+```{note}
+The “digits” parameter for the following “WaveformModes” sets the
 precision of the unscaled current amplitude. For waveforms that are only
 ever +/-1 and 0 (e.g., `MONOPHASIC_PULSE_TRAIN`, `BIPHASIC_FULL_DUTY`,
 `BIPHASIC_PULSE_TRAIN`), the user can represent the waveform faithfully
@@ -515,12 +516,15 @@ intermediate values (e.g., `SINUSOID`,
 of precision may be required to achieve numerical accuracy. An excessive
 number of digits of precision will increase computational load and waste
 storage resources.
+```
 
-Note: if one of the parameter values in the `“WaveformMode”` JSON Object
+```{Note}
+If one of the parameter values in the `“WaveformMode”` JSON Object
 is a list, then there are `n_sim/` folders created for as many waveforms
 as parameter values in the list. If more than one parameter value is a
 list, then there are `n_sim/` folders created for each combination of
 waveform parameters among the lists (i.e., the Cartesian product).
+```
 
 - `“MONOPHASIC_PULSE_TRAIN”`
 

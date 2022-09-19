@@ -1,5 +1,5 @@
 #! /bin/bash
-
+set -e
 conda init
 CONDA_ENVPY=$(conda info --base)/envs/ascent/bin/python
 CONDA_BASE=$(conda info --base)/etc/profile.d/conda.sh

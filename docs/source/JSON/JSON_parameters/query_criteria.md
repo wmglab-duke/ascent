@@ -62,8 +62,10 @@ parameters of interest in **_Sim_** and their value(s).
 - `"sim"`: The value (null, Integer, or \[Integer, …\]) for explicitly
   desired **_Sim_** indices
 
-Note: you can have BOTH lists of desired **_Sample_**, **_Model_**, and
+```{Note}
+You can have BOTH lists of desired **_Sample_**, **_Model_**, and
 **_Sim_** indices AND search criteria in one `query_criteria.json`.
+```
 
 ## Example
 

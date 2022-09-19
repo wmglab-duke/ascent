@@ -17,11 +17,11 @@ state variables. These configurations are organized hierarchically such
 that **_Sample_** does not depend on **_Model_** or **_Sim_**, and
 **_Model_** does not depend on **_Sim_**; thus, changes in **_Sim_** do
 not require changes in **_Model_** or **_Sample_**, and changes in
-**_Model_** do not require changes in **_Sample_** (Figure A).
+**_Model_** do not require changes in **_Sample_**.
 
-![Inline image](uploads/e675a31c0bf2bda687c6d696fa145c0c/Picture15.jpg)
-
-Figure A. ASCENT pipeline file structure in the context of Sample (blue), Model (green), and Sim (purple) configurations. [JSON Overview](JSON/JSON_overview) describes the JSON configuration files and their contents, and [JSON Parameters](JSON/JSON_parameters/index) details the syntax and data types of the key-value parameter pairs.
+```{figure} uploads/e675a31c0bf2bda687c6d696fa145c0c/Picture15.jpg
+ASCENT pipeline file structure in the context of Sample (blue), Model (green), and Sim (purple) configurations. [JSON Overview](JSON/JSON_overview) describes the JSON configuration files and their contents, and [JSON Parameters](JSON/JSON_parameters/index) details the syntax and data types of the key-value parameter pairs.
+```
 
 ## Batching and sweeping of parameters
 

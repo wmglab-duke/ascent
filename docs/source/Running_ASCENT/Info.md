@@ -90,13 +90,13 @@ The medium surrounding the nerve and cuff electrode (e.g., fat, skeletal
 muscle) must contain a "proximal" domain, which runs the full length of
 the nerve, and may optionally include a "distal" domain. The
 parameterization for the geometry of the "proximal" and "distal" domains
-is shown below in Figure A. For details on how to define the
+is shown below. For details on how to define the
 "proximal" and "distal" domain geometries and meshing parameters, see
 [Model Parameters](../JSON/JSON_parameters/model).
 
-![Inline image](../uploads/2019a527f15dc364c132f95ade650b12/Picture23.jpg)
-
-Figure A. The user must define a "proximal" domain, and may optionally define a "distal" domain for independent assignment of meshing parameters for the site of stimulation from the rest of the FEM. The "proximal" domain runs the full length of the nerve and is anchored at (0,0,0). The distal domain’s radius and length may be independently assigned, and the entire distal domain may be shifted ("shift": (x, y, z)). Having a proximal domain that is overly voluminous can significantly decrease COMSOL meshing efficiency and even, rarely, cause errors. At all costs, avoid having a proximal or distal domain whose boundary intersects with a geometry (other than the nerve ends, which are by definition at the longitudinal boundaries of the proximal domain) or the boundary of other geometries (e.g., the cuff-nerve boundary); this will likely create a meshing error.
+```{figure} ../uploads/2019a527f15dc364c132f95ade650b12/Picture23.jpg
+The user must define a "proximal" domain, and may optionally define a "distal" domain for independent assignment of meshing parameters for the site of stimulation from the rest of the FEM. The "proximal" domain runs the full length of the nerve and is anchored at (0,0,0). The distal domain’s radius and length may be independently assigned, and the entire distal domain may be shifted ("shift": (x, y, z)). Having a proximal domain that is overly voluminous can significantly decrease COMSOL meshing efficiency and even, rarely, cause errors. At all costs, avoid having a proximal or distal domain whose boundary intersects with a geometry (other than the nerve ends, which are by definition at the longitudinal boundaries of the proximal domain) or the boundary of other geometries (e.g., the cuff-nerve boundary); this will likely create a meshing error.
+```
 
 ## Cuff placement on nerve
 
@@ -147,7 +147,7 @@ the cuff. Note: orientation masks (`a.tif`) are ignored when using these modes.
 For "automatic" `CuffShiftModes` (i.e.,
 `"AUTO_ROTATION_MIN_CIRCLE_BOUNDARY", "AUTO_ROTATION_TRACE_BOUNDARY"`) the cuff is rotated around the
 nerve based on the size and position of the nerve’s fascicle(s) before
-the cuff is moved toward the nerve sample (Figure A). The point at
+the cuff is moved toward the nerve sample (see image below). The point at
 the intersection of the vector from (0,0) in the direction of the
 `"angle_to_contacts_deg"` parameter in the "preset" JSON file with
 the cuff (i.e., cuff’s "center" in following text) is rotated to meet a specific location of the nerve/monofascicle’s
@@ -172,9 +172,9 @@ nerve an inner or outer, and same result as
 is within the distance of the `"thk_medium_gap_internal"` parameter for
 the cuff.
 
-![Inline image](../uploads/01a27546f96467d15bdf091a13ff5f28/Picture22.jpg)
-
-Figure A. Demonstration of cuff placement on a multifascicular nerve (top) and a monofascicular nerve without epineurium (bottom) with the same "preset" cuff (Purdue.json) for three different cuff rotations using the `"AUTO_ROTATION_TRACE_BOUNDARY"` CuffShiftMode. The cuff rotations are different in the top and bottom rows since the point on the surface of the nerve sample closest to the most endoneurium is unique to each sample (black arrows). Additional angles of rotation were applied to the cuff directly using the "add_ang" parameter in the **_Model’s_** "cuff" JSON Object (red arrows).
+```{figure} ../uploads/01a27546f96467d15bdf091a13ff5f28/Picture22.jpg
+Demonstration of cuff placement on a multifascicular nerve (top) and a monofascicular nerve without epineurium (bottom) with the same "preset" cuff (Purdue.json) for three different cuff rotations using the `"AUTO_ROTATION_TRACE_BOUNDARY"` CuffShiftMode. The cuff rotations are different in the top and bottom rows since the point on the surface of the nerve sample closest to the most endoneurium is unique to each sample (black arrows). Additional angles of rotation were applied to the cuff directly using the "add_ang" parameter in the **_Model’s_** "cuff" JSON Object (red arrows).
+```
 
 The default z-position of each part along the nerve is defined in the
 "preset" cuff JSON file by the expression assigned to the part
@@ -350,12 +350,12 @@ The parameters in the `"MRG_INTERPOLATION"` JSON Object in
 `fibersets/` (i.e., coordinates at which to sample `potentials/` from
 COMSOL) for interpolated MRG fibers. Since the parameter values relate
 to fiber "diameter" as a continuous variable, the expressions for all
-the dimensions that change with fiber diameter, as shown in Figure A, are stored as a String
+the dimensions that change with fiber diameter, as shown below, are stored as a String
 that is computed using Python’s built-in `"eval()"` function.
 
-![Inline image](../uploads/9baecd20e1604f988861fb36945ab50d/Picture12.jpg)
-
-Figure A. Piecewise polynomial fits to published MRG fiber parameters. Single quadratic fits were used for all parameters except for internode length, which has a linear fit below 5.643 µm (using MRG data at 2 and 5.7 µm) and a single quadratic fit at diameters greater than or equal to 5.643 µm (using MRG data >= 5.7 µm); 5.643 µm is the fiber diameter at which the linear and quadratic fits intersected. The fiber diameter is the diameter of the myelin. "Paranode 1" is the MYSA section, "paranode 2" is the FLUT section, and "internode" is the STIN section. The axon diameter is the same for the node of Ranvier and MYSA ("node diameter"), as well as for the FLUT and STIN ("axon diameter"). The node and MYSA lengths are fixed at 1 and 3 μm, respectively, for all fiber diameters.
+```{figure} ../uploads/9baecd20e1604f988861fb36945ab50d/Picture12.jpg
+Piecewise polynomial fits to published MRG fiber parameters. Single quadratic fits were used for all parameters except for internode length, which has a linear fit below 5.643 µm (using MRG data at 2 and 5.7 µm) and a single quadratic fit at diameters greater than or equal to 5.643 µm (using MRG data >= 5.7 µm); 5.643 µm is the fiber diameter at which the linear and quadratic fits intersected. The fiber diameter is the diameter of the myelin. "Paranode 1" is the MYSA section, "paranode 2" is the FLUT section, and "internode" is the STIN section. The axon diameter is the same for the node of Ranvier and MYSA ("node diameter"), as well as for the FLUT and STIN ("axon diameter"). The node and MYSA lengths are fixed at 1 and 3 μm, respectively, for all fiber diameters.
+```
 
 We compared fiber activation thresholds between the originally published
 MRG fiber models and the interpolated MRG ultrastructure (evaluated at
@@ -367,13 +367,13 @@ The waveform was a single biphasic pulse using
 first phase, 100 µs interphase (0 mA), and 400 µs for the second phase
 (cathodic/anodic at one contact and anodic/cathodic at the other
 contact). The thresholds between the originally published models and the
-interpolation of the MRG fiber diameters are compared in Figure B below.
+interpolation of the MRG fiber diameters are compared in the image below.
 The threshold values were determined using a binary search until the
 upper and lower bound stimulation amplitudes were within 1%.
 
-![Inline image](../uploads/0f81dcebee604a443aeaac6c13b2325c/Picture13.jpg)
-
-Figure B. Comparison of thresholds between the originally published models and the interpolation of the MRG fiber diameters (evaluated at the original diameters). Thresholds are expected to vary between the originally published models and the interpolated fiber geometries given their slightly different ultrastructure parameters (Figure A). Used original MRG thresholds as reference.
+```{figure} ../uploads/0f81dcebee604a443aeaac6c13b2325c/Picture13.jpg
+Comparison of thresholds between the originally published models and the interpolation of the MRG fiber diameters (evaluated at the original diameters). Thresholds are expected to vary between the originally published models and the interpolated fiber geometries given their slightly different ultrastructure parameters. Used original MRG thresholds as reference.
+```
 
 ### Unmyelinated Fiber Models
 
