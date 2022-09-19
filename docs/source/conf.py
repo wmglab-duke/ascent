@@ -43,6 +43,7 @@ extensions = [
     'sphinx_copybutton',
     'sphinx_rtd_dark_mode',
     'sphinx_github_changelog',
+    'sphinx_inline_tabs',
     'sphinx.ext.autodoc',
 ]
 
