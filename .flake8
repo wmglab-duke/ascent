@@ -1,8 +1,7 @@
 [flake8]
 #first row of ignore is to make black happy
 ignore = E203, W503,
-    #SIM105 has a problem with except Exception
-    SIM105
+    #place additional ignores here
 per-file-ignores =
     # imported but unused and star imports
     __init__.py: F401, F403
