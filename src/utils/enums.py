@@ -32,7 +32,6 @@ class Config(ASCENTEnum, Enum):
     MATERIALS = 'materials'
     FIBER_Z = 'fiber_z'
     CUFFS = 'cuffs'
-    EXCEPTIONS = 'exceptions'
     CLI_ARGS = 'cli_args'
     ENV = 'env'
     CI_PERINEURIUM_THICKNESS = 'ci_perineurium_thickness'

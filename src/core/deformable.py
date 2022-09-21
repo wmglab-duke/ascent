@@ -18,32 +18,26 @@ from pygame.colordict import THECOLORS
 from pygame.locals import DOUBLEBUF, HWSURFACE, K_ESCAPE, KEYDOWN, QUIT, RESIZABLE
 from shapely.geometry import LineString, Point
 
-#               ascent
 from src.core import Slide, Trace
-from src.utils import Config, Exceptionable, ReshapeNerveMode, SetupMode
+from src.utils import ReshapeNerveMode
 
 
-class Deformable(Exceptionable):
-    """Deforms a nerve cross section."""
+class Deformable:
+    """Deforms a nerve cross-section."""
 
     def __init__(
         self,
-        exception_config: list,
         boundary_start: Trace,
         boundary_end: Trace,
         contents: List[Trace],
     ):
         """Initialize the class.
 
-        :param exception_config: pre-loaded data
         :param boundary_start: original start trace
         :param boundary_end: end trace
         :param contents: list of traces assumed to be within boundary start, not required to be within boundary end.
             Assumes boundary end will be able to hold all contents.
         """
-        # init superclass
-        Exceptionable.__init__(self, SetupMode.OLD, exception_config)
-
         # initialize instance variables
         self.start = boundary_start
         self.end = boundary_end
@@ -67,7 +61,7 @@ class Deformable(Exceptionable):
 
         # Initialize screen and surface which each frame will be drawn on
         screen = pygame.display.set_mode((800, int(800 * im_ratio)), HWSURFACE | DOUBLEBUF | RESIZABLE)
-        drawsurf = pygame.surface.Surface((width, height))
+        drawsurf = pygame.Surface((width, height))
         # pygame debug draw options
         options = pymunk.pygame_util.DrawOptions(drawsurf)
         options.shape_outline_color = (0, 0, 0, 255)
@@ -297,9 +291,6 @@ class Deformable(Exceptionable):
         """
         # method in slide will pull out each trace and add to a list of contents, go through traces and build polygons
 
-        # exception configuration data
-        exception_config_data = slide.configs[Config.EXCEPTIONS.value]
-
         bounds = slide.nerve.polygon().bounds
         width = int(1.5 * (bounds[2] - bounds[0])) / 2
         height = int(1.5 * (bounds[3] - bounds[1])) / 2
@@ -320,7 +311,7 @@ class Deformable(Exceptionable):
         slide.move_center(np.array([0, 0]))
 
         # return new object
-        return Deformable(exception_config_data, boundary_start, boundary_end, contents)
+        return Deformable(boundary_start, boundary_end, contents)
 
     @staticmethod
     def print_progress_bar(iteration, total, prefix='', suffix='', decimals=1, length=100, fill='█'):

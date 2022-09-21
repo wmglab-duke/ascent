@@ -18,13 +18,13 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 
-from src.utils import Exceptionable, SetupMode, WriteMode
+from src.utils import MorphologyError, WriteMode
 
 from .nerve import Nerve
 from .trace import Trace
 
 
-class Fascicle(Exceptionable):
+class Fascicle:
     """Class which uses Trace objects to define a fascicle.
 
     A fascicle is a bundle of axons and their myelin sheaths.
@@ -33,7 +33,6 @@ class Fascicle(Exceptionable):
 
     def __init__(
         self,
-        exception_config,
         outer: Trace,
         inners: List[Trace] = None,
     ):
@@ -43,13 +42,9 @@ class Fascicle(Exceptionable):
         number of inners option 2: an inner, which is passed in as an outer
         argument, and scaled out to make a virtual outer option 3: ... tbd.
 
-        :param exception_config: existing data already loaded form JSON (hence SetupMode.OLD)
         :param inners: list of inner Traces (i.e. endoneuriums)
         :param outer: single outer Trace (i.e. perineurium)
         """
-        # set up superclass
-        Exceptionable.__init__(self, SetupMode.OLD, exception_config)
-
         # intialize scale attribute
         self.outer_scale = None
 
@@ -61,17 +56,20 @@ class Fascicle(Exceptionable):
             self.validate()
 
     def validate(self):
-        """Perform validation checks on traces."""
+        """Perform validation checks on traces.
+
+        :raises MorphologyError: if validation fails
+        """
         # ensure all inner Traces are actually inside outer Trace
         if any([not inner.within(self.outer) for inner in self.inners]):
-            self.throw(8)
+            raise MorphologyError("Not all inner Traces fall within outer Trace")
         # ensure no Traces intersect (and only check each pair of Traces once)
         pairs: List[Tuple[Trace]] = list(itertools.combinations(self.all_traces(), 2))
         if any([pair[0].intersects(pair[1]) for pair in pairs]):
             self.plot()
             plt.axes().set_aspect('equal')
             plt.show()
-            self.throw(9)
+            raise MorphologyError("Intersecting traces found")
 
     def intersects(self, other: Union['Fascicle', Nerve]):
         """Check if the fascicle outer intersects with another fascicle or nerve boundary.
@@ -179,12 +177,14 @@ class Fascicle(Exceptionable):
     ):
         """Plot the fascicle.
 
-        :param plot_format: format string for matplotlib plot
-        :param color: color for plot
-        :param ax: matplotlib axes object
-        :param outer_flag: plot outer trace
+        :param line_kws: keyword arguments to pass to matplotlib.pyplot.plot
+        :param outer_flag: whether to plot the outer trace
         :param inner_index_start: index of first inner trace to plot
-        :param line_kws: keyword arguments for matplotlib plot
+        :param ax: axes to plot on
+        :param color: List of colors to plot the inners with. If None, inners are not filled in.
+            The form of each item in the list should be a color specification acceptable to matplotlib.
+        :param plot_format: outers automatically black, plot_format only affects inners
+        :raises ValueError: if color is not None and len(color) != len(inners)
         """
         if ax is None:
             ax = plt.gca()
@@ -194,7 +194,7 @@ class Fascicle(Exceptionable):
 
         if color is not None:
             if len(self.inners) != len(color):
-                self.throw(145)
+                raise ValueError("Length of fascicle colors list must match number of fascicle inners.")
         else:
             color = [None] * len(self.inners)
 
@@ -250,15 +250,19 @@ class Fascicle(Exceptionable):
 
         :param fit: a dictionary with the values describing a linear relationship
             between fascicle size and perineurium thickness
+        :raises ValueError: if fit is None
+        :raises MorphologyError: if outers already exist
         """
+        if fit is None:
+            raise ValueError("Cannot generate perineurium without fit parameters.")
+
         self.outer_scale = fit
-        # check that outer scale is provided
-        if self.outer_scale is None:
-            self.throw(14)
 
         # can only generate perineurium if there are no inners
         if len(self.inners) != 0:
-            self.throw(149)
+            raise MorphologyError(
+                "Tried to generate perineurium, but fascicle already has an outer and at least one inner."
+            )
 
         # set single inner trace
         self.inners = [self.outer.deepcopy()]
@@ -273,18 +277,17 @@ class Fascicle(Exceptionable):
     def to_list(
         inner_img_path: str,
         outer_img_path: str,
-        exception_config,
         contour_mode,
         z: float = 0,
     ) -> List['Fascicle']:
         """Convert a set of inner and outer images to a list of fascicles.
 
+        :param z: z-coordinate of the slide this fascicle is on
+        :param outer_img_path: path to outer image, if None, only inners are returned
+            (stored as outers until perineurium is generated)
         :param inner_img_path: path to inner image
-        :param outer_img_path: path to outer image
-        :param exception_config: dictionary of exception configurations
-        :param contour_mode: contour mode for cv2.findContours
-        :param z: z coordinate of the fascicle
-        :return: list of fascicles
+        :param contour_mode: contour mode to use for cv2.findContours
+        :return: list of Fascicles derived from the image(s)
         """
 
         def build_traces(path: str) -> List[Trace]:
@@ -301,7 +304,7 @@ class Fascicle(Exceptionable):
             contours, _ = cv2.findContours(img, *params)
 
             # build list of traces
-            return [Trace([item + [z] for item in contour[:, 0, :]], exception_config) for contour in contours]
+            return [Trace([item + [z] for item in contour[:, 0, :]]) for contour in contours]
 
         if outer_img_path is None:
             # inners only case, set each inner as an outer
@@ -328,10 +331,10 @@ class Fascicle(Exceptionable):
                 inners_corresponding = inners[np.where(np.array(inner_correspondence) == index)]
 
                 # add fascicle!
-                fascicles.append(Fascicle(exception_config, outer, inners_corresponding))
+                fascicles.append(Fascicle(outer, inners_corresponding))
             else:
                 # inners only case
-                fascicles.append(Fascicle(exception_config, outer))
+                fascicles.append(Fascicle(outer))
 
         return fascicles
 
@@ -340,11 +343,12 @@ class Fascicle(Exceptionable):
 
         :param mode: Sectionwise... for now
         :param path: root path of fascicle trace destination
+        :raises IOError: if path does not exist
         """
         start = os.getcwd()
 
         if not os.path.exists(path):
-            self.throw(25)
+            raise IOError("Write directory does not exist.")
         else:
             # go to directory to write to
             os.chdir(path)

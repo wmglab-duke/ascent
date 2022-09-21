@@ -22,6 +22,7 @@ from src.core.hocwriter import HocWriter
 from src.core.query import Query
 from src.core import plotter
 
+
 __all__ = [
     'Map',
     'SlideInfo',
