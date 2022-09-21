@@ -505,13 +505,7 @@ classes or creating new classes when appropriate.
 
 Configurable is inherited by other Python classes in the ASCENT pipeline
 to grant access to parameter and data configuration JSON files loaded to
-memory. Configurable has built-in exceptions that it throws which are
-indexed negatively (-1 and below by convention) because it is
-intrinsically unable to inherit from Exceptionable (errors indexed +1
-and above by convention), which, in turn, (Exceptionable) is configured
-by inheriting the Configurable class.
-
-Configurable is an important class for developers to understand because
+memory. Configurable is an important class for developers to understand because
 it is the mechanism by which instances of our Python classes inherit
 their properties from JSON configuration files (e.g., `sample.json`,
 `model.json`, `sim.json`, `fiber_z.json`). The Configurable class takes three
@@ -554,18 +548,6 @@ class can access the contents of the JSON dictionary. For example, in
 **_Sample_** with the following line:
 
 `self.search(Config.SAMPLE, ‘scale’, ‘scale_bar_length’)`
-
-### Exceptionable
-
-Exceptionable is a centralized way to organize and throw exceptions
-(errors) to the user’s console. Exceptionable inherits functionality
-from Configurable. Exceptionable, like Configurable, is initialized with
-"SetupMode", ConfigKey, and a Config. However, the data contents for
-Exceptionable are specifically a list of exceptions stored in
-`config/system/exceptions.json`. The contents of the exceptions
-configuration file is a list of numbered errors with an associated text
-description. These contents, along with the path of the script which called
-exceptionable, are listed in the event of a raised exception.
 
 ### Saveable
 

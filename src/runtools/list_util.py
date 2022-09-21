@@ -7,6 +7,7 @@ The source code can be found on the following GitHub repository: https://github.
 
 import json
 import os
+from json import JSONDecodeError
 
 import pandas as pd
 
@@ -24,9 +25,8 @@ def run(mode):
             with open(run_path + '/' + j) as f:
                 try:
                     rundata = json.load(f)
-                except Exception as e:
-                    print(f'WARNING: Could not load {j}')
-                    print(e)
+                except JSONDecodeError as e:
+                    print(f'WARNING: Could not load {j}, check for syntax errors. Original error: {e}')
                     continue
                 data.append(
                     {
@@ -58,9 +58,8 @@ def run(mode):
             with open(j) as f:
                 try:
                     sampledata = json.load(f)
-                except Exception as e:
-                    print(f'WARNING: Could not load {j}')
-                    print(e)
+                except JSONDecodeError as e:
+                    print(f'WARNING: Could not load {j}, check for syntax errors. Original error: {e}')
                     continue
                 data.append(
                     {
@@ -85,9 +84,8 @@ def run(mode):
             with open(run_path + '/' + j) as f:
                 try:
                     simdata = json.load(f)
-                except Exception as e:
-                    print(f'WARNING: Could not load {j}')
-                    print(e)
+                except JSONDecodeError as e:
+                    print(f'WARNING: Could not load {j}, check for syntax errors. Original error: {e}')
                     continue
                 data.append(
                     {

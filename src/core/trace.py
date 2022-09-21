@@ -22,22 +22,20 @@ from shapely.affinity import rotate, scale
 from shapely.geometry import Point, Polygon
 from shapely.ops import nearest_points
 
-from src.utils import Config, DownSampleMode, Exceptionable, SetupMode, WriteMode
+from src.utils import DownSampleMode, MorphologyError, WriteMode
 
 
-class Trace(Exceptionable):
+class Trace:
     """Core object for manipulating points/traces of nerve sections.
 
     Trace is the fundamental building block for nerve geometries
     (fascicles, nerve, endoneurium, perineurium)
     """
 
-    def __init__(self, points, exception_config):
+    def __init__(self, points):
         """Initialize a Trace object.
 
         :param points: nx3 iterable of points [x, y, z].
-        :param exception_config: data passed from a higher object for exceptions.json,
-            hence why it inherits exceptionable.
         """
         # These are private instance variables that are returned by getter
         self.__contour = None
@@ -45,9 +43,6 @@ class Trace(Exceptionable):
         self.__centroid = None
         self.__int_points = None
         self.__min_circle = None
-
-        # set up superclass
-        Exceptionable.__init__(self, SetupMode.OLD, exception_config)
 
         # add 0 as z value if only x and y given
         if np.shape(points)[1] == 2:
@@ -61,13 +56,14 @@ class Trace(Exceptionable):
         """Append points to the end of the trace.
 
         :param points: nx3 ndarray, where each row is a point [x, y, z]
+        :raises ValueError: if points do not have 3 columns
         """
         # make sure points is multidimensional ndarray (only applicable if a single point is passed in)
         points = np.atleast_2d(points).astype(float)
 
         # ensure 3 columns
         if np.shape(points)[1] != 3:
-            self.throw(5)
+            raise ValueError("Points to append must have 3 columns (x y z)")
 
         # if points has not been initialized (case when called by __init__)
         if self.points is None:
@@ -85,6 +81,7 @@ class Trace(Exceptionable):
         Note: this is not an affine transformation.
         :param fit: dictionary of parameters for a linear fit of distance to offset based off area.
         :param distance: used to scale by a discrete distance
+        :raises ValueError: if fit and distance are both None
         """
         # create clipper offset object
         pco = pyclipper.PyclipperOffset()
@@ -99,7 +96,7 @@ class Trace(Exceptionable):
             # find offset distance from factor and mean radius
             distance: float = fit.get("a") * 2 * np.sqrt(self.area() / np.pi) + fit.get("b")
         elif distance is None:
-            self.throw(29)
+            raise ValueError("Either factor or distance MUST be provided.")
 
         # set new points of offset
         self.points = None
@@ -117,9 +114,11 @@ class Trace(Exceptionable):
 
         :param distance: amount to use for dilation and erosion, in whatever units the trace is using
         :param area_compensation: if True, after smoothing, scale each trace to match its original area
+        :raises ValueError: if distance is not a positive number
+        :raises MorphologyError: if the pre-smoothing area cannot be maintained
         """
         if distance < 0:
-            self.throw(111)
+            raise ValueError("Smoothing value cannot be negative (Sample.json)")
         if distance == 0:
             return
         pre_area = self.area()
@@ -129,7 +128,7 @@ class Trace(Exceptionable):
             # scale back to area of original trace
             self.scale((pre_area / self.area()) ** 0.5)
             if abs(pre_area - self.area()) > 1:
-                self.throw(128)
+                raise MorphologyError("After smoothing trace, could not restore original area.")
         else:
             self.scale(1)
         self.points = np.flip(self.points, axis=0)  # set points to opencv orientation
@@ -139,12 +138,13 @@ class Trace(Exceptionable):
 
         :param factor: scaling factor to scale up by - multiply all points by a factor; [X 0 0; 0 Y 0; 0 0 Z]
         :param center: string "centroid", string "center" or a point [x,y]
+        :raises ValueError: if center is not a valid choice
         """
         if isinstance(center, list):
             center = tuple(center)
         else:
             if center not in ['centroid', 'center']:
-                self.throw(17)
+                raise ValueError("Invalid scale center string.")
 
         scaled_polygon: Polygon = scale(self.polygon(), *([factor] * 3), origin=center)
 
@@ -157,12 +157,13 @@ class Trace(Exceptionable):
 
         :param angle: rotates trace by radians CCW
         :param center: string "centroid", string "center" or a point [x,y]
+        :raises ValueError: if center is not a valid choice
         """
         if isinstance(center, list):
             center = tuple(center)
         else:
             if center not in ['centroid', 'center']:
-                self.throw(17)
+                raise ValueError("Invalid scale center string.")
 
         rotated_polygon: Polygon = rotate(self.polygon(), angle, origin=center, use_radians=True)
 
@@ -174,10 +175,11 @@ class Trace(Exceptionable):
         """Shift the trace by a vector.
 
         :param vector: 1-dim vector with 3 elements... shape is (3,)
+        :raises ValueError: if vector is not a 1-dim vector with 3 elements
         """
         # must be 3 item vector
         if np.shape(vector) != (3,):
-            self.throw(3)
+            raise ValueError("Vector provided must be of shape (3) (i.e. 1-dim)")
 
         # apply shift to each point
         vector = [float(item) for item in vector]
@@ -219,11 +221,14 @@ class Trace(Exceptionable):
     def polygon(self) -> Polygon:
         """Generate a shapely Polygon object from the trace.
 
+        :raises ValueError: if the trace points have multiple z values
         :return: shape of polygon as a shapely.geometry.Polygon (ALL 2D geometry)
         """
         if self.__polygon is None:
             if len(set(self.points[:, 2])) != 1:
-                self.throw(6)
+                raise ValueError(
+                    "Current implementation requires that all points in Trace have same z-value to create contour"
+                )
 
             self.__polygon = Polygon([tuple(point) for point in self.points[:, :2]])
 
@@ -351,12 +356,15 @@ class Trace(Exceptionable):
         """Return a contour based off the Trace.
 
         Builds a "fake" contour so that cv2 can analyze it (independent of the image). Use for to_circle and to_ellipse.
+        :raises ValueError: if the trace points have multiple unique z values
         :return: contour as np.ndarray
         """
         if self.__contour is None:
             # check points all have same z-value (MAY BE CHANGED?)
             if len(set(self.__int_points[:, 2])) != 1:
-                self.throw(6)
+                raise ValueError(
+                    "Current implementation requires that all points in Trace have same z-value to create contour"
+                )
 
             self.__contour = np.zeros([self.count(), 1, 2])
             # check that all points in same plane
@@ -439,7 +447,7 @@ class Trace(Exceptionable):
         # add column of z-values (should all be the same)
         points = np.append(points, np.c_[self.points[:, 2]], axis=1)
 
-        return Trace(points, self.configs[Config.EXCEPTIONS.value])
+        return Trace(points)
 
     # %% output
     def plot(
@@ -481,6 +489,8 @@ class Trace(Exceptionable):
 
         :param mode: choice of write implementations - sectionwise file for COMSOL
         :param path: string path with file name of file WITHOUT extension (it is derived from mode)
+        :raises ValueError: if mode is not supported
+        :raises IOError: if file cannot be written
         :return: string full path including extension that was written to
         """
         # add extension
@@ -514,12 +524,10 @@ class Trace(Exceptionable):
                         f.write(f'{self.points[i, 0]}\t{self.points[i, 1]}\n')
 
                 else:
-                    self.throw(4)
+                    raise ValueError("Write mode not supported or invalid")
 
-        except EnvironmentError:
-            # only one of these can run, so comment at will
-            self.throw(7)
-            # raise
+        except EnvironmentError as e:
+            raise IOError(f"Exception while writing: {e}")
 
         return path
 

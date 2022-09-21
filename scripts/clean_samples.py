@@ -35,12 +35,11 @@ def remove_empty_directories(directory: str, verbose):
 
     if os.path.isdir(directory) and len(os.listdir(directory)) == 0:
         try:
+            if verbose:
+                print(f'\tREMOVE DIR: {directory}')
             os.rmdir(directory)
-        except Exception:
-            print(f'Could not remove {directory}')
-        if verbose:
-            print(f'\tREMOVE DIR: {directory}')
-
+        except (FileNotFoundError, IsADirectoryError) as e:
+            print(f'Could not remove {directory}, {e}')
     else:
         if verbose:
             print(f'\tKEEP DIR: {directory}')
@@ -85,12 +84,11 @@ def run(args):
 
             if not any([filepath.endswith(excluded_filename) for excluded_filename in EXCLUDED_FILENAMES]):
                 try:
+                    if args.verbose:
+                        print(f'\tREMOVE FILE: {filepath}')
                     os.remove(filepath)
-                except Exception:
-                    print(f'Could not remove {filepath}')
-                if args.verbose:
-                    print(f'\tREMOVE FILE: {filepath}')
-
+                except (FileNotFoundError, IsADirectoryError) as e:
+                    print(f'Could not remove {filepath}, {e}')
             else:
                 if args.verbose:
                     print(f'\tKEEP FILE: {filepath}')

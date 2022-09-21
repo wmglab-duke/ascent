@@ -10,9 +10,6 @@ import numpy as np
 import pytest
 
 from src.core.trace import Trace
-from src.utils import Config, Exceptionable, SetupMode
-
-excepter = Exceptionable(SetupMode.NEW)
 
 
 @pytest.fixture
@@ -22,7 +19,7 @@ def basic_trace():
     :return: Trace object.
     """
     points = [(0.0, 0.0), (0.0, 1.0), (1.0, 1.0), (2.0, -1.0), (0.0, 0.0)]
-    return Trace(points, excepter.configs[Config.EXCEPTIONS.value])
+    return Trace(points)
 
 
 def test_shift(basic_trace):

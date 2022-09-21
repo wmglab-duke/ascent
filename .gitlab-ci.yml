@@ -71,11 +71,11 @@ docstring_check:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event' && '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
-#Here should check that no self.throw(9001) is in repo, the error code 9001 is used for development
+#Here should check that no DevelopmentError is thrown in repo
 dev_check:
   stage: lint
   script:
-    - ( ! grep "self.throw(9001)" --include \*.py -r . )
+    - ( ! grep "raise DevelopmentError" --include \*.py -r . )
     - pip install flake8 flake8-fixme
     - flake8 --select=T100,T101,T102 config docs examples scripts src run tests
   rules:

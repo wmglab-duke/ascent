@@ -18,10 +18,10 @@ import pandas as pd
 from scipy import stats as stats
 
 from src.core import Sample, Simulation, Slide
-from src.utils import Config, Configurable, Exceptionable, Object, Saveable, SetupMode
+from src.utils import Config, Configurable, Object, Saveable, SetupMode
 
 
-class Query(Exceptionable, Configurable, Saveable):
+class Query(Configurable, Saveable):
     """Query is for analyzing data after running NEURON simulations.
 
     IMPORTANT: MUST BE RUN FROM PROJECT LEVEL
@@ -34,7 +34,6 @@ class Query(Exceptionable, Configurable, Saveable):
         """
         # set up superclasses
         Configurable.__init__(self)
-        Exceptionable.__init__(self, SetupMode.NEW)
 
         self._ran: bool = False  # marker will be set to True one self.run() is called (as is successful)
 
@@ -50,6 +49,7 @@ class Query(Exceptionable, Configurable, Saveable):
     def run(self):
         """Build query result using criteria.
 
+        :raises IndexError: If no sample results are found
         :return: self
         """
         # initialize empty result
@@ -168,7 +168,7 @@ class Query(Exceptionable, Configurable, Saveable):
                 result[samples_key].pop(-1)
 
         if len(result['samples']) == 0:
-            self.throw(132)
+            raise IndexError("Query run did not return any sample results. Check your indices and try again.")
 
         self._result = result
 
@@ -177,10 +177,13 @@ class Query(Exceptionable, Configurable, Saveable):
     def summary(self) -> dict:
         """Return result of self.run().
 
+        :raises LookupError: If no results (i.e. Query.run() has not been called)
         :return: result as a dict
         """
         if self._result is None:
-            self.throw(53)
+            raise LookupError(
+                "There are no query results. You must call Query.run() before fetching result via Query.summary()"
+            )
 
         return self._result
 
@@ -218,6 +221,7 @@ class Query(Exceptionable, Configurable, Saveable):
         :param indices: list of indices (e.g. [0, 1, 2]). These are sample, model, and sim indices, respectively.
             For just a sample or model, pass [0] or [0, 1], respectively.
         :param just_directory: if True, return path to directory containing file, not the path to the file itself
+        :raises ValueError: if invalid mode is chosen
         :return: path
         """
         result = str()
@@ -249,8 +253,7 @@ class Query(Exceptionable, Configurable, Saveable):
                 'sim.obj',
             )
         else:
-            print(f'INVALID MODE: {type(mode)}')
-            Exceptionable(SetupMode.NEW).throw(55)
+            raise ValueError(f'INVALID MODE: {type(mode)}')
 
         if just_directory:
             result = os.path.join(*result.split(os.sep)[:-1])
@@ -263,8 +266,7 @@ class Query(Exceptionable, Configurable, Saveable):
 
             # ensure key is valid in data
             if key not in data:
-                print(f'ERRONEOUS KEY: {key}')
-                self.throw(54)
+                raise KeyError(f"Criterion key {key} not found in data")
 
             # corresponding values
             c_val = criteria[key]
@@ -304,23 +306,22 @@ class Query(Exceptionable, Configurable, Saveable):
     def threshold_data(
         self,
         sim_indices: List[int] = None,
-        model_indices: List[int] = None,
         ignore_missing=False,
         meanify=False,
     ):
         """Obtain threshold data as a pandas DataFrame.
 
         :param sim_indices: list of simulation indices to include in the threshold data.
-        :param model_indices: list of model indices to include in the threshold data.
         :param ignore_missing: if True, missing threshold data will not cause an error.
         :param meanify: if True, the threshold data will be returned as a mean of each nsim.
+        :raises LookupError: If no results (called before Query.run())
         :return: pandas DataFrame of thresholds.
         """
         # quick helper class for storing data values
 
         # validation
         if self._result is None:
-            self.throw(66)
+            raise LookupError("No query results, Query.run() must be called before calling analysis methods.")
 
         if sim_indices is None:
             sim_indices = self.search(Config.CRITERIA, 'indices', 'sim')

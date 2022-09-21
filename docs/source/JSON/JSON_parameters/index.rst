@@ -56,7 +56,6 @@ System Configuration Files
    :maxdepth: 1
 
    env
-   exceptions
    materials
    ci_peri_thickness
    mesh_dependent_model

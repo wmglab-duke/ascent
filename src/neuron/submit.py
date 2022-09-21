@@ -19,6 +19,7 @@ import subprocess
 import sys
 import time
 import warnings
+from json import JSONDecodeError
 
 import numpy as np
 import pandas as pd
@@ -40,9 +41,8 @@ class ListAction(argparse.Action):
             with open(run_path + '/' + j) as f:
                 try:
                     rundata = json.load(f)
-                except Exception as e:
-                    print(f'WARNING: Could not load {j}')
-                    print(e)
+                except JSONDecodeError as e:
+                    print(f'WARNING: Could not load {j}, check for syntax errors. Original error: {e}')
                     continue
                 data.append(
                     {

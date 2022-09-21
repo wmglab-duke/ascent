@@ -240,17 +240,6 @@ The `env.json` file stores the file paths for:
 When the pipeline is run, the key-value pairs are stored as environment
 variables so that they are globally accessible.
 
-### exceptions.json
-
-The `exceptions.json` file contains a list of exceptions that are
-intentionally thrown in the Python portion of the pipeline. Each error
-has its own "code" (index), and "text" (informative message hinting to the
-reason the program failed). As developers add new methods to Python classes
-that inherit the Exceptionable class, appending errors
-onto `exceptions.json` that are called from Python code file (i.e.,
-`self.throw(<exception index>)`) will help give informative feedback to
-the user.
-
 ### materials.json
 
 The `materials.json` file contains default values for material

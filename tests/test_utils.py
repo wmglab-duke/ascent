@@ -10,21 +10,10 @@ import pickle
 
 import pytest
 
-from src.utils import Configurable, Exceptionable, Saveable, SetupMode
+from src.utils import Configurable, Saveable
 
-excepter = Exceptionable(SetupMode.NEW)
 saver = Saveable()
 configurator = Configurable()
-
-
-def test_exceptionable():
-    """Tests the Exceptionable class."""
-    # test that exception is thrown
-    with pytest.raises(Exception):
-        excepter.throw(0)
-    # test that a bad code still throws an exception
-    with pytest.raises(Exception):
-        excepter.throw('nonexistent_code')
 
 
 def test_saveable():

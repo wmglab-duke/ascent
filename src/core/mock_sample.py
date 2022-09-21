@@ -23,23 +23,19 @@ import scipy.stats as stats
 import shapely.affinity
 from shapely.geometry.point import Point
 
-from src.utils import Config, Configurable, Exceptionable, PopulateMode, SetupMode
+from src.utils import Config, Configurable, IncompatibleParametersError, MorphologyError, PopulateMode
 
 
-class MockSample(Exceptionable, Configurable):
+class MockSample(Configurable):
     """Use MockSample class to generate a synthetic nerve morphology inputs to ASCENT.
 
     (i.e., binary image masks of epineurium (n.tif), perineurium (c.tif), and endoneurium (i.tif),
     and scalebar (s.tif)).
     """
 
-    def __init__(self, exception_config: dict):
-        """Create a MockSample object.
-
-        :param exception_config: The exception configuration.
-        """
+    def __init__(self):
+        """Create a MockSample object."""
         # Initializes superclasses
-        Exceptionable.__init__(self, SetupMode.OLD, exception_config)
         Configurable.__init__(self)
 
         self.fascicles: List[shapely.geometry.Point] = []
@@ -201,6 +197,8 @@ class MockSample(Exceptionable, Configurable):
         """Make fascicles using a truncated normal distribution.
 
         :param min_fascicle_separation: The minimum separation between fascicles [microns].
+        :raises ValueError: If an input parameter is outside the allowed range.
+        :raises IncompatibleParametersError: If input parameters conflict with each other.
         """
         # choose fascicle area [um^2]: A = pi*(d/2)**2
         mu_fasc_diam: float = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value, 'mu_fasc_diam')
@@ -223,11 +221,13 @@ class MockSample(Exceptionable, Configurable):
         np.random.seed(myseed)
         # CALCULATE FASCICLE DIAMS DISTRIBUTION (as if circle, major and minor axes same length)
         if n_std_diam_limit == 0 and std_fasc_diam != 0:
-            self.throw(56)
+            raise IncompatibleParametersError(
+                "Conflicting input arguments for std_fasc_diam and n_std_diam_limit for TRUNCNORM method"
+            )
         lower_fasc_diam = mu_fasc_diam - n_std_diam_limit * std_fasc_diam
         upper_fasc_diam = mu_fasc_diam + n_std_diam_limit * std_fasc_diam
         if lower_fasc_diam < 0:
-            self.throw(57)
+            raise ValueError("lower_fasc_diam must be defined as >= 0 for TRUNCNORM method")
         fasc_diam_dist = stats.truncnorm(
             (lower_fasc_diam - mu_fasc_diam) / std_fasc_diam,
             (upper_fasc_diam - mu_fasc_diam) / std_fasc_diam,
@@ -236,9 +236,13 @@ class MockSample(Exceptionable, Configurable):
         )
         # CALCULATE FASCICLE ECCENTRICITY DISTRIBUTION
         if n_std_ecc_limit == 0 and std_fasc_ecc != 0:
-            self.throw(58)
+            raise IncompatibleParametersError(
+                "Conflicting input arguments for std_fasc_ecc and n_std_ecc_limit for TRUNCNORM method"
+            )
         if mu_fasc_ecc >= 1:
-            self.throw(59)
+            raise ValueError(
+                "Mean eccentricity value exceeds 1. Eccentricity only defined in range [01) for TRUNCNORM method"
+            )
         lower_fasc_ecc = mu_fasc_ecc - n_std_ecc_limit * std_fasc_ecc
         upper_fasc_ecc = mu_fasc_ecc + n_std_ecc_limit * std_fasc_ecc
         if upper_fasc_ecc >= 1:
@@ -267,6 +271,7 @@ class MockSample(Exceptionable, Configurable):
         """Make fascicles using a uniform distribution.
 
         :param min_fascicle_separation: The minimum separation between fascicles [microns].
+        :raises ValueError: If an input parameter is outside the allowed range.
         """
         max_attempt_iter = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value, 'max_attempt_iter')
         # choose fascicle area [um^2]: A = pi*(d/2)**2
@@ -274,15 +279,15 @@ class MockSample(Exceptionable, Configurable):
         upper_fasc_diam: float = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value, 'upper_fasc_diam')
         # check that both lower_diam and upper_diam are positive, and upper_diam > lower_diam
         if lower_fasc_diam < 0:
-            self.throw(60)
+            raise ValueError("lower_fasc_diam bound must be positive length for UNIFORM method")
         if lower_fasc_diam > upper_fasc_diam:
-            self.throw(61)
+            raise ValueError("upper_fasc_diam bound must be >= lower_fasc_diam bound for UNIFORM method")
         lower_fasc_ecc: float = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value, 'lower_fasc_ecc')
         upper_fasc_ecc: float = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value, 'upper_fasc_ecc')
         if lower_fasc_ecc < 0:
-            self.throw(62)
+            raise ValueError("Ellipse eccentricity lower_fasc_ecc must be >= 0 for UNIFORM method")
         if upper_fasc_ecc >= 1:
-            self.throw(63)
+            raise ValueError("Ellipse eccentricity upper_fasc_ecc must be < 1 for UNIFORM method")
         # choose number of fascicles
         num_fascicle_attempt: int = self.search(
             Config.MOCK_SAMPLE,
@@ -366,6 +371,7 @@ class MockSample(Exceptionable, Configurable):
         """Make fascicles explicitly using the fascicle coordinates in the config file.
 
         :param min_fascicle_separation: The minimum separation between fascicles [microns].
+        :raises MorphologyError: If the fascicles are too close together
         """
         fascs_explicit = self.search(Config.MOCK_SAMPLE, PopulateMode.parameters.value, "Fascicles")
         fasc_centroid_xs = [0] * len(fascs_explicit)
@@ -431,11 +437,15 @@ class MockSample(Exceptionable, Configurable):
                 self.fascicles.append(fascicle_attempt)
         # since explicitly defined, user made an error if not all fascicles were placed.
         if len(self.fascicles) < len(fascs_explicit):
-            self.throw(64)
+            raise MorphologyError(
+                "Explicit fascicle positions are too close to each other the nerve boundary, "
+                "or are outside the boundary for EXPLICIT method"
+            )
 
     def make_masks(self):
         """Make the masks for the fascicles and nerve.
 
+        :raises ValueError: If fig_margin is too small
         :return: self
         """
         project_path = os.getcwd()
@@ -468,7 +478,7 @@ class MockSample(Exceptionable, Configurable):
         fig_margin: float = self.search(Config.MOCK_SAMPLE, 'figure', 'fig_margin')
 
         if fig_margin < 1:
-            self.throw(92)
+            raise ValueError("fig_margin < 1 so the ellipse for the nerve will not fit on the canvas")
 
         fig_dpi: int = self.search(Config.MOCK_SAMPLE, 'figure', 'fig_dpi')
 

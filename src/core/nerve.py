@@ -10,7 +10,6 @@ https://github.com/wmglab-duke/ascent
 
 
 from src.core import Trace
-from src.utils import Config
 
 
 class Nerve(Trace):
@@ -24,7 +23,7 @@ class Nerve(Trace):
 
         :param trace: Trace object to be converted to a Nerve object.
         """
-        Trace.__init__(self, trace.points, trace.configs[Config.EXCEPTIONS.value])
+        Trace.__init__(self, trace.points)
 
     def morphology_data(self):
         """Return the morphology data of the Nerve object.

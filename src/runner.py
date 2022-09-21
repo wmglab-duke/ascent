@@ -1,7 +1,8 @@
 #!/usr/bin/env python3.7
 
-"""The copyrights of this software are owned by Duke University.
+"""Defines the runner module.
 
+The copyrights of this software are owned by Duke University.
 Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
@@ -13,7 +14,6 @@ import pickle
 import subprocess
 import sys
 import time
-import traceback
 import warnings
 from copy import deepcopy
 from typing import List
@@ -28,8 +28,10 @@ from src.utils import (
     Configurable,
     CuffShiftMode,
     Env,
-    Exceptionable,
     ExportMode,
+    IncompatibleParametersError,
+    JavaError,
+    MorphologyError,
     NerveMode,
     PerineuriumResistivityMode,
     ReshapeNerveMode,
@@ -39,7 +41,7 @@ from src.utils import (
 )
 
 
-class Runner(Exceptionable, Configurable):
+class Runner(Configurable):
     """Control flow of the pipeline."""
 
     def __init__(self, number: int):
@@ -50,9 +52,6 @@ class Runner(Exceptionable, Configurable):
         # initialize Configurable super class
         Configurable.__init__(self)
 
-        # initialize Exceptionable super class
-        Exceptionable.__init__(self, SetupMode.NEW)
-
         # this corresponds to the run index (as file name in config/user/runs/<run_index>.json
         self.ss_bases_exist = None
         self.potentials_exist = None
@@ -61,6 +60,7 @@ class Runner(Exceptionable, Configurable):
     def load_configs(self) -> dict:
         """Load all configuration files into class.
 
+        :raises TypeError: if sample is not int
         :return: dictionary of all configs (Sample, Model(s), Sims(s))
         """
 
@@ -70,27 +70,24 @@ class Runner(Exceptionable, Configurable):
             :param config_source: all configs, to which we add new ones
             :param key: the key of the dict in Configs
             :param path: path to the JSON file of the config
+            :raises FileNotFoundError: if config file not found
             """
             self.validate_path(path)
             if os.path.exists(path):
                 if key not in config_source:
                     config_source[key] = []
-                try:
-                    config_source[key] += [self.load(path)]
-                except Exception:
-                    warnings.warn(f'Issue loading {key} config: {path}')
-                    self.throw(144)
-
+                config_source[key] += [self.load(path)]
             else:
-                print(f'Missing {key} config: {path}')
-                self.throw(37)
+                raise FileNotFoundError(f"Missing {key} config required by run configuration! ({path})")
 
         configs = {}
 
         sample = self.search(Config.RUN, 'sample')
 
         if not isinstance(sample, int):
-            self.throw(95)
+            raise TypeError(
+                "Sample parameter in run must be an integer. Each Run must be associated with a single Sample."
+            )
 
         models = self.search(Config.RUN, 'models', optional=True)
         sims = self.search(Config.RUN, 'sims', optional=True)
@@ -168,7 +165,7 @@ class Runner(Exceptionable, Configurable):
             sample = self.load_obj(sample_file)
         else:
             # init slide manager
-            sample = Sample(self.configs[Config.EXCEPTIONS.value])
+            sample = Sample()
             # run processes with slide manager (see class for details)
 
             sample.add(SetupMode.OLD, Config.SAMPLE, all_configs[Config.SAMPLE.value][0]).add(
@@ -250,7 +247,7 @@ class Runner(Exceptionable, Configurable):
             if not os.path.exists(sim_obj_dir + '/plots'):
                 os.makedirs(sim_obj_dir + '/plots')
 
-            simulation: Simulation = Simulation(sample, self.configs[Config.EXCEPTIONS.value])
+            simulation: Simulation = Simulation(sample)
             simulation.add(SetupMode.OLD, Config.MODEL, model_config).add(SetupMode.OLD, Config.SIM, sim_config).add(
                 SetupMode.OLD, Config.RUN, self.configs[Config.RUN.value]
             ).add(
@@ -272,6 +269,8 @@ class Runner(Exceptionable, Configurable):
         :param simulation: simulation object
         :param sample_num: sample number
         :param model_num: model number
+        :raises FileNotFoundError: if source_sim object is not found
+        :raises IncompatibleParametersError: If supersampled xy does not match source xy
         :return: directory of source simulation
         """
         source_sim_index = simulation.configs['sims']['supersampled_bases']['source_sim']
@@ -284,15 +283,19 @@ class Runner(Exceptionable, Configurable):
         try:
             source_sim: simulation = self.load_obj(os.path.join(source_sim_obj_dir, 'sim.obj'))
             print(f'\t    Found existing source sim {source_sim_index} for supersampled bases ({source_sim_obj_dir})')
-        except FileNotFoundError:
-            traceback.print_exc()
-            self.throw(129)
+        except FileNotFoundError as e:
+            raise FileNotFoundError(
+                f"Could not load indicated super-sampled sim object (source sim: {source_sim_index})."
+                f"Original error: {e}"
+            )
 
         source_xy_dict: dict = source_sim.configs['sims']['fibers']['xy_parameters']
         xy_dict: dict = simulation.configs['sims']['fibers']['xy_parameters']
 
         if source_xy_dict != xy_dict:
-            self.throw(82)
+            raise IncompatibleParametersError(
+                "Trying to use super-sampled potentials that do not match your Sim's xy_parameters perfectly"
+            )
         return source_sim_obj_dir
 
     def generate_nsims(self, sim_index, model_num, sample_num):
@@ -301,6 +304,7 @@ class Runner(Exceptionable, Configurable):
         :param sim_index: index of sim
         :param model_num: model number
         :param sample_num: sample number
+        :raises ValueError: if export behavior is not supported
         """
         sim_num = self.configs[Config.RUN.value]['sims'][sim_index]
         sim_obj_path = os.path.join(
@@ -331,7 +335,7 @@ class Runner(Exceptionable, Configurable):
             export_behavior = 'selective'
         # check to make sure we have a valid behavior
         if not np.any([export_behavior == x.value for x in ExportMode]):
-            self.throw(139)
+            raise ValueError("Invalid export behavior defined in run.json")
 
         # export simulations
         Simulation.export_n_sims(
@@ -455,6 +459,7 @@ class Runner(Exceptionable, Configurable):
 
         :param run_number: int, run number
         :param class_name: str, class name of Java class to run
+        :raises JavaError: if Java fails to run
         """
         comsol_path = os.environ[Env.COMSOL_PATH.value]
         jdk_path = os.environ[Env.JDK_PATH.value]
@@ -506,11 +511,11 @@ class Runner(Exceptionable, Configurable):
         # compile java code
         exit_code = os.system(compile_command)
         if exit_code != 0:
-            self.throw(140)
+            raise JavaError("Java compiler (javac) encountered an error during compilation operations.")
         # run java code
         exit_code = os.system(java_command)
         if exit_code != 0:
-            self.throw(141)
+            raise JavaError("Encountered an error during handoff to java.")
         os.chdir('..')
 
     def compute_cuff_shift(self, model_config: dict, sample: Sample, sample_config: dict):
@@ -519,6 +524,7 @@ class Runner(Exceptionable, Configurable):
         :param model_config: dict, model config
         :param sample: Sample, sample object
         :param sample_config: dict, sample config
+        :raises ValueError: if deform_ratio is not between 0 and 1 (inclusive)
         :return: model_config: dict, model config
         """
         # NOTE: ASSUMES SINGLE SLIDE
@@ -537,8 +543,8 @@ class Runner(Exceptionable, Configurable):
                 deform_ratio = 1
             else:
                 deform_ratio = self.search(Config.SAMPLE, 'deform_ratio')
-            if deform_ratio > 1:
-                self.throw(109)
+            if deform_ratio < 0 or deform_ratio > 1:
+                raise ValueError("Deform ratio (sample.json) must be between 0 and 1 (inclusive).")
         else:
             deform_ratio = None
 
@@ -571,7 +577,7 @@ class Runner(Exceptionable, Configurable):
         cuff_shift_mode: CuffShiftMode = self.search_mode(CuffShiftMode, Config.MODEL)
 
         if cuff_shift_mode not in CuffShiftMode:
-            self.throw(154)
+            raise ValueError("Invalid CuffShiftMode in Model.")
 
         # remove (pop) temporary model configuration
         model_config = self.remove(Config.MODEL)
@@ -660,6 +666,7 @@ class Runner(Exceptionable, Configurable):
         :param nerve_copy: copied nerve object
         :param sample_config: sample configuration
         :param slide: slide object to shift cuff around
+        :raises MorphologyError: if slide is not centered at origin
         :return: (cuff code, cuff r buffer, expandable, offset, r_bound, r_f, theta_c, theta_i, x, y)
         """
         # fetch 1-2 letter code for cuff (ex: 'CT')
@@ -690,7 +697,9 @@ class Runner(Exceptionable, Configurable):
         # angle of centroid of nerve to center of minimum bounding circle
         reference_x = reference_y = 0.0
         if not slide.monofasc() and not (round(slide.nerve.centroid()[0]) == round(slide.nerve.centroid()[1]) == 0):
-            self.throw(123)  # if the slide has nerve and is not centered at the nerve throw error
+            raise MorphologyError(
+                "Slide is not centered at [0,0]"
+            )  # if the slide has nerve and is not centered at the nerve throw error
         if not slide.monofasc():
             reference_x, reference_y = slide.fascicle_centroid()
         theta_c = (np.arctan2(reference_y - y, reference_x - x) * (360 / (2 * np.pi))) % 360
@@ -718,6 +727,8 @@ class Runner(Exceptionable, Configurable):
         :param expandable: bool, cuff expandable
         :param r_f: float, final radius
         :param theta_i: float, initial angle of cuff pre expansion
+        :raises KeyError: If cuff is expandable and no fixed point is specified
+        :raises IncompatibleParametersError: If the cuff is too small for the nerve
         :return: r_i: float, cuff radius pre expansion; theta_f: float, cuff wrap angle used in FEM
         """
         # check radius iff not expandable
@@ -731,7 +742,7 @@ class Runner(Exceptionable, Configurable):
             ).real  # [um] (scaled from any arbitrary length unit)
 
             if not r_f <= r_i:
-                self.throw(51)
+                raise IncompatibleParametersError("cuff chosen is too small for nerve sample provided")
 
             theta_f = theta_i
         else:
@@ -749,7 +760,10 @@ class Runner(Exceptionable, Configurable):
             if r_i < r_f:
                 fixed_point = cuff_config.get('fixed_point')
                 if fixed_point is None:
-                    self.throw(126)
+                    raise KeyError(
+                        "Cuff configuration file must specify a fixed point if expandable=true. "
+                        "See Creating custom preset cuffs from instances of part primitives in the documentation"
+                    )
                 if fixed_point == 'clockwise_end':
                     theta_f = theta_i * (r_i / r_f)
                 elif fixed_point == 'center':
@@ -766,13 +780,14 @@ class Runner(Exceptionable, Configurable):
 
         :param all_configs: all configs for this run
         :param model_index: index of the model to compute parameters for
+        :raises NotImplementedError: An invalid mode is specified
         """
         # fetch current model config using the index
         model_config = all_configs[Config.MODEL.value][model_index]
         model_num = self.configs[Config.RUN.value]['models'][model_index]
 
         # initialize Waveform object
-        waveform = Waveform(self.configs[Config.EXCEPTIONS.value])
+        waveform = Waveform()
 
         # add model config to Waveform object, enabling it to generate waveforms
         waveform.add(SetupMode.OLD, Config.MODEL, model_config)
@@ -798,7 +813,7 @@ class Runner(Exceptionable, Configurable):
         ):
             pass
         else:
-            self.throw(48)
+            raise NotImplementedError("Rho perineurium method not implemented")
 
         dest_path: str = os.path.join(
             'samples', str(self.configs[Config.RUN.value]['sample']), 'models', str(model_num), 'model.json'
@@ -807,9 +822,12 @@ class Runner(Exceptionable, Configurable):
         TemplateOutput.write(model_config, dest_path)
 
     def populate_env_vars(self):
-        """Get environment variables from config file."""
+        """Get environment variables from config file.
+
+        :raises FileNotFoundError: if environment variable file not found
+        """
         if Config.ENV.value not in self.configs:
-            self.throw(75)
+            raise FileNotFoundError("Missing environment variables configuration file")
 
         for key in Env.vals.value:
             value = self.search(Config.ENV, key)
@@ -820,8 +838,9 @@ class Runner(Exceptionable, Configurable):
         """Check model parameters for validity.
 
         :param all_configs: all configs for this run
+        :raises IncompatibleParametersError: if distal medium exists and proximal is set as ground
         """
         for _, model_config in enumerate(all_configs[Config.MODEL.value]):
             distal_exists = model_config['medium']['distal']['exist']
             if distal_exists and model_config['medium']['proximal']['distant_ground'] is True:
-                self.throw(107)
+                raise IncompatibleParametersError("Proximal medium boundary cannot be ground if distal medium exists.")
