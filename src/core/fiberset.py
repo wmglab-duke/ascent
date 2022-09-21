@@ -740,12 +740,16 @@ class FiberSet(Exceptionable, Configurable, Saveable):
         diam_distribution: bool = type(diameter) is dict
         diams = []
 
-        myelinated = False if super_sample else self.search(
+        myelinated = (
+            False
+            if super_sample
+            else self.search(
                 Config.FIBER_Z,
                 MyelinationMode.parameters.value,
                 fiber_geometry_mode_name,
                 'myelinated',
             )
+        )
 
         if diam_distribution and not super_sample:
             sampling_mode = self.search(
