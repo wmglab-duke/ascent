@@ -377,7 +377,9 @@ length of the fiber). Required.
 
   - `“absolute_offset”`: The value (Double) is the distance (micrometers) that the center coordinate of the fiber is
     shifted along the z-axis from the longitudinal center of the
-    proximal medium. This value is additive with `"offset"`. Note that the shift is with respect to the model center. If a negative value is passed, the fiber will be shifted in the -z direction.
+    proximal medium. This value is additive with `"offset"`.
+    The shift is with respect to the model center. If a negative value is passed, the fiber will be shifted in the -z direction.
+    Any offset from this parameter is cumulative with that from `"offset"`.
 
   - `“seed”`: The value (Integer) seeds the random number generator
     before any random offsets are created. Required only if “offset”
