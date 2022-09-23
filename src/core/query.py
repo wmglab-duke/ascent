@@ -46,9 +46,10 @@ class Query(Configurable, Saveable):
 
         self._result = None  # begin with empty result
 
-    def run(self):
+    def run(self):  # noqa C901
         """Build query result using criteria.
 
+        :raises TypeError: if any indices are not integers
         :raises IndexError: If no sample results are found
         :return: self
         """
@@ -67,6 +68,11 @@ class Query(Configurable, Saveable):
         sim_indices = self.search(Config.CRITERIA, 'indices', 'sim', optional=True)
         if isinstance(sim_indices, int):
             sim_indices = [sim_indices]
+
+        # check that all sets of indices contain only integers
+        for indices in (sample_indices, model_indices, sim_indices):
+            if indices is not None and not all([isinstance(i, int) for i in indices]):
+                raise TypeError('Encountered a non-integer index. Check your search criteria.')
 
         # criteria for each layer
         sample_criteria = self.search(Config.CRITERIA, 'sample', optional=True)
