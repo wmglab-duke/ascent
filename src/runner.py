@@ -15,28 +15,19 @@ import subprocess
 import sys
 import time
 import warnings
-from copy import deepcopy
 from typing import List
 
 import numpy as np
-from quantiphy import Quantity
-from shapely.geometry import Point
 
-from src.core import Sample, Simulation, Waveform
+from src.core import Model, Sample, Simulation
 from src.utils import (
     Config,
     Configurable,
-    CuffShiftMode,
     Env,
     ExportMode,
     IncompatibleParametersError,
     JavaError,
-    MorphologyError,
-    NerveMode,
-    PerineuriumResistivityMode,
-    ReshapeNerveMode,
     SetupMode,
-    TemplateOutput,
     WriteMode,
 )
 
@@ -175,12 +166,12 @@ class Runner(Configurable):
             ).build_file_structure().populate().write(
                 WriteMode.SECTIONWISE2D
             ).output_morphology_data().save(
-                os.path.join(sample_file)
+                sample_file
             )
 
         return sample, sample_num
 
-    def prep_model(self, all_configs, model_index, model_config, sample, sample_num):
+    def prep_model(self, all_configs, model_index, model_config, sample, sample_num, smart=True):
         """Prepare model prior to handoff to Java.
 
         :param all_configs: all configs for this run
@@ -188,24 +179,31 @@ class Runner(Configurable):
         :param model_config: config for this model
         :param sample: sample object
         :param sample_num: sample number
+        :param smart: if True, reuse objects from previous runs
         :return: model number
         """
         model_num = self.configs[Config.RUN.value]['models'][model_index]
         model_pseudonym = model_config.get('pseudonym')
-        print(f'\tMODEL {model_num}', f'- {model_pseudonym}' if model_pseudonym is not None else '')
-
-        # use current model index to computer maximum cuff shift (radius) .. SAVES to file in method
-        model_config = self.compute_cuff_shift(model_config, sample, all_configs[Config.SAMPLE.value][0])
-
-        model_config_file_name = os.path.join(
+        model_file = os.path.join(os.getcwd(), 'samples', str(sample_num), 'models', str(model_num), 'model.obj')
+        model_config_file = os.path.join(
             os.getcwd(), 'samples', str(sample_num), 'models', str(model_num), 'model.json'
         )
-
-        # write edited model config in place
-        TemplateOutput.write(model_config, model_config_file_name)
-
-        # use current model index to compute electrical parameters ... SAVES to file in method
-        self.compute_electrical_parameters(all_configs, model_index)
+        print(f'\tMODEL {model_num}', f'- {model_pseudonym}' if model_pseudonym is not None else '')
+        if smart and os.path.exists(model_file):
+            print(f"\tFound existing model {model_num} ({model_file})")
+            model = self.load_obj(model_file)
+        else:
+            model = Model()
+            # use current model index to computer maximum cuff shift (radius) .. SAVES to file in method
+            model.add(SetupMode.OLD, Config.MODEL, model_config).add(SetupMode.OLD, Config.SAMPLE, sample).add(
+                SetupMode.OLD, Config.RUN, self.configs[Config.RUN.value]
+            ).add(SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value]).compute_cuff_shift(
+                sample, all_configs[Config.SAMPLE.value][0]
+            ).compute_electrical_parameters().validate().write(
+                model_config_file
+            ).save(
+                model_file
+            )
 
         return model_num
 
@@ -236,7 +234,7 @@ class Runner(Configurable):
 
         # init fiber manager
         if smart and os.path.exists(sim_obj_file):
-            print(f'\t    Found existing sim object for sim {sim_index} ({sim_obj_file})')
+            print(f'\t\tFound existing sim object for sim {sim_index} ({sim_obj_file})')
 
             simulation: Simulation = self.load_obj(sim_obj_file)
 
@@ -372,7 +370,7 @@ class Runner(Configurable):
         else:
             for model_index, model_config in enumerate(all_configs[Config.MODEL.value]):
                 # loop through each model
-                model_num = self.prep_model(all_configs, model_index, model_config, sample, sample_num)
+                model_num = self.prep_model(all_configs, model_index, model_config, sample, sample_num, smart=smart)
                 if 'sims' in all_configs:
                     # iterate through simulations
                     for sim_index, sim_config in enumerate(all_configs['sims']):
@@ -398,7 +396,6 @@ class Runner(Configurable):
 
             # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials if necessary
             if 'models' in all_configs and 'sims' in all_configs:
-                self.model_parameter_checking(all_configs)
                 # only transition to java if necessary (there are potentials that do not exist)
                 if not all(self.potentials_exist) or not all(self.ss_bases_exist):
                     print('\nTO JAVA\n')
@@ -518,309 +515,6 @@ class Runner(Configurable):
             raise JavaError("Encountered an error during handoff to java.")
         os.chdir('..')
 
-    def compute_cuff_shift(self, model_config: dict, sample: Sample, sample_config: dict):
-        """Compute the Cuff Shift for a given model.
-
-        :param model_config: dict, model config
-        :param sample: Sample, sample object
-        :param sample_config: dict, sample config
-        :raises ValueError: if deform_ratio is not between 0 and 1 (inclusive)
-        :return: model_config: dict, model config
-        """
-        # NOTE: ASSUMES SINGLE SLIDE
-        # add temporary model configuration
-        self.add(SetupMode.OLD, Config.MODEL, model_config)
-        self.add(SetupMode.OLD, Config.SAMPLE, sample_config)
-
-        # fetch slide
-        slide = sample.slides[0]
-
-        # fetch nerve mode
-        nerve_mode: NerveMode = self.search_mode(NerveMode, Config.SAMPLE)
-
-        if nerve_mode == NerveMode.PRESENT:
-            if 'deform_ratio' not in self.configs[Config.SAMPLE.value]:
-                deform_ratio = 1
-            else:
-                deform_ratio = self.search(Config.SAMPLE, 'deform_ratio')
-            if deform_ratio < 0 or deform_ratio > 1:
-                raise ValueError("Deform ratio (sample.json) must be between 0 and 1 (inclusive).")
-        else:
-            deform_ratio = None
-
-        # get center and radius of nerve's min_bound circle
-        nerve_copy = deepcopy(slide.nerve if nerve_mode == NerveMode.PRESENT else slide.fascicles[0].outer)
-
-        # fetch cuff config
-        cuff_config: dict = self.load(
-            os.path.join(os.getcwd(), "config", "system", "cuffs", model_config['cuff']['preset'])
-        )
-
-        (
-            cuff_code,
-            cuff_r_buffer,
-            expandable,
-            offset,
-            r_bound,
-            r_f,
-            theta_c,
-            theta_i,
-            x,
-            y,
-        ) = self.get_cuff_shift_parameters(cuff_config, deform_ratio, nerve_copy, sample_config, slide)
-
-        r_i, theta_f = self.check_cuff_expansion_radius(cuff_code, cuff_config, expandable, r_f, theta_i)
-
-        # remove sample config
-        self.remove(Config.SAMPLE)
-
-        cuff_shift_mode: CuffShiftMode = self.search_mode(CuffShiftMode, Config.MODEL)
-
-        if cuff_shift_mode not in CuffShiftMode:
-            raise ValueError("Invalid CuffShiftMode in Model.")
-
-        # remove (pop) temporary model configuration
-        model_config = self.remove(Config.MODEL)
-        model_config['min_radius_enclosing_circle'] = r_bound
-        if slide.orientation_angle is not None:
-            theta_c = slide.orientation_angle * (360 / (2 * np.pi)) % 360  # overwrite theta_c, use our own orientation
-
-        # check if a naive mode was chosen
-        naive = cuff_shift_mode in [
-            CuffShiftMode.NAIVE_ROTATION_MIN_CIRCLE_BOUNDARY,
-            CuffShiftMode.NAIVE_ROTATION_TRACE_BOUNDARY,
-        ]
-
-        # initialize as 0, only replace values as needed, must be initialized here in case cuff shift mode is NONE
-        x_shift = y_shift = 0
-        # set pos_ang
-        if naive or cuff_shift_mode == CuffShiftMode.NONE:
-            model_config['cuff']['rotate']['pos_ang'] = 0
-            if slide.orientation_point is not None:
-                print(
-                    'Warning: orientation tif image will be ignored because a NAIVE or NONE cuff shift mode was chosen.'
-                )
-        else:
-            model_config['cuff']['rotate']['pos_ang'] = theta_c - theta_f
-
-        # min circle x and y shift
-        if cuff_shift_mode in [
-            CuffShiftMode.NAIVE_ROTATION_MIN_CIRCLE_BOUNDARY,
-            CuffShiftMode.AUTO_ROTATION_MIN_CIRCLE_BOUNDARY,
-        ]:
-
-            if r_i > r_f:
-                x_shift = x - (r_i - offset - cuff_r_buffer - r_bound) * np.cos(theta_c * ((2 * np.pi) / 360))
-                y_shift = y - (r_i - offset - cuff_r_buffer - r_bound) * np.sin(theta_c * ((2 * np.pi) / 360))
-
-            elif slide.nerve is None or deform_ratio != 1:
-                x_shift, y_shift = x, y
-
-        # min trace modes
-        elif cuff_shift_mode in [
-            CuffShiftMode.NAIVE_ROTATION_TRACE_BOUNDARY,
-            CuffShiftMode.AUTO_ROTATION_TRACE_BOUNDARY,
-        ]:
-            if r_i < r_f:
-                x_shift, y_shift = x, y
-
-            else:
-                id_boundary = Point(0, 0).buffer(r_i - offset)
-                n_boundary = Point(x, y).buffer(r_f)
-
-                if id_boundary.boundary.distance(n_boundary.boundary) < cuff_r_buffer:
-                    nerve_copy.shift([x, y, 0])
-                    print(
-                        "WARNING: NERVE CENTERED ABOUT MIN CIRCLE CENTER (BEFORE PLACEMENT) BECAUSE "
-                        "CENTROID PLACEMENT VIOLATED REQUIRED CUFF BUFFER DISTANCE\n"
-                    )
-
-                center_x = 0
-                center_y = 0
-                step = 1  # [um] STEP SIZE
-                x_step = step * np.cos(-theta_c + np.pi)  # STEP VECTOR X-COMPONENT
-                y_step = step * np.sin(-theta_c + np.pi)  # STEP VECTOR X-COMPONENT
-
-                # shift nerve within cuff until one step within the minimum separation from cuff
-                while nerve_copy.polygon().boundary.distance(id_boundary.boundary) >= cuff_r_buffer:
-                    nerve_copy.shift([x_step, y_step, 0])
-                    center_x -= x_step
-                    center_y -= y_step
-
-                # to maintain minimum separation from cuff, reverse last step
-                center_x += x_step
-                center_y += y_step
-
-                x_shift, y_shift = center_x, center_y
-
-        model_config['cuff']['shift']['x'] = x_shift
-        model_config['cuff']['shift']['y'] = y_shift
-
-        return model_config
-
-    def get_cuff_shift_parameters(self, cuff_config, deform_ratio, nerve_copy, sample_config, slide):
-        """Calculate parameters for cuff shift.
-
-        :param cuff_config: cuff configuration
-        :param deform_ratio: deform ratio
-        :param nerve_copy: copied nerve object
-        :param sample_config: sample configuration
-        :param slide: slide object to shift cuff around
-        :raises MorphologyError: if slide is not centered at origin
-        :return: (cuff code, cuff r buffer, expandable, offset, r_bound, r_f, theta_c, theta_i, x, y)
-        """
-        # fetch 1-2 letter code for cuff (ex: 'CT')
-        cuff_code: str = cuff_config['code']
-        # fetch radius buffer string (ex: '0.003 [in]')
-        cuff_r_buffer_str: str = [
-            item["expression"]
-            for item in cuff_config["params"]
-            if item["name"] == '_'.join(['thk_medium_gap_internal', cuff_code])
-        ][0]
-        # calculate value of radius buffer in micrometers (ex: 76.2)
-        cuff_r_buffer: float = Quantity(
-            Quantity(
-                cuff_r_buffer_str.translate(cuff_r_buffer_str.maketrans('', '', ' []')),
-                scale='m',
-            ),
-            scale='um',
-        ).real  # [um] (scaled from any arbitrary length unit)
-        # Get the boundary and center information for computing cuff shift
-        if self.search_mode(ReshapeNerveMode, Config.SAMPLE) and not slide.monofasc() and deform_ratio == 1:
-            x, y = 0, 0
-            r_bound = np.sqrt(sample_config['Morphology']['Nerve']['area'] / np.pi)
-        else:
-            x, y, r_bound = nerve_copy.make_circle()
-        # next calculate the angle of the "centroid" to the center of min bound circle
-        # if mono fasc, just use 0, 0 as centroid (i.e., centroid of nerve same as centroid of all fasc)
-        # if poly fasc, use centroid of all fascicle as reference, not 0, 0
-        # angle of centroid of nerve to center of minimum bounding circle
-        reference_x = reference_y = 0.0
-        if not slide.monofasc() and not (round(slide.nerve.centroid()[0]) == round(slide.nerve.centroid()[1]) == 0):
-            raise MorphologyError(
-                "Slide is not centered at [0,0]"
-            )  # if the slide has nerve and is not centered at the nerve throw error
-        if not slide.monofasc():
-            reference_x, reference_y = slide.fascicle_centroid()
-        theta_c = (np.arctan2(reference_y - y, reference_x - x) * (360 / (2 * np.pi))) % 360
-        # calculate final necessary radius by adding buffer
-        r_f = r_bound + cuff_r_buffer
-        # fetch initial cuff rotation (convert to rads)
-        theta_i = cuff_config.get('angle_to_contacts_deg') % 360
-        # fetch boolean for cuff expandability
-        expandable: bool = cuff_config['expandable']
-        offset = 0
-        for key, coef in cuff_config["offset"].items():
-            value_str = [item["expression"] for item in cuff_config["params"] if item['name'] == key][0]
-            value: float = Quantity(
-                Quantity(value_str.translate(value_str.maketrans('', '', ' []')), scale='m'),
-                scale='um',
-            ).real  # [um] (scaled from any arbitrary length unit)
-            offset += coef * value
-        return cuff_code, cuff_r_buffer, expandable, offset, r_bound, r_f, theta_c, theta_i, x, y
-
-    def check_cuff_expansion_radius(self, cuff_code, cuff_config, expandable, r_f, theta_i):
-        """Check the cuff expansion radius.
-
-        :param cuff_code: str, cuff code
-        :param cuff_config: dict, cuff config
-        :param expandable: bool, cuff expandable
-        :param r_f: float, final radius
-        :param theta_i: float, initial angle of cuff pre expansion
-        :raises KeyError: If cuff is expandable and no fixed point is specified
-        :raises IncompatibleParametersError: If the cuff is too small for the nerve
-        :return: r_i: float, cuff radius pre expansion; theta_f: float, cuff wrap angle used in FEM
-        """
-        # check radius iff not expandable
-        if not expandable:
-            r_i_str: str = [
-                item["expression"] for item in cuff_config["params"] if item["name"] == '_'.join(['R_in', cuff_code])
-            ][0]
-            r_i: float = Quantity(
-                Quantity(r_i_str.translate(r_i_str.maketrans('', '', ' []')), scale='m'),
-                scale='um',
-            ).real  # [um] (scaled from any arbitrary length unit)
-
-            if not r_f <= r_i:
-                raise IncompatibleParametersError("cuff chosen is too small for nerve sample provided")
-
-            theta_f = theta_i
-        else:
-            # get initial cuff radius
-            r_i_str: str = [
-                item["expression"]
-                for item in cuff_config["params"]
-                if item["name"] == '_'.join(['r_cuff_in_pre', cuff_code])
-            ][0]
-            r_i: float = Quantity(
-                Quantity(r_i_str.translate(r_i_str.maketrans('', '', ' []')), scale='m'),
-                scale='um',
-            ).real  # [um] (scaled from any arbitrary length unit)
-
-            if r_i < r_f:
-                fixed_point = cuff_config.get('fixed_point')
-                if fixed_point is None:
-                    raise KeyError(
-                        "Cuff configuration file must specify a fixed point if expandable=true. "
-                        "See Creating custom preset cuffs from instances of part primitives in the documentation"
-                    )
-                if fixed_point == 'clockwise_end':
-                    theta_f = theta_i * (r_i / r_f)
-                elif fixed_point == 'center':
-                    theta_f = theta_i
-            else:
-                theta_f = theta_i
-
-        return r_i, theta_f
-
-    def compute_electrical_parameters(self, all_configs, model_index):
-        """Compute electrical parameters for a given model.
-
-        Writes output to config file.
-
-        :param all_configs: all configs for this run
-        :param model_index: index of the model to compute parameters for
-        :raises NotImplementedError: An invalid mode is specified
-        """
-        # fetch current model config using the index
-        model_config = all_configs[Config.MODEL.value][model_index]
-        model_num = self.configs[Config.RUN.value]['models'][model_index]
-
-        # initialize Waveform object
-        waveform = Waveform()
-
-        # add model config to Waveform object, enabling it to generate waveforms
-        waveform.add(SetupMode.OLD, Config.MODEL, model_config)
-
-        # compute rho and sigma from waveform instance
-        if (
-            model_config.get('modes').get(PerineuriumResistivityMode.config.value)
-            == PerineuriumResistivityMode.RHO_WEERASURIYA.value
-        ):
-            freq_double = model_config.get('frequency')
-            rho_double = waveform.rho_weerasuriya(freq_double)
-            sigma_double = 1 / rho_double
-            tmp = {
-                'value': str(sigma_double),
-                'label': f'RHO_WEERASURIYA @ {freq_double} Hz',
-                'unit': '[S/m]',
-            }
-            model_config['conductivities']['perineurium'] = tmp
-
-        elif (
-            model_config.get('modes').get(PerineuriumResistivityMode.config.value)
-            == PerineuriumResistivityMode.MANUAL.value
-        ):
-            pass
-        else:
-            raise NotImplementedError("Rho perineurium method not implemented")
-
-        dest_path: str = os.path.join(
-            'samples', str(self.configs[Config.RUN.value]['sample']), 'models', str(model_num), 'model.json'
-        )
-
-        TemplateOutput.write(model_config, dest_path)
-
     def populate_env_vars(self):
         """Get environment variables from config file.
 
@@ -833,14 +527,3 @@ class Runner(Configurable):
             value = self.search(Config.ENV, key)
             assert type(value) is str
             os.environ[key] = value
-
-    def model_parameter_checking(self, all_configs):
-        """Check model parameters for validity.
-
-        :param all_configs: all configs for this run
-        :raises IncompatibleParametersError: if distal medium exists and proximal is set as ground
-        """
-        for _, model_config in enumerate(all_configs[Config.MODEL.value]):
-            distal_exists = model_config['medium']['distal']['exist']
-            if distal_exists and model_config['medium']['proximal']['distant_ground'] is True:
-                raise IncompatibleParametersError("Proximal medium boundary cannot be ground if distal medium exists.")
