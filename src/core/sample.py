@@ -19,7 +19,7 @@ import numpy as np
 from scipy.ndimage import binary_fill_holes
 from skimage import morphology
 
-from src.core import Fascicle, Map, Nerve, Slide, Trace
+from src.core import Deformable, Fascicle, Map, Nerve, Slide, Trace
 from src.utils import (
     Config,
     Configurable,
@@ -39,8 +39,6 @@ from src.utils import (
     TemplateOutput,
     WriteMode,
 )
-
-from .deformable import Deformable
 
 
 class Sample(Configurable, Saveable):
