@@ -76,6 +76,8 @@ class _HeatmapPlotter:
         cbar_kws=None,
         scatter_kws=None,
         line_kws=None,
+        min_thresh=None,
+        max_thresh=None,
         color=None,
     ):
         """Initialize heatmap plotter.
@@ -106,6 +108,8 @@ class _HeatmapPlotter:
         :param cbar_kws: Keyword arguments to pass to matplotlib.colorbar.Colorbar.
         :param scatter_kws: Keyword arguments to pass to matplotlib.pyplot.scatter.
         :param line_kws: Keyword arguments to pass to matplotlib.pyplot.plot.
+        :param min_thresh: Minimum threshold to use for plotting. Use this to override the default minimum.
+        :param max_thresh: Maximum threshold to use for plotting. Use this to override the default maximum.
         :param color: Color passed in by seaborn when using FacetGrid. Not used.
         """
         # add variables to self from input args
@@ -129,7 +133,8 @@ class _HeatmapPlotter:
         self.scatter_kws = scatter_kws if scatter_kws is not None else {}
         self.scatter_kws.setdefault('s', 100)
         self.line_kws = line_kws if line_kws is not None else {}
-        self.max_thresh, self.min_thresh = max(data.threshold), min(data.threshold)
+        self.max_thresh = max(data.threshold) if max_thresh is None else max_thresh
+        self.min_thresh = min(data.threshold) if min_thresh is None else min_thresh
         self.cuff_orientation = cuff_orientation
 
         # run setup in preparation for plotting
@@ -274,10 +279,12 @@ class _HeatmapPlotter:
         """
         assert self.mode in ['fibers', 'inners', 'fibers_on_off', 'inners_on_off']
         if self.mode in ['fibers_on_off', 'inners_on_off']:
-            assert self.cutoff_thresh is not None
+            assert self.cutoff_thresh is not None, 'Must provide cutoff threshold for on/off mode.'
         # make sure only one sample, model, sim, and nsim for this plot
         for index in ['sample', 'model', 'sim', 'nsim']:
-            assert len(pd.unique(data[index])) == 1
+            assert (
+                len(pd.unique(data[index])) == 1
+            ), f'Only one {index} allowed for this plot. Append something like q.threshold_data.query(\'{index}==0\')'
             setattr(self, index + '_index', pd.unique(data[index])[0])
 
     def plot_cuff_orientation(self, ax):
