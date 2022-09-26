@@ -361,7 +361,7 @@ class Query(Configurable, Saveable):
                             fiberset_index,
                         ) = sim_object.potentials_product[potentials_product_index]
                         # fetch outer->inner->fiber and out->inner maps
-                        out_in_fib, out_in = sim_object.fiberset_map_pairs[nsim_index]
+                        out_in_fib, out_in = sim_object.fiberset_map_pairs[fiberset_index]
 
                         # build base dirs for fetching thresholds
                         sim_dir = self.build_path(
@@ -381,7 +381,7 @@ class Query(Configurable, Saveable):
 
                             for local_fiber_index, _ in enumerate(out_in_fib[outer][out_in[outer].index(inner)]):
 
-                                master_index = sim_object.indices_n_to_fib(nsim_index, inner, local_fiber_index)
+                                master_index = sim_object.indices_n_to_fib(fiberset_index, inner, local_fiber_index)
 
                                 thresh_path = os.path.join(
                                     n_sim_dir,
@@ -393,7 +393,7 @@ class Query(Configurable, Saveable):
                                     try:
                                         threshold = np.loadtxt(thresh_path)
                                     except IOError:
-                                        threshold = np.nan
+                                        threshold = np.array(np.nan)
                                         warnings.warn('Missing threshold, but continuing.')
                                 else:
                                     threshold = np.loadtxt(thresh_path)
