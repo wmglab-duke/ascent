@@ -30,16 +30,16 @@ outpath = 'out/analysis/videos'
 
 
 # define initializer function for animation
-def init():
-    """Initialize the animation."""
+def _init():
+    """Initialize the animation."""  # noqa: DAR
     flat_data = data.flatten()
     ax.set_ylim(np.min(flat_data), np.max(flat_data))
     return (ln,)
 
 
 # define update function for each frame of animation
-def update(frame):
-    """Update the animation."""
+def _update(frame):
+    """Update the animation."""  # noqa: DAR
     time_text.set_text('time: ' + str(data[frame][0]))
     ln.set_data(np.arange(0, len(data[0]) - 1), data[frame][1:])
     return ln, time_text
@@ -87,9 +87,9 @@ for sample in samples:
                 print('WARNING: DO NOT ATTEMPT TO OPEN FILE UNTIL FRAME INDICES HAVE FINISHED PRINTING')
                 ani = FuncAnimation(
                     fig,
-                    update,
+                    _update,
                     frames=np.arange(1, 5000, 5),  # frames=np.arange(0, 5000, 1),
-                    init_func=init,
+                    init_func=_init,
                     blit=False,
                     interval=10,
                     save_count=5000,

@@ -8,7 +8,6 @@ source code can be found on the following GitHub repository:
 https://github.com/wmglab-duke/ascent
 """
 
-
 import csv
 import math
 import os
@@ -19,29 +18,34 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy.signal as sg
 
-from src.utils import Configurable, Exceptionable, Saveable
+from src.utils import Configurable, Saveable
 from src.utils.enums import Config, SetupMode, WaveformMode, WriteMode
 
 
-class Waveform(Exceptionable, Configurable, Saveable):
-    """Required (Config.) JSON's: MODEL SIM."""
+class Waveform(Configurable, Saveable):
+    """Class used to construct stimulation waveforms."""
 
-    def __init__(self, exceptions_config: list):
-        """:param exceptions_config: preloaded exceptions.json data."""
+    def __init__(self):
+        """Initialize Waveform Class."""
         # set up superclasses
         Configurable.__init__(self)
-        Exceptionable.__init__(self, SetupMode.OLD, exceptions_config)
 
         # init instance variables
+        self.t_signal = None
+        self.frequency = None
         self.mode = self.dt = self.start = self.on = self.off = self.stop = None
 
         self.wave: np.ndarray = None
         self.mode_str = None
 
     def init_post_config(self):
-        """Initialize instance variables after configuration is loaded."""
+        """Initialize instance variables after configuration is loaded.
+
+        :raises KeyError: if any required configs are missing
+        :return: self
+        """
         if any([config.value not in self.configs.keys() for config in (Config.MODEL, Config.SIM)]):
-            self.throw(72)
+            raise KeyError(f"Missing at least one of {Config.MODEL.value} or {Config.SIM.value} configuration.")
 
         # get mode
         self.mode_str = [
@@ -64,16 +68,22 @@ class Waveform(Exceptionable, Configurable, Saveable):
         return self
 
     def validate_times(self):
-        """Check to make sure that the waveform T_ON < T_START < T_OFF < T_STOP."""
+        """Check to make sure that the waveform T_ON < T_START < T_OFF < T_STOP.
+
+        :raises ValueError: if any time params are out of order
+        """
         time_params = [self.start, self.on, self.off, self.stop]
         if sorted(time_params) != time_params:
-            self.throw(32)
+            raise ValueError("t_start t_on t_off t_stop must be in order.")
 
     def rho_weerasuriya(self, f=None):
         """Calculate of perineurium impedance using results from Weerasuriya 1984 (frog).
 
         Weerasuriya discussion indicates that Models A & B are better candidates than Models C & D, so we only
         consider the former pair.
+
+        :param f: frequency (Hz)
+        :raises NotImplementedError: if temperature is not 37C
         :return: rho [ohm-m].
         """
         temp = self.search(Config.MODEL, "temperature")  # [degC] 37 for mammalian
@@ -84,7 +94,7 @@ class Waveform(Exceptionable, Configurable, Saveable):
 
         if f < 10:  # stimulation for activation response, arbitrary cutoff of 10 Hz!
             if not np.isclose(temp, 37, atol=0.01):
-                self.throw(47)
+                raise NotImplementedError("Temperature dependent perineurium not yet implemented for high frequencies")
 
             self.load(materials_path)
             peri_conductivity = self.search(
@@ -164,108 +174,108 @@ class Waveform(Exceptionable, Configurable, Saveable):
 
         return rho  # [ohm-m]
 
-    def generate(self):
-        """:return: list of 1d ndarrays, waveforms as specified by configuration."""
-        # helper function to pad the start and end of signal with zeroes
-        def pad(
-            input_wave: np.ndarray,
-            time_step: float,
-            start_to_on: float,
-            off_to_stop: float,
-        ) -> np.ndarray:
-            """Pad the start and end of signal with zeroes.
+    @staticmethod
+    def pad(
+        input_wave: np.ndarray,
+        time_step: float,
+        start_to_on: float,
+        off_to_stop: float,
+    ) -> np.ndarray:
+        """Pad the start and end of signal with zeroes.
 
-            :param input_wave: wave (1d np.ndarray) to pad
-            :param time_step: effective dt
-            :param start_to_on: beginning pad length
-            :param off_to_stop: end pad length
-            :return: the padded wave (1d np.ndarray)
-            """
-            return np.concatenate(
-                (
-                    [0] * (round(start_to_on / time_step) - 1),
-                    input_wave,
-                    [0] * (round(off_to_stop / time_step) - 1),
-                )
+        :param input_wave: wave (1d np.ndarray) to pad
+        :param time_step: effective dt
+        :param start_to_on: beginning pad length
+        :param off_to_stop: end pad length
+        :return: the padded wave (1d np.ndarray)
+        """
+        return np.concatenate(
+            (
+                [0] * (round(start_to_on / time_step) - 1),
+                input_wave,
+                [0] * (round(off_to_stop / time_step) - 1),
             )
+        )
 
+    def generate(self):
+        """Generate the waveform.
+
+        :raises NotImplementedError: If the waveform is not implemented.
+        :return: list of 1d ndarrays, waveforms as specified by configuration.
+        """
         # time values to be used for all waves
-        t_signal = np.arange(0, self.off - self.on, self.dt)
+        self.t_signal = np.arange(0, self.off - self.on, self.dt)
 
-        # for ease of parameter src later on
-        path_to_specific_parameters = ['waveform', self.mode_str]
-
-        frequency = self.search(Config.SIM, 'waveform', self.mode.name, 'pulse_repetition_freq') / 1000  # scale for ms
-
+        self.frequency = self.search(Config.SIM, 'waveform', self.mode.name, 'pulse_repetition_freq') / 1000
         if self.mode == WaveformMode.MONOPHASIC_PULSE_TRAIN:
 
-            generated_wave = self.generate_monophasic(frequency, pad, path_to_specific_parameters, t_signal)
+            generated_wave = self.generate_monophasic()
 
         elif self.mode == WaveformMode.SINUSOID:
-            generated_wave = self.generate_sinusoid(frequency, pad, t_signal)
+            generated_wave = self.generate_sinusoid()
 
         elif self.mode == WaveformMode.BIPHASIC_FULL_DUTY:
 
-            generated_wave = self.generate_biphasic_fullduty(frequency, pad, t_signal)
+            generated_wave = self.generate_biphasic_fullduty()
 
         elif self.mode == WaveformMode.BIPHASIC_PULSE_TRAIN:
 
-            generated_wave = self.generate_biphasic_basic(frequency, pad, path_to_specific_parameters, t_signal)
+            generated_wave = self.generate_biphasic_basic()
 
         elif self.mode == WaveformMode.BIPHASIC_PULSE_TRAIN_Q_BALANCED_UNEVEN_PW:
 
-            generated_wave = self.generate_biphasic_uneven(frequency, pad, path_to_specific_parameters, t_signal)
+            generated_wave = self.generate_biphasic_uneven()
 
         elif self.mode == WaveformMode.EXPLICIT:
-            generated_wave = self.generate_explicit(pad)
+            generated_wave = self.generate_explicit()
 
         else:
-            self.throw(34)
+            raise NotImplementedError("WaveformMode chosen not yet implemented.")
 
         self.wave = generated_wave
 
         return self
 
-    def generate_biphasic_uneven(self, frequency, pad, path_to_specific_parameters, t_signal):
+    def generate_biphasic_uneven(self):
         """Generate a biphasic pulse train with uneven pulse widths.
 
-        :param frequency:
-        :param pad:
-        :param path_to_specific_parameters:
-        :param t_signal:
-        :return:
+        :raises ValueError: If the timestep is too long for the waveform.
+        :return: generated waveform
         """
-        pw1 = self.search(Config.SIM, *path_to_specific_parameters, 'pulse_width_1')
-        pw2 = self.search(Config.SIM, *path_to_specific_parameters, 'pulse_width_2')
-        if self.dt > pw1:
-            self.throw(89)
-        if self.dt > pw2:
-            self.throw(90)
+        pw1 = self.search(Config.SIM, 'waveform', self.mode_str, 'pulse_width_1')
+        pw2 = self.search(Config.SIM, 'waveform', self.mode_str, 'pulse_width_2')
+        if self.dt > pw1 or self.dt > pw2:
+            raise ValueError(
+                "Timestep self.dt is longer than BIPHASIC_PULSE_TRAIN_Q_BALANCED_UNEVEN_PW pw1 or pw2 indicated in Sim."
+            )
         # ensure fits within period
-        if (pw1 + pw2) > 1.0 / frequency:
-            self.throw(35)
+        if (pw1 + pw2) > 1.0 / self.frequency:
+            raise ValueError("Pulse is longer than period (2x for biphasic).")
         # loop on inter phase
-        inter_phase = self.search(Config.SIM, *path_to_specific_parameters, 'inter_phase')
+        inter_phase = self.search(Config.SIM, 'waveform', self.mode_str, 'inter_phase')
         if self.dt > inter_phase != 0:
-            self.throw(91)
+            raise ValueError(
+                "Timestep self.dt is longer than "
+                "BIPHASIC_PULSE_TRAIN_Q_BALANCED_UNEVEN_PW inter_phase indicated in Sim."
+            )
         # ensures fits within period
-        if (pw1 + pw2) + inter_phase > 1.0 / frequency:
-            self.throw(36)
+        if (pw1 + pw2) + inter_phase > 1.0 / self.frequency:
+            raise ValueError("2*Pulse + Interphase is longer than period.")
         positive_wave = np.clip(
-            sg.square(2 * np.pi * frequency * t_signal, duty=(pw1 - self.dt) * frequency),
+            sg.square(2 * np.pi * self.frequency * self.t_signal, duty=(pw1 - self.dt) * self.frequency),
             0,
             1,
         )
         negative_wave = np.clip(
             -sg.square(
-                2 * np.pi * frequency * t_signal[: -round((pw1 + inter_phase) / self.dt)],
-                duty=(pw2 - self.dt) * frequency,
+                2 * np.pi * self.frequency * self.t_signal[: -round((pw1 + inter_phase) / self.dt)],
+                duty=(pw2 - self.dt) * self.frequency,
             ),
             -1,
             0,
         )
-        padded_positive = pad(positive_wave, self.dt, self.on - self.start, self.stop - self.off)
-        padded_negative = pad(
+        padded_positive = self.pad(positive_wave, self.dt, self.on - self.start, self.stop - self.off)
+        padded_negative = self.pad(
             negative_wave, self.dt, self.on - self.start + pw1 + inter_phase - self.dt, self.stop - self.off + self.dt
         )
         # q-balanced
@@ -279,94 +289,100 @@ class Waveform(Exceptionable, Configurable, Saveable):
         wave = amp1 * padded_positive + amp2 * padded_negative
         return wave
 
-    def generate_monophasic(self, frequency, pad, path_to_specific_parameters, t_signal):
+    def generate_monophasic(self):
         """Generate a monophasic pulse train.
 
-        :param frequency:
-        :param pad:
-        :param path_to_specific_parameters:
-        :param t_signal:
-        :return:
+        :raises ValueError: if waveform parameters are invalid
+        :return: generated waveform
         """
-        pw = self.search(Config.SIM, *path_to_specific_parameters, 'pulse_width')
+        pw = self.search(Config.SIM, 'waveform', self.mode_str, 'pulse_width')
         if self.dt > pw:
-            self.throw(84)
+            raise ValueError("Timestep self.dt is longer than MONOPHASIC_PULSE_TRAIN pulse-width indicated in Sim.")
         # ensure pulse fits in period
-        if pw > 1.0 / frequency:
-            self.throw(35)
-        wave = sg.square(2 * np.pi * frequency * t_signal, duty=(pw - self.dt) * frequency)
+        if pw > 1.0 / self.frequency:
+            raise ValueError("Pulse is longer than period (2x for biphasic).")
+        wave = sg.square(2 * np.pi * self.frequency * self.t_signal, duty=(pw - self.dt) * self.frequency)
         clipped = np.clip(wave, 0, 1)
-        padded = pad(clipped, self.dt, self.on - self.start, self.stop - self.off)
+        padded = self.pad(clipped, self.dt, self.on - self.start, self.stop - self.off)
         wave = padded
         return wave
 
-    def generate_sinusoid(self, frequency, pad, t_signal):
+    def generate_sinusoid(self):
         """Generate a sinusoid.
 
-        :param frequency:
-        :param pad:
-        :param t_signal:
-        :return:
+        :raises ValueError: If the timestep is too long for the waveform.
+        :return: generated waveform
         """
-        if self.dt > 1.0 / frequency:
-            self.throw(85)
-        wave = np.sin(2 * np.pi * frequency * t_signal)
-        padded = pad(wave, self.dt, self.on - self.start, self.stop - self.off)
+        if self.dt > 1.0 / self.frequency:
+            raise ValueError(
+                "Timestep self.dt is longer than SINUSOID period indicated in Sim by pulse_repetition_freq."
+            )
+        wave = np.sin(2 * np.pi * self.frequency * self.t_signal)
+        padded = self.pad(wave, self.dt, self.on - self.start, self.stop - self.off)
         wave = padded
         return wave
 
-    def generate_biphasic_fullduty(self, frequency, pad, t_signal):
+    def generate_biphasic_fullduty(self):
         """Generate a biphasic pulse train with full duty cycle.
 
-        :param frequency:
-        :param pad:
-        :param t_signal:
-        :return:
+        :raises ValueError: for incorrect timestep.
+        :return: generated waveform
         """
-        if self.dt > 1.0 / frequency:
-            self.throw(86)
-        wave = sg.square(2 * np.pi * frequency * t_signal)
-        padded = pad(wave, self.dt, self.on - self.start, self.stop - self.off)
+        if self.dt > 1.0 / self.frequency:
+            raise ValueError(
+                "Timestep self.dt is longer than BIPHASIC_FULL_DUTY period indicated in Sim by pulse_repetition_freq."
+            )
+        wave = sg.square(2 * np.pi * self.frequency * self.t_signal)
+        padded = self.pad(wave, self.dt, self.on - self.start, self.stop - self.off)
         wave = padded
         return wave
 
-    def generate_biphasic_basic(self, frequency, pad, path_to_specific_parameters, t_signal):
-        """Generate a biphasic pulse train with basic parameters."""
-        pw = self.search(Config.SIM, *path_to_specific_parameters, 'pulse_width')
+    def generate_biphasic_basic(self):
+        """Generate a biphasic pulse train with basic parameters.
+
+        :raises ValueError: If parameters are invalid
+        :return: generated waveform
+        """
+        pw = self.search(Config.SIM, 'waveform', self.mode_str, 'pulse_width')
         if self.dt > pw:
-            self.throw(87)
+            raise ValueError("Timestep self.dt is longer than BIPHASIC_PULSE_TRAIN pulse-width indicated in Sim.")
         # ensure fits within period
-        if 2 * pw > 1.0 / frequency:
-            self.throw(35)
+        if 2 * pw > 1.0 / self.frequency:
+            raise ValueError("Pulse is longer than period (2x for biphasic).")
         # loop on inter phase
-        inter_phase = self.search(Config.SIM, *path_to_specific_parameters, 'inter_phase')
+        inter_phase = self.search(Config.SIM, 'waveform', self.mode_str, 'inter_phase')
         if self.dt > inter_phase != 0:
-            self.throw(88)
+            raise ValueError("Timestep self.dt is longer than BIPHASIC_PULSE_TRAIN inter_phase indicated in Sim.")
         # ensures fits within period
-        if (2 * pw) + inter_phase > 1.0 / frequency:
-            self.throw(36)
+        if (2 * pw) + inter_phase > 1.0 / self.frequency:
+            raise ValueError("2*Pulse + Interphase is longer than period.")
         positive_wave = np.clip(
-            sg.square(2 * np.pi * frequency * t_signal, duty=(pw - self.dt) * frequency),
+            sg.square(2 * np.pi * self.frequency * self.t_signal, duty=(pw - self.dt) * self.frequency),
             0,
             1,
         )
         negative_wave = np.clip(
             -sg.square(
-                2 * np.pi * frequency * t_signal[: -round((pw + inter_phase) / self.dt)],
-                duty=(pw - self.dt) * frequency,
+                2 * np.pi * self.frequency * self.t_signal[: -round((pw + inter_phase) / self.dt)],
+                duty=(pw - self.dt) * self.frequency,
             ),
             -1,
             0,
         )
-        padded_positive = pad(positive_wave, self.dt, self.on - self.start, self.stop - self.off)
-        padded_negative = pad(
+        padded_positive = self.pad(positive_wave, self.dt, self.on - self.start, self.stop - self.off)
+        padded_negative = self.pad(
             negative_wave, self.dt, self.on - self.start + pw + inter_phase - self.dt, self.stop - self.off + self.dt
         )
         wave = padded_positive + padded_negative
         return wave
 
-    def generate_explicit(self, pad):
-        """Generate an explicit waveform."""
+    def generate_explicit(self):
+        """Generate an explicit waveform.
+
+        :raises TypeError: if wave repeats is not an int
+        :raises ValueError: If number of wave repeats does not fit between wave on and off
+        :return: generated waveform
+        """
         path_to_wave = os.path.join(
             'config',
             'user',
@@ -410,14 +426,14 @@ class Waveform(Exceptionable, Configurable, Saveable):
         # repeats?
         repeats = self.search(Config.SIM, 'waveform', WaveformMode.EXPLICIT.name, 'period_repeats')
         if type(repeats) is not int:
-            self.throw(73)
+            raise TypeError("Number of repeats for explicit wave must be an integer value")
         if repeats > 1:
             signal = np.tile(signal, repeats)
         # if number of repeats cannot fit in off-on interval, error
         if self.dt * len(signal) > (self.off - self.on):
-            self.throw(74)
+            raise ValueError("Number of repeats for explicit wave does not fit in global.off - global.on in Sim config")
         # pad with zeros for: time before on, time after off
-        padded = pad(
+        padded = self.pad(
             signal,
             self.dt,
             self.on - self.start,
@@ -426,20 +442,22 @@ class Waveform(Exceptionable, Configurable, Saveable):
         wave = padded
         return wave
 
-    def plot(self, ax: plt.Axes = None, final: bool = False, path: str = None):
+    def plot(self, ax: plt.Axes = None, final: bool = False, path: str = None, plt_kwargs: dict = None):
         """Plot the waveform.
 
-        :param ax:
-        :param final:
-        :param path:
-        :return:
+        :param ax: axes to plot on
+        :param final: Whether to display/save the plot
+        :param path: Path to save the plot if final is True
+        :param plt_kwargs: Keyword arguments to pass to matplotlib.pyplot.plot
         """
         fig = plt.figure()
 
         if ax is None:
             ax = plt.gca()
+        if plt_kwargs is None:
+            plt_kwargs = {}
 
-        ax.plot(np.linspace(self.start, self.dt * len(self.wave), len(self.wave)), self.wave)
+        ax.plot(np.linspace(self.start, self.dt * len(self.wave), len(self.wave)), self.wave, **plt_kwargs)
         ax.set_ylabel('Normalized magnitude')
         ax.set_xlabel('Time step')
         ax.set_title('Waveform generated from user parameters in sim.json')
@@ -449,27 +467,25 @@ class Waveform(Exceptionable, Configurable, Saveable):
                 plt.show()
             else:
                 plt.savefig(path, dpi=300)
-                fig.clear()
                 plt.close(fig)
 
     def write(self, mode: WriteMode, path: str):
         """Write the waveform to a file.
 
         :param mode: usually DATA
-        :param path:
-        :return:
+        :param path: path to write to
+        :return: self
         """
-        path_to_specific_parameters = ['waveform', self.mode_str]
-        digits = self.search(Config.SIM, *path_to_specific_parameters, 'digits')
+        digits = self.search(Config.SIM, 'waveform', self.mode_str, 'digits')
 
         dt_all, dt_post = precision_and_scale(self.dt)
         stop_all, stop_post = precision_and_scale(self.stop)
 
         with open(path + WriteMode.file_endings.value[mode.value], "ab") as f:
-            np.savetxt(f, [self.dt], fmt=f'%{dt_all-dt_post}.{dt_post}f')
+            np.savetxt(f, [self.dt], fmt=f'%{dt_all - dt_post}.{dt_post}f')
 
         with open(path + WriteMode.file_endings.value[mode.value], "ab") as f:
-            np.savetxt(f, [self.stop], fmt=f'%{stop_all-stop_post}.{stop_post}f')
+            np.savetxt(f, [self.stop], fmt=f'%{stop_all - stop_post}.{stop_post}f')
 
         with open(path + WriteMode.file_endings.value[mode.value], "ab") as f:
             np.savetxt(f, self.wave, fmt=f'%.{digits}f')
@@ -482,8 +498,8 @@ class Waveform(Exceptionable, Configurable, Saveable):
 def precision_and_scale(x):
     """Return the number of digits and the scale of the number.
 
-    :param x:
-    :return:
+    :param x: number
+    :return: number of digits, scale
     """
     max_digits = sys.float_info.dig
     int_part = int(abs(x))

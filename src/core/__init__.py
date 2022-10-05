@@ -12,15 +12,17 @@ from src.core.trace import Trace
 from src.core.slide import Slide
 from src.core.fascicle import Fascicle
 from src.core.nerve import Nerve
+from src.core.deformable import Deformable
 from src.core.sample import Sample
 from src.core.mock_sample import MockSample
-from src.core.deformable import Deformable
 from src.core.simulation import Simulation
 from src.core.waveform import Waveform
 from src.core.fiberset import FiberSet
 from src.core.hocwriter import HocWriter
 from src.core.query import Query
+from src.core.model import Model
 from src.core import plotter
+
 
 __all__ = [
     'Map',

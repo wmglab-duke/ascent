@@ -50,21 +50,16 @@ from typing import List
 
 import numpy as np
 
-from src.utils import Config, Configurable, Exceptionable, SetupMode
+from src.utils import Config, Configurable, SetupMode
 
 
-class Map(Exceptionable, Configurable):
+class Map(Configurable):
     """Required (Config.) JSON's SAMPLE."""
 
-    def __init__(self, exception_config):
-        """
-        :param main_config:
-        :param exception_config:
-        :param mode:
-        """
+    def __init__(self):
+        """Initialize Map object."""
 
-        # set up super classes
-        Exceptionable.__init__(self, SetupMode.OLD, exception_config)
+        # set up super class
         Configurable.__init__(self)
         self.slides = None
         self.output_path = None
@@ -129,7 +124,7 @@ class Map(Exceptionable, Configurable):
 
         else:
             # the above if statements are exhaustive, so this should be unreachable
-            self.throw(136)
+            raise ValueError("Invalid SetupMode for Map object")
 
     def find(self, cassette: str, number: int) -> 'SlideInfo':
         """Returns first slide that matches search parameters (there should

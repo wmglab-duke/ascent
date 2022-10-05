@@ -76,8 +76,10 @@ evaluates as expression).
 See: `config/system/materials.json` to see all built-in material
 definitions, which the user may add to.
 
-Note: Perineurium can be represented in the pipeline as either a meshed
+```{note}
+Perineurium can be represented in the pipeline as either a meshed
 domain with a finite thickness or as a thin layer approximation, but the
 conductivity value used for either method is defined in `materials.json`
 unless the `"PerineuriumResistivityMode"` is `"MANUAL"` and the conductivity
 is defined explicitly in **_Model_** ([Perineurium Properties](../../Running_ASCENT/Info.md#definition-of-perineurium)).
+```

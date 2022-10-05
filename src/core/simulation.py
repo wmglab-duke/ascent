@@ -24,23 +24,22 @@ import numpy as np
 import scipy.interpolate as sci
 
 from src.core import Sample
-from src.utils import Config, Configurable, Env, Exceptionable, ExportMode, Saveable, SetupMode, WriteMode
+from src.utils import Config, Configurable, Env, ExportMode, IncompatibleParametersError, Saveable, SetupMode, WriteMode
 
 from .fiberset import FiberSet
+from .hocwriter import HocWriter
 from .waveform import Waveform
 
 
-class Simulation(Exceptionable, Configurable, Saveable):
+class Simulation(Configurable, Saveable):
     """Class for managing the simulation."""
 
-    def __init__(self, sample: Sample, exception_config: list):
+    def __init__(self, sample: Sample):
         """Initialize the simulation class.
 
         :param sample:  Sample object
-        :param exception_config: list of exceptions to be thrown
         """
-        # Initializes superclasses
-        Exceptionable.__init__(self, SetupMode.OLD, exception_config)
+        # Initializes superclass
         Configurable.__init__(self)
 
         self.waveforms = []
@@ -81,6 +80,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
     def resolve_factors(self) -> 'Simulation':
         """Find the factors that are used in the simulation from fibers, waveform, and supersampled_bases.
 
+        :raises ValueError: if n_dimensions in simulation does not match the number of looped parameters
         :return: self
         """
         if len(self.factors.items()) > 0:
@@ -91,14 +91,17 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
             :param dictionary: dictionary that will be searched
             :param path: path to the key to search for
-            :return: self with updated factors
+            :raises ValueError: if any lists have length 1
             """
             for key, value in dictionary.items():
                 if type(value) == list and len(value) > 1:
                     self.factors[path + '->' + key] = value
                 elif type(value) == list and len(value) <= 1:
                     print("ERROR:", key, "is a list, but has length", len(value))
-                    self.throw(137)
+                    raise ValueError(
+                        "If type list, loopable sim parameters must have length greater than 1. "
+                        "For a single (non-looping) value, use a Double."
+                    )
                 elif type(value) == dict:
                     search(value, path + '->' + key)
 
@@ -107,7 +110,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
                 search(self.configs[Config.SIM.value][flag], flag)
 
         if len(self.factors.items()) != self.search(Config.SIM, "n_dimensions"):
-            self.throw(106)
+            raise ValueError("sims->n_dimensions does not equal the number of parameter dimensions given in Sim")
 
         return self
 
@@ -136,7 +139,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
             sim_copy = self._copy_and_edit_config(self.configs[Config.SIM.value], self.fiberset_key, list(fiberset_set))
 
-            fiberset = FiberSet(self.sample, self.configs[Config.EXCEPTIONS.value])
+            fiberset = FiberSet(self.sample)
             fiberset.add(SetupMode.OLD, Config.SIM, sim_copy).add(
                 SetupMode.OLD, Config.RUN, self.configs[Config.RUN.value]
             ).add(SetupMode.OLD, Config.MODEL, self.configs[Config.MODEL.value]).add(
@@ -165,7 +168,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
             if not os.path.exists(ss_fibercoords_directory):
                 os.makedirs(ss_fibercoords_directory)
 
-            fiberset = FiberSet(self.sample, self.configs[Config.EXCEPTIONS.value])
+            fiberset = FiberSet(self.sample)
             fiberset.add(SetupMode.OLD, Config.SIM, self.configs[Config.SIM.value]).add(
                 SetupMode.OLD, Config.RUN, self.configs[Config.RUN.value]
             ).add(SetupMode.OLD, Config.MODEL, self.configs[Config.MODEL.value]).add(
@@ -184,8 +187,8 @@ class Simulation(Exceptionable, Configurable, Saveable):
     def write_waveforms(self, sim_directory: str) -> 'Simulation':
         """Write waveforms to files for each Waveform in the simulation. Create the waveform_product and waveform_keys.
 
-        :param sim_directory:
-        :return:
+        :param sim_directory: directory of the simulation
+        :return: self
         """
         directory = os.path.join(sim_directory, 'waveforms')
         if not os.path.exists(directory):
@@ -199,7 +202,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
         for i, wave_set in enumerate(self.wave_product):
             sim_copy = self._copy_and_edit_config(self.configs[Config.SIM.value], self.wave_key, list(wave_set))
 
-            waveform = Waveform(self.configs[Config.EXCEPTIONS.value])
+            waveform = Waveform()
 
             waveform.add(SetupMode.OLD, Config.SIM, sim_copy).add(
                 SetupMode.OLD, Config.MODEL, self.configs[Config.MODEL.value]
@@ -225,6 +228,9 @@ class Simulation(Exceptionable, Configurable, Saveable):
         """Validate the active_srcs in the simulation config.
 
         :param sim_directory: Path to simulation directory
+        :raises IncompatibleParametersError: if supersampling and active_srcs is default
+        :raises ValueError: if any active_srcs include a value greater than 1 or less than -1
+        :raises ValueError: if active_srcs do not abide by unitary constraints
         :return: self
         """
         # potentials key (s) = (r x p)
@@ -237,7 +243,9 @@ class Simulation(Exceptionable, Configurable, Saveable):
         else:
             ss = self.search(Config.SIM, 'supersampled_bases', optional=True)
             if ss is not None and ss['use'] is True:
-                self.throw(130)
+                raise IncompatibleParametersError(
+                    "Using default active_srcs is not allowed when running supersampled bases"
+                )
             # otherwise, use the default weights (generally you don't want to rely on this as cuffs have different
             # numbers of contacts
             active_srcs_list = self.search(Config.SIM, "active_srcs", "default")
@@ -250,13 +258,12 @@ class Simulation(Exceptionable, Configurable, Saveable):
         for active_srcs in active_srcs_list:
             active_src_abs = [abs(src_weight) for src_weight in active_srcs]
             if not all(abs(i) <= 1 for i in active_src_abs):
-                self.throw(93)
+                raise ValueError(
+                    "Contact weight in Sim (active_srcs) is greater than +1 or less than -1 which is not allowed"
+                )
 
-            if len(active_srcs) == 1:
-                if sum(active_srcs) not in [1, -1]:
-                    self.throw(50)
-            else:
-                pass
+            if len(active_srcs) == 1 and sum(active_srcs) not in [1, -1]:
+                raise ValueError("active_srcs_list provided does not abide by unitary current input response")
 
         self.potentials_product = list(
             itertools.product(
@@ -297,12 +304,82 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
         return self
 
+    def n_sim_setup(self, sim_dir, sim_num, potentials_ind, waveform_ind, t):
+        """Set up the variables for a particular n_sim.
+
+        :param sim_dir: Path to simulation directory
+        :param sim_num: Simulation number
+        :param potentials_ind: Index of potentials in potentials_product
+        :param waveform_ind: Index of waveform in wave_product
+        :param t: Time
+        :return: nsims_dir, fiberset_ind, active_srcs
+        """
+        # build file structure sim/#/n_sims/t/data/(inputs and outputs)
+        self._build_file_structure(os.path.join(sim_dir, str(sim_num)), t)
+        nsim_inputs_directory = os.path.join(sim_dir, str(sim_num), 'n_sims', str(t), 'data', 'inputs')
+
+        if not os.path.exists(nsim_inputs_directory):
+            os.makedirs(nsim_inputs_directory)
+
+        # copy corresponding waveform to sim/#/n_sims/t/data/inputs
+        source_waveform_path = os.path.join(sim_dir, str(sim_num), "waveforms", f"{waveform_ind}.dat")
+        destination_waveform_path = os.path.join(
+            sim_dir,
+            str(sim_num),
+            "n_sims",
+            str(t),
+            "data",
+            "inputs",
+            "waveform.dat",
+        )
+        if not os.path.isfile(destination_waveform_path):
+            shutil.copyfile(source_waveform_path, destination_waveform_path)
+
+        # get source, waveform, and fiberset values for the corresponding neuron simulation t
+        active_src_ind, fiberset_ind = self.potentials_product[potentials_ind]
+        active_src_vals = [self.src_product[active_src_ind]]
+        wave_vals = self.wave_product[waveform_ind]
+        fiberset_vals = self.fiberset_product[fiberset_ind]
+
+        # pair down simulation config to no lists of parameters (corresponding to the neuron simulation index t)
+        sim_copy = self._copy_and_edit_config(
+            self.configs[Config.SIM.value],
+            self.src_key,
+            active_src_vals,
+            copy_again=False,
+        )
+
+        sim_copy = self._copy_and_edit_config(sim_copy, self.wave_key, wave_vals, copy_again=False)
+
+        sim_copy = self._copy_and_edit_config(sim_copy, self.fiberset_key, fiberset_vals, copy_again=False)
+
+        # save the paired down simulation config to its corresponding neuron simulation t folder
+        with open(
+            os.path.join(sim_dir, str(sim_num), "n_sims", str(t), f"{t}.json"),
+            "w",
+        ) as handle:
+            handle.write(json.dumps(sim_copy, indent=2))
+
+        n_tsteps = len(self.waveforms[waveform_ind].wave)
+
+        # add config and write launch.hoc
+        n_sim_dir = os.path.join(sim_dir, str(sim_num), "n_sims", str(t))
+        hocwriter = HocWriter(
+            os.path.join(sim_dir, str(sim_num)),
+            n_sim_dir,
+        )
+        hocwriter.add(SetupMode.OLD, Config.MODEL, self.configs[Config.MODEL.value]).add(
+            SetupMode.OLD, Config.SIM, sim_copy
+        ).add(SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value]).build_hoc(n_tsteps)
+        return nsim_inputs_directory, fiberset_ind, active_src_vals
+
     def validate_ss_dz(self, supersampled_bases, sim_dir):
         """Validate the ss_dz in the simulation. Make sure that the parent SS dz is the same as this one.
 
         :param supersampled_bases: information about the supersampled bases from Sim
         :param sim_dir: directory of the source simulation with previously supersampled bases
-        :return: self
+        :raises FileNotFoundError: if the supersampled source sim is not found
+        :raises ValueError: if the supersampled source sim has a different ss_dz
         """
         source_sim = supersampled_bases.get('source_sim')
 
@@ -310,7 +387,10 @@ class Simulation(Exceptionable, Configurable, Saveable):
         source_sim_obj_dir = os.path.join(sim_dir, str(source_sim))
 
         if not os.path.exists(source_sim_obj_dir):
-            self.throw(94)
+            raise FileNotFoundError(
+                "Source Sim (i.e. source_sim in Sim->supersampled_bases) does not exist. "
+                "Either set proper source_sim that has your previously supersampled potentials or set use to false."
+            )
 
         source_sim_obj_file = os.path.join(source_sim_obj_dir, 'sim.obj')
 
@@ -320,7 +400,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
         if 'dz' in supersampled_bases:
             if supersampled_bases.get('dz') != source_dz:
-                self.throw(79)
+                raise ValueError("Supersampling dz does not match source simulation dz")
         elif 'dz' not in supersampled_bases:
             warnings.warn(f'dz not provided in Sim, so will accept dz={source_dz} specified in source Sim')
 
@@ -332,11 +412,10 @@ class Simulation(Exceptionable, Configurable, Saveable):
         :return: self
         """
 
-        def make_inner_fiber_diam_key(my_fiberset_ind, my_nsim_inputs_directory, my_potentials_directory, my_file):
+        def make_inner_fiber_diam_key(my_fiberset_ind, my_potentials_directory, my_file):
             """Make the key for the inner-fiber-diameter key file.
 
             :param my_fiberset_ind: index of the fiberset we are building the key for
-            :param my_nsim_inputs_directory: directory of the nsim inputs
             :param my_potentials_directory: directory of the potentials
             :param my_file: file we are making
             """
@@ -441,12 +520,13 @@ class Simulation(Exceptionable, Configurable, Saveable):
     def get_ss_bases(self, active_src_vals, file, sim_dir, source_sim, ss_bases):
         """Get the supersampled bases for the given simulation.
 
-        :param active_src_vals:
-        :param file:
-        :param sim_dir:
-        :param source_sim:
-        :param ss_bases:
-        :return:
+        :param active_src_vals: active source values (weights)
+        :param file: file we are getting the supersampled bases from
+        :param sim_dir: directory of simulations
+        :param source_sim: source simulation index where the supersampled bases are from
+        :param ss_bases: supersampled bases values
+        :raises FileNotFoundError: if the supersampled potentials are not found
+        :return: the path to the supersampled bases coordinates, ss_bases
         """
         ss_fiberset_path = os.path.join(sim_dir, str(source_sim), 'ss_coords')
 
@@ -454,11 +534,11 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
             ss_bases_src_path = os.path.join(sim_dir, str(source_sim), 'ss_bases', str(basis_ind))
 
-            if not os.path.exists(ss_bases_src_path):
-                self.throw(81)
-
-            if not os.path.exists(os.path.join(ss_bases_src_path, file)):
-                self.throw(81)
+            if not os.path.exists(ss_bases_src_path) or not os.path.exists(os.path.join(ss_bases_src_path, file)):
+                raise FileNotFoundError(
+                    "Trying to use super-sampled potentials that do not exist. "
+                    "(hint: check that if 'use' is true 'generate' was also true for the source Sim)."
+                )
             else:
                 ss_bases[basis_ind] = np.loadtxt(os.path.join(ss_bases_src_path, file))[1:]
 
@@ -467,12 +547,12 @@ class Simulation(Exceptionable, Configurable, Saveable):
     def weight_potentials(self, active_src_vals, file, root, ss_bases, ss_fiberset_path):
         """Calculate the sum of weighted bases.
 
-        :param active_src_vals:
-        :param file:
-        :param root:
-        :param ss_bases:
-        :param ss_fiberset_path:
-        :return:
+        :param active_src_vals: active source values (weights)
+        :param file: file we are getting the supersampled coordinates from
+        :param root: root directory where the file containging the supersampled coordinates is located
+        :param ss_bases: supersampled bases values
+        :param ss_fiberset_path: path to the supersampled coordinates
+        :return: the weighted sum of the bases for use in the neuron simulation
         """
         ss_weighted_bases_vec = np.zeros(len(ss_bases[0]))
         for src_ind, src_weight in enumerate(active_src_vals[0]):
@@ -541,9 +621,8 @@ class Simulation(Exceptionable, Configurable, Saveable):
     def _build_file_structure(sim_obj_dir, t):
         """Build the file structure for the simulation.
 
-        :param sim_obj_dir:
+        :param sim_obj_dir: simulation object directory for sim in question
         :param t: master production index
-        :return: None
         """
         sim_dir = os.path.join(sim_obj_dir, "n_sims", str(t))
 
@@ -557,7 +636,7 @@ class Simulation(Exceptionable, Configurable, Saveable):
 
         :param config: config file to copy
         :param key: key to edit/reduce
-        :param param_list: list of parameters to set
+        :param setval: list of parameters to set
         :param copy_again: make deep copy of config file
         :return: new (reduced) config file
         """
@@ -581,7 +660,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
         :param project_root: project root
         :param target:  target directory
         :param overwrite: overwrite existing run config if it exists
-        :return: None
         """
         target_dir = os.path.join(target, 'runs')
         target_full = os.path.join(target_dir, str(num) + '.json')
@@ -612,7 +690,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
         :param sim_obj_dir: Simulation object directory
         :param target: Target directory
         :param export_behavior: If the directory exists, what to do (i.e., override or error or skip
-        :return: None
         """
         sim_dir = os.path.join(sim_obj_dir, str(sim), 'n_sims')
         sim_export_base = os.path.join(target, 'n_sims', f'{sample}_{model}_{sim}_')
@@ -638,20 +715,16 @@ class Simulation(Exceptionable, Configurable, Saveable):
         """Export the neuron files to the target directory.
 
         :param target: Target directory
-        :return: None
         """
         # make NSIM_EXPORT_PATH (defined in Env.json) directory if it does not yet exist
         if not os.path.exists(target):
             os.makedirs(target)
 
         # neuron files
-        try:
-            du.copy_tree(
-                os.path.join(os.environ[Env.PROJECT_PATH.value], 'src', 'neuron'),
-                target,
-            )
-        except Exception:
-            pass
+        du.copy_tree(
+            os.path.join(os.environ[Env.PROJECT_PATH.value], 'src', 'neuron'),
+            target,
+        )
 
         submit_target = os.path.join(target, 'submit.py')
         if os.path.isfile(submit_target):
@@ -665,7 +738,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
         """Export the system config files to the target directory.
 
         :param target: Target directory
-        :return: None
         """
         # make NSIM_EXPORT_PATH (defined in Env.json) directory if it does not yet exist
         if not os.path.exists(target):
@@ -703,7 +775,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
         :param sim_dir: Simulation directory
         :param source: Source directory (where n_sims are located)
         :param delete: Delete n_sims from source directory after import
-        :return: None
         """
         print(f'sample: {sample}, model: {model}, sim: {sim}, sim_dir: {sim_dir}, source: {source}')
 
@@ -725,7 +796,6 @@ class Simulation(Exceptionable, Configurable, Saveable):
         :param sample: Sample index
         :param model: Model index
         :param sim: Sim index
-        :param sim_dir: Simulation directory
         :param source: Source directory (where n_sims are located)
         :return: True if thresholds exist, False otherwise
         """

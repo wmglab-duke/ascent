@@ -19,7 +19,6 @@ import numpy as np
 from src.utils import (
     Config,
     Configurable,
-    Exceptionable,
     FiberGeometry,
     MyelinationMode,
     NeuronRunMode,
@@ -31,18 +30,16 @@ from src.utils import (
 )
 
 
-class HocWriter(Exceptionable, Configurable, Saveable):
+class HocWriter(Configurable, Saveable):
     """Make launch.hoc file for each simulation run."""
 
-    def __init__(self, source_dir, dest_dir, exception_config):
+    def __init__(self, source_dir, dest_dir):
         """Initialize HocWriter.
 
         :param source_dir: Path to source directory.
         :param dest_dir: Path to destination directory.
-        :param exception_config: Exception configuration.
         """
-        # Initializes superclasses
-        Exceptionable.__init__(self, SetupMode.OLD, exception_config)
+        # Initializes superclass
         Configurable.__init__(self)
 
         self.source_dir = source_dir
@@ -55,14 +52,17 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         )
 
     def define_sim_indices(self, args: List[List[np.array]]):
-        """Define simulation indices."""
+        """Define simulation indices.
+
+        :param args: List of lists of arrays of simulation indices.
+        :return: List of all simulation indices (flattened).
+        """
         return itertools.product(args)
 
     def build_hoc(self, n_tsteps):
         """Write file launch.hoc for launching NEURON simulations.
 
         :param n_tsteps: Number of time steps in simulation.
-        :return: None
         """
         write_mode = WriteMode.HOC
         file_path = os.path.join(
@@ -92,7 +92,6 @@ class HocWriter(Exceptionable, Configurable, Saveable):
 
         :param file_object: File object to write to.
         :param n_tsteps: Number of time steps in simulation.
-        :return:
         """
         # ENVIRONMENT
         file_object.write("\n//***************** Environment *****************\n")
@@ -109,7 +108,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         """Write fiber parameters to launch.hoc.
 
         :param file_object: File object to write to.
-        :return:
+        :return: Fiber model information.
         """
         # FIBER PARAMETERS
         file_object.write("\n//***************** Fiber Parameters *************\n")
@@ -164,7 +163,6 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         """Write extracellular stimulation parameters to launch.hoc.
 
         :param file_object: File object to write to.
-        :return:
         """
         file_object.write("\n//***************** Extracellular Stim ***********\n")
         file_object.write("strdef VeTime_fname\n")
@@ -176,7 +174,6 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         """Write classification checkpoints to launch.hoc.
 
         :param file_object: File object to write to.
-        :return:
         """
         file_object.write("\n//***************** Classification Checkpoints ***\n")
         # Time points to record Vm and gating params vs x
@@ -212,8 +209,8 @@ class HocWriter(Exceptionable, Configurable, Saveable):
     def write_protocol(self, file_object):
         """Write protocol to launch.hoc.
 
+        :raises ValueError: If protocol is not supported.
         :param file_object: File object to write to.
-        :return:
         """
         file_object.write("\n//***************** Protocol Parameters *********\n")
         protocol_mode_name: str = self.search(Config.SIM, 'protocol', 'mode')
@@ -221,8 +218,8 @@ class HocWriter(Exceptionable, Configurable, Saveable):
             protocol_mode: NeuronRunMode = [
                 mode for mode in NeuronRunMode if str(mode).split('.')[-1] == protocol_mode_name
             ][0]
-        except Exception:
-            self.throw(135)
+        except IndexError:
+            raise ValueError("Invalid protocol mode defined in sim configuration file")
         if protocol_mode != NeuronRunMode.FINITE_AMPLITUDES:
             find_thresh = 1
             if protocol_mode == NeuronRunMode.ACTIVATION_THRESHOLD:
@@ -233,7 +230,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
             threshold: dict = self.search(Config.SIM, "protocol", "threshold")
             file_object.write(f"\nap_thresh = {self.search(Config.SIM, 'protocol', 'threshold', 'value'):0.0f}\n")
             if self.search(Config.SIM, "protocol", "threshold", "n_min_aps") != 1:
-                self.throw(142)
+                raise ValueError("Currently SIM configuration only supports protocol>threshold>n_min_aps = 1")
             file_object.write(f"N_minAPs  = {self.search(Config.SIM, 'protocol', 'threshold', 'n_min_aps'):0.0f}\n")
 
             if 'ap_detect_location' not in threshold:
@@ -321,7 +318,7 @@ class HocWriter(Exceptionable, Configurable, Saveable):
 
         :param fiber_model_info: Dictionary containing information about the fiber model.
         :param file_object:  File object to write to.
-        :return: None
+        :raises ValueError: If AP end time locs are invalid
         """
         file_object.write("\n//***************** Recording ********************\n")
         if 'saving' not in self.configs[Config.SIM.value]:
@@ -365,13 +362,23 @@ class HocWriter(Exceptionable, Configurable, Saveable):
             loc_max = self.search(Config.SIM, "saving", "end_ap_times", "loc_max")
 
             if loc_min > loc_max:
-                self.throw(114)
+                raise ValueError(
+                    "ap_end_times is defined in Sim, so the system is saving AP times at the ends of the fiber. "
+                    "The values defined in Sim violated loc_min > loc_max."
+                )
             if not ((1 >= loc_min >= 0) and (1 >= loc_max >= 0)):
-                self.throw(115)
+                raise ValueError(
+                    "ap_end_times is defined in Sim. "
+                    "The values for loc_min and loc_max defined in Sim are not in [0,1]."
+                )
             if any([loc_min == 0, loc_min == 1, loc_max == 0, loc_max == 1]) and fiber_model_info.get(
                 "passive_end_nodes"
             ):
-                self.throw(116)
+                raise ValueError(
+                    "ap_end_times is defined in Sim, so the system is saving AP times at the ends of the fiber. "
+                    "The values for loc_min and/or loc_max are the terminal nodes  "
+                    "(i.e., 0 or 1), which are also set to passive_end_nodes=1 (i.e., grounded therefore no APs)."
+                )
 
             file_object.write(
                 f"saveflag_end_ap_times = {1}\n\n"
@@ -386,7 +393,6 @@ class HocWriter(Exceptionable, Configurable, Saveable):
         """Write the intracellular stimulation section of the hoc file.
 
         :param file_object: File object to write to.
-        :return: None
         """
         file_object.write("\n//***************** Intracellular Stim ***********\n")
         # use for keys only, get params with self.search() for error throwing if missing them

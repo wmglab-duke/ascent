@@ -18,32 +18,26 @@ from pygame.colordict import THECOLORS
 from pygame.locals import DOUBLEBUF, HWSURFACE, K_ESCAPE, KEYDOWN, QUIT, RESIZABLE
 from shapely.geometry import LineString, Point
 
-#               ascent
 from src.core import Slide, Trace
-from src.utils import Config, Exceptionable, ReshapeNerveMode, SetupMode
+from src.utils import ReshapeNerveMode
 
 
-class Deformable(Exceptionable):
-    """Deforms a nerve cross section."""
+class Deformable:
+    """Deforms a nerve cross-section."""
 
     def __init__(
         self,
-        exception_config: list,
         boundary_start: Trace,
         boundary_end: Trace,
         contents: List[Trace],
     ):
         """Initialize the class.
 
-        :param exception_config: pre-loaded data
         :param boundary_start: original start trace
         :param boundary_end: end trace
         :param contents: list of traces assumed to be within boundary start, not required to be within boundary end.
-           Assumes boundary end will be able to hold all contents.
+            Assumes boundary end will be able to hold all contents.
         """
-        # init superclass
-        Exceptionable.__init__(self, SetupMode.OLD, exception_config)
-
         # initialize instance variables
         self.start = boundary_start
         self.end = boundary_end
@@ -56,7 +50,10 @@ class Deformable(Exceptionable):
         self.end_rotations: List[float] = []
 
     def setup_pygame_render(self):
-        """Initialize the debug render mediated by pygame."""
+        """Initialize the debug render mediated by pygame.
+
+        :return: pygame surface, pymunk space, pygame draw options, pygame screen, image ratio
+        """
         bounds = self.start.polygon().bounds
         width = int(1 * (bounds[2] + bounds[0]))
         height = int(1 * (bounds[3] + bounds[1]))
@@ -64,7 +61,7 @@ class Deformable(Exceptionable):
 
         # Initialize screen and surface which each frame will be drawn on
         screen = pygame.display.set_mode((800, int(800 * im_ratio)), HWSURFACE | DOUBLEBUF | RESIZABLE)
-        drawsurf = pygame.surface.Surface((width, height))
+        drawsurf = pygame.Surface((width, height))
         # pygame debug draw options
         options = pymunk.pygame_util.DrawOptions(drawsurf)
         options.shape_outline_color = (0, 0, 0, 255)
@@ -108,6 +105,7 @@ class Deformable(Exceptionable):
         :param minimum_distance: minimum distance between fascicles.
         :param morph_count: number of morph steps to use.
         :param ratio: deform ratio.
+        :return: morph steps (list of pymunk segments), pymunk space, fascicle polygons
         """
         contents = [trace.deepcopy() for trace in self.contents]
 
@@ -145,7 +143,7 @@ class Deformable(Exceptionable):
 
         :param morph_count: number of incremental traces including the start and end of boundary
         :param morph_index_step: steps between loops of updating outer boundary, i.e. 1 is every loop,
-           2 is every other loop...
+            2 is every other loop...
         :param render: True if you care to see it happen... makes this method WAY slower
         :param minimum_distance: separation between original inputs
         :param ratio: deform ratio
@@ -289,11 +287,9 @@ class Deformable(Exceptionable):
         :param slide: Slide object
         :param mode: ReshapeNerveMode enum
         :param sep_nerve: separation between nerve and fascicles
+        :return: Deformable object
         """
         # method in slide will pull out each trace and add to a list of contents, go through traces and build polygons
-
-        # exception configuration data
-        exception_config_data = slide.configs[Config.EXCEPTIONS.value]
 
         bounds = slide.nerve.polygon().bounds
         width = int(1.5 * (bounds[2] - bounds[0])) / 2
@@ -315,7 +311,7 @@ class Deformable(Exceptionable):
         slide.move_center(np.array([0, 0]))
 
         # return new object
-        return Deformable(exception_config_data, boundary_start, boundary_end, contents)
+        return Deformable(boundary_start, boundary_end, contents)
 
     @staticmethod
     def print_progress_bar(iteration, total, prefix='', suffix='', decimals=1, length=100, fill='█'):
@@ -330,8 +326,8 @@ class Deformable(Exceptionable):
         :param fill: bar fill character
         """
         percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
-        filledLength = int(length * iteration // total)
-        bar = fill * filledLength + '-' * (length - filledLength)
+        filled_length = int(length * iteration // total)
+        bar = fill * filled_length + '-' * (length - filled_length)
         print(f'\r{prefix} |{bar}| {percent}% {suffix}', end='')
         # Print New Line on Complete
         if iteration == total:

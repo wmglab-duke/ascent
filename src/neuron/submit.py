@@ -19,17 +19,21 @@ import subprocess
 import sys
 import time
 import warnings
+from json import JSONDecodeError
 
 import numpy as np
 import pandas as pd
 
 
 # %%Set up parser and top level args
-class listAction(argparse.Action):
+class ListAction(argparse.Action):
     """Custom action for argparse to list run info."""
 
     def __call__(self, parser, values, option_string=None, **kwargs):
-        """Print run info and exit."""
+        """Print run info and exit. # noqa: DAR101.
+
+        This function is called when the --list option is used and should not be called directly.
+        """
         run_path = 'runs'
         jsons = [file for file in os.listdir(run_path) if file.endswith('.json')]
         data = []
@@ -37,9 +41,8 @@ class listAction(argparse.Action):
             with open(run_path + '/' + j) as f:
                 try:
                     rundata = json.load(f)
-                except Exception as e:
-                    print(f'WARNING: Could not load {j}')
-                    print(e)
+                except JSONDecodeError as e:
+                    print(f'WARNING: Could not load {j}, check for syntax errors. Original error: {e}')
                     continue
                 data.append(
                     {
@@ -89,7 +92,7 @@ parser.add_argument(
 parser.add_argument(
     '-l',
     '--list-runs',
-    action=listAction,
+    action=ListAction,
     nargs=0,
     help='List info for available runs.z If supplying this argument, do not pass any run indices',
 )
@@ -146,7 +149,10 @@ class WarnOnlyOnce:
 
     @classmethod
     def warn(cls, message):
-        """Print warning message if first call."""
+        """Print warning message if first call.
+
+        :param message: Warning message to print
+        """
         # storing int == less memory then storing raw message
         h = hash(message)
         if h not in cls.warnings:
@@ -369,6 +375,7 @@ def make_task(
 ):
     """Create shell script used to run a fiber simulation.
 
+    :param sub_con: the string name of the submission context.
     :param my_os: the string name of the operating system
     :param start_p: the string path to the start_dir
     :param sim_p: the string path to the sim_dir
@@ -453,6 +460,7 @@ def submit_fibers(submission_context, submission_data):
 
     :param submission_context: the string name of the submission_context
     :param submission_data: the dictionary of data for fiber submission
+    :raises ValueError: IF the specified cpu count is higher than the number of cores on the machine
     """
     # configuration is not empty
     ran_fibers = 0
@@ -572,6 +580,7 @@ def make_fiber_tasks(submission_list, submission_context):
     """Create all shell scripts for fiber submission tasks.
 
     :param submission_list: the list of fibers to be submitted
+    :param submission_context: the string name of the submission_context
     """
     # assign appropriate configuration data
     sim_dir = os.path.join('n_sims')

@@ -18,7 +18,7 @@ images of segmented histology were provided. The
 `<mock_sample_index>.json` file and the resulting segmented nerve
 morphology files are automatically saved in `input/<NAME>/`.
 
-MockSample is Exceptionable, Configurable, and has instance attributes
+MockSample is Configurable, and has instance attributes
 of "nerve" and a list "fascicles". After the MockSample class is
 initialized, a `mock_sample.json` file is added to the class instance.
 The `mock_morphology_generator.py` script configures an instance of the

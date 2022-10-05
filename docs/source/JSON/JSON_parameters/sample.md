@@ -88,7 +88,7 @@ To declare this entity in
 
 `“sample”`: The value (String) of this property sets the sample
 name/identifier (e.g., “Rat1-1”) to relate to bookkeeping for input
-morphology files ([Data Hierarchy Figure A](../../Data_Hierarchy)). The value must match the directory name in
+morphology files ([Data Hierarchy](../../Data_Hierarchy)). The value must match the directory name in
 `input/<NAME>/` that contains the input morphology files. Required.
 
 `"pseudonym"`: This value (String) informs pipeline print statements, allowing
@@ -115,7 +115,8 @@ records only.
 - `“shrinkage”`: The value (Double) is the shrinkage correction for the
   nerve morphology binary images provided as a decimal (e.g., 0.20
   results in a 20% expansion of the nerve, and 0 results in no
-  shrinkage correction of the nerve). Required, must be greater than 0. Note: Shrinkage correction scaling is linear (i.e. a nerve with diameter d and area a scaled by scaling factor s will have a final diameter of d_final=d*(1+s) and a final area a_final = a*(1+s)<sup>2</sup>)
+  shrinkage correction of the nerve). Required, must be greater than 0.
+  Shrinkage correction scaling is linear (i.e. a nerve with diameter d and area a scaled by scaling factor s will have a final diameter of d_final=d*(1+s) and a final area a_final = a*(1+s)<sup>2</sup>)
 
   <!-- end list -->
 

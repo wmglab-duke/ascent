@@ -7,8 +7,7 @@ refer to the LICENSE and README.md files for licensing instructions. The
 source code can be found on the following GitHub repository:
 https://github.com/wmglab-duke/ascent
 """
-
-
+import math
 import os
 import shutil
 import warnings
@@ -17,17 +16,17 @@ from typing import List
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.ndimage.morphology import binary_fill_holes
+from scipy.ndimage import binary_fill_holes
 from skimage import morphology
 
-from src.core import Fascicle, Map, Nerve, Slide, Trace
+from src.core import Deformable, Fascicle, Map, Nerve, Slide, Trace
 from src.utils import (
     Config,
     Configurable,
     ContourMode,
-    CuffInnerMode,
     DeformationMode,
-    Exceptionable,
+    IncompatibleParametersError,
+    MaskError,
     MaskFileNames,
     MaskInputMode,
     NerveMode,
@@ -37,33 +36,28 @@ from src.utils import (
     ScaleInputMode,
     SetupMode,
     ShrinkageMode,
-    TemplateMode,
     TemplateOutput,
     WriteMode,
 )
 
-from .deformable import Deformable
 
-
-class Sample(Exceptionable, Configurable, Saveable):
+class Sample(Configurable, Saveable):
     """Instantiate Sample, a collection of Slides.
 
     Required (Config.) JSON's:     SAMPLE     RUN
     """
 
-    def __init__(self, exception_config: list):
-        """Initialize Sample.
-
-        :param master_config: preloaded configuration data for master
-        :param exception_config: preloaded configuration data for exceptions
-        :param map_mode: setup mode. If you want to build a new map from a directory, then NEW. Otherwise, or if for
-            a single slide, OLD.
-        """
-        # Initializes superclasses
-        Exceptionable.__init__(self, SetupMode.OLD, exception_config)
+    def __init__(self):
+        """Initialize Sample."""
+        # Initializes superclass
         Configurable.__init__(self)
 
         # Initialize slides
+        self.contour_mode = None
+        self.scale_input_mode = None
+        self.index = None
+        self.start_directory = None
+        self.nerve = None
         self.sample_rotation = None
         self.deform_ratio = None
         self.deform_mode = None
@@ -91,13 +85,15 @@ class Sample(Exceptionable, Configurable, Saveable):
 
         NOTE: the Config.SAMPLE json must have been externally added.
 
-        :param map_mode: should be old for now, but keeping as parameter in case needed in future
+        :raises KeyError: if sample config is not found
+        :param map_mode: should be old for now, but keeping as parameter in case needed in the future
+        :return: self
         """
         if Config.SAMPLE.value not in self.configs:
-            self.throw(38)
+            raise KeyError("Missing Config.SAMPLE configuration!")
 
         # Make a slide map
-        self.map = Map(self.configs[Config.EXCEPTIONS.value])
+        self.map = Map()
         self.map.add(SetupMode.OLD, Config.SAMPLE, self.configs[Config.SAMPLE.value])
         self.map.init_post_config(map_mode)
 
@@ -107,6 +103,7 @@ class Sample(Exceptionable, Configurable, Saveable):
         """Scale all slides to the correct unit.
 
         :param factor: factor by which to scale the image (1=no change)
+        :return: self
         """
         for slide in self.slides:
             slide.scale(factor)
@@ -118,6 +115,7 @@ class Sample(Exceptionable, Configurable, Saveable):
 
         :param n_distance: distance to inflate and deflate the nerve trace
         :param i_distance: distance to inflate and deflate the fascicle traces
+        :return: self
         """
         for slide in self.slides:
             slide.smooth_traces(n_distance, i_distance)
@@ -128,6 +126,7 @@ class Sample(Exceptionable, Configurable, Saveable):
         """Add perineurium to inners.
 
         :param fit: dictionary of perineurium fit parameters
+        :return: self
         """
         for slide in self.slides:
             slide.generate_perineurium(fit)
@@ -137,11 +136,13 @@ class Sample(Exceptionable, Configurable, Saveable):
     def im_preprocess(self, path):
         """Perform cleaning operations on the input image, and convert to uint8.
 
+        :raises ValueError: if object removal area is negative
+        :raises MaskError: if the mask is not binary
         :param path: path to image which will be processed
         """
         img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
         if len(np.unique(img)) != 2:
-            self.throw(150)
+            raise MaskError("Image provided is not binary")
 
         if self.search(Config.SAMPLE, 'image_preprocessing', 'fill_holes', optional=True) is True:
             if self.search_mode(MaskInputMode, Config.SAMPLE) == MaskInputMode.INNER_AND_OUTER_COMPILED:
@@ -154,22 +155,26 @@ class Sample(Exceptionable, Configurable, Saveable):
         removal_size = self.search(Config.SAMPLE, 'image_preprocessing', 'object_removal_area', optional=True)
         if removal_size:
             if removal_size < 0:
-                self.throw(120)
+                raise ValueError(
+                    "Object removal area (image_preprocessing->object_removal_area->sample.json) cannot be negative"
+                )
             img = morphology.remove_small_objects(img.astype(bool), removal_size)
         imgout = (255 * (img / np.amax(img))).astype(np.uint8)
         cv2.imwrite(path, imgout)
 
+    @staticmethod
     def get_factor(
-        self,
         scale_bar_mask_path: str,
         scale_bar_length: float,
         scale_bar_is_literal: bool,
     ) -> 'Sample':
-        """Return scaling factor (micrometers per pixel).
+        """Get scaling factor (micrometers per pixel).
 
         :param scale_bar_mask_path: path to binary mask with white straight (horizontal) scale bar
         :param scale_bar_length: length (in global units as determined by config/user) of the scale bar
         :param scale_bar_is_literal: if True, then scale_bar_length is the factor, otherwise calculate from image
+        :raises MaskError: if TIF file is not valid
+        :return: scaling factor
         """
         if scale_bar_is_literal:
             # use explicitly specified um/px scale instead of drawing from a scale bar image
@@ -187,7 +192,7 @@ class Sample(Exceptionable, Configurable, Saveable):
             elif row_of_column_maxes.ndim == 1:  # masks from mock morphology, 1 bit
                 indices = np.where(row_of_column_maxes[:] == max(row_of_column_maxes[:]))[0]
             else:
-                self.throw(97)
+                raise MaskError("Invalid TIF file format passed into the program")
 
             # find the length of the scale bar by finding total range of "max white" indices
             scale_bar_pixels = max(indices) - min(indices) + 1
@@ -201,6 +206,9 @@ class Sample(Exceptionable, Configurable, Saveable):
         """Build the file structure for morphology inputs.
 
         :param printing: bool, gives user console output
+        :raises FileNotFoundError: If the input folder does not exist or has no files
+        :raises ValueError: If more than one slide provided
+        :return: self
         """
         scale_input_mode = self.search_mode(ScaleInputMode, Config.SAMPLE, optional=True)
         # For backwards compatibility, if scale mode is not specified assume a mask image is provided
@@ -220,7 +228,7 @@ class Sample(Exceptionable, Configurable, Saveable):
         if len(self.map.slides) == 1:
             source_dir = os.path.join(*self.map.slides[0].data()[3])
             if not os.path.exists(source_dir) or len(os.listdir(source_dir)) == 0:
-                self.throw(148)
+                raise FileNotFoundError("Could not find the input defined in the 'sample' field of sample.json.")
             # convert any TIFF to TIF
             [os.rename(x, os.path.splitext(x)[0] + '.tif') for x in os.listdir(source_dir) if x.endswith('.tiff')]
             source_files = os.listdir(source_dir)
@@ -230,7 +238,7 @@ class Sample(Exceptionable, Configurable, Saveable):
                     os.path.join(source_dir, f'{sample}_0_0_{mask_fname}'),
                 )
         else:
-            self.throw(96)
+            raise ValueError("More than one slide provided")
 
         # loop through each slide
         for slide_info in self.map.slides:
@@ -266,8 +274,7 @@ class Sample(Exceptionable, Configurable, Saveable):
                     if os.path.exists(scale_source_file):
                         shutil.copy2(scale_source_file, MaskFileNames.SCALE_BAR.value)
                     else:
-                        print(f'ERROR: scale_source_file: {scale_source_file} not found')
-                        self.throw(98)
+                        raise FileNotFoundError(f"scale_source_file {scale_source_file} not found")
 
                     scale_was_copied = True
 
@@ -306,14 +313,21 @@ class Sample(Exceptionable, Configurable, Saveable):
         if self.contour_mode is None:
             self.contour_mode = ContourMode.SIMPLE
 
-    def mask_exists(self, mask_file_name: MaskFileNames):
-        """Check if a mask exists (.tif file)."""
+    @staticmethod
+    def mask_exists(mask_file_name: MaskFileNames):
+        """Check if a mask exists (.tif file).
+
+        :param mask_file_name: MaskFileNames, name of mask file
+        :return: bool, True if mask exists
+        """
         return os.path.exists(mask_file_name.value)
 
     def calculate_orientation(self, slide):
         """Calculate orientation angle from a.tif.
 
         :param slide: Slide object
+        :raises MaskError: If the mask has an invalid number of objects
+        :return: Slide object
         """
         img = np.flipud(cv2.imread(MaskFileNames.ORIENTATION.value, -1))
 
@@ -322,12 +336,13 @@ class Sample(Exceptionable, Configurable, Saveable):
 
         contour, _ = cv2.findContours(img, cv2.RETR_TREE, self.contour_mode.value)
         if len(contour) > 1:
-            self.throw(124)
+            raise MaskError(
+                "Multiple objects were found in orientation mask. A single object of white pixels must be provided"
+            )
         if len(contour) < 1:
-            self.throw(125)
+            raise MaskError("No objects were found in orientation mask. An object of white pixels must be provided")
         trace = Trace(
             [point + [0] for point in contour[0][:, 0, :]],
-            self.configs[Config.EXCEPTIONS.value],
         )
 
         # choose outer (based on if nerve is present)
@@ -344,7 +359,11 @@ class Sample(Exceptionable, Configurable, Saveable):
         return slide
 
     def mask_validation(self):
-        """Validate mask file dimensions."""
+        """Validate mask file dimensions.
+
+        :raises MaskError: If mask dimensions are not equal
+        :raises FileNotFoundError: If mask file is not found
+        """
         mask_dims = []
         for mask in ["COMPILED", "INNERS", "OUTERS", "NERVE", "ORIENTATION"]:
             maskfile = getattr(MaskFileNames, mask)
@@ -352,9 +371,9 @@ class Sample(Exceptionable, Configurable, Saveable):
                 mask_dims.append(cv2.imread(maskfile.value).shape)
                 self.im_preprocess(maskfile.value)
         if len(mask_dims) == 0:
-            self.throw(121)
+            raise FileNotFoundError("No input morphology masks found")
         if not np.all(np.array(mask_dims) == mask_dims[0]):
-            self.throw(122)
+            raise MaskError("Input morphology masks do not have identical dimensions")
         scalemask = MaskFileNames.SCALE_BAR
         if self.mask_exists(scalemask):
             mask_dims.append(cv2.imread(scalemask.value).shape)
@@ -368,10 +387,13 @@ class Sample(Exceptionable, Configurable, Saveable):
         """Generate fascicle traces from input masks.
 
         :param mask_input_mode: MaskInputMode
+        :raises FileNotFoundError: if a mask file is not found
+        :raises ValueError: if mask input mode is not recognized
+        :return: list of fascicles
         """
         # assign fascicle mask files
         if mask_input_mode not in MaskInputMode:
-            self.throw(152)
+            raise ValueError("Invalid MaskInputMode in Sample.")
 
         if mask_input_mode == MaskInputMode.INNER_AND_OUTER_COMPILED:
             if self.mask_exists(MaskFileNames.COMPILED):
@@ -381,26 +403,30 @@ class Sample(Exceptionable, Configurable, Saveable):
                 self.io_from_compiled(MaskFileNames.COMPILED.value, inner_mask, outer_mask)
 
             else:
-                self.throw(23)
+                raise FileNotFoundError("Compiled masks required for input mode INNER_AND_OUTER_COMPILED.")
         else:
             if not self.mask_exists(MaskFileNames.INNERS):
-                self.throw(21)
+                raise FileNotFoundError("Inner mask required for input mode INNERS.")
             inner_mask = MaskFileNames.INNERS.value
             if mask_input_mode == MaskInputMode.INNER_AND_OUTER_SEPARATE:
                 if not self.mask_exists(MaskFileNames.OUTERS):
-                    self.throw(22)
+                    raise FileNotFoundError("Inner AND outer masks required for input mode INNER_AND_OUTER_SEPARATE.")
                 outer_mask = MaskFileNames.OUTERS.value
             else:  # INNERS mode
                 outer_mask = None
 
         # generate fascicle objects from masks
-        fascicles = Fascicle.to_list(inner_mask, outer_mask, self.configs[Config.EXCEPTIONS.value], self.contour_mode)
+        fascicles = Fascicle.to_list(inner_mask, outer_mask, self.contour_mode)
         return fascicles
 
     def get_epineurium_from_mask(self):
-        """Generate epineurium trace from mask."""
+        """Generate epineurium trace from mask.
+
+        :raises FileNotFoundError: if epineurium mask is not found
+        :return: Nerve object
+        """
         if not self.mask_exists(MaskFileNames.NERVE):
-            self.throw(138)
+            raise FileNotFoundError("NerveMode is PRESENT, but no nerve mask was found.")
         img_nerve = cv2.imread(MaskFileNames.NERVE.value, -1)
 
         if len(img_nerve.shape) > 2 and img_nerve.shape[2] > 1:
@@ -410,7 +436,6 @@ class Sample(Exceptionable, Configurable, Saveable):
         nerve = Nerve(
             Trace(
                 [point + [0] for point in contour[0][:, 0, :]],
-                self.configs[Config.EXCEPTIONS.value],
             )
         )
 
@@ -420,6 +445,7 @@ class Sample(Exceptionable, Configurable, Saveable):
         """Create slide from input masks.
 
         :param slide_info: SlideInfo
+        :raises IncompatibleParametersError: If multiple fascicles are present and NerveMode is not set to PRESENT
         :return: Slide object
         """
         # unpack data and force cast to string
@@ -441,14 +467,16 @@ class Sample(Exceptionable, Configurable, Saveable):
             nerve = self.get_epineurium_from_mask()
         else:
             if len(fascicles) > 1:
-                self.throw(110)
+                raise IncompatibleParametersError(
+                    "NerveMode is not set to present (Sample.json). "
+                    "Multifascicular simulations without a nerve mask are not supported"
+                )
             nerve = None
 
         slide: Slide = Slide(
             fascicles,
             nerve,
             self.nerve_mode,
-            self.configs[Config.EXCEPTIONS.value],
             will_reposition=(self.deform_mode != DeformationMode.NONE),
         )
 
@@ -465,7 +493,13 @@ class Sample(Exceptionable, Configurable, Saveable):
         return slide
 
     def correct_shrinkage(self, slide):
-        """Apply shrinkage correction to slide."""
+        """Apply shrinkage correction to slide.
+
+        :param slide: Slide
+        :raises ValueError: if shrinkage mode is invalid
+        :raises ValueError: if shrinkage correction would result in further shrinkage
+        :return: Slide
+        """
         # shrinkage correction
         s_mode = self.search_mode(ShrinkageMode, Config.SAMPLE, optional=True)
         s_pre = self.search(Config.SAMPLE, "scale", "shrinkage")
@@ -477,7 +511,6 @@ class Sample(Exceptionable, Configurable, Saveable):
             )
             shrinkage_correction = 1 + s_pre
         else:
-            shrinkage_correction = None
             if s_mode == ShrinkageMode.LENGTH_BACKWARDS:
                 shrinkage_correction = 1 / (1 - s_pre)
             elif s_mode == ShrinkageMode.LENGTH_FORWARDS:
@@ -487,24 +520,31 @@ class Sample(Exceptionable, Configurable, Saveable):
             elif s_mode == ShrinkageMode.AREA_FORWARDS:
                 shrinkage_correction = np.sqrt(1 + s_pre)
             else:
-                self.throw(134)
+                raise ValueError("Invalid ShrinkageMode defined in sample.json")
 
         if shrinkage_correction < 1:
-            self.throw(133)
+            raise ValueError(
+                "Shrinkage parameter (s) derived from your input (Sample->shrinkage->scale) "
+                "results in further shrinkage, rather than expansion, which is not expected functionality."
+            )
 
         slide.scale(shrinkage_correction)
 
         return slide
 
     def apply_scaling(self):
-        """Scales from pixels to microns."""
+        """Scales from pixels to microns.
+
+        :raises FileNotFoundError: if scale image is required and not found
+        :raises ValueError: if scale input mode is not valid
+        """
         # create scale bar path
         if self.scale_input_mode == ScaleInputMode.MASK:
             scale_path = os.path.join('samples', str(self.index), MaskFileNames.SCALE_BAR.value)
         elif self.scale_input_mode == ScaleInputMode.RATIO:
             scale_path = ''
         else:
-            self.throw(108)
+            raise ValueError("Invalid scale input mode")
 
         # get scaling factor (to convert from pixels to microns)
         if os.path.exists(scale_path) and self.scale_input_mode == ScaleInputMode.MASK:
@@ -517,20 +557,26 @@ class Sample(Exceptionable, Configurable, Saveable):
             factor = self.get_factor(scale_path, self.search(Config.SAMPLE, 'scale', 'scale_ratio'), True)
         else:
             print(scale_path)
-            self.throw(19)
+            raise FileNotFoundError("Scale bar for nerve micrograph does not exist.")
 
         # scale to microns
         self.scale(factor)
 
     def apply_smoothing(self):
-        """Smooth traces."""
+        """Smooth traces.
+
+        :raises IncompatibleParametersError: if nerve distance is not defined for NERVE_MODE = PRESENT
+        """
         # get smoothing params
         n_distance = self.search(Config.SAMPLE, 'smoothing', 'nerve_distance', optional=True)
         i_distance = self.search(Config.SAMPLE, 'smoothing', 'fascicle_distance', optional=True)
         # smooth traces
         if not (n_distance == i_distance is None):
             if self.nerve_mode == NerveMode.PRESENT and n_distance is None:
-                self.throw(112)
+                raise IncompatibleParametersError(
+                    "If NerveMode is set to PRESENT and smoothing is defined in Sample.json, "
+                    "nerve_distance must be defined"
+                )
             else:
                 self.smooth(n_distance, i_distance)
 
@@ -550,84 +596,89 @@ class Sample(Exceptionable, Configurable, Saveable):
         """Deform a slide based on user parameters.
 
         :param slide: Slide object
+        :raises KeyError: if deform_ratio is not defined in Config.Sample
+        :raises ValueError: if deform mode is invalid
         :return: Slide object
         """
-        if self.deform_mode == DeformationMode.PHYSICS:
+        if self.deform_mode != DeformationMode.PHYSICS:
 
-            if 'morph_count' in self.search(Config.SAMPLE):
-                morph_count = self.search(Config.SAMPLE, 'morph_count')
-            else:
-                morph_count = 100
-
-            if 'deform_ratio' in self.search(Config.SAMPLE):
-                deform_ratio = self.search(Config.SAMPLE, 'deform_ratio')
-                print(f'\tdeform ratio set to {deform_ratio}')
-            else:
-                self.throw(118)
-
-            sep_fascicles = self.search(Config.SAMPLE, "boundary_separation", "fascicles")
-
-            print(f'\tensuring minimum fascicle separation of {sep_fascicles} um')
-
-            if 'nerve' in self.search(Config.SAMPLE, 'boundary_separation'):
-                sep_nerve = self.search(Config.SAMPLE, 'boundary_separation', 'nerve')
-                print(f'\tensuring minimum nerve:fascicle separation of {sep_nerve} um')
-                sep_nerve = sep_nerve - sep_fascicles / 2
-            else:
-                sep_nerve = None
-
-            # scale nerve trace down by sep nerve, will be scaled back up later
-            pre_area = slide.nerve.area()
-            slide.nerve.offset(distance=-sep_nerve)
-            slide.nerve.scale(1)
-            slide.nerve.points = np.flip(slide.nerve.points, axis=0)  # set points to opencv orientation
-
-            if (
-                self.configs[Config.CLI_ARGS.value].get('render_deform') is True
-                or self.search(Config.SAMPLE, 'render_deform', optional=True) is True
-            ):
-                render_deform = True
-                print('Sample deformation is set to render. Rendering...')
-            else:
-                render_deform = False
-
-            deformable = Deformable.from_slide(slide, ReshapeNerveMode.CIRCLE)
-
-            movements, rotations = deformable.deform(
-                morph_count=morph_count,
-                render=render_deform,
-                minimum_distance=sep_fascicles,
-                ratio=deform_ratio,
-            )
-
-            partially_deformed_nerve = Deformable.deform_steps(
-                deformable.start, deformable.end, morph_count, deform_ratio
-            )[-1]
-
-            for move, angle, fascicle in zip(movements, rotations, slide.fascicles):
-                fascicle.shift(list(move) + [0])
-                fascicle.rotate(angle)
-
-            if deform_ratio != 1 and partially_deformed_nerve is not None:
-                partially_deformed_nerve.shift(-np.asarray(list(partially_deformed_nerve.centroid()) + [0]))
-                slide.nerve = partially_deformed_nerve
-                slide.nerve.offset(distance=sep_nerve)
-            else:
-                slide.nerve = slide.reshaped_nerve(self.reshape_nerve_mode)
-            # deforms+offsets usually shrinks the area a bit, so reset back to the original area
-            if slide.nerve.area() != pre_area:
-                slide.nerve.scale((pre_area / slide.nerve.area()) ** 0.5)
-            else:
-                print(f'Note: nerve area before deformation was {pre_area}, post deformation is {self.nerve.area()}')
+            raise ValueError("Invalid DeformationMode in Sample.")
+        if 'morph_count' in self.search(Config.SAMPLE):
+            morph_count = self.search(Config.SAMPLE, 'morph_count')
         else:
-            self.throw(153)
+            morph_count = 100
+
+        if 'deform_ratio' in self.search(Config.SAMPLE):
+            deform_ratio = self.search(Config.SAMPLE, 'deform_ratio')
+            print(f'\tdeform ratio set to {deform_ratio}')
+        else:
+            raise KeyError("Deformation mode is set to physics, but no deform ratio is defined in sample.json")
+
+        sep_fascicles = self.search(Config.SAMPLE, "boundary_separation", "fascicles")
+
+        print(f'\tensuring minimum fascicle separation of {sep_fascicles} um')
+
+        if 'nerve' in self.search(Config.SAMPLE, 'boundary_separation'):
+            sep_nerve = self.search(Config.SAMPLE, 'boundary_separation', 'nerve')
+            print(f'\tensuring minimum nerve:fascicle separation of {sep_nerve} um')
+            sep_nerve = sep_nerve - sep_fascicles / 2
+        else:
+            sep_nerve = None
+
+        # scale nerve trace down by sep nerve, will be scaled back up later
+        pre_area = slide.nerve.area()
+        slide.nerve.offset(distance=-sep_nerve)
+        slide.nerve.scale(1)
+        slide.nerve.points = np.flip(slide.nerve.points, axis=0)  # set points to opencv orientation
+
+        if (
+            self.configs[Config.CLI_ARGS.value].get('render_deform') is True
+            or self.search(Config.SAMPLE, 'render_deform', optional=True) is True
+        ):
+            render_deform = True
+            print('Sample deformation is set to render. Rendering...')
+        else:
+            render_deform = False
+
+        deformable = Deformable.from_slide(slide, ReshapeNerveMode.CIRCLE)
+
+        movements, rotations = deformable.deform(
+            morph_count=morph_count,
+            render=render_deform,
+            minimum_distance=sep_fascicles,
+            ratio=deform_ratio,
+        )
+
+        partially_deformed_nerve = Deformable.deform_steps(deformable.start, deformable.end, morph_count, deform_ratio)[
+            -1
+        ]
+
+        for move, angle, fascicle in zip(movements, rotations, slide.fascicles):
+            fascicle.shift(list(move) + [0])
+            fascicle.rotate(angle)
+
+        if deform_ratio != 1 and partially_deformed_nerve is not None:
+            partially_deformed_nerve.shift(-np.asarray(list(partially_deformed_nerve.centroid()) + [0]))
+            slide.nerve = partially_deformed_nerve
+            slide.nerve.offset(distance=sep_nerve)
+        else:
+            slide.nerve = slide.reshaped_nerve(self.reshape_nerve_mode)
+        # deforms+offsets usually shrinks the area a bit, so reset back to the original area
+        if slide.nerve.area() != pre_area:
+            slide.nerve.scale((pre_area / slide.nerve.area()) ** 0.5)
+        else:
+            print(f'Note: nerve area before deformation was {pre_area}, post deformation is {self.nerve.area()}')
 
         # shift slide about (0,0)
         slide.move_center(np.array([0, 0]))
         return slide
 
     def populate(self) -> 'Sample':
-        """Populate a sample with trace objects using input images."""
+        """Populate a sample with trace objects using input images.
+
+        :raises IncompatibleParametersError: If the sample.json file is not configured correctly.
+        :return: Sample object
+        """
 
         def populate_plotter(slide, title: str, filename: str):
             plt.figure()
@@ -681,7 +732,7 @@ class Sample(Exceptionable, Configurable, Saveable):
                 warnings.warn(f'NO DEFORMATION is happening! AND sep_nerve is not 0, sep_nerve = {sep_nerve}')
         else:
             if self.nerve_mode == NerveMode.NOT_PRESENT:
-                self.throw(40)
+                raise IncompatibleParametersError("Cannot reposition without NerveMode.PRESENT")
             # repositioning!
             for slide in self.slides:
                 self.deform_slide(slide)
@@ -693,11 +744,13 @@ class Sample(Exceptionable, Configurable, Saveable):
             # Rotate sample
             if self.sample_rotation is not None:
                 if slide.orientation_angle is not None:
-                    self.throw(143)
-                slide.rotate(np.radians(self.sample_rotation))
+                    raise IncompatibleParametersError(
+                        "Rotation cannot be defined in sample.json if using an orientation image input."
+                    )
+                slide.rotate(math.radians(self.sample_rotation))
 
-        # ensure that nothing went wrong in slide processing
-        slide.validation(plotpath=plotpath)
+            # ensure that nothing went wrong in slide processing
+            slide.validation(plotpath=plotpath)
 
         # scale with ratio = 1 (no scaling happens, but connects the ends of each trace to itself)
         self.scale(1)
@@ -706,7 +759,8 @@ class Sample(Exceptionable, Configurable, Saveable):
 
         return self
 
-    def io_from_compiled(self, imgin, i_out, o_out):
+    @staticmethod
+    def io_from_compiled(imgin, i_out, o_out):
         """Generate inner and outer mask from compiled mask.
 
         :param imgin: path to input image (hint: c.tif)
@@ -731,6 +785,9 @@ class Sample(Exceptionable, Configurable, Saveable):
         """Write entire list of slides.
 
         :param mode: WriteMode
+        :raises NotImplementedError: if mode is not implemented
+        :raises IOError: if that path to write to does not exist
+        :return: self
         """
         # get starting point so able to go back
         start_directory: str = os.getcwd()
@@ -747,30 +804,23 @@ class Sample(Exceptionable, Configurable, Saveable):
             # build path to slide and ensure that it exists before proceeding
             slide_path = os.path.join(sample_path, cassette, number)
             if not os.path.exists(slide_path):
-                self.throw(27)
+                raise IOError("Path to slide must have already been created.")
             else:
                 # change directories to slide path
                 os.chdir(slide_path)
 
                 # build the directory for output (name is the write mode)
-                directory_to_create = ''
                 if mode == WriteMode.SECTIONWISE2D:
                     directory_to_create = 'sectionwise2d'
                 elif mode == WriteMode.SECTIONWISE:
                     directory_to_create = 'sectionwise'
                 else:
-                    self.throw(28)
+                    raise NotImplementedError("Unimplemented write mode.")
 
                 # clear directory if it exists, then create
                 if os.path.exists(directory_to_create):
-                    try:
-                        shutil.rmtree(directory_to_create)
-                    except Exception:
-                        pass
-                try:
-                    os.makedirs(directory_to_create)
-                except Exception:
-                    pass
+                    shutil.rmtree(directory_to_create, ignore_errors=True)
+                os.makedirs(directory_to_create, exist_ok=True)
 
                 os.chdir(directory_to_create)
 
@@ -782,36 +832,11 @@ class Sample(Exceptionable, Configurable, Saveable):
 
         return self
 
-    def make_electrode_input(self) -> 'Sample':
-        """Generate electrode input for the sample."""
-        # load template for electrode input
-        electrode_input: dict = TemplateOutput.read(TemplateMode.ELECTRODE_INPUT)
-
-        for cuff_inner_mode in CuffInnerMode:
-
-            string_mode = str(cuff_inner_mode).split('.')[1]
-
-            if cuff_inner_mode == CuffInnerMode.CIRCLE:
-
-                (minx, miny, maxx, maxy) = self.slides[0].nerve.polygon().bounds
-                electrode_input[string_mode]['r'] = max([(maxx - minx) / 2, (maxy - miny) / 2])
-
-            elif cuff_inner_mode == CuffInnerMode.BOUNDING_BOX:
-
-                (minx, miny, maxx, maxy) = self.slides[0].nerve.polygon().bounds
-                electrode_input[string_mode]['x'] = maxx - minx
-                electrode_input[string_mode]['y'] = maxy - miny
-
-            else:
-                pass
-
-        # write template for electrode input
-        TemplateOutput.write(electrode_input, TemplateMode.ELECTRODE_INPUT)
-
-        return self
-
     def output_morphology_data(self) -> 'Sample':
-        """Output morhodology data for the sample to sample.json."""
+        """Output morhodology data for the sample to sample.json.
+
+        :return: self
+        """
         nerve_mode = self.search_mode(NerveMode, Config.SAMPLE)
 
         fascicles = [fascicle.morphology_data() for fascicle in self.slides[0].fascicles]

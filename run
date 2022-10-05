@@ -13,12 +13,6 @@ import sys
 from src.runtools import list_util, parse_args, welcome
 
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "1"
-try:
-    import pymunkoptions
-
-    pymunkoptions.options["debug"] = False
-except Exception:
-    pass
 
 args = parse_args.parse()
 

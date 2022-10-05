@@ -193,7 +193,7 @@ The Slide class validates, manipulates, and writes its contents.
 
 _Note that the sample data hierarchy can contain more than
 a single Slide instance (the default being 0 as the cassette index and 0
-as the section index, hence the 0/0 seen in [ASCENT Data Hierarchy](../Data_Hierarchy) Figure A) even though
+as the section index, hence the 0/0 seen in [ASCENT Data Hierarchy](../Data_Hierarchy)) even though
 the pipeline data processing assumes that only a single Slide exists.
 This will allow the current data hierarchy to be backwards compatible if
 multi-Slide samples are processed in the future._
@@ -284,11 +284,11 @@ outers) are repositioned within the new nerve cross-section in a
 physics-based way using Pymunk {cite:p}`pymunk`, a 2D physics library, in which
 each fascicle is treated as rigid body with no elasticity as it is
 slowly "pushed" into place by both surrounding fascicles and the nerve
-boundary (Figure A).
+boundary.
 
-![Inline image](../uploads/1c83c0b093212df340597c3339d9023b/Picture16.jpg)
-
-Figure A. Snapshots at 0%, 50%, and 100% (left-to-right) of the deformation process powered by the pygame package {cite:p}`pygame2011`. The deformation process is shown for two minimum fascicle separation constraints: 10 µm (top row) and 20 µm (bottom row). The geometry at 0% deformation is shown after the fascicles have been spread out to the minimum separation constraint.
+```{figure} ../uploads/1c83c0b093212df340597c3339d9023b/Picture16.jpg
+Snapshots at 0%, 50%, and 100% (left-to-right) of the deformation process powered by the pygame package {cite:p}`pygame2011`. The deformation process is shown for two minimum fascicle separation constraints: 10 µm (top row) and 20 µm (bottom row). The geometry at 0% deformation is shown after the fascicles have been spread out to the minimum separation constraint.
+```
 
 The `deform()` method updates the nerve boundary to
 intermediately-deformed nerve traces between the nerve’s
@@ -505,13 +505,7 @@ classes or creating new classes when appropriate.
 
 Configurable is inherited by other Python classes in the ASCENT pipeline
 to grant access to parameter and data configuration JSON files loaded to
-memory. Configurable has built-in exceptions that it throws which are
-indexed negatively (-1 and below by convention) because it is
-intrinsically unable to inherit from Exceptionable (errors indexed +1
-and above by convention), which, in turn, (Exceptionable) is configured
-by inheriting the Configurable class.
-
-Configurable is an important class for developers to understand because
+memory. Configurable is an important class for developers to understand because
 it is the mechanism by which instances of our Python classes inherit
 their properties from JSON configuration files (e.g., `sample.json`,
 `model.json`, `sim.json`, `fiber_z.json`). The Configurable class takes three
@@ -554,18 +548,6 @@ class can access the contents of the JSON dictionary. For example, in
 **_Sample_** with the following line:
 
 `self.search(Config.SAMPLE, ‘scale’, ‘scale_bar_length’)`
-
-### Exceptionable
-
-Exceptionable is a centralized way to organize and throw exceptions
-(errors) to the user’s console. Exceptionable inherits functionality
-from Configurable. Exceptionable, like Configurable, is initialized with
-"SetupMode", ConfigKey, and a Config. However, the data contents for
-Exceptionable are specifically a list of exceptions stored in
-`config/system/exceptions.json`. The contents of the exceptions
-configuration file is a list of numbered errors with an associated text
-description. These contents, along with the path of the script which called
-exceptionable, are listed in the event of a raised exception.
 
 ### Saveable
 

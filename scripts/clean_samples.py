@@ -23,7 +23,11 @@ EXCLUDED_FILENAMES = [
 
 
 def remove_empty_directories(directory: str, verbose):
-    """Remove empty directories from a given directory."""
+    """Remove empty directories from a given directory.
+
+    :param directory: directory to remove empty directories from
+    :param verbose: whether to print out information about directory removal
+    """
     for path in os.listdir(directory):
         subdirectory = os.path.join(directory, path)
         if os.path.isdir(subdirectory):
@@ -31,19 +35,21 @@ def remove_empty_directories(directory: str, verbose):
 
     if os.path.isdir(directory) and len(os.listdir(directory)) == 0:
         try:
+            if verbose:
+                print(f'\tREMOVE DIR: {directory}')
             os.rmdir(directory)
-        except Exception:
-            print(f'Could not remove {directory}')
-        if verbose:
-            print(f'\tREMOVE DIR: {directory}')
-
+        except (FileNotFoundError, IsADirectoryError) as e:
+            print(f'Could not remove {directory}, {e}')
     else:
         if verbose:
             print(f'\tKEEP DIR: {directory}')
 
 
 def run(args):
-    """Remove files except those specified from samples directories."""
+    """Remove files except those specified from samples directories.
+
+    :param args: command line arguments
+    """
     global EXCLUDED_FILENAMES
     if args.full_reset:
         EXCLUDED_FILENAMES = ['sample.json', 'model.json']
@@ -78,12 +84,11 @@ def run(args):
 
             if not any([filepath.endswith(excluded_filename) for excluded_filename in EXCLUDED_FILENAMES]):
                 try:
+                    if args.verbose:
+                        print(f'\tREMOVE FILE: {filepath}')
                     os.remove(filepath)
-                except Exception:
-                    print(f'Could not remove {filepath}')
-                if args.verbose:
-                    print(f'\tREMOVE FILE: {filepath}')
-
+                except (FileNotFoundError, IsADirectoryError) as e:
+                    print(f'Could not remove {filepath}, {e}')
             else:
                 if args.verbose:
                     print(f'\tKEEP FILE: {filepath}')

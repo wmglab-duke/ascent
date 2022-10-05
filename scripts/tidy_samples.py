@@ -18,7 +18,11 @@ INCLUDED_FILENAMES = ['runtime', 'blank', 'special', 'logs', 'start_']
 
 
 def remove_empty_directories(directory: str, verbose):
-    """Remove empty directories from a given directory."""
+    """Remove empty directories.
+
+    :param directory: The top directory to start removing empty directories from.
+    :param verbose: Whether to print out the directories being removed.
+    """
     for path in os.listdir(directory):
         subdirectory = os.path.join(directory, path)
         if os.path.isdir(subdirectory):
@@ -26,19 +30,21 @@ def remove_empty_directories(directory: str, verbose):
 
     if os.path.isdir(directory) and len(os.listdir(directory)) == 0:
         try:
+            if verbose:
+                print(f'\tREMOVE DIR: {directory}')
             os.rmdir(directory)
-        except Exception:
-            print(f'Could not remove {directory}')
-        if verbose:
-            print(f'\tREMOVE DIR: {directory}')
-
+        except (FileNotFoundError, IsADirectoryError) as e:
+            print(f'Could not remove {directory}, {e}')
     else:
         if verbose:
             print(f'\tKEEP DIR: {directory}')
 
 
 def run(args):
-    """Run the script."""
+    """Remove specified files from sample directories.
+
+    :param args: The command line arguments.
+    """
     global INCLUDED_FILENAMES
     if args.filename:
         INCLUDED_FILENAMES = [args.filename]
@@ -84,12 +90,11 @@ def run(args):
 
             if any([included_filename in filepath for included_filename in INCLUDED_FILENAMES]):
                 try:
+                    if args.verbose:
+                        print(f'\tREMOVE FILE: {filepath}')
                     os.remove(filepath)
-                except Exception:
-                    print(f'Could not remove {filepath}')
-                if args.verbose:
-                    print(f'\tREMOVE FILE: {filepath}')
-
+                except (FileNotFoundError, IsADirectoryError) as e:
+                    print(f'Could not remove {filepath}, {e}')
             else:
                 if args.verbose:
                     print(f'\tKEEP FILE: {filepath}')

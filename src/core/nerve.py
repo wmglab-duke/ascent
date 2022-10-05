@@ -10,19 +10,24 @@ https://github.com/wmglab-duke/ascent
 
 
 from src.core import Trace
-from src.utils import Config
 
 
 class Nerve(Trace):
-    """The Nerve class is a subclass of the Trace class, used to represent the epineurium boundary."""
+    """Represent the epineurium boundary with the Nerve class.
+
+    :return: Nerve object
+    """
 
     def __init__(self, trace: Trace):
         """Initialize a Nerve object.
 
         :param trace: Trace object to be converted to a Nerve object.
         """
-        Trace.__init__(self, trace.points, trace.configs[Config.EXCEPTIONS.value])
+        Trace.__init__(self, trace.points)
 
     def morphology_data(self):
-        """Return the morphology data of the Nerve object."""
+        """Return the morphology data of the Nerve object.
+
+        :return: The morphology data of the Nerve object.
+        """
         return {"area": self.area()}

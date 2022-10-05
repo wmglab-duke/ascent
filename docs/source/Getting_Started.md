@@ -19,7 +19,7 @@ First, these software packages must be manually installed:
   - Depending on your operating system, some additional dependencies may be required.
     - MacOS: Follow the [macOS NEURON dependency](https://www.neuron.yale.edu/neuron/download/compilestd_osx) instructions (Step 1 ONLY)
     - Linux: Follow the [Linux NEURON dependency](<https://www.neuron.yale.edu/neuron/download/compile_linux>) instructions (Under "Install dependencies")
-  - NEURON must be in your PATH in order to run simulations. Either choose the add to path option during installation, or on Linux, you can add to your bash profile: `export PATH=<path/to/neuron/>:$PATH`. Note: The NEURON path should end with `bin`.
+  - NEURON must be in your PATH in order to run simulations. Either choose the add to path option during installation, or on Linux, you can add to your bash profile: `export PATH=<path/to/neuron/>:$PATH`. The NEURON path should end with `bin`.
   - Note: if having issues with the NEURON installation, try running the compatibility troubleshooter.
 
 Users may also download a text editor or integrated development environment (IDE) of their choosing to view/edit code (e.g., [Atom](https://atom.io/), [Visual Studio Code](https://code.visualstudio.com/), [IntelliJ IDEA](https://www.jetbrains.com/idea/download/)). For Java code, full autocomplete functionality requires adding both the path to the COMSOL installation ending in `plugins` as well as the path `<ASCENT_PATH>/bin/json-20190722.jar` to the list of available libraries (usually from within the IDE’s project settings).
@@ -37,15 +37,17 @@ Users may also download a text editor or integrated development environment (IDE
      5. For more information on using Git, check out the [official documentation](https://git-scm.com/doc).
 
 2. Next, install ASCENT dependencies:
-   - Windows: Open the Anaconda Powershell Prompt from the Windows Start Menu as Administrator, and use cd to navigate to the root directory of the pipeline. Then, run `python run install`. Note: If reinstalling ASCENT after having changed your Anaconda/Miniconda installation, it may be necessary to delete the `#region conda initialize` block from `C:\Users\<username>\Documents\WindowsPowerShell\profile.ps1` in order to use Anaconda Powershell Prompt.
+   - Windows: Open the Anaconda Powershell Prompt from the Windows Start Menu as Administrator, and use cd to navigate to the root directory of the pipeline. Then, run `python run install`.
+        ```{caution}
+        If reinstalling ASCENT after having changed your Anaconda/Miniconda installation, it may be necessary to delete the `#region conda initialize` block from `C:\Users\<username>\Documents\WindowsPowerShell\profile.ps1` in order to use Anaconda Powershell Prompt.
+        ```
    - MacOS/Linux: Open Anaconda Prompt and use cd to navigate to the root directory of the pipeline. Then, run `python run install`.
    - For advanced users using their own (non-conda) Python distribution:
      - From the ascent root directory execute `python run install --no-conda`
      - From the ascent root directory execute `pip install -r requirements.txt`
      - This method is highly discouraged as newer versions of packages/Python could potentially break ASCENT or introduce unexpected bugs
 
-After confirming that you are in the correct directory, the script will install the required Python packages: Pillow {cite:p}`clark2015pillow`, NumPy {cite:p}`harris2020array`, Shapely {cite:p}`shapely2007`, Matplotlib {cite:p}`Hunter:2007`, PyClipper {cite:p}`pyclipper2015`, pygame {cite:p}`pygame2011`, QuantiPhy {cite:p}`quantiphy2016`, OpenCV {cite:p}`opencv_library`, PyMunk {cite:p}`pymunk`, and SciPy {cite:p}`Virtanen2020`, pandas {cite:p}`reback2020pandas,mckinney-proc-scipy-2010`, OpenPyXL {cite:p}`OpenpyXL2020`, scikit-image {cite:p}`van2014scikit`,
-ffmpeg {cite:p}`tomar2006converting`, xlsxwriter {cite:p}`xlsxwriter2017`, seaborn {cite:p}`Waskom2021`. It is crucial that all the packages are installed successfully (check for "successfully installed" for each package). The installation script will also create a shortcut to the newly configured ASCENT Conda "environment" on your project path, which can be used for running the pipeline.
+After confirming that you are in the correct directory, the script will install the required Python packages.
 
 1. Then, configure the environment variables. This step may be completed several ways, described below.
    - Recommended Setup: Open Anaconda prompt, navigate to the ASCENT root directory, and execute `python run env_setup`. You will be prompted for the following paths:
@@ -58,7 +60,8 @@ ffmpeg {cite:p}`tomar2006converting`, xlsxwriter {cite:p}`xlsxwriter2017`, seabo
 
 ## Metadata required to model an in vivo experiment using the ASCENT pipeline
 
-Note: All metadata required for the [tutorial run](#tutorial-run) are provided with ASCENT.
+```{note} All metadata required for the [tutorial run](#setting-up-a-run-of-ascent) are provided with ASCENT.
+```
 
 1. Detailed specifications / dimensions of the stimulating cuff
    electrode.
@@ -113,12 +116,18 @@ Note: All metadata required for the [tutorial run](#tutorial-run) are provided w
    stimulation cuff to the location where the nerve inserts into the
    muscle.
 
-## Tutorial Run
+## Setting up a run of ASCENT
 
-Following the instructions below task and verify the threshold value to familiarize yourself with the ASCENT code and documentation.
+`````{tab} Tutorial Run
 
-We provide segmented histology of a rat cervical vagus nerve
-(`examples/tutorial/`). Use the provided histology and configurations files to simulate activation thresholds in
+_How to run the ASCENT tutorial, after completing the initial setup._
+
+**Overview**
+
+Follow the instructions below and verify the threshold value to familiarize yourself with the ASCENT code and documentation.
+
+We provide segmented histology of a rat cervical vagus nerve.
+Use the provided histology and configurations files to simulate activation thresholds in
 response to a charge balanced, biphasic pulse (PW1 = 100 μs, interphase
 gap of 100 μs, PW2 = 400 μs) using Purdue’s bipolar cuff design.
 
@@ -131,38 +140,80 @@ gap of 100 μs, PW2 = 400 μs) using Purdue’s bipolar cuff design.
   1/20 \[S/m\]
 
 After your thresholds have been computed, build a heatmap for the
-threshold at each fiber location using the example script:
-`examples/analysis/heatmap.py`.
+thresholds at each fiber location.
 
 Through this exercise, you will:
 
-- Place and name binary masks of the nerve morphology in the proper
-  directories
+- Set up nerve morphology masks
 
-  - Binary masks provided
-
-- Define and assign a custom material
+- Define model with a custom material
 
 - Build and solve a finite element model
 
 - Define placement of fibers in the nerve cross-section
 
-- Parameterize your custom stimulation waveform
-
-- Simulate activation thresholds for a specific fiber model by
-  submitting NEURON simulations locally or to a computer cluster
+- Simulate activation thresholds for a specific fiber model using a custom waveform
 
 - Generate a heatmap of fiber activation thresholds
 
-Check: Threshold for inner0_fiber0 (`thresh_inner0_fiber0.dat`) should
-be -0.027402 mA
+**Step-by-step instructions**
 
-We provided **_Sample_**, **_Model_**, and **_Sim_** JSON files for the
-solution in `examples/tutorial/`. Use the steps below in order to set up this tutorial run.
+````{note}
+For this tutorial, use the files provided in the `examples/tutorial/` directory.
+The below example directory structure may be helpful.
+```{details} Example directory structure
+![tutorial directory structure](uploads/tutorial_tree.png)
+```
+````
 
-## Setting up a run of ASCENT
+1. **_Input Masks:_** Create the directory `input/tutorial/`.
+   Place the masks (.tif images) from `examples/tutorial/` here
+
+    ```{important}
+    In steps 2-5, you can choose any number for `sample_index`, `model_index`, `sim_index`, and `run_index`.
+    However, the instructions here assume you chose 0 for all of these indices.
+    ```
+
+2. **_Sample:_** Create the directory `samples/<sample_index>/`.
+   Copy `sample.json` from `examples/tutorial/`
+   to the folder you just created (e.g. `samples/0/`).
+
+3. **_Model:_** Create the directory `samples/<sample_index>/models/<model_index>/`.
+   Copy `model.json` from `examples/tutorial/`
+   to the folder you just created (e.g. `samples/0/models/0/`).
+
+4. **_Sim:_** Copy `sim.json` from `config/templates/` to
+   `config/user/sims/` and rename the file to `<sim_index>.json`.
+
+5. **_Run:_** Copy `run.json` from `config/templates/` to
+   `config/user/runs/` and rename the file to `<run_index>.json`.
+   Open the file and edit your sample, model, and sim indices to match the ones you chose above.
+
+6. Run the pipeline with the command`python run pipeline <run_index>` (e.g. `python run pipeline 0`).
+   The pipeline will generate ready-to-run NEURON simulations
+   and export them to the `"ASCENT_NSIM_EXPORT_PATH"` defined during installation.
+
+7. Run the NEURON simulations by navigating to the your `"ASCENT_NSIM_EXPORT_PATH"` and running the command `python submit.py <run_index>`. This may take some time.
+
+8. After the NEURON simulations have completed, move the outputs back to the ASCENT directory structure by running the command `python run import_n_sims <run_index>`.
+
+    ```{admonition} Check
+    Threshold for inner0_fiber0 (`thresh_inner0_fiber0.dat`) should
+    be -0.027402 mA
+    ```
+
+9. To generate a heatmap of activation thresholds, open the script `examples/analysis/heatmap.py` and edit the sample, model, and sim indices to match the ones you chose above.
+    analysis/heatmap.py`, and a heatmap plot will be generated in `out/analysis/`.
+    Run the script from the repository root with the command `python examples/analysis/heatmap.py`.
+`````
+
+```{tab} General Procedure
 
 _How to run the ASCENT pipeline, after completing the initial setup._
+
+```{figure} uploads/pipeline_requirements.png
+Overview of the requirements to run the ASCENT pipeline.
+```
 
 To set up a run of the pipeline, you must provide binary mask inputs for the nerve and save **_Sample_**
 (i.e., `sample.json`), **_Model(s)_** (i.e., `model.json`), and **_Sim(s)_**
@@ -175,7 +226,7 @@ use indices that are consistent with the indices of **_Sample_**,
    must match "sample" parameter in **_Sample_**) with binary masks of
    neural tissue boundaries using either:
 
-   a. Segmented histology (Running_ASCENT/Info.md#morphology-Input-Files) and [Fig 2](https://doi.org/10.1371/journal.pcbi.1009285.g002)), or
+   a. Segmented histology (Running_ASCENT/Info.md#morphology-input-files) and [Fig 2](https://doi.org/10.1371/journal.pcbi.1009285.g002)), or
 
    b. The `mock_morphology_generator.py` script ([Mock Morphology](MockSample)).
 
@@ -233,3 +284,10 @@ use indices that are consistent with the indices of **_Sample_**,
    directory as defined in `config/system/env.json` ([Environment Parameters](JSON/JSON_parameters/env)). NEURON simulations
    are run locally or submitted to a computer cluster with the command
    `"python submit.py <run indices>"` from the export directory.
+```
+
+```{seealso}
+For more information on ASCENT read about [ASCENT usage](Running_ASCENT/Usage.md),
+[ASCENT inputs and controls](Running_ASCENT/Info.md),
+and [ASCENT parameter options](JSON/JSON_parameters/index.rst).
+```

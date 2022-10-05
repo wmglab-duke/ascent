@@ -1,7 +1,8 @@
 #!/usr/bin/env python3.7
 
-"""The copyrights of this software are owned by Duke University.
+"""Defines the runner module.
 
+The copyrights of this software are owned by Duke University.
 Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
@@ -13,33 +14,25 @@ import pickle
 import subprocess
 import sys
 import time
-import traceback
 import warnings
-from copy import deepcopy
 from typing import List
 
 import numpy as np
-from quantiphy import Quantity
-from shapely.geometry import Point
 
-from src.core import Sample, Simulation, Waveform
+from src.core import Model, Sample, Simulation
 from src.utils import (
     Config,
     Configurable,
-    CuffShiftMode,
     Env,
-    Exceptionable,
     ExportMode,
-    NerveMode,
-    PerineuriumResistivityMode,
-    ReshapeNerveMode,
+    IncompatibleParametersError,
+    JavaError,
     SetupMode,
-    TemplateOutput,
     WriteMode,
 )
 
 
-class Runner(Exceptionable, Configurable):
+class Runner(Configurable):
     """Control flow of the pipeline."""
 
     def __init__(self, number: int):
@@ -50,9 +43,6 @@ class Runner(Exceptionable, Configurable):
         # initialize Configurable super class
         Configurable.__init__(self)
 
-        # initialize Exceptionable super class
-        Exceptionable.__init__(self, SetupMode.NEW)
-
         # this corresponds to the run index (as file name in config/user/runs/<run_index>.json
         self.ss_bases_exist = None
         self.potentials_exist = None
@@ -61,6 +51,7 @@ class Runner(Exceptionable, Configurable):
     def load_configs(self) -> dict:
         """Load all configuration files into class.
 
+        :raises TypeError: if sample is not int
         :return: dictionary of all configs (Sample, Model(s), Sims(s))
         """
 
@@ -70,28 +61,24 @@ class Runner(Exceptionable, Configurable):
             :param config_source: all configs, to which we add new ones
             :param key: the key of the dict in Configs
             :param path: path to the JSON file of the config
-            :return: updated dict of all configs
+            :raises FileNotFoundError: if config file not found
             """
             self.validate_path(path)
             if os.path.exists(path):
                 if key not in config_source:
                     config_source[key] = []
-                try:
-                    config_source[key] += [self.load(path)]
-                except Exception:
-                    warnings.warn(f'Issue loading {key} config: {path}')
-                    self.throw(144)
-
+                config_source[key] += [self.load(path)]
             else:
-                print(f'Missing {key} config: {path}')
-                self.throw(37)
+                raise FileNotFoundError(f"Missing {key} config required by run configuration! ({path})")
 
         configs = {}
 
         sample = self.search(Config.RUN, 'sample')
 
         if not isinstance(sample, int):
-            self.throw(95)
+            raise TypeError(
+                "Sample parameter in run must be an integer. Each Run must be associated with a single Sample."
+            )
 
         models = self.search(Config.RUN, 'models', optional=True)
         sims = self.search(Config.RUN, 'sims', optional=True)
@@ -169,7 +156,7 @@ class Runner(Exceptionable, Configurable):
             sample = self.load_obj(sample_file)
         else:
             # init slide manager
-            sample = Sample(self.configs[Config.EXCEPTIONS.value])
+            sample = Sample()
             # run processes with slide manager (see class for details)
 
             sample.add(SetupMode.OLD, Config.SAMPLE, all_configs[Config.SAMPLE.value][0]).add(
@@ -179,12 +166,12 @@ class Runner(Exceptionable, Configurable):
             ).build_file_structure().populate().write(
                 WriteMode.SECTIONWISE2D
             ).output_morphology_data().save(
-                os.path.join(sample_file)
+                sample_file
             )
 
         return sample, sample_num
 
-    def prep_model(self, all_configs, model_index, model_config, sample, sample_num):
+    def prep_model(self, all_configs, model_index, model_config, sample, sample_num, smart=True):
         """Prepare model prior to handoff to Java.
 
         :param all_configs: all configs for this run
@@ -192,24 +179,31 @@ class Runner(Exceptionable, Configurable):
         :param model_config: config for this model
         :param sample: sample object
         :param sample_num: sample number
+        :param smart: if True, reuse objects from previous runs
         :return: model number
         """
         model_num = self.configs[Config.RUN.value]['models'][model_index]
         model_pseudonym = model_config.get('pseudonym')
-        print(f'\tMODEL {model_num}', f'- {model_pseudonym}' if model_pseudonym is not None else '')
-
-        # use current model index to computer maximum cuff shift (radius) .. SAVES to file in method
-        model_config = self.compute_cuff_shift(model_config, sample, all_configs[Config.SAMPLE.value][0])
-
-        model_config_file_name = os.path.join(
+        model_file = os.path.join(os.getcwd(), 'samples', str(sample_num), 'models', str(model_num), 'model.obj')
+        model_config_file = os.path.join(
             os.getcwd(), 'samples', str(sample_num), 'models', str(model_num), 'model.json'
         )
-
-        # write edited model config in place
-        TemplateOutput.write(model_config, model_config_file_name)
-
-        # use current model index to compute electrical parameters ... SAVES to file in method
-        self.compute_electrical_parameters(all_configs, model_index)
+        print(f'\tMODEL {model_num}', f'- {model_pseudonym}' if model_pseudonym is not None else '')
+        if smart and os.path.exists(model_file):
+            print(f"\tFound existing model {model_num} ({model_file})")
+            model = self.load_obj(model_file)
+        else:
+            model = Model()
+            # use current model index to computer maximum cuff shift (radius) .. SAVES to file in method
+            model.add(SetupMode.OLD, Config.MODEL, model_config).add(SetupMode.OLD, Config.SAMPLE, sample).add(
+                SetupMode.OLD, Config.RUN, self.configs[Config.RUN.value]
+            ).add(SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value]).compute_cuff_shift(
+                sample, all_configs[Config.SAMPLE.value][0]
+            ).compute_electrical_parameters().validate().write(
+                model_config_file
+            ).save(
+                model_file
+            )
 
         return model_num
 
@@ -240,7 +234,7 @@ class Runner(Exceptionable, Configurable):
 
         # init fiber manager
         if smart and os.path.exists(sim_obj_file):
-            print(f'\t    Found existing sim object for sim {sim_index} ({sim_obj_file})')
+            print(f'\t\tFound existing sim object for sim {sim_index} ({sim_obj_file})')
 
             simulation: Simulation = self.load_obj(sim_obj_file)
 
@@ -251,7 +245,7 @@ class Runner(Exceptionable, Configurable):
             if not os.path.exists(sim_obj_dir + '/plots'):
                 os.makedirs(sim_obj_dir + '/plots')
 
-            simulation: Simulation = Simulation(sample, self.configs[Config.EXCEPTIONS.value])
+            simulation: Simulation = Simulation(sample)
             simulation.add(SetupMode.OLD, Config.MODEL, model_config).add(SetupMode.OLD, Config.SIM, sim_config).add(
                 SetupMode.OLD, Config.RUN, self.configs[Config.RUN.value]
             ).add(
@@ -273,6 +267,8 @@ class Runner(Exceptionable, Configurable):
         :param simulation: simulation object
         :param sample_num: sample number
         :param model_num: model number
+        :raises FileNotFoundError: if source_sim object is not found
+        :raises IncompatibleParametersError: If supersampled xy does not match source xy
         :return: directory of source simulation
         """
         source_sim_index = simulation.configs['sims']['supersampled_bases']['source_sim']
@@ -285,15 +281,19 @@ class Runner(Exceptionable, Configurable):
         try:
             source_sim: simulation = self.load_obj(os.path.join(source_sim_obj_dir, 'sim.obj'))
             print(f'\t    Found existing source sim {source_sim_index} for supersampled bases ({source_sim_obj_dir})')
-        except FileNotFoundError:
-            traceback.print_exc()
-            self.throw(129)
+        except FileNotFoundError as e:
+            raise FileNotFoundError(
+                f"Could not load indicated super-sampled sim object (source sim: {source_sim_index})."
+                f"Original error: {e}"
+            )
 
         source_xy_dict: dict = source_sim.configs['sims']['fibers']['xy_parameters']
         xy_dict: dict = simulation.configs['sims']['fibers']['xy_parameters']
 
         if source_xy_dict != xy_dict:
-            self.throw(82)
+            raise IncompatibleParametersError(
+                "Trying to use super-sampled potentials that do not match your Sim's xy_parameters perfectly"
+            )
         return source_sim_obj_dir
 
     def generate_nsims(self, sim_index, model_num, sample_num):
@@ -302,7 +302,7 @@ class Runner(Exceptionable, Configurable):
         :param sim_index: index of sim
         :param model_num: model number
         :param sample_num: sample number
-        :return: None
+        :raises ValueError: if export behavior is not supported
         """
         sim_num = self.configs[Config.RUN.value]['sims'][sim_index]
         sim_obj_path = os.path.join(
@@ -333,7 +333,7 @@ class Runner(Exceptionable, Configurable):
             export_behavior = 'selective'
         # check to make sure we have a valid behavior
         if not np.any([export_behavior == x.value for x in ExportMode]):
-            self.throw(139)
+            raise ValueError("Invalid export behavior defined in run.json")
 
         # export simulations
         Simulation.export_n_sims(
@@ -370,7 +370,7 @@ class Runner(Exceptionable, Configurable):
         else:
             for model_index, model_config in enumerate(all_configs[Config.MODEL.value]):
                 # loop through each model
-                model_num = self.prep_model(all_configs, model_index, model_config, sample, sample_num)
+                model_num = self.prep_model(all_configs, model_index, model_config, sample, sample_num, smart=smart)
                 if 'sims' in all_configs:
                     # iterate through simulations
                     for sim_index, sim_config in enumerate(all_configs['sims']):
@@ -396,7 +396,6 @@ class Runner(Exceptionable, Configurable):
 
             # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials if necessary
             if 'models' in all_configs and 'sims' in all_configs:
-                self.model_parameter_checking(all_configs)
                 # only transition to java if necessary (there are potentials that do not exist)
                 if not all(self.potentials_exist) or not all(self.ss_bases_exist):
                     print('\nTO JAVA\n')
@@ -457,7 +456,7 @@ class Runner(Exceptionable, Configurable):
 
         :param run_number: int, run number
         :param class_name: str, class name of Java class to run
-        :return: None
+        :raises JavaError: if Java fails to run
         """
         comsol_path = os.environ[Env.COMSOL_PATH.value]
         jdk_path = os.environ[Env.JDK_PATH.value]
@@ -509,325 +508,22 @@ class Runner(Exceptionable, Configurable):
         # compile java code
         exit_code = os.system(compile_command)
         if exit_code != 0:
-            self.throw(140)
+            raise JavaError("Java compiler (javac) encountered an error during compilation operations.")
         # run java code
         exit_code = os.system(java_command)
         if exit_code != 0:
-            self.throw(141)
+            raise JavaError("Encountered an error during handoff to java.")
         os.chdir('..')
-
-    def compute_cuff_shift(self, model_config: dict, sample: Sample, sample_config: dict):
-        """Compute the Cuff Shift for a given model.
-
-        :param model_config: dict, model config
-        :param sample: Sample, sample object
-        :param sample_config: dict, sample config
-        :return: model_config: dict, model config
-        """
-        # NOTE: ASSUMES SINGLE SLIDE
-        # add temporary model configuration
-        self.add(SetupMode.OLD, Config.MODEL, model_config)
-        self.add(SetupMode.OLD, Config.SAMPLE, sample_config)
-
-        # fetch slide
-        slide = sample.slides[0]
-
-        # fetch nerve mode
-        nerve_mode: NerveMode = self.search_mode(NerveMode, Config.SAMPLE)
-
-        if nerve_mode == NerveMode.PRESENT:
-            if 'deform_ratio' not in self.configs[Config.SAMPLE.value]:
-                deform_ratio = 1
-            else:
-                deform_ratio = self.search(Config.SAMPLE, 'deform_ratio')
-            if deform_ratio > 1:
-                self.throw(109)
-        else:
-            deform_ratio = None
-
-        # get center and radius of nerve's min_bound circle
-        nerve_copy = deepcopy(slide.nerve if nerve_mode == NerveMode.PRESENT else slide.fascicles[0].outer)
-
-        # fetch cuff config
-        cuff_config: dict = self.load(
-            os.path.join(os.getcwd(), "config", "system", "cuffs", model_config['cuff']['preset'])
-        )
-
-        (
-            cuff_code,
-            cuff_r_buffer,
-            expandable,
-            offset,
-            r_bound,
-            r_f,
-            theta_c,
-            theta_i,
-            x,
-            y,
-        ) = self.get_cuff_shift_parameters(cuff_config, deform_ratio, nerve_copy, sample_config, slide)
-
-        r_i, theta_f = self.check_cuff_expansion_radius(cuff_code, cuff_config, expandable, r_f, theta_i)
-
-        # remove sample config
-        self.remove(Config.SAMPLE)
-
-        cuff_shift_mode: CuffShiftMode = self.search_mode(CuffShiftMode, Config.MODEL)
-
-        if cuff_shift_mode not in CuffShiftMode:
-            self.throw(154)
-
-        # remove (pop) temporary model configuration
-        model_config = self.remove(Config.MODEL)
-        model_config['min_radius_enclosing_circle'] = r_bound
-        if slide.orientation_angle is not None:
-            theta_c = slide.orientation_angle * (360 / (2 * np.pi)) % 360  # overwrite theta_c, use our own orientation
-
-        # check if a naive mode was chosen
-        naive = cuff_shift_mode in [
-            CuffShiftMode.NAIVE_ROTATION_MIN_CIRCLE_BOUNDARY,
-            CuffShiftMode.NAIVE_ROTATION_TRACE_BOUNDARY,
-        ]
-
-        # initialize as 0, only replace values as needed, must be initialized here in case cuff shift mode is NONE
-        x_shift = y_shift = 0
-        # set pos_ang
-        if naive or cuff_shift_mode == CuffShiftMode.NONE:
-            model_config['cuff']['rotate']['pos_ang'] = 0
-            if slide.orientation_point is not None:
-                print(
-                    'Warning: orientation tif image will be ignored because a NAIVE or NONE cuff shift mode was chosen.'
-                )
-        else:
-            model_config['cuff']['rotate']['pos_ang'] = theta_c - theta_f
-
-        # min circle x and y shift
-        if cuff_shift_mode in [
-            CuffShiftMode.NAIVE_ROTATION_MIN_CIRCLE_BOUNDARY,
-            CuffShiftMode.AUTO_ROTATION_MIN_CIRCLE_BOUNDARY,
-        ]:
-
-            if r_i > r_f:
-                x_shift = x - (r_i - offset - cuff_r_buffer - r_bound) * np.cos(theta_c * ((2 * np.pi) / 360))
-                y_shift = y - (r_i - offset - cuff_r_buffer - r_bound) * np.sin(theta_c * ((2 * np.pi) / 360))
-
-            elif slide.nerve is None or deform_ratio != 1:
-                x_shift, y_shift = x, y
-
-        # min trace modes
-        elif cuff_shift_mode in [
-            CuffShiftMode.NAIVE_ROTATION_TRACE_BOUNDARY,
-            CuffShiftMode.AUTO_ROTATION_TRACE_BOUNDARY,
-        ]:
-            if r_i < r_f:
-                x_shift, y_shift = x, y
-
-            else:
-                id_boundary = Point(0, 0).buffer(r_i - offset)
-                n_boundary = Point(x, y).buffer(r_f)
-
-                if id_boundary.boundary.distance(n_boundary.boundary) < cuff_r_buffer:
-                    nerve_copy.shift([x, y, 0])
-                    print(
-                        "WARNING: NERVE CENTERED ABOUT MIN CIRCLE CENTER (BEFORE PLACEMENT) BECAUSE "
-                        "CENTROID PLACEMENT VIOLATED REQUIRED CUFF BUFFER DISTANCE\n"
-                    )
-
-                center_x = 0
-                center_y = 0
-                step = 1  # [um] STEP SIZE
-                x_step = step * np.cos(-theta_c + np.pi)  # STEP VECTOR X-COMPONENT
-                y_step = step * np.sin(-theta_c + np.pi)  # STEP VECTOR X-COMPONENT
-
-                # shift nerve within cuff until one step within the minimum separation from cuff
-                while nerve_copy.polygon().boundary.distance(id_boundary.boundary) >= cuff_r_buffer:
-                    nerve_copy.shift([x_step, y_step, 0])
-                    center_x -= x_step
-                    center_y -= y_step
-
-                # to maintain minimum separation from cuff, reverse last step
-                center_x += x_step
-                center_y += y_step
-
-                x_shift, y_shift = center_x, center_y
-
-        model_config['cuff']['shift']['x'] = x_shift
-        model_config['cuff']['shift']['y'] = y_shift
-
-        return model_config
-
-    def get_cuff_shift_parameters(self, cuff_config, deform_ratio, nerve_copy, sample_config, slide):
-        """Calculate parameters for cuff shift.
-
-        :param cuff_config: cuff configuration
-        :param deform_ratio: deform ratio
-        :param nerve_copy: copied nerve object
-        :param sample_config: sample configuration
-        :param slide: slide object to shift cuff around
-        :return: (cuff code, cuff r buffer, expandable, offset, r_bound, r_f, theta_c, theta_i, x, y)
-        """
-        # fetch 1-2 letter code for cuff (ex: 'CT')
-        cuff_code: str = cuff_config['code']
-        # fetch radius buffer string (ex: '0.003 [in]')
-        cuff_r_buffer_str: str = [
-            item["expression"]
-            for item in cuff_config["params"]
-            if item["name"] == '_'.join(['thk_medium_gap_internal', cuff_code])
-        ][0]
-        # calculate value of radius buffer in micrometers (ex: 76.2)
-        cuff_r_buffer: float = Quantity(
-            Quantity(
-                cuff_r_buffer_str.translate(cuff_r_buffer_str.maketrans('', '', ' []')),
-                scale='m',
-            ),
-            scale='um',
-        ).real  # [um] (scaled from any arbitrary length unit)
-        # Get the boundary and center information for computing cuff shift
-        if self.search_mode(ReshapeNerveMode, Config.SAMPLE) and not slide.monofasc() and deform_ratio == 1:
-            x, y = 0, 0
-            r_bound = np.sqrt(sample_config['Morphology']['Nerve']['area'] / np.pi)
-        else:
-            x, y, r_bound = nerve_copy.make_circle()
-        # next calculate the angle of the "centroid" to the center of min bound circle
-        # if mono fasc, just use 0, 0 as centroid (i.e., centroid of nerve same as centroid of all fasc)
-        # if poly fasc, use centroid of all fascicle as reference, not 0, 0
-        # angle of centroid of nerve to center of minimum bounding circle
-        reference_x = reference_y = 0.0
-        if not slide.monofasc() and not (round(slide.nerve.centroid()[0]) == round(slide.nerve.centroid()[1]) == 0):
-            self.throw(123)  # if the slide has nerve and is not centered at the nerve throw error
-        if not slide.monofasc():
-            reference_x, reference_y = slide.fascicle_centroid()
-        theta_c = (np.arctan2(reference_y - y, reference_x - x) * (360 / (2 * np.pi))) % 360
-        # calculate final necessary radius by adding buffer
-        r_f = r_bound + cuff_r_buffer
-        # fetch initial cuff rotation (convert to rads)
-        theta_i = cuff_config.get('angle_to_contacts_deg') % 360
-        # fetch boolean for cuff expandability
-        expandable: bool = cuff_config['expandable']
-        offset = 0
-        for key, coef in cuff_config["offset"].items():
-            value_str = [item["expression"] for item in cuff_config["params"] if item['name'] == key][0]
-            value: float = Quantity(
-                Quantity(value_str.translate(value_str.maketrans('', '', ' []')), scale='m'),
-                scale='um',
-            ).real  # [um] (scaled from any arbitrary length unit)
-            offset += coef * value
-        return cuff_code, cuff_r_buffer, expandable, offset, r_bound, r_f, theta_c, theta_i, x, y
-
-    def check_cuff_expansion_radius(self, cuff_code, cuff_config, expandable, r_f, theta_i):
-        """Check the cuff expansion radius.
-
-        :param cuff_code: str, cuff code
-        :param cuff_config: dict, cuff config
-        :param expandable: bool, cuff expandable
-        :param r_f: float, final radius
-        :param theta_i: float, initial angle
-        :return:
-        """
-        # check radius iff not expandable
-        if not expandable:
-            r_i_str: str = [
-                item["expression"] for item in cuff_config["params"] if item["name"] == '_'.join(['R_in', cuff_code])
-            ][0]
-            r_i: float = Quantity(
-                Quantity(r_i_str.translate(r_i_str.maketrans('', '', ' []')), scale='m'),
-                scale='um',
-            ).real  # [um] (scaled from any arbitrary length unit)
-
-            if not r_f <= r_i:
-                self.throw(51)
-
-            theta_f = theta_i
-        else:
-            # get initial cuff radius
-            r_i_str: str = [
-                item["expression"]
-                for item in cuff_config["params"]
-                if item["name"] == '_'.join(['r_cuff_in_pre', cuff_code])
-            ][0]
-            r_i: float = Quantity(
-                Quantity(r_i_str.translate(r_i_str.maketrans('', '', ' []')), scale='m'),
-                scale='um',
-            ).real  # [um] (scaled from any arbitrary length unit)
-
-            if r_i < r_f:
-                fixed_point = cuff_config.get('fixed_point')
-                if fixed_point is None:
-                    self.throw(126)
-                if fixed_point == 'clockwise_end':
-                    theta_f = theta_i * (r_i / r_f)
-                elif fixed_point == 'center':
-                    theta_f = theta_i
-            else:
-                theta_f = theta_i
-
-        return r_i, theta_f
-
-    def compute_electrical_parameters(self, all_configs, model_index):
-        """Compute electrical parameters for a given model.
-
-        :param all_configs: all configs for this run
-        :param model_index: index of the model to compute parameters for
-        :return: None, writes output to file
-        """
-        # fetch current model config using the index
-        model_config = all_configs[Config.MODEL.value][model_index]
-        model_num = self.configs[Config.RUN.value]['models'][model_index]
-
-        # initialize Waveform object
-        waveform = Waveform(self.configs[Config.EXCEPTIONS.value])
-
-        # add model config to Waveform object, enabling it to generate waveforms
-        waveform.add(SetupMode.OLD, Config.MODEL, model_config)
-
-        # compute rho and sigma from waveform instance
-        if (
-            model_config.get('modes').get(PerineuriumResistivityMode.config.value)
-            == PerineuriumResistivityMode.RHO_WEERASURIYA.value
-        ):
-            freq_double = model_config.get('frequency')
-            rho_double = waveform.rho_weerasuriya(freq_double)
-            sigma_double = 1 / rho_double
-            tmp = {
-                'value': str(sigma_double),
-                'label': f'RHO_WEERASURIYA @ {freq_double} Hz',
-                'unit': '[S/m]',
-            }
-            model_config['conductivities']['perineurium'] = tmp
-
-        elif (
-            model_config.get('modes').get(PerineuriumResistivityMode.config.value)
-            == PerineuriumResistivityMode.MANUAL.value
-        ):
-            pass
-        else:
-            self.throw(48)
-
-        dest_path: str = os.path.join(
-            'samples', str(self.configs[Config.RUN.value]['sample']), 'models', str(model_num), 'model.json'
-        )
-
-        TemplateOutput.write(model_config, dest_path)
 
     def populate_env_vars(self):
         """Get environment variables from config file.
 
-        :return: None
+        :raises FileNotFoundError: if environment variable file not found
         """
         if Config.ENV.value not in self.configs:
-            self.throw(75)
+            raise FileNotFoundError("Missing environment variables configuration file")
 
         for key in Env.vals.value:
             value = self.search(Config.ENV, key)
             assert type(value) is str
             os.environ[key] = value
-
-    def model_parameter_checking(self, all_configs):
-        """Check model parameters for validity.
-
-        :param all_configs: all configs for this run
-        :return: None
-        """
-        for _, model_config in enumerate(all_configs[Config.MODEL.value]):
-            distal_exists = model_config['medium']['distal']['exist']
-            if distal_exists and model_config['medium']['proximal']['distant_ground'] is True:
-                self.throw(107)
