@@ -42,11 +42,11 @@ Welcome to ASCENT's documentation!
   .. details:: APA
      :open:
 
-     **Musselman, E. D.**, **Cariello, J. E.**, Grill, W. M., & Pelot, N. A. (2022). wmglab-duke/ascent: ASCENT v1.1.2 (v1.1.2) [Computer software]. Zenodo. https://doi.org/10.5281/ZENODO.6537277
+     **Musselman, E. D.**, **Cariello, J. E.**, Grill, W. M., & Pelot, N. A. (2022). wmglab-duke/ascent: ASCENT v1.1.4 (v1.1.4) [Computer software]. Zenodo. https://doi.org/10.5281/ZENODO.6537277
 
   .. details:: MLA
 
-      Musselman, Eric D., et al. Wmglab-Duke/Ascent: ASCENT v1.1.2. v1.1.2, Zenodo, 2022, doi:10.5281/ZENODO.6537277.
+      Musselman, Eric D., et al. Wmglab-Duke/Ascent: ASCENT v1.1.4. v1.1.4, Zenodo, 2022, doi:10.5281/ZENODO.6537277.
 
   .. details:: BibTeX
 
@@ -56,7 +56,7 @@ Welcome to ASCENT's documentation!
           doi = {10.5281/ZENODO.6537277},
           url = {https://zenodo.org/record/6537277},
           author = {Musselman,  Eric D and Cariello,  Jake E and Grill,  Warren M and Pelot,  Nicole A},
-          title = {wmglab-duke/ascent: ASCENT v1.1.2},
+          title = {wmglab-duke/ascent: ASCENT v1.1.4},
           publisher = {Zenodo},
           year = {2022},
           copyright = {MIT License}
