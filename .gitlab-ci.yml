@@ -7,7 +7,7 @@
 # https://hub.docker.com/r/library/python/tags/
 
 default:
-  image: python:latest
+  image: python:3.7
 
 workflow:
   rules:
