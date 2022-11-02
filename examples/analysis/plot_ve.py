@@ -1,9 +1,12 @@
 #!/usr/bin/env python3.7
 
-"""
+"""Plot the Ve across a fiber length.
+
 The copyrights of this software are owned by Duke University.
 Please refer to the LICENSE and README.md files for licensing instructions.
-The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
+The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent.
+
+RUN THIS FROM REPOSITORY ROOT
 """
 
 import os
@@ -25,7 +28,7 @@ pve1 = os.path.join(
     str(n_sims[0]),
     'data',
     'inputs',
-    'inner{}_fiber{}.dat'.format(inner, fiber),
+    f'inner{inner}_fiber{fiber}.dat',
 )
 dpve1 = np.loadtxt(pve1)
 plt.plot(dpve1[1:], 'r-', label='p1')
@@ -42,7 +45,7 @@ base_fiberset = os.path.join(
     'potentials',
     str(fiberset),
 )
-fve1 = os.path.join(base_fiberset, '{}.dat'.format(fiber))
+fve1 = os.path.join(base_fiberset, f'{fiber}.dat')
 dfve1 = np.loadtxt(fve1)
 plt.plot(dfve1[1:], 'g--', label='f1')
 plt.legend()

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3.7
 
-"""
+"""Plots the voltage along a fiber, as well as its first and second spatial differential.
+
 The copyrights of this software are owned by Duke University.
 Please refer to the LICENSE and README.md files for licensing instructions.
-The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
+The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent.
 
-Plots the voltage along a fiber, as well as its first and second spatial differential.
-Note: Run from repository root
+RUN THIS FROM REPOSITORY ROOT
 """
 
 import os
@@ -27,7 +27,7 @@ myelinated = True
 base_n_sim = os.path.join('samples', str(sample), 'models', str(model), 'sims', str(sim), 'n_sims')
 
 plt.figure()
-pve1 = os.path.join(base_n_sim, str(n_sim), 'data', 'inputs', 'inner{}_fiber{}.dat'.format(inner, fiber))
+pve1 = os.path.join(base_n_sim, str(n_sim), 'data', 'inputs', f'inner{inner}_fiber{fiber}.dat')
 dpve1 = np.loadtxt(pve1)
 if myelinated:
     dpve1 = [dpve1[i] for i in range(len(dpve1)) if i % 11 == 0]

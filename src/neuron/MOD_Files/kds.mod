@@ -1,6 +1,6 @@
 : Author: David Catherall
 : Created: November 2016
-: Kds is the slowly inactivating delay current in Schild 1994 
+: Kds is the slowly inactivating delay current in Schild 1994
 
 : Neuron Block creates mechanism
 	NEURON {
@@ -24,52 +24,52 @@ PARAMETER {
 	Q10TempA = 22.85	(degC)		: Used to shift tau values based on temperature with equation : tau(T1)=tau(Q10TempA)*Q10^((Q10TempA-T1)/Q10TempB)
 	Q10TempB = 10	(degC)
 
- 
+
 	shiftkds=3.0 (mV) 				: Shift factor present in C-fiber
-	
+
 	: kds_x Variables
-	
+
 		: Steady State Variables
 			V0p5x=39.59 (mV):As defined by Schild 1994, zinf=1.0/(1.0+exp((V0p5z-V)/S0p5z)
 			S0p5x=-14.68(mV)
-		
+
 		: Tau Variables
 			A_taux=5.0	(ms)	:As defined by Schild 1994, tauz=A_tauz*exp(-B^2(V-Vpz)^2)+C
 			B_taux=0.022	(/mV)
 			C_taux=2.5	(ms)
 			Vpx=-65.0		(mV)
-	
+
 	: kds_y Variables
-	
+
 		: Steady State Variables
 			V0p5y=48.0 (mV)
 			S0p5y=7.0 (mV)
-		
+
 		: Tau Variables
 			tau_y22=7500 (ms) :This is tau_y at 22 degC
 
 }
 : Defines variables which will be used or calculated throughout the simulation which may not be constant. Also included NEURON provided variables, like v, celsius, and ina
 	ASSIGNED {
-	
+
 		:NEURON provided Variables
 		 v	(mV) : NEURON provides this
 		 ik	(mA/cm2)
 		 celsius (degC)
 		 ek	(mV)
-		 
+
 		 :Model Specific Variables
 		 g	(S/cm2)
 		 tau_x	(ms)
 		 tau_y	(ms)
 		 xinf
 		 yinf
-		 
-			 
+
+
 	}
 
 : Defines state variables which will be calculated by numerical integration
-	STATE { x y1 } 
+	STATE { x y1 }
 
 : This block iterates the state variable calculations and uses those calculations to calculate currents
 	BREAKPOINT {
@@ -82,7 +82,7 @@ PARAMETER {
 	INITIAL {
 		rates(v) : set tau_x, yinf, xinf
 		: assume that equilibrium has been reached
-		
+
 
 		x = xinf
 		y1 = yinf
@@ -101,10 +101,10 @@ PARAMETER {
 		FUNCTION rates(Vm (mV)) (/ms) {
 			tau_x = A_taux*exp(-(B_taux)^2*(Vm-Vpx)^2)+C_taux
 				xinf = 1.0/(1.0+exp((Vm+V0p5x+shiftkds)/S0p5x))
-				 
+
 			tau_y=tau_y22
 				yinf = 1.0/(1.0+exp((Vm+V0p5y+shiftkds)/S0p5y))
-			
+
 			:This scales the tau values based on temperature
 			tau_x=tau_x*Q10kds^((Q10TempA-celsius)/Q10TempB)
 			tau_y=tau_y*Q10kds^((Q10TempA-celsius)/Q10TempB)

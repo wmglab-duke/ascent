@@ -22,14 +22,14 @@ proc global_parameters(){
 	Length = nsegments*dz
   }
 
-proc build(){ 
+proc build(){
   objref section[nsegments]
   section_coord = new Vector(nsegments,0)
   create node[nsegments]
- 
+
   sl = new SectionList()
   for i=0,nsegments-1{
-		node[i]{ 		
+		node[i]{
 			ii = i
 			section[i] = new SectionRef()
 			sl.append(section[i])
@@ -37,156 +37,155 @@ proc build(){
 			nseg = 1
 			diam = fiberD
 			L  = dz
-			if (passive) {
-				if(i==0 || i==(nsegments-1)){
+			if ((i==0 || i==(nsegments-1)) && (passive == 1)){
+                insert pas
+                g_pas = 0.0001
+                if(type==1){
+                    e_pas=-60//Sundt equilibrium potential
+                }else if(type == 2){
+                    e_pas = -55//tigerholm equilibrium potential
+                }else if(type == 3){
+                    e_pas = -70//Rattay equilibrium potential
+                }else if(type == 4){
+                    e_pas = -48//Schild equilibrium potential
+                }else{
+                    e_pas = -70
+                }
 
-					
-					insert pas
-					g_pas = 0.0001
-					if(type==1){
-						e_pas=-60//Sundt equilibrium potential
-					}else if(type == 2){
-						e_pas = -55//tigerholm equilibrium potential
-					}else if(type == 3){
-						e_pas = -70//Rattay equilibrium potential
-					}else if(type == 4){
-						e_pas = -48//Schild equilibrium potential
-					}else{
-						e_pas = -70
-					}
+                cm = 1
 
-					// no myelination
-					insert extracellular
-	 				xg = 1e10 // short circuit, no myelin
-					xc = 0    // short circuit, no myelin
-					
-					Ra = 1e10 // this forces current passive membrane and not into cable
-				}
+                insert extracellular
+                xg = 1e10 // short circuit, no myelin
+                xc = 0    // short circuit, no myelin
 
+                Ra = 1e10 // this forces current passive membrane and not into cable
 			}else{
-			if(type == 1){ // Sundt Fiber
-				insert nahh
-				gnabar_nahh = .04
-				mshift_nahh = -6		        // NaV1.7/1.8 channelshift
-				hshift_nahh = 6		            // NaV1.7/1.8 channelshift
+                if(type == 1){ // Sundt Fiber
+                    insert nahh
+                    gnabar_nahh = .04
+                    mshift_nahh = -6		        // NaV1.7/1.8 channelshift
+                    hshift_nahh = 6		            // NaV1.7/1.8 channelshift
 
-				insert borgkdr			        // insert delayed rectifier K channels
-				gkdrbar_borgkdr = .04		    // density of K channels
-				ek = -90	  		            // K equilibrium potential
+                    insert borgkdr			        // insert delayed rectifier K channels
+                    gkdrbar_borgkdr = .04		    // density of K channels
+                    ek = -90	  		            // K equilibrium potential
 
-				insert pas			            // insert leak channels	
-				g_pas = 1/10000			        // set Rm = 10000 ohms-cm2
-				Ra = 100			            // intracellular resistance
-				v=-60
-				e_pas = v + (ina + ik)/g_pas	// calculate leak equilibrium potential
-			}else if(type == 2){ // Tigerholm Fiber
-				insert ks
-				gbar_ks 	= 0.0069733
-				insert kf
-				gbar_kf 	= 0.012756
-				insert h
-				gbar_h 		= 0.0025377
-				insert nattxs
-				gbar_nattxs 	= 0.10664
-				insert nav1p8
-				gbar_nav1p8 	= 0.24271
-				insert nav1p9
-				gbar_nav1p9 	= 9.4779e-05
-				insert nakpump
-				smalla_nakpump 	= -0.0047891
-				insert kdrTiger
-				gbar_kdr 	= 0.018002
-				insert kna
-				gbar_kna 	= 0.00042
-				insert naoi
-				theta_naoi	= 0.029	    
-				insert koi
-				theta_koi	= 0.029	    
-	
-				insert leak
-				insert extrapump	
-	
-				Ra 		= 35.5
-				cm 		= 1
-	
-				celsiusT_ks 	= temp
-				celsiusT_kf 	= temp
-				celsiusT_h 	= temp
-				celsiusT_nattxs = temp
-				celsiusT_nav1p8 = temp
-				celsiusT_nav1p9 = temp
-				celsiusT_nakpump = temp
-				celsiusT_kdr 	= temp   
-				v=-55
-			}else if(type == 3){ // Rattay and Aberham Fiber
-				insert RattayAberham// Model adjusted for a resting potential of -70mV instead of 0
-				Ra=100// need to be 100 for propagation less than this does not propagate correctly
-				cm=1
-				v=-70
-				ena=45
-				ek=-82
-			}else if(type == 4){//Schild Fiber
-				R = 8314
-				F = 96500
-				insert leakSchild						// All mechanisms from Schild 1994 inserted into model
-				insert kd
-				insert ka
-				insert can
-				insert cat
-				insert kds
-				insert kca
-				insert caextscale
-				insert caintscale
-				insert CaPump
-				insert NaCaPump
-				insert NaKpumpSchild
-				if (insert97na) {
-					insert naf97mean
-					insert nas97mean
-				} else {
-					insert naf
-					insert nas
-				}
-				// Ionic concentrations
-				cao0_ca_ion = 2.0							          // [mM] Initial Cao Concentration
-				cai0_ca_ion = 0.000117						          // [mM] Initial Cai Concentrations
-				ko          = 5.4									  // [mM] External K Concentration
-				ki          = 145.0									  // [mM] Internal K Concentration
-				kstyle      = ion_style("k_ion",1,2,0,0,0) 		      // Allows ek to be calculated manually
-				ek          = ((R*(celsius+273.15))/F)*log(ko/ki)	  // Manual Calculation of ek in order to use Schild F and R values
-			
-				nao         = 154.0								      // [mM] External Na Concentration
-				nai         = 8.9								      // [mM] Internal Na Concentration
-				nastyle     = ion_style("na_ion",1,2,0,0,0) 		  // Allows ena to be calculated manually
-				ena         = ((R*(celsius+273.15))/F)*log(nao/nai)	  // Manual Calculation of ena in order to use Schild F and R values
-				if (conductances97){				
-					gbar_naf97mean = 0.022434928 		                  // [S/cm^2] This block sets the conductance to the conductances in Schild 1997
-					gbar_nas97mean = 0.022434928
-					gbar_kd        = 0.001956534
-					gbar_ka        = 0.001304356
-					gbar_kds       = 0.000782614
-					gbar_kca       = 0.000913049
-					gbar_can       = 0.000521743
-					gbar_cat       = 0.00018261
-					gbna_leak      = 1.8261E-05
-				}
-				Ra        = 100
-				cm        = 1.326291192
-				v         = -48
-			}
-//			finitialize(v)
-//			fcurrent()
-			insert extracellular
-			xg = 1e10 // short circuit
-			xc = 0    // short circuit
+                    insert pas			            // insert leak channels
+                    g_pas = 1/10000			        // set Rm = 10000 ohms-cm2
+                    Ra = 100			            // intracellular resistance
+                    v=-60
+                    e_pas = v + (ina + ik)/g_pas	// calculate leak equilibrium potential
+                }else if(type == 2){ // Tigerholm Fiber
+                    insert ks
+                    gbar_ks 	= 0.0069733
+                    insert kf
+                    gbar_kf 	= 0.012756
+                    insert h
+                    gbar_h 		= 0.0025377
+                    insert nattxs
+                    gbar_nattxs 	= 0.10664
+                    insert nav1p8
+                    gbar_nav1p8 	= 0.24271
+                    insert nav1p9
+                    gbar_nav1p9 	= 9.4779e-05
+                    insert nakpump
+                    smalla_nakpump 	= -0.0047891
+                    insert kdrTiger
+                    gbar_kdr 	= 0.018002
+                    insert kna
+                    gbar_kna 	= 0.00042
+                    insert naoi
+                    theta_naoi	= 0.029
+                    insert koi
+                    theta_koi	= 0.029
+
+                    insert leak
+                    insert extrapump
+
+                    Ra 		= 35.5
+                    cm 		= 1
+
+                    celsiusT_ks 	= temp
+                    celsiusT_kf 	= temp
+                    celsiusT_h 	= temp
+                    celsiusT_nattxs = temp
+                    celsiusT_nav1p8 = temp
+                    celsiusT_nav1p9 = temp
+                    celsiusT_nakpump = temp
+                    celsiusT_kdr 	= temp
+                    v=-55
+                }else if(type == 3){ // Rattay and Aberham Fiber
+                    insert RattayAberham// Model adjusted for a resting potential of -70mV instead of 0
+                    Ra=100// need to be 100 for propagation less than this does not propagate correctly
+                    cm=1
+                    v=-70
+                    ena=45
+                    ek=-82
+                }else if(type == 4){//Schild Fiber
+                    R = 8314
+                    F = 96500
+                    insert leakSchild						// All mechanisms from Schild 1994 inserted into model
+                    insert kd
+                    insert ka
+                    insert can
+                    insert cat
+                    insert kds
+                    insert kca
+                    insert caextscale
+                    insert caintscale
+                    insert CaPump
+                    insert NaCaPump
+                    insert NaKpumpSchild
+                    if (insert97na) {
+                        insert naf97mean
+                        insert nas97mean
+                    } else {
+                        insert naf
+                        insert nas
+                    }
+					// Ionic concentrations
+					cao0_ca_ion = 2.0							// [mM] Initial Cao Concentration
+					cai0_ca_ion = 0.000117						// [mM] Initial Cai Concentrations
+					ko = 5.4									// [mM] External K Concentration
+					ki = 145.0									// [mM] Internal K Concentration
+					kstyle=ion_style("k_ion",1,2,0,0,0) 		// Allows ek to be calculated manually
+					ek = ((R*(celsius+273.15))/F)*log(ko/ki)	// Manual Calculation of ek in order to use Schild F and R values
+
+					nao = 154.0									// [mM] External Na Concentration
+					nai = 8.9									// [mM] Internal Na Concentration
+					nastyle=ion_style("na_ion",1,2,0,0,0) 		// Allows ena to be calculated manually
+					ena = ((R*(celsius+273.15))/F)*log(nao/nai)	// Manual Calculation of ena in order to use Schild F and R values
+					if (conductances97){
+						gbar_naf97mean=0.022434928 		// [S/cm^2] This block sets the conductance to the conductances in Schild 1997
+						gbar_nas97mean=0.022434928
+						gbar_kd=0.001956534
+						gbar_ka=0.001304356
+						gbar_kds=0.000782614
+						gbar_kca=0.000913049
+						gbar_can=0.000521743
+						gbar_cat=0.00018261
+						gbna_leakSchild = 1.8261E-05
+						gbca_leakSchild	= 9.13049E-06
+					}
+					Ra=100
+					cm = 1.326291192
+					v=-48
+					L_caintscale = L
+					nseg_caintscale = nseg
+					L_caextscale = L
+					nseg_caextscale = nseg
+                }
+                insert extracellular
+                xg = 1e10 // short circuit
+                xc = 0    // short circuit
+            }
 		}
-		}
-		
+
 	}
 	for i=0, nsegments-2 {
-		connect node[i](1), node[i+1](0)	
-	} 
-	
+		connect node[i](1), node[i+1](0)
+	}
+
 }
 
 proc init(){
@@ -207,7 +206,7 @@ proc init(){
   if (numarg()>6) {conductances97 = $7}
   if (numarg()>7) {passive        = $8}
   celsius = temp
-  global_parameters() 
+  global_parameters()
   build()
 }
 

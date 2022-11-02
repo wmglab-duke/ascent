@@ -1,6 +1,6 @@
 {
   "sample": "Rat16-3",
-  "pseudonym":"template sample",
+  "pseudonym": "template sample",
   "sex": "M",
   "level": "Cervical",
   "scale": {
@@ -19,7 +19,8 @@
     "deform": "NONE",
     "ci_perineurium_thickness": "MEASURED",
     "reshape_nerve": "NONE",
-    "shrinkage_definition": "LENGTH_BACKWARDS"
+    "shrinkage_definition": "LENGTH_BACKWARDS",
+    "contour_approximation": "SIMPLE"
   },
   "smoothing": {
     "nerve_distance": 0,

@@ -1,9 +1,13 @@
 #!/usr/bin/env python3.7
 
-"""
+"""Plot a video over time of Ve over the length of a fiber.
+
 The copyrights of this software are owned by Duke University.
 Please refer to the LICENSE and README.md files for licensing instructions.
-The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
+The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent.
+
+This script requires that you have saved Vm at all locs (under time).
+RUN THIS FROM REPOSITORY ROOT
 """
 
 import os
@@ -23,6 +27,23 @@ n_sims = [0, 1, 2]
 amp = 0
 
 outpath = 'out/analysis/videos'
+
+
+# define initializer function for animation
+def _init():
+    """Initialize the animation."""  # noqa: DAR
+    flat_data = data.flatten()
+    ax.set_ylim(np.min(flat_data), np.max(flat_data))
+    return (ln,)
+
+
+# define update function for each frame of animation
+def _update(frame):
+    """Update the animation."""  # noqa: DAR
+    time_text.set_text('time: ' + str(data[frame][0]))
+    ln.set_data(np.arange(0, len(data[0]) - 1), data[frame][1:])
+    return ln, time_text
+
 
 # create output directory
 if not os.path.exists(outpath):
@@ -48,15 +69,11 @@ for sample in samples:
                     'data',
                     'outputs',
                 )
-                # data = np.loadtxt(os.path.join(data_path,
-                #                                'gating_h_time_inner{}_fiber{}_amp0.dat'.format(inner, fiber)
-                #                                ),
-                #                   skiprows=1)[:, 1:]
 
                 data = np.loadtxt(
                     os.path.join(
                         data_path,
-                        'Vm_time_inner{}_fiber{}_amp{}.dat'.format(inner, fiber, amp),
+                        f'Vm_time_inner{inner}_fiber{fiber}_amp{amp}.dat',
                     ),
                     skiprows=1,
                 )[:, 0:]
@@ -66,41 +83,23 @@ for sample in samples:
                 (ln,) = plt.plot(np.arange(0, len(data[0])), data[0])
                 time_text = ax.text(0.5, 0.5, '', fontsize=15)
 
-                # define initializer function for animation
-                def init():
-                    flat_data = data.flatten()
-                    ax.set_ylim(np.min(flat_data), np.max(flat_data))
-                    return (ln,)
-
-                # define update function for each frame of animation
-
-                def update(frame):
-                    time_text.set_text('time: ' + str(data[frame][0]))
-                    ln.set_data(np.arange(0, len(data[0]) - 1), data[frame][1:])
-                    return ln, time_text
-
                 # build and save animation
                 print('WARNING: DO NOT ATTEMPT TO OPEN FILE UNTIL FRAME INDICES HAVE FINISHED PRINTING')
                 ani = FuncAnimation(
                     fig,
-                    update,
+                    _update,
                     frames=np.arange(1, 5000, 5),  # frames=np.arange(0, 5000, 1),
-                    init_func=init,
+                    init_func=_init,
                     blit=False,
                     interval=10,
                     save_count=5000,
                     repeat=False,
                 )
-                # ani.save(os.path.join(data_path,
-                #                       'video_gating_h_time_inner{}_fiber{}_amp0.gif'.format(inner, fiber)  # or .mp4
-                #                       ))
 
                 ani.save(
                     os.path.join(
                         outpath,
-                        'video_Vm_time_{}_{}_{}_{}_inner{}_fiber{}_amp{}.mp4'.format(
-                            sample, model, sim, n_sim, inner, fiber, amp
-                        ),  # or .mp4
+                        f'video_Vm_time_{sample}_{model}_{sim}_{n_sim}_inner{inner}_fiber{fiber}_amp{amp}.mp4',
                     )
                 )
 

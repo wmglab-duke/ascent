@@ -74,7 +74,7 @@ FUNCTION bet(v(mV)) (1/ms) {
 	bet = 0.29*exp(-v/10.86)
 }
 
-DERIVATIVE state {  
+DERIVATIVE state {
         rate(v)
         m' = (minf - m)/tau
 }
@@ -85,4 +85,3 @@ PROCEDURE rate(v (mV)) { :callable from hoc
         tau = 1/(tfa*(a + bet(v)))
         minf = tfa*a*tau
 }
- 

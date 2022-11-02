@@ -1,4 +1,4 @@
-: This is a leak channel for potassium 
+: This is a leak channel for potassium
 
 NEURON {
 	SUFFIX extrapump
@@ -18,7 +18,7 @@ PARAMETER {
 	pumpik =0	(mA/cm2)
         pumpina =0	(mA/cm2)
 
-     
+
 }
 
 ASSIGNED {
@@ -28,7 +28,7 @@ ASSIGNED {
 
 
 BREAKPOINT {
-	 
-	ik = pumpik 
+
+	ik = pumpik
         ina =pumpina
 }

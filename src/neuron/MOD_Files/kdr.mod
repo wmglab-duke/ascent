@@ -38,7 +38,7 @@ STATE {
 ASSIGNED {
 	ik (mA/cm2)
         ninf
-        linf      
+        linf
         gkdr
         taun
         taul
@@ -58,22 +58,22 @@ BREAKPOINT {
 }
 
 FUNCTION alpn(v(mV)) {
-  alpn = exp(1.e-3*zetan*(v-vhalfn)*9.648e4/(8.315*(273.16+celsius))) 
+  alpn = exp(1.e-3*zetan*(v-vhalfn)*9.648e4/(8.315*(273.16+celsius)))
 }
 
 FUNCTION betn(v(mV)) {
-  betn = exp(1.e-3*zetan*gmn*(v-vhalfn)*9.648e4/(8.315*(273.16+celsius))) 
+  betn = exp(1.e-3*zetan*gmn*(v-vhalfn)*9.648e4/(8.315*(273.16+celsius)))
 }
 
 FUNCTION alpl(v(mV)) {
-  alpl = exp(1.e-3*zetal*(v-vhalfl)*9.648e4/(8.315*(273.16+celsius))) 
+  alpl = exp(1.e-3*zetal*(v-vhalfl)*9.648e4/(8.315*(273.16+celsius)))
 }
 
 FUNCTION betl(v(mV)) {
-  betl = exp(1.e-3*zetal*gml*(v-vhalfl)*9.648e4/(8.315*(273.16+celsius))) 
+  betl = exp(1.e-3*zetal*gml*(v-vhalfl)*9.648e4/(8.315*(273.16+celsius)))
 }
 
-DERIVATIVE states {  
+DERIVATIVE states {
         rates(v)
         n' = (ninf - n)/taun
         l' = (linf - l)/taul
@@ -89,10 +89,3 @@ PROCEDURE rates(v (mV)) { :callable from hoc
         linf = 1/(1+a)
         taul = betl(v)/(q10*a0l*(1 + a))
 }
-
-
-
-
-
-
-

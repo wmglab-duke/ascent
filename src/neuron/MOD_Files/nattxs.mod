@@ -61,7 +61,7 @@ ASSIGNED {
 	 hinf
 	 sinf
          ena	(mV)
-         
+
 }
 
 STATE { m h s }
@@ -75,7 +75,7 @@ BREAKPOINT {
 INITIAL {
 	rates(v) : set tau_m, tau_h, hinf, minf
 	: assume that equilibrium has been reached
-	
+
 
         m = minf
 	h = hinf

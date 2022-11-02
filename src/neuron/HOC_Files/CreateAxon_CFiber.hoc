@@ -11,9 +11,14 @@ objref fiber
 proc CreateAxon_CFiber() {
     objref s[axonnodes]
 
-    fiber = new cFiberBuilder(fiberD,len,c_fiber_model_type,celsius,deltaz,0,0,passive_end_nodes)
+    if(c_fiber_model_type==4){
+        fiber = new cFiberBuilder(fiberD,len,c_fiber_model_type,celsius,deltaz,1,1,passive_end_nodes)
+    }else if(c_fiber_model_type==5){
+        fiber = new cFiberBuilder(fiberD,len,4,celsius,deltaz,0,0,passive_end_nodes)
+    }else{
+        fiber = new cFiberBuilder(fiberD,len,c_fiber_model_type,celsius,deltaz,0,0,passive_end_nodes)
+    }
 
-    
 	for i = 0, axonnodes-1 {
 		s[i] = fiber.section[i]
 	}

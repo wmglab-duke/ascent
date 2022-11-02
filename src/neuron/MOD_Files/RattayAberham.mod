@@ -1,18 +1,18 @@
 TITLE hh.mod   squid sodium, potassium, and leak channels
- 
+
 COMMENT
 HH model using RattayAberham k=12 for 37degC
 
  Remember to set celsius=37 in your HOC file.
  Eric Musselman  December 5, 2017
 ENDCOMMENT
- 
+
 UNITS {
         (mA) = (milliamp)
         (mV) = (millivolt)
         (S)  = (siemens)
 }
- 
+
 ? interface
 NEURON {
         SUFFIX RattayAberham
@@ -23,18 +23,18 @@ NEURON {
         GLOBAL minf, hinf, ninf, mtau, htau, ntau
         THREADSAFE : assigned GLOBALs will be per thread
 }
- 
+
 PARAMETER {
         gnabar = .12 (S/cm2)    <0,1e9> : units verified
         gkbar = .036 (S/cm2)    <0,1e9> : units verified
         gl = .0003 (S/cm2)  <0,1e9>     : units verified
         el = -59.4 (mV)                  : changed this to match RattayAberham, units verified
 }
- 
+
 STATE {
         m h n
 }
- 
+
 ASSIGNED {
         v (mV)
         celsius (degC)
@@ -49,18 +49,18 @@ ASSIGNED {
         minf hinf ninf
     mtau (ms) htau (ms) ntau (ms)
 }
- 
+
 ? currents
 BREAKPOINT {
         SOLVE states METHOD cnexp
         gna = gnabar*m*m*m*h
     ina = gna*(v - ena)
         gk = gkbar*n*n*n*n
-    ik = gk*(v - ek)      
+    ik = gk*(v - ek)
         il = gl*(v - el)
 }
- 
- 
+
+
 INITIAL {
     rates(v)
     m = minf
@@ -69,13 +69,13 @@ INITIAL {
 }
 
 ? states
-DERIVATIVE states {  
+DERIVATIVE states {
         rates(v)
         m' =  (minf-m)/mtau
         h' = (hinf-h)/htau
         n' = (ninf-n)/ntau
 }
- 
+
 :LOCAL q10
 
 
@@ -100,13 +100,13 @@ UNITSOFF
     htau = 1/(q10*sum)
         hinf = alpha/sum
                 :"n" potassium activation system
-        alpha = 0.1*vtrap(1-0.1*(v+70),1) 
+        alpha = 0.1*vtrap(1-0.1*(v+70),1)
         beta = 0.125*exp(-(v+70)/80)
     sum = alpha + beta
         ntau = 1/(q10*sum)
         ninf = alpha/sum
 }
- 
+
 FUNCTION vtrap(x,y) {  :Traps for 0 in denominator of rate eqns.
         if (fabs(x/y) < 1e-6) {
                 vtrap = y*(1 - x/y/2)
@@ -114,5 +114,5 @@ FUNCTION vtrap(x,y) {  :Traps for 0 in denominator of rate eqns.
                 vtrap = x/(exp(x/y) - 1)
         }
 }
- 
+
 UNITSON

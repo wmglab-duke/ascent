@@ -1,12 +1,11 @@
 #!/usr/bin/env python3.7
 
-"""
+"""Defines Map class.
+
 The copyrights of this software are owned by Duke University.
 Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
-"""
 
-"""
 Description:
 
     OVERVIEW
@@ -51,25 +50,23 @@ from typing import List
 
 import numpy as np
 
-from src.utils import Config, Configurable, Exceptionable, SetupMode
+from src.utils import Config, Configurable, SetupMode
 
 
-class Map(Exceptionable, Configurable):
-    """
-    Required (Config.) JSON's
-        SAMPLE
-    """
+class Map(Configurable):
+    """Required (Config.) JSON's SAMPLE."""
 
-    def __init__(self, exception_config):
-        """
-        :param main_config:
-        :param exception_config:
-        :param mode:
-        """
+    def __init__(self):
+        """Initialize Map object."""
 
-        # set up super classes
-        Exceptionable.__init__(self, SetupMode.OLD, exception_config)
+        # set up super class
         Configurable.__init__(self)
+        self.slides = None
+        self.output_path = None
+        self.source_path = None
+        self.mode = None
+        self.sample = None
+        self.data_root = None
 
     def init_post_config(self, mode: SetupMode = SetupMode.NEW):
 
@@ -112,12 +109,12 @@ class Map(Exceptionable, Configurable):
             self.source_path = os.path.join('input', self.sample, 'map.json')
 
             # load/edit map template
-            map = self.load(os.path.join('config', 'templates', 'map.json'))
-            map[0]['directory'] = self.source_path.split(os.sep)[:-1]
+            mapper = self.load(os.path.join('config', 'templates', 'map.json'))
+            mapper[0]['directory'] = self.source_path.split(os.sep)[:-1]
 
             # write synthetic map
             with open(os.path.join(self.source_path), "w") as handle:
-                handle.write(json.dumps(map, indent=2))
+                handle.write(json.dumps(mapper, indent=2))
 
             # historical?
             self.output_path = self.source_path
@@ -127,11 +124,12 @@ class Map(Exceptionable, Configurable):
 
         else:
             # the above if statements are exhaustive, so this should be unreachable
-            self.throw(136)
+            raise ValueError("Invalid SetupMode for Map object")
 
     def find(self, cassette: str, number: int) -> 'SlideInfo':
-        """
-        Returns first slide that matches search parameters (there should only be one, though).
+        """Returns first slide that matches search parameters (there should
+        only be one, though).
+
         :param cassette: cassette to narrow search
         :param number: number within that cassette (should narrow search to 1 slide)
         :return: the Slide object (note that the list is being indexed into at the end: [0])
@@ -175,12 +173,12 @@ class Map(Exceptionable, Configurable):
     # %% utility
     @staticmethod
     def clean_file_names():
-        """
-        Jake Cariello
-        July 24, 2019
-        Utility method for cleaning file names.
-        It is not dynamic or system-independent at the time because it is a specific thing that I required.
-        If it becomes clear that this is required for core functionality, I will rewrite the method.
+        """Jake Cariello July 24, 2019 Utility method for cleaning file names.
+
+        It is not dynamic or system-independent at the time because it
+        is a specific thing that I required. If it becomes clear that
+        this is required for core functionality, I will rewrite the
+        method.
         """
         warnings.warn('METHOD clean_file_names IS NOT SYSTEM-INDEPENDENT!')
 
@@ -190,17 +188,17 @@ class Map(Exceptionable, Configurable):
 
         remove_keys = ['.dxf']
 
-        for root, dirs, files in os.walk(dir_to_parse):
+        for root, _, files in os.walk(dir_to_parse):
             for file in files:
                 for prefix in prefixes:
                     if re.match(prefix, file) is not None:
                         # remove leading code (separated by '_') and any extra '_'
-                        new_file = '_'.join([f for f in file.split('_')[1:] if f is not ''])
-                        os.rename('{}/{}'.format(root, file), '{}/{}'.format(root, new_file))
+                        new_file = '_'.join([f for f in file.split('_')[1:] if f != ''])
+                        os.rename(f'{root}/{file}', f'{root}/{new_file}')
 
                 for key in remove_keys:
                     if re.search(key, file) is not None:
-                        os.remove('{}/{}'.format(root, file))
+                        os.remove(f'{root}/{file}')
 
 
 # %% helper classes... self.map will be stored as a list of Slide objects
@@ -216,9 +214,7 @@ class SlideInfo:
         return self.cassette, self.number, self.position, self.directory
 
     def __repr__(self):
-        return 'cas:\t{}\nnum:\t{}\npos:\t{}\ndir:\t{}'.format(
-            self.cassette, self.number, self.position, self.directory
-        )
+        return f'cas:\t{self.cassette}\nnum:\t{self.number}\npos:\t{self.position}\ndir:\t{self.directory}'
 
 
 # quick class to keep track of a reference distance for resizing (i.e. space between electrodes)
@@ -234,4 +230,4 @@ class Reference:
         return distance / float(self.abs_distance)
 
     def __repr__(self):
-        return '\tstart pos:\t{}\n\tend pos:\t{}\n\tabs dist:\t{}\n\n'.format(self.start, self.end, self.abs_distance)
+        return f'\tstart pos:\t{self.start}\n\tend pos:\t{self.end}\n\tabs dist:\t{self.abs_distance}\n\n'

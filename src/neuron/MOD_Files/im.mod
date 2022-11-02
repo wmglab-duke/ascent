@@ -2,7 +2,7 @@ TITLE slowly activating potassium current (M-current)
 
 COMMENT
         *********************************************
-        reference:   	Yamada, Koch & Adams (1989) 
+        reference:   	Yamada, Koch & Adams (1989)
 			Methods in Neuronal Modeling, MIT press
         found in:       bullfrog sympathetic ganglion cells
         *********************************************
@@ -13,7 +13,7 @@ INDEPENDENT {t FROM 0 TO 1 WITH 1 (ms)}
 
 NEURON {
 	SUFFIX iM
-	USEION k READ ek WRITE ik 
+	USEION k READ ek WRITE ik
         RANGE gkbar, ikim, m_inf, tau_m, m, vshift
 }
 
@@ -44,7 +44,7 @@ ASSIGNED {
 	ikim		(mA/cm2)
 }
 
-BREAKPOINT { 
+BREAKPOINT {
 	SOLVE states :METHOD euler
 	ik = gkbar * m * (v-ek)
 	ikim = ik
@@ -53,9 +53,9 @@ BREAKPOINT {
 :DERIVATIVE states {
 :       evaluate_fct(v)
 :
-:       m'= (m_inf-m) / tau_m 
+:       m'= (m_inf-m) / tau_m
 :}
-  
+
 PROCEDURE states() {
         evaluate_fct(v+vshift)
 

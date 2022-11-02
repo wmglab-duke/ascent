@@ -1,9 +1,11 @@
 #!/usr/bin/env python3.7
 
-"""
-The copyrights of this software are owned by Duke University.
-Please refer to the LICENSE and README.md files for licensing instructions.
-The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
+"""Main script for running the pipeline.
+
+The copyrights of this software are owned by Duke University. Please
+refer to the LICENSE and README.md files for licensing instructions. The
+source code can be found on the following GitHub repository:
+https://github.com/wmglab-duke/ascent
 """
 
 
@@ -19,13 +21,13 @@ from .env_setup import run as env_setup
 
 
 def run(args):
+    """Run the pipeline.
+
+    :param args: The command line arguments.
+    """
     # test
     if not (sys.version_info.major == 3 and sys.version_info.minor >= 7):
-        print(
-            'You are running Python {}.{}, but 3.7 or later required'.format(
-                sys.version_info.major, sys.version_info.minor
-            )
-        )
+        print(f'You are running Python {sys.version_info.major}.{sys.version_info.minor}, but 3.7 or later required')
         sys.exit()
 
     # create bin/ directory for storing compiled Java files if it does not yet exist
@@ -39,23 +41,23 @@ def run(args):
         try:
             int(argument)
         except ValueError:
-            print('Invalid type for argument: {}\n' 'All arguments must be positive integers.'.format(argument))
+            print(f'Invalid type for argument: {argument}\nAll arguments must be positive integers.')
             sys.exit()
 
         if int(argument) < 0:
-            print('Invalid sign for argument: {}\n' 'All arguments must be positive integers.'.format(argument))
+            print(f'Invalid sign for argument: {argument}\nAll arguments must be positive integers.')
             sys.exit()
 
-        print('\n########## STARTING RUN {} ##########\n'.format(argument))
+        print(f'\n########## STARTING RUN {argument} ##########\n')
 
-        run_path = os.path.join('config', 'user', 'runs', '{}.json'.format(argument))
+        run_path = os.path.join('config', 'user', 'runs', f'{argument}.json')
         if not os.path.exists(run_path):
-            print('Invalid run configuration path: {}'.format(run_path))
+            print(f'Invalid run configuration path: {run_path}')
             sys.exit()
 
         env_path = os.path.join('config', 'system', 'env.json')
         if not os.path.exists(env_path):
-            print('Missing env configuration file: {}'.format(env_path))
+            print(f'Missing env configuration file: {env_path}')
             env_setup(env_path)
 
         # initialize Runner (loads in parameters)
@@ -74,8 +76,8 @@ def run(args):
         end = time.time()
         elapsed = end - start
 
-        if args.auto_submit or runner.search(Config.RUN, 'auto_submit_fibers', optional=True) == True:
-            print('Auto submitting fibers for run {}'.format(argument))
+        if args.auto_submit or runner.search(Config.RUN, 'auto_submit_fibers', optional=True) is True:
+            print(f'Auto submitting fibers for run {argument}')
             # submit fibers before moving on to next run
             reset_dir = os.getcwd()
             export_path = runner.search(Config.ENV, Env.NSIM_EXPORT_PATH.value)
@@ -91,7 +93,7 @@ def run(args):
                     print('WARNING: Non-zero exit code during fiber submission. Continuing to next run...')
             os.chdir(reset_dir)
 
-        print('\n Run {} runtime: {} (hh:mm:ss)'.format(argument, time.strftime('%H:%M:%S', time.gmtime(elapsed))))
+        print(f"\nRun {argument} runtime: {time.strftime('%H:%M:%S', time.gmtime(elapsed))} (hh:mm:ss)")
 
     # cleanup for console viewing/inspecting
     del start, end

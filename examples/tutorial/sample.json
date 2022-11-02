@@ -1,6 +1,6 @@
 {
-  "sample": "Rat17-3",
-  "pseudonym": "beta sample",
+  "sample": "tutorial",
+  "pseudonym": "tutorial sample",
   "sex": "M",
   "level": "Cervical",
   "scale": {
@@ -18,7 +18,8 @@
     "deform": "NONE",
     "ci_perineurium_thickness": "MEASURED",
     "reshape_nerve": "NONE",
-    "shrinkage_definition": "LENGTH_FORWARDS"
+    "shrinkage_definition": "LENGTH_FORWARDS",
+    "contour_approximation": "SIMPLE"
   },
   "Morphology": null
 }

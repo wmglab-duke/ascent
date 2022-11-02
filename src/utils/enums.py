@@ -1,13 +1,15 @@
 #!/usr/bin/env python3.7
 
-"""
-The copyrights of this software are owned by Duke University.
+"""The copyrights of this software are owned by Duke University.
+
 Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
 import os
 from enum import Enum, unique
+
+import cv2
 
 
 class ASCENTEnum(Enum):
@@ -16,8 +18,6 @@ class ASCENTEnum(Enum):
 
 
 # %% Core (backend) functionality
-
-
 @unique
 class SetupMode(ASCENTEnum, Enum):
     NEW = 0
@@ -32,7 +32,6 @@ class Config(ASCENTEnum, Enum):
     MATERIALS = 'materials'
     FIBER_Z = 'fiber_z'
     CUFFS = 'cuffs'
-    EXCEPTIONS = 'exceptions'
     CLI_ARGS = 'cli_args'
     ENV = 'env'
     CI_PERINEURIUM_THICKNESS = 'ci_perineurium_thickness'
@@ -99,7 +98,6 @@ class MaskInputMode(ASCENTEnum, Enum):
     config = 'mask_input'
 
     INNERS = 0
-    OUTERS = 1
     INNER_AND_OUTER_SEPARATE = 2
     INNER_AND_OUTER_COMPILED = 3
 
@@ -163,8 +161,15 @@ class DeformationMode(ASCENTEnum, Enum):
     config = 'deform'
 
     NONE = None
-    JITTER = 0
     PHYSICS = 1
+
+
+@unique
+class ContourMode(ASCENTEnum, Enum):
+    config = 'contour_approximation'
+
+    NONE = cv2.CHAIN_APPROX_NONE
+    SIMPLE = cv2.CHAIN_APPROX_SIMPLE
 
 
 # %% Fiber Position and Type
@@ -235,7 +240,8 @@ class UnmyelinatedFiberType(ASCENTEnum, Enum):
     SUNDT = 0
     TIGERHOLM = 1
     RATTAY = 2
-    SCHILD = 3
+    SCHILD97 = 3
+    SCHILD9 = 4
 
 
 # %% Waveforms
@@ -347,11 +353,8 @@ class CuffShiftMode(ASCENTEnum, Enum):
     AUTO_ROTATION_MIN_CIRCLE_BOUNDARY = 0
     AUTO_ROTATION_TRACE_BOUNDARY = 1
     NONE = 2
-    PURPLE = 3
-    NAIVE_ROTATION_MIN_CIRCLE_BOUNDARY = 4  # purple
+    NAIVE_ROTATION_MIN_CIRCLE_BOUNDARY = 4
     NAIVE_ROTATION_TRACE_BOUNDARY = 5
-    MIN_CIRCLE_BOUNDARY = 6
-    TRACE_BOUNDARY = 7
 
 
 # %% Templates

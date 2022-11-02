@@ -1,9 +1,11 @@
 #!/usr/bin/env python3.7
 
-"""
+"""Submits NEURON fiber simulations.
+
 The copyrights of this software are owned by Duke University.
-Please refer to the LICENSE and README.md files for licensing instructions.
-The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
+Please refer to the LICENSE and README.md files for licensing
+instructions. The source code can be found on the following GitHub
+repository: https://github.com/wmglab-duke/ascent
 """
 
 import argparse
@@ -16,16 +18,22 @@ import shutil
 import subprocess
 import sys
 import time
-import traceback
 import warnings
+from json import JSONDecodeError
 
 import numpy as np
 import pandas as pd
 
 
 # %%Set up parser and top level args
-class listAction(argparse.Action):
-    def __call__(self, parser, args, values, option_string=None):
+class ListAction(argparse.Action):
+    """Custom action for argparse to list run info."""
+
+    def __call__(self, parser, values, option_string=None, **kwargs):
+        """Print run info and exit. # noqa: DAR101.
+
+        This function is called when the --list option is used and should not be called directly.
+        """
         run_path = 'runs'
         jsons = [file for file in os.listdir(run_path) if file.endswith('.json')]
         data = []
@@ -33,9 +41,8 @@ class listAction(argparse.Action):
             with open(run_path + '/' + j) as f:
                 try:
                     rundata = json.load(f)
-                except Exception as e:
-                    print('WARNING: Could not load {}'.format(j))
-                    print(e)
+                except JSONDecodeError as e:
+                    print(f'WARNING: Could not load {j}, check for syntax errors. Original error: {e}')
                     continue
                 data.append(
                     {
@@ -49,7 +56,7 @@ class listAction(argparse.Action):
         df = pd.DataFrame(data)
         df.RUN = df.RUN.astype(int)
         df = df.sort_values('RUN')
-        print('Run indices available (defined by user .json files in {}):\n'.format(run_path))
+        print(f'Run indices available (defined by user .json files in {run_path}):\n')
         print(df.to_string(index=False))
         sys.exit()
 
@@ -85,7 +92,7 @@ parser.add_argument(
 parser.add_argument(
     '-l',
     '--list-runs',
-    action=listAction,
+    action=ListAction,
     nargs=0,
     help='List info for available runs.z If supplying this argument, do not pass any run indices',
 )
@@ -107,6 +114,12 @@ parser.add_argument(
     type=str,
     help='For cluster submission: string for additional slurm parameters (enclose in quotes)',
 )
+parser.add_argument(
+    '-c',
+    '--force-recompile',
+    action='store_true',
+    help='Force submit.py to recompile NEURON files',
+)
 submit_context_group = parser.add_mutually_exclusive_group()
 submit_context_group.add_argument(
     '-L',
@@ -120,9 +133,9 @@ submit_context_group.add_argument(
     action='store_true',
     help='Set submission context to cluster, overrides run.json',
 )
+
 parser.add_argument('-v', '--verbose', action='store_true', help='Print detailed submission info')
 
-ALLOWED_SUBMISSION_CONTEXTS = ['cluster', 'local', 'auto']
 OS = 'UNIX-LIKE' if any([s in sys.platform for s in ['darwin', 'linux']]) else 'WINDOWS'
 
 
@@ -130,10 +143,16 @@ OS = 'UNIX-LIKE' if any([s in sys.platform for s in ['darwin', 'linux']]) else '
 
 
 class WarnOnlyOnce:
+    """Warn only once per instance."""
+
     warnings = set()
 
     @classmethod
     def warn(cls, message):
+        """Print warning message if first call.
+
+        :param message: Warning message to print
+        """
         # storing int == less memory then storing raw message
         h = hash(message)
         if h not in cls.warnings:
@@ -142,52 +161,65 @@ class WarnOnlyOnce:
             cls.warnings.add(h)
 
 
-def printProgressBar(iteration, total, prefix='', suffix='', decimals=1, length=100, fill='█'):
-    """
-    Call in a loop to create terminal progress bar
-    @params:
-        iteration   - Required  : current iteration (Int)
-        total       - Required  : total iterations (Int)
-        prefix      - Optional  : prefix string (Str)
-        suffix      - Optional  : suffix string (Str)
-        decimals    - Optional  : positive number of decimals in percent complete (Int)
-        length      - Optional  : character length of bar (Int)
-        fill        - Optional  : bar fill character (Str)
+def print_progress_bar(iteration, total, prefix='', suffix='', decimals=1, length=100, fill='█'):
+    """Print or update a progress bar in the terminal.
+
+    Call in a loop to create a terminal progress bar.
+    Information such as the prefix and suffix can be changed with each call.
+
+    :param iteration: The current iteration (current/total)
+    :param total: The total number of iterations
+    :param prefix: The prefix string to place before the progress bar
+    :param suffix: The suffix string to place after the progress bar
+    :param decimals: The number of decimals to show on the percentage progress
+    :param length: The length of the progress bar
+    :param fill: The character to fill the progress bar with
     """
     percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
-    filledLength = int(length * iteration // total)
-    bar = fill * filledLength + '-' * (length - filledLength)
-    print('\r{} |{}| {}% {}'.format(prefix, bar, percent, suffix), end='')
+    filled_length = int(length * iteration // total)
+    bar = fill * filled_length + '-' * (length - filled_length)
+    print(f'\r{prefix} |{bar}| {percent}% {suffix}', end='')
     # Print New Line on Complete
     if iteration == total:
         print()
 
 
 def load(config_path: str):
-    """
-    Loads in json data and returns to user, assuming it has already been validated.
+    """Load in json data and returns to user, assuming it has already been validated.
+
     :param config_path: the string path to load up
     :return: json data (usually dict or list)
     """
     with open(config_path, "r") as handle:
-        # print('load "{}" --> key "{}"'.format(config, key))
         return json.load(handle)
 
 
 def ensure_dir(directory):
+    """Ensure that a directory exists. If it does not, create it.
+
+    :param directory: the string path to the directory
+    """
     if not os.path.exists(directory):
         os.makedirs(directory)
 
 
 def auto_compile(override: bool = False):
+    """Compile NEURON files if they have not been compiled yet.
+
+    :param override: if True, compile regardless of whether the files have already been compiled
+    :return: True if ran compilation, False if not
+    """
     if (
         (not os.path.exists(os.path.join('MOD_Files', 'x86_64', 'special')) and OS == 'UNIX-LIKE')
         or (not os.path.exists(os.path.join('MOD_Files', 'nrnmech.dll')) and OS == 'WINDOWS')
         or override
     ):
-        print('compile')
+        print('compiling')
         os.chdir(os.path.join('MOD_Files'))
-        subprocess.run(['nrnivmodl'], shell=True)
+        exit_data = subprocess.run(['nrnivmodl'], shell=True, capture_output=True, text=True)
+        if exit_data.returncode != 0:
+            print(exit_data.stderr)
+            sys.exit("Error in compiling of NEURON files. Exiting...")
         os.chdir('..')
         compiled = True
     else:
@@ -197,6 +229,13 @@ def auto_compile(override: bool = False):
 
 
 def get_diameter(my_inner_fiber_diam_key, my_inner_ind, my_fiber_ind):
+    """Get the diameter of the fiber from the inner fiber diameter key.
+
+    :param my_inner_fiber_diam_key: the key for the fiber diameters
+    :param my_inner_ind: the index of the inner
+    :param my_fiber_ind: the index of the fiber within the inner
+    :return: the diameter for this fiber
+    """
     for item in my_inner_fiber_diam_key:
         if item[0] == my_inner_ind and item[1] == my_fiber_ind:
             my_diameter = item[2]
@@ -210,6 +249,12 @@ def get_diameter(my_inner_fiber_diam_key, my_inner_ind, my_fiber_ind):
 
 
 def get_deltaz(fiber_model, diameter):
+    """Get the deltaz (node spacing) for a given fiber model and diameter.
+
+    :param fiber_model: the string name of the fiber model
+    :param diameter: the diameter of the fiber in microns
+    :return: the deltaz for this fiber, the neuron flag for the fiber model
+    """
     fiber_z_config = load(os.path.join('config', 'system', 'fiber_z.json'))
     fiber_model_info: dict = fiber_z_config['fiber_type_parameters'][fiber_model]
 
@@ -238,23 +283,30 @@ def get_deltaz(fiber_model, diameter):
     return delta_z, neuron_flag
 
 
-def get_thresh_bounds(args, sim_dir: str, sim_name: str, inner_ind: int):
+def get_thresh_bounds(sim_dir: str, sim_name: str, inner_ind: int):
+    """Get threshold bounds (upper and lower) for this simulation.
+
+    :param sim_dir: the string path to the simulation directory
+    :param sim_name: the string name of the n_sim
+    :param inner_ind: the index of the inner this fiber is in
+    :return: the upper and lower threshold bounds
+    """
     top, bottom = None, None
 
     sample = sim_name.split('_')[0]
     n_sim = sim_name.split('_')[3]
 
-    sim_config = load(os.path.join(sim_dir, sim_name, '{}.json'.format(n_sim)))
+    sim_config = load(os.path.join(sim_dir, sim_name, f'{n_sim}.json'))
 
     if sim_config['protocol']['mode'] == 'ACTIVATION_THRESHOLD' or sim_config['protocol']['mode'] == 'BLOCK_THRESHOLD':
-        if 'scout' in sim_config['protocol']['bounds_search'].keys():
+        if 'scout' in sim_config['protocol']['bounds_search']:
             # load in threshold from scout_sim (example use: run centroid first, then any other xy-mode after)
             scout = sim_config['protocol']['bounds_search']['scout']
             scout_sim_dir = os.path.join('n_sims')
-            scout_sim_name = '{}_{}_{}_{}'.format(sample, scout['model'], scout['sim'], n_sim)
+            scout_sim_name = f"{sample}_{scout['model']}_{scout['sim']}_{n_sim}"
             scout_sim_path = os.path.join(scout_sim_dir, scout_sim_name)
             scout_output_path = os.path.abspath(os.path.join(scout_sim_path, 'data', 'outputs'))
-            scout_thresh_path = os.path.join(scout_output_path, 'thresh_inner{}_fiber{}.dat'.format(inner_ind, 0))
+            scout_thresh_path = os.path.join(scout_output_path, f'thresh_inner{inner_ind}_fiber{0}.dat')
 
             if os.path.exists(scout_thresh_path):
                 stimamp = np.loadtxt(scout_thresh_path)
@@ -269,7 +321,7 @@ def get_thresh_bounds(args, sim_dir: str, sim_name: str, inner_ind: int):
                 unused_protocol_keys = ['top', 'bottom']
 
                 if any(
-                    unused_protocol_key in sim_config['protocol']['bounds_search'].keys()
+                    unused_protocol_key in sim_config['protocol']['bounds_search']
                     for unused_protocol_key in unused_protocol_keys
                 ):
                     if args.verbose:
@@ -286,11 +338,13 @@ def get_thresh_bounds(args, sim_dir: str, sim_name: str, inner_ind: int):
             else:
                 if args.verbose:
                     warnings.warn(
-                        f"No fiber threshold exists for scout sim: inner{inner_ind} fiber0, using standard top and bottom"
+                        f"No fiber threshold exists for scout sim: "
+                        f"inner{inner_ind} fiber0, using standard top and bottom"
                     )
                 else:
                     WarnOnlyOnce.warn(
-                        f"Missing at least one scout threshold, using standard top and bottom. Rerun with --verbose flag for specific inner index."
+                        "Missing at least one scout threshold, using standard top and bottom. "
+                        "Rerun with --verbose flag for specific inner index."
                     )
 
                 top = sim_config['protocol']['bounds_search']['top']
@@ -307,8 +361,8 @@ def get_thresh_bounds(args, sim_dir: str, sim_name: str, inner_ind: int):
 
 
 def make_task(
-    my_os: str,
     sub_con: str,
+    my_os: str,
     start_p: str,
     sim_p: str,
     inner: int,
@@ -319,30 +373,42 @@ def make_task(
     deltaz: float,
     axonnodes: int,
 ):
+    """Create shell script used to run a fiber simulation.
+
+    :param sub_con: the string name of the submission context.
+    :param my_os: the string name of the operating system
+    :param start_p: the string path to the start_dir
+    :param sim_p: the string path to the sim_dir
+    :param inner: the index of the inner this fiber is in
+    :param fiber: the index of the fiber this simulation is for
+    :param top: the upper threshold bound
+    :param bottom: the lower threshold bound
+    :param diam: the diameter of the fiber
+    :param deltaz: the deltaz for the fiber
+    :param axonnodes: the number of axon nodes
+    """
     with open(start_p, 'w+') as handle:
         if my_os == 'UNIX-LIKE':
             lines = [
                 '#!/bin/bash\n',
-                'cd \"{}\"\n'.format(sim_p),
+                f'cd "{sim_p}\"\n',
                 'chmod a+rwx special\n',
                 './special -nobanner '
                 '-c \"strdef sim_path\" '
-                '-c \"sim_path=\\\"{}\\\"\" '
-                '-c \"inner_ind={}\" '
-                '-c \"fiber_ind={}\" '
-                '-c \"stimamp_top={}\" '
-                '-c \"stimamp_bottom={}\" '
-                '-c \"fiberD={:.1f}\" '
-                '-c \"deltaz={:.4f}\" '
-                '-c \"axonnodes={}\" '
+                f'-c \"sim_path=\\\"{sim_p}\\\"\" '
+                f'-c \"inner_ind={inner}\" '
+                f'-c \"fiber_ind={fiber}\" '
+                f'-c \"stimamp_top={top}\" '
+                f'-c \"stimamp_bottom={bottom}\" '
+                f'-c \"fiberD={diam:.1f}\" '
+                f'-c \"deltaz={deltaz:.4f}\" '
+                f'-c \"axonnodes={axonnodes}\" '
                 '-c \"saveflag_end_ap_times=0\" '  # for backwards compatible, overwritten in launch.hoc if 1
                 '-c \"saveflag_runtime=0\" '  # for backwards compatible, overwritten in launch.hoc if 1
-                '-c \"load_file(\\\"launch.hoc\\\")\" blank.hoc\n'.format(
-                    sim_p, inner, fiber, top, bottom, diam, deltaz, axonnodes
-                ),
+                '-c \"load_file(\\\"launch.hoc\\\")\" blank.hoc\n',
             ]
-            if sub_con is not 'cluster':
-                lines.remove('cd \"{}\"\n'.format(sim_p))
+            if sub_con != 'cluster':
+                lines.remove(f'cd "{sim_p}\"\n')
 
             # copy special files ahead of time to avoid 'text file busy error'
             if not os.path.exists('special'):
@@ -352,371 +418,264 @@ def make_task(
             sim_path_win = os.path.join(*sim_p.split(os.pathsep)).replace('\\', '\\\\')
             lines = [
                 'nrniv -nobanner '
-                '-dll \"{}/MOD_Files/nrnmech.dll\" '
+                f'-dll \"{os.getcwd()}/MOD_Files/nrnmech.dll\" '
                 '-c \"strdef sim_path\" '
-                '-c \"sim_path=\\\"{}\"\" '
-                '-c \"inner_ind={}\" '
-                '-c \"fiber_ind={}\" '
-                '-c \"stimamp_top={}\" '
-                '-c \"stimamp_bottom={}\" '
-                '-c \"fiberD={}\" '
-                '-c \"deltaz={:.4f}\" '
-                '-c \"axonnodes={}\" '
+                f'-c \"sim_path=\\\"{sim_path_win}\"\" '
+                f'-c \"inner_ind={inner}\" '
+                f'-c \"fiber_ind={fiber}\" '
+                f'-c \"stimamp_top={top}\" '
+                f'-c \"stimamp_bottom={bottom}\" '
+                f'-c \"fiberD={diam:.1f}\" '
+                f'-c \"deltaz={deltaz:.4f}\" '
+                f'-c \"axonnodes={axonnodes}\" '
                 '-c \"saveflag_end_ap_times=0\" '  # for backwards compatible, overwritten in launch.hoc if 1
                 '-c \"saveflag_runtime=0\" '  # for backwards compatible, overwritten in launch.hoc if 1
                 '-c \"saveflag_ap_loctime=0\" '  # for backwards compatible, overwritten in launch.hoc if 1
-                '-c \"load_file(\\\"launch.hoc\\\")\" blank.hoc\n'.format(
-                    os.getcwd(),
-                    sim_path_win,
-                    inner,
-                    fiber,
-                    top,
-                    bottom,
-                    diam,
-                    deltaz,
-                    axonnodes,
-                )
+                '-c \"load_file(\\\"launch.hoc\\\")\" blank.hoc\n'
             ]
 
         handle.writelines(lines)
         handle.close()
 
 
-def local_submit(my_local_args: dict):
-    sim_path = my_local_args['sim_path']
-    os.chdir(sim_path)
+def local_submit(fiber_data: dict):
+    """Submit a fiber simulation to the local machine.
 
-    start = my_local_args['start']
-    out_filename = my_local_args['output_log']
-    err_filename = my_local_args['error_log']
+    :param fiber_data: the dictionary of fiber data for suvbmission
+    """
+    a = fiber_data["job_number"]
+    out_path = os.path.join('logs', 'out', f'{a}.log')
+    err_path = os.path.join('logs', 'err', f'{a}.log')
+    start = os.path.join('start_scripts', f'start_{a}')
+    with open(out_path, "w+") as fo, open(err_path, "w+") as fe:
+        subprocess.run(['bash', start + '.sh'] if OS == 'UNIX-LIKE' else [start + '.bat'], stdout=fo, stderr=fe)
 
-    with open(out_filename, "w+") as fo, open(err_filename, "w+") as fe:
-        p = subprocess.run(['bash', start] if OS == 'UNIX-LIKE' else [start], stdout=fo, stderr=fe)
+    # print fiber completion
+    if fiber_data['verbose']:
+        print(f'Completed NEURON simulation for inner {fiber_data["inner"]} fiber {fiber_data["fiber"]}.')
 
 
-def cluster_submit(run_number: int, partition: str, args, mem: int = 2000, array_length_max: int = 10):
+def submit_fibers(submission_context, submission_data):
+    """Submit fiber simulations, either locally or to a cluster.
+
+    :param submission_context: the string name of the submission_context
+    :param submission_data: the dictionary of data for fiber submission
+    :raises ValueError: IF the specified cpu count is higher than the number of cores on the machine
+    """
     # configuration is not empty
-    assert array_length_max > 0, 'SLURM Job Array length is not > 0: array_length_max={}'.format(array_length_max)
+    ran_fibers = 0
+    sim_dir = os.path.join('n_sims')
+    n_fibers = sum(len(v) for v in submission_data.values())
 
-    # build configuration filename
-    filename: str = os.path.join('runs', run_number + '.json')
+    for sim_name, runfibers in submission_data.items():
+        if args.verbose:
+            print(f'\n\n################ {sim_name} ################\n\n')
+        # skip if no fibers to run for this nsim
+        if len(runfibers) == 0:
+            continue
+        sim_path = os.path.join(sim_dir, sim_name)
+        start_dir = os.path.join(sim_path, 'start_scripts')
+        start_path_base = os.path.join(start_dir, 'start_')
 
-    # load in configuration data
-    run: dict = load(filename)
+        if submission_context == 'cluster':
 
-    # assign appropriate configuration data
-    samples = [run.get('sample', [])]
-    models = run.get('models', [])
-    sims = run.get('sims', [])
+            cluster_submit(runfibers, sim_name, sim_path, start_path_base)
+            ran_fibers += len(runfibers)
+            if not args.verbose:
+                print_progress_bar(ran_fibers, n_fibers, length=40, prefix=f'Fibers submitted: {ran_fibers}/{n_fibers}')
+        else:
 
-    job_count = 1
-    data = [[], [], []]
-    current_iteration = 0
+            if args.num_cpu is not None:
+                cpus = args.num_cpu
 
-    for sample in samples:
-        # loop models, sims
-        for model in models:
-            for sim in sims:
-                sim_dir = os.path.join('n_sims')
-                sim_name_base = '{}_{}_{}_'.format(sample, model, sim)
-                nsim_list = [x for x in os.listdir(sim_dir) if x.startswith(sim_name_base)]
-                for sim_name in nsim_list:
-                    current_iteration += 1
-                    if args.verbose:
-                        print('\n\n################ {} ################\n\n'.format(sim_name))
-                    else:
-                        # print progress bar
-                        total_iterations = len(samples) * len(models) * len(sims) * len(nsim_list)
-                        printProgressBar(
-                            current_iteration,
-                            total_iterations,
+                if cpus > multiprocessing.cpu_count() - 1:
+                    raise ValueError('num_cpu argument is more than cpu_count-1 CPUs')
+
+                print(f"Submitting locally to {cpus} CPUs")
+
+            else:
+                cpus = multiprocessing.cpu_count() - 1
+                warnings.warn(
+                    f"You did not define number of cores to use (-n), so proceeding with cpu_core_count-1={cpus}"
+                )
+            os.chdir(sim_path)
+            with multiprocessing.Pool(cpus) as p:
+                for x in runfibers:
+                    x['verbose'] = args.verbose
+                if not args.verbose:
+                    print_progress_bar(
+                        0,
+                        len(runfibers),
+                        length=40,
+                        prefix='Sample {}, Model {}, Sim {}, n_sim {}:'.format(*sim_name.split('_')),  # noqa FS002
+                    )
+                # open pool instance, set up progress bar, and iterate over each job
+                for i, _ in enumerate(p.imap_unordered(local_submit, runfibers, 1)):
+                    if not args.verbose:
+                        print_progress_bar(
+                            i + 1,
+                            len(runfibers),
                             length=40,
-                            prefix='Run {}:'.format(run_number),
+                            prefix='Sample {}, Model {}, Sim {}, n_sim {}:'.format(*sim_name.split('_')),  # noqa FS002
                         )
-
-                    sim_path = os.path.join(sim_dir, sim_name)
-                    fibers_path = os.path.abspath(os.path.join(sim_path, 'data', 'inputs'))
-                    output_path = os.path.abspath(os.path.join(sim_path, 'data', 'outputs'))
-                    start_dir = os.path.join(sim_path, 'start_scripts')
-                    start_path_base = os.path.join(start_dir, 'start_')
-
-                    n_sim = sim_name.split('_')[3]
-                    sim_config = load(os.path.join(sim_dir, sim_name, '{}.json'.format(n_sim)))
-
-                    fiber_model = sim_config['fibers']['mode']
-
-                    # ensure log directories exist
-                    out_dir = os.path.join(sim_path, 'logs', 'out', '')
-                    err_dir = os.path.join(sim_path, 'logs', 'err', '')
-                    for cur_dir in [
-                        fibers_path,
-                        output_path,
-                        out_dir,
-                        err_dir,
-                        start_dir,
-                    ]:
-                        ensure_dir(cur_dir)
-
-                    # ensure blank.hoc exists
-                    blank_path = os.path.join(sim_path, 'blank.hoc')
-                    if not os.path.exists(blank_path):
-                        open(blank_path, 'w').close()
-
-                    fibers_files = [x for x in os.listdir(fibers_path) if re.match('inner[0-9]+_fiber[0-9]+\\.dat', x)]
-                    max_fibers_files_ind = len(fibers_files) - 1
-
-                    start_paths_list = []
-                    sim_array_batch = 1
-                    inner_index_tally = []
-                    fiber_index_tally = []
-                    missing_total = 0
-
-                    inner_fiber_diam_key_file = os.path.join(fibers_path, 'inner_fiber_diam_key.obj')
-                    inner_fiber_diam_key = None
-                    if os.path.exists(inner_fiber_diam_key_file):
-                        with open(inner_fiber_diam_key_file, 'rb') as f:
-                            inner_fiber_diam_key = pickle.load(f)
-                        f.close()
-                    else:
-                        diameter = sim_config['fibers']['z_parameters']['diameter']
-
-                    for fiber_file_ind, fiber_filename in enumerate(fibers_files):
-                        master_fiber_name = str(fiber_filename.split('.')[0])
-                        inner_name, fiber_name = tuple(master_fiber_name.split('_'))
-                        inner_ind = int(inner_name.split('inner')[-1])
-                        fiber_ind = int(fiber_name.split('fiber')[-1])
-
-                        thresh_path = os.path.join(output_path, f"thresh_inner{inner_ind}_fiber{fiber_ind}.dat")
-                        if os.path.exists(thresh_path):
-                            continue
-                        else:
-                            missing_total += 1
-                            inner_ind_solo = inner_ind
-                            fiber_ind_solo = fiber_ind
-                            master_fiber_name_solo = master_fiber_name
-
-                    if missing_total == 0:
-                        continue
-
-                    elif missing_total == 1:
-                        stimamp_top, stimamp_bottom = get_thresh_bounds(args, sim_dir, sim_name, inner_ind_solo)
-                        start_path_solo = os.path.join(
-                            sim_path,
-                            'start{}'.format('.sh' if OS == 'UNIX-LIKE' else '.bat'),
-                        )
-
-                        if inner_fiber_diam_key is not None:
-                            diameter = get_diameter(inner_fiber_diam_key, inner_ind, fiber_ind)
-
-                        deltaz, neuron_flag = get_deltaz(fiber_model, diameter)
-
-                        if stimamp_top is not None and stimamp_bottom is not None:
-
-                            # get the axonnodes from data/inputs/inner{}_fiber{}.dat top line
-                            fiber_ve_path = os.path.join(
-                                fibers_path,
-                                'inner{}_fiber{}.dat'.format(inner_ind_solo, fiber_ind_solo),
-                            )
-                            fiber_ve = np.loadtxt(fiber_ve_path)
-                            n_fiber_coords = int(fiber_ve[0])
-
-                            if neuron_flag == 2:
-                                axonnodes = int(1 + (n_fiber_coords - 1) / 11)
-                            elif neuron_flag == 3:
-                                axonnodes = int(n_fiber_coords)
-
-                            make_task(
-                                OS,
-                                'cluster',
-                                start_path_solo,
-                                sim_path,
-                                inner_ind_solo,
-                                fiber_ind_solo,
-                                stimamp_top,
-                                stimamp_bottom,
-                                diameter,
-                                deltaz,
-                                axonnodes,
-                            )
-
-                            # submit batch job for fiber
-                            job_name = '{}_{}'.format(sim_name, master_fiber_name_solo)
-                            output_log = os.path.join(out_dir, '{}{}'.format(master_fiber_name_solo, '.log'))
-                            error_log = os.path.join(err_dir, '{}{}'.format(master_fiber_name_solo, '.log'))
-
-                            if args.verbose:
-                                print('========= SUBMITTING SOLO: {} ==========='.format(job_name))
-
-                            command = [
-                                'sbatch{}'.format(' ' + args.slurm_params if args.slurm_params is not None else ''),
-                                '--job-name={}'.format(job_name),
-                                '--output={}'.format(output_log),
-                                '--error={}'.format(error_log),
-                                '--mem={}'.format(mem),
-                                '-p',
-                                partition,
-                                '-c',
-                                '1',
-                                start_path_solo,
-                            ]
-                            if not args.verbose:
-                                with open(os.devnull, 'wb') as devnull:
-                                    comp = subprocess.run(command, stdout=devnull)
-                            else:
-                                comp = subprocess.run(command)
-                            if comp.returncode != 0:
-                                sys.exit('Non-zero exit code during job submission. Exiting.')
-
-                            # allow job to start before removing slurm file
-                            time.sleep(1.0)
-                        else:
-                            sys.exit('Top and bottom bounds not defined for threshold search. Exiting.')
-
-                    else:
-                        if args.verbose:
-                            print('================= ARRAY SUBMITTING ====================')
-                        array_index = 0
-                        for fiber_file_ind, fiber_filename in enumerate(fibers_files):
-                            master_fiber_name = str(fiber_filename.split('.')[0])
-                            inner_name, fiber_name = tuple(master_fiber_name.split('_'))
-                            inner_ind = int(inner_name.split('inner')[-1])
-                            fiber_ind = int(fiber_name.split('fiber')[-1])
-
-                            thresh_path = os.path.join(
-                                output_path,
-                                f"thresh_inner{inner_ind}_fiber{fiber_ind}.dat",
-                            )
-                            if not os.path.exists(thresh_path):
-                                if args.verbose:
-                                    print(f"RUNNING inner ({inner_ind}) fiber ({fiber_ind})  -->  {thresh_path}")
-                                # time.sleep(1)
-
-                                if inner_fiber_diam_key is not None:
-                                    diameter = get_diameter(inner_fiber_diam_key, inner_ind, fiber_ind)
-                                deltaz, neuron_flag = get_deltaz(fiber_model, diameter)
-
-                                # get the axonnodes from data/inputs/inner{}_fiber{}.dat top line
-                                fiber_ve_path = os.path.join(
-                                    fibers_path,
-                                    'inner{}_fiber{}.dat'.format(inner_ind, fiber_ind),
-                                )
-                                fiber_ve = np.loadtxt(fiber_ve_path)
-                                n_fiber_coords = int(fiber_ve[0])
-
-                                if neuron_flag == 2:
-                                    axonnodes = int(1 + (n_fiber_coords - 1) / 11)
-                                elif neuron_flag == 3:
-                                    axonnodes = int(n_fiber_coords)
-
-                                start_path = '{}{}{}'.format(
-                                    start_path_base,
-                                    job_count,
-                                    '.sh' if OS == 'UNIX-LIKE' else '.bat',
-                                )
-                                start_paths_list.append(start_path)
-
-                                inner_index_tally.append(inner_ind)
-                                fiber_index_tally.append(fiber_ind)
-
-                                stimamp_top, stimamp_bottom = get_thresh_bounds(args, sim_dir, sim_name, inner_ind)
-                                if stimamp_top is not None and stimamp_bottom is not None:
-                                    make_task(
-                                        OS,
-                                        'cluster',
-                                        start_path,
-                                        sim_path,
-                                        inner_ind,
-                                        fiber_ind,
-                                        stimamp_top,
-                                        stimamp_bottom,
-                                        diameter,
-                                        deltaz,
-                                        axonnodes,
-                                    )
-                                    array_index += 1
-                                    job_count += 1
-
-                            if array_index == array_length_max or fiber_file_ind == max_fibers_files_ind:
-                                # output key, since we lose this in array method
-                                start = job_count - len(start_paths_list)
-
-                                key_file = os.path.join(sim_path, 'out_err_key.txt')
-
-                                data[0].append(
-                                    [x for x in range(start, job_count)]
-                                )  # note: last value is job_count - 1
-                                data[1].append(inner_index_tally)
-                                data[2].append(fiber_index_tally)
-
-                                key_arr = np.transpose(
-                                    np.array(
-                                        [
-                                            [x for xs in data[0] for x in xs],
-                                            [y for ys in data[1] for y in ys],
-                                            [z for zs in data[2] for z in zs],
-                                        ]
-                                    )
-                                )
-
-                                if fiber_file_ind == max_fibers_files_ind:
-                                    with open(key_file, "ab") as f:
-                                        np.savetxt(
-                                            f,
-                                            key_arr,
-                                            fmt='%d',
-                                            header='job_n, inner, fiber',
-                                            comments='',
-                                            delimiter=", ",
-                                        )
-
-                                    data = [[], [], []]
-
-                                # submit batch job for fiber
-                                job_name = f"{sim_name}_{sim_array_batch}"
-
-                                command = [
-                                    'sbatch{}'.format(' ' + args.slurm_params if args.slurm_params is not None else ''),
-                                    '--job-name={}'.format(job_name),
-                                    '--output={}%a.log'.format(out_dir),
-                                    '--error={}%a.log'.format(err_dir),
-                                    '--array={}-{}'.format(start, job_count - 1),
-                                    '--mem={}'.format(mem),
-                                    '--partition={}'.format(partition),
-                                    '--cpus-per-task=1',
-                                    'array_launch.slurm',
-                                    start_path_base,
-                                ]
-
-                                if not args.verbose:
-                                    with open(os.devnull, 'wb') as devnull:
-                                        exit_code = subprocess.check_call(command, stdout=devnull)
-                                else:
-                                    exit_code = subprocess.check_call(command)
-                                if exit_code != 0:
-                                    sys.exit('Non-zero exit code during job array submission. Exiting.')
-
-                                # allow job to start before removing slurm file
-                                time.sleep(1.0)
-
-                                array_index = 0
-                                sim_array_batch += 1
-                                start_paths_list = []
-                                inner_index_tally = []
-                                fiber_index_tally = []
+            os.chdir("../..")
 
 
-def make_local_submission_list(run_number: int, args, summary_gen=False):
+def cluster_submit(runfibers, sim_name, sim_path, start_path_base):
+    """Submit fiber simulations on a slurm-based high performance computing cluster.
+
+    :param runfibers: the list of fiber data for submission
+    :param sim_name: the string name of the n_sim
+    :param sim_path: the string path to the simulation
+    :param start_path_base: the string prefix for all start scripts
+    """
+    slurm_params = load(os.path.join('config', 'system', 'slurm_params.json'))
+    out_dir = os.path.abspath(os.path.join(sim_path, 'logs', 'out', '%a.log'))
+    err_dir = os.path.abspath(os.path.join(sim_path, 'logs', 'err', '%a.log'))
+    # assign params for array submission
+    partition = slurm_params['partition'] if args.partition is None else args.partition
+    njobs = slurm_params['jobs_per_array'] if args.num_jobs is None else args.num_jobs
+    mem = slurm_params['memory_per_fiber'] if args.job_mem is None else args.job_mem
+    array_fibertasks = [runfibers[x : x + njobs] for x in range(0, len(runfibers), njobs)]
+    for tasklist in array_fibertasks:
+
+        array_indices = [task['job_number'] for task in tasklist]
+
+        # print fiber submission
+        if args.verbose:
+            for task in tasklist:
+                print(f"RUNNING inner ({task['inner']}) fiber ({task['fiber']})")
+                time.sleep(1)
+
+        # submit batch job for fiber
+
+        command = [
+            'sbatch',
+            *([args.slurm_params] if args.slurm_params else []),
+            f'--job-name={sim_name}',
+            f'--output={out_dir}',
+            f'--error={err_dir}',
+            f"--array={','.join([str(x) for x in array_indices])}",
+            f'--mem={mem}',
+            f'--partition={partition}',
+            '--cpus-per-task=1',
+            'array_launch.slurm',
+            start_path_base,
+        ]
+
+        if not args.verbose:
+            exit_data = subprocess.run(command, capture_output=True, text=True)
+        else:
+            exit_data = subprocess.run(command, capture_output=True, text=True)
+            print(exit_data.stdout)
+        if exit_data.returncode != 0:
+            print(exit_data.stderr)
+            sys.exit('Non-zero exit code during job array submission. Exiting.')
+
+        # allow job to start before removing slurm file
+        time.sleep(1.0)
+
+
+def make_fiber_tasks(submission_list, submission_context):
+    """Create all shell scripts for fiber submission tasks.
+
+    :param submission_list: the list of fibers to be submitted
+    :param submission_context: the string name of the submission_context
+    """
+    # assign appropriate configuration data
+    sim_dir = os.path.join('n_sims')
+    for sim_name, runfibers in submission_list.items():
+
+        sim_path = os.path.join(sim_dir, sim_name)
+        fibers_path = os.path.abspath(os.path.join(sim_path, 'data', 'inputs'))
+        output_path = os.path.abspath(os.path.join(sim_path, 'data', 'outputs'))
+        start_dir = os.path.join(sim_path, 'start_scripts')
+        start_path_base = os.path.join(start_dir, 'start_')
+
+        # ensure log directories exist
+        out_dir = os.path.abspath(os.path.join(sim_path, 'logs', 'out', ''))
+        err_dir = os.path.abspath(os.path.join(sim_path, 'logs', 'err', ''))
+        for cur_dir in [
+            fibers_path,
+            output_path,
+            out_dir,
+            err_dir,
+            start_dir,
+        ]:
+            ensure_dir(cur_dir)
+
+        # ensure blank.hoc exists
+        blank_path = os.path.join(sim_path, 'blank.hoc')
+        if not os.path.exists(blank_path):
+            with open(blank_path, 'w'):
+                pass
+
+        # load JSON file with binary search amplitudes
+        n_sim = sim_name.split('_')[-1]
+        sim_config = load(os.path.join(sim_path, f'{n_sim}.json'))
+        fiber_model = sim_config['fibers']['mode']
+
+        # load the inner x fiber -> diam key saved in the n_sim folder
+        inner_fiber_diam_key_file = os.path.join(fibers_path, 'inner_fiber_diam_key.obj')
+        inner_fiber_diam_key = None
+        if os.path.exists(inner_fiber_diam_key_file):
+            with open(inner_fiber_diam_key_file, 'rb') as f:
+                inner_fiber_diam_key = pickle.load(f)
+            f.close()
+        else:
+            diameter = sim_config['fibers']['z_parameters']['diameter']
+
+        for fiber_data in runfibers:
+            inner_ind, fiber_ind = fiber_data['inner'], fiber_data['fiber']
+
+            if inner_fiber_diam_key is not None:
+                diameter = get_diameter(inner_fiber_diam_key, inner_ind, fiber_ind)
+            deltaz, neuron_flag = get_deltaz(fiber_model, diameter)
+
+            # get the axonnodes from data/inputs/inner{}_fiber{}.dat top line
+            fiber_ve_path = os.path.join(
+                fibers_path,
+                f'inner{inner_ind}_fiber{fiber_ind}.dat',
+            )
+            fiber_ve = np.loadtxt(fiber_ve_path)
+            n_fiber_coords = int(fiber_ve[0])
+
+            if neuron_flag == 2:
+                axonnodes = int(1 + (n_fiber_coords - 1) / 11)
+            elif neuron_flag == 3:
+                axonnodes = int(n_fiber_coords)
+
+            start_path = f"{start_path_base}{fiber_data['job_number']}{'.sh' if OS == 'UNIX-LIKE' else '.bat'}"
+
+            stimamp_top, stimamp_bottom = get_thresh_bounds(sim_dir, sim_name, inner_ind)
+            if stimamp_top is not None and stimamp_bottom is not None:
+                make_task(
+                    submission_context,
+                    OS,
+                    start_path,
+                    sim_path,
+                    inner_ind,
+                    fiber_ind,
+                    stimamp_top,
+                    stimamp_bottom,
+                    diameter,
+                    deltaz,
+                    axonnodes,
+                )
+
+
+def make_run_sub_list(run_number: int):
+    """Create a list of all fiber simulations to be run. Skips fiber sims with existing output.
+
+    :param run_number: the number of the run
+    :return: a dict of all fiber simulations to be run
+    """
     # build configuration filename
-    filename = os.path.join('runs', run_number + '.json')
-
-    # create empty list of args (for local submission with parallelization) for each Run
-    local_args_list = []
-
+    filename: str = os.path.join('runs', f'{run_number}.json')
     # load in configuration data
     run = load(filename)
 
-    # keys required for each local submission
-    local_run_keys = ['start', 'output_log', 'error_log', 'sim_path']
+    submit_list = {}
 
     # assign appropriate configuration data
     samples = [run.get('sample', [])]
@@ -728,294 +687,164 @@ def make_local_submission_list(run_number: int, args, summary_gen=False):
         for model in models:
             for sim in sims:
                 sim_dir = os.path.join('n_sims')
-                sim_name_base = '{}_{}_{}_'.format(sample, model, sim)
-
-                for sim_name in [x for x in os.listdir(sim_dir) if x.startswith(sim_name_base)]:
-                    if not summary_gen and args.verbose:
-                        print('\n\n################ {} ################\n\n'.format(sim_name))
+                sim_name_base = f'{sample}_{model}_{sim}_'
+                nsim_list = [x for x in os.listdir(sim_dir) if x.startswith(sim_name_base)]
+                for sim_name in nsim_list:
+                    submit_list[sim_name] = []
 
                     sim_path = os.path.join(sim_dir, sim_name)
                     fibers_path = os.path.abspath(os.path.join(sim_path, 'data', 'inputs'))
                     output_path = os.path.abspath(os.path.join(sim_path, 'data', 'outputs'))
-                    start_dir = os.path.join(sim_path, "start_scripts")
 
-                    out_dir = os.path.abspath(os.path.join(sim_path, 'logs', 'out'))
-                    err_dir = os.path.abspath(os.path.join(sim_path, 'logs', 'err'))
-
-                    # ensure necessary directories exist
-                    for cur_dir in [
-                        fibers_path,
-                        output_path,
-                        out_dir,
-                        err_dir,
-                        start_dir,
-                    ]:
-                        ensure_dir(cur_dir)
-
-                    # ensure blank.hoc exists
-                    blank_path = os.path.join(sim_path, 'blank.hoc')
-                    if not os.path.exists(blank_path):
-                        open(blank_path, 'w').close()
-
-                    # load JSON file with binary search amplitudes
                     n_sim = sim_name.split('_')[-1]
-                    sim_config = load(os.path.join(sim_path, '{}.json'.format(n_sim)))
-                    fiber_model = sim_config['fibers']['mode']
+                    sim_config = load(os.path.join(sim_path, f'{n_sim}.json'))
 
-                    # load the inner x fiber -> diam key saved in the n_sim folder
-                    inner_fiber_diam_key_file = os.path.join(fibers_path, 'inner_fiber_diam_key.obj')
-                    inner_fiber_diam_key = None
-                    if os.path.exists(inner_fiber_diam_key_file):
-                        with open(inner_fiber_diam_key_file, 'rb') as f:
-                            inner_fiber_diam_key = pickle.load(f)
-                        f.close()
-                    else:
-                        diameter = sim_config['fibers']['z_parameters']['diameter']
+                    fibers_files = [x for x in os.listdir(fibers_path) if re.match('inner[0-9]+_fiber[0-9]+\\.dat', x)]
 
-                    for fiber_filename in [
-                        x for x in os.listdir(fibers_path) if re.match('inner[0-9]+_fiber[' '0-9]+\\.dat', x)
-                    ]:
+                    for i, fiber_filename in enumerate(fibers_files):
                         master_fiber_name = str(fiber_filename.split('.')[0])
                         inner_name, fiber_name = tuple(master_fiber_name.split('_'))
                         inner_ind = int(inner_name.split('inner')[-1])
                         fiber_ind = int(fiber_name.split('fiber')[-1])
 
-                        thresh_path = os.path.join(
-                            output_path,
-                            'thresh_inner{}_fiber{}.dat'.format(inner_ind, fiber_ind),
-                        )
-                        if os.path.exists(thresh_path):
-                            if not summary_gen and args.verbose:
-                                print(
-                                    'Found {} -->\t\tskipping inner ({}) fiber ({})'.format(
-                                        thresh_path, inner_ind, fiber_ind
-                                    )
-                                )
-                            continue
-
-                        # local
-                        start_path = os.path.join(
-                            start_dir,
-                            '{}_{}_start{}'.format(
-                                inner_ind,
-                                fiber_ind,
-                                '.sh' if OS == 'UNIX-LIKE' else '.bat',
-                            ),
-                        )
-                        stimamp_top, stimamp_bottom = get_thresh_bounds(args, sim_dir, sim_name, inner_ind)
-                        if inner_fiber_diam_key is not None:
-                            diameter = get_diameter(inner_fiber_diam_key, inner_ind, fiber_ind)
-                        deltaz, neuron_flag = get_deltaz(fiber_model, diameter)
-                        fiber_ve_path = os.path.join(
-                            fibers_path,
-                            'inner{}_fiber{}.dat'.format(inner_ind, fiber_ind),
-                        )
-                        fiber_ve = np.loadtxt(fiber_ve_path)
-                        n_fiber_coords = int(fiber_ve[0])
-
-                        if neuron_flag == 2:
-                            axonnodes = int(1 + (n_fiber_coords - 1) / 11)
-                        elif neuron_flag == 3:
-                            axonnodes = int(n_fiber_coords)
-
-                        if not summary_gen:
-                            make_task(
-                                OS,
-                                'local',
-                                start_path,
-                                sim_path,
-                                inner_ind,
-                                fiber_ind,
-                                stimamp_top,
-                                stimamp_bottom,
-                                diameter,
-                                deltaz,
-                                axonnodes,
+                        if sim_config['protocol']['mode'] == 'FINITE_AMPLITUDES':
+                            n_amp = len(sim_config['protocol']['amplitudes'])
+                            search_path = os.path.join(
+                                output_path,
+                                f'activation_inner{inner_ind}_fiber{fiber_ind}_amp{n_amp - 1}.dat',
+                            )
+                        else:
+                            search_path = os.path.join(
+                                output_path,
+                                f"thresh_inner{inner_ind}_fiber{fiber_ind}.dat",
                             )
 
-                        # submit batch job for fiber
-                        output_log = os.path.join(out_dir, '{}{}'.format(master_fiber_name, '.log'))
-                        error_log = os.path.join(err_dir, '{}{}'.format(master_fiber_name, '.log'))
+                        if os.path.exists(search_path):
+                            if args.verbose:
+                                print(f'Found {search_path} -->\t\tskipping inner ({inner_ind}) fiber ({fiber_ind})')
+                                time.sleep(1)
+                            continue
 
-                        local_args = dict.fromkeys(local_run_keys, [])
-                        local_args['start'] = os.path.join('start_scripts', start_path.split(os.path.sep)[-1])
-                        local_args['output_log'] = os.path.join('logs', 'out', output_log.split(os.path.sep)[-1])
-                        local_args['error_log'] = os.path.join('logs', 'err', error_log.split(os.path.sep)[-1])
-                        local_args['sim_path'] = os.path.abspath(sim_path)
-                        local_args_list.append(local_args.copy())
+                        submit_list[sim_name].append({"job_number": i, "inner": inner_ind, "fiber": fiber_ind})
+                    # save_submit list as csv
+                    pd.DataFrame(submit_list[sim_name]).to_csv(os.path.join(sim_path, 'out_err_key.csv'), index=False)
 
-    return local_args_list
+    return submit_list
 
 
-def submit_run(sub_context, run_index, args):
-    if sub_context == 'local':
-        filename = os.path.join('runs', run_index + '.json')
-        run = load(filename)
+def confirm_submission(n_fibers, rundata, submission_context):
+    """Confirm that the user wants to submit the simulations.
 
-        if args.num_cpu is not None:
-            cpus = args.num_cpu
-
-            if cpus > multiprocessing.cpu_count() - 1:
-                raise ValueError('num_cpu argument is more than cpu_count-1 CPUs')
-
-            print(f"Submitting Run {run_index} locally to {cpus} CPUs (defined by num_cpu argument)")
-
-        elif 'local_avail_cpus' in run:
-            cpus = run.get('local_avail_cpus')
-
-            if cpus > multiprocessing.cpu_count() - 1:
-                raise ValueError('local_avail_cpus in Run asking for more than cpu_count-1 CPUs')
-
-            print(f"Submitting Run {run_index} locally to {cpus} CPUs (defined by local_avail_cpus in Run)")
-
+    :param n_fibers: the number of fibers to be run
+    :param rundata: the run data (JSON config)
+    :param submission_context: the submission context (e.g. cluster or local)
+    """
+    if n_fibers == 0:
+        sys.exit('No fibers to run. Exiting...')
+    if not args.skip_summary:
+        # format run data
+        df = pd.DataFrame(rundata)
+        df.RUN = df.RUN.astype(int)
+        df = df.sort_values('RUN')
+        # print out and check that the user is happy
+        print(f'Submitting the following runs (submission_context={submission_context}):')
+        print(df.to_string(index=False))
+        print(f'Will result in running {n_fibers} fiber simulations')
+        proceed = input('\t Would you like to proceed?\n' '\t\t 0 = NO\n' '\t\t 1 = YES\n')
+        if int(proceed) != 1:
+            sys.exit()
         else:
-            cpus = multiprocessing.cpu_count() - 1
-            print(f"local_avail_cpus not defined in Run, so proceeding with cpu_count-1={cpus} CPUs")
-
-        submit_list = make_local_submission_list(run_index, args)
-        if len(submit_list) == 0:
-            return
-        with multiprocessing.Pool(cpus) as p:
-            # open pool instance, set up progress bar, and iterate over each job
-            total_iterations = len(submit_list)
-            current_iteration = 0
-            printProgressBar(0, total_iterations, length=40, prefix='Run {}:'.format(run_index))
-            for i, _ in enumerate(p.imap_unordered(local_submit, submit_list, 1)):
-                current_iteration += 1
-                printProgressBar(
-                    current_iteration,
-                    total_iterations,
-                    length=40,
-                    prefix='Run {}:'.format(run_index),
-                )
-
-    elif sub_context == 'cluster':
-        # load slurm params
-        slurm_params = load(os.path.join('config', 'system', 'slurm_params.json'))
-
-        # assign params for array submission
-        partition = slurm_params['partition'] if args.partition is None else args.partition
-        njobs = slurm_params['jobs_per_array'] if args.num_jobs is None else args.num_jobs
-        mem = slurm_params['memory_per_fiber'] if args.job_mem is None else args.job_mem
-
-        cluster_submit(run_index, partition, args, array_length_max=njobs, mem=mem)
+            print('Proceeding...')
     else:
-        sys.exit('Invalid submission context: {}'.format(sub_context))
+        print(f'Skipping summary, submitting {n_fibers} fibers...')
 
 
-# %% main
-def main():
-    # validate inputs
-    args = parser.parse_args()
+def get_submission_list(run_inds):
+    """Get the list of simulations to be submitte for all runs.
 
-    if args.all_runs == True:
-        if len(args.run_indices) > 0:
-            sys.exit('Error: Cannot use -A/--run-all argument and pass run indices.')
-        args.run_indices = [int(os.path.splitext(file)[0]) for file in os.listdir('runs') if file.endswith('.json')]
-    if len(args.run_indices) == 0:
-        sys.exit("Error: No run indices to use.")
-
-    run_inds = args.run_indices
-    runs = []
-    submission_contexts = []
-    auto_compile_flags = []
-
-    # compile MOD files if they have not yet been compiled
-    compiled: bool = False
-    compiled = auto_compile()
-
-    summary = []
+    :param run_inds: the list of run indices
+    :return: summary of runs, a list of all simulations to be submitted
+    """
     rundata = []
-
+    submission_list = {}
     for run_number in run_inds:
 
-        run_number = str(run_number)
-        # run number is numeric
-        assert re.search('[0-9]+', run_number), 'Encountered non-number run number argument: {}'.format(run_number)
-
         # build configuration filename
-        filename = os.path.join('runs', run_number + '.json')
-        runs.append(run_number)
+        filename = os.path.join('runs', f'{run_number}.json')
 
         # configuration file exists
-        assert os.path.exists(filename), 'Run configuration not found: {}'.format(run_number)
+        assert os.path.exists(filename), f'Run configuration not found: {run_number}'
 
         # load in configuration data
         run = load(filename)
 
         # configuration is not empty
-        assert len(run.items()) > 0, 'Encountered empty run configuration: {}'.format(filename)
+        assert len(run.items()) > 0, f'Encountered empty run configuration: {filename}'
 
-        submission_context = run.get('submission_context', 'cluster')
-
-        # submission context is valid
-        assert submission_context in ALLOWED_SUBMISSION_CONTEXTS, 'Invalid submission context: {}'.format(
-            submission_context
-        )
-
-        # check for auto submission context
-        if submission_context == 'auto':
-            host = os.environ.get("HOSTNAME")
-            prefix = run.get('hostname_prefix')
-            if host is not None and host.startswith(prefix):
-                submission_context = 'cluster'
-            else:
-                submission_context = 'local'
-
-        submission_contexts.append(submission_context)
-
-        auto_compile_flag = run.get('override_compiled_mods', False)
-        auto_compile_flags.append(auto_compile_flag)
-
+        print(f'Generating run list for run {run_number}')
+        # sleep to make it not too fast
+        time.sleep(1)
         # get list of fibers to run
-        if args.skip_summary:
-            'Skipping summary generation, submitting fibers...'
-        else:
-            print('Generating run list for run {}'.format(run_number))
-            summary.append(make_local_submission_list(run_number, args, summary_gen=True))
-            rundata.append(
-                {
-                    'RUN': run_number,
-                    'SAMPLE': run['sample'],
-                    'MODELS': run['models'],
-                    'SIMS': run['sims'],
-                }
-            )
-    # check that all submission contexts are the same
-    if args.local_submit == True:
-        submission_contexts = ['local' for i in submission_contexts]
-    if args.cluster_submit == True:
-        submission_contexts = ['cluster' for i in submission_contexts]
-    if not np.all([x == submission_contexts[0] for x in submission_contexts]):
-        sys.exit('Runs with different submission contexts cannot be submitted at the same time')
-    if not args.skip_summary:
-        # format run data
-        n_fibers = sum([len(x) for x in summary])
-        df = pd.DataFrame(rundata)
-        df.RUN = df.RUN.astype(int)
-        df = df.sort_values('RUN')
-        # print out and check that the user is happy
-        print('Submitting the following runs (submission_context={}):'.format(submission_contexts[0]))
-        print(df.to_string(index=False))
-        print('Will result in running {} fiber simulations'.format(n_fibers))
-        if n_fibers == 0:
-            sys.exit('Exiting...')
-        proceed = input('\t Would you like to proceed?\n' '\t\t 0 = NO\n' '\t\t 1 = YES\n')
-        if not int(proceed) == 1:
-            sys.exit()
-        else:
-            print('Proceeding...\n')
+        submission_addition = make_run_sub_list(run_number)
+        # check for duplicate nsims
+        if any([x in submission_list for x in submission_addition.keys()]):
+            warnings.warn(f'Duplicate nsims found in run {run_number}. Continuing')
+        submission_list.update(submission_addition)
+        rundata.append(
+            {
+                'RUN': run_number,
+                'SAMPLE': run['sample'],
+                'MODELS': run['models'],
+                'SIMS': run['sims'],
+            }
+        )
+    return rundata, submission_list
 
-    for sub_context, run_index in zip(submission_contexts, runs):
-        try:
-            submit_run(sub_context, run_index, args)
-        except Exception:
-            traceback.print_exc()
-            print(
-                'WARNING: Error during submission of run {}. See traceback for more information.\n Proceeding to next run...'.format(
-                    run_index
-                )
-            )
+
+def pre_submit_setup():
+    """Perform setup for submitting simulations.
+
+    :return: the list of runs to be submitted, submission_context
+    """
+    # validate inputs
+    global args
+    args = parser.parse_args()
+    if args.all_runs is True:
+        if len(args.run_indices) > 0:
+            sys.exit('Error: Cannot use -A/--run-all argument and pass run indices.')
+        args.run_indices = [int(os.path.splitext(file)[0]) for file in os.listdir('runs') if file.endswith('.json')]
+    if len(args.run_indices) == 0:
+        sys.exit("Error: No run indices to use.")
+    run_inds = args.run_indices
+    # compile MOD files if they have not yet been compiled
+    auto_compile(args.force_recompile)
+    # check for submission context
+    if args.cluster_submit:
+        submission_context = 'cluster'
+    elif args.local_submit:
+        submission_context = 'local'
+    else:
+        submission_context = 'cluster' if shutil.which('sbatch') is not None else 'local'
+
+    return run_inds, submission_context
+
+
+# main
+def main():
+    """Prepare fiber submissions and run NEURON sims."""
+    # pre submit setup
+    run_inds, submission_context = pre_submit_setup()
+    # get list of simulations to be submitted
+    rundata, submission_list = get_submission_list(run_inds)
+    # confirm that the user wants to submit the simulations
+    n_fibers = sum([len(x) for x in submission_list.values()])
+    confirm_submission(n_fibers, rundata, submission_context)
+    # make shell scripts for fiber submission
+    print('Performing setup for fiber submission...')
+    make_fiber_tasks(submission_list, submission_context)
+    # submit fibers
+    print('Submitting...')
+    submit_fibers(submission_context, submission_list)
 
 
 if __name__ == "__main__":  # Allows for the safe importing of the main module

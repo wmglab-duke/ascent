@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-"""
-The copyrights of this software are owned by Duke University.
+"""The copyrights of this software are owned by Duke University.
+
 Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
@@ -10,17 +10,12 @@ import importlib
 import os
 import sys
 
-from config.system.run_utils import parse_args, welcome
+from src.runtools import parse_args, welcome
 
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "1"
-try:
-    import pymunkoptions
-
-    pymunkoptions.options["debug"] = False
-except:
-    pass
 
 args = parse_args.parse()
+
 
 if args.script != 'install':
     env = os.environ.get('CONDA_PREFIX')
@@ -38,6 +33,6 @@ if args.script is not None:
     importlib.import_module('scripts.' + args.script).run(args)
 else:
     if args.list is not None:
-        from config.system.run_utils import list_util
+        from src.runtools import list_util
 
         list_util.run(args.list)

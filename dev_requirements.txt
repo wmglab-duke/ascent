@@ -1,9 +1,6 @@
-autopep8
-flake8
-pylint
-sphinx
+mock==4.0.*
+pre-commit==2.20.*
+pytest==7.1.*
+pytest-cov==3.0.*
+sphinx==4.5.*
 sphinx-rtd-theme
-black
-mypy
-pytest
-pre-commit

@@ -1,15 +1,15 @@
 TITLE hh.mod   squid sodium, potassium, and leak channels
- 
+
 COMMENT
 
 ENDCOMMENT
- 
+
 UNITS {
         (mA) = (milliamp)
         (mV) = (millivolt)
 	(S) = (siemens)
 }
- 
+
 ? interface
 NEURON {
         SUFFIX NaV7
@@ -18,15 +18,15 @@ NEURON {
         RANGE minf, hinf, htau, mtau
 	THREADSAFE : assigned GLOBALs will be per thread
 }
- 
+
 PARAMETER {
         gnabar = .12 (S/cm2)	<0,1e9>
 }
- 
+
 STATE {
         m h
 }
- 
+
 ASSIGNED {
         v (mV)
         celsius (degC)
@@ -36,17 +36,17 @@ ASSIGNED {
         ina (mA/cm2)
         minf hinf
 		mtau (ms)
-		htau (ms) 
+		htau (ms)
 }
- 
+
 ? currents
 BREAKPOINT {
         SOLVE states METHOD cnexp
         gna = gnabar*m*m*m*h
 	ina = gna*(v - ena)
 }
- 
- 
+
+
 INITIAL {
 	rates(v)
 	m = minf
@@ -54,12 +54,12 @@ INITIAL {
 }
 
 ? states
-DERIVATIVE states {  
+DERIVATIVE states {
         rates(v)
         m' =  (minf-m)/mtau
         h' = (hinf-h)/htau
 }
- 
+
 :LOCAL q10
 
 
@@ -79,5 +79,5 @@ UNITSOFF
 			htau = 1/(exp(-1*(v+131)/9.5) + exp((v+5.7)/12.4))/q10
 			hinf = 1/(1+exp((v+68)/7))
 }
- 
+
 UNITSON

@@ -1,19 +1,20 @@
 #!/usr/bin/env python3.7
 
-"""
+"""Generate an excel summary of parameters used in runs of ASCENT.
+
 The copyrights of this software are owned by Duke University.
 Please refer to the LICENSE and README.md files for licensing instructions.
-The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
-"""
+The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent.
 
-# RUN THIS FROM REPOSITORY ROOT
+RUN THIS FROM REPOSITORY ROOT
+"""
 
 import os
 import sys
 
-sys.path.append(os.path.sep.join([os.getcwd(), '']))
-
 from src.core.query import Query
+
+sys.path.append(os.path.sep.join([os.getcwd(), '']))
 
 # initialize and run Querys
 q = Query(

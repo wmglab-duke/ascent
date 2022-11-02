@@ -1,5 +1,5 @@
-: This channels is implemented by Jenny Tigerholm. 
-:The steady state curves are collected from Winkelman 2005 
+: This channels is implemented by Jenny Tigerholm.
+:The steady state curves are collected from Winkelman 2005
 :The time constat is from Gold 1996 and Safron 1996
 : To plot this model run KA_Winkelman.m
 : Adopted and altered by Nathan Titus
@@ -20,8 +20,8 @@ UNITS {
 }
 
 PARAMETER {
-	gbar 	(S/cm2) 
-        
+	gbar 	(S/cm2)
+
     minfshift = 0 (mV)
 	hinfshift = 0 (mV)
 	sinfshift = 0 (mV)
@@ -54,7 +54,7 @@ BREAKPOINT {
 
 INITIAL {
 	: assume that equilibrium has been reached
-    rates(v)    
+    rates(v)
 	m=minf
     h=hinf
 	s=sinf
@@ -66,10 +66,10 @@ DERIVATIVE states {
 	m' = (minf - m)/tau_m
     h' = (hinf - h)/tau_h
 	s' = (sinf - s)/tau_s
-          
+
 }
 
-FUNCTION rates(Vm (mV)) (/ms) {    
+FUNCTION rates(Vm (mV)) (/ms) {
 		LOCAL q10
 		q10 = 3^((celsius-22)/10)
         minf = 1/(1+exp(-1*(v+63)/7.4))
@@ -78,7 +78,7 @@ FUNCTION rates(Vm (mV)) (/ms) {
 		tau_m = .11+33/(exp((v+77)/13.9)+exp(-1*(v+48)/14.8))+1.18/(1+exp(-1*(v+73)/7.8))
 		tau_h = 3.67+27.6/(exp((v+23)/17.4)+exp(-1*(v+100)/17.7))+7.8/(1+exp((v+48)/11.5))
 		tau_s = 2042/(exp((v+57)/16.1)+exp(-1*(v+112)/12.7))+2657/(1+exp(-1*(v+95)/7))
-		
+
         tau_m=tau_m/q10
         tau_h=tau_h/q10
         tau_s=tau_s/q10

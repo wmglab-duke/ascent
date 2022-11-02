@@ -7,7 +7,7 @@ NEURON {
 	RANGE gkleak, gnaleak, gk, qna, ik, ina
 }
 
-UNITS { 
+UNITS {
 	(mV) = (millivolt)  (mA) = (milliamp)
 	(um) = (micron)
 	PI		= (pi) (1)
@@ -44,4 +44,3 @@ INITIAL {
 	ik = gkleak*(v-ek)
 	ina = gnaleak*(v-ena)
 }
-

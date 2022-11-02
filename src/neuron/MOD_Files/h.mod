@@ -1,4 +1,4 @@
-: h.mod is the h channel 
+: h.mod is the h channel
 : from Tom Andersson Sensitivity studies of voltage-dpendent conductance in neurons
 : Tom has build his model on Kouranova 2008 Hyoerpolarization -activated cyclic nuleotide-gated channel mRNA and protein expression in large versus mall diameter dorsal root ganglion neurons: correlation with hyperpolarization-activated current
 
@@ -49,7 +49,7 @@ BREAKPOINT {
 	g = gbar * (0.5*ns+0.5*nf)
         ina=0.5*g*(v-ena)
         ik=0.5*g*(v-ek)
-        :ekna=58*log10((1.0*ko + 0.4*nao)/(1.0*ki + 0.4*nai))          
+        :ekna=58*log10((1.0*ko + 0.4*nao)/(1.0*ki + 0.4*nai))
         :kh=g*(v-ekna)/0.6
         :if (kh>0) {
 	:ik = kh
@@ -66,7 +66,7 @@ INITIAL {
         nf = 1./(1+exp((v+87.2)/9.7(mV)))
 
 }
- 
+
 DERIVATIVE states {
 	rates(v)
 	ns' = (ninfs - ns)/tau_n_s
@@ -82,12 +82,12 @@ FUNCTION rates(Vm (mV)) (/ms) {
 
         tau_n_s = 1(ms)*(300+542*exp((Vm+25)/-20(mV)))
         if (Vm<-70) {tau_n_s=1(ms)*(2500+100*exp((Vm+240)/50(mV)))}
-      
+
         tau_n_f=1(ms)*(140+50*exp((Vm+25)/-20(mV)))
         if (Vm<-70) {tau_n_f=1(ms)*(250+12*exp((Vm+240)/50(mV)))}
         kvot_qt=1/((3^((celsiusT-22)/10)))
         tau_n_s=tau_n_s*kvot_qt
         tau_n_f=tau_n_f*kvot_qt
 
-  
+
 }

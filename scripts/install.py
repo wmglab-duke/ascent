@@ -1,9 +1,11 @@
 #!/usr/bin/env python3.7
 
-"""
-The copyrights of this software are owned by Duke University.
-Please refer to the LICENSE and README.md files for licensing instructions.
-The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
+"""Installs ASCENT.
+
+The copyrights of this software are owned by Duke University. Please
+refer to the LICENSE and README.md files for licensing instructions. The
+source code can be found on the following GitHub repository:
+https://github.com/wmglab-duke/ascent
 """
 
 import os
@@ -12,14 +14,14 @@ import sys
 
 
 def run(args):
-    def ensure_dir(directory):
-        if not os.path.exists(directory):
-            os.makedirs(directory)
+    """Install ASCENT.
 
+    :param args: command line arguments
+    """
     sys.argv = args
 
     if sys.version_info[0] < 3:
-        raise Exception('Installation must be run using Python 3.\nTry \'./run install\' or \'python3 run install\'.\n')
+        sys.exit('Installation must be run using Python 3.\nTry \'./run install\' or \'python3 run install\'.\n')
 
     reply = input('Have you navigated to the root of the ASCENT repository? [y/N] ').lower().strip()
     if reply[0] != 'y':
@@ -40,7 +42,7 @@ def run(args):
     ]
 
     for path in defdirs:
-        ensure_dir(path)
+        os.makedirs(path, exist_ok=True)
 
     # download required JAR(s)
     jars = ['https://repo1.maven.org/maven2/org/json/json/20190722/json-20190722.jar']
@@ -48,7 +50,7 @@ def run(args):
         retrieve = True
         target = os.path.join(binpath, jar.split('/')[-1])
         if os.path.exists(target):
-            reply = input('{} already found! download again and overwrite? [y/N] '.format(target)).lower().strip()
+            reply = input(f'{target} already found! download again and overwrite? [y/N] ').lower().strip()
             if reply[0] != 'y':
                 print('Not overwriting.\n')
                 retrieve = False
@@ -56,33 +58,24 @@ def run(args):
                 print('Overwriting.\n')
 
         if retrieve:
-            print('Downloading {} to {}'.format(jar, target))
+            print(f'Downloading {jar} to {target}')
             if sys.platform.startswith('darwin') or sys.platform.startswith('linux'):
-                subprocess.Popen(['wget', '-q', '-O', target, jar]).wait()
+                subprocess.run(['curl', '-o', target, jar])
             else:
-                p = subprocess.Popen("powershell.exe", stdin=subprocess.PIPE)
-                p.stdin.write(
-                    '[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12\n'.encode()
-                )
-                p.stdin.write('$source = \'{}\'\n'.format(jar).encode())
-                p.stdin.write('$destination = \'{}\'\n'.format(os.path.abspath(target)).encode())
-                p.stdin.write('curl $source -OutFile $destination'.encode())
-                p.stdin.close()
+                with subprocess.Popen("powershell.exe", stdin=subprocess.PIPE) as p:
+                    p.stdin.write(
+                        '[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12\n'.encode()
+                    )
+                    p.stdin.write(f'$source = \'{jar}\'\n'.encode())
+                    p.stdin.write(f'$destination = \'{os.path.abspath(target)}\'\n'.encode())
+                    p.stdin.write('curl $source -OutFile $destination'.encode())
 
     # run system-specific installation
     if args.no_conda:
         print('Skipping conda portion of installation\n')
     else:
-        proc = None
-
         if sys.platform.startswith('darwin') or sys.platform.startswith('linux'):
-            proc = subprocess.Popen(
-                "source config/system/installation/install.sh -i",
-                shell=True,
-                executable="/bin/bash",
-            )
+            subprocess.check_call(["source", "config/system/installation/install.sh", "-i"], executable="/bin/bash")
         else:
-            proc = subprocess.Popen(['powershell.exe', '.\\config\\system\\installation\\install.ps1'])
-
-        proc.wait()
+            subprocess.check_call(['powershell.exe', '.\\config\\system\\installation\\install.ps1'])
     print('Installation complete!\n')
