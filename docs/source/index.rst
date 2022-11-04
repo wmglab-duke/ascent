@@ -46,7 +46,7 @@ Welcome to ASCENT's documentation!
 
   .. details:: MLA
 
-      Musselman, Eric D., et al. Wmglab-Duke/Ascent: ASCENT v1.1.4. v1.1.4, Zenodo, 2022, doi:10.5281/ZENODO.6537277.
+      Musselman, Eric D., et al. Wmglab-Duke/Ascent: ASCENT v1.1.4. v1.1.4, Zenodo, 2022, doi:10.5281/zenodo.7292944.
 
   .. details:: BibTeX
 
@@ -54,7 +54,7 @@ Welcome to ASCENT's documentation!
 
         @misc{https://doi.org/10.5281/zenodo.7292944,
           doi = {10.5281/zenodo.7292944},
-          url = {https://zenodo.org/record/6537277},
+          url = {https://zenodo.org/record/7292944},
           author = {Musselman,  Eric D and Cariello,  Jake E and Grill,  Warren M and Pelot,  Nicole A},
           title = {wmglab-duke/ascent: ASCENT v1.1.4},
           publisher = {Zenodo},
