@@ -20,7 +20,7 @@
 
 - **Cite the code (use the DOI for the version of code used):**
 
-  > **Musselman, E. D.**, **Cariello, J. E.**, Grill, W. M., & Pelot, N. A. (2022). wmglab-duke/ascent: ASCENT v1.1.5 (v1.1.5) [Computer software]. Zenodo. <https://doi.org/10.5281/zenodo.TBD>
+  > **Musselman, E. D.**, **Cariello, J. E.**, Grill, W. M., & Pelot, N. A. (2022). wmglab-duke/ascent: ASCENT v1.1.5 (v1.1.5) [Computer software]. Zenodo. <https://doi.org/10.5281/zenodo.7292944>
 
 ---
 
