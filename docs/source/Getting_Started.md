@@ -207,7 +207,7 @@ The below example directory structure may be helpful.
     Run the script from the repository root with the command `python examples/analysis/heatmap.py`.
 `````
 
-```{tab} General Procedure
+````{tab} General Procedure
 
 _How to run the ASCENT pipeline, after completing the initial setup._
 
@@ -284,7 +284,7 @@ use indices that are consistent with the indices of **_Sample_**,
    directory as defined in `config/system/env.json` ([Environment Parameters](JSON/JSON_parameters/env)). NEURON simulations
    are run locally or submitted to a computer cluster with the command
    `"python submit.py <run indices>"` from the export directory.
-```
+````
 
 ```{seealso}
 For more information on ASCENT read about [ASCENT usage](Running_ASCENT/Usage.md),
