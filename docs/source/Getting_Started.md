@@ -68,7 +68,7 @@ After confirming that you are in the correct directory, the script will install 
 
 2. Transverse cross-section of the nerve where the cuff is placed,
    stained to visualize the different tissue types (e.g., using
-   Masson’s trichrome), with a scale bar ([Fig 2](https://doi.org/10.1371/journal.pcbi.1009285.g002) and Running_ASCENT/Info.md#morphology-Input-Files)) or known scale (micrometers/pixel). Different possible sources
+   Masson’s trichrome), with a scale bar ([Fig 2](https://doi.org/10.1371/journal.pcbi.1009285.g002) and [Morphology Inputs](Running_ASCENT/Info.md#morphology-input-files))) or known scale (micrometers/pixel). Different possible sources
    for defining the nerve sample morphology include:
 
    a. For best specificity, the nerve would be sampled from the
@@ -182,7 +182,7 @@ The below example directory structure may be helpful.
    Copy `model.json` from `examples/tutorial/`
    to the folder you just created (e.g. `samples/0/models/0/`).
 
-4. **_Sim:_** Copy `sim.json` from `config/templates/` to
+4. **_Sim:_** Copy `sim.json` from `examples/tutorial/` to
    `config/user/sims/` and rename the file to `<sim_index>.json`.
 
 5. **_Run:_** Copy `run.json` from `config/templates/` to
@@ -202,9 +202,7 @@ The below example directory structure may be helpful.
     be -0.027402 mA
     ```
 
-9. To generate a heatmap of activation thresholds, open the script `examples/analysis/heatmap.py` and edit the sample, model, and sim indices to match the ones you chose above.
-    analysis/heatmap.py`, and a heatmap plot will be generated in `out/analysis/`.
-    Run the script from the repository root with the command `python examples/analysis/heatmap.py`.
+9. To generate a heatmap of activation thresholds, open the script `examples/analysis/heatmap.py` and edit the sample, model, and sim indices to match the ones you chose above. Run the script from the repository root with the command `python examples/analysis/heatmap.py`, and a heatmap plot will be generated in `out/analysis/`.
 `````
 
 ````{tab} General Procedure
@@ -226,7 +224,7 @@ use indices that are consistent with the indices of **_Sample_**,
    must match "sample" parameter in **_Sample_**) with binary masks of
    neural tissue boundaries using either:
 
-   a. Segmented histology (Running_ASCENT/Info.md#morphology-input-files) and [Fig 2](https://doi.org/10.1371/journal.pcbi.1009285.g002)), or
+   a. [Segmented histology](Running_ASCENT/Info.md#morphology-input-files) and [Fig 2](https://doi.org/10.1371/journal.pcbi.1009285.g002)), or
 
    b. The `mock_morphology_generator.py` script ([Mock Morphology](MockSample)).
 
