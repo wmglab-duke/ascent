@@ -39,3 +39,4 @@ plt.suptitle('Grid of activation threshold heatmaps')
 for ax in g.axes.ravel():
     ax.set_xlabel('')
     ax.set_ylabel('')
+plt.savefig('threshold_heatmap_grid.png', dpi=400, bbox_inches='tight')
