@@ -78,7 +78,7 @@ State the stimulation waveform shape, timestep, and simulation time used. Be cer
 
 ## NEURON simulations
 
-If computing thresholds of activation and/or block, state the search algorithm used (e.g., binary search) and the exit criteria (e.g., tolerance).
+If computing thresholds of activation and/or block, state the search algorithm used (e.g., bisection search) and the exit criteria (e.g., tolerance).
 
 ## Analysis
 

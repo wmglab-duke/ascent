@@ -232,7 +232,7 @@ time-varying signal in NEURON. The stimulation waveform, saved in a
 `n_sim’s data/inputs/` directory as `waveform.dat`, is unscaled (i.e., the
 maximum current magnitude at any timestep is +/-1), and is then scaled
 by the current amplitude in `RunSim.hoc` to either simulate fiber thresholds of
-activation or block with a binary search algorithm, or response to set
+activation or block with a bisection search algorithm, or response to set
 amplitudes.
 
 ### Binary search
@@ -241,9 +241,9 @@ In searching for activation thresholds (i.e., the minimum stimulation
 amplitude required to generate a propagating action potential) or block
 thresholds (i.e., the minimum stimulation amplitude required to block
 the propagation of an action potential) in the pipeline, the NEURON code
-uses a binary search algorithm.
+uses a bisection search algorithm.
 
-The basics of a binary search algorithm are as follows. By starting with
+The basics of a bisection search algorithm are as follows. By starting with
 one value that is above threshold (i.e., upper bound) and one value that
 is below threshold (i.e., lower bound), the program tests the midpoint
 amplitude to determine if it is above or below threshold. If the
@@ -253,12 +253,12 @@ amplitude is found to be above threshold, the midpoint amplitude becomes
 the new upper bound. At each iteration of this process, half of the
 remaining amplitude range is removed. The process is continued until the
 termination criteria is satisfied (e.g., some threshold resolution
-tolerance is achieved). The average performance of a binary search
+tolerance is achieved). The average performance of a bisection search
 algorithm is Ο(log(_n_)) where n is the number of
 elements in the search array (i.e., linearly spaced range of
 amplitudes).
 
-In the pipeline, the binary search protocol parameters (i.e., activation
+In the pipeline, the bisection search protocol parameters (i.e., activation
 or block criteria, threshold criteria, method for searching for starting
 upper- and lower bounds, or termination criteria) are contained in the
 "protocol" JSON Object within **_Sim_** ([Sim Parameters](../JSON/JSON_parameters/sim)).
@@ -269,7 +269,7 @@ The pipeline has a NEURON simulation protocol for determining thresholds
 of activation of nerve fibers in response to extracellular stimulation.
 Threshold amplitude for fiber activation is defined as the minimum
 stimulation amplitude required to initiate a propagating action
-potential. The pipeline uses a binary search algorithm to converge on
+potential. The pipeline uses a bisection search algorithm to converge on
 the threshold amplitude. Current amplitudes are determined to be above
 threshold if the stimulation results in at least `n_AP` propagating
 action potentials detected at 75% of the fiber’s length (note: location
@@ -295,12 +295,12 @@ one action potential is detected, then transmission of the test pulse
 occurred (i.e., the stimulation amplitude is below block threshold).
 However, the absence of an action potential indicates block (i.e., the
 stimulation amplitude is above block threshold). The pipeline uses a
-binary search algorithm to converge on the threshold amplitude. The
+bisection search algorithm to converge on the threshold amplitude. The
 parameters for control over the block threshold protocol are found in
 **_Sim_** within the "protocol" JSON Object ([Sim Parameters](../JSON/JSON_parameters/sim)).
 
 The user must be careful in setting the initial upper and lower bounds
-of the binary search for block thresholds. Especially for small diameter
+of the bisection search for block thresholds. Especially for small diameter
 myelinated fibers, users must be aware of and check for re-excitation
 using a stimulation amplitude sweep {cite:p}`Pelot2017`.
 
@@ -368,7 +368,7 @@ first phase, 100 µs interphase (0 mA), and 400 µs for the second phase
 (cathodic/anodic at one contact and anodic/cathodic at the other
 contact). The thresholds between the originally published models and the
 interpolation of the MRG fiber diameters are compared in the image below.
-The threshold values were determined using a binary search until the
+The threshold values were determined using a bisection search until the
 upper and lower bound stimulation amplitudes were within 1%.
 
 ```{figure} ../uploads/0f81dcebee604a443aeaac6c13b2325c/Picture13.jpg

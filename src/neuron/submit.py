@@ -610,7 +610,7 @@ def make_fiber_tasks(submission_list, submission_context):
             with open(blank_path, 'w'):
                 pass
 
-        # load JSON file with binary search amplitudes
+        # load JSON file with bisection search amplitudes
         n_sim = sim_name.split('_')[-1]
         sim_config = load(os.path.join(sim_path, f'{n_sim}.json'))
         fiber_model = sim_config['fibers']['mode']
