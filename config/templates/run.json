@@ -1,8 +1,8 @@
 {
   "pseudonym": "template_run",
-  "sample": 62,
+  "sample": 0,
   "models": [0],
-  "sims": [99],
+  "sims": [0],
   "recycle_meshes": true,
   "models_exit_status": [true],
   "endo_only_solution": true,
