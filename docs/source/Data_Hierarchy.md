@@ -11,7 +11,7 @@ geometry of nerve, cuff, and medium, spatial discretization (i.e.,
 mesh), materials, boundary conditions, and physics, and (3) **_Sim_**
 (NEURON parameters): for defining fiber models, stimulation waveforms,
 amplitudes, and durations, intracellular test pulses (for example, when
-seeking to determine block thresholds), parameters for the binary search
+seeking to determine block thresholds), parameters for the bisection search
 protocol and termination criteria for thresholds, and flags to save
 state variables. These configurations are organized hierarchically such
 that **_Sample_** does not depend on **_Model_** or **_Sim_**, and
@@ -33,7 +33,7 @@ extracellular stimulation. The second process of ASCENT uses Python to
 batch NEURON jobs to a personal computer or compute cluster to simulate
 fiber response to extracellular stimulation. Each task submitted to a
 CPU simulates the response of a single fiber to either a set of finite
-amplitudes or a binary search for threshold of activation or block,
+amplitudes or a bisection search for threshold of activation or block,
 therefore creating an "embarrassingly parallel" workload.
 
 Groups of fibers from the same **_Sample_**, **_Model_**, **_Sim_**,
