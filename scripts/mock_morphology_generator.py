@@ -12,7 +12,7 @@ import os
 import time
 
 from src.core import MockSample
-from src.utils import Config, SetupMode, TemplateOutput
+from src.utils import Config, Configurable, SetupMode
 
 
 def run(args):
@@ -27,7 +27,7 @@ def run(args):
     mock_sample = MockSample()
     mock_sample.add(SetupMode.NEW, Config.MOCK_SAMPLE, mock_config).make_nerve().make_fascicles().make_masks()
 
-    TemplateOutput.write(mock_sample.configs['mock_sample'], mock_config)
+    Configurable.write(mock_sample.configs['mock_sample'], mock_config)
 
     # END timer
     end = time.time()

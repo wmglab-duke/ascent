@@ -36,7 +36,6 @@ from src.utils import (
     ScaleInputMode,
     SetupMode,
     ShrinkageMode,
-    TemplateOutput,
     WriteMode,
 )
 
@@ -853,7 +852,7 @@ class Sample(Configurable, Saveable):
 
         sample_path = os.path.join('samples', str(self.search(Config.RUN, 'sample')), 'sample.json')
 
-        TemplateOutput.write(self.configs[Config.SAMPLE.value], sample_path)
+        Configurable.write(self.configs[Config.SAMPLE.value], sample_path)
 
         self.morphology = morphology_input
         return self

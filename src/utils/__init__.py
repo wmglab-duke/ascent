@@ -11,6 +11,5 @@ from .configurable import Configurable
 from .enums import *
 from .errors import *
 from .saveable import Saveable
-from .template_output import TemplateOutput
 
-__all__ = ['Configurable', 'TemplateOutput', 'Saveable']
+__all__ = ['Configurable', 'Saveable']

@@ -24,7 +24,6 @@ from src.utils import (
     ReshapeNerveMode,
     Saveable,
     SetupMode,
-    TemplateOutput,
 )
 
 
@@ -344,5 +343,5 @@ class Model(Configurable, Saveable):
         :param path: path to write the config file to
         :return: self
         """
-        TemplateOutput.write(self.configs[Config.MODEL.value], path)
+        Configurable.write(self.configs[Config.MODEL.value], path)
         return self
