@@ -2,12 +2,16 @@
 
 ## Morphology Input Files
 
+
 Each mask must be binary (i.e., white pixels (‘1’) for the segmented
 tissue and black pixels (‘0’) elsewhere) and must use Tagged Image File
-Format (i.e., `.tif`, or `.tiff`). All masks must be defined within the same
+Format (i.e., `.tif`, or `.tiff`).
+```{note}
+For more information on segmentation methods, see {cite:p}`Pelot2020`. Segmentation (i.e., marking of morphological boundaries) can be performed with paid softwares (e.g., NIS Elements, Adobe Photoshop) as well as free software (e.g., ImageJ, Gimp).
+```
+All masks must be defined within the same
 field of view, be the same size, and be the same resolution. To convert
-between pixels of the input masks to dimensioned length (micrometers), the user must specify
-a `"ScaleInputMode"` in **_Sample_** ([JSON Configuration Files](../JSON/index)). If using the mask input mode, a mask for the scale bar (`s.tif`) of known length (oriented horizontally) must be provided (see "Scale Bar" in [Fig 2](https://doi.org/10.1371/journal.pcbi.1009285.g002)) and the length of the scale
+between pixels of the input masks to dimensioned length (micrometers), the user must specify a `"ScaleInputMode"` in **_Sample_** ([JSON Configuration Files](../JSON/index)). If using the mask input mode, a mask for the scale bar (`s.tif`) of known length (oriented horizontally) must be provided (see "Scale Bar" in [Fig 2](https://doi.org/10.1371/journal.pcbi.1009285.g002)) and the length of the scale
 bar must be indicated in **_Sample_** ([JSON Configuration Files](../JSON/index)). If using the ratio input mode, the user explicitly specifies the micrometers/pixel of the input masks in **_Sample_** ([JSON Configuration Files](../JSON/index)), and no scale bar image is required.
 
 The user is required to set the `"MaskInputMode"` in **_Sample_**
