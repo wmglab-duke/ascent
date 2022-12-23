@@ -148,6 +148,7 @@ class Deformable:
         :param render: True if you care to see it happen... makes this method WAY slower
         :param minimum_distance: separation between original inputs
         :param ratio: deform ratio
+        :param progress_bar: whether to print a progress bar during deformation
         :return: tuple of a list of total movement vectors and total angle rotated for each fascicle
         """
         # copy the "contents" so multiple deformations are possible
