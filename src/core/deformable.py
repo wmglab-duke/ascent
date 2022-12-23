@@ -138,6 +138,7 @@ class Deformable:
         render: bool = True,
         minimum_distance: float = 0.0,
         ratio: float = None,
+        progress_bar: bool = True,
     ) -> Tuple[List[tuple], List[float]]:
         """Run the main deformation algorithm.
 
