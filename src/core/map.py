@@ -104,19 +104,18 @@ class Map(Configurable):
 
         elif self.mode == SetupMode.SYNTHETIC:
             # must create a "synthetic" map
-            
+
             inputpath = os.path.join('input', self.sample)
             if not os.path.exists(inputpath):
                 raise FileNotFoundError(f'Input folder specified in sample.json does not exist ({inputpath})')
-            
+
             # assume path to synthetic map is input/<SAMPLE>/map.json
             self.source_path = os.path.join(inputpath, 'map.json')
 
             # load/edit map template
             mapper = self.load(os.path.join('config', 'templates', 'map.json'))
             mapper[0]['directory'] = self.source_path.split(os.sep)[:-1]
-            
-           
+
             # write synthetic map
             with open(os.path.join(self.source_path), "w") as handle:
                 handle.write(json.dumps(mapper, indent=2))
