@@ -684,11 +684,21 @@ class Sample(Configurable, Saveable):
 
         def populate_plotter(slide, title: str, filename: str):
             plt.figure()
+            print(slide.bounds())
+            if (slide.bounds()[2] - slide.bounds()[0]) > 1000:
+                scalebar_length = 1
+                scalebar_units = 'mm'
+            else:
+                scalebar_length = 100
+                scalebar_units = 'μm'
             slide.plot(
                 final=False,
                 fix_aspect_ratio='True',
                 axlabel=u"\u03bcm",
                 title=title,
+                scalebar=True,
+                scalebar_length=scalebar_length,
+                scalebar_units=scalebar_units,
             )
             plt.savefig(plotpath + '/' + filename, dpi=400)
             if self.search(Config.RUN, "popup_plots", optional=True) is True:
