@@ -1,7 +1,9 @@
 # package installation
 $ErrorActionPreference = "Stop"
 conda init powershell
-conda create -n ascent python=3.7 pip setuptools wheel shapely
+conda create -n ascent
 conda activate ascent
+conda install python=3.10 -c conda-forge
+pip install --upgrade pip setuptools wheel
 pip install -r requirements.txt
 conda install -c conda-forge ffmpeg
