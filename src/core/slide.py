@@ -13,6 +13,7 @@ from typing import List, Optional, Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
+from quantiphy import Quantity
 
 from src.utils import MethodError, MorphologyError, NerveMode, ReshapeNerveMode, WriteMode
 
@@ -270,6 +271,9 @@ class Slide:
         inner_index_labels: bool = False,
         show_axis: bool = True,
         axlabel: str = None,
+        scalebar: bool = False,
+        scalebar_length: float = 1,
+        scalebar_units: str = 'mm',
         line_kws=None,
     ):
         """Quick util for plotting the nerve and fascicles.
@@ -286,6 +290,9 @@ class Slide:
         :param final: optional, if False, will not show or add title (if comparisons are being overlayed)
         :param inner_format: optional format for inner traces of fascicles
         :param fix_aspect_ratio: optional, if True, will set equal aspect ratio
+        :param scalebar: If True, add a scalebar to the plot
+        :param scalebar_length: Length of scalebar
+        :param scalebar_units: Units of scalebar
         :raises ValueError: If fascicle_colors is not None and not the same length as the number of inners
         """
         if ax is None:
@@ -338,6 +345,26 @@ class Slide:
         if axlabel is not None:
             ax.set_xlabel(axlabel)
             ax.set_ylabel(axlabel)
+
+        if scalebar:
+            # convert scalebar length to meters and calculat span across axes
+            quantity = Quantity(scalebar_length, scalebar_units, scale='m')
+            scalespan = quantity.scale('micron') / np.diff(ax.get_ylim())[0]
+            # add scalebar and label
+            ax.add_patch(
+                plt.Rectangle(
+                    (0.99, 0.02), -scalespan, 0.02, fill='black', facecolor='black', linewidth=0, transform=ax.transAxes
+                )
+            )
+            ax.text(
+                0.99,
+                0.05,
+                f'{scalebar_length} {scalebar_units}',
+                horizontalalignment='right',
+                verticalalignment='bottom',
+                transform=ax.transAxes,
+                color='black',
+            )
 
         # if final plot, show
         if final:
