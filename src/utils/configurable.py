@@ -130,6 +130,16 @@ class Configurable:
         with open(config_path, "r") as handle:
             return json.load(handle)
 
+    @staticmethod
+    def write(data: Union[list, dict], dest_path):
+        """Write JSON object to file.
+
+        :param data: The data to write.
+        :param dest_path: The destination path.
+        """
+        with open(dest_path, "w") as handle:
+            handle.write(json.dumps(data, indent=2))
+
     def search_mode(self, mode: Type[Enum], key: Config, optional: bool = False):
         """Search for a single mode.
 
