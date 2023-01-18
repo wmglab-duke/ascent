@@ -24,10 +24,10 @@ def test_saveable():
     with open('test.pkl', 'rb') as file:
         pickle.load(file)
     # test that save fails with bad path
-    with pytest.raises(Exception):
+    with pytest.raises(FileNotFoundError):
         saver.save('nonexistent_folder/bad_path.pkl')
     # test that load fails with bad path
-    with pytest.raises(Exception), open('bad_path', 'rb') as file:
+    with pytest.raises(FileNotFoundError), open('bad_path', 'rb') as file:
         pickle.load(file)
     os.remove('test.pkl')
 
