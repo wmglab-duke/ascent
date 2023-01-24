@@ -74,7 +74,7 @@ Welcome to ASCENT's documentation!
    Getting_Started
    Running_ASCENT/index
    JSON/index
-   Methods_Template
+   Publishing_with_ASCENT/index
 
 .. toctree::
    :maxdepth: 2
