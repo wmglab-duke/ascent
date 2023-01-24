@@ -141,7 +141,7 @@ public class ModelWrapper {
      *
      * @param name json filename WITH extension (i.e. "LivaNova2000.json")
      */
-    public void addCuffPartPrimitives(String name) {
+    public void addCuffPartPrimitives(String name) throws IOException {
         // extract data from json
         try {
             JSONObject cuffData = JSONio.read(
@@ -186,7 +186,6 @@ public class ModelWrapper {
                         this.partPrimitiveIMs.put(partPrimitiveName, partPrimitiveIM);
                     } catch (IllegalArgumentException e) {
                         e.printStackTrace();
-                        return;
                     }
                 }
             }
