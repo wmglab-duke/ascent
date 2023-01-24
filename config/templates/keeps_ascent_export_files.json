@@ -1,0 +1,62 @@
+{
+  "sample.json": true,
+  "sample.obj": true,
+  "s.tif": true,
+  "plots": false,
+  "slides": {
+    "0": {
+      "0": {
+        "masks": true,
+        "sectionwise2d": {
+          "fascicles": false,
+          "nerve": false
+        }
+      }
+    }
+  },
+  "models": {
+    "<model_index>": {
+      "model.json": true,
+      "debug_geom.mph": false,
+      "bases": false,
+      "mesh": {
+        "ppim": false,
+        "im.json": false,
+        "mesh.mph": false
+      },
+      "sims": {
+        "<sim_index>": {
+          "sim.obj": false,
+          "fibersets": false,
+          "potentials": false,
+          "waveforms": false,
+          "plots": {
+            "waveforms": false
+          },
+          "n_sims": {
+            "<n_sim_index>": {
+              "<n_sim_index>.json": true,
+              "launch.hoc": true,
+              "data": {
+                "inputs": {
+                  "<ve_files>": true,
+                  "waveform.dat": true
+                },
+                "outputs": {
+                  "<Aptimes>": true,
+                  "<thresh>": true,
+                  "<vm_times>": false,
+                  "<ves>": false,
+                  "<Istims>": false,
+                  "<gating_m_times>": false,
+                  "<gating_mp_times>": false,
+                  "<gating_s_times>": false
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
