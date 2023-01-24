@@ -45,7 +45,7 @@ class Runner(Configurable):
 
         # this corresponds to the run index (as file name in config/user/runs/<run_index>.json
         self.ss_bases_exist = None
-        self.potentials_exist = None
+        self.bases_potentials_exist = None
         self.number = number
 
     def load_configs(self) -> dict:
@@ -359,7 +359,7 @@ class Runner(Configurable):
 
         all_configs = self.setup_run()
 
-        self.potentials_exist: List[bool] = []  # if all of these are true, skip Java
+        self.bases_potentials_exist: List[bool] = []  # if all of these are true, skip Java
         self.ss_bases_exist: List[bool] = []  # if all of these are true, skip Java
 
         sample, sample_num = self.generate_sample(all_configs, smart=smart)
@@ -378,14 +378,23 @@ class Runner(Configurable):
                         simulation, sim_obj_dir = self.sim_setup(
                             sim_index, sim_config, sample_num, model_num, smart, sample, model_config
                         )
+
+                        # CHECK IF POTENTIALS EXIST FOR EACH FIBERSET X BASIS
+                        # DON'T NEED POTENTIALS TO EXIST IF WE ARE USING SUPER SAMPLED ONES
                         if (
-                            'supersampled_bases' in simulation.configs['sims']
-                            and simulation.configs['sims']['supersampled_bases']['use']
+                            'supersampled_bases' not in simulation.configs['sims']
+                            or not simulation.configs['sims']['supersampled_bases']['use']
                         ):
-                            source_sim_obj_dir = self.validate_supersample(simulation, sample_num, model_num)
-                            self.ss_bases_exist.append(simulation.ss_bases_exist(source_sim_obj_dir))
-                        else:
-                            self.potentials_exist.append(simulation.potentials_exist(sim_obj_dir))
+                            self.bases_potentials_exist.append(simulation.bases_potentials_exist(sim_obj_dir))
+
+                        # CHECK IF THE SUPERSAMPLED BASES EXIST FOR EACH BASIS
+                        # check if supersampled bases exist and if so, validate supersampling parameters
+                        if 'supersampled_bases' in simulation.configs['sims']:
+                            if simulation.configs['sims']['supersampled_bases']['generate']:
+                                self.ss_bases_exist.append(simulation.ss_bases_exist(sim_obj_dir))
+                            if simulation.configs['sims']['supersampled_bases']['use']:
+                                source_sim_obj_dir = self.validate_supersample(simulation, sample_num, model_num)
+                                self.ss_bases_exist.append(simulation.ss_bases_exist(source_sim_obj_dir))
 
             if self.configs[Config.CLI_ARGS.value].get('break_point') == 'pre_java' or (
                 ('break_points' in self.configs[Config.RUN.value])
@@ -397,7 +406,7 @@ class Runner(Configurable):
             # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials if necessary
             if 'models' in all_configs and 'sims' in all_configs:
                 # only transition to java if necessary (there are potentials that do not exist)
-                if not all(self.potentials_exist) or not all(self.ss_bases_exist):
+                if not all(self.bases_potentials_exist) or not all(self.ss_bases_exist):
                     print('\nTO JAVA\n')
                     self.handoff(self.number)
                     print('\nTO PYTHON\n')
@@ -418,17 +427,15 @@ class Runner(Configurable):
                         len(models_exit_status) > model_index,
                     ]
                     model_ran = models_exit_status[model_index] if all(conditions) else True
-                    ss_use_notgen = []
-                    # check if all supersampled bases are "use" and not generating
-                    for sim_config in all_configs['sims']:
-                        if (
+                    ss_use_notgen = [
+                        (
                             'supersampled_bases' in sim_config
                             and sim_config['supersampled_bases']['use']
                             and not sim_config['supersampled_bases']['generate']
-                        ):
-                            ss_use_notgen.append(True)
-                        else:
-                            ss_use_notgen.append(False)
+                        )
+                        for sim_config in all_configs['sims']
+                    ]
+
                     if model_ran or np.all(ss_use_notgen):
                         for sim_index, _sim_config in enumerate(all_configs['sims']):
                             # generate output neuron sims

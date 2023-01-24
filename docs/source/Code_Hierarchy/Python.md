@@ -1,5 +1,7 @@
 # Python Classes
-
+```{warning}
+This page of our documentation is not actively updated, as we work on migrating code documentation to docstrings. Most of the information herein remains revelant, but please refer to the codebase for the most up to date structure.
+```
 ## Python classes for representing nerve morphology (Sample)
 
 The nerve cross-section includes the outer nerve trace (if present; not
