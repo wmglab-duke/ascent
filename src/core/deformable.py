@@ -171,14 +171,15 @@ class Deformable:
 
         # MORPHING LOOP
         for morph_index, morph_step in enumerate(morph_steps):
-            # if the loop count is divisible by the index step, update morph
-            Deformable.print_progress_bar(
-                morph_index,
-                len(morph_steps),
-                prefix='\t\tdeforming',
-                suffix='complete',
-                length=50,
-            )
+            if progress_bar:
+                # if the loop count is divisible by the index step, update morph
+                Deformable.print_progress_bar(
+                    morph_index,
+                    len(morph_steps),
+                    prefix='\t\tdeforming',
+                    suffix='complete',
+                    length=50,
+                )
 
             # add new nerve trace
             add_boundary(space, morph_step)

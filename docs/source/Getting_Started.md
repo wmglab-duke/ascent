@@ -12,15 +12,12 @@ First, these software packages must be manually installed:
   - Recommended: Select add to path
   - Recommended: Select "Install for individual user"
 - [Java SE Development Kit 8 (1.8)](https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html) (need to register for a free account)
-  - If your COMSOL version is 6.0 or greater, you may instead install [Java 11](https://www.oracle.com/java/technologies/downloads/#java11).
+  - If your COMSOL version is 6.0 or newer, you may instead install [Java 11](https://www.oracle.com/java/technologies/downloads/#java11).
 - [COMSOL Multiphysics 5.4 or newer](https://www.comsol.com/product-download) (requires purchase of license; only based package needed, which includes the COMSOL Java API)
   - Once COMSOL is installed, alter 'File System Access' permissions via File → Preferences → Security → Methods and Java Libraries → File System Access → All Files.
-- [NEURON 7.6](https://neuron.yale.edu/ftp/neuron/versions/v7.6/) (newer versions have been released, but compatibility has yet to be confirmed; choose appropriate installer depending on operating system; install auxiliary software as prompted by NEURON installer)
-  - Depending on your operating system, some additional dependencies may be required.
-    - MacOS: Follow the [macOS NEURON dependency](https://www.neuron.yale.edu/neuron/download/compilestd_osx) instructions (Step 1 ONLY)
-    - Linux: Follow the [Linux NEURON dependency](<https://www.neuron.yale.edu/neuron/download/compile_linux>) instructions (Under "Install dependencies")
+- [NEURON 7.6.7 or newer](https://nrn.readthedocs.io/en/latest/install/install_instructions.html) (newer versions have been released, but compatibility has yet to be confirmed; choose appropriate installer depending on operating system; install auxiliary software as prompted by NEURON installer)
+  - Depending on your operating system, some additional dependencies may be required. Make sure to follow the installation instructions carefully.
   - NEURON must be in your PATH in order to run simulations. Either choose the add to path option during installation, or on Linux, you can add to your bash profile: `export PATH=<path/to/neuron/>:$PATH`. The NEURON path should end with `bin`.
-  - Note: if having issues with the NEURON installation, try running the compatibility troubleshooter.
 
 Users may also download a text editor or integrated development environment (IDE) of their choosing to view/edit code (e.g., [Atom](https://atom.io/), [Visual Studio Code](https://code.visualstudio.com/), [IntelliJ IDEA](https://www.jetbrains.com/idea/download/)). For Java code, full autocomplete functionality requires adding both the path to the COMSOL installation ending in `plugins` as well as the path `<ASCENT_PATH>/bin/json-20190722.jar` to the list of available libraries (usually from within the IDE’s project settings).
 

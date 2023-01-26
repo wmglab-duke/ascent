@@ -27,3 +27,4 @@ q = Query(
 # Build heatmap
 heatmaps(data=q.threshold_data(), cuff_orientation=True)
 plt.title('Activation threshold heatmap')
+plt.savefig('threshold_heatmap.png', dpi=400, bbox_inches='tight')

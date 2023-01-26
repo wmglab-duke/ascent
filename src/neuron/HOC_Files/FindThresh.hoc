@@ -23,12 +23,12 @@ objref thresh_values
 Nresults = 1
 thresh_values = new Vector(Nresults,0)
 
-// Find threshold with a binary search algorithm
+// Find threshold with a bisection search algorithm
 proc FindThresh() {//local key
 
 	check_top_flag    = 0 // 0 for upper-bound not yet found, value changes to 1 when the upper-bound is found
 	check_bottom_flag = 0 // 0 for lower-bound not yet found, value changes to 1 when the lower-bound is found
-	// when both found, enter binary search
+	// when both found, enter bisection search
 
 	iter = 1
 
@@ -84,7 +84,7 @@ proc FindThresh() {//local key
 		}
 
 		if (N_APs_top != 0 && N_APs_bottom == 0) {
-			print "Bounds set - entering binary search"
+			print "Bounds set - entering bisection search"
 			break
 		}
 

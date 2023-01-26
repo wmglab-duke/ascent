@@ -81,7 +81,7 @@ activation and block thresholds, respectively.
 
 ### FindThresh
 
-The procedure `FindThresh` performs a binary search for activation and
+The procedure `FindThresh` performs a bisection search for activation and
 block thresholds ([Simulation Protocols](../Running_ASCENT/Info.md#simulation-protocols)).
 
 ### Save outputs to file
@@ -108,9 +108,9 @@ path to waveform file in `n_sim/` folder which is always
 should be recorded (i.e., Vm(t), Gating(t), Vm(x), Gating(x) from
 **_Sim_**), the locations at which to record the parameters (nodes of
 Ranvier for myelinated axons from **_Sim_**), and parameters for the
-binary search for thresholds (i.e., activation or block protocol,
+bisection search for thresholds (i.e., activation or block protocol,
 initial upper and lower bounds on the stimulation amplitude for the
-binary search, and threshold resolution for the binary search from
+bisection search, and threshold resolution for the bisection search from
 **_Sim_**). The `launch.hoc` file loads `Wrapper.hoc` which calls all NEURON
 procedures. The `launch.hoc` file is created by the Python `HocWriter`
 class, which takes inputs of the **_Sim_** directory, `n_sim/` directory,
