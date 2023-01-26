@@ -150,7 +150,7 @@ class Part {
         String id,
         String pseudonym,
         ModelWrapper mw
-    ) throws IllegalArgumentException, IOException {
+    ) throws IllegalArgumentException {
         Model model = mw.getModel();
 
         // only used once per method, so ok to define outside the switch
