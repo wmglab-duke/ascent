@@ -770,12 +770,12 @@ public class ModelWrapper {
             if (skipMesh) {
                 String key_on_int_str = Integer.toString(key_on_int + 1);
                 Map key_on_obj = (Map) this.im.currentIDs.get(key_on_int_str);
-                key_on = (String) key_on_obj.get("name");
-                src = (String) key_on_obj.get("pcs");
+                key_on = (String) key_on_obj.keySet().toArray()[0];
+                src = (String) key_on_obj.get(key_on);
             } else {
                 JSONObject key_on_obj = this.im.currentIDs.get(key_on_int + 1);
-                key_on = key_on_obj.getString("name");
-                src = key_on_obj.getString("pcs");
+                key_on = (String) key_on_obj.keySet().toArray()[0];
+                src = (String) key_on_obj.get(key_on);
             }
 
             PhysicsFeature current_on = model.physics("ec").feature(src);
