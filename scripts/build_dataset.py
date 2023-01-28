@@ -581,7 +581,7 @@ def run(args):  # noqa: C901
         mock_samples_copied = []
         not_mock_samples = []
         input_path = 'input'
-        destination_ascent_config_directory = os.path.join(data_destination, 'files', 'code', 'ascent_configs')
+        destination_ascent_config_directory = os.path.join(code_destination, 'ascent_configs')
         destination_mock_config_input_directory = os.path.join(destination_ascent_config_directory, 'mock_samples')
 
         for (sample, model, sim, n_sim, _, _) in master_indices:
