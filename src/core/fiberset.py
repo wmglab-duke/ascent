@@ -97,9 +97,11 @@ class FiberSet(Configurable, Saveable):
         :return: self
         """
         diams = []
+        offset_ratios = []
         for i, fiber in enumerate(self.fibers if self.fibers is not None else []):
             diams.append(fiber['diam'])
             z_coords = fiber['fiber']
+            offset_ratios.append(fiber['offset_ratio'])
 
             with open(
                 os.path.join(path, str(i) + WriteMode.file_endings.value[mode.value]),
@@ -121,6 +123,15 @@ class FiberSet(Configurable, Saveable):
             pass
         else:
             raise ValueError('Some fibers have diameters and some do not.')
+
+        if offset_ratios.count(None) == 0:
+            offset_ratios_key_path = os.path.join(path, 'offsets.txt')
+            with open(offset_ratios_key_path, "w") as f3:
+                np.savetxt(f3, offset_ratios, fmt='%0.2f')
+        elif offset_ratios.count(None) == len(offset_ratios):
+            pass
+        else:
+            raise ValueError('Some fibers have offsets and some do not.')
 
         return self
 
@@ -622,9 +633,10 @@ class FiberSet(Configurable, Saveable):
                 myel,
             )
 
-            my_xyz = [(my_x, my_y, z) for z in z_offset]
+            my_fiber = [(my_x, my_y, z) for z in z_offset]
+            random_offset_ratio = random_offset_value / dz
 
-            return my_xyz
+            return my_fiber, random_offset_ratio
 
         def generate_z_unmyel(mydiams):
             """Generate the z values for an unmyelinated fiber.
@@ -657,17 +669,17 @@ class FiberSet(Configurable, Saveable):
                 z_bottom_half = z_bottom_half[1:]
 
             for (x, y), diam in zip(fibers_xy, diams):
-                fiber_xyz_coords = build_fiber_with_offset(
+                fiber_pre, offset_ratio = build_fiber_with_offset(
                     list(np.concatenate((z_bottom_half[:-1], z_top_half))),
                     myelinated,
                     delta_z,
                     x,
                     y,
                 )
-                if np.amax(np.array(fiber_xyz_coords)[:, 2]) - np.amin(np.array(fiber_xyz_coords)[:, 2]) > fiber_length:
+                if np.amax(np.array(fiber_pre)[:, 2]) - np.amin(np.array(fiber_pre)[:, 2]) > fiber_length:
                     raise ValueError("Fiber generated is longer than chosen fiber length")
 
-                fiber = {'diam': diam, 'fiber': fiber_xyz_coords}
+                fiber = {'diam': diam, 'fiber': fiber_pre, 'offset_ratio': offset_ratio}
 
                 fibers.append(fiber)
             return fibers
@@ -690,11 +702,13 @@ class FiberSet(Configurable, Saveable):
                     z_shift_to_center_in_fiber_range,
                 ) = generate_myel_fiber_zs(diam)
 
-                fiber_pre = build_fiber_with_offset(zs, myelinated, delta_z, x, y, z_shift_to_center_in_fiber_range)
+                fiber_pre, offset_ratio = build_fiber_with_offset(
+                    zs, myelinated, delta_z, x, y, z_shift_to_center_in_fiber_range
+                )
                 if np.amax(np.array(fiber_pre)[:, 2]) - np.amin(np.array(fiber_pre)[:, 2]) > fiber_length:
                     raise ValueError("Fiber generated is longer than chosen fiber length")
 
-                fiber = {'diam': diam, 'fiber': fiber_pre}
+                fiber = {'diam': diam, 'fiber': fiber_pre, 'offset_ratio': offset_ratio}
                 fibers.append(fiber)
             return fibers
 
