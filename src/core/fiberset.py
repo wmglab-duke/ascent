@@ -167,7 +167,7 @@ class FiberSet(Configurable, Saveable):
         """
         # get required parameters from configuration JSON (using inherited Configurable methods)
         xy_mode_name: str = self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode')
-        xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
+        self.xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
         xy_parameters: dict = self.search(Config.SIM, 'fibers', 'xy_parameters')
         my_xy_seed: int = xy_parameters.get('seed', 0)
 
@@ -178,22 +178,22 @@ class FiberSet(Configurable, Saveable):
         if self.search_mode(FiberZMode, Config.MODEL) == FiberZMode.EXTRUSION:
 
             # error if an invalid mode is selected
-            if xy_mode not in FiberXYMode:
+            if self.xy_mode not in FiberXYMode:
                 raise NotImplementedError("Invalid FiberXYMode in Sim.")
 
-            if xy_mode == FiberXYMode.CENTROID:
+            if self.xy_mode == FiberXYMode.CENTROID:
                 points = self.generate_centroid_points()
 
-            elif xy_mode == FiberXYMode.UNIFORM_DENSITY:
+            elif self.xy_mode == FiberXYMode.UNIFORM_DENSITY:
                 points = self.generate_uniform_density_points(buffer, my_xy_seed)
 
-            elif xy_mode == FiberXYMode.UNIFORM_COUNT:
+            elif self.xy_mode == FiberXYMode.UNIFORM_COUNT:
                 points = self.generate_uniform_count_points(buffer, my_xy_seed)
 
-            elif xy_mode == FiberXYMode.WHEEL:
+            elif self.xy_mode == FiberXYMode.WHEEL:
                 points = self.generate_wheel_points(buffer)
 
-            elif xy_mode == FiberXYMode.EXPLICIT:
+            elif self.xy_mode == FiberXYMode.EXPLICIT:
                 points = self.load_explicit_coords(sim_directory)
         else:
             raise NotImplementedError("That FiberZMode is not yet implemented.")
@@ -899,13 +899,16 @@ class FiberSet(Configurable, Saveable):
         :raises MorphologyError: if fiber points are too close to an inner boundary.
         """
         # check that all fibers are inside inners, accounting for trace buffer
-        buffer: float = self.search(Config.SIM, 'fibers', 'xy_trace_buffer')
         all_inners = [inner.deepcopy() for fascicle in self.sample.slides[0].fascicles for inner in fascicle.inners]
-        [inner.offset(distance=-buffer) for inner in all_inners]
-        allpoly = unary_union([inner.polygon() for inner in all_inners])
+        if self.xy_mode != FiberXYMode.CENTROID:
+            buffer: float = self.search(Config.SIM, 'fibers', 'xy_trace_buffer')
+            [inner.offset(distance=-buffer) for inner in all_inners]
+        else:
+            warnings.warn("Ignoring xy_trace_buffer since xy_mode is centroid")
+        allpoly = unary_union([inner.polygon().buffer(0) for inner in all_inners])
         if not np.all(
             [
-                Point(fiber['fiber']).within(allpoly) if type(fiber) is dict else Point(fiber).within(allpoly)
+                Point(fiber['fiber'][0][:-1]).within(allpoly) if type(fiber) is dict else Point(fiber).within(allpoly)
                 for fiber in self.fibers
             ]
         ):
