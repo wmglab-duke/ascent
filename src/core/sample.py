@@ -683,7 +683,6 @@ class Sample(Configurable, Saveable):
 
         def populate_plotter(slide, title: str, filename: str):
             plt.figure()
-            print(slide.bounds())
             if (slide.bounds()[2] - slide.bounds()[0]) > 1000:
                 scalebar_length = 1
                 scalebar_units = 'mm'
