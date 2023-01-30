@@ -617,11 +617,11 @@ class Sample(Configurable, Saveable):
 
         sep_fascicles = self.search(Config.SAMPLE, "boundary_separation", "fascicles")
 
-        print(f'\tensuring minimum fascicle separation of {sep_fascicles} um')
+        print(f'\tensuring minimum fascicle-fascicle separation of {sep_fascicles} um')
 
         if 'nerve' in self.search(Config.SAMPLE, 'boundary_separation'):
             sep_nerve = self.search(Config.SAMPLE, 'boundary_separation', 'nerve')
-            print(f'\tensuring minimum nerve:fascicle separation of {sep_nerve} um')
+            print(f'\tensuring minimum nerve-fascicle separation of {sep_nerve} um')
             sep_nerve = sep_nerve - sep_fascicles / 2
         else:
             sep_nerve = None
