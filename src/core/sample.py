@@ -481,7 +481,7 @@ class Sample(Configurable, Saveable):
             will_reposition=(self.deform_mode != DeformationMode.NONE),
         )
 
-        slide.validation()
+        slide.validate()
 
         # get orientation angle (used later to calculate pos_ang for model.json)
         if self.mask_exists(MaskFileNames.ORIENTATION):
@@ -759,11 +759,11 @@ class Sample(Configurable, Saveable):
                     )
                 slide.rotate(math.radians(self.sample_rotation))
 
-            # ensure that nothing went wrong in slide processing
-            slide.validation(plotpath=plotpath)
-
         # scale with ratio = 1 (no scaling happens, but connects the ends of each trace to itself)
         self.scale(1)
+
+        # ensure that nothing went wrong in slide processing
+        self.slides[0].validate(plotpath=plotpath)
 
         populate_plotter(self.slides[0], 'Final sample after any user specified processing', 'sample_final')
 

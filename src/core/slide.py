@@ -51,7 +51,7 @@ class Slide:
         self.fascicles: List[Fascicle] = fascicles
 
         if not will_reposition:
-            self.validation()
+            self.validate()
         else:
             if self.nerve_mode == NerveMode.NOT_PRESENT:
                 raise ValueError("Cannot deform monofascicle")
@@ -83,19 +83,19 @@ class Slide:
 
         return (x_sum / area_sum), (y_sum / area_sum)
 
-    def validation(
+    def validate(
         self,
-        specific: bool = True,
         die: bool = True,
         tolerance: float = None,
         plotpath=None,
+        shapely: bool = True,
     ) -> bool:
         """Check to make sure nerve geometry is not overlapping itself.
 
-        :param specific: if you want to know what made it fail first
-        :param die: if non-specific, decides whether to throw an error if it fails
+        :param die: if non-specific, decides whether to throw an error_message if it fails
         :param tolerance: minimum separation distance for unit you are currently in
         :param plotpath: path to save plot to
+        :param shapely: if True, uses shapely to check for valid polygons
         :raises MorphologyError: if the nerve morphology is invalid
         :return: Boolean for True (no intersection) or False (issues with geometry overlap)
         """
@@ -115,46 +115,45 @@ class Slide:
             plt.clf()
             plt.close()
 
+        error_message = ''
+
         if self.fascicles_too_small():
             debug_plot()
-            raise MorphologyError(
+            error_message = (
                 "A white area which results in a fascicle trace with <3 points was detected. "
                 "Check your input mask for specks."
             )
 
-        if self.monofasc():
-            return True
+        if shapely and not self.polygons_are_valid():
+            debug_plot()
+            error_message = "A polygon was detected which is invalid. Using smoothing may fix this error_message."
 
-        if specific:
+        if not self.monofasc():
             if self.fascicle_fascicle_intersection():
                 debug_plot()
-                raise MorphologyError("Fascicle-fascicle intersection found")
+                error_message = "Fascicle-fascicle intersection found"
 
             if self.fascicle_nerve_intersection():
                 debug_plot()
-                raise MorphologyError("Fascicle-nerve intersection found")
+                error_message = "Fascicle-nerve intersection found"
 
             if self.fascicles_outside_nerve():
                 debug_plot()
-                raise MorphologyError("Not all fascicles fall within nerve")
+                error_message = "Not all fascicles fall within nerve"
 
+            if self.fascicles_too_close(tolerance):
+                debug_plot()
+                error_message = "Fascicles are too close to each other"
+
+        if error_message == '':
+            return True
         else:
-            if any(
-                [
-                    self.fascicle_fascicle_intersection(),
-                    self.fascicle_nerve_intersection(),
-                    self.fascicles_outside_nerve(),
-                    self.fascicles_too_close(tolerance),
-                    self.fascicles_too_small(),
-                ],
-            ):
-                if die:
-                    debug_plot()
-                    raise MorphologyError("Slide validation failed")
-                else:
-                    return False
+            debug_plot()
+            if die:
+                raise MorphologyError(error_message)
             else:
-                return True
+                print(MorphologyError(error_message))
+                return False
 
     def fascicles_too_close(self, tolerance: float = None) -> bool:
         """Check to see if any fascicles are too close to each other.
@@ -422,7 +421,7 @@ class Slide:
         for fascicle in self.fascicles:
             fascicle.rotate(angle, center)
 
-        self.validation()
+        self.validate()
 
     def bounds(self):
         """Get the bounding box for the slide.
@@ -502,3 +501,15 @@ class Slide:
                 os.chdir(sub_start)
 
         os.chdir(start)
+
+    def polygons_are_valid(self):
+        """Check if all polygons are valid and attempt to fix if not.
+
+        :return: True if all polygons are valid, False if not
+        """
+        for trace in self.trace_list():
+            if not trace.polygon().is_valid:
+                trace.offset(distance=0)
+                if not trace.polygon().is_valid:
+                    return False
+        return True

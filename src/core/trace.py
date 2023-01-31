@@ -247,8 +247,12 @@ class Trace:
         :param my_xy_seed: seed for random number generator
         :param buffer: minimum distance from the edge of the trace
         :param count: number of points to find
+        :raises ValueError: if buffer is too large for the trace
         :return: list of tuples (x,y) that are within the trace (polygon)
         """
+        if self.ecd() < buffer * 2.5:
+            raise ValueError("Buffer is too large for trace")
+
         trace_to_compare = self.deepcopy()
         trace_to_compare.offset(None, -buffer)
 
@@ -766,3 +770,10 @@ class Trace:
         :return: points converted to int32
         """
         return np.array(np.round(points), dtype=np.int32)
+
+    def ecd(self):
+        """Return the effective circular diameter.
+
+        :return: effective circular diameter
+        """
+        return 2 * np.sqrt(self.area() / np.pi)
