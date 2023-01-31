@@ -233,7 +233,10 @@ class Sample(Configurable, Saveable):
             # convert any TIFF to TIF
             [os.rename(x, os.path.splitext(x)[0] + '.tif') for x in os.listdir(source_dir) if x.endswith('.tiff')]
             source_files = os.listdir(source_dir)
-            for mask_fname in [f.value for f in MaskFileNames if f.value in source_files]:
+            mask_fnames = [f.value for f in MaskFileNames if f.value in source_files]
+            if len(mask_fnames) == 0:
+                raise FileNotFoundError("No valid input masks found. Are your input files properly named?")
+            for mask_fname in mask_fnames:
                 shutil.move(
                     os.path.join(source_dir, mask_fname),
                     os.path.join(source_dir, f'{sample}_0_0_{mask_fname}'),
