@@ -8,3 +8,4 @@ Running ASCENT
    command_line_args
    Info
    plotter
+   osparc
