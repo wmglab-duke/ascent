@@ -80,7 +80,7 @@ class Configurable:
         result = self.configs[key.value]
         for arg in args:
             if isinstance(result, list):
-                print(1)
+                pass
             if isinstance(arg, (str, int)):
                 result = result.get(arg)
             else:
