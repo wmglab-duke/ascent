@@ -427,7 +427,9 @@ public class ModelWrapper {
 
                     // LOOP OVER FIBERS IN FIBERSET
                     for (String fiber_file : fiberset_file_list) {
-                        if (fiber_file.contains("diams.txt")) {
+                        if (
+                            fiber_file.contains("diams.txt") || fiber_file.contains("offsets.txt")
+                        ) {
                             continue;
                         } else {
                             // build path to fibeR
