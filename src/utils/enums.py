@@ -152,7 +152,6 @@ class PopulateMode(ASCENTEnum, Enum):
 
 @unique
 class DiamDistMode(ASCENTEnum, Enum):
-
     TRUNCNORM = 0
     UNIFORM = 1
 
@@ -266,7 +265,6 @@ class WaveformMode(ASCENTEnum, Enum):
 
 @unique
 class ExportMode(ASCENTEnum, Enum):
-
     OVERWRITE = "overwrite"
     ERROR = "error"
     SELECTIVE = "selective"

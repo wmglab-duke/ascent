@@ -252,7 +252,6 @@ class Sample(Configurable, Saveable):
 
             scale_was_copied = False
             for directory_part in 'samples', str(sample_index), 'slides', cassette, number, 'masks':
-
                 if not os.path.exists(directory_part):
                     os.makedirs(directory_part)
                 os.chdir(directory_part)
@@ -605,7 +604,6 @@ class Sample(Configurable, Saveable):
         :return: Slide object
         """
         if self.deform_mode != DeformationMode.PHYSICS:
-
             raise ValueError("Invalid DeformationMode in Sample.")
         if 'morph_count' in self.search(Config.SAMPLE):
             morph_count = self.search(Config.SAMPLE, 'morph_count')
@@ -750,7 +748,6 @@ class Sample(Configurable, Saveable):
             for slide in self.slides:
                 self.deform_slide(slide)
         for slide in self.slides:
-
             # shift slide about (0,0)
             slide.move_center(np.array([0, 0]))
 

@@ -176,7 +176,6 @@ class FiberSet(Configurable, Saveable):
 
         # perform implemented mode
         if self.search_mode(FiberZMode, Config.MODEL) == FiberZMode.EXTRUSION:
-
             # error if an invalid mode is selected
             if self.xy_mode not in FiberXYMode:
                 raise NotImplementedError("Invalid FiberXYMode in Sim.")
@@ -459,7 +458,6 @@ class FiberSet(Configurable, Saveable):
             raise NotImplementedError(f"{fiber_z_mode} FiberZMode is not yet implemented.")
 
         def clip(values: list, start, end, myel: bool, is_points: bool = False) -> list:
-
             step = 1
             if myel:
                 step = 11
@@ -527,7 +525,6 @@ class FiberSet(Configurable, Saveable):
 
             # load in all the required specifications for finding myelinated z coordinates
             if sampling_mode == MyelinatedSamplingType.DISCRETE.value:
-
                 diameters, my_delta_zs, paranodal_length_2s = (
                     self.search(
                         Config.FIBER_Z,
@@ -544,7 +541,6 @@ class FiberSet(Configurable, Saveable):
                 inter_length = eval(inter_length_str)
 
             elif sampling_mode == MyelinatedSamplingType.INTERPOLATION.value:
-
                 paranodal_length_2_str, delta_z_str, inter_length_str = (
                     self.search(
                         Config.FIBER_Z,
@@ -789,7 +785,6 @@ class FiberSet(Configurable, Saveable):
 
                 fiber_diam_dist = None
                 if distribution_mode == DiamDistMode.UNIFORM:
-
                     # load parameters
                     lower_fiber_diam: float = diameter['lower']
                     upper_fiber_diam: float = diameter['upper']
@@ -804,7 +799,6 @@ class FiberSet(Configurable, Saveable):
                     fiber_diam_dist = stats.uniform(lower_fiber_diam, upper_fiber_diam - lower_fiber_diam)
 
                 elif distribution_mode == DiamDistMode.TRUNCNORM:
-
                     # load parameters
                     n_std_fiber_diam_limit: float = diameter['n_std_limit']
                     mu_fiber_diam: float = diameter['mu']

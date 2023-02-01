@@ -262,7 +262,6 @@ class Trace:
         random.seed(my_xy_seed)
 
         while len(points) < count:
-
             coordinate = tuple(
                 (random.random() * (ceiling - floor)) + floor for floor, ceiling in ((min_x, max_x), (min_y, max_y))
             )
@@ -612,7 +611,7 @@ class Trace:
 
         # Progressively add points to circle or recompute circle
         c = None
-        for (i, p) in enumerate(shuffled):
+        for i, p in enumerate(shuffled):
             if c is None or not self.is_in_circle(c, p):
                 c = self._make_circle_one_point(shuffled[: i + 1], p)
         return c
@@ -625,7 +624,7 @@ class Trace:
         :return: circle enclosing all points centered on p
         """
         c = (p[0], p[1], 0.0)
-        for (i, q) in enumerate(points):
+        for i, q in enumerate(points):
             if not self.is_in_circle(c, q):
                 if c[2] == 0.0:
                     c = self._make_diameter(p, q)

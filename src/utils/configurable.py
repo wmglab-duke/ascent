@@ -179,7 +179,6 @@ class Configurable:
             raise ValueError('At least one mode type must be provided.')
 
         for mode in modes:
-
             modes_in_config = self.search(key, 'modes', mode.config.value, optional=optional)
 
             if not isinstance(modes_in_config, list):

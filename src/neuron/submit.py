@@ -478,13 +478,11 @@ def submit_fibers(submission_context, submission_data):
         start_path_base = os.path.join(start_dir, 'start_')
 
         if submission_context == 'cluster':
-
             cluster_submit(runfibers, sim_name, sim_path, start_path_base)
             ran_fibers += len(runfibers)
             if not args.verbose:
                 print_progress_bar(ran_fibers, n_fibers, length=40, prefix=f'Fibers submitted: {ran_fibers}/{n_fibers}')
         else:
-
             if args.num_cpu is not None:
                 cpus = args.num_cpu
 
@@ -538,7 +536,6 @@ def cluster_submit(runfibers, sim_name, sim_path, start_path_base):
     mem = slurm_params['memory_per_fiber'] if args.job_mem is None else args.job_mem
     array_fibertasks = [runfibers[x : x + njobs] for x in range(0, len(runfibers), njobs)]
     for tasklist in array_fibertasks:
-
         array_indices = [task['job_number'] for task in tasklist]
 
         # print fiber submission
@@ -585,7 +582,6 @@ def make_fiber_tasks(submission_list, submission_context):
     # assign appropriate configuration data
     sim_dir = os.path.join('n_sims')
     for sim_name, runfibers in submission_list.items():
-
         sim_path = os.path.join(sim_dir, sim_name)
         fibers_path = os.path.abspath(os.path.join(sim_path, 'data', 'inputs'))
         output_path = os.path.abspath(os.path.join(sim_path, 'data', 'outputs'))
@@ -768,7 +764,6 @@ def get_submission_list(run_inds):
     rundata = []
     submission_list = {}
     for run_number in run_inds:
-
         # build configuration filename
         filename = os.path.join('runs', f'{run_number}.json')
 

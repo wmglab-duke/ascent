@@ -151,7 +151,6 @@ class Simulation(Configurable, Saveable):
         self.fiberset_product = list(itertools.product(*fiberset_factors.values()))
 
         for i, fiberset_set in enumerate(self.fiberset_product):
-
             fiberset_directory = os.path.join(fibersets_directory, str(i))
             if not os.path.exists(fiberset_directory):
                 os.makedirs(fiberset_directory)
@@ -173,7 +172,6 @@ class Simulation(Configurable, Saveable):
             self.fibersets.append(fiberset)
 
         if self.search(Config.SIM, 'supersampled_bases', 'generate', optional=True):
-
             ss_fibercoords_directory = os.path.join(sim_directory, 'ss_coords')
 
             if not os.path.exists(ss_fibercoords_directory):
@@ -368,7 +366,6 @@ class Simulation(Configurable, Saveable):
         """
         bases = [None for _ in range(self.n_bases)]
         for basis_ind in range(self.n_bases):
-
             if fiberset_ind is not None:
                 # NOT super sampled bases
                 bases_path = os.path.join(
@@ -470,7 +467,6 @@ class Simulation(Configurable, Saveable):
             fiberset_directory = os.path.join(sim_dir, str(sim_num), 'fibersets', str(fiberset_ind))
 
             for fname_prefix, weights, bases_indices in zip([''], [active_src_vals], [src_bases_indices]):
-
                 if not any(np.isnan(weights)):
                     # get the weights in order of the bases,
                     # since the weights are for a single cuff, but the bases span cuffs
@@ -554,7 +550,6 @@ class Simulation(Configurable, Saveable):
         ss_fiberset_path = os.path.join(sim_dir, str(source_sim), 'ss_coords')
 
         for basis_ind in range(len(active_src_vals[0])):
-
             ss_bases_src_path = os.path.join(sim_dir, str(source_sim), 'ss_bases', str(basis_ind))
 
             if not os.path.exists(ss_bases_src_path) or not os.path.exists(os.path.join(ss_bases_src_path, file)):

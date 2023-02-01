@@ -208,22 +208,18 @@ class Waveform(Configurable, Saveable):
 
         self.frequency = self.search(Config.SIM, 'waveform', self.mode.name, 'pulse_repetition_freq') / 1000
         if self.mode == WaveformMode.MONOPHASIC_PULSE_TRAIN:
-
             generated_wave = self.generate_monophasic()
 
         elif self.mode == WaveformMode.SINUSOID:
             generated_wave = self.generate_sinusoid()
 
         elif self.mode == WaveformMode.BIPHASIC_FULL_DUTY:
-
             generated_wave = self.generate_biphasic_fullduty()
 
         elif self.mode == WaveformMode.BIPHASIC_PULSE_TRAIN:
-
             generated_wave = self.generate_biphasic_basic()
 
         elif self.mode == WaveformMode.BIPHASIC_PULSE_TRAIN_Q_BALANCED_UNEVEN_PW:
-
             generated_wave = self.generate_biphasic_uneven()
 
         elif self.mode == WaveformMode.EXPLICIT:

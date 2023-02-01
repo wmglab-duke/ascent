@@ -584,8 +584,7 @@ def run(args):  # noqa: C901
         destination_ascent_config_directory = os.path.join(code_destination, 'ascent_configs')
         destination_mock_config_input_directory = os.path.join(destination_ascent_config_directory, 'mock_samples')
 
-        for (sample, model, sim, n_sim, _, _) in master_indices:
-
+        for sample, model, sim, n_sim, _, _ in master_indices:
             # copy MockSample configs
             if sample not in not_mock_samples + mock_samples_copied:
                 sample_config_path = os.path.join('samples', str(sample), 'sample.json')
@@ -608,7 +607,6 @@ def run(args):  # noqa: C901
 
             # make list of the rest of things to copy, copy later all at once
             for thing_to_copy in stuff_to_copy:
-
                 # copy Sim configs if including things at the Sim level
                 if sim not in sims_to_copy and "<sim_index>" in thing_to_copy:
                     sims_to_copy.append(sim)

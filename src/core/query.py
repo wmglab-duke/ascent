@@ -91,7 +91,6 @@ class Query(Configurable, Saveable):
 
         # loop samples
         for sample in os.listdir(samples_dir):
-
             # skip this sample if applicable
             if sample.startswith('.') or (sample_indices is not None and int(sample) not in sample_indices):
                 continue
@@ -267,9 +266,7 @@ class Query(Configurable, Saveable):
         return result
 
     def _match(self, criteria: dict, data: dict) -> bool:
-
         for key in criteria.keys():
-
             # ensure key is valid in data
             if key not in data:
                 raise KeyError(f"Criterion key {key} not found in data")
@@ -376,11 +373,9 @@ class Query(Configurable, Saveable):
 
                         # fetch all thresholds
                         for inner in range(n_inners):
-
                             outer = [index for index, inners in enumerate(out_in) if inner in inners][0]
 
                             for local_fiber_index, _ in enumerate(out_in_fib[outer][out_in[outer].index(inner)]):
-
                                 master_index = sim_object.indices_n_to_fib(fiberset_index, inner, local_fiber_index)
 
                                 thresh_path = os.path.join(

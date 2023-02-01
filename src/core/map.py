@@ -69,7 +69,6 @@ class Map(Configurable):
         self.data_root = None
 
     def init_post_config(self, mode: SetupMode = SetupMode.NEW):
-
         # "root" of data within SAMPLE config
         # stored as list because will be "splatted" later when using self.search and self.path
         self.data_root = 'slide_map'

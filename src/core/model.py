@@ -122,7 +122,6 @@ class Model(Configurable, Saveable):
             CuffShiftMode.NAIVE_ROTATION_MIN_CIRCLE_BOUNDARY,
             CuffShiftMode.AUTO_ROTATION_MIN_CIRCLE_BOUNDARY,
         ]:
-
             if r_i > r_f:
                 x_shift = x - (r_i - offset - cuff_r_buffer - r_bound) * np.cos(theta_c * ((2 * np.pi) / 360))
                 y_shift = y - (r_i - offset - cuff_r_buffer - r_bound) * np.sin(theta_c * ((2 * np.pi) / 360))
@@ -373,7 +372,7 @@ class Model(Configurable, Saveable):
 
         condition_match_count = 0
         r_cuff_in_parameter = None
-        for (r_min, r_max, r_min_ix, r_max_ix, parameter) in bounds_final:
+        for r_min, r_max, r_min_ix, r_max_ix, parameter in bounds_final:
             if r_min_ix and r_max_ix:
                 if r_min is None:
                     if r_f <= r_max:
