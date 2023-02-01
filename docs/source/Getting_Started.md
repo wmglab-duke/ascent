@@ -199,7 +199,7 @@ The below example directory structure may be helpful.
     be -0.027402 mA
     ```
 
-9. To generate a heatmap of activation thresholds, open the script `examples/analysis/heatmap.py` and edit the sample, model, and sim indices to match the ones you chose above. Run the script from the repository root with the command `python examples/analysis/heatmap.py`, and a heatmap plot will be generated in `out/analysis/`.
+9. To generate a heatmap of activation thresholds, open the script `examples/analysis/threshold_heatmap.py` and edit the sample, model, and sim indices to match the ones you chose above. Run the script from the repository root with the command `python examples/analysis/threshold_heatmap.py`, and a heatmap plot will be generated in `out/analysis/`.
 `````
 
 ````{tab} General Procedure

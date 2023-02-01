@@ -141,8 +141,7 @@ class Simulation(Configurable, Saveable):
         """
         fibersets_directory = os.path.join(sim_directory, 'fibersets')
         # loop PARAMS in here, but loop HISTOLOGY in FiberSet object
-        if not os.path.exists(fibersets_directory):
-            os.makedirs(fibersets_directory)
+        os.makedirs(fibersets_directory, exist_ok=True)
 
         fiberset_factors = {key: value for key, value in self.factors.items() if key.split('->')[0] == 'fibers'}
 
@@ -152,8 +151,7 @@ class Simulation(Configurable, Saveable):
 
         for i, fiberset_set in enumerate(self.fiberset_product):
             fiberset_directory = os.path.join(fibersets_directory, str(i))
-            if not os.path.exists(fiberset_directory):
-                os.makedirs(fiberset_directory)
+            os.makedirs(fibersets_directory, exist_ok=True)
 
             sim_copy = self._copy_and_edit_config(self.configs[Config.SIM.value], self.fiberset_key, list(fiberset_set))
 
@@ -173,9 +171,7 @@ class Simulation(Configurable, Saveable):
 
         if self.search(Config.SIM, 'supersampled_bases', 'generate', optional=True):
             ss_fibercoords_directory = os.path.join(sim_directory, 'ss_coords')
-
-            if not os.path.exists(ss_fibercoords_directory):
-                os.makedirs(ss_fibercoords_directory)
+            os.makedirs(ss_fibercoords_directory, exist_ok=True)
 
             fiberset = FiberSet(self.sample)
             fiberset.add(SetupMode.OLD, Config.SIM, self.configs[Config.SIM.value]).add(
@@ -213,8 +209,7 @@ class Simulation(Configurable, Saveable):
         :return: self
         """
         directory = os.path.join(sim_directory, 'waveforms')
-        if not os.path.exists(directory):
-            os.makedirs(directory)
+        os.makedirs(directory, exist_ok=True)
 
         wave_factors = {key: value for key, value in self.factors.items() if key.split('->')[0] == 'waveform'}
 
@@ -234,8 +229,7 @@ class Simulation(Configurable, Saveable):
                 WriteMode.DATA, os.path.join(directory, str(i))
             )
             path = sim_directory + f'/plots/waveforms/{i}.png'
-            if not os.path.exists(sim_directory + '/plots/waveforms'):
-                os.makedirs(sim_directory + '/plots/waveforms')
+            os.makedirs(sim_directory + '/plots/waveforms', exist_ok=True)
 
             waveform.plot(final=True, path=path)
 
@@ -662,8 +656,7 @@ class Simulation(Configurable, Saveable):
         if overwrite and os.path.exists(target_full):
             os.remove(target_full)
 
-        if not os.path.exists(target_dir):
-            os.makedirs(target_dir)
+        os.makedirs(target_dir, exist_ok=True)
 
         source = os.path.join(project_root, 'config', 'user', 'runs', str(num) + '.json')
 
@@ -713,8 +706,7 @@ class Simulation(Configurable, Saveable):
         :param target: Target directory
         """
         # make NSIM_EXPORT_PATH (defined in Env.json) directory if it does not yet exist
-        if not os.path.exists(target):
-            os.makedirs(target)
+        os.makedirs(target, exist_ok=True)
 
         # neuron files
         du.copy_tree(
@@ -736,8 +728,7 @@ class Simulation(Configurable, Saveable):
         :param target: Target directory
         """
         # make NSIM_EXPORT_PATH (defined in Env.json) directory if it does not yet exist
-        if not os.path.exists(target):
-            os.makedirs(target)
+        os.makedirs(target, exist_ok=True)
 
         # fiber_z.json files
         shutil.copy2(

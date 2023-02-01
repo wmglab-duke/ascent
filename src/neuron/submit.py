@@ -199,8 +199,7 @@ def ensure_dir(directory):
 
     :param directory: the string path to the directory
     """
-    if not os.path.exists(directory):
-        os.makedirs(directory)
+    os.makedirs(directory, exist_ok=True)
 
 
 def auto_compile(override: bool = False):

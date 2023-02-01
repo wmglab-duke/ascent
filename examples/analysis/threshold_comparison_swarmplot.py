@@ -11,6 +11,8 @@ https://seaborn.pydata.org/generated/seaborn.swarmplot.html
 RUN THIS FROM REPOSITORY ROOT
 """
 
+import os
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -29,4 +31,7 @@ q = Query(
 data = q.threshold_data()
 g = sns.swarmplot(data=data, x='model', y='threshold')
 plt.title('Threshold swarmplot comparison')
-plt.savefig('threshold_comparison_swarmplot.png', dpi=400, bbox_inches='tight')
+
+save_directory = os.path.join('output', 'analysis')
+os.makedirs(save_directory, exist_ok=True)
+plt.savefig(os.path.join(save_directory, 'threshold_comparison_swarmplot.png'), dpi=400, bbox_inches='tight')

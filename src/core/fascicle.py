@@ -358,8 +358,7 @@ class Fascicle:
 
             # write outer and inners
             for items, folder in [([self.outer], 'outer'), (self.inners, 'inners')]:
-                if not os.path.exists(folder):
-                    os.makedirs(folder)
+                os.makedirs(folder, exist_ok=True)
                 os.chdir(folder)
 
                 # write all items (give filename as i (index) without the extension
