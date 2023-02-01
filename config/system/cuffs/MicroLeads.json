@@ -1,4 +1,5 @@
 {
+  "description": "276 um inner diameter cuff, bipolar, based on technical drawing from MicroLeads, use for preclinical animal",
   "code": "U",
   "instances": [
     {
@@ -92,12 +93,12 @@
     {
       "name": "R_in_U",
       "expression": "138 [um]",
-      "description": "Cuff inner diameter"
+      "description": "Cuff inner radius"
     },
     {
       "name": "R_out_U",
       "expression": "0.5 [mm]",
-      "description": "Cuff outer diameter"
+      "description": "Cuff outer radius"
     },
     {
       "name": "Tangent_U",
