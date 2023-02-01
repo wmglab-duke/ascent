@@ -1,13 +1,14 @@
 {
-  "code": "MH3602",
+  "description": "",
+  "code": "MH452",
   "instances": [
     {
       "type": "CuffFill_Primitive",
-      "label": "M18HumanBipolar360 Cuff Fill",
+      "label": "M18HumanBipolar45 Cuff Fill",
       "def": {
-        "Radius": "R_out_MH3602+Thk_fill_MH3602",
-        "Thk": "Thk_fill_MH3602",
-        "L": "L_MH3602+2*Thk_fill_MH3602",
+        "Radius": "R_out_MH452+Thk_fill_MH452",
+        "Thk": "Thk_fill_MH452",
+        "L": "L_MH452+2*Thk_fill_MH452",
         "Center": "z_nerve/2",
         "x_shift": "0",
         "y_shift": "0"
@@ -21,19 +22,19 @@
     },
     {
       "type": "TubeCuff_Primitive",
-      "label": "M18HumanBipolar360 Cuff",
+      "label": "M18HumanBipolar45 Cuff",
       "def": {
-        "N_holes": "N_holes_MH3602",
-        "Tube_theta": "Theta_MH3602",
+        "N_holes": "N_holes_MH452",
+        "Tube_theta": "Theta_MH452",
         "Center": "z_nerve/2",
-        "R_in": "R_in_MH3602",
-        "R_out": "R_out_MH3602",
-        "Tube_L": "L_MH3602",
-        "Rot_def": "Rot_def_MH3602",
-        "D_hole": "D_hole_MH3602",
-        "Buffer_hole": "Buffer_hole_MH3602",
-        "L_holecenter_cuffseam": "L_holecenter_cuffseam_MH3602",
-        "Pitch_holecenter_holecenter": "Pitch_holecenter_holecenter_MH3602"
+        "R_in": "R_in_MH452",
+        "R_out": "R_out_MH452",
+        "Tube_L": "L_MH452",
+        "Rot_def": "Rot_def_MH452",
+        "D_hole": "D_hole_MH452",
+        "Buffer_hole": "Buffer_hole_MH452",
+        "L_holecenter_cuffseam": "L_holecenter_cuffseam_MH452",
+        "Pitch_holecenter_holecenter": "Pitch_holecenter_holecenter_MH452"
       },
       "materials": [
         {
@@ -44,15 +45,15 @@
     },
     {
       "type": "RibbonContact_Primitive",
-      "label": "M18HumanBipolar360 Contact 1",
+      "label": "M18HumanBipolar45 Contact 1",
       "def": {
-        "Ribbon_thk": "Thk_elec_MH3602",
-        "Ribbon_z": "L_elec_MH3602",
-        "R_in": "R_in_MH3602",
-        "Ribbon_recess": "Recess_MH3602",
-        "Center": "(z_nerve/2)-(sep_elec_MH3602/2)",
-        "Ribbon_theta": "Theta_contact_MH3602",
-        "Rot_def": "Rot_def_contact_MH3602"
+        "Ribbon_thk": "Thk_elec_MH452",
+        "Ribbon_z": "L_elec_MH452",
+        "R_in": "R_in_MH452",
+        "Ribbon_recess": "Recess_MH452",
+        "Center": "(z_nerve/2)-(sep_elec_MH452/2)",
+        "Ribbon_theta": "Theta_contact_MH452",
+        "Rot_def": "Rot_def_contact_MH452"
       },
       "materials": [
         {
@@ -67,15 +68,15 @@
     },
     {
       "type": "RibbonContact_Primitive",
-      "label": "M18HumanBipolar360 Contact 2",
+      "label": "M18HumanBipolar45 Contact 2",
       "def": {
-        "Ribbon_thk": "Thk_elec_MH3602",
-        "Ribbon_z": "L_elec_MH3602",
-        "R_in": "R_in_MH3602",
-        "Ribbon_recess": "Recess_MH3602",
-        "Center": "(z_nerve/2)+(sep_elec_MH3602/2)",
-        "Ribbon_theta": "Theta_contact_MH3602",
-        "Rot_def": "Rot_def_contact_MH3602"
+        "Ribbon_thk": "Thk_elec_MH452",
+        "Ribbon_z": "L_elec_MH452",
+        "R_in": "R_in_MH452",
+        "Ribbon_recess": "Recess_MH452",
+        "Center": "(z_nerve/2)+(sep_elec_MH452/2)",
+        "Ribbon_theta": "Theta_contact_MH452",
+        "Rot_def": "Rot_def_contact_MH452"
       },
       "materials": [
         {
@@ -91,122 +92,122 @@
   ],
   "params": [
     {
-      "name": "N_holes_MH3602",
+      "name": "N_holes_MH452",
       "expression": "0",
       "description": "Can have the value of 1 or 2. Adds conical shaped holes in TubeCuff. If 1 hole, centered longitudinally in cuff. If 2, evenly spaced by Pitch_holecenter_holecenter about longitudinal center of cuff"
     },
     {
-      "name": "sep_elec_MH3602",
+      "name": "sep_elec_MH452",
       "expression": "1 [mm]",
       "description": "z-distance between contacts"
     },
     {
-      "name": "Theta_MH3602",
-      "expression": "percent_circ_cuff_MH3602*360 [deg]",
+      "name": "Theta_MH452",
+      "expression": "percent_circ_cuff_MH452*360 [deg]",
       "description": "Angular coverage of cuff"
     },
     {
-      "name": "R_in_MH3602",
-      "expression": "max(r_nerve+thk_medium_gap_internal_MH3602,r_cuff_in_pre_MH3602)",
+      "name": "R_in_MH452",
+      "expression": "max(r_nerve+thk_medium_gap_internal_MH452,r_cuff_in_pre_MH452)",
       "description": "Cuff inner diameter"
     },
     {
-      "name": "R_out_MH3602",
-      "expression": "R_in_MH3602+thk_cuff_MH3602",
+      "name": "R_out_MH452",
+      "expression": "R_in_MH452+thk_cuff_MH452",
       "description": "Cuff outer diameter"
     },
     {
-      "name": "L_MH3602",
+      "name": "L_MH452",
       "expression": "3 [mm]",
       "description": "Length of cuff"
     },
     {
-      "name": "Rot_def_MH3602",
+      "name": "Rot_def_MH452",
       "expression": "0",
       "description": "Rotates TubeCuff CCW by angle"
     },
     {
-      "name": "D_hole_MH3602",
+      "name": "D_hole_MH452",
       "expression": "NaN",
       "description": "Diameter of holes in TubeCuff at the surface of the inner diameter"
     },
     {
-      "name": "Buffer_hole_MH3602",
+      "name": "Buffer_hole_MH452",
       "expression": "NaN",
       "description": "Used so that the cone used to cut hole in the cuff extends half this distance from the inner and outer edge of the part"
     },
     {
-      "name": "L_holecenter_cuffseam_MH3602",
+      "name": "L_holecenter_cuffseam_MH452",
       "expression": "NaN",
       "description": "Distance from edge of the cuff seam to the center of the holes"
     },
     {
-      "name": "Pitch_holecenter_holecenter_MH3602",
+      "name": "Pitch_holecenter_holecenter_MH452",
       "expression": "NaN",
       "description": "Distance between cuff holes, pitch from center to center along the length of the cuff"
     },
     {
-      "name": "percent_circ_cuff_MH3602",
-      "expression": "percent_circ_cuff_pre_MH3602*(r_cuff_in_pre_MH3602/R_in_MH3602)",
+      "name": "percent_circ_cuff_MH452",
+      "expression": "percent_circ_cuff_pre_MH452*(r_cuff_in_pre_MH452/R_in_MH452)",
       "description": "Wrap of the cuff (as compared to 360 degree wrap for continuous insulation) after expansion to accommodate the nerve"
     },
     {
-      "name": "r_cuff_in_pre_MH3602",
+      "name": "r_cuff_in_pre_MH452",
       "expression": "940 [um]",
       "description": "Cuff resting inner diameter"
     },
     {
-      "name": "percent_circ_cuff_pre_MH3602",
+      "name": "percent_circ_cuff_pre_MH452",
       "expression": "1",
       "description": "Wrap of the cuff (as compared to 360 degree wrap for continuous insulation) before expansion to accommodate the nerve"
     },
     {
-      "name": "thk_medium_gap_internal_MH3602",
+      "name": "thk_medium_gap_internal_MH452",
       "expression": "10 [um]",
       "description": "Gap between cuff and nerve"
     },
     {
-      "name": "thk_cuff_MH3602",
+      "name": "thk_cuff_MH452",
       "expression": ".5 [mm]",
       "description": "Cuff thickness"
     },
     {
-      "name": "Recess_MH3602",
+      "name": "Recess_MH452",
       "expression": "0 [mm]",
       "description": "Depth of fill material into the cuff before the contact. This is used to create an associated recess/fill domain with a contact."
     },
     {
-      "name": "Thk_elec_MH3602",
+      "name": "Thk_elec_MH452",
       "expression": "0.05 [mm]",
       "description": "Thickness of contact"
     },
     {
-      "name": "L_elec_MH3602",
+      "name": "L_elec_MH452",
       "expression": ".25 [mm]",
       "description": "Z-length of contact"
     },
     {
-      "name": "Theta_contact_MH3602",
-      "expression": "360*(w_elec_MH3602/(pi*2*(R_in_MH3602+Recess_MH3602))) [deg]",
+      "name": "Theta_contact_MH452",
+      "expression": "360*(w_elec_MH452/(pi*2*(R_in_MH452+Recess_MH452))) [deg]",
       "description": "Angular coverage of contact"
     },
     {
-      "name": "w_elec_MH3602",
-      "expression": "R_in_MH3602*2*pi*(contact_wrap_MH3602/360)",
+      "name": "w_elec_MH452",
+      "expression": "R_in_MH452*2*pi*(contact_wrap_MH452/360)",
       "description": "Contact width"
     },
     {
-      "name": "contact_wrap_MH3602",
-      "expression": "360",
+      "name": "contact_wrap_MH452",
+      "expression": "45",
       "description": "Angular coverage of contact"
     },
     {
-      "name": "Rot_def_contact_MH3602",
-      "expression": "(Theta_MH3602/2)-(Theta_contact_MH3602/2)",
+      "name": "Rot_def_contact_MH452",
+      "expression": "(Theta_MH452/2)-(Theta_contact_MH452/2)",
       "description": "Rotation/orientation of ribbon contact. CWW. Contact is oriented with CW edge at 0 deg (3 o'clock) and extends CCW."
     },
     {
-      "name": "Thk_fill_MH3602",
+      "name": "Thk_fill_MH452",
       "expression": "100 [um]",
       "description": "Distance fill extends beyond cuff boundary"
     }
