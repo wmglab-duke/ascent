@@ -9,6 +9,8 @@ The source code can be found on the following GitHub repository: https://github.
 RUN THIS FROM REPOSITORY ROOT
 """
 
+import os
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -39,4 +41,7 @@ plt.suptitle('Grid of activation threshold heatmaps')
 for ax in g.axes.ravel():
     ax.set_xlabel('')
     ax.set_ylabel('')
-plt.savefig('threshold_heatmap_grid.png', dpi=400, bbox_inches='tight')
+
+save_directory = os.path.join('output', 'analysis')
+os.makedirs(save_directory, exist_ok=True)
+plt.savefig(os.path.join(save_directory, 'threshold_heatmap_grid.png'), dpi=400, bbox_inches='tight')

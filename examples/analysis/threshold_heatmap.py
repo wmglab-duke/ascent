@@ -10,6 +10,8 @@ Note: if more than one heatmap is desired, you must use a Seaborn FacetGrid.
 RUN THIS FROM REPOSITORY ROOT
 """
 
+import os
+
 import matplotlib.pyplot as plt
 
 from src.core.plotter import heatmaps
@@ -27,4 +29,7 @@ q = Query(
 # Build heatmap
 heatmaps(data=q.threshold_data(), cuff_orientation=True)
 plt.title('Activation threshold heatmap')
-plt.savefig('threshold_heatmap.png', dpi=400, bbox_inches='tight')
+
+save_directory = os.path.join('output', 'analysis')
+os.makedirs(save_directory, exist_ok=True)
+plt.savefig(os.path.join(save_directory, 'threshold_heatmap.png'), dpi=400, bbox_inches='tight')

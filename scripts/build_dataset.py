@@ -376,8 +376,7 @@ def run(args):  # noqa: C901
         keeps_config_directory,
         tmp_files_directory,
     ]:
-        if not os.path.exists(directory):
-            os.makedirs(directory)
+        os.makedirs(directory, exist_ok=True)
 
     # LOOP DATASET INDICES
     for dataset_index in args.dataset_indices:
@@ -454,8 +453,7 @@ def run(args):  # noqa: C901
         metadata_destination = os.path.join(code_destination, 'ascent_metadata')
 
         for path in [data_destination, code_destination, metadata_destination, tmp_files_dataset_destination]:
-            if not os.path.exists(path):
-                os.makedirs(path)
+            os.makedirs(path, exist_ok=True)
 
         # FREEZE ENVIRONMENT
         # -pip
@@ -599,8 +597,7 @@ def run(args):  # noqa: C901
 
                 if os.path.exists(source_mock_config_input_path):
                     mock_samples_copied.append(sample)
-                    if not os.path.exists(destination_mock_config_input_directory):
-                        os.makedirs(destination_mock_config_input_directory)
+                    os.makedirs(destination_mock_config_input_directory, exist_ok=True)
                     shutil.copy(source_mock_config_input_path, destination_mock_config_input_path)
                 else:
                     not_mock_samples.append(sample)
@@ -714,8 +711,7 @@ def run(args):  # noqa: C901
             sam = samples_sub_sam[sample]['sam']
             base_directory = os.path.join(data_destination, f'sub-{sub}', f'sam-{sam}-sub-{sub}')
             potential_new_directory = os.path.join(base_directory, directory)
-            if not os.path.exists(potential_new_directory):
-                os.makedirs(potential_new_directory)
+            os.makedirs(potential_new_directory, exist_ok=True)
 
         # COPY FILES
         already_copied_files = []

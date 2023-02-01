@@ -239,12 +239,7 @@ class Runner(Configurable):
             simulation: Simulation = self.load_obj(sim_obj_file)
 
         else:
-            if not os.path.exists(sim_obj_dir):
-                os.makedirs(sim_obj_dir)
-
-            if not os.path.exists(sim_obj_dir + '/plots'):
-                os.makedirs(sim_obj_dir + '/plots')
-
+            os.makedirs(sim_obj_dir + '/plots', exist_ok=True)
             simulation: Simulation = Simulation(sample)
             simulation.add(SetupMode.OLD, Config.MODEL, model_config).add(SetupMode.OLD, Config.SIM, sim_config).add(
                 SetupMode.OLD, Config.RUN, self.configs[Config.RUN.value]

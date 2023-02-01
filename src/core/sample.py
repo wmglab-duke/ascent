@@ -252,8 +252,7 @@ class Sample(Configurable, Saveable):
 
             scale_was_copied = False
             for directory_part in 'samples', str(sample_index), 'slides', cassette, number, 'masks':
-                if not os.path.exists(directory_part):
-                    os.makedirs(directory_part)
+                os.makedirs(directory_part, exist_ok=True)
                 os.chdir(directory_part)
                 # only try to copy scale image if it is being used
 
@@ -717,8 +716,7 @@ class Sample(Configurable, Saveable):
 
         # generate plotpath if not existing
         plotpath = os.path.join('samples', str(self.index), 'plots')
-        if not os.path.exists(plotpath):
-            os.makedirs(plotpath)
+        os.makedirs(plotpath, exist_ok=True)
 
         # Generate slides
         for slide_info in self.map.slides:

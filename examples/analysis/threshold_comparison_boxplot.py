@@ -11,6 +11,8 @@ https://seaborn.pydata.org/generated/seaborn.boxplot.html
 RUN THIS FROM REPOSITORY ROOT
 """
 
+import os
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -29,4 +31,7 @@ q = Query(
 data = q.threshold_data()
 g = sns.boxplot(data=data, x='model', y='threshold')
 plt.title('Threshold boxplot comparison')
-plt.savefig('threshold_comparison_boxplot.png', dpi=400, bbox_inches='tight')
+
+save_directory = os.path.join('output', 'analysis')
+os.makedirs(save_directory, exist_ok=True)
+plt.savefig(os.path.join('threshold_comparison_boxplot.png', save_directory), dpi=400, bbox_inches='tight')

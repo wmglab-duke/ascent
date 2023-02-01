@@ -46,8 +46,8 @@ def _update(frame):
 
 
 # create output directory
-if not os.path.exists(outpath):
-    os.makedirs(outpath)
+os.makedirs(outpath, exist_ok=True)
+
 
 if shutil.which('ffmpeg') is None:
     sys.exit('Please install ffmpeg and add to your PATH before continuing.')

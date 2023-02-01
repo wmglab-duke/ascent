@@ -473,8 +473,7 @@ class Slide:
 
             for items, folder in trace_list:
                 # build path if not already existing
-                if not os.path.exists(folder):
-                    os.makedirs(folder)
+                os.makedirs(folder, exist_ok=True)
                 os.chdir(folder)
 
                 # write all items (give filename as i (index) without the extension
@@ -489,8 +488,8 @@ class Slide:
 
                         # go to indexed folder for each fascicle
                         index_folder = str(i)
-                        if not os.path.exists(index_folder):
-                            os.makedirs(index_folder)
+                        os.makedirs(index_folder, exist_ok=True)
+
                         os.chdir(index_folder)
                         item.write(mode, os.getcwd())
 
