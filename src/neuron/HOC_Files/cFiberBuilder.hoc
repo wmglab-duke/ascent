@@ -91,7 +91,7 @@ proc build(){
                     insert nakpump
                     smalla_nakpump 	= -0.0047891
                     insert kdrTiger
-                    gbar_kdr 	= 0.018002
+                    gbar_kdrTiger 	= 0.018002
                     insert kna
                     gbar_kna 	= 0.00042
                     insert naoi
@@ -102,7 +102,7 @@ proc build(){
                     insert leak
                     insert extrapump
 
-                    Ra 		= 35.5
+                    Ra 		= 35.4
                     cm 		= 1
 
                     celsiusT_ks 	= temp
@@ -112,7 +112,7 @@ proc build(){
                     celsiusT_nav1p8 = temp
                     celsiusT_nav1p9 = temp
                     celsiusT_nakpump = temp
-                    celsiusT_kdr 	= temp
+                    celsiusT_kdrTiger 	= temp
                     v=-55
                 }else if(type == 3){ // Rattay and Aberham Fiber
                     insert RattayAberham// Model adjusted for a resting potential of -70mV instead of 0
