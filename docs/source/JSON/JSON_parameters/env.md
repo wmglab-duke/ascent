@@ -21,7 +21,8 @@ following syntax:
   "ASCENT_COMSOL_PATH": String,
   "ASCENT_JDK_PATH": String,
   "ASCENT_PROJECT_PATH": String,
-  "ASCENT_NSIM_EXPORT_PATH": String
+  "ASCENT_NSIM_EXPORT_PATH": String,
+  "ASCENT_DATASET_EXPORT_PATH": String,
 }
 ```
 
@@ -35,6 +36,8 @@ JDK installation.
 ASCENT repository.
 `"ASCENT_NSIM_EXPORT_PATH"`: The value (String) is the path where the
 pipeline will save NEURON simulation directories to submit.
+`"ASCENT_DATASET_EXPORT_PATH"`: The value (String) is the path where the
+pipeline exports datasets using ASCENT's dataset generating tool. (Optional)
 
 ## Example
 

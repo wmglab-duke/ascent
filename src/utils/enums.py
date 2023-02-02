@@ -60,9 +60,17 @@ class Env(ASCENTEnum, Enum):
     JDK_PATH = prefix + 'JDK_PATH'
     PROJECT_PATH = prefix + 'PROJECT_PATH'
     NSIM_EXPORT_PATH = prefix + 'NSIM_EXPORT_PATH'
+
+    vals = [COMSOL_PATH, JDK_PATH, PROJECT_PATH, NSIM_EXPORT_PATH]
+
+
+@unique
+class OptionalEnv(ASCENTEnum, Enum):
+    prefix = 'ASCENT_'
+
     ASCENT_DATASET_EXPORT_PATH = prefix + 'DATASET_EXPORT_PATH'
 
-    vals = [COMSOL_PATH, JDK_PATH, PROJECT_PATH, NSIM_EXPORT_PATH, ASCENT_DATASET_EXPORT_PATH]
+    vals = [ASCENT_DATASET_EXPORT_PATH]
 
 
 # %% Trace functionality
