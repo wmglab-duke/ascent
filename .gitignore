@@ -163,7 +163,8 @@ src/neuron/HOC_Files/CreateAxon_BFiber.hoc
 config/user/private/
 scripts/private/
 data/
-master_index_key.xlsx
 tmp
 bin/
 projects/
+schema/
+user_input_gui.py
