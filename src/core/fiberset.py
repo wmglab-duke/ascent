@@ -102,6 +102,7 @@ class FiberSet(Configurable, Saveable):
             diams.append(fiber['diam'])
             z_coords = fiber['fiber']
             offset_ratios.append(fiber['offset_ratio'])
+            os.makedirs(path, exist_ok=True)
 
             with open(
                 os.path.join(path, str(i) + WriteMode.file_endings.value[mode.value]),
