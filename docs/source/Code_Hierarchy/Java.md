@@ -1,5 +1,7 @@
 # Java Classes
-
+```{warning}
+This page of our documentation is not actively updated, as we work on migrating code documentation to docstrings. Most of the information herein remains revelant, but please refer to the codebase for the most up to date structure.
+```
 ## ModelWrapper Class
 
 The `ModelWrapper` class in Java takes inputs of the `ASCENT_PROJECT_PATH`

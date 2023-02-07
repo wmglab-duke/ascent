@@ -64,6 +64,15 @@ class Env(ASCENTEnum, Enum):
     vals = [COMSOL_PATH, JDK_PATH, PROJECT_PATH, NSIM_EXPORT_PATH]
 
 
+@unique
+class OptionalEnv(ASCENTEnum, Enum):
+    prefix = 'ASCENT_'
+
+    ASCENT_DATASET_EXPORT_PATH = prefix + 'DATASET_EXPORT_PATH'
+
+    vals = [ASCENT_DATASET_EXPORT_PATH]
+
+
 # %% Trace functionality
 
 
@@ -151,7 +160,6 @@ class PopulateMode(ASCENTEnum, Enum):
 
 @unique
 class DiamDistMode(ASCENTEnum, Enum):
-
     TRUNCNORM = 0
     UNIFORM = 1
 
@@ -265,7 +273,6 @@ class WaveformMode(ASCENTEnum, Enum):
 
 @unique
 class ExportMode(ASCENTEnum, Enum):
-
     OVERWRITE = "overwrite"
     ERROR = "error"
     SELECTIVE = "selective"

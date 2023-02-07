@@ -8,6 +8,7 @@ package model;
 
 import com.comsol.model.*;
 import com.comsol.model.physics.PhysicsFeature;
+import java.io.IOException;
 import java.util.HashMap;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -3353,6 +3354,457 @@ class Part {
                 model.geom(id).run();
 
                 break;
+            case "LivaNova_Primitive":
+                mp.set("Center", "0 [mm]");
+                mp.set("Thk_cuff", "610 [um]");
+                mp.set("W_cuff", "1410 [um]");
+                mp.set("R_in", "1109.4 [um]");
+                mp.set("L_cuff", "3852.6 [um]");
+                mp.set("Rev_insul", "2.2471");
+                mp.set("Rev_cond", "0.84514");
+                mp.set("Recess", "0 [mm]");
+                mp.set("Thk_elec", "50 [um]");
+                mp.set("W_elec", "775 [um]");
+                mp.set("Rot", "0 [deg]");
+
+                im.labels =
+                    new String[] {
+                        "SEL END P1", //0
+                        "PC1",
+                        "CUFF P1",
+                        "RECESS P2", //3
+                        "PC2",
+                        "SRC FINAL",
+                        "CUFF P2",
+                        "SEL END P2",
+                        "PC3",
+                        "CONDUCTOR P2", //9
+                        "CUFF P3",
+                        "PC4",
+                        "CUFF FINAL",
+                    };
+
+                for (String cselLNLabel : im.labels) {
+                    model
+                        .geom(id)
+                        .selection()
+                        .create(im.next("csel", cselLNLabel), "CumulativeSelection")
+                        .label(cselLNLabel);
+                }
+
+                String LNhicsp1Label = "Helical Insulator Cross Section Part 1";
+                GeomFeature LNhicsp1 = model
+                    .geom(id)
+                    .create(im.next("wp", LNhicsp1Label), "WorkPlane");
+                LNhicsp1.label(LNhicsp1Label);
+                LNhicsp1.set("quickplane", "xz");
+                LNhicsp1.set("unite", true);
+
+                String LNhicsLabel = "HELICAL INSULATOR CROSS SECTION PART 1";
+                LNhicsp1
+                    .geom()
+                    .selection()
+                    .create(im.next("csel", LNhicsLabel), "CumulativeSelection");
+                LNhicsp1.geom().selection(im.get(LNhicsLabel)).label(LNhicsLabel);
+
+                String LNhicxp1Label = "Helical Insulator Cross Section Part 1";
+                LNhicsp1.geom().create("r1", "Rectangle");
+                LNhicsp1.geom().feature("r1").label(LNhicxp1Label);
+                LNhicsp1.geom().feature("r1").set("contributeto", im.get(LNhicsLabel));
+                LNhicsp1
+                    .geom()
+                    .feature("r1")
+                    .set("pos", new String[] { "R_in+0.5*Thk_cuff", "Center-0.5*L_cuff" });
+                LNhicsp1.geom().feature("r1").set("base", "center");
+                LNhicsp1.geom().feature("r1").set("size", new String[] { "Thk_cuff", "W_cuff" });
+
+                String LNpcp1Label = "Parametric Curve Part 1";
+                GeomFeature LNpc1 = model
+                    .geom(id)
+                    .create(im.next("pc", LNpcp1Label), "ParametricCurve");
+                LNpc1.label(LNpcp1Label);
+                LNpc1.set("contributeto", im.get(im.labels[1]));
+                LNpc1.set("pos", new int[] { 0, 0, 0 });
+                LNpc1.set("parmax", "(Rev_insul/2)-(Rev_cond/2)");
+                LNpc1.set(
+                    "coord",
+                    new String[] {
+                        "cos(2*pi*s)*(R_in)",
+                        "sin(2*pi*s)*(R_in)",
+                        "Center+(L_cuff)*(s/Rev_insul)-(L_cuff/2)",
+                    }
+                );
+
+                String LNmcp1Label = "Make Cuff Part 1";
+                GeomFeature LNmcp1 = model.geom(id).create(im.next("swe", LNmcp1Label), "Sweep");
+                LNmcp1.label(LNmcp1Label);
+                LNmcp1.set("contributeto", im.get(im.labels[2]));
+                LNmcp1.set("keep", false);
+                LNmcp1.set("includefinal", false);
+                LNmcp1.set("twistcomp", false);
+
+                LNmcp1.selection("face").named(im.get(LNhicsp1Label) + "_" + im.get(LNhicsLabel));
+                LNmcp1.selection("edge").named(im.get(im.labels[1]));
+                LNmcp1.selection("diredge").set(im.get(LNpcp1Label) + "(1)", 1);
+
+                String LNsefp1Label = "Select End Face Part 1";
+                GeomFeature LNsefp1 = model
+                    .geom(id)
+                    .create(im.next("ballsel", LNsefp1Label), "BallSelection");
+                LNsefp1.set("entitydim", 2);
+                LNsefp1.label(LNsefp1Label);
+                LNsefp1.set("posx", "cos(2*pi*((Rev_insul/2)-(Rev_cond/2)))*(R_in+Thk_cuff/2)");
+                LNsefp1.set("posy", "sin(2*pi*((Rev_insul/2)-(Rev_cond/2)))*(R_in+Thk_cuff/2)");
+                LNsefp1.set(
+                    "posz",
+                    "Center+(L_cuff)*(((Rev_insul/2)-(Rev_cond/2))/Rev_insul)-(L_cuff/2)"
+                );
+                LNsefp1.set("r", 1);
+                LNsefp1.set("contributeto", im.get(im.labels[0]));
+
+                String LNhicsp2Label = "Helical Insulator Cross Section Part 2";
+                GeomFeature LNhicsp2 = model
+                    .geom(id)
+                    .create(im.next("wp", LNhicsp2Label), "WorkPlane");
+                LNhicsp2.label(LNhicsp2Label);
+                LNhicsp2.set("planetype", "faceparallel");
+                LNhicsp2.set("unite", true);
+                LNhicsp2.selection("face").named(im.get(im.labels[0]));
+
+                String LNhicxp2Label = "HELICAL INSULATOR CROSS SECTION PART 2";
+                LNhicsp2
+                    .geom()
+                    .selection()
+                    .create(im.next("csel", LNhicxp2Label), "CumulativeSelection");
+                LNhicsp2.geom().selection(im.get(LNhicxp2Label)).label(LNhicxp2Label);
+                LNhicsp2.geom().create("r1", "Rectangle");
+                LNhicsp2.geom().feature("r1").label("Helical Insulator Cross Section Part 2");
+                LNhicsp2.geom().feature("r1").set("contributeto", im.get(LNhicxp2Label));
+                LNhicsp2.geom().feature("r1").set("pos", new int[] { 0, 0 });
+                LNhicsp2.geom().feature("r1").set("base", "center");
+                LNhicsp2.geom().feature("r1").set("size", new String[] { "Thk_cuff", "W_cuff" });
+
+                String LNhccxp2Label = "Helical Conductor Cross Section Part 2";
+                GeomFeature LNhccxp2 = model
+                    .geom(id)
+                    .create(im.next("wp", LNhccxp2Label), "WorkPlane");
+                LNhccxp2.label(LNhccxp2Label);
+                LNhccxp2.set("planetype", "faceparallel");
+                LNhccxp2.set("unite", true);
+                LNhccxp2.selection("face").named(im.get(im.labels[0]));
+
+                String LNhccxp2wpresessLabel = "HELICAL CONDUCTOR CROSS SECTION PART 2 (recess)";
+                LNhccxp2
+                    .geom()
+                    .selection()
+                    .create(im.next("csel", LNhccxp2wpresessLabel), "CumulativeSelection");
+                LNhccxp2
+                    .geom()
+                    .selection(im.get(LNhccxp2wpresessLabel))
+                    .label(LNhccxp2wpresessLabel);
+
+                String LNhcrxp2wpLabel = "HELICAL RECESS CROSS SECTION PART 2";
+                LNhccxp2
+                    .geom()
+                    .selection()
+                    .create(im.next("csel", LNhcrxp2wpLabel), "CumulativeSelection");
+                LNhccxp2.geom().selection(im.get(LNhcrxp2wpLabel)).label(LNhcrxp2wpLabel);
+
+                LNhccxp2.geom().create("if1", "If");
+                LNhccxp2.geom().feature("if1").set("condition", "Recess>0");
+
+                LNhccxp2.geom().create("r2", "Rectangle");
+                LNhccxp2
+                    .geom()
+                    .feature("r2")
+                    .label("Helical Conductor Cross Section Part 2 (recess)");
+                LNhccxp2.geom().feature("r2").set("contributeto", im.get(LNhccxp2wpresessLabel));
+                LNhccxp2
+                    .geom()
+                    .feature("r2")
+                    .set("pos", new String[] { "Recess+(Thk_elec-Thk_cuff)/2", "0" });
+                LNhccxp2.geom().feature("r2").set("base", "center");
+                LNhccxp2.geom().feature("r2").set("size", new String[] { "Thk_elec", "W_elec" });
+
+                LNhccxp2.geom().create("endif1", "EndIf");
+
+                LNhccxp2.geom().create("if2", "If");
+                LNhccxp2.geom().feature("if2").set("condition", "Recess==0");
+
+                LNhccxp2.geom().create("r3", "Rectangle");
+                LNhccxp2
+                    .geom()
+                    .feature("r3")
+                    .label("Helical Conductor Cross Section Part 2 (no recess)");
+                LNhccxp2.geom().feature("r3").set("contributeto", im.get(LNhccxp2wpresessLabel));
+                LNhccxp2
+                    .geom()
+                    .feature("r3")
+                    .set("pos", new String[] { "(Thk_elec-Thk_cuff)/2", "0" });
+                LNhccxp2.geom().feature("r3").set("base", "center");
+                LNhccxp2.geom().feature("r3").set("size", new String[] { "Thk_elec", "W_elec" });
+
+                LNhccxp2.geom().create("endif2", "EndIf");
+
+                String LNhrcxp2Label = "Helical Recess Cross Section Part 2";
+                GeomFeature LNhrcxp2 = model
+                    .geom(id)
+                    .create(im.next("wp", LNhrcxp2Label), "WorkPlane");
+                LNhrcxp2.label(LNhrcxp2Label);
+                LNhrcxp2.set("planetype", "faceparallel");
+                LNhrcxp2.set("unite", true);
+
+                LNhrcxp2.selection("face").named("csel1");
+
+                String LNhccsp2Label = "HELICAL CONDUCTOR CROSS SECTION PART 2";
+                LNhrcxp2.geom().selection().create("csel1", "CumulativeSelection");
+                LNhrcxp2.geom().selection("csel1").label(LNhccsp2Label);
+
+                String LNhrcsp2Label = "HELICAL RECESS CROSS SECTION PART 2";
+                LNhrcxp2.geom().selection().create("csel2", "CumulativeSelection");
+                LNhrcxp2.geom().selection("csel2").label(LNhrcsp2Label);
+
+                LNhrcxp2.geom().create("if1", "If");
+                LNhrcxp2.geom().feature("if1").set("condition", "Recess>0");
+                LNhrcxp2.geom().create("r1", "Rectangle");
+                LNhrcxp2.geom().feature("r1").label("Helical Recess Cross Section Part 2");
+                LNhrcxp2.geom().feature("r1").set("contributeto", "csel2");
+                LNhrcxp2
+                    .geom()
+                    .feature("r1")
+                    .set("pos", new String[] { "Recess/2-Thk_cuff/2", "0" });
+                LNhrcxp2.geom().feature("r1").set("base", "center");
+                LNhrcxp2.geom().feature("r1").set("size", new String[] { "Recess", "W_elec" });
+
+                LNhrcxp2.geom().create("endif1", "EndIf");
+
+                String LNpcp2cLabel = "Parametric Curve Part 2 (cond)";
+                GeomFeature LNpcp2c = model
+                    .geom(id)
+                    .create(im.next("pc", LNpcp2cLabel), "ParametricCurve");
+                LNpcp2c.label(LNpcp2cLabel);
+                LNpcp2c.set("contributeto", im.get(im.labels[4]));
+                LNpcp2c.set("pos", new int[] { 0, 0, 0 });
+                LNpcp2c.set("parmin", "(Rev_insul/2)-(Rev_cond/2)");
+                LNpcp2c.set("parmax", "(Rev_insul/2)+(Rev_cond/2)");
+                LNpcp2c.set(
+                    "coord",
+                    new String[] {
+                        "cos(2*pi*s)*(R_in+Recess)",
+                        "sin(2*pi*s)*(R_in+Recess)",
+                        "Center+(L_cuff)*(s/Rev_insul)-(L_cuff/2)",
+                    }
+                );
+
+                String LNpcp2cfLabel = "Parametric Curve Part 2 (cuff)";
+                GeomFeature LNpcp2cf = model
+                    .geom(id)
+                    .create(im.next("pc", LNpcp2cfLabel), "ParametricCurve");
+                LNpcp2cf.label(LNpcp2cfLabel);
+
+                LNpcp2cf.set("contributeto", im.get(im.labels[8]));
+                LNpcp2cf.set("pos", new int[] { 0, 0, 0 });
+                LNpcp2cf.set("parmin", "(Rev_insul/2)-(Rev_cond/2)");
+                LNpcp2cf.set("parmax", "(Rev_insul/2)+(Rev_cond/2)");
+                LNpcp2cf.set(
+                    "coord",
+                    new String[] {
+                        "cos(2*pi*s)*(R_in)",
+                        "sin(2*pi*s)*(R_in)",
+                        "Center+(L_cuff)*(s/Rev_insul)-(L_cuff/2)",
+                    }
+                );
+
+                model.geom(id).create("if4", "If");
+                model.geom(id).feature("if4").set("condition", "Recess==0");
+
+                String mcp2nrLabel = "Make Cuff Part 2 (no recess)";
+                GeomFeature mcp2nr = model.geom(id).create(im.next("swe", mcp2nrLabel), "Sweep");
+                mcp2nr.label(mcp2nrLabel);
+                mcp2nr.set("contributeto", im.get(im.labels[6]));
+                mcp2nr.set("crossfaces", true);
+                mcp2nr.set("includefinal", false);
+                mcp2nr.set("twistcomp", false);
+                mcp2nr.set("keep", false);
+
+                mcp2nr.selection("face").named(im.get(LNhicsp2Label) + "_" + im.get(LNhicxp2Label));
+                mcp2nr.selection("edge").named(im.get(im.labels[8]));
+                mcp2nr.selection("diredge").set(im.get(LNpcp2cfLabel) + "(1)", 1);
+
+                model.geom(id).create("endif4", "EndIf");
+
+                model.geom(id).create("if5", "If");
+                model.geom(id).feature("if5").set("condition", "Recess>0");
+
+                String mcp2rLabel = "Make Cuff Part 2 (recess)";
+                GeomFeature mcp2r = model.geom(id).create(im.next("swe", mcp2rLabel), "Sweep");
+                mcp2r.label(mcp2rLabel);
+                mcp2r.set("contributeto", im.get(im.labels[6]));
+                mcp2r.set("crossfaces", true);
+                mcp2r.set("includefinal", false);
+                mcp2r.set("twistcomp", false);
+                mcp2r.selection("face").named(im.get(LNhicsp2Label) + "_" + im.get(LNhicxp2Label));
+                mcp2r.selection("edge").named(im.get(im.labels[4]));
+                mcp2r.selection("diredge").set(im.get(LNpcp2cLabel) + "(1)", 1);
+
+                model.geom(id).create("endif5", "EndIf");
+
+                model.geom(id).create("if2", "If");
+                model.geom(id).feature("if2").set("condition", "Recess==0");
+
+                String LNmcp2nrLabel = "Make Conductor Part 2 (no recess)";
+                GeomFeature LNmcp2nr = model
+                    .geom(id)
+                    .create(im.next("swe", LNmcp2nrLabel), "Sweep");
+                LNmcp2nr.label(LNmcp2nrLabel);
+                LNmcp2nr.set("contributeto", im.get(im.labels[9]));
+                LNmcp2nr.set("crossfaces", true);
+                LNmcp2nr.set("keep", false);
+                LNmcp2nr.set("includefinal", false);
+                LNmcp2nr.set("twistcomp", false);
+                LNmcp2nr
+                    .selection("face")
+                    .named(im.get(LNhccxp2Label) + "_" + im.get(LNhccxp2wpresessLabel));
+                LNmcp2nr.selection("edge").named(im.get(im.labels[4]));
+                LNmcp2nr.selection("diredge").set(im.get(LNpcp2cLabel) + "(1)", 1);
+
+                model.geom(id).create("endif2", "EndIf");
+
+                model.geom(id).create("if3", "If");
+                model.geom(id).feature("if3").set("condition", "Recess>0");
+
+                String LNmcprLabel = "Make Conductor Part (recess)";
+                GeomFeature LNmcpr = model.geom(id).create(im.next("swe", LNmcprLabel), "Sweep");
+                LNmcpr.label(LNmcprLabel);
+                LNmcpr.set("contributeto", im.get(im.labels[9]));
+                LNmcpr.set("crossfaces", true);
+                LNmcpr.set("includefinal", false);
+                LNmcpr.set("twistcomp", false);
+                LNmcpr.set("keep", false);
+                LNmcpr
+                    .selection("face")
+                    .named(im.get(LNhccxp2Label) + "_" + im.get(LNhccxp2wpresessLabel));
+                LNmcpr.selection("edge").named(im.get(im.labels[4]));
+                LNmcpr.selection("diredge").set(im.get(LNpcp2cLabel) + "(1)", 1);
+
+                String LNmrp2Label = "Make Recess Part 2";
+                GeomFeature LNmrp2 = model.geom(id).create(im.next("swe", LNmrp2Label), "Sweep");
+                LNmrp2.label(LNmrp2Label);
+                LNmrp2.set("contributeto", im.get(im.labels[3]));
+                LNmrp2.set("crossfaces", true);
+                LNmrp2.set("keep", false);
+                LNmrp2.set("includefinal", false);
+                LNmrp2.set("twistcomp", false);
+                LNmrp2.selection("face").named(im.get(LNhrcxp2Label) + "_" + "csel2");
+                LNmrp2.selection("edge").named(im.get(im.labels[8]));
+                LNmrp2.selection("diredge").set(im.get(LNpcp2cLabel) + "(1)", 1);
+
+                model.geom(id).create("endif3", "EndIf");
+
+                String LNsefp2Label = "Select End Face Part 2";
+                GeomFeature LNsefp2 = model
+                    .geom(id)
+                    .create(im.next("ballsel", LNsefp2Label), "BallSelection");
+                LNsefp2.set("entitydim", 2);
+                LNsefp2.label(LNsefp2Label);
+                LNsefp2.set("posx", "cos(2*pi*((Rev_insul/2)+(Rev_cond/2)))*(R_in+Thk_cuff/2)");
+                LNsefp2.set("posy", "sin(2*pi*((Rev_insul/2)+(Rev_cond/2)))*(R_in+Thk_cuff/2)");
+                LNsefp2.set(
+                    "posz",
+                    "Center+(L_cuff)*(((Rev_insul/2)+(Rev_cond/2))/Rev_insul)-(L_cuff/2)"
+                );
+                LNsefp2.set("r", 1);
+                LNsefp2.set("contributeto", im.get(im.labels[7]));
+
+                String LNhicsp3Label = "Helical Insulator Cross Section Part 3";
+                GeomFeature LNhicsp3 = model
+                    .geom(id)
+                    .create(im.next("wp", LNhicsp3Label), "WorkPlane");
+                LNhicsp3.label(LNhicsp3Label);
+                LNhicsp3.set("planetype", "faceparallel");
+                LNhicsp3.set("unite", true);
+                LNhicsp3.selection("face").named(im.get(im.labels[7]));
+                LNhicsp3.geom().selection().create("csel2", "CumulativeSelection");
+                LNhicsp3.geom().selection("csel2").label("HELICAL INSULATOR CROSS SECTION PART 3");
+
+                LNhicsp3.geom().create("r1", "Rectangle");
+                LNhicsp3.geom().feature("r1").set("contributeto", "csel2");
+                LNhicsp3.geom().feature("r1").set("pos", new int[] { 0, 0 });
+                LNhicsp3.geom().feature("r1").set("base", "center");
+                LNhicsp3.geom().feature("r1").set("size", new String[] { "Thk_cuff", "W_cuff" });
+
+                String LNpcp3Label = "Parametric Curve Part 3";
+                GeomFeature LNpcp3 = model
+                    .geom(id)
+                    .create(im.next("pc", LNpcp3Label), "ParametricCurve");
+                LNpcp3.label(LNpcp3Label);
+                LNpcp3.set("contributeto", im.get(im.labels[11]));
+                LNpcp3.set("pos", new int[] { 0, 0, 0 });
+                LNpcp3.set("parmin", "(Rev_insul/2)+(Rev_cond/2)");
+                LNpcp3.set("parmax", "Rev_insul");
+                LNpcp3.set(
+                    "coord",
+                    new String[] {
+                        "cos(2*pi*s)*(R_in)",
+                        "sin(2*pi*s)*(R_in)",
+                        "Center+(L_cuff)*(s/Rev_insul)-(L_cuff/2)",
+                    }
+                );
+
+                String LNmcp3Label = "Make Cuff Part 3";
+                GeomFeature LNmcp3 = model.geom(id).create(im.next("swe", LNmcp3Label), "Sweep");
+                LNmcp3.label(LNmcp3Label);
+                LNmcp3.set("contributeto", im.get(im.labels[10]));
+                LNmcp3.set("keep", false);
+                LNmcp3.set("includefinal", false);
+                LNmcp3.set("twistcomp", false);
+                LNmcp3.selection("face").named(im.get(LNhicsp3Label) + "_" + "csel2");
+                LNmcp3.selection("edge").named(im.get(im.labels[11]));
+                LNmcp3.selection("diredge").set(im.get(LNpcp3Label) + "(1)", 1);
+
+                String LNptsrcLabel = "ptSRC";
+                GeomFeature LNptsrc = model.geom(id).create(im.next("pt", LNptsrcLabel), "Point");
+                LNptsrc.label(LNptsrcLabel);
+                LNptsrc.set("contributeto", im.get(im.labels[5]));
+                LNptsrc.set(
+                    "p",
+                    new String[] {
+                        "cos(2*pi*Rev_insul*(1.25/2.5))*(Recess+(Thk_elec/2)+R_in)",
+                        "sin(2*pi*Rev_insul*(1.25/2.5))*(Recess+(Thk_elec/2)+R_in)",
+                        "Center",
+                    }
+                );
+
+                String LNuspLabel = "Union Silicone Parts";
+                model.geom(id).create(im.next("uni", LNuspLabel), "Union");
+
+                model.geom(id).create("if6", "If");
+                model.geom(id).feature("if6").set("condition", "Recess>0");
+                model
+                    .geom(id)
+                    .feature(im.get(LNuspLabel))
+                    .selection("input")
+                    .set(im.get(LNmcp1Label), im.get(mcp2rLabel), im.get(LNmcp3Label));
+                model.geom(id).create("endif6", "EndIf");
+
+                model.geom(id).create("if7", "If");
+                model.geom(id).feature("if7").set("condition", "Recess==0");
+                model
+                    .geom(id)
+                    .feature(im.get(LNuspLabel))
+                    .selection("input")
+                    .set(im.get(LNmcp1Label), im.get(mcp2nrLabel), im.get(LNmcp3Label));
+                model.geom(id).create("endif7", "EndIf");
+
+                model.geom(id).selection(im.get("CUFF FINAL")).label("CUFF FINAL");
+                model
+                    .geom(id)
+                    .feature(im.get(LNuspLabel))
+                    .set("contributeto", im.get("CUFF FINAL"));
+
+                model.geom(id).run();
+
+                break;
             default:
                 throw new IllegalArgumentException(
                     "No implementation for part primitive name: " + pseudonym
@@ -4716,6 +5168,111 @@ class Part {
                     ); // SRC_FINAL
                 pf.set("Qjp", 0.000);
                 pf.label(ac_pcsLabel);
+
+                break;
+            case "LivaNova_Primitive":
+                // set instantiation parameters
+                String[] LivaNovaParameters = {
+                    "Center",
+                    "Thk_cuff",
+                    "W_cuff",
+                    "R_in",
+                    "L_cuff",
+                    "Rev_insul",
+                    "Rev_cond",
+                    "Recess",
+                    "Thk_elec",
+                    "W_elec",
+                };
+
+                for (String param : LivaNovaParameters) {
+                    partInstance.setEntry("inputexpr", param, (String) itemObject.get(param));
+                }
+
+                partInstance.set("rot", "cuff_rot + corr_LN");
+
+                // imports
+
+                partInstance.set("selkeepnoncontr", false);
+                partInstance.setEntry(
+                    "selkeepdom",
+                    instanceID + "_" + myIM.get(myLabels[2]) + ".dom",
+                    "off"
+                ); // CUFF P1
+                partInstance.setEntry(
+                    "selkeepdom",
+                    instanceID + "_" + myIM.get(myLabels[3]) + ".dom",
+                    "on"
+                ); // RECESS P2
+                partInstance.setEntry(
+                    "selkeepdom",
+                    instanceID + "_" + myIM.get(myLabels[6]) + ".dom",
+                    "off"
+                ); // CUFF P2
+                partInstance.setEntry(
+                    "selkeepdom",
+                    instanceID + "_" + myIM.get(myLabels[9]) + ".dom",
+                    "on"
+                ); // CONDUCTOR P2
+                partInstance.setEntry(
+                    "selkeepdom",
+                    instanceID + "_" + myIM.get(myLabels[10]) + ".dom",
+                    "off"
+                ); // CUFF P3
+                partInstance.setEntry(
+                    "selkeepdom",
+                    instanceID + "_" + myIM.get(myLabels[12]) + ".dom",
+                    "on"
+                ); // CUFF FINAL
+
+                partInstance.setEntry(
+                    "selkeeppnt",
+                    instanceID + "_" + myIM.get(myLabels[5]) + ".pnt",
+                    "on"
+                ); // SRC FINAL
+
+                partInstance.setEntry(
+                    "selkeepdom",
+                    instanceID + "_" + myIM.get(myLabels[1]) + ".dom",
+                    "off"
+                ); // PC1
+                partInstance.setEntry(
+                    "selkeepdom",
+                    instanceID + "_" + myIM.get(myLabels[4]) + ".dom",
+                    "off"
+                ); // PC2
+                partInstance.setEntry(
+                    "selkeepdom",
+                    instanceID + "_" + myIM.get(myLabels[5]) + ".dom",
+                    "off"
+                ); // SRC FINAL
+                partInstance.setEntry(
+                    "selkeepdom",
+                    instanceID + "_" + myIM.get(myLabels[8]) + ".dom",
+                    "off"
+                ); // PC3
+                partInstance.setEntry(
+                    "selkeepdom",
+                    instanceID + "_" + myIM.get(myLabels[11]) + ".dom",
+                    "off"
+                ); // PC4
+
+                // assign physics
+                String LN_helix_pcsLabel = instanceLabel + " Current Source";
+                id = mw.im.next("pcs", LN_helix_pcsLabel);
+                pf = model.component("comp1").physics("ec").create(id, "PointCurrentSource", 0);
+
+                JSONObject LN_src_heli = new JSONObject();
+                LN_src_heli.put(instanceLabel, id);
+                mw.im.currentIDs.put(mw.im.present("pcs"), LN_src_heli);
+
+                pf
+                    .selection()
+                    .named(
+                        "geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[5]) + "_pnt"
+                    ); // SRC
+                pf.set("Qjp", 0.000);
+                pf.label(LN_helix_pcsLabel);
 
                 break;
             default:

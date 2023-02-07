@@ -10,7 +10,7 @@ The source code can be found on the following GitHub repository: https://github.
 import json
 import os
 
-from src.utils.enums import Env
+from src.utils.enums import Env, OptionalEnv
 
 default_env = os.path.join('config', 'system', 'env.json')
 
@@ -24,12 +24,16 @@ def run(args, env_path=default_env):
     print('Start environment path variables setup.')
 
     result = {}
-    for key in Env.vals.value:
+    optional_msg = '(optional, press ENTER to skip): '
+    required_msg = '(required): '
+    for key in Env.vals.value + OptionalEnv.vals.value:
+        optional = key in OptionalEnv.vals.value
         while True:
-            value = input(f'Enter path for {key}: ')
-
+            value = input(f'Enter path for {key} {optional_msg if optional else required_msg}').replace('\\\\', '\\')
             if os.path.exists(value) or key == 'ASCENT_NSIM_EXPORT_PATH':
                 result[key] = value
+                break
+            elif value == '' and optional:
                 break
             else:
                 print('Nonexistent path provided. Please try again.')

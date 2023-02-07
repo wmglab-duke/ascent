@@ -247,11 +247,13 @@ class Trace:
         :param my_xy_seed: seed for random number generator
         :param buffer: minimum distance from the edge of the trace
         :param count: number of points to find
+        :raises ValueError: if buffer is too large for the trace
         :return: list of tuples (x,y) that are within the trace (polygon)
         """
+        if self.ecd() < buffer * 2.5:
+            raise ValueError("Buffer is too large for trace")
+
         trace_to_compare = self.deepcopy()
-        trace_to_compare.offset(None, 1)  # seems to improve reliability to expand 1 um, and then shrink back first
-        trace_to_compare.offset(None, -1)
         trace_to_compare.offset(None, -buffer)
 
         min_x, min_y, max_x, max_y = trace_to_compare.polygon().bounds
@@ -260,7 +262,6 @@ class Trace:
         random.seed(my_xy_seed)
 
         while len(points) < count:
-
             coordinate = tuple(
                 (random.random() * (ceiling - floor)) + floor for floor, ceiling in ((min_x, max_x), (min_y, max_y))
             )
@@ -610,7 +611,7 @@ class Trace:
 
         # Progressively add points to circle or recompute circle
         c = None
-        for (i, p) in enumerate(shuffled):
+        for i, p in enumerate(shuffled):
             if c is None or not self.is_in_circle(c, p):
                 c = self._make_circle_one_point(shuffled[: i + 1], p)
         return c
@@ -623,7 +624,7 @@ class Trace:
         :return: circle enclosing all points centered on p
         """
         c = (p[0], p[1], 0.0)
-        for (i, q) in enumerate(points):
+        for i, q in enumerate(points):
             if not self.is_in_circle(c, q):
                 if c[2] == 0.0:
                     c = self._make_diameter(p, q)
@@ -768,3 +769,10 @@ class Trace:
         :return: points converted to int32
         """
         return np.array(np.round(points), dtype=np.int32)
+
+    def ecd(self):
+        """Return the effective circular diameter.
+
+        :return: effective circular diameter
+        """
+        return 2 * np.sqrt(self.area() / np.pi)

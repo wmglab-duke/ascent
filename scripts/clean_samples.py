@@ -68,7 +68,6 @@ def run(args):
         print('Proceeding...')
 
     for sample in args.sample_indices:
-
         if args.verbose:
             print(f'Sample: {sample}')
             print('\n\t- - - - - - FILES - - - - - -\n')
@@ -77,7 +76,6 @@ def run(args):
 
         # remove files
         for filepath in [str(path.absolute()) for path in sample_path.glob('**/*')]:
-
             # skip over directories for now
             if os.path.isdir(filepath):
                 continue

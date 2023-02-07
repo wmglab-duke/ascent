@@ -24,7 +24,6 @@ from src.utils import (
     ReshapeNerveMode,
     Saveable,
     SetupMode,
-    TemplateOutput,
 )
 
 
@@ -123,7 +122,6 @@ class Model(Configurable, Saveable):
             CuffShiftMode.NAIVE_ROTATION_MIN_CIRCLE_BOUNDARY,
             CuffShiftMode.AUTO_ROTATION_MIN_CIRCLE_BOUNDARY,
         ]:
-
             if r_i > r_f:
                 x_shift = x - (r_i - offset - cuff_r_buffer - r_bound) * np.cos(theta_c * ((2 * np.pi) / 360))
                 y_shift = y - (r_i - offset - cuff_r_buffer - r_bound) * np.sin(theta_c * ((2 * np.pi) / 360))
@@ -261,12 +259,22 @@ class Model(Configurable, Saveable):
 
             theta_f = theta_i
         else:
-            # get initial cuff radius
-            r_i_str: str = [
-                item["expression"]
-                for item in cuff_config["params"]
-                if item["name"] == '_'.join(['r_cuff_in_pre', cuff_code])
+            adaptive = False
+            r_cuff_in_pre = [
+                item for item in cuff_config["params"] if item["name"] == "_".join(["r_cuff_in_pre", cuff_code])
             ][0]
+            if r_cuff_in_pre.get("adaptive"):
+                adaptive = r_cuff_in_pre["adaptive"]
+
+            if not adaptive:
+                r_i_str: str = r_cuff_in_pre["expression"]
+                r_i: float = Quantity(
+                    Quantity(r_i_str.translate(r_i_str.maketrans("", "", " []")), scale="m"),
+                    scale="um",
+                ).real  # [um] (scaled from any arbitrary length unit)
+            else:
+                r_i_str = self.choose_diameter_pre(r_cuff_in_pre, r_f)
+
             r_i: float = Quantity(
                 Quantity(r_i_str.translate(r_i_str.maketrans('', '', ' []')), scale='m'),
                 scale='um',
@@ -287,6 +295,144 @@ class Model(Configurable, Saveable):
                 theta_f = theta_i
 
         return r_i, theta_f
+
+    def choose_diameter_pre(self, r_cuff_in_pre, r_f):  # noqa: C901
+        """Choose the pre expansion diameter of the cuff based on the cuff expansion radius.
+
+        :param r_cuff_in_pre: parameter for pre expansion radius of cuff (dict) from cuff config file
+        :param r_f: cuff expansion radius
+        :raises IncompatibleParametersError: if the parameters are not compatible in the cuff config file
+        :return: r_i: pre expansion radius
+        """
+        bounds = []
+        for param_option in r_cuff_in_pre["condition"]:
+            r_min_str, r_max_str = (
+                param_option["min"]["value"],
+                param_option["max"]["value"],
+            )
+            r_min_ix, r_max_ix = (
+                param_option["min"]["inclusive"],
+                param_option["max"]["inclusive"],
+            )
+            parameter = param_option["parameter"]
+
+            if r_min_str is not None:
+                r_min: float = Quantity(
+                    Quantity(
+                        r_min_str.translate(r_min_str.maketrans("", "", " []")),
+                        scale="m",
+                    ),
+                    scale="um",
+                ).real  # [um] (scaled from any arbitrary length unit)
+            else:
+                r_min = None
+
+            if r_max_str is not None:
+                r_max: float = Quantity(
+                    Quantity(
+                        r_max_str.translate(r_max_str.maketrans("", "", " []")),
+                        scale="m",
+                    ),
+                    scale="um",
+                ).real  # [um] (scaled from any arbitrary length unit)
+            else:
+                r_max = None
+
+            bounds.append((r_min, r_max, r_min_ix, r_max_ix, parameter))
+
+        # check that none of the conditions have double Nones
+        if any([bound[0] is None and bound[1] is None for bound in bounds]):
+            raise IncompatibleParametersError("Cuff configuration file has a condition with double Nones. ")
+
+        # check that there is only one max with None, and one min with None
+        if [bound[0] is None for bound in bounds].count(True) > 1 or [bound[1] is None for bound in bounds].count(
+            True
+        ) > 1:
+            self.throw(134)
+            raise IncompatibleParametersError(
+                "Cuff configuration file has more than one condition with None for min or max. "
+            )
+
+        # find index of upper and lower bound conditions
+        lower_index = [x for x, y in enumerate(bounds) if y[0] is None][0]
+        upper_index = [x for x, y in enumerate(bounds) if y[1] is None][0]
+        lower = bounds[lower_index]
+        upper = bounds[upper_index]
+
+        # put max of None at end, and min of None at beginning
+        bounds_indices = sorted([lower_index, upper_index], reverse=True)
+        for idx in bounds_indices:
+            if idx < len(bounds):
+                bounds.pop(idx)
+
+        if len(bounds) > 1:
+            bounds.sort(key=lambda tmp: tmp[0])
+
+        bounds_final = [lower, *bounds, upper]
+
+        condition_match_count = 0
+        r_cuff_in_parameter = None
+        for r_min, r_max, r_min_ix, r_max_ix, parameter in bounds_final:
+            if r_min_ix and r_max_ix:
+                if r_min is None:
+                    if r_f <= r_max:
+                        r_cuff_in_parameter: str = parameter
+                        condition_match_count += 1
+                elif r_max is None:
+                    if r_f >= r_min:
+                        r_cuff_in_parameter: str = parameter
+                        condition_match_count += 1
+                elif r_min <= r_f <= r_max:
+                    r_cuff_in_parameter: str = parameter
+                    condition_match_count += 1
+            elif r_min_ix and not r_max_ix:
+                if r_min is None:
+                    if r_f < r_max:
+                        r_cuff_in_parameter: str = parameter
+                        condition_match_count += 1
+                elif r_max is None:
+                    if r_f >= r_min:
+                        r_cuff_in_parameter: str = parameter
+                        condition_match_count += 1
+                elif r_min <= r_f < r_max:
+                    r_cuff_in_parameter: str = parameter
+                    condition_match_count += 1
+            elif r_max_ix and not r_min_ix:
+                if r_min is None:
+                    if r_f <= r_max:
+                        r_cuff_in_parameter: str = parameter
+                        condition_match_count += 1
+                elif r_max is None:
+                    if r_f > r_min:
+                        r_cuff_in_parameter: str = parameter
+                        condition_match_count += 1
+                elif r_min < r_f <= r_max:
+                    r_cuff_in_parameter: str = parameter
+                    condition_match_count += 1
+            elif not r_min_ix and not r_max_ix:
+                if r_min is None:
+                    if r_f < r_max:
+                        r_cuff_in_parameter: str = parameter
+                        condition_match_count += 1
+                elif r_max is None:
+                    if r_f > r_min:
+                        r_cuff_in_parameter: str = parameter
+                        condition_match_count += 1
+                elif r_min < r_f < r_max:
+                    r_cuff_in_parameter: str = parameter
+                    condition_match_count += 1
+
+        if condition_match_count == 0:
+            raise IncompatibleParametersError(
+                "Cuff configuration file has no conditions that match the given parameters. "
+            )
+        elif condition_match_count > 1:
+            # conditions are not mutually exclusive in preset JSON file
+            raise IncompatibleParametersError(
+                "Cuff configuration file has more than one condition that matches the given parameters. "
+            )
+
+        return r_cuff_in_parameter
 
     def compute_electrical_parameters(self):
         """Compute electrical parameters for a given model.
@@ -344,5 +490,5 @@ class Model(Configurable, Saveable):
         :param path: path to write the config file to
         :return: self
         """
-        TemplateOutput.write(self.configs[Config.MODEL.value], path)
+        Configurable.write(self.configs[Config.MODEL.value], path)
         return self

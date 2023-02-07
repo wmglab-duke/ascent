@@ -34,7 +34,15 @@ sample_index = results['samples'][0]['index']
 fig, ax = plt.subplots(1, 1)
 item: Sample = q.get_object(Object.SAMPLE, [results['samples'][0]['index']])
 slide = item.slides[0]
-slide.plot(fix_aspect_ratio=True, final=False, ax=ax, inner_index_labels=True)
+slide.plot(
+    fix_aspect_ratio=True,
+    final=False,
+    ax=ax,
+    inner_index_labels=True,
+    scalebar=True,
+    scalebar_length=100,
+    scalebar_units='μm',
+)
 plt.xlabel('\u03bcm')
 plt.ylabel('\u03bcm')
 plt.show()

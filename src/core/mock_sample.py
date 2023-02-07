@@ -115,7 +115,7 @@ class MockSample(Configurable):
         :param dest: The destination file.
         :param dpi: The resolution of the binary mask.
         """
-        # https://inneka.com/ml/opencv/how-to-read-image-from-in-memory-buffer-stringio-or-from-url-with-opencv-python-library/
+
         def create_opencv_image_from_stringio(img_stream, cv2_img_flag=0):
             img_stream.seek(0)
             img_array = np.asarray(bytearray(img_stream.read()), dtype=np.uint8)
@@ -184,11 +184,9 @@ class MockSample(Configurable):
             self.make_explicit_fascicles(min_fascicle_separation)
 
         elif populate_mode == PopulateMode.TRUNCNORM:
-
             self.make_truncnorm_fascicles(min_fascicle_separation)
 
         elif populate_mode == PopulateMode.UNIFORM:
-
             self.make_uniform_fascicles(min_fascicle_separation)
 
         return self

@@ -50,7 +50,6 @@ for fiberset_ind, fiberset in enumerate(sim.fibersets):
     fmt = 'png'
 
     dest = os.path.join('data', 'tmp', 'fiberset')
-    if not os.path.exists(dest):
-        os.mkdir(dest)
+    os.makedirs(dest, exist_ok=True)
 
     fig.savefig(os.path.join(dest, f'{fname}.{fmt}'), format=fmt, dpi=1200)

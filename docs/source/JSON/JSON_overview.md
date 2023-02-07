@@ -237,6 +237,8 @@ The `env.json` file stores the file paths for:
   directory from which the user will move the files to a computer
   cluster)
 
+- Destination directory for exported datasets created with scripts/build_dataset.py
+
 When the pipeline is run, the key-value pairs are stored as environment
 variables so that they are globally accessible.
 

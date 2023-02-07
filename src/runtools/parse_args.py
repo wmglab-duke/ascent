@@ -148,6 +148,15 @@ install_parser.add_argument('--no-conda', action='store_true', help='Skip conda 
 # parser for env setup
 env_parser = subparsers.add_parser('env_setup', help='Set ASCENT environment variables')
 
+# parser for biuld_dataset
+bd_parser = subparsers.add_parser('build_dataset', help='Export dataset from ASCENT runs in SPARC format')
+bd_parser.add_argument(
+    'dataset_indices',
+    nargs='+',
+    type=int,
+    help='Space separated dataset indices to export',
+)
+
 
 def parse():
     """Parse all args.

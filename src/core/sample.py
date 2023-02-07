@@ -36,7 +36,6 @@ from src.utils import (
     ScaleInputMode,
     SetupMode,
     ShrinkageMode,
-    TemplateOutput,
     WriteMode,
 )
 
@@ -234,7 +233,10 @@ class Sample(Configurable, Saveable):
             # convert any TIFF to TIF
             [os.rename(x, os.path.splitext(x)[0] + '.tif') for x in os.listdir(source_dir) if x.endswith('.tiff')]
             source_files = os.listdir(source_dir)
-            for mask_fname in [f.value for f in MaskFileNames if f.value in source_files]:
+            mask_fnames = [f.value for f in MaskFileNames if f.value in source_files]
+            if len(mask_fnames) == 0:
+                raise FileNotFoundError("No valid input masks found. Are your input files properly named?")
+            for mask_fname in mask_fnames:
                 shutil.move(
                     os.path.join(source_dir, mask_fname),
                     os.path.join(source_dir, f'{sample}_0_0_{mask_fname}'),
@@ -250,9 +252,7 @@ class Sample(Configurable, Saveable):
 
             scale_was_copied = False
             for directory_part in 'samples', str(sample_index), 'slides', cassette, number, 'masks':
-
-                if not os.path.exists(directory_part):
-                    os.makedirs(directory_part)
+                os.makedirs(directory_part, exist_ok=True)
                 os.chdir(directory_part)
                 # only try to copy scale image if it is being used
 
@@ -482,7 +482,7 @@ class Sample(Configurable, Saveable):
             will_reposition=(self.deform_mode != DeformationMode.NONE),
         )
 
-        slide.validation()
+        slide.validate()
 
         # get orientation angle (used later to calculate pos_ang for model.json)
         if self.mask_exists(MaskFileNames.ORIENTATION):
@@ -603,7 +603,6 @@ class Sample(Configurable, Saveable):
         :return: Slide object
         """
         if self.deform_mode != DeformationMode.PHYSICS:
-
             raise ValueError("Invalid DeformationMode in Sample.")
         if 'morph_count' in self.search(Config.SAMPLE):
             morph_count = self.search(Config.SAMPLE, 'morph_count')
@@ -618,11 +617,11 @@ class Sample(Configurable, Saveable):
 
         sep_fascicles = self.search(Config.SAMPLE, "boundary_separation", "fascicles")
 
-        print(f'\tensuring minimum fascicle separation of {sep_fascicles} um')
+        print(f'\tensuring minimum fascicle-fascicle separation of {sep_fascicles} um')
 
         if 'nerve' in self.search(Config.SAMPLE, 'boundary_separation'):
             sep_nerve = self.search(Config.SAMPLE, 'boundary_separation', 'nerve')
-            print(f'\tensuring minimum nerve:fascicle separation of {sep_nerve} um')
+            print(f'\tensuring minimum nerve-fascicle separation of {sep_nerve} um')
             sep_nerve = sep_nerve - sep_fascicles / 2
         else:
             sep_nerve = None
@@ -684,11 +683,20 @@ class Sample(Configurable, Saveable):
 
         def populate_plotter(slide, title: str, filename: str):
             plt.figure()
+            if (slide.bounds()[2] - slide.bounds()[0]) > 1000:
+                scalebar_length = 1
+                scalebar_units = 'mm'
+            else:
+                scalebar_length = 100
+                scalebar_units = 'μm'
             slide.plot(
                 final=False,
                 fix_aspect_ratio='True',
                 axlabel=u"\u03bcm",
                 title=title,
+                scalebar=True,
+                scalebar_length=scalebar_length,
+                scalebar_units=scalebar_units,
             )
             plt.savefig(plotpath + '/' + filename, dpi=400)
             if self.search(Config.RUN, "popup_plots", optional=True) is True:
@@ -708,8 +716,7 @@ class Sample(Configurable, Saveable):
 
         # generate plotpath if not existing
         plotpath = os.path.join('samples', str(self.index), 'plots')
-        if not os.path.exists(plotpath):
-            os.makedirs(plotpath)
+        os.makedirs(plotpath, exist_ok=True)
 
         # Generate slides
         for slide_info in self.map.slides:
@@ -739,7 +746,6 @@ class Sample(Configurable, Saveable):
             for slide in self.slides:
                 self.deform_slide(slide)
         for slide in self.slides:
-
             # shift slide about (0,0)
             slide.move_center(np.array([0, 0]))
 
@@ -751,11 +757,11 @@ class Sample(Configurable, Saveable):
                     )
                 slide.rotate(math.radians(self.sample_rotation))
 
-            # ensure that nothing went wrong in slide processing
-            slide.validation(plotpath=plotpath)
-
         # scale with ratio = 1 (no scaling happens, but connects the ends of each trace to itself)
         self.scale(1)
+
+        # ensure that nothing went wrong in slide processing
+        self.slides[0].validate(plotpath=plotpath)
 
         populate_plotter(self.slides[0], 'Final sample after any user specified processing', 'sample_final')
 
@@ -853,7 +859,7 @@ class Sample(Configurable, Saveable):
 
         sample_path = os.path.join('samples', str(self.search(Config.RUN, 'sample')), 'sample.json')
 
-        TemplateOutput.write(self.configs[Config.SAMPLE.value], sample_path)
+        Configurable.write(self.configs[Config.SAMPLE.value], sample_path)
 
         self.morphology = morphology_input
         return self

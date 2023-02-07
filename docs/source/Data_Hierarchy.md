@@ -20,7 +20,7 @@ not require changes in **_Model_** or **_Sample_**, and changes in
 **_Model_** do not require changes in **_Sample_**.
 
 ```{figure} uploads/e675a31c0bf2bda687c6d696fa145c0c/Picture15.jpg
-ASCENT pipeline file structure in the context of Sample (blue), Model (green), and Sim (purple) configurations. [JSON Overview](JSON/JSON_overview) describes the JSON configuration files and their contents, and [JSON Parameters](JSON/JSON_parameters/index) details the syntax and data types of the key-value parameter pairs.
+ASCENT (v1.0.0) pipeline file structure in the context of Sample (blue), Model (green), and Sim (purple) configurations. [JSON Overview](JSON/JSON_overview) describes the JSON configuration files and their contents, and [JSON Parameters](JSON/JSON_parameters/index) details the syntax and data types of the key-value parameter pairs.
 ```
 
 ## Batching and sweeping of parameters
