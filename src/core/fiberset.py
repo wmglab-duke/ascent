@@ -918,7 +918,11 @@ class FiberSet(Configurable, Saveable):
         :param split_xy: Whether or not to split the xy points into separate arrays.
         :return: The xy points of the fibers.
         """
-        points = [(f['fiber'][0][0], f['fiber'][0][1]) for f in self.fibers]
+        if isinstance(self.fibers[0], dict):
+            points = [(f['fiber'][0][0], f['fiber'][0][1]) for f in self.fibers]
+        else:
+            points = [(f[0][0], f[0][1]) for f in self.fibers]
+
         if split_xy:
             return list(zip(*points))[0], list(zip(*points))[1]
         else:
