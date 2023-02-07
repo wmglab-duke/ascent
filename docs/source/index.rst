@@ -42,7 +42,7 @@ Welcome to ASCENT's documentation!
   .. details:: APA
      :open:
 
-     **Musselman, E. D.**, **Cariello, J. E.**, Grill, W. M., & Pelot, N. A. (2022). wmglab-duke/ascent: ASCENT v1.2.0 (v1.2.0) [Computer software]. Zenodo. https://doi.org/10.5281/ZENODO.7614127
+     **Musselman, E. D.**, **Cariello, J. E.**, Grill, W. M., & Pelot, N. A. (2023). wmglab-duke/ascent: ASCENT v1.2.0 (v1.2.0) [Computer software]. Zenodo. https://doi.org/10.5281/ZENODO.7614127
 
   .. details:: MLA
 
