@@ -28,6 +28,7 @@
         "<sim_index>": {
           "sim.obj": false,
           "fibersets": false,
+          "fibersets_bases": false,
           "potentials": false,
           "waveforms": false,
           "plots": {
