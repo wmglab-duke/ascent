@@ -29,7 +29,7 @@ import pandas as pd
 class ListAction(argparse.Action):
     """Custom action for argparse to list run info."""
 
-    def __call__(self, parser, values, option_string=None, **kwargs):
+    def __call__(self, parser, values, *args, option_string=None, **kwargs):
         """Print run info and exit. # noqa: DAR101.
 
         This function is called when the --list option is used and should not be called directly.

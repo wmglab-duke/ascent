@@ -807,10 +807,8 @@ public class ModelWrapper {
                     index + ".mph",
                 }
             );
-            System.out.println(mphFile);
             //if no bases are valid, must resolve all, even if file exists
             boolean resolveAll = !anyTrue(basesValid);
-            System.out.println(resolveAll);
             System.out.println("\tSolving electric currents for " + key_on + ".");
 
             boolean save = true;
@@ -1716,7 +1714,6 @@ public class ModelWrapper {
                     }
 
                     mw.addMaterialDefinitions(cuff_materials, modelData, materialParams);
-                    mw.addCuffPartMaterialAssignments(cuffData);
 
                     // Add material assignments (links)
                     // DOMAIN
@@ -1727,6 +1724,9 @@ public class ModelWrapper {
                         instanceLabelDistalMedium,
                         instanceLabelProximalMedium
                     );
+
+                    // CUFF
+                    mw.addCuffPartMaterialAssignments(cuffData);
 
                     // NERVE
                     mw.addNerveMaterialAssignments(model, nerveMode);
