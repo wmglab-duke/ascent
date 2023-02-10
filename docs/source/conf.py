@@ -25,7 +25,7 @@ copyright_info = '2021, Duke University'
 author = 'Musselman ED, Cariello JE, Grill WM, Pelot NA.'
 
 # The full version, including alpha/beta/rc tags
-release = 'v1.2.0'
+release = 'v1.2.1'
 
 # -- General configuration ---------------------------------------------------
 
