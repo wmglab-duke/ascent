@@ -1,8 +1,3 @@
-.. ASCENT documentation master file, created by
-   sphinx-quickstart on Fri Sep 17 12:12:45 2021.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 .. |doi| image:: https://zenodo.org/badge/379064819.svg
    :target: https://zenodo.org/badge/latestdoi/379064819
 
@@ -47,23 +42,24 @@ Welcome to ASCENT's documentation!
   .. details:: APA
      :open:
 
-     **Musselman, E. D.**, **Cariello, J. E.**, Grill, W. M., & Pelot, N. A. (2022). wmglab-duke/ascent: ASCENT v1.1.2 (v1.1.2) [Computer software]. Zenodo. https://doi.org/10.5281/ZENODO.6537277
+     **Musselman, E. D.**, **Cariello, J. E.**, Grill, W. M., & Pelot, N. A. (2023). wmglab-duke/ascent: ASCENT v1.2.1 (v1.2.1) [Computer software]. Zenodo. https://doi.org/10.5281/ZENODO.7627427
 
   .. details:: MLA
 
-      Musselman, Eric D., et al. Wmglab-Duke/Ascent: ASCENT v1.1.2. v1.1.2, Zenodo, 2022, doi:10.5281/ZENODO.6537277.
+      Musselman, Eric D., et al. Wmglab-Duke/Ascent: ASCENT v1.2.1. v1.2.1, Zenodo, 2023, doi:10.5281/ZENODO.7627427.
+
 
   .. details:: BibTeX
 
     .. code-block:: BibTeX
 
-        @misc{https://doi.org/10.5281/zenodo.6537277,
-          doi = {10.5281/ZENODO.6537277},
-          url = {https://zenodo.org/record/6537277},
+        @misc{https://doi.org/10.5281/zenodo.7627427,
+          doi = {10.5281/ZENODO.7627427},
+          url = {https://zenodo.org/record/7627427},
           author = {Musselman,  Eric D and Cariello,  Jake E and Grill,  Warren M and Pelot,  Nicole A},
-          title = {wmglab-duke/ascent: ASCENT v1.1.2},
+          title = {wmglab-duke/ascent: ASCENT v1.2.1},
           publisher = {Zenodo},
-          year = {2022},
+          year = {2023},
           copyright = {MIT License}
         }
 
@@ -79,7 +75,7 @@ Welcome to ASCENT's documentation!
    Getting_Started
    Running_ASCENT/index
    JSON/index
-   Methods_Template
+   Publishing_with_ASCENT/index
 
 .. toctree::
    :maxdepth: 2
@@ -104,6 +100,7 @@ Welcome to ASCENT's documentation!
    Publications_Using_ASCENT
    references
    Validation
+   Changelog
 
 .. toctree::
    :maxdepth: 2
@@ -112,3 +109,4 @@ Welcome to ASCENT's documentation!
    ASCENT Publication <https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1009285>
    ASCENT on GitHub <https://github.com/wmglab-duke/ascent>
    The Grill Lab <https://www.neuro.duke.edu/research/faculty-labs/grill-lab>
+   NIH SPARC <https://commonfund.nih.gov/sparc>

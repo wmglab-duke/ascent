@@ -1,13 +1,16 @@
 #! /bin/bash
-
+set -e
 conda init
 CONDA_ENVPY=$(conda info --base)/envs/ascent/bin/python
 CONDA_BASE=$(conda info --base)/etc/profile.d/conda.sh
 source $CONDA_BASE
-conda create -n ascent python=3.7 pip setuptools wheel shapely
+conda create -n ascent
 eval "$(conda shell.bash hook)"
 conda activate ascent
+conda install python=3.7
+$CONDA_ENVPY -m pip install --upgrade pip setuptools wheel
 $CONDA_ENVPY -m pip install -r requirements.txt
+conda install -c conda-forge ffmpeg
 
 echo
 # create shortcut

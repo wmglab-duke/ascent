@@ -18,12 +18,12 @@ PARAMETER {
   txfer   =  50 (ms)  : tau for F-H space <-> bath exchange = 30-100
   :D = 1.85 (um2/ms) : m2s-1
   D = 1.85 (um2/ms)
-  
+
   kbath = 2.6 (mM)
   fhspace = 2 (um)
 }
-ASSIGNED { 
-  ik (mA/cm2) 
+ASSIGNED {
+  ik (mA/cm2)
   Vol_peri (cm3)
   A_peri (um2)
   SA 			(cm2)

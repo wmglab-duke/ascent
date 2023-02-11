@@ -1,33 +1,26 @@
 #!/usr/bin/env python3.7
 
-"""
+"""Plot a sample.
+
 The copyrights of this software are owned by Duke University.
 Please refer to the LICENSE and README.md files for licensing instructions.
-The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
+The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent.
+
+RUN THIS FROM REPOSITORY ROOT
 """
 
 import os
-import sys
 
-root = os.path.abspath(os.path.join(*'../../'.split('/')))
-sys.path.append(root)
+import matplotlib.pyplot as plt
 
 from src.core import Sample
 from src.core.query import Query
 from src.utils import Object
-import matplotlib.pyplot as plt
-
-cwd = os.getcwd()
-os.chdir(root)
 
 criteria = {
     'partial_matches': True,
     'include_downstream': False,
-    'indices': {
-        'sample': [88],
-        'model': None,
-        'sim': None
-    }
+    'indices': {'sample': [0], 'model': None, 'sim': None},
 }
 
 
@@ -41,7 +34,15 @@ sample_index = results['samples'][0]['index']
 fig, ax = plt.subplots(1, 1)
 item: Sample = q.get_object(Object.SAMPLE, [results['samples'][0]['index']])
 slide = item.slides[0]
-slide.plot(fix_aspect_ratio=True, final=False, ax=ax, inner_index_labels=True)
+slide.plot(
+    fix_aspect_ratio=True,
+    final=False,
+    ax=ax,
+    inner_index_labels=True,
+    scalebar=True,
+    scalebar_length=100,
+    scalebar_units='μm',
+)
 plt.xlabel('\u03bcm')
 plt.ylabel('\u03bcm')
 plt.show()
@@ -53,6 +54,4 @@ dest = os.path.join('data', 'tmp', 'samples')
 if not os.path.exists(dest):
     os.mkdir(dest)
 
-fig.savefig(os.path.join(dest, '{}.{}'.format(fname, fmt)), format=fmt, dpi=1200)
-
-os.chdir(cwd)
+fig.savefig(os.path.join(dest, f'{fname}.{fmt}'), format=fmt, dpi=1200)

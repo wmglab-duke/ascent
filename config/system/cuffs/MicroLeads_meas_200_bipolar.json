@@ -1,4 +1,5 @@
 {
+  "description": "MicroLeads cuff we measured, 210 um diameter, bipolar, bipolar, used for preclinical studies",
   "code": "Um200b",
   "instances": [
     {
@@ -84,82 +85,79 @@
       ]
     }
   ],
-
   "params": [
     {
       "name": "z_center_Um200b",
       "expression": "z_nerve/2",
-      "description": ""
+      "description": "Z-position of cuff center"
     },
     {
       "name": "R_in_Um200b",
       "expression": "105 [um]",
-      "description": ""
+      "description": "Cuff inner diameter"
     },
     {
       "name": "R_out_Um200b",
       "expression": "(1080/2) [um]",
-      "description": ""
+      "description": "Cuff outer diameter"
     },
     {
       "name": "Tangent_Um200b",
       "expression": "175 [um]",
-      "description": ""
+      "description": "MicroLeads contact dimension ... shaped like U in cross section, the Tangent is the length of the straight portions on either side of the curve at the bottom of the U"
     },
     {
       "name": "thk_contact_Um200b",
       "expression": "0.02 [mm]",
-      "description": ""
+      "description": "Thickness of contact"
     },
     {
       "name": "z_contact_Um200b",
       "expression": "590 [um]",
-      "description": ""
+      "description": "Z-length of contact"
     },
     {
       "name": "Pitch_Um200b",
       "expression": "895 [um]",
-      "description": ""
+      "description": "z-distance between contacts"
     },
     {
       "name": "L_Um200b",
       "expression": "2075 [um]",
-      "description": ""
+      "description": "Length of cuff"
     },
     {
       "name": "Thk_fill_Um200b",
       "expression": "100 [um]",
-      "description": ""
+      "description": "Distance fill extends beyond cuff boundary"
     },
     {
       "name": "thk_medium_gap_internal_Um200b",
       "expression": "10 [um]",
-      "description": ""
+      "description": "Gap between cuff and nerve"
     },
     {
       "name": "x_shift",
       "expression": "135 [um]",
-      "description": ""
+      "description": "Translation of the fill domain in the x direction"
     },
     {
       "name": "y_shift",
       "expression": "0 [um]",
-      "description": ""
+      "description": "Translation of the fill domain in the y direction"
     },
     {
       "name": "gap",
       "expression": "30 [um]",
-      "description": ""
+      "description": "If MicroLeads cuff does not close all the way, this is used to widen the opening."
     },
     {
       "name": "recess_Um200b",
       "expression": "50 [um]",
-      "description": ""
+      "description": "Depth of fill material into the cuff before the contact. This is used to create an associated recess/fill domain with a contact."
     }
   ],
-
   "expandable": false,
   "angle_to_contacts_deg": 180,
-  "offset": {
-  }
+  "offset": {}
 }

@@ -3,7 +3,7 @@ TITLE Gaines Motor Axon Internode channels
 : 2/02
 : Cameron C. McIntyre
 :
-: Fast Na+, Persistant Na+, Slow K+, and Leakage currents 
+: Fast Na+, Persistant Na+, Slow K+, and Leakage currents
 : responsible for nodal action potential
 : Iterative equations H-H notation rest = -80 mV
 :
@@ -159,12 +159,12 @@ FUNCTION vtrap3(x) {
 	vtrap3 = anA * (x-anB) / (1 - Exp((anB-x)/anC))
 }
 
-FUNCTION vtrap4(x) { 
+FUNCTION vtrap4(x) {
 	:Beta n gating
 	vtrap4 = bnA * (bnB-x) / (1 - Exp((x-bnB)/bnC))
 }
 
-FUNCTION vtrap5(x) { 
+FUNCTION vtrap5(x) {
 	:Alpha hcn (q) gating
 	vtrap5 = aqA * Exp((x-aqB)/aqC)
 }

@@ -1,8 +1,8 @@
 {
-  "pseudonym": "beta model",
+  "pseudonym": "tutorial model",
   "modes": {
     "use_ci": true,
-    "cuff_shift": "MIN_CIRCLE_BOUNDARY",
+    "cuff_shift": "AUTO_ROTATION_MIN_CIRCLE_BOUNDARY",
     "fiber_z": "EXTRUSION",
     "rho_perineurium": "RHO_WEERASURIYA"
   },
@@ -38,8 +38,8 @@
     }
   },
   "mesh": {
-    "quality_measure":"vollength",
-    "shape_order": 2,
+    "quality_measure": "vollength",
+    "shape_order": "quadratic",
     "proximal": {
       "hcurve": 0.2,
       "hmin": 10,
@@ -84,6 +84,7 @@
     "epineurium": "epineurium"
   },
   "solver": {
-    "sorder": "quadratic"
+    "sorder": 2,
+    "type": "iterative"
   }
 }

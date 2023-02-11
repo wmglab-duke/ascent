@@ -7,3 +7,4 @@ Running ASCENT
    Usage
    command_line_args
    Info
+   plotter

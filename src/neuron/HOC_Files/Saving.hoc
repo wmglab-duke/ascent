@@ -12,7 +12,7 @@ Description:
 - Save recorded vectors to text files.
 
 Important notes:
-- 
+-
 
 Variables that must be defined in wrapper/params file:
 - checknode_Ve_values
@@ -56,13 +56,13 @@ proc Saving() {
 		SaveTimeCourse(fname_output_gating_s_time, "s_node", checknode_values, "", savevec_s_time)
 	}
 
-	
+
 	// ***** Save Vm(x) at checknode_times
 	if (saveflag_Vm_space == 1) {
 		SaveSpatialDist(fname_output_Vm_space, "Vm_time", checktime_values_ms, "ms(mV)", savevec_Vm_space)
 	}
-	
-	
+
+
 	// ***** Save gating param vs space at checknode_times
 	if (saveflag_gating_space == 1) {
 		SaveSpatialDist(fname_output_gating_m_space, "m_time", checktime_values_ms, "ms", savevec_m_space)
@@ -70,8 +70,8 @@ proc Saving() {
 		SaveSpatialDist(fname_output_gating_mp_space, "mp_time", checktime_values_ms, "ms", savevec_mp_space)
 		SaveSpatialDist(fname_output_gating_s_space, "s_time", checktime_values_ms, "ms", savevec_s_space)
 	}
-	
-	
+
+
 	// ***** Save Ve(t) at one location.
 	if (saveflag_Ve == 1) {
 		if (fiber_type == 1) {
@@ -84,7 +84,7 @@ proc Saving() {
 		}
 	}
 
-	
+
 	// ***** Save Istim(t) (created in IntracellularStim.hoc).
 	if (saveflag_Istim == 1) {
 		Istim_suffix_tmp = new Vector(1)

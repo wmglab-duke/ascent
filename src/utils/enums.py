@@ -1,13 +1,15 @@
 #!/usr/bin/env python3.7
 
-"""
-The copyrights of this software are owned by Duke University.
+"""The copyrights of this software are owned by Duke University.
+
 Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent
 """
 
-from enum import unique, Enum
 import os
+from enum import Enum, unique
+
+import cv2
 
 
 class ASCENTEnum(Enum):
@@ -16,22 +18,20 @@ class ASCENTEnum(Enum):
 
 
 # %% Core (backend) functionality
-
 @unique
-class SetupMode(ASCENTEnum):
+class SetupMode(ASCENTEnum, Enum):
     NEW = 0
     OLD = 1
     SYNTHETIC = 2  # used for creating a "fake" map.json
 
 
 @unique
-class Config(ASCENTEnum):
+class Config(ASCENTEnum, Enum):
     # system
     MESH = 'mesh'
     MATERIALS = 'materials'
     FIBER_Z = 'fiber_z'
     CUFFS = 'cuffs'
-    EXCEPTIONS = 'exceptions'
     CLI_ARGS = 'cli_args'
     ENV = 'env'
     CI_PERINEURIUM_THICKNESS = 'ci_perineurium_thickness'
@@ -47,13 +47,13 @@ class Config(ASCENTEnum):
 
 
 @unique
-class Object(ASCENTEnum):
+class Object(ASCENTEnum, Enum):
     SAMPLE = 'sample_obj'
     SIMULATION = 'sim_obj'
 
 
 @unique
-class Env(ASCENTEnum):
+class Env(ASCENTEnum, Enum):
     prefix = 'ASCENT_'
 
     COMSOL_PATH = prefix + 'COMSOL_PATH'
@@ -61,23 +61,28 @@ class Env(ASCENTEnum):
     PROJECT_PATH = prefix + 'PROJECT_PATH'
     NSIM_EXPORT_PATH = prefix + 'NSIM_EXPORT_PATH'
 
-    vals = [
-        COMSOL_PATH,
-        JDK_PATH,
-        PROJECT_PATH,
-        NSIM_EXPORT_PATH
-    ]
+    vals = [COMSOL_PATH, JDK_PATH, PROJECT_PATH, NSIM_EXPORT_PATH]
+
+
+@unique
+class OptionalEnv(ASCENTEnum, Enum):
+    prefix = 'ASCENT_'
+
+    ASCENT_DATASET_EXPORT_PATH = prefix + 'DATASET_EXPORT_PATH'
+
+    vals = [ASCENT_DATASET_EXPORT_PATH]
 
 
 # %% Trace functionality
 
+
 @unique
-class DownSampleMode(ASCENTEnum):
+class DownSampleMode(ASCENTEnum, Enum):
     KEEP = 0
     REMOVE = 1
 
 
-class WriteMode(ASCENTEnum):
+class WriteMode(ASCENTEnum, Enum):
     SECTIONWISE = 0
     SECTIONWISE2D = 1
     DATA = 2
@@ -87,8 +92,9 @@ class WriteMode(ASCENTEnum):
 
 # %% Higher-level Manager functionality
 
+
 @unique
-class ReshapeNerveMode(ASCENTEnum):
+class ReshapeNerveMode(ASCENTEnum, Enum):
     config = 'reshape_nerve'
 
     CIRCLE = 0
@@ -97,17 +103,16 @@ class ReshapeNerveMode(ASCENTEnum):
 
 
 @unique
-class MaskInputMode(ASCENTEnum):
+class MaskInputMode(ASCENTEnum, Enum):
     config = 'mask_input'
 
     INNERS = 0
-    OUTERS = 1
     INNER_AND_OUTER_SEPARATE = 2
     INNER_AND_OUTER_COMPILED = 3
 
 
 @unique
-class ScaleInputMode(ASCENTEnum):
+class ScaleInputMode(ASCENTEnum, Enum):
     config = 'scale_input'
 
     MASK = 0
@@ -115,7 +120,7 @@ class ScaleInputMode(ASCENTEnum):
 
 
 @unique
-class MaskFileNames(ASCENTEnum):
+class MaskFileNames(ASCENTEnum, Enum):
     RAW = 'r.tif'
     COMPILED = 'c.tif'
     INNERS = 'i.tif'
@@ -126,7 +131,7 @@ class MaskFileNames(ASCENTEnum):
 
 
 @unique
-class ShrinkageMode(ASCENTEnum):
+class ShrinkageMode(ASCENTEnum, Enum):
     config = 'shrinkage_definition'
 
     LENGTH_BACKWARDS = 0
@@ -136,7 +141,7 @@ class ShrinkageMode(ASCENTEnum):
 
 
 @unique
-class NerveMode(ASCENTEnum):
+class NerveMode(ASCENTEnum, Enum):
     config = 'nerve'
 
     PRESENT = 1
@@ -144,7 +149,7 @@ class NerveMode(ASCENTEnum):
 
 
 @unique
-class PopulateMode(ASCENTEnum):
+class PopulateMode(ASCENTEnum, Enum):
     config = 'populate_method'
     parameters = 'populate'
 
@@ -154,25 +159,32 @@ class PopulateMode(ASCENTEnum):
 
 
 @unique
-class DiamDistMode(ASCENTEnum):
-
+class DiamDistMode(ASCENTEnum, Enum):
     TRUNCNORM = 0
     UNIFORM = 1
 
 
 @unique
-class DeformationMode(ASCENTEnum):
+class DeformationMode(ASCENTEnum, Enum):
     config = 'deform'
 
     NONE = None
-    JITTER = 0
     PHYSICS = 1
+
+
+@unique
+class ContourMode(ASCENTEnum, Enum):
+    config = 'contour_approximation'
+
+    NONE = cv2.CHAIN_APPROX_NONE
+    SIMPLE = cv2.CHAIN_APPROX_SIMPLE
 
 
 # %% Fiber Position and Type
 
+
 @unique
-class FiberXYMode(ASCENTEnum):
+class FiberXYMode(ASCENTEnum, Enum):
     config = 'fiber_xy'
     parameters = 'xy_parameters'
 
@@ -185,7 +197,7 @@ class FiberXYMode(ASCENTEnum):
 
 
 @unique
-class FiberZMode(ASCENTEnum):
+class FiberZMode(ASCENTEnum, Enum):
     config = 'fiber_z'
     parameters = 'z_parameters'
 
@@ -194,7 +206,7 @@ class FiberZMode(ASCENTEnum):
 
 
 @unique
-class ZOffsetMode(ASCENTEnum):
+class ZOffsetMode(ASCENTEnum, Enum):
     config = 'z_offset'
     parameters = 'z_offset_parameters'
 
@@ -203,7 +215,7 @@ class ZOffsetMode(ASCENTEnum):
 
 
 @unique
-class MyelinationMode(ASCENTEnum):
+class MyelinationMode(ASCENTEnum, Enum):
     config = 'myel'
     parameters = 'fiber_type_parameters'
 
@@ -212,7 +224,7 @@ class MyelinationMode(ASCENTEnum):
 
 
 @unique
-class FiberGeometry(ASCENTEnum):
+class FiberGeometry(ASCENTEnum, Enum):
     config = 'myel_fiber'
 
     NONE = None
@@ -223,26 +235,28 @@ class FiberGeometry(ASCENTEnum):
 
 
 @unique
-class MyelinatedSamplingType(ASCENTEnum):
+class MyelinatedSamplingType(ASCENTEnum, Enum):
     DISCRETE = "discrete"
     INTERPOLATION = "interp"
 
 
 @unique
-class UnmyelinatedFiberType(ASCENTEnum):
+class UnmyelinatedFiberType(ASCENTEnum, Enum):
     config = 'unmyel_fiber'
 
     NONE = None
     SUNDT = 0
     TIGERHOLM = 1
     RATTAY = 2
-    SCHILD = 3
+    SCHILD97 = 3
+    SCHILD9 = 4
 
 
 # %% Waveforms
 
+
 @unique
-class WaveformMode(ASCENTEnum):
+class WaveformMode(ASCENTEnum, Enum):
     config = 'waveform'
     global_parameters = 'global'
 
@@ -253,21 +267,22 @@ class WaveformMode(ASCENTEnum):
     BIPHASIC_PULSE_TRAIN_Q_BALANCED_UNEVEN_PW = 4
     EXPLICIT = 5
 
+
 # %% Simulation
 
 
 @unique
-class ExportMode(ASCENTEnum):
-
+class ExportMode(ASCENTEnum, Enum):
     OVERWRITE = "overwrite"
     ERROR = "error"
     SELECTIVE = "selective"
+
 
 # %% NEURON Protocols
 
 
 @unique
-class NeuronRunMode(ASCENTEnum):
+class NeuronRunMode(ASCENTEnum, Enum):
     config = 'mode'
 
     ACTIVATION_THRESHOLD = 0
@@ -276,7 +291,7 @@ class NeuronRunMode(ASCENTEnum):
 
 
 @unique
-class SearchAmplitudeIncrementMode(ASCENTEnum):
+class SearchAmplitudeIncrementMode(ASCENTEnum, Enum):
     config = 'mode'
 
     ABSOLUTE_INCREMENT = 0
@@ -284,7 +299,7 @@ class SearchAmplitudeIncrementMode(ASCENTEnum):
 
 
 @unique
-class TerminationCriteriaMode(ASCENTEnum):
+class TerminationCriteriaMode(ASCENTEnum, Enum):
     config = 'mode'
 
     PERCENT_DIFFERENCE = 0
@@ -293,8 +308,9 @@ class TerminationCriteriaMode(ASCENTEnum):
 
 # %% Perineurium Impedance
 
+
 @unique
-class PerineuriumThicknessMode(ASCENTEnum):
+class PerineuriumThicknessMode(ASCENTEnum, Enum):
     config = 'ci_perineurium_thickness'
     parameters = 'ci_perineurium_thickness_parameters'
 
@@ -308,7 +324,7 @@ class PerineuriumThicknessMode(ASCENTEnum):
 
 
 @unique
-class PerineuriumResistivityMode(ASCENTEnum):
+class PerineuriumResistivityMode(ASCENTEnum, Enum):
     config = 'rho_perineurium'
 
     RHO_WEERASURIYA = 'RHO_WEERASURIYA'
@@ -317,8 +333,9 @@ class PerineuriumResistivityMode(ASCENTEnum):
 
 # %% Cuffs
 
+
 @unique
-class CuffInnerMode(ASCENTEnum):
+class CuffInnerMode(ASCENTEnum, Enum):
     config = 'cuff_inner'
     parameters = 'cuff_inner_parameters'
 
@@ -326,7 +343,7 @@ class CuffInnerMode(ASCENTEnum):
     BOUNDING_BOX = 1
 
 
-class CuffMode(ASCENTEnum):
+class CuffMode(ASCENTEnum, Enum):
     config = 'cuff_mode'
     parameters = 'cuff_parameters'
 
@@ -337,23 +354,21 @@ class CuffMode(ASCENTEnum):
     IMTHERA = 4
 
 
-class CuffShiftMode(ASCENTEnum):
+class CuffShiftMode(ASCENTEnum, Enum):
     config = 'cuff_shift'
 
     AUTO_ROTATION_MIN_CIRCLE_BOUNDARY = 0
     AUTO_ROTATION_TRACE_BOUNDARY = 1
     NONE = 2
-    PURPLE = 3
-    NAIVE_ROTATION_MIN_CIRCLE_BOUNDARY = 4  # purple
+    NAIVE_ROTATION_MIN_CIRCLE_BOUNDARY = 4
     NAIVE_ROTATION_TRACE_BOUNDARY = 5
-    MIN_CIRCLE_BOUNDARY = 6
-    TRACE_BOUNDARY = 7
 
 
 # %% Templates
 
+
 @unique
-class TemplateMode(ASCENTEnum):
+class TemplateMode(ASCENTEnum, Enum):
     path = os.path.join('config', 'templates')
     ELECTRODE_INPUT = 'electrode_input.json'
     MORPHOLOGY = 'morphology.json'

@@ -1,6 +1,6 @@
 : Author: David Catherall
 : Created: November 2016
-: KCa is the calcium-activated potassium current in Schild 1994 
+: KCa is the calcium-activated potassium current in Schild 1994
 
 : Neuron Block creates mechanism
 	NEURON {
@@ -28,12 +28,12 @@
 		Q10TempB = 10	(degC)
 
 		:kca_c Variables
-		
+
 			:Alpha Variables
 				A_alphac=750.0 (/ms-mM) :From Schild 1994, alphac=A_alphac*cai*((Vm+B_alphan)/C_alphan)
 				B_alphac=-10.0 (mV)
 				C_alphac=12.0	(mV)
-			
+
 			:Beta Variables
 				A_betac=0.05 (/ms)	:From Schild 1994, betac=A_betan*exp((Vm+B_betan)/C_betan)
 				B_betac=-10.0 (mV)
@@ -49,15 +49,15 @@
 		 cai (mM)
 		 celsius (degC)
 		 ek	(mV)
-		 
+
 		 :Model Specific Variables
 		 g	(S/cm2)
 		 tau_c	(ms)
 		 cinf
 		 alphac (/ms)
 		 betac (/ms)
-		
-			 
+
+
 	}
 
 : Defines state variables which will be calculated by numerical integration
@@ -74,7 +74,7 @@
 	INITIAL {
 		rates(v) : set tau_c, cinf
 		: assume that equilibrium has been reached
-		
+
 		c = cinf
 	}
 
@@ -100,11 +100,11 @@
 		FUNCTION rates(Vm (mV)) (/ms) {
 			alpha(Vm)
 			beta(Vm)
-			
+
 			tau_c = 4.5/(alphac+betac)
 			cinf = alphac/(alphac+betac)
-			
+
 			:This scales the tau values based on temperature
 
 			tau_c=tau_c*Q10kcac^((Q10TempA-celsius)/Q10TempB)
-		}	
+		}

@@ -1,6 +1,6 @@
 : Author: David Catherall
 : Created: November 2016
-: Can is the high threshold, long-lasting calcium current in Schild 1994 
+: Can is the high threshold, long-lasting calcium current in Schild 1994
 
 : Neuron Block creates mechanism
 	NEURON {
@@ -26,49 +26,49 @@
 		Q10can=4.30 					:Each gating variable has the same constant
 		Q10TempA = 22.85	(degC)			: Used to shift tau values based on temperature with equation : tau(T1)=tau(Q10TempA)*Q10^((Q10TempA-T1)/Q10TempB)
 		Q10TempB = 10	(degC)
-	 
+
 		shiftcan=-7.0 (mV) 				: Shift factor present in C-fiber
-		
+
 		: can_d Variables
-		
+
 			: Steady State Variables
 				V0p5d=20.0 (mV):As defined by Schild 1994, zinf=1.0/(1.0+exp((V0p5z-V)/S0p5z)
 				S0p5d=-4.5 (mV)
-			
+
 			: Tau Variables
 				A_taud=3.25	(ms)	:As defined by Schild 1994, tauz=A_tauz*exp(-B^2(V-Vpz)^2)+C
 				B_taud=0.042	(/mV)
 				C_taud=0.395	(ms)
 				Vpd=-31.0		(mV)
-			
+
 		: can_f1 Variables
-		
+
 			: Steady State Variables
 				V0p5f1=20.0 (mV)
 				S0p5f1=25.0 (mV)
-			
+
 			: Tau Variables
 				A_tauf1=33.5	(ms)
 				B_tauf1=.0395	(/mV)
 				C_tauf1=5.0	(ms)
 				Vpf1=-30.0	(mV)
-			
+
 		: can_f2 Variables
-		
+
 			: Steady State Variables
 				V0p5f2=40.0 (mV)
 				S0p5f2=10.0 (mV)
-			
+
 			: Tau Variables
 				A_tauf2=225.0	(ms)
 				B_tauf2=0.0275	(/mV)
 				C_tauf2=75.00	(ms)
 				Vpf2=-40.0		(mV)
-		
+
 		:Rn Variables
 			A_rn=5.0 (mV)
 			B_rn=-10.0 (mV)
-		
+
 		:Calcium Related Variables
 			R=8.314 (joule/degC): Gas Constant
 			z=2 : Charge of Ca ion
@@ -85,7 +85,7 @@
 		 celsius (degC)
 		 cao (mM)
 		 cai (mM)
-		 
+
 		 :Model Specific Variables
 		 g	(S/cm2)
 		 tau_f1	(ms)
@@ -97,11 +97,11 @@
 		 rn
 		 ecan	(mV)
 
-			 
+
 	}
 
 : Defines state variables which will be calculated by numerical integration
-	STATE { d f1 f2 } 
+	STATE { d f1 f2 }
 
 : This block iterates the state variable calculations and uses those calculations to calculate currents
 BREAKPOINT {
@@ -114,7 +114,7 @@ BREAKPOINT {
 INITIAL {
 		rates(v) : set tau_m, tau_h, hinf, minf
 		: assume that equilibrium has been reached
-		
+
 
 		d = dinf
 		f1 = f1inf
@@ -135,7 +135,7 @@ INITIAL {
 	FUNCTION rates(Vm (mV)) (/ms) {
 
 		rn=0.2/(1.0+exp((Vm +A_rn+shiftcan)/B_rn))
-		
+
 		tau_d = A_taud*exp(-(B_taud)^2*(Vm-Vpd)^2)+C_taud
 			dinf = 1.0/(1.0+exp((Vm+V0p5d+shiftcan)/S0p5d))
 
@@ -144,10 +144,10 @@ INITIAL {
 
 		tau_f2 = A_tauf2*exp(-(B_tauf2)^2*(Vm-Vpf2)^2)+C_tauf2
 			f2inf =rn+(1.0/(1.0+exp((Vm+V0p5f2+shiftcan)/S0p5f2)))
-		
+
 		: Equation for eca given in Schild 1994
-		ecan=(1000)*(R*(celsius+273.15)/z/F*log(cao/cai))-ecaoffset 
-		
+		ecan=(1000)*(R*(celsius+273.15)/z/F*log(cao/cai))-ecaoffset
+
 		:This scales the tau values based on temperature
 			tau_d=tau_d*Q10can^((Q10TempA-celsius)/Q10TempB)
 			tau_f1=tau_f1*Q10can^((Q10TempA-celsius)/Q10TempB)

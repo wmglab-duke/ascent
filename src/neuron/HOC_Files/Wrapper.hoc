@@ -242,14 +242,12 @@ proc run_all(){local myinner, myfiber, myamp, amp_ind
 	if (find_thresh == 0) {
 		// Run sim
 		RunSim(myamp)
-		
-		// Save N_APs
 		print "N_APs = ", N_APs
 		sprint(activation_fname_output, "../%s/data/outputs/activation_inner%d_fiber%d_amp%d.dat", sim_path, myinner, myfiber, amp_ind)
         Saving_Activation()
 
 	}   else if (find_thresh == 1){
-		// Run binary search for thresholds
+		// Run bisection search for thresholds
 		FindThresh()
 		// Run sim once more with final thresh from FindThresh()
 		print "Running stimamp in final check for AP."
@@ -259,7 +257,6 @@ proc run_all(){local myinner, myfiber, myamp, amp_ind
 		// Save threshold value
 		sprint(thresh_fname_output, "../%s/data/outputs/thresh_inner%d_fiber%d.dat", sim_path, myinner, myfiber)
 		Saving_Thresh()
-
 	}
 
 	// Save data

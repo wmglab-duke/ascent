@@ -1,5 +1,5 @@
 {
-  "pseudonym":"template model",
+  "pseudonym": "template model",
   "modes": {
     "rho_perineurium": "RHO_WEERASURIYA",
     "cuff_shift": "AUTO_ROTATION_MIN_CIRCLE_BOUNDARY",
@@ -39,8 +39,8 @@
     }
   },
   "mesh": {
-    "quality_measure":"vollength",
-    "shape_order": 2,
+    "quality_measure": "vollength",
+    "shape_order": "quadratic",
     "proximal": {
       "type": {
         "im": "ftet",
@@ -80,6 +80,7 @@
     "epineurium": "epineurium"
   },
   "solver": {
-    "sorder": "quadratic"
+    "sorder": 2,
+    "type": "iterative"
   }
 }

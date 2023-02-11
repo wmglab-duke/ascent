@@ -20,7 +20,7 @@
  }
 
  ASSIGNED {
- 		i (na)		
+ 		i (na)
  }
 
  INITIAL  { LOCAL j,k
@@ -54,5 +54,5 @@
 		 				pulsecount = 0
 		 				onoff = 0
 		 		}
- 		
+
  }

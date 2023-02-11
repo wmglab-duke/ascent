@@ -10,7 +10,7 @@ NEURON {
 
 UNITS {
         (molar)	= (1/liter)                     : moles do not appear in units
-        (mM)	= (millimolar)             	
+        (mM)	= (millimolar)
 	(mA)	= (milliamp)
 	(mV)	= (millivolt)
 	(S) 	= (siemens)
@@ -48,6 +48,3 @@ BREAKPOINT {
 	w = pmax/(1+(EC50/nai)^nH)
 	ik = gbar*w*(v-ek)
 }
-
-
-

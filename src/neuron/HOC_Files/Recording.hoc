@@ -39,7 +39,7 @@ proc Recording() {
 
 		for i=0, Nchecknodes - 1 {
 			ind_tmp = checknode_values.x[i]
-			
+
 			savevec_Vm_time.o[i] = new Vector(n_tsteps,0)
 
 			if (!(fiber_type == 2)) { // if fiber is not myelinated, do not reference by node
@@ -51,25 +51,25 @@ proc Recording() {
 		}
 	}
 
-	
+
 	// ***** Record MRG gating param's vs time at checknode_values
 	if (saveflag_gating_time == 1) {
 		savevec_m_time = new O1d(Nchecknodes)
 		savevec_h_time = new O1d(Nchecknodes)
 		savevec_mp_time = new O1d(Nchecknodes)
 		savevec_s_time = new O1d(Nchecknodes)
-		
+
 		// Set up the recording vectors for the gating parameters for all checknodes
 		// Leave populated with only zeros for first & last nodes if listed in checknode_values and if using passive end nodes.
 		// WHY? If using passive end nodes, the MRG gating parameters aren't defined for the first and last nodes.
 		for i=0, Nchecknodes - 1 {
 			ind_tmp = checknode_values.x[i]
-			
+
 			savevec_m_time.o[i] = new Vector(n_tsteps,0)
 			savevec_h_time.o[i] = new Vector(n_tsteps,0)
 			savevec_mp_time.o[i] = new Vector(n_tsteps,0)
 			savevec_s_time.o[i] = new Vector(n_tsteps,0)
-			
+
 			// If not an end node or there aren't passive end nodes, then record gating params
 			if ((!(ind_tmp == 0) && !(ind_tmp == axonnodes - 1)) || (passive_end_nodes == 0)) {
 				if (fiber_type == 1) {
@@ -92,25 +92,25 @@ proc Recording() {
 			}
 		}
 	}
-	
-	
+
+
 	// ***** Create vector to record Vm(x) at specified time points. Do actual recording in time loop.
 	if (saveflag_Vm_space == 1) {
 		savevec_Vm_space = new O1d(Nchecktimes)
-		
+
 		for i=0, Nchecktimes - 1 {
 			savevec_Vm_space.o[i] = new Vector(axonnodes,0)
 		}
 	}
-	
-	
+
+
 	// ***** Create vector to record MRG gating param's vs x at specified time points. Do actual recording in time loop.
 	if (saveflag_gating_space == 1) {
 		savevec_m_space = new O1d(Nchecktimes)
 		savevec_h_space = new O1d(Nchecktimes)
 		savevec_mp_space = new O1d(Nchecktimes)
 		savevec_s_space = new O1d(Nchecktimes)
-		
+
 		for i=0, Nchecktimes - 1 {
 			savevec_m_space.o[i] = new Vector(axonnodes,0)
 			savevec_h_space.o[i] = new Vector(axonnodes,0)
@@ -118,19 +118,19 @@ proc Recording() {
 			savevec_s_space.o[i] = new Vector(axonnodes,0)
 		}
 	}
-	
-	
+
+
 	// ***** Create vector to record Ve(t) at one location. Do actual recording in time loop.
 	if (saveflag_Ve == 1) {
 		savevec_Ve = new O1d(1)
 		savevec_Ve.o[0] = new Vector(n_tsteps,0)
 	}
 
-	
+
 	// ***** Record Istim(t) (created in IntracellularStim.hoc).
 	if (saveflag_Istim == 1) {
 		savevec_Istim = new O1d(1)
 		savevec_Istim.o[0] = new Vector(n_tsteps,0)
 		savevec_Istim.o[0].record(&stim.i,dt)
-	}	
+	}
 }

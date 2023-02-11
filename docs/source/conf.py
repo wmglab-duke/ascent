@@ -1,8 +1,14 @@
-# Configuration file for the Sphinx documentation builder.
-#
-# This file only contains a selection of the most common options. For a full
-# list see the documentation:
-# https://www.sphinx-doc.org/en/master/usage/configuration.html
+"""Configuration file for the Sphinx documentation builder.
+
+This file only contains a selection of the most common options.
+For a full list see the documentation:
+https://www.sphinx-doc.org/en/master/usage/configuration.html
+"""
+
+import os
+import sys
+
+import mock
 
 # -- Path setup --------------------------------------------------------------
 
@@ -10,18 +16,16 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-import os
-import sys
-sys.path.insert(0, os.path.abspath('../config/system/run_utils'))
+sys.path.insert(0, os.path.abspath('../..'))
 
 # -- Project information -----------------------------------------------------
 
 project = 'ASCENT'
-copyright = '2021, Duke University'
+copyright_info = '2021, Duke University'
 author = 'Musselman ED, Cariello JE, Grill WM, Pelot NA.'
 
 # The full version, including alpha/beta/rc tags
-release = 'v1.1.2'
+release = 'v1.2.1'
 
 # -- General configuration ---------------------------------------------------
 
@@ -29,14 +33,20 @@ release = 'v1.1.2'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 
-extensions = ['myst_parser',
-              'sphinxarg.ext',
-              'sphinx.ext.intersphinx',
-              'sphinx.ext.autodoc',
-              'sphinxcontrib.bibtex',
-              'sphinxcontrib.details.directive',
-              'sphinx_copybutton',
-              'sphinx_rtd_dark_mode']
+extensions = [
+    'myst_parser',
+    'sphinxarg.ext',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.autodoc',
+    'sphinxcontrib.bibtex',
+    'sphinxcontrib.details.directive',
+    'sphinx_copybutton',
+    'sphinx_rtd_dark_mode',
+    'sphinx_github_changelog',
+    'sphinx_inline_tabs',
+    'sphinx.ext.autodoc',
+    'sphinx_inline_tabs',
+]
 
 source_suffix = {
     '.rst': 'restructuredtext',
@@ -44,12 +54,25 @@ source_suffix = {
     '.md': 'markdown',
 }
 
-import mock
-
 MOCK_MODULES = ['numpy', 'pandas']
 
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = mock.Mock()
+
+autodoc_mock_imports = [
+    'numpy',
+    'cv2',
+    'pandas',
+    'matplotlib',
+    'pyclipper',
+    'pymunk',
+    'shapely',
+    'scipy',
+    'skimage',
+    'pygame',
+    'pymunk',
+    'quantiphy',
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -74,12 +97,12 @@ html_static_path = ['_static']
 html_css_files = [
     'details.css',
 ]
+
 html_show_copyright = True
 
-# no logo because doesn't look nice
-# html_logo="uploads/ascent_media_release_v2.png"
-
 html_show_sphinx = False
+
+# -- Options for extensions -------------------------------------------------
 
 myst_heading_anchors = 4
 
@@ -88,3 +111,5 @@ bibtex_bibfiles = ['refs.bib']
 bibtex_reference_style = 'author_year'
 
 default_dark_mode = False
+
+sphinx_github_changelog_token = os.environ.get("SPHINX_GITHUB_CHANGELOG_TOKEN")

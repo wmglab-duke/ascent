@@ -52,4 +52,3 @@ DERIVATIVE state {
 	   nao' = (1e8)*ina/(wid*FARADAY)+(nainitial-nao)/txfer
 
 }
-

@@ -29,14 +29,14 @@ ASSIGNED {
 	tau	(ms)
         ninf
         ek	(mV)
-   
+
 }
 
 STATE { n }
 
 BREAKPOINT {
 	SOLVE states METHOD cnexp
-	g = gbar*n^4 
+	g = gbar*n^4
 	ik = g*(v-ek)
 }
 
@@ -53,14 +53,14 @@ DERIVATIVE states {
 }
 
 
-FUNCTION rates(Vm (mV)) (/ms) {        
+FUNCTION rates(Vm (mV)) (/ms) {
         ninf=1/(1+exp((v+Vh-10)/-k1))
-        tau=0.16+0.8*exp(-0.0267*(v+11)) 
-        
+        tau=0.16+0.8*exp(-0.0267*(v+11))
+
         if (v<-31){
-        tau=1000*(0.000688 +1/(exp((v+75.2)/6.5) + exp((v-131.5)/-34.8))) 
-        } 
-      
+        tau=1000*(0.000688 +1/(exp((v+75.2)/6.5) + exp((v-131.5)/-34.8)))
+        }
+
         kvot_qt=1/((3.3^((celsiusT-22)/10)))
         tau=tau*kvot_qt
 

@@ -15,7 +15,7 @@ This function is called after the first initialization.
 
 proc balance(){
 	Vrest = fiber.v
-	
+
     forsec fiber.sl{
 	if ((-(ina_nattxs + \
 	ina_nav1p9 + \
@@ -35,7 +35,7 @@ proc balance(){
 	    ina_h + \
 	    ina_nakpump) / (Vrest - ena)
 	}
-	
+
 	if ((-(ik_ks + \
 	ik_kf + \
 	ik_h + \

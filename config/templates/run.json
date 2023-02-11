@@ -1,33 +1,16 @@
 {
-  "pseudonym":"template_run",
-  "submission_context": "local",
-  "sample": 62,
+  "pseudonym": "template_run",
+  "sample": 0,
   "models": [0],
-  "sims": [99],
+  "sims": [0],
   "recycle_meshes": true,
-  "break_points": {
-    "pre_java": false,
-    "pre_geom_run": false,
-    "post_geom_run": false,
-    "pre_mesh_proximal": false,
-    "post_mesh_proximal": false,
-    "pre_mesh_distal": false,
-    "post_mesh_distal": false,
-    "post_material_assign": false,
-    "pre_loop_currents": false
-  },
   "models_exit_status": [true],
-  "endo_only_solution":true,
+  "endo_only_solution": true,
   "keep": {
     "debug_geom": true,
     "mesh": true,
     "bases": true
   },
-  "partial_fem": {
-    "cuff_only": false,
-    "nerve_only": false
-  },
-  "local_avail_cpus": 3,
   "popup_plots": false,
   "export_behavior": "selective"
 }

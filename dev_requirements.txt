@@ -1,0 +1,8 @@
+mock==4.0.*
+myst-parser
+pre-commit==2.20.*
+pytest==7.1.*
+pytest-cov==3.0.*
+sphinx==4.5.*
+sphinx-argparse
+sphinx-rtd-theme

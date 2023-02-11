@@ -1,6 +1,6 @@
 : Author: David Catherall
 : Created: November 2016
-: Kd is the delayed rectifier current in Schild 1994 
+: Kd is the delayed rectifier current in Schild 1994
 
 : Neuron Block creates mechanism
 	NEURON {
@@ -24,20 +24,20 @@
 		Q10TempA = 22.85	(degC)		: Used to shift tau values based on temperature with equation : tau(T1)=tau(Q10TempA)*Q10^((Q10TempA-T1)/Q10TempB)
 		Q10TempB = 10	(degC)
 
-	 
+
 		shiftkd=3.0 (mV) 			: Shift factor present in C-fiber
-		
+
 		: kd_n Variables
-			
+
 			: Steady State Variables
 				V0p5n=14.62 (mV):As defined by Schild 1994, zinf=1.0/(1.0+exp((V0p5z-V)/S0p5z)
 				S0p5n=-18.38 (mV)
-			
+
 			: Alpha Variables
 				A_alphan=.001265 (/ms-mV) :From Schild 1994, alphan=A_alphan*(Vm+B_alphan)/(1.0-exp((Vm+B_alphan)/C_alphan)
 				B_alphan=14.273 (mV)
 				C_alphan=-10.0	(mV)
-				
+
 			:Beta Variables
 				A_betan=0.125 (/ms)	:From Schild 1994, betan=A_betan*exp((Vm+B_betan)/C_betan)
 				B_betan=55.0 (mV)
@@ -51,14 +51,14 @@
 		ik	(mA/cm2)
 		celsius (degC)
 		ek	(mV)
-		 
+
 		:Model Specific Variables
 		g	(S/cm2)
 		tau_n	(ms)
 		ninf
 		alphan (/ms)
 		betan (/ms)
-			 
+
 	}
 
 : Defines state variables which will be calculated by numerical integration
@@ -75,7 +75,7 @@
 	INITIAL {
 		rates(v) : set tau_m, tau_h, hinf, minf
 		: assume that equilibrium has been reached
-		
+
 		n = ninf
 	}
 
@@ -100,10 +100,10 @@
 		FUNCTION rates(Vm (mV)) (/ms) {
 			alpha(Vm)
 			beta(Vm)
-			
+
 			tau_n = 1/(alphan+betan)+1.0
 			ninf = 1.0/(1.0+exp((Vm+V0p5n+shiftkd)/S0p5n))
-			
+
 			:This scales the tau values based on temperature
 			tau_n=tau_n*Q10kdn^((Q10TempA-celsius)/Q10TempB)
 		}
