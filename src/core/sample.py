@@ -736,7 +736,9 @@ class Sample(Configurable, Saveable):
         if self.deform_mode == DeformationMode.NONE:
             sep_nerve = self.search(Config.SAMPLE, 'boundary_separation').get('nerve')
             if sep_nerve != 0:
-                warnings.warn(f'NO DEFORMATION is happening! AND sep_nerve is not 0, sep_nerve = {sep_nerve}')
+                warnings.warn(
+                    f'NO DEFORMATION is happening! AND sep_nerve is not 0, sep_nerve = {sep_nerve}', stacklevel=2
+                )
         else:
             if self.nerve_mode == NerveMode.NOT_PRESENT:
                 raise IncompatibleParametersError("Cannot reposition without NerveMode.PRESENT")

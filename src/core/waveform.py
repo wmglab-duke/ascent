@@ -409,7 +409,7 @@ class Waveform(Configurable, Saveable):
                 'waveform to fit NEURON time '
                 'discretization.'
             )
-            warnings.warn(warning_str)
+            warnings.warn(warning_str, stacklevel=2)
 
             period_explicit = dt_explicit * len(explicit_wave)
             n_samples_resampled = round(period_explicit / self.dt)

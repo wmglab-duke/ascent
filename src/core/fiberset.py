@@ -605,7 +605,8 @@ class FiberSet(Configurable, Saveable):
             if offset is None:
                 warnings.warn(
                     'No offset specified. Proceeding with (original default functionality) of randomized offset. '
-                    'Suppress this warning by including the parameter "offset":"random" in fiber z_parameters.'
+                    'Suppress this warning by including the parameter "offset":"random" in fiber z_parameters.',
+                    stacklevel=2,
                 )
                 offset = 'random'
             if offset == 'random':
@@ -851,7 +852,8 @@ class FiberSet(Configurable, Saveable):
                 warnings.warn(
                     'Program assumed fiber length same as proximal length since "min" and "max" fiber '
                     'length not defined in Config.Sim "fibers" -> "z_parameters". '
-                    'Suppress this warning by adding "full_nerve_length = true" to your z_parameters.'
+                    'Suppress this warning by adding "full_nerve_length = true" to your z_parameters.',
+                    stacklevel=2,
                 )
             self.configs['sims']['fibers'][FiberZMode.parameters.value]['full_nerve_length'] = False
 
@@ -899,7 +901,7 @@ class FiberSet(Configurable, Saveable):
             buffer: float = self.search(Config.SIM, 'fibers', 'xy_trace_buffer')
             [inner.offset(distance=-buffer) for inner in all_inners]
         else:
-            warnings.warn("Ignoring xy_trace_buffer since xy_mode is centroid")
+            warnings.warn("Ignoring xy_trace_buffer since xy_mode is centroid", stacklevel=2)
         allpoly = unary_union([inner.polygon().buffer(0) for inner in all_inners])
         if not np.all(
             [

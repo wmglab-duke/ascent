@@ -283,7 +283,8 @@ class HocWriter(Configurable, Saveable):
             if activation is None:
                 warnings.warn(
                     'No activation threshold parameters defined for FINITE_AMPLITUDES protocol,'
-                    'proceeding with default values'
+                    'proceeding with default values',
+                    stacklevel=2,
                 )
                 ap_thresh = -30
                 ap_detect_location = 0.9
