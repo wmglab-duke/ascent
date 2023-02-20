@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from src.core.query import Query
-from utils import Object
+from src.utils import Object
 
 sample = 0
 model = 0
