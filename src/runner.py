@@ -128,7 +128,9 @@ class Runner(Configurable):
 
         for deprecated_key in ['break_points', 'local_avail_cpus', 'submission_context', 'partial_fem']:
             if deprecated_key in self.configs[Config.RUN.value]:
-                warnings.warn(f"Specifying {deprecated_key} in run.json is deprecated, and has no effect.")
+                warnings.warn(
+                    f"Specifying {deprecated_key} in run.json is deprecated, and has no effect.", stacklevel=2
+                )
 
         return all_configs
 

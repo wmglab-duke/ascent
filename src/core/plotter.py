@@ -223,7 +223,8 @@ class _HeatmapPlotter:
             if innerthresh is np.nan:
                 inner_color_list.append(self.missing_color)
                 warnings.warn(
-                    'Missing at least one fiber threshold, color will appear as missing color (defaults to red).'
+                    'Missing at least one fiber threshold, color will appear as missing color (defaults to red).',
+                    stacklevel=2,
                 )
             elif self.mode == 'inners':
                 inner_color_list.append(_mapthresh(innerthresh))
@@ -237,7 +238,9 @@ class _HeatmapPlotter:
             # get fiber threshold and add the appropriate color to the list
             fiberthresh = np.mean(threshdf.query(f'index=={fiber_index}').threshold)
             if fiberthresh is np.nan:
-                warnings.warn('Missing fiber threshold, color will appear as missing color (defaults to red).')
+                warnings.warn(
+                    'Missing fiber threshold, color will appear as missing color (defaults to red).', stacklevel=2
+                )
                 fiber_color_list.append(self.missing_color)
             elif self.mode == 'fibers':
                 fiber_color_list.append(_mapthresh(fiberthresh))

@@ -248,13 +248,13 @@ class MockSample(Configurable):
             upper_fasc_ecc_warning = (
                 f"Eccentricity only defined in range (0,1], overwrote upper_fasc_ecc, now = {upper_fasc_ecc}"
             )
-            warnings.warn(upper_fasc_ecc_warning)
+            warnings.warn(upper_fasc_ecc_warning, stacklevel=2)
         if lower_fasc_ecc < 0:
             lower_fasc_ecc = 0
             lower_fasc_ecc_warning = (
                 f"Eccentricity only defined in range (0,1], overwrote lower_fasc_ecc, now = {lower_fasc_ecc}"
             )
-            warnings.warn(lower_fasc_ecc_warning)
+            warnings.warn(lower_fasc_ecc_warning, stacklevel=2)
         fasc_ecc_dist = stats.truncnorm(
             (lower_fasc_ecc - mu_fasc_ecc) / std_fasc_ecc,
             (upper_fasc_ecc - mu_fasc_ecc) / std_fasc_ecc,
