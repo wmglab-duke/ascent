@@ -293,6 +293,8 @@ class Simulation(Configurable, Saveable):
             )
         )
 
+        self.src_key = ['->'.join(['active_srcs', cuff])]
+
         # loop over product
         output = [len(self.potentials_product)]
         for active_src_select, fiberset_select in self.potentials_product:
