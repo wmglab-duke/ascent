@@ -389,7 +389,7 @@ class Query(Configurable, Saveable):
                                         threshold = np.loadtxt(thresh_path)
                                     except IOError:
                                         threshold = np.array(np.nan)
-                                        warnings.warn('Missing threshold, but continuing.')
+                                        warnings.warn('Missing threshold, but continuing.', stacklevel=2)
                                 else:
                                     threshold = np.loadtxt(thresh_path)
 

@@ -213,7 +213,7 @@ def auto_compile(override: bool = False):
         or (not os.path.exists(os.path.join('MOD_Files', 'nrnmech.dll')) and OS == 'WINDOWS')
         or override
     ):
-        print('compiling')
+        print('compiling NEURON files...')
         os.chdir(os.path.join('MOD_Files'))
         exit_data = subprocess.run(['nrnivmodl'], shell=True, capture_output=True, text=True)
         if exit_data.returncode != 0:
@@ -326,7 +326,8 @@ def get_thresh_bounds(sim_dir: str, sim_name: str, inner_ind: int):
                     if args.verbose:
                         warnings.warn(
                             'WARNING: scout_sim is defined in Sim, so not using "top" or "bottom" '
-                            'which you also defined \n'
+                            'which you also defined \n',
+                            stacklevel=2,
                         )
                     else:
                         WarnOnlyOnce.warn(
@@ -338,7 +339,8 @@ def get_thresh_bounds(sim_dir: str, sim_name: str, inner_ind: int):
                 if args.verbose:
                     warnings.warn(
                         f"No fiber threshold exists for scout sim: "
-                        f"inner{inner_ind} fiber0, using standard top and bottom"
+                        f"inner{inner_ind} fiber0, using standard top and bottom",
+                        stacklevel=2,
                     )
                 else:
                     WarnOnlyOnce.warn(
@@ -493,7 +495,8 @@ def submit_fibers(submission_context, submission_data):
             else:
                 cpus = multiprocessing.cpu_count() - 1
                 warnings.warn(
-                    f"You did not define number of cores to use (-n), so proceeding with cpu_core_count-1={cpus}"
+                    f"You did not define number of cores to use (-n), so proceeding with cpu_core_count-1={cpus}",
+                    stacklevel=2,
                 )
             os.chdir(sim_path)
             with multiprocessing.Pool(cpus) as p:
@@ -782,7 +785,7 @@ def get_submission_list(run_inds):
         submission_addition = make_run_sub_list(run_number)
         # check for duplicate nsims
         if any([x in submission_list for x in submission_addition.keys()]):
-            warnings.warn(f'Duplicate nsims found in run {run_number}. Continuing')
+            warnings.warn(f'Duplicate nsims found in run {run_number}. Continuing', stacklevel=2)
         submission_list.update(submission_addition)
         rundata.append(
             {

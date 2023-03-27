@@ -824,15 +824,15 @@ which times/locations ([NEURON Scripts](../../Code_Hierarchy/NEURON)). Required.
         activates/blocks, decrease the lower bound by a “step”
         percentage (e.g., 10 for 10%).
 
-  - `“top”`: The value (Double) is the upper-bound stimulation
+  - `“top”`: The value (Double, units: mA) is the upper-bound stimulation
     amplitude first tested in a bisection search for thresholds.
     Required.
 
-  - `“bottom”`: The value (Double) is the lower-bound stimulation
+  - `“bottom”`: The value (Double, units: mA) is the lower-bound stimulation
     amplitude first tested in a bisection search for thresholds.
     Required.
 
-  - `“step”`: The value (Double) is the incremental increase/decrease
+  - `“step”`: The value (Double, units: mA) is the incremental increase/decrease
     of the upper/lower bound in the bisection search. Required.
 
     - If `“ABSOLUTE_INCREMENT”`, the value (Double, unit: mA) is an

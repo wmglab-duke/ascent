@@ -293,6 +293,8 @@ class Simulation(Configurable, Saveable):
             )
         )
 
+        self.src_key = ['->'.join(['active_srcs', cuff])]
+
         # loop over product
         output = [len(self.potentials_product)]
         for active_src_select, fiberset_select in self.potentials_product:
@@ -411,7 +413,9 @@ class Simulation(Configurable, Saveable):
             if supersampled_bases.get('dz') != source_dz:
                 raise ValueError("Supersampling dz does not match source simulation dz")
         elif 'dz' not in supersampled_bases:
-            warnings.warn(f'dz not provided in Sim, so will accept dz={source_dz} specified in source Sim')
+            warnings.warn(
+                f'dz not provided in Sim, so will accept dz={source_dz} specified in source Sim', stacklevel=2
+            )
 
         return self
 

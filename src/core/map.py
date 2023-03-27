@@ -183,7 +183,7 @@ class Map(Configurable):
         this is required for core functionality, I will rewrite the
         method.
         """
-        warnings.warn('METHOD clean_file_names IS NOT SYSTEM-INDEPENDENT!')
+        warnings.warn('METHOD clean_file_names IS NOT SYSTEM-INDEPENDENT!', stacklevel=2)
 
         dir_to_parse = '/Users/jakecariello/Box/SPARCpy/data/input/samples/Pig11-3'
 
