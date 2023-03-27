@@ -131,7 +131,7 @@ the following syntax:
 `"pseudonym"`: This value (String) informs pipeline print statements, allowing
 users to better keep track of the purpose of each configuration file. Optional.
 
-“modes”
+`“modes”`: Each option controls different aspects of how Model functions.
 
 - `“rho_perineurium”`: The value (String) is the
   `“PerineuriumResistivityMode”` that tells the program how to
@@ -300,11 +300,11 @@ meshing statistics (automatically calculated).
 <!-- end list -->
 
 - `“proximal”`: Meshing parameters for the proximal cylindrical domain
-  (as defined in “medium”). Required ([Assigning Material Properties](../../Running_ASCENT/Info.md#control-of-medium-surrounding-nerve and-cuff-electrode)).
+  (as defined in “medium”). Required ([Assigning Material Properties](../../Running_ASCENT/Info.md#control-of-medium-surrounding-nerve-and-cuff-electrode)).
 
   - `“type”`: JSON Object containing parameters/definitions specific
     to meshing discretization method (e.g., free tetrahedral
-    “ftet”). We recommend free tetrahedral meshes. Required ([Assigning Material Properties](../../Running_ASCENT/Info.md#control-of-medium-surrounding-nerve and-cuff-electrode)).
+    “ftet”). We recommend free tetrahedral meshes. Required ([Assigning Material Properties](../../Running_ASCENT/Info.md#control-of-medium-surrounding-nerve-and-cuff-electrode)).
 
     - `“im”`: COMSOL indexing prefix (String) (e.g., free
       tetrahedral “ftet”). Required.
@@ -331,7 +331,7 @@ meshing statistics (automatically calculated).
 
   - `“type”`: JSON Object containing parameters/definitions specific
     to meshing discretization method (e.g., free tetrahedral
-    “ftet”). We recommend free tetrahedral meshes. Required ([Assigning Material Properties](../../Running_ASCENT/Info.md#control-of-medium-surrounding-nerve and-cuff-electrode)).
+    “ftet”). We recommend free tetrahedral meshes. Required ([Assigning Material Properties](../../Running_ASCENT/Info.md#control-of-medium-surrounding-nerve-and-cuff-electrode)).
 
     - `“im”`: COMSOL indexing prefix (String) (e.g., free
       tetrahedral “ftet”). Required.

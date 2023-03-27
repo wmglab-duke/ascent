@@ -21,8 +21,8 @@ sys.path.insert(0, os.path.abspath('../..'))
 # -- Project information -----------------------------------------------------
 
 project = 'ASCENT'
-copyright_info = '2021, Duke University'
-author = 'Musselman ED, Cariello JE, Grill WM, Pelot NA.'
+copyright = '2021-2023, Duke University'  # noqa A001
+author = 'Musselman ED, Cariello JE, Marshall DM, Grill WM, Pelot NA.'
 
 # The full version, including alpha/beta/rc tags
 release = 'v1.2.1'

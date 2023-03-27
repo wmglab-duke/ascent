@@ -207,7 +207,6 @@ following syntax:
     "dt_initSS": Double,
     "threshold": {
       "value": Double,
-      "n_min_aps": Integer,
       "ap_detect_location": Double
     },
     "bounds_search": {
@@ -229,7 +228,6 @@ following syntax:
     "dt_initSS": Double,
     "threshold": {
       "value": Double,
-      "n_min_aps": Integer,
       "ap_detect_location": Double
     },
     "bounds_search": {
@@ -788,12 +786,6 @@ which times/locations ([NEURON Scripts](../../Code_Hierarchy/NEURON)). Required.
     code to count an action potential. Required for threshold
     finding protocols (i.e., `“ACTIVATION_THRESHOLDS”` and
     `“BLOCK_THRESHOLDS”`) only. Optional for `"FINITE_AMPLITUDES"` protocol.
-
-  - `“n_min_aps”`: The value (Integer) is the number of action
-    potentials that must be detected for the amplitude to be
-    considered above threshold. Required for threshold finding
-    protocols (i.e., `“ACTIVATION_THRESHOLDS”` and
-    `“BLOCK_THRESHOLDS”`) only. Ignored for `"FINITE_AMPLITUDES"` protocol
 
   - `“ap_detect_location”`: The value (Double) is the location
     (range 0 to 1, i.e., 0.9 is 90% of the fiber length in the
