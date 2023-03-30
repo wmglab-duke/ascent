@@ -236,7 +236,7 @@ class Runner(Configurable):
 
         # init fiber manager
         if smart and os.path.exists(sim_obj_file):
-            print(f'\t\tFound existing sim object for sim {sim_index} ({sim_obj_file})')
+            print(f'\t\tFound existing sim object for sim {sim_num} ({sim_obj_file})')
 
             simulation: Simulation = self.load_obj(sim_obj_file)
 
