@@ -346,7 +346,7 @@ class Slide:
             ax.set_ylabel(axlabel)
 
         if scalebar:
-            #apply aspect for correct scaling
+            # apply aspect for correct scaling
             ax.apply_aspect()
             # convert scalebar length to meters and calculat span across axes
             quantity = Quantity(scalebar_length, scalebar_units, scale='m')
