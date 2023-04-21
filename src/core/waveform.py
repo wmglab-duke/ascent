@@ -44,7 +44,7 @@ class Waveform(Configurable, Saveable):
         :raises KeyError: if any required configs are missing
         :return: self
         """
-        if any([config.value not in self.configs.keys() for config in (Config.MODEL, Config.SIM)]):
+        if any(config.value not in self.configs.keys() for config in (Config.MODEL, Config.SIM)):
             raise KeyError(f"Missing at least one of {Config.MODEL.value} or {Config.SIM.value} configuration.")
 
         # get mode

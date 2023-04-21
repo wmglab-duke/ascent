@@ -169,8 +169,8 @@ class Slide:
             return False
         else:
             pairs = itertools.combinations(self.fascicles, 2)
-            return any([first.min_distance(second) < tolerance for first, second in pairs]) or any(
-                [fascicle.min_distance(self.nerve) < tolerance for fascicle in self.fascicles]
+            return any(first.min_distance(second) < tolerance for first, second in pairs) or any(
+                fascicle.min_distance(self.nerve) < tolerance for fascicle in self.fascicles
             )
 
     def fascicles_too_small(self) -> bool:
@@ -194,7 +194,7 @@ class Slide:
             raise MethodError("Method fascicle_fascicle_intersection does not apply for monofascicle nerves")
 
         pairs = itertools.combinations(self.fascicles, 2)
-        return any([first.intersects(second) for first, second in pairs])
+        return any(first.intersects(second) for first, second in pairs)
 
     def fascicle_nerve_intersection(self) -> bool:
         """Check for intersection between the fascicles and nerve.
@@ -205,7 +205,7 @@ class Slide:
         if self.monofasc():
             raise MethodError("Method fascicle_nerve_intersection does not apply for monofascicle nerves")
 
-        return any([fascicle.intersects(self.nerve) for fascicle in self.fascicles])
+        return any(fascicle.intersects(self.nerve) for fascicle in self.fascicles)
 
     def fascicles_outside_nerve(self) -> bool:
         """Check if any fascicle is outside the nerve.
@@ -216,7 +216,7 @@ class Slide:
         if self.monofasc():
             raise MethodError("Method fascicles_outside_nerve does not apply for monofascicle nerves")
 
-        return any([not fascicle.within_nerve(self.nerve) for fascicle in self.fascicles])
+        return any(not fascicle.within_nerve(self.nerve) for fascicle in self.fascicles)
 
     def move_center(self, point: np.ndarray):
         """Shifts the center of the slide to the given point.

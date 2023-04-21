@@ -60,7 +60,7 @@ repos:
         args: ["--tab-width", "4", "--print-width", "100"]
   # lint python code
   - repo: https://github.com/pycqa/flake8
-    rev: 5.0.4
+    rev: 5.0.4 # maintain at 5.0.4 until eradicate supports v6
     #when flake8-eradicate supports flake8 6.0 change this rev to newest ver
     hooks:
       - id: flake8
