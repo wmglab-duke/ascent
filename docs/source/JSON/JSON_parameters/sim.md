@@ -337,7 +337,7 @@ length of the fiber). Required.
 
   - `“diameter”` The value can take multiple forms to define the fiber diameter that the user is simulating in NEURON ([NEURON Fiber Models](../../Running_ASCENT/Info.md#implementation-of-neuron-fiber-models)). The value can control simulation of either fixed diameter fibers or fibers chosen from a distribution of diameters (note simulating a distribution of fiber diameters is only compatible with `“MRG_INTERPOLATION”`myelinated or unmyelinated fiber types, not `“MRG_DISCRETE”`). In **_Sim_**, only one mode of defining fiber diameters can be used. Required.
 
-    - Fixed diameter: the value (Double or List[Double], units: micrometer) is the diameter of the fiber models. If using with `“MRG_DISCRETE”`, the diameters must be members of the set of published diameters.
+    - Fixed diameter: the value (Double or List[Double], units: micrometer) is the diameter of all fibers within the model. If using with `“MRG_DISCRETE”`, the diameters must be members of the set of published diameters.
     - Distribution of diameters: the value is a dictionary of key-value pairs to define the distribution of diameters based on the `“mode”` parameter, which can be either `“TRUNCNORM”` or `“UNIFORM”`.
       - `“TRUNCNORM”`
         - `“mode”`: “TRUNCNORM” (String). Required.
