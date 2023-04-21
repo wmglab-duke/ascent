@@ -1,6 +1,7 @@
 # ASCENT: Automated Simulations to Characterize Electrical Nerve Thresholds
 
 [![License](https://img.shields.io/github/license/wmglab-duke/ascent)](https://github.com/wmglab-duke/ascent/blob/master/LICENSE) [![Releases](https://img.shields.io/github/v/release/wmglab-duke/ascent)](https://github.com/wmglab-duke/ascent/releases) [![Documentation](https://img.shields.io/readthedocs/wmglab-duke-ascent?logo=read-the-docs&logoColor=white)](https://wmglab-duke-ascent.readthedocs.io/en/latest/) [![DOI](https://zenodo.org/badge/379064819.svg)](https://zenodo.org/badge/latestdoi/379064819) [![Code Style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 <span class="__dimensions_badge_embed__" data-doi="10.1371/journal.pcbi.1009285" data-style="large_rectangle"></span><script async src="https://badge.dimensions.ai/badge.js" charset="utf-8"></script>
 
 
