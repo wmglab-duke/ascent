@@ -37,7 +37,8 @@ ignore_directives = [
     "changelog",
     "bibliography",
     "tab",
-    "automodule"
+    "automodule",
+    "youtube"
 ]
 
 [tool.flynt]
