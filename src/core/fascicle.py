@@ -61,11 +61,11 @@ class Fascicle:
         :raises MorphologyError: if validation fails
         """
         # ensure all inner Traces are actually inside outer Trace
-        if any([not inner.within(self.outer) for inner in self.inners]):
+        if any(not inner.within(self.outer) for inner in self.inners):
             raise MorphologyError("Not all inner Traces fall within outer Trace")
         # ensure no Traces intersect (and only check each pair of Traces once)
         pairs: List[Tuple[Trace]] = list(itertools.combinations(self.all_traces(), 2))
-        if any([pair[0].intersects(pair[1]) for pair in pairs]):
+        if any(pair[0].intersects(pair[1]) for pair in pairs):
             self.plot()
             plt.axes().set_aspect('equal')
             plt.show()
