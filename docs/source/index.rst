@@ -65,8 +65,7 @@ Welcome to ASCENT's documentation!
 
 **ASCENT** is an open source platform for simulating peripheral nerve stimulation. To download the software, visit the `ASCENT GitHub repository <https://github.com/wmglab-duke/ascent>`_.
 
-.. image:: uploads/ascent_media_release_v2.png
-
+..  youtube:: rG-KU7wWcXY
 
 .. toctree::
    :maxdepth: 2
