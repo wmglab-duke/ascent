@@ -10,8 +10,19 @@
 
 **ASCENT** is an open source platform for simulating peripheral nerve stimulation. For more information, see the ASCENT documentation: [https://wmglab-duke-ascent.readthedocs.io/en/latest/](https://wmglab-duke-ascent.readthedocs.io/en/latest/)
 
+Check out the ASCENT promo video:
+
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=rG-KU7wWcXY
+" target="_blank"><img src="http://img.youtube.com/vi/rG-KU7wWcXY/0.jpg" 
+alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10" /></a>
+
+as well as our video tutorial:
+
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=C41nHvMXyEo
+" target="_blank"><img src="http://img.youtube.com/vi/C41nHvMXyEo/0.jpg" 
+alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10" /></a>
+
 ---
-<iframe width="560" height="315" src="https://www.youtube.com/embed/rG-KU7wWcXY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
 **Cite both the paper and the DOI for the release of the repository used for your work. We encourage you to clone the most recent commit of the repository.**
 
@@ -36,5 +47,3 @@ As a recipient of this software, you may choose which license to receive the cod
 To enter a custom license agreement without the GPLv2 license restrictions, please contact the Digital Innovations department at Duke Office for Translation & Commercialization (https://olv.duke.edu/software/) at olvquestions@duke.edu with reference to "OTC File No. 7483" in your email.
 
 Please note that this software is distributed AS IS, WITHOUT ANY WARRANTY; and without the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-<iframe width="560" height="315" src="https://www.youtube.com/embed/C41nHvMXyEo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
