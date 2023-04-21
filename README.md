@@ -10,9 +10,6 @@
 
 **ASCENT** is an open source platform for simulating peripheral nerve stimulation. For more information, see the ASCENT documentation: [https://wmglab-duke-ascent.readthedocs.io/en/latest/](https://wmglab-duke-ascent.readthedocs.io/en/latest/)
 
----
-<iframe width="560" height="315" src="https://www.youtube.com/embed/rG-KU7wWcXY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-
 **Cite both the paper and the DOI for the release of the repository used for your work. We encourage you to clone the most recent commit of the repository.**
 
 - **Cite the paper:**
@@ -37,4 +34,10 @@ To enter a custom license agreement without the GPLv2 license restrictions, plea
 
 Please note that this software is distributed AS IS, WITHOUT ANY WARRANTY; and without the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/C41nHvMXyEo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+## Check out the ASCENT promo video:
+
+[![Watch the video](https://img.youtube.com/vi/rG-KU7wWcXY/maxresdefault.jpg)](https://youtu.be/rG-KU7wWcXY)
+
+## Click below for our video tutorial:
+
+[![Watch the video](https://img.youtube.com/vi/C41nHvMXyEo/maxresdefault.jpg)](https://youtu.be/C41nHvMXyEo)
