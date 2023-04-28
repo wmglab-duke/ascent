@@ -50,6 +50,7 @@ def run(args):
 
     :param args: command line arguments
     """
+    n_removed_files = 0
     global EXCLUDED_FILENAMES
     if args.full_reset:
         EXCLUDED_FILENAMES = ['sample.json', 'model.json']
@@ -99,3 +100,4 @@ def run(args):
 
         if args.verbose:
             print('\n\n')
+    print(f'Removed {n_removed_files} file(s).')
