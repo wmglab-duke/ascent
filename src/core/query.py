@@ -314,6 +314,8 @@ class Query(Configurable, Saveable):
     ):
         """Obtain threshold data as a pandas DataFrame.
 
+        Waveform, sim, and active_src indices are per your sim configuration file.
+
         :param sim_indices: list of simulation indices to include in the threshold data.
         :param ignore_missing: if True, missing threshold data will not cause an error.
         :param meanify: if True, the threshold data will be returned as a mean of each nsim.
