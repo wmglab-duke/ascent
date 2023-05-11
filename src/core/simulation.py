@@ -261,7 +261,8 @@ class Simulation(Configurable, Saveable):
         if len(cuff_params) > 1:
             # check that "active_srcs" and "active_recs" are both in Sim
             if not all(key in self.configs[Config.SIM.value].keys() for key in ['active_srcs', 'active_recs']):
-                self.throw(151)
+                raise ValueError("Missing \"active_srcs\" or \"active_recs\" in Sim")
+                # self.throw(151)
             stim = True
             rec = True
             # cannot rely on 'default'
@@ -271,12 +272,14 @@ class Simulation(Configurable, Saveable):
                 model_cuff_indices.append(params['index'])
 
             if len(model_cuff_indices) != len(set(model_cuff_indices)):
-                self.throw(147)
+                raise IncompatibleParametersError("Cannot have duplicate cuff indices - i.e., same cuff as stim and record")
+                # self.throw(147)
 
         elif len(cuff_params) == 1:
             if not [key in self.configs[Config.SIM.value].keys() for key in ['active_srcs', 'active_recs']].count(
                     True) == 1:
-                self.throw(152)
+                raise ValueError("One cuff in Model was given, but values given for both active_srcs and active_recs.")
+                # self.throw(152)
             if 'active_srcs' in self.configs[Config.SIM.value].keys():
                 stim = True
                 rec = False
@@ -286,21 +289,21 @@ class Simulation(Configurable, Saveable):
 
         if stim and not rec:
             # can rely on 'default'
-            src_cuff = cuff_params[0]['preset']
+            src_cuff = cuff_params[0]['preset'] #TODO: make cuff_params into [] if only 1 cuff is provided?
             if src_cuff in self.configs[Config.SIM.value]["active_srcs"].keys():
                 active_srcs_list = self.search(Config.SIM, "active_srcs", src_cuff)
             else:
                 # otherwise, use the default weights (generally you don't want to rely on this as cuffs have different
                 # numbers of contacts)
                 active_srcs_list = self.search(Config.SIM, "active_srcs", "default")
-                print("\t\tWARNING: Attempting to use default value for active_srcs: {}".format(active_srcs_list))
+                print(f"\t\tWARNING: Attempting to use default value for active_srcs: {active_srcs_list}")
             active_recs_list = None
 
         elif rec and not stim:
             rec_cuff = cuff_params[0]['preset']
             if rec_cuff in self.configs[Config.SIM.value]["active_recs"].keys():
                 active_recs_list = self.search(Config.SIM, "active_recs", rec_cuff)
-            else:
+            else: 
                 # otherwise, use the default weights (generally you don't want to rely on this as cuffs have different
                 # numbers of contacts)
                 active_recs_list = self.search(Config.SIM, "active_recs", "default")
@@ -311,9 +314,11 @@ class Simulation(Configurable, Saveable):
             sim_cuff_indices = [self.search(Config.SIM, "active_recs", "cuff_index"),
                                 self.search(Config.SIM, "active_srcs", "cuff_index")]
             if len(sim_cuff_indices) != len(set(sim_cuff_indices)):
-                self.throw(147)
+                raise IncompatibleParametersError("Cannot have duplicate cuff indices - i.e., same cuff as stim and record")
+                # self.throw(147)
             if set(model_cuff_indices) != set(sim_cuff_indices):
-                self.throw(148)
+                raise ValueError("Pairs of stim and record indices cannot match between Model->cuffs->indices and Sim->active_srcs/recs->cuff_indices")
+                # self.throw(148)
 
             src_cuff_index = self.search(Config.SIM, "active_srcs", "cuff_index")
             rec_cuff_index = self.search(Config.SIM, "active_recs", "cuff_index")
@@ -325,7 +330,8 @@ class Simulation(Configurable, Saveable):
                 elif params["index"] == rec_cuff_index:
                     rec_cuff = params["preset"]
             if src_cuff is None or rec_cuff is None:
-                self.throw(153)
+                raise ValueError("Failed to pair Model's cuffs to recs and srcs weights")
+                # self.throw(153)
 
             active_srcs_list = self.search(Config.SIM, "active_srcs", src_cuff)
             active_recs_list = self.search(Config.SIM, "active_recs", rec_cuff)
@@ -340,13 +346,17 @@ class Simulation(Configurable, Saveable):
             recs_it = iter(active_recs_list)
             n_rec_bases = len(next(recs_it))
             if not all(len(l) == n_rec_bases for l in recs_it):
-                self.throw(149)
+                raise ValueError("The length of the weights in Sim->active_srcs AND/OR Sim->active_recs is not consistent, and therefore cannot be correct")
+                # self.throw(149)
 
         ss = self.search(Config.SIM, 'supersampled_bases', optional=True)
         if ss is not None and ss['use'] == True:
-            self.throw(130)
+            raise IncompatibleParametersError(
+                        "Using default active_srcs is not allowed when running supersampled bases"
+                    )
+            # self.throw(130)
 
-        self.src_product = active_srcs_list
+        # self.src_product = active_srcs_list
 
         #  loop over the contact weights, make sure the values obey two rules:
         #      (1) current conservation
@@ -362,7 +372,7 @@ class Simulation(Configurable, Saveable):
             if len(srcs) == 1 and sum(srcs) not in [1, -1]: #TODO: consider adding zero.
                 raise ValueError("active_srcs_list provided does not abide by unitary current input response")
 
-        self.n_bases = len(active_srcs_list[0])
+        self.n_bases = len(active_srcs_list[0]) + len(active_recs_list[0]) 
 
         self.potentials_product = list(
             itertools.product(
@@ -415,14 +425,17 @@ class Simulation(Configurable, Saveable):
         if not os.path.isfile(destination_waveform_path):
             shutil.copyfile(source_waveform_path, destination_waveform_path)
         # get source, waveform, and fiberset values for the corresponding neuron simulation t
-        active_src_ind, fiberset_ind = self.potentials_product[potentials_ind]
+        active_src_ind, active_rec_ind, fiberset_ind = self.potentials_product[potentials_ind]
         active_src_vals = [self.src_product[active_src_ind]]
+        active_rec_vals = [self.rec_product[active_rec_ind]] #old code had [active_src_ind]
         wave_vals = self.wave_product[waveform_ind]
         fiberset_vals = self.fiberset_product[fiberset_ind]
         # pare down simulation config to no lists of parameters (corresponding to the neuron simulation index t)
         sim_copy = self._copy_and_edit_config(
             self.configs[Config.SIM.value], self.src_key, active_src_vals, copy_again=False
         )
+        sim_copy = self._copy_and_edit_config(sim_copy,
+                                                  self.rec_key, active_rec_vals, copy_again=False)
         sim_copy = self._copy_and_edit_config(sim_copy, self.wave_key, wave_vals, copy_again=False)
         sim_copy = self._copy_and_edit_config(sim_copy, self.fiberset_key, fiberset_vals, copy_again=False)
         # save the paired down simulation config to its corresponding neuron simulation t folder
@@ -435,7 +448,7 @@ class Simulation(Configurable, Saveable):
         hocwriter.add(SetupMode.OLD, Config.MODEL, self.configs[Config.MODEL.value]).add(
             SetupMode.OLD, Config.SIM, sim_copy
         ).add(SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value]).build_hoc(n_tsteps)
-        return active_src_vals[0], fiberset_ind, nsim_inputs_directory
+        return active_src_vals[0], active_rec_vals[0], fiberset_ind, nsim_inputs_directory
 
     def get_bases(self, file: str, sim_dir: str, source_sim: int, fiberset_ind: int = None):
         """Get the bases potentials for the simulation, and the corresponding fiberset/ss coords.
@@ -460,7 +473,7 @@ class Simulation(Configurable, Saveable):
                 bases_path = os.path.join(sim_dir, str(source_sim), 'ss_bases', str(basis_ind))
                 coords_path = os.path.join(sim_dir, str(source_sim), 'ss_coords')
 
-            # TODO: where the hell does this go now... this was on edgar branch.
+            # TODO: where does this go now... this was on edgar branch.
             # cap = False
             # if 'active_recs' in self.configs['sims'].keys() and 'active_srcs' in self.configs['sims'].keys():
             #     cap = True
@@ -545,18 +558,27 @@ class Simulation(Configurable, Saveable):
 
         supersampled_bases: dict = self.search(Config.SIM, 'supersampled_bases', optional=True)
         do_supersample: bool = supersampled_bases is not None and supersampled_bases.get('use') is True
-
+        #loops through n_sims
         for t, (potentials_ind, waveform_ind) in enumerate(self.master_product_indices):
-            active_src_vals, fiberset_ind, nsim_inputs_directory = self.n_sim_setup(
+            active_src_vals, active_rec_vals, fiberset_ind, nsim_inputs_directory = self.n_sim_setup(
                 potentials_ind, sim_dir, sim_num, t, waveform_ind
             )
-
-            src_bases_indices = self.srcs_mapping(sim_dir)
+            # STOPPED HERE... Pick up next time. src_mappings needs to be updated since updating im.json structure. 
+            src_bases_indices, rec_bases_indices = self.srcs_mapping(sim_dir) # I think this should take care of rec bases as well?
+            print(f"Src bases: {src_bases_indices}, rec bases: {rec_bases_indices}")
 
             fiberset_directory = os.path.join(sim_dir, str(sim_num), 'fibersets', str(fiberset_ind))
 
-            for fname_prefix, weights, bases_indices in zip([''], [active_src_vals], [src_bases_indices]):
-                if not any(np.isnan(weights)):
+            # Place this here?
+            cap = False
+            if 'active_recs' in self.configs[Config.SIM.value].keys() and 'active_srcs' in self.configs[Config.SIM.value].keys():
+                cap = True
+            print(active_src_vals, active_rec_vals)
+            # what if no active_rec_vals? 
+            # Better appraoch: have 'src_bases_indices' return a 2D array [[bases indices cuff 1], [bases indices cuff 2], ...]. Bases coupled together based on index.
+            for fname_prefix, weights, bases_indices in zip(['src', 'rec'], [active_src_vals, active_rec_vals], [src_bases_indices, rec_bases_indices]):
+                print(f"Loop for {fname_prefix}...:\n\tweights = {weights}\n\tbases indices = {bases_indices}")
+                if not any(np.isnan(weights)): #TODO: This might break if only stim cuffs are given.. 
                     # get the weights in order of the bases,
                     # since the weights are for a single cuff, but the bases span cuffs
                     all_weights = list(np.zeros(self.n_bases))
@@ -568,15 +590,15 @@ class Simulation(Configurable, Saveable):
                             if re.match('[0-9]+\\.dat', file):
                                 master_fiber_index = int(file.split('.')[0])
                                 inner_index, fiber_index = self.indices_fib_to_n(fiberset_ind, master_fiber_index)
-                                filename_dat = f'{fname_prefix}inner{inner_index}_fiber{fiber_index}.dat'
+                                filename_dat = f'{fname_prefix}_inner{inner_index}_fiber{fiber_index}.dat'
 
-                                if not do_supersample:
+                                if not do_supersample: # and not cap:
                                     # getting potentials from fibersets_bases
                                     # fibersets_bases\<fiberset_index>\<basis_index>\<fibers>
                                     _, bases = self.get_bases(file, sim_dir, sim_num, fiberset_ind)
                                     neuron_potentials_input = self.weight_bases(all_weights, bases)
-
-                                else:
+                                
+                                else: #lif do_supersample:
                                     # getting potentials from supersampled bases
                                     # ss_bases\<basis_index>\<fibers>
                                     self.validate_ss_dz(supersampled_bases, sim_dir)
@@ -588,6 +610,8 @@ class Simulation(Configurable, Saveable):
                                     neuron_potentials_input = self.interpolate_2d(
                                         fiber_coords, ss_coords, weighted_ss_bases
                                     )
+
+                                # elif cap: #TODO: what about super sampled and cap at the same time?
 
                                 np.savetxt(
                                     os.path.join(nsim_inputs_directory, filename_dat),
@@ -612,18 +636,28 @@ class Simulation(Configurable, Saveable):
         :param sim_dir: directory of the simulation
         :return: recording bases indices, sources bases indices
         """
+        # what is the cuff index of the active_srcs in Sim?
+        src_cuff_index = self.configs[Config.SIM.value]['active_srcs']['cuff_index'] #sim_copy['active_srcs']['cuff_index']
+        # what is the cuff index of the active_recs in Sim?
+        rec_cuff_index = self.configs[Config.SIM.value]['active_recs']['cuff_index'] #sim_copy['active_recs']['cuff_index']
+        print(f"src mappings: src: {src_cuff_index}, rec: {rec_cuff_index}")
         # using the cuff indices in Sim, what are the bases files using the cuff_indexes saved in im.json?
         im_path = os.path.join(os.path.split(sim_dir)[0], 'mesh', 'im.json')
         im_config = self.load_json(im_path)
 
         src_bases_indices = []
+        rec_bases_indices = []
         current_ids = im_config['currentIDs']
         for c_id in current_ids.keys():
-            src_bases_indices.append(int(c_id) - 1)
+            if int(current_ids[c_id]['cuff_index']) == src_cuff_index:
+                src_bases_indices.append(int(c_id) - 1)
+            elif int(current_ids[c_id]['cuff_index']) == rec_cuff_index:
+                rec_bases_indices.append(int(c_id) - 1)
 
         src_bases_indices.sort()
+        rec_bases_indices.sort()
 
-        return src_bases_indices
+        return src_bases_indices, rec_bases_indices
 
     def get_ss_bases(self, active_src_vals, file, sim_dir, source_sim, ss_bases):
         """Get the supersampled bases for the given simulation.
@@ -714,7 +748,8 @@ class Simulation(Configurable, Saveable):
         if not os.path.exists(sim_dir):
             subfolder_names = ["inputs", "outputs"]
             for subfolder_name in subfolder_names:
-                os.makedirs(os.path.join(sim_dir, "data", subfolder_name))
+                # for cuffType in ["src", "rec"]:
+                os.makedirs(os.path.join(sim_dir, "data", subfolder_name)) #, cuffType))
 
     def _copy_and_edit_config(self, config, key, param_list, copy_again=True):
         """Copy the config file and edits the key to set.
@@ -943,14 +978,14 @@ class Simulation(Configurable, Saveable):
             os.path.exists(os.path.join(sim_dir, 'ss_bases', str(basis))) for basis, _ in self.ss_product
         )
 
-    ## TODO: function from edgar_cap branch 
-    def bases_potentials_exist(self, sim_dir: str) -> bool:
-        """
-        Return bool deciding if potentials have already been written
-        :param sim_dir: directory of this simulation
-        :return: boolean!
-            """
-        n_bases = len(self.src_product[0]) + len(self.rec_product[0])
-        return all(
-            os.path.exists(os.path.join(sim_dir, 'fibersets_bases', str(basis))) for basis in range(n_bases)
-        )
+    # ## TODO: function from edgar_cap branch 
+    # def bases_potentials_exist(self, sim_dir: str) -> bool:
+    #     """
+    #     Return bool deciding if potentials have already been written
+    #     :param sim_dir: directory of this simulation
+    #     :return: boolean!
+    #         """
+    #     n_bases = len(self.src_product[0]) + len(self.rec_product[0])
+    #     return all(
+    #         os.path.exists(os.path.join(sim_dir, 'fibersets_bases', str(basis))) for basis in range(n_bases)
+    #     )

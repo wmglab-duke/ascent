@@ -16,15 +16,17 @@ import org.json.JSONObject;
 @SuppressWarnings({ "path" })
 class Part {
 
-    public static void addPointCurrentSource(ModelWrapper mw, Model model,int index, String instanceLabel,String selLabel) {
+    public static void addPointCurrentSource(ModelWrapper mw, Model model, int index, String instanceLabel, String selLabel) {
         String ribbon_pcsLabel = instanceLabel + " Current Source";
         String id = mw.im.next("pcs", ribbon_pcsLabel);
         PhysicsFeature pf = model.component("comp1").physics("ec").create(id, "PointCurrentSource", 0);
 
         JSONObject src_ribbon = new JSONObject();
+        // src_ribbon.put(instanceLabel, id); // from master branch
+        // from cap branch
         src_ribbon.put("name", instanceLabel);
         src_ribbon.put("pcs", id);
-        src_ribbon.put("cuff_index", index);
+        src_ribbon.put("cuff_index", String.valueOf(index));
         mw.im.currentIDs.put(mw.im.present("pcs"), src_ribbon);
 
         pf.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + selLabel + "_pnt"); // SRC
@@ -5207,6 +5209,7 @@ class Part {
                 // pf.label(ac_pcsLabel);
 
                 break;
+            //From master branch
             case "LivaNova_Primitive":
                 // set instantiation parameters
                 String[] LivaNovaParameters = {
@@ -5298,16 +5301,19 @@ class Part {
                 // String LN_helix_pcsLabel = instanceLabel + " Current Source";
                 // id = mw.im.next("pcs", LN_helix_pcsLabel);
                 // pf = model.component("comp1").physics("ec").create(id, "PointCurrentSource", 0);
-                Part.addPointCurrentSource(mw,model,index,instanceLabel,myIM.get(myLabels[3]));
+                Part.addPointCurrentSource(mw,model,index,instanceLabel,myIM.get(myLabels[5]));
 
-                // JSONObject src_ac = new JSONObject();
-                // src_ac.put(instanceLabel, id);
-                // mw.im.currentIDs.put(mw.im.present("pcs"), src_ac);
+                // JSONObject LN_src_heli = new JSONObject();
+                // LN_src_heli.put(instanceLabel, id);
+                // mw.im.currentIDs.put(mw.im.present("pcs"), LN_src_heli);
 
-                // pf.selection().named("geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[3]) + "_pnt"); // SRC_FINAL
+                // pf
+                //     .selection()
+                //     .named(
+                //         "geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[5]) + "_pnt"
+                //     ); // SRC
                 // pf.set("Qjp", 0.000);
-                // pf.label(ac_pcsLabel);
-
+                // pf.label(LN_helix_pcsLabel);
 
                 break;
             default:

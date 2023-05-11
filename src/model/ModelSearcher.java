@@ -60,6 +60,7 @@ public class ModelSearcher {
                     "/",
                     Arrays.copyOfRange(fileParts, 0, fileParts.length - 1)
                 );
+                System.out.println("target: " + file.toString());
                 if (
                     ModelSearcher.meshMatch(reference, query, target) &&
                     ModelSearcher.meshFilesExist(directory)
@@ -112,12 +113,21 @@ public class ModelSearcher {
                 }
                 // rVal is NOT boolean
                 else if (!(rVal instanceof Boolean)) {
-                    // recurse!
-                    boolean match = ModelSearcher.meshMatch(
-                        new JSONObject((Map<String, Object>) rVal),
-                        new JSONObject((Map<String, Object>) q1Map.get(rKey)),
-                        new JSONObject((Map<String, Object>) q2Map.get(rKey))
-                    );
+                    boolean match;
+                    //TODO: for expanding to multi-cuffs... may not need this if you change cuff config in model.json to dict, not list.
+                    //TODO: Rework this function.. right now, query1 and 2 are the same file.. so what is the point? Might as well just be checking it against the reference.. 
+                    if (rKey.equals("cuff")) {
+                        match = q1Map.get(rKey).equals(q2Map.get(rKey));
+                        System.out.println("Cuff match: " + match);
+                    }
+                    else {
+                        // recurse!
+                        match = ModelSearcher.meshMatch(
+                            new JSONObject((Map<String, Object>) rVal),
+                            new JSONObject((Map<String, Object>) q1Map.get(rKey)),
+                            new JSONObject((Map<String, Object>) q2Map.get(rKey))
+                        );
+                    }
                     if (!match) return false;
                 }
                 // in case that rVal is boolean: false, do nothing --> go to next key

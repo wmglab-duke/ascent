@@ -195,7 +195,7 @@ proc run_all(){local myinner, myfiber, myamp, amp_ind
 
 	// Read in Ve(x)
 	if (flag_extracellular_stim == 1) {
-		sprint(VeSpace_fname, "../%s/data/inputs/inner%d_fiber%d.dat",sim_path, myinner, myfiber)
+		sprint(VeSpace_fname, "../%s/data/inputs/src_inner%d_fiber%d.dat",sim_path, myinner, myfiber)
 		VeSpace_read()
 		// Convert to mV (required for e_extracellular)
 		VeSpace_data = VeSpace_data.mul(Ve_unitconv)

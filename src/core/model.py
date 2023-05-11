@@ -12,7 +12,7 @@ import numpy as np
 from quantiphy import Quantity
 from shapely.geometry import Point
 
-from src.core import Sample, Waveform
+from src.core import Sample, Slide, Waveform
 from src.utils import (
     Config,
     Configurable,
@@ -63,28 +63,35 @@ class Model(Configurable, Saveable):
         else:
             deform_ratio = None
 
+        # TODO: do cuff initation for each loaded cuff. make sure its backwards compatible. # Use from edgar's code. 
+        cuff_data = self.search(Config.MODEL, "cuff")
+
+        if type(cuff_data) == dict:
+            cuff_data = [cuff_data] # When single cuff configuration is provided, readjust data type to allow following for-loop
+        cuff_dicts = []
+
+        for cuff_dict in cuff_data:
+            cuff_dict = self.cuff_shift_calc(cuff_dict,
+                                            slide,
+                                            deform_ratio,
+                                            nerve_mode,
+                                            sample_config)
+            cuff_dicts.append(cuff_dict)
+
+        self.configs[Config.MODEL.value]['cuff'] = cuff_dicts
+
+        return self
+
+
+    def cuff_shift_calc(self, cuff_dict: dict, slide: Slide, deform_ratio: float, nerve_mode: NerveMode, sample_config: dict):
+        """
+        """
         # get center and radius of nerve's min_bound circle
         nerve_copy = deepcopy(slide.nerve if nerve_mode == NerveMode.PRESENT else slide.fascicles[0].outer)
-        # TODO: do cuff initation for each loaded cuff. make sure its backwards compatible. # Use from edgar's code. 
-            # cuff_data = self.search(Config.MODEL, "cuff")
-
-            # if type(cuff_data) == dict:
-            #     cuff_data = [cuff_data]
-            # cuff_dicts = []
-
-            # for cuff_dict in cuff_data:
-            #     cuff_dict = self.cuffshiftcalc(cuff_dict,
-            #                                    slide,
-            #                                    deform_ratio,
-            #                                    nerve_mode,
-            #                                    sample_config,
-            #                                    model_config)
-            #     cuff_dicts.append(cuff_dict)
-
-            # model_config['cuff'] = cuff_dicts
+        
         # fetch cuff config
         cuff_config: dict = self.load(
-            os.path.join(os.getcwd(), "config", "system", "cuffs", self.search(Config.MODEL, 'cuff', 'preset'))
+            os.path.join(os.getcwd(), "config", "system", "cuffs", cuff_dict['preset'])
         )
 
         (
@@ -102,8 +109,8 @@ class Model(Configurable, Saveable):
 
         r_i, theta_f = self.check_cuff_expansion_radius(cuff_code, cuff_config, expandable, r_f, theta_i)
 
-        # remove sample config
-        self.remove(Config.SAMPLE)
+        # # remove sample config # why was this removing config.sample?
+        # self.remove(Config.SAMPLE)
 
         cuff_shift_mode: CuffShiftMode = self.search_mode(CuffShiftMode, Config.MODEL)
 
@@ -125,13 +132,13 @@ class Model(Configurable, Saveable):
         x_shift = y_shift = 0
         # set pos_ang
         if naive or cuff_shift_mode == CuffShiftMode.NONE:
-            self.configs[Config.MODEL.value]['cuff']['rotate']['pos_ang'] = 0
+            cuff_dict['rotate']['pos_ang'] = 0
             if slide.orientation_point is not None:
                 print(
                     'Warning: orientation tif image will be ignored because a NAIVE or NONE cuff shift mode was chosen.'
                 )
         else:
-            self.configs[Config.MODEL.value]['cuff']['rotate']['pos_ang'] = theta_c - theta_f
+            cuff_dict['rotate']['pos_ang'] = theta_c - theta_f
 
         # min circle x and y shift
         if cuff_shift_mode in [
@@ -182,10 +189,9 @@ class Model(Configurable, Saveable):
 
                 x_shift, y_shift = center_x, center_y
 
-        self.configs[Config.MODEL.value]['cuff']['shift']['x'] = x_shift
-        self.configs[Config.MODEL.value]['cuff']['shift']['y'] = y_shift
-
-        return self
+        cuff_dict['shift']['x'] = x_shift
+        cuff_dict['shift']['y'] = y_shift
+        return cuff_dict
 
     def get_cuff_shift_parameters(self, cuff_config, deform_ratio, nerve_copy, sample_config, slide):
         """Calculate parameters for cuff shift.
