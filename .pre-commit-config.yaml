@@ -34,7 +34,7 @@ repos:
       - id: black
         language_version: python3
   - repo: https://github.com/PyCQA/docformatter
-    rev: v1.6.0
+    rev: v1.5.1 # maintain at 1.5.1 to avoid errors
     hooks:
       - id: docformatter
         additional_dependencies:
