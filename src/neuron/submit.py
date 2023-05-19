@@ -282,7 +282,7 @@ def get_deltaz(fiber_model, diameter):
     return delta_z, neuron_flag
 
 
-def get_thresh_bounds(sim_dir: str, sim_name: str, inner_ind: int):
+def get_thresh_bounds(sim_dir: str, sim_name: str, inner_ind: int, cuff_type: str):
     """Get threshold bounds (upper and lower) for this simulation.
 
     :param sim_dir: the string path to the simulation directory
@@ -305,7 +305,7 @@ def get_thresh_bounds(sim_dir: str, sim_name: str, inner_ind: int):
             scout_sim_name = f"{sample}_{scout['model']}_{scout['sim']}_{n_sim}"
             scout_sim_path = os.path.join(scout_sim_dir, scout_sim_name)
             scout_output_path = os.path.abspath(os.path.join(scout_sim_path, 'data', 'outputs'))
-            scout_thresh_path = os.path.join(scout_output_path, f'thresh_inner{inner_ind}_fiber{0}.dat')
+            scout_thresh_path = os.path.join(scout_output_path, f'{cuff_type}_thresh_inner{inner_ind}_fiber{0}.dat')
 
             if os.path.exists(scout_thresh_path):
                 stimamp = np.loadtxt(scout_thresh_path)
@@ -613,7 +613,7 @@ def make_fiber_tasks(submission_list, submission_context):
         # load the inner x fiber -> diam key saved in the n_sim folder
         inner_fiber_diam_key_file = os.path.join(fibers_path, 'inner_fiber_diam_key.obj')
         inner_fiber_diam_key = None
-        if os.path.exists(inner_fiber_diam_key_file):
+        if os.path.exists(inner_fiber_diam_key_file): # TODO: check how stim/rec are stored in this obj file for backwards compatibility
             with open(inner_fiber_diam_key_file, 'rb') as f:
                 inner_fiber_diam_key = pickle.load(f)
             f.close()
@@ -621,7 +621,7 @@ def make_fiber_tasks(submission_list, submission_context):
             diameter = sim_config['fibers']['z_parameters']['diameter']
 
         for fiber_data in runfibers:
-            inner_ind, fiber_ind = fiber_data['inner'], fiber_data['fiber']
+            cuff_type, inner_ind, fiber_ind = fiber_data['cuff_type'], fiber_data['inner'], fiber_data['fiber']
 
             if inner_fiber_diam_key is not None:
                 diameter = get_diameter(inner_fiber_diam_key, inner_ind, fiber_ind)
@@ -630,7 +630,7 @@ def make_fiber_tasks(submission_list, submission_context):
             # get the axonnodes from data/inputs/inner{}_fiber{}.dat top line
             fiber_ve_path = os.path.join(
                 fibers_path,
-                f'inner{inner_ind}_fiber{fiber_ind}.dat',
+                f'{cuff_type}_inner{inner_ind}_fiber{fiber_ind}.dat',
             )
             fiber_ve = np.loadtxt(fiber_ve_path)
             n_fiber_coords = int(fiber_ve[0])
@@ -642,7 +642,7 @@ def make_fiber_tasks(submission_list, submission_context):
 
             start_path = f"{start_path_base}{fiber_data['job_number']}{'.sh' if OS == 'UNIX-LIKE' else '.bat'}"
 
-            stimamp_top, stimamp_bottom = get_thresh_bounds(sim_dir, sim_name, inner_ind)
+            stimamp_top, stimamp_bottom = get_thresh_bounds(sim_dir, sim_name, inner_ind, cuff_type)
             if stimamp_top is not None and stimamp_bottom is not None:
                 make_task(
                     submission_context,
@@ -694,11 +694,11 @@ def make_run_sub_list(run_number: int):
                     n_sim = sim_name.split('_')[-1]
                     sim_config = load(os.path.join(sim_path, f'{n_sim}.json'))
 
-                    fibers_files = [x for x in os.listdir(fibers_path) if re.match('inner[0-9]+_fiber[0-9]+\\.dat', x)]
+                    fibers_files = [x for x in os.listdir(fibers_path) if re.match('(?:(rec|src)_)?inner[0-9]+_fiber[0-9]+\\.dat', x)] # First regex group with ? is optional - for backwards compatibility
 
                     for i, fiber_filename in enumerate(fibers_files):
                         master_fiber_name = str(fiber_filename.split('.')[0])
-                        inner_name, fiber_name = tuple(master_fiber_name.split('_'))
+                        cuff_type, inner_name, fiber_name = tuple(master_fiber_name.split('_')) # not backwards compatible
                         inner_ind = int(inner_name.split('inner')[-1])
                         fiber_ind = int(fiber_name.split('fiber')[-1])
 
@@ -706,12 +706,12 @@ def make_run_sub_list(run_number: int):
                             n_amp = len(sim_config['protocol']['amplitudes'])
                             search_path = os.path.join(
                                 output_path,
-                                f'activation_inner{inner_ind}_fiber{fiber_ind}_amp{n_amp - 1}.dat',
+                                f'{cuff_type}_activation_inner{inner_ind}_fiber{fiber_ind}_amp{n_amp - 1}.dat',
                             )
                         else:
                             search_path = os.path.join(
                                 output_path,
-                                f"thresh_inner{inner_ind}_fiber{fiber_ind}.dat",
+                                f"{cuff_type}_thresh_inner{inner_ind}_fiber{fiber_ind}.dat",
                             )
 
                         if os.path.exists(search_path):
@@ -720,7 +720,7 @@ def make_run_sub_list(run_number: int):
                                 time.sleep(1)
                             continue
 
-                        submit_list[sim_name].append({"job_number": i, "inner": inner_ind, "fiber": fiber_ind})
+                        submit_list[sim_name].append({"job_number": i, "cuff_type": cuff_type, "inner": inner_ind, "fiber": fiber_ind})
                     # save_submit list as csv
                     pd.DataFrame(submit_list[sim_name]).to_csv(os.path.join(sim_path, 'out_err_key.csv'), index=False)
 
