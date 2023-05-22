@@ -316,6 +316,7 @@ class Deformable:
         # return new object
         return Deformable(boundary_start, boundary_end, contents)
 
+    # copied from https://stackoverflow.com/questions/3173320/text-progress-bar-in-the-console
     @staticmethod
     def print_progress_bar(iteration, total, prefix='', suffix='', decimals=1, length=100, fill='█'):
         """Create and update a terminal progress bar.
