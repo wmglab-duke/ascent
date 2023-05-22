@@ -494,6 +494,8 @@ class Waveform(Configurable, Saveable):
 def precision_and_scale(x):
     """Return the number of digits and the scale of the number.
 
+    # https://stackoverflow.com/questions/3018758/determine-precision-and-scale-of-particular-number-in-python
+
     :param x: number
     :return: number of digits, scale
     """
