@@ -86,6 +86,7 @@ def run(args):
                     if args.verbose:
                         print(f'\tREMOVE FILE: {filepath}')
                     os.remove(filepath)
+                    n_removed_files += 1
                 except (FileNotFoundError, IsADirectoryError) as e:
                     print(f'Could not remove {filepath}, {e}')
             else:
