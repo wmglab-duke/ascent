@@ -351,7 +351,7 @@ class MockSample(Configurable):
                 if fascicle_attempt.buffer(min_fascicle_separation).boundary.intersects(self.nerve.boundary):
                     chk = 1
 
-                if any([fasc.buffer(min_fascicle_separation).intersects(fascicle_attempt) for fasc in self.fascicles]):
+                if any(fasc.buffer(min_fascicle_separation).intersects(fascicle_attempt) for fasc in self.fascicles):
                     chk = 1
 
                 if chk == 0:
@@ -427,7 +427,7 @@ class MockSample(Configurable):
                 chk = 1
 
             # check for fascicle:fascicle intersection with addition of next fascicle
-            if any([fasc.buffer(min_fascicle_separation).intersects(fascicle_attempt) for fasc in self.fascicles]):
+            if any(fasc.buffer(min_fascicle_separation).intersects(fascicle_attempt) for fasc in self.fascicles):
                 chk = 1
 
             # if all checks passed, add the fascicle to the list

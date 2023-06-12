@@ -136,7 +136,7 @@ submit_context_group.add_argument(
 
 parser.add_argument('-v', '--verbose', action='store_true', help='Print detailed submission info')
 
-OS = 'UNIX-LIKE' if any([s in sys.platform for s in ['darwin', 'linux']]) else 'WINDOWS'
+OS = 'UNIX-LIKE' if any(s in sys.platform for s in ['darwin', 'linux']) else 'WINDOWS'
 
 
 # %% Set up utility functions
@@ -784,7 +784,7 @@ def get_submission_list(run_inds):
         # get list of fibers to run
         submission_addition = make_run_sub_list(run_number)
         # check for duplicate nsims
-        if any([x in submission_list for x in submission_addition.keys()]):
+        if any(x in submission_list for x in submission_addition.keys()):
             warnings.warn(f'Duplicate nsims found in run {run_number}. Continuing', stacklevel=2)
         submission_list.update(submission_addition)
         rundata.append(

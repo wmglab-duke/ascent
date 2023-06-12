@@ -69,7 +69,7 @@ class FiberSet(Configurable, Saveable):
         :raises KeyError: If Model or Simulation are not configured.
         :return: self
         """
-        if any([config.value not in self.configs.keys() for config in (Config.MODEL, Config.SIM)]):
+        if any(config.value not in self.configs.keys() for config in (Config.MODEL, Config.SIM)):
             raise KeyError("Missing Model or Simulation configuration.")
         return self
 
@@ -388,11 +388,9 @@ class FiberSet(Configurable, Saveable):
         # check that all fibers are within exactly one inner
         for fiber in points:
             if not any(
-                [
-                    Point(fiber).within(inner.polygon())
-                    for fascicle in self.sample.slides[0].fascicles
-                    for inner in fascicle.inners
-                ]
+                Point(fiber).within(inner.polygon())
+                for fascicle in self.sample.slides[0].fascicles
+                for inner in fascicle.inners
             ):
                 raise MorphologyError(f"Explicit fiber coordinate: {fiber} does not fall in an inner")
         return points

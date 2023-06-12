@@ -341,7 +341,7 @@ class Model(Configurable, Saveable):
             bounds.append((r_min, r_max, r_min_ix, r_max_ix, parameter))
 
         # check that none of the conditions have double Nones
-        if any([bound[0] is None and bound[1] is None for bound in bounds]):
+        if any(bound[0] is None and bound[1] is None for bound in bounds):
             raise IncompatibleParametersError("Cuff configuration file has a condition with double Nones. ")
 
         # check that there is only one max with None, and one min with None

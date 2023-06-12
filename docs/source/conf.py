@@ -39,6 +39,7 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.autodoc',
     'sphinxcontrib.bibtex',
+    'sphinxcontrib.youtube',
     'sphinxcontrib.details.directive',
     'sphinx_copybutton',
     'sphinx_rtd_dark_mode',

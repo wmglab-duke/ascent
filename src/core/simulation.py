@@ -712,11 +712,14 @@ class Simulation(Configurable, Saveable):
         # make NSIM_EXPORT_PATH (defined in Env.json) directory if it does not yet exist
         os.makedirs(target, exist_ok=True)
 
-        # neuron files
-        du.copy_tree(
-            os.path.join(os.environ[Env.PROJECT_PATH.value], 'src', 'neuron'),
-            target,
-        )
+        try:
+            # neuron files
+            du.copy_tree(
+                os.path.join(os.environ[Env.PROJECT_PATH.value], 'src', 'neuron'),
+                target,
+            )
+        except du.errors.DistutilsFileError:
+            warnings.warn('Failed to copy neuron files, likely because they are in use.', stacklevel=2)
 
         submit_target = os.path.join(target, 'submit.py')
         if os.path.isfile(submit_target):

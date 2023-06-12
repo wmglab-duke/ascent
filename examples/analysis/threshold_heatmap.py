@@ -27,7 +27,7 @@ q = Query(
 ).run()
 
 # Build heatmap
-heatmaps(data=q.threshold_data(), cuff_orientation=True)
+heatmaps(data=q.threshold_data())
 plt.title('Activation threshold heatmap')
 
 save_directory = os.path.join('output', 'analysis')
