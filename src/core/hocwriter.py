@@ -13,7 +13,6 @@ import itertools
 import os
 import warnings
 from typing import List
-import warnings
 
 import numpy as np
 
@@ -99,7 +98,9 @@ class HocWriter(Configurable, Saveable):
         file_object.write(f"celsius   = {self.search(Config.MODEL, 'temperature'):0.0f} // [degC]\n")
         # TIME PARAMETERS
         file_object.write("\n//***************** Global Time ******************\n")
-        file_object.write(f"dt        = {self.search(Config.SIM, 'waveform', 'global', 'dt'):0.3f} // [ms]\n")
+        file_object.write(
+            f"dt        = {self.search(Config.SIM, 'waveform', 'global', 'dt'):0.4f} // [ms]\n"
+        )  # Is change 0.3f to 0.4f necessary for B fiber implementation from cap_edgar branch?
         file_object.write(f"tstop     = {self.search(Config.SIM, 'waveform', 'global', 'stop'):0.0f} // [ms]\n")
         file_object.write(f"n_tsteps  = {n_tsteps:0.0f} // [unitless]\n")
         file_object.write(f"t_initSS  = {self.search(Config.SIM, 'protocol', 'initSS'):0.0f} // [ms]\n")
@@ -285,7 +286,8 @@ class HocWriter(Configurable, Saveable):
             if activation is None:
                 warnings.warn(
                     'No activation threshold parameters defined for FINITE_AMPLITUDES protocol,'
-                    'proceeding with default values'
+                    'proceeding with default values',
+                    stacklevel=2,
                 )
                 ap_thresh = -30
                 ap_detect_location = 0.9

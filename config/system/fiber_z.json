@@ -33,6 +33,21 @@
       "fiber_type": 2,
       "passive_end_nodes": 1
     },
+    "B_FIBER": {
+      "neuron_flag": 2,
+      "geom_determination_method": 2,
+      "myelinated": true,
+      "sampling": "interp",
+      "diameter": true,
+      "node_length": 1.0,
+      "paranodal_length_1": 3.0,
+      "paranodal_length_2": "-0.171*diameter**2 + 6.48*diameter - 0.935",
+      "delta_z": "-3.22*diameter**2 + 148*diameter - 128",
+      "inter_length": "(delta_z - node_length - (2 * paranodal_length_1) - (2 * paranodal_length_2)) / 6",
+      "node_channels": 0,
+      "fiber_type": 2,
+      "passive_end_nodes": 1
+    },
     "SUNDT": {
       "neuron_flag": 3,
       "myelinated": false,

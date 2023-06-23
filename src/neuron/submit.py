@@ -136,7 +136,7 @@ submit_context_group.add_argument(
 
 parser.add_argument('-v', '--verbose', action='store_true', help='Print detailed submission info')
 
-OS = 'UNIX-LIKE' if any([s in sys.platform for s in ['darwin', 'linux']]) else 'WINDOWS'
+OS = 'UNIX-LIKE' if any(s in sys.platform for s in ['darwin', 'linux']) else 'WINDOWS'
 
 
 # %% Set up utility functions
@@ -274,6 +274,12 @@ def get_deltaz(fiber_model, diameter):
         else:
             delta_z = eval(delta_z_str["diameter_less_5.643um"])
 
+    elif fiber_model_info.get("geom_determination_method") == 2:  # B fiber
+        paranodal_length_2_str, delta_z_str, inter_length_str = (
+            fiber_model_info[key] for key in ('paranodal_length_2', 'delta_z', 'inter_length')
+        )
+        delta_z = eval(delta_z_str)
+
     elif fiber_model_info.get("neuron_flag") == 3:  # C Fiber
         delta_z = fiber_model_info["delta_zs"]
 
@@ -288,6 +294,7 @@ def get_thresh_bounds(sim_dir: str, sim_name: str, inner_ind: int, cuff_type: st
     :param sim_dir: the string path to the simulation directory
     :param sim_name: the string name of the n_sim
     :param inner_ind: the index of the inner this fiber is in
+    :param cuff_type: string indicated either 'rec' or 'stim' cuff type
     :return: the upper and lower threshold bounds
     """
     top, bottom = None, None
@@ -326,7 +333,8 @@ def get_thresh_bounds(sim_dir: str, sim_name: str, inner_ind: int, cuff_type: st
                     if args.verbose:
                         warnings.warn(
                             'WARNING: scout_sim is defined in Sim, so not using "top" or "bottom" '
-                            'which you also defined \n'
+                            'which you also defined \n',
+                            stacklevel=2,
                         )
                     else:
                         WarnOnlyOnce.warn(
@@ -338,7 +346,8 @@ def get_thresh_bounds(sim_dir: str, sim_name: str, inner_ind: int, cuff_type: st
                 if args.verbose:
                     warnings.warn(
                         f"No fiber threshold exists for scout sim: "
-                        f"inner{inner_ind} fiber0, using standard top and bottom"
+                        f"inner{inner_ind} fiber0, using standard top and bottom",
+                        stacklevel=2,
                     )
                 else:
                     WarnOnlyOnce.warn(
@@ -399,7 +408,7 @@ def make_task(
                 f'-c \"fiber_ind={fiber}\" '
                 f'-c \"stimamp_top={top}\" '
                 f'-c \"stimamp_bottom={bottom}\" '
-                f'-c \"fiberD={diam:.1f}\" '
+                f'-c \"fiberD={diam:.6f}\" '  # change from 0.1f to 0.6f necessary for B fibers?
                 f'-c \"deltaz={deltaz:.4f}\" '
                 f'-c \"axonnodes={axonnodes}\" '
                 '-c \"saveflag_end_ap_times=0\" '  # for backwards compatible, overwritten in launch.hoc if 1
@@ -424,7 +433,7 @@ def make_task(
                 f'-c \"fiber_ind={fiber}\" '
                 f'-c \"stimamp_top={top}\" '
                 f'-c \"stimamp_bottom={bottom}\" '
-                f'-c \"fiberD={diam:.1f}\" '
+                f'-c \"fiberD={diam:.6f}\" '  # change from 0.1f to 0.6f necessary for B fibers?
                 f'-c \"deltaz={deltaz:.4f}\" '
                 f'-c \"axonnodes={axonnodes}\" '
                 '-c \"saveflag_end_ap_times=0\" '  # for backwards compatible, overwritten in launch.hoc if 1
@@ -493,7 +502,8 @@ def submit_fibers(submission_context, submission_data):
             else:
                 cpus = multiprocessing.cpu_count() - 1
                 warnings.warn(
-                    f"You did not define number of cores to use (-n), so proceeding with cpu_core_count-1={cpus}"
+                    f"You did not define number of cores to use (-n), so proceeding with cpu_core_count-1={cpus}",
+                    stacklevel=2,
                 )
             os.chdir(sim_path)
             with multiprocessing.Pool(cpus) as p:
@@ -613,7 +623,9 @@ def make_fiber_tasks(submission_list, submission_context):
         # load the inner x fiber -> diam key saved in the n_sim folder
         inner_fiber_diam_key_file = os.path.join(fibers_path, 'inner_fiber_diam_key.obj')
         inner_fiber_diam_key = None
-        if os.path.exists(inner_fiber_diam_key_file): # TODO: check how stim/rec are stored in this obj file for backwards compatibility
+        if os.path.exists(
+            inner_fiber_diam_key_file
+        ):  # TODO: check how stim/rec are stored in this obj file for backwards compatibility
             with open(inner_fiber_diam_key_file, 'rb') as f:
                 inner_fiber_diam_key = pickle.load(f)
             f.close()
@@ -694,11 +706,17 @@ def make_run_sub_list(run_number: int):
                     n_sim = sim_name.split('_')[-1]
                     sim_config = load(os.path.join(sim_path, f'{n_sim}.json'))
 
-                    fibers_files = [x for x in os.listdir(fibers_path) if re.match('(?:(rec|src)_)?inner[0-9]+_fiber[0-9]+\\.dat', x)] # First regex group with ? is optional - for backwards compatibility
+                    fibers_files = [
+                        x
+                        for x in os.listdir(fibers_path)
+                        if re.match('(?:(rec|src)_)?inner[0-9]+_fiber[0-9]+\\.dat', x)
+                    ]  # First regex group with ? is optional - for backwards compatibility
 
                     for i, fiber_filename in enumerate(fibers_files):
                         master_fiber_name = str(fiber_filename.split('.')[0])
-                        cuff_type, inner_name, fiber_name = tuple(master_fiber_name.split('_')) # not backwards compatible
+                        cuff_type, inner_name, fiber_name = tuple(
+                            master_fiber_name.split('_')
+                        )  # not backwards compatible
                         inner_ind = int(inner_name.split('inner')[-1])
                         fiber_ind = int(fiber_name.split('fiber')[-1])
 
@@ -720,7 +738,9 @@ def make_run_sub_list(run_number: int):
                                 time.sleep(1)
                             continue
 
-                        submit_list[sim_name].append({"job_number": i, "cuff_type": cuff_type, "inner": inner_ind, "fiber": fiber_ind})
+                        submit_list[sim_name].append(
+                            {"job_number": i, "cuff_type": cuff_type, "inner": inner_ind, "fiber": fiber_ind}
+                        )
                     # save_submit list as csv
                     pd.DataFrame(submit_list[sim_name]).to_csv(os.path.join(sim_path, 'out_err_key.csv'), index=False)
 
@@ -781,8 +801,8 @@ def get_submission_list(run_inds):
         # get list of fibers to run
         submission_addition = make_run_sub_list(run_number)
         # check for duplicate nsims
-        if any([x in submission_list for x in submission_addition.keys()]):
-            warnings.warn(f'Duplicate nsims found in run {run_number}. Continuing')
+        if any(x in submission_list for x in submission_addition.keys()):
+            warnings.warn(f'Duplicate nsims found in run {run_number}. Continuing', stacklevel=2)
         submission_list.update(submission_addition)
         rundata.append(
             {

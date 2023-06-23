@@ -140,6 +140,9 @@ data/*.pickle
 data/
 input/
 */user/*
+mlruns/
+output/
+Analysis Plots/
 
 # samples
 *.class*

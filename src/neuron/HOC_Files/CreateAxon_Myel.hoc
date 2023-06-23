@@ -129,6 +129,11 @@ proc CreateAxon_Myel() {
 				if (node_channels == 0) {
 					cm		= 2
 					insert axnode_myel
+					// set gnabar and gkbar to values that don't produce multi-AP in response to single stim pulses (B fibers only)
+					if (geometry_determination_method==2) {
+						gnabar_axnode_myel = 2.333333
+						gkbar_axnode_myel = 0.115556
+					}
 				} else if (node_channels == 1) {
 					// cm = 1.326291192				// [uF/cm^2] specific membrane capacitance (Schild 1994, C-type)
 					cm = 1.149452367				// [uF/cm^2] specific membrane capacitance (Schild 1994, A-type)
