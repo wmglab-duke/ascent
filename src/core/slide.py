@@ -350,7 +350,7 @@ class Slide:
             ax.apply_aspect()
             # convert scalebar length to meters and calculat span across axes
             quantity = Quantity(scalebar_length, scalebar_units, scale='m')
-            scalespan = quantity.scale('micron') / np.diff(ax.get_ylim())[0]
+            scalespan = quantity.scale('micron') / np.diff(ax.get_xlim())[0]
             # add scalebar and label
             ax.add_patch(
                 plt.Rectangle(
