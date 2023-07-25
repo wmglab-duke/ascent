@@ -190,7 +190,7 @@ def load(config_path: str):
     :param config_path: the string path to load up
     :return: json data (usually dict or list)
     """
-    with open(config_path, "r") as handle:
+    with open(config_path) as handle:
         return json.load(handle)
 
 

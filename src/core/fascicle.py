@@ -343,12 +343,12 @@ class Fascicle:
 
         :param mode: Sectionwise... for now
         :param path: root path of fascicle trace destination
-        :raises IOError: if path does not exist
+        :raises OSError: if path does not exist
         """
         start = os.getcwd()
 
         if not os.path.exists(path):
-            raise IOError("Write directory does not exist.")
+            raise OSError("Write directory does not exist.")
         else:
             # go to directory to write to
             os.chdir(path)

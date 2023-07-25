@@ -7,8 +7,7 @@ https://www.sphinx-doc.org/en/master/usage/configuration.html
 
 import os
 import sys
-
-import mock
+from unittest import mock
 
 # -- Path setup --------------------------------------------------------------
 

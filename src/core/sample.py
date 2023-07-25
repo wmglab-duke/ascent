@@ -690,7 +690,7 @@ class Sample(Configurable, Saveable):
             slide.plot(
                 final=False,
                 fix_aspect_ratio='True',
-                axlabel=u"\u03bcm",
+                axlabel="\u03bcm",
                 title=title,
                 scalebar=True,
                 scalebar_length=scalebar_length,
@@ -794,7 +794,7 @@ class Sample(Configurable, Saveable):
 
         :param mode: WriteMode
         :raises NotImplementedError: if mode is not implemented
-        :raises IOError: if that path to write to does not exist
+        :raises OSError: if that path to write to does not exist
         :return: self
         """
         # get starting point so able to go back
@@ -812,7 +812,7 @@ class Sample(Configurable, Saveable):
             # build path to slide and ensure that it exists before proceeding
             slide_path = os.path.join(sample_path, cassette, number)
             if not os.path.exists(slide_path):
-                raise IOError("Path to slide must have already been created.")
+                raise OSError("Path to slide must have already been created.")
             else:
                 # change directories to slide path
                 os.chdir(slide_path)
