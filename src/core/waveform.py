@@ -59,7 +59,7 @@ class Waveform(Configurable, Saveable):
         )
 
         # unpack global variables
-        self.dt, self.on, self.off, self.stop = [global_parameters.get(key) for key in ['dt', 'on', 'off', 'stop']]
+        self.dt, self.on, self.off, self.stop = (global_parameters.get(key) for key in ['dt', 'on', 'off', 'stop'])
 
         self.start = 0
 

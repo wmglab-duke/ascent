@@ -27,6 +27,12 @@ repos:
     rev: "0.78"
     hooks:
       - id: flynt
+  # pyupgrade (migrate code to newer syntax)
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.4.0
+    hooks:
+      - id: pyupgrade
+        args: ["--py37-plus", "--py36-plus"]
   # format python code
   - repo: https://github.com/psf/black
     rev: 23.3.0
