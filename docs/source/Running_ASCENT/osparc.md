@@ -7,7 +7,7 @@ _The guided mode implementation of ASCENT on oSPARC enables simulation of activa
 ```{tip}
 Remember to reference the [oSPARC documentation](https://docs.osparc.io/#/) for more information on how to navigate the platform.
 ```
-1. Create a new study using the []"ASCENT Guided Mode" template](https://osparc.io/study/7bb84d3a-24b2-11ee-a4be-02420a0bc195).
+1. Create a new study using the ["ASCENT Guided Mode" template](https://osparc.io/study/7bb84d3a-24b2-11ee-a4be-02420a0bc195).
 2. Use the GUI in the "ascent-runner" node, located in the middle of the top task bar, to choose your desired parameters, and then click the "Run" button.
 3. Once "ascent-runner" finishes, open the Jupyter ASCENT node. Open a terminal instance, and enter the commands:
   1. `cd work/workspace`
