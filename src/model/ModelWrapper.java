@@ -1144,7 +1144,7 @@ public class ModelWrapper {
                         // Add 3D geom to component node 1
                         model.component("comp1").geom().create("geom1", 3);
                         // Set default length units to micron
-                        model.component("comp1").geom("geom1").lengthUnit("µm");
+                        model.component("comp1").geom("geom1").lengthUnit("um");
                         // Add materials node to component node 1
                         model.component("comp1").physics().create("ec", "ConductiveMedia", "geom1");
                         // and mesh node to component node 1
