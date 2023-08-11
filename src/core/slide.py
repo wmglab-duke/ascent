@@ -107,7 +107,7 @@ class Slide:
             plt.figure()
             self.plot(
                 final=False,
-                fix_aspect_ratio='True',
+                fix_aspect_ratio=True,
                 axlabel="\u03bcm",
                 title='Debug sample which failed validation.',
             )

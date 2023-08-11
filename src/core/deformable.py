@@ -69,7 +69,8 @@ class Deformable:
 
         return options, drawsurf, screen, im_ratio
 
-    def draw_pygame(self, drawsurf, space, options, screen, im_ratio, morph_index, morph_steps):
+    @staticmethod
+    def draw_pygame(drawsurf, space, options, screen, im_ratio, morph_index, morph_steps):
         """Draws the current morphology state onto the pygame render surface.
 
         :param drawsurf: pygame surface to draw on

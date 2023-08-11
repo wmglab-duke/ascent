@@ -437,7 +437,7 @@ class Simulation(Configurable, Saveable):
             :return: None
             """
             inner_fiber_diam_key = []
-            diams = np.loadtxt(os.path.join(my_potentials_directory, my_file), unpack=True,ndmin=1)
+            diams = np.loadtxt(os.path.join(my_potentials_directory, my_file), unpack=True, ndmin=1)
             for fiber_ind in range(diams.size):
                 diam = diams[fiber_ind]
 
