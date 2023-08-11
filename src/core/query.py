@@ -229,8 +229,6 @@ class Query(Configurable, Saveable):
         :raises ValueError: if invalid mode is chosen
         :return: path
         """
-        result = ''
-
         if indices is None:
             indices = [
                 0,
