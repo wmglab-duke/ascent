@@ -422,9 +422,10 @@ def make_task(
 
         else:  # OS is 'WINDOWS'
             sim_path_win = os.path.join(*sim_p.split(os.pathsep)).replace('\\', '\\\\')
+            main_path_win = os.getcwd().replace('\\', '/')
             lines = [
                 'nrniv -nobanner '
-                f'-dll \"{os.getcwd()}/MOD_Files/nrnmech.dll\" '
+                f'-dll \"{main_path_win}/MOD_Files/nrnmech.dll\" '
                 '-c \"strdef sim_path\" '
                 f'-c \"sim_path=\\\"{sim_path_win}\"\" '
                 f'-c \"inner_ind={inner}\" '
