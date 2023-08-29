@@ -127,7 +127,7 @@ class Configurable:
         :param config_path: the string path to load
         :return: json data (dict or list)
         """
-        with open(config_path, "r") as handle:
+        with open(config_path) as handle:
             return json.load(handle)
 
     @staticmethod

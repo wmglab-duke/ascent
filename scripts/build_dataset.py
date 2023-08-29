@@ -32,7 +32,7 @@ def load(config_path: str):
     :param config_path: the string path to load up
     :return: json data (usually dict or list)
     """
-    with open(config_path, "r") as handle:
+    with open(config_path) as handle:
         return json.load(handle)
 
 
@@ -212,16 +212,16 @@ def make_comsol_cleared_readme(
     ]
     with open(files_readme_path, 'bw+') as f:
         f.write(
-            '# Files for which the mesh/solution were retained.\n'
-            '<basis_index>.mph files can have dual membership\n\n'.encode('utf-8')
+            b'# Files for which the mesh/solution were retained.\n'
+            b'<basis_index>.mph files can have dual membership\n\n'
         )
         for group, group_name in zip([meshes_kept_mesh, bases_kept_mesh, bases_kept_solution], group_names):
-            f.write(f'# {group_name}\n'.encode('utf-8'))
+            f.write(f'# {group_name}\n'.encode())
             for fi, file in enumerate(group):
                 if fi != len(group) - 1:
-                    f.write(f'* {file}\n'.encode('utf-8'))
+                    f.write(f'* {file}\n'.encode())
                 else:
-                    f.write(f'* {file}\n\n'.encode('utf-8'))
+                    f.write(f'* {file}\n\n'.encode())
     return None
 
 
@@ -246,7 +246,7 @@ def freeze_environment():
     else:
         for line in pip_packages.splitlines():
             sline = str(line)
-            if sline.startswith(u'-e '):
+            if sline.startswith('-e '):
                 package, version = (sline.strip(), '')
                 frozen_pip[package] = version
 
@@ -260,10 +260,10 @@ def freeze_environment():
                 else:
                     pass
 
-            elif sline.startswith(u'## FIXME:'):  # noqa T100
+            elif sline.startswith('## FIXME:'):  # noqa T100
                 pass
-            elif u'==' in sline:
-                package, version = sline.strip().split(u'==')
+            elif '==' in sline:
+                package, version = sline.strip().split('==')
                 frozen_pip[package] = version
             else:
                 print(f'Didnt know what to do with:\n\t{sline}')
@@ -276,7 +276,7 @@ def freeze_environment():
     else:
         for line in conda_packages.splitlines():
             sline = str(line)
-            if sline.startswith(u'#') or len(sline.split()) == 1:
+            if sline.startswith('#') or len(sline.split()) == 1:
                 pass
             else:
                 package, version = sline.strip().split()[0], line.strip().split()[1]

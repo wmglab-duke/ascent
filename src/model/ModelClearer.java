@@ -5,7 +5,6 @@ import com.comsol.model.util.ModelUtil;
 import com.comsol.util.exceptions.FlException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -15,7 +14,7 @@ import org.json.JSONObject;
 public class ModelClearer {
 
     public static void main(String[] args) throws InterruptedException, IOException {
-        List<String> comsol_files = Arrays.asList(args[0].split(",", -1));
+        String[] comsol_files = args[0].split(",", -1);
         String export_directory = args[1].replace("[", "").replace("]", "").replace("'", "");
         String data_index = args[2];
 
@@ -61,12 +60,12 @@ public class ModelClearer {
 
             List<Integer> allMatches = new ArrayList<>();
             while (m.find()) {
-                allMatches.add(new Integer(m.group()));
+                allMatches.add(Integer.valueOf(m.group()));
             }
             allMatches.toArray(new Integer[0]);
 
-            Boolean clear_mesh = true;
-            Boolean clear_sol = true;
+            boolean clear_mesh = true;
+            boolean clear_sol = true;
 
             Integer sample_index;
             Integer model_index;
@@ -159,7 +158,7 @@ public class ModelClearer {
         long stop = waitHours * 60 * 60 * 1000 + start;
         while (System.currentTimeMillis() < stop) {
             lic = ModelUtil.checkoutLicense("COMSOL");
-            if (lic == true) {
+            if (lic) {
                 long now = System.currentTimeMillis();
                 double elapsed =
                     (Long.valueOf(now).doubleValue() - Long.valueOf(start).doubleValue()) /
@@ -170,7 +169,7 @@ public class ModelClearer {
                 TimeUnit.SECONDS.sleep(600);
             }
         }
-        if (lic == false) {
+        if (!lic) {
             System.out.println(
                 "A COMSOL license did not become available within the specified time window. Exiting..."
             );
@@ -180,7 +179,7 @@ public class ModelClearer {
 
     private static void serverConnect(int waitMinutes) throws InterruptedException {
         // Try to connect to comsol server
-        long connectTime = waitMinutes * 60 * 1000 + System.currentTimeMillis();
+        long connectTime = (long) waitMinutes * 60 * 1000 + System.currentTimeMillis();
         while (true) {
             try {
                 ModelUtil.connect("localhost", 2036);

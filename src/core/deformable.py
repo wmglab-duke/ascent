@@ -69,7 +69,8 @@ class Deformable:
 
         return options, drawsurf, screen, im_ratio
 
-    def draw_pygame(self, drawsurf, space, options, screen, im_ratio, morph_index, morph_steps):
+    @staticmethod
+    def draw_pygame(drawsurf, space, options, screen, im_ratio, morph_index, morph_steps):
         """Draws the current morphology state onto the pygame render surface.
 
         :param drawsurf: pygame surface to draw on
@@ -316,6 +317,7 @@ class Deformable:
         # return new object
         return Deformable(boundary_start, boundary_end, contents)
 
+    # copied from https://stackoverflow.com/questions/3173320/text-progress-bar-in-the-console
     @staticmethod
     def print_progress_bar(iteration, total, prefix='', suffix='', decimals=1, length=100, fill='█'):
         """Create and update a terminal progress bar.

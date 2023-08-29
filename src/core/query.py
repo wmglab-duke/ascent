@@ -229,8 +229,6 @@ class Query(Configurable, Saveable):
         :raises ValueError: if invalid mode is chosen
         :return: path
         """
-        result = str()
-
         if indices is None:
             indices = [
                 0,
@@ -314,6 +312,8 @@ class Query(Configurable, Saveable):
     ):
         """Obtain threshold data as a pandas DataFrame.
 
+        Waveform, fiberset, and active_src indices are per your sim configuration file.
+
         :param sim_indices: list of simulation indices to include in the threshold data.
         :param ignore_missing: if True, missing threshold data will not cause an error.
         :param meanify: if True, the threshold data will be returned as a mean of each nsim.
@@ -387,7 +387,7 @@ class Query(Configurable, Saveable):
                                 if ignore_missing:
                                     try:
                                         threshold = np.loadtxt(thresh_path)
-                                    except IOError:
+                                    except OSError:
                                         threshold = np.array(np.nan)
                                         warnings.warn('Missing threshold, but continuing.', stacklevel=2)
                                 else:

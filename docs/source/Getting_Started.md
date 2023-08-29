@@ -1,6 +1,4 @@
 # Getting Started
-Our video tutorial covers all the content in this page, plus explanations of how ASCENT works! See it below:
-<iframe width="560" height="315" src="https://www.youtube.com/embed/C41nHvMXyEo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
 ## Installation
 
@@ -21,7 +19,7 @@ First, these software packages must be manually installed:
   - Depending on your operating system, some additional dependencies may be required. Make sure to follow the installation instructions carefully.
   - NEURON must be in your PATH in order to run simulations. Either choose the add to path option during installation, or on Linux, you can add to your bash profile: `export PATH=<path/to/neuron/>:$PATH`. The NEURON path should end with `bin`.
 
-Users may also download a text editor or integrated development environment (IDE) of their choosing to view/edit code (e.g., [Atom](https://atom.io/), [Visual Studio Code](https://code.visualstudio.com/), [IntelliJ IDEA](https://www.jetbrains.com/idea/download/)). For Java code, full autocomplete functionality requires adding both the path to the COMSOL installation ending in `plugins` as well as the path `<ASCENT_PATH>/bin/json-20190722.jar` to the list of available libraries (usually from within the IDE’s project settings).
+Users may also download a text editor or integrated development environment (IDE) of their choosing to view/edit code (e.g., [Atom](https://atom.io/), [Visual Studio Code](https://code.visualstudio.com/), [IntelliJ IDEA](https://www.jetbrains.com/idea/download/)). For Java code, full autocomplete functionality requires adding both the path to the COMSOL installation ending in `plugins` as well as the path `<ASCENT_PATH>/bin/json-20190722.jar` to the list of available libraries (usually from within the IDE’s project settings). To run code in your IDE, newer version of COMSOL may also require you to check the box `File>Preferences>Security>Methods and Java Libraries>Allow access to network sockets`.
 
 ### Installing ASCENT
 
