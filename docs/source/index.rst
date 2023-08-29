@@ -46,7 +46,7 @@ Welcome to ASCENT's documentation!
 
   .. details:: MLA
 
-      Musselman, Eric D., et al. Wmglab-Duke/Ascent: ASCENT v1.2.2. v1.2.2, Zenodo, 2023, doi:10.5281/ZENODO.TBD.
+      Musselman, Eric D., et al. Wmglab-Duke/Ascent: ASCENT v1.2.2. v1.2.2, Zenodo, 2023, doi:10.5281/ZENODO.8298703.
 
 
   .. details:: BibTeX
