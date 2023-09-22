@@ -1,4 +1,6 @@
 # Getting Started
+Our video tutorial covers all the content in this page, plus explanations of how ASCENT works! See it below:
+<iframe width="560" height="315" src="https://www.youtube.com/embed/C41nHvMXyEo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
 ## Installation
 
@@ -198,7 +200,7 @@ The below example directory structure may be helpful.
     Threshold for inner0_fiber0 (`samples/<sample_index>/models/<model_index>/sims/<sim_index>/n_sims/data/outputs/thresh_inner0_fiber0.dat`) should be -0.027402 mA
     ```
 
-9. To generate a heatmap of activation thresholds, open the script `examples/analysis/threshold_heatmap.py` and edit the sample, model, and sim indices to match the ones you chose above. Run the script from the repository root with the command `python examples/analysis/threshold_heatmap.py`, and a heatmap plot will be generated in `out/analysis/`. Your heatmap should look like the one below.
+9. To generate a heatmap of activation thresholds, open the script `examples/analysis/threshold_heatmap.py` and edit the sample, model, and sim indices to match the ones you chose above. Run the script from the repository root with the command `python examples/analysis/threshold_heatmap.py`, and a heatmap plot will be generated in `output/analysis/`. Your heatmap should look like the one below.
 ![tutorial directory structure](uploads/heatmap.png)
 `````
 
