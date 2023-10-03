@@ -82,7 +82,7 @@
       "mode": "PERCENT_INCREMENT",
       "top": -1,
       "bottom": -0.01,
-      "step": 10,
+      "step": 50,
       "scout_sim": false
     },
     "termination_criteria": {
