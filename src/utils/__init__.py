@@ -12,10 +12,4 @@ from .enums import *
 from .errors import *
 from .saveable import Saveable
 
-# From edgar_cap branch
-# from .template_output import TemplateOutput
-# from .interpolation import *
-# from .validatable import Validatable
-
-# from master branch 
 __all__ = ['Configurable', 'Saveable']
