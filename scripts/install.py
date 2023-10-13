@@ -63,12 +63,10 @@ def run(args):
                 subprocess.run(['curl', '-o', target, jar])
             else:
                 with subprocess.Popen("powershell.exe", stdin=subprocess.PIPE) as p:
-                    p.stdin.write(
-                        '[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12\n'.encode()
-                    )
+                    p.stdin.write(b'[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12\n')
                     p.stdin.write(f'$source = \'{jar}\'\n'.encode())
                     p.stdin.write(f'$destination = \'{os.path.abspath(target)}\'\n'.encode())
-                    p.stdin.write('curl $source -OutFile $destination'.encode())
+                    p.stdin.write(b'curl $source -OutFile $destination')
 
     # run system-specific installation
     if args.no_conda:

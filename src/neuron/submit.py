@@ -190,7 +190,7 @@ def load(config_path: str):
     :param config_path: the string path to load up
     :return: json data (usually dict or list)
     """
-    with open(config_path, "r") as handle:
+    with open(config_path) as handle:
         return json.load(handle)
 
 
@@ -213,10 +213,15 @@ def auto_compile(override: bool = False):
         or (not os.path.exists(os.path.join('MOD_Files', 'nrnmech.dll')) and OS == 'WINDOWS')
         or override
     ):
-        print('compiling')
+        print('compiling NEURON files...')
         os.chdir(os.path.join('MOD_Files'))
         exit_data = subprocess.run(['nrnivmodl'], shell=True, capture_output=True, text=True)
-        if exit_data.returncode != 0:
+        # note, nrnivmodl always returns 0, even if it fails
+        if (
+            exit_data.returncode != 0
+            or (not os.path.exists(os.path.join('x86_64', 'special')) and OS == 'UNIX-LIKE')
+            or (not os.path.exists(os.path.join('nrnmech.dll')) and OS == 'WINDOWS')
+        ):
             print(exit_data.stderr)
             sys.exit("Error in compiling of NEURON files. Exiting...")
         os.chdir('..')
@@ -424,9 +429,10 @@ def make_task(
 
         else:  # OS is 'WINDOWS'
             sim_path_win = os.path.join(*sim_p.split(os.pathsep)).replace('\\', '\\\\')
+            main_path_win = os.getcwd().replace('\\', '/')
             lines = [
                 'nrniv -nobanner '
-                f'-dll \"{os.getcwd()}/MOD_Files/nrnmech.dll\" '
+                f'-dll \"{main_path_win}/MOD_Files/nrnmech.dll\" '
                 '-c \"strdef sim_path\" '
                 f'-c \"sim_path=\\\"{sim_path_win}\"\" '
                 f'-c \"inner_ind={inner}\" '

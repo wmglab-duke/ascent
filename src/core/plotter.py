@@ -192,7 +192,8 @@ class _HeatmapPlotter:
         )
         self.mappable = mappable
 
-    def set_ax(self, ax):
+    @staticmethod
+    def set_ax(ax):
         """Remove axis elements.
 
         :param ax: axis to plot on

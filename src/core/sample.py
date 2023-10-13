@@ -690,7 +690,7 @@ class Sample(Configurable, Saveable):
             slide.plot(
                 final=False,
                 fix_aspect_ratio='True',
-                axlabel=u"\u03bcm",
+                axlabel="\u03bcm",
                 title=title,
                 scalebar=True,
                 scalebar_length=scalebar_length,
@@ -736,7 +736,9 @@ class Sample(Configurable, Saveable):
         if self.deform_mode == DeformationMode.NONE:
             sep_nerve = self.search(Config.SAMPLE, 'boundary_separation').get('nerve')
             if sep_nerve != 0:
-                warnings.warn(f'NO DEFORMATION is happening! AND sep_nerve is not 0, sep_nerve = {sep_nerve}')
+                warnings.warn(
+                    f'NO DEFORMATION is happening! AND sep_nerve is not 0, sep_nerve = {sep_nerve}', stacklevel=2
+                )
         else:
             if self.nerve_mode == NerveMode.NOT_PRESENT:
                 raise IncompatibleParametersError("Cannot reposition without NerveMode.PRESENT")
@@ -792,7 +794,7 @@ class Sample(Configurable, Saveable):
 
         :param mode: WriteMode
         :raises NotImplementedError: if mode is not implemented
-        :raises IOError: if that path to write to does not exist
+        :raises OSError: if that path to write to does not exist
         :return: self
         """
         # get starting point so able to go back
@@ -810,7 +812,7 @@ class Sample(Configurable, Saveable):
             # build path to slide and ensure that it exists before proceeding
             slide_path = os.path.join(sample_path, cassette, number)
             if not os.path.exists(slide_path):
-                raise IOError("Path to slide must have already been created.")
+                raise OSError("Path to slide must have already been created.")
             else:
                 # change directories to slide path
                 os.chdir(slide_path)

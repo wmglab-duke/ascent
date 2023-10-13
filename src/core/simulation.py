@@ -38,13 +38,13 @@ def get_z_coords(root, file):
     :param file: fiber file to get z-coords from
     :return: z-coords
     """
-    with open(os.path.join(root, file), 'r') as coords_file:
+    with open(os.path.join(root, file)) as coords_file:
         coords_file_lines = coords_file.readlines()[1:]
         coords = []
         for coords_file_line in coords_file_lines:
             coords = np.append(
                 coords,
-                float(coords_file_line.split(' ')[-2]),  # this is the z coord
+                float(coords_file_line.split(' ')[2]),  # this is the z coord
             )
     return coords
 
@@ -95,7 +95,7 @@ class Simulation(Configurable, Saveable):
         :param config_path: the string path to load up
         :return: json data (usually dict or list)
         """
-        with open(config_path, "r") as h:
+        with open(config_path) as h:
             return json.load(h)
 
     def resolve_factors(self) -> 'Simulation':
@@ -845,11 +845,14 @@ class Simulation(Configurable, Saveable):
         # make NSIM_EXPORT_PATH (defined in Env.json) directory if it does not yet exist
         os.makedirs(target, exist_ok=True)
 
-        # neuron files
-        du.copy_tree(
-            os.path.join(os.environ[Env.PROJECT_PATH.value], 'src', 'neuron'),
-            target,
-        )
+        try:
+            # neuron files
+            du.copy_tree(
+                os.path.join(os.environ[Env.PROJECT_PATH.value], 'src', 'neuron'),
+                target,
+            )
+        except du.errors.DistutilsFileError:
+            warnings.warn('Failed to copy neuron files, likely because they are in use.', stacklevel=2)
 
         submit_target = os.path.join(target, 'submit.py')
         if os.path.isfile(submit_target):

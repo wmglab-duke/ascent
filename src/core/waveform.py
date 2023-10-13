@@ -44,7 +44,7 @@ class Waveform(Configurable, Saveable):
         :raises KeyError: if any required configs are missing
         :return: self
         """
-        if any([config.value not in self.configs.keys() for config in (Config.MODEL, Config.SIM)]):
+        if any(config.value not in self.configs.keys() for config in (Config.MODEL, Config.SIM)):
             raise KeyError(f"Missing at least one of {Config.MODEL.value} or {Config.SIM.value} configuration.")
 
         # get mode
@@ -59,7 +59,7 @@ class Waveform(Configurable, Saveable):
         )
 
         # unpack global variables
-        self.dt, self.on, self.off, self.stop = [global_parameters.get(key) for key in ['dt', 'on', 'off', 'stop']]
+        self.dt, self.on, self.off, self.stop = (global_parameters.get(key) for key in ['dt', 'on', 'off', 'stop'])
 
         self.start = 0
 
@@ -409,7 +409,7 @@ class Waveform(Configurable, Saveable):
                 'waveform to fit NEURON time '
                 'discretization.'
             )
-            warnings.warn(warning_str)
+            warnings.warn(warning_str, stacklevel=2)
 
             period_explicit = dt_explicit * len(explicit_wave)
             n_samples_resampled = round(period_explicit / self.dt)
@@ -493,6 +493,8 @@ class Waveform(Configurable, Saveable):
 
 def precision_and_scale(x):
     """Return the number of digits and the scale of the number.
+
+    # https://stackoverflow.com/questions/3018758/determine-precision-and-scale-of-particular-number-in-python
 
     :param x: number
     :return: number of digits, scale

@@ -463,10 +463,8 @@ public class ModelWrapper {
                     // LOOP OVER FIBERS IN FIBERSET
                     for (String fiber_file : fiberset_file_list) {
                         if (
-                            fiber_file.contains("diams.txt") || fiber_file.contains("offsets.txt")
+                            !fiber_file.contains("diams.txt") && !fiber_file.contains("offsets.txt")
                         ) {
-                            continue;
-                        } else {
                             // build path to fibeR
                             String[] fiber_file_parts = fiber_file.split("\\.");
                             Integer fiber_file_ind = Integer.parseInt(fiber_file_parts[0]);
@@ -474,7 +472,6 @@ public class ModelWrapper {
                             manageExtractPotentials(
                                 basis,
                                 fiber_file_ind,
-                                fiberset_ind,
                                 fiberset_dir,
                                 ve_fiberset_basis_dir,
                                 do_ss,
@@ -493,7 +490,6 @@ public class ModelWrapper {
     private static void manageExtractPotentials(
         Model basis,
         Integer fiber_file_ind,
-        int fiberset_ind,
         String fiberset_dir,
         String ve_fiberset_basis_dir,
         Boolean do_ss,
@@ -505,13 +501,8 @@ public class ModelWrapper {
             new String[] { ve_fiberset_basis_dir, fiber_file_ind + ".dat" }
         );
         // DEAL WITH EXTRACTING POTENTIALS (FOR BASIS) FOR SUPERSAMPLING COORDS
-        if (new File(fiber_ve_path).exists()) {
-            if (!do_ss || fiberset_ind != 0) {
-                // if potentials for the fiber exist and we don't need to worry about
-                // supersampling (fiber_ind = 0), then move on
-                return;
-            }
-        } else {
+        // Skip if file already exists
+        if (!new File(fiber_ve_path).exists()) {
             // EXTRACT POTENTIALS (FOR BASIS) FOR FIBER
             String coords_path = String.join(
                 "/",
@@ -539,9 +530,7 @@ public class ModelWrapper {
                 );
 
                 // If the potentials for this fiberset/basis/fiber have been created, move on
-                if (new File(ss_ve_path).exists()) {
-                    return;
-                } else {
+                if (!new File(ss_ve_path).exists()) {
                     // EXTRACT POTENTIALS FOR SUPERSAMPLED COORDS
                     String ss_coords_path = String.join(
                         "/",
@@ -1186,7 +1175,7 @@ public class ModelWrapper {
                         // Add 3D geom to component node 1
                         model.component("comp1").geom().create("geom1", 3);
                         // Set default length units to micron
-                        model.component("comp1").geom("geom1").lengthUnit("\u00b5m");
+                        model.component("comp1").geom("geom1").lengthUnit("um");
                         // Add materials node to component node 1
                         model.component("comp1").physics().create("ec", "ConductiveMedia", "geom1");
                         // and mesh node to component node 1
@@ -2234,11 +2223,7 @@ public class ModelWrapper {
                         .getJSONObject(Integer.toString(cu + 1))
                         .getString("name");
                     File basisFile = new File(bases_directory + "/" + bases_name + ".mph");
-                    if (!basisFile.exists()) {
-                        basesValid[cu] = false;
-                    } else {
-                        basesValid[cu] = true;
-                    }
+                    basesValid[cu] = basisFile.exists();
                 }
             } catch (FileNotFoundException e) {
                 System.out.println(

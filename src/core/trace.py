@@ -491,7 +491,7 @@ class Trace:
         :param mode: choice of write implementations - sectionwise file for COMSOL
         :param path: string path with file name of file WITHOUT extension (it is derived from mode)
         :raises ValueError: if mode is not supported
-        :raises IOError: if file cannot be written
+        :raises OSError: if file cannot be written
         :return: string full path including extension that was written to
         """
         # add extension
@@ -527,8 +527,8 @@ class Trace:
                 else:
                     raise ValueError("Write mode not supported or invalid")
 
-        except EnvironmentError as e:
-            raise IOError(f"Exception while writing: {e}")
+        except OSError as e:
+            raise OSError(f"Exception while writing: {e}")
 
         return path
 

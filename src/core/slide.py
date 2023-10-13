@@ -107,8 +107,8 @@ class Slide:
             plt.figure()
             self.plot(
                 final=False,
-                fix_aspect_ratio='True',
-                axlabel=u"\u03bcm",
+                fix_aspect_ratio=True,
+                axlabel="\u03bcm",
                 title='Debug sample which failed validation.',
             )
             plt.savefig(plotpath + '/sample_debug')
@@ -169,8 +169,8 @@ class Slide:
             return False
         else:
             pairs = itertools.combinations(self.fascicles, 2)
-            return any([first.min_distance(second) < tolerance for first, second in pairs]) or any(
-                [fascicle.min_distance(self.nerve) < tolerance for fascicle in self.fascicles]
+            return any(first.min_distance(second) < tolerance for first, second in pairs) or any(
+                fascicle.min_distance(self.nerve) < tolerance for fascicle in self.fascicles
             )
 
     def fascicles_too_small(self) -> bool:
@@ -194,7 +194,7 @@ class Slide:
             raise MethodError("Method fascicle_fascicle_intersection does not apply for monofascicle nerves")
 
         pairs = itertools.combinations(self.fascicles, 2)
-        return any([first.intersects(second) for first, second in pairs])
+        return any(first.intersects(second) for first, second in pairs)
 
     def fascicle_nerve_intersection(self) -> bool:
         """Check for intersection between the fascicles and nerve.
@@ -205,7 +205,7 @@ class Slide:
         if self.monofasc():
             raise MethodError("Method fascicle_nerve_intersection does not apply for monofascicle nerves")
 
-        return any([fascicle.intersects(self.nerve) for fascicle in self.fascicles])
+        return any(fascicle.intersects(self.nerve) for fascicle in self.fascicles)
 
     def fascicles_outside_nerve(self) -> bool:
         """Check if any fascicle is outside the nerve.
@@ -216,7 +216,7 @@ class Slide:
         if self.monofasc():
             raise MethodError("Method fascicles_outside_nerve does not apply for monofascicle nerves")
 
-        return any([not fascicle.within_nerve(self.nerve) for fascicle in self.fascicles])
+        return any(not fascicle.within_nerve(self.nerve) for fascicle in self.fascicles)
 
     def move_center(self, point: np.ndarray):
         """Shifts the center of the slide to the given point.
@@ -346,9 +346,11 @@ class Slide:
             ax.set_ylabel(axlabel)
 
         if scalebar:
+            # apply aspect for correct scaling
+            ax.apply_aspect()
             # convert scalebar length to meters and calculat span across axes
             quantity = Quantity(scalebar_length, scalebar_units, scale='m')
-            scalespan = quantity.scale('micron') / np.diff(ax.get_ylim())[0]
+            scalespan = quantity.scale('micron') / np.diff(ax.get_xlim())[0]
             # add scalebar and label
             ax.add_patch(
                 plt.Rectangle(
@@ -452,12 +454,12 @@ class Slide:
 
         :param mode: Sectionwise for now... could be other types in the future (STL, DXF)
         :param path: root path of slide
-        :raises IOError: if path does not exist
+        :raises OSError: if path does not exist
         """
         start = os.getcwd()
 
         if not os.path.exists(path):
-            raise IOError("Invalid path to write Slide to.")
+            raise OSError("Invalid path to write Slide to.")
         else:
             # go to directory to write to
             os.chdir(path)

@@ -229,8 +229,6 @@ class Query(Configurable, Saveable):
         :raises ValueError: if invalid mode is chosen
         :return: path
         """
-        result = str()
-
         if indices is None:
             indices = [
                 0,
@@ -385,7 +383,7 @@ class Query(Configurable, Saveable):
                                 if ignore_missing:
                                     try:
                                         sfap = np.loadtxt(sfap_path, skiprows=1)
-                                    except IOError:
+                                    except OSError:
                                         sfap = np.array(np.nan)
                                         warnings.warn('Missing SFAP, but continuing.', stacklevel=2)
                                 else:
@@ -421,6 +419,8 @@ class Query(Configurable, Saveable):
         meanify=False,
     ):
         """Obtain threshold data as a pandas DataFrame.
+
+        Waveform, fiberset, and active_src indices are per your sim configuration file.
 
         :param sim_indices: list of simulation indices to include in the threshold data.
         :param ignore_missing: if True, missing threshold data will not cause an error.
@@ -496,7 +496,7 @@ class Query(Configurable, Saveable):
                                 if ignore_missing:
                                     try:
                                         threshold = np.loadtxt(thresh_path)
-                                    except IOError:
+                                    except OSError:
                                         threshold = np.array(np.nan)
                                         warnings.warn('Missing threshold, but continuing.', stacklevel=2)
                                 else:

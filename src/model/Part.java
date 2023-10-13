@@ -8,7 +8,6 @@ package model;
 
 import com.comsol.model.*;
 import com.comsol.model.physics.PhysicsFeature;
-import java.io.IOException;
 import java.util.HashMap;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -16,10 +15,19 @@ import org.json.JSONObject;
 @SuppressWarnings({ "path" })
 class Part {
 
-    public static void addPointCurrentSource(ModelWrapper mw, Model model, int index, String instanceLabel, String selLabel) {
+    public static void addPointCurrentSource(
+        ModelWrapper mw,
+        Model model,
+        int index,
+        String instanceLabel,
+        String selLabel
+    ) {
         String ribbon_pcsLabel = instanceLabel + " Current Source";
         String id = mw.im.next("pcs", ribbon_pcsLabel);
-        PhysicsFeature pf = model.component("comp1").physics("ec").create(id, "PointCurrentSource", 0);
+        PhysicsFeature pf = model
+            .component("comp1")
+            .physics("ec")
+            .create(id, "PointCurrentSource", 0);
 
         JSONObject src_ribbon = new JSONObject();
         // src_ribbon.put(instanceLabel, id); // from master branch
@@ -54,7 +62,7 @@ class Part {
         // only used once per method, so ok to define outside the switch
         model.geom().create(id, "Part", 3);
         model.geom(id).label(pseudonym);
-        model.geom(id).lengthUnit("\u00b5m");
+        model.geom(id).lengthUnit("um");
 
         // only used once per method, so ok to define outside the switch
         IdentifierManager im = new IdentifierManager();
@@ -174,7 +182,7 @@ class Part {
         // only used once per method, so ok to define outside the switch
         model.geom().create(id, "Part", 3);
         model.geom(id).label(pseudonym);
-        model.geom(id).lengthUnit("\u00b5m");
+        model.geom(id).lengthUnit("um");
 
         // only used once per method, so ok to define outside the switch
         IdentifierManager im = new IdentifierManager();
@@ -2550,7 +2558,7 @@ class Part {
 
                 break;
             case "uCuffTrap_Primitive":
-                model.geom(id).lengthUnit("\u00b5m");
+                model.geom(id).lengthUnit("um");
 
                 model.geom(id).inputParam().set("R_in", "70 [um]");
                 model.geom(id).inputParam().set("Ut_tangent", "100 [um]");
@@ -2792,7 +2800,7 @@ class Part {
             case "uContactTrap_Primitive":
                 model.geom(id).label("uContactTrap_Primitive");
 
-                model.geom(id).lengthUnit("\u00b5m");
+                model.geom(id).lengthUnit("um");
 
                 model.geom(id).inputParam().set("Center", "0 [mm]");
                 model.geom(id).inputParam().set("R_in", "100 [um]");
@@ -3848,9 +3856,10 @@ class Part {
         String instanceLabel,
         String pseudonym,
         ModelWrapper mw,
-        JSONObject instanceParams, 
-        String name, 
-        int index) throws IllegalArgumentException {
+        JSONObject instanceParams,
+        String name,
+        int index
+    ) throws IllegalArgumentException {
         Model model = mw.getModel();
 
         GeomFeature partInstance = model
@@ -3860,11 +3869,15 @@ class Part {
         partInstance.label(instanceLabel);
         partInstance.set("part", mw.im.get(pseudonym));
 
-        partInstance.set("displ", new String[]{
-                name+"_"+index+"_cuff_shift_x",
-                name+"_"+index+"_cuff_shift_y",
-                name+"_"+index+"_cuff_shift_z"}); // moves cuff around the nerve
-        partInstance.set("rot", name+"_"+index+"_cuff_rot");
+        partInstance.set(
+            "displ",
+            new String[] {
+                name + "_" + index + "_cuff_shift_x",
+                name + "_" + index + "_cuff_shift_y",
+                name + "_" + index + "_cuff_shift_z",
+            }
+        ); // moves cuff around the nerve
+        partInstance.set("rot", name + "_" + index + "_cuff_rot");
 
         JSONObject itemObject = instanceParams.getJSONObject("def");
         IdentifierManager myIM = mw.getPartPrimitiveIM(pseudonym);
@@ -4079,7 +4092,7 @@ class Part {
                 //     .component("comp1")
                 //     .physics("ec")
                 //     .create(id, "PointCurrentSource", 0);
-                Part.addPointCurrentSource(mw,model,index,instanceLabel,myIM.get(myLabels[2]));
+                Part.addPointCurrentSource(mw, model, index, instanceLabel, myIM.get(myLabels[2]));
 
                 // JSONObject src_ribbon = new JSONObject();
                 // src_ribbon.put(instanceLabel, id); // need to add index
@@ -4166,12 +4179,12 @@ class Part {
                 ); // SRC
 
                 // assign physics
-                // TODO: 
+                // TODO:
                 // String wire_pcsLabel = instanceLabel + " Current Source";
                 // id = mw.im.next("pcs", wire_pcsLabel);
                 // pf = model.component("comp1").physics("ec").create(id, "PointCurrentSource", 0);
 
-                Part.addPointCurrentSource(mw,model,index,instanceLabel,myIM.get(myLabels[2]));
+                Part.addPointCurrentSource(mw, model, index, instanceLabel, myIM.get(myLabels[2]));
 
                 // JSONObject src_wire = new JSONObject();
                 // src_wire.put(instanceLabel, id);
@@ -4395,7 +4408,7 @@ class Part {
                 // String circle_pcsLabel = instanceLabel + " Current Source";
                 // id = mw.im.next("pcs", circle_pcsLabel);
                 // pf = model.component("comp1").physics("ec").create(id, "PointCurrentSource", 0);
-                Part.addPointCurrentSource(mw,model,index,instanceLabel,myIM.get(myLabels[4]));
+                Part.addPointCurrentSource(mw, model, index, instanceLabel, myIM.get(myLabels[4]));
 
                 // JSONObject src_circ = new JSONObject();
                 // src_circ.put(instanceLabel, id);
@@ -4418,7 +4431,7 @@ class Part {
                     partInstance.setEntry("inputexpr", param, (String) itemObject.get(param));
                 }
 
-                partInstance.set("rot", name+"_"+index+"_cuff_rot + corr_LN");
+                partInstance.set("rot", name + "_" + index + "_cuff_rot + corr_LN");
 
                 model
                     .component("comp1")
@@ -4465,7 +4478,7 @@ class Part {
                 // id = mw.im.next("pcs", pc_helix_pcsLabel);
                 // pf = model.component("comp1").physics("ec").create(id, "PointCurrentSource", 0);
 
-                Part.addPointCurrentSource(mw,model,index,instanceLabel,myIM.get(myLabels[4]));
+                Part.addPointCurrentSource(mw, model, index, instanceLabel, myIM.get(myLabels[4]));
 
                 // JSONObject pc_src_heli = new JSONObject();
                 // pc_src_heli.put(instanceLabel, id);
@@ -4493,7 +4506,7 @@ class Part {
                     partInstance.setEntry("inputexpr", param, (String) itemObject.get(param));
                 }
 
-                partInstance.set("rot", name+"_"+index+"_cuff_rot + corr_LN");
+                partInstance.set("rot", name + "_" + index + "_cuff_rot + corr_LN");
 
                 model
                     .component("comp1")
@@ -4590,7 +4603,7 @@ class Part {
                 // id = mw.im.next("pcs", helix_pcsLabel);
                 // pf = model.component("comp1").physics("ec").create(id, "PointCurrentSource", 0);
 
-                Part.addPointCurrentSource(mw,model,index,instanceLabel,myIM.get(myLabels[4]));
+                Part.addPointCurrentSource(mw, model, index, instanceLabel, myIM.get(myLabels[4]));
 
                 // JSONObject src_heli = new JSONObject();
                 // src_heli.put(instanceLabel, id);
@@ -4885,7 +4898,7 @@ class Part {
                 // id = mw.im.next("pcs", square_pcsLabel);
                 // pf = model.component("comp1").physics("ec").create(id, "PointCurrentSource", 0);
 
-                Part.addPointCurrentSource(mw,model,index,instanceLabel,myIM.get(myLabels[16]));
+                Part.addPointCurrentSource(mw, model, index, instanceLabel, myIM.get(myLabels[16]));
 
                 // JSONObject src_rect = new JSONObject();
                 // src_rect.put(instanceLabel, id);
@@ -4949,7 +4962,7 @@ class Part {
                 // id = mw.im.next("pcs", u_pcsLabel);
                 // pf = model.component("comp1").physics("ec").create(id, "PointCurrentSource", 0);
 
-                Part.addPointCurrentSource(mw,model,index,instanceLabel,myIM.get(myLabels[2]));
+                Part.addPointCurrentSource(mw, model, index, instanceLabel, myIM.get(myLabels[2]));
 
                 // JSONObject src_u = new JSONObject();
                 // src_u.put(instanceLabel, id);
@@ -5136,7 +5149,7 @@ class Part {
                 // id = mw.im.next("pcs", ut_pcsLabel);
                 // pf = model.component("comp1").physics("ec").create(id, "PointCurrentSource", 0);
 
-                Part.addPointCurrentSource(mw,model,index,instanceLabel,myIM.get(myLabels[4]));
+                Part.addPointCurrentSource(mw, model, index, instanceLabel, myIM.get(myLabels[4]));
 
                 // JSONObject src_ut = new JSONObject();
                 // src_ut.put(instanceLabel, id);
@@ -5194,7 +5207,7 @@ class Part {
                 // id = mw.im.next("pcs", ac_pcsLabel);
                 // pf = model.component("comp1").physics("ec").create(id, "PointCurrentSource", 0);
 
-                Part.addPointCurrentSource(mw,model,index,instanceLabel,myIM.get(myLabels[3]));
+                Part.addPointCurrentSource(mw, model, index, instanceLabel, myIM.get(myLabels[3]));
 
                 // JSONObject src_ac = new JSONObject();
                 // src_ac.put(instanceLabel, id);
@@ -5297,11 +5310,11 @@ class Part {
                     "off"
                 ); // PC4
 
-                // TODO: assign physics //note : livanova was not part of edgar/cap branch yet. 
+                // TODO: assign physics //note : livanova was not part of edgar/cap branch yet.
                 // String LN_helix_pcsLabel = instanceLabel + " Current Source";
                 // id = mw.im.next("pcs", LN_helix_pcsLabel);
                 // pf = model.component("comp1").physics("ec").create(id, "PointCurrentSource", 0);
-                Part.addPointCurrentSource(mw,model,index,instanceLabel,myIM.get(myLabels[5]));
+                Part.addPointCurrentSource(mw, model, index, instanceLabel, myIM.get(myLabels[5]));
 
                 // JSONObject LN_src_heli = new JSONObject();
                 // LN_src_heli.put(instanceLabel, id);

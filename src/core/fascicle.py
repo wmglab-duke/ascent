@@ -61,11 +61,11 @@ class Fascicle:
         :raises MorphologyError: if validation fails
         """
         # ensure all inner Traces are actually inside outer Trace
-        if any([not inner.within(self.outer) for inner in self.inners]):
+        if any(not inner.within(self.outer) for inner in self.inners):
             raise MorphologyError("Not all inner Traces fall within outer Trace")
         # ensure no Traces intersect (and only check each pair of Traces once)
         pairs: List[Tuple[Trace]] = list(itertools.combinations(self.all_traces(), 2))
-        if any([pair[0].intersects(pair[1]) for pair in pairs]):
+        if any(pair[0].intersects(pair[1]) for pair in pairs):
             self.plot()
             plt.axes().set_aspect('equal')
             plt.show()
@@ -343,12 +343,12 @@ class Fascicle:
 
         :param mode: Sectionwise... for now
         :param path: root path of fascicle trace destination
-        :raises IOError: if path does not exist
+        :raises OSError: if path does not exist
         """
         start = os.getcwd()
 
         if not os.path.exists(path):
-            raise IOError("Write directory does not exist.")
+            raise OSError("Write directory does not exist.")
         else:
             # go to directory to write to
             os.chdir(path)

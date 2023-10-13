@@ -36,7 +36,7 @@ class Model(Configurable, Saveable):
         Configurable.__init__(self)
 
     def compute_cuff_shift(self, sample: Sample, sample_config: dict):
-        """Compute the Cuff Shift for a given model.
+        """Compute the Cuff Shift for single or multiple cuffs in a given model.
 
         :param sample: Sample, sample object
         :param sample_config: dict, sample config
@@ -63,36 +63,41 @@ class Model(Configurable, Saveable):
         else:
             deform_ratio = None
 
-        # TODO: do cuff initation for each loaded cuff. make sure its backwards compatible. # Use from edgar's code. 
+        # TODO: do cuff initation for each loaded cuff. make sure its backwards compatible. # Use from edgar's code.
         cuff_data = self.search(Config.MODEL, "cuff")
 
         if type(cuff_data) == dict:
-            cuff_data = [cuff_data] # When single cuff configuration is provided, readjust data type to allow following for-loop
+            cuff_data = [
+                cuff_data
+            ]  # When single cuff configuration is provided, readjust data type to allow following for-loop
         cuff_dicts = []
 
         for cuff_dict in cuff_data:
-            cuff_dict = self.cuff_shift_calc(cuff_dict,
-                                            slide,
-                                            deform_ratio,
-                                            nerve_mode,
-                                            sample_config)
+            cuff_dict = self.cuff_shift_calc(cuff_dict, slide, deform_ratio, nerve_mode, sample_config)
             cuff_dicts.append(cuff_dict)
 
         self.configs[Config.MODEL.value]['cuff'] = cuff_dicts
 
         return self
 
+    def cuff_shift_calc(
+        self, cuff_dict: dict, slide: Slide, deform_ratio: float, nerve_mode: NerveMode, sample_config: dict
+    ):
+        """Compute the cuff shift for a single cuff.
 
-    def cuff_shift_calc(self, cuff_dict: dict, slide: Slide, deform_ratio: float, nerve_mode: NerveMode, sample_config: dict):
-        """
+        :param cuff_dict: dictionary for single cuff
+        :param slide: the sample's slide
+        :param deform_ratio: deformation ratio
+        :param nerve_mode: whether the nerve is present. Flag from sample config file.
+        :param sample_config: sample configuration variables
+        :raises ValueError: if deform_ratio is not between 0 and 1 (inclusive)
+        :return: updated cuff dictionary
         """
         # get center and radius of nerve's min_bound circle
         nerve_copy = deepcopy(slide.nerve if nerve_mode == NerveMode.PRESENT else slide.fascicles[0].outer)
-        
+
         # fetch cuff config
-        cuff_config: dict = self.load(
-            os.path.join(os.getcwd(), "config", "system", "cuffs", cuff_dict['preset'])
-        )
+        cuff_config: dict = self.load(os.path.join(os.getcwd(), "config", "system", "cuffs", cuff_dict['preset']))
 
         (
             cuff_code,
@@ -108,9 +113,6 @@ class Model(Configurable, Saveable):
         ) = self.get_cuff_shift_parameters(cuff_config, deform_ratio, nerve_copy, sample_config, slide)
 
         r_i, theta_f = self.check_cuff_expansion_radius(cuff_code, cuff_config, expandable, r_f, theta_i)
-
-        # # remove sample config # why was this removing config.sample?
-        # self.remove(Config.SAMPLE)
 
         cuff_shift_mode: CuffShiftMode = self.search_mode(CuffShiftMode, Config.MODEL)
 
@@ -363,7 +365,7 @@ class Model(Configurable, Saveable):
             bounds.append((r_min, r_max, r_min_ix, r_max_ix, parameter))
 
         # check that none of the conditions have double Nones
-        if any([bound[0] is None and bound[1] is None for bound in bounds]):
+        if any(bound[0] is None and bound[1] is None for bound in bounds):
             raise IncompatibleParametersError("Cuff configuration file has a condition with double Nones. ")
 
         # check that there is only one max with None, and one min with None
