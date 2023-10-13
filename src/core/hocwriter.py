@@ -349,6 +349,13 @@ class HocWriter(Configurable, Saveable):
         file_object.write(
             f"saveflag_Istim        = {int(self.search(Config.SIM, 'saving', 'time', 'istim') is True):0.0f}\n"
         )
+        if 'cap_recording' not in self.configs[Config.SIM.value]['saving']:
+            file_object.write(f"saveflag_Imem         = {0}\n")
+        else:
+            file_object.write(
+                f"saveflag_Imem         = "
+                f"{int(self.search(Config.SIM, 'saving', 'cap_recording', 'Imembrane_matrix') is True):0.0f}\n"
+            )
         if 'runtimes' not in self.configs[Config.SIM.value]['saving']:
             file_object.write(f"saveflag_runtime      = {0}\n")
         else:

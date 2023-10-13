@@ -78,6 +78,12 @@ if (saveflag_end_ap_times==1) {
 
 
 proc RunSim() {local myamp
+	if (saveflag_Imem==1) {
+	dt_vector = new Vector(1,dt)
+	tstop_vector = new Vector(1,tstop)
+	axontotal_vector = new Vector(1,axontotal)
+	Imembrane_save_format_vector = new Vector((axontotal)*(n_tsteps+1),0)
+	}
 	myamp = $1
 	// If recording extracellular signals, initialize a vector to store the SFAP
 	if (flag_extracellular_rec == 1) {
@@ -203,6 +209,11 @@ proc RunSim() {local myamp
 				} else {
 					// for unmyelinated axons, the current through the membrane is all that is needed
 					net_i_extracellular_seg_i = i_membrane_seg_i // [mA]
+				}
+
+				if (saveflag_Imem==1) {
+				// for Imembrane_save_format_vector, save the current at the membrane, not the net current entering the extracellular space
+				Imembrane_save_format_vector.x[seg_ind*(n_tsteps+1) + t_ind] = net_i_extracellular_seg_i
 				}
 
 				// Store SFAP signal (in V) contributed by this latest time point and node location

@@ -132,6 +132,8 @@ if (fiber_type == 2) { // myelinated
 }
 
 load_file("Recording.hoc")
+strdef Imembrane_fname_output
+objref Imembrane, dt_vector, tstop_vector, axontotal_vector, Imembrane_save_format_vector, num_compartments_to_save
 
 // ***************************************************************************
 // Call sequence of procedures/functions for each sim
@@ -258,6 +260,20 @@ proc run_all(){local myinner, myfiber, myamp, amp_ind
 		sprint(thresh_fname_output, "../%s/data/outputs/thresh_inner%d_fiber%d.dat", sim_path, myinner, myfiber)
 		Saving_Thresh()
 	}
+
+	// Save membrane current matrix
+	if (saveflag_Imem==1) {
+        sprint(Imembrane_fname_output, "../%s/data/outputs/Imembrane_axon%d_fiber%d_amp%d.dat", sim_path, myinner, myfiber, amp_ind)
+        Imembrane = new File()
+        Imembrane.wopen(Imembrane_fname_output)
+
+        tstop_vector.vwrite(Imembrane)
+        dt_vector.vwrite(Imembrane)
+        axontotal_vector.vwrite(Imembrane)
+
+        Imembrane_save_format_vector.vwrite(Imembrane)
+        Imembrane.close()
+    }
 
 	// Save data
 	Saving()
