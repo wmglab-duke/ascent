@@ -48,6 +48,7 @@ def run(args):
                             sample,
                             model,
                             sim,
+                            sim_dir,
                             os.path.join(nsim_source, 'n_sims'),
                             len(sim_config['protocol']['amplitudes']),
                         )

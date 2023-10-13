@@ -567,9 +567,7 @@ class Simulation(Configurable, Saveable):
                 potentials_ind, sim_dir, sim_num, t, waveform_ind
             )
             # STOPPED HERE... Pick up next time. src_mappings needs to be updated since updating im.json structure.
-            src_bases_indices, rec_bases_indices = self.srcs_mapping(
-                sim_dir
-            )  # I think this should take care of rec bases as well?
+            src_bases_indices, rec_bases_indices = self.srcs_mapping(sim_dir)
             print(f"Src bases: {src_bases_indices}, rec bases: {rec_bases_indices}")
 
             fiberset_directory = os.path.join(sim_dir, str(sim_num), 'fibersets', str(fiberset_ind))
@@ -650,6 +648,7 @@ class Simulation(Configurable, Saveable):
         ]  # sim_copy['active_recs']['cuff_index']
         print(f"src mappings: src: {src_cuff_index}, rec: {rec_cuff_index}")
         # using the cuff indices in Sim, what are the bases files using the cuff_indexes saved in im.json?
+        # TODO: Reading im_path from this source does not work when recycling multi-cuff meshes...
         im_path = os.path.join(os.path.split(sim_dir)[0], 'mesh', 'im.json')
         im_config = self.load_json(im_path)
 

@@ -20,8 +20,6 @@ from scipy import stats as stats
 from src.core import Sample, Simulation, Slide
 from src.utils import Config, Configurable, Object, Saveable, SetupMode
 
-import matplotlib as plt
-
 
 class Query(Configurable, Saveable):
     """Query is for analyzing data after running NEURON simulations.
@@ -73,7 +71,7 @@ class Query(Configurable, Saveable):
 
         # check that all sets of indices contain only integers
         for indices in (sample_indices, model_indices, sim_indices):
-            if indices is not None and not all([isinstance(i, int) for i in indices]):
+            if indices is not None and not all(isinstance(i, int) for i in indices):
                 raise TypeError('Encountered a non-integer index. Check your search criteria.')
 
         # criteria for each layer
@@ -285,7 +283,7 @@ class Query(Configurable, Saveable):
                     return False
 
             # neither c_val nor d_val are list
-            elif not any([type(v) is list for v in (c_val, d_val)]):
+            elif not any(type(v) is list for v in (c_val, d_val)):
                 if c_val != d_val:
                     return False
 
@@ -303,10 +301,118 @@ class Query(Configurable, Saveable):
             # both c_val and d_val are list
             else:  # all([type(v) is list for v in (c_val, d_val)]):
                 # "partial matches" indicates that other values may be present in d_val
-                if not self.search(Config.CRITERIA, 'partial_matches') or not all([c_i in d_val for c_i in c_val]):
+                if not self.search(Config.CRITERIA, 'partial_matches') or not all(c_i in d_val for c_i in c_val):
                     return False
 
         return True
+
+    def sfap_data(self, fiber_indices: List[int] = None, all_fibers: bool = False, ignore_missing: bool = False):
+        """Obtain SFAP data as a pandas DataFrame for user-defined fiber indices or all fibers.
+
+        :param fiber_indices: list of fiber indexes to pull SFAP data for. Default: single fiber 0.
+        :param all_fibers: If True, all fiber's SFAP data will be pulled. If False, only fiber_indices will be pulled.
+        :param ignore_missing: if True, missing threshold data will not cause an error.
+        :raises LookupError: If no results (called before Query.run())
+        :return: pandas DataFrame of SFAP data.
+        """
+        if self._result is None:
+            raise LookupError("No query results, Query.run() must be called before calling analysis methods.")
+        if fiber_indices is None:
+            fiber_indices = [0]
+        [samples, models, sims] = list(self.configs['criteria']['indices'].values())
+
+        # TODO: simplify/clean this function! Inspired by threshold_data for first quick approach.
+        sample_results: dict
+        for sample_results in self._result.get('samples', []):
+            sample_index = sample_results['index']
+            sample_object: Sample = self.get_object(Object.SAMPLE, [sample_index])
+            slide: Slide = sample_object.slides[0]
+            n_inners = sum(len(fasc.inners) for fasc in slide.fascicles)
+
+            # loop models
+            for model_results in sample_results.get('models', []):
+                model_index = model_results['index']
+
+                for sim_index in sims:
+                    sim_object = self.get_object(Object.SIMULATION, [sample_index, model_index, sim_index])
+
+                    # whether the comparison key is for 'fiber' or 'wave', the nsims will always be in order!
+                    # this realization allows us to simply loop through the factors in sim.factors[key] and treat the
+                    # indices as if they were the nsim indices
+                    # TODO: loop over master_indices to only obtain data for desired fibers. Need to find another way
+                    # to obtain nsim_index...
+                    master_indices = []
+                    for i in sim_object.master_product_indices:
+                        if i[0] in fiber_indices:
+                            master_indices.append(i)
+                    for nsim_index, (
+                        potentials_product_index,
+                        waveform_index,
+                    ) in enumerate(sim_object.master_product_indices):
+                        (
+                            active_src_index,
+                            active_rec_index,
+                            fiberset_index,
+                        ) = sim_object.potentials_product[potentials_product_index]
+                        # fetch outer->inner->fiber and out->inner maps
+                        out_in_fib, out_in = sim_object.fiberset_map_pairs[fiberset_index]
+
+                        # build base dirs for fetching SFAPs
+                        sim_dir = self.build_path(
+                            Object.SIMULATION,
+                            [sample_index, model_index, sim_index],
+                            just_directory=True,
+                        )
+                        n_sim_dir = os.path.join(sim_dir, 'n_sims', str(nsim_index))
+
+                        # init SFAP container for this model, sim, nsim
+                        sfap_data: List[float] = []
+
+                        # fetch all SFAPs
+                        for inner in range(n_inners):
+                            outer = [index for index, inners in enumerate(out_in) if inner in inners][0]
+
+                            for local_fiber_index, _ in enumerate(out_in_fib[outer][out_in[outer].index(inner)]):
+                                master_index = sim_object.indices_n_to_fib(fiberset_index, inner, local_fiber_index)
+
+                                # TODO: replace amp0 with variable
+                                sfap_path = os.path.join(
+                                    n_sim_dir,
+                                    'data',
+                                    'outputs',
+                                    f'SFAP_time_inner{inner}_fiber{local_fiber_index}_amp0.dat',
+                                )
+                                if ignore_missing:
+                                    try:
+                                        sfap = np.loadtxt(sfap_path, skiprows=1)
+                                    except IOError:
+                                        sfap = np.array(np.nan)
+                                        warnings.warn('Missing SFAP, but continuing.', stacklevel=2)
+                                else:
+                                    sfap = np.loadtxt(sfap_path, skiprows=1)
+
+                                for row in sfap:
+                                    sfap_data.append(
+                                        {
+                                            'sample': sample_results['index'],
+                                            'model': model_results['index'],
+                                            'sim': sim_index,
+                                            'nsim': nsim_index,
+                                            'inner': inner,
+                                            'fiber': local_fiber_index,
+                                            'index': master_index,
+                                            'fiberset_index': fiberset_index,
+                                            'waveform_index': waveform_index,
+                                            'active_src_index': active_src_index,
+                                            'active_rec_index': active_rec_index,
+                                            'SFAP_times': row[0] - 1.2,
+                                            'SFAP0': row[1],
+                                        }
+                                    )
+
+        sfap_data = pd.DataFrame(sfap_data)
+        output = sfap_data.loc[sfap_data.fiberset_index.isin(fiber_indices)] if not all_fibers else sfap_data
+        return output
 
     def threshold_data(
         self,
@@ -357,6 +463,7 @@ class Query(Configurable, Saveable):
                     ) in enumerate(sim_object.master_product_indices):
                         (
                             active_src_index,
+                            active_rec_index,
                             fiberset_index,
                         ) = sim_object.potentials_product[potentials_product_index]
                         # fetch outer->inner->fiber and out->inner maps
@@ -391,7 +498,7 @@ class Query(Configurable, Saveable):
                                         threshold = np.loadtxt(thresh_path)
                                     except IOError:
                                         threshold = np.array(np.nan)
-                                        warnings.warn('Missing threshold, but continuing.')
+                                        warnings.warn('Missing threshold, but continuing.', stacklevel=2)
                                 else:
                                     threshold = np.loadtxt(thresh_path)
 
@@ -411,7 +518,8 @@ class Query(Configurable, Saveable):
                                             'index': master_index,
                                             'fiberset_index': fiberset_index,
                                             'waveform_index': waveform_index,
-                                            'active_src_index': active_src_index,
+                                            'active_src_index': active_src_index,  # TODO: only report src or rec.
+                                            'active_rec_index': active_rec_index,  # Doesn't make sense to do both.
                                             'threshold': abs(threshold),
                                         }
                                     )
@@ -427,6 +535,7 @@ class Query(Configurable, Saveable):
                                         'fiberset_index': fiberset_index,
                                         'waveform_index': waveform_index,
                                         'active_src_index': active_src_index,
+                                        'active_rec_index': active_rec_index,
                                         'mean': np.nan,
                                     }
                                 )
@@ -442,6 +551,7 @@ class Query(Configurable, Saveable):
                                         'fiberset_index': fiberset_index,
                                         'waveform_index': waveform_index,
                                         'active_src_index': active_src_index,
+                                        'active_rec_index': active_rec_index,
                                         'mean': np.mean(thresholds),
                                         'std': np.std(thresholds, ddof=1),
                                         'sem': stats.sem(thresholds),
@@ -618,177 +728,3 @@ class Query(Configurable, Saveable):
                 writer.sheets[sheet_name].set_column(0, 256)
 
         writer.save()
-
-    ## From edgar's cap branch - no longer located in master. TODO: Delete?
-    # def ap_time_and_location(
-    #         self,
-    #         delta_V: float = 60,
-    #         rounding_precision: int = 5,
-    #         n_sim_filter: List[int] = None,
-    #         plot: bool = False,
-    #         plot_nodes_on_find: bool = False,
-    #         plot_compiled: bool = False,
-    #         absolute_voltage: bool = True,
-    #         n_sim_label_override: str = None,
-    #         model_labels: List[str] = None,
-    #         save: bool = False,
-    #         subplots=False,
-    #         nodes_only=False):
-
-    #     print(
-    #         f'Finding time and location of action potentials, which are defined as any voltage deflection of {delta_V} mV.')
-
-    #     if plot:
-    #         print(
-    #             'Note: Plotting is currently only defined for MRG axons in the SL branch; plotting for other axon models/locations may yield unexpected results.')
-
-    #     # loop samples
-    #     for sample_index, sample_results in [(s['index'], s) for s in self._result.get('samples')]:
-    #         print('sample: {}'.format(sample_index))
-
-    #         # sample_object: Sample = self.get_object(Object.SAMPLE, [sample_index])
-
-    #         # loop models
-    #         for model_index, model_results in [(m['index'], m) for m in sample_results.get('models')]:
-    #             print('\tmodel: {}'.format(model_index))
-
-    #             # loop sims
-    #             for sim_index in model_results.get('sims', []):
-    #                 print('\t\tsim: {}'.format(sim_index))
-
-    #                 sim_object = self.get_object(Object.SIMULATION, [sample_index, model_index, sim_index])
-
-    #                 if subplots == True:
-    #                     fig, axs = plt.subplots(ncols=len(sim_object.master_product_indices), nrows=2, sharey="row")
-
-    #                 # loop nsims
-    #                 for n_sim_index, (potentials_product_index, waveform_index) in enumerate(
-    #                         sim_object.master_product_indices):
-    #                     print('\t\t\tnsim: {}'.format(n_sim_index))
-
-    #                     active_src_index, fiberset_index = sim_object.potentials_product[potentials_product_index]
-
-    #                     # skip if not in existing n_sim filter
-    #                     if n_sim_filter is not None and n_sim_index not in n_sim_filter:
-    #                         print('\t\t\t\t(skip)')
-    #                         continue
-
-    #                     # directory of data for this (sample, model, sim)
-    #                     sim_dir = self.build_path(Object.SIMULATION, [sample_index, model_index, sim_index],
-    #                                               just_directory=True)
-
-    #                     # directory for specific n_sim
-    #                     n_sim_dir = os.path.join(sim_dir, 'n_sims', str(n_sim_index))
-
-    #                     # directory of fiberset (i.e., points and potentials) associated with this n_sim
-    #                     fiberset_dir = os.path.join(sim_dir, 'fibersets', str(fiberset_index))
-
-    #                     # the simulation outputs for this n_sim
-    #                     outputs_path = os.path.join(n_sim_dir, 'data', 'outputs')
-
-    #                     # path of the first inner, first fiber vm(t) data
-    #                     vm_t_path = os.path.join(outputs_path, 'Vm_time_inner0_fiber0_amp0.dat')
-
-    #                     # load vm(t) data (see path above)
-    #                     # each row is a snapshot of the voltages at each node [mV]
-    #                     # the first column is the time [ms]
-    #                     # first row is holds column labels, so this is skipped (time, node0, node1, ...)
-    #                     vm_t_data = np.loadtxt(vm_t_path, skiprows=1)
-
-    #                     # find V-nought be averaging voltage of all nodes at first timestep (assuming no stimulation at time=0)
-    #                     V_o = np.mean(vm_t_data[0, 1:])
-    #                     # if using absolute voltage, set an absolute delta V (i.e., -30mV)
-    #                     if absolute_voltage:
-    #                         V_o = 0
-
-    #                     # find dt by rounding first timestep
-    #                     dt = round(vm_t_data[1, 0] - vm_t_data[0, 0], rounding_precision)
-
-    #                     # initialize value AP time, node (locations), voltages at time
-    #                     time, node, voltages = None, None, None
-
-    #                     # loop through and enumerate each timestep
-    #                     rows = vm_t_data[:, 1:]
-    #                     index = int(len(rows) / 2)
-    #                     for i, row in enumerate(rows):
-    #                         # get list of node indices that satisfy deflection condition
-    #                         found_nodes = np.where(row >= V_o + delta_V)[0]
-    #                         # that list contains any elements, set time and node (location), then break out of loop
-    #                         if len(found_nodes) > 0:
-    #                             time = round(i * dt, rounding_precision)
-    #                             node = found_nodes[0]
-    #                             voltages = row
-    #                             index = i
-    #                             break
-
-    #                     if plot_compiled:
-    #                         plt.figure()
-    #                         for row in rows[index - 5: index + 5]:
-    #                             plt.plot(row)
-    #                         plt.show()
-
-    #                     # if no AP found, skip
-    #                     if time is None or node is None:
-    #                         print('\t\t\t\t(no AP found)')
-
-    #                     # print results of timestep search
-    #                     # if time is not None and node is not None:
-    #                     else:
-    #                         # create message about AP time and location findings
-    #                         message = f't: {time} ms, node: {node + 1} (of {len(vm_t_data[0, 1:])})'
-    #                         print(f'\t\t\t\t{message}')
-
-    #                         # plot the AP location with voltage trace
-    #                         # create subplots
-    #                         if plot or save:
-    #                             if subplots != True:
-    #                                 fig, axes = plt.subplots(2, 1)
-    #                             else:
-    #                                 axes = [axs[0][n_sim_index], axs[1][n_sim_index]]
-    #                             # load fiber coordinates
-    #                             fiber = np.loadtxt(os.path.join(fiberset_dir, '0.dat'), skiprows=1)
-    #                             nodefiber = fiber[0::11, :]
-
-    #                             # plot fiber coordinates in 2D
-    #                             if nodes_only != True:
-    #                                 axes[0].plot(fiber[:, 0], fiber[:, 2], 'b.', label='fiber')
-    #                             else:
-    #                                 axes[0].plot(nodefiber[:, 0], nodefiber[:, 2], 'b.', label='fiber')
-
-    #                             # plot AP location
-    #                             axes[0].plot(fiber[11 * node, 0], fiber[11 * node, 2], 'r*', markersize=10)
-
-    #                             # location display settings
-    #                             n_sim_label = f'n_sim: {n_sim_index}' if (
-    #                                 n_sim_label_override is None) else n_sim_label_override
-    #                             model_label = '' if (model_labels is None) else f', {model_labels[model_index]}'
-    #                             axes[0].set_xlabel('x location, µm')
-
-    #                             axes[0].set_title(f'{n_sim_label}{model_label}')
-    #                             if subplots != True:
-    #                                 axes[0].legend(['fiber', f'AP ({message})'])
-    #                             else:
-    #                                 axes[0].legend(['fiber', 'AP'])
-
-    #                             # axes[0].set_aspect(1)
-    #                             plt.tight_layout()
-
-    #                             # plot voltages
-    #                             axes[1].plot(voltages, 'bo')
-
-    #                             # voltages display settings
-    #                             axes[1].set_xlabel('node')
-    #                             if subplots != True or n_sim_index == 0:
-    #                                 axes[1].set_ylabel('voltage (mV)')
-    #                                 axes[0].set_ylabel('z location, µm')
-    #                             # axes[1].set_aspect(0.25)
-    #                             plt.tight_layout()
-
-    #                         # display
-    #                         if save:
-    #                             plt.savefig(
-    #                                 f'out/analysis/ap_time_loc_{sample_index}_{model_index}_{sim_index}_{n_sim_index}.png',
-    #                                 dpi=300)
-
-    #                         if plot:
-    #                             plt.show()
