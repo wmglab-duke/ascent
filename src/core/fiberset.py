@@ -119,7 +119,7 @@ class FiberSet(Configurable, Saveable):
         if diams.count(None) == 0:
             diams_key_path = os.path.join(path, 'diams.txt')
             with open(diams_key_path, "w") as f2:
-                np.savetxt(f2, diams, fmt='%0.1f')
+                np.savetxt(f2, diams, fmt='%0.6f')
         elif diams.count(None) == len(diams):
             pass
         else:

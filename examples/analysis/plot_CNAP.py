@@ -1,9 +1,10 @@
 #!/usr/bin/env python3.7
 
-"""Plot single or multiple overlaid Single Fiber Action Potentials (SFAP).
+"""Plot the compound nerve action potential (CNAP).
 
 The recorded SFAPs are produced for every fiber when a model contains a
-recording cuff, identified within the model.json configuration file.
+recording cuff, identified within the model.json configuration file. The user
+may pass in specific fiber indices or choose to compound across all fibers.
 
 The copyrights of this software are owned by Duke University.
 Please refer to the LICENSE and README.md files for licensing instructions.
@@ -21,7 +22,8 @@ from src.core.query import Query
 sys.path.append(os.path.sep.join([os.getcwd(), '']))
 sns.set_style("whitegrid")
 
-fiber_indices = [0]
+fiber_indices = list(range(13))
+print(fiber_indices)
 
 q = Query(
     {
@@ -30,14 +32,15 @@ q = Query(
         'indices': {'sample': [20230323], 'model': [0], 'sim': [20230323092]},
     }
 ).run()
+data = q.sfap_data(fiber_indices, all_fibers=True)
 
-data = q.sfap_data(all_fibers=True)
-print(data)
+# CNAP = Summation of all fibers
+cnap = data.groupby(['SFAP_times'])['SFAP0'].sum().reset_index()
 
-# for fiber in
-sns.lineplot(data=data, x='SFAP_times', y='SFAP0', hue='fiberset_index', palette='deep')
-plt.xlim(left=0, right=10.0)
-plt.title('Single Fiber Action Potentials')
+# Generate plot
+sns.lineplot(data=cnap, x='SFAP_times', y='SFAP0')
+plt.title('Compound Neuron Action Potential')
 plt.xlabel('Time (ms)')
 plt.ylabel(r'signal (${\mu}V$)')
+plt.xlim(left=0, right=4.5)
 plt.show()

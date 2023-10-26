@@ -713,9 +713,7 @@ def make_run_sub_list(run_number: int):
                     sim_config = load(os.path.join(sim_path, f'{n_sim}.json'))
 
                     fibers_files = [
-                        x
-                        for x in os.listdir(fibers_path)
-                        if re.match('(?:(rec|src)_)?inner[0-9]+_fiber[0-9]+\\.dat', x)
+                        x for x in os.listdir(fibers_path) if re.match('(?:(src)_)?inner[0-9]+_fiber[0-9]+\\.dat', x)
                     ]  # First regex group with ? is optional - for backwards compatibility
 
                     for i, fiber_filename in enumerate(fibers_files):
@@ -781,7 +779,7 @@ def confirm_submission(n_fibers, rundata, submission_context):
 
 
 def get_submission_list(run_inds):
-    """Get the list of simulations to be submitte for all runs.
+    """Get the list of simulations to be submitted for all runs.
 
     :param run_inds: the list of run indices
     :return: summary of runs, a list of all simulations to be submitted

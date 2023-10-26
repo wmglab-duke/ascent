@@ -386,11 +386,10 @@ public class ModelWrapper {
 
             // LOOP OVER SIMS
             for (int sim_ind = 0; sim_ind < sims_list.length(); sim_ind++) { // loop over sims
-                int sim_num = (int) sims_list.get(sim_ind); // get sim number for index in sims list
                 // build path to directory of sim
                 String sim_dir = String.join(
                     "/",
-                    new String[] { model_path, "sims", Integer.toString(sim_num) }
+                    new String[] { model_path, "sims", sims_list.get(sim_ind).toString() }
                 );
                 // String sim_config_path = String.join("/", new String[]{ // build path to sim config file
                 //     projectPath, "config", "user", "sims", sim_num + ".json"

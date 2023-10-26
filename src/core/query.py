@@ -343,6 +343,9 @@ class Query(Configurable, Saveable):
                     for i in sim_object.master_product_indices:
                         if i[0] in fiber_indices:
                             master_indices.append(i)
+
+                    # init SFAP container for this model, sim, nsim
+                    sfap_data: List[float] = []
                     for nsim_index, (
                         potentials_product_index,
                         waveform_index,
@@ -362,9 +365,6 @@ class Query(Configurable, Saveable):
                             just_directory=True,
                         )
                         n_sim_dir = os.path.join(sim_dir, 'n_sims', str(nsim_index))
-
-                        # init SFAP container for this model, sim, nsim
-                        sfap_data: List[float] = []
 
                         # fetch all SFAPs
                         for inner in range(n_inners):
