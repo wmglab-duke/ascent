@@ -27,7 +27,7 @@ def import_tm_current_matrix(imembrane_file_name):
         alldata = file.read()
         # TODO: check that the format '@' works on other machines. Test on cluster.
         # Currently it is in native format, might need to be in standard format.
-        _, _, current_amp, _, _, dt, _, _, axon_num, vector_size, _ = struct.unpack(
+        _, _, tstop, _, _, dt, _, _, axon_num, vector_size, _ = struct.unpack(
             "@iidiidiidii", alldata[:56]  # 56 is the total number of bytes correlating with the format
         )
         current_matrix = np.array(struct.unpack_from(f"{vector_size}d", alldata[56:]))
@@ -38,10 +38,10 @@ def import_tm_current_matrix(imembrane_file_name):
     time_vector = np.arange(0, dt * (vector_size / axon_num), dt)
 
     # Sanity checks
-    print(current_amp, dt, axon_num, vector_size)
+    print(tstop, dt, axon_num, vector_size)
     print(np.shape(current_matrix))
     print(time_vector[:5])
-    return current_amp, time_vector, current_matrix
+    return tstop, time_vector, current_matrix
 
 
 # Test on sample file
