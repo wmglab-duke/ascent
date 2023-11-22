@@ -17,9 +17,9 @@ import sys
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from src.core.query import Query
-
 sys.path.append(os.path.sep.join([os.getcwd(), '']))
+from src.core.query import Query  # noqa E402
+
 sns.set_style("whitegrid")
 
 fiber_indices = list(range(13))

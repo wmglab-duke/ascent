@@ -16,9 +16,9 @@ import sys
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from src.core.query import Query
-
 sys.path.append(os.path.sep.join([os.getcwd(), '']))
+from src.core.query import Query  # noqa E402
+
 sns.set_style("whitegrid")
 
 fiber_indices = [0]
@@ -31,7 +31,7 @@ q = Query(
     }
 ).run()
 
-data = q.sfap_data(all_fibers=True)
+data = q.sfap_data(fiber_indices=fiber_indices, all_fibers=True)
 print(data)
 
 # for fiber in

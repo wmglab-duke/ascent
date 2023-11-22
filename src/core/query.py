@@ -384,7 +384,7 @@ class Query(Configurable, Saveable):
                                     try:
                                         sfap = np.loadtxt(sfap_path, skiprows=1)
                                     except OSError:
-                                        sfap = np.array(np.nan)
+                                        sfap = np.array([[np.nan, np.nan]])
                                         warnings.warn('Missing SFAP, but continuing.', stacklevel=2)
                                 else:
                                     sfap = np.loadtxt(sfap_path, skiprows=1)
