@@ -838,7 +838,6 @@ public class ModelWrapper {
 
             //if no bases are valid, must resolve all, even if file exists
             boolean resolveAll = !anyTrue(basesValid);
-            System.out.println(basesValid);
             System.out.println("\tSolving electric currents for " + key_on + ".");
 
             boolean save = true;

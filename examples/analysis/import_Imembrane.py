@@ -34,13 +34,11 @@ def import_tm_current_matrix(imembrane_file_name):
     file.close()
 
     # Build current matrix and time vectors from file data
-    current_matrix = current_matrix.reshape(((int)(vector_size / axon_num), -1))
+    current_matrix = current_matrix.reshape(
+        ((int)(vector_size / axon_num), -1), order='F'
+    )  # Matlab and Fortran ('F order') both use column-major layout as the default
     time_vector = np.arange(0, dt * (vector_size / axon_num), dt)
 
-    # Sanity checks
-    print(tstop, dt, axon_num, vector_size)
-    print(np.shape(current_matrix))
-    print(time_vector[:5])
     return tstop, time_vector, current_matrix
 
 
