@@ -366,7 +366,7 @@ public class ModelWrapper {
                 .stream(bases_files)
                 .filter(s -> Pattern.matches("Cuff\\s[0-9]+_[a-zA-Z0-9 ]+\\.mph", s))
                 .toArray(String[]::new);
-
+        Arrays.sort(bases_files); // Now that bases files contain descriptive cuff strings, sort the values to avoid errors with later cuff indexing.
         //TODO: Loop over cuffs
 
         // LOOP OVER BASES
