@@ -19,14 +19,12 @@ from scipy.stats import mode
 
 sys.path.append(os.path.sep.join([os.getcwd(), '']))
 from src.core.query import Query  # noqa E402
-from src.utils import Object  # noqa E402
+from src.utils import Config  # noqa E402
 
 sample = 20230323
 model = 0
 sim = 20230323092
-n_sim = 0
-axon = 0
-fiber = 0
+fiber = 0  # fiber index in each nsim. Used to specify membrane current matrix file path on line 75
 amp_num = 0
 
 q = Query(
@@ -36,14 +34,13 @@ q = Query(
         'indices': {'sample': [sample], 'model': [model], 'sim': [sim]},
     }
 ).run()
-sim_obj = q.get_object(Object.SIMULATION, [sample, model, sim])
-template_fiber_diameters = sim_obj.factors['fibers->z_parameters->diameter']
+sim_obj = q.get_config(Config.SIM, [sim])
+template_fiber_diameters = sim_obj['fibers']['z_parameters']['diameter']
 
 # Input variables
 fiber_type = 'MRG_DISCRETE'  # Set common time bounds based on this - pull from sim
+stim_pulse_start_time_ms = sim_obj['waveform']['global']['on']  # [ms]
 
-template_node_indice = [1]  # target_compartment_index 194 --> loop over to generate a matrix of saved output object
-stim_pulse_start_time_ms = 2  # [ms]
 # Note: tpeakl is relative to start of stim pulse.
 if fiber_type in [
     'MRG_DISCRETE',
@@ -77,7 +74,7 @@ for fiber_ind in range(len(template_fiber_diameters)):  # Looping through simula
     membrane_current_filename = os.path.join(
         os.getcwd(),
         f"samples\\{sample}\\models\\{model}\\sims\\{sim}\\n_sims\\{fiber_ind}\\data\\outputs\\"
-        f"Imembrane_axon{axon}_fiber{fiber}_amp{amp_num}.dat",
+        f"Imembrane_axon{fiber}_fiber{fiber}_amp{amp_num}.dat",
     )
     tstop, time_vector, transmembrane_curent_matrix = import_tm_current_matrix(membrane_current_filename)
 
@@ -97,7 +94,7 @@ for fiber_ind in range(len(template_fiber_diameters)):  # Looping through simula
     transmembrane_curent_matrix = transmembrane_curent_matrix[blanking_buffer_first_idx:, :]
     time_vector = time_vector[time_vector > blanking_buffer_ms]
 
-    # Calculate CV - focus on myelinated (195) ignore before
+    # Calculate CV - focus on myelinated fibers
     node_indices = range(0, len(z_locations_mm), n_compartments_per_repeatable_uit)
     node_z_locations = z_locations_mm[node_indices]
     index_to_extract = round((len(node_z_locations) - 1) * 0.7)  #
@@ -136,7 +133,6 @@ for fiber_ind in range(len(template_fiber_diameters)):  # Looping through simula
     dipolar_currents = -np.cumsum(transmembrane_curent_matrix, 1)
 
     # Pull out templates for both mono and dipole methods - myelinated has 11 surrounding compartments
-    # monopolar_temporal_template
     if fiber_type == 'myelinated':
         myel_compartments_around_target_idx = range(
             target_compartment_index, target_compartment_index + n_compartments_per_repeatable_uit
@@ -149,9 +145,6 @@ for fiber_ind in range(len(template_fiber_diameters)):  # Looping through simula
 
     # Upsample each template by factor of 15 - to get a more exact tpeak suitable for template alignment for
     # interpolation over fiber diameter.
-    # Fourier interpolation method - ask edgar (instead of spline). Lets you upsample, but not generate new values
-    # from user-defined x samples.
-    # scipy.signal.resample
     template_upsample_factor = 15
     monopolar_signal, monopolar_time = resample(
         monopolar_temporal_template, template_upsample_factor * (len(monopolar_temporal_template) - 1), t=time_vector
@@ -160,7 +153,7 @@ for fiber_ind in range(len(template_fiber_diameters)):  # Looping through simula
         dipole_temporal_template, template_upsample_factor * (len(dipole_temporal_template) - 1), t=time_vector
     )
 
-    # shifting time vectors so tpeak happens at time 0 (ML line 375)
+    # Shifting time vectors so tpeak happens at time 0
     peak_idx_monopolar = np.argmax(monopolar_signal[:, 0])
     peak_idx_dipole = np.argmax(dipole_signal[:, 0])
     time_at_peak_monopolar = monopolar_time[peak_idx_monopolar]
@@ -168,8 +161,8 @@ for fiber_ind in range(len(template_fiber_diameters)):  # Looping through simula
     monopolar_time -= time_at_peak_monopolar
     dipole_time -= time_at_peak_dipole
 
-    # At this point, though peaks allb happen at t=0, the previous x-points won't be aligned. Need a new standard
-    # time vector and use interp to resample the points. common_time_vector - 1. must include 0 2. resampling method
+    # At this point, though peaks all happen at t=0, the previous x-points won't be aligned. Need a new standard
+    # time vector and use interp to resample the points.
     dt_pre_resample, _ = mode(np.diff(time_vector), keepdims=False)  # [ms]
     common_time_vector = np.concatenate(
         (
@@ -180,12 +173,11 @@ for fiber_ind in range(len(template_fiber_diameters)):  # Looping through simula
     mono_interp = interp1d(monopolar_time, monopolar_signal, kind='cubic', axis=0, bounds_error=False, fill_value=0)
     temporal_templates = mono_interp(common_time_vector)
 
-    # Template construction - interpolate to form mono and dipole temporal templates using spline (382)
+    # Template construction - interpolate to form mono and dipole temporal templates using spline.
     dipole_interp = interp1d(dipole_time, dipole_signal, kind='cubic', axis=0, bounds_error=False, fill_value=0)
     dipole_temporal_templates = dipole_interp(common_time_vector)
 
-    # Outputs - 395, store all uncommented variables into a "matrix" for this single node template.
-    # Ultimately, will run this for multiple templates (nodes) for different fibers.
+    # Outputs - store variables for this single node template.
     fiber_data = (
         fiber_ind,
         template_fiber_diameters[fiber_ind],
@@ -197,6 +189,7 @@ for fiber_ind in range(len(template_fiber_diameters)):  # Looping through simula
         time_at_peak_dipole,
         target_compartment_index,
     )
+    # Append single node template to list of node templates per fiber.
     fiber_data_list.append(fiber_data)
 
 # Constructing structured array to allow for matlab export of 'output_data' to be in the form of a struct, not a cell.
@@ -219,9 +212,5 @@ output_data = np.array(
 # Save as .mat file to be compatible with edgar's foloowing CAPulator matlab script.
 output_file_name = os.path.join('output', 'analysis', 'templates')
 os.makedirs(output_file_name, exist_ok=True)
-output_file_name = os.path.join(output_file_name, f'template_data_{sample}_{model}_{sim}2.mat')
+output_file_name = os.path.join(output_file_name, f'template_data_{sample}_{model}_{sim}.mat')
 savemat(output_file_name, {'fiber_type': fiber_type, 'output_data_structure': output_data})
-
-
-# For both the mono and dipole methods, we are deriving individual tpeaks, but using same common_time_vec
-# Example data: code/bin/myel_template_data_Iext.mat
