@@ -33,7 +33,7 @@
       "fiber_type": 2,
       "passive_end_nodes": 1
     },
-    "B_FIBER": {
+    "SMALL_MRG_INTERPOLATION_V1": {
       "neuron_flag": 2,
       "geom_determination_method": 2,
       "myelinated": true,

@@ -279,7 +279,7 @@ def get_deltaz(fiber_model, diameter):
         else:
             delta_z = eval(delta_z_str["diameter_less_5.643um"])
 
-    elif fiber_model_info.get("geom_determination_method") == 2:  # B fiber
+    elif fiber_model_info.get("geom_determination_method") == 2:  # SMALL_MRG_INTERPOLATION_V1 fiber
         paranodal_length_2_str, delta_z_str, inter_length_str = (
             fiber_model_info[key] for key in ('paranodal_length_2', 'delta_z', 'inter_length')
         )
@@ -413,7 +413,7 @@ def make_task(
                 f'-c \"fiber_ind={fiber}\" '
                 f'-c \"stimamp_top={top}\" '
                 f'-c \"stimamp_bottom={bottom}\" '
-                f'-c \"fiberD={diam:.6f}\" '  # change from 0.1f to 0.6f necessary for B fibers?
+                f'-c \"fiberD={diam:.6f}\" '
                 f'-c \"deltaz={deltaz:.4f}\" '
                 f'-c \"axonnodes={axonnodes}\" '
                 '-c \"saveflag_end_ap_times=0\" '  # for backwards compatible, overwritten in launch.hoc if 1
@@ -439,7 +439,7 @@ def make_task(
                 f'-c \"fiber_ind={fiber}\" '
                 f'-c \"stimamp_top={top}\" '
                 f'-c \"stimamp_bottom={bottom}\" '
-                f'-c \"fiberD={diam:.6f}\" '  # change from 0.1f to 0.6f necessary for B fibers?
+                f'-c \"fiberD={diam:.6f}\" '
                 f'-c \"deltaz={deltaz:.4f}\" '
                 f'-c \"axonnodes={axonnodes}\" '
                 '-c \"saveflag_end_ap_times=0\" '  # for backwards compatible, overwritten in launch.hoc if 1

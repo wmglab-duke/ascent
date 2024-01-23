@@ -98,9 +98,7 @@ class HocWriter(Configurable, Saveable):
         file_object.write(f"celsius   = {self.search(Config.MODEL, 'temperature'):0.0f} // [degC]\n")
         # TIME PARAMETERS
         file_object.write("\n//***************** Global Time ******************\n")
-        file_object.write(
-            f"dt        = {self.search(Config.SIM, 'waveform', 'global', 'dt'):0.4f} // [ms]\n"
-        )  # Is change 0.3f to 0.4f necessary for B fiber implementation from cap_edgar branch?
+        file_object.write(f"dt        = {self.search(Config.SIM, 'waveform', 'global', 'dt'):0.4f} // [ms]\n")
         file_object.write(f"tstop     = {self.search(Config.SIM, 'waveform', 'global', 'stop'):0.0f} // [ms]\n")
         file_object.write(f"n_tsteps  = {n_tsteps:0.0f} // [unitless]\n")
         file_object.write(f"t_initSS  = {self.search(Config.SIM, 'protocol', 'initSS'):0.0f} // [ms]\n")
@@ -117,22 +115,22 @@ class HocWriter(Configurable, Saveable):
         fiber_model = self.search(Config.SIM, "fibers", "mode")
         fiber_model_info: dict = self.search(Config.FIBER_Z, MyelinationMode.parameters.value, fiber_model)
         # if myelinated
-        if fiber_model_info.get("neuron_flag") == 2 and fiber_model != FiberGeometry.B_FIBER.value:
+        if fiber_model_info.get("neuron_flag") == 2 and fiber_model != FiberGeometry.SMALL_MRG_INTERPOLATION_V1.value:
             file_object.write(
                 f"geometry_determination_method = {fiber_model_info.get('geom_determination_method'):0.0f} "
                 f"// geometry_determination_method = 0 for preset fiber diameters; "
                 f"geometry_determination_method = 1 for MRG-based geometry interpolation; "
                 f"geometry_determination_method = 2 for GeometryBuilder fits from SPARC Y2Q1\n"
             )
-            file_object.write(f"flag_model_b_fiber = {0}\n")
-        if fiber_model_info.get("neuron_flag") == 2 and fiber_model == FiberGeometry.B_FIBER.value:
+            file_object.write(f"flag_model_small_mrg_interp_v1 = {0}\n")
+        if fiber_model_info.get("neuron_flag") == 2 and fiber_model == FiberGeometry.SMALL_MRG_INTERPOLATION_V1.value:
             file_object.write(
                 f"geometry_determination_method = {fiber_model_info.get('geom_determination_method')} "
                 "// geometry_determination_method = 0 for preset fiber diameters; "
                 "geometry_determination_method = 1 for MRG-based geometry interpolation; "
                 "geometry_determination_method = 2 for GeometryBuilder fits from SPARC Y2Q1\n"
             )
-            file_object.write(f"flag_model_b_fiber = {1}\n")
+            file_object.write(f"flag_model_small_mrg_interp_v1 = {1}\n")
         file_object.write(
             f"fiber_type = {fiber_model_info.get('neuron_flag')} "
             "// fiber_type = 1 for unmyelinated; fiber_type = 2 for myelinated; "

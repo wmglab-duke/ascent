@@ -129,7 +129,7 @@ proc CreateAxon_Myel() {
 				if (node_channels == 0) {
 					cm		= 2
 					insert axnode_myel
-					// set gnabar and gkbar to values that don't produce multi-AP in response to single stim pulses (B fibers only)
+					// set gnabar and gkbar to values that don't produce multi-AP in response to single stim pulses (SMALL_MRG_INTERPOLATION_V1 fibers only)
 					if (geometry_determination_method==2) {
 						gnabar_axnode_myel = 2.333333
 						gkbar_axnode_myel = 0.115556

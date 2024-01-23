@@ -551,7 +551,7 @@ class FiberSet(Configurable, Saveable):
                 )
                 paranodal_length_2 = eval(paranodal_length_2_str)
 
-                if fiber_geometry_mode_name == FiberGeometry.B_FIBER.value:
+                if fiber_geometry_mode_name == FiberGeometry.SMALL_MRG_INTERPOLATION_V1.value:
                     delta_z = eval(delta_z_str)
                     inter_length = eval(inter_length_str)
                 elif fiber_geometry_mode_name == FiberGeometry.MRG_INTERPOLATION.value:

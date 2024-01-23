@@ -45,7 +45,7 @@ stim_pulse_start_time_ms = sim_obj['waveform']['global']['on']  # [ms]
 if fiber_type in [
     'MRG_DISCRETE',
     'MRG_INTERPOLATION',
-    'MRG_INTERPOLATION_LIMITED_TO_1AP',
+    'SMALL_MRG_INTERPOLATION_V1',
 ]:  # Myelinated types that ascent allows
     fiber_type = 'myelinated'
     stim_pulse_duration_ms = 0.1  # includes total duration of biphasic stim pulse  - pull from sim
@@ -101,33 +101,33 @@ for fiber_ind in range(len(template_fiber_diameters)):  # Looping through simula
     value_at_70_percent = node_z_locations[index_to_extract]
     dz_mm, _ = mode(np.diff(z_locations_mm[node_indices]), keepdims=False)
     target_compartment_index = np.where(z_locations_mm == value_at_70_percent)[0][0]
-    if fiber_type == 'myelinated':
-        resample_factor = 64
-        indices_for_upsample = target_compartment_index + np.arange(-6, 7) * n_compartments_per_repeatable_uit
-        indices_for_upsample = indices_for_upsample.tolist()
 
-        # Subset columns from the matrix
-        transmembrane_currents_all_compartments_subset = transmembrane_curent_matrix[:, indices_for_upsample]
-        upsampled_transmembrane_currents_all_compartments_subset, upsampled_time_vector = resample(
-            transmembrane_currents_all_compartments_subset,
-            resample_factor * (len(transmembrane_currents_all_compartments_subset) - 1),
-            t=time_vector,
-        )
-        # Find the index of the maximum value in each column
-        max_idx = np.argmax(upsampled_transmembrane_currents_all_compartments_subset, axis=0)
+    # Resample around target compartment index at a high factor for peaks to align properly
+    resample_factor = 64
+    indices_for_upsample = target_compartment_index + np.arange(-6, 7) * n_compartments_per_repeatable_uit
+    indices_for_upsample = indices_for_upsample.tolist()
 
-        # Calculate the time between maxima
-        measured_time_between_compartments_or_nodes = np.diff(upsampled_time_vector[max_idx])
+    # Subset columns from the matrix
+    transmembrane_currents_all_compartments_subset = transmembrane_curent_matrix[:, indices_for_upsample]
+    upsampled_transmembrane_currents_all_compartments_subset, upsampled_time_vector = resample(
+        transmembrane_currents_all_compartments_subset,
+        resample_factor * (len(transmembrane_currents_all_compartments_subset) - 1),
+        t=time_vector,
+    )
+    # Find the index of the maximum value in each column
+    max_idx = np.argmax(upsampled_transmembrane_currents_all_compartments_subset, axis=0)
 
-        # Refine the time between maxima by taking the median
-        refined_time_between_compartments_or_nodes = np.median(measured_time_between_compartments_or_nodes)
+    # Calculate the time between maxima
+    measured_time_between_compartments_or_nodes = np.diff(upsampled_time_vector[max_idx])
 
-        # Set the time_between_compartments_or_nodes to the refined value
-        time_between_compartments_or_nodes = refined_time_between_compartments_or_nodes
+    # Refine the time between maxima by taking the median
+    refined_time_between_compartments_or_nodes = np.median(measured_time_between_compartments_or_nodes)
 
-        # Calculate conduction velocity
-        conduction_velocity_m_per_s = dz_mm / time_between_compartments_or_nodes
-    # TODO: Unmyelinated fibers?
+    # Set the time_between_compartments_or_nodes to the refined value
+    time_between_compartments_or_nodes = refined_time_between_compartments_or_nodes
+
+    # Calculate conduction velocity
+    conduction_velocity_m_per_s = dz_mm / time_between_compartments_or_nodes
 
     # Calculate dipole variable
     dipolar_currents = -np.cumsum(transmembrane_curent_matrix, 1)
@@ -177,6 +177,7 @@ for fiber_ind in range(len(template_fiber_diameters)):  # Looping through simula
     dipole_interp = interp1d(dipole_time, dipole_signal, kind='cubic', axis=0, bounds_error=False, fill_value=0)
     dipole_temporal_templates = dipole_interp(common_time_vector)
 
+    target_compartment_index_z_loc = z_locations_mm[target_compartment_index]
     # Outputs - store variables for this single node template.
     fiber_data = (
         fiber_ind,
@@ -188,6 +189,8 @@ for fiber_ind in range(len(template_fiber_diameters)):  # Looping through simula
         time_at_peak_monopolar,
         time_at_peak_dipole,
         target_compartment_index,
+        target_compartment_index_z_loc,
+        z_locations_mm,
     )
     # Append single node template to list of node templates per fiber.
     fiber_data_list.append(fiber_data)
@@ -206,6 +209,8 @@ output_data = np.array(
         ('reference_peak_time_i_ms', type(time_at_peak_monopolar)),
         ('reference_peak_time_i_dipole_ms', type(time_at_peak_dipole)),
         ('target_compartment_index', type(target_compartment_index)),
+        ('z_loc_of_target_compartment_index', type(target_compartment_index_z_loc)),
+        ('z_locations_mm_all', type(z_locations_mm)),
     ],
 )
 

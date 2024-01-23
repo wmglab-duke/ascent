@@ -61,8 +61,7 @@ if (fiber_type == 3) {
 
 	   if 	(fiber_type == 1) { 	v_init = -88.3 				// [mV]
 } else if   (fiber_type == 2) { 	v_init = -80 				// See note above !! [mV]
-} else if 	(fiber_type == 3) {		v_init = v_init_c_fiber			// [mV]
-} else if 	(fiber_type == 2 && flag_model_b_fiber==1) {		v_init = v_init_b_fiber			// [mV]
+} else if 	(fiber_type == 3) {		v_init = v_init_c_fiber		// [mV]
 }
 
 // ***************************************************************************

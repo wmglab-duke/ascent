@@ -568,11 +568,9 @@ class Simulation(Configurable, Saveable):
             )
             # STOPPED HERE... Pick up next time. src_mappings needs to be updated since updating im.json structure.
             src_bases_indices, rec_bases_indices = self.srcs_mapping(sim_dir)
-            print(f"Src bases: {src_bases_indices}, rec bases: {rec_bases_indices}")
 
             fiberset_directory = os.path.join(sim_dir, str(sim_num), 'fibersets', str(fiberset_ind))
 
-            print(active_src_vals, active_rec_vals)
             # what if no active_rec_vals?
             # Better appraoch: have 'src_bases_indices' return a 2D array
             # [[bases indices cuff 1], [bases indices cuff 2], ...]. Bases coupled together based on index.
