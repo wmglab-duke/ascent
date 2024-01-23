@@ -1,7 +1,7 @@
 .. |doi| image:: https://zenodo.org/badge/379064819.svg
    :target: https://zenodo.org/badge/latestdoi/379064819
 
-Welcome to ASCENT's documentation! 
+Welcome to ASCENT's documentation!
 ==================================
 
 This documentation is an adaptation and update of the supplements associated with the original ASCENT publication.
