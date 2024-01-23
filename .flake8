@@ -1,5 +1,7 @@
 [flake8]
-ignore = E203, W503, # Black compatibility
+ignore =
+    # Black compatibility
+    E203, W503,
     #place additional ignores here
 per-file-ignores =
     __init__.py: F401, F403
