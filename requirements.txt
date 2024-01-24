@@ -1,7 +1,7 @@
 ffmpeg
 matplotlib
 numpy
-opencv-python<=4.5.*
+opencv-python
 openpyxl
 pandas
 pillow
