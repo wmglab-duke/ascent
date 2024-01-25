@@ -34,7 +34,6 @@ q = Query(
 data = q.sfap_data(fiber_indices=fiber_indices, all_fibers=True)
 print(data)
 
-# for fiber in
 fig, ax = plt.subplots()
 sns.lineplot(data=data, x='SFAP_times', y='SFAP0', hue='fiberset_index', palette='deep', ax=ax)
 sns.move_legend(ax, "upper left", bbox_to_anchor=(1, 1))

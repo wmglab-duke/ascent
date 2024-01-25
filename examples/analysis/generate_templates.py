@@ -21,9 +21,9 @@ sys.path.append(os.path.sep.join([os.getcwd(), '']))
 from src.core.query import Query  # noqa E402
 from src.utils import Config  # noqa E402
 
-sample = 20230323
+sample = 202303232
 model = 0
-sim = 20230323092
+sim = 20230323093
 fiber = 0  # fiber index in each nsim. Used to specify membrane current matrix file path on line 75
 amp_num = 0
 
@@ -38,7 +38,7 @@ sim_obj = q.get_config(Config.SIM, [sim])
 template_fiber_diameters = sim_obj['fibers']['z_parameters']['diameter']
 
 # Input variables
-fiber_type = 'MRG_DISCRETE'  # Set common time bounds based on this - pull from sim
+fiber_type = sim_obj['fibers']['mode']  # Set common time bounds based fiber type
 stim_pulse_start_time_ms = sim_obj['waveform']['global']['on']  # [ms]
 
 # Note: tpeakl is relative to start of stim pulse.
@@ -48,7 +48,7 @@ if fiber_type in [
     'SMALL_MRG_INTERPOLATION_V1',
 ]:  # Myelinated types that ascent allows
     fiber_type = 'myelinated'
-    stim_pulse_duration_ms = 0.1  # includes total duration of biphasic stim pulse  - pull from sim
+    stim_pulse_duration_ms = 0.1  # includes total duration of biphasic stim pulse
     common_time_bounds_ms = [-2.4, 36]
     n_compartments_per_repeatable_uit = 11
 else:  # Assuming ascent ran successfully, if not myelinated fiber, then input is unmyelinated fiber

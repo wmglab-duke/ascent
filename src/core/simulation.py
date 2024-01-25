@@ -750,8 +750,7 @@ class Simulation(Configurable, Saveable):
         if not os.path.exists(sim_dir):
             subfolder_names = ["inputs", "outputs"]
             for subfolder_name in subfolder_names:
-                # for cuffType in ["src", "rec"]:
-                os.makedirs(os.path.join(sim_dir, "data", subfolder_name))  # , cuffType))
+                os.makedirs(os.path.join(sim_dir, "data", subfolder_name))
 
     def _copy_and_edit_config(self, config, key, param_list, copy_again=True):
         """Copy the config file and edits the key to set.
@@ -935,10 +934,9 @@ class Simulation(Configurable, Saveable):
         return allthresh
 
     @staticmethod
-    def activations_exist(sample: int, model: int, sim: int, sim_dir: str, source: str, n_amps: int):
+    def activations_exist(sample: int, model: int, sim: int, source: str, n_amps: int):
         """Check if the activations (Ap times) exist in the source directory.
 
-        :param sim_dir: Simulation directory
         :param sample: Sample index
         :param model: Model index
         :param sim: Sim index
