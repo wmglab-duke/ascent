@@ -4,7 +4,7 @@ default_language_version:
   python: python3 # or python3
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v4.5.0
     hooks:
       # checking for syntax
       - id: check-yaml
@@ -19,17 +19,17 @@ repos:
       - id: check-merge-conflict
   # sort python imports
   - repo: https://github.com/pycqa/isort
-    rev: 5.12.0
+    rev: 5.13.2
     hooks:
       - id: isort
   # format f strings
   - repo: https://github.com/ikamensh/flynt/
-    rev: "0.78"
+    rev: "1.0.1"
     hooks:
       - id: flynt
   # pyupgrade (migrate code to newer syntax)
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.4.0
+    rev: v3.15.0
     hooks:
       - id: pyupgrade
         args: ["--py37-plus", "--py36-plus"]
@@ -40,7 +40,7 @@ repos:
       - id: black
         language_version: python3
   - repo: https://github.com/PyCQA/docformatter
-    rev: v1.5.1 # maintain at 1.5.1 to avoid errors
+    rev: v1.7.5 # maintain at 1.5.1 to avoid errors
     hooks:
       - id: docformatter
         additional_dependencies:
@@ -48,14 +48,14 @@ repos:
         args: ["--in-place", "--config", "./pyproject.toml"]
   # format markdown, yaml, json
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v3.0.0-alpha.6
+    rev: v4.0.0-alpha.8
     hooks:
       - id: prettier
         exclude_types: [python, markdown]
         args: ["--print-width", "100"]
   # format java. Seperate from the above for different tab width
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v3.0.0-alpha.6
+    rev: v4.0.0-alpha.8
     hooks:
       - id: prettier
         name: prettier-java
@@ -66,8 +66,7 @@ repos:
         args: ["--tab-width", "4", "--print-width", "100"]
   # lint python code
   - repo: https://github.com/pycqa/flake8
-    rev: 5.0.4 # maintain at 5.0.4 until eradicate supports v6
-    #when flake8-eradicate supports flake8 6.0 change this rev to newest ver
+    rev: 7.0.0
     hooks:
       - id: flake8
         additional_dependencies:
@@ -82,21 +81,22 @@ repos:
           - flake8-blind-except
           - pep8-naming
           - darglint
+          - flake8-deprecated
   # format and lint markdown
   - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.33.0
+    rev: v0.38.0
     hooks:
       - id: markdownlint-fix
         args: ["--disable", "md013,md034,md033,md036"]
   # check config files
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.22.0
+    rev: 0.27.3
     hooks:
       - id: check-gitlab-ci
       - id: check-readthedocs
   # linting for rst files
   - repo: https://github.com/rstcheck/rstcheck
-    rev: v6.1.2
+    rev: v6.2.0
     hooks:
       - id: rstcheck
         additional_dependencies:

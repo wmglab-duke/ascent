@@ -3,6 +3,9 @@
 
 Welcome to ASCENT's documentation!
 ==================================
+
+This documentation is an adaptation and update of the supplements associated with the original ASCENT publication.
+
 **Please check out the associated** `publication <https://doi.org/10.1371/journal.pcbi.1009285>`_ **in PLOS Computational Biology!**
 
 **Cite both the paper and the DOI for the release of the repository used for your work. We encourage you to clone the most recent commit of the repository.**
@@ -42,22 +45,22 @@ Welcome to ASCENT's documentation!
   .. details:: APA
      :open:
 
-     **Musselman, E. D.**, **Cariello, J. E.**, Grill, W. M., & Pelot, N. A. (2023). wmglab-duke/ascent: ASCENT v1.2.1 (v1.2.1) [Computer software]. Zenodo. https://doi.org/10.5281/ZENODO.7627427
+     **Musselman, E. D.**, **Cariello, J. E.**, Grill, W. M., & Pelot, N. A. (2023). wmglab-duke/ascent: ASCENT v1.2.2 (v1.2.2) [Computer software]. Zenodo. https://doi.org/10.5281/ZENODO.8298703
 
   .. details:: MLA
 
-      Musselman, Eric D., et al. Wmglab-Duke/Ascent: ASCENT v1.2.1. v1.2.1, Zenodo, 2023, doi:10.5281/ZENODO.7627427.
+      Musselman, Eric D., et al. Wmglab-Duke/Ascent: ASCENT v1.2.2. v1.2.2, Zenodo, 2023, doi:10.5281/ZENODO.8298703.
 
 
   .. details:: BibTeX
 
     .. code-block:: BibTeX
 
-        @misc{https://doi.org/10.5281/zenodo.7627427,
-          doi = {10.5281/ZENODO.7627427},
-          url = {https://zenodo.org/record/7627427},
+        @misc{https://doi.org/10.5281/zenodo.8298703,
+          doi = {10.5281/ZENODO.8298703},
+          url = {https://zenodo.org/record/8298703},
           author = {Musselman,  Eric D and Cariello,  Jake E and Grill,  Warren M and Pelot,  Nicole A},
-          title = {wmglab-duke/ascent: ASCENT v1.2.1},
+          title = {wmglab-duke/ascent: ASCENT v1.2.2},
           publisher = {Zenodo},
           year = {2023},
           copyright = {MIT License}
@@ -108,5 +111,5 @@ Welcome to ASCENT's documentation!
 
    ASCENT Publication <https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1009285>
    ASCENT on GitHub <https://github.com/wmglab-duke/ascent>
-   The Grill Lab <https://www.neuro.duke.edu/research/faculty-labs/grill-lab>
+   The Grill Lab <https://grill-lab.pratt.duke.edu>
    NIH SPARC <https://commonfund.nih.gov/sparc>

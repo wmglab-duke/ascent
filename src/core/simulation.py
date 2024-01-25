@@ -115,15 +115,15 @@ class Simulation(Configurable, Saveable):
             :raises ValueError: if any lists have length 1
             """
             for key, value in dictionary.items():
-                if type(value) == list and len(value) > 1:
+                if isinstance(value, list) and len(value) > 1:
                     self.factors[path + '->' + key] = value
-                elif type(value) == list and len(value) <= 1:
+                elif isinstance(value, list) and len(value) <= 1:
                     print("ERROR:", key, "is a list, but has length", len(value))
                     raise ValueError(
                         "If type list, loopable sim parameters must have length greater than 1. "
                         "For a single (non-looping) value, use a Double."
                     )
-                elif type(value) == dict:
+                elif isinstance(value, dict):
                     search(value, path + '->' + key)
 
         for flag in ['fibers', 'waveform', 'supersampled_bases']:

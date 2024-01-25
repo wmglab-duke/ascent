@@ -52,7 +52,7 @@ def run(args):
 
         run_path = os.path.join('config', 'user', 'runs', f'{argument}.json')
         if not os.path.exists(run_path):
-            print(f'Invalid run configuration path: {run_path}')
+            print(f'Nonexistent run configuration path: {run_path}')
             sys.exit()
 
         env_path = os.path.join('config', 'system', 'env.json')
