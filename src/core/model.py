@@ -65,7 +65,7 @@ class Model(Configurable, Saveable):
 
         cuff_data = self.search(Config.MODEL, "cuff")
 
-        if type(cuff_data) == dict:
+        if isinstance(cuff_data, dict):
             cuff_data = [
                 cuff_data
             ]  # When single cuff configuration is provided, re-adjust data type to allow following for-loop
