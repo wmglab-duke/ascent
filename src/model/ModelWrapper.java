@@ -200,7 +200,7 @@ public class ModelWrapper {
      *
      * @param name same formatting as in addCuffPartPrimitives()
      */
-    public void addCuffPartInstances(String name, int index) {
+    public void addCuffPartInstances(String name, int index, int cuffType) {
         // public void addCuffPartInstances(String name) { // TODO: master branch
         // extract data from json (name is something like Enteromedics.json)
         try {
@@ -216,15 +216,16 @@ public class ModelWrapper {
                 String instanceLabel = (String) "Cuff " + index + "_" + itemObject.get("label");
                 String instanceID = this.im.next("pi", instanceLabel);
                 String type = (String) itemObject.get("type");
-                String cuffname = name.split("\\.")[0]; // from edgar cap branch
+                String cuffName = name.split("\\.")[0]; // from edgar cap branch
                 Part.createCuffPartInstance(
                     instanceID,
                     instanceLabel,
                     type,
                     this,
                     itemObject,
-                    cuffname,
-                    index
+                    cuffName,
+                    index,
+                    cuffType
                 );
                 // Part.createCuffPartInstance(instanceID, instanceLabel, type, this, itemObject); //TODO: master
             }
@@ -1310,19 +1311,23 @@ public class ModelWrapper {
                             Object cuffObject = modelData.get("cuff");
                             JSONArray allCuffSpec = null;
                             if (cuffObject instanceof JSONArray) {
-                                // It's an array
+                                // It's an array --> single cuff
                                 allCuffSpec = (JSONArray) cuffObject;
                             } else if (cuffObject instanceof JSONObject) {
-                                // It's an object
+                                // It's an object --> multiple cuffs in an array
                                 cuffObject = (JSONObject) cuffObject;
                                 allCuffSpec = new JSONArray();
                                 allCuffSpec.put(cuffObject);
                             }
 
-                            for (int i = 0; i < allCuffSpec.length(); i++) {
+                            for (
+                                int cuff_index = 0;
+                                cuff_index < allCuffSpec.length();
+                                cuff_index++
+                            ) {
                                 // Read cuff to build from model.json (cuff.preset) which links to JSON containing instantiations of parts
-                                JSONObject cuffSpec = allCuffSpec.getJSONObject(i);
-                                addCuffParams(mw, cuffConformationParams, cuffSpec);
+                                JSONObject cuffSpec = allCuffSpec.getJSONObject(cuff_index);
+                                addCuffParams(mw, cuffConformationParams, cuffSpec, cuff_index);
                             }
                         }
 
@@ -2004,15 +2009,25 @@ public class ModelWrapper {
     private static void addCuffParams(
         ModelWrapper mw,
         ModelParamGroup cuffConformationParams,
-        JSONObject cuffSpec
+        JSONObject cuffSpec,
+        Integer cuff_index
     ) {
+        // Note: The input argument cuff_index here refers to the numerical index in which the input cuff spec falls within the cuff variable in model.json.
+        // Not to be confused with the 'cuff_index' variable in sim.json's active_srcs/recs configurations, which currently describes the cuff type (0 - src, 1 - rec).
+        // Future work should update cuff type descriptors to strings instead of numbers.
         // add PART PRIMITIVES for CUFF
         String cuff = cuffSpec.getString("preset");
         mw.addCuffPartPrimitives(cuff);
 
         // add PART INSTANCES for cuff
-        Integer cuff_index = cuffSpec.getInt("index");
-        mw.addCuffPartInstances(cuff, cuff_index);
+        // Note: If no index was given to define cuff type (0 = src, 1 = rec), we assume the single cuff is used for stimulation.
+        Integer cuffType;
+        try {
+            cuffType = cuffSpec.getInt("index");
+        } catch (Exception e) {
+            cuffType = 0;
+        }
+        mw.addCuffPartInstances(cuff, cuff_index, cuffType);
 
         //Set cuff conformation parameters
         String cuff_shift_unit = "[micrometer]";

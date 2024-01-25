@@ -69,7 +69,7 @@ class Model(Configurable, Saveable):
         if type(cuff_data) == dict:
             cuff_data = [
                 cuff_data
-            ]  # When single cuff configuration is provided, readjust data type to allow following for-loop
+            ]  # When single cuff configuration is provided, re-adjust data type to allow following for-loop
         cuff_dicts = []
 
         for cuff_dict in cuff_data:
