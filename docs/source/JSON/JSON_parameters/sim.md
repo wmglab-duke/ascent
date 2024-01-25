@@ -24,7 +24,13 @@ following syntax:
   "n_dimensions": Integer,
   "active_srcs": {
     "CorTec300.json": [[Double, Double]], // for example
-    "default": [[1, -1]]
+    "default": [[1, -1]],
+    "cuff_index": Integer // Must be 0 for stimulation cuff. Optional for single stimulating cuff simulations.
+  },
+  "active_recs": {
+    "cyl_MicroLeads_300t.json":[[Double, Double, Double]], // for example
+    "default": [[1, 0, 0]],
+    "cuff_index": Integer // Must be 1 for recording cuff.
   },
   "fibers": {
     "mode": String,
@@ -263,7 +269,7 @@ creating unintended NEURON simulations. The pipeline will only loop over
 the first n-dimensions. Required.
 
 `“active_srcs”`: The value is a JSON Object containing key-value pairs of
-contact weightings for preset cuffs. Each value (`List[List[Double]]`)
+contact weightings for preset stimulation cuffs. Each value (`List[List[Double]]`)
 is the contact weighting used to make extracellular potentials inputs
 to NEURON simulations. The order of weights matches the order of parts
 containing point current sources. The values should not exceed +/-1 in magnitude,
@@ -287,6 +293,14 @@ finite amplitudes or a bisection search for thresholds ([Simulation Protocols](.
 
 ![f4]
 
+- `“cuff_index”`: The value (Integer) used to designate which cuff will be used for
+  stimulation and which cuff will be used for recording. The index value must correspond to the “index” value in the Model "cuff" configuration. Only required when modeling multiple cuffs in the Model "cuff" configuration.
+
+`“active_recs”`: The JSON Object value serves the same purpose as `active_srcs`, but provides contact weightings for preset cuffs used for recording. Only required when modeling a recording cuff in the Model configurations. Default weighting: `"default": [[1, 0, 0]]`.
+
+- `“cuff_index”`: The value (Integer) used to designate which cuff will be used for
+  stimulation and which cuff will be used for recording. The index value must correspond to the “index” value in the Model "cuff" configuration. Only required when modeling multiple cuffs in the Model "cuff" configuration.
+
 `“fibers”`: The value is a JSON Object containing key-value pairs that
 define how potentials are sampled in the FEM for application as
 extracellular potentials in NEURON (i.e., the Cartesian coordinates of
@@ -302,6 +316,9 @@ length of the fiber). Required.
 
     - `“MRG_INTERPOLATION”` (interpolates the discrete diameters
       from published MRG fiber models)
+
+    - `SMALL_MRG_INTERPOLATION_V1` (interpolates diameters from published literature data on small myelinated fibers; used by the publication entitled “Computational Models of Compound Nerve
+      Action Potentials: Efficient Filter-Based Methods to Quantify Effects of Tissue Conductivities, Conduction Distance, and Nerve Fiber Parameters” to model myelinated fibers with >1.011 um diameter; uses the same ion channels as MRG_DISCRETE and MRG_INTERPLOATION, but decreases the maximum conductance of sodium ion channels and increases the maximum conductance of potassium ion channels to ensure one action potential per stimulus pulse.)
 
     - `“TIGERHOLM”` (published C-fiber model)
 
@@ -749,6 +766,12 @@ which times/locations ([NEURON Scripts](../../Code_Hierarchy/NEURON)). Required.
   the NEURON runtime for either the finite amplitude or bisection search for
   threshold simulation. If this key-value pair is omitted, the default
   behavior is False.
+
+- `“cap_recording”`:
+
+  - `“Imembrane_matrix”`: The value (Boolean), if true, tells the program to save the
+    transmembrane current matrix for each fiber. These are memory-intensive matrices that contain the transmembrane currents for all fiber compartments across all time points. The matrices are required if the user aims to later generate current templates using the `examples\analysis\generate_templates.py` script. Default: False. Optional.
+
 
 `“protocol”`:
 

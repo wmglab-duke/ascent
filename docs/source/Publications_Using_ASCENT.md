@@ -5,3 +5,5 @@
 - Measuring and modeling the effects of vagus nerve stimulation on heart rate and laryngeal muscles. [https://doi.org/10.1186/s42234-023-00107-4](https://doi.org/10.1186/s42234-023-00107-4)
 
 - Fibers in smaller fascicles have lower activation thresholds with cuff electrodes due to thinner perineurium and smaller cross-sectional area. [https://doi.org/10.1088/1741-2552/acc42b](https://doi.org/10.1088/1741-2552/acc42b)
+
+- Computational Models of Compound Nerve Action Potential Recordings: Efficient Filter-Based Methods to Quantify Impact of Materials, Conduction Distance, and Fiber Parameters in Rat Cervical Vagus Nerve. (<<Paper link to DOI.org>>)

@@ -47,6 +47,8 @@ the following syntax:
   "inner_interp_tol": Double,
   "outer_interp_tol": Double,
   "nerve_interp_tol": Double,
+
+  // EXAMPLE for modeling a single stimulation cuff
   "cuff": {
     "preset": String,
     "rotate": {
@@ -59,6 +61,37 @@ the following syntax:
       "z": Double
     }
   },
+
+  // EXAMPLE for modeling a stimulation and recording cuff
+  "cuff": [
+    {
+      "preset": String,
+      "index": Integer, // 0 for stimulation
+      "rotate": {
+        "pos_ang": Double,
+        "add_ang": Double
+      },
+      "shift": {
+        "x": Double,
+        "y": Double,
+        "z": Double
+      }
+    },
+    {
+      "preset": String,
+      "index": Integer, // 1 for recording
+      "rotate": {
+        "pos_ang": Double,
+        "add_ang": Double
+      },
+      "shift": {
+        "x": Double,
+        "y": Double,
+        "z": Double
+      }
+    }
+  ]
+
   "min_radius_enclosing_circle": Double,
   "mesh": {
   "quality_measure": String,
@@ -250,9 +283,7 @@ morphology. See the [COMSOL Documentation](https://doc.comsol.com/5.5/doc/com.co
 
 `“cuff”`: The cuff JSON Object contains key-value pairs that define which
 cuff to model on the nerve in addition to how it is placed on the nerve
-(i.e., rotation and translation). If the user would like to loop over
-preset cuff designs, then they must create a **_Model_** (model index)
-for each cuff preset. Required.
+(i.e., rotation and translation). Two cuffs can be modeled by providing a list of JSON Objects along with unique "index" values indicating whether the cuff is used for stimulation (0) or recording (1). If the user would like to loop over preset cuff designs, then they must create a **_Model_** (model index) for each cuff preset. Required.
 
 - `“preset”`: The value (String) indicates which cuff to model, selected
   from the list of filenames of the “preset” cuffs in
@@ -282,6 +313,8 @@ for each cuff preset. Required.
     if monofascicular), and shift in z-direction is along the
     proximal medium’s (i.e., the nerve’s) length relative to the
     cuff “Center” (defined in preset JSON file).
+
+- `“index”`: The value (Integer) is used to define which cuff to use for stimulation and which to use for recording. Required only if modeling multiple cuffs (e.g., the value for "cuffs" is a list of multiple key-value pairs). Each cuff should have a unique index value. The current implementation is limited to two cuffs, where an index of "0" indicates that the set of key-value pairs belong to the stimulation cuff, and an index of "1" indicates that the key-value pairs belong to the recording cuff.
 
 `“min_radius_enclosing_circle”`: The value (Double, units: micrometer)
 is automatically defined in the program with the radius of the minimum

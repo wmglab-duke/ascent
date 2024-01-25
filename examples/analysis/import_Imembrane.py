@@ -3,7 +3,7 @@
 """Import the transmembrane current matrix.
 
 This script will likely later become part of the query class later on,
-and only serves as a starting point for template generation.
+and serves as a starting point for template generation.
 
 The copyrights of this software are owned by Duke University.
 Please refer to the LICENSE and README.md files for licensing instructions.

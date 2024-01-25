@@ -82,6 +82,7 @@ Welcome to ASCENT's documentation!
 
    MockSample
    Primitives_and_Cuffs/index
+   Modeling_Neural_Recording
    Convergence_Example
    Troubleshooting-Guide
 

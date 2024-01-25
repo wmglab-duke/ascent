@@ -29,7 +29,7 @@ q = Query(
     {
         'partial_matches': False,
         'include_downstream': True,
-        'indices': {'sample': [20230323], 'model': [0], 'sim': [20230323092]},
+        'indices': {'sample': [0], 'model': [0], 'sim': [0]},
     }
 ).run()
 data = q.sfap_data(fiber_indices, all_fibers=True)
