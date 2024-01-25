@@ -41,8 +41,6 @@ public class ModelSearcher {
      */
     public ModelSearcher.Match searchMeshMatch(JSONObject query, JSONObject reference)
         throws IOException {
-        //        System.out.println("queryPath = " + queryPath);
-
         for (Path file : Files.walk(this.root).toArray(Path[]::new)) {
             String[] fileParts;
             String os = System.getProperty("os.name").toLowerCase(); // https://www.techiedelight.com/determine-operating-system-and-its-version-java/
@@ -60,7 +58,6 @@ public class ModelSearcher {
                     "/",
                     Arrays.copyOfRange(fileParts, 0, fileParts.length - 1)
                 );
-                System.out.println("target: " + file.toString());
                 if (
                     ModelSearcher.meshMatch(reference, query, target) &&
                     ModelSearcher.meshFilesExist(directory)
@@ -80,10 +77,8 @@ public class ModelSearcher {
             directory + "/mesh/im.json",
         };
         for (String filename : filenames) {
-            //            System.out.println("Checking existence of: " + filename);
             if (!new File(filename).exists()) return false;
         }
-        //        System.out.println("MESH FILES EXIST");
         return true;
     }
 
@@ -107,26 +102,22 @@ public class ModelSearcher {
                         (q1Map.containsKey(rKey) ^ q2Map.containsKey(rKey)) ||
                         !q1Map.get(rKey).equals(q2Map.get(rKey))
                     ) {
-                        //                        System.out.println("\t\tA value does not match here: " + q1Map.get(rKey).toString() + " and " + q2Map.get(rKey).toString());
                         return false; // a value DOES NOT MATCH
                     }
                 }
                 // rVal is NOT boolean
                 else if (!(rVal instanceof Boolean)) {
                     boolean match;
-                    //TODO: for expanding to multi-cuffs... may not need this if you change cuff config in model.json to dict, not list.
-                    //TODO: Rework this function.. right now, query1 and 2 are the same file.. so what is the point? Might as well just be checking it against the reference.. 
                     if (rKey.equals("cuff")) {
                         match = q1Map.get(rKey).equals(q2Map.get(rKey));
-                        System.out.println("Cuff match: " + match);
-                    }
-                    else {
+                    } else {
                         // recurse!
-                        match = ModelSearcher.meshMatch(
-                            new JSONObject((Map<String, Object>) rVal),
-                            new JSONObject((Map<String, Object>) q1Map.get(rKey)),
-                            new JSONObject((Map<String, Object>) q2Map.get(rKey))
-                        );
+                        match =
+                            ModelSearcher.meshMatch(
+                                new JSONObject((Map<String, Object>) rVal),
+                                new JSONObject((Map<String, Object>) q1Map.get(rKey)),
+                                new JSONObject((Map<String, Object>) q2Map.get(rKey))
+                            );
                     }
                     if (!match) return false;
                 }
@@ -172,7 +163,6 @@ public class ModelSearcher {
                 File ppimPath = new File(path + "/mesh/ppim/");
                 for (String filename : Objects.requireNonNull(ppimPath.list())) {
                     String[] fileParts = filename.split("\\.");
-                    //                    System.out.println("file path = " + ppimPath.toString() + "/" + filename);
                     ppims.put(
                         fileParts[0],
                         IdentifierManager.fromJSONObject(JSONio.read(ppimPath + "/" + filename))

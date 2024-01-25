@@ -141,7 +141,7 @@ public class ModelWrapper {
     public void addCuffPartPrimitives(String name) {
         // extract data from json
         try {
-            // Only add primitives if this is the first time for this cuff // this if statement check is from cap branch
+            // Only add primitives if this is the first time for this cuff
             if (!this.im.hasPseudonym(name)) {
                 JSONObject cuffData = JSONio.read(
                     String.join("/", new String[] { this.root, "config", "system", "cuffs", name })
@@ -201,7 +201,6 @@ public class ModelWrapper {
      * @param name same formatting as in addCuffPartPrimitives()
      */
     public void addCuffPartInstances(String name, int index, int cuffType) {
-        // public void addCuffPartInstances(String name) { // TODO: master branch
         // extract data from json (name is something like Enteromedics.json)
         try {
             JSONObject cuffData = JSONio.read(
@@ -216,7 +215,7 @@ public class ModelWrapper {
                 String instanceLabel = (String) "Cuff " + index + "_" + itemObject.get("label");
                 String instanceID = this.im.next("pi", instanceLabel);
                 String type = (String) itemObject.get("type");
-                String cuffName = name.split("\\.")[0]; // from edgar cap branch
+                String cuffName = name.split("\\.")[0];
                 Part.createCuffPartInstance(
                     instanceID,
                     instanceLabel,
@@ -227,7 +226,6 @@ public class ModelWrapper {
                     index,
                     cuffType
                 );
-                // Part.createCuffPartInstance(instanceID, instanceLabel, type, this, itemObject); //TODO: master
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -241,7 +239,6 @@ public class ModelWrapper {
      */
     // index is cuff index defined in active_recs dictionary entry in sim file.
     public void addCuffPartMaterialAssignments(JSONObject cuffData, int index) {
-        // public void addCuffPartMaterialAssignments(JSONObject cuffData) { //TODO: from master
         // extract data from json, its name is something like Enteromedics.json
         // loop through all part instances
         for (Object item : (JSONArray) cuffData.get("instances")) {
@@ -351,11 +348,6 @@ public class ModelWrapper {
             }
         );
 
-        // Check if cuff is a json array (multiple cuffs) or a json object (single cuff)
-        // String cuff="";
-        // Object cuffObject = modelData.get("cuff");
-        // Boolean cap_potentials = null;
-
         // construct bases path (to MPH)
         String bases_directory = String.join("/", new String[] { model_path, "bases" });
 
@@ -368,7 +360,6 @@ public class ModelWrapper {
                 .filter(s -> Pattern.matches("Cuff\\s[0-9]+_[a-zA-Z0-9 ]+\\.mph", s))
                 .toArray(String[]::new);
         Arrays.sort(bases_files); // Now that bases files contain descriptive cuff strings, sort the values to avoid errors with later cuff indexing.
-        //TODO: Loop over cuffs
 
         // LOOP OVER BASES
         for (int basis_ind = 0; basis_ind < bases_files.length; basis_ind++) {
@@ -392,18 +383,9 @@ public class ModelWrapper {
                     "/",
                     new String[] { model_path, "sims", sims_list.get(sim_ind).toString() }
                 );
-                // String sim_config_path = String.join("/", new String[]{ // build path to sim config file
-                //     projectPath, "config", "user", "sims", sim_num + ".json"
-                // });
-                // JSONObject simData = JSONio.read(sim_config_path); // load sim configuration data
-                // if (simData.has("active_recs")) {
-                //     cap_potentials = true;
-                // } else {
-                //     cap_potentials = false;
-                // }
 
                 // GET FIBERSETS
-                // build path to directory of fibersetS, make sure they have fibers
+                // build path to directory of fibersets, make sure they have fibers
                 String fibersets_dir = String.join("/", new String[] { sim_dir, "fibersets" });
                 File fibersets_file = new File(fibersets_dir);
                 File[] fibersets_file_list = fibersets_file.listFiles();
@@ -424,7 +406,7 @@ public class ModelWrapper {
                 // directory for ss_basis
                 String ss_basis_dir = String.join(
                     "/",
-                    new String[] { sim_dir, "ss_bases", String.valueOf(basis_ind) } // TODO: change output bases directories to also have descriptive names instead of indices?
+                    new String[] { sim_dir, "ss_bases", String.valueOf(basis_ind) }
                 );
 
                 // LOOP OVER FIBERSETS
@@ -791,12 +773,6 @@ public class ModelWrapper {
         for (int key_on_int = 0; key_on_int < s.size(); key_on_int++) {
             String key_on;
             String src;
-            //TODO: revisit this if breaks code. from cap branhc.
-            // JSONObject key_on_obj = this.im.currentIDs.get(key_on_int + 1);
-            // key_on = key_on_obj.getString("name");
-            // src = key_on_obj.getString("pcs");
-            // Get key_on and src from currentIDs
-            // JSONObject key_on_obj;
 
             if (skipMesh) {
                 String key_on_int_str = Integer.toString(key_on_int + 1);
@@ -1751,14 +1727,13 @@ public class ModelWrapper {
                     );
 
                     // CUFFS
-                    ///////// TODO: keep this code below to replace in master. could potential update some functions to stay like master branch.
-                    //// Add material definitions and assignments for CUFFs
+                    // Add material definitions and assignments for CUFFs
                     // Check if multiple cuffs (array) or single cuff (json object)
                     Object cuffObject = modelData.get("cuff");
                     JSONArray allCuffSpec = null;
-                    if (cuffObject instanceof JSONArray) { // Stim only cuffs - single cuff type configuration defined in model.json
+                    if (cuffObject instanceof JSONArray) { // Only one stim or recording cuff - single cuff configuration defined in model.json
                         allCuffSpec = (JSONArray) cuffObject;
-                    } else if (cuffObject instanceof JSONObject) { // Stim and Rec cuffs - multi cuff type configurations defined in model.json
+                    } else if (cuffObject instanceof JSONObject) { // Stim and Rec cuffs - multiple cuff configurations defined in model.json
                         cuffObject = (JSONObject) cuffObject;
                         allCuffSpec = new JSONArray();
                         allCuffSpec.put(cuffObject);
@@ -2228,11 +2203,10 @@ public class ModelWrapper {
             );
             try {
                 JSONObject imdata = JSONio.read(imFile);
-                //TODO: make currentIDs variable
-                basesValid = new boolean[imdata.getJSONObject("currentIDs").length()];
-                for (int cu = 0; cu < imdata.getJSONObject("currentIDs").length(); cu++) {
-                    String bases_name = imdata
-                        .getJSONObject("currentIDs")
+                JSONObject currentIDs = imdata.getJSONObject("currentIDs");
+                basesValid = new boolean[currentIDs.length()];
+                for (int cu = 0; cu < currentIDs.length(); cu++) {
+                    String bases_name = currentIDs
                         .getJSONObject(Integer.toString(cu + 1))
                         .getString("name");
                     File basisFile = new File(bases_directory + "/" + bases_name + ".mph");

@@ -629,9 +629,7 @@ def make_fiber_tasks(submission_list, submission_context):
         # load the inner x fiber -> diam key saved in the n_sim folder
         inner_fiber_diam_key_file = os.path.join(fibers_path, 'inner_fiber_diam_key.obj')
         inner_fiber_diam_key = None
-        if os.path.exists(
-            inner_fiber_diam_key_file
-        ):  # TODO: check how stim/rec are stored in this obj file for backwards compatibility
+        if os.path.exists(inner_fiber_diam_key_file):
             with open(inner_fiber_diam_key_file, 'rb') as f:
                 inner_fiber_diam_key = pickle.load(f)
             f.close()

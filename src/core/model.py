@@ -63,7 +63,6 @@ class Model(Configurable, Saveable):
         else:
             deform_ratio = None
 
-        # TODO: do cuff initation for each loaded cuff. make sure its backwards compatible. # Use from edgar's code.
         cuff_data = self.search(Config.MODEL, "cuff")
 
         if type(cuff_data) == dict:

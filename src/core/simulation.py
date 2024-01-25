@@ -243,7 +243,6 @@ class Simulation(Configurable, Saveable):
         return self
 
     def validate_srcs(self, sim_directory) -> 'Simulation':  # noqa: C901
-        # TODO: come back and reduce function complexity
         """Validate the active_srcs in the simulation config.
 
         :param sim_directory: Path to simulation directory
@@ -482,12 +481,6 @@ class Simulation(Configurable, Saveable):
                 bases_path = os.path.join(sim_dir, str(source_sim), 'ss_bases', str(basis_ind))
                 coords_path = os.path.join(sim_dir, str(source_sim), 'ss_coords')
 
-            # TODO: where does this go now... this was on edgar branch.
-            ''' cap = False # noqa: E800
-            # if 'active_recs' in self.configs['sims'].keys() and 'active_srcs' in self.configs['sims'].keys():
-            #     cap = True
-            # potentials_directory = os.path.join(sim_dir, str(sim_num), 'potentials', str(p))
-            '''
             if not os.path.exists(bases_path):
                 raise ValueError(f"bases_path {bases_path} does not exist")
 
@@ -574,18 +567,13 @@ class Simulation(Configurable, Saveable):
             active_src_vals, active_rec_vals, fiberset_ind, nsim_inputs_directory = self.n_sim_setup(
                 potentials_ind, sim_dir, sim_num, t, waveform_ind
             )
-            # STOPPED HERE... Pick up next time. src_mappings needs to be updated since updating im.json structure.
             src_bases_indices, rec_bases_indices = self.srcs_mapping(sim_dir)
 
             fiberset_directory = os.path.join(sim_dir, str(sim_num), 'fibersets', str(fiberset_ind))
 
-            # what if no active_rec_vals?
-            # Better appraoch: have 'src_bases_indices' return a 2D array
-            # [[bases indices cuff 1], [bases indices cuff 2], ...]. Bases coupled together based on index.
             for fname_prefix, weights, bases_indices in zip(
                 ['src', 'rec'], [active_src_vals, active_rec_vals], [src_bases_indices, rec_bases_indices]
             ):
-                print(f"Loop for {fname_prefix}...:\n\tweights = {weights}\n\tbases indices = {bases_indices}")
                 if (
                     not any(np.isnan(weights)) and weights
                 ):  # Execute procedure if weights contains valid values and is not empty
@@ -602,13 +590,13 @@ class Simulation(Configurable, Saveable):
                                 inner_index, fiber_index = self.indices_fib_to_n(fiberset_ind, master_fiber_index)
                                 filename_dat = f'{fname_prefix}_inner{inner_index}_fiber{fiber_index}.dat'
 
-                                if not do_supersample:  # and not cap:
+                                if not do_supersample:
                                     # getting potentials from fibersets_bases
                                     # fibersets_bases\<fiberset_index>\<basis_index>\<fibers>
                                     _, bases = self.get_bases(file, sim_dir, sim_num, fiberset_ind)
                                     neuron_potentials_input = self.weight_bases(all_weights, bases)
 
-                                else:  # lif do_supersample:
+                                else:
                                     # getting potentials from supersampled bases
                                     # ss_bases\<basis_index>\<fibers>
                                     self.validate_ss_dz(supersampled_bases, sim_dir)
@@ -655,9 +643,7 @@ class Simulation(Configurable, Saveable):
         if not src_cuff_index and not rec_cuff_index:
             src_cuff_index = 0
 
-        print(f"src mappings: src: {src_cuff_index}, rec: {rec_cuff_index}")
         # using the cuff indices in Sim, what are the bases files using the cuff_indexes saved in im.json?
-        # TODO: Reading im_path from this source does not work when recycling multi-cuff meshes...
         im_path = os.path.join(os.path.split(sim_dir)[0], 'mesh', 'im.json')
         im_config = self.load_json(im_path)
 
@@ -975,7 +961,6 @@ class Simulation(Configurable, Saveable):
                             allamp = False
         return allamp
 
-    # TODO: function from master branch .
     def bases_potentials_exist(self, sim_dir: str) -> bool:
         """Return bool deciding if fibersets bases potentials have already been written for each fiberset.
 

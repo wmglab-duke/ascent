@@ -319,7 +319,7 @@ class Query(Configurable, Saveable):
             fiber_indices = [0]
         [samples, models, sims] = list(self.configs['criteria']['indices'].values())
 
-        # TODO: simplify/clean this function! Inspired by threshold_data for first quick approach.
+        # Note: simplify/clean this function. Inspired by threshold_data for first quick approach.
         sample_results: dict
         for sample_results in self._result.get('samples', []):
             sample_index = sample_results['index']
@@ -337,8 +337,8 @@ class Query(Configurable, Saveable):
                     # whether the comparison key is for 'fiber' or 'wave', the nsims will always be in order!
                     # this realization allows us to simply loop through the factors in sim.factors[key] and treat the
                     # indices as if they were the nsim indices
-                    # TODO: loop over master_indices to only obtain data for desired fibers. Need to find another way
-                    # to obtain nsim_index...
+                    #   Better optimized method: loop over master_indices to only obtain data for desired fibers.
+                    #       Need to find another way to obtain nsim_index...
                     master_indices = []
                     for i in sim_object.master_product_indices:
                         if i[0] in fiber_indices:
@@ -373,7 +373,6 @@ class Query(Configurable, Saveable):
                             for local_fiber_index, _ in enumerate(out_in_fib[outer][out_in[outer].index(inner)]):
                                 master_index = sim_object.indices_n_to_fib(fiberset_index, inner, local_fiber_index)
 
-                                # TODO: replace amp0 with variable
                                 sfap_path = os.path.join(
                                     n_sim_dir,
                                     'data',
@@ -518,8 +517,8 @@ class Query(Configurable, Saveable):
                                             'index': master_index,
                                             'fiberset_index': fiberset_index,
                                             'waveform_index': waveform_index,
-                                            'active_src_index': active_src_index,  # TODO: only report src or rec.
-                                            'active_rec_index': active_rec_index,  # Doesn't make sense to do both.
+                                            'active_src_index': active_src_index,  # Note: only report src or rec
+                                            'active_rec_index': active_rec_index,  # Doesn't make sense to do both
                                             'threshold': abs(threshold),
                                         }
                                     )

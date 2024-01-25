@@ -9,7 +9,6 @@ The copyrights of this software are owned by Duke University.
 Please refer to the LICENSE and README.md files for licensing instructions.
 The source code can be found on the following GitHub repository: https://github.com/wmglab-duke/ascent.
 """
-import os
 import struct
 
 import numpy as np
@@ -25,7 +24,6 @@ def import_tm_current_matrix(imembrane_file_name):
     """
     with open(imembrane_file_name, 'rb') as file:
         alldata = file.read()
-        # TODO: check that the format '@' works on other machines. Test on cluster.
         # Currently it is in native format, might need to be in standard format.
         _, _, tstop, _, _, dt, _, _, axon_num, vector_size, _ = struct.unpack(
             "@iidiidiidii", alldata[:56]  # 56 is the total number of bytes correlating with the format
@@ -40,28 +38,3 @@ def import_tm_current_matrix(imembrane_file_name):
     time_vector = np.arange(0, dt * (vector_size / axon_num), dt)
 
     return tstop, time_vector, current_matrix
-
-
-# Test on sample file
-sample = 20230323
-model = 0
-sim = 20230323092
-n_sim = 0
-axon = 0
-fiber = 0
-amp_num = 0
-file = os.path.join(
-    os.getcwd(),
-    "samples",
-    f'{sample}',
-    "models",
-    f'{model}',
-    "sims",
-    f'{sim}',
-    "n_sims",
-    f'{n_sim}',
-    "data",
-    "outputs",
-    f"Imembrane_axon{axon}_fiber{fiber}_amp{amp_num}.dat",
-)
-import_tm_current_matrix(file)
