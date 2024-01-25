@@ -4087,13 +4087,6 @@ class Part {
                     "off"
                 ); // RECESS FINAL
 
-                // assign physics
-                // String ribbon_pcsLabel = instanceLabel + " Current Source";
-                // String id = mw.im.next("pcs", ribbon_pcsLabel);
-                // PhysicsFeature pf = model
-                //     .component("comp1")
-                //     .physics("ec")
-                //     .create(id, "PointCurrentSource", 0);
                 Part.addPointCurrentSource(
                     mw,
                     model,
@@ -4101,18 +4094,6 @@ class Part {
                     instanceLabel,
                     myIM.get(myLabels[2])
                 );
-
-                // JSONObject src_ribbon = new JSONObject();
-                // src_ribbon.put(instanceLabel, id); // need to add index
-                // mw.im.currentIDs.put(mw.im.present("pcs"), src_ribbon);
-
-                // pf
-                //     .selection()
-                //     .named(
-                //         "geom1_" + mw.im.get(instanceLabel) + "_" + myIM.get(myLabels[2]) + "_pnt"
-                //     ); // SRC
-                // pf.set("Qjp", 0.000);
-                // pf.label(ribbon_pcsLabel);
 
                 break;
             case "TubeCuffSweep_Primitive":
