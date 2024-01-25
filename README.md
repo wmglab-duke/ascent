@@ -1,6 +1,6 @@
 # ASCENT: Automated Simulations to Characterize Electrical Nerve Thresholds
 
-[![License](https://img.shields.io/github/license/wmglab-duke/ascent)](https://github.com/wmglab-duke/ascent/blob/master/LICENSE) [![Releases](https://img.shields.io/github/v/release/wmglab-duke/ascent)](https://github.com/wmglab-duke/ascent/releases) [![Documentation](https://img.shields.io/readthedocs/wmglab-duke-ascent?logo=read-the-docs&logoColor=white)](https://wmglab-duke-ascent.readthedocs.io/en/latest/) [![DOI](https://zenodo.org/badge/379064819.svg)](https://zenodo.org/badge/latestdoi/379064819) [![Code Style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![License](https://img.shields.io/github/license/wmglab-duke/ascent)](https://github.com/wmglab-duke/ascent/blob/master/LICENSE) [![Releases](https://img.shields.io/github/v/release/wmglab-duke/ascent)](https://github.com/wmglab-duke/ascent/releases) [![Documentation](https://img.shields.io/readthedocs/wmglab-duke-ascent?logo=read-the-docs&logoColor=white)](https://wmglab-duke-ascent.readthedocs.io/en/latest/) [![DOI](https://zenodo.org/badge/TBD.svg)](https://zenodo.org/badge/latestdoi/TBD) [![Code Style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 **User support: nikki.pelot@duke.edu**
 
@@ -18,7 +18,7 @@
 
 - **Cite the code (use the DOI for the version of code used):**
 
-  > **Musselman, E. D.**, **Cariello, J. E.**, Grill, W. M., & Pelot, N. A. (2023). wmglab-duke/ascent: ASCENT v1.2.2 (v1.2.2) [Computer software]. Zenodo. <https://doi.org/10.5281/ZENODO.8298703>
+  > **Musselman, E. D.**, **Cariello, J. E.**, Grill, W. M., & Pelot, N. A. (2023). wmglab-duke/ascent: ASCENT v1.3.0 (v1.3.0) [Computer software]. Zenodo. <https://doi.org/10.5281/ZENODO.TBD>
 
 ---
 
