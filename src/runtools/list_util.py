@@ -47,9 +47,11 @@ def run(mode):
         run_path = os.path.join('samples')
         samples = [file for file in os.listdir(run_path) if not file.startswith('.')]
         sample_jsons = [
-            os.path.join(run_path, x, 'sample.json')
-            if os.path.isfile(os.path.join(run_path, x, 'sample.json'))
-            else print(f'WARNING: sample {x} has no json file')
+            (
+                os.path.join(run_path, x, 'sample.json')
+                if os.path.isfile(os.path.join(run_path, x, 'sample.json'))
+                else print(f'WARNING: sample {x} has no json file')
+            )
             for x in samples
         ]
         sample_jsons = [x for x in sample_jsons if x is not None]
