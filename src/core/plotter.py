@@ -358,7 +358,7 @@ def ap_loctime(
                 ):
                     print(f'\t\t\tnsim: {n_sim_index}')
 
-                    active_src_index, fiberset_index = sim_object.potentials_product[potentials_product_index]
+                    _, _, fiberset_index = sim_object.potentials_product[potentials_product_index]
 
                     # skip if not in existing n_sim filter
                     if n_sim_filter is not None and n_sim_index not in n_sim_filter:
