@@ -7,6 +7,7 @@ https://github.com/wmglab-duke/ascent
 """
 
 import os
+import warnings
 from copy import deepcopy
 
 import numpy as np
@@ -66,10 +67,15 @@ class Model(Configurable, Saveable):
 
         cuff_data = self.search(Config.MODEL, "cuff")
 
-        if isinstance(cuff_data, dict):
-            cuff_data = [
-                cuff_data
-            ]  # When single cuff configuration is provided, re-adjust data type to allow following for-loop
+        if isinstance(
+            cuff_data, dict
+        ):  # When single cuff configuration is provided, re-adjust data type to allow following for-loop
+            if not self.search(Config.MODEL, "cuff", "index", optional=True):  # If not cuff index is provided
+                warnings.warn('No "cuff" -> "index" provided in model.json. Assigning cuff index to 0.', stacklevel=2)
+                cuff_data["index"] = 0
+
+            cuff_data = [cuff_data]
+
         cuff_dicts = []
 
         for cuff_dict in cuff_data:

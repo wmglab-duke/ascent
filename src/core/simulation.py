@@ -571,7 +571,7 @@ class Simulation(Configurable, Saveable):
                             if re.match('[0-9]+\\.dat', file):
                                 master_fiber_index = int(file.split('.')[0])
                                 inner_index, fiber_index = self.indices_fib_to_n(fiberset_ind, master_fiber_index)
-                                filename_dat = f'{fname_prefix}_inner{inner_index}_fiber{fiber_index}.dat'
+                                fiber_filename_dat = f'inner{inner_index}_fiber{fiber_index}.dat'
 
                                 if not do_supersample:
                                     # getting potentials from fibersets_bases
@@ -592,8 +592,14 @@ class Simulation(Configurable, Saveable):
                                         fiber_coords, ss_coords, weighted_ss_bases
                                     )
 
+                                if os.path.exists(
+                                    os.path.join(nsim_inputs_directory, fiber_filename_dat)
+                                ):  # If sims from ASCENT<=1.2.2 already exist, rename to new file name formatting
+                                    final_filename_dat = fiber_filename_dat
+                                else:
+                                    final_filename_dat = f'{fname_prefix}_{fiber_filename_dat}'
                                 np.savetxt(
-                                    os.path.join(nsim_inputs_directory, filename_dat),
+                                    os.path.join(nsim_inputs_directory, final_filename_dat),
                                     neuron_potentials_input,
                                     fmt='%0.18f',
                                     header=str(len(neuron_potentials_input)),
@@ -634,6 +640,7 @@ class Simulation(Configurable, Saveable):
         rec_bases_indices = []
         current_ids = im_config['currentIDs']
         for c_id in current_ids.keys():
+            assert 'cuff_index' in current_ids[c_id], "Cuff_index missing from im.json. Regenerate mesh."
             if int(current_ids[c_id]['cuff_index']) == src_cuff_index:
                 src_bases_indices.append(int(c_id) - 1)
             elif int(current_ids[c_id]['cuff_index']) == rec_cuff_index:
