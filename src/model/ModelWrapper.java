@@ -1300,8 +1300,14 @@ public class ModelWrapper {
                             for (int i = 0; i < allCuffSpec.length(); i++) {
                                 // Read cuff to build from model.json (cuff.preset) which links to JSON containing instantiations of parts
                                 JSONObject cuffSpec = allCuffSpec.getJSONObject(i);
-                                Integer cuff_index = cuffSpec.getInt("index");
-                                addCuffParams(mw, cuffConformationParams, cuffSpec, cuff_index);
+                                Integer cuffIndex;
+                                try {
+                                    cuffIndex = cuffSpec.getInt("index");
+                                } catch (Exception e) {
+                                    System.out.println("WARNING: No cuff index provided in model.json. Setting cuff index to 0.");
+                                    cuffIndex = 0;
+                                }
+                                addCuffParams(mw, cuffConformationParams, cuffSpec, cuffIndex);
                             }
                         }
 
@@ -1736,7 +1742,13 @@ public class ModelWrapper {
                         JSONObject cuffSpec = allCuffSpec.getJSONObject(i);
 
                         String cuff = cuffSpec.getString("preset");
-                        Integer index = cuffSpec.getInt("index");
+                        Integer index;
+                        try {
+                            index = cuffSpec.getInt("index");
+                        } catch (Exception e) {
+                            System.out.println("WARNING: No cuff index provided in model.json. Setting cuff index to 0.");
+                            index = 0; // If no cuff index provided: this is an old
+                        }
 
                         JSONObject cuffData = JSONio.read(
                             String.join(
@@ -1989,6 +2001,7 @@ public class ModelWrapper {
         try {
             cuffIndex = cuffSpec.getInt("index");
         } catch (Exception e) {
+            System.out.println("WARNING: No cuff index provided in model.json. Setting cuff index to 0.");
             cuffIndex = 0;
         }
         mw.addCuffPartInstances(cuff, cuff_num, cuffIndex);
@@ -2202,7 +2215,6 @@ public class ModelWrapper {
                         if (basisFile.exists()) {
                             // Update im.json
                             JSONObject current_object = currentIDs.getJSONObject(Integer.toString(cu + 1));
-                            System.out.println(current_object.keys().next());
                             String key = current_object.keys().next();
                             current_object.put("pcs", current_object.get(key));
                             current_object.put("name", cu + "_Cuff 0_" + key);
@@ -2211,14 +2223,12 @@ public class ModelWrapper {
                             String cuffNameIdPseudonym = imdata.getJSONObject("identifierPseudonyms").getString(key);
                             imdata.getJSONObject("identifierPseudonyms").put(cu+"_Cuff 0_"+key, cuffNameIdPseudonym);
                             imdata.getJSONObject("identifierPseudonyms").remove(key);
-                            System.out.println("Updating " + currentIDs.getJSONObject(Integer.toString(cu + 1)) + " to " + current_object);
                             currentIDs.put(Integer.toString(cu + 1), current_object);
                             imdata.put("currentIDs", currentIDs);
                             JSONio.write(imFile, imdata); // write to file
 
                             // Rename bases files.
                             File newBasisFile = new File(bases_directory + "/" + current_object.get("name") + ".mph");
-                            System.out.println("Renaming " + basisFile + " to " + newBasisFile);
                             basisFile.renameTo(newBasisFile);
                             basesValid[cu] = newBasisFile.exists();
                         }
