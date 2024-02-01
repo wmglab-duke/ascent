@@ -194,6 +194,13 @@ class Runner(Configurable):
         if smart and os.path.exists(model_file):
             print(f"\tFound existing model {model_num} ({model_file})")
             model = self.load_obj(model_file)
+            if isinstance(
+                model.configs['models']['cuff'], dict
+            ):  # Indicates that model.obj was built before ascent had multi-cuff functionality
+                # Update model cuffs with new list structure
+                model.configs['models']['cuff'] = [model.configs['models']['cuff']]  # cast to list
+                # Save to files for future runs
+                model.save(model_file)
         else:
             model = Model()
             # use current model index to computer maximum cuff shift (radius) .. SAVES to file in method

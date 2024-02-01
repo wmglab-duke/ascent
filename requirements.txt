@@ -11,7 +11,7 @@ pygame
 pymunk
 quantiphy
 scikit-image
-scipy
+scipy>=1.11.4
 seaborn
 setuptools
 shapely==1.8.*
