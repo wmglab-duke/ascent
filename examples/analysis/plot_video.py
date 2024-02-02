@@ -1,5 +1,3 @@
-#!/usr/bin/env python3.7
-
 """Plot a video over time of Ve over the length of a fiber.
 
 The copyrights of this software are owned by Duke University.

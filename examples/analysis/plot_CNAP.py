@@ -1,5 +1,3 @@
-#!/usr/bin/env python3.7
-
 """Plot the compound nerve action potential (CNAP).
 
 The recorded SFAPs are produced for every fiber when a model contains a

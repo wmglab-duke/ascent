@@ -1,5 +1,3 @@
-#!/usr/bin/env python3.7
-
 """Plot a sample.
 
 The copyrights of this software are owned by Duke University.

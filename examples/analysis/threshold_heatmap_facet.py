@@ -1,5 +1,3 @@
-#!/usr/bin/env python3.7
-
 """Generate heatmaps of activation thresholds, using Seaborn's FacetGrid.
 
 The copyrights of this software are owned by Duke University.
