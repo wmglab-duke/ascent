@@ -1,5 +1,3 @@
-#!/usr/bin/env python3.7
-
 """Plot the Ve across a fiber length.
 
 The copyrights of this software are owned by Duke University.

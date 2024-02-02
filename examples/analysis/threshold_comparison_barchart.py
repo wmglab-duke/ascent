@@ -1,5 +1,3 @@
-#!/usr/bin/env python3.7
-
 """Compare thresholds across models using a barchart.
 
 The copyrights of this software are owned by Duke University.

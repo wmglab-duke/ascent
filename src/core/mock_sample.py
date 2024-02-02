@@ -321,9 +321,7 @@ class MockSample(Configurable):
         # CALCULATE FASCICLE ROTATIONS
         fasc_rots = [360 * np.random.random() for _ in range(num_fascicle_attempt)]
         # CALCULATE FASCICLE MAJOR AND MINOR AXES
-        a_axes = [
-            ((area**2) / ((np.pi**2) * (1 - (ecc**2)))) ** (1 / 4) for area, ecc in zip(fasc_areas, fasc_eccs)
-        ]
+        a_axes = [((area**2) / ((np.pi**2) * (1 - (ecc**2)))) ** (1 / 4) for area, ecc in zip(fasc_areas, fasc_eccs)]
         b_axes = [area / (np.pi * a_axis) for area, a_axis in zip(fasc_areas, a_axes)]
         # DEFINE/PLACE FASCICLES
         n_itr = []

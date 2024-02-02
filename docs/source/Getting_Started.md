@@ -197,11 +197,10 @@ The below example directory structure may be helpful.
 8. After the NEURON simulations have completed, move the outputs back to the ASCENT directory structure by running the command `python run import_n_sims <run_index>`.
 
     ```{admonition} Check
-    Threshold for inner0_fiber0 (`thresh_inner0_fiber0.dat`) should
-    be -0.027402 mA
+    Threshold for inner0_fiber0 (`samples/<sample_index>/models/<model_index>/sims/<sim_index>/n_sims/data/outputs/thresh_inner0_fiber0.dat`) should be -0.027402 mA
     ```
 
-9. To generate a heatmap of activation thresholds, open the script `examples/analysis/threshold_heatmap.py` and edit the sample, model, and sim indices to match the ones you chose above. Run the script from the repository root with the command `python examples/analysis/threshold_heatmap.py`, and a heatmap plot will be generated in `out/analysis/`. Your heatmap should look like the one below.
+9. To generate a heatmap of activation thresholds, open the script `examples/analysis/threshold_heatmap.py` and edit the sample, model, and sim indices to match the ones you chose above. Run the script from the repository root with the command `python examples/analysis/threshold_heatmap.py`, and a heatmap plot will be generated in `output/analysis/`. Your heatmap should look like the one below.
 ![tutorial directory structure](uploads/heatmap.png)
 `````
 

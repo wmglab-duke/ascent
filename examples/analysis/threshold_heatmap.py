@@ -1,5 +1,3 @@
-#!/usr/bin/env python3.7
-
 """Generate a heatmap of activation thresholds.
 
 The copyrights of this software are owned by Duke University.

@@ -119,7 +119,7 @@ class FiberSet(Configurable, Saveable):
         if diams.count(None) == 0:
             diams_key_path = os.path.join(path, 'diams.txt')
             with open(diams_key_path, "w") as f2:
-                np.savetxt(f2, diams, fmt='%0.1f')
+                np.savetxt(f2, diams, fmt='%0.6f')
         elif diams.count(None) == len(diams):
             pass
         else:
@@ -551,9 +551,14 @@ class FiberSet(Configurable, Saveable):
                 )
                 paranodal_length_2 = eval(paranodal_length_2_str)
 
-                if fiber_geometry_mode_name == FiberGeometry.B_FIBER.value:
-                    inter_length = eval(inter_length_str)
+                if fiber_geometry_mode_name == FiberGeometry.SMALL_MRG_INTERPOLATION_V1.value:
                     delta_z = eval(delta_z_str)
+                    inter_length = eval(inter_length_str)
+                    if diameter > 16.0 or diameter < 1.011:
+                        raise ValueError(
+                            "Diameter entered for SMALL_MRG_INTERPOLATION_V1 must be"
+                            "between 1.011 and 16.0 (inclusive)."
+                        )
                 elif fiber_geometry_mode_name == FiberGeometry.MRG_INTERPOLATION.value:
                     if diameter > 16.0 or diameter < 2.0:
                         raise ValueError(

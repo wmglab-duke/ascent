@@ -1,0 +1,35 @@
+{
+  "sample": "cap_tutorial",
+  "pseudonym": "tutorial sample for modeling CAP recording on a rat cervical vagus nerve sample",
+  "sex": "M",
+  "level": "Cervical",
+  "scale": {
+    "scale_bar_length": 249,
+    "shrinkage": 0
+  },
+  "boundary_separation": {
+    "fascicles": 10,
+    "nerve": 10
+  },
+  "modes": {
+    "mask_input": "INNERS",
+    "scale_input": "MASK",
+    "nerve": "NOT_PRESENT",
+    "deform": "NONE",
+    "ci_perineurium_thickness": "RAT_VN_INHOUSE_200601",
+    "reshape_nerve": "NONE",
+    "shrinkage_definition": "LENGTH_BACKWARDS"
+  },
+  "smoothing": {
+    "nerve_distance": 0,
+    "fascicle_distance": 0
+  },
+  "image_preprocessing": {
+    "fill_holes": true,
+    "object_removal_area": 10
+  },
+  "morph_count": 36,
+  "deform_ratio": 1,
+  "render_deform": false,
+  "Morphology": null
+}

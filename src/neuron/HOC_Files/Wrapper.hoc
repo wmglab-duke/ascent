@@ -61,8 +61,7 @@ if (fiber_type == 3) {
 
 	   if 	(fiber_type == 1) { 	v_init = -88.3 				// [mV]
 } else if   (fiber_type == 2) { 	v_init = -80 				// See note above !! [mV]
-} else if 	(fiber_type == 3) {		v_init = v_init_c_fiber			// [mV]
-} else if 	(fiber_type == 2 && flag_model_b_fiber==1) {		v_init = v_init_b_fiber			// [mV]
+} else if 	(fiber_type == 3) {		v_init = v_init_c_fiber		// [mV]
 }
 
 // ***************************************************************************
@@ -99,7 +98,21 @@ load_file("ExtracellularStim_Time.hoc")
 // ***************************************************************************
 // ExtracellularStim_Space.hoc
 strdef VeSpace_fname
+strdef VeSpace_rec_fname // Since this variable is used in a proc of ExtracellularStim_Space, it must be declared before that script is loaded, otherwise there will be a runtime error stating that VeSpace_rec_fname (even though that proc is not actually used until later in the code)
 load_file("ExtracellularStim_Space.hoc")
+
+// ***************************************************************************
+// Extracelluar recording
+objref SFAP
+strdef SFAP_fname
+
+// Set SFAP_dt_downsample_factor to an integer greater than or equal to 1; a
+// value of 1 will save SFAP at every dt time step; a value of 2 will save
+// SFAP at every other dt time step; etc.
+SFAP_dt_downsample_factor = 1
+if (SFAP_dt_downsample_factor%1 != 0 || SFAP_dt_downsample_factor < 0) {
+	execerror("SFAP_dt_downsample_factor must be an integer greater than or equal to 1")
+}
 
 // ***************************************************************************
 // Recording.hoc
@@ -118,11 +131,14 @@ if (fiber_type == 2) { // myelinated
 }
 
 load_file("Recording.hoc")
+strdef Imembrane_fname_output
+objref Imembrane, dt_vector, tstop_vector, axontotal_vector, Imembrane_save_format_vector, num_compartments_to_save
 
 // ***************************************************************************
 // Call sequence of procedures/functions for each sim
 load_file("RunSim.hoc")
 
+strdef fname_output_SFAP_time
 strdef fname_output_Vm_time
 strdef fname_output_Vm_space
 strdef fname_output_gating_m_time, fname_output_gating_h_time, fname_output_gating_mp_time, fname_output_gating_s_time
@@ -180,7 +196,7 @@ proc run_all(){local myinner, myfiber, myamp, amp_ind
 
 	// Read in Ve(x)
 	if (flag_extracellular_stim == 1) {
-		sprint(VeSpace_fname, "../%s/data/inputs/inner%d_fiber%d.dat",sim_path, myinner, myfiber)
+		sprint(VeSpace_fname, "../%s/data/inputs/src_inner%d_fiber%d.dat",sim_path, myinner, myfiber)
 		VeSpace_read()
 		// Convert to mV (required for e_extracellular)
 		VeSpace_data = VeSpace_data.mul(Ve_unitconv)
@@ -191,6 +207,15 @@ proc run_all(){local myinner, myfiber, myamp, amp_ind
 		}
 	}
 
+	// Read in Ve(x) for recording
+	if (flag_extracellular_rec == 1) {
+		sprint(VeSpace_rec_fname, "../%s/data/inputs/rec_inner%d_fiber%d.dat",sim_path, myinner, myfiber)
+		VeSpace_extracellular_rec_read()
+
+		// Convert to mV (required for e_extracellular)
+		VeSpace_rec_data = VeSpace_rec_data.mul(Ve_unitconv)
+	}
+
 	// Read in Ve(t)
 	sprint(VeTime_fname, "../%s/data/inputs/waveform.dat",sim_path)
 	if (flag_extracellular_stim == 1) {
@@ -199,6 +224,7 @@ proc run_all(){local myinner, myfiber, myamp, amp_ind
 
 	sprint(Ve_fname_output,              "../%s/data/outputs/Ve_inner%d_fiber%d_amp%d.dat",              sim_path, myinner, myfiber, amp_ind)
 	sprint(Istim_fname_output,           "../%s/data/outputs/Istim_inner%d_fiber%d_amp%d.dat",           sim_path, myinner, myfiber, amp_ind)
+	sprint(fname_output_SFAP_time,       "../%s/data/outputs/SFAP_time_inner%d_fiber%d_amp%d.dat",       sim_path, myinner, myfiber, amp_ind)
 	sprint(fname_output_Vm_time,         "../%s/data/outputs/Vm_time_inner%d_fiber%d_amp%d.dat",         sim_path, myinner, myfiber, amp_ind)
 	sprint(fname_output_gating_m_time,   "../%s/data/outputs/gating_m_time_inner%d_fiber%d_amp%d.dat",   sim_path, myinner, myfiber, amp_ind)
 	sprint(fname_output_gating_h_time,   "../%s/data/outputs/gating_h_time_inner%d_fiber%d_amp%d.dat",   sim_path, myinner, myfiber, amp_ind)
@@ -233,6 +259,20 @@ proc run_all(){local myinner, myfiber, myamp, amp_ind
 		sprint(thresh_fname_output, "../%s/data/outputs/thresh_inner%d_fiber%d.dat", sim_path, myinner, myfiber)
 		Saving_Thresh()
 	}
+
+	// Save membrane current matrix
+	if (saveflag_Imem==1) {
+        sprint(Imembrane_fname_output, "../%s/data/outputs/Imembrane_axon%d_fiber%d_amp%d.dat", sim_path, myinner, myfiber, amp_ind)
+        Imembrane = new File()
+        Imembrane.wopen(Imembrane_fname_output)
+
+        tstop_vector.vwrite(Imembrane)
+        dt_vector.vwrite(Imembrane)
+        axontotal_vector.vwrite(Imembrane)
+
+        Imembrane_save_format_vector.vwrite(Imembrane)
+        Imembrane.close()
+    }
 
 	// Save data
 	Saving()

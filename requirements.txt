@@ -1,7 +1,7 @@
 ffmpeg
 matplotlib
 numpy
-opencv-python<=4.5.*
+opencv-python
 openpyxl
 pandas
 pillow
@@ -11,7 +11,7 @@ pygame
 pymunk
 quantiphy
 scikit-image
-scipy
+scipy>=1.11.4
 seaborn
 setuptools
 shapely==1.8.*

@@ -1,4 +1,4 @@
-myst-parser==0.15.2
+myst-parser
 sphinx-argparse
 sphinx-copybutton
 sphinx-github-changelog

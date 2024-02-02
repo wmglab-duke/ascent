@@ -177,7 +177,7 @@ class Deformable:
             if progress_bar:
                 # if the loop count is divisible by the index step, update morph
                 Deformable.print_progress_bar(
-                    morph_index,
+                    morph_index + 1,
                     len(morph_steps),
                     prefix='\t\tdeforming',
                     suffix='complete',

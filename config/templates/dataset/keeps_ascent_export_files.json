@@ -7,10 +7,7 @@
     "0": {
       "0": {
         "masks": true,
-        "sectionwise2d": {
-          "fascicles": false,
-          "nerve": false
-        }
+        "sectionwise2d": true
       }
     }
   },

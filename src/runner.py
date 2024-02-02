@@ -193,7 +193,22 @@ class Runner(Configurable):
         print(f'\tMODEL {model_num}', f'- {model_pseudonym}' if model_pseudonym is not None else '')
         if smart and os.path.exists(model_file):
             print(f"\tFound existing model {model_num} ({model_file})")
-            model = self.load_obj(model_file)
+            model: Model = self.load_obj(model_file)
+            if isinstance(
+                model.configs['models']['cuff'], dict
+            ):  # Indicates that model.obj was built before ascent had multi-cuff functionality
+                if "index" not in model.configs['models']['cuff']:  # If no cuff index is provided
+                    warnings.warn(
+                        'No "cuff" -> "index" provided in model.json. Assigning cuff index to 0.', stacklevel=2
+                    )
+                    model.configs['models']['cuff']['index'] = 0
+                # Update model cuffs with new list structure
+                model.configs['models']['cuff'] = [model.configs['models']['cuff']]  # cast to list
+
+                # Save to files for future runs
+                model.write(model_config_file)
+                model.save(model_file)
+
         else:
             model = Model()
             # use current model index to computer maximum cuff shift (radius) .. SAVES to file in method

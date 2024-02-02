@@ -20,6 +20,8 @@ Variables that must be defined in wrapper/params file:
 
 objref axontotal_tmp
 objref VeSpace_file, VeSpace_data
+objref axontotal_rec_tmp
+objref VeSpace_rec_file, VeSpace_rec_data
 
 // Read in Ve(x)
 proc VeSpace_read() {
@@ -42,4 +44,27 @@ proc VeSpace_read() {
 
 	// Close file
 	VeSpace_file.close()
+}
+
+// Read in Ve(x) for recording
+proc VeSpace_extracellular_rec_read() {
+	VeSpace_rec_file = new File()
+	VeSpace_rec_file.ropen(VeSpace_rec_fname)
+
+	// Read in axontotal used to generate the potentials
+	// Make sure it matches the value being used in NEURON
+	axontotal_tmp = new Vector(1)
+	axontotal_tmp.scanf(VeSpace_rec_file,1)
+
+	// Error checking
+	if (axontotal_tmp.x[0] != axontotal) {
+		execerror("Need axontotal_tmp from VeSpace file to match axontotal used in NEURON.")
+	}
+
+	// Read in Ve(x)
+	VeSpace_rec_data = new Vector(axontotal)
+	VeSpace_rec_data.scanf(VeSpace_rec_file)
+
+	// Close file
+	VeSpace_rec_file.close()
 }

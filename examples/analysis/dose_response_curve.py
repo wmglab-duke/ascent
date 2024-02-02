@@ -1,5 +1,3 @@
-#!/usr/bin/env python3.7
-
 """Generate dose-response curves (% fibers activated as a function of stimulation amplitude).
 
 The copyrights of this software are owned by Duke University.
