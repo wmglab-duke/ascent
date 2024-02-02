@@ -1,5 +1,3 @@
-#!/usr/bin/env python3.7
-
 """Use this script to run a convergence study.
 
 The copyrights of this software are owned by Duke University.
@@ -9,7 +7,6 @@ The source code can be found on the following GitHub repository: https://github.
 Threshold error will be calculated for each model and sample with respect to the reference model.
 RUN THIS FROM REPOSITORY ROOT
 """
-
 
 import os
 import sys

@@ -1,5 +1,3 @@
-#!/usr/bin/env python3.7
-
 """Plots the time and location where an action potential occurred.
 
 The copyrights of this software are owned by Duke University.

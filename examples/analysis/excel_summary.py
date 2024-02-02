@@ -1,5 +1,3 @@
-#!/usr/bin/env python3.7
-
 """Generate an excel summary of parameters used in runs of ASCENT.
 
 The copyrights of this software are owned by Duke University.
