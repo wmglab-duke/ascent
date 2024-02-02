@@ -1,5 +1,3 @@
-#!/usr/bin/env python3.7
-
 """Generate a plot of fiber coordinates overlaid with a plot of the sample.
 
 The copyrights of this software are owned by Duke University.

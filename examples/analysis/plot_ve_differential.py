@@ -1,5 +1,3 @@
-#!/usr/bin/env python3.7
-
 """Plots the voltage along a fiber, as well as its first and second spatial differential.
 
 The copyrights of this software are owned by Duke University.

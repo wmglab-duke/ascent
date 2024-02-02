@@ -1,5 +1,3 @@
-#!/usr/bin/env python3.7
-
 """Plot the waveform used for stimulation.
 
 The copyrights of this software are owned by Duke University.

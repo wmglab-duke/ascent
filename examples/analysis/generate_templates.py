@@ -26,7 +26,6 @@ from src.utils import Config, Object, WaveformMode  # noqa E402
 sample = 0
 model = 0
 sim = 0
-fiber = 0  # fiber index in each nsim. Used to specify membrane current matrix file path on line 75
 
 q = Query(
     {
