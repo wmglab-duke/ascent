@@ -13,6 +13,7 @@ import shutil
 import subprocess
 import sys
 import time
+import warnings
 from typing import List
 
 import numpy as np
@@ -21,7 +22,6 @@ import pandas as pd
 from src.core.query import Query
 
 # RUN THIS FROM REPOSITORY ROOT
-
 
 sys.path.append(os.path.sep.join([os.getcwd(), '']))
 
@@ -225,69 +225,6 @@ def make_comsol_cleared_readme(
     return None
 
 
-def freeze_environment():
-    """Pip section adapted from: https://programtalk.com/python-examples/subprocess.check_output.decode/ .
-
-    Not currently used, but we might want to use this in the future to compile the requirements into one file?
-    Chose to keep them separate to user could easily reinstall them all with conda and pip independently without
-    requiring they figure out new installation script that we would need to write specifically for this purpose
-    :raises ValueError: if pip freeze fails or conflicting packages are found
-    :return: frozen which is a dictionary of the frozen environment for conda and pip
-    """
-    frozen = {}
-    frozen_pip = {}
-    frozen_conda = {}
-
-    # pip
-    try:
-        pip_packages = subprocess.check_output(["pip", "freeze"]).decode("utf-8", "strict")
-    except subprocess.CalledProcessError as e:
-        raise ValueError(f'Error with pip freeze: {e}')
-    else:
-        for line in pip_packages.splitlines():
-            sline = str(line)
-            if sline.startswith('-e '):
-                package, version = (sline.strip(), '')
-                frozen_pip[package] = version
-
-                if package not in frozen_pip:
-                    frozen_pip[package] = version
-                elif package in frozen_pip and frozen_pip[package] != version:
-                    previous_version = frozen_pip[package]
-                    raise ValueError(
-                        f'Duplicate pip package {package} with conflicting version: {version} and {previous_version}'
-                    )
-                else:
-                    pass
-
-            elif sline.startswith('## FIXME:'):  # noqa T100
-                pass
-            elif '==' in sline:
-                package, version = sline.strip().split('==')
-                frozen_pip[package] = version
-            else:
-                print(f'Didnt know what to do with:\n\t{sline}')
-
-    # conda
-    try:
-        conda_packages = subprocess.check_output(["conda", "list"]).decode("utf-8", "strict")
-    except subprocess.CalledProcessError as e:
-        raise ValueError(f'Error with pip freeze: {e}')
-    else:
-        for line in conda_packages.splitlines():
-            sline = str(line)
-            if sline.startswith('#') or len(sline.split()) == 1:
-                pass
-            else:
-                package, version = sline.strip().split()[0], line.strip().split()[1]
-                frozen_conda[package] = version
-
-    frozen['pip'] = frozen_pip
-    frozen['conda'] = frozen_conda
-
-    return frozen
-
-
 def tidy_n_sim_index_json(thing_to_copy: str, model_config_path: str, tmp_files_dataset_directory: str):
     """Tidy up the n_sim_index.json file and copy it to the dataset directory.
 
@@ -327,7 +264,7 @@ def tidy_n_sim_index_json(thing_to_copy: str, model_config_path: str, tmp_files_
     return output_file
 
 
-def run(args):  # noqa: C901
+def run(args):
     """Run the script, which in this case is a list of dataset indices.
 
     :param args: the arguments passed to the script
@@ -389,438 +326,25 @@ def run(args):  # noqa: C901
         query_criteria_path = os.path.join(query_criteria_config_directory, f'{dataset_index}.json')
         queried_indices_path = os.path.join(ux_directory, f'{dataset_index}.xlsx')
         queried_indices_info_path = os.path.join(queried_indices_info_directory, f'{dataset_index}.json')
-        tmp_files_dataset_destination = os.path.join(tmp_files_directory, str(dataset_index))
 
         # MAKE LIST OF INDICES FROM WHICH WE ARE COPYING THINGS
-        # STEP 1: do this using
-        redo_query_indices = False
-        queried_indices_path_exists = False
-        if os.path.exists(queried_indices_path):
-            queried_indices_path_exists = True
-            # ask user if they would like to delete it and rerun
-            reply = (
-                input(
-                    f'Existing queried_indices_path found: {queried_indices_path}\n'
-                    f'Would you like to delete it and start over with '
-                    f'complete Query result? [y/N]: '
-                )
-                .lower()
-                .strip()
-            )
-            if reply[0] == 'y':
-                os.remove(queried_indices_path)
-                redo_query_indices = True
-
-        if not queried_indices_path_exists or redo_query_indices:
-            criteria = load(query_criteria_path)
-            q = Query(criteria).run()
-
-            queried_indices_info = load(queried_indices_info_path)
-
-            q.excel_output(
+        if args.stage == 'query':
+            query_excel_output(queried_indices_info_path, queried_indices_path, query_criteria_path)
+        elif args.stage == 'generate':
+            generate_dataset(
+                args,
+                comsol_clearing_exceptions_directory,
+                comsol_file_ending,
+                dataset_index,
+                dataset_index_directory,
+                env_config,
+                keeps_config_directory,
                 queried_indices_path,
-                sample_keys=queried_indices_info["sample_keys"],
-                model_keys=queried_indices_info["model_keys"],
-                sim_keys=queried_indices_info["sim_keys"],
-                individual_indices=queried_indices_info["individual_indices"],
-                config_paths=queried_indices_info["config_paths"],
-                console_output=queried_indices_info["console_output"],
-                column_width=queried_indices_info["column_width"],
+                regex_legend,
+                tmp_files_directory,
             )
-
-            print(f'Excel file for you to edit saved to: {queried_indices_path}')
-            print(
-                'Modify this file if you wish to not export all data '
-                '(delete rows for items you do not want), then rerun this script.'
-            )
-            sys.exit()
         else:
-            # if using previously edited queried_indices_path
-            print(f'FOUND QUERIED_INDICES: {queried_indices_path}\n\tCONTINUING WITH DATASET EXPORT\n')
-
-        # RUN 1 of 2 BREAKS JUST ABOVE HERE, RUN 2 of 2 CONTINUES HERE
-        if os.path.exists(dataset_index_directory):
-            raise ValueError(
-                f'Attempting to re-run dataset_index {dataset_index}.\n\t'
-                f'The dataset files will not be overwritten, so either '
-                f'create configs for a new dataset_index and re-run,\n\t'
-                f'OR delete the existing directory: {dataset_index_directory}'
-            )
-
-        files_directory = os.path.join(dataset_index_directory, 'files')
-        data_destination = os.path.join(files_directory, 'primary')
-        code_destination = os.path.join(files_directory, 'code')
-        metadata_destination = os.path.join(code_destination, 'ascent_metadata')
-
-        for path in [data_destination, code_destination, metadata_destination, tmp_files_dataset_destination]:
-            os.makedirs(path, exist_ok=True)
-
-        # FREEZE ENVIRONMENT
-        # -pip
-        pip_requirements_path = os.path.join(metadata_destination, 'pip_requirements.txt')
-        with open(pip_requirements_path, 'w') as f:
-            subprocess.Popen(['pip', 'freeze'], stdout=f).communicate()
-
-        # -conda
-        conda_requirements_path = os.path.join(metadata_destination, 'conda_requirements.txt')
-        with open(conda_requirements_path, 'w') as f:
-            subprocess.Popen(['conda', 'list'], stdout=f).communicate()
-
-        xls = pd.ExcelFile(queried_indices_path, engine='openpyxl')
-        df = pd.read_excel(xls, None)
-
-        # LOAD ASCENT INDICES, AND, IF APPLICABLE, USER-INDICATED PICKY SPARC INDICES
-        ascent_indices = []
-        sparc_subs = []
-        sparc_sams = []
-        for sheet in df:
-            new_indices = df[sheet].loc[:, 'Indices'].tolist()
-            ascent_indices.extend(new_indices)
-
-            if 'sub' in df[sheet].columns:
-                new_subs = [int(x) if not np.isnan(x) else np.nan for x in df[sheet].loc[:, 'sub'].tolist()]
-                sparc_subs.extend(new_subs)
-            else:
-                new_subs = np.full([1, len(new_indices)], np.nan).tolist()[0]
-                sparc_subs.extend(new_subs)
-
-            if 'sam' in df[sheet].columns:
-                new_sams = [int(x) if not np.isnan(x) else np.nan for x in df[sheet].loc[:, 'sam'].tolist()]
-                sparc_sams.extend(new_sams)
-            else:
-                new_sams = np.full([1, len(new_indices)], np.nan).tolist()[0]
-                sparc_sams.extend(new_sams)
-
-        # CHECK THAT PICKY ENTRIES WITH THE SAME SAMPLE (ASCENT) ARE ASSIGNED TO THE SAME SUB+SAM (SPARC);
-        # ALSO ASSIGN PICKY SUB+SAM
-        samples_sub_sam = {}
-        for inds, sub, sam in zip(ascent_indices, sparc_subs, sparc_sams):
-            sample, _, _, _ = tuple([int(x) for x in inds.split('_')])
-
-            if sample not in samples_sub_sam:
-                if not np.isnan(sub):
-                    samples_sub_sam[sample] = {}
-                    samples_sub_sam[sample]['sub'] = sub
-                    if not np.isnan(sam):
-                        samples_sub_sam[sample]['sam'] = sam
-                else:
-                    continue
-            else:
-                prev_sub = samples_sub_sam[sample]['sub']
-                prev_sam = samples_sub_sam[sample].get('sam', np.nan)
-                if np.isnan(sub) and np.isnan(sam):
-                    continue
-                elif sub != prev_sub:
-                    raise ValueError(
-                        'Manual input of SPARC-subs is not consistent.'
-                        f'\n\tASCENT Sample {sample} was assigned to both SPARC subs {sub} and {prev_sub}'
-                    )
-                elif sam != prev_sam:
-                    raise ValueError(
-                        'Manual input of SPARC-sams is not consistent.'
-                        f'\n\tASCENT Sample {sample} was assigned to both SPARC sams {sam} and {prev_sam}'
-                    )
-
-        # ASSIGN NON-PICKY SUB+SAM, MAKE NEW INDICES LAZILY AS NEEDED TO FILL
-        master_indices = []
-        sub_auto = 0
-
-        # make set comprehension of previous line
-        subs_set = []
-        for x in sparc_subs:
-            if ~np.isnan(x):
-                subs_set.append(x)
-        subs_set = list(set(subs_set))
-
-        for inds, sub in zip(ascent_indices, sparc_subs):
-            sample, model, sim, n_sim = tuple([int(x) for x in inds.split('_')])
-
-            if sample not in samples_sub_sam:
-                while True:
-                    if np.isnan(sub) and sub_auto not in subs_set:
-                        samples_sub_sam[sample] = {}
-                        samples_sub_sam[sample]['sub'] = sub_auto
-                        samples_sub_sam[sample]['sam'] = 0
-                        sub_auto += 1
-                        break
-                    else:
-                        sub_auto += 1
-            else:
-                if 'sam' not in samples_sub_sam[sample]:
-                    samples_sub_sam[sample]['sam'] = 0
-                else:
-                    continue
-
-        # SAVE SAMPLES_SUB_SAM TO FILE FOR USE IN ANALYSIS CODE
-        # TO CONVERT ASCENT FILE STRX TO DATASET FILE STRX WITH SPARC SUB+SAM
-        samples_sub_sam_path = os.path.join(metadata_destination, 'samples_sub_sam.json')
-        to_json(samples_sub_sam_path, samples_sub_sam)
-
-        # COMPILE ALL INDICES OF THINGS WE WILL COPY: SAMPLE, MODEL, SIM, N-SIM,
-        for inds in ascent_indices:
-            sample, model, sim, n_sim = tuple([int(x) for x in inds.split('_')])
-            master_indices.append(
-                (sample, model, sim, n_sim, samples_sub_sam[sample]['sub'], samples_sub_sam[sample]['sam'])
-            )
-
-        # MAKE LIST OF THINGS TO COPY
-        keeps_path = os.path.join(keeps_config_directory, f'{dataset_index}.json')
-        keeps = load(keeps_path)
-
-        sample_directory = os.path.join('samples', '<sample_index>')
-        stuff_to_copy = paths_from_keeps(sample_directory, keeps)
-
-        directories_to_copy = []
-        files_to_copy = []
-        file_lists_to_copy = []
-        modified_files_to_copy = []
-
-        sims_to_copy = []
-        mock_samples_copied = []
-        not_mock_samples = []
-        input_path = 'input'
-        destination_ascent_config_directory = os.path.join(code_destination, 'ascent_configs')
-        destination_mock_config_input_directory = os.path.join(destination_ascent_config_directory, 'mock_samples')
-
-        for sample, model, sim, n_sim, _, _ in master_indices:
-            # copy MockSample configs
-            if sample not in not_mock_samples + mock_samples_copied:
-                sample_config_path = os.path.join('samples', str(sample), 'sample.json')
-                sample_config = load(sample_config_path)
-                sample_name = sample_config['sample']
-                source_mock_config_input_path = os.path.join(input_path, sample_name, 'mock.json')
-                sub = samples_sub_sam[sample]['sub']
-                sam = samples_sub_sam[sample]['sam']
-                destination_mock_config_input_path = os.path.join(
-                    destination_mock_config_input_directory, f'sub{sub}_sam{sam}_Sample{sample}.json'
-                )
-
-                if os.path.exists(source_mock_config_input_path):
-                    mock_samples_copied.append(sample)
-                    os.makedirs(destination_mock_config_input_directory, exist_ok=True)
-                    shutil.copy(source_mock_config_input_path, destination_mock_config_input_path)
-                else:
-                    not_mock_samples.append(sample)
-
-            # make list of the rest of things to copy, copy later all at once
-            for thing_to_copy in stuff_to_copy:
-                # copy Sim configs if including things at the Sim level
-                if sim not in sims_to_copy and "<sim_index>" in thing_to_copy:
-                    sims_to_copy.append(sim)
-
-                # tidy files that need tidying
-                is_n_sim_index_json = '<n_sim_index>.json' in thing_to_copy
-
-                # replace placeholders in thing_to_copy
-                thing_to_copy = replace_placeholders(thing_to_copy, sample, model, sim, n_sim)
-
-                # if tidy_weights is true, tidy the file
-                if is_n_sim_index_json:
-                    model_config_path = os.path.join('samples', str(sample), 'models', str(model), 'model.json')
-                    # saves the modified file to a temporary location
-                    modified_thing_to_copy = tidy_n_sim_index_json(
-                        thing_to_copy, model_config_path, tmp_files_dataset_destination
-                    )
-                    modified_files_to_copy.append(modified_thing_to_copy)
-                else:
-                    # determine if file or directory, append to lists
-                    if os.path.isfile(thing_to_copy):
-                        files_to_copy.append(thing_to_copy)
-                    elif os.path.isdir(thing_to_copy):
-                        directories_to_copy.append(thing_to_copy)
-                    else:
-                        # check that <> is in the path
-                        if not all(character in thing_to_copy for character in ['<', '>']):
-                            if thing_to_copy.split(os.sep)[-1] == 's.tif':
-                                # check that "scale" -> "scale_ratio" is in Sample config
-                                sample_config_path = os.path.join('samples', str(sample), 'sample.json')
-                                sample_config = load(sample_config_path)
-                                if 'scale_ratio' in sample_config['scale']:
-                                    continue
-                                else:
-                                    raise ValueError(
-                                        f'"scale" -> "scale_ratio" not in '
-                                        f'\nSample config: {sample_config_path} '
-                                        f'\nand "s.tif" not found'
-                                    )
-                            else:
-                                print(f'Not sure what this thing_to_copy is, could be missing: {thing_to_copy}')
-                                continue
-                        else:
-                            file_lists_to_copy.append(thing_to_copy)
-
-        # CHECK THAT DIRECTORIES TO COPY ARE NOT EMPTY
-        empty_directories = [directory for directory in directories_to_copy if len(os.listdir(directory)) == 0]
-
-        if len(empty_directories) > 0:
-            for directory in empty_directories:
-                print(f'EMPTY DIRECTORY TO COPY: {directory}')
-            reply = (
-                input(
-                    'Empty directories specified for copying. See preceding print statement(s) for details.'
-                    'Would you like to proceed? [y/N] '
-                )
-                .lower()
-                .strip()
-            )
-            if reply[0] != 'y':
-                print('Exiting program.\n')
-                sys.exit()
-            else:
-                print('Continuing...')
-
-        # ADD FILES FROM FILE LISTS TO FILES TO COPY USING REGEX
-        for file_list in file_lists_to_copy:
-            list_type = file_list.split(os.sep)[-1]
-            list_directory = os.path.join(*file_list.split(os.sep)[:-1])
-            regex = regex_legend[list_type]
-
-            for filename in [x for x in os.listdir(list_directory) if re.match(regex, x)]:
-                files_to_copy.append(os.path.join(list_directory, filename))
-
-        # REMOVE DUPLICATE THINGS TO COPY
-        files_to_copy = list(set(files_to_copy))
-        modified_files_to_copy = list(set(modified_files_to_copy))
-        directories_to_copy = list(set(directories_to_copy))
-
-        # MAKE FOLDERS STRX IN OUTPUT DIRECTORY FOR FILES, LATER MAKE DIRECTORIES TO COPY WHEN WE COPY
-        # <data_export_index>, which matches export config
-        #   "files" (for SPARC)
-        #       "primary" (for SPARC)
-        #           <sub-#> (for SPARC)
-        #               <sam-#> (for SPARC)
-        #                   "samples" (from ASCENT)
-        #                       <sample_index> (from ASCENT)
-        #                           ... rest is same as ASCENT
-        #                           i.e., at this level is:
-        #                           "sample.json", "sample.obj", "s.tif", "plots/", "slides/", "models/"
-        #                               i.e., at this level in "models/" is:
-        #                               <model_index>
-        #                                   i.e., at this level in "models"/<model_index>/ is:
-        #                                   "model.json", "debug_geom.mph", "bases/", "mesh/", "sims/"
-        #                                       i.e., at this level in "sims/" is:
-        #                                       <sim_index>
-        #                                       ... ETC
-
-        file_directories_to_copy = [os.path.join(*file.split(os.sep)[:-1]) for file in files_to_copy]
-        file_directories_to_copy = list(set(file_directories_to_copy))
-
-        for directory in file_directories_to_copy:
-            sample = int(directory.split(os.sep)[1])
-            sub = samples_sub_sam[sample]['sub']
-            sam = samples_sub_sam[sample]['sam']
-            base_directory = os.path.join(data_destination, f'sub-{sub}', f'sam-{sam}-sub-{sub}')
-            potential_new_directory = os.path.join(base_directory, directory)
-            os.makedirs(potential_new_directory, exist_ok=True)
-
-        # COPY FILES
-        already_copied_files = []
-        copied_mph_files = []  # to use later if you choose to clear mesh/solutions
-        for file in files_to_copy:
-            sample = int(file.split(os.sep)[1])
-            sub = samples_sub_sam[sample]['sub']
-            sam = samples_sub_sam[sample]['sam']
-            base_directory = os.path.join(data_destination, f'sub-{sub}', f'sam-{sam}-sub-{sub}')
-            new_file_path = os.path.join(base_directory, file)
-
-            if not os.path.exists(new_file_path):
-                shutil.copy(file, new_file_path)
-            else:
-                already_copied_files.append(file)
-
-            if new_file_path.endswith(comsol_file_ending):
-                copied_mph_files.append(new_file_path)
-
-        if len(already_copied_files) > 0:
-            print('FILES ALREADY COPIED OVER:')
-            print('\t' + '\n\t'.join(already_copied_files))
-
-        # COPY MODIFIED FILES
-        already_copied_modified_files = []
-        for file in modified_files_to_copy:
-            dataset_file_path = file.split(os.path.join('samples'))[1]
-            sample = int(dataset_file_path.split(os.sep)[1])
-            sub = samples_sub_sam[sample]['sub']
-            sam = samples_sub_sam[sample]['sam']
-            base_directory = os.path.join(data_destination, f'sub-{sub}', f'sam-{sam}-sub-{sub}')
-            new_file_path = os.path.join(base_directory, 'samples') + dataset_file_path
-
-            if not os.path.exists(new_file_path):
-                shutil.copy(file, new_file_path)
-            else:
-                already_copied_modified_files.append(file)
-
-        if len(already_copied_modified_files) > 0:
-            print('FILES (modified) ALREADY COPIED OVER:')
-            print('\t' + '\n\t'.join(already_copied_modified_files))
-
-        # COPY DIRECTORIES
-        already_copied_directories = []
-        for directory in directories_to_copy:
-            sample = int(directory.split(os.sep)[1])
-            sub = samples_sub_sam[sample]['sub']
-            sam = samples_sub_sam[sample]['sam']
-            base_directory = os.path.join(data_destination, f'sub-{sub}', f'sam-{sam}-sub-{sub}')
-            new_directory = os.path.join(base_directory, directory)
-
-            if not os.path.exists(new_directory):
-                shutil.copytree(directory, new_directory)
-            else:
-                already_copied_directories.append(directory)
-
-            copied_mph_files.extend(
-                [
-                    os.path.join(new_directory, file)
-                    for file in os.listdir(new_directory)
-                    if file.endswith(comsol_file_ending)
-                ]
-            )
-
-        # COPY SIM CONFIGS
-        destination_ascent_sims_directory = os.path.join(destination_ascent_config_directory, 'sims')
-        source_ascent_config_directory = os.path.join('config', 'user', 'sims')
-        if len(sims_to_copy) > 0 and not os.path.exists(destination_ascent_sims_directory):
-            os.makedirs(destination_ascent_sims_directory)
-
-        for sim in sims_to_copy:
-            source_sim_path = os.path.join(source_ascent_config_directory, f'{sim}.json')
-            destination_sim_path = os.path.join(destination_ascent_sims_directory, f'{sim}.json')
-            if not os.path.exists(destination_sim_path):
-                shutil.copy(source_sim_path, destination_sim_path)
-            else:
-                already_copied_files.append(source_sim_path)
-
-        if len(already_copied_directories) > 0:
-            print('DIRECTORIES ALREADY COPIED OVER:')
-            print('\t' + '\n\t'.join(already_copied_directories))
-
-        mph_files_readme_path = os.path.join(destination_ascent_config_directory, 'README.txt')
-        if len(copied_mph_files) > 1:
-            make_comsol_cleared_readme(
-                my_dataset_index=dataset_index,
-                comsol_clearing_config_directory=comsol_clearing_exceptions_directory,
-                samples_sub_sam_path=samples_sub_sam_path,
-                files_readme_path=mph_files_readme_path,
-            )
-            handoff(comsol_files=copied_mph_files, env=env_config, my_dataset_index=dataset_index)
-
-        subs_sams_samples = []
-        for sample in samples_sub_sam:
-            subs_sams_samples.append((samples_sub_sam[sample]['sub'], samples_sub_sam[sample]['sam'], sample))
-        subs_sams_samples.sort(key=lambda element: (element[0], element[1]))  # sort by sub, then sam
-
-        subs, sams = [], []
-        for sub, sam, _ in subs_sams_samples:
-            # since ASCENT Sample is sub x sam
-            if sub not in subs:
-                subs.append(sub)
-            sams.append(sam)
-
-        print(f'NUMBER OF SUBJECTS: {len(subs)}')
-        print(f'NUMBER OF SAMPLES: {len(sams)}')
-
-        # DELETE TMPDIR
-        shutil.rmtree(tmp_files_dataset_destination)
+            raise ValueError(f'Invalid stage: {args.stage}')
 
         # END TIMER
         end = time.time()
@@ -828,15 +352,556 @@ def run(args):  # noqa: C901
         elapsed = time.strftime('%H:%M:%S', time.gmtime(elapsed))
         print(f'\ndataset_index {dataset_index} runtime: {elapsed} (HH:MM:SS)')
 
-        print(f'REMEMBER TO ADD YOUR SCRIPTS AND VERIFY THAT THEY RUN IN PLACE FROM: {code_destination}\n')
-        print(
-            'CREATE METADATA FILES FOR DATASET WITH SODA:'
-            '\n\tdataset_description.xlsx'
-            '\n\tsubmission.xlsx'
-            '\n\tsubjects.xlsx'
-            '\n\tsamples.xlsx'
-            '\nSee template for iterating on contents with your advisor at: <link forthcoming>'
-        )
         print(f'======================= DONE WITH DATASET: {dataset_index} =======================')
 
-    return None
+    return
+
+
+def generate_dataset(  # noqa: D103
+    args,
+    comsol_clearing_exceptions_directory,
+    comsol_file_ending,
+    dataset_index,
+    dataset_index_directory,
+    env_config,
+    keeps_config_directory,
+    queried_indices_path,
+    regex_legend,
+    tmp_files_directory,
+):
+    # check for existing dataset
+    check_existing_dataset(args, dataset_index, dataset_index_directory)
+
+    # make directories
+    code_destination, data_destination, metadata_destination, tmp_files_dataset_destination = make_dataset_directories(
+        dataset_index, dataset_index_directory, tmp_files_directory
+    )
+
+    # FREEZE ENVIRONMENT
+    freeze_pip_requirements(metadata_destination)
+    xls = pd.ExcelFile(queried_indices_path, engine='openpyxl')
+    df = pd.read_excel(xls, None)
+
+    # LOAD ASCENT INDICES, AND, IF APPLICABLE, USER-INDICATED PICKY SPARC INDICES
+    ascent_indices, sparc_sams, sparc_subs = process_indices(df)
+
+    # CHECK THAT PICKY ENTRIES WITH THE SAME SAMPLE (ASCENT) ARE ASSIGNED TO THE SAME SUB+SAM (SPARC);
+    # ALSO ASSIGN PICKY SUB+SAM
+    samples_sub_sam = assign_picky(ascent_indices, sparc_sams, sparc_subs)
+
+    # ASSIGN NON-PICKY SUB+SAM, MAKE NEW INDICES LAZILY AS NEEDED TO FILL
+    master_indices = assign_non_picky(ascent_indices, samples_sub_sam, sparc_subs)
+
+    # SAVE SAMPLES_SUB_SAM TO FILE FOR USE IN ANALYSIS CODE
+    # TO CONVERT ASCENT FILE STRX TO DATASET FILE STRX WITH SPARC SUB+SAM
+    samples_sub_sam_path = os.path.join(metadata_destination, 'samples_sub_sam.json')
+    to_json(samples_sub_sam_path, samples_sub_sam)
+
+    # COMPILE ALL INDICES OF THINGS WE WILL COPY: SAMPLE, MODEL, SIM, N-SIM,
+    compile_indices(ascent_indices, master_indices, samples_sub_sam)
+
+    # MAKE LIST OF THINGS TO COPY
+    (
+        destination_ascent_config_directory,
+        directories_to_copy,
+        file_lists_to_copy,
+        files_to_copy,
+        modified_files_to_copy,
+        sims_to_copy,
+    ) = list_things_to_copy(
+        code_destination,
+        dataset_index,
+        keeps_config_directory,
+        master_indices,
+        samples_sub_sam,
+        tmp_files_dataset_destination,
+    )
+
+    # CHECK THAT DIRECTORIES TO COPY ARE NOT EMPTY
+    check_empty(directories_to_copy)
+
+    # ADD FILES FROM FILE LISTS TO FILES TO COPY USING REGEX
+    regex_copy_list(file_lists_to_copy, files_to_copy, regex_legend)
+
+    # REMOVE DUPLICATE THINGS TO COPY
+    directories_to_copy, files_to_copy, modified_files_to_copy = remove_duplicates(
+        directories_to_copy, files_to_copy, modified_files_to_copy
+    )
+
+    # MAKE FOLDERS STRX IN OUTPUT DIRECTORY FOR FILES, LATER MAKE DIRECTORIES TO COPY WHEN WE COPY
+    make_folders_for_copy(data_destination, files_to_copy, samples_sub_sam)
+
+    # COPY FILES
+    already_copied_files, copied_mph_files = copy_files(
+        comsol_file_ending, data_destination, files_to_copy, samples_sub_sam
+    )
+
+    # COPY MODIFIED FILES
+    copy_modified_files(data_destination, modified_files_to_copy, samples_sub_sam)
+
+    # COPY DIRECTORIES
+    copy_directories(comsol_file_ending, copied_mph_files, data_destination, directories_to_copy, samples_sub_sam)
+
+    # COPY SIM CONFIGS
+    copy_sim_configs(already_copied_files, destination_ascent_config_directory, sims_to_copy)
+
+    # Clear COMSOL files and make README
+    if len(copied_mph_files) > 1:
+        make_comsol_cleared_readme(
+            my_dataset_index=dataset_index,
+            comsol_clearing_config_directory=comsol_clearing_exceptions_directory,
+            samples_sub_sam_path=samples_sub_sam_path,
+            files_readme_path=os.path.join(destination_ascent_config_directory, 'README.txt'),
+        )
+        handoff(comsol_files=copied_mph_files, env=env_config, my_dataset_index=dataset_index)
+
+    # Get final sample and subject lists
+    sams, subs = get_sams_subs(samples_sub_sam)
+    print(f'NUMBER OF SUBJECTS: {len(subs)}')
+    print(f'NUMBER OF SAMPLES: {len(sams)}')
+
+    # DELETE TMPDIR
+    shutil.rmtree(tmp_files_dataset_destination)
+    print(f'REMEMBER TO ADD YOUR SCRIPTS AND VERIFY THAT THEY RUN IN PLACE FROM: {code_destination}\n')
+    print(
+        'CREATE METADATA FILES FOR DATASET WITH SODA:'
+        '\n\tdataset_description.xlsx'
+        '\n\tsubmission.xlsx'
+        '\n\tsubjects.xlsx'
+        '\n\tsamples.xlsx'
+        '\nSee template for iterating on contents with your advisor at: <link forthcoming>'
+    )
+
+
+def get_sams_subs(samples_sub_sam):  # noqa: D103
+    subs_sams_samples = []
+    for sample in samples_sub_sam:
+        subs_sams_samples.append((samples_sub_sam[sample]['sub'], samples_sub_sam[sample]['sam'], sample))
+    subs_sams_samples.sort(key=lambda element: (element[0], element[1]))  # sort by sub, then sam
+    subs, sams = [], []
+    for sub, sam, _ in subs_sams_samples:
+        # since ASCENT Sample is sub x sam
+        if sub not in subs:
+            subs.append(sub)
+        sams.append(sam)
+    return sams, subs
+
+
+def copy_files(comsol_file_ending, data_destination, files_to_copy, samples_sub_sam):  # noqa: D103
+    already_copied_files = []
+    copied_mph_files = []  # to use later if you choose to clear mesh/solutions
+    for file in files_to_copy:
+        sample = int(file.split(os.sep)[1])
+        sub = samples_sub_sam[sample]['sub']
+        sam = samples_sub_sam[sample]['sam']
+        base_directory = os.path.join(data_destination, f'sub-{sub}', f'sam-{sam}-sub-{sub}')
+        new_file_path = os.path.join(base_directory, file)
+
+        if not os.path.exists(new_file_path):
+            shutil.copy(file, new_file_path)
+        else:
+            already_copied_files.append(file)
+
+        if new_file_path.endswith(comsol_file_ending):
+            copied_mph_files.append(new_file_path)
+    if len(already_copied_files) > 0:
+        print('FILES ALREADY COPIED OVER:')
+        print('\t' + '\n\t'.join(already_copied_files))
+    return already_copied_files, copied_mph_files
+
+
+def copy_modified_files(data_destination, modified_files_to_copy, samples_sub_sam):  # noqa: D103
+    already_copied_modified_files = []
+    for file in modified_files_to_copy:
+        dataset_file_path = file.split(os.path.join('samples'))[1]
+        sample = int(dataset_file_path.split(os.sep)[1])
+        sub = samples_sub_sam[sample]['sub']
+        sam = samples_sub_sam[sample]['sam']
+        base_directory = os.path.join(data_destination, f'sub-{sub}', f'sam-{sam}-sub-{sub}')
+        new_file_path = os.path.join(base_directory, 'samples') + dataset_file_path
+
+        if not os.path.exists(new_file_path):
+            shutil.copy(file, new_file_path)
+        else:
+            already_copied_modified_files.append(file)
+    if len(already_copied_modified_files) > 0:
+        print('FILES (modified) ALREADY COPIED OVER:')
+        print('\t' + '\n\t'.join(already_copied_modified_files))
+
+
+def copy_sim_configs(already_copied_files, destination_ascent_config_directory, sims_to_copy):  # noqa: D103
+    destination_ascent_sims_directory = os.path.join(destination_ascent_config_directory, 'sims')
+    source_ascent_config_directory = os.path.join('config', 'user', 'sims')
+    if len(sims_to_copy) > 0 and not os.path.exists(destination_ascent_sims_directory):
+        os.makedirs(destination_ascent_sims_directory)
+    for sim in sims_to_copy:
+        source_sim_path = os.path.join(source_ascent_config_directory, f'{sim}.json')
+        destination_sim_path = os.path.join(destination_ascent_sims_directory, f'{sim}.json')
+        if not os.path.exists(destination_sim_path):
+            shutil.copy(source_sim_path, destination_sim_path)
+        else:
+            already_copied_files.append(source_sim_path)
+
+
+def copy_directories(  # noqa: D103
+    comsol_file_ending, copied_mph_files, data_destination, directories_to_copy, samples_sub_sam
+):  # noqa: D103
+    already_copied_directories = []
+    for directory in directories_to_copy:
+        sample = int(directory.split(os.sep)[1])
+        sub = samples_sub_sam[sample]['sub']
+        sam = samples_sub_sam[sample]['sam']
+        base_directory = os.path.join(data_destination, f'sub-{sub}', f'sam-{sam}-sub-{sub}')
+        new_directory = os.path.join(base_directory, directory)
+
+        if not os.path.exists(new_directory):
+            shutil.copytree(directory, new_directory)
+        else:
+            already_copied_directories.append(directory)
+
+        copied_mph_files.extend(
+            [
+                os.path.join(new_directory, file)
+                for file in os.listdir(new_directory)
+                if file.endswith(comsol_file_ending)
+            ]
+        )
+    if len(already_copied_directories) > 0:
+        print('DIRECTORIES ALREADY COPIED OVER:')
+        print('\t' + '\n\t'.join(already_copied_directories))
+
+
+def make_folders_for_copy(data_destination, files_to_copy, samples_sub_sam):  # noqa: D103
+    # <data_export_index>, which matches export config
+    #   "files" (for SPARC)
+    #       "primary" (for SPARC)
+    #           <sub-#> (for SPARC)
+    #               <sam-#> (for SPARC)
+    #                   "samples" (from ASCENT)
+    #                       <sample_index> (from ASCENT)
+    #                           ... rest is same as ASCENT
+    #                           i.e., at this level is:
+    #                           "sample.json", "sample.obj", "s.tif", "plots/", "slides/", "models/"
+    #                               i.e., at this level in "models/" is:
+    #                               <model_index>
+    #                                   i.e., at this level in "models"/<model_index>/ is:
+    #                                   "model.json", "debug_geom.mph", "bases/", "mesh/", "sims/"
+    #                                       i.e., at this level in "sims/" is:
+    #                                       <sim_index>
+    #                                       ... ETC
+    file_directories_to_copy = [os.path.join(*file.split(os.sep)[:-1]) for file in files_to_copy]
+    file_directories_to_copy = list(set(file_directories_to_copy))
+    for directory in file_directories_to_copy:
+        sample = int(directory.split(os.sep)[1])
+        sub = samples_sub_sam[sample]['sub']
+        sam = samples_sub_sam[sample]['sam']
+        base_directory = os.path.join(data_destination, f'sub-{sub}', f'sam-{sam}-sub-{sub}')
+        potential_new_directory = os.path.join(base_directory, directory)
+        os.makedirs(potential_new_directory, exist_ok=True)
+
+
+def remove_duplicates(directories_to_copy, files_to_copy, modified_files_to_copy):  # noqa: D103
+    files_to_copy = list(set(files_to_copy))
+    modified_files_to_copy = list(set(modified_files_to_copy))
+    directories_to_copy = list(set(directories_to_copy))
+    return directories_to_copy, files_to_copy, modified_files_to_copy
+
+
+def regex_copy_list(file_lists_to_copy, files_to_copy, regex_legend):  # noqa: D103
+    for file_list in file_lists_to_copy:
+        list_type = file_list.split(os.sep)[-1]
+        list_directory = os.path.join(*file_list.split(os.sep)[:-1])
+        regex = regex_legend[list_type]
+
+        for filename in [x for x in os.listdir(list_directory) if re.match(regex, x)]:
+            files_to_copy.append(os.path.join(list_directory, filename))
+
+
+def check_empty(directories_to_copy):  # noqa: D103
+    empty_directories = [directory for directory in directories_to_copy if len(os.listdir(directory)) == 0]
+    if len(empty_directories) > 0:
+        for directory in empty_directories:
+            print(f'EMPTY DIRECTORY TO COPY: {directory}')
+        reply = (
+            input(
+                'Empty directories specified for copying. See preceding print statement(s) for details.'
+                'Would you like to proceed? [y/N] '
+            )
+            .lower()
+            .strip()
+        )
+        if reply[0] != 'y':
+            print('Exiting program.\n')
+            sys.exit()
+        else:
+            print('Continuing...')
+
+
+def list_things_to_copy(  # noqa: D103
+    code_destination,
+    dataset_index,
+    keeps_config_directory,
+    master_indices,
+    samples_sub_sam,
+    tmp_files_dataset_destination,
+):
+    keeps_path = os.path.join(keeps_config_directory, f'{dataset_index}.json')
+    keeps = load(keeps_path)
+    sample_directory = os.path.join('samples', '<sample_index>')
+    stuff_to_copy = paths_from_keeps(sample_directory, keeps)
+    directories_to_copy = []
+    files_to_copy = []
+    file_lists_to_copy = []
+    modified_files_to_copy = []
+    sims_to_copy = []
+    mock_samples_copied = []
+    not_mock_samples = []
+    input_path = 'input'
+    destination_ascent_config_directory = os.path.join(code_destination, 'ascent_configs')
+    destination_mock_config_input_directory = os.path.join(destination_ascent_config_directory, 'mock_samples')
+    for sample, model, sim, n_sim, _, _ in master_indices:
+        # copy MockSample configs
+        if sample not in not_mock_samples + mock_samples_copied:
+            sample_config_path = os.path.join('samples', str(sample), 'sample.json')
+            sample_config = load(sample_config_path)
+            sample_name = sample_config['sample']
+            source_mock_config_input_path = os.path.join(input_path, sample_name, 'mock.json')
+            sub = samples_sub_sam[sample]['sub']
+            sam = samples_sub_sam[sample]['sam']
+            destination_mock_config_input_path = os.path.join(
+                destination_mock_config_input_directory, f'sub{sub}_sam{sam}_Sample{sample}.json'
+            )
+
+            if os.path.exists(source_mock_config_input_path):
+                mock_samples_copied.append(sample)
+                os.makedirs(destination_mock_config_input_directory, exist_ok=True)
+                shutil.copy(source_mock_config_input_path, destination_mock_config_input_path)
+            else:
+                not_mock_samples.append(sample)
+
+        # make list of the rest of things to copy, copy later all at once
+        for thing_to_copy in stuff_to_copy:
+            # copy Sim configs if including things at the Sim level
+            if sim not in sims_to_copy and "<sim_index>" in thing_to_copy:
+                sims_to_copy.append(sim)
+
+            # tidy files that need tidying
+            is_n_sim_index_json = '<n_sim_index>.json' in thing_to_copy
+
+            # replace placeholders in thing_to_copy
+            thing_to_copy = replace_placeholders(thing_to_copy, sample, model, sim, n_sim)
+
+            # if tidy_weights is true, tidy the file
+            if is_n_sim_index_json:
+                model_config_path = os.path.join('samples', str(sample), 'models', str(model), 'model.json')
+                # saves the modified file to a temporary location
+                modified_thing_to_copy = tidy_n_sim_index_json(
+                    thing_to_copy, model_config_path, tmp_files_dataset_destination
+                )
+                modified_files_to_copy.append(modified_thing_to_copy)
+            else:
+                # determine if file or directory, append to lists
+                if os.path.isfile(thing_to_copy):
+                    files_to_copy.append(thing_to_copy)
+                elif os.path.isdir(thing_to_copy):
+                    directories_to_copy.append(thing_to_copy)
+                else:
+                    # check that <> is in the path
+                    if not all(character in thing_to_copy for character in ['<', '>']):
+                        if thing_to_copy.split(os.sep)[-1] == 's.tif':
+                            # check that "scale" -> "scale_ratio" is in Sample config
+                            sample_config_path = os.path.join('samples', str(sample), 'sample.json')
+                            sample_config = load(sample_config_path)
+                            if 'scale_ratio' in sample_config['scale']:
+                                continue
+                            else:
+                                raise ValueError(
+                                    f'"scale" -> "scale_ratio" not in '
+                                    f'\nSample config: {sample_config_path} '
+                                    f'\nand "s.tif" not found'
+                                )
+                        else:
+                            print(f'Not sure what this thing_to_copy is, could be missing: {thing_to_copy}')
+                            continue
+                    else:
+                        file_lists_to_copy.append(thing_to_copy)
+    return (
+        destination_ascent_config_directory,
+        directories_to_copy,
+        file_lists_to_copy,
+        files_to_copy,
+        modified_files_to_copy,
+        sims_to_copy,
+    )
+
+
+def compile_indices(ascent_indices, master_indices, samples_sub_sam):  # noqa: D103
+    for inds in ascent_indices:
+        sample, model, sim, n_sim = tuple([int(x) for x in inds.split('_')])
+        master_indices.append(
+            (sample, model, sim, n_sim, samples_sub_sam[sample]['sub'], samples_sub_sam[sample]['sam'])
+        )
+
+
+def assign_non_picky(ascent_indices, samples_sub_sam, sparc_subs):  # noqa: D103
+    master_indices = []
+    sub_auto = 0
+    # make set comprehension of previous line
+    subs_set = []
+    for x in sparc_subs:
+        if ~np.isnan(x):
+            subs_set.append(x)
+    subs_set = list(set(subs_set))
+    for inds, sub in zip(ascent_indices, sparc_subs):
+        sample, model, sim, n_sim = tuple([int(x) for x in inds.split('_')])
+
+        if sample not in samples_sub_sam:
+            while True:
+                if np.isnan(sub) and sub_auto not in subs_set:
+                    samples_sub_sam[sample] = {}
+                    samples_sub_sam[sample]['sub'] = sub_auto
+                    samples_sub_sam[sample]['sam'] = 0
+                    sub_auto += 1
+                    break
+                else:
+                    sub_auto += 1
+        else:
+            if 'sam' not in samples_sub_sam[sample]:
+                samples_sub_sam[sample]['sam'] = 0
+            else:
+                continue
+    return master_indices
+
+
+def assign_picky(ascent_indices, sparc_sams, sparc_subs):  # noqa: D103
+    samples_sub_sam = {}
+    for inds, sub, sam in zip(ascent_indices, sparc_subs, sparc_sams):
+        sample, _, _, _ = tuple([int(x) for x in inds.split('_')])
+
+        if sample not in samples_sub_sam:
+            if not np.isnan(sub):
+                samples_sub_sam[sample] = {}
+                samples_sub_sam[sample]['sub'] = sub
+                if not np.isnan(sam):
+                    samples_sub_sam[sample]['sam'] = sam
+            else:
+                continue
+        else:
+            prev_sub = samples_sub_sam[sample]['sub']
+            prev_sam = samples_sub_sam[sample].get('sam', np.nan)
+            if np.isnan(sub) and np.isnan(sam):
+                continue
+            elif sub != prev_sub:
+                raise ValueError(
+                    'Manual input of SPARC-subs is not consistent.'
+                    f'\n\tASCENT Sample {sample} was assigned to both SPARC subs {sub} and {prev_sub}'
+                )
+            elif sam != prev_sam:
+                raise ValueError(
+                    'Manual input of SPARC-sams is not consistent.'
+                    f'\n\tASCENT Sample {sample} was assigned to both SPARC sams {sam} and {prev_sam}'
+                )
+    return samples_sub_sam
+
+
+def process_indices(df):  # noqa D103
+    ascent_indices = []
+    sparc_subs = []
+    sparc_sams = []
+    for sheet in df:
+        new_indices = df[sheet].loc[:, 'Indices'].tolist()
+        ascent_indices.extend(new_indices)
+
+        if 'sub' in df[sheet].columns:
+            new_subs = [int(x) if not np.isnan(x) else np.nan for x in df[sheet].loc[:, 'sub'].tolist()]
+            sparc_subs.extend(new_subs)
+        else:
+            new_subs = np.full([1, len(new_indices)], np.nan).tolist()[0]
+            sparc_subs.extend(new_subs)
+
+        if 'sam' in df[sheet].columns:
+            new_sams = [int(x) if not np.isnan(x) else np.nan for x in df[sheet].loc[:, 'sam'].tolist()]
+            sparc_sams.extend(new_sams)
+        else:
+            new_sams = np.full([1, len(new_indices)], np.nan).tolist()[0]
+            sparc_sams.extend(new_sams)
+    return ascent_indices, sparc_sams, sparc_subs
+
+
+def freeze_pip_requirements(metadata_destination):  # noqa D103
+    pip_requirements_path = os.path.join(metadata_destination, 'pip_requirements.txt')
+    with open(pip_requirements_path, 'w') as f:
+        subprocess.run(['pip', 'freeze'], stdout=f)
+    if shutil.which('conda'):
+        # -conda
+        conda_requirements_path = os.path.join(metadata_destination, 'conda_requirements.txt')
+        try:
+            with open(conda_requirements_path, 'w') as f:
+                subprocess.run(['conda', 'list'], stdout=f)
+        except FileNotFoundError:
+            warnings.warn("Issue with conda list export, skipping", stacklevel=2)
+    else:
+        warnings.warn('conda not found in path, skipping conda list export', stacklevel=2)
+
+
+def make_dataset_directories(dataset_index, dataset_index_directory, tmp_files_directory):  # noqa D103
+    files_directory = os.path.join(dataset_index_directory, 'files')
+    data_destination = os.path.join(files_directory, 'primary')
+    code_destination = os.path.join(files_directory, 'code')
+    metadata_destination = os.path.join(code_destination, 'ascent_metadata')
+    tmp_files_dataset_destination = os.path.join(tmp_files_directory, str(dataset_index))
+    for path in [data_destination, code_destination, metadata_destination, tmp_files_dataset_destination]:
+        os.makedirs(path, exist_ok=True)
+    return code_destination, data_destination, metadata_destination, tmp_files_dataset_destination
+
+
+def check_existing_dataset(args, dataset_index, dataset_index_directory):  # noqa D103
+    if os.path.exists(dataset_index_directory):
+        if not args.force:
+            raise ValueError(
+                f'Attempting to re-run dataset_index {dataset_index}.\n\t'
+                f'Create configs for a new dataset_index and re-run,\n\t'
+                f'or pass the -f option to overwrite the existing dataset_index files.'
+            )
+        else:
+            try:
+                shutil.rmtree(dataset_index_directory)
+            except OSError as e:
+                raise OSError('Could not delete existing dataset_index directory') from e
+
+
+def query_excel_output(queried_indices_info_path, queried_indices_path, query_criteria_path):  # noqa D103
+    redo_query_indices = False
+    queried_indices_path_exists = False
+    if os.path.exists(queried_indices_path):
+        queried_indices_path_exists = True
+        # ask user if they would like to delete it and rerun
+        reply = (
+            input(
+                f'Existing queried_indices_path found: {queried_indices_path}\n'
+                f'Would you like to delete it and start over with '
+                f'complete Query result? [y/N]: '
+            )
+            .lower()
+            .strip()
+        )
+        if reply[0] == 'y':
+            os.remove(queried_indices_path)
+            redo_query_indices = True
+    if not queried_indices_path_exists or redo_query_indices:
+        criteria = load(query_criteria_path)
+        q = Query(criteria).run()
+
+        queried_indices_info = load(queried_indices_info_path)
+
+        q.excel_output(queried_indices_path, **queried_indices_info)
+
+        print(f'Excel file for you to edit saved to: {queried_indices_path}')
+        print(
+            'Modify this file if you wish to not export all data '
+            '(delete rows for items you do not want), then rerun this script.'
+        )
+        sys.exit()
+    else:
+        # if using previously edited queried_indices_path
+        print(f'FOUND QUERIED_INDICES: {queried_indices_path}\n\tCONTINUING WITH DATASET EXPORT\n')

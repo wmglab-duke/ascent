@@ -14,6 +14,7 @@
   "models": {
     "<model_index>": {
       "model.json": true,
+      "model.obj" : true,
       "debug_geom.mph": false,
       "bases": false,
       "mesh": {
@@ -23,7 +24,7 @@
       },
       "sims": {
         "<sim_index>": {
-          "sim.obj": false,
+          "sim.obj": true,
           "fibersets": false,
           "fibersets_bases": false,
           "potentials": false,
