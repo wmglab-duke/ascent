@@ -10,6 +10,9 @@ RUN THIS FROM REPOSITORY ROOT
 """
 
 import os
+import sys
+
+sys.path.append(os.path.sep.join([os.getcwd(), '']))
 
 import matplotlib.pyplot as plt
 import seaborn as sns

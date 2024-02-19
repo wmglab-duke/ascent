@@ -14,7 +14,7 @@
   "models": {
     "<model_index>": {
       "model.json": true,
-      "model.obj" : true,
+      "model.obj": true,
       "debug_geom.mph": false,
       "bases": false,
       "mesh": {
