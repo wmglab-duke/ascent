@@ -9,8 +9,13 @@ https://seaborn.pydata.org/generated/seaborn.ecdfplot.html#seaborn.ecdfplot
 RUN THIS FROM REPOSITORY ROOT
 """
 
+import os
+import sys
+
 import matplotlib.pyplot as plt
 import seaborn as sb
+
+sys.path.append(os.path.sep.join([os.getcwd(), '']))
 
 from src.core.query import Query
 

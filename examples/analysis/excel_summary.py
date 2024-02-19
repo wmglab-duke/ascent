@@ -10,9 +10,9 @@ RUN THIS FROM REPOSITORY ROOT
 import os
 import sys
 
-from src.core.query import Query
-
 sys.path.append(os.path.sep.join([os.getcwd(), '']))
+
+from src.core.query import Query
 
 # initialize and run Querys
 q = Query(

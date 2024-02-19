@@ -11,13 +11,13 @@ RUN THIS FROM REPOSITORY ROOT
 import os
 import sys
 
+sys.path.append(os.path.sep.join([os.getcwd(), '']))
+
 import matplotlib.pyplot as plt
 import numpy as np
 
 from src.core.plotter import ap_loctime
 from src.core.query import Query
-
-sys.path.append(os.path.sep.join([os.getcwd(), '']))
 
 # set default fig size
 plt.rcParams['figure.figsize'] = list(np.array([16.8, 10.14]) / 2)
