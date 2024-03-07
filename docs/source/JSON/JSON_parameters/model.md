@@ -23,7 +23,6 @@ the following syntax:
   "modes": {
     "rho_perineurium": String,
     "cuff_shift": String,
-    "fiber_z": String,
     "use_ci": Boolean
   },
   "medium": {
@@ -213,10 +212,6 @@ users to better keep track of the purpose of each configuration file. Optional.
     - `“NONE”`: Program keeps both the nerve centroid and cuff
       centered at (x,y) =(0,0) and no cuff rotation is performed ([Creating Custom Cuffs](../../Primitives_and_Cuffs/Custom_Cuffs) and [Cuff Placement on the Nerve](../../Running_ASCENT/Info.md#cuff-placement-on-nerve)). Note: This mode will ignore any supplied orientation image (`a.tif`).
 
-- `“fiber_z”`: The value (String) is the `“FiberZMode”` that tells the
-  program how to seed the NEURON fibers along the length of the FEM.
-  In the current implementation of the pipeline, this value must be
-  “EXTRUSION”. Required.
 
 - `“use_ci”`: The value (Boolean), if true, tells the program whether
   to model fascicles (outer) that have a single inner as a sheet

@@ -72,6 +72,7 @@ autodoc_mock_imports = [
     'pygame',
     'pymunk',
     'quantiphy',
+    'nd_line',
 ]
 
 # Add any paths that contain templates here, relative to this directory.

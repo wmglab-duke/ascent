@@ -2,8 +2,7 @@
   "pseudonym": "tutorial sim",
   "n_dimensions": 0,
   "active_srcs": {
-    "Purdue.json": [[1, -1]],
-    "default": [[1, -1]]
+    "Purdue.json": [[1, -1]]
   },
   "fibers": {
     "plot": false,

@@ -3,6 +3,7 @@
 See ``examples/analysis`` for examples of how to use.
 """
 
+import glob
 import json
 import os
 import warnings
@@ -173,6 +174,7 @@ class _HeatmapPlotter:
             ax=ax,
             outers_flag=self.plot_outers,
             inner_format='k-',
+            scalebar=True,
             line_kws=self.line_kws,
         )
         if np.any([bool(x) for x in self.fiber_colors]):
@@ -312,10 +314,11 @@ class _HeatmapPlotter:
         ax.scatter(r * 1.2 * np.cos(theta), r * 1.2 * np.sin(theta), 300, 'red', 'o')
 
 
-def ap_loctime(
+def ap_loctime(  # noqa: C901
     query_object: Query,
     n_sim_filter: List[int] = None,
     plot: bool = False,
+    plot_distribution: bool = False,
     n_sim_label_override: str = None,
     model_labels: List[str] = None,
     save: bool = False,
@@ -327,7 +330,8 @@ def ap_loctime(
 
     :param query_object: Query object to use for plotting.
     :param n_sim_filter: List of n_sim values to plot.
-    :param plot: Whether to plot the data.
+    :param plot: Whether to plot the ap location node for each fiber.
+    :param plot_distribution: Whether to plot action potential initiation node distribution.
     :param n_sim_label_override: Label to use for n_sim.
     :param model_labels: Labels to use for models.
     :param save: Whether to save the plot.
@@ -358,7 +362,7 @@ def ap_loctime(
                 ):
                     print(f'\t\t\tnsim: {n_sim_index}')
 
-                    _, _, fiberset_index = sim_object.potentials_product[potentials_product_index]
+                    _, *_, fiberset_index = sim_object.potentials_product[potentials_product_index]
 
                     # skip if not in existing n_sim filter
                     if n_sim_filter is not None and n_sim_index not in n_sim_filter:
@@ -380,75 +384,101 @@ def ap_loctime(
                     outputs_path = os.path.join(n_sim_dir, 'data', 'outputs')
 
                     # path of the first inner, first fiber vm(t) data
-                    vm_t_path = os.path.join(outputs_path, f'ap_loctime_inner0_fiber0_amp{amp}.dat')
-
-                    # load vm(t) data (see path above)
-                    # each row is a snapshot of the voltages at each node [mV]
-                    # the first column is the time [ms]
-                    # first row is holds column labels, so this is skipped (time, node0, node1, ...)
-                    aploc_data = np.loadtxt(vm_t_path, skiprows=0)
-
-                    aploc_data[np.where(aploc_data == 0)] = float('Inf')
-
-                    time = min(aploc_data)
-
-                    node = np.argmin(aploc_data)
-
-                    # create message about AP time and location findings
-                    message = f't: {time} ms, node: {node + 1} (of {len(aploc_data) + 2})'
-                    if time != float('inf'):
-                        print(f'\t\t\t\t{message}')
+                    inner = 0
+                    if plot_distribution:
+                        fiber_indices = len(glob.glob(fiberset_dir + '/*.dat'))
                     else:
-                        print('No action potential occurred.')
-                        continue
-
-                    # plot the AP location with voltage trace
-                    # create subplots
-                    if plot or save:
-                        if subplots is not True:
-                            fig, axes = plt.subplots(1, 1)
-                            axes = [axes]
-                        else:
-                            axes = [axs[0][n_sim_index], axs[1][n_sim_index]]
-                        # load fiber coordinates
-                        fiber = np.loadtxt(os.path.join(fiberset_dir, '0.dat'), skiprows=1)
-                        nodefiber = fiber[0::11, :]
-
-                        # plot fiber coordinates in 2D
-                        if nodes_only is not True:
-                            axes[0].plot(fiber[:, 0], fiber[:, 2], 'b.', label='fiber')
-                        else:
-                            axes[0].plot(nodefiber[:, 0], nodefiber[:, 2], 'b.', label='fiber')
-
-                        # plot AP location
-                        axes[0].plot(fiber[11 * node, 0], fiber[11 * node, 2], 'r*', markersize=10)
-
-                        # location display settings
-                        n_sim_label = (
-                            f'n_sim: {n_sim_index}' if (n_sim_label_override is None) else n_sim_label_override
-                        )
-                        model_label = '' if (model_labels is None) else f', {model_labels[model_index]}'
-                        axes[0].set_xlabel('x location, µm')
-
-                        axes[0].set_title(f'{n_sim_label}{model_label}')
-                        if subplots is not True:
-                            axes[0].legend(['fiber', f'AP ({message})'])
-                        else:
-                            axes[0].legend(['fiber', 'AP'])
-
-                        plt.tight_layout()
-
-                        # voltages display settings
-                        if subplots is not True or n_sim_index == 0:
-                            axes[0].set_ylabel('z location, µm')
-                        plt.tight_layout()
-
-                    # display
-                    if save:
-                        plt.savefig(
-                            f'out/analysis/ap_time_loc_{sample_index}_{model_index}_{sim_index}_{n_sim_index}.png',
-                            dpi=300,
+                        fiber_indices = [0]
+                    ap_nodes = []
+                    for fiber_index in fiber_indices:
+                        vm_t_path = os.path.join(
+                            outputs_path, f'ap_loctime_inner{inner}_fiber{fiber_index}_amp{amp}.dat'
                         )
 
-                    if plot:
+                        # load vm(t) data (see path above)
+                        # each row is a snapshot of the voltages at each node [mV]
+                        # the first column is the time [ms]
+                        # first row is holds column labels, so this is skipped (time, node0, node1, ...)
+                        aploc_data = np.loadtxt(vm_t_path, skiprows=0)
+
+                        aploc_data[np.where(aploc_data == 0)] = float('Inf')
+
+                        time = min(aploc_data)
+
+                        node = np.argmin(aploc_data)
+                        ap_nodes.append(node)
+
+                        # create message about AP time and location findings
+                        message = f't: {time} ms, node: {node + 1} (of {len(aploc_data) + 2})'
+                        if time != float('inf'):
+                            print(f'\t\t\t\t\t\t{message}')
+                        else:
+                            print('No action potential occurred.')
+                            continue
+
+                        # plot the AP location with voltage trace
+                        # create subplots
+                        if plot or save:
+                            print(f'\t\t\t\tinner: {inner} \n \t\t\t\t\tfiber: {fiber_index}')
+                            if subplots is not True:
+                                fig, axes = plt.subplots(1, 1)
+                                axes = [axes]
+                            else:
+                                axes = [axs[0][n_sim_index], axs[1][n_sim_index]]
+                            # load fiber coordinates
+                            fiber = np.loadtxt(os.path.join(fiberset_dir, f'{fiber_index}.dat'), skiprows=1)
+                            nodefiber = fiber[0::11, :]
+
+                            # plot fiber coordinates in 2D
+                            if nodes_only is not True:
+                                axes[0].plot(fiber[:, 0], fiber[:, 2], 'b.', label='fiber')
+                            else:
+                                axes[0].plot(nodefiber[:, 0], nodefiber[:, 2], 'b.', label='fiber')
+
+                            # plot AP location
+                            axes[0].plot(fiber[11 * node, 0], fiber[11 * node, 2], 'r*', markersize=10)
+
+                            # location display settings
+                            n_sim_label = (
+                                f'n_sim: {n_sim_index}' if (n_sim_label_override is None) else n_sim_label_override
+                            )
+                            model_label = '' if (model_labels is None) else f', {model_labels[model_index]}'
+                            axes[0].set_xlabel('x location, µm')
+
+                            axes[0].set_title(f'{n_sim_label}{model_label}')
+                            if subplots is not True:
+                                axes[0].legend(['fiber', f'AP ({message})'])
+                            else:
+                                axes[0].legend(['fiber', 'AP'])
+
+                            plt.tight_layout()
+
+                            # voltages display settings
+                            if subplots is not True or n_sim_index == 0:
+                                axes[0].set_ylabel('z location, µm')
+                            plt.tight_layout()
+
+                        # display
+                        if save:
+                            plt.savefig(
+                                (
+                                    f'out/analysis/ap_time_loc_{sample_index}_{model_index}_{sim_index}_{n_sim_index}_'
+                                    f'inner{inner}_fiber{fiber_index}.png'
+                                ),
+                                dpi=300,
+                            )
+
+                        if plot:
+                            plt.show()
+                    if plot_distribution:
+                        total_nodes = len(aploc_data) + 2
+                        plt.hist(ap_nodes, range=(0, total_nodes), bins=total_nodes)
+                        plt.title('Distribution of AP initiation node sites')
+                        plt.xlabel('Node Index')
+                        plt.ylabel('Node Count')
                         plt.show()
+                        if save:
+                            plt.savefig(
+                                (f'out/analysis/ap_time_loc_distribution_{sample_index}_{model_index}_{sim_index}.png'),
+                                dpi=300,
+                            )
