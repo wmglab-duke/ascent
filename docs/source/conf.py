@@ -24,7 +24,7 @@ copyright = '2021-2024, Duke University'  # noqa A001
 author = 'Musselman ED, Cariello JE, Marshall DM, Grill WM, Pelot NA.'
 
 # The full version, including alpha/beta/rc tags
-release = 'v1.3.0'
+release = 'v1.3.1'
 
 # -- General configuration ---------------------------------------------------
 
